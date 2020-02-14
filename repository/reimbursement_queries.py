@@ -27,6 +27,7 @@ def find_all_offerer_payments(offerer_id: int) -> List[namedtuple]:
         .filter(Venue.managingOffererId == offerer_id) \
         .join(Offerer) \
         .distinct(payment_status_query.c.paymentId) \
+        .order_by(payment_status_query.c.paymentId.desc()) \
         .with_entities(User.lastName.label('user_lastName'),
                        User.firstName.label('user_firstName'),
                        Booking.token.label('booking_token'),
@@ -40,17 +41,14 @@ def find_all_offerer_payments(offerer_id: int) -> List[namedtuple]:
                        Payment.iban.label('iban'),
                        Payment.transactionLabel.label('transactionLabel'),
                        payment_status_query.c.status.label('status'),
-                       payment_status_query.c.detail.label('detail')) \
-        .all()
+                       payment_status_query.c.detail.label('detail')).all()
 
 
 def _build_payment_status_subquery() -> subquery:
     payment_alias = aliased(Payment)
-    payment_status_query = PaymentStatus.query \
+    return PaymentStatus.query \
         .filter(PaymentStatus.paymentId == payment_alias.id) \
-        .order_by(PaymentStatus.date.desc()) \
         .with_entities(PaymentStatus.paymentId.label('paymentId'),
                        PaymentStatus.status.label('status'),
-                       PaymentStatus.detail) \
+                       PaymentStatus.detail.label('detail')) \
         .subquery()
-    return payment_status_query

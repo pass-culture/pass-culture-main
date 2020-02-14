@@ -95,3 +95,77 @@ class FindAllOffererPaymentsTest:
             'pass Culture Pro - remboursement 1ère quinzaine 07-2019',
             TransactionStatus.SENT,
             'All good')
+
+    @clean_database
+    def test_should_return_matching_status_for_each_payment(self, app):
+        # Given
+        user = create_user(email='user+plus@email.fr', last_name='User', first_name='Plus')
+        deposit = create_deposit(user)
+        offerer = create_offerer(address='7 rue du livre')
+        venue = create_venue(offerer)
+        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=10)
+        now = datetime.utcnow()
+        booking1 = create_booking(user=user, stock=stock, is_used=True, date_used=now,
+                                  token='ABCDEF', venue=venue)
+        booking2 = create_booking(user=user, stock=stock, is_used=True, date_used=now,
+                                  token='ABCDFE', venue=venue)
+
+        payment1 = create_payment(booking1, offerer,
+                                  transaction_label='pass Culture Pro - remboursement 1ère quinzaine 07-2019',
+                                  status=TransactionStatus.ERROR,
+                                  amount=50,
+                                  status_date=now - timedelta(days=2))
+        payment2 = create_payment(booking2, offerer,
+                                  transaction_label='pass Culture Pro - remboursement 2ème quinzaine 07-2019',
+                                  status=TransactionStatus.ERROR,
+                                  amount=75,
+                                  detail=None,
+                                  status_date=now - timedelta(days=4))
+        payment_status1 = create_payment_status(payment1, detail='Retry',
+                                                status=TransactionStatus.RETRY,
+                                                date=now - timedelta(days=1))
+        payment_status2 = create_payment_status(payment1, detail='All good',
+                                                status=TransactionStatus.SENT)
+        payment_status3 = create_payment_status(payment2, detail='Iban non fournis',
+                                                status=TransactionStatus.ERROR,
+                                                date=now - timedelta(days=3))
+        payment_status4 = create_payment_status(payment2, detail=None,
+                                                status=TransactionStatus.SENT,
+                                                date=now)
+
+        repository.save(deposit, payment_status1, payment_status2, payment_status3, payment_status4)
+
+        # When
+        payments = find_all_offerer_payments(offerer.id)
+
+        # Then
+        assert len(payments) == 2
+        assert payments[0] == (
+            'User',
+            'Plus',
+            'ABCDFE',
+            now,
+            'Test Book',
+            '7 rue du livre',
+            'La petite librairie',
+            '12345678912345',
+            '123 rue de Paris',
+            Decimal('75.00'),
+            None,
+            'pass Culture Pro - remboursement 2ème quinzaine 07-2019',
+            TransactionStatus.SENT,
+            None)
+        assert payments[1] == (
+            'User', 'Plus',
+            'ABCDEF',
+            now,
+            'Test Book',
+            '7 rue du livre',
+            'La petite librairie',
+            '12345678912345',
+            '123 rue de Paris',
+            Decimal('50.00'),
+            None,
+            'pass Culture Pro - remboursement 1ère quinzaine 07-2019',
+            TransactionStatus.SENT,
+            'All good')
