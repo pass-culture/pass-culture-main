@@ -4,6 +4,7 @@ import { closeModal } from 'pass-culture-shared'
 import React, { PureComponent, Fragment } from 'react'
 import PropTypes from 'prop-types'
 
+import StockInformationMessage from './StockItem/utils/StockInformationMessage'
 import StockItemContainer from './StockItem/StockItemContainer'
 import HeroSection from '../../../layout/HeroSection/HeroSection'
 
@@ -216,11 +217,7 @@ class StocksManager extends PureComponent {
               <tbody>
                 <tr>
                   <td colSpan="10">
-                    <i>
-                      {'Il n’est pas possible d’ajouter ni de supprimer d’horaires '}
-                      {'pour cet événement '}
-                      {provider.name}
-                    </i>
+                    <StockInformationMessage providerName={provider.name}/>
                   </td>
                 </tr>
               </tbody>
