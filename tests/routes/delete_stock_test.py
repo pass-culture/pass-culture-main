@@ -3,11 +3,13 @@ from unittest.mock import patch
 
 from models import Booking, Provider
 from repository import repository
+from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_user_offerer
-from tests.model_creators.specific_creators import create_stock_with_event_offer, create_offer_with_thing_product
+from tests.model_creators.specific_creators import create_stock_with_event_offer, create_offer_with_thing_product, \
+    create_offer_with_event_product
 from utils.human_ids import humanize
 
 NOW = datetime.utcnow()
@@ -54,6 +56,27 @@ class Delete:
             bookings = Booking.query.filter_by(isCancelled=True).all()
             assert booking1 in bookings
             assert booking2 in bookings
+
+        @clean_database
+        def when_stock_is_on_an_offer_from_allocine_provider(self, app):
+            # Given
+            allocine_provider = get_provider_by_local_class('AllocineStocks')
+            offerer = create_offerer()
+            user = create_user(email='test@email.com')
+            user_offerer = create_user_offerer(user, offerer)
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue, last_provider_id=allocine_provider.id,
+                                                    id_at_providers='allo')
+            stock = create_stock(offer=offer, id_at_providers='allo-cine')
+            repository.save(user, user_offerer, stock)
+
+            # When
+            response = TestClient(app.test_client()).with_auth(user.email) \
+                .delete('/stocks/' + humanize(stock.id))
+
+            # Then
+            assert response.status_code == 200
+            assert response.json['isSoftDeleted'] is True
 
         @patch('routes.stocks.redis.add_offer_id')
         @clean_database

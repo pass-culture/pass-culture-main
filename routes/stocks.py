@@ -128,12 +128,11 @@ def edit_stock(stock_id):
 @login_or_api_key_required
 def delete_stock(id):
     stock = load_or_404(Stock, id)
-    check_offer_is_editable(stock.offer)
     offerer_id = stock.resolvedOffer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
     bookings = delete_stock_and_cancel_bookings(stock)
 
-    check_stocks_are_editable_for_offer(stock.offer)
+    check_stock_is_updatable(stock)
 
     if bookings:
         try:
