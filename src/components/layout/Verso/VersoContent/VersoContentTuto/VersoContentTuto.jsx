@@ -4,7 +4,7 @@ import React from 'react'
 const VersoContentTuto = ({ imageURL }) => (
   <div className="verso-info-tuto">
     <img
-      alt="verso"
+      alt="Et voilà ! Glissez la carte vers le bas pour revenir vers l’écran précédent, ou utilisez le bouton fermer. Bonne découverte !"
       className="verso-tuto-mediation is-full-width"
       src={imageURL}
     />

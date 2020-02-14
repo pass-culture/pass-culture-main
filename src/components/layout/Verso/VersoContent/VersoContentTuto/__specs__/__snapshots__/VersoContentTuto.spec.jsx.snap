@@ -22,7 +22,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <img
-          alt="verso"
+          alt="Et voilà ! Glissez la carte vers le bas pour revenir vers l’écran précédent, ou utilisez le bouton fermer. Bonne découverte !"
           className="verso-tuto-mediation is-full-width"
           src="https://example.net/img.jpg"
         />,
@@ -47,7 +47,7 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "alt": "verso",
+          "alt": "Et voilà ! Glissez la carte vers le bas pour revenir vers l’écran précédent, ou utilisez le bouton fermer. Bonne découverte !",
           "className": "verso-tuto-mediation is-full-width",
           "src": "https://example.net/img.jpg",
         },
@@ -165,7 +165,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <img
-            alt="verso"
+            alt="Et voilà ! Glissez la carte vers le bas pour revenir vers l’écran précédent, ou utilisez le bouton fermer. Bonne découverte !"
             className="verso-tuto-mediation is-full-width"
             src="https://example.net/img.jpg"
           />,
@@ -190,7 +190,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "alt": "verso",
+            "alt": "Et voilà ! Glissez la carte vers le bas pour revenir vers l’écran précédent, ou utilisez le bouton fermer. Bonne découverte !",
             "className": "verso-tuto-mediation is-full-width",
             "src": "https://example.net/img.jpg",
           },
