@@ -78,12 +78,13 @@
     - meta: flush_handlers
 
     - name: Copy create_database_tunnel.sh
-      template:
-        src: create_database_tunnel.sh.j2
+      copy:
+        src: create_database_tunnel.sh
         dest: /opt/jupyterhub/create_database_tunnel.sh
         owner: ubuntu
         mode: u=rwx,g=rx,o=rx
-      tags: 'copy'
+      notify: Reload daemon
+      tags: 'copy-create-database-tunnel'
 
     - name: Check if scalingo cli is installed
       stat:
