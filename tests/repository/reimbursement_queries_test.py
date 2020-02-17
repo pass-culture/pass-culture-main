@@ -99,7 +99,7 @@ class FindAllOffererPaymentsTest:
             'All good')
 
     @clean_database
-    def test_should_return_matching_status_for_each_payment(self, app):
+    def test_should_return_last_matching_status_based_on_date_for_each_payment(self, app):
         # Given
         user = create_user(last_name='User', first_name='Plus')
         deposit = create_deposit(user)
@@ -114,29 +114,32 @@ class FindAllOffererPaymentsTest:
 
         payment1 = create_payment(booking1, offerer,
                                   transaction_label='pass Culture Pro - remboursement 1ère quinzaine 07-2019',
-                                  status=TransactionStatus.ERROR,
+                                  status=TransactionStatus.PENDING,
                                   amount=50,
                                   status_date=now - timedelta(days=2))
         payment2 = create_payment(booking2, offerer,
                                   transaction_label='pass Culture Pro - remboursement 2ème quinzaine 07-2019',
-                                  status=TransactionStatus.ERROR,
+                                  status=TransactionStatus.PENDING,
                                   amount=75,
-                                  detail=None,
                                   status_date=now - timedelta(days=4))
-        first_status_for_payment1 = create_payment_status(payment1, detail='Retry',
-                                                          status=TransactionStatus.RETRY,
-                                                          date=now - timedelta(days=1))
+
+        repository.save(deposit, payment1, payment2)
+
         last_status_for_payment1 = create_payment_status(payment1, detail='All good',
-                                                         status=TransactionStatus.SENT)
-        first_status_for_payment2 = create_payment_status(payment2, detail='Iban non fournis',
-                                                          status=TransactionStatus.ERROR,
-                                                          date=now - timedelta(days=3))
+                                                         status=TransactionStatus.SENT,
+                                                         date=now)
         last_status_for_payment2 = create_payment_status(payment2, detail=None,
                                                          status=TransactionStatus.SENT,
                                                          date=now)
+        repository.save(last_status_for_payment1, last_status_for_payment2)
 
-        repository.save(deposit, first_status_for_payment1, last_status_for_payment1, first_status_for_payment2,
-                        last_status_for_payment2)
+        first_status_for_payment1 = create_payment_status(payment1, detail='Retry',
+                                                          status=TransactionStatus.RETRY,
+                                                          date=now - timedelta(days=1))
+        first_status_for_payment2 = create_payment_status(payment2, detail='Iban non fournis',
+                                                          status=TransactionStatus.ERROR,
+                                                          date=now - timedelta(days=3))
+        repository.save(first_status_for_payment1, first_status_for_payment2)
 
         # When
         payments = find_all_offerer_payments(offerer.id)
