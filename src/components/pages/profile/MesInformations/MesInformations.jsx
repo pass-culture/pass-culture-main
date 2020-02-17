@@ -51,8 +51,8 @@ class MesInformations extends PureComponent {
             errors={errors && errors.publicName}
             id="identifiant"
             label="Identifiant"
-            maxlength={255}
-            minlength={3}
+            maxLength={255}
+            minLength={3}
             name="publicName"
             onBlur={this.handleBlur}
             onChange={this.handlePublicNameChange}
@@ -82,11 +82,14 @@ class MesInformations extends PureComponent {
             value={getDepartment(user.departementCode)}
           />
         </form>
-        <div className="mi-change-password">
+        <div className="mi-field">
           <label>
             {'Mot de passe'}
           </label>
-          <Link to="/profil/password">
+          <Link
+            className="mi-field-button"
+            to="/profil/password"
+          >
             {'Changer mon mot de passe'}
           </Link>
         </div>
