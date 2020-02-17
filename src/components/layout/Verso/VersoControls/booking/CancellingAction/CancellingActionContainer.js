@@ -76,11 +76,10 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   const requestPatchBooking = (bookingId, offerId) => {
     dispatch(
       requestData({
-        apiPath: `/bookings/${bookingId}`,
-        body: { isCancelled: true },
+        apiPath: `/bookings/${bookingId}/cancel`,
         handleFail: handleOpenFailurePopin,
         handleSuccess: () => handleSuccessPopin(offerId),
-        method: 'PATCH',
+        method: 'PUT',
         normalizer: bookingNormalizer,
       })
     )
