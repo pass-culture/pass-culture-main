@@ -15,7 +15,7 @@ class FindAllOffererPaymentsTest:
     @clean_database
     def test_should_return_one_payment_info_with_error_status(self, app):
         # Given
-        user = create_user(email='user+plus@example.com', last_name='User', first_name='Plus')
+        user = create_user(last_name='User', first_name='Plus')
         deposit = create_deposit(user)
         offerer = create_offerer(address='7 rue du livre')
         venue = create_venue(offerer)
@@ -37,7 +37,8 @@ class FindAllOffererPaymentsTest:
         # Then
         assert len(payments) == 1
         assert payments[0] == (
-            'User', 'Plus',
+            'User',
+            'Plus',
             'ABCDEF',
             now,
             'Test Book',
@@ -54,7 +55,7 @@ class FindAllOffererPaymentsTest:
     @clean_database
     def test_should_return_one_payment_info_with_sent_status(self, app):
         # Given
-        user = create_user(email='user+plus@email.fr', last_name='User', first_name='Plus')
+        user = create_user(last_name='User', first_name='Plus')
         deposit = create_deposit(user)
         offerer = create_offerer(address='7 rue du livre')
         venue = create_venue(offerer)
@@ -82,7 +83,8 @@ class FindAllOffererPaymentsTest:
         # Then
         assert len(payments) == 1
         assert payments[0] == (
-            'User', 'Plus',
+            'User',
+            'Plus',
             'ABCDEF',
             now,
             'Test Book',
@@ -99,7 +101,7 @@ class FindAllOffererPaymentsTest:
     @clean_database
     def test_should_return_matching_status_for_each_payment(self, app):
         # Given
-        user = create_user(email='user+plus@email.fr', last_name='User', first_name='Plus')
+        user = create_user(last_name='User', first_name='Plus')
         deposit = create_deposit(user)
         offerer = create_offerer(address='7 rue du livre')
         venue = create_venue(offerer)
@@ -121,19 +123,20 @@ class FindAllOffererPaymentsTest:
                                   amount=75,
                                   detail=None,
                                   status_date=now - timedelta(days=4))
-        payment_status1 = create_payment_status(payment1, detail='Retry',
-                                                status=TransactionStatus.RETRY,
-                                                date=now - timedelta(days=1))
-        payment_status2 = create_payment_status(payment1, detail='All good',
-                                                status=TransactionStatus.SENT)
-        payment_status3 = create_payment_status(payment2, detail='Iban non fournis',
-                                                status=TransactionStatus.ERROR,
-                                                date=now - timedelta(days=3))
-        payment_status4 = create_payment_status(payment2, detail=None,
-                                                status=TransactionStatus.SENT,
-                                                date=now)
+        first_status_for_payment1 = create_payment_status(payment1, detail='Retry',
+                                                          status=TransactionStatus.RETRY,
+                                                          date=now - timedelta(days=1))
+        last_status_for_payment1 = create_payment_status(payment1, detail='All good',
+                                                         status=TransactionStatus.SENT)
+        first_status_for_payment2 = create_payment_status(payment2, detail='Iban non fournis',
+                                                          status=TransactionStatus.ERROR,
+                                                          date=now - timedelta(days=3))
+        last_status_for_payment2 = create_payment_status(payment2, detail=None,
+                                                         status=TransactionStatus.SENT,
+                                                         date=now)
 
-        repository.save(deposit, payment_status1, payment_status2, payment_status3, payment_status4)
+        repository.save(deposit, first_status_for_payment1, last_status_for_payment1, first_status_for_payment2,
+                        last_status_for_payment2)
 
         # When
         payments = find_all_offerer_payments(offerer.id)

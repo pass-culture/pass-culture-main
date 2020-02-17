@@ -41,7 +41,8 @@ def find_all_offerer_payments(offerer_id: int) -> List[namedtuple]:
                        Payment.iban.label('iban'),
                        Payment.transactionLabel.label('transactionLabel'),
                        payment_status_query.c.status.label('status'),
-                       payment_status_query.c.detail.label('detail')).all()
+                       payment_status_query.c.detail.label('detail')) \
+        .all()
 
 
 def _build_payment_status_subquery() -> subquery:
