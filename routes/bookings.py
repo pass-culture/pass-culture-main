@@ -204,6 +204,45 @@ def patch_booking(booking_id: int):
     check_booking_is_cancellable(booking, is_user_cancellation)
 
     booking_offerer = booking.stock.resolvedOffer.venue.managingOffererId
+
+    is_offerer_cancellation = current_user.hasRights(
+        RightsType.editor, booking_offerer)
+
+    if not is_user_cancellation and not is_offerer_cancellation:
+        return 'Vous n’avez pas le droit d’annuler cette réservation', 403
+
+    booking.isCancelled = True
+    repository.save(booking)
+
+    redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
+    try:
+        send_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,
+                                                     send_raw_email)
+    except MailServiceException as error:
+        app.logger.error('Mail service failure', error)
+
+    return jsonify(as_dict(booking, includes=WEBAPP_PATCH_POST_BOOKING_INCLUDES)), 200
+
+
+@app.route('/bookings/<booking_id>/cancel', methods=['PUT'])
+@login_required
+def cancel_booking(booking_id: int):
+    booking = booking_queries.find_by_id(dehumanize(booking_id))
+    is_already_cancelled = booking.isCancelled
+
+    if is_already_cancelled is True:
+        api_errors = ApiErrors()
+        api_errors.add_error(
+            'isCancelled',
+            'Vous pouvez seulement changer l’état isCancelled à vrai'
+        )
+        raise api_errors
+
+    is_user_cancellation = booking.user == current_user
+    check_booking_is_cancellable(booking, is_user_cancellation)
+
+    booking_offerer = booking.stock.resolvedOffer.venue.managingOffererId
+
     is_offerer_cancellation = current_user.hasRights(
         RightsType.editor, booking_offerer)
 
