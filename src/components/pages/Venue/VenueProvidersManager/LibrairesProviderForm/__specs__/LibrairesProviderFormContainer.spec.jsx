@@ -13,6 +13,9 @@ describe('src | components | pages | Venue | VenueProviderManager | form | Provi
             venueId: 'AE',
           },
         },
+        providerId:'AA',
+        venueId: 'AC',
+        venueSiret: 'AB',
       }
     })
 
@@ -30,15 +33,10 @@ describe('src | components | pages | Venue | VenueProviderManager | form | Provi
     describe('createVenueProvider', () => {
       it('should create a venue provider using API', () => {
         // given
-        const payload = {
-          providerId: 'AA',
-          venueIdAtOfferProvider: 'AB',
-          venueId: 'AC',
-        }
         const functions = mapDispatchToProps(dispatch, props)
 
         // when
-        functions.createVenueProvider(jest.fn(), jest.fn(), payload)
+        functions.createVenueProvider(jest.fn(), jest.fn())
 
         // then
         expect(dispatch).toHaveBeenCalledWith({

@@ -6,7 +6,7 @@ import {
   DEFAULT_PROVIDER_OPTION,
   LIBRAIRES_PROVIDER_OPTION,
   TITELIVE_PROVIDER_OPTION,
-} from './utils/utils'
+} from './utils/providerOptions'
 import AllocineProviderForm from './AllocineProviderForm/AllocineProviderFormContainer'
 import TiteliveProviderForm from './TiteliveProviderForm/TiteliveProviderFormContainer'
 import ReactTooltip from 'react-tooltip'
@@ -51,6 +51,7 @@ class VenueProvidersManager extends PureComponent {
     this.setState({
       providerSelectedIsAllocine: false,
       providerSelectedIsTitelive: false,
+      providerSelectedIsLibraires: false,
     })
 
     if (valueParsed && valueParsed.name === ALLOCINE_PROVIDER_OPTION.name) {

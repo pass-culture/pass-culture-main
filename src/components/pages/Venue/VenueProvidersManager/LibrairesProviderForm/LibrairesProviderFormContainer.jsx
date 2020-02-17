@@ -6,9 +6,15 @@ import { requestData } from 'redux-saga-data'
 
 import LibrairesProviderForm from './LibrairesProviderForm'
 
-export const mapDispatchToProps = (dispatch) => {
+export const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    createVenueProvider: (handleFail, handleSuccess, payload) => {
+    createVenueProvider: (handleFail, handleSuccess) => {
+      const { providerId, venueId, venueSiret } = ownProps
+      const payload = {
+        providerId: providerId,
+        venueIdAtOfferProvider: venueSiret,
+        venueId: venueId,
+      }
       dispatch(
         requestData({
           apiPath: `/venueProviders`,

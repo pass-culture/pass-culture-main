@@ -98,11 +98,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Libr
 
       // then
       expect(wrapper.state('isLoadingMode')).toBe(true)
-      expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
-        providerId: 'CC',
-        venueId: 'AA',
-        venueIdAtOfferProvider: '12345678912345',
-      })
+      expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function))
     })
   })
 
@@ -136,7 +132,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Libr
         batch: jest.fn(),
       }
       // when
-      wrapper.instance().handleFail(form)({}, action)
+      wrapper.instance().handleFail({}, action)
       // then
       expect(notify).toHaveBeenCalledWith([{ error: 'fake error' }])
     })

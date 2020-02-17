@@ -10,19 +10,11 @@ class LibrairesProviderForm extends PureComponent {
     }
   }
 
-  handleFormSubmit = (formValues, form) => {
+  handleFormSubmit = () => {
     this.setState({ isLoadingMode: true })
 
     const { createVenueProvider } = this.props
-    const { providerId, venueId, venueSiret } = this.props
-
-    const payload = {
-      providerId: providerId,
-      venueIdAtOfferProvider: venueSiret,
-      venueId: venueId,
-    }
-
-    return createVenueProvider(this.handleFail(form), this.handleSuccess, payload)
+    return createVenueProvider(this.handleFail, this.handleSuccess)
   }
 
   handleSuccess = () => {
@@ -34,7 +26,7 @@ class LibrairesProviderForm extends PureComponent {
     history.push(`/structures/${offererId}/lieux/${venueId}`)
   }
 
-  handleFail = () => (state, action) => {
+  handleFail = (state, action) => {
     const { notify } = this.props
     const {
       payload: { errors },
