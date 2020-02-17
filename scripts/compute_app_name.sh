@@ -5,7 +5,7 @@ if [[ "$1" == "production" ]]; then
 elif [[ "$1" == "master" ]]; then
 	echo "pass-culture-api-dev"
 elif [[ "$1" == "datalake" ]]; then
-	echo "pass-culture-datalake"
+	echo "pass-culture-api-datalake"
 elif [[  ! -z "$1" ]]; then
 	echo "pass-culture-api-$1"
 fi
