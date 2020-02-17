@@ -89,8 +89,8 @@ def create_industrial_bookings(recommendations_by_name):
 
             token += 1
 
-            # if bookings_by_name[booking_name].isUsed:
-            #     bookings_by_name[booking_name].dateUsed = datetime.now()
+            if bookings_by_name[booking_name].isUsed:
+                bookings_by_name[booking_name].dateUsed = datetime.now()
 
     repository.save(*bookings_by_name.values())
 
