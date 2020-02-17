@@ -20,31 +20,26 @@ def restize_not_found_route_errors(e):
 
 @app.errorhandler(ApiErrors)
 def restize_api_errors(e):
-    app.logger.error(json.dumps(e.errors))
     return jsonify(e.errors), e.status_code or 400
 
 
 @app.errorhandler(TooLateToDeleteError)
 def restize_too_late_to_delete_error(e):
-    app.logger.error(json.dumps(e.errors))
     return jsonify(e.errors), e.status_code or 400
 
 
 @app.errorhandler(ForbiddenError)
 def restize_forbidden_error(e):
-    app.logger.error(json.dumps(e.errors))
     return jsonify(e.errors), 403
 
 
 @app.errorhandler(ResourceGoneError)
 def restize_resource_gone_error(e):
-    app.logger.error(json.dumps(e.errors))
     return jsonify(e.errors), e.status_code or 410
 
 
 @app.errorhandler(ResourceNotFoundError)
 def restize_booking_not_found_error(e):
-    app.logger.error(json.dumps(e.errors))
     return jsonify(e.errors), e.status_code or 404
 
 
