@@ -4,12 +4,12 @@ describe('components | FinishableContainer', () => {
   describe('mapStateToProps', () => {
     describe('isNotBookable', () => {
       describe('when coming from /reservations', () => {
-        it('should return false when offer is not bookable and offer is already booked', () => {
+        it('should return false when offer is not bookable, is fully booked, offer is already booked', () => {
           // given
           const state = {
             data: {
               bookings: [{ id: 'A1', stockId: 'B1' }],
-              offers: [{ id: 'C1', isNotBookable: true }],
+              offers: [{ id: 'C1', isFullyBooked: true, isNotBookable: true }],
               stocks: [{ id: 'B1', offerId: 'C1' }]
             }
           }
@@ -31,12 +31,12 @@ describe('components | FinishableContainer', () => {
           })
         })
 
-        it('should return false when offer is bookable and offer is already booked', () => {
+        it('should return false when offer is bookable, not fully booked and offer is already booked', () => {
           // given
           const state = {
             data: {
               bookings: [{ id: 'A1', stockId: 'B1' }],
-              offers: [{ id: 'C1', isNotBookable: false }],
+              offers: [{ id: 'C1', isFullyBooked: false, isNotBookable: false }],
               stocks: [{ id: 'B1', offerId: 'C1' }]
             }
           }
@@ -58,12 +58,12 @@ describe('components | FinishableContainer', () => {
           })
         })
 
-        it('should return true when offer is not bookable and offer is not booked', () => {
+        it('should return true when offer is not bookable, is fully booked and offer is not booked', () => {
           // given
           const state = {
             data: {
               bookings: [{ id: 'A1', stockId: 'B1' }],
-              offers: [{ id: 'C1', isNotBookable: true }],
+              offers: [{ id: 'C1', isFullyBooked: true, isNotBookable: true }],
               stocks: [{ id: 'B1', offerId: 'C1' }]
             }
           }
@@ -85,12 +85,12 @@ describe('components | FinishableContainer', () => {
           })
         })
 
-        it('should return false when offer is bookable and offer is not booked', () => {
+        it('should return false when offer is bookable, not fully booked and offer is not booked', () => {
           // given
           const state = {
             data: {
               bookings: [{ id: 'A1', stockId: 'B1' }],
-              offers: [{ id: 'C1', isNotBookable: false }],
+              offers: [{ id: 'C1', isFullyBooked: false, isNotBookable: false }],
               stocks: [{ id: 'B1', offerId: 'C1' }]
             }
           }
@@ -114,11 +114,11 @@ describe('components | FinishableContainer', () => {
       })
 
       describe('when coming from other routes', () => {
-        it('should return false when offer is not bookable and offer is already booked', () => {
+        it('should return false when offer is not bookable, is fully booked and offer is already booked', () => {
           // given
           const state = {
             data: {
-              offers: [{ id: 'A1', isNotBookable: true }],
+              offers: [{ id: 'A1', isFullyBooked: true, isNotBookable: true }],
             }
           }
           const ownProps = {
@@ -139,11 +139,11 @@ describe('components | FinishableContainer', () => {
           })
         })
 
-        it('should return false when offer is bookable and offer is already booked', () => {
+        it('should return false when offer is bookable, not fully booked and offer is already booked', () => {
           // given
           const state = {
             data: {
-              offers: [{ id: 'A1', isNotBookable: false }],
+              offers: [{ id: 'A1', isFullyBooked: false, isNotBookable: false }],
             }
           }
           const ownProps = {
@@ -164,11 +164,11 @@ describe('components | FinishableContainer', () => {
           })
         })
 
-        it('should return true when offer is not bookable and offer is not booked', () => {
+        it('should return true when offer is not bookable, is fully booked and offer is not booked', () => {
           // given
           const state = {
             data: {
-              offers: [{ id: 'A1', isNotBookable: true }],
+              offers: [{ id: 'A1', isFullyBooked: true, isNotBookable: true }],
             }
           }
           const ownProps = {
@@ -189,11 +189,11 @@ describe('components | FinishableContainer', () => {
           })
         })
 
-        it('should return false when offer is bookable and offer is not booked', () => {
+        it('should return false when offer is bookable, not fully booked and offer is not booked', () => {
           // given
           const state = {
             data: {
-              offers: [{ id: 'A1', isNotBookable: false }],
+              offers: [{ id: 'A1', isFullyBooked: false, isNotBookable: false }],
             }
           }
           const ownProps = {

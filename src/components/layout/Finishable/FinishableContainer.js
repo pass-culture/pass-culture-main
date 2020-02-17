@@ -19,9 +19,12 @@ export const mapStateToProps = (state, ownProps) => {
     const { offerId: offerIdFromStock } = stock
     offerId = offerIdFromStock
   }
-
   const offer = selectOfferById(state, offerId) || {}
-  const offerIsNoLongerBookable = offer.isNotBookable && !isBooked
+
+  let offerIsNoLongerBookable = false
+  if (!isBooked) {
+    offerIsNoLongerBookable = offer.isNotBookable || offer.isFullyBooked
+  }
 
   return {
     offerIsNoLongerBookable,

@@ -3,24 +3,25 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import getPriceRangeFromStocks from '../../../../../../utils/getPriceRangeFromStocks'
-import { selectOfferByRouterMatch } from '../../../../../../selectors/data/offersSelectors'
+import { selectOfferById } from '../../../../../../selectors/data/offersSelectors'
 import { selectStocksByOfferId } from '../../../../../../selectors/data/stocksSelectors'
-import { selectIsNotBookableByRouterMatch } from '../../../../../../selectors/isNotBookableSelector'
 import BookingAction from './BookingAction'
 
 export const mapStateToProps = (state, ownProps) => {
-  const { match, location } = ownProps
+  const { location, match } = ownProps
+  const { params } = match
+  const { offerId } = params
   const { pathname, search } = location
 
   const bookingUrl = `${pathname}/reservation${search}`
-  const isNotBookable = selectIsNotBookableByRouterMatch(state, match)
-  const offer = selectOfferByRouterMatch(state, match) || {}
-  const stocks = selectStocksByOfferId(state, offer.id)
+  const offer = selectOfferById(state, offerId) || {}
+  let offerIsNoLongerBookable = offer.isNotBookable || offer.isFullyBooked
+  const stocks = selectStocksByOfferId(state, offerId)
   const priceRange = getPriceRangeFromStocks(stocks)
 
   return {
     bookingUrl,
-    isNotBookable,
+    isNotBookable: offerIsNoLongerBookable,
     priceRange,
   }
 }
