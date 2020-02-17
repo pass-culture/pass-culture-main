@@ -16,7 +16,7 @@ jest.mock('redux-thunk-data', () => {
   }
 })
 
-describe('src | components | layout | Verso | VersoControls | booking | BookingAction | BookingAction', () => {
+describe('components | BookingAction', () => {
   let props
 
   beforeEach(() => {

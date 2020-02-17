@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | layout | Verso | VersoControls | booking | BookingAction | BookingAction when the offer is bookable should render a price and label within link 1`] = `
+exports[`components | BookingAction when the offer is bookable should render a price and label within link 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookingAction
@@ -179,7 +179,7 @@ ShallowWrapper {
 }
 `;
 
-exports[`src | components | layout | Verso | VersoControls | booking | BookingAction | BookingAction when the offer is not bookable should render a price and label within a wrapper 1`] = `
+exports[`components | BookingAction when the offer is not bookable should render a price and label within a wrapper 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookingAction

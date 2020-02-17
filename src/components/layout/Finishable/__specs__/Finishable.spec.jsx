@@ -2,8 +2,9 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import Finishable from '../Finishable'
+import Icon from '../../Icon/Icon'
 
-describe('src | components | layout | Finishable | Finishable', () => {
+describe('components | Finishable', () => {
   let props
 
   beforeEach(() => {
@@ -17,26 +18,30 @@ describe('src | components | layout | Finishable | Finishable', () => {
   describe('when the offer is bookable', () => {
     it('should not render the ribbon', () => {
       // given
-      props.isNotBookable = false
+      props.offerIsNoLongerBookable = false
 
       // when
       const wrapper = shallow(<Finishable {...props} />)
 
       // then
-      expect(wrapper).toMatchSnapshot()
+      expect(wrapper.find(Icon)).toHaveLength(0)
     })
   })
 
   describe('when the offer is not bookable', () => {
     it('should render the ribbon', () => {
       // given
-      props.isNotBookable = true
+      props.offerIsNoLongerBookable = true
 
       // when
       const wrapper = shallow(<Finishable {...props} />)
 
       // then
-      expect(wrapper).toMatchSnapshot()
+      const icon = wrapper.find(Icon)
+      expect(icon).toHaveLength(1)
+      expect(icon.prop('alt')).toBe('Réservation finie')
+      expect(icon.prop('className')).toBe('finishable-ribbon-img')
+      expect(icon.prop('svg')).toBe('badge-termine')
     })
   })
 })

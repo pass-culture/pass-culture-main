@@ -1,18 +1,30 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-
-import getIsBooked from '../../../utils/getIsBooked'
-import { selectBookingByRouterMatch } from '../../../selectors/data/bookingsSelectors'
-import { selectIsNotBookableByRouterMatch } from '../../../selectors/isNotBookableSelector'
 import Finishable from './Finishable'
+import { selectStockById } from '../../../selectors/data/stocksSelectors'
+import { selectBookingById } from '../../../selectors/data/bookingsSelectors'
+import { selectOfferById } from '../../../selectors/data/offersSelectors'
 
-const mapStateToProps = (state, { match }) => {
-  const booking = selectBookingByRouterMatch(state, match)
-  const isNotBookable = selectIsNotBookableByRouterMatch(state, match) && !getIsBooked(booking)
+export const mapStateToProps = (state, ownProps) => {
+  const { isBooked, match } = ownProps
+  const { params } = match
+  const { bookingId, offerId: offerIdQueryParam } = params
+
+  let offerId = offerIdQueryParam
+  if (bookingId) {
+    const booking = selectBookingById(state, bookingId)
+    const { stockId } = booking
+    const stock = selectStockById(state, stockId)
+    const { offerId: offerIdFromStock } = stock
+    offerId = offerIdFromStock
+  }
+
+  const offer = selectOfferById(state, offerId) || {}
+  const offerIsNoLongerBookable = offer.isNotBookable && !isBooked
 
   return {
-    isNotBookable,
+    offerIsNoLongerBookable,
   }
 }
 
