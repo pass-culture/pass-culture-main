@@ -78,7 +78,7 @@ if [[ "$ENV" == "production" ]]; then
 elif [[ "$ENV" == "testing" ]]; then
   SCALINGO_APP=pass-culture-api-dev
 elif [[ "$ENV" == "datalake" ]]; then
-  SCALINGO_APP=pass-culture-datalake
+  SCALINGO_APP=pass-culture-api-datalake
 elif [[  ! -z "$ENV" ]]; then
   SCALINGO_APP=pass-culture-api-"$ENV"
 fi
