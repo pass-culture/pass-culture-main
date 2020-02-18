@@ -69,7 +69,7 @@ def save_industrial_sandbox():
 
     create_industrial_mediations(offers_by_name)
 
-    DiscoveryView.refresh()
+    # DiscoveryView.refresh()
     recommendations_by_name = create_industrial_recommendations(
         offers_by_name,
         users_by_name
