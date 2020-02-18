@@ -149,7 +149,7 @@ def check_booking_token_is_keepable(booking: Booking):
         raise resource_gone_error
 
 
-def check_booking_is_cancellable(booking, is_user_cancellation):
+def check_booking_is_cancellable_by_user(booking, is_user_cancellation):
     api_errors = ApiErrors()
 
     if booking.isUsed:

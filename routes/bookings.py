@@ -30,7 +30,7 @@ from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, expect_json_data
 from utils.token import random_token
 from validation.routes.bookings import check_already_booked, \
-    check_booking_is_cancellable, \
+    check_booking_is_cancellable_by_user, \
     check_booking_is_not_already_cancelled, \
     check_booking_is_not_used, \
     check_booking_quantity_limit, \
@@ -51,7 +51,7 @@ from validation.routes.users_authorizations import \
     check_api_key_allows_to_cancel_booking, \
     check_api_key_allows_to_validate_booking, check_can_book_free_offer, \
     check_user_can_validate_activation_offer, check_user_can_validate_bookings, \
-    check_user_can_validate_bookings_v2
+    check_user_can_validate_bookings_v2, check_user_can_cancel_booking_by_id
 
 
 @app.route('/bookings/csv', methods=['GET'])
@@ -201,7 +201,7 @@ def patch_booking(booking_id: int):
     booking = booking_queries.find_by_id(dehumanize(booking_id))
 
     is_user_cancellation = booking.user == current_user
-    check_booking_is_cancellable(booking, is_user_cancellation)
+    check_booking_is_cancellable_by_user(booking, is_user_cancellation)
 
     booking_offerer = booking.stock.resolvedOffer.venue.managingOffererId
 
@@ -228,26 +228,17 @@ def patch_booking(booking_id: int):
 @login_required
 def cancel_booking(booking_id: int):
     booking = booking_queries.find_by_id(dehumanize(booking_id))
-    is_already_cancelled = booking.isCancelled
-
-    if is_already_cancelled is True:
-        api_errors = ApiErrors()
-        api_errors.add_error(
-            'isCancelled',
-            'Vous pouvez seulement changer l’état isCancelled à vrai'
-        )
-        raise api_errors
-
-    is_user_cancellation = booking.user == current_user
-    check_booking_is_cancellable(booking, is_user_cancellation)
-
     booking_offerer = booking.stock.resolvedOffer.venue.managingOffererId
+    check_booking_is_not_already_cancelled(booking)
 
     is_offerer_cancellation = current_user.hasRights(
         RightsType.editor, booking_offerer)
+    is_user_cancellation = booking.user == current_user
 
-    if not is_user_cancellation and not is_offerer_cancellation:
-        return 'Vous n’avez pas le droit d’annuler cette réservation', 403
+    check_user_can_cancel_booking_by_id(is_user_cancellation, is_offerer_cancellation)
+
+    if is_user_cancellation:
+        check_booking_is_cancellable_by_user(booking, is_user_cancellation)
 
     booking.isCancelled = True
     repository.save(booking)

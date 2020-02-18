@@ -17,7 +17,7 @@ from tests.model_creators.specific_creators import create_booking_for_thing, cre
     create_offer_with_event_product
 from utils.human_ids import humanize
 from validation.routes.bookings import check_expenses_limits, \
-    check_booking_is_cancellable, \
+    check_booking_is_cancellable_by_user, \
     check_booking_quantity_limit, \
     check_rights_to_get_bookings_csv, \
     check_booking_is_not_already_cancelled, \
@@ -89,7 +89,7 @@ class CheckBookingIsCancellableTest:
 
         # When
         with pytest.raises(ApiErrors) as e:
-            check_booking_is_cancellable(booking, is_user_cancellation=False)
+            check_booking_is_cancellable_by_user(booking, is_user_cancellation=False)
 
         # Then
         assert e.value.errors['booking'] == ["Impossible d\'annuler une réservation consommée"]
@@ -103,7 +103,7 @@ class CheckBookingIsCancellableTest:
 
         # When
         with pytest.raises(ApiErrors) as e:
-            check_booking_is_cancellable(booking, is_user_cancellation=True)
+            check_booking_is_cancellable_by_user(booking, is_user_cancellation=True)
 
         # Then
         assert e.value.errors['booking'] == [
@@ -117,7 +117,7 @@ class CheckBookingIsCancellableTest:
         booking.stock.beginningDatetime = datetime.utcnow() + timedelta(hours=73)
 
         # When
-        check_output = check_booking_is_cancellable(booking, is_user_cancellation=False)
+        check_output = check_booking_is_cancellable_by_user(booking, is_user_cancellation=False)
 
         # Then
         assert check_output is None
@@ -130,7 +130,7 @@ class CheckBookingIsCancellableTest:
         booking.stock.beginningDatetime = datetime.utcnow() + timedelta(hours=71)
 
         # When
-        check_output = check_booking_is_cancellable(booking, is_user_cancellation=False)
+        check_output = check_booking_is_cancellable_by_user(booking, is_user_cancellation=False)
 
         # Then
         assert check_output is None
@@ -144,7 +144,7 @@ class CheckBookingIsCancellableTest:
         booking.stock.offer.product = create_product_with_thing_type()
 
         # When
-        check_output = check_booking_is_cancellable(booking, is_user_cancellation=False)
+        check_output = check_booking_is_cancellable_by_user(booking, is_user_cancellation=False)
 
         # Then
         assert check_output is None
