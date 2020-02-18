@@ -83,6 +83,8 @@ def _save_allocine_venue_provider(payload: Dict) -> VenueProvider:
     venue_provider.venueId = venue.id
     venue_provider.providerId = dehumanize(payload['providerId'])
     venue_provider.venueIdAtOfferProvider = allocine_theater_id
+    venue_provider.isDuo = bool(payload.get('isDuo'))
+    venue_provider.quantity = payload.get('quantity')
 
     save_venue_provider_price_rule(venue_provider, payload.get('price'))
 

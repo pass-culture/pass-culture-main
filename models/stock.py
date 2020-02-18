@@ -16,7 +16,7 @@ from sqlalchemy import BigInteger, \
 from sqlalchemy.orm import column_property, relationship
 from sqlalchemy.sql import select, func
 
-from models import Booking
+from models.booking import Booking
 from models.db import Model
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin

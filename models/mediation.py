@@ -10,7 +10,7 @@ from sqlalchemy import Column, \
     String
 from sqlalchemy.orm import relationship
 
-from models import DeactivableMixin
+from models.deactivable_mixin import DeactivableMixin
 from models.db import Model
 from models.has_thumb_mixin import HasThumbMixin
 from models.pc_object import PcObject

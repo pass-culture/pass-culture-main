@@ -1,6 +1,6 @@
 import pytest
 
-from models import ApiErrors
+from models import ApiErrors, VenueProvider
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider, create_provider
@@ -72,3 +72,19 @@ def test_raise_errors_if_venue_provider_already_exists_with_same_information(app
 
     # then
     assert errors.value.errors['global'] == ["Votre lieu est déjà lié à cette source"]
+
+
+@clean_database
+def test_venue_provider_should_have_the_correct_provider_class(app):
+    # given
+    provider = activate_provider('LibrairesStocks')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    venue_provider = create_venue_provider(venue, provider)
+    repository.save(venue_provider)
+
+    # when
+    allocine_venue_provider = VenueProvider.query.first()
+
+    # then
+    assert allocine_venue_provider.providerClass == 'LibrairesStocks'

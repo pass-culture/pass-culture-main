@@ -23,7 +23,7 @@ from models import ApiKey, \
     Favorite, \
     BeneficiaryImportStatus, \
     OfferCriterion, \
-    Criterion, VenueProviderPriceRule, AllocinePivot
+    Criterion, VenueProviderPriceRule, AllocinePivot, AllocineVenueProvider
 from models.activity import load_activity
 from models.db import db
 from models.email import Email
@@ -35,6 +35,7 @@ def clean_all_database(*args, **kwargs):
     Activity = load_activity()
     LocalProviderEvent.query.delete()
     VenueProviderPriceRule.query.delete()
+    AllocineVenueProvider.query.delete()
     VenueProvider.query.delete()
     PaymentStatus.query.delete()
     Payment.query.delete()

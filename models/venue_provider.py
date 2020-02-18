@@ -1,11 +1,18 @@
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, UniqueConstraint
-from sqlalchemy.orm import relationship
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, UniqueConstraint, case, select
+from sqlalchemy.orm import relationship, column_property
 
-from models import Offer
-from models.db import Model
+from models.provider import Provider
+from models.offer import Offer
+from models.db import Model, db
 from models.deactivable_mixin import DeactivableMixin
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
+
+
+def is_from_allocine_provider(provider_local_class: str):
+    if provider_local_class == 'AllocineStocks':
+        return db.true()
+    return db.false()
 
 
 class VenueProvider(PcObject,
@@ -17,7 +24,6 @@ class VenueProvider(PcObject,
                      nullable=False)
 
     venue = relationship('Venue',
-                         back_populates="venueProviders",
                          foreign_keys=[venueId])
 
     providerId = Column(BigInteger,
@@ -26,7 +32,6 @@ class VenueProvider(PcObject,
                         nullable=False)
 
     provider = relationship('Provider',
-                            back_populates="venueProviders",
                             foreign_keys=[providerId])
 
     venueIdAtOfferProvider = Column(String(70))
@@ -34,6 +39,19 @@ class VenueProvider(PcObject,
     lastSyncDate = Column(DateTime, nullable=True)
 
     syncWorkerId = Column(String(24), nullable=True)
+
+    providerClass = column_property(
+        select([Provider.localClass]).
+            where(Provider.id == providerId
+                  )
+    )
+
+    __mapper_args__ = {
+        "polymorphic_on": case([
+            (is_from_allocine_provider(providerClass), "allocine_venue_provider")
+        ], else_="venue_provider"),
+        "polymorphic_identity": "venue_provider"
+    }
 
     __table_args__ = (
         UniqueConstraint(
@@ -56,3 +74,8 @@ class VenueProvider(PcObject,
             .filter(Offer.venueId == self.venueId) \
             .filter(Offer.lastProviderId == self.providerId) \
             .count()
+
+    def setConfig(self, config):
+        pass
+
+

@@ -3,7 +3,11 @@ from io import StringIO
 from typing import Iterable
 
 from domain.password import random_password, generate_reset_token
-from models import Deposit, EventType, ThingType, ApiErrors, User, ImportStatus
+from models.deposit import Deposit
+from models.offer_type import EventType, ThingType
+from models.api_errors import ApiErrors
+from models.user import User
+from models.beneficiary_import_status import ImportStatus
 from models.booking import ActivationUser
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 

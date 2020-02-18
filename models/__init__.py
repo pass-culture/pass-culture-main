@@ -1,4 +1,5 @@
 from models.allocine_pivot import AllocinePivot
+from models.allocine_venue_provider import AllocineVenueProvider
 from models.api_errors import ApiErrors
 from models.api_key import ApiKey
 from models.bank_information import BankInformation
@@ -48,6 +49,7 @@ __all__ = (
     'ApiErrors',
     'ApiKey',
     'AllocinePivot',
+    'AllocineVenueProvider',
     'BankInformation',
     'BeneficiaryImport',
     'BeneficiaryImportStatus',
@@ -115,6 +117,7 @@ models = (
     Booking,
     VenueProvider,
     VenueProviderPriceRule,
+    AllocineVenueProvider,
     LocalProviderEvent,
     OfferCriterion,
     PaymentMessage,

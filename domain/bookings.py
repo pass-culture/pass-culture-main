@@ -10,7 +10,7 @@ import qrcode
 import qrcode.image.svg
 from PIL import Image
 
-from models import Booking
+from models.booking import Booking
 from models.stock import Stock
 from utils.string_processing import format_decimal
 
