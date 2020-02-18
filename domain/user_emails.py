@@ -67,6 +67,16 @@ def send_beneficiary_booking_cancellation_email(booking: Booking, send_email: Ca
     send_email(data=beneficiary_booking_cancellation_email_data)
 
 
+def send_offerer_driven_cancellation_email_to_offerer(booking: Booking, send_email: Callable[..., bool]) -> bool:
+    offerer_email = booking.stock.resolvedOffer.bookingEmail
+    recipients = []
+    if offerer_email:
+        recipients.append(offerer_email)
+    recipients.append(ADMINISTRATION_EMAIL_ADDRESS)
+    email = make_offerer_driven_cancellation_email_for_offerer(booking)
+    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
+    return send_email(data=email)
+
 def send_user_driven_cancellation_email_to_offerer(booking: Booking, send_email: Callable[..., bool]) -> bool:
     recipients = _build_recipients_list(booking)
     mailjet_data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking, recipients)
@@ -78,16 +88,6 @@ def send_warning_to_beneficiary_after_pro_booking_cancellation(booking: Booking,
     email = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
     send_email(data=email)
 
-
-def send_offerer_driven_cancellation_email_to_offerer(booking: Booking, send_email: Callable[..., bool]) -> bool:
-    offerer_email = booking.stock.resolvedOffer.bookingEmail
-    recipients = []
-    if offerer_email:
-        recipients.append(offerer_email)
-    recipients.append(ADMINISTRATION_EMAIL_ADDRESS)
-    email = make_offerer_driven_cancellation_email_for_offerer(booking)
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
-    return send_email(data=email)
 
 def send_reset_password_email_to_user(user: User, send_email: Callable[..., bool]) -> bool:
     email = retrieve_data_for_reset_password_user_email(user)
@@ -125,8 +125,8 @@ def send_offerer_bookings_recap_email_after_offerer_cancellation(bookings: List[
     send_email(data=email)
 
 
-def send_cancellation_emails_to_user_and_offerer(booking: Booking, is_offerer_cancellation: bool,
-                                                 is_user_cancellation: bool, send_email: Callable[..., bool]):
+def send_booking_cancellation_emails_to_user_and_offerer(booking: Booking, is_offerer_cancellation: bool,
+                                                         is_user_cancellation: bool, send_email: Callable[..., bool]):
     if is_user_cancellation:
         send_beneficiary_booking_cancellation_email(booking, send_email)
         send_user_driven_cancellation_email_to_offerer(booking, send_email)

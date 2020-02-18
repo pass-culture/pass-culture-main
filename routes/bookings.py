@@ -13,7 +13,7 @@ from domain.expenses import get_expenses
 from domain.user_activation import create_initial_deposit, is_activation_booking
 from domain.user_emails import send_activation_email, \
     send_booking_confirmation_email_to_beneficiary, \
-    send_booking_recap_emails, send_cancellation_emails_to_user_and_offerer
+    send_booking_recap_emails, send_booking_cancellation_emails_to_user_and_offerer
 from models import ApiErrors, Booking, EventType, Offerer, RightsType, Stock, ApiKey, User
 from models.feature import FeatureToggle
 from models.offer_type import ProductType
@@ -216,8 +216,8 @@ def patch_booking(booking_id: int):
 
     redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
     try:
-        send_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,
-                                                     send_raw_email)
+        send_booking_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,
+                                                             send_raw_email)
     except MailServiceException as error:
         app.logger.error('Mail service failure', error)
 
@@ -246,8 +246,8 @@ def cancel_booking(booking_id: int):
     redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
 
     try:
-        send_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,
-                                                     send_raw_email)
+        send_booking_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,
+                                                             send_raw_email)
     except MailServiceException as error:
         app.logger.error('Mail service failure', error)
 
