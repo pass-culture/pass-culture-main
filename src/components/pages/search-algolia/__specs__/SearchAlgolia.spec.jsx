@@ -23,9 +23,10 @@ jest.mock('../service/algoliaService', () => ({
 }))
 jest.mock('react-toastify', () => ({
   toast: {
-    info: jest.fn()
+    info: jest.fn(),
   },
 }))
+
 describe('components | SearchAlgolia', () => {
   let props
   let change
@@ -43,7 +44,7 @@ describe('components | SearchAlgolia', () => {
         longitude: 41.1,
       },
       location: {
-        search: ''
+        search: '',
       },
       match: {
         params: {},
@@ -53,6 +54,7 @@ describe('components | SearchAlgolia', () => {
         clear,
         parse,
       },
+      redirectToSearchMainPage: jest.fn(),
     }
   })
 
@@ -63,7 +65,7 @@ describe('components | SearchAlgolia', () => {
 
       // then
       const header = wrapper.find(HeaderContainer)
-      expect(header).toHaveLength(1)
+      expect(header).toHaveLength(2)
     })
 
     it('should display a form element with an input text', () => {
@@ -76,7 +78,7 @@ describe('components | SearchAlgolia', () => {
       const textInput = form.find('input')
       expect(textInput).toHaveLength(1)
       expect(textInput.prop('name')).toBe('keywords')
-      expect(textInput.prop('placeholder')).toBe('Saisir un mot-clé')
+      expect(textInput.prop('placeholder')).toBe('Artiste, auteur...')
       expect(textInput.prop('type')).toBe('text')
     })
 
@@ -86,10 +88,9 @@ describe('components | SearchAlgolia', () => {
 
       // then
       const form = wrapper.find('form')
-      const submitButton = form.find('button')
+      const submitButton = form.findWhere(node => node.prop('type') === 'submit').first()
       expect(submitButton).toHaveLength(1)
-      expect(submitButton.prop('type')).toBe('submit')
-      expect(submitButton.text()).toBe('Chercher')
+      expect(submitButton.text()).toBe('Rechercher')
     })
 
     it('should not display results when no keywords in url', () => {
@@ -148,7 +149,7 @@ describe('components | SearchAlgolia', () => {
           .findWhere(node => node.text() === '"une librairie" : 0 résultat')
           .first()
         expect(results).toHaveLength(0)
-        expect(searchInput.prop('defaultValue')).toBe('une librairie')
+        expect(searchInput.prop('value')).toBe('une librairie')
         expect(resultTitle).toHaveLength(1)
         expect(props.query.change).toHaveBeenCalledWith({ 'mots-cles': 'une librairie', page: 1 })
       })
@@ -178,7 +179,7 @@ describe('components | SearchAlgolia', () => {
           .findWhere(node => node.text() === '"une librairie" : 2 résultats')
           .first()
         expect(results).toHaveLength(2)
-        expect(searchInput.prop('defaultValue')).toBe('une librairie')
+        expect(searchInput.prop('value')).toBe('une librairie')
         expect(resultTitle).toHaveLength(1)
       })
 
@@ -480,7 +481,7 @@ describe('components | SearchAlgolia', () => {
             hitsPerPage: 2,
             processingTimeMS: 1,
             query: 'librairie',
-            params: 'query=\'librairie\'&hitsPerPage=2',
+            params: "query='librairie'&hitsPerPage=2",
           })
         })
       )
@@ -517,7 +518,7 @@ describe('components | SearchAlgolia', () => {
             hitsPerPage: 2,
             processingTimeMS: 1,
             query: 'librairie',
-            params: 'query=\'librairie\'&hitsPerPage=2',
+            params: "query='librairie'&hitsPerPage=2",
           })
         })
       )
@@ -553,7 +554,7 @@ describe('components | SearchAlgolia', () => {
             hitsPerPage: 2,
             processingTimeMS: 1,
             query: 'librairie',
-            params: 'query=\'librairie\'&hitsPerPage=2',
+            params: "query='librairie'&hitsPerPage=2",
           })
         })
       )
@@ -585,7 +586,7 @@ describe('components | SearchAlgolia', () => {
             hitsPerPage: 2,
             processingTimeMS: 1,
             query: 'vas-y',
-            params: 'query=\'vas-y\'&hitsPerPage=2',
+            params: "query='vas-y'&hitsPerPage=2",
           })
         })
       )
@@ -603,11 +604,13 @@ describe('components | SearchAlgolia', () => {
       expect(resultSecondFetch).toHaveLength(1)
       expect(wrapper.state()).toStrictEqual({
         currentPage: 0,
+        hasSearchBeenMade: true,
+        keywordsToSearch: 'vas-y',
         isLoading: false,
         results: [{ objectID: 'AG', offer: { name: 'Livre nul' } }],
         resultsCount: 1,
-        searchKeywords: 'vas-y',
-        totalPagesNumber: 0
+        searchedKeywords: 'vas-y',
+        totalPagesNumber: 0,
       })
     })
 
@@ -698,8 +701,64 @@ describe('components | SearchAlgolia', () => {
       // then
       await toast.info
       expect(toast.info).toHaveBeenCalledWith(
-        "La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard.",
+        "La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard."
       )
+    })
+
+    describe('reset cross', () => {
+      it('should not display reset cross when nothing is typed in text input', () => {
+        // when
+        const wrapper = shallow(<SearchAlgolia {...props} />)
+
+        // then
+        const resetButton = wrapper.findWhere(node => node.prop('type') === 'reset').first()
+        expect(resetButton).toHaveLength(0)
+      })
+
+      it('should display reset cross when something is typed in text input', () => {
+        // given
+        const wrapper = shallow(<SearchAlgolia {...props} />)
+        const form = wrapper.find('form')
+        const input = form.find('input')
+
+        // when
+        input.simulate('change', {
+          target: {
+            name: 'keywords',
+            value: 'typed search',
+          },
+          preventDefault: jest.fn(),
+        })
+
+        // then
+        const resetButton = wrapper.findWhere(node => node.prop('type') === 'reset').first()
+        expect(wrapper.state('keywordsToSearch')).toBe('typed search')
+        expect(resetButton).toHaveLength(1)
+      })
+
+      it('should clear text input when clicking on reset cross', () => {
+        // given
+        const wrapper = shallow(<SearchAlgolia {...props} />)
+        const form = wrapper.find('form')
+        const input = form.find('input').first()
+        input.simulate('change', {
+          target: {
+            name: 'keywords',
+            value: 'typed search',
+          },
+        })
+        const resetButton = wrapper.findWhere(node => node.prop('type') === 'reset').first()
+
+        // when
+        resetButton.simulate('click')
+
+        // then
+        const expectedMissingResetButton = wrapper
+          .findWhere(node => node.prop('type') === 'reset')
+          .first()
+        expect(expectedMissingResetButton).toHaveLength(0)
+        expect(wrapper.state('keywordsToSearch')).toBe('')
+      })
     })
   })
 
@@ -752,6 +811,80 @@ describe('components | SearchAlgolia', () => {
       expect(form).toHaveLength(0)
       expect(searchDetails).toHaveLength(1)
     })
+
+    describe('search icon and come back icon', () => {
+      it('should display magnifying glass icon when current route is /recherche-offres', () => {
+        // when
+        const wrapper = shallow(<SearchAlgolia {...props} />)
+
+        // then
+        const form = wrapper.find('form')
+        const magnifyingGlassIcon = form
+          .findWhere(node => node.prop('svg') === 'picto-search')
+          .first()
+        expect(magnifyingGlassIcon).toHaveLength(1)
+      })
+
+      it('should render an icon to come back to search main page when a research has been made', async () => {
+        // given
+        fetch.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [],
+              nbHits: 0,
+              page: 0,
+            })
+          })
+        )
+        parse.mockReturnValue({
+          'mots-cles': 'une librairie',
+          page: 0,
+        })
+
+        // when
+        const wrapper = await shallow(<SearchAlgolia {...props} />)
+
+        // then
+        const form = wrapper.find('form')
+        const backIcon = form.findWhere(node => node.prop('svg') === 'picto-back-grey').first()
+        expect(backIcon).toHaveLength(1)
+      })
+
+      it('should reset text input when clicking on come back arrow', async () => {
+        // given
+        fetch.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [],
+              nbHits: 0,
+              page: 0,
+            })
+          })
+        )
+        parse.mockReturnValue({
+          'mots-cles': 'une librairie',
+          page: 0,
+        })
+        const redirectToSearchMainPage = jest.fn()
+
+        // when
+        const wrapper = await shallow(
+          <SearchAlgolia
+            {...props}
+            redirectToSearchMainPage={redirectToSearchMainPage}
+          />
+        )
+        const form = wrapper.find('form')
+        const backIcon = form.findWhere(node => node.prop('type') === 'button').first()
+        expect(backIcon).toHaveLength(1)
+        expect(wrapper.state('keywordsToSearch')).toBe('une librairie')
+        backIcon.simulate('click')
+
+        // then
+        expect(redirectToSearchMainPage).toHaveBeenCalledTimes(1)
+        expect(wrapper.state('keywordsToSearch')).toBe('')
+      })
+    })
   })
 
   describe('header', () => {
@@ -771,10 +904,63 @@ describe('components | SearchAlgolia', () => {
       )
 
       // then
-      const header = wrapper.find(HeaderContainer)
+      const header = wrapper.find(HeaderContainer).first()
       expect(header.prop('closeTo')).toBe('/decouverte')
       expect(header.prop('closeTitle')).toBe('Retourner à la page découverte')
       expect(header.prop('shouldBackFromDetails')).toBe(false)
+    })
+
+    it('should not render header when search has been made', async () => {
+      // given
+      const offer1 = { objectID: 'AE', offer: { name: 'Livre de folie de la librairie' } }
+      const offer2 = { objectID: 'AF', offer: { name: 'Livre bien de la librairie' } }
+      fetch.mockReturnValue(
+        new Promise(resolve => {
+          resolve({
+            hits: [offer1, offer2],
+            page: 0,
+            nbHits: 1,
+            nbPages: 0,
+            hitsPerPage: 2,
+            processingTimeMS: 1,
+            query: 'librairie',
+            params: 'query=librairie&hitsPerPage=2',
+          })
+        })
+      )
+      const wrapper = shallow(<SearchAlgolia {...props} />)
+      const form = wrapper.find('form')
+
+      // when
+      await form.simulate('submit', {
+        target: {
+          keywords: {
+            value: 'librairie',
+          },
+        },
+        preventDefault: jest.fn(),
+      })
+
+      // then
+      const header = wrapper.find(HeaderContainer)
+      expect(header).toHaveLength(1)
+    })
+
+    it('should render a button to come back from last search when on details page', () => {
+      // given
+      props.match.params = {
+        details: 'details',
+      }
+      props.location = {
+        search: '?mots-cles=yo&page=1',
+      }
+
+      // when
+      const wrapper = shallow(<SearchAlgolia {...props} />)
+
+      // then
+      const header = wrapper.find(HeaderContainer).at(1)
+      expect(header.prop('shouldBackFromDetails')).toBe(true)
     })
   })
 })

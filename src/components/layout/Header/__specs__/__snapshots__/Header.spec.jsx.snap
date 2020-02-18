@@ -10,6 +10,7 @@ ShallowWrapper {
     closeActionOnClick={null}
     closeTitle="Retourner à la page découverte"
     closeTo="/decouverte"
+    extraClassName=""
     history={
       Object {
         "push": [Function],
@@ -64,7 +65,7 @@ ShallowWrapper {
         </div>,
         false,
       ],
-      "className": "header",
+      "className": "header ",
     },
     "ref": null,
     "rendered": Array [
@@ -137,7 +138,7 @@ ShallowWrapper {
           </div>,
           false,
         ],
-        "className": "header",
+        "className": "header ",
       },
       "ref": null,
       "rendered": Array [

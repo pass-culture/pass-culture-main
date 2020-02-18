@@ -11,21 +11,11 @@ import SearchAlgoliaDetailsContainer from './Result/ResultDetail/ResultDetailCon
 import Spinner from '../../layout/Spinner/Spinner'
 import Result from './Result/Result'
 import { computeToAroundLatLng } from '../../../utils/geolocation'
+import Icon from '../../layout/Icon/Icon'
 
 class SearchAlgolia extends PureComponent {
   constructor(props) {
     super(props)
-    this.state = {
-      currentPage: 0,
-      isLoading: false,
-      resultsCount: 0,
-      results: [],
-      searchKeywords: '',
-      totalPagesNumber: 0,
-    }
-  }
-
-  componentDidMount() {
     const { query } = this.props
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles']
@@ -37,6 +27,16 @@ class SearchAlgolia extends PureComponent {
     } else {
       query.clear()
     }
+    this.state = {
+      currentPage: 0,
+      keywordsToSearch: '',
+      hasSearchBeenMade: false,
+      isLoading: false,
+      resultsCount: 0,
+      results: [],
+      searchedKeywords: '',
+      totalPagesNumber: 0,
+    }
   }
 
   showFailModal = () => {
@@ -45,16 +45,16 @@ class SearchAlgolia extends PureComponent {
 
   handleOnSubmit = event => {
     event.preventDefault()
-    const { currentPage, searchKeywords } = this.state
+    const { currentPage, searchedKeywords } = this.state
     const keywords = event.target.keywords.value
     const keywordsTrimmed = keywords.trim()
 
-    if (searchKeywords === keywordsTrimmed) {
+    if (searchedKeywords === keywordsTrimmed) {
       return
     }
 
     if (keywordsTrimmed !== '') {
-      if (searchKeywords !== keywordsTrimmed) {
+      if (searchedKeywords !== keywordsTrimmed) {
         this.setState(
           {
             currentPage: 0,
@@ -80,8 +80,8 @@ class SearchAlgolia extends PureComponent {
   }
 
   fetchNextOffersPage = currentPage => {
-    const { searchKeywords } = this.state
-    this.fetchOffers(searchKeywords, currentPage)
+    const { searchedKeywords } = this.state
+    this.fetchOffers(searchedKeywords, currentPage)
   }
 
   fetchOffers = (keywords, currentPage) => {
@@ -97,10 +97,12 @@ class SearchAlgolia extends PureComponent {
         const { hits, nbHits, nbPages } = offers
         this.setState({
           currentPage: currentPage,
+          keywordsToSearch: keywords,
+          hasSearchBeenMade: true,
           isLoading: false,
           resultsCount: nbHits,
           results: [...results, ...hits],
-          searchKeywords: keywords,
+          searchedKeywords: keywords,
           totalPagesNumber: nbPages,
         })
         query.change({
@@ -116,7 +118,22 @@ class SearchAlgolia extends PureComponent {
       })
   }
 
-  getScrollParent = () => document.querySelector('.sp-content')
+  getScrollParent = () => document.querySelector('.sp-results-wrapper')
+
+  handleBackButtonClick = () => {
+    const { redirectToSearchMainPage } = this.props
+    this.setState({
+      currentPage: 0,
+      keywordsToSearch: '',
+      hasSearchBeenMade: false,
+      isLoading: false,
+      resultsCount: 0,
+      results: [],
+      searchedKeywords: '',
+      totalPagesNumber: 0,
+    })
+    redirectToSearchMainPage()
+  }
 
   shouldBackFromDetails = () => {
     const { match } = this.props
@@ -124,55 +141,103 @@ class SearchAlgolia extends PureComponent {
     return Boolean(match.params.details)
   }
 
+  handleResetButtonClick = () => {
+    this.setState({
+      keywordsToSearch: '',
+    })
+  }
+
+  handleOnTextInputChange = event => {
+    this.setState({
+      keywordsToSearch: event.target.value,
+    })
+  }
+
   render() {
     const { geolocation, location } = this.props
     const { search } = location
     const {
       currentPage,
+      keywordsToSearch,
+      hasSearchBeenMade,
       isLoading,
       resultsCount,
       results,
-      searchKeywords,
+      searchedKeywords,
       totalPagesNumber,
     } = this.state
 
     return (
-      <main className="search-page">
-        <HeaderContainer
-          closeTitle="Retourner à la page découverte"
-          closeTo="/decouverte"
-          shouldBackFromDetails={this.shouldBackFromDetails()}
-          title="Recherche"
-        />
+      <main className="search-page-algolia">
         <Switch>
           <Route
             exact
             path="/recherche-offres"
           >
-            <div className="sp-content">
-              <form onSubmit={this.handleOnSubmit}>
-                <div className="sp-container">
-                  <div className="sp-input-wrapper">
-                    <input
-                      className="sp-input"
-                      defaultValue={searchKeywords}
-                      name="keywords"
-                      placeholder="Saisir un mot-clé"
-                      type="text"
-                    />
-                  </div>
+            {!hasSearchBeenMade && (
+              <HeaderContainer
+                closeTitle="Retourner à la page découverte"
+                closeTo="/decouverte"
+                extraClassName="header-search-main-page"
+                shouldBackFromDetails={this.shouldBackFromDetails()}
+                title="Recherche"
+              />
+            )}
+            <form
+              className="sp-text-input-form"
+              onSubmit={this.handleOnSubmit}
+            >
+              <div className="sp-text-input-wrapper">
+                {hasSearchBeenMade ? (
                   <button
-                    className="sp-button"
-                    type="submit"
+                    className="sp-text-input-left-part"
+                    onClick={this.handleBackButtonClick}
+                    type="button"
                   >
-                    {'Chercher'}
+                    <Icon svg="picto-back-grey" />
                   </button>
+                ) : (
+                  <div className="sp-text-input-left-part">
+                    <Icon svg="picto-search" />
+                  </div>
+                )}
+                <input
+                  className="sp-text-input"
+                  name="keywords"
+                  onChange={this.handleOnTextInputChange}
+                  placeholder="Artiste, auteur..."
+                  type="text"
+                  value={keywordsToSearch}
+                />
+                <div className="sp-text-input-reset">
+                  {keywordsToSearch && (
+                    <button
+                      className="sp-text-input-reset-button"
+                      onClick={this.handleResetButtonClick}
+                      type="reset"
+                    >
+                      {'x'}
+                    </button>
+                  )}
                 </div>
-              </form>
+              </div>
+              <div className="sp-search-button-wrapper">
+                <button
+                  className={`sp-search-button ${
+                    hasSearchBeenMade ? 'sp-minimize-search-button' : ''
+                  }`}
+                  type="submit"
+                >
+                  {'Rechercher'}
+                </button>
+              </div>
+            </form>
+
+            <div className="sp-results-wrapper">
               {isLoading && <Spinner label="Recherche en cours" />}
-              {searchKeywords && (
+              {hasSearchBeenMade && (
                 <h1 className="sp-results-title">
-                  {`"${searchKeywords}" : ${resultsCount} ${
+                  {`"${searchedKeywords}" : ${resultsCount} ${
                     resultsCount > 1 ? 'résultats' : 'résultat'
                   }`}
                 </h1>
@@ -204,6 +269,12 @@ class SearchAlgolia extends PureComponent {
             path="/recherche-offres/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
             sensitive
           >
+            <HeaderContainer
+              closeTitle="Retourner à la page découverte"
+              closeTo="/decouverte"
+              shouldBackFromDetails={this.shouldBackFromDetails()}
+              title="Recherche"
+            />
             <SearchAlgoliaDetailsContainer />
           </Route>
         </Switch>
@@ -235,6 +306,7 @@ SearchAlgolia.propTypes = {
     change: PropTypes.func,
     parse: PropTypes.func,
   }).isRequired,
+  redirectToSearchMainPage: PropTypes.func.isRequired,
 }
 
 export default SearchAlgolia

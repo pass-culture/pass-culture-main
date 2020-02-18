@@ -56,13 +56,14 @@ class Header extends PureComponent {
       closeActionOnClick,
       closeTitle,
       closeTo,
+      extraClassName,
       submitDisabled,
       title,
       useSubmit,
     } = this.props
     const backTo = this.getBackTo()
     return (
-      <header className="header">
+      <header className={`header ${extraClassName}`}>
         {backTo && (
           <div className="header-start">
             <BackLink
@@ -101,6 +102,7 @@ Header.defaultProps = {
   closeActionOnClick: null,
   closeTitle: 'Retourner à la page découverte',
   closeTo: '/decouverte',
+  extraClassName: '',
   shouldBackFromDetails: false,
   submitDisabled: true,
   useSubmit: false,
@@ -113,6 +115,7 @@ Header.propTypes = {
   closeActionOnClick: PropTypes.func,
   closeTitle: PropTypes.string,
   closeTo: PropTypes.string,
+  extraClassName: PropTypes.string,
   history: PropTypes.shape({
     replace: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,

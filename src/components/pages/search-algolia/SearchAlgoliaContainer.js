@@ -4,16 +4,19 @@ import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 import SearchAlgolia from './SearchAlgolia'
 import { selectUserGeolocation } from '../../../selectors/geolocationSelectors'
 
-export const mapStateToProps = (state) => {
+export const mapStateToProps = (state, ownProps) => {
   const geolocation = selectUserGeolocation(state)
-
+  const redirectToSearchMainPage = () => {
+    const { history } = ownProps
+    history.push('/recherche-offres')
+  }
   return {
-    geolocation
+    geolocation,
+    redirectToSearchMainPage,
   }
 }
+
 export default compose(
   withRequiredLogin,
-  connect(
-    mapStateToProps
-  )
+  connect(mapStateToProps)
 )(SearchAlgolia)
