@@ -66,6 +66,10 @@ then
   echo "ERROR: You have to provide an application name : '-a app_name'"
   show_help
   exit 1
+elif [ $app_name == "pass-culture-api" ]
+then
+  echo "This action is not permitted for pass-culture-api application"
+  exit 1
 fi
 
 source manage_tunnel.sh
