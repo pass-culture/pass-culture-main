@@ -241,7 +241,7 @@ class BuildPcProOfferLinkTest:
 
 
 class BuildRecipientsListTest:
-    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'admin@pass.com')
+    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     def test_should_return_admin_email_and_booking_email_when_booking_email_on_offer_exists(self):
         # Given
         user = create_user()
@@ -255,9 +255,9 @@ class BuildRecipientsListTest:
         recipients = _build_recipients_list(booking)
 
         # Then
-        assert recipients == 'booking.email@example.com, admin@pass.com'
+        assert recipients == 'booking.email@example.com, administration@example.com'
 
-    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'admin@pass.com')
+    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     def test_should_return_only_admin_email_when_offer_has_no_booking_email(self):
         # Given
         user = create_user()
@@ -271,7 +271,7 @@ class BuildRecipientsListTest:
         recipients = _build_recipients_list(booking)
 
         # Then
-        assert recipients == 'admin@pass.com'
+        assert recipients == 'administration@example.com'
 
 
 class FormatDateAndHourForEmailTest:

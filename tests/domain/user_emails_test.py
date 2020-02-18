@@ -77,6 +77,7 @@ class SendWarningToBeneficiaryAfterProBookingCancellationTest:
 
 
 class SendOffererDrivenCancellationEmailToOffererTest:
+    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     @patch('domain.user_emails.make_offerer_driven_cancellation_email_for_offerer', return_value={'Html-part': ''})
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_feature_send_mail_to_users_enabled_and_offer_booking_email_sends_to_offerer_and_administration(self,
@@ -99,8 +100,9 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         make_offerer_driven_cancellation_email_for_offerer.assert_called_once_with(booking)
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'offer@example.com, administration@passculture.app'
+        assert args[1]['data']['To'] == 'offer@example.com, administration@example.com'
 
+    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     @patch('domain.user_emails.make_offerer_driven_cancellation_email_for_offerer', return_value={'Html-part': ''})
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_feature_send_mail_to_users_enabled_and_not_offer_booking_email_sends_only_to_administration(self,
@@ -122,7 +124,7 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         make_offerer_driven_cancellation_email_for_offerer.assert_called_once_with(booking)
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'administration@passculture.app'
+        assert args[1]['data']['To'] == 'administration@example.com'
 
 
 class SendBookingConfirmationEmailToBeneficiaryTest:
@@ -166,6 +168,7 @@ class SendBookingRecapEmailsTest:
         data = args[1]['data']
         assert data['To'] == 'dev@example.com'
 
+    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_feature_send_mail_to_users_enabled_and_offer_booking_email_sends_to_offerer_and_administration(self,
                                                                                                             mock_feature_send_mail_to_users_enabled,
@@ -187,8 +190,9 @@ class SendBookingRecapEmailsTest:
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         data = args[1]['data']
-        assert data['To'] == 'administration@passculture.app, offer.booking.email@example.net'
+        assert data['To'] == 'administration@example.com, offer.booking.email@example.net'
 
+    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_feature_send_mail_to_users_enabled_and_not_offer_booking_email_sends_only_to_administration(
             self,
@@ -209,7 +213,7 @@ class SendBookingRecapEmailsTest:
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         data = args[1]['data']
-        assert data['To'] == 'administration@passculture.app'
+        assert data['To'] == 'administration@example.com'
 
 
 class SendFinalBookingRecapEmailTest:
@@ -235,6 +239,7 @@ class SendFinalBookingRecapEmailTest:
         assert args[1]['data']['To'] == 'dev@example.com'
         mock_set_booking_recap_sent_and_save.assert_called_once_with(stock)
 
+    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     @patch('domain.user_emails.set_booking_recap_sent_and_save')
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_feature_send_mail_to_users_enabled_and_offer_booking_email_sends_to_offerer_and_support(self,
@@ -253,9 +258,10 @@ class SendFinalBookingRecapEmailTest:
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         assert 'offer.booking.email@example.net' in args[1]['data']['To']
-        assert 'administration@passculture.app' in args[1]['data']['To']
+        assert 'administration@example.com' in args[1]['data']['To']
         mock_set_booking_recap_sent_and_save.assert_called_once_with(stock)
 
+    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     @patch('domain.user_emails.set_booking_recap_sent_and_save')
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_feature_send_mail_to_users_enabled_and_not_offer_booking_email_sends_only_to_administration(self,
@@ -273,7 +279,7 @@ class SendFinalBookingRecapEmailTest:
         # then
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'administration@passculture.app'
+        assert args[1]['data']['To'] == 'administration@example.com'
         mock_set_booking_recap_sent_and_save.assert_called_once_with(stock)
 
 

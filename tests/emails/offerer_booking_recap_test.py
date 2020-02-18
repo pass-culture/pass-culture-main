@@ -14,8 +14,7 @@ from tests.model_creators.specific_creators import create_stock_with_event_offer
     create_stock_from_offer, create_stock_with_thing_offer, create_product_with_thing_type, \
     create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
 from tests.utils.mailing_test import _remove_whitespaces
-from utils.mailing import ADMINISTRATION_EMAIL_ADDRESS, \
-    make_offerer_booking_recap_email_after_user_action
+from utils.mailing import make_offerer_booking_recap_email_after_user_action
 
 
 class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
@@ -295,7 +294,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
         booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
         stock.bookings = [booking]
-        recipient = ['dev@example.com', ADMINISTRATION_EMAIL_ADDRESS]
+        recipient = ['dev@example.com', 'administration@example.com']
 
         repository.save(stock)
 
@@ -309,7 +308,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
             'FromEmail': 'support@passculture.app',
             'MJ-TemplateID': 1095029,
             'MJ-TemplateLanguage': True,
-            'To': f'dev@example.com, {ADMINISTRATION_EMAIL_ADDRESS}',
+            'To': 'dev@example.com, administration@example.com',
             'Vars':
                 {
                     'nom_offre': 'Test Book',
@@ -354,7 +353,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         booking_1 = create_booking(user=user_1, stock=stock, venue=venue, token='ACVSDC')
         booking_2 = create_booking(user=user_2, stock=stock, venue=venue, token='TEST95')
         stock.bookings = [booking_1, booking_2]
-        recipient = ['dev@example.com', ADMINISTRATION_EMAIL_ADDRESS]
+        recipient = ['dev@example.com', 'administration@example.com']
 
         repository.save(stock)
 
@@ -368,7 +367,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
             'FromEmail': 'support@passculture.app',
             'MJ-TemplateID': 1095029,
             'MJ-TemplateLanguage': True,
-            'To': f'dev@example.com, {ADMINISTRATION_EMAIL_ADDRESS}',
+            'To': 'dev@example.com, administration@example.com',
             'Vars':
                 {
                     'nom_offre': 'Test Book',
@@ -416,7 +415,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
         booking = create_booking(user=user, stock=stock, venue=venue, token='ACVSDC')
         stock.bookings = [booking]
-        recipient = ['dev2@example.com', ADMINISTRATION_EMAIL_ADDRESS]
+        recipient = ['dev2@example.com', 'administration@example.com']
 
         repository.save(stock)
 

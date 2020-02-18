@@ -10,6 +10,7 @@ from tests.model_creators.specific_creators import create_offer_with_thing_produ
 from utils.mailing import MailServiceException
 
 
+@patch('domain.admin_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
 @patch('connectors.api_entreprises.requests.get')
 def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_objects_to_validate_and_send_email_enabled(
         mock_api_entreprise,
@@ -40,7 +41,7 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
     mocked_send_email.assert_called_once()
     args = mocked_send_email.call_args
     email = args[1]['data']
-    assert email['To'] == 'administration@passculture.app'
+    assert email['To'] == 'administration@example.com'
     assert 'This is a test' not in email['Html-part']
 
 
@@ -104,6 +105,7 @@ def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validate
     assert not mocked_send_email.called
 
 
+@patch('domain.admin_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
 def test_send_venue_validation_email_when_mailjet_status_code_200_sends_email_to_pass_culture(app):
     # Given
     offerer = create_offerer()
@@ -122,7 +124,7 @@ def test_send_venue_validation_email_when_mailjet_status_code_200_sends_email_to
     mocked_send_email.assert_called_once()
     args = mocked_send_email.call_args
     email = args[1]['data']
-    assert email['To'] == 'administration@passculture.app'
+    assert email['To'] == 'administration@example.com'
     assert 'This is a test' not in email['Html-part']
 
 
@@ -291,6 +293,7 @@ def test_send_payments_report_emails_email_has_pass_culture_dev_as_recipient_whe
 
 
 class SendOfferCreationNotificationToAdministrationTest:
+    @patch('utils.mailing.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     def test_when_mailjet_status_code_200_sends_email_to_administration_email(self, app):
         mocked_send_email = Mock()
         return_value = Mock()
@@ -308,7 +311,7 @@ class SendOfferCreationNotificationToAdministrationTest:
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         email = args[1]['data']
-        assert email['To'] == 'administration@passculture.app'
+        assert email['To'] == 'administration@example.com'
 
     @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     def test_when_send_email_disabled_has_pass_culture_dev_as_recipient(self, app):
