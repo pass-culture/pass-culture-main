@@ -8,7 +8,7 @@ from tests.model_creators.generic_creators import create_offerer, create_user, c
 
 class ProOffererAttachmentValidationEmailTest:
     @clean_database
-    @patch('emails.offerer_attachment_validation.DEV_EMAIL_ADDRESS', 'dev@passculture.app')
+    @patch('emails.offerer_attachment_validation.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('emails.offerer_attachment_validation.feature_send_mail_to_users_enabled', return_value=False)
     @patch('emails.offerer_attachment_validation.format_environment_for_email', return_value='-testing')
     @patch('emails.offerer_attachment_validation.find_user_offerer_email',
@@ -34,7 +34,7 @@ class ProOffererAttachmentValidationEmailTest:
             'FromEmail': 'support@example.com',
             'MJ-TemplateID': 778756,
             'MJ-TemplateLanguage': True,
-            'To': 'dev@passculture.app',
+            'To': 'dev@example.com',
             'Vars':
                 {
                     'nom_structure': 'Le Théâtre SAS',

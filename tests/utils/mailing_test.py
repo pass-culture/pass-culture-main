@@ -200,8 +200,7 @@ class GetUsersInformationFromStockBookingsTest:
                              first_name='Toto', last_name='Titi', public_name='Test')
         offerer = create_offerer()
         venue = create_venue(offerer=offerer, name='Test offerer', booking_email='reservations@test.fr', is_virtual=True, siret=None)
-        thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION,
-                                                      booking_email='dev@passculture.app')
+        thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
         stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
         booking_1 = create_booking(user=user_1, stock=stock, venue=venue, token='HELLO0')

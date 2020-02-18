@@ -31,6 +31,7 @@ class UserValidationEmailsTest:
         assert email['Subject'] == 'Validation de votre adresse email pour le pass Culture'
         assert email['FromEmail'] == 'support@passculture.app'
 
+    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     def test_make_pro_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
         # Given
         user = create_user(email="test@example.com")
@@ -40,7 +41,7 @@ class UserValidationEmailsTest:
         # When
         email = make_user_validation_email(user, app_origin_url, is_webapp=False)
         expected = {
-            'FromEmail': 'dev@passculture.app',
+            'FromEmail': 'dev@example.com',
             'FromName': 'pass Culture pro',
             'Subject': '[pass Culture pro] Validation de votre adresse email pour le pass Culture',
             'MJ-TemplateID': 778688,

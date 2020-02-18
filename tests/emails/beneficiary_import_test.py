@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from bs4 import BeautifulSoup
 from freezegun import freeze_time
 
@@ -8,6 +10,7 @@ from utils.mailing import make_beneficiaries_import_email
 
 @freeze_time('2019-05-20 12:00:00')
 class MakeBeneficiariesImportEmailTest:
+    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     def test_sends_date_in_subject(self, app):
         # given
         new_beneficiaries = [User(), User()]
@@ -17,7 +20,7 @@ class MakeBeneficiariesImportEmailTest:
         email = make_beneficiaries_import_email(new_beneficiaries, error_messages)
 
         # then
-        assert email["FromEmail"] == 'dev@passculture.app'
+        assert email["FromEmail"] == 'dev@example.com'
         assert email["FromName"] == 'pass Culture'
         assert email["Subject"] == 'Import des utilisateurs depuis Démarches Simplifiées 2019-05-20'
 

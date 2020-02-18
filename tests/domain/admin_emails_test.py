@@ -45,6 +45,7 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
 
 
 @patch('connectors.api_entreprises.requests.get')
+@patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
 def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_dev_when_objects_to_validate_and_send_email_disabled(
         mock_api_entreprise,
         app):
@@ -74,7 +75,7 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_dev_whe
     mocked_send_email.assert_called_once()
     args = mocked_send_email.call_args
     email = args[1]['data']
-    assert email['To'] == 'dev@passculture.app'
+    assert email['To'] == 'dev@example.com'
     assert 'This is a test' in email['Html-part']
 
 
@@ -125,6 +126,7 @@ def test_send_venue_validation_email_when_mailjet_status_code_200_sends_email_to
     assert 'This is a test' not in email['Html-part']
 
 
+@patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
 def test_send_venue_validation_email_has_pass_culture_dev_as_recipient_when_send_email_disabled(app):
     # Given
     offerer = create_offerer()
@@ -143,7 +145,7 @@ def test_send_venue_validation_email_has_pass_culture_dev_as_recipient_when_send
     mocked_send_email.assert_called_once()
     args = mocked_send_email.call_args
     email = args[1]['data']
-    assert email['To'] == 'dev@passculture.app'
+    assert email['To'] == 'dev@example.com'
     assert 'This is a test' in email['Html-part']
 
 
@@ -168,6 +170,7 @@ def test_send_payment_details_email_when_mailjet_status_code_200_sends_email_to_
     assert email['To'] == 'comptable1@culture.fr, comptable2@culture.fr'
 
 
+@patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
 def test_send_payment_details_email_has_pass_culture_dev_as_recipient_when_send_email_disabled(app):
     # Given
     csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
@@ -186,7 +189,7 @@ def test_send_payment_details_email_has_pass_culture_dev_as_recipient_when_send_
     mocked_send_email.assert_called_once()
     args = mocked_send_email.call_args
     email = args[1]['data']
-    assert email['To'] == 'dev@passculture.app'
+    assert email['To'] == 'dev@example.com'
 
 
 def test_send_wallet_balances_email_when_mailjet_status_code_200_sends_email_to_recipients(app):
@@ -210,6 +213,7 @@ def test_send_wallet_balances_email_when_mailjet_status_code_200_sends_email_to_
     assert email['To'] == 'comptable1@culture.fr, comptable2@culture.fr'
 
 
+@patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
 def test_send_wallet_balances_email_has_pass_culture_dev_as_recipient_when_send_email_disabled(app):
     # Given
     csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
@@ -228,7 +232,7 @@ def test_send_wallet_balances_email_has_pass_culture_dev_as_recipient_when_send_
     mocked_send_email.assert_called_once()
     args = mocked_send_email.call_args
     email = args[1]['data']
-    assert email['To'] == 'dev@passculture.app'
+    assert email['To'] == 'dev@example.com'
 
 
 def test_send_payments_report_emails_when_mailjet_status_code_200_sends_email_to_recipients(app):
@@ -258,6 +262,7 @@ def test_send_payments_report_emails_when_mailjet_status_code_200_sends_email_to
     assert email['To'] == 'dev.team@test.com'
 
 
+@patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
 def test_send_payments_report_emails_email_has_pass_culture_dev_as_recipient_when_send_email_disabled(app):
     # Given
     not_processable_csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
@@ -282,7 +287,7 @@ def test_send_payments_report_emails_email_has_pass_culture_dev_as_recipient_whe
     mocked_send_email.assert_called_once()
     args = mocked_send_email.call_args
     email = args[1]['data']
-    assert email['To'] == 'dev@passculture.app'
+    assert email['To'] == 'dev@example.com'
 
 
 class SendOfferCreationNotificationToAdministrationTest:
@@ -305,6 +310,7 @@ class SendOfferCreationNotificationToAdministrationTest:
         email = args[1]['data']
         assert email['To'] == 'administration@passculture.app'
 
+    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     def test_when_send_email_disabled_has_pass_culture_dev_as_recipient(self, app):
         # Given
         mocked_send_email = Mock()
@@ -323,7 +329,7 @@ class SendOfferCreationNotificationToAdministrationTest:
         mocked_send_email.assert_called_once()
         args = mocked_send_email.call_args
         email = args[1]['data']
-        assert email['To'] == 'dev@passculture.app'
+        assert email['To'] == 'dev@example.com'
 
 
 class SendPaymentMessageEmailTest:

@@ -5,7 +5,7 @@ from tests.model_creators.generic_creators import create_offerer
 
 
 class MakeNewOffererValidationEmailTest:
-    @patch('emails.new_offerer_validation.DEV_EMAIL_ADDRESS', 'dev@passculture.app')
+    @patch('emails.new_offerer_validation.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('emails.new_offerer_validation.feature_send_mail_to_users_enabled', return_value=False)
     @patch('emails.new_offerer_validation.format_environment_for_email', return_value='-testing')
     @patch('emails.new_offerer_validation.find_new_offerer_user_email',
@@ -26,7 +26,7 @@ class MakeNewOffererValidationEmailTest:
             'FromEmail': 'support@example.com',
             'MJ-TemplateID': 778723,
             'MJ-TemplateLanguage': True,
-            'To': 'dev@passculture.app',
+            'To': 'dev@example.com',
             'Vars':
                 {
                     'offerer_name': 'Le Théâtre SAS',
