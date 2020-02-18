@@ -465,7 +465,7 @@ class SendAttachmentValidationEmailToProOffererTest:
     @patch('emails.offerer_attachment_validation.format_environment_for_email', return_value='')
     @patch('emails.offerer_attachment_validation.find_user_offerer_email',
            return_value='pro@example.com')
-    @patch('emails.offerer_attachment_validation.SUPPORT_EMAIL_ADDRESS', 'support@passculture.app')
+    @patch('emails.offerer_attachment_validation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @clean_database
     def test_should_return_true_when_email_data_are_valid(self,
                                                           mock_feature_send_mail_to_users_enabled,
@@ -490,7 +490,7 @@ class SendAttachmentValidationEmailToProOffererTest:
         args = mocked_send_email.call_args
         data = args[1]['data']
         assert data['MJ-TemplateID'] == 778756
-        assert data['FromEmail'] == 'support@passculture.app'
+        assert data['FromEmail'] == 'support@example.com'
         assert data['To'] == 'pro@example.com'
         assert data['Vars']['nom_structure'] == 'Test Offerer'
 

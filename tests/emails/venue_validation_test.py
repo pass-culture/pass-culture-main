@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from bs4 import BeautifulSoup
 
 from tests.model_creators.generic_creators import create_offerer, create_venue
@@ -5,6 +7,7 @@ from tests.utils.mailing_test import _remove_whitespaces
 from utils.mailing import make_venue_to_validate_email, make_venue_validated_email
 
 
+@patch('utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
 def test_make_venue_to_validate_email(app):
     # Given
     offerer = create_offerer(name='La Structure', siren='123456789')
@@ -15,7 +18,7 @@ def test_make_venue_to_validate_email(app):
     email = make_venue_to_validate_email(venue)
 
     # Then
-    assert email["FromEmail"] == 'support@passculture.app'
+    assert email["FromEmail"] == 'support@example.com'
     assert email["FromName"] == "pass Culture"
     assert email["Subject"] == "{} - rattachement de lieu pro à valider : {}".format(venue.departementCode, venue.name)
     email_html = _remove_whitespaces(email['Html-part'])
@@ -30,6 +33,7 @@ def test_make_venue_to_validate_email(app):
     assert 'localhost/validate/venue?token={}'.format(venue.validationToken) in html_validation_link
 
 
+@patch('utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
 def test_make_venue_validated_email(app):
     # Given
     offerer = create_offerer(name='La Structure', siren='123456789')
@@ -40,7 +44,7 @@ def test_make_venue_validated_email(app):
 
     # Then
     assert email['Subject'] == 'Validation du rattachement du lieu "Le Lieu" à votre structure "La Structure"'
-    assert email["FromEmail"] == 'support@passculture.app'
+    assert email["FromEmail"] == 'support@example.com'
     assert email["FromName"] == "pass Culture pro"
     email_html = _remove_whitespaces(email['Html-part'])
     parsed_email = BeautifulSoup(email_html, 'html.parser')

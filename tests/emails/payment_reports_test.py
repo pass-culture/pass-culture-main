@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from bs4 import BeautifulSoup
 from freezegun import freeze_time
@@ -39,12 +39,13 @@ class MakePaymentsReportEmailTest:
             }
         ]
 
+    @patch('utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     def test_it_contains_from_and_subject_info(self, app):
         # When
         email = make_payments_report_email(self.not_processable_csv, self.error_csv, self.grouped_payments)
 
         # Then
-        assert email["FromEmail"] == 'support@passculture.app'
+        assert email["FromEmail"] == 'support@example.com'
         assert email["FromName"] == "pass Culture Pro"
         assert email["Subject"] == "Récapitulatif des paiements pass Culture Pro - 2018-10-15"
 
@@ -65,6 +66,7 @@ class MakePaymentsReportEmailTest:
         assert email_html.find('ul').text == '\nERROR : 2\nSENT : 1\nPENDING : 3\n'
 
 
+@patch('utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
 @freeze_time('2018-10-15 09:21:34')
 def test_make_payment_message_email_sends_a_xml_file_with_its_checksum_in_email_body(app):
     # Given
@@ -75,7 +77,7 @@ def test_make_payment_message_email_sends_a_xml_file_with_its_checksum_in_email_
     email = make_payment_message_email(xml, checksum)
 
     # Then
-    assert email["FromEmail"] == 'support@passculture.app'
+    assert email["FromEmail"] == 'support@example.com'
     assert email["FromName"] == "pass Culture Pro"
     assert email["Subject"] == "Virements XML pass Culture Pro - 2018-10-15"
     assert email["Attachments"] == [{"ContentType": "text/xml",
@@ -89,6 +91,7 @@ def test_make_payment_message_email_sends_a_xml_file_with_its_checksum_in_email_
            in email_html.find('p', {'id': 'checksum'}).find('strong').text
 
 
+@patch('utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
 @freeze_time('2018-10-15 09:21:34')
 def test_make_payment_details_email():
     # Given
@@ -98,7 +101,7 @@ def test_make_payment_details_email():
     email = make_payment_details_email(csv)
 
     # Then
-    assert email["FromEmail"] == 'support@passculture.app'
+    assert email["FromEmail"] == 'support@example.com'
     assert email["FromName"] == "pass Culture Pro"
     assert email["Subject"] == "Détails des paiements pass Culture Pro - 2018-10-15"
     assert email["Html-part"] == ""

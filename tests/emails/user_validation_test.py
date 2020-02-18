@@ -7,6 +7,7 @@ from utils.mailing import make_user_validation_email
 
 
 class UserValidationEmailsTest:
+    @patch('utils.mailing.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     def test_webapp_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
         # Given
         user = create_user(email="test@example.com")
@@ -29,7 +30,7 @@ class UserValidationEmailsTest:
         assert email['To'] == user.email
         assert email['FromName'] == 'pass Culture'
         assert email['Subject'] == 'Validation de votre adresse email pour le pass Culture'
-        assert email['FromEmail'] == 'support@passculture.app'
+        assert email['FromEmail'] == 'support@example.com'
 
     @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     def test_make_pro_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
