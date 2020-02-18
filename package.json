@@ -80,6 +80,7 @@
     "eslint-plugin-react": "^7.16.0",
     "file-loader": "^4.2.0",
     "fs-extra": "^8.1.0",
+    "full-icu": "^1.3.0",
     "html-webpack-plugin": "4.0.0-alpha.2",
     "husky": "^3.0.9",
     "jest": "23.6.0",
@@ -120,7 +121,7 @@
     "lint:js:fix": "yarn lint:js --fix",
     "start": "node scripts/start.js",
     "test:cafe": "testcafe --assertion-timeout 8000 --selector-timeout 20000 -S -s testcafe_screenshots 'chrome:headless' testcafe",
-    "test:unit": "jest --env=jsdom"
+    "test:unit": "NODE_ICU_DATA=node_modules/full-icu jest --env=jsdom"
   },
   "husky": {
     "hooks": {

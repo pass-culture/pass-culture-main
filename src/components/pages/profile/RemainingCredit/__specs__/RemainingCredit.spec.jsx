@@ -132,7 +132,7 @@ describe('components | RemainingCredit', () => {
 
       // Then
       const textWithEndValidityDate = wrapper.find('.rc-end-validity-date').text()
-      expect(textWithEndValidityDate).toBe('Votre crédit est valable jusqu’au September 10, 2021.')
+      expect(textWithEndValidityDate).toBe('Votre crédit est valable jusqu’au 10 septembre 2021.')
     })
 
     it('should not render end validity date when user has no deposit', () => {

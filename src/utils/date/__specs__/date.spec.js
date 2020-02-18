@@ -10,7 +10,7 @@ describe('src | utils | date', () => {
       const formattedDate = computeEndValidityDate(date)
 
       // then
-      expect(formattedDate).toBe('September 10, 2021')
+      expect(formattedDate).toBe('10 septembre 2021')
     })
   })
 
@@ -40,8 +40,7 @@ describe('src | utils | date', () => {
         const result = formatRecommendationDates(departementCode, dateRange)
 
         // then
-        // https://github.com/nodejs/node-v0.x-archive/issues/4689
-        expect(result).toBe('du 10/25/2018 au 10/26/2018')
+        expect(result).toBe('du 25/10/2018 au 26/10/2018')
       })
     })
 
@@ -55,8 +54,7 @@ describe('src | utils | date', () => {
         const result = formatRecommendationDates(departementCode, dateRange)
 
         // then
-        // https://github.com/nodejs/node-v0.x-archive/issues/4689
-        expect(result).toBe('du 10/25/2018 au 10/26/2018')
+        expect(result).toBe('du 25/10/2018 au 26/10/2018')
       })
     })
   })
