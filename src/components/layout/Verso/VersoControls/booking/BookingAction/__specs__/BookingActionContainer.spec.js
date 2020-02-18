@@ -27,7 +27,7 @@ describe('components | BookingActionContainer', () => {
         const props = mapStateToProps(state, ownProps)
 
         // then
-        expect(props.isNotBookable).toBe(true)
+        expect(props.offerCannotBeBooked).toBe(true)
       })
 
       it('should return true when offer is not bookable and offer is fully booked', () => {
@@ -54,7 +54,7 @@ describe('components | BookingActionContainer', () => {
         const props = mapStateToProps(state, ownProps)
 
         // then
-        expect(props.isNotBookable).toBe(true)
+        expect(props.offerCannotBeBooked).toBe(true)
       })
 
       it('should return true when offer is bookable and offer is fully booked', () => {
@@ -81,7 +81,7 @@ describe('components | BookingActionContainer', () => {
         const props = mapStateToProps(state, ownProps)
 
         // then
-        expect(props.isNotBookable).toBe(true)
+        expect(props.offerCannotBeBooked).toBe(true)
       })
 
       it('should return false when offer is bookable and offer is not fully booked', () => {
@@ -108,7 +108,7 @@ describe('components | BookingActionContainer', () => {
         const props = mapStateToProps(state, ownProps)
 
         // then
-        expect(props.isNotBookable).toBe(false)
+        expect(props.offerCannotBeBooked).toBe(false)
       })
     })
 

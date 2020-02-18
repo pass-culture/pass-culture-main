@@ -27,7 +27,7 @@ describe('components | FinishableContainer', () => {
 
           // then
           expect(props).toStrictEqual({
-            offerIsNoLongerBookable: false
+            offerCannotBeBooked: false
           })
         })
 
@@ -54,7 +54,7 @@ describe('components | FinishableContainer', () => {
 
           // then
           expect(props).toStrictEqual({
-            offerIsNoLongerBookable: false
+            offerCannotBeBooked: false
           })
         })
 
@@ -81,7 +81,7 @@ describe('components | FinishableContainer', () => {
 
           // then
           expect(props).toStrictEqual({
-            offerIsNoLongerBookable: true
+            offerCannotBeBooked: true
           })
         })
 
@@ -108,7 +108,7 @@ describe('components | FinishableContainer', () => {
 
           // then
           expect(props).toStrictEqual({
-            offerIsNoLongerBookable: false
+            offerCannotBeBooked: false
           })
         })
       })
@@ -135,7 +135,7 @@ describe('components | FinishableContainer', () => {
 
           // then
           expect(props).toStrictEqual({
-            offerIsNoLongerBookable: false
+            offerCannotBeBooked: false
           })
         })
 
@@ -160,7 +160,7 @@ describe('components | FinishableContainer', () => {
 
           // then
           expect(props).toStrictEqual({
-            offerIsNoLongerBookable: false
+            offerCannotBeBooked: false
           })
         })
 
@@ -185,7 +185,7 @@ describe('components | FinishableContainer', () => {
 
           // then
           expect(props).toStrictEqual({
-            offerIsNoLongerBookable: true
+            offerCannotBeBooked: true
           })
         })
 
@@ -210,7 +210,7 @@ describe('components | FinishableContainer', () => {
 
           // then
           expect(props).toStrictEqual({
-            offerIsNoLongerBookable: false
+            offerCannotBeBooked: false
           })
         })
       })

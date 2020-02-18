@@ -6,17 +6,16 @@ import Price from '../../../../Price/Price'
 class BookingAction extends PureComponent {
   handleBookingAction = () => {
     const { bookingUrl, history } = this.props
-
     history.push(bookingUrl)
   }
 
   render() {
-    const { isNotBookable, priceRange } = this.props
+    const { offerCannotBeBooked, priceRange } = this.props
 
     return (
       <button
         className="ticket-action"
-        disabled={isNotBookable}
+        disabled={offerCannotBeBooked}
         onClick={this.handleBookingAction}
         type="button"
       >
@@ -34,13 +33,13 @@ class BookingAction extends PureComponent {
 }
 
 BookingAction.defaultProps = {
-  isNotBookable: false,
+  offerCannotBeBooked: false,
 }
 
 BookingAction.propTypes = {
   bookingUrl: PropTypes.string.isRequired,
   history: PropTypes.shape().isRequired,
-  isNotBookable: PropTypes.bool,
+  offerCannotBeBooked: PropTypes.bool,
   priceRange: PropTypes.arrayOf(PropTypes.number.isRequired).isRequired,
 }
 
