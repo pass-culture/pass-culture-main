@@ -22,7 +22,7 @@ from repository.feature_queries import feature_cron_send_final_booking_recaps_en
     feature_cron_send_wallet_balances, \
     feature_import_beneficiaries_enabled, \
     feature_cron_synchronize_allocine_stocks, \
-    feature_update_recommendations_view
+    feature_update_recommendations_view, feature_cron_synchronize_libraires_stocks
 from repository.provider_queries import get_provider_by_local_class
 from repository.recommendation_queries import delete_useless_recommendations
 from repository.user_queries import find_most_recent_beneficiary_creation_date
@@ -41,6 +41,7 @@ app.config['DEBUG'] = True
 db.init_app(app)
 
 ALLOCINE_STOCKS_PROVIDER_NAME = "AllocineStocks"
+LIBRAIRES_STOCKS_PROVIDER_NAME = "LibrairesStocks"
 
 RECO_VIEW_REFRESH_FREQUENCY = os.environ.get('RECO_VIEW_REFRESH_FREQUENCY', '*')
 
@@ -100,6 +101,20 @@ def pc_synchronize_allocine_stocks():
         process = subprocess.Popen(
             'PYTHONPATH="." python scripts/pc.py update_providables_by_provider_id --provider-id '
             + str(allocine_stocks_provider_id),
+            shell=True,
+            cwd=API_ROOT_PATH)
+        output, error = process.communicate()
+        logger.info(StringIO(output))
+        logger.info(StringIO(error))
+
+
+@log_cron
+def pc_synchronize_libraires_stocks():
+    with app.app_context():
+        libraires_stocks_provider_id = get_provider_by_local_class(LIBRAIRES_STOCKS_PROVIDER_NAME).id
+        process = subprocess.Popen(
+            'PYTHONPATH="." python scripts/pc.py update_providables_by_provider_id --provider-id '
+            + str(libraires_stocks_provider_id),
             shell=True,
             cwd=API_ROOT_PATH)
         output, error = process.communicate()
@@ -189,6 +204,10 @@ if __name__ == '__main__':
     if feature_cron_synchronize_allocine_stocks():
         scheduler.add_job(pc_synchronize_allocine_stocks, 'cron', id='synchronize_allocine_stocks',
                           day='*', hour='23')
+
+    if feature_cron_synchronize_libraires_stocks():
+        scheduler.add_job(pc_synchronize_libraires_stocks, 'cron', id='synchronize_libraires_stocks',
+                          day='*', hour='22')
 
     if feature_cron_send_remedial_emails():
         scheduler.add_job(pc_send_remedial_emails, 'cron', id='send_remedial_emails', minute='*/15')

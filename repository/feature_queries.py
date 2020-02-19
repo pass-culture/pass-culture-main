@@ -83,6 +83,10 @@ def feature_cron_synchronize_allocine_stocks() -> bool:
     return os.environ.get('CRON_SYNCHRONIZE_ALLOCINE_STOCKS', False)
 
 
+def feature_cron_synchronize_libraires_stocks() -> bool:
+    return os.environ.get('CRON_SYNCHRONIZE_LIBRAIRES_STOCKS', False)
+
+
 def feature_cron_send_remedial_emails() -> bool:
     return os.environ.get('CRON_SEND_REMEDIAL_EMAILS', False)
 
