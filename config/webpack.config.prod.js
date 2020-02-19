@@ -113,6 +113,15 @@ module.exports = {
   optimization: {
     minimize: true,
     minimizer: [new TerserPlugin()],
+    splitChunks: {
+      chunks: 'async',
+      minSize: 30000,
+      maxSize: 0,
+      minChunks: 1,
+      maxAsyncRequests: 6,
+      maxInitialRequests: 4,
+      automaticNameDelimiter: '~',
+    }
   },
   output: {
     chunkFilename: 'static/js/[name].[chunkhash:8].chunk.js',

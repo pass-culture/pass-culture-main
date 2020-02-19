@@ -10,7 +10,7 @@ jest.mock('../../../../../../utils/geolocation', () => ({
   navigationLink: jest.fn()
 }))
 
-describe('src | components | layout | Verso | verso-content | VersoContentOffer | VersoContentOffer', () => {
+describe('components | VersoContentOffer', () => {
   let offer
 
   beforeEach(() => {
@@ -140,7 +140,7 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
     const props = {
       bookables: [
         { bookinglimitDatetime: '2019-04-01', id: 1 },
-        { bookinglimitDatetime: '2019-04-01', id: 2 }
+        { bookinglimitDatetime: '2019-04-09', id: 2 }
       ],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
@@ -167,6 +167,30 @@ describe('src | components | layout | Verso | verso-content | VersoContentOffer 
       bookables: [
         { bookinglimitDatetime: undefined, id: 1 },
         { bookinglimitDatetime: undefined, id: 2 }
+      ],
+      distance: '1',
+      handleRequestMusicAndShowTypes: jest.fn(),
+      isNotBookable: false,
+      maxShownDates: 1,
+      offer,
+      userGeolocation: {
+        latitude: null,
+        longitude: null
+      }
+    }
+
+    // when
+    const wrapper = shallow(<VersoContentOffer {...props} />)
+
+    // then
+    const liElements = wrapper.find('.dates-info').find('li')
+    expect(liElements.at(0).text()).toBe('Dès maintenant')
+  })
+
+  it('should render thing offer infos when offer is thing but not bookable', () => {
+    // given
+    const props = {
+      bookables: [
       ],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),

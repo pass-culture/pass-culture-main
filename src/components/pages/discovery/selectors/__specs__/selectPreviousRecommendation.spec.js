@@ -1,13 +1,12 @@
 import selectPreviousRecommendation from '../selectPreviousRecommendation'
 
-describe('src | components | pages | discovery | selectors | selectPreviousRecommendation', () => {
-  it('should select the previous indexified recommendation', () => {
+describe('components | selectPreviousRecommendation', () => {
+  it('should return the previous recommendation when exist', () => {
     // given
-    const offerId = 'AE'
     const currentRecommendation = {
-      productOrTutoIdentifier: 'foo',
       id: 'BF',
-      offerId,
+      productOrTutoIdentifier: 'foo',
+      offerId: 'AE',
     }
     const previousRecommendation = {
       productOrTutoIdentifier: 'bar',
@@ -20,14 +19,50 @@ describe('src | components | pages | discovery | selectors | selectPreviousRecom
     }
 
     // when
-    const result = selectPreviousRecommendation(state, offerId)
+    const result = selectPreviousRecommendation(state, 'AE')
 
     // then
-    const expected = {
+    expect(result).toStrictEqual({
       index: 0,
+      offerId: 'BF',
       path: `/decouverte/${previousRecommendation.offerId}/`,
-      ...previousRecommendation,
+      productOrTutoIdentifier: 'bar'
+    })
+  })
+
+  it('should not return previous recommendation when not exist', () => {
+    // given
+    const currentRecommendation = {
+      id: 'BF',
+      productOrTutoIdentifier: 'foo',
+      offerId: 'AE',
     }
-    expect(result).toStrictEqual(expected)
+    const state = {
+      data: {
+        recommendations: [currentRecommendation],
+      },
+    }
+
+    // when
+    const result = selectPreviousRecommendation(state, 'AE')
+
+    // then
+    expect(result).toBeNull()
+  })
+
+  it('should return null when no current recommendation', () => {
+    // given
+    const currentRecommendation = {}
+    const state = {
+      data: {
+        recommendations: [currentRecommendation],
+      },
+    }
+
+    // when
+    const result = selectPreviousRecommendation(state, 'AE')
+
+    // then
+    expect(result).toBeNull()
   })
 })

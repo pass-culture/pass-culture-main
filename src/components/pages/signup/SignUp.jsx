@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
-import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
 import { requestData } from 'redux-thunk-data'
 
 import CheckBoxField from '../../forms/inputs/CheckBoxField'
@@ -9,6 +8,7 @@ import EmailField from '../../forms/inputs/EmailField'
 import InputField from '../../forms/inputs/InputField'
 import PasswordField from '../../forms/inputs/PasswordField'
 import FormFooter from './FormFooter/FormFooter'
+import { getCanSubmit, parseSubmitErrors } from '../../../utils/react-form-utils/functions'
 
 class SignUp extends PureComponent {
   constructor(props) {

@@ -1,33 +1,18 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { assignData, deleteData, requestData } from 'redux-thunk-data'
-import isEmpty from 'lodash.isempty'
-
+import { saveLastRecommendationsRequestTimestamp } from '../../../reducers/data'
+import { updatePage, updateSeed, updateSeedLastRequestTimestamp } from '../../../reducers/pagination'
+import { selectReadRecommendations } from '../../../selectors/data/readRecommendationsSelectors'
+import { selectRecommendations } from '../../../selectors/data/recommendationsSelectors'
+import { selectPage, selectSeed, selectSeedLastRequestTimestamp } from '../../../selectors/pagination/paginationSelector'
+import getOfferIdAndMediationIdApiPathQueryString, { DEFAULT_VIEW_IDENTIFIERS } from '../../../utils/getOfferIdAndMediationIdApiPathQueryString'
+import { recommendationNormalizer } from '../../../utils/normalizers'
+import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 import Discovery from './Discovery'
-import {
-  checkIfShouldReloadRecommendationsBecauseOfLongTime,
-  isDiscoveryStartupUrl,
-} from './utils/utils'
 import selectCurrentRecommendation from './selectors/selectCurrentRecommendation'
 import selectTutorials from './selectors/selectTutorials'
-import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
-import getOfferIdAndMediationIdApiPathQueryString, {
-  DEFAULT_VIEW_IDENTIFIERS,
-} from '../../../utils/getOfferIdAndMediationIdApiPathQueryString'
-import { saveLastRecommendationsRequestTimestamp } from '../../../reducers/data'
-import { recommendationNormalizer } from '../../../utils/normalizers'
-import { selectRecommendations } from '../../../selectors/data/recommendationsSelectors'
-import { selectReadRecommendations } from '../../../selectors/data/readRecommendationsSelectors'
-import {
-  selectPage,
-  selectSeed,
-  selectSeedLastRequestTimestamp,
-} from '../../../selectors/pagination/paginationSelector'
-import {
-  updatePage,
-  updateSeed,
-  updateSeedLastRequestTimestamp,
-} from '../../../reducers/pagination'
+import { checkIfShouldReloadRecommendationsBecauseOfLongTime, isDiscoveryStartupUrl } from './utils/utils'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
@@ -77,7 +62,8 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
     let queryParams = getOfferIdAndMediationIdApiPathQueryString(match, currentRecommendation)
 
     let newPage = page
-    if (!isEmpty(currentRecommendation)) {
+    const currentRecommendationIsNotEmpty = currentRecommendation && Object.keys(currentRecommendation).length > 0
+    if (currentRecommendationIsNotEmpty) {
       if (!DEFAULT_VIEW_IDENTIFIERS.includes(currentRecommendation.mediationId)) {
         newPage = page + 1
       }

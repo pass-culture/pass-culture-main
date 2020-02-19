@@ -1,4 +1,3 @@
-import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import Draggable from 'react-draggable'
@@ -56,7 +55,7 @@ class Deck extends PureComponent {
       width,
     } = this.props
 
-    const index = get(currentRecommendation, 'index', 0)
+    const index = currentRecommendation && currentRecommendation.index || 0
     const offset = (data.x + width * index) / width
 
     if (data.y > height * verticalSlideRatio) {
@@ -194,10 +193,11 @@ class Deck extends PureComponent {
         data-nb-recos={nbRecommendations}
         id="deck"
       >
-        {detailView && <CloseLink
+        {detailView &&
+        <CloseLink
           closeTitle="Fermer"
           closeTo={this.buildCloseToUrl()}
-                       />}
+        />}
 
         {this.renderDraggableCards()}
 

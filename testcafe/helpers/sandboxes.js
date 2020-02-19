@@ -10,10 +10,5 @@ export async function fetchSandbox(moduleName, getterName) {
       Origin: 'http://localhost:3001',
     },
   })
-
-  const obj = await result.json()
-
-  return obj
+  return await result.json()
 }
-
-export default fetchSandbox

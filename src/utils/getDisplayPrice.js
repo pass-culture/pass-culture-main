@@ -1,5 +1,3 @@
-import isEqual from 'lodash.isequal'
-
 const EURO_SYMBOL = '€'
 const SPACE = '\u0020'
 const NO_BREAK_SPACE = '\u00A0'
@@ -34,10 +32,9 @@ const getDisplayPrice = (simplePriceOrPriceRange, freeValue = null) => {
     : [simplePriceOrPriceRange]
 
   const parsedPrices = priceRange.map(valueToNumber)
+  if (parsedPrices.length <= 0) return ''
 
-  if (!parsedPrices.length) return ''
-
-  const isFree = isEqual(priceRange, 0) || isEqual(priceRange, [0])
+  const isFree = priceRange.includes(0)
   if (isFree && freeValue) return freeValue
 
   const pricesWithComma = parsedPrices.map(value => formatToFrenchDecimal(value))

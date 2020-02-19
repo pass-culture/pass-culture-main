@@ -1,13 +1,12 @@
-import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
-import { capitalize } from 'react-final-form-utils'
 
 import { navigationLink } from '../../../../../utils/geolocation'
 import DuoOfferContainer from '../../../DuoOffer/DuoOfferContainer'
 import Icon from '../../../Icon/Icon'
 import getDurationFromMinutes from './utils/getDurationFromMinutes'
 import VersoActionsBar from './VersoActionsBar/VersoActionsBar'
+import { capitalize } from '../../../../../utils/react-form-utils/functions'
 
 const UNKNOWN_DISTANCE = '-'
 
@@ -111,7 +110,8 @@ class VersoContentOffer extends PureComponent {
 
   renderThingOfferDateInfos() {
     const { bookables } = this.props
-    const limitDatetime = get(bookables, '[0].bookinglimitDatetime')
+    const atLeastOneBookable = bookables.length > 0
+    const limitDatetime = atLeastOneBookable ? bookables[0].bookinglimitDatetime : null
 
     return (<li>
       {`Dès maintenant${limitDatetime ? ` et jusqu’au ${limitDatetime}` : ''}`}

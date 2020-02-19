@@ -1,4 +1,3 @@
-import get from 'lodash.get'
 import createCachedSelector from 're-reselect'
 
 import mapArgsToCacheKey from './mapArgsToCacheKey'
@@ -9,30 +8,25 @@ const selectPreviousRecommendation = createCachedSelector(
   selectRecommendationsWithLastFakeReco,
   selectCurrentRecommendation,
   (recommendations, currentRecommendation) => {
-    const previousRecommendation =
-      currentRecommendation &&
-      get(
-        recommendations,
-        recommendations.findIndex(
-          recommendation => recommendation.id === currentRecommendation.id
-        ) - 1
+    let previousRecommendation = null
+    if (currentRecommendation) {
+      const currentRecommendationIndex = recommendations.findIndex(
+        recommendation => recommendation.id === currentRecommendation.id
       )
-
-    if (!previousRecommendation) {
-      return undefined
+      previousRecommendation = currentRecommendation && recommendations[currentRecommendationIndex - 1]
     }
 
-    // path
+    if (!previousRecommendation) {
+      return null
+    }
+
     const { mediationId, offerId } = previousRecommendation
     const path = `/decouverte/${offerId}/${mediationId || ''}`
 
-    // return
-    return Object.assign(
-      {
-        path,
-      },
-      previousRecommendation
-    )
+    return {
+      path,
+      ...previousRecommendation
+    }
   }
 )(mapArgsToCacheKey)
 

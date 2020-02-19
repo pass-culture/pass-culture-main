@@ -1,4 +1,3 @@
-import get from 'lodash.get'
 import moment from 'moment'
 import createCachedSelector from 're-reselect'
 import { createSelector } from 'reselect'
@@ -187,14 +186,12 @@ export const selectBookingByRouterMatch = createCachedSelector(
 
     if (offer) {
       const stocks = selectStocksByOfferId({ data: { stocks: allStocks } }, offer.id)
-      const firstMatchingBooking = selectFirstMatchingBookingByOfferId(
+      return selectFirstMatchingBookingByOfferId(
         {
           data: { bookings, stocks },
         },
         offer.id
       )
-
-      return firstMatchingBooking
     }
   }
 )((state, match) => {
@@ -209,7 +206,7 @@ export const selectBookables = createCachedSelector(
   (state, offer) => offer,
   (bookings, allStocks, offer) => {
     let { venue } = offer || {}
-    const stocks = selectStocksByOfferId({ data: { stocks: allStocks } }, get(offer, 'id'))
+    const stocks = selectStocksByOfferId({ data: { stocks: allStocks } }, offer && offer.id)
     const { departementCode } = venue || {}
     const tz = getTimezone(departementCode)
 
@@ -226,6 +223,5 @@ export const selectBookables = createCachedSelector(
     )(stocks)
   }
 )((state, offer) => {
-  const key = (offer && offer.id) || ' '
-  return key
+  return (offer && offer.id) || ' '
 })

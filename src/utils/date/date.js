@@ -2,7 +2,7 @@ import moment from 'moment'
 import 'moment-timezone'
 
 import { getTimezone } from '../timezone'
-import { capitalize } from 'react-final-form-utils'
+import { capitalize } from '../react-form-utils/functions'
 
 const PASS_CULTURE_YEARS_VALIDITY = 2
 

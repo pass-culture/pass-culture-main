@@ -1,4 +1,3 @@
-import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'
 import React, { createRef, PureComponent } from 'react'
 
@@ -15,7 +14,7 @@ class Verso extends PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    const propsHaveBeenUpdated = !isEqual(prevProps, this.props)
+    const propsHaveBeenUpdated = prevProps !== this.props
 
     if (propsHaveBeenUpdated) {
       this.versoWrapper.current.scrollTop = 0
