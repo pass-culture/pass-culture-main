@@ -193,22 +193,6 @@ class Put:
             assert response.json['booking'] == ["Impossible d'annuler une réservation consommée"]
             assert not Booking.query.get(booking.id).isCancelled
 
-        @clean_database
-        def when_trying_to_revert_cancellation(self, app):
-            # Given
-            user = create_user()
-            booking = create_booking(user=user, is_cancelled=True)
-            create_deposit(user, amount=500)
-            repository.save(booking)
-
-            # When
-            response = TestClient(app.test_client()) \
-                .with_auth(user.email) \
-                .put(f'/bookings/{humanize(booking.id)}/cancel')
-
-            # Then
-            assert response.status_code == 400
-            assert Booking.query.get(booking.id).isCancelled
 
         @clean_database
         def when_event_beginning_date_time_is_in_less_than_72_hours(self, app):
@@ -266,3 +250,21 @@ class Put:
 
             # Then
             assert response.status_code == 404
+
+    class Returns410:
+        @clean_database
+        def when_trying_to_revert_cancellation(self, app):
+            # Given
+            user = create_user()
+            booking = create_booking(user=user, is_cancelled=True)
+            create_deposit(user, amount=500)
+            repository.save(booking)
+
+            # When
+            response = TestClient(app.test_client()) \
+                .with_auth(user.email) \
+                .put(f'/bookings/{humanize(booking.id)}/cancel')
+
+            # Then
+            assert response.status_code == 410
+            assert Booking.query.get(booking.id).isCancelled
