@@ -67,6 +67,11 @@ def send_beneficiary_booking_cancellation_email(booking: Booking, send_email: Ca
     send_email(data=beneficiary_booking_cancellation_email_data)
 
 
+def send_user_driven_cancellation_email_to_offerer(booking: Booking, send_email: Callable[..., bool]) -> bool:
+    recipients = _build_recipients_list(booking)
+    mailjet_data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking, recipients)
+    return send_email(data=mailjet_data)
+
 def send_offerer_driven_cancellation_email_to_offerer(booking: Booking, send_email: Callable[..., bool]) -> bool:
     offerer_email = booking.stock.resolvedOffer.bookingEmail
     recipients = []
@@ -76,11 +81,6 @@ def send_offerer_driven_cancellation_email_to_offerer(booking: Booking, send_ema
     email = make_offerer_driven_cancellation_email_for_offerer(booking)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)
-
-def send_user_driven_cancellation_email_to_offerer(booking: Booking, send_email: Callable[..., bool]) -> bool:
-    recipients = _build_recipients_list(booking)
-    mailjet_data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking, recipients)
-    return send_email(data=mailjet_data)
 
 
 def send_warning_to_beneficiary_after_pro_booking_cancellation(booking: Booking,

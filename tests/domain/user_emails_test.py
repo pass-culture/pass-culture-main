@@ -95,11 +95,9 @@ class SendOffererDrivenCancellationEmailToOffererTest:
 class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
     @clean_database
     @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
-    @patch('domain.user_emails.send_user_driven_cancellation_email_to_offerer', return_value={'Html-part': ''})
     @patch('emails.beneficiary_offer_cancellation.feature_send_mail_to_users_enabled', return_value=True)
     def test_should_send_booking_cancellation_email_to_offerer_and_administration_when_booking_email_provided(self,
-                                                                                                              feature_send_mail_to_users_enabled,
-                                                                                                              mock_send_user_driven_cancellation_email_to_offerer,
+                                                                                                              mock_feature_send_mail_to_users_enabled,
                                                                                                               app):
         # Given
         user = create_user(email='user@example.com')
@@ -123,11 +121,9 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
 
     @clean_database
     @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
-    @patch('domain.user_emails.send_user_driven_cancellation_email_to_offerer', return_value={'Html-part': ''})
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('emails.beneficiary_offer_cancellation.feature_send_mail_to_users_enabled', return_value=True)
     def test_should_send_booking_cancellation_email_only_to_administration_when_no_booking_email_provided(self,
-                                                                                                          feature_send_mail_to_users_enabled,
-                                                                                                          mock_send_user_driven_cancellation_email_to_offerer,
+                                                                                                          mock_feature_send_mail_to_users_enabled,
                                                                                                           app):
         # Given
         user = create_user(email='user@example.com')
@@ -153,7 +149,8 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
 class SendWarningToBeneficiaryAfterProBookingCancellationTest:
     @patch('emails.beneficiary_warning_after_pro_booking_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('emails.beneficiary_warning_after_pro_booking_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    def test_should_sends_email_to_beneficiary_when_pro_cancels_booking(self):
+    @patch('emails.beneficiary_warning_after_pro_booking_cancellation.feature_send_mail_to_users_enabled', return_value=True)
+    def test_should_sends_email_to_beneficiary_when_pro_cancels_booking(self, mock_feature_send_mail_to_users_enabled):
         # Given
         user = create_user(email='user@example.com')
         booking = create_booking(user=user)
@@ -187,9 +184,13 @@ class SendWarningToBeneficiaryAfterProBookingCancellationTest:
 
 
 class SendBookingConfirmationEmailToBeneficiaryTest:
+    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     @patch('domain.user_emails.retrieve_data_for_beneficiary_booking_confirmation_email',
            return_value={'MJ-TemplateID': 1163067})
-    def when_called_calls_send_email(self, mocked_retrieve_data_for_beneficiary_booking_confirmation_email):
+    def when_called_calls_send_email(self,
+                                     mocked_retrieve_data_for_beneficiary_booking_confirmation_email,
+                                     mock_feature_send_mail_to_users_enabled
+                                     ):
         # Given
         user = create_user()
         booking = create_booking(user=user, idx=23)
@@ -204,8 +205,8 @@ class SendBookingConfirmationEmailToBeneficiaryTest:
 
 
 class SendBookingRecapEmailsTest:
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False)
     @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False)
     def when_feature_send_mail_to_users_disabled_sends_email_to_pass_culture_dev(self,
                                                                                  mock_feature_send_mail_to_users_enabled,
                                                                                  app):
@@ -276,9 +277,9 @@ class SendBookingRecapEmailsTest:
 
 
 class SendFinalBookingRecapEmailTest:
+    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('domain.user_emails.set_booking_recap_sent_and_save')
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False)
-    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     def when_feature_send_mail_to_users_disabled_sends_email_to_pass_culture_dev(self,
                                                                                  mock_feature_send_mail_to_users_enabled,
                                                                                  mock_set_booking_recap_sent_and_save,
@@ -302,7 +303,7 @@ class SendFinalBookingRecapEmailTest:
     @patch('domain.user_emails.set_booking_recap_sent_and_save')
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_feature_send_mail_to_users_enabled_and_offer_booking_email_sends_to_offerer_and_support(self,
-                                                                                                     feature_send_mail_to_users_enabled,
+                                                                                                     mock_feature_send_mail_to_users_enabled,
                                                                                                      mock_set_booking_recap_sent_and_save):
         # given
         offerer = create_offerer()
@@ -324,7 +325,7 @@ class SendFinalBookingRecapEmailTest:
     @patch('domain.user_emails.set_booking_recap_sent_and_save')
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_feature_send_mail_to_users_enabled_and_not_offer_booking_email_sends_only_to_administration(self,
-                                                                                                         feature_send_mail_to_users_enabled,
+                                                                                                         mock_feature_send_mail_to_users_enabled,
                                                                                                          mock_set_booking_recap_sent_and_save):
         # given
         offerer = create_offerer()

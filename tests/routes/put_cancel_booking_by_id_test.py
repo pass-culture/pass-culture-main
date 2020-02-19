@@ -104,11 +104,11 @@ class Put:
             mock_add_offer_id_to_redis.assert_called_once_with(client=app.redis_client, offer_id=booking.stock.offerId)
 
         @clean_database
-        @patch('routes.bookings.send_cancellation_emails_to_user_and_offerer', return_value=True)
+        @patch('routes.bookings.send_booking_cancellation_emails_to_user_and_offerer', return_value=True)
         @patch('routes.bookings.send_raw_email', return_value=True)
         def when_cancel_by_offerer_should_send_email_to_beneficiary_user(self,
                                                               mock_send_raw_email,
-                                                              mock_send_cancellation_emails_to_user_and_offerer,
+                                                              mock_send_booking_cancellation_emails_to_user_and_offerer,
                                                               app):
             # Given
             offerer_user = create_user(can_book_free_offers=False, is_admin=False)
@@ -134,16 +134,16 @@ class Put:
 
             # Then
             assert response.status_code == 200
-            mock_send_cancellation_emails_to_user_and_offerer.assert_called_once_with(booking,
+            mock_send_booking_cancellation_emails_to_user_and_offerer.assert_called_once_with(booking,
                                                                                       is_offerer_cancellation,
                                                                                       is_user_cancellation,
                                                                                       mock_send_raw_email)
         @clean_database
-        @patch('routes.bookings.send_cancellation_emails_to_user_and_offerer', return_value=True)
+        @patch('routes.bookings.send_booking_cancellation_emails_to_user_and_offerer', return_value=True)
         @patch('routes.bookings.send_raw_email', return_value=True)
         def when_cancel_by_beneficiary_should_send_email_to_offerer_user(self,
                                                               mock_send_raw_email,
-                                                              mock_send_cancellation_emails_to_user_and_offerer,
+                                                              mock_send_booking_cancellation_emails_to_user_and_offerer,
                                                               app):
             # Given
             offerer_user = create_user(can_book_free_offers=False, is_admin=False)
@@ -169,7 +169,7 @@ class Put:
 
             # Then
             assert response.status_code == 200
-            mock_send_cancellation_emails_to_user_and_offerer.assert_called_once_with(booking,
+            mock_send_booking_cancellation_emails_to_user_and_offerer.assert_called_once_with(booking,
                                                                                       is_offerer_cancellation,
                                                                                       is_user_cancellation,
                                                                                       mock_send_raw_email)
