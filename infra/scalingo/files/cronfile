@@ -18,7 +18,7 @@
 
 # Restore dump functions
 # ------------------
-0 23 * * 1 . $HOME/.profile; cd ~/pass-culture-main && ./pc_new_region -e testing sandbox --name=testing
+0 23 * * 1 . $HOME/.profile; cd ~/pass-culture-main && ./pc_new_region -e testing sandbox --name=testing 2>&1 | tee /var/log/restore/pass-culture-api-testing.log
 
 45 1 * * * . $HOME/.profile; SCALINGO_REGION=osc-fr1 manage_backups.sh -a pass-culture-api-datalake -r osc-fr1 -dz 2>&1 | tee /var/log/restore/pass-culture-api-datalake.log
 
