@@ -174,7 +174,7 @@ def make_offerer_booking_recap_email_after_user_action(booking: Booking, is_canc
 
 
 def make_validation_email_object(offerer: Offerer, user_offerer: UserOfferer,
-                                  get_by_siren=api_entreprises.get_by_offerer) -> Dict:
+                                 get_by_siren=api_entreprises.get_by_offerer) -> Dict:
     vars_obj_user = vars(user_offerer.user)
     vars_obj_user.pop('clearTextPassword', None)
     api_entreprise = get_by_siren(offerer).json()
@@ -240,6 +240,7 @@ def make_venue_to_validate_email(venue: Venue) -> Dict:
         'Subject': '{} - rattachement de lieu pro à valider : {}'.format(venue.departementCode, venue.name),
         'Html-part': html
     }
+
 
 def make_user_validation_email(user: User, app_origin_url: str, is_webapp: bool) -> Dict:
     if is_webapp:
@@ -438,24 +439,6 @@ def make_offer_creation_notification_email(offer: Offer, author: User, pro_origi
         'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'FromName': 'pass Culture',
         'Subject': f'[Création d’offre - {location_information}] {offer.product.name}'
-    }
-
-
-def make_beneficiaries_import_email(new_beneficiaries: List[User], error_messages: List[str]) -> Dict:
-    date_import = datetime.utcnow().strftime('%Y-%m-%d')
-
-    html = render_template(
-        'mails/beneficiaries_import_email.html',
-        number_of_new_beneficiaries=len(new_beneficiaries),
-        error_messages=error_messages,
-        date_import=date_import
-    )
-
-    return {
-        'Subject': 'Import des utilisateurs depuis Démarches Simplifiées %s' % date_import,
-        'FromEmail': DEV_EMAIL_ADDRESS,
-        'FromName': "pass Culture",
-        'Html-part': html
     }
 
 

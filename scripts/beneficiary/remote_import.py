@@ -4,7 +4,6 @@ from datetime import datetime
 from typing import Callable, List
 
 from connectors.api_demarches_simplifiees import get_application_details
-from domain.admin_emails import send_remote_beneficiaries_import_report_email
 from domain.demarches_simplifiees import get_all_application_ids_for_procedure
 from domain.user_activation import create_beneficiary_from_application
 from domain.user_emails import send_activation_email
@@ -15,7 +14,7 @@ from repository.beneficiary_import_queries import is_already_imported, save_bene
     find_applications_ids_to_retry
 from repository.user_queries import find_by_civility, find_user_by_email
 from utils.logger import logger
-from utils.mailing import send_raw_email, parse_email_addresses, DEV_EMAIL_ADDRESS
+from utils.mailing import send_raw_email
 
 TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_TOKEN', None)
 PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID', None)
@@ -54,9 +53,6 @@ def run(
         if not already_imported(information['application_id']):
             process_beneficiary_application(information, error_messages, new_beneficiaries, retry_ids)
 
-    REPORT_RECIPIENTS = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_REPORT_RECIPIENTS', DEV_EMAIL_ADDRESS)
-    recipients = parse_email_addresses(REPORT_RECIPIENTS)
-    send_remote_beneficiaries_import_report_email(new_beneficiaries, error_messages, recipients, send_raw_email)
     logger.info('[BATCH][REMOTE IMPORT BENEFICIARIES] End import from Démarches Simplifiées')
 
 

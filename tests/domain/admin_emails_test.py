@@ -2,9 +2,7 @@ from unittest.mock import Mock, patch, MagicMock
 
 from domain.admin_emails import maybe_send_offerer_validation_email, send_venue_validation_email, \
     send_payment_details_email, send_wallet_balances_email, send_payments_report_emails, \
-    send_offer_creation_notification_to_administration, send_payment_message_email, \
-    send_remote_beneficiaries_import_report_email
-from models import User
+    send_offer_creation_notification_to_administration, send_payment_message_email
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
 from tests.model_creators.specific_creators import create_offer_with_thing_product
 from utils.mailing import MailServiceException
@@ -365,48 +363,3 @@ class SendPaymentMessageEmailTest:
 
         # then
         assert not successfully_sent
-
-
-@patch('utils.mailing.feature_send_mail_to_users_enabled')
-class SendRemoteBeneficiariesImportReportEmailTest:
-    def test_returns_true_if_email_was_sent(self, send_is_enabled):
-        # given
-        mocked_send_email = Mock()
-        mocked_send_email.return_value = True
-        new_beneficiaries = [User(), User()]
-        error_messages = ['erreur import 1', 'erreur import 2']
-        recipient = 'send@report.to'
-        send_is_enabled.return_value = True
-
-        # when
-        successfully_sent = send_remote_beneficiaries_import_report_email(
-            new_beneficiaries, error_messages, recipient, mocked_send_email
-        )
-
-        # then
-        assert successfully_sent
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        email = args[1]['data']
-        assert email['To'] == recipient
-
-    def test_returns_false_if_email_was_not_sent(self, send_is_enabled):
-        # given
-        mocked_send_email = Mock()
-        mocked_send_email.return_value = False
-        new_beneficiaries = [User(), User()]
-        error_messages = ['erreur import 1', 'erreur import 2']
-        recipient = 'send@report.to'
-        send_is_enabled.return_value = True
-
-        # when
-        successfully_sent = send_remote_beneficiaries_import_report_email(
-            new_beneficiaries, error_messages, recipient, mocked_send_email
-        )
-
-        # then
-        assert not successfully_sent
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        email = args[1]['data']
-        assert email['To'] == recipient

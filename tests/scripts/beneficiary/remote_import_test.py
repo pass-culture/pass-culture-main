@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from unittest.mock import Mock, patch, ANY
+from unittest.mock import Mock, patch
 
 from mailjet_rest import Client
 
@@ -22,9 +22,8 @@ ONE_WEEK_AGO = NOW - timedelta(days=7)
 
 
 class RunTest:
-    @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
-    def test_all_applications_are_processed_once(self, process_beneficiary_application, send_report_email):
+    def test_all_applications_are_processed_once(self, process_beneficiary_application):
         # given
         get_all_application_ids = Mock(return_value=[123, 456, 789])
         find_applications_ids_to_retry = Mock(return_value=[])
@@ -52,9 +51,8 @@ class RunTest:
         # then
         assert process_beneficiary_application.call_count == 3
 
-    @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
-    def test_applications_to_retry_are_processed(self, process_beneficiary_application, send_report_email):
+    def test_applications_to_retry_are_processed(self, process_beneficiary_application):
         # given
         get_all_application_ids = Mock(return_value=[123])
         find_applications_ids_to_retry = Mock(return_value=[456, 789])
@@ -82,40 +80,13 @@ class RunTest:
         # then
         assert process_beneficiary_application.call_count == 3
 
-    @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
-    @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
-    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_REPORT_RECIPIENTS': 'send@report.to'})
-    def test_a_report_email_is_sent(self, process_beneficiary_application, send_report_email):
-        # given
-        get_all_application_ids = Mock(return_value=[123])
-        find_applications_ids_to_retry = Mock(return_value=[])
-
-        get_details = Mock(
-            side_effect=[make_application_detail(123, 'closed')])
-        has_already_been_imported = Mock(return_value=False)
-        has_already_been_created = Mock(return_value=False)
-
-        # when
-        remote_import.run(
-            ONE_WEEK_AGO,
-            get_all_applications_ids=get_all_application_ids,
-            get_applications_ids_to_retry=find_applications_ids_to_retry,
-            get_details=get_details,
-            already_imported=has_already_been_imported,
-            already_existing_user=has_already_been_created
-        )
-
-        # then
-        send_report_email.assert_called_with([], [], ['send@report.to'], ANY)
-
-    @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
     @patch('scripts.beneficiary.remote_import.parse_beneficiary_information')
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_REPORT_RECIPIENTS': 'send@report.to'})
     @clean_database
     def test_an_error_status_is_saved_when_an_application_is_not_parsable(
             self,
             parse_beneficiary_information,
-            send_report_email, app
+            app
     ):
         # given
         get_all_application_ids = Mock(return_value=[123])
@@ -142,11 +113,10 @@ class RunTest:
         assert beneficiary_import.demarcheSimplifieeApplicationId == 123
         assert beneficiary_import.detail == 'Le dossier 123 contient des erreurs et a été ignoré'
 
-    @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
     def test_application_with_known_demarche_simplifiee_application_id_are_not_processed(self,
-                                                                                         process_beneficiary_application,
-                                                                                         send_report_email):
+                                                                                         process_beneficiary_application
+                                                                                         ):
         # given
         get_all_application_ids = Mock(return_value=[123, 456])
         find_applications_ids_to_retry = Mock(return_value=[])
@@ -170,12 +140,11 @@ class RunTest:
         # then
         process_beneficiary_application.assert_not_called()
 
-    @patch('scripts.beneficiary.remote_import.send_remote_beneficiaries_import_report_email')
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
     @clean_database
     def test_application_with_known_email_are_saved_as_rejected(self,
                                                                 process_beneficiary_application,
-                                                                send_report_email, app):
+                                                                app):
         # given
         get_all_application_ids = Mock(return_value=[123])
         find_applications_ids_to_retry = Mock(return_value=[])

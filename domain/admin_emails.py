@@ -1,10 +1,10 @@
-from typing import Dict, List, Callable, Union
+from typing import Dict, List, Callable
 
 from models import Offer, User, Offerer, UserOfferer, Venue
 from utils.mailing import make_validation_email_object, make_payment_message_email, \
     make_venue_to_validate_email, compute_email_html_part_and_recipients, make_payment_details_email, \
     make_payments_report_email, make_wallet_balances_email, make_offer_creation_notification_email, \
-    make_beneficiaries_import_email, make_activation_users_email, \
+    make_activation_users_email, \
     ADMINISTRATION_EMAIL_ADDRESS
 
 
@@ -37,7 +37,8 @@ def send_wallet_balances_email(csv_attachment: str, recipients: List[str], send_
     return send_email(data=email)
 
 
-def send_users_activation_report(csv_attachment: str, recipients: List[str], send_email: Callable[[dict], bool]) -> bool:
+def send_users_activation_report(csv_attachment: str, recipients: List[str],
+                                 send_email: Callable[[dict], bool]) -> bool:
     email = make_activation_users_email(csv_attachment)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients("", recipients)
     return send_email(data=email)
@@ -61,11 +62,4 @@ def send_offer_creation_notification_to_administration(offer: Offer, author: Use
                                                        send_email: Callable[[dict], bool]) -> bool:
     email = make_offer_creation_notification_email(offer, author, app_origin_url)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], email['To'])
-    return send_email(data=email)
-
-
-def send_remote_beneficiaries_import_report_email(new_beneficiaries: List[User], error_messages: List[str],
-                                                  recipients: Union[List, str], send_email: Callable[[dict], bool]) -> bool:
-    email = make_beneficiaries_import_email(new_beneficiaries, error_messages)
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)

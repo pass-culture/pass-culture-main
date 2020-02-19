@@ -156,7 +156,6 @@ def pc_send_remedial_emails():
 @log_cron
 def pc_remote_import_beneficiaries():
     with app.app_context():
-        app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
         import_from_date = find_most_recent_beneficiary_creation_date()
         remote_import.run(import_from_date)
 
