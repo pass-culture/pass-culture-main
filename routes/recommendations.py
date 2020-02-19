@@ -1,5 +1,3 @@
-import random
-
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
@@ -97,16 +95,10 @@ def put_recommendations():
     logger.debug(lambda: '(special) requested_recommendation %s' %
                          requested_recommendation)
 
-    request_page = request.args.get('page')
-    request_seed = request.args.get('seed')
-    pagination_params = {
-        'page': DEFAULT_PAGE if request_page is None else int(request_page),
-        'seed': random.random() if request_seed is None else float(request_seed)
-    }
-
     created_recommendations = create_recommendations_for_discovery(limit=BLOB_SIZE,
                                                                    user=current_user,
-                                                                   pagination_params=pagination_params)
+                                                                   seen_recommendation_ids=request.json[
+                                                                       'seenRecommendationIds'])
 
     logger.debug(lambda: '(new recos)' + str([(reco, reco.mediation, reco.dateRead)
                                               for reco in created_recommendations]))
