@@ -74,10 +74,9 @@ class FindAllOffererBookingsByVenueIdTest:
         bookings = booking_queries.find_all_bookings_info(offerer1.id, venue_id=venue1.id)
 
         # then
-        ordered_bookings_by_quantity = sorted(bookings, key=lambda booking: booking.quantity)
-        assert len(ordered_bookings_by_quantity) == 2
-        assert ordered_bookings_by_quantity[0].quantity == booking1.quantity
-        assert ordered_bookings_by_quantity[1].quantity == booking2.quantity
+        assert len(bookings) == 2
+        assert booking1 in bookings
+        assert booking2 in bookings
 
     @clean_database
     def test_returns_bookings_on_given_venue_and_thing_offer_and_date(self, app):
@@ -131,8 +130,8 @@ class FindAllOffererBookingsByVenueIdTest:
 
         # then
         assert len(bookings) == 2
-        assert bookings[0].quantity == target_booking_1.quantity
-        assert bookings[1].quantity == target_booking_2.quantity
+        assert target_booking_1 in bookings
+        assert target_booking_2 in bookings
 
     @clean_database
     def test_returns_bookings_on_given_venue_and_event_offer_and_date(self, app):
@@ -175,8 +174,7 @@ class FindAllOffererBookingsByVenueIdTest:
                                                           date_to='2020-05-01T20:00:00.000Z')
 
         # then
-        assert len(bookings) == 1
-        assert bookings[0].quantity == target_booking.quantity
+        assert [target_booking] == bookings
 
     @clean_database
     def test_should_return_only_expected_attributes(self, app):
@@ -197,17 +195,17 @@ class FindAllOffererBookingsByVenueIdTest:
         bookings = booking_queries.find_all_bookings_info(offerer.id)
 
         # Then
-        assert len(bookings) == 1
-        assert bookings[0] == (datetime(2018, 1, 29),
-                               1,
-                               Decimal('9.90'),
-                               False,
-                               True,
-                               'La petite librairie',
-                               'Test Book',
-                               'Doe',
-                               'John',
-                               'john.doe@example.com')
+        assert bookings == [(booking.id,
+                             datetime(2018, 1, 29),
+                             1,
+                             Decimal('9.90'),
+                             False,
+                             True,
+                             'La petite librairie',
+                             'Test Book',
+                             'Doe',
+                             'John',
+                             'john.doe@example.com')]
 
 
 class FindAllDigitalBookingsForOffererTest:
@@ -235,8 +233,7 @@ class FindAllDigitalBookingsForOffererTest:
         bookings = booking_queries.find_all_bookings_info(offerer1.id, only_digital_venues=True)
 
         # then
-        assert len(bookings) == 1
-        assert bookings[0].quantity == booking_for_digital.quantity
+        assert [booking_for_digital] == bookings
 
     @clean_database
     def test_returns_only_bookings_for_specified_offerer(self, app):
@@ -265,8 +262,7 @@ class FindAllDigitalBookingsForOffererTest:
         bookings = booking_queries.find_all_bookings_info(target_offerer.id, only_digital_venues=True)
 
         # then
-        assert len(bookings) == 1
-        assert bookings[0].quantity == target_booking.quantity
+        assert [target_booking] == bookings
 
     @clean_database
     def test_returns_only_bookings_for_specified_offerer_and_offer(self, app):
@@ -288,8 +284,7 @@ class FindAllDigitalBookingsForOffererTest:
                                                           only_digital_venues=True)
 
         # Then
-        assert len(bookings) == 1
-        assert bookings[0].quantity == booking2.quantity
+        assert [booking2] == bookings
 
     @clean_database
     def test_returns_only_bookings_for_specified_offerer_and_thing_offer_and_booking_date(self, app):
@@ -324,8 +319,8 @@ class FindAllDigitalBookingsForOffererTest:
 
         # then
         assert len(bookings) == 2
-        assert bookings[0].quantity == booking_for_offerer2.quantity
-        assert bookings[1].quantity == booking_for_offerer3.quantity
+        assert booking_for_offerer2 in bookings
+        assert booking_for_offerer3 in bookings
 
 
 @clean_database

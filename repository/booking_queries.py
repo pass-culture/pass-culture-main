@@ -113,7 +113,8 @@ def _filter_bookings_by_dates(query: Query, date_from: Union[datetime, str] = No
 
 
 def _select_only_needed_fields_for_bookings_info(query: Query) -> Query:
-    return query.with_entities(Booking.dateCreated.label('date_created'),
+    return query.with_entities(Booking.id.label('id'),
+                               Booking.dateCreated.label('date_created'),
                                Booking.quantity.label('quantity'),
                                Booking.amount.label('amount'),
                                Booking.isCancelled.label('isCancelled'),
