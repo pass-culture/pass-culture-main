@@ -407,6 +407,26 @@ class CheckStockIsUpdatableTest:
         ]
 
     @clean_database
+    def test_fail_when_offer_is_from_librairesprovider(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        provider = get_provider_by_local_class('LibrairesStocks')
+        offer = create_offer_with_thing_product(venue, last_provider_id=provider.id, last_provider=provider)
+        stock = create_stock(offer=offer, available=10, id_at_providers='test')
+
+        repository.save(stock)
+
+        # When
+        with pytest.raises(ApiErrors) as error:
+            check_stock_is_updatable(stock)
+
+        # Then
+        assert error.value.errors['global'] == [
+            'Les offres importées ne sont pas modifiables'
+        ]
+
+    @clean_database
     def test_does_not_raise_an_error_when_offer_is_not_from_provider(self, app):
         # Given
         offerer = create_offerer()
