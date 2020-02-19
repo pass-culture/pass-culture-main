@@ -40,9 +40,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['DEBUG'] = True
 db.init_app(app)
 
-ALLOCINE_STOCKS_PROVIDER_NAME = "AllocineStocks"
-LIBRAIRES_STOCKS_PROVIDER_NAME = "LibrairesStocks"
-
 RECO_VIEW_REFRESH_FREQUENCY = os.environ.get('RECO_VIEW_REFRESH_FREQUENCY', '*')
 
 
@@ -97,10 +94,10 @@ def pc_send_wallet_balances():
 @log_cron
 def pc_synchronize_allocine_stocks():
     with app.app_context():
-        allocine_stocks_provider_id = get_provider_by_local_class(ALLOCINE_STOCKS_PROVIDER_NAME).id
+        allocine_stocks_provider_id = get_provider_by_local_class("AllocineStocks").id
         process = subprocess.Popen(
-            'PYTHONPATH="." python scripts/pc.py update_providables_by_provider_id --provider-id '
-            + str(allocine_stocks_provider_id),
+            f'PYTHONPATH="." python scripts/pc.py update_providables_by_provider_id'
+            f' --provider-id {allocine_stocks_provider_id}',
             shell=True,
             cwd=API_ROOT_PATH)
         output, error = process.communicate()
@@ -111,10 +108,10 @@ def pc_synchronize_allocine_stocks():
 @log_cron
 def pc_synchronize_libraires_stocks():
     with app.app_context():
-        libraires_stocks_provider_id = get_provider_by_local_class(LIBRAIRES_STOCKS_PROVIDER_NAME).id
+        libraires_stocks_provider_id = get_provider_by_local_class("LibrairesStocks").id
         process = subprocess.Popen(
-            'PYTHONPATH="." python scripts/pc.py update_providables_by_provider_id --provider-id '
-            + str(libraires_stocks_provider_id),
+            f'PYTHONPATH="." python scripts/pc.py update_providables_by_provider_id'
+            f' --provider-id {libraires_stocks_provider_id}',
             shell=True,
             cwd=API_ROOT_PATH)
         output, error = process.communicate()
