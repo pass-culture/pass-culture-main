@@ -191,7 +191,7 @@ class AllocineStocks(LocalProvider):
         if 'poster_url' in self.movie_information:
             image_url = self.movie_information['poster_url']
             return get_movie_poster(image_url)
-        return super().get_object_thumb()
+        return bytes()
 
     def get_object_thumb_index(self) -> int:
         return 1
@@ -213,8 +213,9 @@ def retrieve_movie_information(raw_movie_information: Dict) -> Dict:
     parsed_movie_information['description'] = _build_description(raw_movie_information)
     parsed_movie_information['duration'] = _parse_movie_duration(raw_movie_information['runtime'])
     parsed_movie_information['title'] = raw_movie_information['title']
-    if raw_movie_information['poster']:
-        parsed_movie_information['poster_url'] = _format_poster_url(raw_movie_information['poster']['url'])
+    movie_poster_information = raw_movie_information['poster']
+    if movie_poster_information:
+        parsed_movie_information['poster_url'] = _format_poster_url(movie_poster_information['url'])
     is_stage_director_info_available = len(raw_movie_information['credits']['edges']) > 0
 
     if is_stage_director_info_available:

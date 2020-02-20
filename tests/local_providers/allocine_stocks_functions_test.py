@@ -394,7 +394,7 @@ class FormatNaiveDateToUtcTest:
 
 
 class FindShowtimesByShowtimeUUIDTest:
-    def test_should_filter_on_begining_date(self):
+    def test_should_return_showtime_matching_the_given_beginning_datetime(self):
         # Given
         showtimes = [
             {
