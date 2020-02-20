@@ -28,7 +28,6 @@
     "react-dom": "^16.11.0",
     "react-draggable": "^4.1.0",
     "react-final-form": "^6.3.0",
-    "react-final-form-utils": "1.3.6",
     "react-helmet": "^5.2.1",
     "react-infinite-scroller": "^1.2.4",
     "react-redux": "^7.1.1",

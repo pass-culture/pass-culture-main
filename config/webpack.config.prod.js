@@ -114,17 +114,11 @@ module.exports = {
     minimize: true,
     minimizer: [new TerserPlugin()],
     splitChunks: {
-      chunks: 'async',
-      minSize: 30000,
-      maxSize: 0,
-      minChunks: 1,
-      maxAsyncRequests: 6,
-      maxInitialRequests: 4,
-      automaticNameDelimiter: '~',
+      chunks: 'all'
     }
   },
   output: {
-    chunkFilename: 'static/js/[name].[chunkhash:8].chunk.js',
+    chunkFilename: 'static/js/[name].[chunkhash:8].js',
     filename: 'static/js/[name].[chunkhash:8].js',
     devtoolModuleFilenameTemplate: info =>
       path.relative(paths.appSrc, info.absoluteResourcePath).replace(/\\/g, '/'),
