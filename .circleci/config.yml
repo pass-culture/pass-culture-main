@@ -60,6 +60,33 @@ jobs:
             docker login -u passcultureapp -p $DOCKERHUB_PASSWORD
             docker push passcultureapp/api-flask:latest
 
+  tests-metabase:
+    working_directory: ~/
+    docker:
+      - image: circleci/python:3.7.6
+        environment:
+          DATABASE_URL: postgresql://pass_culture:passq@postgres-product:5432/pass_culture
+      - image: circleci/postgres:11.6-alpine
+        name: postgres-product
+        environment:
+          POSTGRES_USER: pass_culture
+          POSTGRES_PASSWORD: passq
+          POSTGRES_DB: pass_culture
+    steps:
+      - run:
+          name: Initialize environment
+          command: |
+            git clone https://github.com/betagouv/pass-culture-metabase.git
+            cd pass-culture-metabase
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+      - run:
+          name: Running tests
+          command: |
+            . venv/bin/activate
+            pytest tests
+
   functional-tests-webapp:
     machine:
       image: circleci/classic:latest
@@ -206,6 +233,7 @@ workflows:
   version: 2
   commit:
     jobs:
+      - tests-metabase
       - build:
           filters:
             branches:
