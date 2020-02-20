@@ -12,7 +12,7 @@ MODULE_PATH = Path(os.path.dirname(os.path.realpath(__file__)))
 class CheckThumbQualityTest:
     def test_an_error_is_raised_if_the_thumb_width_is_less_than_400_px(self):
         # given
-        with open(MODULE_PATH / '..' / 'files/mouette_portrait.jpg', 'rb') as f:
+        with open(MODULE_PATH / '../..' / 'files/mouette_portrait.jpg', 'rb') as f:
             thumb = f.read()
 
         # when
@@ -24,7 +24,7 @@ class CheckThumbQualityTest:
 
     def test_an_error_is_raised_if_the_thumb_height_is_less_than_400_px(self):
         # given
-        with open(MODULE_PATH / '..' / 'files/mouette_landscape.jpg', 'rb') as f:
+        with open(MODULE_PATH / '../..' / 'files/mouette_landscape.jpg', 'rb') as f:
             thumb = f.read()
 
         # when
@@ -36,7 +36,7 @@ class CheckThumbQualityTest:
 
     def test_no_error_is_raised_if_the_thumb_is_heavier_than_100_ko(self):
         # given
-        with open(MODULE_PATH / '..' / 'files/mouette_full_size.jpg', 'rb') as f:
+        with open(MODULE_PATH / '../..' / 'files/mouette_full_size.jpg', 'rb') as f:
             thumb = f.read()
 
         try:
