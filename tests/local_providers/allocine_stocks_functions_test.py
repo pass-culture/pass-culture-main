@@ -4,7 +4,8 @@ import pytest
 
 from local_providers.allocine_stocks import _parse_movie_duration, retrieve_movie_information, \
     retrieve_showtime_information, _format_poster_url, \
-    _format_date_from_local_timezone_to_utc, _filter_only_digital_and_non_experience_showtimes
+    _format_date_from_local_timezone_to_utc, _filter_only_digital_and_non_experience_showtimes, \
+    _get_showtimes_uuid_by_idAtProvider, _find_showtime_by_showtime_uuid
 
 
 class ParseMovieDurationTest:
@@ -223,6 +224,48 @@ class RetrieveMovieInformationTest:
         with pytest.raises(KeyError):
             retrieve_movie_information(movie_information['node']['movie'])
 
+    def test_should_return_empty_value_when_missing_poster_information(self):
+        # Given
+        movie_information = {
+            "node": {
+                "movie": {
+                    "id": "TW92aWU6Mzc4MzI=",
+                    "backlink": {
+                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
+                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"
+                    },
+                    "internalId": 37832,
+                    "data": {
+                        "eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E",
+                        "productionYear": 2001
+                    },
+                    "title": "Les Contes de la m\u00e8re poule",
+                    "originalTitle": "Les Contes de la m\u00e8re poule",
+                    "runtime": "PT1H50M0S",
+                    "poster": None,
+                    "synopsis": "synopsis du film",
+                    "credits": {
+                        "edges": []
+                    },
+                    "releases": [
+                        {
+                            "name": "Released",
+                            "releaseDate": {
+                                "date": "2019-11-20"
+                            },
+                            "data": []
+                        }
+                    ],
+                }
+            }
+        }
+
+        # When
+        movie_parsed_information = retrieve_movie_information(movie_information['node']['movie'])
+
+        # Then
+        assert 'poster_url' not in movie_parsed_information
+
 
 class RetrieveShowtimeInformationTest:
     def test_should_retrieve_showtime_information_from_allocine_json_response(self):
@@ -268,7 +311,6 @@ class FormatPosterUrlTest:
 
         # Then
         assert formatted_url == "https://fr.web.img4.acsta.net/pictures/19/07/23/15/55/2940058.jpg"
-
 
 
 class FormatDateFromLocalTimezoneToUtcTest:
@@ -326,3 +368,79 @@ class FilterOnlyDigitalAndNonExperiencedShowtimesTest:
                 "experience": None
             }
         ]
+
+
+class GetShowtimeUUIDFromIdAtProviderTest:
+    def test_should_return_the_right_uuid(self):
+        # When
+        showtime_uuid = _get_showtimes_uuid_by_idAtProvider('TW92aWU6Mzc4MzI=%77567146400110#LOCAL/2019-12-04T18:00:00')
+
+        # Then
+        assert showtime_uuid == 'LOCAL/2019-12-04T18:00:00'
+
+
+class FormatNaiveDateToUtcTest:
+    def test_should_convert_date_to_utc_timezone(self):
+        # Given
+        local_date = datetime(2019, 12, 3, 20, 0)
+        local_tz = 'America/Cayenne'
+
+        # When
+        date_in_utc = _format_date_from_local_timezone_to_utc(local_date, local_tz)
+
+        # Then
+        assert date_in_utc.hour == 23
+        assert date_in_utc.tzname() == 'UTC'
+
+
+class FindShowtimesByShowtimeUUIDTest:
+    def test_should_filter_on_begining_date(self):
+        # Given
+        showtimes = [
+            {
+                'diffusionVersion': 'LOCAL',
+                'experience': None,
+                'projection': ['DIGITAL'],
+                'startsAt': '2019-12-03T10:00:00'
+            },
+            {
+                'diffusionVersion': 'LOCAL',
+                'experience': None,
+                'projection': ['DIGITAL'],
+                'startsAt': '2019-12-04T18:00:00'
+            }
+        ]
+
+        # When
+        showtime = _find_showtime_by_showtime_uuid(showtimes, 'LOCAL/2019-12-04T18:00:00')
+
+        # Then
+        assert showtime == {
+            'diffusionVersion': 'LOCAL',
+            'experience': None,
+            'projection': ['DIGITAL'],
+            'startsAt': '2019-12-04T18:00:00'
+        }
+
+    def test_should_return_none_when_no_showtimes_found(self):
+        # Given
+        showtimes = [
+            {
+                'diffusionVersion': 'LOCAL',
+                'experience': None,
+                'projection': ['DIGITAL'],
+                'startsAt': '2019-12-04T18:00:00'
+            },
+            {
+                'diffusionVersion': 'LOCAL',
+                'experience': None,
+                'projection': ['DIGITAL'],
+                'startsAt': '2019-12-04T18:00:00'
+            }
+        ]
+
+        # When
+        showtime = _find_showtime_by_showtime_uuid(showtimes, 'DUBBED/2019-12-04T18:00:00')
+
+        # Then
+        assert showtime is None

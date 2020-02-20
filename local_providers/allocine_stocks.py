@@ -126,7 +126,6 @@ class AllocineStocks(LocalProvider):
         if 'stageDirector' in self.movie_information:
             allocine_offer.extraData["stageDirector"] = self.movie_information['stageDirector']
 
-
         movie_version = ORIGINAL_VERSION_SUFFIX if _is_original_version_offer(allocine_offer.idAtProviders) \
             else FRENCH_VERSION_SUFFIX
 
@@ -189,8 +188,10 @@ class AllocineStocks(LocalProvider):
             raise AllocineStocksPriceRule("Aucun prix par défaut n'a été trouvé")
 
     def get_object_thumb(self) -> bytes:
-        image_url = self.movie_information['poster_url']
-        return get_movie_poster(image_url)
+        if 'poster_url' in self.movie_information:
+            image_url = self.movie_information['poster_url']
+            return get_movie_poster(image_url)
+        return super().get_object_thumb()
 
     def get_object_thumb_index(self) -> int:
         return 1
@@ -212,7 +213,8 @@ def retrieve_movie_information(raw_movie_information: Dict) -> Dict:
     parsed_movie_information['description'] = _build_description(raw_movie_information)
     parsed_movie_information['duration'] = _parse_movie_duration(raw_movie_information['runtime'])
     parsed_movie_information['title'] = raw_movie_information['title']
-    parsed_movie_information['poster_url'] = _format_poster_url(raw_movie_information['poster']['url'])
+    if raw_movie_information['poster']:
+        parsed_movie_information['poster_url'] = _format_poster_url(raw_movie_information['poster']['url'])
     is_stage_director_info_available = len(raw_movie_information['credits']['edges']) > 0
 
     if is_stage_director_info_available:
