@@ -17,11 +17,11 @@ def test_should_return_error_message_when_iban_is_invalid():
 
 def test_should_return_error_message_when_bic_is_invalid():
     # Given
-    bank_information_fo = create_bank_information(bic="1234")
+    bank_information = create_bank_information(bic="1234")
     api_errors = ApiErrors()
 
     # When
-    api_error = validate(bank_information_fo, api_errors)
+    api_error = validate(bank_information, api_errors)
 
     # Then
     assert api_error.errors['bic'] == ['Le BIC renseigné ("1234") est invalide']
@@ -29,11 +29,11 @@ def test_should_return_error_message_when_bic_is_invalid():
 
 def test_should_return_error_messages_when_iban_and_bic_are_invalid():
     # Given
-    bank_information_fo = create_bank_information(bic="1234", iban="1234")
+    bank_information = create_bank_information(bic="1234", iban="1234")
     api_errors = ApiErrors()
 
     # When
-    api_error = validate(bank_information_fo, api_errors)
+    api_error = validate(bank_information, api_errors)
 
     # Then
     assert api_error.errors == {

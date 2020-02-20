@@ -1,40 +1,38 @@
-from models import ApiErrors
-from models.db import Model
+from models import ApiErrors, Venue
 from repository import offerer_queries
 from repository import venue_queries
 
 
-def validate(model: Model, api_errors: ApiErrors) -> ApiErrors:
-    if model.siret is not None and not len(model.siret) == 14:
-        api_errors.add_error('siret', f'Ce code SIRET est invalide : {model.siret}')
+def validate(venue: Venue, api_errors: ApiErrors) -> ApiErrors:
+    if venue.siret is not None and not len(venue.siret) == 14:
+        api_errors.add_error('siret', f'Ce code SIRET est invalide : {venue.siret}')
 
-    if model.postalCode is not None and len(model.postalCode) != 5:
+    if venue.postalCode is not None and len(venue.postalCode) != 5:
         api_errors.add_error('postalCode', 'Ce code postal est invalide')
 
-    if model.managingOffererId is not None:
-        if model.managingOfferer is None:
-            managing_offerer = offerer_queries.find_by_id(model.managingOffererId)
+    if venue.managingOffererId is not None:
+        if venue.managingOfferer is None:
+            managing_offerer = offerer_queries.find_by_id(venue.managingOffererId)
         else:
-            managing_offerer = model.managingOfferer
-
+            managing_offerer = venue.managingOfferer
         if managing_offerer.siren is None:
-            api_errors.add_error('siren', 'Ce lieu ne peut enregistrer de SIRET car la structure associée n’a pas de SIREN renseigné')
-
-        if model.siret is not None \
+            api_errors.add_error('siren',
+                                 'Ce lieu ne peut enregistrer de SIRET car la structure associée n’a pas de SIREN renseigné')
+        if venue.siret is not None \
                 and managing_offerer is not None \
-                and not model.siret.startswith(managing_offerer.siren):
+                and managing_offerer.siren is not None \
+                and not venue.siret.startswith(managing_offerer.siren):
             api_errors.add_error('siret', 'Le code SIRET doit correspondre à un établissement de votre structure')
 
-    if model.isVirtual:
-        offerer_id = model.managingOffererId
+    if venue.isVirtual:
+        offerer_id = venue.managingOffererId
 
         if offerer_id is None:
-            offerer_id = model.managingOfferer.id
+            offerer_id = venue.managingOfferer.id
 
-        already_existing_virtual_venue = venue_queries.find_by_offrer_id_and_is_virtual(offerer_id)
-
+        already_existing_virtual_venue = venue_queries.find_by_offerer_id_and_is_virtual(offerer_id)
         if already_existing_virtual_venue is not None \
-                and already_existing_virtual_venue.id != model.id:
+                and already_existing_virtual_venue.id != venue.id:
             api_errors.add_error('isVirtual', 'Un lieu pour les offres numériques existe déjà pour cette structure')
 
     return api_errors
