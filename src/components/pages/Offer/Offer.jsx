@@ -782,7 +782,7 @@ class Offer extends PureComponent {
                 <NavLink
                   className="button is-secondary is-medium"
                   id="modify-offer-button"
-                  to={'/offres/' + offerId + '/edition'}
+                  to={`/offres/${offerId}/edition`}
                 >
                   {'Modifier l’offre'}
                 </NavLink>

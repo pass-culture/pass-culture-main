@@ -569,7 +569,7 @@ describe('src | components | pages | Offer | Offer ', () => {
 
         // then
         const modifyOfferButton = wrapper.find('#modify-offer-button')
-        expect(modifyOfferButton.exists()).toStrictEqual(false)
+        expect(modifyOfferButton.exists()).toBe(false)
       })
 
       it('should display LocalProviderInformation if offer was generated from local provider', () => {
@@ -638,7 +638,7 @@ describe('src | components | pages | Offer | Offer ', () => {
 
         // then
         const modifyOfferButton = wrapper.find('#modify-offer-button')
-        expect(modifyOfferButton.exists()).toStrictEqual(true)
+        expect(modifyOfferButton.exists()).toBe(true)
       })
     })
 
