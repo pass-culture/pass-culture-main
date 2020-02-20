@@ -1,27 +1,26 @@
 from sqlalchemy.exc import IntegrityError
 
-from models import ApiErrors
-from models.db import Model
+from models import ApiErrors, User
 from repository import user_queries
 
 
-def validate_user(model: Model, api_errors: ApiErrors) -> ApiErrors:
-    user_count = 0
+def validate(user: User, api_errors: ApiErrors) -> ApiErrors:
     try:
-        user_count = user_queries.count_users_by_email(model.email)
+        user_count = user_queries.count_users_by_email(user.email)
     except IntegrityError:
-        if model.id is None:
+        if user.id is None:
             api_errors.add_error('email', 'Un compte lié à cet e-mail existe déjà')
+        return api_errors
 
-    if model.id is None and user_count > 0:
+    if user.id is None and user_count > 0:
         api_errors.add_error('email', 'Un compte lié à cet e-mail existe déjà')
-    if model.publicName is not None:
-        api_errors.check_min_length('publicName', model.publicName, 3)
-    if model.email:
-        api_errors.check_email('email', model.email)
-    if model.isAdmin and model.canBookFreeOffers:
+    if user.publicName is not None:
+        api_errors.check_min_length('publicName', user.publicName, 3)
+    if user.email:
+        api_errors.check_email('email', user.email)
+    if user.isAdmin and user.canBookFreeOffers:
         api_errors.add_error('canBookFreeOffers', 'Admin ne peut pas réserver')
-    if model.clearTextPassword:
-        api_errors.check_min_length('password', model.clearTextPassword, 8)
+    if user.clearTextPassword:
+        api_errors.check_min_length('password', user.clearTextPassword, 8)
 
     return api_errors

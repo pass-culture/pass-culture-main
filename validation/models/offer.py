@@ -1,17 +1,17 @@
-from models import ApiErrors
-from models.db import Model
-from repository import venue_queries
+from models import ApiErrors, Offer
 
 
-def validate(offer: Model, api_errors: ApiErrors) -> ApiErrors:
-    venue = offer.venue if offer.venue else venue_queries.find_by_id(offer.venueId)
+def validate(offer: Offer, api_errors: ApiErrors) -> ApiErrors:
+    venue = offer.venue
 
     if offer.isDigital:
         if not venue.isVirtual:
-            api_errors.add_error('venue', 'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"')
+            api_errors.add_error('venue',
+                                 'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"')
 
         if offer.is_offline_only:
-            api_errors.add_error('url', f'Une offre de type {offer.get_label_from_type_string()} ne peut pas être numérique')
+            api_errors.add_error('url',
+                                 f'Une offre de type {offer.get_label_from_type_string()} ne peut pas être numérique')
     else:
         if venue.isVirtual:
             api_errors.add_error('venue', 'Une offre physique ne peut être associée au lieu "Offre numérique"')

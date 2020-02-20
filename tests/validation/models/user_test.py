@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 
 from models import ApiErrors
 from tests.model_creators.generic_creators import create_user
-from validation.models.user import validate_user
+from validation.models.user import validate
 
 
 class UserAlreadyExistsTest:
@@ -18,7 +18,7 @@ class UserAlreadyExistsTest:
         api_errors = ApiErrors()
 
         # When
-        api_error = validate_user(user, api_errors)
+        api_error = validate(user, api_errors)
 
         # Then
         assert api_error.errors['email'] == ['Un compte lié à cet e-mail existe déjà']
@@ -33,7 +33,7 @@ class UserAlreadyExistsTest:
         api_errors = ApiErrors()
 
         # When
-        api_error = validate_user(user, api_errors)
+        api_error = validate(user, api_errors)
 
         # Then
         assert api_error.errors == {}
@@ -47,7 +47,7 @@ class UserAlreadyExistsTest:
         api_errors = ApiErrors()
 
         # When
-        api_error = validate_user(user, api_errors)
+        api_error = validate(user, api_errors)
 
         # Then
         assert api_error.errors['email'] == ['Un compte lié à cet e-mail existe déjà']
@@ -57,11 +57,11 @@ class UserAlreadyExistsTest:
                                                                                     app):
         # Given
         user = create_user(idx=1)
-        mocked_count_users_by_email.side_effect = IntegrityError('Mock', 'mock', 'mock')
+        mocked_count_users_by_email.return_value = IntegrityError('mock', 'mock', 'mock')
         api_errors = ApiErrors()
 
         # When
-        api_error = validate_user(user, api_errors)
+        api_error = validate(user, api_errors)
 
         # Then
         assert api_error.errors == {}
@@ -74,7 +74,7 @@ class PublicNameTest:
         api_errors = ApiErrors()
 
         # When
-        api_error = validate_user(user, api_errors)
+        api_error = validate(user, api_errors)
 
         # Then
         assert api_error.errors['publicName'] == ['Vous devez saisir au moins 3 caractères.']
@@ -85,7 +85,7 @@ class PublicNameTest:
         api_errors = ApiErrors()
 
         # When
-        api_error = validate_user(user, api_errors)
+        api_error = validate(user, api_errors)
 
         # Then
         assert api_error.errors['publicName'] == ['Vous devez saisir au moins 3 caractères.']
@@ -98,7 +98,7 @@ class PublicNameTest:
         api_errors = ApiErrors()
 
         # When
-        api_error = validate_user(user, api_errors)
+        api_error = validate(user, api_errors)
 
         # Then
         assert api_error.errors == {}
@@ -111,7 +111,7 @@ class EmailTest:
         api_errors = ApiErrors()
 
         # When
-        api_error = validate_user(user, api_errors)
+        api_error = validate(user, api_errors)
 
         # Then
         assert api_error.errors['email'] == ['L’e-mail doit contenir un @.']
@@ -124,7 +124,7 @@ class EmailTest:
         api_errors = ApiErrors()
 
         # When
-        api_error = validate_user(user, api_errors)
+        api_error = validate(user, api_errors)
 
         # Then
         assert api_error.errors == {}
@@ -137,7 +137,7 @@ class AdminTest:
         api_errors = ApiErrors()
 
         # When
-        api_error = validate_user(user, api_errors)
+        api_error = validate(user, api_errors)
 
         # Then
         assert api_error.errors['canBookFreeOffers'] == ['Admin ne peut pas réserver']
@@ -150,7 +150,7 @@ class PasswordTest:
         api_errors = ApiErrors()
 
         # When
-        api_error = validate_user(user, api_errors)
+        api_error = validate(user, api_errors)
 
         # Then
         assert api_error.errors['password'] == ['Vous devez saisir au moins 8 caractères.']
@@ -163,7 +163,7 @@ class PasswordTest:
         api_errors = ApiErrors()
 
         # When
-        api_error = validate_user(user, api_errors)
+        api_error = validate(user, api_errors)
 
         # Then
         assert api_error.errors == {}
