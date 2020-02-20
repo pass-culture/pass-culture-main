@@ -1,8 +1,7 @@
 from models import ApiErrors, BankInformation, HasAddressMixin, Offer, Offerer, Product, Stock, User, Venue
 from models.db import Model
-from validation.models import offer, bank_information, offerer, product, stock, user, venue
+from validation.models import offer, bank_information, offerer, product, stock, user, venue, has_address_mixin
 from validation.models.generic import validate_generic
-from validation.models.has_address_mixin import validate_has_address_mixin
 
 
 def validate(model: Model) -> ApiErrors:
@@ -12,7 +11,7 @@ def validate(model: Model) -> ApiErrors:
         return api_errors
 
     if isinstance(model, HasAddressMixin):
-        api_errors = validate_has_address_mixin(model, api_errors)
+        api_errors = has_address_mixin.validate(model, api_errors)
 
     if isinstance(model, BankInformation):
         api_errors = bank_information.validate(model, api_errors)
