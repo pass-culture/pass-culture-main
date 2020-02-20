@@ -1,8 +1,9 @@
 from models import ApiErrors, Offer
+from repository import venue_queries
 
 
 def validate(offer: Offer, api_errors: ApiErrors) -> ApiErrors:
-    venue = offer.venue
+    venue = offer.venue if offer.venue else venue_queries.find_by_id(offer.venueId)
 
     if offer.isDigital:
         if not venue.isVirtual:

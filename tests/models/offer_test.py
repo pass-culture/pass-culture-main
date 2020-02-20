@@ -544,12 +544,10 @@ class CreateOfferTest:
     def test_success_when_is_digital_and_virtual_venue(self, app):
         # Given
         url = 'http://mygame.fr/offre'
-        digital_thing = create_product_with_thing_type(
-            thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
+        digital_thing = create_product_with_thing_type(thing_type=ThingType.JEUX_VIDEO, url=url, is_national=True)
         offerer = create_offerer()
         virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
         repository.save(virtual_venue)
-
         offer = create_offer_with_thing_product(venue=virtual_venue, product=digital_thing)
 
         # When

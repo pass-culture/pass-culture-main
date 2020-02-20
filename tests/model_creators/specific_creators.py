@@ -1,7 +1,7 @@
 import random
 import string
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 from models import Booking, EventType, Offer, Offerer, Product, Stock, ThingType, User, Venue, Provider
 from utils.token import random_token
@@ -259,7 +259,7 @@ def create_stock_from_event_occurrence(event_occurrence: Dict,
 
 def create_stock_from_offer(offer: Offer,
                             price: float = 9.90,
-                            available: int = 10,
+                            available: Union[int, None] = 10,
                             soft_deleted: bool = False,
                             booking_limit_datetime: datetime = None,
                             beginning_datetime: datetime = None,

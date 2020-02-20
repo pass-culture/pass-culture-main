@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from hashlib import sha256
-from typing import Optional
+from typing import Optional, Union
 
 from local_providers.price_rule import PriceRule
 from models import ApiKey, BankInformation, BeneficiaryImport, \
@@ -214,7 +214,7 @@ def create_offerer(address: str = None,
                    last_provider_id: int = None,
                    name: str = 'Test Offerer',
                    postal_code: str = '93100',
-                   siren: str = '123456789',
+                   siren: Union[str, None] = '123456789',
                    thumb_count: int = 0,
                    validation_token: str = None) -> Offerer:
     offerer = Offerer()
