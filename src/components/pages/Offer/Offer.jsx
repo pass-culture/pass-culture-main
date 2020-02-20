@@ -330,6 +330,7 @@ class Offer extends PureComponent {
       venuesMatchingOfferType,
     } = this.props
 
+    console.log(isEditableOffer)
     const { isEvent } = offer || {}
     const { isCreatedEntity, isModifiedEntity, method, readOnly } = query.context()
     const isEventType = get(selectedOfferType, 'type') === 'Event' || isEvent
@@ -778,10 +779,9 @@ class Offer extends PureComponent {
             style={{ justifyContent: 'space-between' }}
           >
             <div className="control">
-              {readOnly && (
+              {readOnly && isEditableOffer && (
                 <NavLink
                   className="button is-secondary is-medium"
-                  disabled={isEditableOffer ? '' : 'disabled'}
                   id="modify-offer-button"
                   to={"/offres/" + offerId + "/edition"}
                 >
