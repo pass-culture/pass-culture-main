@@ -84,7 +84,7 @@ class Product(PcObject,
     def isDigital(self):
         return self.url is not None and self.url != ''
 
-    def type_can_only_be_offline(self):
+    def is_offline_only(self):
         offline_only_products = filter(
             lambda product_type: product_type.value['offlineOnly'], ThingType)
         offline_only_types_for_products = map(

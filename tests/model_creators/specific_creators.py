@@ -194,6 +194,8 @@ def create_product_with_thing_type(thing_name: str = 'Test Book',
                                    author_name: str = 'Test Author',
                                    is_national: bool = False,
                                    id_at_providers: str = None,
+                                   is_digital: bool = False,
+                                   is_offline_only: bool = False,
                                    date_modified_at_last_provider: datetime = None,
                                    last_provider_id: int = None,
                                    media_urls: List[str] = ['test/urls'],
@@ -221,6 +223,10 @@ def create_product_with_thing_type(thing_name: str = 'Test Book',
     product.url = url
     product.owningOfferer = owning_offerer
     product.description = description
+    if is_digital:
+        product.url = 'fake/url'
+    if is_offline_only:
+        product.type = str(ThingType.CINEMA_ABO)
 
     return product
 
