@@ -34,7 +34,6 @@ def _update_offer(offer: Offer, modifications) -> Offer:
 
 
 def _update_offer_for_allocine_offers(offer: Offer, modifications) -> Offer:
-
     modifications = _exclude_modifications_where_offer_value_wont_change(offer, modifications)
 
     check_edition_for_allocine_offer_is_valid(modifications)

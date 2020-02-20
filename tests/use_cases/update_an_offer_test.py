@@ -93,3 +93,20 @@ class UseCaseTest:
                     except:
                         assert False
 
+        class WhenTheOfferIsFromAnotherProvider:
+            @clean_database
+            def test_offer_should_not_be_updated(self, app):
+                # Given
+                provider = get_provider_by_local_class('LibrairesStocks')
+                offerer = create_offerer()
+                venue = create_venue(offerer)
+                offer = create_offer_with_thing_product(venue, last_provider=provider)
+                repository.save(offer)
+
+                # When
+                modifications = {'isDuo': 'true'}
+                with pytest.raises(ApiErrors) as api_error:
+                    update_an_offer(offer, modifications)
+
+                # Then
+                assert api_error.value.errors['global'] == ['Les offres importées ne sont pas modifiables']

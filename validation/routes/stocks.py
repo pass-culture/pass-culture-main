@@ -21,20 +21,6 @@ def check_stock_is_updatable(stock: Stock) -> None:
         raise api_errors
 
 
-def check_offer_offerer_exists(offerer):
-    if offerer is None:
-        api_errors = ApiErrors()
-        api_errors.add_error('offerId', 'l\'offreur associé à cette offre est inconnu')
-        raise api_errors
-
-
-def check_event_occurrence_offerer_exists(offerer):
-    if offerer is None:
-        api_errors = ApiErrors()
-        api_errors.add_error('eventOccurrenceId', 'l\'offreur associé à cet évènement est inconnu')
-        raise api_errors
-
-
 def check_request_has_offer_id(request_data: dict):
     if 'offerId' not in request_data:
         raise ApiErrors({'offerId': ['Ce paramètre est obligatoire']})

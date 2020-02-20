@@ -143,7 +143,7 @@ class Offer(PcObject,
     @property
     def isEditable(self) -> bool:
         local_class = self.lastProvider.localClass if self.lastProvider else ''
-        return self.isFromProvider is False or 'TiteLive' in local_class or 'Allocine' in local_class
+        return self.isFromProvider is False or 'Allocine' in local_class
 
     @property
     def isFromProvider(self) -> bool:
@@ -223,7 +223,8 @@ class Offer(PcObject,
 
     @property
     def is_offline_only(self) -> bool:
-        offline_thing = [thing_type for thing_type in ThingType if self._is_same_type(thing_type) and self._is_offline_type_only(thing_type)]
+        offline_thing = [thing_type for thing_type in ThingType if
+                         self._is_same_type(thing_type) and self._is_offline_type_only(thing_type)]
 
         return len(list(offline_thing)) == 1
 

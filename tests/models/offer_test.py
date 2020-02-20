@@ -124,7 +124,7 @@ class AddStockAlertMessageToOfferTest:
             booking2 = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=10)
 
             repository.save(booking, booking2, deposit, user,
-                          offer, stock, stock2, user2)
+                            offer, stock, stock2, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -149,7 +149,7 @@ class AddStockAlertMessageToOfferTest:
             booking2 = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=20)
 
             repository.save(booking, booking2, deposit, user,
-                          offer, stock, stock2, user2)
+                            offer, stock, stock2, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -200,7 +200,7 @@ class AddStockAlertMessageToOfferTest:
             booking2 = create_booking(user=user2, stock=stock3, venue=venue, recommendation=recommendation, quantity=1)
 
             repository.save(booking, booking2, deposit, user, offer,
-                          stock, stock2, stock3, stock4, user2)
+                            stock, stock2, stock3, stock4, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -311,7 +311,7 @@ class AddStockAlertMessageToOfferTest:
             booking2 = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=10)
 
             repository.save(booking, booking2, deposit, user,
-                          offer, stock, stock2, user2)
+                            offer, stock, stock2, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -336,7 +336,7 @@ class AddStockAlertMessageToOfferTest:
             booking2 = create_booking(user=user2, stock=stock2, venue=venue, recommendation=recommendation, quantity=11)
 
             repository.save(booking, booking2, deposit, user,
-                          offer, stock, stock2, user2)
+                            offer, stock, stock2, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -387,7 +387,7 @@ class AddStockAlertMessageToOfferTest:
             booking2 = create_booking(user=user2, stock=stock3, venue=venue, recommendation=recommendation, quantity=1)
 
             repository.save(booking, booking2, deposit, user, offer,
-                          stock, stock2, stock3, stock4, user2)
+                            stock, stock2, stock3, stock4, user2)
 
             # when
             result = offer.stockAlertMessage
@@ -1010,7 +1010,7 @@ class IsEditableTest:
         # then
         assert offer.isEditable is False
 
-    def test_returns_true_if_offer_is_coming_from_TiteLive_provider(self, app):
+    def test_returns_false_if_offer_is_coming_from_TiteLive_provider(self, app):
         # given
         provider = Provider()
         provider.name = 'myProvider'
@@ -1022,7 +1022,7 @@ class IsEditableTest:
         offer.lastProvider = provider
 
         # then
-        assert offer.isEditable is True
+        assert offer.isEditable is False
 
     def test_returns_true_if_offer_is_coming_from_Allocine_provider(self, app):
         # given
