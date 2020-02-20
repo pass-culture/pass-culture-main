@@ -1,7 +1,6 @@
 import traceback
 
-from scripts.cron_logger.cron_logger import build_cron_log_message
-from scripts.cron_logger.cron_status import CronStatus
+from scheduled_tasks.logger import build_cron_log_message, CronStatus
 
 
 class CronLoggerMessageBuilderTest():
@@ -32,7 +31,6 @@ class CronLoggerMessageBuilderTest():
 
         # Then
         assert 'status=ended duration=245' in message
-
 
     def test_should_contain_stacktrace_attribute_if_needed(self):
         # When

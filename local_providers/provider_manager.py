@@ -4,8 +4,7 @@ from typing import Callable
 import local_providers
 from local_providers.local_provider import LocalProvider
 from repository import repository
-from scripts.cron_logger.cron_logger import build_cron_log_message
-from scripts.cron_logger.cron_status import CronStatus
+from scheduled_tasks.logger import build_cron_log_message, CronStatus
 from utils.logger import logger
 
 

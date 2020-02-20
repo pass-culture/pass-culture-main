@@ -1,7 +1,5 @@
 import os
 import subprocess
-import time
-from functools import wraps
 from io import StringIO
 
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -26,9 +24,8 @@ from repository.feature_queries import feature_cron_send_final_booking_recaps_en
 from repository.provider_queries import get_provider_by_local_class
 from repository.recommendation_queries import delete_useless_recommendations
 from repository.user_queries import find_most_recent_beneficiary_creation_date
+from scheduled_tasks.decorators import log_cron
 from scripts.beneficiary import remote_import
-from scripts.cron_logger.cron_logger import build_cron_log_message
-from scripts.cron_logger.cron_status import CronStatus
 from scripts.dashboard.write_dashboard import write_dashboard
 from utils.config import API_ROOT_PATH
 from utils.logger import logger
@@ -41,22 +38,6 @@ app.config['DEBUG'] = True
 db.init_app(app)
 
 RECO_VIEW_REFRESH_FREQUENCY = os.environ.get('RECO_VIEW_REFRESH_FREQUENCY', '*')
-
-
-def log_cron(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        start_time = time.time()
-        logger.info(build_cron_log_message(name=func.__name__, status=CronStatus.STARTED))
-
-        result = func(*args, **kwargs)
-
-        end_time = time.time()
-        duration = end_time - start_time
-        logger.info(build_cron_log_message(name=func.__name__, status=CronStatus.ENDED, duration=duration))
-        return result
-
-    return wrapper
 
 
 @log_cron
@@ -178,6 +159,8 @@ def pc_update_recommendations_view():
 if __name__ == '__main__':
     orm.configure_mappers()
     scheduler = BlockingScheduler()
+
+    scheduler.add_job(synchronize_libraire_stocks, 'cron', id='synchronize_libraire_stocks', day='*', hour='21')
 
     if feature_cron_send_final_booking_recaps_enabled():
         scheduler.add_job(pc_send_final_booking_recaps, 'cron', id='send_final_booking_recaps', day='*')

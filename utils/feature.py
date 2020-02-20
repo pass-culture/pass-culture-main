@@ -19,5 +19,7 @@ def feature_required(feature_toggle: FeatureToggle):
             )
             errors.status_code = 403
             raise errors
+
         return wrapper
+
     return decorator

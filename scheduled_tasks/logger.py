@@ -1,8 +1,16 @@
-from scripts.cron_logger import cron_status
+from enum import Enum
 
 
-def build_cron_log_message(name: str, status: cron_status, traceback = None, duration:int = None):
+class CronStatus(Enum):
+    STARTED = 'started'
+    ENDED = 'ended'
+    FAILED = 'failed'
 
+    def __str__(self):
+        return self.value
+
+
+def build_cron_log_message(name: str, status: CronStatus, traceback=None, duration: int = None):
     log_message = f"type=cron name={name} status={status}"
 
     if duration:
