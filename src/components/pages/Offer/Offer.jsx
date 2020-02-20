@@ -13,7 +13,7 @@ import {
 
 import React, { PureComponent, Fragment } from 'react'
 import ReactToolTip from 'react-tooltip'
-import { Link, NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
 import MediationsManager from './MediationsManager/MediationsManagerContainer'
@@ -330,7 +330,6 @@ class Offer extends PureComponent {
       venuesMatchingOfferType,
     } = this.props
 
-    console.log(isEditableOffer)
     const { isEvent } = offer || {}
     const { isCreatedEntity, isModifiedEntity, method, readOnly } = query.context()
     const isEventType = get(selectedOfferType, 'type') === 'Event' || isEvent
@@ -783,7 +782,7 @@ class Offer extends PureComponent {
                 <NavLink
                   className="button is-secondary is-medium"
                   id="modify-offer-button"
-                  to={"/offres/" + offerId + "/edition"}
+                  to={'/offres/' + offerId + '/edition'}
                 >
                   {'Modifier l’offre'}
                 </NavLink>
