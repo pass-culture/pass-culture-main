@@ -9,17 +9,19 @@ def swift_con(dest_container_name):
         user = os.environ.get('OVH_USER_TESTING')
         key = os.environ.get('OVH_PASSWORD_TESTING')
         tenant_name = os.environ.get('OVH_TENANT_NAME_TESTING')
+        region_name = os.environ.get('OVH_REGION_NAME_TESTING', 'GRA')
     elif dest_container_name == 'storage-pc-staging':
         user = os.environ.get('OVH_USER_STAGING')
         key = os.environ.get('OVH_PASSWORD_STAGING')
         tenant_name = os.environ.get('OVH_TENANT_NAME_STAGING')
+        region_name = os.environ.get('OVH_REGION_NAME_STAGING', 'GRA')
     else:
         print('Ce conteneur ne semble pas exister')
         return 1
 
     auth_url = 'https://auth.cloud.ovh.net/v2.0/'
     options = {
-        'region_name': 'GRA3'
+        'region_name': region_name
     }
     auth_version = '2'
     return swiftclient.Connection(user=user,
@@ -34,10 +36,11 @@ def swift_con_prod():
     user = os.environ.get('OVH_USER_PROD')
     key = os.environ.get('OVH_PASSWORD_PROD')
     tenant_name = os.environ.get('OVH_TENANT_NAME_PROD')
+    region_name = os.environ.get('OVH_REGION_NAME_PROD', 'GRA')
 
     auth_url = 'https://auth.cloud.ovh.net/v2.0/'
     options = {
-        'region_name': 'GRA3'
+        'region_name': region_name
     }
     auth_version = '2'
     return swiftclient.Connection(user=user,
