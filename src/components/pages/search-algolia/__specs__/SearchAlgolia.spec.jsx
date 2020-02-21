@@ -757,8 +757,8 @@ describe('components | SearchAlgolia', () => {
             value: 'typed search',
           },
         })
-
         const resetButton = wrapper.findWhere(node => node.prop('type') === 'reset').first()
+
         // when
         resetButton.simulate('click')
 
@@ -856,6 +856,7 @@ describe('components | SearchAlgolia', () => {
         const wrapper = await shallow(<SearchAlgolia {...props} />)
 
         // then
+        console.log(wrapper.debug())
         const form = wrapper.find('form')
         const backIcon = form.findWhere(node => node.prop('svg') === 'picto-back-grey').first()
         expect(backIcon).toHaveLength(1)

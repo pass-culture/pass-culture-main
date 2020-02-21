@@ -199,7 +199,10 @@ class SearchAlgolia extends PureComponent {
                     onClick={this.handleBackButtonClick}
                     type="button"
                   >
-                    <Icon svg="picto-back-grey" />
+                    <Icon
+                      alt="Réinitialiser la recherche"
+                      svg="picto-back-grey"
+                    />
                   </button>
                 ) : (
                   <div className="sp-text-input-back">
@@ -222,7 +225,10 @@ class SearchAlgolia extends PureComponent {
                       onClick={this.handleResetButtonClick}
                       type="reset"
                     >
-                      <Icon svg="picto-reset" />
+                      <Icon
+                        alt="Supprimer la saisie"
+                        svg="picto-reset"
+                      />
                     </button>
                   )}
                 </div>
