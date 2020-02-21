@@ -1,5 +1,5 @@
-import React, {PureComponent} from 'react'
-import {Form} from 'react-final-form'
+import React, { PureComponent } from 'react'
+import { Form } from 'react-final-form'
 import PropTypes from 'prop-types'
 
 class LibrairesProviderForm extends PureComponent {
@@ -18,11 +18,7 @@ class LibrairesProviderForm extends PureComponent {
   }
 
   handleSuccess = () => {
-    const {
-      history,
-      offererId,
-      venueId,
-    } = this.props
+    const { history, offererId, venueId } = this.props
     history.push(`/structures/${offererId}/lieux/${venueId}`)
   }
 
@@ -46,9 +42,7 @@ class LibrairesProviderForm extends PureComponent {
             <div className="account-label">
               {'Compte'}
             </div>
-            <div
-              className='account-value'
-            >
+            <div className="account-value">
               {venueSiret}
             </div>
           </div>
@@ -69,11 +63,10 @@ class LibrairesProviderForm extends PureComponent {
   }
 
   render() {
-    return (
-      <Form
-        onSubmit={this.handleFormSubmit}
-        render={this.renderForm}
-      />)
+    return (<Form
+      onSubmit={this.handleFormSubmit}
+      render={this.renderForm}
+            />)
   }
 }
 
@@ -81,9 +74,8 @@ LibrairesProviderForm.propTypes = {
   createVenueProvider: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   notify: PropTypes.func.isRequired,
-  providerId: PropTypes.string.isRequired,
   venueId: PropTypes.string.isRequired,
-  venueSiret: PropTypes.string.isRequired
+  venueSiret: PropTypes.string.isRequired,
 }
 
 export default LibrairesProviderForm

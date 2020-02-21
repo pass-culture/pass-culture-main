@@ -39,15 +39,15 @@ ShallowWrapper {
             signPage={false}
             whiteHeader={false}
           />
-          <span
+          <button
             className="navbar-burger"
             onClick={[Function]}
-            role="navigation"
+            type="button"
           >
             <span />
             <span />
             <span />
-          </span>
+          </button>
         </div>
         <div
           className="navbar-menu"
@@ -245,15 +245,15 @@ ShallowWrapper {
               signPage={false}
               whiteHeader={false}
             />
-            <span
+            <button
               className="navbar-burger"
               onClick={[Function]}
-              role="navigation"
+              type="button"
             >
               <span />
               <span />
               <span />
-            </span>
+            </button>
           </div>,
           <div
             className="navbar-menu"
@@ -449,15 +449,15 @@ ShallowWrapper {
                 signPage={false}
                 whiteHeader={false}
               />,
-              <span
+              <button
                 className="navbar-burger"
                 onClick={[Function]}
-                role="navigation"
+                type="button"
               >
                 <span />
                 <span />
                 <span />
-              </span>,
+              </button>,
             ],
             "className": "navbar-brand",
           },
@@ -489,7 +489,7 @@ ShallowWrapper {
                 ],
                 "className": "navbar-burger",
                 "onClick": [Function],
-                "role": "navigation",
+                "type": "button",
               },
               "ref": null,
               "rendered": Array [
@@ -521,7 +521,7 @@ ShallowWrapper {
                   "type": "span",
                 },
               ],
-              "type": "span",
+              "type": "button",
             },
           ],
           "type": "div",
@@ -1731,15 +1731,15 @@ ShallowWrapper {
               signPage={false}
               whiteHeader={false}
             />
-            <span
+            <button
               className="navbar-burger"
               onClick={[Function]}
-              role="navigation"
+              type="button"
             >
               <span />
               <span />
               <span />
-            </span>
+            </button>
           </div>
           <div
             className="navbar-menu"
@@ -1937,15 +1937,15 @@ ShallowWrapper {
                 signPage={false}
                 whiteHeader={false}
               />
-              <span
+              <button
                 className="navbar-burger"
                 onClick={[Function]}
-                role="navigation"
+                type="button"
               >
                 <span />
                 <span />
                 <span />
-              </span>
+              </button>
             </div>,
             <div
               className="navbar-menu"
@@ -2141,15 +2141,15 @@ ShallowWrapper {
                   signPage={false}
                   whiteHeader={false}
                 />,
-                <span
+                <button
                   className="navbar-burger"
                   onClick={[Function]}
-                  role="navigation"
+                  type="button"
                 >
                   <span />
                   <span />
                   <span />
-                </span>,
+                </button>,
               ],
               "className": "navbar-brand",
             },
@@ -2181,7 +2181,7 @@ ShallowWrapper {
                   ],
                   "className": "navbar-burger",
                   "onClick": [Function],
-                  "role": "navigation",
+                  "type": "button",
                 },
                 "ref": null,
                 "rendered": Array [
@@ -2213,7 +2213,7 @@ ShallowWrapper {
                     "type": "span",
                   },
                 ],
-                "type": "span",
+                "type": "button",
               },
             ],
             "type": "div",

@@ -31,7 +31,7 @@ class TextField extends PureComponent {
     }
   }
 
-  preventEnteringInvalidChars = (isDecimal) => {
+  preventEnteringInvalidChars = isDecimal => {
     this.keypressListener = this.inputElement.addEventListener('keypress', event => {
       const validCharacters = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
 
@@ -55,7 +55,6 @@ class TextField extends PureComponent {
       disabled,
       id,
       innerClassName,
-      isDecimal,
       label,
       min,
       name,
@@ -87,11 +86,9 @@ class TextField extends PureComponent {
               <span>
                 {label}
               </span>
-              {required && !readOnly && (
-                <span className="field-asterisk">
-                  {'*'}
-                </span>
-              )}
+              {required && !readOnly && <span className="field-asterisk">
+                {'*'}
+                                        </span>}
             </span>
           </label>
         )}

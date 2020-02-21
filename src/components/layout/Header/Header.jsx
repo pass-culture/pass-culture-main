@@ -41,15 +41,15 @@ class Header extends PureComponent {
               className="navbar-item"
               whiteHeader={whiteHeader}
             />
-            <span
+            <button
               className="navbar-burger"
               onClick={this.handleOnClick(showMobileMenu)}
-              role="navigation"
+              type="button"
             >
               <span />
               <span />
               <span />
-            </span>
+            </button>
           </div>
           <div
             className={classnames('navbar-menu', {

@@ -26,7 +26,6 @@ class LocationViewer extends PureComponent {
     this.state = {
       inputValue: '',
       isLoading: false,
-      hasSelectedSuggestion: false,
       marker: null,
       position: props.initialPosition,
       suggestions: [],
@@ -128,7 +127,6 @@ class LocationViewer extends PureComponent {
     const { onTextChange: onTextChangeFromProps } = this.props
     const address = event.target.value
     this.setState({
-      hasSelectedSuggestion: false,
       inputValue: address,
     })
 
@@ -149,7 +147,6 @@ class LocationViewer extends PureComponent {
     const { latitude, longitude, placeholder } = location
     if (placeholder) return
     this.setState({
-      hasSelectedSuggestion: true,
       inputValue: address,
       position: {
         latitude,
@@ -200,11 +197,9 @@ class LocationViewer extends PureComponent {
 
   renderSuggestionsMenu = suggestionElements => {
     const empty = suggestionElements.length === 0
-    return (
-      <div className={classnames('menu', { empty })}>
-        {suggestionElements}
-      </div>
-    )
+    return (<div className={classnames('menu', { empty })}>
+      {suggestionElements}
+    </div>)
   }
 
   renderSuggestion = ({ id, label, placeholder }, highlighted) => (
