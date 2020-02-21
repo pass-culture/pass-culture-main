@@ -1,12 +1,8 @@
 from repository import repository
 from tests.conftest import TestClient, clean_database
-from tests.model_creators.generic_creators import (create_bank_information,
-                                                   create_booking,
-                                                   create_deposit,
-                                                   create_mediation,
-                                                   create_offerer,
-                                                   create_stock, create_user,
-                                                   create_venue)
+from tests.model_creators.generic_creators import create_bank_information, \
+    create_booking, create_deposit, create_mediation, create_offerer, \
+    create_stock, create_user, create_venue
 from tests.model_creators.specific_creators import \
     create_offer_with_thing_product
 from utils.human_ids import humanize
@@ -69,7 +65,7 @@ class Get:
             offer = create_offer_with_thing_product(venue=venue)
             stock = create_stock(offer=offer)
             booking = create_booking(user=beneficiary, stock=stock)
-            repository.save(beneficiary, booking)
+            repository.save(booking)
 
             # When
             response = TestClient(app.test_client()) \

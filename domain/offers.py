@@ -47,7 +47,7 @@ def is_from_allocine(offer: Offer) -> bool:
 def find_first_matching_booking_from_offer_by_user(offer: Offer, user: User) -> Optional[Booking]:
     for stock in offer.stocks:
         sorted_booking_by_date_created = sorted(stock.bookings,
-                                                key=lambda booking: booking.dateCreated)
+                                                key=lambda booking: booking.dateCreated, reverse=True)
         for booking in sorted_booking_by_date_created:
             if booking.userId == user.id:
                 return booking
