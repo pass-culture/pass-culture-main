@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from local_providers import AllocineStocks
-from models import Offer, Stock
+from models import Booking, Offer, Stock, User
 
 
 class InconsistentOffer(Exception):
@@ -42,3 +42,14 @@ def has_at_least_one_stock_in_the_future(stocks: List[Stock]) -> bool:
 
 def is_from_allocine(offer: Offer) -> bool:
     return offer.isFromProvider and offer.lastProvider.localClass == AllocineStocks.__name__
+
+
+def find_first_matching_booking_from_offer_by_user(offer: Offer, user: User) -> Optional[Booking]:
+    for stock in offer.stocks:
+        sorted_booking_by_date_created = sorted(stock.bookings,
+                                                key=lambda booking: booking.dateCreated)
+        for booking in sorted_booking_by_date_created:
+            if booking.userId == user.id:
+                return booking
+
+    return None

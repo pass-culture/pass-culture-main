@@ -1,25 +1,35 @@
+from typing import Dict
+
 from flask import current_app as app
 from flask import jsonify, request
 from flask_login import current_user, login_required
 
-from domain.admin_emails import send_offer_creation_notification_to_administration
-from domain.create_offer import fill_offer_with_new_data, initialize_offer_from_product_id
+from domain.admin_emails import \
+    send_offer_creation_notification_to_administration
+from domain.create_offer import (fill_offer_with_new_data,
+                                 initialize_offer_from_product_id)
+from domain.offers import find_first_matching_booking_from_offer_by_user
 from models import Offer, RightsType, Venue
 from models.api_errors import ResourceNotFoundError
-from repository import repository, venue_queries, offer_queries
-from repository.offer_queries import find_activation_offers, find_offers_with_filter_parameters
+from repository import offer_queries, repository, venue_queries
+from repository.offer_queries import (find_activation_offers,
+                                      find_offers_with_filter_parameters)
 from routes.serialization import as_dict
 from use_cases.update_an_offer import update_an_offer
 from utils.config import PRO_URL
 from utils.human_ids import dehumanize
-from utils.includes import OFFER_INCLUDES
+from utils.includes import (OFFER_INCLUDES,
+                            WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES)
 from utils.mailing import send_raw_email
-from utils.rest import ensure_current_user_has_rights, expect_json_data, \
-    handle_rest_get_list, load_or_404, load_or_raise_error, \
-    login_or_api_key_required
-from validation.routes.offers import check_has_venue_id, check_offer_is_editable, \
-    check_offer_type_is_valid, check_user_has_rights_for_query, check_valid_edition, \
-    check_venue_exists_when_requested, check_offer_name_length_is_valid
+from utils.rest import (ensure_current_user_has_rights, expect_json_data,
+                        handle_rest_get_list, load_or_404, load_or_raise_error,
+                        login_or_api_key_required)
+from validation.routes.offers import (check_has_venue_id,
+                                      check_offer_name_length_is_valid,
+                                      check_offer_type_is_valid,
+                                      check_user_has_rights_for_query,
+                                      check_valid_edition,
+                                      check_venue_exists_when_requested)
 
 
 @app.route('/offers', methods=['GET'])
@@ -53,7 +63,7 @@ def list_offers() -> (str, int):
 @login_required
 def get_offer(offer_id: int) -> (str, int):
     offer = load_or_404(Offer, offer_id)
-    return jsonify(as_dict(offer, includes=OFFER_INCLUDES)), 200
+    return jsonify(_serialize_offer(offer)), 200
 
 
 @app.route('/offers/activation', methods=['GET'])
@@ -111,3 +121,14 @@ def patch_offer(offer_id: str) -> (str, int):
     offer = update_an_offer(offer, modifications=payload)
 
     return jsonify(as_dict(offer, includes=OFFER_INCLUDES)), 200
+
+
+def _serialize_offer(offer: Offer) -> Dict:
+    dict_offer = as_dict(offer, includes=OFFER_INCLUDES)
+
+    booking = find_first_matching_booking_from_offer_by_user(offer, current_user)
+    if booking:
+        dict_offer['firstMatchingBooking'] = as_dict(
+            booking, includes=WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES)
+
+    return dict_offer

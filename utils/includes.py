@@ -70,7 +70,7 @@ OFFER_INCLUDES = [
     },
     {
         "key": "stocks",
-        "includes": ['bookings', 'isBookable']
+        "includes": ['isBookable']
     },
     {
         "key": "venue",

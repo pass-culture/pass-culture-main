@@ -2,13 +2,20 @@ from datetime import datetime
 
 from freezegun import freeze_time
 
-from domain.offers import update_is_active_status, has_remaining_stocks, has_at_least_one_stock_in_the_future, \
-    is_from_allocine
+from domain.offers import (find_first_matching_booking_from_offer_by_user,
+                           has_at_least_one_stock_in_the_future,
+                           has_remaining_stocks, is_from_allocine,
+                           update_is_active_status)
 from models import Offer
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
-    create_venue, create_provider
-from tests.model_creators.specific_creators import create_offer_with_event_product
+from tests.model_creators.generic_creators import (create_booking,
+                                                   create_deposit,
+                                                   create_offerer,
+                                                   create_provider,
+                                                   create_stock, create_user,
+                                                   create_venue)
+from tests.model_creators.specific_creators import \
+    create_offer_with_event_product
 
 
 class UpdateIsActiveStatusTest:
@@ -189,3 +196,55 @@ class IsFromAllocineTest:
 
         # Then
         assert result is False
+
+
+class FindFirstMatchingBookingFromOfferByUserTest:
+    def test_should_return_nothing_when_no_bookings(self):
+        # Given
+        beneficiary = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue=venue)
+
+        # When
+        booking = find_first_matching_booking_from_offer_by_user(offer, beneficiary)
+
+        # Then
+        assert booking is None
+
+    def test_should_return_nothing_when_beneficiary_has_no_bookings(self):
+        # Given
+        beneficiary = create_user(idx=1)
+        other_beneficiary = create_user(email='other_beneficiary@example.com', idx=2)
+        create_deposit(user=other_beneficiary)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue=venue)
+        stock = create_stock(offer=offer)
+        create_booking(user=other_beneficiary, stock=stock, date_created=datetime(2020, 1, 1))
+
+        # When
+        booking = find_first_matching_booking_from_offer_by_user(offer, beneficiary)
+
+        # Then
+        assert booking is None
+
+    def test_should_return_first_matching_booking(self):
+        # Given
+        beneficiary = create_user(idx=1)
+        other_beneficiary = create_user(email='other_beneficiary@example.com', idx=2)
+        create_deposit(user=beneficiary)
+        create_deposit(user=other_beneficiary)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue=venue)
+        stock = create_stock(offer=offer)
+        create_booking(user=other_beneficiary, stock=stock, date_created=datetime(2020, 1, 1))
+        create_booking(user=beneficiary, stock=stock, date_created=datetime(2020, 1, 10))
+        my_booking = create_booking(user=beneficiary, stock=stock, date_created=datetime(2020, 1, 3))
+
+        # When
+        booking = find_first_matching_booking_from_offer_by_user(offer, beneficiary)
+
+        # Then
+        assert booking == my_booking

@@ -113,8 +113,9 @@ def create_booking(user: User,
     booking.isCancelled = is_cancelled
     booking.isUsed = is_used
     booking.quantity = quantity
-    booking.token = token if token is not None else random_token()
     booking.stock = stock
+    booking.token = token if token is not None else random_token()
+    booking.userId = user.id
 
     return booking
 

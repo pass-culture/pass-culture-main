@@ -1,8 +1,14 @@
 from repository import repository
-from tests.conftest import clean_database, TestClient
-from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, create_mediation, \
-    create_bank_information
-from tests.model_creators.specific_creators import create_offer_with_thing_product
+from tests.conftest import TestClient, clean_database
+from tests.model_creators.generic_creators import (create_bank_information,
+                                                   create_booking,
+                                                   create_deposit,
+                                                   create_mediation,
+                                                   create_offerer,
+                                                   create_stock, create_user,
+                                                   create_venue)
+from tests.model_creators.specific_creators import \
+    create_offer_with_thing_product
 from utils.human_ids import humanize
 
 
@@ -51,3 +57,24 @@ class Get:
             # then
             assert response.status_code == 200
             assert response.json['activeMediation'] is not None
+
+        @clean_database
+        def when_returns_a_first_matching_booking(self, app):
+            # Given
+            beneficiary = create_user()
+            create_deposit(user=beneficiary)
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue=venue)
+            stock = create_stock(offer=offer)
+            booking = create_booking(user=beneficiary, stock=stock)
+            repository.save(beneficiary, booking)
+
+            # When
+            response = TestClient(app.test_client()) \
+                .with_auth(email=beneficiary.email) \
+                .get(f'/offers/{humanize(offer.id)}')
+
+            # Then
+            assert response.status_code == 200
+            assert humanize(booking.id) in response.json['firstMatchingBooking']['id']
