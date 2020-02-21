@@ -2,6 +2,7 @@ const Autoprefixer = require('autoprefixer')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const getClientEnvironment = require('./env')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlCriticalWebpackPlugin = require("html-critical-webpack-plugin")
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin')
 const ManifestPlugin = require('webpack-manifest-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
@@ -111,6 +112,7 @@ module.exports = {
     child_process: 'empty',
   },
   optimization: {
+    runtimeChunk: 'single',
     minimize: true,
     minimizer: [new TerserPlugin()],
     splitChunks: {
@@ -178,6 +180,12 @@ module.exports = {
       staticFileGlobsIgnorePatterns: [/\.map$/, /asset-manifest\.json$/],
     }),
     new Webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    new HtmlCriticalWebpackPlugin({
+      base: path.resolve(__dirname, '../build'),
+      src: 'index.html',
+      dest: 'index.html',
+      inline: true,
+      minify: true,})
   ],
   resolve: {
     alias: {
