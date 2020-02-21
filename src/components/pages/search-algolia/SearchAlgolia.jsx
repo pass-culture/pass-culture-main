@@ -16,6 +16,20 @@ import Icon from '../../layout/Icon/Icon'
 class SearchAlgolia extends PureComponent {
   constructor(props) {
     super(props)
+    this.state = {
+      currentPage: 0,
+      keywordsToSearch: '',
+      hasSearchBeenMade: false,
+      isLoading: false,
+      resultsCount: 0,
+      results: [],
+      searchedKeywords: '',
+      totalPagesNumber: 0,
+    }
+    this.inputRef = React.createRef()
+  }
+
+  componentDidMount() {
     const { query } = this.props
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles']
@@ -26,16 +40,6 @@ class SearchAlgolia extends PureComponent {
       this.handleFetchOffers(keywords, currentPage)
     } else {
       query.clear()
-    }
-    this.state = {
-      currentPage: 0,
-      keywordsToSearch: '',
-      hasSearchBeenMade: false,
-      isLoading: false,
-      resultsCount: 0,
-      results: [],
-      searchedKeywords: '',
-      totalPagesNumber: 0,
     }
   }
 
@@ -145,6 +149,7 @@ class SearchAlgolia extends PureComponent {
     this.setState({
       keywordsToSearch: '',
     })
+    this.inputRef.current.focus()
   }
 
   handleOnTextInputChange = event => {
@@ -190,14 +195,14 @@ class SearchAlgolia extends PureComponent {
               <div className="sp-text-input-wrapper">
                 {hasSearchBeenMade ? (
                   <button
-                    className="sp-text-input-left-part"
+                    className="sp-text-input-back"
                     onClick={this.handleBackButtonClick}
                     type="button"
                   >
                     <Icon svg="picto-back-grey" />
                   </button>
                 ) : (
-                  <div className="sp-text-input-left-part">
+                  <div className="sp-text-input-back">
                     <Icon svg="picto-search" />
                   </div>
                 )}
@@ -206,6 +211,7 @@ class SearchAlgolia extends PureComponent {
                   name="keywords"
                   onChange={this.handleOnTextInputChange}
                   placeholder="Artiste, auteur..."
+                  ref={this.inputRef}
                   type="text"
                   value={keywordsToSearch}
                 />
@@ -216,7 +222,7 @@ class SearchAlgolia extends PureComponent {
                       onClick={this.handleResetButtonClick}
                       type="reset"
                     >
-                      {'x'}
+                      <Icon svg="picto-reset" />
                     </button>
                   )}
                 </div>

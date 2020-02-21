@@ -34,7 +34,6 @@ describe('components | SearchAlgolia', () => {
   let parse
 
   beforeEach(() => {
-    fetch.mockReset()
     change = jest.fn()
     clear = jest.fn()
     parse = jest.fn().mockReturnValue({})
@@ -56,6 +55,11 @@ describe('components | SearchAlgolia', () => {
       },
       redirectToSearchMainPage: jest.fn(),
     }
+  })
+
+  afterEach(() => {
+    fetch.mockReset()
+    parse.mockReset()
   })
 
   describe('when render', () => {
@@ -732,13 +736,19 @@ describe('components | SearchAlgolia', () => {
 
         // then
         const resetButton = wrapper.findWhere(node => node.prop('type') === 'reset').first()
-        expect(wrapper.state('keywordsToSearch')).toBe('typed search')
         expect(resetButton).toHaveLength(1)
       })
 
-      it('should clear text input when clicking on reset cross', () => {
+      it('should clear text input when clicking on reset cross', async () => {
         // given
-        const wrapper = shallow(<SearchAlgolia {...props} />)
+        const history = createMemoryHistory()
+        history.push('/recherche-offres?mots-cles=librairie&page=2')
+
+        const wrapper = await mount(
+          <Router history={history}>
+            <SearchAlgolia {...props} />
+          </Router>
+        )
         const form = wrapper.find('form')
         const input = form.find('input').first()
         input.simulate('change', {
@@ -747,8 +757,8 @@ describe('components | SearchAlgolia', () => {
             value: 'typed search',
           },
         })
-        const resetButton = wrapper.findWhere(node => node.prop('type') === 'reset').first()
 
+        const resetButton = wrapper.findWhere(node => node.prop('type') === 'reset').first()
         // when
         resetButton.simulate('click')
 
@@ -756,8 +766,9 @@ describe('components | SearchAlgolia', () => {
         const expectedMissingResetButton = wrapper
           .findWhere(node => node.prop('type') === 'reset')
           .first()
+        const resettedInput = form.find('input').first()
         expect(expectedMissingResetButton).toHaveLength(0)
-        expect(wrapper.state('keywordsToSearch')).toBe('')
+        expect(resettedInput.instance().value).toBe('')
       })
     })
   })
@@ -874,93 +885,100 @@ describe('components | SearchAlgolia', () => {
             redirectToSearchMainPage={redirectToSearchMainPage}
           />
         )
+
         const form = wrapper.find('form')
-        const backIcon = form.findWhere(node => node.prop('type') === 'button').first()
-        expect(backIcon).toHaveLength(1)
+        const backButton = form.findWhere(node => node.prop('type') === 'button').first()
         expect(wrapper.state('keywordsToSearch')).toBe('une librairie')
-        backIcon.simulate('click')
+        backButton.simulate('click')
 
         // then
         expect(redirectToSearchMainPage).toHaveBeenCalledTimes(1)
         expect(wrapper.state('keywordsToSearch')).toBe('')
       })
     })
-  })
 
-  describe('header', () => {
-    it('should display a close button redirecting to discovery when arriving on search page', () => {
-      // given
-      const history = createBrowserHistory()
-      history.push('/recherche-offres')
-      props.match = {
-        params: {},
-      }
+    describe('header', () => {
+      it('should display a close button redirecting to discovery when arriving on search page', () => {
+        // given
+        const history = createBrowserHistory()
+        history.push('/recherche-offres')
+        props.match = {
+          params: {},
+        }
 
-      // when
-      const wrapper = mount(
-        <Router history={history}>
-          <SearchAlgolia {...props} />
-        </Router>
-      )
+        // when
+        const wrapper = mount(
+          <Router history={history}>
+            <SearchAlgolia {...props} />
+          </Router>
+        )
 
-      // then
-      const header = wrapper.find(HeaderContainer).first()
-      expect(header.prop('closeTo')).toBe('/decouverte')
-      expect(header.prop('closeTitle')).toBe('Retourner à la page découverte')
-      expect(header.prop('shouldBackFromDetails')).toBe(false)
-    })
-
-    it('should not render header when search has been made', async () => {
-      // given
-      const offer1 = { objectID: 'AE', offer: { name: 'Livre de folie de la librairie' } }
-      const offer2 = { objectID: 'AF', offer: { name: 'Livre bien de la librairie' } }
-      fetch.mockReturnValue(
-        new Promise(resolve => {
-          resolve({
-            hits: [offer1, offer2],
-            page: 0,
-            nbHits: 1,
-            nbPages: 0,
-            hitsPerPage: 2,
-            processingTimeMS: 1,
-            query: 'librairie',
-            params: 'query=librairie&hitsPerPage=2',
-          })
-        })
-      )
-      const wrapper = shallow(<SearchAlgolia {...props} />)
-      const form = wrapper.find('form')
-
-      // when
-      await form.simulate('submit', {
-        target: {
-          keywords: {
-            value: 'librairie',
-          },
-        },
-        preventDefault: jest.fn(),
+        // then
+        const header = wrapper.find(HeaderContainer).first()
+        expect(header.prop('closeTo')).toBe('/decouverte')
+        expect(header.prop('closeTitle')).toBe('Retourner à la page découverte')
+        expect(header.prop('shouldBackFromDetails')).toBe(false)
       })
 
-      // then
-      const header = wrapper.find(HeaderContainer)
-      expect(header).toHaveLength(1)
-    })
+      it('should not render header when search has been made', async () => {
+        // given
+        history.push('/recherche-offres?mots-cles=librairie&page=1')
+        const offer1 = { objectID: 'AE', offer: { name: 'Livre de folie de la librairie' } }
+        const offer2 = { objectID: 'AF', offer: { name: 'Livre bien de la librairie' } }
+        fetch.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [offer1, offer2],
+              page: 0,
+              nbHits: 1,
+              nbPages: 0,
+              hitsPerPage: 2,
+              processingTimeMS: 1,
+              query: 'librairie',
+              params: 'query=librairie&hitsPerPage=2',
+            })
+          })
+        )
+        const wrapper = mount(
+          <Router history={history}>
+            <SearchAlgolia {...props} />
+          </Router>
+        )
+        const form = wrapper.find('form')
 
-    it('should render a button to come back from last search when on details page', () => {
-      // given
-      props.match.params = {
-        details: 'details',
-      }
-      props.location = {
-        search: '?mots-cles=yo&page=1',
-      }
+        // when
+        await form.simulate('submit', {
+          target: {
+            keywords: {
+              value: 'librairie',
+            },
+          },
+          preventDefault: jest.fn(),
+        })
+        wrapper.update()
 
-      // when
-      const wrapper = shallow(<SearchAlgolia {...props} />)
+        // then
+        const header = wrapper.find(HeaderContainer)
+        expect(header).toHaveLength(0)
+      })
 
-      // then
-      const header = wrapper.find(HeaderContainer).at(1)
-      expect(header.prop('shouldBackFromDetails')).toBe(true)
+      it('should render header when on details page', () => {
+        // given
+        history.push('/recherche-offres/details/AE?mots-cles=librairie&page=1')
+
+        // when
+        const wrapper = mount(
+          <Router history={history}>
+            <Provider store={store}>
+              <SearchAlgolia {...props} />
+            </Provider>
+          </Router>
+        )
+
+        // then
+        const header = wrapper.find(HeaderContainer)
+        expect(header).toHaveLength(1)
+      })
     })
   })
 })

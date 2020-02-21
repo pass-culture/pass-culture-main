@@ -1,7 +1,7 @@
 import { mapStateToProps } from '../SearchAlgoliaContainer'
 
 describe('mapStateToProps', () => {
-  it('should return an object of props', () => {
+  it('should return an object with geolocation and redirect function', () => {
     // given
     const push = jest.fn()
     const props = { history: { push } }

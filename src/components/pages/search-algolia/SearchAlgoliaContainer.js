@@ -1,5 +1,6 @@
 import { compose } from 'redux'
 import { connect } from 'react-redux'
+
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 import SearchAlgolia from './SearchAlgolia'
 import { selectUserGeolocation } from '../../../selectors/geolocationSelectors'
