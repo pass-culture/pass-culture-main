@@ -42,3 +42,11 @@ BEGIN
     EXECUTE 'DROP TYPE IF EXISTS ' || quote_ident(r.typename) || ' CASCADE';
   END LOOP;
 END $$;
+
+DO $$ DECLARE
+  r RECORD;
+BEGIN
+  FOR r IN (SELECT table_name FROM INFORMATION_SCHEMA.views WHERE table_schema = 'public') LOOP
+    EXECUTE 'DROP VIEW IF EXISTS ' || quote_ident(r.table_name) || ' CASCADE';
+  END LOOP;
+END $$;
