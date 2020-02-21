@@ -34,14 +34,6 @@ module.exports = {
       {
         oneOf: [
           {
-            loader: 'url-loader',
-            options: {
-              limit: 10000,
-              name: 'static/media/[name].[hash:8].[ext]',
-            },
-            test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.ttf$/, /\.webp$/],
-          },
-          {
             exclude: process.env.HAS_WORKERS && /index\.(.*)\.worker\.js$/,
             include: paths.appSrc,
             loader: 'babel-loader',
