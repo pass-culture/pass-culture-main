@@ -12,7 +12,7 @@ from repository.feature_queries import feature_cron_synchronize_titelive_things,
     feature_cron_synchronize_titelive_descriptions, \
     feature_cron_synchronize_titelive_thumbs, feature_cron_synchronize_titelive_stocks
 from repository.provider_queries import get_provider_by_local_class
-from scheduled_tasks.decorators import log_cron
+from scheduled_tasks.decorators import log_cron, cron_context
 from utils.config import API_ROOT_PATH
 from utils.logger import logger
 
@@ -26,47 +26,46 @@ TITELIVE_STOCKS_PROVIDER_NAME = "TiteLiveStocks"
 
 
 @log_cron
-def pc_synchronize_titelive_things():
-    with app.app_context():
-        process = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
-                                   + ' --provider TiteLiveThings',
-                                   shell=True,
-                                   cwd=API_ROOT_PATH)
-        output, error = process.communicate()
-        logger.info(StringIO(output))
-        logger.info(StringIO(error))
+@cron_context
+def pc_synchronize_titelive_things(app):
+    process = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
+                               + ' --provider TiteLiveThings',
+                               shell=True,
+                               cwd=API_ROOT_PATH)
+    output, error = process.communicate()
+    logger.info(StringIO(output))
+    logger.info(StringIO(error))
 
 
 @log_cron
-def pc_synchronize_titelive_descriptions():
-    with app.app_context():
-        process = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
-                                   + ' --provider TiteLiveThingDescriptions',
-                                   shell=True,
-                                   cwd=API_ROOT_PATH)
-        output, error = process.communicate()
-        logger.info(StringIO(output))
-        logger.info(StringIO(error))
+@cron_context
+def pc_synchronize_titelive_descriptions(app):
+    process = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
+                               + ' --provider TiteLiveThingDescriptions',
+                               shell=True,
+                               cwd=API_ROOT_PATH)
+    output, error = process.communicate()
+    logger.info(StringIO(output))
+    logger.info(StringIO(error))
 
 
 @log_cron
-def pc_synchronize_titelive_thumbs():
-    with app.app_context():
-        process = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
-                                   + ' --provider TiteLiveThingThumbs',
-                                   shell=True,
-                                   cwd=API_ROOT_PATH)
-        output, error = process.communicate()
-        logger.info(StringIO(output))
-        logger.info(StringIO(error))
+@cron_context
+def pc_synchronize_titelive_thumbs(app):
+    process = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
+                               + ' --provider TiteLiveThingThumbs',
+                               shell=True,
+                               cwd=API_ROOT_PATH)
+    output, error = process.communicate()
+    logger.info(StringIO(output))
+    logger.info(StringIO(error))
 
 
 @log_cron
-def pc_synchronize_titelive_stocks():
-    with app.app_context():
-        with app.app_context():
-            titelive_stocks_provider_id = get_provider_by_local_class(TITELIVE_STOCKS_PROVIDER_NAME).id
-            update_venues_for_specific_provider(titelive_stocks_provider_id)
+@cron_context
+def pc_synchronize_titelive_stocks(app):
+    titelive_stocks_provider_id = get_provider_by_local_class(TITELIVE_STOCKS_PROVIDER_NAME).id
+    update_venues_for_specific_provider(titelive_stocks_provider_id)
 
 
 if __name__ == '__main__':
@@ -74,19 +73,27 @@ if __name__ == '__main__':
     scheduler = BlockingScheduler()
 
     if feature_cron_synchronize_titelive_things():
-        scheduler.add_job(pc_synchronize_titelive_things, 'cron', id='synchronize_titelive_things',
+        scheduler.add_job(pc_synchronize_titelive_things, 'cron',
+                          [app],
+                          id='synchronize_titelive_things',
                           day='*', hour='1')
 
     if feature_cron_synchronize_titelive_descriptions():
-        scheduler.add_job(pc_synchronize_titelive_descriptions, 'cron', id='synchronize_titelive_descriptions',
+        scheduler.add_job(pc_synchronize_titelive_descriptions, 'cron',
+                          [app],
+                          id='synchronize_titelive_descriptions',
                           day='*', hour='2')
 
     if feature_cron_synchronize_titelive_thumbs():
-        scheduler.add_job(pc_synchronize_titelive_thumbs, 'cron', id='synchronize_titelive_thumbs',
+        scheduler.add_job(pc_synchronize_titelive_thumbs, 'cron',
+                          [app],
+                          id='synchronize_titelive_thumbs',
                           day='*', hour='3')
 
     if feature_cron_synchronize_titelive_stocks():
-        scheduler.add_job(pc_synchronize_titelive_stocks, 'cron', id='synchronize_titelive_stocks',
+        scheduler.add_job(pc_synchronize_titelive_stocks, 'cron',
+                          [app],
+                          id='synchronize_titelive_stocks',
                           day='*', hour='6')
 
     scheduler.start()

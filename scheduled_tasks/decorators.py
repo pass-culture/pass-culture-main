@@ -5,6 +5,16 @@ from scheduled_tasks.logger import build_cron_log_message, CronStatus
 from utils.logger import logger
 
 
+def cron_context(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        clock_application = args[0]
+        with clock_application.app_context():
+            return func(*args, **kwargs)
+
+    return wrapper
+
+
 def log_cron(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
