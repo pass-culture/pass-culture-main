@@ -17,21 +17,21 @@ class Get:
         @clean_database
         def when_user_has_rights_on_managing_offerer(self, app):
             # Given
-            user = create_user(email='user@test.com')
+            beneficiary = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
             stock = create_stock(offer=offer)
             create_bank_information(venue=venue, id_at_providers=venue.siret)
             create_bank_information(offerer=offerer, id_at_providers=offerer.siren)
+            repository.save(beneficiary, stock)
 
-            repository.save(user, stock)
-
-            # when
-            response = TestClient(app.test_client()).with_auth(email='user@test.com') \
+            # When
+            response = TestClient(app.test_client()) \
+                .with_auth(email=beneficiary.email) \
                 .get(f'/offers/{humanize(offer.id)}')
 
-            # then
+            # Then
             response_json = response.json
             assert response.status_code == 200
             assert 'iban' in response_json['venue']
@@ -43,18 +43,19 @@ class Get:
         @clean_database
         def when_returns_an_active_mediation(self, app):
             # Given
-            user = create_user(email='user@test.com')
+            beneficiary = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
             mediation = create_mediation(offer, is_active=True)
-            repository.save(user, mediation)
+            repository.save(beneficiary, mediation)
 
-            # when
-            response = TestClient(app.test_client()).with_auth(email='user@test.com') \
+            # When
+            response = TestClient(app.test_client()) \
+                .with_auth(email=beneficiary.email) \
                 .get(f'/offers/{humanize(offer.id)}')
 
-            # then
+            # Then
             assert response.status_code == 200
             assert response.json['activeMediation'] is not None
 

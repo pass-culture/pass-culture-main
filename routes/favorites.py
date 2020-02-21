@@ -4,7 +4,7 @@ from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
 from domain.favorites import create_favorite
-from domain.favorites import find_first_matching_booking_from_favorite
+from domain.offers import find_first_matching_booking_from_offer_by_user
 from models import Mediation, Offer, Favorite
 from repository import repository
 from repository.favorite_queries import find_favorite_for_offer_and_user, find_all_favorites_by_user_id
@@ -25,7 +25,7 @@ def add_to_favorite():
     check_offer_id_is_present_in_request(offer_id)
 
     offer = load_or_404(Offer, offer_id)
-    if mediation_id != None:
+    if mediation_id is not None:
         mediation = load_or_404(Mediation, mediation_id)
 
     favorite = create_favorite(mediation, offer, current_user)
@@ -70,7 +70,7 @@ def _serialize_favorites(favorites: List[Favorite]) -> List:
 def _serialize_favorite(favorite: Favorite) -> dict:
     dict_favorite = as_dict(favorite, includes=FAVORITE_INCLUDES)
 
-    booking = find_first_matching_booking_from_favorite(favorite, current_user)
+    booking = find_first_matching_booking_from_offer_by_user(favorite.offer, current_user)
     if booking:
         dict_favorite['firstMatchingBooking'] = as_dict(
             booking, includes=WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES)

@@ -144,7 +144,6 @@ class HasStocksInFutureTest:
         # Then
         assert result is True
 
-
     @freeze_time('2020-01-10 10:00:00')
     def test_should_return_false_when_stocks_are_expired(self):
         # Given
