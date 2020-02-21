@@ -21,7 +21,7 @@ def test_should_return_error_when_siret_is_invalid():
 def test_should_return_error_when_address_is_invalid():
     # Given
     offerer = create_offerer()
-    venue = create_venue(offerer, siret="41816609600069", postal_code="123")
+    venue = create_venue(offerer, postal_code="123")
     api_errors = ApiErrors()
 
     # When
@@ -35,7 +35,7 @@ def test_should_return_error_when_address_is_invalid():
 def test_should_return_error_when_offerer_has_no_siren(app):
     # Given
     offerer = create_offerer(siren=None)
-    venue = create_venue(offerer, siret="41816609600069")
+    venue = create_venue(offerer)
     repository.save(venue)
     api_errors = ApiErrors()
 
