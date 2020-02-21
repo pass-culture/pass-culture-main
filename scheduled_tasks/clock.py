@@ -160,7 +160,7 @@ if __name__ == '__main__':
     orm.configure_mappers()
     scheduler = BlockingScheduler()
 
-    scheduler.add_job(synchronize_libraire_stocks, 'cron', id='synchronize_libraire_stocks', day='*', hour='21')
+    scheduler.add_job(pc_synchronize_libraires_stocks, 'cron', id='synchronize_libraire_stocks', day='*', hour='21')
 
     if feature_cron_send_final_booking_recaps_enabled():
         scheduler.add_job(pc_send_final_booking_recaps, 'cron', id='send_final_booking_recaps', day='*')
