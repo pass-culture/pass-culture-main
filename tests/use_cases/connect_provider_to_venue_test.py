@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from local_providers import AllocineStocks, LibrairesStocks, TiteLiveStocks
-from models import AllocineVenueProvider, VenueProvider, VenueProviderPriceRule
+from models import VenueProvider, VenueProvider, AllocineVenueProviderPriceRule, AllocineVenueProvider
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue
@@ -37,7 +37,7 @@ class UseCaseTest:
 
                 #Then
                 allocine_venue_provider = AllocineVenueProvider.query.one()
-                venue_provider_price_rule = VenueProviderPriceRule.query.one()
+                venue_provider_price_rule = AllocineVenueProviderPriceRule.query.one()
 
                 assert allocine_venue_provider.venue == venue
                 assert allocine_venue_provider.isDuo

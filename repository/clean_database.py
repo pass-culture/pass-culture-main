@@ -16,15 +16,15 @@ from models import ApiKey, \
     UserSession, \
     Venue, \
     Provider, \
-    VenueProvider, \
     PaymentMessage, \
     BankInformation, \
     LocalProviderEvent, \
     Favorite, \
     BeneficiaryImportStatus, \
     OfferCriterion, \
-    Criterion, VenueProviderPriceRule, AllocinePivot, AllocineVenueProvider
+    Criterion, AllocineVenueProviderPriceRule, AllocinePivot, VenueProvider
 from models.activity import load_activity
+from models.allocine_venue_provider import AllocineVenueProvider
 from models.db import db
 from models.email import Email
 from models.install import install_features
@@ -34,7 +34,7 @@ def clean_all_database(*args, **kwargs):
     """ Order of deletions matters because of foreign key constraints """
     Activity = load_activity()
     LocalProviderEvent.query.delete()
-    VenueProviderPriceRule.query.delete()
+    AllocineVenueProviderPriceRule.query.delete()
     AllocineVenueProvider.query.delete()
     VenueProvider.query.delete()
     PaymentStatus.query.delete()

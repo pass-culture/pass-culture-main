@@ -1,7 +1,7 @@
 from decimal import Decimal
 from unittest.mock import patch
 
-from models import ApiErrors, VenueProvider, VenueProviderPriceRule, AllocineVenueProvider
+from models import ApiErrors, VenueProvider, AllocineVenueProviderPriceRule, VenueProvider
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_venue_provider

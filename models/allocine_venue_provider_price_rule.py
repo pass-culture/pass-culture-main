@@ -6,16 +6,16 @@ from models import PcObject
 from models.db import Model
 
 
-class VenueProviderPriceRule(PcObject, Model):
+class AllocineVenueProviderPriceRule(PcObject, Model):
     priceRule = Column(Enum(PriceRule), nullable=False)
 
-    venueProviderId = Column(BigInteger,
-                             ForeignKey('venue_provider.id'),
+    allocineVenueProviderId = Column(BigInteger,
+                             ForeignKey('allocine_venue_provider.id'),
                              index=True,
                              nullable=False)
 
-    venueProvider = relationship('VenueProvider',
-                                 foreign_keys=[venueProviderId],
+    allocineVenueProvider = relationship('AllocineVenueProvider',
+                                 foreign_keys=[allocineVenueProviderId],
                                  backref='priceRules')
 
     price = Column(Numeric(10, 2),
@@ -24,7 +24,7 @@ class VenueProviderPriceRule(PcObject, Model):
 
     __table_args__ = (
         UniqueConstraint(
-            'venueProviderId',
+            'allocineVenueProviderId',
             'priceRule',
             name='unique_venue_provider_price_rule',
         ),

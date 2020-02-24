@@ -1,7 +1,7 @@
 from models import AllocineVenueProvider, VenueProvider
 from repository import repository
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider
+from tests.model_creators.generic_creators import create_offerer, create_venue
 from tests.model_creators.provider_creators import activate_provider
 
 
@@ -20,8 +20,8 @@ class AllocineVenueProviderTest:
 
         repository.save(allocine_venue_provider)
 
-        assert AllocineVenueProvider.query.count() == 1
         assert VenueProvider.query.count() == 1
+        assert AllocineVenueProvider.query.count() == 1
         allocine_vp = VenueProvider.query.filter(VenueProvider.providerId == provider_allocine.id).first()
         assert allocine_vp.isDuo
         assert allocine_vp.providerClass == 'AllocineStocks'

@@ -4,7 +4,7 @@ from typing import Dict
 from local_providers import AllocineStocks, LibrairesStocks, TiteLiveStocks
 from local_providers.local_provider import LocalProvider
 from local_providers.price_rule import PriceRule
-from models import VenueProvider, Venue, AllocineVenueProvider, VenueProviderPriceRule
+from models import AllocineVenueProvider, Venue, VenueProvider, AllocineVenueProviderPriceRule
 from repository import repository
 from repository.allocine_pivot_queries import get_allocine_theaterId_for_venue
 from utils.human_ids import dehumanize
@@ -21,7 +21,7 @@ def connect_provider_to_venue(provider_type: LocalProvider, venue_provider_paylo
     return new_venue_provider
 
 
-def _connect_allocine_to_venue(venue: Venue, payload: Dict) -> VenueProvider:
+def _connect_allocine_to_venue(venue: Venue, payload: Dict) -> AllocineVenueProvider:
     allocine_theater_id = get_allocine_theaterId_for_venue(venue)
 
     allocine_venue_provider = _create_allocine_venue_provider(allocine_theater_id, payload, venue)
@@ -43,9 +43,9 @@ def _connect_titelive_or_libraires_to_venue(venue: Venue, payload: Dict) -> Venu
     return venue_provider
 
 
-def _create_venue_provider_price_rule(allocine_venue_provider: AllocineVenueProvider, price: Decimal) -> VenueProviderPriceRule:
-    venue_provider_price_rule = VenueProviderPriceRule()
-    venue_provider_price_rule.venueProvider = allocine_venue_provider
+def _create_venue_provider_price_rule(allocine_venue_provider: VenueProvider, price: Decimal) -> AllocineVenueProviderPriceRule:
+    venue_provider_price_rule = AllocineVenueProviderPriceRule()
+    venue_provider_price_rule.allocineVenueProvider = allocine_venue_provider
     venue_provider_price_rule.priceRule = PriceRule.default
     venue_provider_price_rule.price = price
 

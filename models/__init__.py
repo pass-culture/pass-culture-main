@@ -1,5 +1,5 @@
 from models.allocine_pivot import AllocinePivot
-from models.allocine_venue_provider import AllocineVenueProvider
+from models.allocine_venue_provider import VenueProvider, AllocineVenueProvider
 from models.api_errors import ApiErrors
 from models.api_key import ApiKey
 from models.bank_information import BankInformation
@@ -41,7 +41,7 @@ from models.user_offerer import UserOfferer
 from models.user_session import UserSession
 from models.venue import Venue
 from models.venue_provider import VenueProvider
-from models.venue_provider_price_rule import VenueProviderPriceRule
+from models.allocine_venue_provider_price_rule import AllocineVenueProviderPriceRule
 from models.versioned_mixin import VersionedMixin
 
 __all__ = (
@@ -72,7 +72,7 @@ __all__ = (
     'Stock',
     'Offerer',
     'VenueProvider',
-    'VenueProviderPriceRule',
+    'AllocineVenueProviderPriceRule',
     'LocalProviderEvent',
     'OfferCriterion',
     'Offer',
@@ -116,8 +116,8 @@ models = (
     Stock,
     Booking,
     VenueProvider,
-    VenueProviderPriceRule,
     AllocineVenueProvider,
+    AllocineVenueProviderPriceRule,
     LocalProviderEvent,
     OfferCriterion,
     PaymentMessage,

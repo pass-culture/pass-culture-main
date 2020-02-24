@@ -8,7 +8,8 @@ from models import ApiKey, BankInformation, BeneficiaryImport, \
     Email, Favorite, ImportStatus, Mediation, Offer, Offerer, \
     Payment, PaymentMessage, PaymentStatus, Provider, \
     Recommendation, RightsType, Stock, ThingType, User, \
-    UserOfferer, Venue, VenueProvider, VenueProviderPriceRule, AllocinePivot
+    UserOfferer, Venue, AllocineVenueProviderPriceRule, AllocinePivot, VenueProvider
+from models.allocine_venue_provider import AllocineVenueProvider
 from models.email import EmailStatus
 from domain.payments import PaymentDetails
 from models.payment_status import TransactionStatus
@@ -553,15 +554,23 @@ def create_venue_provider(venue: Venue,
     return venue_provider
 
 
-def create_venue_provider_price_rule(venue_provider: VenueProvider,
-                                     idx: int = None,
-                                     price: int = 10,
-                                     price_rule: PriceRule = PriceRule.default) -> VenueProviderPriceRule:
-    venue_provider_price_rule = VenueProviderPriceRule()
+def create_allocine_venue_provider(allocine_provider: Provider, venue: Venue) -> AllocineVenueProvider:
+    allocine_venue_provider = AllocineVenueProvider()
+    allocine_venue_provider.venue = venue
+    allocine_venue_provider.provider = allocine_provider
+
+    return allocine_venue_provider
+
+
+def create_allocine_venue_provider_price_rule(allocine_venue_provider: AllocineVenueProvider,
+                                              idx: int = None,
+                                              price: int = 10,
+                                              price_rule: PriceRule = PriceRule.default) -> AllocineVenueProviderPriceRule:
+    venue_provider_price_rule = AllocineVenueProviderPriceRule()
     venue_provider_price_rule.id = idx
     venue_provider_price_rule.price = price
     venue_provider_price_rule.priceRule = price_rule
-    venue_provider_price_rule.venueProvider = venue_provider
+    venue_provider_price_rule.allocineVenueProvider = allocine_venue_provider
 
     return venue_provider_price_rule
 
@@ -581,3 +590,4 @@ def create_payment_status(payment: Payment, detail: str = None, status: Transact
     payment_status.status = status
     payment_status.date = date
     return payment_status
+
