@@ -1,6 +1,5 @@
 version: 2.1
 jobs:
-
   tests-script-pc:
     machine:
       image: circleci/classic:latest
@@ -178,7 +177,6 @@ jobs:
       - run: python3 scripts/analyze_report.py /tmp/artillery-report.json
       - store_artifacts:
           path: /tmp/artillery-report.json
-
   deploy-api:
     machine:
       image: circleci/classic:latest
@@ -213,7 +211,6 @@ jobs:
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
             curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Api,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
           when: on_fail
-
   deploy-api-datalake:
     machine:
       image: circleci/classic:latest
@@ -230,7 +227,7 @@ jobs:
           command: |
             SCALINGO_APP_NAME=$(./scripts/compute_app_name.sh ${CIRCLE_BRANCH})
             cd api
-            git remote add scalingo git@scalingo.com:${SCALINGO_APP_NAME}.git
+            git remote add scalingo git@${SCALINGO_REMOTE_URL}:${SCALINGO_APP_NAME}.git
             git push -f scalingo HEAD:master
 
   deploy-pro:
@@ -272,7 +269,6 @@ jobs:
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
             curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Pro,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
           when: on_fail
-
   deploy-webapp:
     machine:
       image: circleci/classic:latest
@@ -312,7 +308,6 @@ jobs:
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
             curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Webapp,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
           when: on_fail
-
   release-synthesis:
     machine:
       image: circleci/classic:latest
