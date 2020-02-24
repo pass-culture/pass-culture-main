@@ -13,6 +13,7 @@ class AllocineVenueProvider(VenueProvider):
                    nullable=False)
 
     available = Column(Integer,
+                       default=None,
                        nullable=True)
 
     __mapper_args__ = {

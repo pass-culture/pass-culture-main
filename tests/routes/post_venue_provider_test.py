@@ -1,7 +1,7 @@
 from decimal import Decimal
 from unittest.mock import patch
 
-from models import ApiErrors, VenueProvider, VenueProviderPriceRule
+from models import ApiErrors, VenueProvider, VenueProviderPriceRule, AllocineVenueProvider
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_venue_provider
@@ -74,10 +74,36 @@ class Post:
 
             # Then
             assert response.status_code == 201
-            venue_provider = VenueProvider.query.one()
-            venue_provider_price_rule = VenueProviderPriceRule.query.one()
-            assert len(venue_provider.priceRules) == 1
-            assert venue_provider_price_rule.price == Decimal('9.99')
+
+
+        @clean_database
+        @patch('routes.venue_providers.subprocess.Popen')
+        def when_add_allocine_stocks_provider_with_default_settings_at_import(self, mock_subprocess, app):
+            # Given
+            offerer = create_offerer(siren='775671464')
+            venue = create_venue(offerer)
+            user = create_user(is_admin=True, can_book_free_offers=False)
+            repository.save(venue, user)
+
+            provider = activate_provider('AllocineStocks')
+
+            venue_provider_data = {
+                'providerId': humanize(provider.id),
+                'venueId': humanize(venue.id),
+                'price': '9.99',
+                'available': 50,
+                'isDuo': True
+            }
+
+            auth_request = TestClient(app.test_client()) \
+                .with_auth(email=user.email)
+
+            # When
+            response = auth_request.post('/venueProviders',
+                                         json=venue_provider_data)
+
+            # Then
+            assert response.status_code == 201
 
     class Returns400:
         @clean_database

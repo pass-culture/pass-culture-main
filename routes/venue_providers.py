@@ -1,18 +1,13 @@
 import subprocess
-from typing import Dict
 
 from flask import current_app as app, jsonify, request
 from flask_login import login_required
 
 import local_providers
-from local_providers import AllocineStocks, TiteLiveStocks, LibrairesStocks
-from models import Venue
 from models.api_errors import ApiErrors
 from models.venue_provider import VenueProvider
-from repository import repository
-from repository.allocine_pivot_queries import get_allocine_theaterId_for_venue
 from repository.provider_queries import get_provider_enabled_for_pro_by_id
-from repository.venue_provider_price_rule_queries import save_venue_provider_price_rule
+from use_cases.connect_provider_to_venue import connect_provider_to_venue
 from routes.serialization import as_dict
 from utils.config import API_ROOT_PATH
 from utils.human_ids import dehumanize
@@ -58,10 +53,7 @@ def create_venue_provider():
     validate_existing_provider(provider)
 
     provider_type = getattr(local_providers, provider.localClass)
-    if provider_type == AllocineStocks:
-        new_venue_provider = _save_allocine_venue_provider(venue_provider_payload)
-    elif provider_type == LibrairesStocks or TiteLiveStocks:
-        new_venue_provider = _save_titelive_or_libraires_venue_provider(venue_provider_payload)
+    new_venue_provider = connect_provider_to_venue(provider_type, venue_provider_payload)
 
     _run_first_synchronization(new_venue_provider)
 
@@ -74,30 +66,3 @@ def _run_first_synchronization(new_venue_provider):
                      shell=True,
                      cwd=API_ROOT_PATH)
 
-
-def _save_allocine_venue_provider(payload: Dict) -> VenueProvider:
-    venue = load_or_404(Venue, payload['venueId'])
-    allocine_theater_id = get_allocine_theaterId_for_venue(venue)
-
-    venue_provider = VenueProvider()
-    venue_provider.venueId = venue.id
-    venue_provider.providerId = dehumanize(payload['providerId'])
-    venue_provider.venueIdAtOfferProvider = allocine_theater_id
-    venue_provider.isDuo = bool(payload.get('isDuo'))
-    venue_provider.quantity = payload.get('quantity')
-
-    save_venue_provider_price_rule(venue_provider, payload.get('price'))
-
-    repository.save(venue_provider)
-    return venue_provider
-
-
-def _save_titelive_or_libraires_venue_provider(payload: Dict) -> VenueProvider:
-    venue = load_or_404(Venue, payload['venueId'])
-    venue_provider = VenueProvider()
-    venue_provider.venueId = venue.id
-    venue_provider.providerId = dehumanize(payload['providerId'])
-    venue_provider.venueIdAtOfferProvider = venue.siret
-
-    repository.save(venue_provider)
-    return venue_provider
