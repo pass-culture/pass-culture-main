@@ -177,7 +177,7 @@ class SearchAlgolia extends PureComponent {
         <Switch>
           <Route
             exact
-            path="/recherche-offres"
+            path="/recherche-offres/:menu?"
           >
             {!hasSearchBeenMade && (
               <HeaderContainer

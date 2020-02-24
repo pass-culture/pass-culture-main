@@ -2,6 +2,14 @@
   @extend .page;
   @extend .with-footer;
   @extend .with-header;
+
+  position: static;
+  display: flex;
+  flex-direction: column;
+
+  .pc-footer {
+    position: static;
+  }
 }
 
 .header-search-main-page {
@@ -21,6 +29,7 @@
   display: flex;
   justify-content: center;
   position: absolute;
+  z-index: 2;
   width: 100%;
 }
 
@@ -52,8 +61,7 @@
 
 .sp-text-input-wrapper {
   display: flex;
-  padding: rem(25px) 0;
-  width: 100%;
+  flex-grow: 1;
 }
 
 .sp-text-input {
@@ -62,7 +70,7 @@
   font-weight: 700;
   padding: rem(9px);
   width: 75%;
-  
+
   &::placeholder {
     font-size: rem(18px);
     font-style: italic;
@@ -73,6 +81,9 @@
 .sp-text-input-form {
   background-color: $primary;
   padding-right: rem(12px);
+  height: 16.5vh;
+  display: flex;
+  align-items: center;
 }
 
 .sp-text-input-reset {
@@ -105,8 +116,8 @@
 
 .sp-results-wrapper {
   background: $white;
-  height: 100%;
   overflow-y: auto;
+  flex-grow: 1;
 }
 
 .sp-results-title {
