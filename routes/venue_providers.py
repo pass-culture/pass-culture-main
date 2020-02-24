@@ -7,8 +7,8 @@ import local_providers
 from models.api_errors import ApiErrors
 from models.venue_provider import VenueProvider
 from repository.provider_queries import get_provider_enabled_for_pro_by_id
-from use_cases.connect_provider_to_venue import connect_provider_to_venue
 from routes.serialization import as_dict
+from use_cases.connect_provider_to_venue import connect_provider_to_venue
 from utils.config import API_ROOT_PATH
 from utils.human_ids import dehumanize
 from utils.includes import VENUE_PROVIDER_INCLUDES
@@ -60,9 +60,8 @@ def create_venue_provider():
     return jsonify(as_dict(new_venue_provider, includes=VENUE_PROVIDER_INCLUDES)), 201
 
 
-def _run_first_synchronization(new_venue_provider):
+def _run_first_synchronization(new_venue_provider: VenueProvider):
     subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
                      + ' --venue-provider-id %s' % str(new_venue_provider.id),
                      shell=True,
                      cwd=API_ROOT_PATH)
-

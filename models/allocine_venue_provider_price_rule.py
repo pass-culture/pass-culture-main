@@ -10,13 +10,13 @@ class AllocineVenueProviderPriceRule(PcObject, Model):
     priceRule = Column(Enum(PriceRule), nullable=False)
 
     allocineVenueProviderId = Column(BigInteger,
-                             ForeignKey('allocine_venue_provider.id'),
-                             index=True,
-                             nullable=False)
+                                     ForeignKey('allocine_venue_provider.id'),
+                                     index=True,
+                                     nullable=False)
 
     allocineVenueProvider = relationship('AllocineVenueProvider',
-                                 foreign_keys=[allocineVenueProviderId],
-                                 backref='priceRules')
+                                         foreign_keys=[allocineVenueProviderId],
+                                         backref='priceRules')
 
     price = Column(Numeric(10, 2),
                    CheckConstraint('price >= 0', name='check_price_is_not_negative'),

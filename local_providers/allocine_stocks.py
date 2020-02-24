@@ -29,11 +29,11 @@ class AllocineStocks(LocalProvider):
     can_create = True
     manually_editable_fields = ['available', 'price', 'bookingLimitDatetime']
 
-    def __init__(self, venue_provider: VenueProvider, allocine_venue_provider=AllocineVenueProvider()):
-        super().__init__(venue_provider)
+    def __init__(self, allocine_venue_provider: AllocineVenueProvider):
+        super().__init__(allocine_venue_provider)
         self.api_key = os.environ.get('ALLOCINE_API_KEY', None)
-        self.venue = venue_provider.venue
-        self.theater_id = venue_provider.venueIdAtOfferProvider
+        self.venue = allocine_venue_provider.venue
+        self.theater_id = allocine_venue_provider.venueIdAtOfferProvider
         self.movies_showtimes = get_movies_showtimes(self.api_key, self.theater_id)
         self.isDuo = allocine_venue_provider.isDuo
         self.available = allocine_venue_provider.available

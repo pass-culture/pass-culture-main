@@ -1,15 +1,15 @@
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, UniqueConstraint, case, select
 from sqlalchemy.orm import relationship, column_property
 
-from models.provider import Provider
-from models.offer import Offer
 from models.db import Model, db
 from models.deactivable_mixin import DeactivableMixin
+from models.offer import Offer
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
+from models.provider import Provider
 
 
-def is_from_allocine_provider(provider_local_class: str):
+def is_from_allocine_provider(provider_local_class: str) -> bool:
     if provider_local_class == 'AllocineStocks':
         return db.true()
     return db.false()
@@ -74,8 +74,3 @@ class VenueProvider(PcObject,
             .filter(Offer.venueId == self.venueId) \
             .filter(Offer.lastProviderId == self.providerId) \
             .count()
-
-    def setConfig(self, config):
-        pass
-
-

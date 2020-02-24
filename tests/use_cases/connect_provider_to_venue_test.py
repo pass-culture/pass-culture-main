@@ -1,10 +1,13 @@
 from decimal import Decimal
 
+import pytest
+
 from local_providers import AllocineStocks, LibrairesStocks, TiteLiveStocks
-from models import VenueProvider, VenueProvider, AllocineVenueProviderPriceRule, AllocineVenueProvider
+from models import VenueProvider, AllocineVenueProviderPriceRule, AllocineVenueProvider, ApiErrors
 from repository import repository
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_offerer, create_venue
+from tests.local_providers.provider_test_utils import TestLocalProvider
+from tests.model_creators.generic_creators import create_offerer, create_venue, create_provider
 from tests.model_creators.provider_creators import activate_provider
 from use_cases.connect_provider_to_venue import connect_provider_to_venue
 from utils.human_ids import humanize
@@ -15,7 +18,7 @@ class UseCaseTest:
         class WhenProviderIsAllocine:
             @clean_database
             def test_should_connect_venue_to_allocine_provider(self, app):
-                #Given
+                # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer)
                 provider = activate_provider('AllocineStocks')
@@ -32,10 +35,10 @@ class UseCaseTest:
                     'available': 50
                 }
 
-                #When
+                # When
                 connect_provider_to_venue(provider_type, venue_provider_payload)
 
-                #Then
+                # Then
                 allocine_venue_provider = AllocineVenueProvider.query.one()
                 venue_provider_price_rule = AllocineVenueProviderPriceRule.query.one()
 
@@ -44,11 +47,10 @@ class UseCaseTest:
                 assert allocine_venue_provider.available == 50
                 assert venue_provider_price_rule.price == Decimal('9.99')
 
-
         class WhenProviderIsLibraires:
             @clean_database
             def test_should_connect_venue_to_libraires_provider(self, app):
-                #Given
+                # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer)
                 provider = activate_provider('LibrairesStocks')
@@ -62,18 +64,17 @@ class UseCaseTest:
                     'venueId': humanize(venue.id),
                 }
 
-                #When
+                # When
                 connect_provider_to_venue(provider_type, venue_provider_payload)
 
-                #Then
+                # Then
                 libraires_venue_provider = VenueProvider.query.one()
                 assert libraires_venue_provider.venue == venue
-
 
         class WhenProviderIsTiteLive:
             @clean_database
             def test_should_connect_venue_to_titelive_provider(self, app):
-                #Given
+                # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer)
                 provider = activate_provider('TiteLiveStocks')
@@ -87,9 +88,32 @@ class UseCaseTest:
                     'venueId': humanize(venue.id),
                 }
 
-                #When
+                # When
                 connect_provider_to_venue(provider_type, venue_provider_payload)
 
-                #Then
+                # Then
                 titelive_venue_provider = VenueProvider.query.one()
                 assert titelive_venue_provider.venue == venue
+
+        class WhenProviderIsSomethingElse:
+            @clean_database
+            def test_should_raise_an_error(self, app):
+                # Given
+                offerer = create_offerer()
+                venue = create_venue(offerer)
+                provider = create_provider(local_class='TestLocalProvider')
+                repository.save(venue, provider)
+
+                provider_type = TestLocalProvider
+
+                venue_provider_payload = {
+                    'providerId': humanize(provider.id),
+                    'venueId': humanize(venue.id),
+                }
+
+                # When
+                with pytest.raises(ApiErrors) as error:
+                    connect_provider_to_venue(provider_type, venue_provider_payload)
+
+                # Then
+                assert error.value.errors['provider'] == ['Provider non pris en charge']

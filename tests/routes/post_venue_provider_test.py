@@ -1,7 +1,6 @@
-from decimal import Decimal
 from unittest.mock import patch
 
-from models import ApiErrors, VenueProvider, AllocineVenueProviderPriceRule, VenueProvider
+from models import ApiErrors, VenueProvider
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_venue_provider
@@ -50,7 +49,7 @@ class Post:
 
         @clean_database
         @patch('routes.venue_providers.subprocess.Popen')
-        def when_add_allocine_stocks_provider_with_price(self, mock_subprocess, app):
+        def when_add_allocine_stocks_provider_with_price_but_no_isDuo_config(self, mock_subprocess, app):
             # Given
             offerer = create_offerer(siren='775671464')
             venue = create_venue(offerer)
@@ -74,7 +73,6 @@ class Post:
 
             # Then
             assert response.status_code == 201
-
 
         @clean_database
         @patch('routes.venue_providers.subprocess.Popen')
