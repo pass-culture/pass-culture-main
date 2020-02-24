@@ -73,8 +73,6 @@ jobs:
           POSTGRES_DB: pass_culture
     steps:
       - checkout:
-      #- restore_cache:
-      #    key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run:
           name: Initialize api environment
           command: |
@@ -82,10 +80,6 @@ jobs:
             . venv/bin/activate
             pip install -r requirements.txt
             python -m nltk.downloader punkt stopwords
-      #- save_cache:
-      #    key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
-      #    paths:
-      #      - "venv"
       - run:
           name: Initialize data
           command: |
@@ -251,7 +245,6 @@ workflows:
   version: 2
   commit:
     jobs:
-      - tests-metabase
       - build:
           filters:
             branches:
@@ -273,3 +266,4 @@ workflows:
     jobs:
       - functional-tests-webapp
       - functional-tests-pro
+      - tests-metabase
