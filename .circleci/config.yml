@@ -61,7 +61,6 @@ jobs:
             docker push passcultureapp/api-flask:latest
 
   tests-metabase:
-    working_directory: ~/
     docker:
       - image: circleci/python:3.7.6
         environment:
@@ -73,19 +72,38 @@ jobs:
           POSTGRES_PASSWORD: passq
           POSTGRES_DB: pass_culture
     steps:
+      - checkout:
+      #- restore_cache:
+      #    key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run:
-          name: Initialize environment
+          name: Initialize api environment
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+            python -m nltk.downloader punkt stopwords
+      #- save_cache:
+      #    key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+      #    paths:
+      #      - "venv"
+      - run:
+          name: Initialize data
           command: |
             git clone https://github.com/betagouv/pass-culture-metabase.git
+            cd pass-culture-metabase
+            cp install_models.py ../install_models.py;
+            cd ..
+            . venv/bin/activate
+            PYTHONPATH=. python install_models.py;
+      - run:
+          name: Run tests
+          command: |
             cd pass-culture-metabase
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
-      - run:
-          name: Running tests
-          command: |
-            . venv/bin/activate
-            pytest tests
+            pytest
+
 
   functional-tests-webapp:
     machine:
