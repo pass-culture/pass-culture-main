@@ -12,8 +12,8 @@ class AllocineVenueProvider(VenueProvider):
                    default=False,
                    nullable=False)
 
-    def setConfig(self, config):
-        self.isDuo = config.isDuo
+    available = Column(Integer,
+                       nullable=True)
 
     __mapper_args__ = {
         'polymorphic_identity': 'allocine_venue_provider',

@@ -11,7 +11,7 @@ from domain.allocine import get_movies_showtimes, get_movie_poster
 from local_providers.local_provider import LocalProvider
 from local_providers.price_rule import AllocineStocksPriceRule
 from local_providers.providable_info import ProvidableInfo
-from models import VenueProvider, Offer, Product, EventType, Stock, Venue
+from models import VenueProvider, Offer, Product, EventType, Stock, Venue, AllocineVenueProvider
 from models.db import Model, db
 from models.local_provider_event import LocalProviderEventType
 from utils.date import get_dept_timezone
@@ -29,12 +29,14 @@ class AllocineStocks(LocalProvider):
     can_create = True
     manually_editable_fields = ['available', 'price', 'bookingLimitDatetime']
 
-    def __init__(self, venue_provider: VenueProvider):
+    def __init__(self, venue_provider: VenueProvider, allocine_venue_provider=AllocineVenueProvider()):
         super().__init__(venue_provider)
         self.api_key = os.environ.get('ALLOCINE_API_KEY', None)
         self.venue = venue_provider.venue
         self.theater_id = venue_provider.venueIdAtOfferProvider
         self.movies_showtimes = get_movies_showtimes(self.api_key, self.theater_id)
+        self.isDuo = allocine_venue_provider.isDuo
+        self.available = allocine_venue_provider.available
 
         self.movie_information = None
         self.filtered_movie_showtimes = None
@@ -140,10 +142,7 @@ class AllocineStocks(LocalProvider):
 
         if is_new_offer_to_insert:
             allocine_offer.id = get_next_offer_id_from_database()
-
-        if not is_new_offer_to_insert:
-            if 'isDuo' not in allocine_offer.fieldsUpdated:
-                allocine_offer.isDuo = False
+            allocine_offer.isDuo = self.isDuo
 
         if movie_version == ORIGINAL_VERSION_SUFFIX:
             self.last_vo_offer_id = allocine_offer.id
@@ -172,7 +171,7 @@ class AllocineStocks(LocalProvider):
             allocine_stock.bookingLimitDatetime = date_in_utc
 
         if 'available' not in allocine_stock.fieldsUpdated:
-            allocine_stock.available = None
+            allocine_stock.available = self.available
 
         if 'price' not in allocine_stock.fieldsUpdated:
             allocine_stock.price = self.apply_allocine_price_rule(allocine_stock)

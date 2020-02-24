@@ -77,7 +77,7 @@ def test_raise_errors_if_venue_provider_already_exists_with_same_information(app
 @clean_database
 def test_venue_provider_should_have_the_correct_provider_class(app):
     # given
-    provider = activate_provider('LibrairesStocks')
+    provider = activate_provider('AllocineStocks')
     offerer = create_offerer()
     venue = create_venue(offerer)
     venue_provider = create_venue_provider(venue, provider)
@@ -87,4 +87,4 @@ def test_venue_provider_should_have_the_correct_provider_class(app):
     allocine_venue_provider = VenueProvider.query.first()
 
     # then
-    assert allocine_venue_provider.providerClass == 'LibrairesStocks'
+    assert allocine_venue_provider.providerClass == 'AllocineStocks'
