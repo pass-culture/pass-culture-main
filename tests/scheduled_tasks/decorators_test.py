@@ -26,7 +26,7 @@ class LogCronTest:
     @patch('scheduled_tasks.decorators.time.time')
     @patch('scheduled_tasks.decorators.logger.info')
     @patch('scheduled_tasks.decorators.build_cron_log_message')
-    def test_should_call_logger_with_builded_message(self, mock_cron_log_builder, mock_logger, mock_time):
+    def test_should_call_logger_with_builded_message(self, mock_cron_log_builder, mock_logger_info, mock_time):
         # Given
         @log_cron
         def decorated_function(*args):
@@ -42,7 +42,7 @@ class LogCronTest:
         # Then
         assert result == 'expected result'
         assert mock_time.call_count == 2
-        assert mock_logger.call_count == 2
+        assert mock_logger_info.call_count == 2
         assert mock_cron_log_builder.call_count == 2
         assert mock_cron_log_builder.call_args_list == [call(name=decorated_function.__name__,
                                                              status=CronStatus.STARTED),

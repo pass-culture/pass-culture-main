@@ -33,3 +33,4 @@ def install_scripts():
     import scripts.storage
     import scripts.install_data
     import scripts.payment.banishment_command
+    import scripts.payment.generate_payments

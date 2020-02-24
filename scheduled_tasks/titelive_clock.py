@@ -16,14 +16,6 @@ from scheduled_tasks.decorators import log_cron, cron_context
 from utils.config import API_ROOT_PATH
 from utils.logger import logger
 
-app = Flask(__name__, template_folder='../templates')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['DEBUG'] = True
-db.init_app(app)
-
-TITELIVE_STOCKS_PROVIDER_NAME = "TiteLiveStocks"
-
 
 @log_cron
 @cron_context
@@ -64,36 +56,37 @@ def pc_synchronize_titelive_thumbs(app):
 @log_cron
 @cron_context
 def pc_synchronize_titelive_stocks(app):
-    titelive_stocks_provider_id = get_provider_by_local_class(TITELIVE_STOCKS_PROVIDER_NAME).id
+    titelive_stocks_provider_id = get_provider_by_local_class("TiteLiveStocks").id
     update_venues_for_specific_provider(titelive_stocks_provider_id)
 
 
 if __name__ == '__main__':
+    app = Flask(__name__)
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    db.init_app(app)
+
     orm.configure_mappers()
     scheduler = BlockingScheduler()
 
     if feature_cron_synchronize_titelive_things():
         scheduler.add_job(pc_synchronize_titelive_things, 'cron',
                           [app],
-                          id='synchronize_titelive_things',
                           day='*', hour='1')
 
     if feature_cron_synchronize_titelive_descriptions():
         scheduler.add_job(pc_synchronize_titelive_descriptions, 'cron',
                           [app],
-                          id='synchronize_titelive_descriptions',
                           day='*', hour='2')
 
     if feature_cron_synchronize_titelive_thumbs():
         scheduler.add_job(pc_synchronize_titelive_thumbs, 'cron',
                           [app],
-                          id='synchronize_titelive_thumbs',
                           day='*', hour='3')
 
     if feature_cron_synchronize_titelive_stocks():
         scheduler.add_job(pc_synchronize_titelive_stocks, 'cron',
                           [app],
-                          id='synchronize_titelive_stocks',
                           day='*', hour='6')
 
     scheduler.start()

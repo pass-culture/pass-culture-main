@@ -4,7 +4,6 @@ from io import StringIO
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from flask import Flask
-from mailjet_rest import Client
 from sqlalchemy import orm
 
 from models import DiscoveryView
@@ -23,23 +22,6 @@ from scripts.dashboard.write_dashboard import write_dashboard
 from scripts.update_booking_used import update_booking_used_after_stock_occurrence
 from utils.config import API_ROOT_PATH
 from utils.logger import logger
-from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
-
-app = Flask(__name__, template_folder='../templates')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['DEBUG'] = True
-db.init_app(app)
-
-RECO_VIEW_REFRESH_FREQUENCY = os.environ.get('RECO_VIEW_REFRESH_FREQUENCY', '*')
-
-
-@log_cron
-@cron_context
-def pc_generate_and_send_payments(app, payment_message_id: str = None):
-    from scripts.payment.batch import generate_and_send_payments
-    app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
-    generate_and_send_payments(payment_message_id)
 
 
 @log_cron
@@ -79,8 +61,8 @@ def pc_synchronize_libraires_stocks(app):
 @log_cron
 @cron_context
 def pc_retrieve_offerers_bank_information(app):
-    process = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
-                               + ' --provider BankInformationProvider',
+    process = subprocess.Popen(f'PYTHONPATH="." python scripts/pc.py update_providables'
+                               f' --provider BankInformationProvider',
                                shell=True,
                                cwd=API_ROOT_PATH)
     output, error = process.communicate()
@@ -109,55 +91,49 @@ def pc_update_recommendations_view(app):
 
 
 if __name__ == '__main__':
+    app = Flask(__name__)
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    db.init_app(app)
+
+    discovery_view_refresh_frequency = os.environ.get('RECO_VIEW_REFRESH_FREQUENCY', '*')
+
     orm.configure_mappers()
     scheduler = BlockingScheduler()
-
-    if feature_cron_synchronize_libraires_stocks():
-        scheduler.add_job(pc_synchronize_libraires_stocks, 'cron',
-                          [app],
-                          id='synchronize_libraire_stocks',
-                          day='*', hour='21')
 
     if feature_cron_retrieve_offerers_bank_information():
         scheduler.add_job(pc_retrieve_offerers_bank_information, 'cron',
                           [app],
-                          id='retrieve_offerers_bank_information',
                           day='*')
 
     if feature_cron_synchronize_allocine_stocks():
         scheduler.add_job(pc_synchronize_allocine_stocks, 'cron',
                           [app],
-                          id='synchronize_allocine_stocks',
                           day='*', hour='23')
 
     if feature_cron_synchronize_libraires_stocks():
         scheduler.add_job(pc_synchronize_libraires_stocks, 'cron',
                           [app],
-                          id='synchronize_libraires_stocks',
                           day='*', hour='22')
 
     if feature_import_beneficiaries_enabled():
         scheduler.add_job(pc_remote_import_beneficiaries, 'cron',
                           [app],
-                          id='remote_import_beneficiaries',
                           day='*')
 
     if feature_write_dashboard_enabled():
         scheduler.add_job(pc_write_dashboard, 'cron',
                           [app],
-                          id='pc_write_dashboard',
                           day='*', hour='4')
 
     if feature_update_booking_used():
         scheduler.add_job(pc_update_booking_used, 'cron',
                           [app],
-                          id='pc_update_booking_used',
                           day='*', hour='0')
 
     if feature_update_recommendations_view():
         scheduler.add_job(pc_update_recommendations_view, 'cron',
                           [app],
-                          id='pc_update_recommendations_view',
-                          minute=RECO_VIEW_REFRESH_FREQUENCY)
+                          minute=discovery_view_refresh_frequency)
 
     scheduler.start()
