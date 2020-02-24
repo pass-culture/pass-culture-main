@@ -32,4 +32,20 @@ describe('src | components | pages | Offer | utils | isLibrairesOffer', () => {
     // then
     expect(isOfferLibrairesGenerated).toBe(false)
   })
+
+  it('should return false if last provider name is "TiteLive Stocks (Epagine / Place des libraires.com)"', () => {
+    // given
+    const offer = {
+      id: 'AZER',
+      lastProvider: {
+        name: 'TiteLive Stocks (Epagine / Place des libraires.com)',
+      },
+    }
+
+    // when
+    const isOfferLibrairesGenerated = isLibrairesOffer(offer)
+
+    // then
+    expect(isOfferLibrairesGenerated).toBe(false)
+  })
 })

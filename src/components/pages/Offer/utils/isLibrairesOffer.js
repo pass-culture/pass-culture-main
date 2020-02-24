@@ -8,7 +8,7 @@ const isLibrairesOffer = (offer = null) => {
     return false
   }
 
-  return lastProvider.name.toLowerCase().includes('libraires')
+  return lastProvider.name === 'Leslibraires.fr'
 }
 
 export default isLibrairesOffer

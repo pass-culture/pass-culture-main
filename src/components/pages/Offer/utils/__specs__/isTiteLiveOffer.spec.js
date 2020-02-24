@@ -6,7 +6,7 @@ describe('src | components | pages | Offer | utils | isTiteLiveOffer', () => {
     const offer = {
       id: 'AZER',
       lastProvider: {
-        name: 'TiteLive Stock Manager',
+        name: 'TiteLive Stocks (Epagine / Place des libraires.com)',
       },
     }
 
