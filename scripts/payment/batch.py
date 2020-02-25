@@ -6,6 +6,7 @@ from repository.payment_queries import get_payments_by_message_id
 from scripts.payment.batch_steps import generate_new_payments, concatenate_payments_with_errors_and_retries, \
     send_transactions, send_payments_report, send_payments_details, send_wallet_balances, \
     set_not_processable_payments_with_bank_information_to_retry
+from scripts.update_booking_used import update_booking_used_after_stock_occurrence
 from utils.logger import logger
 from utils.mailing import parse_email_addresses
 
@@ -19,6 +20,9 @@ def generate_and_send_payments(payment_message_id: str = None):
     PAYMENTS_REPORT_RECIPIENTS = parse_email_addresses(os.environ.get('PAYMENTS_REPORT_RECIPIENTS', None))
     PAYMENTS_DETAILS_RECIPIENTS = parse_email_addresses(os.environ.get('PAYMENTS_DETAILS_RECIPIENTS', None))
     WALLET_BALANCES_RECIPIENTS = parse_email_addresses(os.environ.get('WALLET_BALANCES_RECIPIENTS', None))
+
+    logger.info('[BATCH][PAYMENTS] STEP 0 : validate bookings later than event end datetime')
+    update_booking_used_after_stock_occurrence()
 
     not_processable_payments, payments_to_send = generate_or_collect_payments(payment_message_id)
 
