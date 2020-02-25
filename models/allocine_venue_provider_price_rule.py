@@ -26,13 +26,13 @@ class AllocineVenueProviderPriceRule(PcObject, Model):
         UniqueConstraint(
             'allocineVenueProviderId',
             'priceRule',
-            name='unique_venue_provider_price_rule',
+            name='unique_allocine_venue_provider_price_rule',
         ),
     )
 
     @staticmethod
     def restize_integrity_error(internal_error):
-        if 'unique_venue_provider_price_rule' in str(internal_error.orig):
+        if 'unique_allocine_venue_provider_price_rule' in str(internal_error.orig):
             return ['global', "Vous ne pouvez avoir qu''un seul prix par catégorie"]
         if 'check_price_is_not_negative' in str(internal_error.orig):
             return ['global', "Vous ne pouvez renseigner un prix négatif"]

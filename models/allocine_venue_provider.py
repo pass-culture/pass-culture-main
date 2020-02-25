@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, ForeignKey, Boolean
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, false
 
 from models.venue_provider import VenueProvider
 
@@ -10,11 +10,10 @@ class AllocineVenueProvider(VenueProvider):
 
     isDuo = Column(Boolean,
                    default=False,
+                   server_default=false(),
                    nullable=False)
 
-    available = Column(Integer,
-                       default=None,
-                       nullable=True)
+    available = Column(Integer, nullable=True)
 
     __mapper_args__ = {
         'polymorphic_identity': 'allocine_venue_provider',

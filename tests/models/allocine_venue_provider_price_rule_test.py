@@ -7,7 +7,7 @@ from models import ApiErrors, AllocineVenueProviderPriceRule
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_allocine_venue_provider, create_venue, create_offerer, \
+from tests.model_creators.generic_creators import create_venue, create_offerer, \
     create_allocine_venue_provider_price_rule, create_allocine_venue_provider
 from tests.model_creators.provider_creators import activate_provider
 
@@ -21,7 +21,9 @@ class VenueProviderPriceRuleTest:
         allocine_provider = get_provider_by_local_class('AllocineStocks')
         allocine_provider.isActive = True
         allocine_venue_provider = create_allocine_venue_provider(allocine_provider, venue)
-        allocine_venue_provider_price_rule = create_allocine_venue_provider_price_rule(allocine_venue_provider, price_rule=PriceRule.default, price=10)
+        allocine_venue_provider_price_rule = create_allocine_venue_provider_price_rule(allocine_venue_provider,
+                                                                                       price_rule=PriceRule.default,
+                                                                                       price=10)
 
         # When
         repository.save(allocine_venue_provider_price_rule)
@@ -53,12 +55,13 @@ class VenueProviderPriceRuleTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        allocine_provider = get_provider_by_local_class('AllocineStocks')
-        allocine_provider.isActive = True
+        allocine_provider = activate_provider('AllocineStocks')
         allocine_venue_provider = create_allocine_venue_provider(allocine_provider, venue)
-        venue_provider_price_rule = create_allocine_venue_provider_price_rule(allocine_venue_provider, price_rule=PriceRule.default, price=10)
+        venue_provider_price_rule = create_allocine_venue_provider_price_rule(allocine_venue_provider,
+                                                                              price_rule=PriceRule.default, price=10)
         repository.save(venue_provider_price_rule)
-        venue_provider_price_rule2 = create_allocine_venue_provider_price_rule(allocine_venue_provider, price_rule=PriceRule.default, price=12)
+        venue_provider_price_rule2 = create_allocine_venue_provider_price_rule(allocine_venue_provider,
+                                                                               price_rule=PriceRule.default, price=12)
 
         # When
         with pytest.raises(ApiErrors) as error:
@@ -75,7 +78,8 @@ class VenueProviderPriceRuleTest:
         allocine_provider = get_provider_by_local_class('AllocineStocks')
         allocine_venue_provider = create_allocine_venue_provider(allocine_provider, venue)
         price = 'wrong_price_format'
-        venue_provider_price_rule = create_allocine_venue_provider_price_rule(allocine_venue_provider, price_rule=PriceRule.default, price=price)
+        venue_provider_price_rule = create_allocine_venue_provider_price_rule(allocine_venue_provider,
+                                                                              price_rule=PriceRule.default, price=price)
 
         # When
         with pytest.raises(ApiErrors) as error:
