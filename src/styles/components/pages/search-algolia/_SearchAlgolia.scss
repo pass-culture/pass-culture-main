@@ -55,13 +55,12 @@
   border-top-right-radius: 0;
   display: flex;
   justify-content: flex-end;
-  margin-left: rem(12px);
   width: 10%;
 }
 
 .sp-text-input-wrapper {
   display: flex;
-  flex-grow: 1;
+  width: 90%;
 }
 
 .sp-text-input {
@@ -80,9 +79,10 @@
 
 .sp-text-input-form {
   background-color: $primary;
-  padding-right: rem(12px);
   height: 16.5vh;
   display: flex;
+  justify-content: center;
+  padding: 1rem 0;
   align-items: center;
 }
 
