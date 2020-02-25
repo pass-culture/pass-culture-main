@@ -1546,14 +1546,13 @@ class GetValidBookingsByUserId:
         assert bookings == [booking2, booking3, booking1]
 
 
-class FindNotUsedAndNotCancelledBookingsAssociatedToOutdatedStockTest:
+class FindNotUsedAndNotCancelledBookingsAssociatedToOutdatedStocksTest:
     @clean_database
     @freeze_time('2020-01-10')
     def test_should_return_bookings_which_are_not_cancelled(self, app):
         # Given
         user = create_user()
         create_deposit(user)
-
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
@@ -1575,7 +1574,6 @@ class FindNotUsedAndNotCancelledBookingsAssociatedToOutdatedStockTest:
         # Given
         user = create_user()
         create_deposit(user)
-
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
@@ -1597,7 +1595,6 @@ class FindNotUsedAndNotCancelledBookingsAssociatedToOutdatedStockTest:
         # Given
         user = create_user()
         create_deposit(user)
-
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)

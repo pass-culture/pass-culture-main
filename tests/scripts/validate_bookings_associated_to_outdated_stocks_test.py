@@ -4,7 +4,7 @@ from freezegun import freeze_time
 
 from models.db import db
 from repository import repository
-from scripts.correct_unused_bookings_after_limit_end_time import correct_unused_bookings_after_limit_end_time
+from scripts.validate_bookings_associated_to_outdated_stocks import validate_bookings_associated_to_outdated_stocks
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
@@ -17,17 +17,16 @@ from tests.model_creators.specific_creators import create_offer_with_event_produ
 def test_when_booking_is_associated_to_sold_out_stock_should_update_stocks_and_bookings(app):
     # Given
     user = create_user()
-    deposit = create_deposit(user)
-
+    create_deposit(user)
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_offer_with_event_product(venue)
     stock1 = create_stock(offer=offer,
-                         end_datetime=datetime(2019, 9, 15),
-                         available=10)
+                          end_datetime=datetime(2019, 9, 15),
+                          available=10)
     stock2 = create_stock(offer=offer,
-                         end_datetime=datetime(2019, 9, 20),
-                         available=10)
+                          end_datetime=datetime(2019, 9, 20),
+                          available=10)
     booking1 = create_booking(user=user, is_used=False, stock=stock1)
     booking2 = create_booking(user=user, is_used=False, stock=stock1)
     booking3 = create_booking(user=user, is_used=False, stock=stock2)
@@ -37,7 +36,7 @@ def test_when_booking_is_associated_to_sold_out_stock_should_update_stocks_and_b
     repository.save(stock1, stock2)
 
     # When
-    correct_unused_bookings_after_limit_end_time()
+    validate_bookings_associated_to_outdated_stocks()
 
     # Then
     db.session.refresh(stock1)
@@ -60,7 +59,7 @@ def test_when_booking_is_associated_to_sold_out_stock_should_update_stocks_and_b
 def test_when_booking_is_associated_to_enough_stock_should_not_update_anything(app):
     # Given
     user = create_user()
-    deposit = create_deposit(user)
+    create_deposit(user)
 
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -70,14 +69,18 @@ def test_when_booking_is_associated_to_enough_stock_should_not_update_anything(a
     stock = create_stock(offer=offer,
                          end_datetime=end_datetime,
                          available=10)
-    booking1 = create_booking(user=user, is_used=True,
-                              date_used=end_datetime_plus_two_days, stock=stock)
-    booking2 = create_booking(user=user, is_used=True,
-                              date_used=end_datetime_plus_two_days, stock=stock)
-    repository.save(user, deposit, booking1, booking2, stock)
+    booking1 = create_booking(user=user,
+                              is_used=True,
+                              date_used=end_datetime_plus_two_days,
+                              stock=stock)
+    booking2 = create_booking(user=user,
+                              is_used=True,
+                              date_used=end_datetime_plus_two_days,
+                              stock=stock)
+    repository.save(booking1, booking2)
 
     # When
-    correct_unused_bookings_after_limit_end_time()
+    validate_bookings_associated_to_outdated_stocks()
 
     # Then
     db.session.refresh(stock)
