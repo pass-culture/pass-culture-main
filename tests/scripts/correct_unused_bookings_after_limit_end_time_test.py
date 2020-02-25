@@ -10,7 +10,6 @@ from tests.model_creators.generic_creators import create_booking, create_user, c
     create_venue, \
     create_deposit
 from tests.model_creators.specific_creators import create_offer_with_event_product
-from utils.logger import logger
 
 
 @freeze_time('2019-10-01')
@@ -23,27 +22,37 @@ def test_when_booking_is_associated_to_sold_out_stock_should_update_stocks_and_b
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_offer_with_event_product(venue)
-    stock = create_stock(offer=offer,
+    stock1 = create_stock(offer=offer,
                          end_datetime=datetime(2019, 9, 15),
                          available=10)
-    booking1 = create_booking(user=user, is_used=False, stock=stock)
-    booking2 = create_booking(user=user, is_used=False, stock=stock)
-    repository.save(user, deposit, booking1, booking2, stock)
-    stock.available = 0
-    repository.save(stock)
+    stock2 = create_stock(offer=offer,
+                         end_datetime=datetime(2019, 9, 20),
+                         available=10)
+    booking1 = create_booking(user=user, is_used=False, stock=stock1)
+    booking2 = create_booking(user=user, is_used=False, stock=stock1)
+    booking3 = create_booking(user=user, is_used=False, stock=stock2)
+    repository.save(booking1, booking2, booking3)
+    stock1.available = 0
+    stock2.available = 0
+    repository.save(stock1, stock2)
 
     # When
     correct_unused_bookings_after_limit_end_time()
 
     # Then
-    db.session.refresh(stock)
+    db.session.refresh(stock1)
+    db.session.refresh(stock2)
     db.session.refresh(booking1)
     db.session.refresh(booking2)
-    assert stock.available == 2
+    db.session.refresh(booking3)
+    assert stock1.available == 2
+    assert stock2.available == 1
     assert booking1.isUsed is True
     assert booking1.dateUsed == datetime(2019, 9, 17)
     assert booking2.isUsed is True
     assert booking2.dateUsed == datetime(2019, 9, 17)
+    assert booking3.isUsed is True
+    assert booking3.dateUsed == datetime(2019, 9, 22)
 
 
 @freeze_time('2019-10-01')

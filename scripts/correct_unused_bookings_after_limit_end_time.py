@@ -1,15 +1,9 @@
-from datetime import datetime, timedelta
-from models import Booking, Stock
-from repository import repository
+from datetime import timedelta
+from repository import repository, booking_queries
 
 
 def correct_unused_bookings_after_limit_end_time() -> None:
-    bookings_to_process = Booking.query \
-        .join(Stock) \
-        .filter(Booking.isUsed == False) \
-        .filter(Booking.isCancelled == False) \
-        .filter(Stock.endDatetime + timedelta(hours=48) < datetime.utcnow()) \
-        .all()
+    bookings_to_process = booking_queries.find_not_used_and_not_cancelled_bookings_associated_to_outdated_stock()
 
     stocksToUpdate = []
     for booking in bookings_to_process:
@@ -33,6 +27,4 @@ def correct_unused_bookings_after_limit_end_time() -> None:
             repository.save(booking)
         except Exception:
             bookins_id_errors.append('something went wrong saving booking with id : ' + booking.id)
-
-    # A ameliorer : save un dict plutot que 1 par 1
 
