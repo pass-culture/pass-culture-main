@@ -18,6 +18,7 @@ from tests.model_creators.generic_creators import create_booking, create_user, c
     create_venue, \
     create_payment, create_bank_information
 from tests.model_creators.specific_creators import create_offer_with_thing_product
+from utils.human_ids import humanize
 
 
 @freeze_time('2018-10-15 09:21:34')
@@ -397,7 +398,7 @@ class CreatePaymentDetailsTest:
         # given
         user = create_user(email='jane.doe@test.com', idx=3)
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
-        venue = create_venue(offerer, name='Jack le Sculpteur', siret='1234567891234')
+        venue = create_venue(offerer, name='Jack le Sculpteur', siret='1234567891234', idx=1)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=12, available=5, offer=offer)
         booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), idx=5, quantity=2)
@@ -411,6 +412,7 @@ class CreatePaymentDetailsTest:
         # then
         assert details.venue_name == 'Jack le Sculpteur'
         assert details.venue_siret == '1234567891234'
+        assert details.venue_humanized_id == humanize(venue.id)
 
     def test_contains_info_on_offer(self):
         # given

@@ -10,7 +10,7 @@ from models import ApiKey, BankInformation, BeneficiaryImport, \
     Recommendation, RightsType, Stock, ThingType, User, \
     UserOfferer, Venue, VenueProvider, VenueProviderPriceRule, AllocinePivot
 from models.email import EmailStatus
-from models.payment import PaymentDetails
+from domain.payments import PaymentDetails
 from models.payment_status import TransactionStatus
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_stock_with_thing_offer
 from utils.token import random_token
@@ -296,7 +296,8 @@ def create_payment_details(booking_amount: int = 15,
                            reimbursement_rate: float = 0.5,
                            transaction_end_to_end_id: str = None,
                            venue_name: str = 'Vive les BDs',
-                           venue_siret: str = '12345678912345') -> PaymentDetails:
+                           venue_siret: str = '12345678912345',
+                           venue_humanized_id: str = 'AE') -> PaymentDetails:
     payment_details = PaymentDetails()
     payment_details.booking_amount = booking_amount
     payment_details.booking_date = booking_date
@@ -315,6 +316,7 @@ def create_payment_details(booking_amount: int = 15,
     payment_details.transaction_end_to_end_id = transaction_end_to_end_id
     payment_details.venue_name = venue_name
     payment_details.venue_siret = venue_siret
+    payment_details.venue_humanized_id = venue_humanized_id
 
     return payment_details
 

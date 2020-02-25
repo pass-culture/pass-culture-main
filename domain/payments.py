@@ -14,10 +14,11 @@ from lxml import etree
 from domain.bank_account import format_raw_iban_or_bic
 from domain.reimbursement import BookingReimbursement
 from models import PaymentMessage
-from models.payment import Payment, PaymentDetails
+from models.payment import Payment
 from models.payment_status import TransactionStatus
 from models.user import WalletBalance
 from repository import booking_queries
+from utils.human_ids import humanize
 
 XML_NAMESPACE = {'ns': 'urn:iso:std:iso:20022:tech:xsd:pain.001.001.03'}
 
@@ -41,6 +42,72 @@ class Transaction:
         self.end_to_end_id = end_to_end_id
         self.amount = amount
         self.custom_message = custom_message
+
+
+class PaymentDetails:
+    CSV_HEADER = [
+        "ID de l'utilisateur",
+        "Email de l'utilisateur",
+        "Raison sociale de la structure",
+        "SIREN",
+        "Raison sociale du lieu",
+        "SIRET",
+        "ID du lieu",
+        "Nom de l'offre",
+        "Type de l'offre",
+        "Date de la réservation",
+        "Prix de la réservation",
+        "Date de validation",
+        "IBAN",
+        "Payment Message Name",
+        "Transaction ID",
+        "Paiement ID",
+        "Taux de remboursement",
+        "Montant remboursé à l'offreur",
+    ]
+
+    def __init__(self, payment: Payment = None, booking_used_date: datetime = None):
+        if payment is not None:
+            self.booking_user_id = payment.booking.user.id
+            self.booking_user_email = payment.booking.user.email
+            self.offerer_name = payment.booking.stock.resolvedOffer.venue.managingOfferer.name
+            self.offerer_siren = payment.booking.stock.resolvedOffer.venue.managingOfferer.siren
+            self.venue_name = payment.booking.stock.resolvedOffer.venue.name
+            self.venue_siret = payment.booking.stock.resolvedOffer.venue.siret
+            self.venue_humanized_id = humanize(payment.booking.stock.resolvedOffer.venue.id)
+            self.offer_name = payment.booking.stock.resolvedOffer.product.name
+            self.offer_type = payment.booking.stock.resolvedOffer.product.offerType['proLabel']
+            self.booking_date = payment.booking.dateCreated
+            self.booking_amount = payment.booking.value
+            self.booking_used_date = booking_used_date
+            self.payment_iban = payment.iban
+            self.payment_message_name = payment.paymentMessageName
+            self.transaction_end_to_end_id = payment.transactionEndToEndId
+            self.payment_id = payment.id
+            self.reimbursement_rate = payment.reimbursementRate
+            self.reimbursed_amount = payment.amount
+
+    def as_csv_row(self):
+        return [
+            str(self.booking_user_id),
+            self.booking_user_email,
+            self.offerer_name,
+            self.offerer_siren,
+            self.venue_name,
+            self.venue_siret,
+            self.venue_humanized_id,
+            self.offer_name,
+            self.offer_type,
+            str(self.booking_date),
+            str(self.booking_amount),
+            str(self.booking_used_date),
+            self.payment_iban,
+            self.payment_message_name,
+            str(self.transaction_end_to_end_id),
+            str(self.payment_id),
+            str(self.reimbursement_rate),
+            str(self.reimbursed_amount)
+        ]
 
 
 def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> Payment:
@@ -74,8 +141,8 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
     return payment
 
 
-def filter_out_already_paid_for_bookings(booking_reimbursements: List[BookingReimbursement]) -> List[
-        BookingReimbursement]:
+def filter_out_already_paid_for_bookings(booking_reimbursements: List[BookingReimbursement]) -> \
+        List[BookingReimbursement]:
     return list(filter(lambda x: not x.booking.payments, booking_reimbursements))
 
 
@@ -131,7 +198,8 @@ def generate_file_checksum(file: str):
     return sha256(encoded_file).digest()
 
 
-def create_all_payments_details(payments: List[Payment], find_booking_date_used=booking_queries.find_date_used) -> List[PaymentDetails]:
+def create_all_payments_details(payments: List[Payment], find_booking_date_used=booking_queries.find_date_used) -> \
+        List[PaymentDetails]:
     return list(map(lambda p: create_payment_details(p, find_booking_date_used), payments))
 
 
