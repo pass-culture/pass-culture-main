@@ -1,5 +1,5 @@
 from collections import namedtuple
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Set, List, Union
 
 from sqlalchemy import func
@@ -270,3 +270,13 @@ def get_only_offer_ids_from_bookings(user: User) -> List[int]:
         .with_entities(Offer.id) \
         .all()
     return [offer.id for offer in offers_booked]
+
+
+def find_not_used_and_not_cancelled_bookings_associated_to_outdated_stock() -> List[Booking]:
+    return Booking.query \
+        .join(Stock) \
+        .filter(Booking.isUsed == False) \
+        .filter(Booking.isCancelled == False) \
+        .filter(Stock.endDatetime + timedelta(hours=48) < datetime.utcnow()) \
+        .all()
+

@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 
 import pytest
+from freezegun import freeze_time
 
 from models import ThingType, Booking, EventType
 from models.api_errors import ResourceNotFoundError, ApiErrors
@@ -1543,3 +1544,80 @@ class GetValidBookingsByUserId:
 
         # Then
         assert bookings == [booking2, booking3, booking1]
+
+
+class FindNotUsedAndNotCancelledBookingsAssociatedToOutdatedStockTest:
+    @clean_database
+    @freeze_time('2020-01-10')
+    def test_should_return_bookings_which_are_not_cancelled(self, app):
+        # Given
+        user = create_user()
+        create_deposit(user)
+
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        stock = create_stock(offer=offer, available=10, end_datetime=datetime(2020, 1, 1))
+        booking1 = create_booking(user=user, is_cancelled=False, stock=stock)
+        booking2 = create_booking(user=user, is_cancelled=True, stock=stock)
+        repository.save(booking1, booking2)
+
+        # When
+        bookings = booking_queries.find_not_used_and_not_cancelled_bookings_associated_to_outdated_stock()
+
+        # Then
+        assert booking1 in bookings
+        assert booking2 not in bookings
+
+    @clean_database
+    @freeze_time('2020-01-10')
+    def test_should_return_bookings_which_are_not_used(self, app):
+        # Given
+        user = create_user()
+        create_deposit(user)
+
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        stock = create_stock(offer=offer, available=10, end_datetime=datetime(2020, 1, 1))
+        booking1 = create_booking(user=user, is_used=False, stock=stock)
+        booking2 = create_booking(user=user, is_used=True, stock=stock)
+        repository.save(booking1, booking2)
+
+        # When
+        bookings = booking_queries.find_not_used_and_not_cancelled_bookings_associated_to_outdated_stock()
+
+        # Then
+        assert booking1 in bookings
+        assert booking2 not in bookings
+
+    @clean_database
+    @freeze_time('2020-01-10')
+    def test_should_return_bookings_associated_to_outdated_stock(self, app):
+        # Given
+        user = create_user()
+        create_deposit(user)
+
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        outdated_stock = create_stock(offer=offer,
+                                      available=10,
+                                      end_datetime=datetime(2020, 1, 1)
+                                      )
+        valid_stock = create_stock(offer=offer,
+                                   available=10,
+                                   end_datetime=datetime(2020, 1, 30)
+                                   )
+        booking1 = create_booking(user=user, is_used=False, is_cancelled=False, stock=outdated_stock)
+        booking2 = create_booking(user=user, is_used=False, is_cancelled=False, stock=outdated_stock)
+        booking3 = create_booking(user=user, is_used=False, is_cancelled=False, stock=valid_stock)
+        repository.save(booking1, booking2, booking3)
+
+        # When
+        bookings = booking_queries.find_not_used_and_not_cancelled_bookings_associated_to_outdated_stock()
+
+        # Then
+        assert booking1 in bookings
+        assert booking2 in bookings
+        assert booking3 not in bookings
