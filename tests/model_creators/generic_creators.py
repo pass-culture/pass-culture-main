@@ -554,9 +554,8 @@ def create_venue_provider(venue: Venue,
     return venue_provider
 
 
-def create_allocine_venue_provider(allocine_provider: Provider, venue: Venue, is_duo: bool = False,
-                                   available: Optional[int] = None,
-                                   venue_id_at_offer_provider: str = None) -> AllocineVenueProvider:
+def create_allocine_venue_provider(venue: Provider, allocine_provider: Venue, is_duo: bool = False,
+                                   available: Optional[int] = None, venue_id_at_offer_provider: str = None) -> AllocineVenueProvider:
     allocine_venue_provider = AllocineVenueProvider()
     allocine_venue_provider.venue = venue
     allocine_venue_provider.provider = allocine_provider

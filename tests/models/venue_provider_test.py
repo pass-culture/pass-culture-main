@@ -87,4 +87,4 @@ def test_venue_provider_should_have_the_correct_provider_class(app):
     allocine_venue_provider = VenueProvider.query.first()
 
     # then
-    assert allocine_venue_provider.providerClass == 'AllocineStocks'
+    assert allocine_venue_provider.isFromAllocineProvider

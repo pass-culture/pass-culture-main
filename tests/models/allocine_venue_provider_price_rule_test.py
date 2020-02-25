@@ -12,7 +12,7 @@ from tests.model_creators.generic_creators import create_venue, create_offerer, 
 from tests.model_creators.provider_creators import activate_provider
 
 
-class VenueProviderPriceRuleTest:
+class AllocineVenueProviderPriceRuleTest:
     @clean_database
     def test_should_add_price_rules_to_venue_provider(self, app):
         # Given
@@ -20,7 +20,7 @@ class VenueProviderPriceRuleTest:
         venue = create_venue(offerer)
         allocine_provider = get_provider_by_local_class('AllocineStocks')
         allocine_provider.isActive = True
-        allocine_venue_provider = create_allocine_venue_provider(allocine_provider, venue)
+        allocine_venue_provider = create_allocine_venue_provider(venue, allocine_provider)
         allocine_venue_provider_price_rule = create_allocine_venue_provider_price_rule(allocine_venue_provider,
                                                                                        price_rule=PriceRule.default,
                                                                                        price=10)
@@ -38,7 +38,7 @@ class VenueProviderPriceRuleTest:
         venue = create_venue(offerer)
         allocine_provider = get_provider_by_local_class('AllocineStocks')
         allocine_provider.isActive = True
-        allocine_venue_provider = create_allocine_venue_provider(allocine_provider, venue)
+        allocine_venue_provider = create_allocine_venue_provider(venue, allocine_provider)
         venue_provider_price_rule = create_allocine_venue_provider_price_rule(allocine_venue_provider,
                                                                               price_rule=PriceRule.default,
                                                                               price=-4)
@@ -56,7 +56,7 @@ class VenueProviderPriceRuleTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         allocine_provider = activate_provider('AllocineStocks')
-        allocine_venue_provider = create_allocine_venue_provider(allocine_provider, venue)
+        allocine_venue_provider = create_allocine_venue_provider(venue, allocine_provider)
         venue_provider_price_rule = create_allocine_venue_provider_price_rule(allocine_venue_provider,
                                                                               price_rule=PriceRule.default, price=10)
         repository.save(venue_provider_price_rule)
@@ -76,7 +76,7 @@ class VenueProviderPriceRuleTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         allocine_provider = get_provider_by_local_class('AllocineStocks')
-        allocine_venue_provider = create_allocine_venue_provider(allocine_provider, venue)
+        allocine_venue_provider = create_allocine_venue_provider(venue, allocine_provider)
         price = 'wrong_price_format'
         venue_provider_price_rule = create_allocine_venue_provider_price_rule(allocine_venue_provider,
                                                                               price_rule=PriceRule.default, price=price)
@@ -97,7 +97,7 @@ class SaveAllocineVenueProviderPriceRuleTest:
         venue = create_venue(offerer)
         allocine_provider = activate_provider('AllocineStocks')
 
-        allocine_venue_provider = create_allocine_venue_provider(allocine_provider, venue)
+        allocine_venue_provider = create_allocine_venue_provider(venue, allocine_provider)
 
         venue_provider_price_rule = AllocineVenueProviderPriceRule()
         venue_provider_price_rule.allocineVenueProvider = allocine_venue_provider
@@ -120,7 +120,7 @@ class SaveAllocineVenueProviderPriceRuleTest:
         venue = create_venue(offerer)
         allocine_provider = activate_provider('AllocineStocks')
 
-        allocine_venue_provider = create_allocine_venue_provider(allocine_provider, venue)
+        allocine_venue_provider = create_allocine_venue_provider(venue, allocine_provider)
 
         venue_provider_price_rule = AllocineVenueProviderPriceRule()
         venue_provider_price_rule.allocineVenueProvider = allocine_venue_provider

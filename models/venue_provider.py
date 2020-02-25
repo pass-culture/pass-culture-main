@@ -1,18 +1,12 @@
-from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, UniqueConstraint, case, select
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String, UniqueConstraint, case, select, and_, exists
 from sqlalchemy.orm import relationship, column_property
 
-from models.db import Model, db
+from models.db import Model
 from models.deactivable_mixin import DeactivableMixin
 from models.offer import Offer
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.provider import Provider
-
-
-def is_from_allocine_provider(provider_local_class: str) -> bool:
-    if provider_local_class == 'AllocineStocks':
-        return db.true()
-    return db.false()
 
 
 class VenueProvider(PcObject,
@@ -40,15 +34,16 @@ class VenueProvider(PcObject,
 
     syncWorkerId = Column(String(24), nullable=True)
 
-    providerClass = column_property(
-        select([Provider.localClass]).
-            where(Provider.id == providerId
-                  )
+    isFromAllocineProvider = column_property(
+        exists(select([Provider.id]).
+               where(and_(Provider.id == providerId,
+                          Provider.localClass == 'AllocineStocks')
+                     ))
     )
 
     __mapper_args__ = {
         "polymorphic_on": case([
-            (is_from_allocine_provider(providerClass), "allocine_venue_provider")
+            (isFromAllocineProvider, "allocine_venue_provider"),
         ], else_="venue_provider"),
         "polymorphic_identity": "venue_provider"
     }

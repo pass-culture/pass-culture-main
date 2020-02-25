@@ -1,7 +1,10 @@
+from models import AllocineVenueProvider, VenueProvider
 from repository import repository
-from repository.venue_provider_queries import get_venue_providers_to_sync, get_nb_containers_at_work
+from repository.venue_provider_queries import get_venue_providers_to_sync, get_nb_containers_at_work, \
+    get_venue_provider_by_id
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider
+from tests.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider, \
+    create_allocine_venue_provider
 from tests.model_creators.provider_creators import activate_provider
 
 
@@ -50,7 +53,7 @@ class GetNbContainersAtWorkTest:
         venue_1 = create_venue(offerer, siret='12345678901234')
         venue_2 = create_venue(offerer)
         titelive_provider = activate_provider('TiteLiveStocks')
-        venue_provider_1 = create_venue_provider(venue_1, titelive_provider, )
+        venue_provider_1 = create_venue_provider(venue_1, titelive_provider)
         venue_provider_2 = create_venue_provider(venue_2, titelive_provider, sync_worker_id='1234567')
         repository.save(venue_provider_1, venue_provider_2)
 
@@ -59,3 +62,37 @@ class GetNbContainersAtWorkTest:
 
         # Then
         assert nb_containers_at_work == 1
+
+
+class GetVenueProviderByIdTest:
+    @clean_database
+    def test_should_return_matching_venue_provider(self):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        titelive_provider = activate_provider('TiteLiveStocks')
+        venue_provider = create_venue_provider(venue, titelive_provider)
+        repository.save(venue_provider)
+
+        # When
+        existing_venue_provider = get_venue_provider_by_id(venue_provider.id)
+
+        # Then
+        assert existing_venue_provider == venue_provider
+        assert isinstance(venue_provider, VenueProvider)
+
+    @clean_database
+    def test_should_return_matching_venue_provider_with_allocine_attributes(self):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        titelive_provider = activate_provider('AllocineStocks')
+        venue_provider = create_allocine_venue_provider(venue, titelive_provider)
+        repository.save(venue_provider)
+
+        # When
+        existing_venue_provider = get_venue_provider_by_id(venue_provider.id)
+
+        # Then
+        assert existing_venue_provider == venue_provider
+        assert isinstance(venue_provider, AllocineVenueProvider)

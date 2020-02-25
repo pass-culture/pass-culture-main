@@ -10,6 +10,10 @@ def get_venue_providers_to_sync(provider_id: int) -> List[VenueProvider]:
         .all()
 
 
+def get_venue_provider_by_id(venue_provider_id: int) -> VenueProvider:
+    return VenueProvider.query.get(venue_provider_id)
+
+
 def get_nb_containers_at_work() -> int:
     return VenueProvider.query \
         .filter(VenueProvider.syncWorkerId != None) \
