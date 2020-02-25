@@ -21,7 +21,7 @@ def generate_and_send_payments(payment_message_id: str = None):
     PAYMENTS_DETAILS_RECIPIENTS = parse_email_addresses(os.environ.get('PAYMENTS_DETAILS_RECIPIENTS', None))
     WALLET_BALANCES_RECIPIENTS = parse_email_addresses(os.environ.get('WALLET_BALANCES_RECIPIENTS', None))
 
-    logger.info('[BATCH][PAYMENTS] STEP 0 : validate bookings later than event end datetime')
+    logger.info('[BATCH][PAYMENTS] STEP 0 : validate bookings associated to outdated stocks')
     update_booking_used_after_stock_occurrence()
 
     not_processable_payments, payments_to_send = generate_or_collect_payments(payment_message_id)

@@ -39,25 +39,7 @@ class PaymentDetailsCSVTest:
 
         # Then
         assert _count_non_empty_lines(csv) == 3
-        csv_as_lines = csv.splitlines(True)
-        assert csv_as_lines[0] == "\"ID de l'utilisateur\"," \
-                                  "\"Email de l'utilisateur\"," \
-                                  "\"Raison sociale de la structure\"," \
-                                  "\"SIREN\"," \
-                                  "\"Raison sociale du lieu\"," \
-                                  "\"SIRET\"," \
-                                  "\"ID du lieu\"," \
-                                  "\"Nom de l'offre\"," \
-                                  "\"Type de l'offre\"," \
-                                  "\"Date de la réservation\"," \
-                                  "\"Prix de la réservation\"," \
-                                  "\"Date de validation\"," \
-                                  "\"IBAN\"," \
-                                  "\"Payment Message Name\"," \
-                                  "\"Transaction ID\"," \
-                                  "\"Paiement ID\"," \
-                                  "\"Taux de remboursement\"," \
-                                  "\"Montant remboursé à l'offreur\"\r\n"
+        csv_as_lines = csv.splitlines()
         assert csv_as_lines[1] == "\"1234\"," \
                                   "\"john.doe@example.com\"," \
                                   "\"Les petites librairies\"," \
@@ -75,7 +57,7 @@ class PaymentDetailsCSVTest:
                                   "\"None\"," \
                                   "\"123\"," \
                                   "\"0.5\"," \
-                                  "\"7.5\"\r\n"
+                                  "\"7.5\""
         assert csv_as_lines[2] == "\"1234\"," \
                                   "\"john.doe@example.com\"," \
                                   "\"Les petites librairies\"," \
@@ -93,7 +75,7 @@ class PaymentDetailsCSVTest:
                                   "\"None\"," \
                                   "\"123\"," \
                                   "\"0.5\"," \
-                                  "\"7.5\"\r\n"
+                                  "\"7.5\""
 
     def test_generate_payment_details_csv_with_headers_and_zero_payment_details_lines(self):
         # Given
