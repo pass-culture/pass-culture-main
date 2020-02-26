@@ -3,15 +3,6 @@ import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
 class FormFooter extends PureComponent {
-  componentDidMount() {
-    const userAgent = navigator.userAgent
-    if (userAgent.includes('Instagram')) {
-      const buttonsContainer = document.getElementById('logout-form-footer')
-      buttonsContainer.style.position = 'relative'
-      buttonsContainer.style.bottom = '13%'
-    }
-  }
-
   renderSubmitButton = options => {
     const attributes = {
       className: `flex-1 ${options.className || ''}`,
@@ -42,9 +33,7 @@ class FormFooter extends PureComponent {
 
   handleTracking = () => {
     if (window.location.href === 'https://app.passculture.beta.gouv.fr/beta') {
-      window.gtag_report_conversion(
-        'https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture'
-      )
+      window.gtag_report_conversion('https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture')
     }
   }
 
@@ -76,11 +65,9 @@ class FormFooter extends PureComponent {
     const isInnerLink = Boolean(submit && submit.url)
     const isSubmitButton = Boolean(submit && !submit.url)
     const hideSeparator = !(isCancelLink || isExternalLink) || !submit
+
     return (
-      <footer
-        className="logout-form-footer"
-        id="logout-form-footer"
-      >
+      <footer className="logout-form-footer">
         {isCancelLink && this.renderLink(cancel)}
         {isExternalLink && this.renderExternalLink(externalLink)}
         {!hideSeparator && <hr className="dotted-left-2x-white flex-0" />}
