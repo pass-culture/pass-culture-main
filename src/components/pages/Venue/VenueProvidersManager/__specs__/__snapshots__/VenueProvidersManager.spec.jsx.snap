@@ -75,7 +75,6 @@ ShallowWrapper {
         >
           <button
             className="button is-secondary"
-            disabled={false}
             id="add-venue-provider-btn"
             onClick={[Function]}
             type="button"
@@ -108,13 +107,11 @@ ShallowWrapper {
           "children": Array [
             Array [],
             false,
-            false,
           ],
           "className": "provider-list",
         },
         "ref": null,
         "rendered": Array [
-          false,
           false,
         ],
         "type": "ul",
@@ -126,7 +123,6 @@ ShallowWrapper {
         "props": Object {
           "children": <button
             className="button is-secondary"
-            disabled={false}
             id="add-venue-provider-btn"
             onClick={[Function]}
             type="button"
@@ -143,7 +139,6 @@ ShallowWrapper {
           "props": Object {
             "children": "+ Importer des offres",
             "className": "button is-secondary",
-            "disabled": false,
             "id": "add-venue-provider-btn",
             "onClick": [Function],
             "type": "button",
@@ -177,7 +172,6 @@ ShallowWrapper {
           >
             <button
               className="button is-secondary"
-              disabled={false}
               id="add-venue-provider-btn"
               onClick={[Function]}
               type="button"
@@ -210,13 +204,11 @@ ShallowWrapper {
             "children": Array [
               Array [],
               false,
-              false,
             ],
             "className": "provider-list",
           },
           "ref": null,
           "rendered": Array [
-            false,
             false,
           ],
           "type": "ul",
@@ -228,7 +220,6 @@ ShallowWrapper {
           "props": Object {
             "children": <button
               className="button is-secondary"
-              disabled={false}
               id="add-venue-provider-btn"
               onClick={[Function]}
               type="button"
@@ -245,7 +236,6 @@ ShallowWrapper {
             "props": Object {
               "children": "+ Importer des offres",
               "className": "button is-secondary",
-              "disabled": false,
               "id": "add-venue-provider-btn",
               "onClick": [Function],
               "type": "button",

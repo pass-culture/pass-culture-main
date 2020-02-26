@@ -3,11 +3,11 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import NumberField from '../../../../layout/form/fields/NumberField'
 import Icon from '../../../../layout/Icon'
-import {Field, Form} from 'react-final-form'
+import { Form } from 'react-final-form'
 import SynchronisationConfirmationModal from './SynchronisationConfirmationModal/SynchronisationConfirmationModal'
 import { getCanSubmit } from 'react-final-form-utils'
-import Insert from "../../../../layout/Insert/Insert";
-import CheckboxField from "../../../../layout/form/fields/CheckboxField";
+import Insert from "../../../../layout/Insert/Insert"
+import CheckboxField from "../../../../layout/form/fields/CheckboxField"
 
 class AllocineProviderForm extends PureComponent {
   constructor() {
@@ -21,7 +21,7 @@ class AllocineProviderForm extends PureComponent {
   handleSubmit = (formValues) => {
     this.hideModal()
     const { createVenueProvider, providerId, venueId } = this.props
-    const { available, price  } = formValues
+    const { available, price } = formValues
 
     const payload = {
       available,
@@ -67,7 +67,7 @@ class AllocineProviderForm extends PureComponent {
   }
 
   renderForm = (props) => {
-    const {isLoadingMode, isShowingConfirmationModal} = this.state
+    const { isLoadingMode, isShowingConfirmationModal } = this.state
 
     const canSubmit = getCanSubmit(props)
 
@@ -76,35 +76,35 @@ class AllocineProviderForm extends PureComponent {
         {!isLoadingMode && (
           <div className="allocine-provider-form">
             <div className="apf-price-section">
-                <div className="price-section-label">
-                  <label
-                    htmlFor="price"
-                  >
-                    {'Prix de vente/place '}
-                    <span className="field-asterisk">
-                      {'*'}
-                    </span>
-                  </label>
-                  <span
-                    data-place="bottom"
-                    data-tip="<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue.</p>"
-                    data-type="info"
-                    className="apf-tooltip"
-                  >
-                    <Icon
-                      alt="image d’aide à l’information"
-                      svg="picto-info"
-                    />
+              <div className="price-section-label">
+                <label
+                  htmlFor="price"
+                >
+                  {'Prix de vente/place '}
+                  <span className="field-asterisk">
+                    {'*'}
                   </span>
-                </div>
-                <NumberField
-                  className={classNames('field-text price-field')}
-                  min="0"
-                  name="price"
-                  placeholder="Ex : 12€"
-                  required
-                />
+                </label>
+                <span
+                  className="apf-tooltip"
+                  data-place="bottom"
+                  data-tip="<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue.</p>"
+                  data-type="info"
+                >
+                  <Icon
+                    alt="image d’aide à l’information"
+                    svg="picto-info"
+                  />
+                </span>
               </div>
+              <NumberField
+                className={classNames('field-text price-field')}
+                min="0"
+                name="price"
+                placeholder="Ex : 12€"
+                required
+              />
+            </div>
             <div className="apf-available-section">
               <label
                 className="label-available"
@@ -113,18 +113,22 @@ class AllocineProviderForm extends PureComponent {
                 {'Nombre de places/séance'}
               </label>
               <NumberField
+                min="0"
                 name="available"
                 placeholder="Illimité"
-                min="0"
               />
             </div>
             <div className="apf-isDuo-section">
-              <CheckboxField name="isDuo" id="apf-isDuo" label="Accepter les réservations DUO"/>
+              <CheckboxField
+                id="apf-isDuo"
+                label="Accepter les réservations DUO"
+                name="isDuo"
+              />
               <span
+                className="apf-tooltip"
                 data-place="bottom"
                 data-tip="<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>"
                 data-type="info"
-                className="apf-tooltip"
               >
                 <Icon
                   alt="image d’aide à l’information"

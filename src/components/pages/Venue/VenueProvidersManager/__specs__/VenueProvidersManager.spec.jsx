@@ -91,7 +91,6 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         const importButton = wrapper.find('#add-venue-provider-btn')
         expect(importButton).toHaveLength(1)
         expect(importButton.prop('className')).toBe('button is-secondary')
-        expect(importButton.prop('disabled')).toBe(false)
         expect(importButton.prop('id')).toBe('add-venue-provider-btn')
         expect(importButton.prop('onClick')).toStrictEqual(expect.any(Function))
         expect(importButton.prop('type')).toBe('button')

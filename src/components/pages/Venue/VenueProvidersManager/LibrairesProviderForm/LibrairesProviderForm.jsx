@@ -68,10 +68,11 @@ class LibrairesProviderForm extends PureComponent {
   }
 
   render() {
-    return (<Form
-      onSubmit={this.handleFormSubmit}
-      render={this.renderForm}
-    />)
+    return (
+      <Form
+        onSubmit={this.handleFormSubmit}
+        render={this.renderForm}
+      />)
   }
 }
 
@@ -79,7 +80,6 @@ LibrairesProviderForm.propTypes = {
   createVenueProvider: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   notify: PropTypes.func.isRequired,
-  providerId: PropTypes.string.isRequired,
   venueId: PropTypes.string.isRequired,
   venueSiret: PropTypes.string.isRequired
 }

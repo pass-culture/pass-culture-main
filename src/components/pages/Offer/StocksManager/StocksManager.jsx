@@ -217,7 +217,7 @@ class StocksManager extends PureComponent {
               <tbody>
                 <tr>
                   <td colSpan="10">
-                    <StockInformationMessage providerName={provider.name}/>
+                    <StockInformationMessage providerName={provider.name} />
                   </td>
                 </tr>
               </tbody>

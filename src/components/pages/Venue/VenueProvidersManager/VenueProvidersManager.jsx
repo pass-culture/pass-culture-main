@@ -10,7 +10,6 @@ import {
 import AllocineProviderForm from './AllocineProviderForm/AllocineProviderFormContainer'
 import TiteliveProviderForm from './TiteliveProviderForm/TiteliveProviderFormContainer'
 import ReactTooltip from 'react-tooltip'
-import Insert from '../../../layout/Insert/Insert'
 import LibrairesProviderForm from './LibrairesProviderForm/LibrairesProviderFormContainer'
 
 class VenueProvidersManager extends PureComponent {
@@ -154,7 +153,6 @@ class VenueProvidersManager extends PureComponent {
                 {providerSelectedIsLibraires && (
                   <LibrairesProviderForm
                     offererId={match.params.offererId}
-                    providerId={providerId}
                     venueId={match.params.venueId}
                     venueSiret={venueSiret}
                   />
