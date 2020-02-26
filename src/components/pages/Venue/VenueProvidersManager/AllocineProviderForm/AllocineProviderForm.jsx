@@ -3,9 +3,11 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import NumberField from '../../../../layout/form/fields/NumberField'
 import Icon from '../../../../layout/Icon'
-import { Form } from 'react-final-form'
+import {Field, Form} from 'react-final-form'
 import SynchronisationConfirmationModal from './SynchronisationConfirmationModal/SynchronisationConfirmationModal'
 import { getCanSubmit } from 'react-final-form-utils'
+import Insert from "../../../../layout/Insert/Insert";
+import CheckboxField from "../../../../layout/form/fields/CheckboxField";
 
 class AllocineProviderForm extends PureComponent {
   constructor() {
@@ -19,9 +21,10 @@ class AllocineProviderForm extends PureComponent {
   handleSubmit = (formValues) => {
     this.hideModal()
     const { createVenueProvider, providerId, venueId } = this.props
-    const { price } = formValues
+    const { available, price  } = formValues
 
     const payload = {
+      available,
       price,
       providerId,
       venueId,
@@ -65,17 +68,16 @@ class AllocineProviderForm extends PureComponent {
 
   renderForm = (props) => {
     const {isLoadingMode, isShowingConfirmationModal} = this.state
+
     const canSubmit = getCanSubmit(props)
 
     return (
       <form onSubmit={props.handleSubmit}>
-        <div className="allocine-provider-form">
-          <div>
-            {!isLoadingMode && (
-              <div className="price-section">
+        {!isLoadingMode && (
+          <div className="allocine-provider-form">
+            <div className="apf-price-section">
                 <div className="price-section-label">
                   <label
-                    className="label-price"
                     htmlFor="price"
                   >
                     {'Prix de vente/place '}
@@ -87,7 +89,7 @@ class AllocineProviderForm extends PureComponent {
                     data-place="bottom"
                     data-tip="<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue.</p>"
                     data-type="info"
-                    id="price-tooltip"
+                    className="apf-tooltip"
                   >
                     <Icon
                       alt="image d’aide à l’information"
@@ -103,29 +105,63 @@ class AllocineProviderForm extends PureComponent {
                   required
                 />
               </div>
-            )}
-          </div>
+            <div className="apf-available-section">
+              <label
+                className="label-available"
+                htmlFor="available"
+              >
+                {'Nombre de places/séance'}
+              </label>
+              <NumberField
+                name="available"
+                placeholder="Illimité"
+                min="0"
+              />
+            </div>
+            <div className="apf-isDuo-section">
+              <CheckboxField name="isDuo" id="apf-isDuo" label="Accepter les réservations DUO"/>
+              <span
+                data-place="bottom"
+                data-tip="<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>"
+                data-type="info"
+                className="apf-tooltip"
+              >
+                <Icon
+                  alt="image d’aide à l’information"
+                  svg="picto-info"
+                />
+              </span>
+            </div>
 
-          {!isLoadingMode && (
-            <div className="provider-import-button-container">
+            <Insert
+              className='blue-insert'
+              icon='picto-info-solid-black'
+            >
+              {'Pour le moment, seules les séances "classiques" peuvent être importées.'}
+              <p />
+              {'Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne génèreront pas d\'offres.'}
+              <p />
+              {'Nous travaillons actuellement à l\'ajout de séances spécifiques.'}
+            </Insert>
+
+            <div className="apf-provider-import-button-section">
               <button
-                className="button is-intermediate provider-import-button"
+                className="button is-primary apf-provider-import-button"
                 disabled={!canSubmit}
                 onClick={this.handleShowModal}
                 type="button"
               >
-                {'Importer'}
+                {'Importer les offres'}
               </button>
             </div>
-          )}
+          </div>
+        )}
 
-          {isShowingConfirmationModal && (
-            <SynchronisationConfirmationModal
-              handleClose={this.hideModal}
-              handleConfirm={props.handleSubmit}
-            />
-          )}
-        </div>
+        {isShowingConfirmationModal && (
+          <SynchronisationConfirmationModal
+            handleClose={this.hideModal}
+          />
+        )}
       </form>
     )
   }

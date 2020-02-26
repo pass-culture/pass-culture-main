@@ -5,7 +5,7 @@ import { Form } from 'react-final-form'
 import TextField from '../TextField'
 
 describe('src | components | layout | form | TextField', () => {
-  it('should match the snapchot', () => {
+  it('should match the snapshot', () => {
     // given
     const initialValues = {
       text: 'Ca parle de canapés.',

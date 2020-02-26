@@ -162,27 +162,12 @@ class VenueProvidersManager extends PureComponent {
               </div>
             </li>
           )}
-
-          {providerSelectedIsAllocine && (
-            <Insert
-              className='blue-insert'
-              icon='picto-info-solid-black'
-            >
-              {'Pour le moment, seules les séances "classiques" peuvent être importées.'}
-              <p />
-              {'Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne génèreront pas d\'offres.'}
-              <p />
-              {'Nous travaillons actuellement à l\'ajout de séances spécifiques.'}
-            </Insert>
-          )}
-
         </ul>
 
-        {hasAtLeastOneProvider && hasNoVenueProvider && (
+        {hasAtLeastOneProvider && hasNoVenueProvider && !isCreationMode && (
           <div className="has-text-centered">
             <button
               className="button is-secondary"
-              disabled={isCreationMode}
               id="add-venue-provider-btn"
               onClick={this.handleAddVenueProvider}
               type="button"

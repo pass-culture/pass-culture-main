@@ -6,12 +6,7 @@
   .provider-list {
 
     .add-provider-form {
-      display: flex;
-      flex-direction: row;
-
       .select-provider-section {
-        margin-right: 20px;
-
         .provider-picto {
           align-items: center;
           width: 30px;
@@ -22,11 +17,8 @@
         }
 
         #select-source {
-          align-items: flex-start;
-          display: flex;
-          flex-direction: column;
-
           label {
+            display: block;
             margin-top: 6px;
           }
 
@@ -35,6 +27,7 @@
             border: 2px solid $grey-dark;
             border-radius: 17px;
             margin-top: 8px;
+            width: 100%;
           }
         }
       }

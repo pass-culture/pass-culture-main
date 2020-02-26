@@ -8,7 +8,7 @@ import Icon from '../../../../../layout/Icon'
 import AllocineProviderForm from '../../AllocineProviderForm/AllocineProviderForm'
 import SynchronisationConfirmationModal from '../SynchronisationConfirmationModal/SynchronisationConfirmationModal'
 
-describe('src | components | pages | Venue | VenueProvidersManager | form | AllocineProviderForm', () => {
+describe('components | AllocineProviderForm', () => {
   let createVenueProvider
   let props
   let notify
@@ -55,13 +55,11 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
     const wrapper = mount(<AllocineProviderForm {...props} />)
 
     // then
-    const importButtonContainer = wrapper.find('.provider-import-button-container')
-    expect(importButtonContainer).toHaveLength(1)
-    const importButton = importButtonContainer.find('button')
-    expect(importButton).toHaveLength(1)
-    expect(importButton.prop('className')).toBe('button is-intermediate provider-import-button')
-    expect(importButton.prop('type')).toBe('button')
-    expect(importButton.text()).toBe('Importer')
+    const offerImportButton = wrapper.find({
+      children: `Importer les offres`,
+    })
+    expect(offerImportButton).toHaveLength(1)
+    expect(offerImportButton.type()).toBe('button')
   })
 
   it('should display the price field with minimum value set to 0', () => {
@@ -69,13 +67,50 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
     const wrapper = mount(<AllocineProviderForm {...props} />)
 
     // then
-    const priceSection = wrapper.find(Form).find('.price-section')
-    expect(priceSection).toHaveLength(1)
-    const label = priceSection.find('label')
-    expect(label.text()).toBe('Prix de vente/place *')
-    const priceInput = priceSection.find(NumberField)
-    expect(priceInput).toHaveLength(1)
-    expect(priceInput.prop('min')).toBe('0')
+    const priceFieldLabel =  wrapper
+      .findWhere(node => node.text() === 'Prix de vente/place ')
+      .first()
+
+    const priceFieldInput =  wrapper
+      .findWhere(node => node.prop('placeholder') === 'Ex : 12€')
+      .first()
+
+    expect(priceFieldLabel).toHaveLength(1)
+    expect(priceFieldInput).toHaveLength(1)
+    expect(priceFieldInput.prop('min')).toBe('0')
+    expect(priceFieldInput.prop('required')).toBe(true)
+  })
+
+  it('should display the available field with default value set to Illimité', () => {
+    // when
+    const wrapper = mount(<AllocineProviderForm {...props} />)
+
+    // then
+    const availableInputLabel = wrapper.find({
+      children: `Nombre de places/séance`,
+    })
+
+    const availableInput =  wrapper
+      .findWhere(node => node.prop('placeholder') === 'Illimité')
+      .first()
+
+    expect(availableInputLabel).toHaveLength(1)
+    expect(availableInput).toHaveLength(1)
+  })
+
+  it('should display the isDuo checkbox with default value checked=false', () => {
+    // when
+    const wrapper = mount(<AllocineProviderForm {...props} />)
+
+    // then
+    const isDuoCheckboxLabel = wrapper.find({
+      children: `Accepter les réservations DUO`,
+    })
+
+    const isDuoCheckbox = wrapper.findWhere(node => node.prop('type') === 'checkbox').first()
+
+    expect(isDuoCheckboxLabel).toHaveLength(1)
+    expect(isDuoCheckbox).toHaveLength(1)
   })
 
   it('should display a tooltip and an Icon component for price field', () => {
@@ -83,12 +118,30 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
     const wrapper = mount(<AllocineProviderForm {...props} />)
 
     // then
-    const priceSection = wrapper.find(Form).find('.price-section')
-    const tooltip = priceSection.find('#price-tooltip')
+    const priceToolTip =  wrapper
+      .findWhere(node => node.prop('data-tip') === '<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue.</p>')
+      .first()
+
+    const toolTipIcon = priceToolTip.find(Icon)
+
+
+    expect(priceToolTip).toHaveLength(1)
+    expect(toolTipIcon).toHaveLength(1)
+    expect(toolTipIcon.prop('svg')).toBe('picto-info')
+  })
+
+
+  it('should display a tooltip and an Icon component for isDuo field', () => {
+    // when
+    const wrapper = mount(<AllocineProviderForm {...props} />)
+
+    // then
+    const priceSection = wrapper.find(Form).find('.apf-isDuo-section')
+    const tooltip = priceSection.find('.apf-tooltip')
     expect(tooltip).toHaveLength(1)
     expect(tooltip.prop('data-place')).toBe('bottom')
     expect(tooltip.prop('data-tip')).toBe(
-      '<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue.</p>'
+      '<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>'
     )
     const icon = tooltip.find(Icon)
     expect(icon).toHaveLength(1)
@@ -153,6 +206,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
       // given
       const formValues = {
         price: 12,
+        available: 50
       }
       const wrapper = shallow(<AllocineProviderForm {...props} />)
 
@@ -163,6 +217,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Allo
       expect(wrapper.state('isLoadingMode')).toBe(true)
       expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
         price: 12,
+        available: 50,
         providerId: 'AA',
         venueId: 'BB',
       })
