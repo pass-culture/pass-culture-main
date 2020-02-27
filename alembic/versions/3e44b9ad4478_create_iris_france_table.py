@@ -20,7 +20,7 @@ def upgrade():
     op.create_table(
         'iris_france',
         sa.Column('irisCode', sa.VARCHAR(9), nullable=False),
-        sa.Column('irisType', sa.VARCHAR(1), nullable=False),
+        sa.Column('centroid', Geometry(geometry_type='POINT'), nullable=False),
         sa.Column('shape', Geometry(geometry_type='MULTIPOLYGON', srid=4326), nullable=False),
     )
 
