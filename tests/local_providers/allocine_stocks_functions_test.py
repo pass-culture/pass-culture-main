@@ -265,7 +265,7 @@ class RetrieveMovieInformationTest:
         # Then
         assert 'poster_url' not in movie_parsed_information
 
-    def test_should_create_product_and_new_offer_with_missing_person_in_credit(self):
+    def test_should_create_product_and_new_offer_with_missing_person_in_credits(self):
         # Given
         movie_information = {
             "node": {

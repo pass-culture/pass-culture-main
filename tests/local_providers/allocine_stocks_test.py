@@ -941,11 +941,11 @@ class UpdateObjectsTest:
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
-    def test_should_not_create_product_and_offer_when_missing_required_information_in_api(self,
-                                                                                          mock_call_allocine_api,
-                                                                                          mock_api_poster,
-                                                                                          mock_redis,
-                                                                                          app):
+    def test_should_not_create_product_and_offer_when_missing_required_information_in_api_response(self,
+                                                                                                   mock_call_allocine_api,
+                                                                                                   mock_api_poster,
+                                                                                                   mock_redis,
+                                                                                                   app):
         # Given
         mock_call_allocine_api.return_value = iter([
             {
