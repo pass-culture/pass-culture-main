@@ -17,13 +17,16 @@ depends_on = None
 
 
 def upgrade():
+    op.execute('CREATE EXTENSION postgis')
     op.create_table(
         'iris_france',
+        sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
         sa.Column('irisCode', sa.VARCHAR(9), nullable=False),
         sa.Column('centroid', Geometry(geometry_type='POINT'), nullable=False),
-        sa.Column('shape', Geometry(geometry_type='MULTIPOLYGON', srid=4326), nullable=False),
+        sa.Column('shape', Geometry(srid=4326), nullable=False),
     )
 
 
 def downgrade():
     op.drop_table('iris_france')
+    op.execute('DROP EXTENSION IF EXISTS postgis CASCADE')
