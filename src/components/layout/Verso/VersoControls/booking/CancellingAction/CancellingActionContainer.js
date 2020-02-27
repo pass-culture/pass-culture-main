@@ -73,7 +73,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     history.push(successUrl)
   }
 
-  const requestPatchBooking = (bookingId, offerId) => {
+  const cancelBooking = (bookingId, offerId) => {
     dispatch(
       requestData({
         apiPath: `/bookings/${bookingId}/cancel`,
@@ -90,7 +90,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
       const options = {
         buttons: [
           PopinButton({
-            action: () => requestPatchBooking(bookingId, offerId),
+            action: () => cancelBooking(bookingId, offerId),
             label: 'Oui',
           }),
           PopinButton({
