@@ -279,4 +279,3 @@ def find_not_used_and_not_cancelled_bookings_associated_to_outdated_stock() -> L
         .filter(Booking.isCancelled == False) \
         .filter(Stock.endDatetime + timedelta(hours=48) < datetime.utcnow()) \
         .all()
-

@@ -15,8 +15,7 @@ def validate_bookings_associated_to_outdated_stocks() -> None:
 
     stocks_id_errors = []
     for stock in stocks_to_update:
-        bookings_associated_to_stock = list(
-            filter(lambda associated_booking: associated_booking.stockId == stock.id, bookings_to_process))
+        bookings_associated_to_stock = stock.bookings
         stock.available = len(bookings_associated_to_stock)
         try:
             repository.save(stock)
