@@ -190,7 +190,6 @@ def create_booking():
 def cancel_booking(booking_id: int):
     booking = booking_queries.find_by_id(dehumanize(booking_id))
     booking_offerer = booking.stock.resolvedOffer.venue.managingOffererId
-    check_booking_is_not_already_cancelled(booking)
 
     is_offerer_cancellation = current_user.hasRights(
         RightsType.editor, booking_offerer)
@@ -200,6 +199,9 @@ def cancel_booking(booking_id: int):
 
     if is_user_cancellation:
         check_booking_is_cancellable_by_user(booking, is_user_cancellation)
+
+    if booking.isCancelled:
+        return '', 204
 
     booking.isCancelled = True
     repository.save(booking)

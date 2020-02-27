@@ -174,6 +174,25 @@ class Put:
                                                                                       is_user_cancellation,
                                                                                       mock_send_raw_email)
 
+    class Returns204:
+        @clean_database
+        def when_trying_cancel_an_already_cancelled_booking(self, app):
+            # Given
+            user = create_user()
+            booking = create_booking(user=user, is_cancelled=True)
+            create_deposit(user, amount=500)
+            repository.save(booking)
+
+            # When
+            response = TestClient(app.test_client()) \
+                .with_auth(user.email) \
+                .put(f'/bookings/{humanize(booking.id)}/cancel')
+
+            # Then
+            assert response.status_code == 204
+            assert Booking.query.get(booking.id).isCancelled
+
+
     class Returns400:
         @clean_database
         def when_the_booking_cannot_be_cancelled(self, app):
@@ -250,21 +269,3 @@ class Put:
 
             # Then
             assert response.status_code == 404
-
-    class Returns410:
-        @clean_database
-        def when_trying_to_revert_cancellation(self, app):
-            # Given
-            user = create_user()
-            booking = create_booking(user=user, is_cancelled=True)
-            create_deposit(user, amount=500)
-            repository.save(booking)
-
-            # When
-            response = TestClient(app.test_client()) \
-                .with_auth(user.email) \
-                .put(f'/bookings/{humanize(booking.id)}/cancel')
-
-            # Then
-            assert response.status_code == 410
-            assert Booking.query.get(booking.id).isCancelled
