@@ -29,27 +29,7 @@ def batch_indexing_offers_in_algolia_by_venue_provider(client: Redis) -> None:
         for venue_provider in venue_providers:
             provider_id = venue_provider['providerId']
             venue_id = int(venue_provider['venueId'])
-            has_still_offers = True
-            page = 0
-
-            while has_still_offers is True:
-                offer_ids_as_tuple = offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id(
-                    last_provider_id=provider_id,
-                    limit=ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE,
-                    page=page,
-                    venue_id=venue_id
-                )
-                offer_ids_as_int = from_tuple_to_int(offer_ids_as_tuple)
-
-                if len(offer_ids_as_tuple) > 0:
-                    process_eligible_offers(client=client, offer_ids=offer_ids_as_int, from_provider_update=True)
-                    logger.info(
-                        f'[ALGOLIA] indexing offers for (venue {venue_id} / provider {provider_id}) from page {page}...')
-                    page += 1
-                else:
-                    has_still_offers = False
-                    logger.info(
-                        f'[ALGOLIA] indexing offers for (venue {venue_id} / provider {provider_id}) finished!')
+            _process_venue_provider(client, provider_id, venue_id)
 
 
 def batch_indexing_offers_in_algolia_by_venue(client: Redis) -> None:
@@ -113,3 +93,26 @@ def batch_deleting_expired_offers_in_algolia(client: Redis) -> None:
             has_still_offers = False
             logger.info('[ALGOLIA] deleting expired offers finished!')
         page += 1
+
+
+def _process_venue_provider(client: Redis, provider_id: str, venue_id: int) -> None:
+    has_still_offers = True
+    page = 0
+    while has_still_offers is True:
+        offer_ids_as_tuple = offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id(
+            last_provider_id=provider_id,
+            limit=ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE,
+            page=page,
+            venue_id=venue_id
+        )
+        offer_ids_as_int = from_tuple_to_int(offer_ids_as_tuple)
+
+        if len(offer_ids_as_tuple) > 0:
+            process_eligible_offers(client=client, offer_ids=offer_ids_as_int, from_provider_update=True)
+            logger.info(
+                f'[ALGOLIA] indexing offers for (venue {venue_id} / provider {provider_id}) from page {page}...')
+            page += 1
+        else:
+            has_still_offers = False
+            logger.info(
+                f'[ALGOLIA] indexing offers for (venue {venue_id} / provider {provider_id}) finished!')

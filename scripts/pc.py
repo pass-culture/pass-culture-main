@@ -1,4 +1,3 @@
-""" pc """
 import os
 
 import redis
