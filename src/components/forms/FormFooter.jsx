@@ -4,11 +4,15 @@ import { Link } from 'react-router-dom'
 
 class FormFooter extends PureComponent {
   componentDidMount() {
+    // In Instagram iOS in-app browser, the browser footer hides actions buttons, and it's impossible to scroll
+    // this hack replace the actions buttons upper
     const userAgent = navigator.userAgent
-    if (userAgent.includes('Instagram')) {
+    if (userAgent.includes('Instagram') && userAgent.includes('iPhone')) {
       const buttonsContainer = document.getElementById('logout-form-footer')
-      buttonsContainer.style.position = 'absolute'
-      buttonsContainer.style.bottom = '13%'
+      buttonsContainer.style.position = 'relative'
+      buttonsContainer.style.bottom = '9%'
+      const arbitraryValueToScrollToTheBottom = 10000
+      window.scrollTo(0, arbitraryValueToScrollToTheBottom)
     }
   }
 

@@ -17,7 +17,7 @@ const BetaPage = () => (
       <div className="bp-content">
         {'Vous avez 18 ans et vivez dans un\n'}
         <a
-          href='https://pass.culture.fr/#jeune'
+          href="https://pass.culture.fr/#jeune"
           rel="noopener noreferrer"
           target="_blank"
         >
@@ -31,21 +31,19 @@ const BetaPage = () => (
         {'de nouvelles !'}
       </div>
     </main>
-    <div className="bp-buttons-container">
-      <FormFooter
-        externalLink={{
-          id: 'sign-up-link',
-          label: 'Créer un compte',
-          title: 'Créer un compte (nouvelle fenêtre)',
-          url: 'https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture',
-        }}
-        submit={{
-          id: 'sign-in-link',
-          label: "J'ai un compte",
-          url: '/connexion'
-        }}
-      />
-    </div>
+    <FormFooter
+      externalLink={{
+        id: 'sign-up-link',
+        label: 'Créer un compte',
+        title: 'Créer un compte (nouvelle fenêtre)',
+        url: 'https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture',
+      }}
+      submit={{
+        id: 'sign-in-link',
+        label: "J'ai un compte",
+        url: '/connexion',
+      }}
+    />
   </div>
 )
 

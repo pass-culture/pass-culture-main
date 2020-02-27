@@ -2,6 +2,7 @@
   background-image: linear-gradient(to bottom right, $primary, $purple-blue);
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   height: 100%;
   width: 100%;
 }
@@ -9,7 +10,6 @@
 .bp-main {
   display: flex;
   flex-direction: column;
-  flex: 1;
   font-style: italic;
   justify-content: center;
   padding: rem(23px);
@@ -37,8 +37,7 @@
   }
 }
 
-.bp-buttons-container {
-  flex: 0;
+.logout-form-footer {
 
   #sign-in-link, #sign-up-link {
     color: $white;
