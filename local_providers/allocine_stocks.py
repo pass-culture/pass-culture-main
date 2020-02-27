@@ -48,13 +48,12 @@ class AllocineStocks(LocalProvider):
             self.movie_information = retrieve_movie_information(raw_movie_information['node']['movie'])
             self.filtered_movie_showtimes = _filter_only_digital_and_non_experience_showtimes(raw_movie_information
                                                                                               ['node']['showtimes'])
-            showtimes_number = len(self.filtered_movie_showtimes)
-
-        except KeyError:
+        except (KeyError, TypeError):
             self.log_provider_event(LocalProviderEventType.SyncError,
-                                    f"Error parsing information for movie: {raw_movie_information['node']['movie']}")
+                                    f"Error parsing movie for theater {self.venue.siret}")
             return []
 
+        showtimes_number = len(self.filtered_movie_showtimes)
         providable_information_list = [self.create_providable_info(Product,
                                                                    self.movie_information['id'],
                                                                    datetime.utcnow())]
@@ -96,18 +95,20 @@ class AllocineStocks(LocalProvider):
             self.fill_stock_attributes(pc_object)
 
     def fill_product_attributes(self, allocine_product: Product):
+        allocine_product.name = self.movie_information['title']
+        allocine_product.type = str(EventType.CINEMA)
         allocine_product.thumbCount = 0
-        allocine_product.description = self.movie_information['description']
-        allocine_product.durationMinutes = self.movie_information['duration']
+        if 'description' in self.movie_information:
+            allocine_product.description = self.movie_information['description']
+        if 'duration' in self.movie_information:
+            allocine_product.durationMinutes = self.movie_information['duration']
         if not allocine_product.extraData:
             allocine_product.extraData = {}
         if 'visa' in self.movie_information:
             allocine_product.extraData["visa"] = self.movie_information['visa']
         if 'stageDirector' in self.movie_information:
             allocine_product.extraData["stageDirector"] = self.movie_information['stageDirector']
-        allocine_product.name = self.movie_information['title']
 
-        allocine_product.type = str(EventType.CINEMA)
         is_new_product_to_insert = allocine_product.id is None
 
         if is_new_product_to_insert:
@@ -117,8 +118,10 @@ class AllocineStocks(LocalProvider):
     def fill_offer_attributes(self, allocine_offer: Offer):
         allocine_offer.venueId = self.venue.id
         allocine_offer.bookingEmail = self.venue.bookingEmail
-        allocine_offer.description = self.movie_information['description']
-        allocine_offer.durationMinutes = self.movie_information['duration']
+        if 'description' in self.movie_information:
+            allocine_offer.description = self.movie_information['description']
+        if 'duration' in self.movie_information:
+            allocine_offer.durationMinutes = self.movie_information['duration']
         if not allocine_offer.extraData:
             allocine_offer.extraData = {}
         if 'visa' in self.movie_information:
@@ -148,7 +151,6 @@ class AllocineStocks(LocalProvider):
             self.last_vf_offer_id = allocine_offer.id
 
     def fill_stock_attributes(self, allocine_stock: Stock):
-
         showtime_uuid = _get_showtimes_uuid_by_idAtProvider(allocine_stock.idAtProviders)
         showtime = _find_showtime_by_showtime_uuid(self.filtered_movie_showtimes, showtime_uuid)
 
@@ -175,8 +177,11 @@ class AllocineStocks(LocalProvider):
         if 'price' not in allocine_stock.fieldsUpdated:
             allocine_stock.price = self.apply_allocine_price_rule(allocine_stock)
 
-        movie_duration = self.movie_information['duration']
-        stock_movie_duration = timedelta(minutes=movie_duration) if movie_duration else timedelta(seconds=1)
+        if 'duration' in self.movie_information \
+                and self.movie_information['duration'] is not None:
+            stock_movie_duration = timedelta(minutes=self.movie_information['duration'])
+        else:
+            stock_movie_duration = timedelta(seconds=1)
         allocine_stock.endDatetime = allocine_stock.beginningDatetime + stock_movie_duration
 
     def apply_allocine_price_rule(self, allocine_stock: Stock) -> int:
@@ -210,23 +215,15 @@ def get_next_offer_id_from_database():
 def retrieve_movie_information(raw_movie_information: Dict) -> Dict:
     parsed_movie_information = dict()
     parsed_movie_information['id'] = raw_movie_information['id']
-    parsed_movie_information['description'] = _build_description(raw_movie_information)
-    parsed_movie_information['duration'] = _parse_movie_duration(raw_movie_information['runtime'])
     parsed_movie_information['title'] = raw_movie_information['title']
-    movie_poster_information = raw_movie_information['poster']
-    if movie_poster_information:
-        parsed_movie_information['poster_url'] = _format_poster_url(movie_poster_information['url'])
-    is_stage_director_info_available = len(raw_movie_information['credits']['edges']) > 0
-
-    if is_stage_director_info_available:
-        parsed_movie_information['stageDirect' \
-                                 'or'] = _build_stage_director_full_name(raw_movie_information)
-
-    is_operating_visa_available = len(raw_movie_information['releases']) > 0 \
-                                  and len(raw_movie_information['releases'][0]['data']) > 0
-
-    if is_operating_visa_available:
+    try:
+        parsed_movie_information['description'] = _build_description(raw_movie_information)
+        parsed_movie_information['duration'] = _parse_movie_duration(raw_movie_information['runtime'])
+        parsed_movie_information['poster_url'] = _format_poster_url(raw_movie_information['poster']['url'])
+        parsed_movie_information['stageDirector'] = _build_stage_director_full_name(raw_movie_information)
         parsed_movie_information['visa'] = _get_operating_visa(raw_movie_information)
+    except (TypeError, KeyError, IndexError):
+        pass
 
     return parsed_movie_information
 

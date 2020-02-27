@@ -205,7 +205,7 @@ class RetrieveMovieInformationTest:
             'poster_url': "https://fr.web.img6.acsta.net/medias/nmedia/00/02/32/64/69215979_af.jpg"
         }
 
-    def test_should_raise_key_error_exception_when_missing_keys_in_movie_information(self):
+    def test_should_raise_key_error_exception_when_missing_required_keys_in_movie_information(self):
         # Given
         movie_information = {
             'node': {
@@ -215,7 +215,6 @@ class RetrieveMovieInformationTest:
                         "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
                         "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"
                     },
-                    "title": "Les Contes de la m\u00e8re poule",
                 }
             }
         }
@@ -265,6 +264,52 @@ class RetrieveMovieInformationTest:
 
         # Then
         assert 'poster_url' not in movie_parsed_information
+
+    def test_should_create_product_and_new_offer_with_missing_person_in_credit(self):
+        # Given
+        movie_information = {
+            "node": {
+                "movie": {
+                    "id": "TW92aWU6Mzc4MzI=",
+                    "backlink": {
+                        "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
+                        "label": "Tous les d\u00e9tails du film sur AlloCin\u00e9"
+                    },
+                    "internalId": 37832,
+                    "data": {
+                        "eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E",
+                        "productionYear": 2001
+                    },
+                    "title": "Les Contes de la m\u00e8re poule",
+                    "originalTitle": "Les Contes de la m\u00e8re poule",
+                    "runtime": "PT1H50M0S",
+                    "poster": None,
+                    "synopsis": "synopsis du film",
+                    "credits": {
+                        "edges": [
+                            {
+                                "person": None,
+                            }
+                        ]
+                    },
+                    "releases": [
+                        {
+                            "name": "Released",
+                            "releaseDate": {
+                                "date": "2019-11-20"
+                            },
+                            "data": []
+                        }
+                    ],
+                }
+            }
+        }
+
+        # When
+        movie_parsed_information = retrieve_movie_information(movie_information['node']['movie'])
+
+        # Then
+        assert 'stageDirector' not in movie_parsed_information
 
 
 class RetrieveShowtimeInformationTest:

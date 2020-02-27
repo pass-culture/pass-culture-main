@@ -53,6 +53,7 @@ class AllocineStocksTest:
                     "node": {
                         "movie": {
                             "id": "TW92aWU6Mzc4MzI=",
+                            "type": "FEATURE_FILM",
                             "internalId": 37832,
                             "backlink": {
                                 "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
@@ -179,6 +180,7 @@ class UpdateObjectsTest:
                 "node": {
                     "movie": {
                         "id": "TW92aWU6Mzc4MzI=",
+                        "type": "FEATURE_FILM",
                         "internalId": 37832,
                         "backlink": {
                             "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
@@ -304,6 +306,7 @@ class UpdateObjectsTest:
                 "node": {
                     "movie": {
                         "id": "TW92aWU6Mzc4MzI=",
+                        "type": "FEATURE_FILM",
                         "internalId": 37832,
                         "backlink": {
                             "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
@@ -466,6 +469,7 @@ class UpdateObjectsTest:
                 "node": {
                     "movie": {
                         "id": "TW92aWU6Mzc4MzI=",
+                        "type": "FEATURE_FILM",
                         "internalId": 37832,
                         "backlink": {
                             "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
@@ -587,6 +591,7 @@ class UpdateObjectsTest:
                 "node": {
                     "movie": {
                         "id": "TW92aWU6Mzc4MzI=",
+                        "type": "FEATURE_FILM",
                         "internalId": 37832,
                         "backlink": {
                             "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
@@ -725,6 +730,7 @@ class UpdateObjectsTest:
                 "node": {
                     "movie": {
                         "id": "TW92aWU6Mzc4MzI=",
+                        "type": "FEATURE_FILM",
                         "internalId": 37832,
                         "backlink": {
                             "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
@@ -845,6 +851,7 @@ class UpdateObjectsTest:
                 "node": {
                     "movie": {
                         "id": "TW92aWU6Mzc4MzI=",
+                        "type": "FEATURE_FILM",
                         "internalId": 37832,
                         "backlink": {
                             "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
@@ -932,6 +939,94 @@ class UpdateObjectsTest:
     @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
     @patch('local_providers.allocine_stocks.get_movie_poster')
     @patch('local_providers.allocine_stocks.get_movies_showtimes')
+    @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
+    @clean_database
+    def test_should_not_create_product_and_offer_when_missing_required_information_in_api(self,
+                                                                                          mock_call_allocine_api,
+                                                                                          mock_api_poster,
+                                                                                          mock_redis,
+                                                                                          app):
+        # Given
+        mock_call_allocine_api.return_value = iter([
+            {
+                "node": {
+                    "movie": {
+                        "id": "TW92aWU6Mzc4MzI=",
+                        "type": "FEATURE_FILM",
+                        "internalId": 37832,
+                        "backlink": None,
+                        "data": {
+                            "eidr": r"10.5240\/EF0C-7FB2-7D20-46D1-5C8D-E",
+                            "productionYear": 2001
+                        },
+                        "originalTitle": "Les Contes de la m\u00e8re poule",
+                        "runtime": "PT1H50M0S",
+                        "poster": {
+                            "url": r"https:\/\/fr.web.img6.acsta.net\/medias\/nmedia\/00\/02\/32\/64\/69215979_af.jpg"
+                        },
+                        "synopsis": "synopsis du film",
+                        "releases": [
+                            {
+                                "name": "Released",
+                                "releaseDate": {
+                                    "date": "2001-10-03"
+                                },
+                                "data": []
+                            }
+                        ],
+                        "credits": None,
+                        "cast": {
+                            "backlink": {
+                                "url": r"http:\/\/www.allocine.fr\/film\/fichefilm-255951\/casting\/",
+                                "label": "Casting complet du film sur AlloCin\u00e9"
+                            },
+                            "edges": []
+                        },
+                        "countries": [
+                            {
+                                "name": "Iran",
+                                "alpha3": "IRN"
+                            }
+                        ],
+                        "genres": [
+                            "ANIMATION",
+                            "FAMILY"
+                        ],
+                        "companies": []
+                    },
+                    "showtimes": [
+                        {
+                            "startsAt": "2019-10-29T10:30:00",
+                            "diffusionVersion": "DUBBED",
+                            "projection": [
+                                "DIGITAL"
+                            ],
+                            "experience": None
+                        }
+                    ]
+                }
+            }])
+
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+
+        allocine_provider = activate_provider('AllocineStocks')
+        venue_provider = create_venue_provider(venue, allocine_provider)
+        venue_provider_price_rule = create_venue_provider_price_rule(venue_provider)
+        repository.save(venue_provider_price_rule)
+
+        allocine_stocks_provider = AllocineStocks(venue_provider)
+
+        # When
+        allocine_stocks_provider.updateObjects()
+
+        # Then
+        assert Offer.query.count() == 0
+        assert Product.query.count() == 0
+
+    @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
+    @patch('local_providers.allocine_stocks.get_movie_poster')
+    @patch('local_providers.allocine_stocks.get_movies_showtimes')
     @patch('local_providers.allocine_stocks.AllocineStocks.get_object_thumb')
     @patch.dict('os.environ', {'ALLOCINE_API_KEY': 'token'})
     @clean_database
@@ -948,6 +1043,7 @@ class UpdateObjectsTest:
                 "node": {
                     "movie": {
                         "id": "TW92aWU6Mzc4MzI=",
+                        "type": "FEATURE_FILM",
                         "internalId": 37832,
                         "backlink": {
                             "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
@@ -1058,6 +1154,7 @@ class UpdateObjectsTest:
                 "node": {
                     "movie": {
                         "id": "TW92aWU6Mzc4MzI=",
+                        "type": "FEATURE_FILM",
                         "internalId": 37832,
                         "backlink": {
                             "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
@@ -1179,6 +1276,7 @@ class UpdateObjectsTest:
                 "node": {
                     "movie": {
                         "id": "TW92aWU6Mzc4MzI=",
+                        "type": "FEATURE_FILM",
                         "internalId": 37832,
                         "backlink": {
                             "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
@@ -1289,8 +1387,6 @@ class UpdateObjectsTest:
         created_offer = Offer.query.all()
         created_stock = Stock.query.all()
 
-        vf_offer = created_offer[0]
-
         first_stock = created_stock[0]
         second_stock = created_stock[1]
 
@@ -1298,6 +1394,11 @@ class UpdateObjectsTest:
         assert len(created_offer) == 1
         assert len(created_stock) == 2
 
+        vf_offer = Offer.query \
+            .filter(Offer.name.contains('VF')) \
+            .one()
+
+        assert vf_offer is not None
         assert vf_offer.name == 'Les Contes de la mère poule - VF'
 
         assert first_stock.offerId == vf_offer.id
@@ -1331,6 +1432,7 @@ class UpdateObjectsTest:
                 "node": {
                     "movie": {
                         "id": "TW92aWU6Mzc4MzI=",
+                        "type": "FEATURE_FILM",
                         "internalId": 37832,
                         "backlink": {
                             "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
@@ -1511,6 +1613,7 @@ class UpdateObjectsTest:
                     "node": {
                         "movie": {
                             "id": "TW92aWU6Mzc4MzI=",
+                            "type": "FEATURE_FILM",
                             "internalId": 37832,
                             "backlink": {
                                 "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
@@ -1596,6 +1699,7 @@ class UpdateObjectsTest:
                     "node": {
                         "movie": {
                             "id": "TW92aWU6Mzc4MzI=",
+                            "type": "FEATURE_FILM",
                             "internalId": 37832,
                             "backlink": {
                                 "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
@@ -1720,6 +1824,7 @@ class UpdateObjectsTest:
                 "node": {
                     "movie": {
                         "id": "TW92aWU6Mzc4MzI=",
+                        "type": "FEATURE_FILM",
                         "internalId": 37832,
                         "backlink": {
                             "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
@@ -1819,8 +1924,8 @@ class UpdateObjectsTest:
             assert mock_poster_get_allocine.call_count == 2
             assert len(created_product) == 1
             assert len(created_offer) == 2
-            assert created_offer[0].venueId == venue1.id
-            assert created_offer[1].venueId == venue2.id
+            assert Offer.query.filter(Offer.venueId == venue1.id).count() == 1
+            assert Offer.query.filter(Offer.venueId == venue2.id).count() == 1
             assert len(created_stock) == 2
 
         @patch('local_providers.allocine_stocks.get_movies_showtimes')
@@ -1838,6 +1943,7 @@ class UpdateObjectsTest:
                 "node": {
                     "movie": {
                         "id": "TW92aWU6Mzc4MzI=",
+                        "type": "FEATURE_FILM",
                         "internalId": 37832,
                         "backlink": {
                             "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
@@ -1923,6 +2029,7 @@ class UpdateObjectsTest:
                     "node": {
                         "movie": {
                             "id": "TW92aWU6Mzc4MzI=",
+                            "type": "FEATURE_FILM",
                             "internalId": 37832,
                             "backlink": {
                                 "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
@@ -2062,6 +2169,7 @@ class UpdateObjectsTest:
                 "node": {
                     "movie": {
                         "id": "TW92aWU6Mzc4MzI=",
+                        "type": "FEATURE_FILM",
                         "internalId": 37832,
                         "backlink": {
                             "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
@@ -2147,6 +2255,7 @@ class UpdateObjectsTest:
                     "node": {
                         "movie": {
                             "id": "TW92aWU6Mzc4MzI=",
+                            "type": "FEATURE_FILM",
                             "internalId": 37832,
                             "backlink": {
                                 "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
@@ -2269,6 +2378,7 @@ class UpdateObjectsTest:
                 "node": {
                     "movie": {
                         "id": "TW92aWU6Mzc4MzI=",
+                        "type": "FEATURE_FILM",
                         "internalId": 37832,
                         "backlink": {
                             "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
@@ -2346,6 +2456,7 @@ class UpdateObjectsTest:
                     "node": {
                         "movie": {
                             "id": "TW92aWU6Mzc4MzI=",
+                            "type": "FEATURE_FILM",
                             "internalId": 37832,
                             "backlink": {
                                 "url": r"http:\/\/www.allocine.fr\/film\/fichefilm_gen_cfilm=37832.html",
