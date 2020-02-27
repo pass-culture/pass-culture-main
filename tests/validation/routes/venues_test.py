@@ -1,7 +1,7 @@
 import pytest
 
 from models import ApiErrors
-from validation.routes.venues import validate_coordinates
+from validation.routes.venues import validate_coordinates, check_existing_venue
 
 
 def test_validate_coordinates_raises_an_api_errors_if_latitude_is_not_a_decimal():
@@ -76,3 +76,16 @@ def test_validate_coordinates_raises_an_api_errors_if_both_latitude_and_longitud
     # then
     assert e.value.errors['latitude'] == ['La latitude doit être comprise entre -90.0 et +90.0']
     assert e.value.errors['longitude'] == ['La longitude doit être comprise entre -180.0 et +180.0']
+
+
+class CheckExistingVenueTest:
+    def test_should_raise_error_when_venue_does_not_exist(self):
+        # Given
+        venue = None
+
+        # When
+        with pytest.raises(ApiErrors) as error:
+            check_existing_venue(venue)
+
+        # Then
+        assert error.value.errors['venue'] == ["Ce lieu n'existe pas"]

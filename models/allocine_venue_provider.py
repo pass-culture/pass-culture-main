@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, false
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, false, BigInteger
 
 from models.venue_provider import VenueProvider
 
@@ -6,7 +6,7 @@ from models.venue_provider import VenueProvider
 class AllocineVenueProvider(VenueProvider):
     __tablename__ = 'allocine_venue_provider'
 
-    id = Column(Integer, ForeignKey('venue_provider.id'), primary_key=True)
+    id = Column(BigInteger, ForeignKey('venue_provider.id'), primary_key=True)
 
     isDuo = Column(Boolean,
                    default=False,

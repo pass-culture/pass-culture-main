@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 import pytest
 
 from local_providers.price_rule import PriceRule
@@ -90,29 +88,6 @@ class AllocineVenueProviderPriceRuleTest:
 
 
 class SaveAllocineVenueProviderPriceRuleTest:
-    @clean_database
-    def test_should_create_one_venue_provider_price_rule_in_database(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        allocine_provider = activate_provider('AllocineStocks')
-
-        allocine_venue_provider = create_allocine_venue_provider(venue, allocine_provider)
-
-        venue_provider_price_rule = AllocineVenueProviderPriceRule()
-        venue_provider_price_rule.allocineVenueProvider = allocine_venue_provider
-        venue_provider_price_rule.priceRule = PriceRule.default
-        venue_provider_price_rule.price = Decimal(10.0)
-
-        # When
-        repository.save(venue_provider_price_rule)
-
-        # Then
-        venue_provider_price_rule = AllocineVenueProviderPriceRule.query.one()
-        assert venue_provider_price_rule.allocineVenueProvider == allocine_venue_provider
-        assert venue_provider_price_rule.price == Decimal(10.0)
-        assert venue_provider_price_rule.priceRule == PriceRule.default
-
     @clean_database
     def test_should_not_save_new_venue_provider_price_rule(self, app):
         # Given

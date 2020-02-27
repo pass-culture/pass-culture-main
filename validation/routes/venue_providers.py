@@ -3,7 +3,7 @@ import json
 from models import ApiErrors, Provider
 
 
-def validate_new_venue_provider_information(payload: json):
+def check_new_venue_provider_information(payload: json):
     errors = ApiErrors()
     errors.status_code = 400
 
@@ -15,7 +15,7 @@ def validate_new_venue_provider_information(payload: json):
     errors.maybe_raise()
 
 
-def validate_existing_provider(provider: Provider):
+def check_existing_provider(provider: Provider):
     if not provider:
         errors = ApiErrors()
         errors.status_code = 400

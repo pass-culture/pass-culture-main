@@ -11,7 +11,7 @@ from sqlalchemy import BigInteger, \
 from sqlalchemy.orm import relationship, column_property
 from sqlalchemy.sql import expression, select
 
-from models import Favorite
+from models.favorite import Favorite
 from models.db import Model
 from models.pc_object import PcObject
 from utils.human_ids import humanize

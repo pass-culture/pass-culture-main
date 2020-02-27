@@ -2,7 +2,7 @@ from sqlalchemy import Column, Enum, BigInteger, ForeignKey, Numeric, CheckConst
 from sqlalchemy.orm import relationship
 
 from local_providers.price_rule import PriceRule
-from models import PcObject
+from models.pc_object import PcObject
 from models.db import Model
 
 

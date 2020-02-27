@@ -1,5 +1,4 @@
 from models.allocine_pivot import AllocinePivot
-from models.allocine_venue_provider import VenueProvider, AllocineVenueProvider
 from models.api_errors import ApiErrors
 from models.api_key import ApiKey
 from models.bank_information import BankInformation
@@ -10,6 +9,7 @@ from models.booking import Booking
 from models.criterion import Criterion
 from models.deactivable_mixin import DeactivableMixin
 from models.deposit import Deposit
+from models.discovery_view import DiscoveryView
 from models.email import Email
 from models.extra_data_mixin import ExtraDataMixin
 from models.favorite import Favorite
@@ -31,7 +31,6 @@ from models.product import BookFormat
 from models.product import Product
 from models.providable_mixin import ProvidableMixin
 from models.provider import Provider
-from models.discovery_view import DiscoveryView
 from models.recommendation import Recommendation
 from models.stock import Stock
 from models.stock import Stock
@@ -41,8 +40,9 @@ from models.user_offerer import UserOfferer
 from models.user_session import UserSession
 from models.venue import Venue
 from models.venue_provider import VenueProvider
-from models.allocine_venue_provider_price_rule import AllocineVenueProviderPriceRule
 from models.versioned_mixin import VersionedMixin
+from models.allocine_venue_provider import AllocineVenueProvider
+from models.allocine_venue_provider_price_rule import AllocineVenueProviderPriceRule
 
 __all__ = (
     'VersionedMixin',

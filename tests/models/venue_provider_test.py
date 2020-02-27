@@ -17,10 +17,14 @@ def test_nOffers_with_one_venue_provider(app):
     offerer = create_offerer()
     venue = create_venue(offerer)
     venue_provider = create_venue_provider(venue, provider)
-    offer_1 = create_offer_with_thing_product(venue, last_provider_id=provider.id, id_at_providers='offer1', last_provider=provider)
-    offer_2 = create_offer_with_event_product(venue, last_provider_id=provider.id, id_at_providers='offer2', last_provider=provider)
-    offer_3 = create_offer_with_event_product(venue, last_provider_id=provider.id, id_at_providers='offer3', last_provider=provider)
-    offer_4 = create_offer_with_thing_product(venue, last_provider_id=provider.id, id_at_providers='offer4', last_provider=provider)
+    offer_1 = create_offer_with_thing_product(venue, last_provider_id=provider.id, id_at_providers='offer1',
+                                              last_provider=provider)
+    offer_2 = create_offer_with_event_product(venue, last_provider_id=provider.id, id_at_providers='offer2',
+                                              last_provider=provider)
+    offer_3 = create_offer_with_event_product(venue, last_provider_id=provider.id, id_at_providers='offer3',
+                                              last_provider=provider)
+    offer_4 = create_offer_with_thing_product(venue, last_provider_id=provider.id, id_at_providers='offer4',
+                                              last_provider=provider)
     repository.save(offer_1, offer_2, offer_3, offer_4, venue_provider)
 
     # when
@@ -41,10 +45,14 @@ def test_nOffers_with_two_venue_providers_from_different_providers(app):
     venue = create_venue(offerer)
     venue_provider1 = create_venue_provider(venue, provider1)
     venue_provider2 = create_venue_provider(venue, provider2)
-    offer_1 = create_offer_with_thing_product(venue, last_provider_id=provider1.id, id_at_providers='offer1', last_provider=provider1)
-    offer_2 = create_offer_with_event_product(venue, last_provider_id=provider2.id, id_at_providers='offer2', last_provider=provider2)
-    offer_3 = create_offer_with_event_product(venue, last_provider_id=provider1.id, id_at_providers='offer3', last_provider=provider1)
-    offer_4 = create_offer_with_thing_product(venue, last_provider_id=provider1.id, id_at_providers='offer4', last_provider=provider1)
+    offer_1 = create_offer_with_thing_product(venue, last_provider_id=provider1.id, id_at_providers='offer1',
+                                              last_provider=provider1)
+    offer_2 = create_offer_with_event_product(venue, last_provider_id=provider2.id, id_at_providers='offer2',
+                                              last_provider=provider2)
+    offer_3 = create_offer_with_event_product(venue, last_provider_id=provider1.id, id_at_providers='offer3',
+                                              last_provider=provider1)
+    offer_4 = create_offer_with_thing_product(venue, last_provider_id=provider1.id, id_at_providers='offer4',
+                                              last_provider=provider1)
     repository.save(offer_1, offer_2, offer_3, offer_4, venue_provider1, venue_provider2)
 
     # when
@@ -75,7 +83,7 @@ def test_raise_errors_if_venue_provider_already_exists_with_same_information(app
 
 
 @clean_database
-def test_venue_provider_should_have_the_correct_provider_class(app):
+def test_should_have_attribute_matching_allocine_when_having_allocine_provider(app):
     # given
     provider = activate_provider('AllocineStocks')
     offerer = create_offerer()
@@ -88,3 +96,19 @@ def test_venue_provider_should_have_the_correct_provider_class(app):
 
     # then
     assert allocine_venue_provider.isFromAllocineProvider
+
+
+@clean_database
+def test_should_not_be_matched_has_allocine_provider_with_other_provider(app):
+    # given
+    provider = activate_provider('TiteLiveStocks')
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    venue_provider = create_venue_provider(venue, provider)
+    repository.save(venue_provider)
+
+    # when
+    allocine_venue_provider = VenueProvider.query.first()
+
+    # then
+    assert not allocine_venue_provider.isFromAllocineProvider

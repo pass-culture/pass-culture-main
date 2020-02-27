@@ -14,7 +14,7 @@ from utils.human_ids import dehumanize
 from utils.includes import VENUE_PROVIDER_INCLUDES
 from utils.rest import expect_json_data, \
     load_or_404
-from validation.routes.venue_providers import validate_new_venue_provider_information, validate_existing_provider
+from validation.routes.venue_providers import check_new_venue_provider_information, check_existing_provider
 
 
 @app.route('/venueProviders', methods=['GET'])
@@ -46,14 +46,14 @@ def get_venue_provider(id):
 @expect_json_data
 def create_venue_provider():
     venue_provider_payload = request.json
-    validate_new_venue_provider_information(venue_provider_payload)
+    check_new_venue_provider_information(venue_provider_payload)
 
     provider_id = dehumanize(venue_provider_payload['providerId'])
     provider = get_provider_enabled_for_pro_by_id(provider_id)
-    validate_existing_provider(provider)
+    check_existing_provider(provider)
 
-    provider_type = getattr(local_providers, provider.localClass)
-    new_venue_provider = connect_provider_to_venue(provider_type, venue_provider_payload)
+    provider_class = getattr(local_providers, provider.localClass)
+    new_venue_provider = connect_provider_to_venue(provider_class, venue_provider_payload)
 
     _run_first_synchronization(new_venue_provider)
 

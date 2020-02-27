@@ -1,9 +1,17 @@
 from decimal import Decimal, InvalidOperation
 
-from models import ApiErrors
+from models import ApiErrors, Venue
 
 MAX_LONGITUDE = 180
 MAX_LATITUDE = 90
+
+
+def check_existing_venue(venue: Venue):
+    if not venue:
+        errors = ApiErrors()
+        errors.status_code = 404
+        errors.add_error('venue', "Ce lieu n'existe pas")
+        raise errors
 
 
 def validate_coordinates(raw_latitude, raw_longitude):

@@ -84,7 +84,7 @@ class SynchronizeVenueProviderTest:
     @clean_database
     @patch('local_providers.provider_manager.get_local_provider_class_by_name')
     @patch('local_providers.provider_manager.do_update')
-    def test_should_call_do_update_with_expected_provider(self, mock_do_update, mock_get_provider_class, app):
+    def test_should_start_synchronization_with_linked_provider(self, mock_do_update, mock_get_provider_class, app):
         # Given
         limit = 10
         offerer = create_offerer()

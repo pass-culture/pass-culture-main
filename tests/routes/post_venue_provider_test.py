@@ -73,6 +73,7 @@ class Post:
 
             # Then
             assert response.status_code == 201
+            assert '_sa_polymorphic_on' not in response.json
 
         @clean_database
         @patch('routes.venue_providers.subprocess.Popen')
@@ -105,14 +106,14 @@ class Post:
 
     class Returns400:
         @clean_database
-        @patch('routes.venue_providers.validate_new_venue_provider_information')
-        def when_api_error_raise_from_payload_validation(self, validate_new_venue_provider_information, app):
+        @patch('routes.venue_providers.check_new_venue_provider_information')
+        def when_api_error_raise_from_payload_validation(self, mock_check_new_venue_provider_information, app):
             # Given
             api_errors = ApiErrors()
             api_errors.status_code = 400
             api_errors.add_error('errors', 'error received')
 
-            validate_new_venue_provider_information.side_effect = api_errors
+            mock_check_new_venue_provider_information.side_effect = api_errors
 
             user = create_user(can_book_free_offers=False, is_admin=True)
             repository.save(user)

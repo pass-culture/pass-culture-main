@@ -7,15 +7,18 @@ from local_providers.price_rule import PriceRule
 from models import AllocineVenueProvider, Venue, VenueProvider, AllocineVenueProviderPriceRule, ApiErrors
 from repository import repository
 from repository.allocine_pivot_queries import get_allocine_theaterId_for_venue
+from repository.venue_queries import find_by_id
 from utils.human_ids import dehumanize
-from utils.rest import load_or_404
+from validation.routes.venues import check_existing_venue
 
 
-def connect_provider_to_venue(provider_type: LocalProvider, venue_provider_payload: Dict) -> VenueProvider:
-    venue = load_or_404(Venue, venue_provider_payload['venueId'])
-    if provider_type == AllocineStocks:
+def connect_provider_to_venue(provider_class: LocalProvider, venue_provider_payload: Dict) -> VenueProvider:
+    venue_id = dehumanize(venue_provider_payload['venueId'])
+    venue = find_by_id(venue_id)
+    check_existing_venue(venue)
+    if provider_class == AllocineStocks:
         new_venue_provider = _connect_allocine_to_venue(venue, venue_provider_payload)
-    elif provider_type in (LibrairesStocks, TiteLiveStocks):
+    elif provider_class in (LibrairesStocks, TiteLiveStocks):
         new_venue_provider = _connect_titelive_or_libraires_to_venue(venue, venue_provider_payload)
     else:
         errors = ApiErrors()
@@ -29,9 +32,9 @@ def connect_provider_to_venue(provider_type: LocalProvider, venue_provider_paylo
 def _connect_allocine_to_venue(venue: Venue, payload: Dict) -> AllocineVenueProvider:
     allocine_theater_id = get_allocine_theaterId_for_venue(venue)
     allocine_venue_provider = _create_allocine_venue_provider(allocine_theater_id, payload, venue)
-    venue_provider_price_rule = _create_venue_provider_price_rule(allocine_venue_provider, payload.get('price'))
+    allocine_venue_provider_price_rule = _create_allocine_venue_provider_price_rule(allocine_venue_provider, payload.get('price'))
 
-    repository.save(venue_provider_price_rule)
+    repository.save(allocine_venue_provider_price_rule)
 
     return allocine_venue_provider
 
@@ -46,8 +49,8 @@ def _connect_titelive_or_libraires_to_venue(venue: Venue, payload: Dict) -> Venu
     return venue_provider
 
 
-def _create_venue_provider_price_rule(allocine_venue_provider: VenueProvider,
-                                      price: Decimal) -> AllocineVenueProviderPriceRule:
+def _create_allocine_venue_provider_price_rule(allocine_venue_provider: VenueProvider,
+                                               price: Decimal) -> AllocineVenueProviderPriceRule:
     venue_provider_price_rule = AllocineVenueProviderPriceRule()
     venue_provider_price_rule.allocineVenueProvider = allocine_venue_provider
     venue_provider_price_rule.priceRule = PriceRule.default
