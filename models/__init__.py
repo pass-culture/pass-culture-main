@@ -43,6 +43,7 @@ from models.venue_provider import VenueProvider
 from models.versioned_mixin import VersionedMixin
 from models.allocine_venue_provider import AllocineVenueProvider
 from models.allocine_venue_provider_price_rule import AllocineVenueProviderPriceRule
+from models.iris_france import IrisFrance
 
 __all__ = (
     'VersionedMixin',
@@ -64,6 +65,7 @@ __all__ = (
     'Feature',
     'HasAddressMixin',
     'HasThumbMixin',
+    'IrisFrance',
     'BookFormat',
     'NeedsValidationMixin',
     'ProvidableMixin',
@@ -123,6 +125,7 @@ models = (
     PaymentMessage,
     Payment,
     PaymentStatus,
+    IrisFrance,
 )
 
 materialized_views = (

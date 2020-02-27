@@ -22,7 +22,11 @@ from models import ApiKey, \
     Favorite, \
     BeneficiaryImportStatus, \
     OfferCriterion, \
-    Criterion, AllocineVenueProviderPriceRule, AllocinePivot, VenueProvider
+    Criterion, \
+    AllocineVenueProviderPriceRule, \
+    AllocinePivot, VenueProvider, \
+    IrisFrance
+
 from models.activity import load_activity
 from models.allocine_venue_provider import AllocineVenueProvider
 from models.db import db
@@ -64,6 +68,7 @@ def clean_all_database(*args, **kwargs):
     LocalProviderEvent.query.delete()
     Provider.query.delete()
     AllocinePivot.query.delete()
+    IrisFrance.query.delete()
     db.session.commit()
     install_features()
     install_local_providers()

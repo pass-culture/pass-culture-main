@@ -72,3 +72,7 @@ def create_versionning_tables():
 
 def create_index_btree_gist_extension():
     db.engine.execute("CREATE EXTENSION IF NOT EXISTS btree_gist;")
+
+
+def create_postgis_extension():
+    db.engine.execute("CREATE EXTENSION IF NOT EXISTS postgis;")

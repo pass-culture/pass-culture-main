@@ -71,3 +71,4 @@ urllib3==1.25.7
 werkzeug==0.16.0
 wetransferpy==0.2.3
 xlrd==1.2.0
+GeoAlchemy2==0.6.3
