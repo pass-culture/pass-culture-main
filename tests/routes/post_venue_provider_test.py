@@ -73,7 +73,10 @@ class Post:
 
             # Then
             assert response.status_code == 201
-            assert '_sa_polymorphic_on' not in response.json
+            json = response.json
+            assert '_sa_polymorphic_on' not in json
+            venue_provider = VenueProvider.query.one()
+            assert json['venueId'] == humanize(venue_provider.venueId)
 
         @clean_database
         @patch('routes.venue_providers.subprocess.Popen')

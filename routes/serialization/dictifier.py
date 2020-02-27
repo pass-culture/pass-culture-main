@@ -5,7 +5,9 @@ from typing import Iterable, Set, List
 from sqlalchemy.orm.collections import InstrumentedList
 
 from domain.reimbursement import BookingReimbursement
-from models import PcObject
+from models.allocine_venue_provider import AllocineVenueProvider
+from models.pc_object import PcObject
+from models.venue_provider import VenueProvider
 from routes.serialization.serializer import serialize
 
 
@@ -27,6 +29,29 @@ def _(booking_reimbursement, column=None, includes: Iterable = ()):
 def _(models, column=None, includes: Iterable = ()):
     not_deleted_objects = filter(lambda x: not x.is_soft_deleted(), models)
     return [as_dict(o, includes=includes) for o in not_deleted_objects]
+
+
+@as_dict.register(AllocineVenueProvider)
+def _(model, column=None, includes: Iterable = ()):
+    result = OrderedDict()
+
+    for key in _keys_to_serialize(model, includes):
+        value = getattr(model, key)
+        columns = model.__class__.__table__.columns._data
+        column = columns.get(key)
+        if column is None:
+            columns = VenueProvider.__table__.columns._data
+            column = columns.get(key)
+        result[key] = as_dict(value, column=column)
+
+    for join in _joins_to_serialize(includes):
+        key = join['key']
+        sub_includes = join.get('includes', set())
+        value = getattr(model, key)
+        result[key] = as_dict(value, includes=sub_includes)
+
+    result['modelName'] = model.__class__.__name__
+    return result
 
 
 @as_dict.register(PcObject)
