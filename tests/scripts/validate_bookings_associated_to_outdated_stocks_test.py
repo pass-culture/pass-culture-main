@@ -83,6 +83,33 @@ def test_when_booking_is_associated_to_sold_out_stock_should_update_stocks_avail
 
 @freeze_time('2019-10-01')
 @clean_database
+def test_when_booking_is_associated_to_sold_out_stock_should_update_stocks_availability_with_duo_offer(app):
+    # Given
+    user = create_user()
+    create_deposit(user)
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_offer_with_event_product(venue)
+    stock = create_stock(offer=offer,
+                         end_datetime=datetime(2019, 9, 15),
+                         available=10)
+    booking1 = create_booking(user=user, is_used=False, stock=stock)
+    booking2 = create_booking(user=user, is_used=False, quantity=2, stock=stock)
+    booking3 = create_booking(user=user, is_used=False, stock=stock)
+    repository.save(booking1, booking2, booking3)
+    stock.available = 0
+    repository.save(stock)
+
+    # When
+    validate_bookings_associated_to_outdated_stocks()
+
+    # Then
+    db.session.refresh(stock)
+    assert stock.available == 4
+
+
+@freeze_time('2019-10-01')
+@clean_database
 def test_when_booking_is_associated_to_enough_stock_should_not_update_anything(app):
     # Given
     user = create_user()

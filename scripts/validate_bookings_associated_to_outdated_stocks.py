@@ -15,8 +15,7 @@ def validate_bookings_associated_to_outdated_stocks() -> None:
 
     stocks_id_errors = []
     for stock in stocks_to_update:
-        bookings_associated_to_stock = stock.bookings
-        stock.available = len(bookings_associated_to_stock)
+        stock.available = sum([booking.quantity for booking in stock.bookings])
         try:
             repository.save(stock)
         except ApiErrors:
