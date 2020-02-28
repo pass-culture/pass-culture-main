@@ -19,6 +19,7 @@ export const VENUE_MODIFICATION_PATCH_KEYS = [
   'publicName',
   'address',
   'city',
+  'comment',
   'latitude',
   'longitude',
   'name',

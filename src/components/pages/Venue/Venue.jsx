@@ -112,6 +112,7 @@ class Venue extends PureComponent {
     const { isCreatedEntity, isModifiedEntity, readOnly } = query.context({
       id: venueId,
     })
+
     const { bic, iban, siret: initialSiret } = formInitialValues || {}
 
     const canSubmit = getCanSubmit(formProps)
@@ -126,7 +127,8 @@ class Venue extends PureComponent {
     const siretValidOnCreation = formSiret && removeWhitespaces(formSiret).length === 14
     const fieldReadOnlyBecauseFrozenFormSiretOnCreation = isCreatedEntity && siretValidOnCreation
 
-    const siretValidOnModification = typeof initialSiret !== 'undefined'
+    const siretValidOnModification = initialSiret !== null
+
     const fieldReadOnlyBecauseFrozenFormSiretOnModification =
       isModifiedEntity && siretValidOnModification
 
