@@ -21,10 +21,11 @@ class AllocineProviderForm extends PureComponent {
   handleSubmit = (formValues) => {
     this.hideModal()
     const { createVenueProvider, providerId, venueId } = this.props
-    const { available, price } = formValues
+    const { available, isDuo, price } = formValues
 
     const payload = {
       available,
+      isDuo,
       price,
       providerId,
       venueId,
@@ -41,6 +42,7 @@ class AllocineProviderForm extends PureComponent {
       offererId,
       venueId
     } = this.props
+
     history.push(`/structures/${offererId}/lieux/${venueId}`)
   }
 
@@ -66,13 +68,16 @@ class AllocineProviderForm extends PureComponent {
     })
   }
 
-  renderForm = (props) => {
+  renderForm = (formProps) => {
     const { isLoadingMode, isShowingConfirmationModal } = this.state
+    const required = value => {
+      return value ? undefined : 'Ce champ est obligatoire'
+    }
 
-    const canSubmit = getCanSubmit(props)
+    const canSubmit = getCanSubmit(formProps)
 
     return (
-      <form onSubmit={props.handleSubmit}>
+      <form onSubmit={formProps.handleSubmit}>
         {!isLoadingMode && (
           <div className="allocine-provider-form">
             <div className="apf-price-section">
@@ -102,7 +107,7 @@ class AllocineProviderForm extends PureComponent {
                 min="0"
                 name="price"
                 placeholder="Ex : 12€"
-                required
+                validate={required}
               />
             </div>
             <div className="apf-available-section">
@@ -164,6 +169,7 @@ class AllocineProviderForm extends PureComponent {
         {isShowingConfirmationModal && (
           <SynchronisationConfirmationModal
             handleClose={this.hideModal}
+            handleConfirm={formProps.handleSubmit}
           />
         )}
       </form>

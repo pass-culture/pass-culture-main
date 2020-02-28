@@ -7,6 +7,7 @@ import Icon from '../../../../../layout/Icon'
 
 import AllocineProviderForm from '../../AllocineProviderForm/AllocineProviderForm'
 import SynchronisationConfirmationModal from '../SynchronisationConfirmationModal/SynchronisationConfirmationModal'
+import CheckboxField from "../../../../../layout/form/fields/CheckboxField";
 
 describe('components | AllocineProviderForm', () => {
   let createVenueProvider
@@ -50,18 +51,6 @@ describe('components | AllocineProviderForm', () => {
     })
   })
 
-  it('should display an import button', () => {
-    // when
-    const wrapper = mount(<AllocineProviderForm {...props} />)
-
-    // then
-    const offerImportButton = wrapper.find({
-      children: `Importer les offres`,
-    })
-    expect(offerImportButton).toHaveLength(1)
-    expect(offerImportButton.type()).toBe('button')
-  })
-
   it('should display the price field with minimum value set to 0', () => {
     // when
     const wrapper = mount(<AllocineProviderForm {...props} />)
@@ -78,7 +67,6 @@ describe('components | AllocineProviderForm', () => {
     expect(priceFieldLabel).toHaveLength(1)
     expect(priceFieldInput).toHaveLength(1)
     expect(priceFieldInput.prop('min')).toBe('0')
-    expect(priceFieldInput.prop('required')).toBe(true)
   })
 
   it('should display the available field with default value set to Illimité', () => {
@@ -98,7 +86,7 @@ describe('components | AllocineProviderForm', () => {
     expect(availableInput).toHaveLength(1)
   })
 
-  it('should display the isDuo checkbox with default value checked=false', () => {
+  it('should display the isDuo checkbox with default value unchecked by default', () => {
     // when
     const wrapper = mount(<AllocineProviderForm {...props} />)
 
@@ -128,28 +116,41 @@ describe('components | AllocineProviderForm', () => {
     expect(priceToolTip).toHaveLength(1)
     expect(toolTipIcon).toHaveLength(1)
     expect(toolTipIcon.prop('svg')).toBe('picto-info')
+    expect(toolTipIcon.prop('alt')).toBe('image d’aide à l’information')
   })
-
 
   it('should display a tooltip and an Icon component for isDuo field', () => {
     // when
     const wrapper = mount(<AllocineProviderForm {...props} />)
 
     // then
-    const priceSection = wrapper.find(Form).find('.apf-isDuo-section')
-    const tooltip = priceSection.find('.apf-tooltip')
-    expect(tooltip).toHaveLength(1)
-    expect(tooltip.prop('data-place')).toBe('bottom')
-    expect(tooltip.prop('data-tip')).toBe(
-      '<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>'
-    )
-    const icon = tooltip.find(Icon)
-    expect(icon).toHaveLength(1)
-    expect(icon.prop('svg')).toBe('picto-info')
-    expect(icon.prop('alt')).toBe('image d’aide à l’information')
+    const isDuoToolTip = wrapper
+      .findWhere(node => node.prop('data-tip') === '<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>')
+      .first()
+
+    const isDuoToolTipIcon = isDuoToolTip.find(Icon)
+
+    expect(isDuoToolTip).toHaveLength(1)
+    expect(isDuoToolTipIcon).toHaveLength(1)
+    expect(isDuoToolTipIcon.prop('svg')).toBe('picto-info')
+    expect(isDuoToolTipIcon.prop('alt')).toBe('image d’aide à l’information')
   })
 
-  it('should display a confirmation modal', () => {
+  it('should display an import button disabled by default', () => {
+    // when
+    const wrapper = mount(<AllocineProviderForm {...props} />)
+
+    // then
+    const offerImportButton = wrapper.find({
+      children: `Importer les offres`,
+    })
+
+    expect(offerImportButton).toHaveLength(1)
+    expect(offerImportButton.type()).toBe('button')
+    expect(offerImportButton.prop('disabled')).toBe(true)
+  })
+
+  it('should be able to submit when price field is filled and display a confirmation modal', () => {
     // given
     const wrapper = mount(<AllocineProviderForm {...props} />)
     const importButton = wrapper.find('button')
@@ -163,6 +164,25 @@ describe('components | AllocineProviderForm', () => {
     // then
     const syncConfirmationModal = wrapper.find(SynchronisationConfirmationModal)
     expect(syncConfirmationModal).toHaveLength(1)
+  })
+
+  it('should not be able to submit when price field is not filled', function () {
+    // given
+    const wrapper = mount(<AllocineProviderForm {...props} />)
+    const importButton = wrapper.find('button')
+    const availableSection = wrapper.findWhere(node => node.text() === 'Nombre de places/séance')
+    const isDuoSection = wrapper.findWhere(node => node.text() === 'Accepter les réservations DUO')
+    const availableInput = availableSection.find(NumberField).find('input')
+
+    availableInput.simulate('change', { target: { value: 10 } })
+    availableInput.simulate('click')
+
+    // when
+    importButton.simulate('click')
+
+    // then
+    const syncConfirmationModal = wrapper.find(SynchronisationConfirmationModal)
+    expect(syncConfirmationModal).toHaveLength(0)
   })
 
   describe('handleSuccess', () => {
@@ -206,7 +226,8 @@ describe('components | AllocineProviderForm', () => {
       // given
       const formValues = {
         price: 12,
-        available: 50
+        available: 50,
+        isDuo: true
       }
       const wrapper = shallow(<AllocineProviderForm {...props} />)
 
@@ -218,6 +239,7 @@ describe('components | AllocineProviderForm', () => {
       expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
         price: 12,
         available: 50,
+        isDuo: true,
         providerId: 'AA',
         venueId: 'BB',
       })
