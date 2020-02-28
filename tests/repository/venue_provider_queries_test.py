@@ -1,11 +1,48 @@
 from models import AllocineVenueProvider, VenueProvider
 from repository import repository
 from repository.venue_provider_queries import get_venue_providers_to_sync, get_nb_containers_at_work, \
-    get_venue_provider_by_id
+    get_venue_provider_by_id, get_actives_venue_providers_for_specific_provider
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_venue_provider, \
     create_allocine_venue_provider
 from tests.model_creators.provider_creators import activate_provider
+
+
+class GetActivesVenueProvidersForSpecificProviderTest:
+    @clean_database
+    def test_should_return_all_venue_provider_matching_provider_id(self, app):
+        # Given
+        offerer = create_offerer()
+        venue1 = create_venue(offerer, siret='12345678901234')
+        venue2 = create_venue(offerer)
+        titelive_provider = activate_provider('TiteLiveStocks')
+        allocine_provider = activate_provider('AllocineStocks')
+        venue_provider1 = create_venue_provider(venue1, titelive_provider)
+        venue_provider2 = create_venue_provider(venue2, allocine_provider)
+        repository.save(venue_provider1, venue_provider2)
+
+        # When
+        venue_providers = get_actives_venue_providers_for_specific_provider(titelive_provider.id)
+
+        # Then
+        assert venue_providers == [venue_provider1]
+
+    @clean_database
+    def test_should_return_all_actives_venue_provider_matching_provider_id(self, app):
+        # Given
+        offerer = create_offerer()
+        venue1 = create_venue(offerer, siret='12345678901234')
+        venue2 = create_venue(offerer)
+        titelive_provider = activate_provider('TiteLiveStocks')
+        venue_provider1 = create_venue_provider(venue1, titelive_provider)
+        venue_provider2 = create_venue_provider(venue2, titelive_provider, is_active=False)
+        repository.save(venue_provider1, venue_provider2)
+
+        # When
+        venue_providers = get_actives_venue_providers_for_specific_provider(titelive_provider.id)
+
+        # Then
+        assert venue_providers == [venue_provider1]
 
 
 class GetVenueProvidersToSyncTest:

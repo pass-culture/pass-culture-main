@@ -1,57 +1,36 @@
 import os
-import subprocess
-from io import StringIO
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from flask import Flask
 from sqlalchemy import orm
 
+from local_providers.provider_manager import synchronize_data_for_provider
 from local_providers.venue_provider_worker import update_venues_for_specific_provider
 from models.db import db
 from models.feature import FeatureToggle
 from repository.provider_queries import get_provider_by_local_class
 from scheduled_tasks.decorators import log_cron, cron_context, cron_require_feature
-from utils.config import API_ROOT_PATH
-from utils.logger import logger
 
 
 @log_cron
 @cron_context
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS)
 def synchronize_titelive_things(app):
-    process = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
-                               + ' --provider TiteLiveThings',
-                               shell=True,
-                               cwd=API_ROOT_PATH)
-    output, error = process.communicate()
-    logger.info(StringIO(output))
-    logger.info(StringIO(error))
+    synchronize_data_for_provider("TiteLiveThings")
 
 
 @log_cron
 @cron_context
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION)
 def synchronize_titelive_thing_descriptions(app):
-    process = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
-                               + ' --provider TiteLiveThingDescriptions',
-                               shell=True,
-                               cwd=API_ROOT_PATH)
-    output, error = process.communicate()
-    logger.info(StringIO(output))
-    logger.info(StringIO(error))
+    synchronize_data_for_provider("TiteLiveThingDescriptions")
 
 
 @log_cron
 @cron_context
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS)
 def synchronize_titelive_thing_thumbs(app):
-    process = subprocess.Popen('PYTHONPATH="." python scripts/pc.py update_providables'
-                               + ' --provider TiteLiveThingThumbs',
-                               shell=True,
-                               cwd=API_ROOT_PATH)
-    output, error = process.communicate()
-    logger.info(StringIO(output))
-    logger.info(StringIO(error))
+    synchronize_data_for_provider("TiteLiveThingThumbs")
 
 
 @log_cron

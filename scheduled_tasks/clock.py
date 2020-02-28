@@ -1,12 +1,11 @@
 import os
-import subprocess
-from io import StringIO
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from flask import Flask
 from mailjet_rest import Client
 from sqlalchemy import orm
 
+from local_providers.provider_manager import synchronize_venue_providers_for_provider, synchronize_data_for_provider
 from models import DiscoveryView
 from models.db import db
 from models.feature import FeatureToggle
@@ -17,8 +16,6 @@ from scheduled_tasks.decorators import log_cron, cron_context, cron_require_feat
 from scripts.beneficiary import remote_import
 from scripts.dashboard.write_dashboard import write_dashboard
 from scripts.update_booking_used import update_booking_used_after_stock_occurrence
-from utils.config import API_ROOT_PATH
-from utils.logger import logger
 from utils.mailing import MAILJET_API_SECRET, MAILJET_API_KEY
 
 
@@ -34,14 +31,7 @@ def update_booking_used(app):
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_ALLOCINE)
 def synchronize_allocine_stocks(app):
     allocine_stocks_provider_id = get_provider_by_local_class("AllocineStocks").id
-    process = subprocess.Popen(
-        f'PYTHONPATH="." python scripts/pc.py update_providables_by_provider_id'
-        f' --provider-id {allocine_stocks_provider_id}',
-        shell=True,
-        cwd=API_ROOT_PATH)
-    output, error = process.communicate()
-    logger.info(StringIO(output))
-    logger.info(StringIO(error))
+    synchronize_venue_providers_for_provider(allocine_stocks_provider_id)
 
 
 @log_cron
@@ -49,27 +39,14 @@ def synchronize_allocine_stocks(app):
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_LIBRAIRES)
 def synchronize_libraires_stocks(app):
     libraires_stocks_provider_id = get_provider_by_local_class("LibrairesStocks").id
-    process = subprocess.Popen(
-        f'PYTHONPATH="." python scripts/pc.py update_providables_by_provider_id'
-        f' --provider-id {libraires_stocks_provider_id}',
-        shell=True,
-        cwd=API_ROOT_PATH)
-    output, error = process.communicate()
-    logger.info(StringIO(output))
-    logger.info(StringIO(error))
+    synchronize_venue_providers_for_provider(libraires_stocks_provider_id)
 
 
 @log_cron
 @cron_context
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_BANK_INFORMATION)
 def pc_retrieve_offerers_bank_information(app):
-    process = subprocess.Popen(f'PYTHONPATH="." python scripts/pc.py update_providables'
-                               f' --provider BankInformationProvider',
-                               shell=True,
-                               cwd=API_ROOT_PATH)
-    output, error = process.communicate()
-    logger.info(StringIO(output))
-    logger.info(StringIO(error))
+    synchronize_data_for_provider("BankInformationProvider")
 
 
 @log_cron
