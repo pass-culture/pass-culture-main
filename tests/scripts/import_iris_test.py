@@ -1,3 +1,6 @@
+import os
+from pathlib import Path
+
 import geopandas as gpd
 from shapely.geometry import Polygon, Point
 
@@ -9,7 +12,7 @@ from tests.conftest import clean_database
 
 def test_read_iris_shape_file_should_read_shape_file_and_return_correct_data_in_wgs84_format():
     # given
-    file_path = 'tests/files/geolocation_data/test_guyane/'
+    file_path = Path(os.path.dirname(os.path.realpath('tests/files/geolocation_data/test_guyane/test_guyane.shp')))
 
     # when
     iris_df = read_iris_shape_file(file_path)
@@ -36,7 +39,7 @@ def test_fill_iris_from_should_save_iris_row_in_table(app):
 @clean_database
 def test_import_iris_shape_file_to_table_should_import_shape_from_file_and_write_on_iris_table(app):
     # Given
-    filepath = 'tests/files/geolocation_data/test_guyane/'
+    filepath = Path(os.path.dirname(os.path.realpath('tests/files/geolocation_data/test_guyane/test_guyane.shp')))
 
     # When
     import_iris_shape_file_to_table(filepath)
