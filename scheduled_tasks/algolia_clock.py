@@ -7,14 +7,9 @@ from sqlalchemy import orm
 
 from algolia.infrastructure.worker import process_multi_indexing
 from models.db import db
-from repository.feature_queries import \
-    feature_cron_algolia_indexing_offers_by_offer_enabled, \
-    feature_cron_algolia_indexing_offers_by_venue_provider_enabled, \
-    feature_cron_algolia_indexing_offers_by_venue_enabled, \
-    feature_cron_algolia_deleting_expired_offers_enabled
-from scheduled_tasks.decorators import log_cron, cron_context
-from scripts.algolia_indexing.indexing import \
-    batch_indexing_offers_in_algolia_by_offer, \
+from models.feature import FeatureToggle
+from scheduled_tasks.decorators import log_cron, cron_context, cron_require_feature
+from scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer, \
     batch_indexing_offers_in_algolia_by_venue, \
     batch_deleting_expired_offers_in_algolia
 from utils.config import REDIS_URL
@@ -22,25 +17,29 @@ from utils.config import REDIS_URL
 
 @log_cron
 @cron_context
-def pc_batch_indexing_offers_in_algolia_by_offer(app):
+@cron_require_feature(FeatureToggle.SYNCHRONIZE_ALGOLIA)
+def index_offers_in_algolia_by_offer(app):
     batch_indexing_offers_in_algolia_by_offer(client=app.redis_client)
 
 
 @log_cron
 @cron_context
-def pc_batch_indexing_offers_in_algolia_by_venue(app):
+@cron_require_feature(FeatureToggle.SYNCHRONIZE_ALGOLIA)
+def index_offers_in_algolia_by_venue(app):
     batch_indexing_offers_in_algolia_by_venue(client=app.redis_client)
 
 
 @log_cron
 @cron_context
-def pc_batch_indexing_offers_in_algolia_by_venue_provider(app):
+@cron_require_feature(FeatureToggle.SYNCHRONIZE_ALGOLIA)
+def index_offers_in_algolia_by_venue_provider(app):
     process_multi_indexing(client=app.redis_client)
 
 
 @log_cron
 @cron_context
-def pc_batch_deleting_expired_offers_in_algolia(app):
+@cron_require_feature(FeatureToggle.SYNCHRONIZE_ALGOLIA)
+def delete_expired_offers_in_algolia(app):
     batch_deleting_expired_offers_in_algolia(client=app.redis_client)
 
 
@@ -61,24 +60,20 @@ if __name__ == '__main__':
     orm.configure_mappers()
     scheduler = BlockingScheduler()
 
-    if feature_cron_algolia_indexing_offers_by_offer_enabled():
-        scheduler.add_job(pc_batch_indexing_offers_in_algolia_by_offer, 'cron',
-                          [app],
-                          minute=algolia_cron_indexing_offers_by_offer_frequency)
+    scheduler.add_job(index_offers_in_algolia_by_offer, 'cron',
+                      [app],
+                      minute=algolia_cron_indexing_offers_by_offer_frequency)
 
-    if feature_cron_algolia_indexing_offers_by_venue_provider_enabled():
-        scheduler.add_job(pc_batch_indexing_offers_in_algolia_by_venue_provider, 'cron',
-                          [app],
-                          minute=algolia_cron_indexing_offers_by_venue_frequency)
+    scheduler.add_job(index_offers_in_algolia_by_venue_provider, 'cron',
+                      [app],
+                      minute=algolia_cron_indexing_offers_by_venue_frequency)
 
-    if feature_cron_algolia_indexing_offers_by_venue_enabled():
-        scheduler.add_job(pc_batch_indexing_offers_in_algolia_by_venue, 'cron',
-                          [app],
-                          minute=algolia_cron_indexing_offers_by_venue_provider_frequency)
+    scheduler.add_job(index_offers_in_algolia_by_venue, 'cron',
+                      [app],
+                      minute=algolia_cron_indexing_offers_by_venue_provider_frequency)
 
-    if feature_cron_algolia_deleting_expired_offers_enabled():
-        scheduler.add_job(pc_batch_deleting_expired_offers_in_algolia, 'cron',
-                          [app],
-                          day='*', hour='1')
+    scheduler.add_job(delete_expired_offers_in_algolia, 'cron',
+                      [app],
+                      day='*', hour='1')
 
     scheduler.start()
