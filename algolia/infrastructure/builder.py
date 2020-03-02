@@ -26,11 +26,13 @@ def build_object(offer: Offer) -> Dict:
     if offer.isEvent:
         stocks = offer.notDeletedStocks
         dates = list(map(lambda stock: datetime.timestamp(stock.beginningDatetime), stocks))
+    date_created = datetime.timestamp(offer.dateCreated)
 
     object_to_index = {
         'objectID': humanize_offer_id,
         'offer': {
             'author': author,
+            'dateCreated': date_created,
             'dateRange': date_range,
             'dates': dates,
             'description': offer.description,

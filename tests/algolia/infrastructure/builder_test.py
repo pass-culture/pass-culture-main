@@ -29,8 +29,9 @@ class BuildObjectTest:
                                                 idx=3,
                                                 is_active=True,
                                                 event_name='Event name',
-                                                event_type=EventType.MUSIQUE, 
-                                                thumb_count=1)
+                                                event_type=EventType.MUSIQUE,
+                                                thumb_count=1,
+                                                date_created=datetime(2020, 1, 1, 10, 0, 0))
         stock = create_stock(available=10,
                              beginning_datetime=beginning_datetime,
                              end_datetime=end_datetime,
@@ -47,6 +48,7 @@ class BuildObjectTest:
             'objectID': 'AM',
             'offer': {
                 'author': None,
+                'dateCreated': 1577872800.0,
                 'dateRange': ['2019-11-01 10:00:00', '2019-12-01 10:00:00'],
                 'dates': [1572602400.0],
                 'description': 'Un lit sous une rivière',
