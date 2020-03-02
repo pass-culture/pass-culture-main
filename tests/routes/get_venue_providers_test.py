@@ -36,8 +36,8 @@ class Get:
             # given
             offerer = create_offerer()
             venue = create_venue(offerer)
-            titelive_things_provider = get_provider_by_local_class('AllocineStocks')
-            allocine_venue_provider = create_allocine_venue_provider(venue, titelive_things_provider)
+            allocine_stocks_provider = get_provider_by_local_class('AllocineStocks')
+            allocine_venue_provider = create_allocine_venue_provider(venue, allocine_stocks_provider)
             repository.save(allocine_venue_provider)
 
             user = create_user()
@@ -50,7 +50,6 @@ class Get:
 
             # then
             assert response.status_code == 200
-            logger.info(response.json)
             assert response.json[0].get('id') == humanize(allocine_venue_provider.id)
             assert response.json[0].get('venueId') == humanize(venue.id)
 

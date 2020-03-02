@@ -35,13 +35,14 @@ def _(models, column=None, includes: Iterable = ()):
 def _(model, column=None, includes: Iterable = ()):
     result = OrderedDict()
 
+    venue_provider_columns = VenueProvider.__table__.columns._data
+    allocine_specific_columns = AllocineVenueProvider.__table__.columns._data
+    allocine_venue_provider_columns = OrderedDict(venue_provider_columns.items()
+                                                  + allocine_specific_columns.items())
+
     for key in _keys_to_serialize(model, includes):
         value = getattr(model, key)
-        columns = model.__class__.__table__.columns._data
-        column = columns.get(key)
-        if column is None:
-            columns = VenueProvider.__table__.columns._data
-            column = columns.get(key)
+        column = allocine_venue_provider_columns.get(key)
         result[key] = as_dict(value, column=column)
 
     for join in _joins_to_serialize(includes):
