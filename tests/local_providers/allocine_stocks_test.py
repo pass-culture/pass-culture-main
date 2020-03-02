@@ -1011,11 +1011,11 @@ class UpdateObjectsTest:
         venue = create_venue(offerer)
 
         allocine_provider = activate_provider('AllocineStocks')
-        venue_provider = create_venue_provider(venue, allocine_provider)
-        venue_provider_price_rule = create_venue_provider_price_rule(venue_provider)
-        repository.save(venue_provider_price_rule)
+        allocine_venue_provider = create_allocine_venue_provider(venue, allocine_provider)
+        allocine_venue_provider_price_rule = create_allocine_venue_provider_price_rule(allocine_venue_provider)
+        repository.save(allocine_venue_provider_price_rule)
 
-        allocine_stocks_provider = AllocineStocks(venue_provider)
+        allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
 
         # When
         allocine_stocks_provider.updateObjects()
