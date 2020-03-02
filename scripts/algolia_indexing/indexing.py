@@ -4,7 +4,7 @@ from redis import Redis
 
 from algolia.usecase.orchestrator import process_eligible_offers, delete_expired_offers
 from connectors.redis import get_venue_ids, delete_venue_ids, \
-    get_venue_providers, delete_venue_providers, get_offer_ids
+    get_venue_providers, delete_venue_providers, get_offer_ids, delete_venue_provider_currently_in_sync
 from repository import offer_queries
 from utils.converter import from_tuple_to_int
 from utils.logger import logger
@@ -27,9 +27,13 @@ def batch_indexing_offers_in_algolia_by_venue_provider(client: Redis) -> None:
     if len(venue_providers) > 0:
         delete_venue_providers(client=client)
         for venue_provider in venue_providers:
+            venue_provider_id = venue_provider['id']
             provider_id = venue_provider['providerId']
             venue_id = int(venue_provider['venueId'])
-            _process_venue_provider(client, provider_id, venue_id)
+            _process_venue_provider(client=client,
+                                    provider_id=provider_id,
+                                    venue_id=venue_id,
+                                    venue_provider_id=venue_provider_id)
 
 
 def batch_indexing_offers_in_algolia_by_venue(client: Redis) -> None:
@@ -95,7 +99,7 @@ def batch_deleting_expired_offers_in_algolia(client: Redis) -> None:
         page += 1
 
 
-def _process_venue_provider(client: Redis, provider_id: str, venue_id: int) -> None:
+def _process_venue_provider(client: Redis, venue_provider_id: int, provider_id: str, venue_id: int) -> None:
     has_still_offers = True
     page = 0
     while has_still_offers is True:
@@ -116,3 +120,4 @@ def _process_venue_provider(client: Redis, provider_id: str, venue_id: int) -> N
             has_still_offers = False
             logger.info(
                 f'[ALGOLIA] indexing offers for (venue {venue_id} / provider {provider_id}) finished!')
+    delete_venue_provider_currently_in_sync(client=client, venue_provider_id=venue_provider_id)
