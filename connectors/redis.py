@@ -24,6 +24,7 @@ class RedisBucket(Enum):
     REDIS_LIST_VENUE_IDS_NAME = 'venue_ids'
     REDIS_LIST_VENUE_PROVIDERS_NAME = 'venue_providers'
     REDIS_HASHMAP_INDEXED_OFFERS_NAME = 'indexed_offers'
+    REDIS_HASHMAP_VENUE_PROVIDERS_IN_SYNC_NAME = 'venue_providers_in_sync'
 
 
 def add_offer_id(client: Redis, offer_id: int) -> None:
@@ -153,5 +154,29 @@ def delete_all_indexed_offers(client: Redis) -> None:
     try:
         client.delete(RedisBucket.REDIS_HASHMAP_INDEXED_OFFERS_NAME.value)
         logger.debug(f'[REDIS] indexed offers were deleted')
+    except redis.exceptions.RedisError as error:
+        logger.error(f'[REDIS] {error}')
+
+
+def add_venue_provider_currently_in_sync(client: Redis, venue_provider_id: int, container_id: str) -> None:
+    try:
+        client.hset(RedisBucket.REDIS_HASHMAP_VENUE_PROVIDERS_IN_SYNC_NAME.value, venue_provider_id, container_id)
+        logger.debug(f'[REDIS] venue provider "{venue_provider_id}" in container {container_id} was added.')
+    except redis.exceptions.RedisError as error:
+        logger.error(f'[REDIS] {error}')
+
+
+def delete_venue_provider_currently_in_sync(client: Redis, venue_provider_id: int) -> None:
+    try:
+        container_id = client.hget(RedisBucket.REDIS_HASHMAP_VENUE_PROVIDERS_IN_SYNC_NAME.value, venue_provider_id)
+        client.hdel(RedisBucket.REDIS_HASHMAP_VENUE_PROVIDERS_IN_SYNC_NAME.value, venue_provider_id)
+        logger.debug(f'[REDIS] venue provider "{venue_provider_id}" in container {container_id} was deleted.')
+    except redis.exceptions.RedisError as error:
+        logger.error(f'[REDIS] {error}')
+
+
+def get_number_of_venue_providers_currently_in_sync(client: Redis) -> int:
+    try:
+        return client.hlen(RedisBucket.REDIS_HASHMAP_VENUE_PROVIDERS_IN_SYNC_NAME.value)
     except redis.exceptions.RedisError as error:
         logger.error(f'[REDIS] {error}')

@@ -8,7 +8,8 @@ from connectors.redis import add_offer_id, get_offer_ids, delete_offer_ids, \
     get_venue_ids, delete_venue_ids, _add_venue_provider, get_venue_providers, \
     delete_venue_providers, send_venue_provider_data_to_redis, add_to_indexed_offers, \
     delete_indexed_offers, \
-    check_offer_exists, get_offer_details, delete_all_indexed_offers
+    check_offer_exists, get_offer_details, delete_all_indexed_offers, add_venue_provider_currently_in_sync, \
+    delete_venue_provider_currently_in_sync, get_number_of_venue_providers_currently_in_sync
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_venue_provider, create_venue, create_user, create_offerer, \
@@ -271,10 +272,7 @@ class DeleteVenueProvidersTest:
 
 class AddToIndexedOffersTest:
     @patch('connectors.redis.redis')
-    @clean_database
-    def test_should_add_to_indexed_offers(self,
-                                          mock_redis,
-                                          app):
+    def test_should_add_to_indexed_offers(self, mock_redis, app):
         # Given
         client = MagicMock()
         client.hset = MagicMock()
@@ -296,9 +294,7 @@ class AddToIndexedOffersTest:
 class DeleteIndexedOffersTest:
     @patch('connectors.redis.redis')
     @clean_database
-    def test_should_delete_indexed_offers(self,
-                                          mock_redis,
-                                          app):
+    def test_should_delete_indexed_offers(self, mock_redis, app):
         # Given
         client = MagicMock()
         client.hdel = MagicMock()
@@ -313,10 +309,7 @@ class DeleteIndexedOffersTest:
 
 class CheckOfferExistsTest:
     @patch('connectors.redis.redis')
-    @clean_database
-    def test_should_return_true_when_offer_exists(self,
-                                                  mock_redis,
-                                                  app):
+    def test_should_return_true_when_offer_exists(self, mock_redis, app):
         # Given
         client = MagicMock()
         client.hexists = MagicMock()
@@ -327,13 +320,10 @@ class CheckOfferExistsTest:
 
         # Then
         client.hexists.assert_called_once_with('indexed_offers', 1)
-        assert result == True
+        assert result
 
     @patch('connectors.redis.redis')
-    @clean_database
-    def test_should_return_false_when_offer_not_exists(self,
-                                                       mock_redis,
-                                                       app):
+    def test_should_return_false_when_offer_not_exists(self, mock_redis, app):
         # Given
         client = MagicMock()
         client.hexists = MagicMock()
@@ -344,15 +334,12 @@ class CheckOfferExistsTest:
 
         # Then
         client.hexists.assert_called_once_with('indexed_offers', 1)
-        assert result == False
+        assert not result
 
 
 class GetOfferDetailsTest:
     @patch('connectors.redis.redis')
-    @clean_database
-    def test_should_return_offer_details_when_offer_exists(self,
-                                                           mock_redis,
-                                                           app):
+    def test_should_return_offer_details_when_offer_exists(self, mock_redis, app):
         # Given
         client = MagicMock()
         client.hget = MagicMock()
@@ -366,10 +353,7 @@ class GetOfferDetailsTest:
         assert result == {'dateRange': ["2020-01-01 10:00:00", "2020-01-06 12:00:00"], 'name': 'super offre'}
 
     @patch('connectors.redis.redis')
-    @clean_database
-    def test_should_return_empty_dict_when_offer_does_exists(self,
-                                                             mock_redis,
-                                                             app):
+    def test_should_return_empty_dict_when_offer_does_exists(self, mock_redis, app):
         # Given
         client = MagicMock()
         client.hget = MagicMock()
@@ -385,10 +369,7 @@ class GetOfferDetailsTest:
 
 class DeleteAllIndexedOffersTest:
     @patch('connectors.redis.redis')
-    @clean_database
-    def test_should_delete_all_indexed_offers(self,
-                                              mock_redis,
-                                              app):
+    def test_should_delete_all_indexed_offers(self, mock_redis, app):
         # Given
         client = MagicMock()
         client.delete = MagicMock()
@@ -398,3 +379,62 @@ class DeleteAllIndexedOffersTest:
 
         # Then
         client.delete.assert_called_once_with('indexed_offers')
+
+
+class AddVenueProviderCurrentlyInSyncTest:
+    @patch('connectors.redis.redis')
+    def test_should_add_venue_provider_currently_in_sync_to_hashmap(self, mock_redis, app):
+        # Given
+        client = MagicMock()
+        client.hset = MagicMock()
+
+        # When
+        add_venue_provider_currently_in_sync(client=client, venue_provider_id=1, container_id='azerty123')
+
+        # Then
+        client.hset.assert_called_once_with('venue_providers_in_sync', 1, 'azerty123')
+
+
+class DeleteVenueProviderCurrentlyInSyncTest:
+    @patch('connectors.redis.redis')
+    def test_should_retrieve_container_id_of_venue_provider_currently_in_sync(self, mock_redis, app):
+        # Given
+        client = MagicMock()
+        client.hget = MagicMock()
+        client.hdel = MagicMock()
+
+        # When
+        delete_venue_provider_currently_in_sync(client=client, venue_provider_id=1)
+
+        # Then
+        client.hget.assert_called_once_with('venue_providers_in_sync', 1)
+
+    @patch('connectors.redis.redis')
+    def test_should_delete_venue_provider_currently_in_sync_from_hashmap(self, mock_redis, app):
+        # Given
+        client = MagicMock()
+        client.hget = MagicMock()
+        client.hget.return_value = 'azerty123'
+        client.hdel = MagicMock()
+
+        # When
+        delete_venue_provider_currently_in_sync(client=client, venue_provider_id=1)
+
+        # Then
+        client.hdel.assert_called_once_with('venue_providers_in_sync', 1)
+
+
+class GetNumbeOfVenueProvidersCurrentlyInSync:
+    @patch('connectors.redis.redis')
+    def test_should_return_number_of_venue_providers_currently_in_sync(self, mock_redis, app):
+        # Given
+        client = MagicMock()
+        client.hlen = MagicMock()
+        client.hlen.return_value = 10
+
+        # When
+        number_of_venue_providers_currently_in_sync = get_number_of_venue_providers_currently_in_sync(client=client)
+
+        # Then
+        client.hlen.assert_called_once_with('venue_providers_in_sync')
+        assert number_of_venue_providers_currently_in_sync == 10
