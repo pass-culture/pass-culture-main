@@ -32,6 +32,7 @@ def upgrade():
 
     op.rename_table('venue_provider_price_rule',
                     'allocine_venue_provider_price_rule')
+    op.drop_constraint('venue_provider_price_rule_pkey', 'allocine_venue_provider_price_rule')
     op.create_primary_key('allocine_venue_provider_price_rule_pkey',
                           'allocine_venue_provider_price_rule', ['id'])
     op.execute(
@@ -61,6 +62,8 @@ def downgrade():
     op.rename_table('allocine_venue_provider_price_rule', 'venue_provider_price_rule')
     op.drop_table('allocine_venue_provider')
     op.drop_constraint('allocine_venue_provider_price_rule_pkey', 'venue_provider_price_rule')
+    op.create_primary_key('venue_provider_price_rule_pkey',
+                          'venue_provider_price_rule', ['id'])
     op.execute(
         'ALTER SEQUENCE allocine_venue_provider_price_rule_id_seq'
         ' RENAME TO venue_provider_price_rule_id_seq'
