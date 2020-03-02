@@ -70,13 +70,3 @@ export const humanizeDistance = distance => {
 
   return `${Math.round(distance / 1000)} km`
 }
-
-export const computeToAroundLatLng = geolocation => {
-  const { latitude, longitude } = geolocation
-
-  let aroundLatLng = ''
-  if (latitude && longitude) {
-    aroundLatLng = `${latitude}, ${longitude}`
-  }
-  return aroundLatLng
-}

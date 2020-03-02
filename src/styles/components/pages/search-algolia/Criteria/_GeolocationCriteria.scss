@@ -1,0 +1,58 @@
+.gc-item-list {
+  background-color: $white;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.gc-item {
+  height: rem(48px);
+  margin-top: rem(48px);
+  display: flex;
+  align-items: center;
+}
+
+.gc-item-icon-check {
+  width: rem(24px);
+  height: rem(24px);
+  margin-left: rem(8px);
+}
+
+.gc-item-icon {
+  width: rem(24px);
+  height: rem(24px);
+}
+
+.gc-item-icon-bg {
+  margin: rem(0 20px);
+  height: rem(40px);
+  width: rem(40px);
+  background-color: $grey-light;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gc-active-icon {
+  border: rem(2px) solid $primary;
+}
+
+.gc-item-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: $black-light;
+}
+
+.gc-active-label {
+  color: $primary;
+}
+
+.gc-header {
+  align-items: center;
+ h1 {
+   margin-right: 20px ;
+ }
+}
+
+

@@ -1,9 +1,8 @@
 import {
   computeDistanceInMeters,
-  computeToAroundLatLng,
   getHumanizeRelativeDistance,
   humanizeDistance,
-  navigationLink
+  navigationLink,
 } from '../geolocation'
 import getMobileOperatingSystem from '../../utils/getMobileOperatingSystem'
 
@@ -151,36 +150,6 @@ describe('src | utils | geolocation', () => {
     })
   })
 
-  describe('computeToAroundLatLng', () => {
-    it('should return computed value when latitude and longitude are provided', () => {
-      // given
-      const geolocation = {
-        latitude: 42,
-        longitude: 43
-      }
-
-      // when
-      const result = computeToAroundLatLng(geolocation)
-
-      // then
-      expect(result).toBe('42, 43')
-    })
-
-    it('should return empty value when latitude or longitude are not provided', () => {
-      // given
-      const geolocation = {
-        latitude: null,
-        longitude: null
-      }
-
-      // when
-      const result = computeToAroundLatLng(geolocation)
-
-      // then
-      expect(result).toBe('')
-    })
-  })
-
   describe('navigationLink', () => {
     describe('when OS is iOS', () => {
       it('should return google map link', () => {
@@ -220,7 +189,7 @@ describe('src | utils | geolocation', () => {
           const venueLongitude = 20
           const userGeolocation = {
             latitude: 1,
-            longitude: 2
+            longitude: 2,
           }
           getMobileOperatingSystem.mockReturnValue(null)
 
@@ -239,7 +208,7 @@ describe('src | utils | geolocation', () => {
           const venueLongitude = 20
           const userGeolocation = {
             latitude: null,
-            longitude: null
+            longitude: null,
           }
           getMobileOperatingSystem.mockReturnValue(null)
 

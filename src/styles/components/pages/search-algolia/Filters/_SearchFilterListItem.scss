@@ -1,0 +1,32 @@
+.sfi-wrapper {
+  background: $white;
+  text-align: center;
+  padding: rem(23px) 0;
+}
+
+.sfi-link-label {
+  margin-bottom: rem(13px);
+  color: $grey;
+  font-size: 16px;
+
+  span:first-child {
+    margin-right: rem(8px);
+  }
+}
+
+.sfi-page-link {
+  font-size: rem(22px);
+  font-weight: bold;
+  line-height: 1.18;
+  display: flex;
+  align-items: center;
+  color: $black-light;
+
+  &:visited {
+    color: $black-light;
+  }
+
+  .sfi-page-icon {
+    margin-right: rem(12px);
+  }
+}

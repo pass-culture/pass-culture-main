@@ -1,12 +1,16 @@
-import { compose } from 'redux'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
+import { selectUserGeolocation } from '../../../selectors/geolocationSelectors'
 
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 import SearchAlgolia from './SearchAlgolia'
-import { selectUserGeolocation } from '../../../selectors/geolocationSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const geolocation = selectUserGeolocation(state)
+  const isGeolocationEnabled = () => {
+    const { latitude, longitude } = geolocation
+    return longitude && latitude ? true : false
+  }
   const redirectToSearchMainPage = () => {
     const { history } = ownProps
     history.push('/recherche-offres')
@@ -14,6 +18,7 @@ export const mapStateToProps = (state, ownProps) => {
   return {
     geolocation,
     redirectToSearchMainPage,
+    isGeolocationEnabled,
   }
 }
 

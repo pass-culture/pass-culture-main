@@ -6,7 +6,7 @@ describe('mapStateToProps', () => {
     const push = jest.fn()
     const props = { history: { push } }
     const state = {
-      geolocation: { lat: 48.8533261, long: 2.3451865 },
+      geolocation: { latitude: 48.8533261, longitude: 2.3451865 },
     }
 
     // when
@@ -14,8 +14,9 @@ describe('mapStateToProps', () => {
 
     // then
     expect(result).toStrictEqual({
-      geolocation: { lat: 48.8533261, long: 2.3451865 },
+      geolocation: { latitude: 48.8533261, longitude: 2.3451865 },
       redirectToSearchMainPage: expect.any(Function),
+      isGeolocationEnabled: expect.any(Function),
     })
   })
 
@@ -29,5 +30,27 @@ describe('mapStateToProps', () => {
 
     // then
     expect(push).toHaveBeenCalledWith('/recherche-offres')
+  })
+
+  it('should return true if user authorized geolocation', () => {
+    // Given
+    const state = {
+      geolocation: { latitude: 48.8533261, longitude: 2.3451865 },
+    }
+    // When
+    const result = mapStateToProps(state).isGeolocationEnabled()
+    // Then
+    expect(result).toBe(true)
+  })
+
+  it('should return false if user refused geolocation', () => {
+    // Given
+    const state = {
+      geolocation: { latitude:null, longitude: null },
+    }
+    // When
+    const result = mapStateToProps(state).isGeolocationEnabled()
+    // Then
+    expect(result).toBe(false)
   })
 })

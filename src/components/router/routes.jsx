@@ -89,7 +89,7 @@ const routes = [
     featureName: 'SEARCH_ALGOLIA',
     icon: 'ico-search',
     path:
-      '/recherche-offres/:details(details|transition)?/:offerId([A-Z0-9]+)?/:mediationId(vide|[A-Z0-9]+)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?',
+      '/recherche-offres/:resultats?/:details(details|transition)?/:offerId([A-Z0-9]+)?/:mediationId(vide|[A-Z0-9]+)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?',
     title: 'Recherche',
   },
   {
