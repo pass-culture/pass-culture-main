@@ -1,6 +1,6 @@
 import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueContainer'
 import { getCurrentUserUUID } from 'with-react-redux-login'
-import { venueNormalizer } from "../../../../utils/normalizers";
+import { venueNormalizer } from '../../../../utils/normalizers'
 
 jest.mock('../Notification', () => {
   return jest.fn().mockImplementation(() => 'Some text')
@@ -47,7 +47,7 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
         },
         query: {
           context: () => ({
-            isVenueCreation: true,
+            isCreatedEntity: true,
           }),
         },
       }
@@ -83,7 +83,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
     },
     query: {
       context: () => ({
-        isVenueCreation: true,
+        isCreatedEntity: true,
       }),
     },
   }
@@ -120,7 +120,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
   })
 
   describe('handleSubmitRequest', () => {
-    it('should call patch method with proper params', function () {
+    it('should call patch method with proper params', function() {
       // given
       const ownProps = {
         match: {
@@ -131,21 +131,25 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
         query: {
           context: () => ({
             method: 'PATCH',
-            isVenueCreation: false,
+            isCreatedEntity: false,
           }),
         },
       }
 
       const formValues = {
         comment: 'Commentaire',
-        address: '3 Place Saint-Michel'
+        address: '3 Place Saint-Michel',
       }
 
       const handleFail = jest.fn()
       const handleSuccess = jest.fn()
 
       // when
-      mapDispatchToProps(dispatch, ownProps).handleSubmitRequest({formValues, handleFail, handleSuccess})
+      mapDispatchToProps(dispatch, ownProps).handleSubmitRequest({
+        formValues,
+        handleFail,
+        handleSuccess,
+      })
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
@@ -153,16 +157,16 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
           apiPath: '/venues/TR',
           body: {
             comment: 'Commentaire',
-            address: '3 Place Saint-Michel'
+            address: '3 Place Saint-Michel',
           },
           handleFail: handleFail,
           handleSuccess: handleSuccess,
           method: 'PATCH',
-          normalizer: venueNormalizer
+          normalizer: venueNormalizer,
         },
-        type: 'REQUEST_DATA_PATCH_/VENUES/TR'
+        type: 'REQUEST_DATA_PATCH_/VENUES/TR',
       })
-    });
+    })
   })
 
   describe('handleSubmitRequestSuccess', () => {
