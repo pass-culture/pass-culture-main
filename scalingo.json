@@ -3,7 +3,7 @@
   "description": "Serveur API du Pass Culture",
   "repository": "https://github.com/betagouv/pass-culture-api",
   "addons": [
-    "postgresql:postgresql-sandbox",
+    "postgresql:postgresql-starter-512",
     "redis:redis-sandbox"
   ],
   "env": {

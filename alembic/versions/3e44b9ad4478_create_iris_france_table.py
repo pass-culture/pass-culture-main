@@ -17,7 +17,6 @@ depends_on = None
 
 
 def upgrade():
-    op.execute('CREATE EXTENSION postgis')
     op.create_table(
         'iris_france',
         sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
@@ -29,4 +28,3 @@ def upgrade():
 
 def downgrade():
     op.drop_table('iris_france')
-    op.execute('DROP EXTENSION IF EXISTS postgis CASCADE')

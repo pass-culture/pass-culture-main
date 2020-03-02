@@ -11,6 +11,7 @@ from repository import repository
 def install_database_extensions():
     create_text_search_configuration_if_not_exists()
     create_index_btree_gist_extension()
+    create_postgis_extension()
 
 
 def install_models():
