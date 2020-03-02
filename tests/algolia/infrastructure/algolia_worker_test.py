@@ -15,8 +15,8 @@ class ProcessMultiIndexingTest:
         # Then
         mock_get_venue_providers.assert_called_once_with(client=client)
 
-    @patch.dict('os.environ', {"SYNC_WORKERS_POOL_SIZE": '2'})
-    @patch('algolia.infrastructure.algolia_worker.WAIT_TIME_FOR_AVAILABLE_WORKER')
+    @patch.dict('os.environ', {"ALGOLIA_SYNC_WORKERS_POOL_SIZE": '2'})
+    @patch('algolia.infrastructure.algolia_worker.ALGOLIA_WAIT_TIME_FOR_AVAILABLE_WORKER')
     @patch('algolia.infrastructure.algolia_worker.sleep')
     @patch('algolia.infrastructure.algolia_worker._run_indexing')
     @patch('algolia.infrastructure.algolia_worker.get_venue_providers')
@@ -56,7 +56,7 @@ class RunIndexingTest:
             'venueId': 3
         }
         run_algolia_venue_provider_command = f"PYTHONPATH=. " \
-                                             f"python scripts/pc.py run_algolia_venue_provider " \
+                                             f"python scripts/pc.py process_venue_provider_offers_for_algolia " \
                                              f"--provider-id {venue_provider['providerId']} " \
                                              f"--venueId {venue_provider['venueId']} "
 

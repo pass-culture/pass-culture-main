@@ -8,13 +8,13 @@ from connectors.redis import get_venue_providers
 from connectors.scalingo_api import run_process_in_one_off_container, ScalingoApiException
 from utils.logger import logger
 
-WAIT_TIME_FOR_AVAILABLE_WORKER = 60
-DEFAULT_SYNC_WORKERS_POOL_SIZE = 10
+ALGOLIA_WAIT_TIME_FOR_AVAILABLE_WORKER = 60
+ALGOLIA_DEFAULT_SYNC_WORKERS_POOL_SIZE = 10
 
 
 def process_multi_indexing(client: Redis):
     venue_providers_to_process = get_venue_providers(client=client)
-    sync_worker_pool = int(os.environ.get('SYNC_WORKERS_POOL_SIZE', DEFAULT_SYNC_WORKERS_POOL_SIZE))
+    sync_worker_pool = int(os.environ.get('ALGOLIA_SYNC_WORKERS_POOL_SIZE', ALGOLIA_DEFAULT_SYNC_WORKERS_POOL_SIZE))
 
     counter = 0
     while len(venue_providers_to_process) > 0:
@@ -26,7 +26,7 @@ def process_multi_indexing(client: Redis):
             venue_providers_to_process.pop(0)
             counter += 1
         else:
-            sleep(WAIT_TIME_FOR_AVAILABLE_WORKER)
+            sleep(ALGOLIA_WAIT_TIME_FOR_AVAILABLE_WORKER)
             counter = 0
 
 
@@ -36,7 +36,7 @@ def _run_indexing(venue_provider: Dict):
     venue_id = venue_provider['venueId']
 
     run_algolia_venue_provider_command = f"PYTHONPATH=. " \
-                                         f"python scripts/pc.py run_algolia_venue_provider " \
+                                         f"python scripts/pc.py process_venue_provider_offers_for_algolia " \
                                          f"--provider-id {provider_id} " \
                                          f"--venueId {venue_id} "
     try:
