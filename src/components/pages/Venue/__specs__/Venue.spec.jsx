@@ -1,11 +1,14 @@
-import { shallow } from 'enzyme'
+import {mount, shallow} from 'enzyme'
 import React from 'react'
 import { Form } from 'react-final-form'
 
 import Venue from '../Venue'
 import VenueProvidersManagerContainer from '../VenueProvidersManager/VenueProvidersManagerContainer'
 import HeroSection from '../../../../components/layout/HeroSection/HeroSection'
-import { NavLink } from 'react-router-dom'
+import {NavLink, Route, Router, Switch} from 'react-router-dom'
+import configureStore from "../../../../utils/store";
+import {createBrowserHistory} from "history";
+import {Provider} from "react-redux";
 
 describe('src | components | pages | Venue', () => {
   let push
@@ -44,6 +47,9 @@ describe('src | components | pages | Venue', () => {
           isModifiedEntity: false,
           readOnly: false,
         }),
+      },
+      user: {
+        publicName: 'toto'
       },
       trackCreateVenue: jest.fn(),
       trackModifyVenue: jest.fn(),
@@ -362,6 +368,37 @@ describe('src | components | pages | Venue', () => {
 
       // then
       expect(props.trackModifyVenue).toHaveBeenCalledWith('CM')
+    })
+  })
+
+  describe('submitting form venue', () => {
+    describe('when creating a venue', () => {
+      it('should do stuff', function () {
+        // given
+        console.log(props, 'yolo')
+        const { store } = configureStore()
+        const history = createBrowserHistory()
+        history.push(`/structures/AE/lieux/creation`)
+        const wrapper = mount(
+          <Provider store={store}>
+            <Router history={history}>
+                <Venue {...props} />
+            </Router>
+          </Provider>
+        )
+
+        // when
+        console.log(wrapper.debug())
+
+        // then
+      })
+    })
+    describe('when editing a venue', () => {
+      describe('when no initial SIRET', () => {
+        it('should do stuff X', function () {
+
+        })
+      })
     })
   })
 })
