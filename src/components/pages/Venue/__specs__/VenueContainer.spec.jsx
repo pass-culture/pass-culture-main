@@ -1,5 +1,6 @@
 import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueContainer'
 import { getCurrentUserUUID } from 'with-react-redux-login'
+import { venueNormalizer } from "../../../../utils/normalizers";
 
 jest.mock('../Notification', () => {
   return jest.fn().mockImplementation(() => 'Some text')
@@ -46,7 +47,7 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
         },
         query: {
           context: () => ({
-            isCreatedEntity: true,
+            isVenueCreation: true,
           }),
         },
       }
@@ -82,7 +83,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
     },
     query: {
       context: () => ({
-        isCreatedEntity: true,
+        isVenueCreation: true,
       }),
     },
   }
@@ -116,6 +117,52 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
         type: 'REQUEST_DATA_GET_/USEROFFERERS/APEQ',
       })
     })
+  })
+
+  describe('handleSubmitRequest', () => {
+    it('should call patch method with proper params', function () {
+      // given
+      const ownProps = {
+        match: {
+          params: {
+            venueId: 'TR',
+          },
+        },
+        query: {
+          context: () => ({
+            method: 'PATCH',
+            isVenueCreation: false,
+          }),
+        },
+      }
+
+      const formValues = {
+        comment: 'Commentaire',
+        address: '3 Place Saint-Michel'
+      }
+
+      const handleFail = jest.fn()
+      const handleSuccess = jest.fn()
+
+      // when
+      mapDispatchToProps(dispatch, ownProps).handleSubmitRequest({formValues, handleFail, handleSuccess})
+
+      // then
+      expect(dispatch).toHaveBeenCalledWith({
+        config: {
+          apiPath: '/venues/TR',
+          body: {
+            comment: 'Commentaire',
+            address: '3 Place Saint-Michel'
+          },
+          handleFail: handleFail,
+          handleSuccess: handleSuccess,
+          method: 'PATCH',
+          normalizer: venueNormalizer
+        },
+        type: 'REQUEST_DATA_PATCH_/VENUES/TR'
+      })
+    });
   })
 
   describe('handleSubmitRequestSuccess', () => {

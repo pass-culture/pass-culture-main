@@ -25,12 +25,12 @@ export const mapStateToProps = (state, ownProps) => {
     query,
   } = ownProps
   const { id: currentUserId } = currentUser
-  const { isCreatedEntity } = query.context()
+  const { isVenueCreation } = query.context()
   const formInitialValues = selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity(
     state,
     venueId,
     offererId,
-    isCreatedEntity
+    isVenueCreation
   )
   const adminUserOfferer = selectUserOffererByOffererIdAndUserIdAndRightsType(
     state,
@@ -54,7 +54,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     query,
   } = ownProps
 
-  const { isCreatedEntity, method } = query.context({ id: venueId })
+  const { isVenueCreation, method } = query.context({ id: venueId })
 
   return {
     handleInitialRequest: () => {
@@ -79,11 +79,11 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     },
 
     handleSubmitRequest: ({ formValues, handleFail, handleSuccess }) => {
-      const apiPath = `/venues/${isCreatedEntity ? '' : venueId}`
+      const apiPath = `/venues/${isVenueCreation ? '' : venueId}`
 
       const body = formatPatch(
         formValues,
-        { isCreatedEntity },
+        { isVenueCreation },
         VENUE_CREATION_PATCH_KEYS,
         VENUE_MODIFICATION_PATCH_KEYS
       )
