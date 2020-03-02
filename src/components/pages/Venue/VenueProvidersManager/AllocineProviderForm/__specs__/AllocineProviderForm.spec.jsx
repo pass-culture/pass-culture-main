@@ -7,7 +7,7 @@ import Icon from '../../../../../layout/Icon'
 
 import AllocineProviderForm from '../../AllocineProviderForm/AllocineProviderForm'
 import SynchronisationConfirmationModal from '../SynchronisationConfirmationModal/SynchronisationConfirmationModal'
-import CheckboxField from "../../../../../layout/form/fields/CheckboxField";
+import CheckboxField from '../../../../../layout/form/fields/CheckboxField'
 
 describe('components | AllocineProviderForm', () => {
   let createVenueProvider
@@ -116,7 +116,6 @@ describe('components | AllocineProviderForm', () => {
     expect(priceToolTip).toHaveLength(1)
     expect(toolTipIcon).toHaveLength(1)
     expect(toolTipIcon.prop('svg')).toBe('picto-info')
-    expect(toolTipIcon.prop('alt')).toBe('image d’aide à l’information')
   })
 
   it('should display a tooltip and an Icon component for isDuo field', () => {
@@ -133,7 +132,6 @@ describe('components | AllocineProviderForm', () => {
     expect(isDuoToolTip).toHaveLength(1)
     expect(isDuoToolTipIcon).toHaveLength(1)
     expect(isDuoToolTipIcon.prop('svg')).toBe('picto-info')
-    expect(isDuoToolTipIcon.prop('alt')).toBe('image d’aide à l’information')
   })
 
   it('should display an import button disabled by default', () => {
