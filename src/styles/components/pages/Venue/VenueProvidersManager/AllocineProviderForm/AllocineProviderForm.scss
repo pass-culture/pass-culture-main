@@ -28,34 +28,34 @@
   margin-top: .5rem;
 }
 
-.apf-isDuo-section {
+.apf-is-duo-section {
   display: flex;
 
   input {
     @extend .input;
-    margin-right: 0.5rem;
     background-image: url(/icons/checkbox.svg);
-    border: none;
     background-repeat: no-repeat;
     background-size: 1.1875em;
-    width: 1.1875em;
-    height: 1.1875em;
-    padding: 0;
+    border: none;
     border-radius: 0;
+    height: 1.1875em;
+    margin-right: 0.5rem;
+    padding: 0;
+    width: 1.1875em;
 
     &:checked {
       &::after {
-        content: '';
         background: url(/icons/checkbox-check.svg) center no-repeat;
-        width: 100%;
+        content: '';
         height: 100%;
+        width: 100%;
       }
     }
   }
 }
 
 .apf-provider-import-button-section {
-  margin-top: 1rem;
+  margin-top: rem(17px);
 
   button {
     width: 100%;
@@ -63,5 +63,5 @@
 }
 
 .apf-tooltip {
-  margin-left: .25rem;
+  margin-left: rem(4px);
 }

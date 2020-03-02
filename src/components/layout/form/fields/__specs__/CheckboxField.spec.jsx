@@ -39,7 +39,7 @@ describe('components | CheckboxField', () => {
     expect(input.prop('id')).toBe('checkbox-id')
   })
 
-  it('should have label tag that has htmlFor prop to checkbox id when label is defined', function () {
+  it('should have label tag that has htmlFor prop to checkbox id when label is defined', () => {
     // given
     const props = {
       id: 'checkbox-id',
@@ -70,45 +70,5 @@ describe('components | CheckboxField', () => {
     // then
     const label = wrapper.find('label')
     expect(label.prop('htmlFor')).toBe('checkbox-id')
-  })
-
-  it('should get checkbox value when form is submitted', () => {
-    // given
-    const props = {
-      id: 'checkbox-id',
-      name: 'checkbox-name',
-      label: 'checkbox-label'
-    }
-
-    const formWithCheckboxField = ({handleSubmit}) => (
-      <form>
-        <CheckboxField {...props} />
-        <button
-          onClick={handleSubmit}
-          type="submit"
-        >
-          {'Submit'}
-        </button>
-      </form>
-    )
-
-    const wrapper = mount(
-      <Form
-        onSubmit={handleOnSubmit}
-        render={formWithCheckboxField}
-      />
-    )
-
-    // when
-    wrapper
-      .find('input')
-      .simulate('change', { target: { value: true } })
-
-    wrapper.find('button[type="submit"]').simulate('click')
-
-    // then
-    function handleOnSubmit(formValues) {
-      expect(formValues['checkbox-name']).toBe(true)
-    }
   })
 })

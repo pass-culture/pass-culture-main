@@ -86,7 +86,7 @@ describe('components | AllocineProviderForm', () => {
     expect(availableInput).toHaveLength(1)
   })
 
-  it('should display the isDuo checkbox with default value unchecked by default', () => {
+  it('should display the isDuo checkbox unchecked by default', () => {
     // when
     const wrapper = mount(<AllocineProviderForm {...props} />)
 
@@ -146,11 +146,51 @@ describe('components | AllocineProviderForm', () => {
     })
 
     expect(offerImportButton).toHaveLength(1)
-    expect(offerImportButton.type()).toBe('button')
+    expect(offerImportButton.prop('type')).toBe('button')
     expect(offerImportButton.prop('disabled')).toBe(true)
   })
 
-  it('should be able to submit when price field is filled and display a confirmation modal', () => {
+  it('should get checkbox value when form is submitted', () => {
+    // given
+    const props = {
+      id: 'checkbox-id',
+      name: 'checkbox-name',
+      label: 'checkbox-label'
+    }
+
+    const formWithCheckboxField = ({handleSubmit}) => (
+      <form>
+        <CheckboxField {...props} />
+        <button
+          onClick={handleSubmit}
+          type="submit"
+        >
+          {'Submit'}
+        </button>
+      </form>
+    )
+
+    const wrapper = mount(
+      <Form
+        onSubmit={handleOnSubmit}
+        render={formWithCheckboxField}
+      />
+    )
+
+    // when
+    wrapper
+      .find('input')
+      .simulate('change', { target: { value: true } })
+
+    wrapper.find('button[type="submit"]').simulate('click')
+
+    // then
+    function handleOnSubmit(formValues) {
+      expect(formValues['checkbox-name']).toBe(true)
+    }
+  })
+
+  it('should be able to submit and display a confirmation modal when price field is filled ', () => {
     // given
     const wrapper = mount(<AllocineProviderForm {...props} />)
     const importButton = wrapper.find('button')
@@ -166,12 +206,11 @@ describe('components | AllocineProviderForm', () => {
     expect(syncConfirmationModal).toHaveLength(1)
   })
 
-  it('should not be able to submit when price field is not filled', function () {
+  it('should not be able to submit when price field is not filled', () => {
     // given
     const wrapper = mount(<AllocineProviderForm {...props} />)
     const importButton = wrapper.find('button')
     const availableSection = wrapper.findWhere(node => node.text() === 'Nombre de places/séance')
-    const isDuoSection = wrapper.findWhere(node => node.text() === 'Accepter les réservations DUO')
     const availableInput = availableSection.find(NumberField).find('input')
 
     availableInput.simulate('change', { target: { value: 10 } })
@@ -235,7 +274,6 @@ describe('components | AllocineProviderForm', () => {
       wrapper.instance().handleSubmit(formValues, {})
 
       // then
-      expect(wrapper.state('isLoadingMode')).toBe(true)
       expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
         price: 12,
         available: 50,

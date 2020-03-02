@@ -97,7 +97,6 @@ class AllocineProviderForm extends PureComponent {
                   data-type="info"
                 >
                   <Icon
-                    alt="image d’aide à l’information"
                     svg="picto-info"
                   />
                 </span>
@@ -123,9 +122,9 @@ class AllocineProviderForm extends PureComponent {
                 placeholder="Illimité"
               />
             </div>
-            <div className="apf-isDuo-section">
+            <div className="apf-is-duo-section">
               <CheckboxField
-                id="apf-isDuo"
+                id="apf-is-duo"
                 label="Accepter les réservations DUO"
                 name="isDuo"
               />
@@ -136,7 +135,6 @@ class AllocineProviderForm extends PureComponent {
                 data-type="info"
               >
                 <Icon
-                  alt="image d’aide à l’information"
                   svg="picto-info"
                 />
               </span>
