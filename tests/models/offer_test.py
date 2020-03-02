@@ -1094,3 +1094,10 @@ class ThumbUrlTest:
 
         # then
         assert offer.thumb_url == 'http://localhost/storage/thumbs/products/AE'
+
+    def test_should_return_empty_thumb_url_when_no_product_nor_mediation(self):
+        # given
+        offer = Offer()
+
+        # then
+        assert offer.thumb_url == ''

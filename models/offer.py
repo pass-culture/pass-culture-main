@@ -216,7 +216,11 @@ class Offer(PcObject,
 
     @property
     def thumb_url(self) -> str:
-        return self.activeMediation.thumbUrl if self.hasActiveMediation else self.product.thumbUrl
+        if self.hasActiveMediation:
+            return self.activeMediation.thumbUrl
+        if self.product:
+            return self.product.thumbUrl
+        return ''
 
     def _has_unlimited_stock(self):
         return any(map(lambda s: s.available is None, self.stocks))
