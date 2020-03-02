@@ -1,10 +1,10 @@
 from unittest.mock import MagicMock, patch, call
 
-from algolia.infrastructure.algolia_worker import process_multi_indexing, _run_indexing
+from algolia.infrastructure.worker import process_multi_indexing, _run_indexing
 
 
 class ProcessMultiIndexingTest:
-    @patch('algolia.infrastructure.algolia_worker.get_venue_providers')
+    @patch('algolia.infrastructure.worker.get_venue_providers')
     def test_should_retrieve_venue_providers_to_process(self, mock_get_venue_providers):
         # Given
         client = MagicMock()
@@ -15,11 +15,12 @@ class ProcessMultiIndexingTest:
         # Then
         mock_get_venue_providers.assert_called_once_with(client=client)
 
-    @patch('algolia.infrastructure.algolia_worker.delete_venue_providers')
-    @patch('algolia.infrastructure.algolia_worker.get_venue_providers')
+    @patch('algolia.infrastructure.worker.delete_venue_providers')
+    @patch('algolia.infrastructure.worker.get_venue_providers')
     def test_should_delete_venue_providers_to_process(self, mock_get_venue_providers, mock_delete_venue_providers):
         # Given
         client = MagicMock()
+        mock_get_venue_providers.return_value = []
 
         # When
         process_multi_indexing(client=client)
@@ -28,12 +29,12 @@ class ProcessMultiIndexingTest:
         mock_delete_venue_providers.assert_called_once_with(client=client)
 
     @patch.dict('os.environ', {"ALGOLIA_SYNC_WORKERS_POOL_SIZE": '2'})
-    @patch('algolia.infrastructure.algolia_worker.ALGOLIA_WAIT_TIME_FOR_AVAILABLE_WORKER')
-    @patch('algolia.infrastructure.algolia_worker.sleep')
-    @patch('algolia.infrastructure.algolia_worker._run_indexing')
-    @patch('algolia.infrastructure.algolia_worker.get_number_of_venue_providers_currently_in_sync')
-    @patch('algolia.infrastructure.algolia_worker.delete_venue_providers')
-    @patch('algolia.infrastructure.algolia_worker.get_venue_providers')
+    @patch('algolia.infrastructure.worker.ALGOLIA_WAIT_TIME_FOR_AVAILABLE_WORKER')
+    @patch('algolia.infrastructure.worker.sleep')
+    @patch('algolia.infrastructure.worker._run_indexing')
+    @patch('algolia.infrastructure.worker.get_number_of_venue_providers_currently_in_sync')
+    @patch('algolia.infrastructure.worker.delete_venue_providers')
+    @patch('algolia.infrastructure.worker.get_venue_providers')
     def test_should_run_indexing_until_reaching_max_pool_size(self,
                                                               mock_get_venue_providers,
                                                               mock_delete_venue_providers,
@@ -69,7 +70,7 @@ class ProcessMultiIndexingTest:
 
 
 class RunIndexingTest:
-    @patch('algolia.infrastructure.algolia_worker.run_process_in_one_off_container')
+    @patch('algolia.infrastructure.worker.run_process_in_one_off_container')
     def test_should_run_process_in_a_one_off_container(self, mock_run_process_in_one_off_container):
         # Given
         client = MagicMock()
@@ -80,8 +81,8 @@ class RunIndexingTest:
         }
         run_algolia_venue_provider_command = f"PYTHONPATH=. " \
                                              f"python scripts/pc.py process_venue_provider_offers_for_algolia " \
-                                             f"--venue-provider-id {venue_provider['id']} " \
                                              f"--provider-id {venue_provider['providerId']} " \
+                                             f"--venue-provider-id {venue_provider['id']} " \
                                              f"--venueId {venue_provider['venueId']} "
 
         # When
@@ -90,8 +91,8 @@ class RunIndexingTest:
         # Then
         mock_run_process_in_one_off_container.assert_called_once_with(run_algolia_venue_provider_command)
 
-    @patch('algolia.infrastructure.algolia_worker.add_venue_provider_currently_in_sync')
-    @patch('algolia.infrastructure.algolia_worker.run_process_in_one_off_container')
+    @patch('algolia.infrastructure.worker.add_venue_provider_currently_in_sync')
+    @patch('algolia.infrastructure.worker.run_process_in_one_off_container')
     def test_should_add_venue_provider_to_hash_of_venue_providers_in_sync(self,
                                                                           mock_run_process_in_one_off_container,
                                                                           mock_add_venue_provider_currently_in_sync):

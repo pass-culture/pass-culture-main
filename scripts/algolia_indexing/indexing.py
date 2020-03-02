@@ -99,9 +99,10 @@ def batch_deleting_expired_offers_in_algolia(client: Redis) -> None:
         page += 1
 
 
-def _process_venue_provider(client: Redis, venue_provider_id: int, provider_id: str, venue_id: int) -> None:
+def _process_venue_provider(client: Redis, provider_id: str, venue_provider_id: int, venue_id: int) -> None:
     has_still_offers = True
     page = 0
+
     while has_still_offers is True:
         offer_ids_as_tuple = offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id(
             last_provider_id=provider_id,

@@ -5,7 +5,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from flask import Flask
 from sqlalchemy import orm
 
-from algolia.infrastructure.algolia_worker import process_multi_indexing
+from algolia.infrastructure.worker import process_multi_indexing
 from models.db import db
 from repository.feature_queries import feature_cron_algolia_indexing_offers_by_offer_enabled, \
     feature_cron_algolia_indexing_offers_by_venue_provider_enabled, \
@@ -13,7 +13,7 @@ from repository.feature_queries import feature_cron_algolia_indexing_offers_by_o
 from scheduled_tasks.decorators import log_cron, cron_context
 from scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer, \
     batch_indexing_offers_in_algolia_by_venue, \
-    batch_indexing_offers_in_algolia_by_venue_provider, batch_deleting_expired_offers_in_algolia
+    batch_deleting_expired_offers_in_algolia
 from utils.config import REDIS_URL
 
 
@@ -31,9 +31,8 @@ def pc_batch_indexing_offers_in_algolia_by_venue(app):
 
 @log_cron
 @cron_context
-def pc_batch_indexing_offers_in_algolia_by_venue_provider():
-    with app.app_context():
-        process_multi_indexing(client=app.redis_client)
+def pc_batch_indexing_offers_in_algolia_by_venue_provider(app):
+    process_multi_indexing(client=app.redis_client)
 
 
 @log_cron

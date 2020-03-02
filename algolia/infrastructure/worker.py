@@ -24,8 +24,8 @@ def process_multi_indexing(client: Redis):
         has_remaining_slot_in_pool = sync_worker_pool - venue_providers_currently_in_sync > 0
 
         if has_remaining_slot_in_pool:
-            _run_indexing(client=client, venue_provider=venue_provider)
             venue_providers_to_process.pop(0)
+            _run_indexing(client=client, venue_provider=venue_provider)
         else:
             sleep(ALGOLIA_WAIT_TIME_FOR_AVAILABLE_WORKER)
 
@@ -37,8 +37,8 @@ def _run_indexing(client: Redis, venue_provider: Dict):
 
     run_algolia_venue_provider_command = f"PYTHONPATH=. " \
                                          f"python scripts/pc.py process_venue_provider_offers_for_algolia " \
-                                         f"--venue-provider-id {venue_provider_id} " \
                                          f"--provider-id {provider_id} " \
+                                         f"--venue-provider-id {venue_provider_id} " \
                                          f"--venueId {venue_id} "
     try:
         container_id = run_process_in_one_off_container(run_algolia_venue_provider_command)
