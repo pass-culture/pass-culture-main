@@ -502,10 +502,6 @@ describe('selectCancelledBookings()', () => {
         bookings: [
           {
             id: 'b1',
-            isCancelled: false,
-          },
-          {
-            id: 'b2',
             isCancelled: true,
           },
         ],
@@ -518,24 +514,94 @@ describe('selectCancelledBookings()', () => {
     // then
     expect(results).toStrictEqual([
       {
-        id: 'b2',
+        id: 'b1',
         isCancelled: true,
       },
     ])
   })
+
+  it('should not return bookings that are not cancelled', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [
+          {
+            id: 'b1',
+            isCancelled: false,
+          },
+        ],
+      },
+    }
+
+    // when
+    const results = selectCancelledBookings(state)
+
+    // then
+    expect(results).toStrictEqual([])
+  })
 })
 
 describe('selectUsedThingBookings()', () => {
-  it('should return expired booking for events or used bookings for things', () => {
+  it('should not return bookings on events', () => {
     // given
     jest.spyOn(Date, 'now').mockImplementation(() => '2000-01-01T20:00:00Z')
-    const stockYesterday = {
+    const eventStock = {
       beginningDatetime: new Date('1999-12-31T20:00:00.00Z').toISOString(),
       id: 's1',
     }
-    const stockPermanent = {
+
+    const state = {
+      data: {
+        bookings: [
+          {
+            id: 'b1',
+            isUsed: true,
+            stockId: eventStock.id,
+          },
+        ],
+        stocks: [eventStock],
+      },
+    }
+
+    // when
+    const results = selectUsedThingBookings(state)
+
+    // then
+    expect(results).toStrictEqual([])
+  })
+
+  it('should not return bookings on unused things', () => {
+    // given
+
+    const thingStock = {
       beginningDatetime: null,
-      id: 's2',
+      id: 's1',
+    }
+    const state = {
+      data: {
+        bookings: [
+          {
+            id: 'b1',
+            isUsed: false,
+            stockId: thingStock.id,
+          },
+        ],
+        stocks: [thingStock],
+      },
+    }
+
+    // when
+    const results = selectUsedThingBookings(state)
+
+    // then
+    expect(results).toStrictEqual([])
+  })
+
+  it('should return booking on used things', () => {
+    // given
+    const thingStock = {
+      beginningDatetime: null,
+      id: 's1',
     }
     const state = {
       data: {
@@ -543,20 +609,10 @@ describe('selectUsedThingBookings()', () => {
           {
             id: 'b1',
             isUsed: true,
-            stockId: stockYesterday.id,
-          },
-          {
-            id: 'b2',
-            isUsed: true,
-            stockId: stockPermanent.id,
-          },
-          {
-            id: 'b3',
-            isUsed: false,
-            stockId: stockPermanent.id,
+            stockId: thingStock.id,
           },
         ],
-        stocks: [stockYesterday, stockPermanent],
+        stocks: [thingStock],
       },
     }
 
@@ -566,9 +622,9 @@ describe('selectUsedThingBookings()', () => {
     // then
     expect(results).toStrictEqual([
       {
-        id: 'b2',
+        id: 'b1',
         isUsed: true,
-        stockId: stockPermanent.id,
+        stockId: thingStock.id,
       },
     ])
   })
