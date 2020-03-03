@@ -46,6 +46,9 @@ def process_eligible_offers(client: Redis, offer_ids: List[int], from_provider_u
     if len(offers_to_delete) > 0:
         _process_deleting(client=client, offer_ids_to_delete=offers_to_delete)
 
+    if len(offers_to_add) == 0 and len(offers_to_delete):
+        logger.info(f'[ALGOLIA] no objects were added nor deleted!')
+
 
 def delete_expired_offers(client: Redis, offer_ids: List[int]) -> None:
     offer_ids_to_delete = []
@@ -76,7 +79,7 @@ def _build_offer_details_to_be_indexed(offer: Offer) -> dict:
 
 def _process_adding(pipeline: Pipeline, adding_objects: List[dict]) -> None:
     add_objects(objects=adding_objects)
-    logger.info(f'[ALGOLIA] indexed {len(adding_objects)} objects')
+    logger.info(f'[ALGOLIA] {len(adding_objects)} objects were indexed!')
     pipeline.execute()
     pipeline.reset()
 
@@ -85,4 +88,4 @@ def _process_deleting(client: Redis, offer_ids_to_delete: List[int]) -> None:
     humanized_offer_ids_to_delete = [humanize(offer_id) for offer_id in offer_ids_to_delete]
     delete_objects(object_ids=humanized_offer_ids_to_delete)
     delete_indexed_offers(client=client, offer_ids=offer_ids_to_delete)
-    logger.info(f'[ALGOLIA] deleted {len(offer_ids_to_delete)} objects from index')
+    logger.info(f'[ALGOLIA] {len(offer_ids_to_delete)} objects were deleted from index!')
