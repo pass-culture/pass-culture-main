@@ -74,11 +74,10 @@ def put_recommendations():
     json_keys = request.json.keys()
 
     if 'readRecommendations' in json_keys:
-        update_read_recommendations(request.json['readRecommendations'] or [])
+        update_read_recommendations(request.json['readRecommendations'])
 
     if 'seenRecommendationIds' in json_keys:
-        humanized_seen_recommendation_ids = request.json['seenRecommendationIds'] or [
-        ]
+        humanized_seen_recommendation_ids = request.json['seenRecommendationIds']
         seen_recommendation_ids = list(
             map(dehumanize, humanized_seen_recommendation_ids))
     else:
@@ -97,8 +96,7 @@ def put_recommendations():
 
     created_recommendations = create_recommendations_for_discovery(limit=BLOB_SIZE,
                                                                    user=current_user,
-                                                                   seen_recommendation_ids=request.json[
-                                                                       'seenRecommendationIds'])
+                                                                   seen_recommendation_ids=seen_recommendation_ids)
 
     logger.debug(lambda: '(new recos)' + str([(reco, reco.mediation, reco.dateRead)
                                               for reco in created_recommendations]))

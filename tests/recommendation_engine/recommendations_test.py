@@ -5,14 +5,19 @@ from unittest.mock import patch
 from dateutil.tz import tzutc
 
 from models import Offerer, Stock
-from recommendations_engine import create_recommendations_for_discovery, \
-    get_recommendation_search_params, \
-    give_requested_recommendation_to_user
+from models.discovery_view import DiscoveryView
+from recommendations_engine import (create_recommendations_for_discovery,
+                                    get_recommendation_search_params,
+                                    give_requested_recommendation_to_user)
 from repository import repository
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
-    create_recommendation, create_mediation
-from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
+from tests.model_creators.generic_creators import (create_mediation,
+                                                   create_offerer,
+                                                   create_recommendation,
+                                                   create_stock, create_user,
+                                                   create_venue)
+from tests.model_creators.specific_creators import (
+    create_offer_with_thing_product, create_stock_from_offer)
 from utils.human_ids import humanize
 
 
@@ -109,6 +114,7 @@ class CreateRecommendationsForDiscoveryTest:
     @clean_database
     def test_does_not_put_mediation_ids_of_inactive_mediations(self, app):
         # Given
+        seen_recommendation_ids = []
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -120,9 +126,10 @@ class CreateRecommendationsForDiscoveryTest:
         mediation2 = create_mediation(offer2, is_active=False)
         mediation3 = create_mediation(offer2, is_active=True)
         repository.save(user, stock1, mediation1, stock2, mediation2, mediation3)
+        DiscoveryView.refresh(concurrently=False)
 
         # When
-        recommendations = create_recommendations_for_discovery(pagination_params={'page': 1, 'seed': 0.5},
+        recommendations = create_recommendations_for_discovery(seen_recommendation_ids=seen_recommendation_ids,
                                                                user=user)
 
         # Then
@@ -136,6 +143,7 @@ class CreateRecommendationsForDiscoveryTest:
     def test_should_include_recommendations_on_offers_previously_displayed_in_search_results(
             self, app):
         # Given
+        seen_recommendation_ids = []
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -149,9 +157,10 @@ class CreateRecommendationsForDiscoveryTest:
         recommendation = create_recommendation(offer=offer2, user=user, mediation=mediation2, search="bla")
 
         repository.save(user, stock1, mediation1, stock2, mediation2, recommendation)
+        DiscoveryView.refresh(concurrently=False)
 
         # When
-        recommendations = create_recommendations_for_discovery(pagination_params={'page': 1, 'seed': 0.5}, user=user)
+        recommendations = create_recommendations_for_discovery(seen_recommendation_ids=seen_recommendation_ids, user=user)
 
         # Then
         assert len(recommendations) == 2
@@ -161,14 +170,15 @@ class CreateRecommendationsForDiscoveryTest:
                                                                            get_offers_for_recommendations_discovery,
                                                                            app):
         # Given
+        seen_recommendation_ids = []
         user = create_user()
 
         # When
-        create_recommendations_for_discovery(user=user, pagination_params={'page': 1, 'seed': 0.5})
+        create_recommendations_for_discovery(user=user, seen_recommendation_ids=seen_recommendation_ids)
 
         # Then
         get_offers_for_recommendations_discovery.assert_called_once_with(limit=3,
-                                                                         pagination_params={'page': 1, 'seed': 0.5},
+                                                                         seen_recommendation_ids=seen_recommendation_ids,
                                                                          user=user)
 
     @clean_database
@@ -176,6 +186,7 @@ class CreateRecommendationsForDiscoveryTest:
         # given
         departements_ok = ['75', '77', '78', '91', '92', '93', '94', '95']
         departements_ko = ['34', '973']
+        seen_recommendation_ids = []
 
         user = create_user(departement_code='93')
         offerer_ok = create_offerer()
@@ -186,11 +197,12 @@ class CreateRecommendationsForDiscoveryTest:
                                                                                              departements_ko)
         repository.save(user)
         repository.save(*(expected_stocks_recommended + expected_stocks_not_recommended))
+        DiscoveryView.refresh(concurrently=False)
 
         offer_ids_in_adjacent_department = set([stock.offerId for stock in expected_stocks_recommended])
 
         #  when
-        recommendations = create_recommendations_for_discovery(pagination_params={'page': 1, 'seed': 0.5},
+        recommendations = create_recommendations_for_discovery(seen_recommendation_ids=seen_recommendation_ids,
                                                                limit=10,
                                                                user=user)
 
@@ -203,6 +215,7 @@ class CreateRecommendationsForDiscoveryTest:
     def test_returns_offers_from_any_departement_for_user_from_00(self, app):
         # given
         departements_ok = ['97', '01', '93', '06', '78']
+        seen_recommendation_ids = []
 
         user = create_user(departement_code='00')
         offerer_ok = create_offerer()
@@ -210,12 +223,13 @@ class CreateRecommendationsForDiscoveryTest:
                                                                                          departements_ok)
         repository.save(user)
         repository.save(*expected_stocks_recommended)
+        DiscoveryView.refresh(concurrently=False)
 
         offer_ids_in_all_department = set([stock.offerId for stock in expected_stocks_recommended])
 
         #  when
         recommendations = create_recommendations_for_discovery(limit=10,
-                                                               pagination_params={'page': 1, 'seed': 0.5},
+                                                               seen_recommendation_ids=seen_recommendation_ids,
                                                                user=user)
 
         # then

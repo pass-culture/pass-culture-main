@@ -624,7 +624,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
         repository.save(stock, mediation)
-        DiscoveryView.refresh()
+        DiscoveryView.refresh(concurrently=False)
 
         # When
         number_of_offerers = get_offerers_with_offer_available_on_discovery_count_v2('93')
@@ -1273,7 +1273,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
         repository.save(stock, mediation)
-        DiscoveryView.refresh()
+        DiscoveryView.refresh(concurrently=False)
 
         # When
         number_of_offers = get_offers_available_on_discovery_count('93')
@@ -1533,7 +1533,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
         repository.save(stock, mediation)
-        DiscoveryView.refresh()
+        DiscoveryView.refresh(concurrently=False)
 
         # When
         number_of_offers = get_offers_available_on_discovery_count_v2('93')

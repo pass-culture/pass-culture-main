@@ -1,15 +1,18 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
+from models.discovery_view import DiscoveryView
 from models.mediation import Mediation
 from models.recommendation import Recommendation
 from repository import repository
-from tests.conftest import clean_database, TestClient
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
-    create_recommendation, create_mediation
-from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_from_offer, \
-    create_stock_with_thing_offer, create_offer_with_thing_product, create_offer_with_event_product, \
-    create_event_occurrence
+from tests.conftest import TestClient, clean_database
+from tests.model_creators.generic_creators import create_booking, \
+    create_mediation, create_offerer, create_recommendation, \
+    create_user, create_venue
+from tests.model_creators.specific_creators import create_event_occurrence, \
+    create_offer_with_event_product, \
+    create_offer_with_thing_product, create_stock_from_event_occurrence, \
+    create_stock_from_offer, create_stock_with_thing_offer
 from utils.human_ids import humanize
 from utils.tutorials import upsert_tuto_mediations
 
@@ -32,7 +35,7 @@ class Put:
         @clean_database
         def when_given_mediation_does_not_match_given_offer(self, app):
             # given
-            user = create_user(email='user1@user.fr')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer_thing_1 = create_offer_with_thing_product(venue, thumb_count=1)
@@ -56,7 +59,7 @@ class Put:
         @clean_database
         def when_offer_is_unknown_and_mediation_is_known(self, app):
             # given
-            user = create_user(email='user1@user.fr')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer_with_thing = create_offer_with_thing_product(venue, thumb_count=1)
@@ -68,9 +71,7 @@ class Put:
             # when
             response = auth_request.put(RECOMMENDATION_URL +
                                         "?offerId=ABCDE" +
-                                        "&mediationId=" + humanize(mediation.id) +
-                                        "&page=1" +
-                                        "&seed=0.5",
+                                        "&mediationId=" + humanize(mediation.id),
                                         json={'seenRecommendationIds': []})
 
             # then
@@ -79,15 +80,13 @@ class Put:
         @clean_database
         def when_mediation_is_unknown(self, app):
             # given
-            user = create_user(email='user1@user.fr')
+            user = create_user()
             repository.save(user)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
-                                        "?mediationId=ABCDE" +
-                                        "&page=1" +
-                                        "&seed=0.5",
+                                        "?mediationId=ABCDE",
                                         json={'seenRecommendationIds': []})
 
             # then
@@ -96,7 +95,7 @@ class Put:
         @clean_database
         def when_offer_is_known_and_mediation_is_unknown(self, app):
             # given
-            user = create_user(email='user1@user.fr')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer_thing = create_offer_with_thing_product(venue, thumb_count=1)
@@ -108,9 +107,7 @@ class Put:
             # when
             response = auth_request.put(RECOMMENDATION_URL +
                                         "?offerId=" + humanize(offer_thing.id) +
-                                        "&mediationId=ABCDE" +
-                                        '&page=1' +
-                                        '&seed=0.5',
+                                        "&mediationId=ABCDE",
                                         json={'seenRecommendationIds': []})
 
             # then
@@ -119,16 +116,14 @@ class Put:
         @clean_database
         def when_offer_is_unknown_and_mediation_is_unknown(self, app):
             # given
-            user = create_user(email='user1@user.fr')
+            user = create_user()
             repository.save(user)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
                                         "?offerId=ABCDE" +
-                                        "&mediationId=ABCDE" +
-                                        '&page=1' +
-                                        '&seed=0.5',
+                                        "&mediationId=ABCDE",
                                         json={'seenRecommendationIds': []})
 
             # then
@@ -137,7 +132,7 @@ class Put:
         @clean_database
         def when_venue_of_given_offer_is_not_validated(self, app):
             # given
-            user = create_user(email='weird.bug@email.com')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             venue.generate_validation_token()
@@ -149,9 +144,7 @@ class Put:
             data = {'seenRecommendationIds': []}
             # when
             response = auth_request.put(RECOMMENDATION_URL +
-                                        '?offerId=%s' % humanize(offer1.id) +
-                                        '&page=1' +
-                                        '&seed=0.5',
+                                        '?offerId=%s' % humanize(offer1.id),
                                         json=data)
 
             # then
@@ -164,7 +157,7 @@ class Put:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
-            user = create_user(email='test@email.com')
+            user = create_user()
             event_occurrence1 = create_event_occurrence(offer)
             event_occurrence2 = create_event_occurrence(offer)
             stock1 = create_stock_from_event_occurrence(event_occurrence1, soft_deleted=True)
@@ -193,7 +186,7 @@ class Put:
             ]
 
             # When
-            response = TestClient(app.test_client()).with_auth('test@email.com') \
+            response = TestClient(app.test_client()).with_auth(user.email) \
                 .put('{}/read'.format(RECOMMENDATION_URL), json=read_recommendation_data)
 
             # Then
@@ -220,6 +213,7 @@ class Put:
             recommendation2 = create_recommendation(thing_offer1, user)
             recommendation3 = create_recommendation(thing_offer2, user)
             repository.save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
+            DiscoveryView.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -230,9 +224,7 @@ class Put:
             ]
             data = {'readRecommendations': reads}
             # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?page=1" +
-                                        "&seed=0.5",
+            response = auth_request.put(RECOMMENDATION_URL,
                                         json=data)
 
             # then
@@ -261,10 +253,7 @@ class Put:
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email) \
-                .put(RECOMMENDATION_URL +
-                     "?page=1" +
-                     "&seed=0.5",
-                     json={'readRecommendations': []})
+                .put(RECOMMENDATION_URL, json={'readRecommendations': []})
 
             # then
             assert response.status_code == 200
@@ -284,12 +273,11 @@ class Put:
             create_mediation(thing_offer1)
             create_mediation(thing_offer2)
             repository.save(user, stock1, stock2)
+            DiscoveryView.refresh(concurrently=False)
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email) \
-                .put(RECOMMENDATION_URL +
-                     "?page=1"
-                     "&seed=0.5", json={'readRecommendations': []})
+                .put(RECOMMENDATION_URL, json={'readRecommendations': []})
 
             # then
             assert response.status_code == 200
@@ -329,15 +317,14 @@ class Put:
             create_mediation(thing_offer2)
             create_mediation(event_offer)
             repository.save(user, event_stock, soft_deleted_event_stock, thing_stock, soft_deleted_thing_stock)
+            DiscoveryView.refresh(concurrently=False)
 
             event_offer_id = event_offer.id
             thing_offer2_id = thing_offer2.id
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email) \
-                .put(RECOMMENDATION_URL +
-                     "?page=1"
-                     "&seed=0.5", json={})
+                .put(RECOMMENDATION_URL, json={})
 
             # Then
             recommendations = response.json
@@ -349,7 +336,7 @@ class Put:
         @clean_database
         def when_offers_have_no_stocks(self, app):
             # given
-            user = create_user(email='weird.bug@email.com')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
@@ -358,9 +345,7 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?page=1"
-                                        "&seed=0.5", json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -369,7 +354,7 @@ class Put:
         @clean_database
         def when_offers_have_a_thumb_count_for_thing_and_no_mediation(self, app):
             # given
-            user = create_user(email='weird.bug@email.com')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue, thumb_count=1)
@@ -379,9 +364,7 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?page=1"
-                                        "&seed=0.5", json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -390,7 +373,7 @@ class Put:
         @clean_database
         def when_offers_have_no_thumb_count_for_thing_and_no_mediation(self, app):
             # given
-            user = create_user(email='weird.bug@email.com')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue, thumb_count=0)
@@ -400,9 +383,7 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?page=1"
-                                        "&seed=0.5", json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -412,20 +393,19 @@ class Put:
         def when_offers_have_no_thumb_count_for_thing_and_a_mediation(
                 self, app):
             # given
-            user = create_user(email='weird.bug@email.com')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             stock = create_stock_from_offer(offer, price=0)
             mediation = create_mediation(offer)
             repository.save(user, stock, mediation)
+            DiscoveryView.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?page=1"
-                                        "&seed=0.5", json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -438,7 +418,7 @@ class Put:
             four_days_from_now = now + timedelta(days=4)
             eight_days_from_now = now + timedelta(days=8)
 
-            user = create_user(email='weird.bug@email.com')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
@@ -449,13 +429,12 @@ class Put:
             )
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
             repository.save(user, stock)
+            DiscoveryView.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?page=1"
-                                        "&seed=0.5", json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -469,7 +448,7 @@ class Put:
             four_days_from_now = now + timedelta(days=4)
             eight_days_from_now = now + timedelta(days=8)
 
-            user = create_user(email='weird.bug@email.com')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
@@ -481,13 +460,12 @@ class Put:
             mediation = create_mediation(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
             repository.save(user, stock, mediation)
+            DiscoveryView.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?page=1"
-                                        "&seed=0.5", json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -501,7 +479,7 @@ class Put:
             four_days_from_now = now + timedelta(days=4)
             eight_days_from_now = now + timedelta(days=8)
 
-            user = create_user(email='weird.bug@email.com')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, thumb_count=1)
@@ -516,9 +494,7 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?page=1"
-                                        "&seed=0.5", json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -535,19 +511,18 @@ class Put:
             offer_venue_validated = create_offer_with_thing_product(venue_validated, thumb_count=1)
             stock_venue_not_validated = create_stock_from_offer(offer_venue_not_validated)
             stock_venue_validated = create_stock_from_offer(offer_venue_validated)
-            user = create_user(email='test@email.com')
+            user = create_user()
             create_mediation(offer_venue_not_validated)
             create_mediation(offer_venue_validated)
             repository.save(stock_venue_not_validated, stock_venue_validated, user)
+            DiscoveryView.refresh(concurrently=False)
 
             venue_validated_id = venue_validated.id
             venue_not_validated_id = venue_not_validated.id
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?page=1"
-                                        "&seed=0.5", json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # Then
             assert response.status_code == 200
@@ -570,6 +545,7 @@ class Put:
             mediation2 = create_mediation(offer2, is_active=False)
             mediation3 = create_mediation(offer2, is_active=True)
             repository.save(user, stock1, mediation1, stock2, mediation2, mediation3)
+            DiscoveryView.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
             mediation3_id = mediation3.id
@@ -577,9 +553,7 @@ class Put:
             mediation1_id = mediation1.id
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?page=1"
-                                        "&seed=0.5", json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -592,7 +566,7 @@ class Put:
         @clean_database
         def when_a_recommendation_is_requested(self, app):
             # given
-            user = create_user(email='weird.bug@email.com')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer1 = create_offer_with_thing_product(venue)
@@ -612,6 +586,7 @@ class Put:
             stock3 = create_stock_from_offer(offer3, price=0)
             stock4 = create_stock_from_offer(offer4, price=0)
             repository.save(user, stock1, stock2, stock3, stock4)
+            DiscoveryView.refresh(concurrently=False)
 
             offer1_id = offer1.id
             offer2_id = offer2.id
@@ -622,9 +597,7 @@ class Put:
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
-                                        "?offerId=" + humanize(offer1.id) +
-                                        "&page=1" +
-                                        "&seed=0.5",
+                                        "?offerId=" + humanize(offer1.id),
                                         json={'seenRecommendationIds': []})
 
             # then
@@ -644,7 +617,7 @@ class Put:
             now = datetime.utcnow()
             four_days_from_now = now + timedelta(days=4)
             eight_days_from_now = now + timedelta(days=8)
-            user = create_user(email='user1@user.fr')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer_event = create_offer_with_event_product(venue)
@@ -659,13 +632,12 @@ class Put:
             create_mediation(offer_thing)
             create_mediation(offer_event)
             repository.save(user, event_stock, stock_thing)
+            DiscoveryView.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?page=1"
-                                        "&seed=0.5", json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -684,17 +656,15 @@ class Put:
             offer2 = create_offer_with_thing_product(venue_outside_dept, thumb_count=0)
             stock2 = create_stock_from_offer(offer2, price=0)
             mediation2 = create_mediation(offer2, is_active=True)
-
             recommendation = create_recommendation(offer=offer2, user=user, mediation=mediation2, search="bla")
-
             repository.save(user, stock1, mediation1, stock2, mediation2, recommendation)
+            DiscoveryView.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # When
             recommendations_req = auth_request.put(RECOMMENDATION_URL +
-                                                   "?page=1"
-                                                   "&seed=0.5", json={})
+                                                   "?page=1", json={})
 
             # Then
             assert recommendations_req.status_code == 200
@@ -705,7 +675,7 @@ class Put:
         @clean_database
         def when_a_recommendation_with_an_offer_and_a_mediation_is_requested(self, app):
             # given
-            user = create_user(email='user1@user.fr')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer_thing = create_offer_with_thing_product(venue, thumb_count=1)
@@ -718,9 +688,7 @@ class Put:
             # when
             response = auth_request.put(RECOMMENDATION_URL +
                                         "?offerId=" + humanize(offer_thing.id) +
-                                        "&mediationId=" + humanize(mediation.id) +
-                                        "&page=1" +
-                                        "&seed=0.5", json={'seenRecommendationIds': []})
+                                        "&mediationId=" + humanize(mediation.id), json={'seenRecommendationIds': []})
             # then
             assert response.status_code == 200
             recos = response.json
@@ -729,7 +697,7 @@ class Put:
         @clean_database
         def when_a_recommendation_with_an_offer_and_no_mediation_is_requested(self, app):
             # given
-            user = create_user(email='user1@user.fr')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer_thing = create_offer_with_thing_product(venue, thumb_count=1)
@@ -742,9 +710,7 @@ class Put:
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
-                                        "?offerId=" + humanize(offer_thing.id) +
-                                        "&page=1" +
-                                        "&seed=0.5", json={'seenRecommendationIds': []})
+                                        "?offerId=" + humanize(offer_thing.id), json={'seenRecommendationIds': []})
 
             # then
             assert response.status_code == 200
@@ -754,7 +720,7 @@ class Put:
         @clean_database
         def when_a_recommendation_with_no_offer_and_a_mediation_is_requested(self, app):
             # given
-            user = create_user(email='user1@user.fr')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer_thing = create_offer_with_thing_product(venue, thumb_count=1)
@@ -767,9 +733,7 @@ class Put:
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
-                                        "?mediationId=" + humanize(mediation.id) +
-                                        "&page=1" +
-                                        "&seed=0.5",
+                                        "?mediationId=" + humanize(mediation.id),
                                         json={'seenRecommendationIds': []})
 
             # then
@@ -790,6 +754,7 @@ class Put:
             active_mediation = create_mediation(offer1, is_active=True)
             invalid_recommendation = create_recommendation(offer=offer1, user=user, mediation=inactive_mediation)
             repository.save(user, stock1, inactive_mediation, active_mediation, invalid_recommendation)
+            DiscoveryView.refresh(concurrently=False)
 
             active_mediation_id = active_mediation.id
             inactive_mediation_id = inactive_mediation.id
@@ -798,9 +763,7 @@ class Put:
             data = {'seenRecommendationIds': []}
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?page=1" +
-                                        "&seed=0.5", json=data)
+            response = auth_request.put(RECOMMENDATION_URL, json=data)
 
             # then
             assert response.status_code == 200
@@ -827,14 +790,13 @@ class Put:
             create_mediation(thing_offer1)
             create_mediation(thing_offer2)
             repository.save(stock1, stock2, stock3, stock4, user)
+            DiscoveryView.refresh(concurrently=False)
 
             upsert_tuto_mediations()
 
             # when
             auth_request = TestClient(app.test_client()).with_auth(user.email)
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?page=1" +
-                                        "&seed=0.5", json={})
+            response = auth_request.put(RECOMMENDATION_URL, json={})
 
             # then
             assert response.status_code == 200
@@ -881,9 +843,7 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?page=1" +
-                                        "&seed=0.5", json=data)
+            response = auth_request.put(RECOMMENDATION_URL, json=data)
 
             # then
             assert response.status_code == 200
@@ -908,10 +868,7 @@ class Put:
 
             # When
             recommendations = TestClient(app.test_client()).with_auth(user.email) \
-                .put(RECOMMENDATION_URL +
-                     "?page=1" +
-                     "&seed=0.5",
-                     json={})
+                .put(RECOMMENDATION_URL, json={})
 
             # Then
             assert recommendations.status_code == 200
@@ -932,9 +889,7 @@ class Put:
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email) \
-                .put(RECOMMENDATION_URL +
-                     "?page=1" +
-                     "&seed=0.5", json={'seenRecommendationIds': [humanize(recommendation.id)]})
+                .put(RECOMMENDATION_URL, json={'seenRecommendationIds': [humanize(recommendation.id)]})
 
             # then
             assert response.status_code == 200
@@ -946,7 +901,7 @@ class Put:
             now = datetime.utcnow()
             four_days_from_now = now + timedelta(days=4)
             eight_days_from_now = now + timedelta(days=8)
-            user = create_user(email='user1@user.fr')
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             repository.save(user)
@@ -965,15 +920,12 @@ class Put:
                 create_mediation(offer_event)
                 repository.save(event_stock, stock_thing)
 
+            DiscoveryView.refresh(concurrently=False)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            recommendations1 = auth_request.put(RECOMMENDATION_URL +
-                                                "?page=1" +
-                                                "&seed=0.5", json={'seenRecommendationIds': []})
-            recommendations2 = auth_request.put(RECOMMENDATION_URL +
-                                                "?page=1" +
-                                                "&seed=0.5", json={'seenRecommendationIds': []})
+            recommendations1 = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            recommendations2 = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
 
             # then
             assert recommendations1.status_code == 200
@@ -1000,13 +952,12 @@ class Put:
 
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation)
             repository.save(user, recommendation)
+            DiscoveryView.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # When
-            recommendations_req = auth_request.put(RECOMMENDATION_URL +
-                                                   "?page=1" +
-                                                   "&seed=0.5", json={})
+            recommendations_req = auth_request.put(RECOMMENDATION_URL, json={})
 
             # Then
             assert recommendations_req.status_code == 200
@@ -1029,66 +980,12 @@ class Put:
             booking = create_booking(user=user, stock=stock, venue=venue)
             create_mediation(offer)
             repository.save(booking)
-
-            booking_id = booking.id
+            DiscoveryView.refresh(concurrently=False)
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email) \
-                .put(RECOMMENDATION_URL +
-                     "?page=1" +
-                     "&seed=0.5", json={'readRecommendations': []})
+                .put(RECOMMENDATION_URL, json={})
 
             # then
             assert response.status_code == 200
             assert response.json == []
-
-        @clean_database
-        @patch('routes.recommendations.create_recommendations_for_discovery')
-        def test_should_create_recommendations_using_pagination_params(self, create_recommendations_for_discovery, app):
-            # given
-            user = create_user(can_book_free_offers=True, departement_code='93', is_admin=False)
-            offerer = create_offerer()
-            venue = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
-            offer = create_offer_with_thing_product(venue, thing_name='thing 93', url=None, is_national=False)
-            stock = create_stock_from_offer(offer, price=0)
-            booking = create_booking(user=user, stock=stock, venue=venue)
-            create_mediation(offer)
-            repository.save(booking)
-
-            # when
-            TestClient(app.test_client()).with_auth(user.email) \
-                .put(RECOMMENDATION_URL +
-                     "?page=1" +
-                     "&seed=0.5", json={'readRecommendations': []})
-
-            # then
-            args = create_recommendations_for_discovery.call_args
-            assert args[1]['limit'] == 30
-            assert args[1]['pagination_params'] == {'page': 1, 'seed': 0.5}
-
-        @clean_database
-        @patch('routes.recommendations.create_recommendations_for_discovery')
-        @patch('routes.recommendations.random.random', return_value=0.5)
-        def test_should_create_recommendations_using_default_pagination_params_when_not_provided(self,
-                                                                                                 mock_random,
-                                                                                                 create_recommendations_for_discovery,
-                                                                                                 app):
-            # given
-            user = create_user(can_book_free_offers=True, departement_code='93', is_admin=False)
-            offerer = create_offerer()
-            venue = create_venue(offerer, siret=offerer.siren + '54321', postal_code='93000', departement_code='93')
-            offer = create_offer_with_thing_product(venue, thing_name='thing 93', url=None, is_national=False)
-            stock = create_stock_from_offer(offer, price=0)
-            booking = create_booking(user=user, stock=stock, venue=venue)
-            create_mediation(offer)
-            repository.save(booking)
-
-            # when
-            TestClient(app.test_client()).with_auth(user.email) \
-                .put(RECOMMENDATION_URL, json={'readRecommendations': []})
-
-            # then
-            args = create_recommendations_for_discovery.call_args
-            print(args[1])
-            assert args[1]['limit'] == 30
-            assert args[1]['pagination_params'] == {'page': 1, 'seed': 0.5}
