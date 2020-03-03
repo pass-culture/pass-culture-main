@@ -39,14 +39,14 @@ def _run_indexing(client: Redis, venue_provider: Dict):
                                          f"python scripts/pc.py process_venue_provider_offers_for_algolia " \
                                          f"--provider-id {provider_id} " \
                                          f"--venue-provider-id {venue_provider_id} " \
-                                         f"--venueId {venue_id} "
+                                         f"--venue-id {venue_id}"
     try:
         container_id = run_process_in_one_off_container(run_algolia_venue_provider_command)
         add_venue_provider_currently_in_sync(client=client,
                                              container_id=container_id,
                                              venue_provider_id=venue_provider_id)
         logger.info(f"[ALGOLIA][VenueProviderWorker] Indexing offers from VenueProvider {venue_provider_id}"
-                    f" synchro in container {container_id}")
+                    f" in container {container_id}")
     except ScalingoApiException as error:
         logger.error(f"[ALGOLIA][VenueProviderWorker] Error indexing offers from VenueProvider {venue_provider_id}"
                      f" with errors: {error}")

@@ -83,7 +83,7 @@ class RunIndexingTest:
                                              f"python scripts/pc.py process_venue_provider_offers_for_algolia " \
                                              f"--provider-id {venue_provider['providerId']} " \
                                              f"--venue-provider-id {venue_provider['id']} " \
-                                             f"--venueId {venue_provider['venueId']} "
+                                             f"--venue-id {venue_provider['venueId']}"
 
         # When
         _run_indexing(client=client, venue_provider=venue_provider)
