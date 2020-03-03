@@ -1,4 +1,4 @@
-import {mount, shallow} from 'enzyme'
+import { mount, shallow } from 'enzyme'
 import React from 'react'
 import { Form } from 'react-final-form'
 import * as reactReduxLogin from 'with-react-redux-login'
@@ -11,6 +11,7 @@ import configureStore from '../../../../utils/store'
 import { createBrowserHistory } from 'history'
 import { Provider } from 'react-redux'
 import LocationFields from '../fields/LocationFields/LocationFields'
+import AddressField from '../fields/LocationFields/AddressField'
 
 describe('src | components | pages | Venue', () => {
   let push
@@ -165,7 +166,7 @@ describe('src | components | pages | Venue', () => {
         expect(wrapper.state('isRequestPending')).toBe(false)
       })
 
-      it('should display a LocationFields component with param fieldReadOnlyBecauseFrozenFormSiret being false', () => {
+      it('should be able to edit address field when venue has no SIRET', () => {
         // given
         props.formInitialValues = {
           siret: null
@@ -189,8 +190,24 @@ describe('src | components | pages | Venue', () => {
           </Provider>
         )
 
+        let addressField = wrapper
+          .find(LocationFields)
+          .find(AddressField)
+          .find('input.field-address')
+          .first()
+
+        addressField.simulate('change', { target: { value: 'Addresse de test' } })
+
+        wrapper = wrapper.update()
+
+        addressField = wrapper
+          .find(LocationFields)
+          .find(AddressField)
+          .find('input.field-address')
+          .first()
+
         // then
-        expect(wrapper.find(LocationFields).props().fieldReadOnlyBecauseFrozenFormSiret).toBe(false)
+        expect(addressField.prop('value')).toBe('Addresse de test')
       })
     })
 
