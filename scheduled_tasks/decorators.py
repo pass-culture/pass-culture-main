@@ -11,7 +11,7 @@ def cron_context(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         clock_application = args[0]
-        with clock_application.app_context() as app:
+        with clock_application.app_context():
             return func(*args, **kwargs)
 
     return wrapper

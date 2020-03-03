@@ -3,7 +3,7 @@ from typing import List
 from models import VenueProvider
 
 
-def get_actives_venue_providers_for_specific_provider(provider_id: int) -> List[VenueProvider]:
+def get_active_venue_providers_for_specific_provider(provider_id: int) -> List[VenueProvider]:
     return VenueProvider.query \
         .filter(VenueProvider.providerId == provider_id) \
         .filter(VenueProvider.isActive == True) \
