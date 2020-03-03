@@ -4,11 +4,10 @@ from typing import List
 from redis import Redis
 from redis.client import Pipeline
 
+from algolia.domain.rules_engine import is_eligible_for_indexing, is_eligible_for_reindexing
 from algolia.infrastructure.api import add_objects, delete_objects
 from algolia.infrastructure.builder import build_object
-from algolia.domain.rules_engine import is_eligible_for_indexing, is_eligible_for_reindexing
-from connectors.redis import add_to_indexed_offers, check_offer_exists, delete_offer_ids, \
-    delete_indexed_offers, get_offer_details
+from connectors.redis import add_to_indexed_offers, check_offer_exists, delete_indexed_offers, get_offer_details
 from models import Offer
 from repository import offer_queries
 from utils.human_ids import humanize
@@ -46,8 +45,6 @@ def process_eligible_offers(client: Redis, offer_ids: List[int], from_provider_u
 
     if len(offers_to_delete) > 0:
         _process_deleting(client=client, offer_ids_to_delete=offers_to_delete)
-
-    delete_offer_ids(client=client)
 
 
 def delete_expired_offers(client: Redis, offer_ids: List[int]) -> None:

@@ -168,7 +168,6 @@ class ProcessEligibleOffersTest:
         mock_pipeline.execute.assert_not_called()
         mock_pipeline.reset.assert_not_called()
 
-    @patch('algolia.usecase.orchestrator.delete_offer_ids')
     @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
     @patch('algolia.usecase.orchestrator.get_offer_details')
     @patch('algolia.usecase.orchestrator.check_offer_exists')
@@ -183,7 +182,6 @@ class ProcessEligibleOffersTest:
                                                               mock_check_offer_exists,
                                                               mock_get_offer_details,
                                                               mock_add_to_indexed_offers,
-                                                              mock_delete_offer_ids,
                                                               app):
         # Given
         client = MagicMock()
@@ -234,9 +232,7 @@ class ProcessEligibleOffersTest:
         assert mock_pipeline.execute.call_count == 1
         assert mock_pipeline.reset.call_count == 1
         assert mock_delete_objects.call_count == 0
-        assert mock_delete_offer_ids.call_count == 1
 
-    @patch('algolia.usecase.orchestrator.delete_offer_ids')
     @patch('algolia.usecase.orchestrator.delete_indexed_offers')
     @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
     @patch('algolia.usecase.orchestrator.get_offer_details')
@@ -253,7 +249,6 @@ class ProcessEligibleOffersTest:
                                                            mock_get_offer_details,
                                                            mock_add_to_indexed_offers,
                                                            mock_delete_indexed_offers,
-                                                           mock_delete_offer_ids,
                                                            app):
         # Given
         client = MagicMock()
@@ -293,9 +288,7 @@ class ProcessEligibleOffersTest:
         ]
         assert mock_pipeline.execute.call_count == 0
         assert mock_pipeline.reset.call_count == 0
-        assert mock_delete_offer_ids.call_count == 1
 
-    @patch('algolia.usecase.orchestrator.delete_offer_ids')
     @patch('algolia.usecase.orchestrator.delete_indexed_offers')
     @patch('algolia.usecase.orchestrator.check_offer_exists')
     @patch('algolia.usecase.orchestrator.delete_objects')
@@ -304,7 +297,6 @@ class ProcessEligibleOffersTest:
                                                                    mock_delete_objects,
                                                                    mock_check_offer_exists,
                                                                    mock_delete_indexed_offers,
-                                                                   mock_delete_offer_ids,
                                                                    app):
         # Given
         client = MagicMock()
@@ -330,9 +322,7 @@ class ProcessEligibleOffersTest:
         assert mock_check_offer_exists.call_count == 2
         assert mock_delete_objects.call_count == 0
         assert mock_delete_indexed_offers.call_count == 0
-        assert mock_delete_offer_ids.call_count == 1
 
-    @patch('algolia.usecase.orchestrator.delete_offer_ids')
     @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
     @patch('algolia.usecase.orchestrator.get_offer_details')
     @patch('algolia.usecase.orchestrator.check_offer_exists')
@@ -347,7 +337,6 @@ class ProcessEligibleOffersTest:
                                                                                        mock_check_offer_exists,
                                                                                        mock_get_offer_details,
                                                                                        mock_add_to_indexed_offers,
-                                                                                       mock_delete_offer_ids,
                                                                                        app):
         # Given
         client = MagicMock()
@@ -389,9 +378,7 @@ class ProcessEligibleOffersTest:
         assert mock_pipeline.execute.call_count == 1
         assert mock_pipeline.reset.call_count == 1
         assert mock_delete_objects.call_count == 0
-        assert mock_delete_offer_ids.call_count == 1
 
-    @patch('algolia.usecase.orchestrator.delete_offer_ids')
     @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
     @patch('algolia.usecase.orchestrator.get_offer_details')
     @patch('algolia.usecase.orchestrator.check_offer_exists')
@@ -406,7 +393,6 @@ class ProcessEligibleOffersTest:
                                                                                               mock_check_offer_exists,
                                                                                               mock_get_offer_details,
                                                                                               mock_add_to_indexed_offers,
-                                                                                              mock_delete_offer_ids,
                                                                                               app):
         # Given
         client = MagicMock()
@@ -438,9 +424,7 @@ class ProcessEligibleOffersTest:
         assert mock_pipeline.execute.call_count == 0
         assert mock_pipeline.reset.call_count == 0
         assert mock_delete_objects.call_count == 0
-        assert mock_delete_offer_ids.call_count == 1
 
-    @patch('algolia.usecase.orchestrator.delete_offer_ids')
     @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
     @patch('algolia.usecase.orchestrator.get_offer_details')
     @patch('algolia.usecase.orchestrator.check_offer_exists')
@@ -456,7 +440,6 @@ class ProcessEligibleOffersTest:
                                                                                     mock_check_offer_exists,
                                                                                     mock_get_offer_details,
                                                                                     mock_add_to_indexed_offers,
-                                                                                    mock_delete_offer_ids,
                                                                                     app):
         # Given
         client = MagicMock()
@@ -507,7 +490,6 @@ class ProcessEligibleOffersTest:
         assert mock_pipeline.execute.call_count == 1
         assert mock_pipeline.reset.call_count == 1
         assert mock_delete_objects.call_count == 0
-        assert mock_delete_offer_ids.call_count == 1
 
 
 class OrchestrateDeleteExpiredOffersTest:

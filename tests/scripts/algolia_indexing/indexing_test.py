@@ -9,9 +9,11 @@ from scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_b
 
 class BatchIndexingOffersInAlgoliaByOfferTest:
     @patch('scripts.algolia_indexing.indexing.process_eligible_offers')
+    @patch('scripts.algolia_indexing.indexing.delete_offer_ids')
     @patch('scripts.algolia_indexing.indexing.get_offer_ids')
     def test_should_index_offers_when_at_least_one_offer_id(self,
                                                             mock_get_offer_ids,
+                                                            mock_delete_offer_ids,
                                                             mock_process_eligible_offers):
         # Given
         client = MagicMock()
@@ -22,14 +24,17 @@ class BatchIndexingOffersInAlgoliaByOfferTest:
 
         # Then
         mock_get_offer_ids.assert_called_once()
+        mock_delete_offer_ids.assert_called_once()
         assert mock_process_eligible_offers.call_args_list == [
             call(client=client, offer_ids=[1], from_provider_update=False)
         ]
 
     @patch('scripts.algolia_indexing.indexing.process_eligible_offers')
+    @patch('scripts.algolia_indexing.indexing.delete_offer_ids')
     @patch('scripts.algolia_indexing.indexing.get_offer_ids')
     def test_should_not_trigger_indexing_when_no_offer_id(self,
                                                           mock_get_offer_ids,
+                                                          mock_delete_offer_ids,
                                                           mock_process_eligible_offers):
         # Given
         client = MagicMock()
@@ -40,6 +45,7 @@ class BatchIndexingOffersInAlgoliaByOfferTest:
 
         # Then
         mock_get_offer_ids.assert_called_once()
+        mock_delete_offer_ids.assert_not_called()
         mock_process_eligible_offers.assert_not_called()
 
 
