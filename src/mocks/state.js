@@ -129,6 +129,9 @@ const state = {
         isActive: true,
         lastProviderId: null,
         name: 'super offre',
+        offerType: {
+          appLabel: 'Mon super type',
+        },
         type: 'EventType.SPECTACLE_VIVANT',
         modelName: 'Offer',
         stocks: [],

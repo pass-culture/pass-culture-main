@@ -1,11 +1,18 @@
-import { shallow } from 'enzyme'
+import configureStore from 'redux-mock-store'
+import { createMemoryHistory } from 'history'
+import { mount, shallow } from 'enzyme'
+import { Provider } from 'react-redux'
 import React from 'react'
+import { Router } from 'react-router-dom'
+import thunk from 'redux-thunk'
 
+import Booking from '../../../layout/Booking/Booking'
 import LoaderContainer from '../../../layout/Loader/LoaderContainer'
 import MyFavorites from '../MyFavorites'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import NoItems from '../../../layout/NoItems/NoItems'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
+import state from '../../../../mocks/state'
 import TeaserContainer from '../../../layout/Teaser/TeaserContainer'
 
 describe('src | components | pages | my-favorites | MyFavorites', () => {
@@ -137,6 +144,87 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
         // then
         const loaderContainer = wrapper.find(LoaderContainer)
         expect(loaderContainer).toHaveLength(1)
+      })
+    })
+
+    describe('when on details page I can initiate booking', () => {
+      it('should open booking component with offerId and mediationId on url', () => {
+        // given
+        const buildStore = configureStore([thunk])
+        const store = buildStore(state)
+        const history = createMemoryHistory()
+        const props = {
+          deleteFavorites: jest.fn(),
+          loadMyFavorites: jest.fn(),
+          myFavorites: [
+            {
+              id: 1,
+              offerId: 'AM3A',
+              offer: {
+                id: 'AM3A',
+                name: 'name',
+              },
+              mediationId: 'B4',
+              mediation: {
+                id: 'B4',
+                thumbUrl: 'thumbUrl',
+              },
+            },
+          ],
+        }
+        history.push('/favoris/details/AM3A/B4/reservation')
+
+        // when
+        const wrapper = mount(
+          <Router history={history}>
+            <Provider store={store}>
+              <MyFavorites {...props} />
+            </Provider>
+          </Router>
+        )
+        const myFavorites = wrapper.find(MyFavorites)
+        myFavorites.setState({ isLoading: false })
+
+        // then
+        const booking = wrapper.find(Booking)
+        expect(booking.isEmptyRender()).toBe(false)
+      })
+
+      it('should open booking component with no mediationId on url', () => {
+        // given
+        const buildStore = configureStore([thunk])
+        const store = buildStore(state)
+        const history = createMemoryHistory()
+        const props = {
+          deleteFavorites: jest.fn(),
+          loadMyFavorites: jest.fn(),
+          myFavorites: [
+            {
+              id: 1,
+              offerId: 'AM3A',
+              offer: {
+                id: 'AM3A',
+                name: 'name',
+              },
+            },
+          ],
+        }
+
+        // when
+        history.push('/favoris/details/AM3A/vide/reservation')
+        const wrapper = mount(
+          <Router history={history}>
+            <Provider store={store}>
+              <MyFavorites {...props} />
+            </Provider>
+          </Router>
+        )
+        const myFavorites = wrapper.find(MyFavorites)
+        myFavorites.setState({ isLoading: false })
+
+        // then
+        const booking = wrapper.find(Booking)
+        expect(booking.isEmptyRender()).toBe(false)
       })
     })
   })
