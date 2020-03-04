@@ -3,8 +3,13 @@ import os
 from redis import Redis
 
 from algolia.usecase.orchestrator import process_eligible_offers, delete_expired_offers
-from connectors.redis import get_venue_ids, delete_venue_ids, \
-    get_venue_providers, delete_venue_providers, get_offer_ids, delete_venue_provider_currently_in_sync, \
+from connectors.redis import \
+    get_venue_ids, \
+    delete_venue_ids, \
+    get_venue_providers, \
+    delete_venue_providers, \
+    get_offer_ids, \
+    delete_venue_provider_currently_in_sync, \
     delete_offer_ids
 from repository import offer_queries
 from utils.converter import from_tuple_to_int

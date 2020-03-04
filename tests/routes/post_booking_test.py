@@ -715,9 +715,10 @@ class Post:
             # Then
             assert response.status_code == 201
 
+        @patch('routes.bookings.feature_queries.is_active', return_value=True)
         @patch('routes.bookings.redis.add_offer_id')
         @clean_database
-        def when_booking_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, app):
+        def when_booking_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, mock_feature, app):
             # Given
             beneficiary = create_user()
             offerer = create_offerer()
@@ -742,3 +743,31 @@ class Post:
             # Then
             assert response.status_code == 201
             mock_add_offer_id_to_redis.assert_called_once_with(client=app.redis_client, offer_id=thing_stock.offerId)
+
+        @patch('routes.bookings.feature_queries.is_active', return_value=False)
+        @patch('routes.bookings.redis.add_offer_id')
+        @clean_database
+        def when_booking_expect_offer_id_not_to_be_added_to_redis(self, mock_add_offer_id_to_redis, mock_feature, app):
+            # Given
+            beneficiary = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            thing_offer = create_offer_with_thing_product(venue)
+            thing_stock = create_stock_with_thing_offer(offerer, venue, thing_offer)
+            recommendation = create_recommendation(thing_offer, beneficiary)
+            create_deposit(beneficiary)
+            repository.save(recommendation)
+
+            booking_json = {
+                'stockId': humanize(thing_stock.id),
+                'recommendationId': humanize(recommendation.id),
+                'quantity': 1
+            }
+
+            # When
+            TestClient(app.test_client()) \
+                .with_auth(beneficiary.email) \
+                .post('/bookings', json=booking_json)
+
+            # Then
+            mock_add_offer_id_to_redis.assert_not_called()

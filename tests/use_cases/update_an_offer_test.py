@@ -15,8 +15,9 @@ class UseCaseTest:
     class UpdateAnOfferTest:
         class WhenTheOfferIsFromAllocine:
             @clean_database
+            @patch('use_cases.update_an_offer.feature_queries.is_active', return_value=True)
             @patch('use_cases.update_an_offer.redis.add_offer_id')
-            def test_keep_track_of_updated_fields_so_they_wont_be_overriden(self, mock_redis, app):
+            def test_keep_track_of_updated_fields_so_they_wont_be_overriden(self, mock_redis, mock_feature, app):
                 # Given
                 provider = get_provider_by_local_class('AllocineStocks')
                 offerer = create_offerer()
@@ -33,8 +34,9 @@ class UseCaseTest:
                 assert offer.fieldsUpdated == ['isDuo']
 
             @clean_database
+            @patch('use_cases.update_an_offer.feature_queries.is_active', return_value=True)
             @patch('use_cases.update_an_offer.redis.add_offer_id')
-            def test_preserve_already_updated_fields_so_they_wont_be_overriden(self, mock_redis, app):
+            def test_preserve_already_updated_fields_so_they_wont_be_overriden(self, mock_redis, mock_feature, app):
                 # Given
                 provider = get_provider_by_local_class('AllocineStocks')
                 offerer = create_offerer()
@@ -54,8 +56,9 @@ class UseCaseTest:
 
             class WhenUpdatingForbiddenFields:
                 @clean_database
+                @patch('use_cases.update_an_offer.feature_queries.is_active', return_value=True)
                 @patch('use_cases.update_an_offer.redis.add_offer_id')
-                def test_should_raise_an_error_when_field_has_changed(self, mock_redis, app):
+                def test_should_raise_an_error_when_field_has_changed(self, mock_redis, mock_feature, app):
                     # Given
                     provider = get_provider_by_local_class('AllocineStocks')
                     offerer = create_offerer()
@@ -74,8 +77,9 @@ class UseCaseTest:
                     assert error.value.errors['bookingEmail'] == ['Vous ne pouvez pas modifier ce champ']
 
                 @clean_database
+                @patch('use_cases.update_an_offer.feature_queries.is_active', return_value=True)
                 @patch('use_cases.update_an_offer.redis.add_offer_id')
-                def test_should_not_raise_an_error_when_field_has_not_changed(self, mock_redis, app):
+                def test_should_not_raise_an_error_when_field_has_not_changed(self, mock_redis, mock_feature, app):
                     # Given
                     booking_email = 'company@example.net'
                     provider = get_provider_by_local_class('AllocineStocks')

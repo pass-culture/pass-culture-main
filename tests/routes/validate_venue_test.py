@@ -26,9 +26,10 @@ class Get:
             db.session.refresh(venue)
             assert venue.isValidated
 
+        @patch('routes.validate.feature_queries.is_active', return_value=True)
         @patch('routes.validate.redis.add_venue_id')
         @clean_database
-        def expect_venue_id_to_be_added_to_redis(self, mock_redis_add_venue_id, app):
+        def expect_venue_id_to_be_added_to_redis(self, mock_redis, mock_feature, app):
             # Given
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -40,8 +41,8 @@ class Get:
 
             # Then
             assert response.status_code == 202
-            assert mock_redis_add_venue_id.call_count == 1
-            assert mock_redis_add_venue_id.call_args_list == [
+            assert mock_redis.call_count == 1
+            assert mock_redis.call_args_list == [
                 call(client=app.redis_client, venue_id=venue.id)
             ]
 

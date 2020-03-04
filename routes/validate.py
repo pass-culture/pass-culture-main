@@ -14,7 +14,8 @@ from domain.user_emails import send_validation_confirmation_email_to_pro, \
 from models import ApiErrors, \
     UserOfferer, Offerer, Venue
 from models.api_errors import ResourceNotFoundError, ForbiddenError
-from repository import user_offerer_queries, user_queries, repository
+from models.feature import FeatureToggle
+from repository import user_offerer_queries, user_queries, repository, feature_queries
 from repository.payment_queries import find_message_checksum
 from repository.user_offerer_queries import count_pro_attached_to_offerer
 from utils.config import IS_INTEGRATION
@@ -64,7 +65,8 @@ def validate_venue():
     check_venue_found(venue)
     venue.validationToken = None
     repository.save(venue)
-    redis.add_venue_id(client=app.redis_client, venue_id=venue.id)
+    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+        redis.add_venue_id(client=app.redis_client, venue_id=venue.id)
 
     try:
         send_venue_validation_confirmation_email(venue, send_raw_email)

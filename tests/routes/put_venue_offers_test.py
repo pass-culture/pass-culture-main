@@ -144,10 +144,10 @@ class Put:
             assert response.status_code == 200
             assert response.json[0]['stockAlertMessage'] == 'encore 22 places'
 
-
+        @patch('routes.venues.feature_queries.is_active', return_value=True)
         @patch('routes.venues.redis.add_venue_id')
         @clean_database
-        def when_activating_all_venue_offers_expect_venue_id_to_be_added_to_redis(self, mock_redis, app):
+        def when_activating_all_venue_offers_expect_venue_id_to_be_added_to_redis(self, mock_redis, mock_feature, app):
             # Given
             user = create_user(email='test@example.net')
             offerer = create_offerer()
@@ -172,7 +172,6 @@ class Put:
             # Then
             assert response.status_code == 200
             mock_redis.assert_called_once_with(client=app.redis_client, venue_id=venue.id)
-
 
         @clean_database
         def when_deactivating_all_venue_offers(self, app):
@@ -226,10 +225,13 @@ class Put:
             assert response.status_code == 200
             assert response.json[0]['stockAlertMessage'] == 'plus de places pour toutes les dates'
 
-
+        @patch('routes.venues.feature_queries.is_active', return_value=True)
         @patch('routes.venues.redis.add_venue_id')
         @clean_database
-        def when_deactivating_all_venue_offers_expect_venue_id_to_be_added_to_redis(self, mock_redis, app):
+        def when_deactivating_all_venue_offers_expect_venue_id_to_be_added_to_redis(self,
+                                                                                    mock_redis,
+                                                                                    mock_feature,
+                                                                                    app):
             # Given
             user = create_user(email='test@example.net')
             offerer = create_offerer()
@@ -251,4 +253,3 @@ class Put:
             # Then
             assert response.status_code == 200
             mock_redis.assert_called_once_with(client=app.redis_client, venue_id=venue.id)
-

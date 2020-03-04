@@ -7,11 +7,14 @@ from sqlalchemy import orm
 
 from algolia.infrastructure.worker import process_multi_indexing
 from models.db import db
-from repository.feature_queries import feature_cron_algolia_indexing_offers_by_offer_enabled, \
+from repository.feature_queries import \
+    feature_cron_algolia_indexing_offers_by_offer_enabled, \
     feature_cron_algolia_indexing_offers_by_venue_provider_enabled, \
-    feature_cron_algolia_indexing_offers_by_venue_enabled, feature_cron_algolia_deleting_expired_offers_enabled
+    feature_cron_algolia_indexing_offers_by_venue_enabled, \
+    feature_cron_algolia_deleting_expired_offers_enabled
 from scheduled_tasks.decorators import log_cron, cron_context
-from scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer, \
+from scripts.algolia_indexing.indexing import \
+    batch_indexing_offers_in_algolia_by_offer, \
     batch_indexing_offers_in_algolia_by_venue, \
     batch_deleting_expired_offers_in_algolia
 from utils.config import REDIS_URL

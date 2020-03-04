@@ -12,9 +12,10 @@ from utils.human_ids import dehumanize, humanize
 
 class Post:
     class Returns201:
+        @patch('routes.mediations.feature_queries.is_active', return_value=True)
         @patch('routes.stocks.redis.add_offer_id')
         @clean_database
-        def when_user_has_rights(self, mock_add_offer_id_to_redis, app):
+        def when_user_has_rights(self, mock_add_offer_id_to_redis, mock_feature, app):
             # Given
             user = create_user(email='test@email.fr')
             offerer = create_offerer()

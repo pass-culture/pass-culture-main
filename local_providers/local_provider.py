@@ -4,6 +4,7 @@ from collections import Iterator
 from datetime import datetime
 from pprint import pprint
 
+from models.feature import FeatureToggle
 from validation.models import entity_validator
 from connectors.redis import send_venue_provider_data_to_redis
 from connectors.thumb_storage import save_provider_thumb
@@ -13,7 +14,7 @@ from models import ApiErrors
 from models.db import Model, db
 from models.has_thumb_mixin import HasThumbMixin
 from models.local_provider_event import LocalProviderEvent, LocalProviderEventType
-from repository import repository
+from repository import repository, feature_queries
 from repository.providable_queries import get_last_update_for_provider
 from repository.provider_queries import get_provider_by_local_class
 from utils.logger import logger
@@ -225,7 +226,8 @@ class LocalProvider(Iterator):
             self.venue_provider.lastSyncDate = datetime.utcnow()
             self.venue_provider.syncWorkerId = None
             repository.save(self.venue_provider)
-            send_venue_provider_data_to_redis(self.venue_provider)
+            if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+                send_venue_provider_data_to_redis(self.venue_provider)
 
 
 def _save_same_thumb_from_thumb_count_to_index(pc_object: Model, thumb_index: int, image_as_bytes: bytes):

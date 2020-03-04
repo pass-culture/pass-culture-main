@@ -11,7 +11,7 @@ from domain.allocine import get_movies_showtimes, get_movie_poster
 from local_providers.local_provider import LocalProvider
 from local_providers.price_rule import AllocineStocksPriceRule
 from local_providers.providable_info import ProvidableInfo
-from models import VenueProvider, Offer, Product, EventType, Stock, Venue, AllocineVenueProvider
+from models import Offer, Product, EventType, Stock, Venue, AllocineVenueProvider
 from models.db import Model, db
 from models.local_provider_event import LocalProviderEventType
 from utils.date import get_dept_timezone

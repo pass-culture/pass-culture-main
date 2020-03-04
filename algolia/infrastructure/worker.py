@@ -4,8 +4,11 @@ from typing import Dict
 
 from redis import Redis
 
-from connectors.redis import get_venue_providers, get_number_of_venue_providers_currently_in_sync, \
-    add_venue_provider_currently_in_sync, delete_venue_providers
+from connectors.redis import \
+    get_venue_providers, \
+    get_number_of_venue_providers_currently_in_sync, \
+    add_venue_provider_currently_in_sync, \
+    delete_venue_providers
 from connectors.scalingo_api import run_process_in_one_off_container, ScalingoApiException
 from utils.logger import logger
 

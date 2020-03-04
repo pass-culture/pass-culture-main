@@ -42,8 +42,9 @@ class Patch:
             assert mediation.backText == data['backText']
 
         @clean_database
+        @patch('routes.mediations.feature_queries.is_active', return_value=True)
         @patch('routes.mediations.redis.add_offer_id')
-        def should_add_offer_id_to_redis_when_mediation_is_edited(self, mock_redis, app):
+        def should_add_offer_id_to_redis_when_mediation_is_edited(self, mock_redis, mock_feature, app):
             # given
             user = create_user()
             offerer = create_offerer()

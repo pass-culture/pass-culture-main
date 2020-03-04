@@ -10,6 +10,7 @@ from tests.model_creators.specific_creators import create_product_with_thing_typ
 
 
 @clean_database
+@patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
 @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attributes(stub_get_stocks_information,
@@ -54,6 +55,7 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attribut
 
 
 @clean_database
+@patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
 @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_update_1_stock_and_1_offer(stub_get_stocks_information, stub_redis, app):
@@ -90,6 +92,7 @@ def test_titelive_stock_provider_update_1_stock_and_1_offer(stub_get_stocks_info
 
 
 @clean_database
+@patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
 @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(stub_get_stocks_information,
@@ -126,6 +129,7 @@ def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(stub
 
 
 @clean_database
+@patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
 @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_create_2_stocks_and_2_offers_even_if_existing_offer_on_same_product(
@@ -169,6 +173,7 @@ def test_titelive_stock_provider_create_2_stocks_and_2_offers_even_if_existing_o
 
 
 @clean_database
+@patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
 @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_create_nothing_if_titelive_api_returns_no_results(stub_get_stocks_information,
@@ -200,6 +205,7 @@ def test_titelive_stock_provider_create_nothing_if_titelive_api_returns_no_resul
 
 
 @clean_database
+@patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
 @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_deactivate_offer_if_stock_available_equals_0(stub_get_stocks_information,
@@ -237,6 +243,7 @@ def test_titelive_stock_provider_deactivate_offer_if_stock_available_equals_0(st
 
 
 @clean_database
+@patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
 @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_iterates_over_pagination(stub_get_stocks_information, stub_redis, app):
@@ -282,6 +289,7 @@ def test_titelive_stock_provider_iterates_over_pagination(stub_get_stocks_inform
 
 
 @clean_database
+@patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
 @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_return_last_elements_as_last_seen_isbn(stub_get_stocks_information,
@@ -319,6 +327,7 @@ def test_titelive_stock_provider_return_last_elements_as_last_seen_isbn(stub_get
 
 
 @clean_database
+@patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
 @patch('local_providers.local_provider.send_venue_provider_data_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_should_activate_offer_when_stocks_are_refilled(stub_get_stocks_information, stub_redis, app):

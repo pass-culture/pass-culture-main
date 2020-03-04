@@ -8,11 +8,12 @@ from domain.stocks import delete_stock_and_cancel_bookings
 from domain.user_emails import send_batch_cancellation_emails_to_users, \
     send_offerer_bookings_recap_email_after_offerer_cancellation
 from models import Product
+from models.feature import FeatureToggle
 from models.mediation import Mediation
 from models.stock import Stock
 from models.user_offerer import RightsType
 from models.venue import Venue
-from repository import offerer_queries, repository
+from repository import offerer_queries, repository, feature_queries
 from repository.offer_queries import get_offer_by_id
 from repository.stock_queries import find_stocks_with_possible_filters
 from routes.serialization import as_dict
@@ -86,7 +87,8 @@ def create_stock():
     new_stock = Stock(from_dict=request_data)
     repository.save(new_stock)
 
-    redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
+    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+        redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
 
     return jsonify(as_dict(new_stock)), 201
 
@@ -119,7 +121,8 @@ def edit_stock(stock_id):
     stock.populate_from_dict(stock_data)
     repository.save(stock)
 
-    redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
+    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+        redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
     return jsonify(as_dict(stock)), 200
 
@@ -143,6 +146,7 @@ def delete_stock(id):
 
     repository.save(stock, *bookings)
 
-    redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
+    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+        redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
     return jsonify(as_dict(stock)), 200

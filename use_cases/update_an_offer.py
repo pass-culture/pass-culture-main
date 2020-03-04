@@ -1,7 +1,8 @@
 from flask import current_app as app
 
 from connectors import redis
-from repository import repository
+from models.feature import FeatureToggle
+from repository import repository, feature_queries
 from domain.offers import is_from_allocine
 from models import Offer
 from validation.routes.offers import check_edition_for_allocine_offer_is_valid, check_offer_is_editable
@@ -28,7 +29,8 @@ def _update_offer(offer: Offer, modifications) -> Offer:
     offer.update_with_product_data(modifications)
 
     repository.save(offer)
-    redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
+    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+        redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
 
     return offer
 
@@ -48,7 +50,8 @@ def _update_offer_for_allocine_offers(offer: Offer, modifications) -> Offer:
     offer.fieldsUpdated = new_updated_fields
 
     repository.save(offer)
-    redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
+    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+        redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
 
     return offer
 
@@ -58,7 +61,8 @@ def _update_offer_when_updating_isActive_field(offer: Offer, modifications) -> O
     offer.update_with_product_data(modifications)
 
     repository.save(offer)
-    redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
+    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+        redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
 
     return offer
 

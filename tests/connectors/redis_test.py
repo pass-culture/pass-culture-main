@@ -33,11 +33,8 @@ class RedisTest:
 
 
 class AddOfferIdTest:
-    @patch('connectors.redis.feature_queries.is_active', return_value=True)
     @patch('connectors.redis.redis')
-    def test_should_add_offer_id_when_algolia_feature_is_enabled(self,
-                                                                 mock_redis,
-                                                                 mock_feature_active):
+    def test_should_add_offer_id(self, mock_redis):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()
@@ -47,21 +44,6 @@ class AddOfferIdTest:
 
         # Then
         client.rpush.assert_called_once_with('offer_ids', 1)
-
-    @patch('connectors.redis.feature_queries.is_active', return_value=False)
-    @patch('connectors.redis.redis')
-    def test_should_not_add_offer_id_when_algolia_feature_is_disabled(self,
-                                                                      mock_redis,
-                                                                      mock_feature_active):
-        # Given
-        client = MagicMock()
-        client.rpush = MagicMock()
-
-        # When
-        add_offer_id(client=client, offer_id=1)
-
-        # Then
-        client.rpush.assert_not_called()
 
 
 class GetOfferIdsTest:
@@ -97,11 +79,8 @@ class DeleteOfferIdsTest:
 
 
 class AddVenueIdTest:
-    @patch('connectors.redis.feature_queries.is_active', return_value=True)
     @patch('connectors.redis.redis')
-    def test_should_add_venue_id_when_algolia_feature_is_enabled(self,
-                                                                 mock_redis,
-                                                                 mock_feature_active):
+    def test_should_add_venue_id_when_algolia_feature_is_enabled(self, mock_redis):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()
@@ -111,21 +90,6 @@ class AddVenueIdTest:
 
         # Then
         client.rpush.assert_called_once_with('venue_ids', 1)
-
-    @patch('connectors.redis.feature_queries.is_active', return_value=False)
-    @patch('connectors.redis.redis')
-    def test_should_not_add_venue_id_when_algolia_feature_is_disabled(self,
-                                                                      mock_redis,
-                                                                      mock_feature_active):
-        # Given
-        client = MagicMock()
-        client.rpush = MagicMock()
-
-        # When
-        add_venue_id(client=client, venue_id=1)
-
-        # Then
-        client.rpush.assert_not_called()
 
 
 class GetVenueIdsTest:
@@ -159,13 +123,9 @@ class DeleteVenueIdsTest:
 
 
 class AddVenueProviderTest:
-    @patch('connectors.redis.feature_queries.is_active', return_value=True)
     @patch('connectors.redis.redis')
     @clean_database
-    def test_should_add_venue_provider_when_algolia_feature_is_enabled(self,
-                                                                       mock_redis,
-                                                                       mock_feature_active,
-                                                                       app):
+    def test_should_add_venue_provider(self, mock_redis, app):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()
@@ -183,30 +143,6 @@ class AddVenueProviderTest:
         # Then
         client.rpush.assert_called_once_with('venue_providers',
                                              '{"id": 1, "providerId": 1, "venueId": 1}')
-
-    @patch('connectors.redis.feature_queries.is_active', return_value=False)
-    @patch('connectors.redis.redis')
-    @clean_database
-    def test_should_not_add_venue_provider_when_algolia_feature_is_disabled(self,
-                                                                            mock_redis,
-                                                                            mock_feature_active,
-                                                                            app):
-        # Given
-        client = MagicMock()
-        client.rpush = MagicMock()
-        provider = create_provider(idx=1, local_class='OpenAgenda', is_active=False, is_enable_for_pro=False)
-        user = create_user()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user=user, offerer=offerer)
-        venue = create_venue(idx=1, offerer=offerer)
-        venue_provider = create_venue_provider(idx=1, provider=provider, venue=venue)
-        repository.save(user_offerer, venue_provider)
-
-        # When
-        _add_venue_provider(client=client, venue_provider=venue_provider)
-
-        # Then
-        client.rpush.assert_not_called()
 
     @patch('connectors.redis._add_venue_provider')
     @patch('connectors.redis.redis')
@@ -424,7 +360,7 @@ class DeleteVenueProviderCurrentlyInSyncTest:
         client.hdel.assert_called_once_with('venue_providers_in_sync', 1)
 
 
-class GetNumbeOfVenueProvidersCurrentlyInSync:
+class GetNumberOfVenueProvidersCurrentlyInSync:
     @patch('connectors.redis.redis')
     def test_should_return_number_of_venue_providers_currently_in_sync(self, mock_redis, app):
         # Given

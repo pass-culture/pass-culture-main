@@ -170,7 +170,8 @@ def create_booking():
     check_expenses_limits(expenses, new_booking)
     repository.save(new_booking)
 
-    redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
+    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+        redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
     try:
         send_booking_recap_emails(new_booking, send_raw_email)
@@ -206,7 +207,8 @@ def cancel_booking(booking_id: int):
     booking.isCancelled = True
     repository.save(booking)
 
-    redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
+    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+        redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
 
     try:
         send_booking_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,

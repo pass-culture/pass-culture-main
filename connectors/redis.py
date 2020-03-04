@@ -7,9 +7,6 @@ import redis
 from redis import Redis
 from redis.client import Pipeline
 
-from models import VenueProvider
-from models.feature import FeatureToggle
-from repository import feature_queries
 from utils.config import REDIS_URL
 from utils.human_ids import humanize
 from utils.logger import logger
@@ -28,41 +25,38 @@ class RedisBucket(Enum):
 
 
 def add_offer_id(client: Redis, offer_id: int) -> None:
-    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
-        try:
-            client.rpush(RedisBucket.REDIS_LIST_OFFER_IDS_NAME.value, offer_id)
-            logger.debug(f'[REDIS] offer id "{humanize(offer_id)}" was added')
-        except redis.exceptions.RedisError as error:
-            logger.error(f'[REDIS] {error}')
+    try:
+        client.rpush(RedisBucket.REDIS_LIST_OFFER_IDS_NAME.value, offer_id)
+        logger.debug(f'[REDIS] offer id "{humanize(offer_id)}" was added')
+    except redis.exceptions.RedisError as error:
+        logger.error(f'[REDIS] {error}')
 
 
 def add_venue_id(client: Redis, venue_id: int) -> None:
-    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
-        try:
-            client.rpush(RedisBucket.REDIS_LIST_VENUE_IDS_NAME.value, venue_id)
-            logger.debug(f'[REDIS] venue id "{humanize(venue_id)}" was added')
-        except redis.exceptions.RedisError as error:
-            logger.error(f'[REDIS] {error}')
+    try:
+        client.rpush(RedisBucket.REDIS_LIST_VENUE_IDS_NAME.value, venue_id)
+        logger.debug(f'[REDIS] venue id "{humanize(venue_id)}" was added')
+    except redis.exceptions.RedisError as error:
+        logger.error(f'[REDIS] {error}')
 
 
-def send_venue_provider_data_to_redis(venue_provider: VenueProvider) -> None:
+def send_venue_provider_data_to_redis(venue_provider) -> None:
     redis_client = redis.from_url(url=REDIS_URL, decode_responses=True)
     _add_venue_provider(client=redis_client, venue_provider=venue_provider)
 
 
-def _add_venue_provider(client: Redis, venue_provider: VenueProvider) -> None:
-    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
-        try:
-            venue_provider_as_dict = {
-                'id': venue_provider.id,
-                'providerId': venue_provider.providerId,
-                'venueId': venue_provider.venueId
-            }
-            venue_provider_as_string = json.dumps(venue_provider_as_dict)
-            client.rpush(RedisBucket.REDIS_LIST_VENUE_PROVIDERS_NAME.value, venue_provider_as_string)
-            logger.debug('[REDIS] venue provider was added')
-        except redis.exceptions.RedisError as error:
-            logger.error(f'[REDIS] {error}')
+def _add_venue_provider(client: Redis, venue_provider) -> None:
+    try:
+        venue_provider_as_dict = {
+            'id': venue_provider.id,
+            'providerId': venue_provider.providerId,
+            'venueId': venue_provider.venueId
+        }
+        venue_provider_as_string = json.dumps(venue_provider_as_dict)
+        client.rpush(RedisBucket.REDIS_LIST_VENUE_PROVIDERS_NAME.value, venue_provider_as_string)
+        logger.debug('[REDIS] venue provider was added')
+    except redis.exceptions.RedisError as error:
+        logger.error(f'[REDIS] {error}')
 
 
 def get_offer_ids(client: Redis) -> List[int]:

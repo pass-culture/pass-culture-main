@@ -7,9 +7,10 @@ from connectors import redis
 from domain.admin_emails import send_venue_validation_email
 from domain.offers import update_is_active_status
 from domain.venues import is_algolia_indexing
+from models.feature import FeatureToggle
 from models.user_offerer import RightsType
 from models.venue import Venue
-from repository import repository
+from repository import repository, feature_queries
 from repository.venue_queries import find_by_managing_user
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize
@@ -72,7 +73,8 @@ def edit_venue(venueId):
     repository.save(venue)
 
     if is_algolia_indexing(previous_venue, request.json):
-        redis.add_venue_id(client=app.redis_client, venue_id=dehumanize(venueId))
+        if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+            redis.add_venue_id(client=app.redis_client, venue_id=dehumanize(venueId))
 
     return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 200
 
@@ -85,7 +87,8 @@ def activate_venue_offers(venueId):
     offers = venue.offers
     activated_offers = update_is_active_status(offers, True)
     repository.save(*activated_offers)
-    redis.add_venue_id(client=app.redis_client, venue_id=venue.id)
+    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+        redis.add_venue_id(client=app.redis_client, venue_id=venue.id)
     return jsonify([as_dict(offer, includes=OFFER_INCLUDES) for offer in activated_offers]), 200
 
 
@@ -97,5 +100,6 @@ def deactivate_venue_offers(venueId):
     offers = venue.offers
     deactivated_offers = update_is_active_status(offers, False)
     repository.save(*deactivated_offers)
-    redis.add_venue_id(client=app.redis_client, venue_id=venue.id)
+    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+        redis.add_venue_id(client=app.redis_client, venue_id=venue.id)
     return jsonify([as_dict(offer, includes=OFFER_INCLUDES) for offer in deactivated_offers]), 200
