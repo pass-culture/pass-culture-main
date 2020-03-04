@@ -146,6 +146,26 @@ class ProcessVenueProviderTest:
             venue_provider_id=1
         )
 
+    @patch('scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE', 3)
+    @patch('scripts.algolia_indexing.indexing.delete_venue_provider_currently_in_sync')
+    @patch('scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id',
+           return_value=Exception)
+    def test_should_delete_venue_provider_currently_in_sync_when_exception_is_raised(self,
+                                                                                     mock_get_paginated_offer_ids,
+                                                                                     mock_delete_venue_provider_currently_in_sync):
+        # Given
+        client = MagicMock()
+
+        # When
+        _process_venue_provider(client=client, venue_provider_id=1, provider_id='2', venue_id=5)
+
+        # Then
+        assert mock_get_paginated_offer_ids.call_count == 1
+        mock_delete_venue_provider_currently_in_sync.assert_called_once_with(
+            client=client,
+            venue_provider_id=1
+        )
+
 
 class BatchIndexingOffersInAlgoliaByVenueTest:
     @patch('scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE', 1)
