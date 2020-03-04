@@ -44,7 +44,7 @@ from validation.routes.bookings import check_already_booked, \
     check_offer_date, check_offer_is_active, \
     check_rights_to_get_bookings_csv, \
     check_stock_booking_limit_date, \
-    check_stock_venue_is_validated
+    check_stock_venue_is_validated, check_stock_is_bookable
 from validation.routes.users_authentifications import check_user_is_logged_in_or_email_is_provided, \
     login_or_api_key_required_v2
 from validation.routes.users_authorizations import \
@@ -149,11 +149,7 @@ def create_booking():
 
     check_can_book_free_offer(stock, current_user)
 
-    check_not_soft_deleted_stock(stock)
-    check_offer_date(stock)
-    check_offer_is_active(stock)
-    check_stock_booking_limit_date(stock)
-    check_stock_venue_is_validated(stock)
+    check_stock_is_bookable(stock)
 
     new_booking = Booking(from_dict={
         'stockId': stock_id,
@@ -166,7 +162,7 @@ def create_booking():
 
     bookings = booking_queries.find_active_bookings_by_user_id(current_user.id)
     expenses = get_expenses(bookings)
-    check_expenses_limits(expenses, new_booking)
+    check_expenses_limits(expenses, new_booking, stock)
     repository.save(new_booking)
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):

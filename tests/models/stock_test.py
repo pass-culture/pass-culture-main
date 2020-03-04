@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 
 import pytest
-from freezegun import freeze_time
 from pytest import approx
 
 from models import ApiErrors
@@ -255,7 +254,8 @@ class StockRemainingQuantityTest:
         stock = create_stock_from_offer(offer, available=2, price=0)
         repository.save(stock)
         user = create_user()
-        booking1 = create_booking(user=user, stock=stock, date_used=datetime.utcnow() - timedelta(days=1), is_cancelled=False,
+        booking1 = create_booking(user=user, stock=stock, date_used=datetime.utcnow() - timedelta(days=1),
+                                  is_cancelled=False,
                                   is_used=True, quantity=1)
         booking2 = create_booking(user=user, stock=stock, is_cancelled=False, is_used=False, quantity=1)
 
@@ -267,31 +267,101 @@ class StockRemainingQuantityTest:
 
 
 class IsBookableTest:
-    @freeze_time('2019-07-10')
-    def test_is_False_when_booking_limit_datetime_is_in_the_past(self):
+    def test_should_return_true_when_stock_requirements_are_fulfilled(self):
         # Given
-        limit_datetime = datetime(2019, 7, 9)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
 
         # When
-        stock = create_stock(booking_limit_datetime=limit_datetime)
+        stock = create_stock(offer=offer)
 
         # Then
-        assert stock.isBookable is False
+        assert stock.isBookable
 
-    @freeze_time('2019-07-10')
-    def test_is_True_when_booking_limit_datetime_is_in_the_future(self):
+    def test_should_return_false_when_booking_limit_datetime_has_passed(self):
         # Given
-        limit_datetime = datetime(2019, 7, 11)
+        limit_datetime = datetime.utcnow() - timedelta(days=2)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
 
         # When
-        stock = create_stock(booking_limit_datetime=limit_datetime)
+        stock = create_stock(offer=offer, booking_limit_datetime=limit_datetime)
 
         # Then
-        assert stock.isBookable is True
+        assert not stock.isBookable
 
-    def test_is_True_when_no_booking_datetime_limit(self):
+    def test_should_return_false_when_offerer_is_not_active(self):
+        # Given
+        offerer = create_offerer(is_active=False)
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+
         # When
-        stock = create_stock(booking_limit_datetime=None)
+        stock = create_stock(offer=offer)
 
         # Then
-        assert stock.isBookable is True
+        assert not stock.isBookable
+
+    def test_should_return_false_when_venue_is_not_validated(self):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer, validation_token='ZERTYUIO')
+        offer = create_offer_with_thing_product(venue)
+
+        # When
+        stock = create_stock(offer=offer)
+
+        # Then
+        assert not stock.isBookable
+
+    def test_should_return_false_when_offer_is_not_active(self):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, is_active=False)
+
+        # When
+        stock = create_stock(offer=offer)
+
+        # Then
+        assert not stock.isBookable
+
+    def test_should_return_false_when_stock_is_soft_deleted(self):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+
+        # When
+        stock = create_stock(offer=offer, is_soft_deleted=True)
+
+        # Then
+        assert not stock.isBookable
+
+    def test_should_return_false_when_offer_is_event_with_passed_begining_datetime(self):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        expired_stock_date = datetime.utcnow() - timedelta(days=2)
+
+        # When
+        stock = create_stock(offer=offer, beginning_datetime=expired_stock_date)
+
+        # Then
+        assert not stock.isBookable
+
+    def test_should_return_false_when_no_remaining_stock(self):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+
+        # When
+        stock = create_stock(offer=offer)
+        stock.remainingQuantity = 0
+
+        # Then
+        assert not stock.isBookable

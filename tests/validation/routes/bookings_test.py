@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
-from unittest.mock import Mock
 
 import pytest
 
@@ -24,7 +23,7 @@ from validation.routes.bookings import check_expenses_limits, \
     check_booking_is_not_used, \
     check_booking_token_is_usable, \
     check_booking_token_is_keepable, \
-    check_is_not_activation_booking
+    check_is_not_activation_booking, check_stock_is_bookable
 
 
 class CheckExpenseLimitsTest:
@@ -36,11 +35,10 @@ class CheckExpenseLimitsTest:
         }
         booking = Booking(from_dict={'stockId': humanize(123), 'amount': 11, 'quantity': 1})
         stock = create_booking_for_thing(product_type=ThingType.LIVRE_EDITION).stock
-        mocked_query = Mock(return_value=stock)
 
         # when
         with pytest.raises(ApiErrors) as api_errors:
-            check_expenses_limits(expenses, booking, find_stock=mocked_query)
+            check_expenses_limits(expenses, booking, stock)
 
         # then
         assert api_errors.value.errors['global'] == ['Le plafond de %s € pour les biens culturels ne vous permet pas ' \
@@ -54,11 +52,10 @@ class CheckExpenseLimitsTest:
         }
         booking = Booking(from_dict={'stockId': humanize(123), 'amount': 11, 'quantity': 1})
         stock = create_booking_for_thing(url='http://on.line', product_type=ThingType.JEUX_VIDEO).stock
-        mocked_query = Mock(return_value=stock)
 
         # when
         with pytest.raises(ApiErrors) as api_errors:
-            check_expenses_limits(expenses, booking, find_stock=mocked_query)
+            check_expenses_limits(expenses, booking, stock)
 
         # then
         assert api_errors.value.errors['global'] == ['Le plafond de %s € pour les offres numériques ne vous permet pas ' \
@@ -71,11 +68,11 @@ class CheckExpenseLimitsTest:
             'digital': {'max': SUBVENTION_DIGITAL_THINGS, 'actual': 90}
         }
         booking = Booking(from_dict={'stockId': humanize(123), 'amount': 11, 'quantity': 1})
-        mocked_query = Mock()
+        stock = create_booking_for_thing(url='http://on.line', product_type=ThingType.JEUX_VIDEO).stock
 
         # when
         try:
-            check_expenses_limits(expenses, booking, find_stock=mocked_query)
+            check_expenses_limits(expenses, booking, stock)
         except ApiErrors:
             # then
             pytest.fail('Booking for events must not raise any exceptions')
@@ -311,7 +308,8 @@ class CheckQuantityIsValidTest:
             check_quantity_is_valid(quantity, is_duo)
 
         # then
-        assert api_errors.value.errors['quantity'] == ["Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO."]
+        assert api_errors.value.errors['quantity'] == [
+            "Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO."]
 
     def test_raise_error_when_booking_quantity_is_bigger_than_one_and_offer_is_not_duo(self):
         # given
@@ -323,7 +321,8 @@ class CheckQuantityIsValidTest:
             check_quantity_is_valid(quantity, is_duo)
 
         # then
-        assert api_errors.value.errors['quantity'] == ["Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO."]
+        assert api_errors.value.errors['quantity'] == [
+            "Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO."]
 
     def test_does_not_raise_an_error_when_booking_quantity_is_one_and_offer_is_not_duo(self):
         # given
@@ -347,7 +346,8 @@ class CheckQuantityIsValidTest:
             check_quantity_is_valid(quantity, is_duo)
 
         # then
-        assert api_errors.value.errors['quantity'] == ["Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO."]
+        assert api_errors.value.errors['quantity'] == [
+            "Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO."]
 
     def test_does_not_raise_an_error_when_booking_quantity_is_one_and_offer_is_duo(self):
         # given
@@ -531,21 +531,20 @@ class CheckBookingIsKeepableTest:
             pytest.fail(
                 'Bookings token which are used and not cancelled and  have a beginning datetime in more than 72 hours should be keepable')
 
-
     def test_does_not_raise_error_if_not_cancelled_but_used_and_no_beginning_datetime(self, app):
-            # Given
-            booking = Booking()
-            booking.isUsed = True
-            booking.isCancelled = False
-            booking.stock = Stock()
-            booking.stock.beginningDatetime = None
+        # Given
+        booking = Booking()
+        booking.isUsed = True
+        booking.isCancelled = False
+        booking.stock = Stock()
+        booking.stock.beginningDatetime = None
 
-            # When
-            try:
-                check_booking_token_is_keepable(booking)
-            except ApiErrors:
-                pytest.fail(
-                    'Bookings token which are used nor cancelled and do not have a beginning datetime should be keepable')
+        # When
+        try:
+            check_booking_token_is_keepable(booking)
+        except ApiErrors:
+            pytest.fail(
+                'Bookings token which are used nor cancelled and do not have a beginning datetime should be keepable')
 
     def test_does_not_raise_error_if_neither_cancelled_but_used_and_beginning_datetime_in_less_than_72_hours(self, app):
         # Given
@@ -563,3 +562,20 @@ class CheckBookingIsKeepableTest:
             pytest.fail(
                 'Bookings token which are used and no cancelled and do not have a beginning datetime should be keepable')
 
+
+class CheckStockIsBookableTest:
+    def test_should_raise_error_when_stock_is_not_bookable(self):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, is_active=False)
+
+        # When
+        stock = create_stock(offer=offer)
+
+        # When
+        with pytest.raises(ApiErrors) as error:
+            check_stock_is_bookable(stock)
+
+        # Then
+        assert error.value.errors == {'stock': ["Ce stock n'est pas réservable"]}

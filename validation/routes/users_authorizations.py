@@ -55,7 +55,8 @@ def check_can_book_free_offer(stock, user):
         api_errors.add_error('cannotBookFreeOffers', 'Votre compte ne vous permet pas de faire de réservation.')
         raise api_errors
 
-def check_user_can_cancel_booking_by_id(is_user_cancellation,is_offerer_cancellation):
+
+def check_user_can_cancel_booking_by_id(is_user_cancellation, is_offerer_cancellation):
     forbidden_error = ForbiddenError()
     if not is_user_cancellation and not is_offerer_cancellation:
         forbidden_error.add_error(
@@ -63,4 +64,3 @@ def check_user_can_cancel_booking_by_id(is_user_cancellation,is_offerer_cancella
             "Vous n'avez pas les droits suffisants pour annuler cette réservation."
         )
         raise forbidden_error
-

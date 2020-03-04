@@ -5,8 +5,10 @@ from domain.bookings import BOOKING_CANCELLATION_DELAY
 from domain.expenses import is_eligible_to_digital_offers_capping, \
     is_eligible_to_physical_offers_capping
 from domain.user_activation import is_activation_booking
-from models import ApiErrors, Booking, RightsType, Stock, User
-from models.api_errors import ForbiddenError, ResourceGoneError
+from models import ApiErrors, Booking, RightsType
+from models import User
+from models.api_errors import ResourceGoneError, ForbiddenError
+from models.stock import Stock
 from repository import payment_queries, stock_queries, venue_queries
 from utils.rest import ensure_current_user_has_rights
 
@@ -53,7 +55,6 @@ def check_offer_is_active(stock: Stock) -> None:
         raise api_errors
 
 
-
 def check_already_booked(stock_already_booked_by_user: bool):
     if stock_already_booked_by_user:
         api_errors = ApiErrors()
@@ -87,7 +88,8 @@ def check_offer_date(stock: Stock) -> None:
         raise api_errors
 
 
-def check_expenses_limits(expenses: Dict, booking: Booking, find_stock: Callable[..., Stock] = stock_queries.find_stock_by_id) -> None:
+def check_expenses_limits(expenses: Dict, booking: Booking,
+                          find_stock: Callable[..., Stock] = stock_queries.find_stock_by_id) -> None:
     stock = find_stock(booking.stockId)
     offer = stock.resolvedOffer
 
@@ -115,7 +117,7 @@ def check_booking_token_is_usable(booking: Booking) -> None:
         resource_gone_error.add_error('booking', 'Cette réservation a été annulée')
         raise resource_gone_error
     event_starts_in_more_than_72_hours = booking.stock.beginningDatetime and (
-        booking.stock.beginningDatetime > (datetime.utcnow() + BOOKING_CANCELLATION_DELAY))
+            booking.stock.beginningDatetime > (datetime.utcnow() + BOOKING_CANCELLATION_DELAY))
     if event_starts_in_more_than_72_hours:
         errors = ForbiddenError()
         errors.add_error('beginningDatetime',
@@ -215,4 +217,11 @@ def check_booking_is_not_used(booking: Booking) -> None:
             'global',
             "Impossible d'annuler une réservation consommée"
         )
+        raise api_errors
+
+
+def check_stock_is_bookable(stock: Stock):
+    if not stock.isBookable:
+        api_errors = ApiErrors()
+        api_errors.add_error('stock', "Ce stock n'est pas réservable")
         raise api_errors

@@ -9,10 +9,9 @@ from tests.model_creators.generic_creators import create_booking, \
     create_mediation, \
     create_offerer, \
     create_recommendation, \
-    create_user, create_venue
-from tests.model_creators.specific_creators import create_event_occurrence, \
-    create_offer_with_event_product, create_offer_with_thing_product, \
-    create_stock_from_event_occurrence, create_stock_with_event_offer, \
+    create_user, create_venue, create_stock
+from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product, \
+    create_stock_with_event_offer, \
     create_stock_with_thing_offer
 from utils.human_ids import humanize
 
@@ -44,8 +43,7 @@ class Post:
 
             # Then
             assert response.status_code == 400
-            assert response.json['stockId'] == [
-                'Vous ne pouvez pas encore réserver cette offre, son lieu est en attente de validation']
+            assert response.json['stock'] == ["Ce stock n'est pas réservable"]
 
         @clean_database
         def when_booking_limit_datetime_has_passed(self, app):
@@ -73,8 +71,7 @@ class Post:
 
             # then
             assert response.status_code == 400
-            assert 'global' in response.json
-            assert 'date limite' in response.json['global'][0]
+            assert response.json['stock'] == ["Ce stock n'est pas réservable"]
 
         @clean_database
         def when_too_many_bookings(self, app):
@@ -103,8 +100,7 @@ class Post:
 
             # then
             assert response.status_code == 400
-            assert 'global' in response.json
-            assert 'quantité disponible' in response.json['global'][0]
+            assert response.json['stock'] == ["Ce stock n'est pas réservable"]
 
         @clean_database
         def when_user_cannot_book_free_offers_and_free_offer(self, app):
@@ -289,7 +285,7 @@ class Post:
 
             # Then
             assert response.status_code == 400
-            assert response.json['stockId'] == ["Cette offre a été retirée. Elle n'est plus valable."]
+            assert response.json['stock'] == ["Ce stock n'est pas réservable"]
 
         @clean_database
         def when_offerer_is_inactive(self, app):
@@ -314,7 +310,7 @@ class Post:
 
             # Then
             assert response.status_code == 400
-            assert response.json['stockId'] == ["Cette offre a été retirée. Elle n'est plus valable."]
+            assert response.json['stock'] == ["Ce stock n'est pas réservable"]
 
         @clean_database
         def when_stock_is_soft_deleted(self, app):
@@ -339,7 +335,7 @@ class Post:
 
             # Then
             assert response.status_code == 400
-            assert response.json['stockId'] == ["Cette date a été retirée. Elle n'est plus disponible."]
+            assert response.json['stock'] == ["Ce stock n'est pas réservable"]
 
         @clean_database
         def when_null_quantity(self, app):
@@ -428,9 +424,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, event_name='Event Name', event_type=EventType.CINEMA)
-            event_occurrence = create_event_occurrence(offer, beginning_datetime=five_days_ago,
-                                                       end_datetime=four_days_ago)
-            stock = create_stock_from_event_occurrence(event_occurrence)
+            stock = create_stock(offer=offer, beginning_datetime=five_days_ago, end_datetime=four_days_ago)
             create_deposit(user)
             repository.save(stock, user)
 
@@ -447,7 +441,7 @@ class Post:
 
             # Then
             assert response.status_code == 400
-            assert response.json['date'] == ["Cette offre n'est plus valable car sa date est passée"]
+            assert response.json['stock'] == ["Ce stock n'est pas réservable"]
 
         @clean_database
         def when_thing_booking_limit_datetime_has_expired(self, app):
@@ -473,7 +467,7 @@ class Post:
 
             # Then
             assert response.status_code == 400
-            assert response.json['global'] == ['La date limite de réservation de cette offre est dépassée']
+            assert response.json['stock'] == ["Ce stock n'est pas réservable"]
 
         @clean_database
         def when_already_booked_by_user(self, app):
@@ -706,6 +700,31 @@ class Post:
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer)
             create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
+            create_deposit(user)
+            repository.save(stock, user)
+
+            booking_json = {
+                'stockId': humanize(stock.id),
+                'recommendationId': None,
+                'quantity': 1
+            }
+
+            # When
+            response = TestClient(app.test_client()) \
+                .with_auth(user.email) \
+                .post('/bookings', json=booking_json)
+
+            # Then
+            assert response.status_code == 201
+
+        @clean_database
+        def when_stock_is_unlimited(self, app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            thing_offer = create_offer_with_thing_product(venue)
+            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, available=None)
             create_deposit(user)
             repository.save(stock, user)
 
