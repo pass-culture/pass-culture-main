@@ -23,13 +23,13 @@ describe('src | components | pages | search-algolia | Criteria | GeolocationCrit
 
   it('should set geolocation for search when "autour de moi" is selected', () => {
     // Given
-    const onGeolocationCriterionSelection = jest.fn()
+    const onCriterionSelection = jest.fn()
     props.isGeolocationEnabled.mockReturnValue(true)
     const wrapper = shallow(
       <GeolocationCriteria
         {...props}
-        activeGeolocationLabel="Autour de moi"
-        onGeolocationCriterionSelection={onGeolocationCriterionSelection}
+        activeCriterionLabel="Autour de moi"
+        onCriterionSelection={onCriterionSelection}
       />
     )
     const aroundMe = wrapper.find({
@@ -41,19 +41,19 @@ describe('src | components | pages | search-algolia | Criteria | GeolocationCrit
     aroundMeButton.simulate('click')
 
     // Then
-    expect(onGeolocationCriterionSelection).toHaveBeenCalledWith('AROUND_ME')
+    expect(onCriterionSelection).toHaveBeenCalledWith('AROUND_ME')
   })
 
   it('should not set geolocation and alert user to enable geolocation for search when "autour de moi" is selected but geolocation is disabled', () => {
     // Given
     jest.spyOn(window, 'alert').mockImplementationOnce(() => {})
-    const onGeolocationCriterionSelection = jest.fn()
+    const onCriterionSelection = jest.fn()
     props.isGeolocationEnabled.mockReturnValue(false)
     const wrapper = shallow(
       <GeolocationCriteria
         {...props}
-        activeGeolocationLabel="Autour de moi"
-        onGeolocationCriterionSelection={onGeolocationCriterionSelection}
+        activeCriterionLabel="Autour de moi"
+        onCriterionSelection={onCriterionSelection}
       />
     )
     const aroundMe = wrapper.find({
@@ -65,7 +65,7 @@ describe('src | components | pages | search-algolia | Criteria | GeolocationCrit
     aroundMeButton.simulate('click')
 
     // Then
-    expect(onGeolocationCriterionSelection).not.toHaveBeenCalled()
+    expect(onCriterionSelection).not.toHaveBeenCalled()
     expect(window.alert).toHaveBeenCalledWith(
       'Veuillez activer la géolocalisation pour voir les offres autour de vous.'
     )
@@ -73,12 +73,12 @@ describe('src | components | pages | search-algolia | Criteria | GeolocationCrit
 
   it('should not set geolocation for search when "Partout" is selected', () => {
     // Given
-    const onGeolocationCriterionSelection = jest.fn()
+    const onCriterionSelection = jest.fn()
     const wrapper = shallow(
       <GeolocationCriteria
         {...props}
-        activeGeolocationLabel="Partout"
-        onGeolocationCriterionSelection={onGeolocationCriterionSelection}
+        activeCriterionLabel="Partout"
+        onCriterionSelection={onCriterionSelection}
       />
     )
     const aroundMe = wrapper.find({
@@ -90,6 +90,6 @@ describe('src | components | pages | search-algolia | Criteria | GeolocationCrit
     aroundMeButton.simulate('click')
 
     // Then
-    expect(onGeolocationCriterionSelection).toHaveBeenCalledWith('EVERYWHERE')
+    expect(onCriterionSelection).toHaveBeenCalledWith('EVERYWHERE')
   })
 })

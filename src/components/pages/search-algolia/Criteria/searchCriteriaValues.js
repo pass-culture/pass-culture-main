@@ -4,34 +4,56 @@ export const GEOLOCATION_CRITERIA = {
 }
 
 export const CATEGORY_CRITERIA = {
-  FILM: { label: 'Films, séries, podcasts', icon: '', filters: ['Film'] },
-  CINEMA: { label: 'Cinéma', icon: '', filters: ['Cinéma', "Carte d'abonnement cinéma"] },
-  CONFERENCE: {
-    label: 'Conférences, rencontres',
-    icon: '',
-    filters: ['Conférences, rencontres et découverte des métiers'],
+  ALL: { label: 'Toutes les catégories', icon: 'ico-gem-stone', filters: [] },
+  CINEMA: {
+    label: 'Cinéma',
+    icon: 'ico-popcorn',
+    filters: ['Cinéma', "Carte d'abonnement cinéma"],
   },
+  EXHIBITION: {
+    label: 'Visites, expositions',
+    icon: 'ico-star-struck',
+    filters: ['Musée, arts visuels et patrimoine'],
+  },
+  MUSIC: {
+    label: 'Musique',
+    icon: 'ico-headphone',
+    filters: ['Concert ou festival', 'Abonnements concerts', 'Musique'],
+  },
+  SHOW: {
+    label: 'Spectacles',
+    icon: 'ico-studio-microphone',
+    filters: ['Spectacle', 'Abonnement spectacles'],
+  },
+  LESSON: {
+    label: 'Cours, ateliers',
+    icon: 'ico-performing-arts',
+    filters: ['Pratique artistique'],
+  },
+  BOOK: {
+    label: 'Livres',
+    icon: 'ico-books',
+    filters: ['Livre audio numérique', 'Livre ou carte lecture'],
+  },
+  FILM: { label: 'Films, séries, podcasts', icon: 'ico-film-frames', filters: ['Film'] },
+  PRESS: { label: 'Presse', icon: 'ico-newspaper', filters: ['Presse en ligne'] },
   VIDEO_GAME: {
     label: 'Jeux vidéos',
+    icon: 'ico-video-game',
     filters: [
       'Jeux - événement, rencontre ou concours',
       'Jeux - abonnements',
       'Jeu vidéo en ligne',
     ],
   },
-  BOOK: { label: 'Livres', icon: '', filters: ['Livre audio numérique', 'Livre ou carte lecture'] },
-  EXHIBITION: {
-    label: 'Visites, expositions',
-    icon: '',
-    filters: ['Musée, arts visuels et patrimoine'],
+  CONFERENCE: {
+    label: 'Conférences, rencontres',
+    icon: 'ico-busts-in-silhouette',
+    filters: ['Conférences, rencontres et découverte des métiers'],
   },
-  MUSIC: {
-    label: 'Musique',
-    icon: '',
-    filters: ['Concert ou festival', 'Abonnements concerts', 'Musique'],
+  INSTRUMENT: {
+    label: 'Instruments de musique',
+    icon: 'ico-drum',
+    filters: ['Instrument de musique'],
   },
-  LESSON: { label: 'Cours, ateliers', icon: '', filters: ['Pratique artistique'] },
-  PRESS: { label: 'Presse', icon: '', filters: ['Presse en ligne'] },
-  SHOW: { label: 'Spectacles', icon: '', filters: ['Spectacle', 'Abonnement spectacles'] },
-  INSTRUMENT: { label: 'Instruments de musique', icon: '', filters: ['Instrument de musique'] },
 }

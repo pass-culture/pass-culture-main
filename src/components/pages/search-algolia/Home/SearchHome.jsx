@@ -38,7 +38,7 @@ export class SearchHome extends PureComponent {
 
   render() {
     const { keywordsToSearch } = this.state
-    const { geolocationCriterion } = this.props
+    const { geolocationCriterion, categoryCriterion } = this.props
     return (
       <main className="search-page-algolia">
         <div className="sp-header-wrapper">
@@ -93,6 +93,12 @@ export class SearchHome extends PureComponent {
 
         <ul className="sp-filter-list">
           <SearchFilterListItem
+            icon={categoryCriterion.icon}
+            label="Je cherche"
+            linkTo="/recherche-offres/criteres-categorie"
+            selectedFilter={categoryCriterion.label}
+          />
+          <SearchFilterListItem
             icon={geolocationCriterion.params.icon}
             label="Où"
             linkTo="/recherche-offres/criteres-localisation"
@@ -110,6 +116,10 @@ export class SearchHome extends PureComponent {
 }
 
 SearchHome.propTypes = {
+  categoryCriterion: PropTypes.shape({
+    label: PropTypes.string.isRequired,
+    icon: PropTypes.string.isRequired,
+  }).isRequired,
   geolocationCriterion: PropTypes.shape({
     params: PropTypes.shape({
       label: PropTypes.string.isRequired,

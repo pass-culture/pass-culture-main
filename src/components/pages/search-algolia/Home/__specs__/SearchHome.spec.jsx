@@ -20,6 +20,10 @@ describe('components | pages | search-algolia | Home | SearchHome', () => {
           icon: 'ico-globe',
         },
       },
+      categoryCriterion: {
+        label: 'Toutes les catégories',
+        icon: 'ico-gem-stone',
+      },
     }
   })
 
