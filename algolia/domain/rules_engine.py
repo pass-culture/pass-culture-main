@@ -9,7 +9,7 @@ def is_eligible_for_indexing(offer: Offer) -> bool:
 
     venue = offer.venue
     offerer = venue.managingOfferer
-    not_deleted_stocks = offer.notDeletedStocks
+    not_deleted_stocks = offer.activeStocks
 
     if offerer.isActive \
             and offerer.validationToken is None \

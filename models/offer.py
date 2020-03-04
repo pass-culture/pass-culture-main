@@ -104,6 +104,7 @@ class Offer(PcObject,
                             backref=db.backref('criteria', lazy='dynamic'),
                             secondary='offer_criterion')
 
+    # TODO: delete or not ?
     def update_with_product_data(self, product_dict: dict):
         owning_offerer = self.product.owningOfferer
         if owning_offerer and owning_offerer == self.venue.managingOfferer:
@@ -117,11 +118,11 @@ class Offer(PcObject,
 
     @property
     def dateRange(self) -> DateTimes:
-        if ProductType.is_thing(self.type) or not self.notDeletedStocks:
+        if ProductType.is_thing(self.type) or not self.activeStocks:
             return DateTimes()
 
-        start = min([stock.beginningDatetime for stock in self.notDeletedStocks])
-        end = max([stock.endDatetime for stock in self.notDeletedStocks])
+        start = min([stock.beginningDatetime for stock in self.activeStocks])
+        end = max([stock.endDatetime for stock in self.activeStocks])
         return DateTimes(start, end)
 
     @property
@@ -177,7 +178,7 @@ class Offer(PcObject,
             .first()
 
     @property
-    def notDeletedStocks(self) -> List[Stock]:
+    def activeStocks(self) -> List[Stock]:
         return [stock for stock in self.stocks if not stock.isSoftDeleted]
 
     @property

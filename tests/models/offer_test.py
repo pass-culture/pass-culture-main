@@ -948,57 +948,55 @@ class ActiveMediationTest:
         assert offer.activeMediation.frontText == '3rd'
 
 
-def test_date_range_is_empty_if_offer_is_on_a_thing():
-    # given
-    offer = Offer()
-    offer.product = create_product_with_thing_type()
-    offer.stocks = []
+class DateRangeTest:
+    def test_date_range_is_empty_when_offer_is_a_thing(self):
+        # Given
+        offer = Offer()
+        offer.type = str(ThingType.LIVRE_EDITION)
+        offer.stocks = [create_stock(offer=offer)]
 
-    # then
-    assert offer.dateRange == DateTimes()
+        # When / Then
+        assert offer.dateRange == DateTimes()
 
+    def test_date_range_matches_the_occurrence_when_offer_has_only_one_stock(self):
+        # Given
+        offer = Offer()
+        offer.type = str(EventType.CINEMA)
+        offer.stocks = [
+            create_stock(offer=offer,
+                         beginning_datetime=two_days_ago,
+                         end_datetime=five_days_from_now)
+        ]
 
-def test_date_range_matches_the_occurrence_if_only_one_occurrence():
-    # given
-    offer = Offer()
-    offer.product = create_product_with_event_type()
-    offer.stocks = [
-        create_stock(offer=offer, beginning_datetime=two_days_ago,
-                     end_datetime=five_days_from_now)
-    ]
+        # When / Then
+        assert offer.dateRange == DateTimes(two_days_ago, five_days_from_now)
 
-    # then
-    assert offer.dateRange == DateTimes(two_days_ago, five_days_from_now)
+    def test_date_range_starts_at_first_beginning_date_time_and_ends_at_last_end_date_time(self):
+        # Given
+        offer = Offer()
+        offer.type = str(EventType.CINEMA)
+        offer.stocks = [
+            create_stock(offer=offer, beginning_datetime=two_days_ago,
+                         end_datetime=five_days_from_now),
+            create_stock(offer=offer, beginning_datetime=four_days_ago,
+                         end_datetime=five_days_from_now),
+            create_stock(offer=offer, beginning_datetime=four_days_ago,
+                         end_datetime=ten_days_from_now),
+            create_stock(offer=offer, beginning_datetime=two_days_ago,
+                         end_datetime=ten_days_from_now)
+        ]
 
+        # When / Then
+        assert offer.dateRange == DateTimes(four_days_ago, ten_days_from_now)
 
-def test_date_range_starts_at_first_beginning_date_time_and_ends_at_last_end_date_time():
-    # given
-    offer = Offer()
-    offer.product = create_product_with_event_type()
-    offer.stocks = [
-        create_stock(offer=offer, beginning_datetime=two_days_ago,
-                     end_datetime=five_days_from_now),
-        create_stock(offer=offer, beginning_datetime=four_days_ago,
-                     end_datetime=five_days_from_now),
-        create_stock(offer=offer, beginning_datetime=four_days_ago,
-                     end_datetime=ten_days_from_now),
-        create_stock(offer=offer, beginning_datetime=two_days_ago,
-                     end_datetime=ten_days_from_now)
-    ]
+    def test_date_range_is_empty_when_event_has_no_stocks(self):
+        # given
+        offer = Offer()
+        offer.type = str(EventType.CINEMA)
+        offer.stocks = []
 
-    # then
-    assert offer.dateRange == DateTimes(four_days_ago, ten_days_from_now)
-    assert offer.dateRange.datetimes == [four_days_ago, ten_days_from_now]
-
-
-def test_date_range_is_empty_if_event_has_no_stocks():
-    # given
-    offer = Offer()
-    offer.product = create_product_with_event_type()
-    offer.stocks = []
-
-    # then
-    assert offer.dateRange == DateTimes()
+        # then
+        assert offer.dateRange == DateTimes()
 
 
 class IsEditableTest:
@@ -1044,6 +1042,21 @@ class IsEditableTest:
 
         # then
         assert offer.isEditable is True
+
+
+class ActiveStocksTest:
+    def test_should_return_only_not_soft_deleted_stocks(self):
+        # Given
+        offer = Offer()
+        active_stock = create_stock(offer=offer, is_soft_deleted=False)
+        soft_deleted_stock = create_stock(offer=offer, is_soft_deleted=True)
+        offer.stocks = [
+            soft_deleted_stock,
+            active_stock,
+        ]
+
+        # When / Then
+        assert offer.activeStocks == [active_stock]
 
 
 class IsFromProviderTest:

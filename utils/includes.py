@@ -44,7 +44,6 @@ EVENT_INCLUDES = [
 
 OFFER_INCLUDES = [
     "isDigital",
-    "isDuo",
     "isEditable",
     "isEvent",
     'isFullyBooked',

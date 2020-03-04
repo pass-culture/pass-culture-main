@@ -24,7 +24,7 @@ class DatesHaveChanged(EligibilityRule):
         if not offer.isEvent:
             return False
 
-        offer_dates = list(map(lambda stock: datetime.timestamp(stock.beginningDatetime), offer.notDeletedStocks))
+        offer_dates = list(map(lambda stock: datetime.timestamp(stock.beginningDatetime), offer.activeStocks))
         indexed_offer_dates = offer_details['dates']
 
         return offer_dates != indexed_offer_dates
@@ -32,7 +32,7 @@ class DatesHaveChanged(EligibilityRule):
 
 class PricesHaveChanged(EligibilityRule):
     def apply(self, offer: Offer, offer_details: dict):
-        offer_prices = list(map(lambda stock: float(stock.price), offer.notDeletedStocks))
+        offer_prices = list(map(lambda stock: float(stock.price), offer.activeStocks))
         indexed_offer_prices = offer_details['prices']
 
         return offer_prices != indexed_offer_prices
