@@ -7,7 +7,7 @@
 
 .gc-item {
   height: rem(48px);
-  margin-top: rem(48px);
+  margin-top: rem(28px);
   display: flex;
   align-items: center;
 }
@@ -27,7 +27,7 @@
   margin: rem(0 20px);
   height: rem(40px);
   width: rem(40px);
-  background-color: $grey-light;
+  background-color: $grey-even-more-light;
   border-radius: 50%;
   display: flex;
   justify-content: center;
