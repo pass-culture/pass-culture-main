@@ -20,7 +20,7 @@ def upgrade():
         'iris_venues',
         sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
         sa.Column('irisId', sa.BigInteger),
-        sa.Column('venuesId', sa.BigInteger),
+        sa.Column('venueId', sa.BigInteger),
     )
 
 
