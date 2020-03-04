@@ -90,10 +90,36 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
           .type().name
       ).toStrictEqual('GeolocationCriteria')
     })
+
+    it('should render CategoryCriteria page when path is /recherche-offres/criteres-categorie', () => {
+      // Given
+      const wrapper = shallow(
+        <SearchAlgolia
+          history={createBrowserHistory()}
+          isGeolocationEnabled={jest.fn()}
+          location={{ pathname: 'recherche-offres/criteres-categorie' }}
+          match={{}}
+          query={{ clear: jest.fn(), change: jest.fn(), parse: jest.fn() }}
+          redirectToSearchMainPage={jest.fn()}
+        />
+      )
+
+      // When
+      const routes = wrapper.find(Route)
+
+      // Then
+      expect(routes.at(3).prop('path')).toBe('/recherche-offres/criteres-categorie')
+      expect(
+        routes
+          .at(3)
+          .children()
+          .type().name
+      ).toStrictEqual('CategoryCriteria')
+    })
   })
 
   describe('when rendering', () => {
-    it('should display "Autour de moi" if geolocation is enabled', () => {
+    it('should select "Autour de moi" if geolocation is enabled', () => {
       // Given
       const history = createBrowserHistory()
       history.location.pathname = '/recherche-offres'
@@ -117,7 +143,7 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
       expect(aroundMe).toHaveLength(1)
     })
 
-    it('should display "Partout" if geolocation is disabled', () => {
+    it('should select "Partout" if geolocation is disabled', () => {
       // Given
       const history = createBrowserHistory()
       history.location.pathname = '/recherche-offres'
@@ -136,6 +162,30 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
 
       // When
       const aroundMe = wrapper.findWhere(node => node.text() === 'Partout').first()
+
+      // Then
+      expect(aroundMe).toHaveLength(1)
+    })
+
+    it('should select "Toutes les catégories" by default', () => {
+      // Given
+      const history = createBrowserHistory()
+      history.location.pathname = '/recherche-offres'
+      const wrapper = mount(
+        <Router history={history}>
+          <SearchAlgolia
+            history={history}
+            isGeolocationEnabled={jest.fn()}
+            location={history.location}
+            match={{ params: {} }}
+            query={{ clear: jest.fn(), change: jest.fn(), parse: jest.fn() }}
+            redirectToSearchMainPage={jest.fn()}
+          />
+        </Router>
+      )
+
+      // When
+      const aroundMe = wrapper.findWhere(node => node.text() === 'Toutes les catégories').first()
 
       // Then
       expect(aroundMe).toHaveLength(1)

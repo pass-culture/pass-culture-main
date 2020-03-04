@@ -98,4 +98,48 @@ describe('fetchAlgolia', () => {
       page: pageRequested,
     })
   })
+
+  it('should call Algolia with filter parameter if one category is provided', () => {
+    // Given
+    const initIndex = jest.fn()
+    algoliasearch.mockReturnValue({ initIndex })
+    const search = jest.fn()
+    initIndex.mockReturnValue({ search })
+    const searchedKeywords = 'searched keywords'
+    const pageRequested = 0
+    const geolocation = null
+    const categoriesFilter = ['Pratique artistique']
+
+    // When
+    fetchAlgolia(searchedKeywords, pageRequested, geolocation, categoriesFilter)
+
+    // Then
+    expect(search).toHaveBeenCalledWith({
+      query: searchedKeywords,
+      page: pageRequested,
+      filters: 'offer.label:"Pratique artistique"',
+    })
+  })
+
+  it('should call Algolia with formatted filter parameter if multiple categories are provided', () => {
+    // Given
+    const initIndex = jest.fn()
+    algoliasearch.mockReturnValue({ initIndex })
+    const search = jest.fn()
+    initIndex.mockReturnValue({ search })
+    const searchedKeywords = 'searched keywords'
+    const pageRequested = 0
+    const geolocation = null
+    const categoriesFilter = ['Spectacle', 'Abonnement spectacles']
+
+    // When
+    fetchAlgolia(searchedKeywords, pageRequested, geolocation, categoriesFilter)
+
+    // Then
+    expect(search).toHaveBeenCalledWith({
+      query: searchedKeywords,
+      page: pageRequested,
+      filters: 'offer.label:"Spectacle" OR offer.label:"Abonnement spectacles"',
+    })
+  })
 })

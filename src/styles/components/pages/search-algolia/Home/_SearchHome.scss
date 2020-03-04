@@ -156,3 +156,8 @@
   align-items: center;
   flex-direction: column;
 }
+
+.search-criteria-separator {
+  border-top: 1px solid $grey-even-more-light;
+  width: 90%;
+}

@@ -205,7 +205,7 @@ describe('components | SearchResults', () => {
           shallow(<SearchResults {...props} />)
 
           // then
-          expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null)
+          expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, [])
         })
 
         it('should fetch data using page 0 when page query param value is negative', async () => {
@@ -228,7 +228,7 @@ describe('components | SearchResults', () => {
           await shallow(<SearchResults {...props} />)
 
           // then
-          expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null)
+          expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, [])
         })
 
         it('should fetch data using page 0 when page query param value is not a valid value', async () => {
@@ -251,7 +251,7 @@ describe('components | SearchResults', () => {
           await shallow(<SearchResults {...props} />)
 
           // then
-          expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null)
+          expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, [])
         })
       })
 
@@ -269,7 +269,7 @@ describe('components | SearchResults', () => {
           )
           parse.mockReturnValue({
             'mots-cles': 'une librairie',
-            page: 'invalid value',
+            page: 1,
           })
           props.isSearchAroundMe = true
           props.geolocation = {
@@ -281,10 +281,41 @@ describe('components | SearchResults', () => {
           await shallow(<SearchResults {...props} />)
 
           // then
-          expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, {
-            latitude: 40.1,
-            longitude: 41.1,
+          expect(fetchAlgolia).toHaveBeenCalledWith(
+            'une librairie',
+            0,
+            {
+              latitude: 40.1,
+              longitude: 41.1,
+            },
+            []
+          )
+        })
+      })
+
+      describe('when filter is provided', () => {
+        it('should fetch data using provided filter', async () => {
+          // given
+          fetchAlgolia.mockReturnValue(
+            new Promise(resolve => {
+              resolve({
+                hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+                nbHits: 2,
+                page: 0,
+              })
+            })
+          )
+          parse.mockReturnValue({
+            'mots-cles': 'une librairie',
+            page: 1,
           })
+          props.categoriesFilter = ['Cinéma']
+
+          // when
+          await shallow(<SearchResults {...props} />)
+
+          // then
+          expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, ['Cinéma'])
         })
       })
     })
@@ -373,7 +404,7 @@ describe('components | SearchResults', () => {
       })
 
       // then
-      expect(fetchAlgolia).toHaveBeenCalledWith('un livre très cherché', 0, null)
+      expect(fetchAlgolia).toHaveBeenCalledWith('un livre très cherché', 0, null, [])
     })
 
     it('should display search keywords and number of results when 0 result', async () => {

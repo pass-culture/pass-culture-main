@@ -6,7 +6,7 @@ import {
   WEBAPP_ALGOLIA_SEARCH_API_KEY,
 } from '../../../../utils/config'
 
-export const fetchAlgolia = (keywords = '', page = 0, geolocation) => {
+export const fetchAlgolia = (keywords = '', page = 0, geolocation, categoriesFilter = []) => {
   if (!keywords) {
     return
   }
@@ -15,6 +15,12 @@ export const fetchAlgolia = (keywords = '', page = 0, geolocation) => {
   const searchParameters = {
     query: keywords,
     page: page,
+  }
+
+  if (categoriesFilter.length > 0) {
+    searchParameters.filters = categoriesFilter
+      .map(category => `offer.label:"${category}"`)
+      .join(' OR ')
   }
 
   if (geolocation) {

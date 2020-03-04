@@ -86,12 +86,13 @@ class SearchResults extends PureComponent {
   }
 
   fetchOffers = (keywords, currentPage) => {
-    const { geolocation, isSearchAroundMe } = this.props
+    const { geolocation, isSearchAroundMe, categoriesFilter } = this.props
     this.setState({
       isLoading: true,
     })
+    const geolocationCoordinates = isSearchAroundMe ? geolocation : null
 
-    fetchAlgolia(keywords, currentPage, isSearchAroundMe ? geolocation : null)
+    fetchAlgolia(keywords, currentPage, geolocationCoordinates, categoriesFilter)
       .then(offers => {
         const { results } = this.state
         const { hits, nbHits, nbPages } = offers
@@ -269,11 +270,13 @@ class SearchResults extends PureComponent {
 }
 
 SearchResults.defaultProps = {
+  categoriesFilter: [],
   geolocation: { longitude: null, latitude: null },
   isSearchAroundMe: false,
 }
 
 SearchResults.propTypes = {
+  categoriesFilter: PropTypes.arrayOf(PropTypes.string),
   geolocation: PropTypes.shape({
     latitude: PropTypes.number,
     longitude: PropTypes.number,

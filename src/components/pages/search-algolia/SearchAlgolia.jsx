@@ -69,6 +69,7 @@ class SearchAlgolia extends PureComponent {
         </Route>
         <Route path="/recherche-offres/resultats">
           <SearchResults
+            categoriesFilter={categoryCriterion.filters}
             geolocation={geolocation}
             isSearchAroundMe={geolocationCriterion.isSearchAroundMe}
             location={location}

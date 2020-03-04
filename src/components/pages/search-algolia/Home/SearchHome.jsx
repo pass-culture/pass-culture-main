@@ -98,6 +98,7 @@ export class SearchHome extends PureComponent {
             linkTo="/recherche-offres/criteres-categorie"
             selectedFilter={categoryCriterion.label}
           />
+          <span className="search-criteria-separator" />
           <SearchFilterListItem
             icon={geolocationCriterion.params.icon}
             label="Où"
