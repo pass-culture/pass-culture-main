@@ -2,13 +2,15 @@ from datetime import datetime, timedelta
 from hashlib import sha256
 from typing import Optional
 
+from geoalchemy2.shape import from_shape
+
 from local_providers.price_rule import PriceRule
 from models import ApiKey, BankInformation, BeneficiaryImport, \
     BeneficiaryImportStatus, Booking, Criterion, Deposit, \
     Email, Favorite, ImportStatus, Mediation, Offer, Offerer, \
     Payment, PaymentMessage, PaymentStatus, Provider, \
     Recommendation, RightsType, Stock, ThingType, User, \
-    UserOfferer, Venue, AllocineVenueProviderPriceRule, AllocinePivot, VenueProvider
+    UserOfferer, Venue, AllocineVenueProviderPriceRule, AllocinePivot, VenueProvider, IrisFrance
 from models.allocine_venue_provider import AllocineVenueProvider
 from models.email import EmailStatus
 from domain.payments import PaymentDetails
@@ -593,3 +595,11 @@ def create_payment_status(payment: Payment, detail: str = None, status: Transact
     payment_status.status = status
     payment_status.date = date
     return payment_status
+
+
+def create_iris(centroid, polygon):
+    iris = IrisFrance()
+    iris.centroid = from_shape(centroid, srid=4326)
+    iris.irisCode = '123456789'
+    iris.shape = from_shape(polygon, srid=4326)
+    return iris

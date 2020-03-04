@@ -19,8 +19,8 @@ def upgrade():
     op.create_table(
         'iris_venues',
         sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column('irisId', sa.BigInteger),
-        sa.Column('venueId', sa.BigInteger),
+        sa.Column('irisId', sa.BigInteger, nullable=False),
+        sa.Column('venueId', sa.BigInteger, nullable=False),
     )
 
 

@@ -16,6 +16,7 @@ from models.favorite import Favorite
 from models.feature import Feature
 from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
+from models.iris_venues import IrisVenues
 from models.local_provider_event import LocalProviderEvent
 from models.mediation import Mediation
 from models.needs_validation_mixin import NeedsValidationMixin
@@ -66,6 +67,7 @@ __all__ = (
     'HasAddressMixin',
     'HasThumbMixin',
     'IrisFrance',
+    'IrisVenues',
     'BookFormat',
     'NeedsValidationMixin',
     'ProvidableMixin',
@@ -126,6 +128,7 @@ models = (
     Payment,
     PaymentStatus,
     IrisFrance,
+    IrisVenues
 )
 
 materialized_views = (
