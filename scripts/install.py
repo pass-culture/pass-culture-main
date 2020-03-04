@@ -34,5 +34,4 @@ def install_scripts():
     import scripts.install_data
     import scripts.payment.banishment_command
     import scripts.payment.generate_payments
-    import scripts.algolia_indexing.process_venue_provider_offers_for_algolia
     import scripts.algolia_indexing.commands
