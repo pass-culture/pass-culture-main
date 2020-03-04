@@ -2,7 +2,7 @@ const Autoprefixer = require('autoprefixer')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const getClientEnvironment = require('./env')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const HtmlCriticalWebpackPlugin = require("html-critical-webpack-plugin")
+const HtmlCriticalWebpackPlugin = require('html-critical-webpack-plugin')
 const InterpolateHtmlPlugin = require('react-dev-utils/InterpolateHtmlPlugin')
 const ManifestPlugin = require('webpack-manifest-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
@@ -33,6 +33,14 @@ module.exports = {
     rules: [
       {
         oneOf: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 10000,
+              name: 'static/media/[name].[hash:8].[ext]',
+            },
+            test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.ttf$/],
+          },
           {
             exclude: process.env.HAS_WORKERS && /index\.(.*)\.worker\.js$/,
             include: paths.appSrc,
@@ -76,12 +84,12 @@ module.exports = {
           .concat(
             process.env.HAS_WORKERS
               ? [
-                  {
-                    loader: 'worker-loader',
-                    options: { inline: true },
-                    test: /index\.(.*)\.worker\.js$/,
-                  },
-                ]
+                {
+                  loader: 'worker-loader',
+                  options: { inline: true },
+                  test: /index\.(.*)\.worker\.js$/,
+                },
+              ]
               : []
           )
           .concat([
@@ -177,7 +185,8 @@ module.exports = {
       src: 'index.html',
       dest: 'index.html',
       inline: true,
-      minify: true,})
+      minify: true,
+    })
   ],
   resolve: {
     alias: {
