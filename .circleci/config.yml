@@ -65,7 +65,7 @@ jobs:
       - image: circleci/python:3.7.6
         environment:
           DATABASE_URL: postgresql://pass_culture:passq@postgres-product:5432/pass_culture
-      - image: circleci/postgres:11.6-alpine
+      - image: circleci/postgres:11.6-postgis
         name: postgres-product
         environment:
           POSTGRES_USER: pass_culture
