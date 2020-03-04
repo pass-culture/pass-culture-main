@@ -31,10 +31,9 @@ class SearchResults extends PureComponent {
     const { query } = this.props
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles']
-    const page = queryParams['page']
-    const currentPage = page ? parseInt(page) : 0
 
     if (keywords != null) {
+      const { currentPage } = this.state
       this.handleFetchOffers(keywords, currentPage)
     } else {
       query.clear()
@@ -87,7 +86,7 @@ class SearchResults extends PureComponent {
   }
 
   fetchOffers = (keywords, currentPage) => {
-    const { geolocation, query, isSearchAroundMe } = this.props
+    const { geolocation, isSearchAroundMe } = this.props
     this.setState({
       isLoading: true,
     })
@@ -104,10 +103,6 @@ class SearchResults extends PureComponent {
           results: [...results, ...hits],
           searchedKeywords: keywords,
           totalPagesNumber: nbPages,
-        })
-        query.change({
-          'mots-cles': keywords,
-          page: currentPage + 1,
         })
       })
       .catch(() => {
@@ -168,7 +163,9 @@ class SearchResults extends PureComponent {
 
     return (
       <main className="search-page-algolia">
-        <Route path="/recherche-offres/resultats/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?">
+        <Route
+          path="/recherche-offres/resultats/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+        >
           <HeaderContainer
             closeTitle="Retourner à la page découverte"
             closeTo="/decouverte"
@@ -231,9 +228,9 @@ class SearchResults extends PureComponent {
           {isLoading && <Spinner label="Recherche en cours" />}
           <h1 className="sp-results-title">
             {searchedKeywords &&
-              `"${searchedKeywords}" : ${resultsCount} ${
-                resultsCount > 1 ? 'résultats' : 'résultat'
-              }`}
+            `"${searchedKeywords}" : ${resultsCount} ${
+              resultsCount > 1 ? 'résultats' : 'résultat'
+            }`}
           </h1>
           {results.length > 0 && (
             <InfiniteScroll

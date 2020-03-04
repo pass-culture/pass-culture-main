@@ -153,7 +153,6 @@ describe('components | SearchResults', () => {
         expect(results).toHaveLength(0)
         expect(searchInput.prop('value')).toBe('une librairie')
         expect(resultTitle).toHaveLength(1)
-        expect(props.query.change).toHaveBeenCalledWith({ 'mots-cles': 'une librairie', page: 1 })
       })
 
       it('should fill search input and display keywords, number of results when results are found', async () => {
@@ -183,30 +182,6 @@ describe('components | SearchResults', () => {
         expect(results).toHaveLength(2)
         expect(searchInput.prop('value')).toBe('une librairie')
         expect(resultTitle).toHaveLength(1)
-      })
-
-      describe('when no page query param', () => {
-        it('should set page query param to 1', async () => {
-          // given
-          fetchAlgolia.mockReturnValue(
-            new Promise(resolve => {
-              resolve({
-                hits: [],
-                nbHits: 0,
-                page: 0,
-              })
-            })
-          )
-          parse.mockReturnValue({
-            'mots-cles': 'une librairie',
-          })
-
-          // when
-          await shallow(<SearchResults {...props} />)
-
-          // then
-          expect(props.query.change).toHaveBeenCalledWith({ 'mots-cles': 'une librairie', page: 1 })
-        })
       })
 
       describe('when page query param is provided', () => {
@@ -538,40 +513,6 @@ describe('components | SearchResults', () => {
       expect(results).toHaveLength(1)
       expect(results.at(0).prop('geolocation')).toStrictEqual({ latitude: 40.1, longitude: 41.1 })
       expect(results.at(0).prop('result')).toStrictEqual(offer)
-    })
-
-    it('should add query params in url when fetching data', async () => {
-      // given
-      const offer = { objectID: 'AE', offer: { name: 'Livre de folie' } }
-      fetchAlgolia.mockReturnValue(
-        new Promise(resolve => {
-          resolve({
-            hits: [offer],
-            page: 0,
-            nbHits: 1,
-            nbPages: 0,
-            hitsPerPage: 2,
-            processingTimeMS: 1,
-            query: 'librairie',
-            params: "query='librairie'&hitsPerPage=2",
-          })
-        })
-      )
-      const wrapper = shallow(<SearchResults {...props} />)
-      const form = wrapper.find('form')
-
-      // when
-      await form.simulate('submit', {
-        target: {
-          keywords: {
-            value: 'librairie',
-          },
-        },
-        preventDefault: jest.fn(),
-      })
-
-      // then
-      expect(props.query.change).toHaveBeenCalledWith({ 'mots-cles': 'librairie', page: 1 })
     })
 
     it('should clear previous results and page number when searching with new keywords', async () => {

@@ -12,8 +12,10 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
         <SearchAlgolia
           history={createBrowserHistory()}
           isGeolocationEnabled={jest.fn()}
-          location={{ pathname: 'recherche-offres' }}
-          match={{}}
+          location={{ pathname: 'recherche-offres', search: '' }}
+          match={{
+            params: {}
+          }}
           query={{ clear: jest.fn(), change: jest.fn(), parse: jest.fn() }}
           redirectToSearchMainPage={jest.fn()}
         />
@@ -39,8 +41,10 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
         <SearchAlgolia
           history={createBrowserHistory()}
           isGeolocationEnabled={jest.fn()}
-          location={{ pathname: 'recherche-offres/resultats' }}
-          match={{}}
+          location={{ pathname: 'recherche-offres/resultats', search: '' }}
+          match={{
+            params: {}
+          }}
           query={{ clear: jest.fn(), change: jest.fn(), parse: jest.fn() }}
           redirectToSearchMainPage={jest.fn()}
         />
@@ -65,8 +69,10 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
         <SearchAlgolia
           history={createBrowserHistory()}
           isGeolocationEnabled={jest.fn()}
-          location={{ pathname: 'recherche-offres/criteres-localisation' }}
-          match={{}}
+          location={{ pathname: 'recherche-offres/criteres-localisation', search: '' }}
+          match={{
+            params: {}
+          }}
           query={{ clear: jest.fn(), change: jest.fn(), parse: jest.fn() }}
           redirectToSearchMainPage={jest.fn()}
         />
