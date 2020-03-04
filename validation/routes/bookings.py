@@ -18,22 +18,13 @@ def check_has_stock_id(stock_id: int) -> None:
         raise api_errors
 
 
-def check_has_quantity(quantity: int) -> None:
-    if quantity is None or quantity <= 0:
-        api_errors = ApiErrors()
-        api_errors.add_error('quantity', 'Vous devez préciser une quantité pour la réservation')
-        raise api_errors
+def check_quantity_is_valid(quantity: int, is_duo: bool):
+    is_valid_quantity_for_duo_offer = (quantity in (1, 2) and is_duo)
+    is_valid_quantity_for_solo_offer = (quantity == 1 and not is_duo)
 
-
-def check_booking_quantity_limit(quantity: int, is_duo: bool) -> None:
-    if quantity > 1 and is_duo is False:
+    if not is_valid_quantity_for_duo_offer and not is_valid_quantity_for_solo_offer:
         api_errors = ApiErrors()
-        api_errors.add_error('quantity', "Vous ne pouvez pas réserver plus d'une offre à la fois")
-        raise api_errors
-
-    if quantity > 2 and is_duo:
-        api_errors = ApiErrors()
-        api_errors.add_error('quantity', "Vous ne pouvez pas réserver plus de deux places s'il s'agit d'une offre DUO")
+        api_errors.add_error('quantity', "Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO.")
         raise api_errors
 
 
@@ -62,9 +53,9 @@ def check_offer_is_active(stock: Stock) -> None:
         raise api_errors
 
 
-def check_already_booked(user_bookings: Booking) -> None:
-    already_booked = len(user_bookings) > 0
-    if already_booked:
+
+def check_already_booked(stock_already_booked_by_user: bool):
+    if stock_already_booked_by_user:
         api_errors = ApiErrors()
         api_errors.add_error('stockId', "Cette offre a déja été reservée par l'utilisateur")
         raise api_errors

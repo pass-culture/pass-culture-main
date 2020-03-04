@@ -130,12 +130,12 @@ def find_from_recommendation(recommendation: Recommendation, user: User) -> List
         .all()
 
 
-def find_for_stock_and_user(stock: Stock, current_user: User) -> List[Booking]:
+def is_stock_already_booked_by_user(stock: Stock, current_user: User) -> bool:
     return Booking.query \
-        .filter_by(userId=current_user.id) \
-        .filter_by(isCancelled=False) \
-        .filter_by(stockId=stock.id) \
-        .all()
+               .filter_by(userId=current_user.id) \
+               .filter_by(isCancelled=False) \
+               .filter_by(stockId=stock.id) \
+               .count() > 0
 
 
 def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:

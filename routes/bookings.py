@@ -33,12 +33,12 @@ from validation.routes.bookings import check_already_booked, \
     check_booking_is_cancellable_by_user, \
     check_booking_is_not_already_cancelled, \
     check_booking_is_not_used, \
-    check_booking_quantity_limit, \
+    check_quantity_is_valid, \
     check_booking_token_is_keepable, \
     check_booking_token_is_usable, \
     check_email_and_offer_id_for_anonymous_user, \
     check_existing_stock, check_expenses_limits, \
-    check_has_quantity, check_has_stock_id, \
+    check_has_stock_id, \
     check_is_not_activation_booking, \
     check_not_soft_deleted_stock, \
     check_offer_date, check_offer_is_active, \
@@ -137,24 +137,23 @@ def create_booking():
     stock_id = request.json.get('stockId')
     recommendation_id = request.json.get('recommendationId')
     quantity = request.json.get('quantity')
-    is_duo = request.json.get('isDuo')
+    check_has_stock_id(stock_id)
     stock = Stock.query.filter_by(id=dehumanize(stock_id)).first()
+    check_existing_stock(stock)
 
-    try:
-        check_has_stock_id(stock_id)
-        check_existing_stock(stock)
-        user_bookings = booking_queries.find_for_stock_and_user(stock, current_user)
-        check_already_booked(user_bookings)
-        check_has_quantity(quantity)
-        check_booking_quantity_limit(quantity, is_duo)
-        check_offer_date(stock)
-        check_not_soft_deleted_stock(stock)
-        check_can_book_free_offer(stock, current_user)
-        check_offer_is_active(stock)
-        check_stock_booking_limit_date(stock)
-        check_stock_venue_is_validated(stock)
-    except ApiErrors as api_errors:
-        return jsonify(api_errors.errors), 400
+    stock_already_booked_by_user = booking_queries.is_stock_already_booked_by_user(stock, current_user)
+    check_already_booked(stock_already_booked_by_user)
+
+    offer_is_duo = stock.offer.isDuo
+    check_quantity_is_valid(quantity, offer_is_duo)
+
+    check_can_book_free_offer(stock, current_user)
+
+    check_not_soft_deleted_stock(stock)
+    check_offer_date(stock)
+    check_offer_is_active(stock)
+    check_stock_booking_limit_date(stock)
+    check_stock_venue_is_validated(stock)
 
     new_booking = Booking(from_dict={
         'stockId': stock_id,

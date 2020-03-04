@@ -53,7 +53,9 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer=offerer)
             thing_offer = create_offer_with_thing_product(venue)
-            expired_stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=0, booking_limit_datetime=datetime.utcnow() - timedelta(seconds=1))
+            expired_stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=0,
+                                                          booking_limit_datetime=datetime.utcnow() - timedelta(
+                                                              seconds=1))
             user = create_user()
             recommendation = create_recommendation(thing_offer, user)
             repository.save(expired_stock)
@@ -189,7 +191,8 @@ class Post:
 
             # Then
             assert response.status_code == 400
-            assert response.json['global'] == ['Le plafond de 200 € pour les biens culturels ne vous permet pas de réserver cette offre.']
+            assert response.json['global'] == [
+                'Le plafond de 200 € pour les biens culturels ne vous permet pas de réserver cette offre.']
 
         @clean_database
         def when_missing_stock_id(self, app):
@@ -234,7 +237,8 @@ class Post:
 
             # Then
             assert response.status_code == 400
-            assert response.json['quantity'] == ['Vous devez préciser une quantité pour la réservation']
+            assert response.json['quantity'] == [
+                "Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO."]
 
         @clean_database
         def when_negative_quantity(self, app):
@@ -259,7 +263,8 @@ class Post:
 
             # Then
             assert response.status_code == 400
-            assert response.json['quantity'] == ['Vous devez préciser une quantité pour la réservation']
+            assert response.json['quantity'] == [
+                "Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO."]
 
         @clean_database
         def when_offer_is_inactive(self, app):
@@ -359,7 +364,8 @@ class Post:
 
             # Then
             assert response.status_code == 400
-            assert response.json['quantity'] == ['Vous devez préciser une quantité pour la réservation']
+            assert response.json['quantity'] == [
+                "Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO."]
 
         @clean_database
         def when_quantity_is_more_than_one_and_offer_is_not_duo(self, app):
@@ -374,8 +380,7 @@ class Post:
             booking_json = {
                 'stockId': humanize(stock.id),
                 'recommendationId': None,
-                'quantity': 5,
-                'isDuo': False,
+                'quantity': 5
             }
 
             # When
@@ -385,7 +390,8 @@ class Post:
 
             # Then
             assert response.status_code == 400
-            assert response.json['quantity'] == ["Vous ne pouvez pas réserver plus d'une offre à la fois"]
+            assert response.json['quantity'] == [
+                "Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO."]
 
         @clean_database
         def when_quantity_is_more_than_two_and_offer_is_duo(self, app):
@@ -400,8 +406,7 @@ class Post:
             booking_json = {
                 'stockId': humanize(stock.id),
                 'recommendationId': None,
-                'quantity': 3,
-                'isDuo': True,
+                'quantity': 3
             }
 
             # When
@@ -412,7 +417,7 @@ class Post:
             # Then
             assert response.status_code == 400
             assert response.json['quantity'] == [
-                "Vous ne pouvez pas réserver plus de deux places s'il s'agit d'une offre DUO"]
+                "Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO."]
 
         @clean_database
         def when_event_occurrence_beginning_datetime_has_passed(self, app):
@@ -423,7 +428,8 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, event_name='Event Name', event_type=EventType.CINEMA)
-            event_occurrence = create_event_occurrence(offer, beginning_datetime=five_days_ago, end_datetime=four_days_ago)
+            event_occurrence = create_event_occurrence(offer, beginning_datetime=five_days_ago,
+                                                       end_datetime=four_days_ago)
             stock = create_stock_from_event_occurrence(event_occurrence)
             create_deposit(user)
             repository.save(stock, user)
@@ -502,7 +508,8 @@ class Post:
             # Given
             offerer = create_offerer()
             venue = create_venue(offerer=offerer)
-            ok_stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0, booking_limit_datetime=datetime.utcnow() + timedelta(minutes=2))
+            ok_stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0,
+                                                     booking_limit_datetime=datetime.utcnow() + timedelta(minutes=2))
             user = create_user()
             recommendation = create_recommendation(offer=ok_stock.offer, user=user)
             repository.save(ok_stock, user)
@@ -527,7 +534,8 @@ class Post:
             # Given
             offerer = create_offerer()
             venue = create_venue(offerer=offerer)
-            ok_stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0, booking_limit_datetime=datetime.utcnow() + timedelta(minutes=2))
+            ok_stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0,
+                                                     booking_limit_datetime=datetime.utcnow() + timedelta(minutes=2))
             user = create_user()
             recommendation = create_recommendation(offer=ok_stock.offer, user=user)
             repository.save(ok_stock, user)
