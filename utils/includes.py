@@ -48,6 +48,7 @@ OFFER_INCLUDES = [
     "isEvent",
     'isFullyBooked',
     'isNotBookable',
+    'isBookable',
     "isThing",
     "lastProvider",
     "offerType",
@@ -136,6 +137,7 @@ RECOMMENDATION_INCLUDES = [
             "dateRange",
             "isEvent",
             'isNotBookable',
+            'isBookable',
             'isFullyBooked',
             "isThing",
             "offerType",
@@ -314,6 +316,7 @@ PRO_BOOKING_INCLUDES = [
                     "key": "resolvedOffer",
                     "includes": [
                         'isNotBookable',
+                        'isBookable',
                         'isFullyBooked',
                         {
                             "key": "product",

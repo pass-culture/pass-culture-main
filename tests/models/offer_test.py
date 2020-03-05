@@ -875,6 +875,38 @@ class IsFullyBookedTest:
         assert offer.isFullyBooked is False
 
 
+class IsBookableTest:
+    def test_returns_true_when_at_least_one_stock_is_bookable(self):
+        # Given
+        passed_limit_datetime = datetime.utcnow() - timedelta(days=2)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        offer.stocks = [create_stock(offer=offer, booking_limit_datetime=passed_limit_datetime),
+                        create_stock(offer=offer)]
+
+        # When
+        is_offer_bookable = offer.isBookable
+
+        # Then
+        assert is_offer_bookable
+
+    def test_returns_false_when_no_stock_is_bookable(self):
+        # Given
+        passed_limit_datetime = datetime.utcnow() - timedelta(days=2)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        offer.stocks = [create_stock(offer=offer, booking_limit_datetime=passed_limit_datetime),
+                        create_stock(offer=offer, is_soft_deleted=True)]
+
+        # When
+        is_offer_bookable = offer.isBookable
+
+        # Then
+        assert not is_offer_bookable
+
+
 class IsNotBookableTest:
     def test_returns_true_if_all_stocks_have_past_booking_limit_datetime(self):
         # given
@@ -886,7 +918,7 @@ class IsNotBookableTest:
         offer.stocks = [stock1, stock2, stock3]
 
         # then
-        assert offer.isNotBookable is True
+        assert offer.isNotBookable
 
     def test_returns_false_if_any_stock_has_future_booking_limit_datetime(self):
         # given
@@ -898,7 +930,7 @@ class IsNotBookableTest:
         offer.stocks = [stock1, stock2, stock3]
 
         # then
-        assert offer.isNotBookable is False
+        assert not offer.isNotBookable
 
     def test_returns_false_if_all_stocks_have_no_booking_limit_datetime(self):
         # given
@@ -909,7 +941,7 @@ class IsNotBookableTest:
         offer.stocks = [stock1, stock2, stock3]
 
         # then
-        assert offer.isNotBookable is False
+        assert not offer.isNotBookable
 
 
 class ActiveMediationTest:
