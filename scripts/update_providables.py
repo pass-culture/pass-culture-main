@@ -3,6 +3,7 @@ from flask import current_app as app
 from local_providers.provider_manager import synchronize_data_for_provider, \
     synchronize_venue_providers_for_provider
 from local_providers.provider_manager import synchronize_venue_provider
+from repository.venue_provider_queries import get_venue_provider_by_id
 
 
 @app.manager.option('-p',
@@ -23,7 +24,8 @@ def update_providables(provider_name: str, venue_provider_id: str, limit: int):
         synchronize_data_for_provider(provider_name, limit)
 
     if venue_provider_id:
-        return synchronize_venue_provider(venue_provider_id, limit)
+        venue_provider = get_venue_provider_by_id(int(venue_provider_id))
+        synchronize_venue_provider(venue_provider, limit)
 
 
 @app.manager.option('-p',

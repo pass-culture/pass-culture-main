@@ -3,10 +3,6 @@ from typing import List, Optional
 from models.provider import Provider
 
 
-def get_provider_by_id(provider_id: int) -> Provider:
-    return Provider.query.get(provider_id)
-
-
 def get_provider_enabled_for_pro_by_id(provider_id: int) -> Optional[Provider]:
     return Provider.query \
         .filter_by(id=provider_id) \

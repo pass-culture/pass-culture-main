@@ -16,6 +16,10 @@ def mock_update_objects():
     raise Exception
 
 
+def mock_init_provider(*arg):
+    raise Exception
+
+
 class DoUpdateTest:
     def test_should_call_provider_objects_synchronization_function(self, app):
         # Given
@@ -92,15 +96,13 @@ class SynchronizeVenueProviderTest:
         provider = create_provider(local_class='TestLocalProvider')
         venue_provider = create_venue_provider(venue, provider)
         repository.save(venue_provider)
-        venue_provider_id = venue_provider.id
         mock_get_provider_class.return_value = TestLocalProvider
 
         # When
-        synchronize_venue_provider(venue_provider_id, limit)
+        synchronize_venue_provider(venue_provider, limit)
 
         # Then
-        mock_do_update.assert_called_once_with(
-            fake(TestLocalProvider), limit)
+        mock_do_update.assert_called_once_with(fake(TestLocalProvider), limit)
 
     @clean_database
     @patch('local_providers.provider_manager.get_local_provider_class_by_name')
@@ -113,12 +115,11 @@ class SynchronizeVenueProviderTest:
         provider = create_provider(local_class='TestLocalProvider')
         venue_provider = create_venue_provider(venue, provider)
         repository.save(venue_provider)
-        venue_provider_id = venue_provider.id
         mock_provider_class = MagicMock()
         mock_get_provider_class.return_value = mock_provider_class
 
         # When
-        synchronize_venue_provider(venue_provider_id, limit)
+        synchronize_venue_provider(venue_provider, limit)
 
         # Then
         mock_provider_class.assert_called_once_with(venue_provider)
@@ -140,13 +141,37 @@ class SynchronizeVenueProviderTest:
         mock_get_provider_class.return_value = mock_provider_class
 
         # When
-        synchronize_venue_provider(allocine_venue_provider.id, None)
+        synchronize_venue_provider(allocine_venue_provider, None)
 
         # Then
         mock_provider_class.assert_called_once()
         venue_provider_mock_arg = mock_provider_class.call_args[0][0]
         assert venue_provider_mock_arg == allocine_venue_provider
         assert venue_provider_mock_arg.isDuo
+
+    @clean_database
+    @patch('local_providers.provider_manager.get_local_provider_class_by_name')
+    @patch('local_providers.provider_manager.build_cron_log_message')
+    def test_should_log_exception_when_one_is_raised_during_provider_initilization(self,
+                                                                                   mock_build_cron_log_message,
+                                                                                   mock_get_provider_class,
+                                                                                   app):
+        # Given
+        provider_test = create_provider(local_class='TestLocalProvider')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        venue_provider = create_venue_provider(venue, provider_test)
+        repository.save(venue_provider)
+
+        mock_get_provider_class.return_value = mock_init_provider
+
+        # When
+        synchronize_venue_provider(venue_provider, 10)
+
+        # Then
+        mock_build_cron_log_message.assert_called_once_with(name='mock_init_provider',
+                                                            status=ANY,
+                                                            traceback=ANY)
 
 
 class SynchronizeVenueProvidersForProviderTest:
@@ -188,12 +213,28 @@ class SynchronizeVenueProvidersForProviderTest:
         mock_get_provider_class.assert_called_once()
         mock_do_update.assert_called_once_with(fake(TestLocalProvider), 10)
 
+    @patch('local_providers.provider_manager.synchronize_venue_provider')
+    @clean_database
+    def test_should_call_synchronize_venue_provider(self, mock_synchronize_venue_provider, app):
+        # Given
+        provider_test = create_provider(local_class='TestLocalProvider')
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        venue_provider = create_venue_provider(venue, provider_test)
+        repository.save(venue_provider)
+
+        # When
+        synchronize_venue_providers_for_provider(provider_test.id, 10)
+
+        # Then
+        mock_synchronize_venue_provider.assert_called_once()
+
 
 class SynchronizeDataForProviderTest:
     @patch('local_providers.provider_manager.do_update')
     @patch('local_providers.provider_manager.get_local_provider_class_by_name')
     @clean_database
-    def test_should_call_do_synchronize_for_specified_provider(self, mock_get_provider_class, mock_do_update, app):
+    def test_should_call_do_update_for_specified_provider(self, mock_get_provider_class, mock_do_update, app):
         # Given
         provider_test = create_provider(local_class='TestLocalProvider')
         repository.save(provider_test)

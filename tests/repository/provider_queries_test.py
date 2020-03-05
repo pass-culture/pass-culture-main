@@ -1,24 +1,9 @@
 from repository import repository
 from repository.provider_queries import get_enabled_providers_for_pro, \
     get_providers_enabled_for_pro_excluding_specific_provider, \
-    get_provider_enabled_for_pro_by_id, get_provider_by_local_class, get_provider_by_id
+    get_provider_enabled_for_pro_by_id, get_provider_by_local_class
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_provider
-
-
-class GetProviderByIdTest:
-    @clean_database
-    def test_should_return_matching_provider_for_id(self, app):
-        # Given
-        provider1 = create_provider(local_class='OpenAgenda')
-        provider2 = create_provider(local_class='TiteLive')
-        repository.save(provider1, provider2)
-
-        # When
-        matching_provider = get_provider_by_id(provider1.id)
-
-        # Then
-        assert matching_provider == provider1
 
 
 class GetEnabledProvidersForProTest:
