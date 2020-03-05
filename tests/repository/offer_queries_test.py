@@ -11,9 +11,15 @@ from repository.offer_queries import department_or_national_offers, \
     find_offers_with_filter_parameters, \
     get_offers_for_recommendations_search, \
     get_active_offers, \
-    get_offers_by_venue_id, _has_remaining_stock, order_by_with_criteria, get_paginated_active_offer_ids, \
-    get_paginated_offer_ids_by_venue_id_and_last_provider_id, _order_by_occurs_soon_or_is_thing_then_randomize, \
-    get_paginated_offer_ids_by_venue_id, get_offers_by_ids, get_paginated_expired_offer_ids
+    get_offers_by_venue_id, \
+    _has_remaining_stock, \
+    order_by_with_criteria, \
+    get_paginated_active_offer_ids, \
+    get_paginated_offer_ids_by_venue_id_and_last_provider_id, \
+    _order_by_occurs_soon_or_is_thing_then_randomize, \
+    get_paginated_offer_ids_by_venue_id, \
+    get_offers_by_ids, \
+    get_paginated_expired_offer_ids
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_criterion, create_user, create_offerer, \
     create_venue, create_user_offerer, create_mediation, create_favorite, create_provider
@@ -1689,10 +1695,10 @@ class GetPaginatedExpiredOfferIdsTest:
         offer2 = create_offer_with_event_product(is_active=True, venue=venue)
         offer3 = create_offer_with_thing_product(is_active=True, venue=venue)
         offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
-        stock1 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 21, 0, 0, 0), offer=offer1)
-        stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 22, 0, 0, 0), offer=offer2)
-        stock3 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 23, 0, 0, 0), offer=offer3)
-        stock4 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 24, 0, 0, 0), offer=offer4)
+        stock1 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0), offer=offer1)
+        stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0), offer=offer2)
+        stock3 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0), offer=offer3)
+        stock4 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0), offer=offer4)
         repository.save(stock1, stock2, stock3, stock4)
 
         # When
@@ -1756,11 +1762,13 @@ class GetPaginatedExpiredOfferIdsTest:
         offer2 = create_offer_with_event_product(is_active=True, venue=venue)
         offer3 = create_offer_with_thing_product(is_active=True, venue=venue)
         offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
-        stock1 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 1, 1, 0, 0, 0), offer=offer1)
-        stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 1, 1, 0, 0, 0), offer=offer2)
-        stock3 = create_stock_from_offer(beginning_datetime=None, booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0),
+        stock1 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0), offer=offer1)
+        stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 30, 0, 0, 0), offer=offer2)
+        stock3 = create_stock_from_offer(beginning_datetime=None,
+                                         booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0),
                                          offer=offer3)
-        stock4 = create_stock_from_offer(beginning_datetime=None, booking_limit_datetime=datetime(2020, 1, 3, 0, 0, 0),
+        stock4 = create_stock_from_offer(beginning_datetime=None,
+                                         booking_limit_datetime=datetime(2020, 1, 3, 0, 0, 0),
                                          offer=offer4)
         repository.save(stock1, stock2, stock3, stock4)
 
@@ -1773,3 +1781,123 @@ class GetPaginatedExpiredOfferIdsTest:
         assert (offer2.id,) not in results
         assert (offer3.id,) not in results
         assert (offer4.id,) not in results
+
+    @clean_database
+    def test_should_return_one_offer_id_when_two_offers_are_expired_and_the_second_one_is_out_of_range(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_event_product(is_active=True, venue=venue)
+        offer2 = create_offer_with_event_product(is_active=True, venue=venue)
+        in_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0), offer=offer1)
+        out_of_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 1, 0, 0, 0),
+                                                     offer=offer2)
+        repository.save(in_range_stock, out_of_range_stock)
+
+        # When
+        results = get_paginated_expired_offer_ids(limit=2, page=0)
+
+        # Then
+        assert len(results) == 1
+        assert (offer1.id,) in results
+        assert (offer2.id,) not in results
+
+    @clean_database
+    def test_should_return_no_offer_ids_when_offers_are_expired_since_more_than_two_days(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_event_product(is_active=True, venue=venue)
+        offer2 = create_offer_with_event_product(is_active=True, venue=venue)
+        out_of_range_stock1 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 0),
+                                                      offer=offer1)
+        out_of_range_stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 29, 0, 0, 0),
+                                                      offer=offer2)
+        repository.save(out_of_range_stock1, out_of_range_stock2)
+
+        # When
+        results = get_paginated_expired_offer_ids(limit=2, page=0)
+
+        # Then
+        assert len(results) == 0
+
+    @clean_database
+    def test_should_return_one_offer_id_when_offers_are_expired_since_more_than_two_days_and_one_second(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_event_product(is_active=True, venue=venue)
+        offer2 = create_offer_with_event_product(is_active=True, venue=venue)
+        in_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 30, 10, 1, 0), offer=offer1)
+        out_of_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 59),
+                                                     offer=offer2)
+        repository.save(in_range_stock, out_of_range_stock)
+
+        # When
+        results = get_paginated_expired_offer_ids(limit=2, page=0)
+
+        # Then
+        assert len(results) == 1
+        assert offer1 in results
+        assert offer2 not in results
+
+    @clean_database
+    def test_should_return_one_offer_id_when_offers_are_expired_since_more_than_two_days_and_one_second(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_event_product(is_active=True, venue=venue)
+        offer2 = create_offer_with_event_product(is_active=True, venue=venue)
+        in_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 30, 10, 1, 0), offer=offer1)
+        out_of_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 59),
+                                                     offer=offer2)
+        repository.save(in_range_stock, out_of_range_stock)
+
+        # When
+        results = get_paginated_expired_offer_ids(limit=2, page=0)
+
+        # Then
+        assert len(results) == 1
+        assert offer1 in results
+        assert offer2 not in results
+
+    @clean_database
+    def test_should_return_one_offer_id_when_offers_are_expired_exactly_since_two_days(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_event_product(is_active=True, venue=venue)
+        offer2 = create_offer_with_event_product(is_active=True, venue=venue)
+        in_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 30, 10, 0, 0), offer=offer1)
+        out_of_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 59),
+                                                     offer=offer2)
+        repository.save(in_range_stock, out_of_range_stock)
+
+        # When
+        results = get_paginated_expired_offer_ids(limit=2, page=0)
+
+        # Then
+        assert len(results) == 1
+        assert offer1 in results
+        assert offer2 not in results
+
+    @clean_database
+    def test_should_return_one_offer_id_when_offers_are_expired_exactly_since_one_day(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer1 = create_offer_with_event_product(is_active=True, venue=venue)
+        offer2 = create_offer_with_event_product(is_active=True, venue=venue)
+        in_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 31, 10, 0, 0), offer=offer1)
+        out_of_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 59),
+                                                     offer=offer2)
+        repository.save(in_range_stock, out_of_range_stock)
+
+        # When
+        results = get_paginated_expired_offer_ids(limit=2, page=0)
+
+        # Then
+        assert len(results) == 1
+        assert offer1 in results
+        assert offer2 not in results
+

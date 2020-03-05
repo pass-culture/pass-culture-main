@@ -443,8 +443,8 @@ def get_offers_by_product_id(product_id: int) -> List[Offer]:
 
 def get_offers_by_ids(offer_ids: List[int]) -> List[Offer]:
     return Offer.query \
-        .filter(Offer.id.in_(offer_ids))\
-        .options(joinedload('stocks'))\
+        .filter(Offer.id.in_(offer_ids)) \
+        .options(joinedload('stocks')) \
         .all()
 
 
@@ -483,12 +483,17 @@ def get_paginated_offer_ids_by_venue_id_and_last_provider_id(last_provider_id: s
 
 
 def get_paginated_expired_offer_ids(limit: int, page: int) -> List[tuple]:
+    one_day_before_now = datetime.utcnow() - timedelta(days=1)
+    two_days_before_now = datetime.utcnow() - timedelta(days=2)
+    start_limit = two_days_before_now <= Stock.bookingLimitDatetime
+    end_limit = Stock.bookingLimitDatetime <= one_day_before_now
+
     return Offer.query \
-        .join(Stock)\
-        .with_entities(Offer.id)\
+        .join(Stock) \
+        .with_entities(Offer.id) \
         .filter(Offer.isActive == True) \
-        .filter(Stock.bookingLimitDatetime is not None)\
-        .filter(Stock.bookingLimitDatetime < (datetime.utcnow() - timedelta(days=1))) \
+        .filter(Stock.bookingLimitDatetime is not None) \
+        .filter(start_limit, end_limit) \
         .order_by(Offer.id) \
         .offset(page * limit) \
         .limit(limit) \
