@@ -6,30 +6,40 @@ import {
   WEBAPP_ALGOLIA_SEARCH_API_KEY,
 } from '../../../../utils/config'
 
-export const fetchAlgolia = (keywords = '', page = 0, geolocation, categoriesFilter = []) => {
-  if (!keywords) {
-    return
-  }
-  const client = algoliasearch(WEBAPP_ALGOLIA_APPLICATION_ID, WEBAPP_ALGOLIA_SEARCH_API_KEY)
-  const index = client.initIndex(WEBAPP_ALGOLIA_INDEX_NAME)
+const CATEGORY_FACET = `offer.label`
+const UNLIMITED_RADIUS = 'all'
+
+export const fetchAlgolia = (keywords = '', page = 0, geolocationCoordinates, categories = []) => {
+  if (!keywords) return
+
   const searchParameters = {
     query: keywords,
     page: page,
+    ...buildCategoryFilterParameter(categories),
+    ...buildGeolocationParameter(geolocationCoordinates),
   }
 
-  if (categoriesFilter.length > 0) {
-    searchParameters.filters = categoriesFilter
-      .map(category => `offer.label:"${category}"`)
-      .join(' OR ')
-  }
+  const client = algoliasearch(WEBAPP_ALGOLIA_APPLICATION_ID, WEBAPP_ALGOLIA_SEARCH_API_KEY)
+  const index = client.initIndex(WEBAPP_ALGOLIA_INDEX_NAME)
+  return index.search(searchParameters)
+}
 
-  if (geolocation) {
-    const { longitude, latitude } = geolocation
-    if (latitude && longitude) {
-      searchParameters.aroundLatLng = `${latitude}, ${longitude}`
-      searchParameters.aroundRadius = 'all'
+const buildCategoryFilterParameter = categories => {
+  if (categories.length > 0) {
+    return {
+      filters: categories.map(category => `${CATEGORY_FACET}:"${category}"`).join(' OR '),
     }
   }
+}
 
-  return index.search(searchParameters)
+const buildGeolocationParameter = geolocationCoordinates => {
+  if (geolocationCoordinates) {
+    const { longitude, latitude } = geolocationCoordinates
+    if (latitude && longitude) {
+      return {
+        aroundLatLng: `${latitude}, ${longitude}`,
+        aroundRadius: UNLIMITED_RADIUS,
+      }
+    }
+  }
 }
