@@ -27,6 +27,7 @@ class FeatureToggle(enum.Enum):
     UPDATE_DISCOVERY_VIEW = 'Permettre la mise à jour des données du carousel'
     UPDATE_BOOKING_USED = 'Permettre la validation automatique des contremarques 48h après la fin de l''évènement'
     WEBAPP_SIGNUP = 'Permettre aux bénéficiaires de créer un compte'
+    RECOMMENDATIONS_WITH_MATERIALIZED_VIEW = 'Permettre aux utilisateurs d''avoir des recommandations de manières plus rapides'
 
 
 class Feature(PcObject, Model, DeactivableMixin):

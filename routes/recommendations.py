@@ -6,6 +6,7 @@ from flask_login import current_user, login_required
 from domain.build_recommendations import move_requested_recommendation_first, \
     move_tutorial_recommendations_first
 from models import Recommendation
+from models.feature import FeatureToggle
 from recommendations_engine import create_recommendations_for_discovery, \
     create_recommendations_for_discovery_v2, \
     create_recommendations_for_search, \
@@ -15,6 +16,7 @@ from repository import repository
 from repository.recommendation_queries import update_read_recommendations
 from routes.serialization.recommendation_serialize import serialize_recommendations, serialize_recommendation
 from utils.config import BLOB_SIZE
+from utils.feature import feature_required
 from utils.human_ids import dehumanize
 from utils.logger import logger
 from utils.rest import expect_json_data
@@ -72,6 +74,7 @@ def put_read_recommendations():
 
 @app.route('/v2/recommendations', methods=['PUT'])
 @login_required
+@feature_required(FeatureToggle.RECOMMENDATIONS_WITH_MATERIALIZED_VIEW)
 @expect_json_data
 def put_recommendations_v2():
     json_keys = request.json.keys()

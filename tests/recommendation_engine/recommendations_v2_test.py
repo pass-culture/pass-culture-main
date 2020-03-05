@@ -162,9 +162,9 @@ class CreateRecommendationsForDiscoveryTest:
         # Then
         assert len(recommendations) == 2
 
-    @patch('recommendations_engine.recommendations.get_offers_for_recommendations_discovery')
+    @patch('recommendations_engine.recommendations.get_offers_for_recommendations_discovery_v2')
     def test_should_get_offers_using_pagination_when_query_params_provided(self,
-                                                                           get_offers_for_recommendations_discovery,
+                                                                           get_offers_for_recommendations_discovery_v2,
                                                                            app):
         # Given
         seen_recommendation_ids = []
@@ -174,9 +174,9 @@ class CreateRecommendationsForDiscoveryTest:
         create_recommendations_for_discovery_v2(user=user, seen_recommendation_ids=seen_recommendation_ids)
 
         # Then
-        get_offers_for_recommendations_discovery.assert_called_once_with(limit=3,
-                                                                         seen_recommendation_ids=seen_recommendation_ids,
-                                                                         user=user)
+        get_offers_for_recommendations_discovery_v2.assert_called_once_with(limit=3,
+                                                                            seen_recommendation_ids=seen_recommendation_ids,
+                                                                            user=user)
 
     @clean_database
     def test_returns_offer_in_all_ile_de_france_for_user_from_93(self, app):
