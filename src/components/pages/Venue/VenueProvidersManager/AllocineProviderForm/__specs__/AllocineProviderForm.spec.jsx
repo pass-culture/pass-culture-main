@@ -228,6 +228,27 @@ describe('components | AllocineProviderForm', () => {
     })
   })
 
+  it('should be able to submit with filled payload when price field is filled with a decimal', () => {
+    // given
+    const wrapper = mount(<AllocineProviderForm {...props} />)
+    const submitButton = wrapper.find('button')
+    const priceSection = wrapper.findWhere(node => node.text() === 'Prix de vente/place *')
+    const priceInput = priceSection.find(NumberField).find('input')
+    priceInput.simulate('change', { target: { value: '0,42' } })
+
+    // when
+    submitButton.simulate('click')
+
+    // then
+    expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
+      price: 0.42,
+      available: undefined,
+      isDuo: undefined,
+      providerId: 'AA',
+      venueId: 'BB',
+    })
+  })
+
   it('should not be able to submit when price field is not filled', () => {
     // given
     const wrapper = mount(<AllocineProviderForm {...props} />)
@@ -236,7 +257,6 @@ describe('components | AllocineProviderForm', () => {
     const availableInput = availableSection.find(NumberField).find('input')
 
     availableInput.simulate('change', { target: { value: 10 } })
-    availableInput.simulate('click')
 
     // when
     form.simulate('click')

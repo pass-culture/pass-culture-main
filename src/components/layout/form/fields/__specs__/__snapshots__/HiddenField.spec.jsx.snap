@@ -34,6 +34,7 @@ ShallowWrapper {
           format={null}
           id={null}
           innerClassName={null}
+          isDecimal={true}
           label=""
           name="title"
           parse={null}
@@ -91,6 +92,7 @@ ShallowWrapper {
             format={null}
             id={null}
             innerClassName={null}
+            isDecimal={true}
             label=""
             name="title"
             parse={null}
@@ -126,6 +128,7 @@ ShallowWrapper {
             "format": null,
             "id": null,
             "innerClassName": null,
+            "isDecimal": true,
             "label": "",
             "name": "title",
             "parse": null,
@@ -201,6 +204,7 @@ ShallowWrapper {
             format={null}
             id={null}
             innerClassName={null}
+            isDecimal={true}
             label=""
             name="title"
             parse={null}
@@ -258,6 +262,7 @@ ShallowWrapper {
               format={null}
               id={null}
               innerClassName={null}
+              isDecimal={true}
               label=""
               name="title"
               parse={null}
@@ -293,6 +298,7 @@ ShallowWrapper {
               "format": null,
               "id": null,
               "innerClassName": null,
+              "isDecimal": true,
               "label": "",
               "name": "title",
               "parse": null,

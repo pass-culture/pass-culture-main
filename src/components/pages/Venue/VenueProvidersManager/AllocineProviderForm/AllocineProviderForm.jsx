@@ -103,6 +103,7 @@ class AllocineProviderForm extends PureComponent {
                 {'Nombre de places/séance'}
               </label>
               <NumberField
+                isDecimal={false}
                 min="0"
                 name="available"
                 placeholder="Illimité"
@@ -141,6 +142,7 @@ class AllocineProviderForm extends PureComponent {
               <button
                 className="button is-primary apf-provider-import-button"
                 disabled={!canSubmit}
+                onClick={formProps.handleSubmit}
                 type="submit"
               >
                 {'Importer les offres'}

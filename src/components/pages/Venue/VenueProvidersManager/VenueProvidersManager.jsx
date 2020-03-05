@@ -59,13 +59,13 @@ class VenueProvidersManager extends PureComponent {
         venueIdAtOfferProviderIsRequired: valueParsed.requireProviderIdentifier,
       })
     } else if (valueParsed && valueParsed.name === TITELIVE_PROVIDER_OPTION.name) {
-        this.setState({
-          providerSelectedIsTitelive: true,
-        })
+      this.setState({
+        providerSelectedIsTitelive: true,
+      })
     } else if (valueParsed && valueParsed.name === LIBRAIRES_PROVIDER_OPTION.name) {
-        this.setState({
-          providerSelectedIsLibraires: true,
-        })
+      this.setState({
+        providerSelectedIsLibraires: true,
+      })
     }
 
     this.setState({
@@ -102,33 +102,35 @@ class VenueProvidersManager extends PureComponent {
 
           {isCreationMode && (
             <li className="add-provider-form">
-              <div className="select-provider-section">
-                <div id="select-source">
-                  <label htmlFor="provider-options">
-                    {'Source'}
-                  </label>
-                  <select
-                    className="field-select"
-                    id="provider-options"
-                    onChange={this.handleChange}
-                  >
-                    <option
-                      key={DEFAULT_PROVIDER_OPTION.id}
-                      value={JSON.stringify(DEFAULT_PROVIDER_OPTION)}
+              <div className="field-control">
+                <div className="select-provider-section">
+                  <div id="select-source">
+                    <label htmlFor="provider-options">
+                      {'Source'}
+                    </label>
+                    <select
+                      className="field-select"
+                      id="provider-options"
+                      onChange={this.handleChange}
                     >
-                      {DEFAULT_PROVIDER_OPTION.name}
-                    </option>
-                    {providers.map(provider => {
-                      return (
-                        <option
-                          key={`provider-${provider.id}`}
-                          value={JSON.stringify(provider)}
-                        >
-                          {provider.name}
-                        </option>
-                      )
-                    })}
-                  </select>
+                      <option
+                        key={DEFAULT_PROVIDER_OPTION.id}
+                        value={JSON.stringify(DEFAULT_PROVIDER_OPTION)}
+                      >
+                        {DEFAULT_PROVIDER_OPTION.name}
+                      </option>
+                      {providers.map(provider => {
+                        return (
+                          <option
+                            key={`provider-${provider.id}`}
+                            value={JSON.stringify(provider)}
+                          >
+                            {provider.name}
+                          </option>
+                        )
+                      })}
+                    </select>
+                  </div>
                 </div>
               </div>
               <div className="provider-form">

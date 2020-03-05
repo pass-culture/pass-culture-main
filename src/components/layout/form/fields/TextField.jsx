@@ -19,10 +19,9 @@ function getInputValue(inputType, value) {
 
 class TextField extends PureComponent {
   componentDidMount() {
-    const { type } = this.props
-
+    const { type, isDecimal } = this.props
     if (type === 'number') {
-      this.preventEnteringInvalidChars()
+      this.preventEnteringInvalidChars(isDecimal)
     }
   }
 
@@ -32,9 +31,13 @@ class TextField extends PureComponent {
     }
   }
 
-  preventEnteringInvalidChars = () => {
+  preventEnteringInvalidChars = (isDecimal) => {
     this.keypressListener = this.inputElement.addEventListener('keypress', event => {
-      const validCharacters = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', ',', '.']
+      const validCharacters = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+
+      if (isDecimal) {
+        validCharacters.push(',', '.')
+      }
 
       if (!validCharacters.includes(event.key)) {
         event.preventDefault()
@@ -52,6 +55,7 @@ class TextField extends PureComponent {
       disabled,
       id,
       innerClassName,
+      isDecimal,
       label,
       min,
       name,
@@ -140,6 +144,7 @@ TextField.defaultProps = {
   format: null,
   id: null,
   innerClassName: null,
+  isDecimal: true,
   label: '',
   parse: null,
   placeholder: '',
@@ -157,6 +162,7 @@ TextField.propTypes = {
   format: PropTypes.func,
   id: PropTypes.string,
   innerClassName: PropTypes.string,
+  isDecimal: PropTypes.bool,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
   parse: PropTypes.func,

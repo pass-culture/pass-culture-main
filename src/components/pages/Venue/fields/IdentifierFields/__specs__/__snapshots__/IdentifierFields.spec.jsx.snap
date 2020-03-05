@@ -65,6 +65,7 @@ ShallowWrapper {
               format={[Function]}
               id={null}
               innerClassName={null}
+              isDecimal={true}
               label=""
               name="siret"
               parse={null}
@@ -83,6 +84,7 @@ ShallowWrapper {
             format={null}
             id={null}
             innerClassName={null}
+            isDecimal={true}
             label="Nom du lieu : "
             name="name"
             parse={null}
@@ -100,6 +102,7 @@ ShallowWrapper {
             format={null}
             id={null}
             innerClassName={null}
+            isDecimal={true}
             label="Nom d’usage du lieu : "
             name="publicName"
             parse={null}
@@ -117,6 +120,7 @@ ShallowWrapper {
             format={null}
             id={null}
             innerClassName="col-75"
+            isDecimal={true}
             label="E-mail : "
             name="bookingEmail"
             parse={null}
@@ -203,6 +207,7 @@ ShallowWrapper {
                 format={[Function]}
                 id={null}
                 innerClassName={null}
+                isDecimal={true}
                 label=""
                 name="siret"
                 parse={null}
@@ -221,6 +226,7 @@ ShallowWrapper {
               format={null}
               id={null}
               innerClassName={null}
+              isDecimal={true}
               label="Nom du lieu : "
               name="name"
               parse={null}
@@ -238,6 +244,7 @@ ShallowWrapper {
               format={null}
               id={null}
               innerClassName={null}
+              isDecimal={true}
               label="Nom d’usage du lieu : "
               name="publicName"
               parse={null}
@@ -255,6 +262,7 @@ ShallowWrapper {
               format={null}
               id={null}
               innerClassName="col-75"
+              isDecimal={true}
               label="E-mail : "
               name="bookingEmail"
               parse={null}
@@ -327,6 +335,7 @@ ShallowWrapper {
                   format={[Function]}
                   id={null}
                   innerClassName={null}
+                  isDecimal={true}
                   label=""
                   name="siret"
                   parse={null}
@@ -435,6 +444,7 @@ ShallowWrapper {
                   "format": [Function],
                   "id": null,
                   "innerClassName": null,
+                  "isDecimal": true,
                   "label": "",
                   "name": "siret",
                   "parse": null,
@@ -463,6 +473,7 @@ ShallowWrapper {
               "format": null,
               "id": null,
               "innerClassName": null,
+              "isDecimal": true,
               "label": "Nom du lieu : ",
               "name": "name",
               "parse": null,
@@ -488,6 +499,7 @@ ShallowWrapper {
               "format": null,
               "id": null,
               "innerClassName": null,
+              "isDecimal": true,
               "label": "Nom d’usage du lieu : ",
               "name": "publicName",
               "parse": null,
@@ -513,6 +525,7 @@ ShallowWrapper {
               "format": null,
               "id": null,
               "innerClassName": "col-75",
+              "isDecimal": true,
               "label": "E-mail : ",
               "name": "bookingEmail",
               "parse": null,
@@ -602,6 +615,7 @@ ShallowWrapper {
                 format={[Function]}
                 id={null}
                 innerClassName={null}
+                isDecimal={true}
                 label=""
                 name="siret"
                 parse={null}
@@ -620,6 +634,7 @@ ShallowWrapper {
               format={null}
               id={null}
               innerClassName={null}
+              isDecimal={true}
               label="Nom du lieu : "
               name="name"
               parse={null}
@@ -637,6 +652,7 @@ ShallowWrapper {
               format={null}
               id={null}
               innerClassName={null}
+              isDecimal={true}
               label="Nom d’usage du lieu : "
               name="publicName"
               parse={null}
@@ -654,6 +670,7 @@ ShallowWrapper {
               format={null}
               id={null}
               innerClassName="col-75"
+              isDecimal={true}
               label="E-mail : "
               name="bookingEmail"
               parse={null}
@@ -740,6 +757,7 @@ ShallowWrapper {
                   format={[Function]}
                   id={null}
                   innerClassName={null}
+                  isDecimal={true}
                   label=""
                   name="siret"
                   parse={null}
@@ -758,6 +776,7 @@ ShallowWrapper {
                 format={null}
                 id={null}
                 innerClassName={null}
+                isDecimal={true}
                 label="Nom du lieu : "
                 name="name"
                 parse={null}
@@ -775,6 +794,7 @@ ShallowWrapper {
                 format={null}
                 id={null}
                 innerClassName={null}
+                isDecimal={true}
                 label="Nom d’usage du lieu : "
                 name="publicName"
                 parse={null}
@@ -792,6 +812,7 @@ ShallowWrapper {
                 format={null}
                 id={null}
                 innerClassName="col-75"
+                isDecimal={true}
                 label="E-mail : "
                 name="bookingEmail"
                 parse={null}
@@ -864,6 +885,7 @@ ShallowWrapper {
                     format={[Function]}
                     id={null}
                     innerClassName={null}
+                    isDecimal={true}
                     label=""
                     name="siret"
                     parse={null}
@@ -972,6 +994,7 @@ ShallowWrapper {
                     "format": [Function],
                     "id": null,
                     "innerClassName": null,
+                    "isDecimal": true,
                     "label": "",
                     "name": "siret",
                     "parse": null,
@@ -1000,6 +1023,7 @@ ShallowWrapper {
                 "format": null,
                 "id": null,
                 "innerClassName": null,
+                "isDecimal": true,
                 "label": "Nom du lieu : ",
                 "name": "name",
                 "parse": null,
@@ -1025,6 +1049,7 @@ ShallowWrapper {
                 "format": null,
                 "id": null,
                 "innerClassName": null,
+                "isDecimal": true,
                 "label": "Nom d’usage du lieu : ",
                 "name": "publicName",
                 "parse": null,
@@ -1050,6 +1075,7 @@ ShallowWrapper {
                 "format": null,
                 "id": null,
                 "innerClassName": "col-75",
+                "isDecimal": true,
                 "label": "E-mail : ",
                 "name": "bookingEmail",
                 "parse": null,

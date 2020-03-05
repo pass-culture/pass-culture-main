@@ -20,16 +20,25 @@
   }
 
   .blue-insert {
-    margin-top: .5rem;
+    margin-top: .8rem;
+
+    img {
+      max-width: rem(24px);
+    }
   }
 }
 
 .apf-price-section {
-  margin-top: .5rem;
+  margin-top: .8rem;
+}
+
+.apf-available-section {
+  margin-top: .8rem;
 }
 
 .apf-is-duo-section {
   display: flex;
+  margin-top: .8rem;
 
   input {
     @extend .input;

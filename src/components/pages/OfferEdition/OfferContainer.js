@@ -40,7 +40,6 @@ export const mapStateToProps = (state, ownProps) => {
   const formVenueId = get(state, 'form.offer.venueId')
   const venueId = (offer) ? offer.venueId : ''
   const venue = selectVenueById(state, venueId)
-  console.log(venue)
   const isVenueVirtual = get(venue, 'isVirtual')
   const types = selectTypesByIsVenueVirtual(state, isVenueVirtual)
   const offerTypeValue = get(state, 'form.offer.type') || get(offer, 'type')
