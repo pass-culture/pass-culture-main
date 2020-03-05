@@ -65,6 +65,7 @@ class SearchAlgolia extends PureComponent {
           <SearchResults
             categoriesFilter={categoryCriterion.filters}
             geolocation={geolocation}
+            history={history}
             isSearchAroundMe={geolocationCriterion.isSearchAroundMe}
             match={match}
             query={query}

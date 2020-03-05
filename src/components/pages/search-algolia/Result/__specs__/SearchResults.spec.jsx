@@ -29,17 +29,24 @@ describe('components | SearchResults', () => {
   let change
   let clear
   let parse
+  let replace
 
   beforeEach(() => {
     change = jest.fn()
     clear = jest.fn()
     parse = jest.fn().mockReturnValue({})
+    replace = jest.fn()
     props = {
       geolocation: {
         latitude: 40.1,
         longitude: 41.1,
       },
-      search: '',
+      history: {
+        replace
+      },
+      location: {
+        search: '',
+      },
       match: {
         params: {},
       },
@@ -55,6 +62,7 @@ describe('components | SearchResults', () => {
   afterEach(() => {
     fetchAlgolia.mockReset()
     parse.mockReset()
+    replace.mockReset()
   })
 
   describe('when render', () => {
@@ -706,6 +714,39 @@ describe('components | SearchResults', () => {
       expect(toast.info).toHaveBeenCalledWith(
         "La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard."
       )
+    })
+
+    it('should display search keywords in url when fetch succeeded', async () => {
+      // given
+      const wrapper = shallow(<SearchResults {...props} />)
+      const form = wrapper.find('form')
+      fetchAlgolia.mockReturnValue(
+        new Promise(resolve => {
+          resolve({
+            hits: [],
+            page: 0,
+            nbHits: 0,
+            nbPages: 0,
+            hitsPerPage: 2,
+            processingTimeMS: 1,
+            query: 'librairie',
+            params: 'query=librairie&hitsPerPage=2',
+          })
+        })
+      )
+
+      // when
+      await form.simulate('submit', {
+        target: {
+          keywords: {
+            value: 'librairie',
+          },
+        },
+        preventDefault: jest.fn(),
+      })
+
+      // then
+      expect(replace).toHaveBeenCalledWith({search: "?mots-cles=librairie"})
     })
 
     describe('reset cross', () => {

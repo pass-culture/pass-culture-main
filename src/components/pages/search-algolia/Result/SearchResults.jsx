@@ -86,7 +86,7 @@ class SearchResults extends PureComponent {
   }
 
   fetchOffers = (keywords, currentPage) => {
-    const { categoriesFilter, geolocation, isSearchAroundMe } = this.props
+    const { categoriesFilter, history, geolocation, isSearchAroundMe } = this.props
     this.setState({
       isLoading: true,
     })
@@ -112,6 +112,7 @@ class SearchResults extends PureComponent {
         })
         this.showFailModal()
       })
+    history.replace({ search: '?mots-cles=' + keywords})
   }
 
   getScrollParent = () => document.querySelector('.home-results-wrapper')
@@ -279,6 +280,7 @@ SearchResults.propTypes = {
     latitude: PropTypes.number,
     longitude: PropTypes.number,
   }),
+  history: PropTypes.shape().isRequired,
   isSearchAroundMe: PropTypes.bool,
   match: PropTypes.shape().isRequired,
   query: PropTypes.shape({
