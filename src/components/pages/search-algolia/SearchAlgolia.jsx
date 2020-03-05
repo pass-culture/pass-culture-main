@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
-import CategoryCriteria from './Criteria/CategoryCriteria'
-import GeolocationCriteria from './Criteria/GeolocationCriteria'
+import { SearchCriteria } from './Criteria/SearchCriteria'
 import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA } from './Criteria/searchCriteriaValues'
 import { SearchHome } from './Home/SearchHome'
 import SearchResults from './Result/SearchResults'
+
+const GEOLOCATION_ACTIVATION_REQUEST =
+  'Veuillez activer la géolocalisation pour voir les offres autour de vous.'
 
 class SearchAlgolia extends PureComponent {
   constructor(props) {
@@ -21,7 +23,12 @@ class SearchAlgolia extends PureComponent {
     }
   }
 
-  handleGeolocationCriterionSelection = criterionKey => {
+  handleGeolocationCriterionSelection = criterionKey => () => {
+    const { isGeolocationEnabled } = this.props
+    if (GEOLOCATION_CRITERIA[criterionKey].requiresGeolocation && !isGeolocationEnabled()) {
+      return window.alert(GEOLOCATION_ACTIVATION_REQUEST)
+    }
+
     const label = GEOLOCATION_CRITERIA[criterionKey].label
     this.setState(() => {
       return {
@@ -35,7 +42,7 @@ class SearchAlgolia extends PureComponent {
     redirectToSearchMainPage()
   }
 
-  handleCategoryCriterionSelection = criterionKey => {
+  handleCategoryCriterionSelection = criterionKey => () => {
     this.setState(() => ({
       categoryCriterion: CATEGORY_CRITERIA[criterionKey],
     }))
@@ -79,22 +86,26 @@ class SearchAlgolia extends PureComponent {
           />
         </Route>
         <Route path="/recherche-offres/criteres-localisation">
-          <GeolocationCriteria
+          <SearchCriteria
             activeCriterionLabel={geolocationCriterion.params.label}
+            criteria={GEOLOCATION_CRITERIA}
             history={history}
             isGeolocationEnabled={isGeolocationEnabled}
             location={location}
             match={match}
             onCriterionSelection={this.handleGeolocationCriterionSelection}
+            title="Localisation"
           />
         </Route>
         <Route path="/recherche-offres/criteres-categorie">
-          <CategoryCriteria
+          <SearchCriteria
             activeCriterionLabel={categoryCriterion.label}
+            criteria={CATEGORY_CRITERIA}
             history={history}
             location={location}
             match={match}
             onCriterionSelection={this.handleCategoryCriterionSelection}
+            title="Catégories"
           />
         </Route>
       </Switch>

@@ -1,8 +1,9 @@
 import { shallow } from 'enzyme'
 import React from 'react'
-import CategoryCriteria from '../CategoryCriteria'
+import { SearchCriteria } from '../SearchCriteria'
+import { CATEGORY_CRITERIA } from '../searchCriteriaValues'
 
-describe('src | components | pages | search-algolia | Criteria | CategoryCriteria', () => {
+describe('src | components | pages | search-algolia | Criteria | SearchCriteria', () => {
   let props
   beforeEach(() => {
     props = {
@@ -24,10 +25,12 @@ describe('src | components | pages | search-algolia | Criteria | CategoryCriteri
     // Given
     const onCriterionSelection = jest.fn()
     const wrapper = shallow(
-      <CategoryCriteria
+      <SearchCriteria
         {...props}
         activeCriterionLabel="Toutes les catégories"
+        criteria={CATEGORY_CRITERIA}
         onCriterionSelection={onCriterionSelection}
+        title="Catégories"
       />
     )
     const cinemaCategory = wrapper.find({
@@ -40,27 +43,5 @@ describe('src | components | pages | search-algolia | Criteria | CategoryCriteri
 
     // Then
     expect(onCriterionSelection).toHaveBeenCalledWith('CINEMA')
-  })
-
-  it('should not set category filter for search when "Toutes les catégories" is selected', () => {
-    // Given
-    const onCriterionSelection = jest.fn()
-    const wrapper = shallow(
-      <CategoryCriteria
-        {...props}
-        activeCriterionLabel="Toutes les catégories"
-        onCriterionSelection={onCriterionSelection}
-      />
-    )
-    const allCategories = wrapper.find({
-      children: 'Toutes les catégories',
-    })
-    const allCategoriesButton = allCategories.parent()
-
-    // When
-    allCategoriesButton.simulate('click')
-
-    // Then
-    expect(onCriterionSelection).toHaveBeenCalledWith('ALL')
   })
 })

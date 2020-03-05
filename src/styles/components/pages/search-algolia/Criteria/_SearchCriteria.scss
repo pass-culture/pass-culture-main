@@ -1,4 +1,4 @@
-.gc-item-list {
+.sc-item-list {
   background-color: $white;
   height: 100vh;
   display: flex;
@@ -6,25 +6,25 @@
   overflow: scroll;
 }
 
-.gc-item {
+.sc-item {
   height: rem(48px);
   margin-top: rem(28px);
   display: flex;
   align-items: center;
 }
 
-.gc-item-icon-check {
+.sc-item-icon-check {
   width: rem(24px);
   height: rem(24px);
   margin-left: rem(8px);
 }
 
-.gc-item-icon {
+.sc-item-icon {
   width: rem(24px);
   height: rem(24px);
 }
 
-.gc-item-icon-bg {
+.sc-item-icon-bg {
   margin: rem(0 20px);
   height: rem(40px);
   width: rem(40px);
@@ -35,25 +35,24 @@
   align-items: center;
 }
 
-.gc-active-icon {
+.sc-active-icon {
   border: rem(2px) solid $primary;
 }
 
-.gc-item-label {
+.sc-item-label {
   font-size: 16px;
   font-weight: 700;
   color: $black-light;
 }
 
-.gc-active-label {
+.sc-active-label {
   color: $primary;
 }
 
-.gc-header {
+.sc-header {
   align-items: center;
- h1 {
-   margin-right: 20px ;
- }
+
+  h1 {
+    margin-right: 20px;
+  }
 }
-
-

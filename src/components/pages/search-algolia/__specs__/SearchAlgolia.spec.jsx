@@ -14,7 +14,7 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
           isGeolocationEnabled={jest.fn()}
           location={{ pathname: 'recherche-offres', search: '' }}
           match={{
-            params: {}
+            params: {},
           }}
           query={{ clear: jest.fn(), change: jest.fn(), parse: jest.fn() }}
           redirectToSearchMainPage={jest.fn()}
@@ -43,7 +43,7 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
           isGeolocationEnabled={jest.fn()}
           location={{ pathname: 'recherche-offres/resultats', search: '' }}
           match={{
-            params: {}
+            params: {},
           }}
           query={{ clear: jest.fn(), change: jest.fn(), parse: jest.fn() }}
           redirectToSearchMainPage={jest.fn()}
@@ -63,7 +63,7 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
       ).toStrictEqual('SearchResults')
     })
 
-    it('should render GeolocationCriteria page when path is /recherche-offres/criteres-localisation', () => {
+    it('should render geolocation criteria page when path is /recherche-offres/criteres-localisation', () => {
       // Given
       const wrapper = shallow(
         <SearchAlgolia
@@ -71,7 +71,7 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
           isGeolocationEnabled={jest.fn()}
           location={{ pathname: 'recherche-offres/criteres-localisation', search: '' }}
           match={{
-            params: {}
+            params: {},
           }}
           query={{ clear: jest.fn(), change: jest.fn(), parse: jest.fn() }}
           redirectToSearchMainPage={jest.fn()}
@@ -87,18 +87,18 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
         routes
           .at(2)
           .children()
-          .type().name
-      ).toStrictEqual('GeolocationCriteria')
+          .props().title
+      ).toStrictEqual('Localisation')
     })
 
-    it('should render CategoryCriteria page when path is /recherche-offres/criteres-categorie', () => {
+    it('should render category criteria page when path is /recherche-offres/criteres-categorie', () => {
       // Given
       const wrapper = shallow(
         <SearchAlgolia
           history={createBrowserHistory()}
           isGeolocationEnabled={jest.fn()}
-          location={{ pathname: 'recherche-offres/criteres-categorie' }}
-          match={{}}
+          location={{ pathname: 'recherche-offres/criteres-categorie', search: '' }}
+          match={{ params: {} }}
           query={{ clear: jest.fn(), change: jest.fn(), parse: jest.fn() }}
           redirectToSearchMainPage={jest.fn()}
         />
@@ -113,8 +113,8 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
         routes
           .at(3)
           .children()
-          .type().name
-      ).toStrictEqual('CategoryCriteria')
+          .props().title
+      ).toStrictEqual('Catégories')
     })
   })
 
