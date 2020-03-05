@@ -44,6 +44,7 @@ export const CATEGORY_CRITERIA = {
       'Jeux - événement, rencontre ou concours',
       'Jeux - abonnements',
       'Jeu vidéo en ligne',
+      'Support physique',
     ],
   },
   CONFERENCE: {
