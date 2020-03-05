@@ -9,6 +9,8 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
+from sqlalchemy import ForeignKey
+
 revision = 'b8edbf51e278'
 down_revision = '3e44b9ad4478'
 branch_labels = None
@@ -19,8 +21,8 @@ def upgrade():
     op.create_table(
         'iris_venues',
         sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column('irisId', sa.BigInteger, nullable=False),
-        sa.Column('venueId', sa.BigInteger, nullable=False),
+        sa.Column('irisId', sa.BigInteger, ForeignKey('iris_france.id'), nullable=False),
+        sa.Column('venueId', sa.BigInteger, ForeignKey('venue.id'), nullable=False),
     )
 
 
