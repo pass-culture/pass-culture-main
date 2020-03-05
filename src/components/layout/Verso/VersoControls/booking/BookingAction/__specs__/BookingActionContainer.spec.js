@@ -8,19 +8,19 @@ describe('components | BookingActionContainer', () => {
         const ownProps = {
           location: {
             pathname: '/fake-url',
-            search: ''
+            search: '',
           },
           match: {
             params: {
-              offerId: 'AE'
-            }
-          }
+              offerId: 'AE',
+            },
+          },
         }
         const state = {
           data: {
             offers: [{ id: 'AE', isFullyBooked: false, isNotBookable: true }],
-            stocks: [{ id: 'BE', offerId: 'AE' }]
-          }
+            stocks: [{ id: 'BE', offerId: 'AE' }],
+          },
         }
 
         // when
@@ -35,19 +35,19 @@ describe('components | BookingActionContainer', () => {
         const ownProps = {
           location: {
             pathname: '/fake-url',
-            search: ''
+            search: '',
           },
           match: {
             params: {
-              offerId: 'AE'
-            }
-          }
+              offerId: 'AE',
+            },
+          },
         }
         const state = {
           data: {
             offers: [{ id: 'AE', isFullyBooked: true, isNotBookable: true }],
-            stocks: [{ id: 'BE', offerId: 'AE' }]
-          }
+            stocks: [{ id: 'BE', offerId: 'AE' }],
+          },
         }
 
         // when
@@ -62,19 +62,19 @@ describe('components | BookingActionContainer', () => {
         const ownProps = {
           location: {
             pathname: '/fake-url',
-            search: ''
+            search: '',
           },
           match: {
             params: {
-              offerId: 'AE'
-            }
-          }
+              offerId: 'AE',
+            },
+          },
         }
         const state = {
           data: {
             offers: [{ id: 'AE', isFullyBooked: true, isNotBookable: false }],
-            stocks: [{ id: 'BE', offerId: 'AE' }]
-          }
+            stocks: [{ id: 'BE', offerId: 'AE' }],
+          },
         }
 
         // when
@@ -89,19 +89,19 @@ describe('components | BookingActionContainer', () => {
         const ownProps = {
           location: {
             pathname: '/fake-url',
-            search: ''
+            search: '',
           },
           match: {
             params: {
-              offerId: 'AE'
-            }
-          }
+              offerId: 'AE',
+            },
+          },
         }
         const state = {
           data: {
             offers: [{ id: 'AE', isFullyBooked: false, isNotBookable: false }],
-            stocks: [{ id: 'BE', offerId: 'AE' }]
-          }
+            stocks: [{ id: 'BE', offerId: 'AE' }],
+          },
         }
 
         // when
@@ -118,19 +118,19 @@ describe('components | BookingActionContainer', () => {
         const ownProps = {
           location: {
             pathname: '/fake-url',
-            search: ''
+            search: '',
           },
           match: {
             params: {
-              offerId: 'AE'
-            }
-          }
+              offerId: 'AE',
+            },
+          },
         }
         const state = {
           data: {
             offers: [{ id: 'AE', isFullyBooked: false, isNotBookable: true }],
-            stocks: [{ id: 'BE', offerId: 'AE' }]
-          }
+            stocks: [{ id: 'BE', offerId: 'AE' }],
+          },
         }
 
         // when
@@ -147,22 +147,22 @@ describe('components | BookingActionContainer', () => {
         const ownProps = {
           location: {
             pathname: '/fake-url',
-            search: ''
+            search: '',
           },
           match: {
             params: {
-              offerId: 'AE'
-            }
-          }
+              offerId: 'AE',
+            },
+          },
         }
         const state = {
           data: {
             offers: [{ id: 'AE', isFullyBooked: false, isNotBookable: true }],
             stocks: [
-              { id: 'BE', offerId: 'AE', price: 10, available: 10, isBookable: true },
-              { id: 'CE', offerId: 'AE', price: 20, available: 10, isBookable: true }
-            ]
-          }
+              { id: 'BE', offerId: 'AE', price: 10, isBookable: true },
+              { id: 'CE', offerId: 'AE', price: 20, isBookable: true },
+            ],
+          },
         }
 
         // when

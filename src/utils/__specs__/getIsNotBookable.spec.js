@@ -1,10 +1,10 @@
-import getIsNotBookable from '../getIsNotBookable'
+import isOfferBookableForUser from '../getIsNotBookable'
 
-describe('src | helpers | getIsNotBookable', () => {
-  describe('getIsNotBookable', () => {
+describe('src | helpers | isOfferBookableForUser', () => {
+  describe('isOfferBookableForUser', () => {
     it('should return false when no recommendation', () => {
       // when
-      const result = getIsNotBookable(null)
+      const result = isOfferBookableForUser(null)
 
       // then
       expect(result).toBe(false)
@@ -15,7 +15,7 @@ describe('src | helpers | getIsNotBookable', () => {
       const offer = { isNotBookable: false }
 
       // when
-      const result = getIsNotBookable(offer)
+      const result = isOfferBookableForUser(offer)
 
       // then
       expect(result).toBe(false)
@@ -27,7 +27,7 @@ describe('src | helpers | getIsNotBookable', () => {
       const mediation = { tutoIndex: 1 }
 
       // when
-      const result = getIsNotBookable(offer, mediation)
+      const result = isOfferBookableForUser(offer, mediation)
 
       // then
       expect(result).toBe(false)
@@ -41,7 +41,7 @@ describe('src | helpers | getIsNotBookable', () => {
       const mediation = {}
 
       // when
-      const result = getIsNotBookable(offer, mediation)
+      const result = isOfferBookableForUser(offer, mediation)
 
       // then
       expect(result).toBe(false)
@@ -55,7 +55,7 @@ describe('src | helpers | getIsNotBookable', () => {
       const mediation = {}
 
       // when
-      const result = getIsNotBookable(offer, mediation)
+      const result = isOfferBookableForUser(offer, mediation)
 
       // then
       expect(result).toBe(true)

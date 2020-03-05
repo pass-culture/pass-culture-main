@@ -1,15 +1,16 @@
-const getIsNotBookable = (offer, mediation, booking) => {
+const isOfferBookableForUser = (offer, mediation, booking) => {
   if (!offer) {
     return false
   }
-  if (mediation && typeof mediation.tutoIndex !== 'undefined') {
+  const isTutorialCard = mediation && typeof mediation.tutoIndex !== 'undefined'
+  if (isTutorialCard) {
     return false
   }
   const { isUsed } = booking || {}
   if (isUsed) {
     return false
   }
-  return offer.isNotBookable
+  return !offer.isBookable
 }
 
-export default getIsNotBookable
+export default isOfferBookableForUser
