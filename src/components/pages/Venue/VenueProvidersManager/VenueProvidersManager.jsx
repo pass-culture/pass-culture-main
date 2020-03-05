@@ -153,6 +153,7 @@ class VenueProvidersManager extends PureComponent {
                 {providerSelectedIsLibraires && (
                   <LibrairesProviderForm
                     offererId={match.params.offererId}
+                    providerId={providerId}
                     venueId={match.params.venueId}
                     venueSiret={venueSiret}
                   />

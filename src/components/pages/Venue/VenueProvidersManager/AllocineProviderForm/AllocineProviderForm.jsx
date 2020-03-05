@@ -4,22 +4,20 @@ import PropTypes from 'prop-types'
 import NumberField from '../../../../layout/form/fields/NumberField'
 import Icon from '../../../../layout/Icon'
 import { Form } from 'react-final-form'
-import SynchronisationConfirmationModal from './SynchronisationConfirmationModal/SynchronisationConfirmationModal'
 import { getCanSubmit } from 'react-final-form-utils'
 import Insert from "../../../../layout/Insert/Insert"
 import CheckboxField from "../../../../layout/form/fields/CheckboxField"
+
 
 class AllocineProviderForm extends PureComponent {
   constructor() {
     super()
     this.state = {
       isLoadingMode: false,
-      isShowingConfirmationModal: false,
     }
   }
 
   handleSubmit = (formValues) => {
-    this.hideModal()
     const { createVenueProvider, providerId, venueId } = this.props
     const { available, isDuo, price } = formValues
 
@@ -56,26 +54,14 @@ class AllocineProviderForm extends PureComponent {
     notify(errors)
   }
 
-  handleShowModal = () => {
-    this.setState({
-      isShowingConfirmationModal: true,
-    })
-  }
-
-  hideModal = () => {
-    this.setState({
-      isShowingConfirmationModal: false,
-    })
+  required(value) {
+    return typeof value === 'number' ? undefined : 'Ce champ est obligatoire' 
   }
 
   renderForm = (formProps) => {
-    const { isLoadingMode, isShowingConfirmationModal } = this.state
-    const required = value => {
-      return value ? undefined : 'Ce champ est obligatoire'
-    }
-
+    const { isLoadingMode } = this.state 
     const canSubmit = getCanSubmit(formProps)
-
+  
     return (
       <form onSubmit={formProps.handleSubmit}>
         {!isLoadingMode && (
@@ -106,7 +92,7 @@ class AllocineProviderForm extends PureComponent {
                 min="0"
                 name="price"
                 placeholder="Ex : 12€"
-                validate={required}
+                validate={this.required}
               />
             </div>
             <div className="apf-available-section">
@@ -155,20 +141,12 @@ class AllocineProviderForm extends PureComponent {
               <button
                 className="button is-primary apf-provider-import-button"
                 disabled={!canSubmit}
-                onClick={this.handleShowModal}
-                type="button"
+                type="submit"
               >
                 {'Importer les offres'}
               </button>
             </div>
           </div>
-        )}
-
-        {isShowingConfirmationModal && (
-          <SynchronisationConfirmationModal
-            handleClose={this.hideModal}
-            handleConfirm={formProps.handleSubmit}
-          />
         )}
       </form>
     )

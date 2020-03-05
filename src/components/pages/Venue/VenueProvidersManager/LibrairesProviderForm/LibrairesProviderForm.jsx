@@ -38,6 +38,7 @@ class LibrairesProviderForm extends PureComponent {
   renderForm = props => {
     const { venueSiret } = this.props
     const { isLoadingMode } = this.state
+
     return (
       <form onSubmit={props.handleSubmit}>
         <div className="libraires-provider-form">
@@ -80,6 +81,7 @@ LibrairesProviderForm.propTypes = {
   createVenueProvider: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   notify: PropTypes.func.isRequired,
+  providerId: PropTypes.string.isRequired,
   venueId: PropTypes.string.isRequired,
   venueSiret: PropTypes.string.isRequired
 }

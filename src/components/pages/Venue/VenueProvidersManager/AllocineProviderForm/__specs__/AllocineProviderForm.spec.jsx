@@ -4,9 +4,7 @@ import { mount, shallow } from 'enzyme'
 import { Form } from 'react-final-form'
 import NumberField from '../../../../../layout/form/fields/NumberField'
 import Icon from '../../../../../layout/Icon'
-
 import AllocineProviderForm from '../../AllocineProviderForm/AllocineProviderForm'
-import SynchronisationConfirmationModal from '../SynchronisationConfirmationModal/SynchronisationConfirmationModal'
 import CheckboxField from '../../../../../layout/form/fields/CheckboxField'
 
 describe('components | AllocineProviderForm', () => {
@@ -28,7 +26,6 @@ describe('components | AllocineProviderForm', () => {
       offererId: 'CC',
       providerId: 'AA',
       venueId: 'BB',
-      isShowingConfirmationModal: false,
     }
   })
 
@@ -47,7 +44,6 @@ describe('components | AllocineProviderForm', () => {
     // then
     expect(wrapper.state()).toStrictEqual({
       isLoadingMode: false,
-      isShowingConfirmationModal: false,
     })
   })
 
@@ -56,11 +52,11 @@ describe('components | AllocineProviderForm', () => {
     const wrapper = mount(<AllocineProviderForm {...props} />)
 
     // then
-    const priceFieldLabel =  wrapper
+    const priceFieldLabel = wrapper
       .findWhere(node => node.text() === 'Prix de vente/place ')
       .first()
 
-    const priceFieldInput =  wrapper
+    const priceFieldInput = wrapper
       .findWhere(node => node.prop('placeholder') === 'Ex : 12€')
       .first()
 
@@ -78,7 +74,7 @@ describe('components | AllocineProviderForm', () => {
       children: `Nombre de places/séance`,
     })
 
-    const availableInput =  wrapper
+    const availableInput = wrapper
       .findWhere(node => node.prop('placeholder') === 'Illimité')
       .first()
 
@@ -106,7 +102,7 @@ describe('components | AllocineProviderForm', () => {
     const wrapper = mount(<AllocineProviderForm {...props} />)
 
     // then
-    const priceToolTip =  wrapper
+    const priceToolTip = wrapper
       .findWhere(node => node.prop('data-tip') === '<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue.</p>')
       .first()
 
@@ -144,7 +140,7 @@ describe('components | AllocineProviderForm', () => {
     })
 
     expect(offerImportButton).toHaveLength(1)
-    expect(offerImportButton.prop('type')).toBe('button')
+    expect(offerImportButton.prop('type')).toBe('submit')
     expect(offerImportButton.prop('disabled')).toBe(true)
   })
 
@@ -156,17 +152,19 @@ describe('components | AllocineProviderForm', () => {
       label: 'checkbox-label'
     }
 
-    const formWithCheckboxField = ({handleSubmit}) => (
-      <form>
-        <CheckboxField {...props} />
-        <button
-          onClick={handleSubmit}
-          type="submit"
-        >
-          {'Submit'}
-        </button>
-      </form>
-    )
+    function formWithCheckboxField({ handleSubmit }) {
+      return (
+        <form>
+          <CheckboxField {...props} />
+          <button
+            onClick={handleSubmit}
+            type="submit"
+          >
+            {'Submit'}
+          </button>
+        </form>
+      )
+    }
 
     const wrapper = mount(
       <Form
@@ -188,26 +186,52 @@ describe('components | AllocineProviderForm', () => {
     }
   })
 
-  it('should be able to submit and display a confirmation modal when price field is filled ', () => {
+  it('should be able to submit with filled payload when price field is filled', () => {
     // given
     const wrapper = mount(<AllocineProviderForm {...props} />)
-    const importButton = wrapper.find('button')
+    const form = wrapper.find('form')
     const priceSection = wrapper.findWhere(node => node.text() === 'Prix de vente/place *')
     const priceInput = priceSection.find(NumberField).find('input')
     priceInput.simulate('change', { target: { value: 10 } })
 
     // when
-    importButton.simulate('click')
+    form.simulate('submit')
 
     // then
-    const syncConfirmationModal = wrapper.find(SynchronisationConfirmationModal)
-    expect(syncConfirmationModal).toHaveLength(1)
+    expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
+      price: 10,
+      available: undefined,
+      isDuo: undefined,
+      providerId: 'AA',
+      venueId: 'BB',
+    })
+  })
+
+  it('should be able to submit with filled payload when price field is filled to 0', () => {
+    // given
+    const wrapper = mount(<AllocineProviderForm {...props} />)
+    const form = wrapper.find('form')
+    const priceSection = wrapper.findWhere(node => node.text() === 'Prix de vente/place *')
+    const priceInput = priceSection.find(NumberField).find('input')
+    priceInput.simulate('change', { target: { value: 0 } })
+
+    // when
+    form.simulate('submit')
+
+    // then
+    expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
+      price: 0,
+      available: undefined,
+      isDuo: undefined,
+      providerId: 'AA',
+      venueId: 'BB',
+    })
   })
 
   it('should not be able to submit when price field is not filled', () => {
     // given
     const wrapper = mount(<AllocineProviderForm {...props} />)
-    const importButton = wrapper.find('button')
+    const form = wrapper.find('form')
     const availableSection = wrapper.findWhere(node => node.text() === 'Nombre de places/séance')
     const availableInput = availableSection.find(NumberField).find('input')
 
@@ -215,11 +239,10 @@ describe('components | AllocineProviderForm', () => {
     availableInput.simulate('click')
 
     // when
-    importButton.simulate('click')
+    form.simulate('click')
 
     // then
-    const syncConfirmationModal = wrapper.find(SynchronisationConfirmationModal)
-    expect(syncConfirmationModal).toHaveLength(0)
+    expect(createVenueProvider).not.toHaveBeenCalled()
   })
 
   describe('handleSuccess', () => {
