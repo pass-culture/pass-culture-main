@@ -5,7 +5,7 @@ from models.db import db
 from repository import repository
 
 
-def find_iris_near_venue(venue_id: int) -> List:
+def find_iris_located_near_venue(venue_id: int) -> List:
     maximum_distance_in_meters = 100000
     query = f''' WITH venue_coordinates AS (SELECT longitude, latitude from venue WHERE id = {venue_id})
                  SELECT id from iris_france, venue_coordinates
