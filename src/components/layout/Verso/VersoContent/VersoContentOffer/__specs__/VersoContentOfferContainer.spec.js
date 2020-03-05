@@ -21,7 +21,7 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
           offers: [
             {
               id: 1,
-              isNotBookable: false,
+              isBookable: true,
               stocks: [{}],
               venue: {
                 latitude: 48.91683,
@@ -50,7 +50,7 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
 
       // then
       expect(result.bookables).not.toBeNull()
-      expect(result.isNotBookable).toBe(false)
+      expect(result.isBookable).toBe(true)
       expect(result.recommendation).not.toBeNull()
     })
   })

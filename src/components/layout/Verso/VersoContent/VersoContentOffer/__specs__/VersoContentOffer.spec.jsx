@@ -7,7 +7,7 @@ import VersoActionsBar from '../VersoActionsBar/VersoActionsBar'
 import VersoContentOffer from '../VersoContentOffer'
 
 jest.mock('../../../../../../utils/geolocation', () => ({
-  navigationLink: jest.fn()
+  navigationLink: jest.fn(),
 }))
 
 describe('components | VersoContentOffer', () => {
@@ -20,10 +20,10 @@ describe('components | VersoContentOffer', () => {
       isEvent: false,
       isThing: true,
       offerType: {
-        appLabel: 'Presse — Abonnements'
+        appLabel: 'Presse — Abonnements',
       },
       product: {
-        description: 'fake description do not use'
+        description: 'fake description do not use',
       },
       productId: 'QE',
       venue: {
@@ -34,8 +34,8 @@ describe('components | VersoContentOffer', () => {
         longitude: 48.88381,
         name: 'fake name',
         postalCode: '93230',
-        publicName: 'fake publicName'
-      }
+        publicName: 'fake publicName',
+      },
     }
   })
 
@@ -54,8 +54,8 @@ describe('components | VersoContentOffer', () => {
       style: 'Rap / Contenders',
       userGeolocation: {
         latitude: null,
-        longitude: null
-      }
+        longitude: null,
+      },
     }
 
     // when
@@ -76,8 +76,8 @@ describe('components | VersoContentOffer', () => {
       offer,
       userGeolocation: {
         latitude: null,
-        longitude: null
-      }
+        longitude: null,
+      },
     }
 
     // when
@@ -98,8 +98,8 @@ describe('components | VersoContentOffer', () => {
       offer,
       userGeolocation: {
         latitude: null,
-        longitude: null
-      }
+        longitude: null,
+      },
     }
 
     // when
@@ -123,8 +123,8 @@ describe('components | VersoContentOffer', () => {
       offer,
       userGeolocation: {
         latitude: null,
-        longitude: null
-      }
+        longitude: null,
+      },
     }
 
     // when
@@ -140,7 +140,7 @@ describe('components | VersoContentOffer', () => {
     const props = {
       bookables: [
         { bookinglimitDatetime: '2019-04-01', id: 1 },
-        { bookinglimitDatetime: '2019-04-09', id: 2 }
+        { bookinglimitDatetime: '2019-04-09', id: 2 },
       ],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
@@ -149,8 +149,8 @@ describe('components | VersoContentOffer', () => {
       offer,
       userGeolocation: {
         latitude: null,
-        longitude: null
-      }
+        longitude: null,
+      },
     }
 
     // when
@@ -166,7 +166,7 @@ describe('components | VersoContentOffer', () => {
     const props = {
       bookables: [
         { bookinglimitDatetime: undefined, id: 1 },
-        { bookinglimitDatetime: undefined, id: 2 }
+        { bookinglimitDatetime: undefined, id: 2 },
       ],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
@@ -175,8 +175,8 @@ describe('components | VersoContentOffer', () => {
       offer,
       userGeolocation: {
         latitude: null,
-        longitude: null
-      }
+        longitude: null,
+      },
     }
 
     // when
@@ -190,8 +190,7 @@ describe('components | VersoContentOffer', () => {
   it('should render thing offer infos when offer is thing but not bookable', () => {
     // given
     const props = {
-      bookables: [
-      ],
+      bookables: [],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
       isNotBookable: false,
@@ -199,8 +198,8 @@ describe('components | VersoContentOffer', () => {
       offer,
       userGeolocation: {
         latitude: null,
-        longitude: null
-      }
+        longitude: null,
+      },
     }
 
     // when
@@ -217,13 +216,13 @@ describe('components | VersoContentOffer', () => {
       bookables: [{ id: 1 }, { id: 2 }],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isNotBookable: true,
+      isBookable: false,
       maxShownDates: 1,
       offer,
       userGeolocation: {
         latitude: null,
-        longitude: null
-      }
+        longitude: null,
+      },
     }
 
     // when
@@ -245,8 +244,8 @@ describe('components | VersoContentOffer', () => {
       offer,
       userGeolocation: {
         latitude: null,
-        longitude: null
-      }
+        longitude: null,
+      },
     }
 
     // when
@@ -272,8 +271,8 @@ describe('components | VersoContentOffer', () => {
       offer,
       userGeolocation: {
         latitude: null,
-        longitude: null
-      }
+        longitude: null,
+      },
     }
 
     // when
@@ -298,8 +297,8 @@ describe('components | VersoContentOffer', () => {
           offer,
           userGeolocation: {
             latitude: null,
-            longitude: null
-          }
+            longitude: null,
+          },
         }
 
         // when
@@ -318,8 +317,8 @@ describe('components | VersoContentOffer', () => {
           offer,
           userGeolocation: {
             latitude: null,
-            longitude: null
-          }
+            longitude: null,
+          },
         }
         navigationLink.mockReturnValue('this is a fake url')
 
@@ -346,8 +345,8 @@ describe('components | VersoContentOffer', () => {
           offer,
           userGeolocation: {
             latitude: null,
-            longitude: null
-          }
+            longitude: null,
+          },
         }
 
         // when
@@ -367,8 +366,8 @@ describe('components | VersoContentOffer', () => {
           offer,
           userGeolocation: {
             latitude: null,
-            longitude: null
-          }
+            longitude: null,
+          },
         }
         navigationLink.mockReturnValue('this is a fake url')
 
@@ -389,8 +388,8 @@ describe('components | VersoContentOffer', () => {
           offer,
           userGeolocation: {
             latitude: null,
-            longitude: null
-          }
+            longitude: null,
+          },
         }
         navigationLink.mockReturnValue('this is a fake url')
 
@@ -418,8 +417,8 @@ describe('components | VersoContentOffer', () => {
           offer,
           userGeolocation: {
             latitude: null,
-            longitude: null
-          }
+            longitude: null,
+          },
         }
 
         // when
@@ -446,8 +445,8 @@ describe('components | VersoContentOffer', () => {
           offer: offerWithoutCoordinates,
           userGeolocation: {
             latitude: null,
-            longitude: null
-          }
+            longitude: null,
+          },
         }
 
         // when
@@ -464,19 +463,19 @@ describe('components | VersoContentOffer', () => {
       // given
       const props = {
         booking: {
-          completedUrl: 'http://fake-url.com'
+          completedUrl: 'http://fake-url.com',
         },
         bookables: [],
         isCancelled: false,
         distance: '1',
         handleRequestMusicAndShowTypes: jest.fn(),
         offer: {
-          id: 'ID'
+          id: 'ID',
         },
         userGeolocation: {
           latitude: null,
-          longitude: null
-        }
+          longitude: null,
+        },
       }
 
       // when
@@ -498,12 +497,12 @@ describe('components | VersoContentOffer', () => {
         distance: '1',
         handleRequestMusicAndShowTypes: jest.fn(),
         offer: {
-          id: 'ID'
+          id: 'ID',
         },
         userGeolocation: {
           latitude: null,
-          longitude: null
-        }
+          longitude: null,
+        },
       }
 
       // when
@@ -525,12 +524,12 @@ describe('components | VersoContentOffer', () => {
         distance: '1',
         handleRequestMusicAndShowTypes: jest.fn(),
         offer: {
-          id: 'ID'
+          id: 'ID',
         },
         userGeolocation: {
           latitude: null,
-          longitude: null
-        }
+          longitude: null,
+        },
       }
 
       // when

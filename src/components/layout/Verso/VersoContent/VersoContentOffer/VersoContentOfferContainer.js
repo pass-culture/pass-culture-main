@@ -5,11 +5,10 @@ import { requestData } from 'redux-thunk-data'
 
 import {
   selectBookables,
-  selectBookingByRouterMatch
+  selectBookingByRouterMatch,
 } from '../../../../../selectors/data/bookingsSelectors'
 import { selectOfferByRouterMatch } from '../../../../../selectors/data/offersSelectors'
 import { selectDistanceByRouterMatch } from '../../../../../selectors/geolocationSelectors'
-import { selectIsNotBookableByRouterMatch } from '../../../../../selectors/isNotBookableSelector'
 import { selectUserGeolocation } from '../../../../../selectors/geolocationSelectors'
 import getStyle from './utils/getStyle'
 import VersoContentOffer from './VersoContentOffer'
@@ -18,7 +17,7 @@ export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
   const offer = selectOfferByRouterMatch(state, match) || {}
   const bookables = selectBookables(state, offer)
-  const isNotBookable = selectIsNotBookableByRouterMatch(state, match)
+  const isBookable = offer.isBookable
   const { extraData } = offer || {}
   const style = getStyle(state, extraData)
   const booking = selectBookingByRouterMatch(state, match)
@@ -31,10 +30,10 @@ export const mapStateToProps = (state, ownProps) => {
     booking,
     distance,
     isCancelled,
-    isNotBookable,
+    isBookable,
     offer,
     style,
-    userGeolocation
+    userGeolocation,
   }
 }
 
@@ -45,7 +44,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     if (!musicTypes) {
       dispatch(
         requestData({
-          apiPath: '/musicTypes'
+          apiPath: '/musicTypes',
         })
       )
     }
@@ -53,11 +52,11 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     if (!showTypes) {
       dispatch(
         requestData({
-          apiPath: '/showTypes'
+          apiPath: '/showTypes',
         })
       )
     }
-  }
+  },
 })
 
 export default compose(
