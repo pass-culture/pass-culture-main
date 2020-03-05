@@ -1,7 +1,8 @@
 from shapely.geometry import Polygon, Point
 
+from models import IrisVenues
 from repository import repository
-from repository.iris_venues_queries import find_iris_near_venue
+from repository.iris_venues_queries import find_iris_near_venue, insert_venue_in_iris_venues
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_venue, create_offerer, create_iris
 
@@ -30,3 +31,16 @@ def test_find_iris_near_venue_should_return_iris_ids_located_near_to_given_venue
 
     # then
     assert iris_id == [iris_beauvais.id]
+
+
+@clean_database
+def test_insert_venue_in_iris_venues_should_insert_venue_in_iris_venues(app):
+    # Given
+    venue_id = 1
+    iris_ids_near_to_venue = [1, 2, 3]
+
+    # When
+    insert_venue_in_iris_venues(venue_id, iris_ids_near_to_venue)
+
+    # Then
+    assert IrisVenues.query.count() == 3

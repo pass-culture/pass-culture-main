@@ -1,6 +1,8 @@
 from typing import List
 
+from models import IrisVenues
 from models.db import db
+from repository import repository
 
 
 def find_iris_near_venue(venue_id: int) -> List:
@@ -12,3 +14,11 @@ def find_iris_near_venue(venue_id: int) -> List:
     '''
     iris_ids = db.session.execute(query).fetchall()
     return [iris_id[0] for iris_id in iris_ids]
+
+
+def insert_venue_in_iris_venues(venue_id: int, iris_ids_near_venue: List[int]) -> None:
+    for iris_id in iris_ids_near_venue:
+        iris_venue = IrisVenues()
+        iris_venue.venueId = venue_id
+        iris_venue.irisId = iris_id
+        repository.save(iris_venue)
