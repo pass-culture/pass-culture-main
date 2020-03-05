@@ -365,3 +365,33 @@ class IsBookableTest:
 
         # Then
         assert not stock.isBookable
+
+class hasBookingLimitDatetimesPassed:
+    @freeze_time('2019-07-10')
+    def test_is_True_when_booking_limit_datetime_is_in_the_past(self):
+        # Given
+        limit_datetime = datetime(2019, 7, 9)
+
+        # When
+        stock = create_stock(booking_limit_datetime=limit_datetime)
+
+        # Then
+        assert stock.hasBookingLimitDatetimesPassed is True
+
+    @freeze_time('2019-07-10')
+    def test_is_False_when_booking_limit_datetime_is_in_the_future(self):
+        # Given
+        limit_datetime = datetime(2019, 7, 11)
+
+        # When
+        stock = create_stock(booking_limit_datetime=limit_datetime)
+
+        # Then
+        assert stock.hasBookingLimitDatetimesPassed is False
+
+    def test_is_False_when_no_booking_datetime_limit(self):
+        # When
+        stock = create_stock(booking_limit_datetime=None)
+
+        # Then
+        assert stock.hasBookingLimitDatetimesPassed is False

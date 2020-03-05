@@ -162,6 +162,10 @@ class Offer(PcObject,
         return all(map(lambda s: not s.isBookable, self.stocks))
 
     @property
+    def hasBookingLimitDatetimesPassed(self) -> bool:
+        return True
+
+    @property
     def isFullyBooked(self) -> bool:
         if self._has_unlimited_stock():
             return False

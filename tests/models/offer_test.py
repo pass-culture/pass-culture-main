@@ -465,7 +465,7 @@ class DateRangeTest:
         assert offer_dict['dateRange'] == [
             '2018-10-22T10:10:10Z', '2018-10-22T13:10:10Z']
 
-    def test_is_empty_if_offer_is_on_a_thing(self):
+    def test_is_empty_when_offer_is_on_a_thing(self):
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -474,7 +474,7 @@ class DateRangeTest:
         # then
         assert offer.dateRange == DateTimes()
 
-    def test_matches_the_occurrence_if_only_one_occurrence(self):
+    def test_matches_the_occurrence_when_only_one_occurrence(self):
         # given
         offer = create_offer_with_event_product()
         offer.stocks = [
@@ -519,7 +519,7 @@ class DateRangeTest:
         assert offer.dateRange == DateTimes(two_days_ago, ten_days_from_now)
         assert offer.dateRange.datetimes == [two_days_ago, ten_days_from_now]
 
-    def test_is_empty_if_event_has_no_event_occurrences(self):
+    def test_is_empty_when_event_has_no_event_occurrences(self):
         # given
         offer = create_offer_with_event_product()
         offer.stocks = []
@@ -527,7 +527,7 @@ class DateRangeTest:
         # then
         assert offer.dateRange == DateTimes()
 
-    def test_is_empty_if_event_only_has_a_soft_deleted_occurence(self):
+    def test_is_empty_when_event_only_has_a_soft_deleted_occurence(self):
         # given
         offer = create_offer_with_event_product()
         offer.stocks = [
@@ -705,7 +705,7 @@ class CreateOfferTest:
             'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"']
 
 
-def test_offer_is_digital_if_it_has_an_url():
+def test_offer_is_digital_when_it_has_an_url():
     # given
     offer = Offer()
     offer.url = 'http://url.com'
@@ -773,7 +773,7 @@ def test_event_offer_offerType_returns_dict_matching_EventType_enum():
     assert offer_type == expected_value
 
 
-def test_thing_offer_offerType_returns_None_if_type_does_not_match_ThingType_enum():
+def test_thing_offer_offerType_returns_None_when_type_does_not_match_ThingType_enum():
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -786,7 +786,7 @@ def test_thing_offer_offerType_returns_None_if_type_does_not_match_ThingType_enu
     assert offer_type == None
 
 
-def test_event_offer_offerType_returns_None_if_type_does_not_match_EventType_enum():
+def test_event_offer_offerType_returns_None_when_type_does_not_match_EventType_enum():
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -800,7 +800,7 @@ def test_event_offer_offerType_returns_None_if_type_does_not_match_EventType_enu
 
 
 class IsFullyBookedTest:
-    def test_returns_true_if_all_available_stocks_are_booked_after_last_update(self):
+    def test_returns_true_when_all_available_stocks_are_booked_after_last_update(self):
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -832,7 +832,7 @@ class IsFullyBookedTest:
         # then
         assert offer.isFullyBooked is False
 
-    def test_stocks_with_past_booking_limit_datetimes_are_ignored(self):
+    def test_stocks_with_passed_booking_limit_datetimes_are_ignored(self):
         # given
         offer = Offer()
         user = create_user()
@@ -847,7 +847,7 @@ class IsFullyBookedTest:
         # then
         assert offer.isFullyBooked is True
 
-    def test_returns_false_if_stocks_have_none_available_quantity(self):
+    def test_returns_false_when_stocks_have_none_available_quantity(self):
         # given
         offer = Offer()
         user = create_user()
@@ -860,7 +860,7 @@ class IsFullyBookedTest:
         # then
         assert offer.isFullyBooked is False
 
-    def test_returns_false_if_stocks_are_booked_before_last_update(self):
+    def test_returns_false_when_stocks_are_booked_before_last_update(self):
         # given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -875,40 +875,44 @@ class IsFullyBookedTest:
         assert offer.isFullyBooked is False
 
 
-class IsBookableTest:
-    def test_returns_true_when_at_least_one_stock_is_bookable(self):
-        # Given
-        passed_limit_datetime = datetime.utcnow() - timedelta(days=2)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        offer.stocks = [create_stock(offer=offer, booking_limit_datetime=passed_limit_datetime),
-                        create_stock(offer=offer)]
+class hasBookingLimitDatetimesPassedTest:
+    def test_returns_true_when_all_stocks_have_passed_booking_limit_datetime(self):
+        # given
+        now = datetime.utcnow()
+        offer = Offer()
+        stock1 = create_stock(booking_limit_datetime=now - timedelta(weeks=3))
+        stock2 = create_stock(booking_limit_datetime=now - timedelta(weeks=2))
+        stock3 = create_stock(booking_limit_datetime=now - timedelta(weeks=1))
+        offer.stocks = [stock1, stock2, stock3]
 
-        # When
-        is_offer_bookable = offer.isBookable
+        # then
+        assert offer.hasBookingLimitDatetimesPassed is True
 
-        # Then
-        assert is_offer_bookable
+    def test_returns_false_when_any_stock_has_future_booking_limit_datetime(self):
+        # given
+        now = datetime.utcnow()
+        offer = Offer()
+        stock1 = create_stock(booking_limit_datetime=now - timedelta(weeks=3))
+        stock2 = create_stock(booking_limit_datetime=None)
+        stock3 = create_stock(booking_limit_datetime=now + timedelta(weeks=1))
+        offer.stocks = [stock1, stock2, stock3]
 
-    def test_returns_false_when_no_stock_is_bookable(self):
-        # Given
-        passed_limit_datetime = datetime.utcnow() - timedelta(days=2)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        offer.stocks = [create_stock(offer=offer, booking_limit_datetime=passed_limit_datetime),
-                        create_stock(offer=offer, is_soft_deleted=True)]
+        # then
+        assert offer.hasBookingLimitDatetimesPassed is False
 
-        # When
-        is_offer_bookable = offer.isBookable
+    def test_returns_false_when_all_stocks_have_no_booking_limit_datetime(self):
+        # given
+        offer = Offer()
+        stock1 = create_stock(booking_limit_datetime=None)
+        stock2 = create_stock(booking_limit_datetime=None)
+        stock3 = create_stock(booking_limit_datetime=None)
+        offer.stocks = [stock1, stock2, stock3]
 
-        # Then
-        assert not is_offer_bookable
-
+        # then
+        assert offer.hasBookingLimitDatetimesPassed is False
 
 class IsNotBookableTest:
-    def test_returns_true_if_all_stocks_have_past_booking_limit_datetime(self):
+    def test_returns_true_when_all_stocks_have_passed_booking_limit_datetime(self):
         # given
         now = datetime.utcnow()
         offer = Offer()
@@ -920,7 +924,7 @@ class IsNotBookableTest:
         # then
         assert offer.isNotBookable
 
-    def test_returns_false_if_any_stock_has_future_booking_limit_datetime(self):
+    def test_returns_false_when_any_stock_has_future_booking_limit_datetime(self):
         # given
         now = datetime.utcnow()
         offer = Offer()
@@ -932,7 +936,7 @@ class IsNotBookableTest:
         # then
         assert not offer.isNotBookable
 
-    def test_returns_false_if_all_stocks_have_no_booking_limit_datetime(self):
+    def test_returns_false_when_all_stocks_have_no_booking_limit_datetime(self):
         # given
         offer = Offer()
         stock1 = create_stock(booking_limit_datetime=None)
@@ -943,9 +947,8 @@ class IsNotBookableTest:
         # then
         assert not offer.isNotBookable
 
-
 class ActiveMediationTest:
-    def test_returns_none_if_no_mediations_exist_on_offer(self):
+    def test_returns_none_when_no_mediations_exist_on_offer(self):
         # given
         offer = Offer()
         offer.mediations = []
@@ -953,7 +956,7 @@ class ActiveMediationTest:
         # then
         assert offer.activeMediation is None
 
-    def test_returns_none_if_all_mediations_are_deactivated(self):
+    def test_returns_none_when_all_mediations_are_deactivated(self):
         # given
         offer = Offer()
         offer.mediations = [
@@ -1032,7 +1035,7 @@ class DateRangeTest:
 
 
 class IsEditableTest:
-    def test_returns_false_if_offer_is_coming_from_provider(self, app):
+    def test_returns_false_when_offer_is_coming_from_provider(self, app):
         # given
         offer = Offer()
         offer.lastProviderId = 21
@@ -1040,7 +1043,7 @@ class IsEditableTest:
         # then
         assert offer.isEditable is False
 
-    def test_returns_false_if_offer_is_coming_from_TiteLive_provider(self, app):
+    def test_returns_false_when_offer_is_coming_from_TiteLive_provider(self, app):
         # given
         provider = Provider()
         provider.name = 'myProvider'
@@ -1054,7 +1057,7 @@ class IsEditableTest:
         # then
         assert offer.isEditable is False
 
-    def test_returns_true_if_offer_is_coming_from_Allocine_provider(self, app):
+    def test_returns_true_when_offer_is_coming_from_Allocine_provider(self, app):
         # given
         provider = Provider()
         provider.name = 'my allocine provider'
@@ -1068,7 +1071,7 @@ class IsEditableTest:
         # then
         assert offer.isEditable is True
 
-    def test_returns_true_if_offer_is_not_coming_from_provider(self, app):
+    def test_returns_true_when_offer_is_not_coming_from_provider(self, app):
         # given
         offer = Offer()
 
@@ -1092,7 +1095,7 @@ class ActiveStocksTest:
 
 
 class IsFromProviderTest:
-    def test_returns_True_if_offer_is_coming_from_provider(self, app):
+    def test_returns_True_when_offer_is_coming_from_provider(self, app):
         # given
         offer = Offer()
         offer.lastProviderId = 21
@@ -1100,7 +1103,7 @@ class IsFromProviderTest:
         # then
         assert offer.isFromProvider is True
 
-    def test_returns_True_if_offer_is_coming_from_TiteLive_provider(self, app):
+    def test_returns_True_when_offer_is_coming_from_TiteLive_provider(self, app):
         # given
         provider = Provider()
         provider.name = 'myProvider'
@@ -1114,7 +1117,7 @@ class IsFromProviderTest:
         # then
         assert offer.isFromProvider is True
 
-    def test_returns_False_if_offer_is_not_coming_from_provider(self, app):
+    def test_returns_False_when_offer_is_not_coming_from_provider(self, app):
         # given
         offer = Offer()
 
