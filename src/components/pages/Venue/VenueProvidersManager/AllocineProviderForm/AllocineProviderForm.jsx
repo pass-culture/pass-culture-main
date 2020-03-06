@@ -55,15 +55,15 @@ class AllocineProviderForm extends PureComponent {
   }
 
   required(value) {
-    return typeof value === 'number' ? undefined : 'Ce champ est obligatoire' 
+    return typeof value === 'number' ? undefined : 'Ce champ est obligatoire'
   }
 
   renderForm = (formProps) => {
-    const { isLoadingMode } = this.state 
+    const { isLoadingMode } = this.state
     const canSubmit = getCanSubmit(formProps)
-  
+
     return (
-      <form onSubmit={formProps.handleSubmit}>
+      <form>
         {!isLoadingMode && (
           <div className="allocine-provider-form">
             <div className="apf-price-section">

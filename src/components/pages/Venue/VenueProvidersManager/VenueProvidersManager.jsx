@@ -104,7 +104,7 @@ class VenueProvidersManager extends PureComponent {
             <li className="add-provider-form">
               <div className="field-control">
                 <div className="select-provider-section">
-                  <div id="select-source">
+                  <div className="select-source">
                     <label htmlFor="provider-options">
                       {'Source'}
                     </label>
@@ -119,16 +119,14 @@ class VenueProvidersManager extends PureComponent {
                       >
                         {DEFAULT_PROVIDER_OPTION.name}
                       </option>
-                      {providers.map(provider => {
-                        return (
-                          <option
-                            key={`provider-${provider.id}`}
-                            value={JSON.stringify(provider)}
-                          >
-                            {provider.name}
-                          </option>
-                        )
-                      })}
+                      {providers.map(provider => (
+                        <option
+                          key={`provider-${provider.id}`}
+                          value={JSON.stringify(provider)}
+                        >
+                          {provider.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>

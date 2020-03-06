@@ -131,7 +131,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
         addOfferBtn.simulate('click')
 
         // then
-        const selectButton = wrapper.find('#select-source')
+        const selectButton = wrapper.find('.select-source')
         expect(selectButton).toHaveLength(1)
         const selectButtonOptions = wrapper.find('#provider-options option')
         expect(selectButtonOptions).toHaveLength(3)

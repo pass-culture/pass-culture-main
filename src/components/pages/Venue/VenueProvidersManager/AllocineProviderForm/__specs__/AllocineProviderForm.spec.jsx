@@ -189,13 +189,13 @@ describe('components | AllocineProviderForm', () => {
   it('should be able to submit with filled payload when price field is filled', () => {
     // given
     const wrapper = mount(<AllocineProviderForm {...props} />)
-    const form = wrapper.find('form')
+    const formSubmit = wrapper.find('button')
     const priceSection = wrapper.findWhere(node => node.text() === 'Prix de vente/place *')
     const priceInput = priceSection.find(NumberField).find('input')
     priceInput.simulate('change', { target: { value: 10 } })
 
     // when
-    form.simulate('submit')
+    formSubmit.simulate('click')
 
     // then
     expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
@@ -210,13 +210,13 @@ describe('components | AllocineProviderForm', () => {
   it('should be able to submit with filled payload when price field is filled to 0', () => {
     // given
     const wrapper = mount(<AllocineProviderForm {...props} />)
-    const form = wrapper.find('form')
+    const formSubmit = wrapper.find('button')
     const priceSection = wrapper.findWhere(node => node.text() === 'Prix de vente/place *')
     const priceInput = priceSection.find(NumberField).find('input')
     priceInput.simulate('change', { target: { value: 0 } })
 
     // when
-    form.simulate('submit')
+    formSubmit.simulate('click')
 
     // then
     expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
@@ -249,7 +249,7 @@ describe('components | AllocineProviderForm', () => {
     })
   })
 
-  it('should not be able to submit when price field is not filled', () => {
+  it('should not be able to submit when available is filled but price is not', () => {
     // given
     const wrapper = mount(<AllocineProviderForm {...props} />)
     const form = wrapper.find('form')
