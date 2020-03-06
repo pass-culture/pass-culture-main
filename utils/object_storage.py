@@ -20,11 +20,11 @@ def swift_con():
     tenant_name = os.environ.get('OVH_TENANT_NAME')
     region_name = os.environ.get('OVH_REGION_NAME', 'GRA')
 
-    auth_url = 'https://auth.cloud.ovh.net/v2.0/'
+    auth_url = 'https://auth.cloud.ovh.net/v3/'
     options = {
         'region_name': region_name
     }
-    auth_version = '2'
+    auth_version = '3'
     return swiftclient.Connection(user=user,
                                   key=key,
                                   authurl=auth_url,

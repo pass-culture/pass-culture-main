@@ -19,11 +19,11 @@ def swift_con(dest_container_name):
         print('Ce conteneur ne semble pas exister')
         return 1
 
-    auth_url = 'https://auth.cloud.ovh.net/v2.0/'
+    auth_url = 'https://auth.cloud.ovh.net/v3/'
     options = {
         'region_name': region_name
     }
-    auth_version = '2'
+    auth_version = '3'
     return swiftclient.Connection(user=user,
                                   key=key,
                                   authurl=auth_url,
@@ -38,11 +38,11 @@ def swift_con_prod():
     tenant_name = os.environ.get('OVH_TENANT_NAME_PROD')
     region_name = os.environ.get('OVH_REGION_NAME_PROD', 'GRA')
 
-    auth_url = 'https://auth.cloud.ovh.net/v2.0/'
+    auth_url = 'https://auth.cloud.ovh.net/v3/'
     options = {
         'region_name': region_name
     }
-    auth_version = '2'
+    auth_version = '3'
     return swiftclient.Connection(user=user,
                                   key=key,
                                   authurl=auth_url,
