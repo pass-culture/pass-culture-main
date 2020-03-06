@@ -311,6 +311,25 @@ jobs:
             curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Webapp,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
           when: on_fail
 
+  deploy-sandbox-in-testing:
+    machine:
+      image: circleci/classic:latest
+    working_directory: ~/pass-culture
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run:
+          name: Deploy Sandbox in Testing
+          command: |
+            ./pc -e testing sandbox --name=testing
+      - run:
+          name: Notify PC Ops Bot
+          when: on_fail
+          command: |
+            export BOT_MESSAGE="'Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL'"
+            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
+
   release-synthesis:
     machine:
       image: circleci/classic:latest
@@ -375,3 +394,13 @@ workflows:
           requires:
             - deploy-pro
             - deploy-webapp
+  every-mondays-nights:
+    triggers:
+      - schedule:
+          cron: "0 23 * * 1"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - deploy-sandbox-in-testing
