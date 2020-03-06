@@ -787,8 +787,10 @@ describe('components | SearchResults', () => {
       )
 
       // then
+      const form = wrapper.find('form')
       const searchDetails = wrapper.find(SearchAlgoliaDetailsContainer)
       expect(searchDetails).toHaveLength(1)
+      expect(form).toHaveLength(0)
     })
 
     describe('come back icon', () => {

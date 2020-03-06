@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
-import { Route } from 'react-router'
+import { Route, Switch } from 'react-router'
 import { toast } from 'react-toastify'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import Icon from '../../../layout/Icon/Icon'
@@ -41,7 +41,7 @@ class SearchResults extends PureComponent {
   }
 
   showFailModal = () => {
-    toast.info("La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard.")
+    toast.info('La recherche n\'a pas pu aboutir, veuillez ré-essayer plus tard.')
   }
 
   handleOnSubmit = event => {
@@ -163,96 +163,101 @@ class SearchResults extends PureComponent {
 
     return (
       <main className="search-page-algolia">
-        <Route
-          path="/recherche-offres/resultats/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
-        >
-          <HeaderContainer
-            closeTitle="Retourner à la page découverte"
-            closeTo="/decouverte"
-            shouldBackFromDetails={this.shouldBackFromDetails()}
-            title="Recherche"
-          />
-          <SearchAlgoliaDetailsContainer />
-        </Route>
-
-        <form
-          className="spr-text-input-form"
-          onSubmit={this.handleOnSubmit}
-        >
-          <div className="sp-text-input-wrapper">
-            <button
-              className="sp-text-input-back"
-              onClick={this.handleBackButtonClick}
-              type="button"
+        <Switch>
+          <Route
+            exact
+            path="/recherche-offres/resultats(/menu)?"
+          >
+            <form
+              className="spr-text-input-form"
+              onSubmit={this.handleOnSubmit}
             >
-              <Icon
-                alt="Réinitialiser la recherche"
-                svg="picto-back-grey"
-              />
-            </button>
-            <input
-              className="sp-text-input"
-              name="keywords"
-              onChange={this.handleOnTextInputChange}
-              placeholder="Artiste, auteur..."
-              ref={this.inputRef}
-              type="text"
-              value={keywordsToSearch}
-            />
-            <div className="sp-text-input-reset">
-              {keywordsToSearch && (
+              <div className="sp-text-input-wrapper">
                 <button
-                  className="sp-text-input-reset-button"
-                  onClick={this.handleResetButtonClick}
-                  type="reset"
+                  className="sp-text-input-back"
+                  onClick={this.handleBackButtonClick}
+                  type="button"
                 >
                   <Icon
-                    alt="Supprimer la saisie"
-                    svg="picto-reset"
+                    alt="Réinitialiser la recherche"
+                    svg="picto-back-grey"
                   />
                 </button>
+                <input
+                  className="sp-text-input"
+                  name="keywords"
+                  onChange={this.handleOnTextInputChange}
+                  placeholder="Artiste, auteur..."
+                  ref={this.inputRef}
+                  type="text"
+                  value={keywordsToSearch}
+                />
+                <div className="sp-text-input-reset">
+                  {keywordsToSearch && (
+                    <button
+                      className="sp-text-input-reset-button"
+                      onClick={this.handleResetButtonClick}
+                      type="reset"
+                    >
+                      <Icon
+                        alt="Supprimer la saisie"
+                        svg="picto-reset"
+                      />
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="sp-search-button-wrapper">
+                <button
+                  className="sp-search-button sp-minimize-search-button"
+                  type="submit"
+                >
+                  {'Rechercher'}
+                </button>
+              </div>
+            </form>
+            <div className="sp-results-wrapper">
+              {isLoading && <Spinner label="Recherche en cours" />}
+              <h1 className="sp-results-title">
+                {searchedKeywords &&
+                `"${searchedKeywords}" : ${resultsCount} ${
+                  resultsCount > 1 ? 'résultats' : 'résultat'
+                }`}
+              </h1>
+              {results.length > 0 && (
+                <InfiniteScroll
+                  getScrollParent={this.getScrollParent}
+                  hasMore={currentPage + 1 < totalPagesNumber}
+                  loader={<Spinner key="loader" />}
+                  loadMore={this.fetchNextOffersPage}
+                  pageStart={currentPage}
+                  threshold={-10}
+                  useWindow={false}
+                >
+                  {results.map(result => (
+                    <Result
+                      geolocation={geolocation}
+                      key={result.objectID}
+                      result={result}
+                      search={search}
+                    />
+                  ))}
+                </InfiniteScroll>
               )}
             </div>
-          </div>
-          <div className="sp-search-button-wrapper">
-            <button
-              className="sp-search-button sp-minimize-search-button"
-              type="submit"
-            >
-              {'Rechercher'}
-            </button>
-          </div>
-        </form>
-
-        <div className="sp-results-wrapper">
-          {isLoading && <Spinner label="Recherche en cours" />}
-          <h1 className="sp-results-title">
-            {searchedKeywords &&
-            `"${searchedKeywords}" : ${resultsCount} ${
-              resultsCount > 1 ? 'résultats' : 'résultat'
-            }`}
-          </h1>
-          {results.length > 0 && (
-            <InfiniteScroll
-              getScrollParent={this.getScrollParent}
-              hasMore={currentPage + 1 < totalPagesNumber}
-              loader={<Spinner key="loader" />}
-              loadMore={this.fetchNextOffersPage}
-              pageStart={currentPage}
-              threshold={-10}
-              useWindow={false}
-            >
-              {results.map(result => (
-                <Result
-                  geolocation={geolocation}
-                  key={result.objectID}
-                  result={result}
-                  search={search}
-                />
-              ))}
-            </InfiniteScroll>
-          )}
-        </div>
+          </Route>
+          <Route
+            path="/recherche-offres/resultats/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+          >
+            <HeaderContainer
+              closeTitle="Retourner à la page découverte"
+              closeTo="/decouverte"
+              shouldBackFromDetails={this.shouldBackFromDetails()}
+              title="Recherche"
+            />
+            <SearchAlgoliaDetailsContainer />
+          </Route>
+        </Switch>
 
         <RelativeFooterContainer
           extraClassName="dotted-top-red"
