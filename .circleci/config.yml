@@ -165,7 +165,6 @@ jobs:
             export BOT_MESSAGE="'Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL'"
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
 
-
   tests-perf:
     working_directory: ~
     docker:
@@ -177,6 +176,7 @@ jobs:
       - run: python3 scripts/analyze_report.py /tmp/artillery-report.json
       - store_artifacts:
           path: /tmp/artillery-report.json
+
   deploy-api:
     machine:
       image: circleci/classic:latest
@@ -211,6 +211,7 @@ jobs:
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
             curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Api,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
           when: on_fail
+
   deploy-api-datalake:
     machine:
       image: circleci/classic:latest
@@ -269,6 +270,7 @@ jobs:
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
             curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Pro,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
           when: on_fail
+
   deploy-webapp:
     machine:
       image: circleci/classic:latest
@@ -308,6 +310,7 @@ jobs:
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
             curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Webapp,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
           when: on_fail
+
   release-synthesis:
     machine:
       image: circleci/classic:latest
