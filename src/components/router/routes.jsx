@@ -79,7 +79,7 @@ const routes = [
   },
   {
     component: DiscoveryContainerV2,
-    featureName: 'RECOMMENDATIONS_WITH_MATERIALIZED_VIEW',
+    featureName: 'RECOMMENDATIONS_WITH_DISCOVERY_VIEW',
     icon: 'ico-offres',
     path:
       '/decouverte-v2/:offerId(tuto|[A-Z0-9]+)?/:mediationId(vide|fin|[A-Z0-9]+)?/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?',

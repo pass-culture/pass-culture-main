@@ -101,6 +101,9 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
   updateLastRequestTimestamp: () => {
     dispatch(updateSeedLastRequestTimestamp(Date.now()))
   },
+  resetRecommendations: () => {
+    dispatch(assignData({ recommendations: [] }))
+  },
 })
 
 export default compose(
