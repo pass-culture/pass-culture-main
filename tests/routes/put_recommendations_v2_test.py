@@ -155,7 +155,7 @@ class Put:
         def when_feature_is_not_active(self, app):
             # Given
             user = create_user(can_book_free_offers=True, departement_code='973', is_admin=False)
-            feature = Feature.query.filter_by(name=FeatureToggle.RECOMMENDATIONS_WITH_MATERIALIZED_VIEW).first()
+            feature = Feature.query.filter_by(name=FeatureToggle.RECOMMENDATIONS_WITH_DISCOVERY_VIEW).first()
             feature.isActive = False
             repository.save(feature, user)
             reads = [

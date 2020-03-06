@@ -73,8 +73,8 @@ def put_read_recommendations():
 
 
 @app.route('/recommendations/v2', methods=['PUT'])
+@feature_required(FeatureToggle.RECOMMENDATIONS_WITH_DISCOVERY_VIEW)
 @login_required
-@feature_required(FeatureToggle.RECOMMENDATIONS_WITH_MATERIALIZED_VIEW)
 @expect_json_data
 def put_recommendations_v2():
     json_keys = request.json.keys()
@@ -98,7 +98,7 @@ def put_recommendations_v2():
         mediation_id
     )
     logger.debug(lambda: '(special) requested_recommendation %s' %
-                         requested_recommendation)
+                 requested_recommendation)
 
     created_recommendations = create_recommendations_for_discovery_v2(limit=BLOB_SIZE,
                                                                       user=current_user,

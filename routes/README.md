@@ -2,7 +2,7 @@
 
 ## Feature Flipping
 
-Les nouvelles fonctionnalités peuvent nécessiter d'être "feature flippé" afin d'être testées sur des environnements de tests et pas directement sur la prod. Cette décision est généralement prise avec accord les détenteurs du produit.
+Les nouvelles fonctionnalités peuvent nécessiter d'être "feature flippé" afin d'être testées sur des environnements de tests et pas directement sur la prod. Cette décision est généralement prise avec les détenteurs du produit.
 
 Pour faire un feature flipping dans l'API du pass Culture, les étapes suivantes sont nécessaires :
 
@@ -11,7 +11,7 @@ Pour faire un feature flipping dans l'API du pass Culture, les étapes suivantes
 exemple :
 
 ```python
-RECOMMENDATIONS_WITH_MATERIALIZED_VIEW = 'Permettre aux utilisateurs d''avoir des recommandations de manières plus rapides'
+RECOMMENDATIONS_WITH_DISCOVERY_VIEW = 'Permettre aux utilisateurs d''avoir des recommandations de manière plus rapide'
 ```
 
 - Dans le package routes, sur les routes qui seront mise à disposition ou non selon l'environnement :
@@ -23,7 +23,7 @@ Exemple :
 ```python
 @app.route('/v2/recommendations', methods=['PUT'])
 @login_required
-@feature_required(FeatureToggle.RECOMMENDATIONS_WITH_MATERIALIZED_VIEW)
+@feature_required(FeatureToggle.RECOMMENDATIONS_WITH_DISCOVERY_VIEW)
 @expect_json_datadefla route
 put_recommendations_v2():
     json_keys = request.json.keys()
@@ -31,6 +31,8 @@ put_recommendations_v2():
 ```
 
 Les fonctionnalités "feature flippées" doivent être activées ou désactivées par les détenteurs du produit. Ils peuvent le faire grâce à l'interface Flask Admin. La table "feature" en base de données stocke les fonctionnalités actives.
+
+## Ajout de la feature en base
 
 Dans votre terminal pass Culture :
 
@@ -68,7 +70,7 @@ def upgrade():
                   'BENEFICIARIES_IMPORT', 'SYNCHRONIZE_ALGOLIA', 'SYNCHRONIZE_ALLOCINE',
                   'SYNCHRONIZE_BANK_INFORMATION', 'SYNCHRONIZE_LIBRAIRES', 'SYNCHRONIZE_TITELIVE',
                   'SYNCHRONIZE_TITELIVE_PRODUCTS', 'SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION',
-                  'SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS', 'UPDATE_DISCOVERY_VIEW', 'UPDATE_BOOKING_USED', 'RECOMMENDATIONS_WITH_MATERIALIZED_VIEW')
+                  'SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS', 'UPDATE_DISCOVERY_VIEW', 'UPDATE_BOOKING_USED', 'RECOMMENDATIONS_WITH_DISCOVERY_VIEW')
 # Prendre toutes les valeurs de l'enum features (sans votre nouvelle variable feature flip)
     previous_values = ('WEBAPP_SIGNUP', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'QR_CODE',
                   'FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE', 'SEARCH_ALGOLIA', 'SEARCH_LEGACY',
@@ -110,7 +112,7 @@ def downgrade():
                        'SYNCHRONIZE_BANK_INFORMATION', 'SYNCHRONIZE_LIBRAIRES', 'SYNCHRONIZE_TITELIVE',
                        'SYNCHRONIZE_TITELIVE_PRODUCTS', 'SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION',
                        'SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS', 'UPDATE_DISCOVERY_VIEW', 'UPDATE_BOOKING_USED',
-                       'RECOMMENDATIONS_WITH_MATERIALIZED_VIEW')
+                       'RECOMMENDATIONS_WITH_DISCOVERY_VIEW')
 
     previous_enum = sa.Enum(*previous_values, name='featuretoggle')
     new_enum = sa.Enum(*new_values, name='featuretoggle')
