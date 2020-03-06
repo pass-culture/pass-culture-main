@@ -4,8 +4,7 @@ from models import Venue
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
-from tests.model_creators.specific_creators import create_offer_with_thing_product
-from utils.human_ids import humanize
+from utils.human_ids import humanize, dehumanize
 
 
 class Patch:
@@ -31,6 +30,50 @@ class Patch:
             # Then
             assert response.status_code == 200
             assert response.json['siret'] == siret
+
+        @clean_database
+        @patch('routes.venues.delete_venue_from_iris_venues')
+        @patch('routes.venues.link_venue_to_irises')
+        def when_venue_is_physical_expect_delete_venue_from_iris_venues_and_link_venue_to_irises_to_be_called(self,
+                                                                                                mock_link_venue_to_irises,
+                                                                                                mock_delete_venue_from_iris_venues,
+                                                                                                app):
+            # Given
+            offerer = create_offerer()
+            user = create_user(email='user.pro@test.com')
+            venue = create_venue(offerer, name='Théâtre Victor Hugo', is_virtual=False)
+            user_offerer = create_user_offerer(user, offerer)
+            repository.save(user_offerer, venue)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+            venue_coordinates = {'latitude': 2, 'longitude': 48}
+
+            # when
+            response = auth_request.patch('/venues/%s' % humanize(venue.id), json=venue_coordinates)
+            id = response.json['id']
+            venue = Venue.query.filter_by(id=dehumanize(id)).one()
+
+            # Then
+            mock_delete_venue_from_iris_venues.assert_called_once_with(venue.id)
+            mock_link_venue_to_irises.assert_called_once_with(venue)
+
+        @clean_database
+        @patch('routes.venues.delete_venue_from_iris_venues')
+        def when_venue_is_virtual_expect_delete_venue_from_iris_venues_not_to_be_called(self,mock_delete_venue_from_iris_venues,
+                                                                                                              app):
+            # Given
+            offerer = create_offerer()
+            user = create_user(email='user.pro@test.com')
+            venue = create_venue(offerer, name='Théâtre Victor Hugo', is_virtual=True, siret=None)
+            user_offerer = create_user_offerer(user, offerer)
+            repository.save(user_offerer, venue)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+            venue_coordinates = {'latitude': 2, 'longitude': 48}
+
+            # when
+            response = auth_request.patch('/venues/%s' % humanize(venue.id), json=venue_coordinates)
+
+            # Then
+            mock_delete_venue_from_iris_venues.assert_not_called()
 
         @clean_database
         @patch('routes.venues.feature_queries.is_active', return_value=True)

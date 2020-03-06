@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from models import Venue
 from repository import repository
 from tests.conftest import clean_database, TestClient
@@ -71,6 +73,36 @@ class Post:
             json = response.json
             assert json['isValidated'] == False
             assert 'validationToken' not in json
+
+        @clean_database
+        @patch('routes.venues.link_venue_to_irises')
+        def when_user_has_rights_and_siret_expect_link_venue_to_irises(self, mock_link_venue_to_irises, app):
+            # given
+            offerer = create_offerer(siren='302559178')
+            user = create_user(email='user.pro@test.com')
+            user_offerer = create_user_offerer(user, offerer)
+            repository.save(user_offerer)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+            venue_data = {
+                'name': 'Ma venue',
+                'siret': '30255917810045',
+                'address': '75 Rue Charles Fourier, 75013 Paris',
+                'postalCode': '75200',
+                'bookingEmail': 'toto@btmx.fr',
+                'city': 'Paris',
+                'managingOffererId': humanize(offerer.id),
+                'latitude': 48.82387,
+                'longitude': 2.35284,
+                'publicName': 'Ma venue publique'
+            }
+
+            # when
+            response = auth_request.post('/venues', json=venue_data)
+            id = response.json['id']
+            venue = Venue.query.filter_by(id=dehumanize(id)).one()
+
+            # then
+            mock_link_venue_to_irises.assert_called_once_with(venue)
 
     class Returns400:
         @clean_database

@@ -2,7 +2,7 @@ from shapely.geometry import Polygon
 
 from models import IrisVenues
 from repository import repository
-from repository.iris_venues_queries import find_irises_located_near_venue, insert_venue_in_iris_venues, \
+from repository.iris_venues_queries import find_irises_located_near_venue, insert_venue_in_iris_venue, \
     delete_venue_from_iris_venues
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_venue, create_offerer, create_iris, create_iris_venue
@@ -12,7 +12,7 @@ WGS_SPATIAL_REFERENCE_IDENTIFIER = 4326
 
 class FindIrisesLocatedNearVenueTest:
     @clean_database
-    def test_should_return_ids_list_of_iris_located_near_to_given_venue(self, app):
+    def test_should_return_ids_list_of_iris_located_near_given_venue(self, app):
         # given
         offerer = create_offerer()
         venue_in_paris = create_venue(offerer=offerer, longitude=2.351499, latitude=48.856610)
@@ -34,8 +34,22 @@ class FindIrisesLocatedNearVenueTest:
         # then
         assert iris_id == [iris_beauvais.id]
 
+    @clean_database
+    def test_should_return_empty_list_when_no_iris_found_near_given_venue(self, app):
+        # given
+        offerer = create_offerer()
+        venue_in_paris = create_venue(offerer=offerer, longitude=2.351499, latitude=48.856610)
 
-class InsertVenueInIrisVenuesTest:
+        repository.save(venue_in_paris)
+
+        # when
+        iris_id = find_irises_located_near_venue(venue_in_paris.id)
+
+        # then
+        assert iris_id == []
+
+
+class InsertVenueInIrisVenueTest:
     @clean_database
     def test_should_insert_venue_in_iris_venues(self, app):
         # Given
@@ -53,7 +67,7 @@ class InsertVenueInIrisVenuesTest:
         iris_ids_near_to_venue = [iris_1.id, iris_2.id]
 
         # When
-        insert_venue_in_iris_venues(venue.id, iris_ids_near_to_venue)
+        insert_venue_in_iris_venue(venue.id, iris_ids_near_to_venue)
 
         # Then
         assert IrisVenues.query.count() == 2

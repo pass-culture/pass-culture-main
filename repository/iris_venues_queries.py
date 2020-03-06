@@ -18,7 +18,7 @@ def find_irises_located_near_venue(venue_id: int) -> List:
     return [iris_id[0] for iris_id in iris_ids]
 
 
-def insert_venue_in_iris_venues(venue_id: int, iris_ids_near_venue: List[int]) -> None:
+def insert_venue_in_iris_venue(venue_id: int, iris_ids_near_venue: List[int]) -> None:
     irises_venues = []
     for iris_id in iris_ids_near_venue:
         iris_venue = IrisVenues()
