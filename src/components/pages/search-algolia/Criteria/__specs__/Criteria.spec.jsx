@@ -1,10 +1,10 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 import Header from '../../../../layout/Header/Header'
-import { SearchCriteria } from '../SearchCriteria'
-import { CATEGORY_CRITERIA } from '../searchCriteriaValues'
+import { Criteria } from '../Criteria'
+import { CATEGORY_CRITERIA } from '../criteriaEnums'
 
-describe('components | SearchCriteria', () => {
+describe('components | Criteria', () => {
   let props
   beforeEach(() => {
     props = {
@@ -25,9 +25,10 @@ describe('components | SearchCriteria', () => {
       title: 'Catégories',
     }
   })
+
   it('should render a Header component with the right props', () => {
     // When
-    const wrapper = shallow(<SearchCriteria {...props} />)
+    const wrapper = shallow(<Criteria {...props} />)
 
     // Then
     const header = wrapper.find(Header)
@@ -42,7 +43,7 @@ describe('components | SearchCriteria', () => {
 
   it('should set category filter for search when "Cinéma" is selected', () => {
     // Given
-    const wrapper = shallow(<SearchCriteria {...props} />)
+    const wrapper = shallow(<Criteria {...props} />)
     const cinemaCategory = wrapper.find({
       children: 'Cinéma',
     })

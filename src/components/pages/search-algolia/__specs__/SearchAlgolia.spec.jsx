@@ -2,7 +2,7 @@ import { mount, shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Route, Router } from 'react-router'
-import { SearchCriteria } from '../Criteria/SearchCriteria'
+import { Criteria } from '../Criteria/Criteria'
 import SearchResults from '../Result/SearchResults'
 import SearchAlgolia from '../SearchAlgolia'
 
@@ -28,6 +28,7 @@ describe('components | SearchAlgolia', () => {
       },
     }
   })
+
   describe('routing', () => {
     it('should render Home page when path is exactly /recherche-offres', () => {
       // Given
@@ -47,7 +48,7 @@ describe('components | SearchAlgolia', () => {
       expect(routes.at(0).prop('exact')).toBeDefined()
     })
 
-    it('should render SearchResults page when path is /recherche-offres/resultats', () => {
+    it('should render search results page when path is /recherche-offres/resultats', () => {
       // Given
       props.history.location.pathname = 'recherche-offres/resultats'
       const wrapper = shallow(<SearchAlgolia {...props} />)
@@ -84,7 +85,7 @@ describe('components | SearchAlgolia', () => {
       const critereLocalisationRoute = routes.at(2)
       expect(critereLocalisationRoute.prop('path')).toBe('/recherche-offres/criteres-localisation')
 
-      const searchCriteriaLocation = critereLocalisationRoute.find(SearchCriteria)
+      const searchCriteriaLocation = critereLocalisationRoute.find(Criteria)
       expect(searchCriteriaLocation.prop('activeCriterionLabel')).toStrictEqual('Partout')
       expect(searchCriteriaLocation.prop('criteria')).toStrictEqual(expect.any(Object))
       expect(searchCriteriaLocation.prop('history')).toStrictEqual(props.history)
@@ -107,7 +108,7 @@ describe('components | SearchAlgolia', () => {
       const critereCategorieRoute = routes.at(3)
       expect(critereCategorieRoute.prop('path')).toBe('/recherche-offres/criteres-categorie')
 
-      const searchCriteriaCategory = critereCategorieRoute.find(SearchCriteria)
+      const searchCriteriaCategory = critereCategorieRoute.find(Criteria)
       expect(searchCriteriaCategory.prop('activeCriterionLabel')).toStrictEqual(
         'Toutes les catégories'
       )

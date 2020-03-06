@@ -3,7 +3,7 @@ import React from 'react'
 import Header from '../../../layout/Header/Header'
 import Icon from '../../../layout/Icon/Icon'
 
-export const SearchCriteria = props => {
+export const Criteria = props => {
   const { match, history, activeCriterionLabel, onCriterionSelection, title, criteria } = props
 
   return (
@@ -11,13 +11,13 @@ export const SearchCriteria = props => {
       <Header
         backTo="/recherche-offres"
         closeTo=""
-        extraClassName="sc-header"
+        extraClassName="criteria-header"
         history={history}
         location={history.location}
         match={match}
         title={title}
       />
-      <ul className="sc-item-list">
+      <ul className="criteria-item-list">
         {Object.keys(criteria).map(criterionKey => {
           const label = criteria[criterionKey].label
           const icon = criteria[criterionKey].icon
@@ -25,21 +25,21 @@ export const SearchCriteria = props => {
           return (
             <li key={label}>
               <button
-                className="sc-item"
+                className="criteria-item"
                 onClick={onCriterionSelection(criterionKey)}
                 type="button"
               >
-                <div className={`sc-item-icon-bg ${isActive && 'sc-active-icon'}`}>
+                <div className={`criteria-item-icon-bg ${isActive && 'criteria-active-icon'}`}>
                   <Icon
-                    className="sc-item-icon"
+                    className="criteria-item-icon"
                     svg={icon}
                   />
                 </div>
-                <span className={`sc-item-label ${isActive && 'sc-active-label'}`}>
+                <span className={`criteria-item-label ${isActive && 'criteria-active-label'}`}>
                   {label}
                 </span>
                 {isActive && <Icon
-                  className="sc-item-icon-check"
+                  className="criteria-item-icon-check"
                   svg="ico-check-pink"
                              />}
               </button>
@@ -51,7 +51,7 @@ export const SearchCriteria = props => {
   )
 }
 
-SearchCriteria.propTypes = {
+Criteria.propTypes = {
   activeCriterionLabel: PropTypes.string.isRequired,
   criteria: PropTypes.objectOf((propValue, key, componentName, location, propFullName) => {
     if (!propValue[key].label || !propValue[key].icon) {

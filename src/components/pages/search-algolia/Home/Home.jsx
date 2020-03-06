@@ -38,10 +38,10 @@ export class Home extends PureComponent {
 
   render() {
     const { keywordsToSearch } = this.state
-    const { geolocationCriterion, categoryCriterion } = this.props
+    const { categoryCriterion, geolocationCriterion } = this.props
     return (
       <main className="search-page-algolia">
-        <div className="sp-header-wrapper">
+        <div className="home-header-wrapper">
           <HeaderContainer
             closeTitle="Retourner à la page découverte"
             closeTo="/decouverte"
@@ -49,15 +49,15 @@ export class Home extends PureComponent {
             title="Recherche"
           />
           <form
-            className="sp-text-input-form"
+            className="home-text-input-form"
             onSubmit={this.handleOnSubmit}
           >
-            <div className="sp-text-input-wrapper">
-              <div className="sp-text-input-back">
+            <div className="home-text-input-wrapper">
+              <div className="home-text-input-back">
                 <Icon svg="picto-search" />
               </div>
               <input
-                className="sp-text-input"
+                className="home-text-input"
                 name="keywords"
                 onChange={this.handleOnTextInputChange}
                 placeholder="Artiste, auteur..."
@@ -65,10 +65,10 @@ export class Home extends PureComponent {
                 type="text"
                 value={keywordsToSearch}
               />
-              <div className="sp-text-input-reset">
+              <div className="home-text-input-reset">
                 {keywordsToSearch && (
                   <button
-                    className="sp-text-input-reset-button"
+                    className="home-text-input-reset-button"
                     onClick={this.handleResetButtonClick}
                     type="reset"
                   >
@@ -80,9 +80,9 @@ export class Home extends PureComponent {
                 )}
               </div>
             </div>
-            <div className="sp-search-button-wrapper">
+            <div className="home-search-button-wrapper">
               <button
-                className="sp-search-button"
+                className="home-search-button"
                 type="submit"
               >
                 {'Rechercher'}
@@ -91,7 +91,7 @@ export class Home extends PureComponent {
           </form>
         </div>
 
-        <ul className="sp-filter-list">
+        <ul className="home-filter-list">
           <CriterionItem
             icon={categoryCriterion.icon}
             label="Je cherche"

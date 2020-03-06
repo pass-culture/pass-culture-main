@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
-import { SearchCriteria } from './Criteria/SearchCriteria'
-import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA } from './Criteria/searchCriteriaValues'
+import { Criteria } from './Criteria/Criteria'
+import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA } from './Criteria/criteriaEnums'
 import { Home } from './Home/Home'
 import SearchResults from './Result/SearchResults'
 
@@ -73,7 +73,7 @@ class SearchAlgolia extends PureComponent {
           />
         </Route>
         <Route path="/recherche-offres/criteres-localisation">
-          <SearchCriteria
+          <Criteria
             activeCriterionLabel={geolocationCriterion.params.label}
             criteria={GEOLOCATION_CRITERIA}
             history={history}
@@ -83,7 +83,7 @@ class SearchAlgolia extends PureComponent {
           />
         </Route>
         <Route path="/recherche-offres/criteres-categorie">
-          <SearchCriteria
+          <Criteria
             activeCriterionLabel={categoryCriterion.label}
             criteria={CATEGORY_CRITERIA}
             history={history}

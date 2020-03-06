@@ -86,7 +86,7 @@ class SearchResults extends PureComponent {
   }
 
   fetchOffers = (keywords, currentPage) => {
-    const { geolocation, isSearchAroundMe, categoriesFilter } = this.props
+    const { categoriesFilter, geolocation, isSearchAroundMe } = this.props
     this.setState({
       isLoading: true,
     })
@@ -114,7 +114,7 @@ class SearchResults extends PureComponent {
       })
   }
 
-  getScrollParent = () => document.querySelector('.sp-results-wrapper')
+  getScrollParent = () => document.querySelector('.home-results-wrapper')
 
   handleBackButtonClick = () => {
     const { redirectToSearchMainPage } = this.props
@@ -172,9 +172,9 @@ class SearchResults extends PureComponent {
               className="spr-text-input-form"
               onSubmit={this.handleOnSubmit}
             >
-              <div className="sp-text-input-wrapper">
+              <div className="home-text-input-wrapper">
                 <button
-                  className="sp-text-input-back"
+                  className="home-text-input-back"
                   onClick={this.handleBackButtonClick}
                   type="button"
                 >
@@ -184,7 +184,7 @@ class SearchResults extends PureComponent {
                   />
                 </button>
                 <input
-                  className="sp-text-input"
+                  className="home-text-input"
                   name="keywords"
                   onChange={this.handleOnTextInputChange}
                   placeholder="Artiste, auteur..."
@@ -192,10 +192,10 @@ class SearchResults extends PureComponent {
                   type="text"
                   value={keywordsToSearch}
                 />
-                <div className="sp-text-input-reset">
+                <div className="home-text-input-reset">
                   {keywordsToSearch && (
                     <button
-                      className="sp-text-input-reset-button"
+                      className="home-text-input-reset-button"
                       onClick={this.handleResetButtonClick}
                       type="reset"
                     >
@@ -207,9 +207,9 @@ class SearchResults extends PureComponent {
                   )}
                 </div>
               </div>
-              <div className="sp-search-button-wrapper">
+              <div className="home-search-button-wrapper">
                 <button
-                  className="sp-search-button sp-minimize-search-button"
+                  className="home-search-button home-minimize-search-button"
                   type="submit"
                 >
                   {'Rechercher'}
@@ -217,13 +217,13 @@ class SearchResults extends PureComponent {
               </div>
             </form>
 
-            <div className="sp-results-wrapper">
+            <div className="home-results-wrapper">
               {isLoading && <Spinner label="Recherche en cours" />}
-              <h1 className="sp-results-title">
+              <h1 className="home-results-title">
                 {searchedKeywords &&
-                `"${searchedKeywords}" : ${resultsCount} ${
-                  resultsCount > 1 ? 'résultats' : 'résultat'
-                }`}
+                  `"${searchedKeywords}" : ${resultsCount} ${
+                    resultsCount > 1 ? 'résultats' : 'résultat'
+                  }`}
               </h1>
               {results.length > 0 && (
                 <InfiniteScroll
@@ -247,9 +247,7 @@ class SearchResults extends PureComponent {
               )}
             </div>
           </Route>
-          <Route
-            path="/recherche-offres/resultats/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
-          >
+          <Route path="/recherche-offres/resultats/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?">
             <HeaderContainer
               closeTitle="Retourner à la page découverte"
               closeTo="/decouverte"

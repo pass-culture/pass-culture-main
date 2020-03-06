@@ -14,9 +14,9 @@ export const mapStateToProps = (state, ownProps) => {
   }
 
   return {
-    isUserAllowedToSelectCriterion,
     geolocation,
     isGeolocationEnabled: isGeolocationEnabled(geolocation),
+    isUserAllowedToSelectCriterion,
     redirectToSearchMainPage,
   }
 }

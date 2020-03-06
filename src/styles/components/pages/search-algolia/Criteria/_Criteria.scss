@@ -1,4 +1,4 @@
-.sc-item-list {
+.criteria-item-list {
   background-color: $white;
   height: 100vh;
   display: flex;
@@ -6,25 +6,25 @@
   overflow: scroll;
 }
 
-.sc-item {
+.criteria-item {
   height: rem(48px);
   margin-top: rem(28px);
   display: flex;
   align-items: center;
 }
 
-.sc-item-icon-check {
+.criteria-item-icon-check {
   width: rem(24px);
   height: rem(24px);
   margin-left: rem(8px);
 }
 
-.sc-item-icon {
+.criteria-item-icon {
   width: rem(24px);
   height: rem(24px);
 }
 
-.sc-item-icon-bg {
+.criteria-item-icon-bg {
   margin: rem(0 20px);
   height: rem(40px);
   width: rem(40px);
@@ -35,21 +35,21 @@
   align-items: center;
 }
 
-.sc-active-icon {
+.criteria-active-icon {
   border: rem(2px) solid $primary;
 }
 
-.sc-item-label {
+.criteria-item-label {
   font-size: 16px;
   font-weight: 700;
   color: $black-light;
 }
 
-.sc-active-label {
+.criteria-active-label {
   color: $primary;
 }
 
-.sc-header {
+.criteria-header {
   align-items: center;
 
   h1 {

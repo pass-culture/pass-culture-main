@@ -1,4 +1,4 @@
-import { GEOLOCATION_CRITERIA } from '../components/pages/search-algolia/Criteria/searchCriteriaValues'
+import { GEOLOCATION_CRITERIA } from '../components/pages/search-algolia/Criteria/criteriaEnums'
 import getMobileOperatingSystem from '../utils/getMobileOperatingSystem'
 
 export const getHumanizeRelativeDistance = (
