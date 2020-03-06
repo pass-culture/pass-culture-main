@@ -9,7 +9,9 @@ import {
 const CATEGORY_FACET = `offer.label`
 const UNLIMITED_RADIUS = 'all'
 
-export const fetchAlgolia = (keywords = '', page = 0, geolocationCoordinates, categories = []) => {
+export const fetchAlgolia = (keywords = '', page = 0, geolocationCoordinates, categories = [], indexSuffix='') => {
+  if (!keywords) return
+
   const searchParameters = {
     page: page,
     ...buildQueryParameter(keywords),
@@ -18,7 +20,7 @@ export const fetchAlgolia = (keywords = '', page = 0, geolocationCoordinates, ca
   }
 
   const client = algoliasearch(WEBAPP_ALGOLIA_APPLICATION_ID, WEBAPP_ALGOLIA_SEARCH_API_KEY)
-  const index = client.initIndex(WEBAPP_ALGOLIA_INDEX_NAME)
+  const index = client.initIndex(WEBAPP_ALGOLIA_INDEX_NAME+indexSuffix)
   return index.search(searchParameters)
 }
 

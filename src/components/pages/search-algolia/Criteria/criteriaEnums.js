@@ -58,3 +58,31 @@ export const CATEGORY_CRITERIA = {
     filters: ['Instrument de musique'],
   },
 }
+
+export const SORT_CRITERIA = {
+  RANDOM: {
+    label: 'Au hasard',
+    icon: 'ico-random',
+    index: '',
+    requiresGeolocation: false,
+  },
+  NEAR_ME: {
+    label: 'Proximité',
+    icon: 'ico-nearme',
+    index:'_by_proximity',
+    requiresGeolocation: true,
+  },
+  NEW: {
+    label: 'Nouveauté',
+    icon: 'ico-new',
+    index: '_by_novelty',
+    requiresGeolocation: false,
+  },
+  PRICE: {
+    label: 'Prix',
+    icon: 'ico-price',
+    index: '_by_price',
+    requiresGeolocation: false,
+
+  },
+}

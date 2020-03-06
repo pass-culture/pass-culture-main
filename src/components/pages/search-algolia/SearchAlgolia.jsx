@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
 import { Criteria } from './Criteria/Criteria'
-import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA } from './Criteria/criteriaEnums'
+import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA, SORT_CRITERIA } from './Criteria/criteriaEnums'
 import { Home } from './Home/Home'
 import SearchResults from './Result/SearchResults'
 
@@ -17,6 +17,7 @@ class SearchAlgolia extends PureComponent {
           : GEOLOCATION_CRITERIA.EVERYWHERE,
       },
       categoryCriterion: CATEGORY_CRITERIA.ALL,
+      sortCriterion:SORT_CRITERIA.RANDOM,
     }
   }
 
@@ -38,16 +39,24 @@ class SearchAlgolia extends PureComponent {
   }
 
   handleCategoryCriterionSelection = criterionKey => () => {
-    this.setState(() => ({
+    this.setState({
       categoryCriterion: CATEGORY_CRITERIA[criterionKey],
-    }))
+    })
+    const { redirectToSearchMainPage } = this.props
+    redirectToSearchMainPage()
+  }
+
+  handleSortCriterionSelection = criterionKey => () => {
+    this.setState({
+        sortCriterion:SORT_CRITERIA[criterionKey],
+      })
     const { redirectToSearchMainPage } = this.props
     redirectToSearchMainPage()
   }
 
   render() {
     const { match, query, redirectToSearchMainPage, history, geolocation } = this.props
-    const { geolocationCriterion, categoryCriterion } = this.state
+    const { geolocationCriterion, categoryCriterion, sortCriterion } = this.state
 
     return (
       <Switch>
@@ -59,6 +68,7 @@ class SearchAlgolia extends PureComponent {
             categoryCriterion={categoryCriterion}
             geolocationCriterion={geolocationCriterion}
             history={history}
+            sortCriterion={sortCriterion}
           />
         </Route>
         <Route path="/recherche-offres/resultats">
@@ -70,6 +80,8 @@ class SearchAlgolia extends PureComponent {
             match={match}
             query={query}
             redirectToSearchMainPage={redirectToSearchMainPage}
+            search={history.location.search}
+            sortingIndexSuffix={sortCriterion.index}
           />
         </Route>
         <Route path="/recherche-offres/criteres-localisation">
@@ -90,6 +102,16 @@ class SearchAlgolia extends PureComponent {
             match={match}
             onCriterionSelection={this.handleCategoryCriterionSelection}
             title="Catégories"
+          />
+        </Route>
+        <Route path="/recherche-offres/criteres-tri">
+          <Criteria
+            activeCriterionLabel={categoryCriterion.label}
+            criteria={SORT_CRITERIA}
+            history={history}
+            match={match}
+            onCriterionSelection={this.handleSortCriterionSelection}
+            title="Trier par"
           />
         </Route>
       </Switch>

@@ -68,13 +68,13 @@ class SearchResults extends PureComponent {
   }
 
   fetchOffers = (keywords, currentPage) => {
-    const { categoriesFilter, geolocation, isSearchAroundMe } = this.props
+    const { categoriesFilter, geolocation, isSearchAroundMe , sortingIndexSuffix } = this.props
     this.setState({
       isLoading: true,
     })
     const geolocationCoordinates = isSearchAroundMe ? geolocation : null
 
-    fetchAlgolia(keywords, currentPage, geolocationCoordinates, categoriesFilter)
+    fetchAlgolia(keywords, currentPage, geolocationCoordinates, categoriesFilter, sortingIndexSuffix)
       .then(offers => {
         const { results } = this.state
         const { hits, nbHits, nbPages } = offers
@@ -229,9 +229,7 @@ class SearchResults extends PureComponent {
               )}
             </div>
           </Route>
-          <Route
-            path="/recherche-offres/resultats/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
-          >
+          <Route path="/recherche-offres/resultats/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?">
             <HeaderContainer
               closeTitle="Retourner à la page découverte"
               closeTo="/decouverte"
@@ -275,6 +273,8 @@ SearchResults.propTypes = {
     parse: PropTypes.func,
   }).isRequired,
   redirectToSearchMainPage: PropTypes.func.isRequired,
+  search: PropTypes.string.isRequired,
+  sortingIndexSuffix: PropTypes.string.isRequired,
 }
 
 export default SearchResults

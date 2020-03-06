@@ -15,8 +15,10 @@
 }
 
 .criteria-item {
-  display: flex;
   align-items: center;
+  display: flex;
+  height: rem(48px);
+  margin-top: rem(28px);
 }
 
 .criteria-item-icon-check {
