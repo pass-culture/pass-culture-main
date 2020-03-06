@@ -2,16 +2,20 @@ from datetime import datetime, timedelta
 
 import pytest
 from pytest import approx
+from freezegun import freeze_time
 
 from models import ApiErrors
 from models.pc_object import DeletedRecordException
 from models.stock import Stock
 from repository import repository
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
-    create_venue
-from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_offer, \
-    create_offer_with_thing_product, create_offer_with_event_product
+from tests.model_creators.generic_creators import (create_booking,
+                                                   create_offerer,
+                                                   create_stock, create_user,
+                                                   create_venue)
+from tests.model_creators.specific_creators import (
+    create_offer_with_event_product, create_offer_with_thing_product,
+    create_stock_from_offer, create_stock_with_event_offer)
 
 
 @clean_database
@@ -360,15 +364,15 @@ class IsBookableTest:
         offer = create_offer_with_event_product(venue)
 
         # When
-        stock = create_stock(offer=offer)
+        stock = create_stock(offer=offer, available=10)
         stock.remainingQuantity = 0
 
         # Then
         assert not stock.isBookable
 
-class hasBookingLimitDatetimesPassed:
+class hasBookingLimitDatetimePassedTest:
     @freeze_time('2019-07-10')
-    def test_is_True_when_booking_limit_datetime_is_in_the_past(self):
+    def test_should_return_true_when_booking_limit_datetime_is_in_the_past(self):
         # Given
         limit_datetime = datetime(2019, 7, 9)
 
@@ -376,10 +380,10 @@ class hasBookingLimitDatetimesPassed:
         stock = create_stock(booking_limit_datetime=limit_datetime)
 
         # Then
-        assert stock.hasBookingLimitDatetimesPassed is True
+        assert stock.hasBookingLimitDatetimePassed
 
     @freeze_time('2019-07-10')
-    def test_is_False_when_booking_limit_datetime_is_in_the_future(self):
+    def test_should_return_false_when_booking_limit_datetime_is_in_the_future(self):
         # Given
         limit_datetime = datetime(2019, 7, 11)
 
@@ -387,11 +391,11 @@ class hasBookingLimitDatetimesPassed:
         stock = create_stock(booking_limit_datetime=limit_datetime)
 
         # Then
-        assert stock.hasBookingLimitDatetimesPassed is False
+        assert not stock.hasBookingLimitDatetimePassed
 
-    def test_is_False_when_no_booking_datetime_limit(self):
+    def test_should_return_false_when_no_booking_datetime_limit(self):
         # When
         stock = create_stock(booking_limit_datetime=None)
 
         # Then
-        assert stock.hasBookingLimitDatetimesPassed is False
+        assert not stock.hasBookingLimitDatetimePassed

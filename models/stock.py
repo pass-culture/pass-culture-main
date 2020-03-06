@@ -107,9 +107,15 @@ class Stock(PcObject,
             return False
         if self.beginningDatetime and self.beginningDatetime < datetime.utcnow():
             return False
-        if self.available and self.remainingQuantity == 0:
+        if self.available is not None and self.remainingQuantity == 0:
             return False
         return True
+
+    @property
+    def hasBookingLimitDatetimePassed(self):
+        if self.bookingLimitDatetime and self.bookingLimitDatetime < datetime.utcnow():
+            return True
+        return False
 
     @property
     def resolvedOffer(self):

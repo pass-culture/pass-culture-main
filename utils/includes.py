@@ -48,6 +48,7 @@ OFFER_INCLUDES = [
     "isEvent",
     'isFullyBooked',
     'isNotBookable',
+    'hasBookingLimitDatetimesPassed',
     'isBookable',
     "isThing",
     "lastProvider",
@@ -105,6 +106,7 @@ FAVORITE_INCLUDES = [
             "favorites",
             "isEvent",
             "isNotBookable",
+            'hasBookingLimitDatetimesPassed',
             "isThing",
             "isFullyBooked",
             "offerType",
@@ -137,6 +139,7 @@ RECOMMENDATION_INCLUDES = [
             "dateRange",
             "isEvent",
             'isNotBookable',
+            'hasBookingLimitDatetimesPassed',
             'isBookable',
             'isFullyBooked',
             "isThing",
@@ -193,6 +196,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                     'isDigital',
                     'isEvent',
                     "isNotBookable",
+                    'hasBookingLimitDatetimesPassed',
                     "isFullyBooked",
                     "offerType",
                     {
@@ -232,6 +236,7 @@ WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = [
                     'isDigital',
                     'isEvent',
                     "isNotBookable",
+                    'hasBookingLimitDatetimesPassed',
                     "isFullyBooked",
                     "offerType",
                     {
@@ -272,6 +277,7 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
                     "favorites",
                     "isEvent",
                     "isNotBookable",
+                    'hasBookingLimitDatetimesPassed',
                     "isFullyBooked",
                     "isThing",
                     "offerType",
@@ -304,50 +310,6 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
     {
         "key": "user",
         "includes": USER_INCLUDES
-    }
-]
-
-PRO_BOOKING_INCLUDES = [
-    {
-        "key": "stock",
-        "includes":
-            [
-                {
-                    "key": "resolvedOffer",
-                    "includes": [
-                        'isNotBookable',
-                        'isBookable',
-                        'isFullyBooked',
-                        {
-                            "key": "product",
-                            "includes": ["thumbUrl"]
-                        },
-                    ]
-                }
-            ]
-    },
-    {
-        "key": 'user',
-        "includes": [
-            '-id',
-            '-canBookFreeOffers',
-            '-clearTextPassword',
-            '-culturalSurveyId',
-            '-culturalSurveyFilledDate',
-            '-dateCreated',
-            '-dateOfBirth',
-            '-departementCode',
-            '-isAdmin',
-            '-needsToFillCulturalSurvey',
-            '-offerers',
-            '-password',
-            '-phoneNumber',
-            '-postalCode',
-            '-publicName',
-            '-resetPasswordToken',
-            '-resetPasswordTokenValidityLimit',
-            '-validationToken'
-        ]
     }
 ]
 

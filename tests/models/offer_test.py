@@ -834,15 +834,17 @@ class IsFullyBookedTest:
 
     def test_stocks_with_passed_booking_limit_datetimes_are_ignored(self):
         # given
-        offer = Offer()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue=venue)
         user = create_user()
-        stock1 = create_stock(
+
+        expired_stock = create_stock(
             available=2, booking_limit_datetime=datetime.utcnow() - timedelta(weeks=3))
-        stock2 = create_stock(available=1, date_modified=datetime(2019, 1, 1))
-        stock3 = create_stock(available=1, date_modified=datetime(2019, 1, 1))
-        create_booking(user=user, date_used=datetime(2019, 2, 1), is_used=True, quantity=1, stock=stock2)
-        create_booking(user=user, date_used=datetime(2019, 2, 1), is_used=True, quantity=1, stock=stock3)
-        offer.stocks = [stock1, stock2, stock3]
+        booked_stock = create_stock(available=1, date_modified=datetime(2019, 1, 1))
+
+        create_booking(user=user, date_used=datetime(2019, 2, 1), is_used=True, quantity=1, stock=booked_stock)
+        offer.stocks = [expired_stock, booked_stock]
 
         # then
         assert offer.isFullyBooked is True
@@ -886,11 +888,12 @@ class hasBookingLimitDatetimesPassedTest:
         offer.stocks = [stock1, stock2, stock3]
 
         # then
-        assert offer.hasBookingLimitDatetimesPassed is True
+        assert offer.hasBookingLimitDatetimesPassed
 
     def test_returns_false_when_any_stock_has_future_booking_limit_datetime(self):
         # given
         now = datetime.utcnow()
+
         offer = Offer()
         stock1 = create_stock(booking_limit_datetime=now - timedelta(weeks=3))
         stock2 = create_stock(booking_limit_datetime=None)
@@ -898,24 +901,30 @@ class hasBookingLimitDatetimesPassedTest:
         offer.stocks = [stock1, stock2, stock3]
 
         # then
-        assert offer.hasBookingLimitDatetimesPassed is False
+        assert not offer.hasBookingLimitDatetimesPassed
 
     def test_returns_false_when_all_stocks_have_no_booking_limit_datetime(self):
         # given
-        offer = Offer()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue=venue)
+
         stock1 = create_stock(booking_limit_datetime=None)
         stock2 = create_stock(booking_limit_datetime=None)
         stock3 = create_stock(booking_limit_datetime=None)
         offer.stocks = [stock1, stock2, stock3]
 
         # then
-        assert offer.hasBookingLimitDatetimesPassed is False
+        assert not offer.hasBookingLimitDatetimesPassed
 
 class IsNotBookableTest:
     def test_returns_true_when_all_stocks_have_passed_booking_limit_datetime(self):
         # given
         now = datetime.utcnow()
-        offer = Offer()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue=venue)
+
         stock1 = create_stock(booking_limit_datetime=now - timedelta(weeks=3))
         stock2 = create_stock(booking_limit_datetime=now - timedelta(weeks=2))
         stock3 = create_stock(booking_limit_datetime=now - timedelta(weeks=1))
@@ -927,7 +936,11 @@ class IsNotBookableTest:
     def test_returns_false_when_any_stock_has_future_booking_limit_datetime(self):
         # given
         now = datetime.utcnow()
-        offer = Offer()
+
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue=venue)
+
         stock1 = create_stock(booking_limit_datetime=now - timedelta(weeks=3))
         stock2 = create_stock(booking_limit_datetime=None)
         stock3 = create_stock(booking_limit_datetime=now + timedelta(weeks=1))
@@ -938,7 +951,10 @@ class IsNotBookableTest:
 
     def test_returns_false_when_all_stocks_have_no_booking_limit_datetime(self):
         # given
-        offer = Offer()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue=venue)
+        
         stock1 = create_stock(booking_limit_datetime=None)
         stock2 = create_stock(booking_limit_datetime=None)
         stock3 = create_stock(booking_limit_datetime=None)
