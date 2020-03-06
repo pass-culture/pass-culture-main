@@ -41,7 +41,7 @@ class SearchResults extends PureComponent {
   }
 
   showFailModal = () => {
-    toast.info('La recherche n\'a pas pu aboutir, veuillez ré-essayer plus tard.')
+    toast.info("La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard.")
   }
 
   handleOnSubmit = event => {
