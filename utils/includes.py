@@ -47,7 +47,6 @@ OFFER_INCLUDES = [
     "isEditable",
     "isEvent",
     'isFullyBooked',
-    'isNotBookable',
     'hasBookingLimitDatetimesPassed',
     'isBookable',
     "isThing",
@@ -105,7 +104,7 @@ FAVORITE_INCLUDES = [
             "dateRange",
             "favorites",
             "isEvent",
-            "isNotBookable",
+            "isBookable",
             'hasBookingLimitDatetimesPassed',
             "isThing",
             "isFullyBooked",
@@ -138,7 +137,6 @@ RECOMMENDATION_INCLUDES = [
         "includes": [
             "dateRange",
             "isEvent",
-            'isNotBookable',
             'hasBookingLimitDatetimesPassed',
             'isBookable',
             'isFullyBooked',
@@ -195,7 +193,6 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                 "includes": [
                     'isDigital',
                     'isEvent',
-                    "isNotBookable",
                     'hasBookingLimitDatetimesPassed',
                     "isFullyBooked",
                     "offerType",
@@ -235,7 +232,6 @@ WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = [
                 "includes": [
                     'isDigital',
                     'isEvent',
-                    "isNotBookable",
                     'hasBookingLimitDatetimesPassed',
                     "isFullyBooked",
                     "offerType",
@@ -276,7 +272,6 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
                     "dateRange",
                     "favorites",
                     "isEvent",
-                    "isNotBookable",
                     'hasBookingLimitDatetimesPassed',
                     "isFullyBooked",
                     "isThing",

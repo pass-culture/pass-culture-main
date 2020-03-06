@@ -141,7 +141,6 @@ class Get:
             assert 'offer' in recommendation
             assert 'dateRange' in recommendation['offer']
             assert 'isEvent' in recommendation['offer']
-            assert 'isNotBookable' in recommendation['offer']
             assert 'isFullyBooked' in recommendation['offer']
             assert 'isThing' in recommendation['offer']
             assert 'offerType' in recommendation['offer']

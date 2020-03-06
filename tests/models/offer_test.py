@@ -917,51 +917,6 @@ class hasBookingLimitDatetimesPassedTest:
         # then
         assert not offer.hasBookingLimitDatetimesPassed
 
-class IsNotBookableTest:
-    def test_returns_true_when_all_stocks_have_passed_booking_limit_datetime(self):
-        # given
-        now = datetime.utcnow()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue=venue)
-
-        stock1 = create_stock(booking_limit_datetime=now - timedelta(weeks=3))
-        stock2 = create_stock(booking_limit_datetime=now - timedelta(weeks=2))
-        stock3 = create_stock(booking_limit_datetime=now - timedelta(weeks=1))
-        offer.stocks = [stock1, stock2, stock3]
-
-        # then
-        assert offer.isNotBookable
-
-    def test_returns_false_when_any_stock_has_future_booking_limit_datetime(self):
-        # given
-        now = datetime.utcnow()
-
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue=venue)
-
-        stock1 = create_stock(booking_limit_datetime=now - timedelta(weeks=3))
-        stock2 = create_stock(booking_limit_datetime=None)
-        stock3 = create_stock(booking_limit_datetime=now + timedelta(weeks=1))
-        offer.stocks = [stock1, stock2, stock3]
-
-        # then
-        assert not offer.isNotBookable
-
-    def test_returns_false_when_all_stocks_have_no_booking_limit_datetime(self):
-        # given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue=venue)
-        
-        stock1 = create_stock(booking_limit_datetime=None)
-        stock2 = create_stock(booking_limit_datetime=None)
-        stock3 = create_stock(booking_limit_datetime=None)
-        offer.stocks = [stock1, stock2, stock3]
-
-        # then
-        assert not offer.isNotBookable
 
 class ActiveMediationTest:
     def test_returns_none_when_no_mediations_exist_on_offer(self):

@@ -24,7 +24,7 @@ def build_object(offer: Offer) -> Dict:
     price = offer.stocks and offer.stocks[0].price
     dates = []
     if offer.isEvent:
-        stocks = offer.notDeletedStocks
+        stocks = offer.activeStocks
         dates = list(map(lambda stock: datetime.timestamp(stock.beginningDatetime), stocks))
     date_created = datetime.timestamp(offer.dateCreated)
 
