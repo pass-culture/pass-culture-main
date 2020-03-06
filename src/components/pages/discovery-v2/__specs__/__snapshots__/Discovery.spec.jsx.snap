@@ -1,0 +1,377 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | discovery | Discovery should match the snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <Discovery
+    currentRecommendation={Object {}}
+    deleteTutorials={[MockFunction]}
+    loadRecommendations={[MockFunction]}
+    location={
+      Object {
+        "pathname": "",
+        "search": "",
+      }
+    }
+    match={
+      Object {
+        "params": Object {},
+      }
+    }
+    readRecommendations={Array []}
+    recommendations={Array []}
+    redirectHome={[MockFunction]}
+    redirectToFirstRecommendationIfNeeded={
+      [MockFunction] {
+        "calls": Array [
+          Array [
+            Array [],
+          ],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
+    }
+    resetReadRecommendations={[MockFunction]}
+    resetRecommendations={[MockFunction]}
+    resetRecommendationsAndBookings={[MockFunction]}
+    saveLastRecommendationsRequestTimestamp={[MockFunction]}
+    seedLastRequestTimestamp={1574236357670}
+    shouldReloadRecommendations={false}
+    tutorials={Array []}
+    updateLastRequestTimestamp={[MockFunction]}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "function",
+    "props": Object {
+      "children": Array [
+        <main
+          className="discovery-page no-padding page with-footer"
+        >
+          <React.Fragment>
+            <Route
+              path="/decouverte-v2/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
+              render={[Function]}
+              sensitive={true}
+            />
+            <Route
+              path="/decouverte-v2/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+              render={[Function]}
+              sensitive={true}
+            />
+          </React.Fragment>
+          <withRouter(AbsoluteFooter)
+            areDetailsVisible={false}
+            borderTop={true}
+            id="deck-footer"
+          />
+        </main>,
+        <withRouter(Loader)
+          hasError={false}
+          isEmpty={null}
+          isLoading={false}
+        />,
+      ],
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <React.Fragment>
+              <Route
+                path="/decouverte-v2/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
+                render={[Function]}
+                sensitive={true}
+              />
+              <Route
+                path="/decouverte-v2/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+                render={[Function]}
+                sensitive={true}
+              />
+            </React.Fragment>,
+            <withRouter(AbsoluteFooter)
+              areDetailsVisible={false}
+              borderTop={true}
+              id="deck-footer"
+            />,
+          ],
+          "className": "discovery-page no-padding page with-footer",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "children": Array [
+                <Route
+                  path="/decouverte-v2/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
+                  render={[Function]}
+                  sensitive={true}
+                />,
+                <Route
+                  path="/decouverte-v2/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+                  render={[Function]}
+                  sensitive={true}
+                />,
+              ],
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": "route-discovery-deck",
+                "nodeType": "class",
+                "props": Object {
+                  "path": "/decouverte-v2/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?",
+                  "render": [Function],
+                  "sensitive": true,
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              Object {
+                "instance": null,
+                "key": "route-discovery-booking",
+                "nodeType": "class",
+                "props": Object {
+                  "path": "/decouverte-v2/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?",
+                  "render": [Function],
+                  "sensitive": true,
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+            ],
+            "type": Symbol(react.fragment),
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "areDetailsVisible": false,
+              "borderTop": true,
+              "id": "deck-footer",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+        ],
+        "type": "main",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "hasError": false,
+          "isEmpty": null,
+          "isLoading": false,
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+    ],
+    "type": Symbol(react.fragment),
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "function",
+      "props": Object {
+        "children": Array [
+          <main
+            className="discovery-page no-padding page with-footer"
+          >
+            <React.Fragment>
+              <Route
+                path="/decouverte-v2/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
+                render={[Function]}
+                sensitive={true}
+              />
+              <Route
+                path="/decouverte-v2/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+                render={[Function]}
+                sensitive={true}
+              />
+            </React.Fragment>
+            <withRouter(AbsoluteFooter)
+              areDetailsVisible={false}
+              borderTop={true}
+              id="deck-footer"
+            />
+          </main>,
+          <withRouter(Loader)
+            hasError={false}
+            isEmpty={null}
+            isLoading={false}
+          />,
+        ],
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <React.Fragment>
+                <Route
+                  path="/decouverte-v2/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
+                  render={[Function]}
+                  sensitive={true}
+                />
+                <Route
+                  path="/decouverte-v2/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+                  render={[Function]}
+                  sensitive={true}
+                />
+              </React.Fragment>,
+              <withRouter(AbsoluteFooter)
+                areDetailsVisible={false}
+                borderTop={true}
+                id="deck-footer"
+              />,
+            ],
+            "className": "discovery-page no-padding page with-footer",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "children": Array [
+                  <Route
+                    path="/decouverte-v2/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
+                    render={[Function]}
+                    sensitive={true}
+                  />,
+                  <Route
+                    path="/decouverte-v2/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+                    render={[Function]}
+                    sensitive={true}
+                  />,
+                ],
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": "route-discovery-deck",
+                  "nodeType": "class",
+                  "props": Object {
+                    "path": "/decouverte-v2/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?",
+                    "render": [Function],
+                    "sensitive": true,
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                Object {
+                  "instance": null,
+                  "key": "route-discovery-booking",
+                  "nodeType": "class",
+                  "props": Object {
+                    "path": "/decouverte-v2/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?",
+                    "render": [Function],
+                    "sensitive": true,
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+              ],
+              "type": Symbol(react.fragment),
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "areDetailsVisible": false,
+                "borderTop": true,
+                "id": "deck-footer",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+          ],
+          "type": "main",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "hasError": false,
+            "isEmpty": null,
+            "isLoading": false,
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+      ],
+      "type": Symbol(react.fragment),
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
+}
+`;
