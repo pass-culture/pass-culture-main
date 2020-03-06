@@ -117,7 +117,7 @@ export const selectFinishedEventBookings = createSelector(
       return (
         filteredOffer.isEvent &&
         !booking.isCancelled &&
-        (filteredOffer.isNotBookable || booking.isEventExpired)
+        (filteredOffer.hasBookingLimitDatetimesPassed || booking.isEventExpired)
       )
     })
 )

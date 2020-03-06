@@ -305,7 +305,7 @@ describe('selectFinishedEventBookings', () => {
 
       const offer = {
         id: 'o1',
-        isNotBookable: true,
+        hasBookingLimitDatetimesPassed: true,
         isEvent: true,
       }
 
@@ -348,7 +348,7 @@ describe('selectFinishedEventBookings', () => {
 
       const offer = {
         id: 'o1',
-        isNotBookable: false,
+        hasBookingLimitDatetimesPassed: false,
         isEvent: true,
       }
 
@@ -391,7 +391,7 @@ describe('selectFinishedEventBookings', () => {
 
       const offer = {
         id: 'o1',
-        isNotBookable: false,
+        hasBookingLimitDatetimesPassed: false,
         isEvent: true,
       }
 
@@ -428,7 +428,7 @@ describe('selectFinishedEventBookings', () => {
 
       const thingOffer = {
         id: 'o1',
-        isNotBookable: true,
+        hasBookingLimitDatetimesPassed: true,
         isEvent: false,
       }
 
@@ -464,7 +464,7 @@ describe('selectFinishedEventBookings', () => {
 
       const offer = {
         id: 'o1',
-        isNotBookable: true,
+        hasBookingLimitDatetimesPassed: true,
         isEvent: true,
       }
 

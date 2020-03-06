@@ -22,7 +22,6 @@ ShallowWrapper {
     }
     isBookable={true}
     isCancelled={true}
-    isNotBookable={false}
     maxShownDates={7}
     offer={
       Object {

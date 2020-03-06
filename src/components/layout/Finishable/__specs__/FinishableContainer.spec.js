@@ -2,24 +2,24 @@ import { mapStateToProps } from '../FinishableContainer'
 
 describe('components | FinishableContainer', () => {
   describe('mapStateToProps', () => {
-    describe('isNotBookable', () => {
+    describe('not isBookable', () => {
       describe('when coming from /reservations', () => {
         it('should return false when offer is not bookable, is fully booked, offer is already booked', () => {
           // given
           const state = {
             data: {
               bookings: [{ id: 'A1', stockId: 'B1' }],
-              offers: [{ id: 'C1', isFullyBooked: true, isNotBookable: true }],
-              stocks: [{ id: 'B1', offerId: 'C1' }]
-            }
+              offers: [{ id: 'C1', isBookable: false }],
+              stocks: [{ id: 'B1', offerId: 'C1' }],
+            },
           }
           const ownProps = {
             isBooked: true,
             match: {
               params: {
-                bookingId: 'A1'
-              }
-            }
+                bookingId: 'A1',
+              },
+            },
           }
 
           // when
@@ -27,7 +27,7 @@ describe('components | FinishableContainer', () => {
 
           // then
           expect(props).toStrictEqual({
-            offerCannotBeBooked: false
+            offerCannotBeBooked: false,
           })
         })
 
@@ -36,17 +36,17 @@ describe('components | FinishableContainer', () => {
           const state = {
             data: {
               bookings: [{ id: 'A1', stockId: 'B1' }],
-              offers: [{ id: 'C1', isFullyBooked: false, isNotBookable: false }],
-              stocks: [{ id: 'B1', offerId: 'C1' }]
-            }
+              offers: [{ id: 'C1', isBookable: true }],
+              stocks: [{ id: 'B1', offerId: 'C1' }],
+            },
           }
           const ownProps = {
             isBooked: true,
             match: {
               params: {
-                bookingId: 'A1'
-              }
-            }
+                bookingId: 'A1',
+              },
+            },
           }
 
           // when
@@ -54,7 +54,7 @@ describe('components | FinishableContainer', () => {
 
           // then
           expect(props).toStrictEqual({
-            offerCannotBeBooked: false
+            offerCannotBeBooked: false,
           })
         })
 
@@ -63,17 +63,17 @@ describe('components | FinishableContainer', () => {
           const state = {
             data: {
               bookings: [{ id: 'A1', stockId: 'B1' }],
-              offers: [{ id: 'C1', isFullyBooked: true, isNotBookable: true }],
-              stocks: [{ id: 'B1', offerId: 'C1' }]
-            }
+              offers: [{ id: 'C1', isBookable: false }],
+              stocks: [{ id: 'B1', offerId: 'C1' }],
+            },
           }
           const ownProps = {
             isBooked: false,
             match: {
               params: {
-                bookingId: 'A1'
-              }
-            }
+                bookingId: 'A1',
+              },
+            },
           }
 
           // when
@@ -81,7 +81,7 @@ describe('components | FinishableContainer', () => {
 
           // then
           expect(props).toStrictEqual({
-            offerCannotBeBooked: true
+            offerCannotBeBooked: true,
           })
         })
 
@@ -90,17 +90,17 @@ describe('components | FinishableContainer', () => {
           const state = {
             data: {
               bookings: [{ id: 'A1', stockId: 'B1' }],
-              offers: [{ id: 'C1', isFullyBooked: false, isNotBookable: false }],
-              stocks: [{ id: 'B1', offerId: 'C1' }]
-            }
+              offers: [{ id: 'C1', isBookable: true }],
+              stocks: [{ id: 'B1', offerId: 'C1' }],
+            },
           }
           const ownProps = {
             isBooked: false,
             match: {
               params: {
-                bookingId: 'A1'
-              }
-            }
+                bookingId: 'A1',
+              },
+            },
           }
 
           // when
@@ -108,7 +108,7 @@ describe('components | FinishableContainer', () => {
 
           // then
           expect(props).toStrictEqual({
-            offerCannotBeBooked: false
+            offerCannotBeBooked: false,
           })
         })
       })
@@ -118,16 +118,16 @@ describe('components | FinishableContainer', () => {
           // given
           const state = {
             data: {
-              offers: [{ id: 'A1', isFullyBooked: true, isNotBookable: true }],
-            }
+              offers: [{ id: 'A1', isBookable: false }],
+            },
           }
           const ownProps = {
             isBooked: true,
             match: {
               params: {
-                offerId: 'A1'
-              }
-            }
+                offerId: 'A1',
+              },
+            },
           }
 
           // when
@@ -135,7 +135,7 @@ describe('components | FinishableContainer', () => {
 
           // then
           expect(props).toStrictEqual({
-            offerCannotBeBooked: false
+            offerCannotBeBooked: false,
           })
         })
 
@@ -143,16 +143,16 @@ describe('components | FinishableContainer', () => {
           // given
           const state = {
             data: {
-              offers: [{ id: 'A1', isFullyBooked: false, isNotBookable: false }],
-            }
+              offers: [{ id: 'A1', isBookable: true }],
+            },
           }
           const ownProps = {
             isBooked: true,
             match: {
               params: {
-                offerId: 'A1'
-              }
-            }
+                offerId: 'A1',
+              },
+            },
           }
 
           // when
@@ -160,7 +160,7 @@ describe('components | FinishableContainer', () => {
 
           // then
           expect(props).toStrictEqual({
-            offerCannotBeBooked: false
+            offerCannotBeBooked: false,
           })
         })
 
@@ -168,16 +168,16 @@ describe('components | FinishableContainer', () => {
           // given
           const state = {
             data: {
-              offers: [{ id: 'A1', isFullyBooked: true, isNotBookable: true }],
-            }
+              offers: [{ id: 'A1', isBookable: false }],
+            },
           }
           const ownProps = {
             isBooked: false,
             match: {
               params: {
-                offerId: 'A1'
-              }
-            }
+                offerId: 'A1',
+              },
+            },
           }
 
           // when
@@ -185,7 +185,7 @@ describe('components | FinishableContainer', () => {
 
           // then
           expect(props).toStrictEqual({
-            offerCannotBeBooked: true
+            offerCannotBeBooked: true,
           })
         })
 
@@ -193,16 +193,16 @@ describe('components | FinishableContainer', () => {
           // given
           const state = {
             data: {
-              offers: [{ id: 'A1', isFullyBooked: false, isNotBookable: false }],
-            }
+              offers: [{ id: 'A1', isBookable: true }],
+            },
           }
           const ownProps = {
             isBooked: false,
             match: {
               params: {
-                offerId: 'A1'
-              }
-            }
+                offerId: 'A1',
+              },
+            },
           }
 
           // when
@@ -210,7 +210,7 @@ describe('components | FinishableContainer', () => {
 
           // then
           expect(props).toStrictEqual({
-            offerCannotBeBooked: false
+            offerCannotBeBooked: false,
           })
         })
       })

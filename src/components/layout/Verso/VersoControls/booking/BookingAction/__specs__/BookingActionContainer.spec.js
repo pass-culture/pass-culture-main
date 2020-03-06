@@ -2,7 +2,7 @@ import { mapStateToProps } from '../BookingActionContainer'
 
 describe('components | BookingActionContainer', () => {
   describe('mapStateToProps', () => {
-    describe('isNotBookable', () => {
+    describe('not isBookable', () => {
       it('should return true when offer is not bookable and offer is not fully booked', () => {
         // given
         const ownProps = {
@@ -18,7 +18,7 @@ describe('components | BookingActionContainer', () => {
         }
         const state = {
           data: {
-            offers: [{ id: 'AE', isFullyBooked: false, isNotBookable: true }],
+            offers: [{ id: 'AE', isBookable: false }],
             stocks: [{ id: 'BE', offerId: 'AE' }],
           },
         }
@@ -45,7 +45,7 @@ describe('components | BookingActionContainer', () => {
         }
         const state = {
           data: {
-            offers: [{ id: 'AE', isFullyBooked: true, isNotBookable: true }],
+            offers: [{ id: 'AE', isBookable: false }],
             stocks: [{ id: 'BE', offerId: 'AE' }],
           },
         }
@@ -72,7 +72,7 @@ describe('components | BookingActionContainer', () => {
         }
         const state = {
           data: {
-            offers: [{ id: 'AE', isFullyBooked: true, isNotBookable: false }],
+            offers: [{ id: 'AE', isBookable: false }],
             stocks: [{ id: 'BE', offerId: 'AE' }],
           },
         }
@@ -99,7 +99,7 @@ describe('components | BookingActionContainer', () => {
         }
         const state = {
           data: {
-            offers: [{ id: 'AE', isFullyBooked: false, isNotBookable: false }],
+            offers: [{ id: 'AE', isBookable: true }],
             stocks: [{ id: 'BE', offerId: 'AE' }],
           },
         }
@@ -128,7 +128,7 @@ describe('components | BookingActionContainer', () => {
         }
         const state = {
           data: {
-            offers: [{ id: 'AE', isFullyBooked: false, isNotBookable: true }],
+            offers: [{ id: 'AE', isBookable: false }],
             stocks: [{ id: 'BE', offerId: 'AE' }],
           },
         }
@@ -157,7 +157,7 @@ describe('components | BookingActionContainer', () => {
         }
         const state = {
           data: {
-            offers: [{ id: 'AE', isFullyBooked: false, isNotBookable: true }],
+            offers: [{ id: 'AE', isBookable: false }],
             stocks: [
               { id: 'BE', offerId: 'AE', price: 10, isBookable: true },
               { id: 'CE', offerId: 'AE', price: 20, isBookable: true },

@@ -6,7 +6,6 @@ import getPriceRangeFromStocks from '../../../../../../utils/getPriceRangeFromSt
 import { selectOfferById } from '../../../../../../selectors/data/offersSelectors'
 import { selectStocksByOfferId } from '../../../../../../selectors/data/stocksSelectors'
 import BookingAction from './BookingAction'
-import { checkOfferCannotBeBooked } from '../../../../../../utils/offer/offer'
 
 export const mapStateToProps = (state, ownProps) => {
   const { location, match } = ownProps
@@ -22,7 +21,7 @@ export const mapStateToProps = (state, ownProps) => {
 
   return {
     bookingUrl,
-    offerCannotBeBooked: checkOfferCannotBeBooked(offer),
+    offerCannotBeBooked: !offer.isBookable,
     priceRange,
   }
 }

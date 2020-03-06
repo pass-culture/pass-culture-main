@@ -5,7 +5,6 @@ import Finishable from './Finishable'
 import { selectStockById } from '../../../selectors/data/stocksSelectors'
 import { selectBookingById } from '../../../selectors/data/bookingsSelectors'
 import { selectOfferById } from '../../../selectors/data/offersSelectors'
-import { checkOfferCannotBeBooked } from '../../../utils/offer/offer'
 
 export const mapStateToProps = (state, ownProps) => {
   const { isBooked, match } = ownProps
@@ -23,7 +22,7 @@ export const mapStateToProps = (state, ownProps) => {
   const offer = selectOfferById(state, offerId) || {}
 
   return {
-    offerCannotBeBooked: isBooked ? false : checkOfferCannotBeBooked(offer),
+    offerCannotBeBooked: isBooked ? false : !offer.isBookable,
   }
 }
 

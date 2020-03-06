@@ -48,7 +48,7 @@ describe('components | VersoContentOffer', () => {
       bookables: [],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isNotBookable: false,
+      isBookable: true,
       maxShownDates: 7,
       offer,
       style: 'Rap / Contenders',
@@ -71,7 +71,7 @@ describe('components | VersoContentOffer', () => {
       bookables: [],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isNotBookable: false,
+      isBookable: true,
       maxShownDates: 7,
       offer,
       userGeolocation: {
@@ -93,7 +93,7 @@ describe('components | VersoContentOffer', () => {
       bookables: [],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isNotBookable: false,
+      isBookable: true,
       maxShownDates: 7,
       offer,
       userGeolocation: {
@@ -118,7 +118,7 @@ describe('components | VersoContentOffer', () => {
       bookables: [{ id: 1 }, { id: 2 }, { id: 3 }],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isNotBookable: false,
+      isBookable: true,
       maxShownDates: 1,
       offer,
       userGeolocation: {
@@ -144,7 +144,7 @@ describe('components | VersoContentOffer', () => {
       ],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isNotBookable: false,
+      isBookable: true,
       maxShownDates: 1,
       offer,
       userGeolocation: {
@@ -170,7 +170,7 @@ describe('components | VersoContentOffer', () => {
       ],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isNotBookable: false,
+      isBookable: true,
       maxShownDates: 1,
       offer,
       userGeolocation: {
@@ -193,7 +193,7 @@ describe('components | VersoContentOffer', () => {
       bookables: [],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isNotBookable: false,
+      isBookable: true,
       maxShownDates: 1,
       offer,
       userGeolocation: {
@@ -239,7 +239,7 @@ describe('components | VersoContentOffer', () => {
       bookables: [{ id: 1 }, { id: 2 }],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isNotBookable: true,
+      isBookable: false,
       maxShownDates: 1,
       offer,
       userGeolocation: {
@@ -266,7 +266,7 @@ describe('components | VersoContentOffer', () => {
       bookables: [{ id: 1 }, { id: 2 }],
       distance: '1',
       handleRequestMusicAndShowTypes: jest.fn(),
-      isNotBookable: true,
+      isBookable: false,
       maxShownDates: 1,
       offer,
       userGeolocation: {
