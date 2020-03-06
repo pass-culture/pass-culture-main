@@ -65,7 +65,7 @@ describe('components | SearchAlgolia', () => {
       expect(searchResultsComponent.prop('isSearchAroundMe')).toStrictEqual(
         props.isGeolocationEnabled
       )
-      expect(searchResultsComponent.prop('history')).toStrictEqual(props.history.location.search)
+      expect(searchResultsComponent.prop('history')).toStrictEqual(props.history)
       expect(searchResultsComponent.prop('match')).toStrictEqual(props.match)
       expect(searchResultsComponent.prop('query')).toStrictEqual(props.query)
       expect(searchResultsComponent.prop('redirectToSearchMainPage')).toStrictEqual(

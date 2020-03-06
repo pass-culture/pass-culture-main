@@ -70,7 +70,6 @@ class SearchAlgolia extends PureComponent {
             match={match}
             query={query}
             redirectToSearchMainPage={redirectToSearchMainPage}
-            search={history.location.search}
           />
         </Route>
         <Route path="/recherche-offres/criteres-localisation">

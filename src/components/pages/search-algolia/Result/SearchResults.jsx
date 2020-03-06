@@ -86,7 +86,7 @@ class SearchResults extends PureComponent {
   }
 
   fetchOffers = (keywords, currentPage) => {
-    const { categoriesFilter, history, geolocation, isSearchAroundMe } = this.props
+    const { categoriesFilter, geolocation, history, isSearchAroundMe } = this.props
     this.setState({
       isLoading: true,
     })
@@ -112,7 +112,7 @@ class SearchResults extends PureComponent {
         })
         this.showFailModal()
       })
-    history.replace({ search: '?mots-cles=' + keywords})
+    history.replace({ search: '?mots-cles=' + keywords })
   }
 
   getScrollParent = () => document.querySelector('.home-results-wrapper')
@@ -151,7 +151,7 @@ class SearchResults extends PureComponent {
   }
 
   render() {
-    const { geolocation, search } = this.props
+    const { geolocation, history: { search } } = this.props
     const {
       currentPage,
       keywordsToSearch,
@@ -222,9 +222,9 @@ class SearchResults extends PureComponent {
               {isLoading && <Spinner label="Recherche en cours" />}
               <h1 className="home-results-title">
                 {searchedKeywords &&
-                  `"${searchedKeywords}" : ${resultsCount} ${
-                    resultsCount > 1 ? 'résultats' : 'résultat'
-                  }`}
+                `"${searchedKeywords}" : ${resultsCount} ${
+                  resultsCount > 1 ? 'résultats' : 'résultat'
+                }`}
               </h1>
               {results.length > 0 && (
                 <InfiniteScroll
@@ -248,7 +248,9 @@ class SearchResults extends PureComponent {
               )}
             </div>
           </Route>
-          <Route path="/recherche-offres/resultats/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?">
+          <Route
+            path="/recherche-offres/resultats/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+          >
             <HeaderContainer
               closeTitle="Retourner à la page découverte"
               closeTo="/decouverte"
@@ -280,7 +282,10 @@ SearchResults.propTypes = {
     latitude: PropTypes.number,
     longitude: PropTypes.number,
   }),
-  history: PropTypes.shape().isRequired,
+  history: PropTypes.shape({
+    replace: PropTypes.func.isRequired,
+    search: PropTypes.string.isRequired
+  }).isRequired,
   isSearchAroundMe: PropTypes.bool,
   match: PropTypes.shape().isRequired,
   query: PropTypes.shape({
@@ -289,7 +294,6 @@ SearchResults.propTypes = {
     parse: PropTypes.func,
   }).isRequired,
   redirectToSearchMainPage: PropTypes.func.isRequired,
-  search: PropTypes.string.isRequired,
 }
 
 export default SearchResults

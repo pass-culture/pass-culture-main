@@ -42,6 +42,7 @@ describe('components | SearchResults', () => {
         longitude: 41.1,
       },
       history: {
+        search: '',
         replace
       },
       location: {
