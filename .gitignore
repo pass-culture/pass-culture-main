@@ -17,6 +17,7 @@ scripts/remove_doublons_of_tuto_recommendation.py
 scripts/recreate_where_not_first_tuto.py
 
 .pytest_cache/
+.env/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
