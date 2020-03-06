@@ -4,9 +4,9 @@ import React from 'react'
 import { Router } from 'react-router-dom'
 
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
-import { SearchHome } from '../SearchHome'
+import { Home } from '../Home'
 
-describe('components | pages | search-algolia | Home | SearchHome', () => {
+describe('components | Home', () => {
   let props
   beforeEach(() => {
     props = {
@@ -29,7 +29,7 @@ describe('components | pages | search-algolia | Home | SearchHome', () => {
 
   it('should display magnifying glass icon when current route is /recherche-offres', () => {
     // When
-    const wrapper = shallow(<SearchHome {...props} />)
+    const wrapper = shallow(<Home {...props} />)
 
     // then
     const form = wrapper.find('form')
@@ -48,7 +48,7 @@ describe('components | pages | search-algolia | Home | SearchHome', () => {
     // when
     const wrapper = mount(
       <Router history={history}>
-        <SearchHome {...props} />
+        <Home {...props} />
       </Router>
     )
 
@@ -64,7 +64,7 @@ describe('components | pages | search-algolia | Home | SearchHome', () => {
     history.push('/recherche-offres')
     const wrapper = await mount(
       <Router history={history}>
-        <SearchHome {...props} />
+        <Home {...props} />
       </Router>
     )
     const form = wrapper.find('form')
@@ -92,7 +92,7 @@ describe('components | pages | search-algolia | Home | SearchHome', () => {
 
   it('should not redirect to result page if search is empty', () => {
     // Given
-    const wrapper = shallow(<SearchHome {...props} />)
+    const wrapper = shallow(<Home {...props} />)
     const form = wrapper.find('form')
     // When
     form.simulate('submit', {
@@ -105,7 +105,7 @@ describe('components | pages | search-algolia | Home | SearchHome', () => {
 
   it('should redirect to result page if search is made', () => {
     // Given
-    const wrapper = shallow(<SearchHome {...props} />)
+    const wrapper = shallow(<Home {...props} />)
     const form = wrapper.find('form')
     const input = form.find('input')
 

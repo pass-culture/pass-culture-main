@@ -1,21 +1,21 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
-import Icon from '../../../layout/Icon/Icon'
+import Icon from '../../../../layout/Icon/Icon'
 
-export const SearchFilterListItem = ({ icon, label, selectedFilter, linkTo }) => (
-  <li className="sfi-wrapper">
-    <div className="sfi-link-label">
+export const CriterionItem = ({ icon, label, selectedFilter, linkTo }) => (
+  <li className="ci-wrapper">
+    <div className="ci-link-label">
       <span>
         {label}
       </span>
     </div>
     <Link
-      className="sfi-page-link"
+      className="ci-page-link"
       to={linkTo}
     >
       <Icon
-        className="sfi-page-icon"
+        className="ci-page-icon"
         svg={icon}
       />
       <span>
@@ -25,7 +25,7 @@ export const SearchFilterListItem = ({ icon, label, selectedFilter, linkTo }) =>
   </li>
 )
 
-SearchFilterListItem.propTypes = {
+CriterionItem.propTypes = {
   icon: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   linkTo: PropTypes.string.isRequired,

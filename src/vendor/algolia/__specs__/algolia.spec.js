@@ -3,11 +3,11 @@ import {
   WEBAPP_ALGOLIA_APPLICATION_ID,
   WEBAPP_ALGOLIA_INDEX_NAME,
   WEBAPP_ALGOLIA_SEARCH_API_KEY,
-} from '../../../../../utils/config'
-import { fetchAlgolia } from '../algoliaService'
+} from '../../../utils/config'
+import { fetchAlgolia } from '../algolia'
 
 jest.mock('algoliasearch')
-jest.mock('../../../../../utils/config', () => ({
+jest.mock('../../../utils/config', () => ({
   WEBAPP_ALGOLIA_APPLICATION_ID: 'appId',
   WEBAPP_ALGOLIA_INDEX_NAME: 'indexName',
   WEBAPP_ALGOLIA_SEARCH_API_KEY: 'apiKey',

@@ -3,9 +3,9 @@ import React, { PureComponent } from 'react'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import Icon from '../../../layout/Icon/Icon'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
-import { SearchFilterListItem } from '../Filters/SearchFilterListItem'
+import { CriterionItem } from './CriterionItem/CriterionItem'
 
-export class SearchHome extends PureComponent {
+export class Home extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -92,14 +92,14 @@ export class SearchHome extends PureComponent {
         </div>
 
         <ul className="sp-filter-list">
-          <SearchFilterListItem
+          <CriterionItem
             icon={categoryCriterion.icon}
             label="Je cherche"
             linkTo="/recherche-offres/criteres-categorie"
             selectedFilter={categoryCriterion.label}
           />
           <span className="search-criteria-separator" />
-          <SearchFilterListItem
+          <CriterionItem
             icon={geolocationCriterion.params.icon}
             label="Où"
             linkTo="/recherche-offres/criteres-localisation"
@@ -116,7 +116,7 @@ export class SearchHome extends PureComponent {
   }
 }
 
-SearchHome.propTypes = {
+Home.propTypes = {
   categoryCriterion: PropTypes.shape({
     label: PropTypes.string.isRequired,
     icon: PropTypes.string.isRequired,

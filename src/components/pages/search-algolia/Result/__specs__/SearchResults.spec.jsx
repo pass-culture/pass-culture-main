@@ -7,16 +7,15 @@ import { toast } from 'react-toastify'
 import configureStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import state from '../../../../../mocks/state'
-
+import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import RelativeFooterContainer from '../../../../layout/RelativeFooter/RelativeFooterContainer'
 import Spinner from '../../../../layout/Spinner/Spinner'
-import { fetchAlgolia } from '../../service/algoliaService'
 import Result from '../Result'
 import SearchAlgoliaDetailsContainer from '../ResultDetail/ResultDetailContainer'
 import SearchResults from '../SearchResults'
 
-jest.mock('../../service/algoliaService', () => ({
+jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
 }))
 jest.mock('react-toastify', () => ({
@@ -40,9 +39,7 @@ describe('components | SearchResults', () => {
         latitude: 40.1,
         longitude: 41.1,
       },
-      location: {
-        search: '',
-      },
+      search: '',
       match: {
         params: {},
       },

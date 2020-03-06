@@ -4,7 +4,7 @@ import {
   WEBAPP_ALGOLIA_APPLICATION_ID,
   WEBAPP_ALGOLIA_INDEX_NAME,
   WEBAPP_ALGOLIA_SEARCH_API_KEY,
-} from '../../../../utils/config'
+} from '../../utils/config'
 
 const CATEGORY_FACET = `offer.label`
 const UNLIMITED_RADIUS = 'all'

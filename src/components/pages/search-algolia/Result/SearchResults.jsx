@@ -3,12 +3,12 @@ import React, { PureComponent } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 import { Route, Switch } from 'react-router'
 import { toast } from 'react-toastify'
+
+import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import Icon from '../../../layout/Icon/Icon'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 import Spinner from '../../../layout/Spinner/Spinner'
-
-import { fetchAlgolia } from '../service/algoliaService'
 import Result from './Result'
 import SearchAlgoliaDetailsContainer from './ResultDetail/ResultDetailContainer'
 
@@ -150,8 +150,7 @@ class SearchResults extends PureComponent {
   }
 
   render() {
-    const { geolocation, location } = this.props
-    const { search } = location
+    const { geolocation, search } = this.props
     const {
       currentPage,
       keywordsToSearch,
@@ -217,6 +216,7 @@ class SearchResults extends PureComponent {
                 </button>
               </div>
             </form>
+
             <div className="sp-results-wrapper">
               {isLoading && <Spinner label="Recherche en cours" />}
               <h1 className="sp-results-title">
@@ -282,9 +282,6 @@ SearchResults.propTypes = {
     longitude: PropTypes.number,
   }),
   isSearchAroundMe: PropTypes.bool,
-  location: PropTypes.shape({
-    search: PropTypes.string,
-  }).isRequired,
   match: PropTypes.shape().isRequired,
   query: PropTypes.shape({
     clear: PropTypes.func,
@@ -292,6 +289,7 @@ SearchResults.propTypes = {
     parse: PropTypes.func,
   }).isRequired,
   redirectToSearchMainPage: PropTypes.func.isRequired,
+  search: PropTypes.string.isRequired,
 }
 
 export default SearchResults

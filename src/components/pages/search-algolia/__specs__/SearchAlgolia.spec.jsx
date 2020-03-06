@@ -2,24 +2,36 @@ import { mount, shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Route, Router } from 'react-router'
+import { SearchCriteria } from '../Criteria/SearchCriteria'
+import SearchResults from '../Result/SearchResults'
 import SearchAlgolia from '../SearchAlgolia'
 
-describe('src | components | pages | search-algolia | SearchAlgolia', () => {
+describe('components | SearchAlgolia', () => {
+  let props
+  beforeEach(() => {
+    props = {
+      history: createBrowserHistory(),
+      isGeolocationEnabled: false,
+      isUserAllowedToSelectCriterion: jest.fn(),
+      match: {
+        params: {},
+      },
+      query: {
+        clear: jest.fn(),
+        change: jest.fn(),
+        parse: jest.fn(),
+      },
+      redirectToSearchMainPage: jest.fn(),
+      geolocation: {
+        latitude: 32,
+        longitude: 45,
+      },
+    }
+  })
   describe('routing', () => {
-    it('should render SearchHome page when path is exactly /recherche-offres', () => {
+    it('should render Home page when path is exactly /recherche-offres', () => {
       // Given
-      const wrapper = shallow(
-        <SearchAlgolia
-          history={createBrowserHistory()}
-          isGeolocationEnabled={jest.fn()}
-          location={{ pathname: 'recherche-offres', search: '' }}
-          match={{
-            params: {},
-          }}
-          query={{ clear: jest.fn(), change: jest.fn(), parse: jest.fn() }}
-          redirectToSearchMainPage={jest.fn()}
-        />
-      )
+      const wrapper = shallow(<SearchAlgolia {...props} />)
 
       // When
       const routes = wrapper.find(Route)
@@ -31,108 +43,92 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
           .at(0)
           .children()
           .type().name
-      ).toStrictEqual('SearchHome')
+      ).toStrictEqual('Home')
       expect(routes.at(0).prop('exact')).toBeDefined()
     })
 
     it('should render SearchResults page when path is /recherche-offres/resultats', () => {
       // Given
-      const wrapper = shallow(
-        <SearchAlgolia
-          history={createBrowserHistory()}
-          isGeolocationEnabled={jest.fn()}
-          location={{ pathname: 'recherche-offres/resultats', search: '' }}
-          match={{
-            params: {},
-          }}
-          query={{ clear: jest.fn(), change: jest.fn(), parse: jest.fn() }}
-          redirectToSearchMainPage={jest.fn()}
-        />
-      )
+      props.history.location.pathname = 'recherche-offres/resultats'
+      const wrapper = shallow(<SearchAlgolia {...props} />)
 
       // When
       const routes = wrapper.find(Route)
 
       // Then
-      expect(routes.at(1).prop('path')).toBe('/recherche-offres/resultats')
-      expect(
-        routes
-          .at(1)
-          .children()
-          .type().name
-      ).toStrictEqual('SearchResults')
+      const resultatsRoute = routes.at(1)
+      expect(resultatsRoute.prop('path')).toBe('/recherche-offres/resultats')
+      const searchResultsComponent = resultatsRoute.find(SearchResults)
+      expect(searchResultsComponent.prop('categoriesFilter')).toStrictEqual([])
+      expect(searchResultsComponent.prop('geolocation')).toStrictEqual(props.geolocation)
+      expect(searchResultsComponent.prop('isSearchAroundMe')).toStrictEqual(
+        props.isGeolocationEnabled
+      )
+      expect(searchResultsComponent.prop('search')).toStrictEqual(props.history.location.search)
+      expect(searchResultsComponent.prop('match')).toStrictEqual(props.match)
+      expect(searchResultsComponent.prop('query')).toStrictEqual(props.query)
+      expect(searchResultsComponent.prop('redirectToSearchMainPage')).toStrictEqual(
+        props.redirectToSearchMainPage
+      )
     })
 
     it('should render geolocation criteria page when path is /recherche-offres/criteres-localisation', () => {
       // Given
-      const wrapper = shallow(
-        <SearchAlgolia
-          history={createBrowserHistory()}
-          isGeolocationEnabled={jest.fn()}
-          location={{ pathname: 'recherche-offres/criteres-localisation', search: '' }}
-          match={{
-            params: {},
-          }}
-          query={{ clear: jest.fn(), change: jest.fn(), parse: jest.fn() }}
-          redirectToSearchMainPage={jest.fn()}
-        />
-      )
+      props.history.location.pathname = 'recherche-offres/criteres-localisation'
+      const wrapper = shallow(<SearchAlgolia {...props} />)
 
       // When
       const routes = wrapper.find(Route)
 
       // Then
-      expect(routes.at(2).prop('path')).toBe('/recherche-offres/criteres-localisation')
-      expect(
-        routes
-          .at(2)
-          .children()
-          .props().title
-      ).toStrictEqual('Localisation')
+      const critereLocalisationRoute = routes.at(2)
+      expect(critereLocalisationRoute.prop('path')).toBe('/recherche-offres/criteres-localisation')
+
+      const searchCriteriaLocation = critereLocalisationRoute.find(SearchCriteria)
+      expect(searchCriteriaLocation.prop('activeCriterionLabel')).toStrictEqual('Partout')
+      expect(searchCriteriaLocation.prop('criteria')).toStrictEqual(expect.any(Object))
+      expect(searchCriteriaLocation.prop('history')).toStrictEqual(props.history)
+      expect(searchCriteriaLocation.prop('match')).toStrictEqual(props.match)
+      expect(searchCriteriaLocation.prop('onCriterionSelection')).toStrictEqual(
+        expect.any(Function)
+      )
+      expect(searchCriteriaLocation.prop('title')).toStrictEqual('Localisation')
     })
 
     it('should render category criteria page when path is /recherche-offres/criteres-categorie', () => {
       // Given
-      const wrapper = shallow(
-        <SearchAlgolia
-          history={createBrowserHistory()}
-          isGeolocationEnabled={jest.fn()}
-          location={{ pathname: 'recherche-offres/criteres-categorie', search: '' }}
-          match={{ params: {} }}
-          query={{ clear: jest.fn(), change: jest.fn(), parse: jest.fn() }}
-          redirectToSearchMainPage={jest.fn()}
-        />
-      )
+      props.history.location.pathname = '/recherche-offres/criteres-categorie'
+      const wrapper = shallow(<SearchAlgolia {...props} />)
 
       // When
       const routes = wrapper.find(Route)
 
       // Then
-      expect(routes.at(3).prop('path')).toBe('/recherche-offres/criteres-categorie')
-      expect(
-        routes
-          .at(3)
-          .children()
-          .props().title
-      ).toStrictEqual('Catégories')
+      const critereCategorieRoute = routes.at(3)
+      expect(critereCategorieRoute.prop('path')).toBe('/recherche-offres/criteres-categorie')
+
+      const searchCriteriaCategory = critereCategorieRoute.find(SearchCriteria)
+      expect(searchCriteriaCategory.prop('activeCriterionLabel')).toStrictEqual(
+        'Toutes les catégories'
+      )
+      expect(searchCriteriaCategory.prop('criteria')).toStrictEqual(expect.any(Object))
+      expect(searchCriteriaCategory.prop('history')).toStrictEqual(props.history)
+      expect(searchCriteriaCategory.prop('match')).toStrictEqual(props.match)
+      expect(searchCriteriaCategory.prop('onCriterionSelection')).toStrictEqual(
+        expect.any(Function)
+      )
+      expect(searchCriteriaCategory.prop('title')).toStrictEqual('Catégories')
     })
   })
 
   describe('when rendering', () => {
     it('should select "Autour de moi" if geolocation is enabled', () => {
       // Given
-      const history = createBrowserHistory()
-      history.location.pathname = '/recherche-offres'
+      props.isGeolocationEnabled = true
+      props.history.location.pathname = '/recherche-offres'
       const wrapper = mount(
-        <Router history={history}>
-          <SearchAlgolia
-            history={history}
-            isGeolocationEnabled={jest.fn().mockReturnValue(true)}
-            location={history.location}
-            match={{ params: {} }}
-            query={{ clear: jest.fn(), change: jest.fn(), parse: jest.fn() }}
-            redirectToSearchMainPage={jest.fn()}
-          />
+        <Router history={props.history}>
+          <SearchAlgolia {...props} />
         </Router>
       )
 
@@ -145,18 +141,11 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
 
     it('should select "Partout" if geolocation is disabled', () => {
       // Given
-      const history = createBrowserHistory()
-      history.location.pathname = '/recherche-offres'
+      props.isGeolocationEnabled = false
+      props.history.location.pathname = '/recherche-offres'
       const wrapper = mount(
-        <Router history={history}>
-          <SearchAlgolia
-            history={history}
-            isGeolocationEnabled={jest.fn().mockReturnValue(false)}
-            location={history.location}
-            match={{ params: {} }}
-            query={{ clear: jest.fn(), change: jest.fn(), parse: jest.fn() }}
-            redirectToSearchMainPage={jest.fn()}
-          />
+        <Router history={props.history}>
+          <SearchAlgolia {...props} />
         </Router>
       )
 
@@ -169,18 +158,10 @@ describe('src | components | pages | search-algolia | SearchAlgolia', () => {
 
     it('should select "Toutes les catégories" by default', () => {
       // Given
-      const history = createBrowserHistory()
-      history.location.pathname = '/recherche-offres'
+      props.history.location.pathname = '/recherche-offres/criteres-categorie'
       const wrapper = mount(
-        <Router history={history}>
-          <SearchAlgolia
-            history={history}
-            isGeolocationEnabled={jest.fn()}
-            location={history.location}
-            match={{ params: {} }}
-            query={{ clear: jest.fn(), change: jest.fn(), parse: jest.fn() }}
-            redirectToSearchMainPage={jest.fn()}
-          />
+        <Router history={props.history}>
+          <SearchAlgolia {...props} />
         </Router>
       )
 

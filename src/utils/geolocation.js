@@ -1,3 +1,4 @@
+import { GEOLOCATION_CRITERIA } from '../components/pages/search-algolia/Criteria/searchCriteriaValues'
 import getMobileOperatingSystem from '../utils/getMobileOperatingSystem'
 
 export const getHumanizeRelativeDistance = (
@@ -69,4 +70,17 @@ export const humanizeDistance = distance => {
   }
 
   return `${Math.round(distance / 1000)} km`
+}
+
+export const isGeolocationEnabled = geolocation => {
+  const { latitude, longitude } = geolocation
+  return longitude && latitude ? true : false
+}
+
+export const isUserAllowedToSelectCriterion = (criterionKey, isGeolocationEnabled) => {
+  if (GEOLOCATION_CRITERIA[criterionKey].requiresGeolocation && !isGeolocationEnabled) {
+    window.alert('Veuillez activer la géolocalisation pour voir les offres autour de vous.')
+    return false
+  }
+  return true
 }

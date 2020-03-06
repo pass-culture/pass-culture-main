@@ -1,10 +1,12 @@
+import getMobileOperatingSystem from '../../utils/getMobileOperatingSystem'
 import {
   computeDistanceInMeters,
   getHumanizeRelativeDistance,
   humanizeDistance,
+  isGeolocationEnabled,
+  isUserAllowedToSelectCriterion,
   navigationLink,
 } from '../geolocation'
-import getMobileOperatingSystem from '../../utils/getMobileOperatingSystem'
 
 jest.mock('../../utils/getMobileOperatingSystem')
 
@@ -218,6 +220,88 @@ describe('src | utils | geolocation', () => {
           // then
           expect(link).toBe('https://www.openstreetmap.org/directions?route=;10,20')
         })
+      })
+    })
+  })
+
+  describe('isGeolocationEnabled', () => {
+    it('should return true when latitude and longitude are valid', () => {
+      // Given
+      const geolocation = { latitude: 48.8533261, longitude: 2.3451865 }
+
+      // When
+      const result = isGeolocationEnabled(geolocation)
+
+      // Then
+      expect(result).toBe(true)
+    })
+
+    it('should return false when latitude and longitude are not valid', () => {
+      // Given
+      const geolocation = { latitude: null, longitude: null }
+
+      // When
+      const result = isGeolocationEnabled(geolocation)
+
+      // Then
+      expect(result).toBe(false)
+    })
+
+    it('should return false when latitude is valid but longitude is not valid', () => {
+      // Given
+      const geolocation = { latitude: 43, longitude: null }
+
+      // When
+      const result = isGeolocationEnabled(geolocation)
+
+      // Then
+      expect(result).toBe(false)
+    })
+
+    it('should return false when longitude is valid but latitude is not valid', () => {
+      // Given
+      const geolocation = { latitude: null, longitude: 45 }
+
+      // When
+      const result = isGeolocationEnabled(geolocation)
+
+      // Then
+      expect(result).toBe(false)
+    })
+  })
+
+  describe('isUserAllowedToSelectCriterion', () => {
+    describe('when geolocation is enabled', () => {
+      it('should return true when user selects a criterion requiring geolocation', () => {
+        // When
+        const isUserAllowed = isUserAllowedToSelectCriterion('AROUND_ME', true)
+
+        // Then
+        expect(isUserAllowed).toBe(true)
+      })
+    })
+
+    describe('when geolocation is disabled', () => {
+      it('should return false when user selects a criterion requiring geolocation', () => {
+        // Given
+        const mockedAlert = jest.spyOn(window, 'alert').mockImplementationOnce(() => {})
+
+        // When
+        const isUserAllowed = isUserAllowedToSelectCriterion('AROUND_ME', false)
+
+        // Then
+        expect(isUserAllowed).toBe(false)
+        expect(mockedAlert).toHaveBeenCalledWith(
+          'Veuillez activer la géolocalisation pour voir les offres autour de vous.'
+        )
+      })
+
+      it('should return true when user selects a criterion not requiring geolocation', () => {
+        // When
+        const isUserAllowed = isUserAllowedToSelectCriterion('EVERYWHERE', false)
+
+        // Then
+        expect(isUserAllowed).toBe(true)
       })
     })
   })

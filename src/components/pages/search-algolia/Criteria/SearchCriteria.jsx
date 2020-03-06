@@ -4,15 +4,7 @@ import Header from '../../../layout/Header/Header'
 import Icon from '../../../layout/Icon/Icon'
 
 export const SearchCriteria = props => {
-  const {
-    location,
-    match,
-    history,
-    activeCriterionLabel,
-    onCriterionSelection,
-    title,
-    criteria,
-  } = props
+  const { match, history, activeCriterionLabel, onCriterionSelection, title, criteria } = props
 
   return (
     <div>
@@ -21,7 +13,7 @@ export const SearchCriteria = props => {
         closeTo=""
         extraClassName="sc-header"
         history={history}
-        location={location}
+        location={history.location}
         match={match}
         title={title}
       />
@@ -71,10 +63,7 @@ SearchCriteria.propTypes = {
   history: PropTypes.shape({
     replace: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
-  }).isRequired,
-  location: PropTypes.shape({
-    pathname: PropTypes.string.isRequired,
-    search: PropTypes.string.isRequired,
+    location: PropTypes.shape(),
   }).isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({

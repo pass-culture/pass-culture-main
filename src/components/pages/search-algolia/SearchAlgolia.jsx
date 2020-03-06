@@ -3,19 +3,16 @@ import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
 import { SearchCriteria } from './Criteria/SearchCriteria'
 import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA } from './Criteria/searchCriteriaValues'
-import { SearchHome } from './Home/SearchHome'
+import { Home } from './Home/Home'
 import SearchResults from './Result/SearchResults'
-
-const GEOLOCATION_ACTIVATION_REQUEST =
-  'Veuillez activer la géolocalisation pour voir les offres autour de vous.'
 
 class SearchAlgolia extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
       geolocationCriterion: {
-        isSearchAroundMe: props.isGeolocationEnabled(),
-        params: props.isGeolocationEnabled()
+        isSearchAroundMe: props.isGeolocationEnabled,
+        params: props.isGeolocationEnabled
           ? GEOLOCATION_CRITERIA.AROUND_ME
           : GEOLOCATION_CRITERIA.EVERYWHERE,
       },
@@ -24,10 +21,8 @@ class SearchAlgolia extends PureComponent {
   }
 
   handleGeolocationCriterionSelection = criterionKey => () => {
-    const { isGeolocationEnabled } = this.props
-    if (GEOLOCATION_CRITERIA[criterionKey].requiresGeolocation && !isGeolocationEnabled()) {
-      return window.alert(GEOLOCATION_ACTIVATION_REQUEST)
-    }
+    const { isUserAllowedToSelectCriterion, isGeolocationEnabled } = this.props
+    if (!isUserAllowedToSelectCriterion(criterionKey, isGeolocationEnabled)) return
 
     const label = GEOLOCATION_CRITERIA[criterionKey].label
     this.setState(() => {
@@ -51,15 +46,7 @@ class SearchAlgolia extends PureComponent {
   }
 
   render() {
-    const {
-      location,
-      match,
-      query,
-      redirectToSearchMainPage,
-      history,
-      geolocation,
-      isGeolocationEnabled,
-    } = this.props
+    const { match, query, redirectToSearchMainPage, history, geolocation } = this.props
     const { geolocationCriterion, categoryCriterion } = this.state
 
     return (
@@ -68,7 +55,7 @@ class SearchAlgolia extends PureComponent {
           exact
           path="/recherche-offres(/menu)?"
         >
-          <SearchHome
+          <Home
             categoryCriterion={categoryCriterion}
             geolocationCriterion={geolocationCriterion}
             history={history}
@@ -79,10 +66,10 @@ class SearchAlgolia extends PureComponent {
             categoriesFilter={categoryCriterion.filters}
             geolocation={geolocation}
             isSearchAroundMe={geolocationCriterion.isSearchAroundMe}
-            location={location}
             match={match}
             query={query}
             redirectToSearchMainPage={redirectToSearchMainPage}
+            search={history.location.search}
           />
         </Route>
         <Route path="/recherche-offres/criteres-localisation">
@@ -90,8 +77,6 @@ class SearchAlgolia extends PureComponent {
             activeCriterionLabel={geolocationCriterion.params.label}
             criteria={GEOLOCATION_CRITERIA}
             history={history}
-            isGeolocationEnabled={isGeolocationEnabled}
-            location={location}
             match={match}
             onCriterionSelection={this.handleGeolocationCriterionSelection}
             title="Localisation"
@@ -102,7 +87,6 @@ class SearchAlgolia extends PureComponent {
             activeCriterionLabel={categoryCriterion.label}
             criteria={CATEGORY_CRITERIA}
             history={history}
-            location={location}
             match={match}
             onCriterionSelection={this.handleCategoryCriterionSelection}
             title="Catégories"
@@ -122,11 +106,9 @@ SearchAlgolia.propTypes = {
     latitude: PropTypes.number,
     longitude: PropTypes.number,
   }),
-  history: PropTypes.shape({ push: PropTypes.func }).isRequired,
-  isGeolocationEnabled: PropTypes.func.isRequired,
-  location: PropTypes.shape({
-    search: PropTypes.string,
-  }).isRequired,
+  history: PropTypes.shape({ push: PropTypes.func, location: PropTypes.shape() }).isRequired,
+  isGeolocationEnabled: PropTypes.bool.isRequired,
+  isUserAllowedToSelectCriterion: PropTypes.func.isRequired,
   match: PropTypes.shape().isRequired,
   query: PropTypes.shape({
     clear: PropTypes.func,
