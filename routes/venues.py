@@ -12,6 +12,7 @@ from models.feature import FeatureToggle
 from models.user_offerer import RightsType
 from models.venue import Venue
 from repository import repository, feature_queries
+from repository.iris_venues_queries import delete_venue_from_iris_venues
 from repository.venue_queries import find_by_managing_user
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize
@@ -71,6 +72,9 @@ def edit_venue(venueId):
     validate_coordinates(request.json.get('latitude', None), request.json.get('longitude', None))
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     venue.populate_from_dict(request.json)
+
+    if not venue.isVirtual:
+        delete_venue_from_iris_venues(venue.id)
 
     repository.save(venue)
     link_venue_to_irises(venue)

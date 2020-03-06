@@ -10,7 +10,7 @@ MAXIMUM_DISTANCE_IN_METERS = 100000
 def find_irises_located_near_venue(venue_id: int) -> List:
     search_radius = MAXIMUM_DISTANCE_IN_METERS
     query = f''' WITH venue_coordinates AS (SELECT longitude, latitude from venue WHERE id = {venue_id})
-                 SELECT id from iris_france, venue_coordinates
+                 SELECT id FROM iris_france, venue_coordinates
                  WHERE ST_DISTANCE(centroid, CAST(ST_SetSRID(ST_MakePoint(longitude, latitude), 4326) AS GEOGRAPHY))
                  < {search_radius} ;
     '''
@@ -27,3 +27,10 @@ def insert_venue_in_iris_venues(venue_id: int, iris_ids_near_venue: List[int]) -
         irises_venues.append(iris_venue)
 
     repository.save(*irises_venues)
+
+
+def delete_venue_from_iris_venues(venue_id: int) -> None:
+    iris_venues_to_delete = IrisVenues.query \
+        .filter_by(venueId=venue_id) \
+        .all()
+    repository.delete(*iris_venues_to_delete)

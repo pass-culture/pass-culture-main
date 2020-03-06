@@ -11,7 +11,7 @@ from models import ApiKey, BankInformation, BeneficiaryImport, \
     Email, Favorite, ImportStatus, Mediation, Offer, Offerer, \
     Payment, PaymentMessage, PaymentStatus, Provider, \
     Recommendation, RightsType, Stock, ThingType, User, \
-    UserOfferer, Venue, AllocineVenueProviderPriceRule, AllocinePivot, VenueProvider, IrisFrance
+    UserOfferer, Venue, AllocineVenueProviderPriceRule, AllocinePivot, VenueProvider, IrisFrance, IrisVenues
 from models.allocine_venue_provider import AllocineVenueProvider
 from models.email import EmailStatus
 from domain.payments import PaymentDetails
@@ -605,3 +605,10 @@ def create_iris(polygon: Polygon, iris_code: str = '123456789') -> IrisFrance:
     iris.irisCode = iris_code
     iris.shape = from_shape(polygon, srid=WGS_SPATIAL_REFERENCE_IDENTIFIER)
     return iris
+
+
+def create_iris_venue(iris_id: int, venue_id: int) -> IrisVenues:
+    iris_venue = IrisVenues()
+    iris_venue.venueId = venue_id
+    iris_venue.irisId = iris_id
+    return iris_venue
