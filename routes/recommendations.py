@@ -72,7 +72,7 @@ def put_read_recommendations():
     return jsonify(serialize_recommendations(read_recommendations, current_user)), 200
 
 
-@app.route('/v2/recommendations', methods=['PUT'])
+@app.route('/recommendations/v2', methods=['PUT'])
 @login_required
 @feature_required(FeatureToggle.RECOMMENDATIONS_WITH_MATERIALIZED_VIEW)
 @expect_json_data

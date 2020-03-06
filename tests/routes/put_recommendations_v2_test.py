@@ -16,7 +16,7 @@ from tests.model_creators.specific_creators import create_event_occurrence, \
 from utils.human_ids import humanize
 from utils.tutorials import upsert_tuto_mediations
 
-RECOMMENDATION_URL_V2 = '/v2/recommendations'
+RECOMMENDATION_URL_V2 = '/recommendations/v2'
 
 
 class Put:
@@ -167,7 +167,7 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # When
-            response = auth_request.put('/v2/recommendations',
+            response = auth_request.put(RECOMMENDATION_URL_V2,
                       json=data, headers={'origin': 'http://localhost:3000'})
 
             # Then
