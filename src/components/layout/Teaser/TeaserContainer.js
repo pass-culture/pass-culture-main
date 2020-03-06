@@ -28,7 +28,7 @@ export const mapStateToProps = (state, ownProps) => {
   const { handleToggleTeaser, item, isEditMode } = ownProps
   const { offerId, mediationId } = item
   const offer = selectOfferById(state, offerId)
-  const { dateRange, isActive, isNotBookable, isFullyBooked, venue } = offer
+  const { dateRange, isActive, hasBookingLimitDatetimesPassed, isFullyBooked, venue } = offer
   const booking = selectFirstMatchingBookingByOfferId(state, offerId)
   const isBooked = getIsBooked(booking)
   const hasBookings = booking !== null
@@ -44,7 +44,7 @@ export const mapStateToProps = (state, ownProps) => {
   const humanizeRelativeDate = humanizeBeginningDateTime(hasBookings, state, booking)
   const statuses = reservationStatuses(
     isActive,
-    isNotBookable,
+    hasBookingLimitDatetimesPassed,
     isFullyBooked,
     hasBookings,
     humanizeRelativeDate,

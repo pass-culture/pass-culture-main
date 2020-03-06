@@ -19,10 +19,11 @@ export const mapStateToProps = (state, ownProps) => {
     const { offerId: offerIdFromStock } = stock
     offerId = offerIdFromStock
   }
-  const offer = selectOfferById(state, offerId) || {}
+  const offer = selectOfferById(state, offerId)
+  const isOfferNotBookable = Boolean(offer) && !offer.isBookable
 
   return {
-    offerCannotBeBooked: isBooked ? false : !offer.isBookable,
+    offerCannotBeBooked: isBooked ? false : isOfferNotBookable,
   }
 }
 

@@ -30,7 +30,7 @@ describe('src | components | layout | Teaser | TeaserContainer', () => {
             id: 'o1',
             isActive: true,
             isFullyBooked: false,
-            isNotBookable: false,
+            hasBookingLimitDatetimesPassed: false,
             name: 'Fake offer name',
             offerType: {
               appLabel: 'Fake offer type',

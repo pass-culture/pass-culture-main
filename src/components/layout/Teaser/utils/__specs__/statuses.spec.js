@@ -42,7 +42,7 @@ describe('reservationStatuses()', () => {
       it('should return an object with "Demain" and "tomorrow"', () => {
         // given
         const isActive = true
-        const isNotBookable = false
+        const hasBookingLimitDatetimesPassed = false
         const isFullyBooked = false
         const hasBookings = false
         const isBooked = false
@@ -51,7 +51,7 @@ describe('reservationStatuses()', () => {
         // when
         const result = reservationStatuses(
           isActive,
-          isNotBookable,
+          hasBookingLimitDatetimesPassed,
           isFullyBooked,
           hasBookings,
           humanizeRelativeDate,
@@ -72,7 +72,7 @@ describe('reservationStatuses()', () => {
       it('should return an object with "Aujourd’hui" and "today"', () => {
         // given
         const isActive = true
-        const isNotBookable = false
+        const hasBookingLimitDatetimesPassed = false
         const isFullyBooked = false
         const hasBookings = false
         const isBooked = false
@@ -81,7 +81,7 @@ describe('reservationStatuses()', () => {
         // when
         const result = reservationStatuses(
           isActive,
-          isNotBookable,
+          hasBookingLimitDatetimesPassed,
           isFullyBooked,
           hasBookings,
           humanizeRelativeDate,
@@ -104,7 +104,7 @@ describe('reservationStatuses()', () => {
       it('should return an object with "Demain" and "tomorrow" and "Réservé" and "booked"', () => {
         // given
         const isActive = true
-        const isNotBookable = false
+        const hasBookingLimitDatetimesPassed = false
         const isFullyBooked = false
         const hasBookings = true
         const isBooked = true
@@ -113,7 +113,7 @@ describe('reservationStatuses()', () => {
         // when
         const result = reservationStatuses(
           isActive,
-          isNotBookable,
+          hasBookingLimitDatetimesPassed,
           isFullyBooked,
           hasBookings,
           humanizeRelativeDate,
@@ -138,7 +138,7 @@ describe('reservationStatuses()', () => {
       it('should return an object with "Aujourd’hui" and "today" and "Réservé" and "booked"', () => {
         // given
         const isActive = true
-        const isNotBookable = false
+        const hasBookingLimitDatetimesPassed = false
         const isFullyBooked = false
         const hasBookings = true
         const isBooked = true
@@ -147,7 +147,7 @@ describe('reservationStatuses()', () => {
         // when
         const result = reservationStatuses(
           isActive,
-          isNotBookable,
+          hasBookingLimitDatetimesPassed,
           isFullyBooked,
           hasBookings,
           humanizeRelativeDate,
@@ -173,7 +173,7 @@ describe('reservationStatuses()', () => {
     it('should return an object with "Terminé" and "finished"', () => {
       // given
       const isActive = true
-      const isNotBookable = true
+      const hasBookingLimitDatetimesPassed = true
       const isFullyBooked = null
       const hasBookings = null
       const isBooked = null
@@ -182,7 +182,7 @@ describe('reservationStatuses()', () => {
       // when
       const result = reservationStatuses(
         isActive,
-        isNotBookable,
+        hasBookingLimitDatetimesPassed,
         isFullyBooked,
         hasBookings,
         humanizeRelativeDate,
@@ -204,7 +204,7 @@ describe('reservationStatuses()', () => {
       it('should return an object with "Épuisé" and "fully-booked"', () => {
         // given
         const isActive = true
-        const isNotBookable = false
+        const hasBookingLimitDatetimesPassed = false
         const isFullyBooked = true
         const hasBookings = null
         const isBooked = null
@@ -213,7 +213,7 @@ describe('reservationStatuses()', () => {
         // when
         const result = reservationStatuses(
           isActive,
-          isNotBookable,
+          hasBookingLimitDatetimesPassed,
           isFullyBooked,
           hasBookings,
           humanizeRelativeDate,
@@ -234,7 +234,7 @@ describe('reservationStatuses()', () => {
       it('should return an object with "Annulé" and "cancel"', () => {
         // given
         const isActive = true
-        const isNotBookable = false
+        const hasBookingLimitDatetimesPassed = false
         const isFullyBooked = true
         const hasBookings = true
         const isBooked = false
@@ -243,7 +243,7 @@ describe('reservationStatuses()', () => {
         // when
         const result = reservationStatuses(
           isActive,
-          isNotBookable,
+          hasBookingLimitDatetimesPassed,
           isFullyBooked,
           hasBookings,
           humanizeRelativeDate,
@@ -265,7 +265,7 @@ describe('reservationStatuses()', () => {
     it('should return an object with "Réservé" and "booked"', () => {
       // given
       const isActive = true
-      const isNotBookable = false
+      const hasBookingLimitDatetimesPassed = false
       const isFullyBooked = false
       const hasBookings = true
       const isBooked = true
@@ -274,7 +274,7 @@ describe('reservationStatuses()', () => {
       // when
       const result = reservationStatuses(
         isActive,
-        isNotBookable,
+        hasBookingLimitDatetimesPassed,
         isFullyBooked,
         hasBookings,
         humanizeRelativeDate,
@@ -295,7 +295,7 @@ describe('reservationStatuses()', () => {
     it('should return an object with "Annulé" and "cancelled" even if there is a date', () => {
       // given
       const isActive = true
-      const isNotBookable = false
+      const hasBookingLimitDatetimesPassed = false
       const isFullyBooked = false
       const hasBookings = true
       const isBooked = false
@@ -304,7 +304,7 @@ describe('reservationStatuses()', () => {
       // when
       const result = reservationStatuses(
         isActive,
-        isNotBookable,
+        hasBookingLimitDatetimesPassed,
         isFullyBooked,
         hasBookings,
         humanizeRelativeDate,
@@ -325,7 +325,7 @@ describe('reservationStatuses()', () => {
     it('should return an object with "Annulé" and "cancelled" even if there is a date', () => {
       // given
       const isActive = false
-      const isNotBookable = false
+      const hasBookingLimitDatetimesPassed = false
       const isFullyBooked = false
       const hasBookings = true
       const isBooked = false
@@ -334,7 +334,7 @@ describe('reservationStatuses()', () => {
       // when
       const result = reservationStatuses(
         isActive,
-        isNotBookable,
+        hasBookingLimitDatetimesPassed,
         isFullyBooked,
         hasBookings,
         humanizeRelativeDate,
