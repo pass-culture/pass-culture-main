@@ -29,7 +29,7 @@ def _update_offer(offer: Offer, modifications) -> Offer:
     offer.update_with_product_data(modifications)
 
     repository.save(offer)
-    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
 
     return offer
@@ -50,7 +50,7 @@ def _update_offer_for_allocine_offers(offer: Offer, modifications) -> Offer:
     offer.fieldsUpdated = new_updated_fields
 
     repository.save(offer)
-    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
 
     return offer
@@ -61,7 +61,7 @@ def _update_offer_when_updating_isActive_field(offer: Offer, modifications) -> O
     offer.update_with_product_data(modifications)
 
     repository.save(offer)
-    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
 
     return offer

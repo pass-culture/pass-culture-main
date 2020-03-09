@@ -65,7 +65,7 @@ def validate_venue():
     check_venue_found(venue)
     venue.validationToken = None
     repository.save(venue)
-    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_venue_id(client=app.redis_client, venue_id=venue.id)
 
     try:

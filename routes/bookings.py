@@ -170,7 +170,7 @@ def create_booking():
     check_expenses_limits(expenses, new_booking)
     repository.save(new_booking)
 
-    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
     try:
@@ -207,7 +207,7 @@ def cancel_booking(booking_id: int):
     booking.isCancelled = True
     repository.save(booking)
 
-    if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
 
     try:

@@ -226,7 +226,7 @@ class LocalProvider(Iterator):
             self.venue_provider.lastSyncDate = datetime.utcnow()
             self.venue_provider.syncWorkerId = None
             repository.save(self.venue_provider)
-            if feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA):
+            if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
                 send_venue_provider_data_to_redis(self.venue_provider)
 
 
