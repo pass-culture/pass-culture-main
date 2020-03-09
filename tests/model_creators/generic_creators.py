@@ -2,8 +2,9 @@ from datetime import datetime, timedelta
 from hashlib import sha256
 from typing import Optional
 
+
 from geoalchemy2.shape import from_shape
-from shapely.geometry import Point, Polygon
+from shapely.geometry import Polygon
 
 from local_providers.price_rule import PriceRule
 from models import ApiKey, BankInformation, BeneficiaryImport, \
