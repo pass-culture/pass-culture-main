@@ -33,6 +33,6 @@ def upgrade():
 
 def downgrade():
     op.alter_column('iris_venues', 'venueId', nullable= True)
-    op.drop_column('iris_venues', 'irisId', nullable= True)
+    op.alter_column('iris_venues', 'irisId', nullable= True)
     op.drop_constraint('iris_venues_irisId_fkey', 'iris_venues', type_='foreignkey')
     op.drop_constraint('iris_venues_venueId_fkey', 'iris_venues', type_='foreignkey')
