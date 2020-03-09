@@ -17,7 +17,7 @@ depends_on = None
 
 def upgrade():
     op.alter_column('iris_venues','venueId', nullable=False)
-    op.add_column('iris_venues','irisId', nullable=False)
+    op.alter_column('iris_venues','irisId', nullable=False)
 
     op.create_foreign_key(
         'iris_venues_irisId_fkey',
