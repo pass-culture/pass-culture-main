@@ -146,10 +146,13 @@ class StocksManager extends PureComponent {
             {'Date Limite de Réservation'}
           </td>
           <td>
-            {isEvent ? 'Places affectées' : 'Stock affecté'}
+            {'Stock total'}
           </td>
           <td>
-            {isEvent ? 'Places restantes' : 'Stock restant'}
+            {'Stock restant'}
+          </td>
+          <td>
+            {'Réservations'}
           </td>
           <td>
             {'Modifier'}

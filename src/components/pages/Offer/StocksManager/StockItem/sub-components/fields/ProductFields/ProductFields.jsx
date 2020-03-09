@@ -96,7 +96,7 @@ class ProductFields extends PureComponent {
 
   render() {
     const { beginningDatetime, isEvent, readOnly, stock, timezone, venue } = this.props
-    const { available, remainingQuantity } = stock || {}
+    const { available, bookingsQuantity, remainingQuantity } = stock || {}
     const remainingStocksCount = getRemainingStocksCount(available, remainingQuantity)
 
     return (
@@ -150,6 +150,13 @@ class ProductFields extends PureComponent {
           id="remaining-stock"
         >
           {remainingStocksCount}
+        </td>
+
+        <td
+          className="is-small bookings-count"
+          id="bookings-count"
+        >
+          {bookingsQuantity}
         </td>
       </Fragment>
     )

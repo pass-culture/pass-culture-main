@@ -64,7 +64,6 @@ class StockItem extends PureComponent {
     this.setState({ isRequestPending: true })
 
     handleSetErrors()
-
     const body = Object.assign({}, formValues)
     if (body.price === '') {
       body.price = 0
@@ -102,7 +101,6 @@ class StockItem extends PureComponent {
     const { readOnly } = query.context({ id: stockId, key: 'stock' })
     const userIsNotUpdatingStock = readOnly
     const { form, values, handleSubmit } = formProps
-
     const { beginningDatetime } = values
     const canSubmit = getCanSubmit(Object.assign({}, formProps, { pristine: false }))
 
@@ -207,6 +205,7 @@ StockItem.defaultProps = {
 StockItem.propTypes = {
   closeInfo: PropTypes.func.isRequired,
   deleteStock: PropTypes.func.isRequired,
+  handleSetErrors: PropTypes.func.isRequired,
   hasIban: PropTypes.bool.isRequired,
   history: PropTypes.shape().isRequired,
   isEvent: PropTypes.bool.isRequired,

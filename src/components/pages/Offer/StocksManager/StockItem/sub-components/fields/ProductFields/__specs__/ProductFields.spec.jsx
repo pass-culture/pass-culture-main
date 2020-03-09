@@ -21,18 +21,11 @@ describe('src | components | pages | Offer | StocksManager | StockItem | sub-com
       stock: {
         available: 2,
         remainingQuantity: 1,
+        bookingsQuantity: 1,
       },
       timezone: 'UTC',
       venue: {},
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<ProductFields {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {
@@ -71,7 +64,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem | sub-com
       // then
       const dateField = wrapper.find(DateField)
       expect(dateField).toHaveLength(1)
-      expect(dateField.prop('maxDate')).toStrictEqual(undefined)
+      expect(dateField.prop('maxDate')).toBeUndefined()
       expect(dateField.prop('name')).toBe('bookingLimitDatetime')
       expect(dateField.prop('placeholder')).toBe('Laissez vide si pas de limite')
       expect(dateField.prop('readOnly')).toBe(false)
@@ -102,6 +95,16 @@ describe('src | components | pages | Offer | StocksManager | StockItem | sub-com
       const remainingStockElement = wrapper.find('#remaining-stock')
       expect(remainingStockElement).toHaveLength(1)
       expect(remainingStockElement.text()).toBe('1')
+    })
+
+    it('should display booking count when given', () => {
+      // when
+      const wrapper = shallow(<ProductFields {...props} />)
+
+      // then
+      const bookingCountElement = wrapper.find('#bookings-count')
+      expect(bookingCountElement).toHaveLength(1)
+      expect(bookingCountElement.text()).toBe('1')
     })
   })
 

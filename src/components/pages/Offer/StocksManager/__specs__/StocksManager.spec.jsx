@@ -38,13 +38,16 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
         state: undefined,
         key: '4c2v7m',
       },
+      product: {
+        id: 'ABDD',
+      },
       query,
       shouldPreventCreationOfSecondStock: false,
       stocks: [stock],
     }
   })
 
-  it('should match the snapshot', () => {
+  it('should match the snapshot when managing an event', () => {
     // when
     const wrapper = shallow(<StocksManager {...props} />)
 
@@ -52,7 +55,18 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
     expect(wrapper).toMatchSnapshot()
   })
 
-  describe('onClickCreateStockItem()', () => {
+  it('should match the snapshot when managing a thing', () => {
+    // given
+    props.isEvent = false
+
+    // when
+    const wrapper = shallow(<StocksManager {...props} />)
+
+    // then
+    expect(wrapper).toMatchSnapshot()
+  })
+
+  describe('onClickCreateStockItem', () => {
     it('should update URL query param when click on add stock button', () => {
       // given
       const wrapper = shallow(<StocksManager {...props} />)
@@ -68,7 +82,7 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
     })
   })
 
-  describe('render()', () => {
+  describe('render', () => {
     it('should return a error message', () => {
       // given
       props.query = { context: () => ({}) }

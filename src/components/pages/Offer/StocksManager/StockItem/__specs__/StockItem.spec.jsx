@@ -32,82 +32,13 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       stockPatch: {
         id: 'DG',
       },
-      stocks: [],
       updateStockInformations: jest.fn(),
       deleteStock: jest.fn(),
     }
   })
 
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<StockItem {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
-  describe('renderForm', () => {
+  describe('on render', () => {
     describe('when offer is an event', () => {
-      beforeEach(() => {
-        props.isEvent = true
-      })
-
-      it('should render event fields', () => {
-        // When
-        const stockItemWrapper = shallow(<StockItem {...props} />)
-        const formWrapper = shallow(stockItemWrapper.instance().renderForm({ values: {} }))
-
-        // Then
-        const eventFields = formWrapper.find(EventFields)
-        expect(eventFields).toHaveLength(1)
-      })
-
-      it('should render product fields', () => {
-        // When
-        const stockItemWrapper = shallow(<StockItem {...props} />)
-        const formWrapper = shallow(stockItemWrapper.instance().renderForm({ values: {} }))
-
-        // Then
-        const eventFields = formWrapper.find(ProductFieldsContainer)
-        expect(eventFields).toHaveLength(1)
-      })
-
-      describe('when the stocks are attached to an offer provided from Allociné', () => {
-        beforeEach(() => {
-          props.offer = new Offer({ lastProvider: { name: 'Allociné' } })
-          props.query = { context: () => ({ readOnly: false }) }
-        })
-
-        it('beginning time and end time should not be alterable', () => {
-          // When
-          const stockItemWrapper = shallow(<StockItem {...props} />)
-          const formWrapper = shallow(stockItemWrapper.instance().renderForm({ values: {} }))
-
-          // Then
-          const eventFields = formWrapper.find(EventFields)
-          expect(eventFields.props().readOnly).toBe(true)
-        })
-      })
-
-      describe('when the stocks are attached to an event offer created by the user', () => {
-        beforeEach(() => {
-          props.offer = new Offer({ id: 'AE', lastProvider: null })
-          props.query = { context: () => ({ readOnly: false }) }
-        })
-
-        it('beginning time and end time should be alterable', () => {
-          // When
-          const stockItemWrapper = shallow(<StockItem {...props} />)
-          const formWrapper = shallow(stockItemWrapper.instance().renderForm({ values: {} }))
-
-          // Then
-          const eventFields = formWrapper.find(EventFields)
-          expect(eventFields.props().readOnly).toBe(false)
-        })
-      })
-    })
-
-    describe('with event', () => {
       let eventFieldComponent
       let productFieldsContainerComponent
       let wrapper
@@ -272,9 +203,37 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
         // then
         expect(bookingLimitDatetimeInput.props().value).toStrictEqual('20/01/2020')
       })
+
+      describe('when the stocks are attached to an offer provided from Allociné', () => {
+        it('beginning time and end time should not be alterable', () => {
+          // When
+          props.offer = new Offer({ lastProvider: { name: 'Allociné' } })
+          props.query = { context: () => ({ readOnly: false }) }
+          const stockItemWrapper = shallow(<StockItem {...props} />)
+          const formWrapper = shallow(stockItemWrapper.instance().renderForm({ values: {} }))
+
+          // Then
+          const eventFields = formWrapper.find(EventFields)
+          expect(eventFields.props().readOnly).toBe(true)
+        })
+      })
+
+      describe('when the stocks are attached to an event offer created by the user', () => {
+        it('beginning time and end time should be alterable', () => {
+          // When
+          props.offer = new Offer({ id: 'AE', lastProvider: null })
+          props.query = { context: () => ({ readOnly: false }) }
+          const stockItemWrapper = shallow(<StockItem {...props} />)
+          const formWrapper = shallow(stockItemWrapper.instance().renderForm({ values: {} }))
+
+          // Then
+          const eventFields = formWrapper.find(EventFields)
+          expect(eventFields.props().readOnly).toBe(false)
+        })
+      })
     })
 
-    describe('with product', () => {
+    describe('when offer is a thing', () => {
       let eventFieldComponent
       let productFieldsContainerComponent
       let wrapper
@@ -405,7 +364,179 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
     })
   })
 
-  describe('handleOnFormSubmit()', () => {
+  describe('when submitting on creation for event', () => {
+    let wrapper
+
+    // given
+    beforeEach(() => {
+      const history = createBrowserHistory()
+      history.push(`/offres/EM?gestion&lieu=CE&stock=creation`)
+      const middleWares = []
+      const mockStore = configureStore(middleWares)
+
+      props.stockPatch = {
+        beginningDatetime: '2020-01-27T20:00:00Z',
+        endDatetime: '2020-01-27T22:00:00Z',
+        offerId: 'EM',
+        offererId: 'ZZ',
+        price: 0,
+      }
+
+      props.isEvent = true
+      props.stock = {}
+      props.timezone = 'Europe/Paris'
+
+      const store = mockStore({
+        data: {
+          offers: [
+            {
+              id: 'EM',
+              productId: 'EM',
+              venueId: 'CE',
+              isEvent: true,
+            },
+          ],
+          offerers: [{ id: 'BQ', postalCode: '97300' }],
+          products: [{ id: 'AE' }],
+          stocks: [],
+          venues: [{ id: 'CE', managingOffererId: 'BQ' }],
+        },
+      })
+
+      wrapper = mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <Switch>
+              <Route path="/offres/:offerId">
+                <StockItem {...props} />
+              </Route>
+            </Switch>
+          </Router>
+        </Provider>
+      )
+    })
+
+    it('should be able to submit with only inital values', () => {
+      // given
+      const submitButton = wrapper.find('button[type="submit"]')
+      submitButton.simulate('click')
+
+      // then
+      expect(props.updateStockInformations).toHaveBeenCalledWith(
+        undefined,
+        {
+          beginningDatetime: '2020-01-27T20:00:00Z',
+          beginningTime: '21:00',
+          bookingLimitDatetime: '2020-01-27T20:00:00Z',
+          endDatetime: '2020-01-27T22:00:00Z',
+          endTime: '23:00',
+          offerId: 'EM',
+          offererId: 'ZZ',
+          price: 0,
+        },
+        expect.any(Function),
+        expect.any(Function)
+      )
+    })
+
+    it('should not submit when beginningDatetime is missing', () => {
+      // given
+      const beginningDatetimeInput = wrapper
+        .find(Field)
+        .find({ name: 'beginningDatetime' })
+        .find('input')
+
+      beginningDatetimeInput.simulate('change', { target: { value: null } })
+
+      const submitButton = wrapper.find('button[type="submit"]')
+      submitButton.simulate('click')
+
+      // then
+      expect(props.updateStockInformations).not.toHaveBeenCalled()
+    })
+
+    it('should fill bookingLimitDatetime with beginningDatetime when bookingLimitDatetime is empty', () => {
+      // given
+      props.stockPatch.beginningDatetime = '2020-01-27T20:00:00Z'
+      props.stockPatch.bookingLimitDatetime = null
+
+      // when
+      const submitButton = wrapper.find('button[type="submit"]')
+      submitButton.simulate('click')
+
+      // then
+      expect(props.updateStockInformations).toHaveBeenCalledWith(
+        undefined,
+        {
+          beginningDatetime: '2020-01-27T20:00:00Z',
+          beginningTime: '21:00',
+          bookingLimitDatetime: '2020-01-27T20:00:00Z',
+          endDatetime: '2020-01-27T22:00:00Z',
+          endTime: '23:00',
+          offerId: 'EM',
+          offererId: 'ZZ',
+          price: 0,
+        },
+        expect.any(Function),
+        expect.any(Function)
+      )
+    })
+
+    it('should update bookingLimitDatetime and endDatetime when submitting a beginningDatetime before bookingLimitDatetime (or before initial beginningDatetime ???)', () => {
+      // given
+      props.stockPatch.beginningDatetime = '2020-04-27T20:00:00Z'
+      props.stockPatch.endDatetime = '2020-04-27T22:00:00Z'
+
+      const beginningDatetimeInput = wrapper
+        .find(Field)
+        .find({ name: 'beginningDatetime' })
+        .find('input')
+
+      beginningDatetimeInput.simulate('change', { target: { value: '11/03/2019' } })
+
+      const submitButton = wrapper.find('button[type="submit"]')
+      submitButton.simulate('click')
+
+      // then
+      expect(props.updateStockInformations).toHaveBeenCalledWith(
+        undefined,
+        {
+          beginningDatetime: '2019-03-11T20:00:00.000Z',
+          beginningTime: '21:00',
+          bookingLimitDatetime: '2019-03-11T20:00:00.000Z',
+          endDatetime: '2019-03-11T22:00:00.000Z',
+          endTime: '23:00',
+          offerId: 'EM',
+          offererId: 'ZZ',
+          price: 0,
+        },
+        expect.any(Function),
+        expect.any(Function)
+      )
+    })
+
+    it('should update remaining stock when updating total stock', () => {
+      // given
+      props.stockPatch.remainingQuantity = 9
+
+      const availableInput = wrapper
+        .find(Field)
+        .find({ name: 'available' })
+        .find('input')
+
+      availableInput.simulate('change', { target: { value: 100 } })
+
+      // when
+      const submitButton = wrapper.find('button[type="submit"]')
+      submitButton.simulate('click')
+
+      // then
+      const remainingStock = wrapper.find('#remaining-stock')
+      expect(remainingStock.value).toBe(5)
+    })
+  })
+
+  describe('handleOnFormSubmit', () => {
     it('should set state isRequestPending to true', () => {
       // given
       const wrapper = shallow(<StockItem {...props} />)
@@ -417,7 +548,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       expect(wrapper.state(['isRequestPending'])).toBe(true)
     })
 
-    it('should called handleSetErrors function', () => {
+    it('should call handleSetErrors function', () => {
       // given
       const wrapper = shallow(<StockItem {...props} />)
 
@@ -480,7 +611,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
     })
   })
 
-  describe('handleRequestSuccess()', () => {
+  describe('handleRequestSuccess', () => {
     it('redirect to gestion at patch success', () => {
       // given
       const wrapper = shallow(<StockItem {...props} />)

@@ -1,6 +1,1489 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Offer | StocksManager | StocksManager should match the snapshot 1`] = `
+exports[`src | components | pages | Offer | StocksManager | StocksManager should match the snapshot when managing a thing 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <StocksManager
+    dispatch={[MockFunction]}
+    isEvent={false}
+    location={
+      Object {
+        "hash": "",
+        "key": "4c2v7m",
+        "pathname": "/offres/AWHA",
+        "search": "?gestion",
+        "state": undefined,
+      }
+    }
+    product={
+      Object {
+        "id": "ABDD",
+      }
+    }
+    query={
+      Object {
+        "changeToCreation": [MockFunction],
+        "context": [Function],
+      }
+    }
+    shouldPreventCreationOfSecondStock={false}
+    stocks={
+      Array [
+        Object {
+          "available": 10,
+          "bookingLimitDatetime": "2019-03-06T23:00:00Z",
+          "bookingRecapSent": null,
+          "dateModified": "2019-03-06T15:51:39.253527Z",
+          "dateModifiedAtLastProvider": "2019-03-06T15:51:39.253504Z",
+          "eventOccurrenceId": null,
+          "groupSize": 1,
+          "id": "ARMQ",
+          "idAtProviders": null,
+          "isSoftDeleted": false,
+          "lastProviderId": null,
+          "modelName": "Stock",
+          "offerId": "AUSQ",
+          "price": 17,
+        },
+      ]
+    }
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <div
+          className="info is-invisible"
+        >
+          <div
+            className="content"
+          >
+            <div />
+          </div>
+        </div>,
+        null,
+        <div
+          className="stocks-table-wrapper"
+        >
+          <HeroSection
+            subtitle={null}
+            title="Prix"
+          />
+          <table
+            className="table is-hoverable stocks-table small"
+          >
+            <thead>
+              <tr>
+                <td>
+                  Prix
+                </td>
+                <td>
+                  Date Limite de Réservation
+                </td>
+                <td>
+                  Stock total
+                </td>
+                <td>
+                  Stock restant
+                </td>
+                <td>
+                  Réservations
+                </td>
+                <td>
+                  Modifier
+                </td>
+                <td>
+                  Supprimer
+                </td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                className=""
+              >
+                <td
+                  colSpan="10"
+                >
+                  <button
+                    className="button is-secondary"
+                    disabled={true}
+                    id="add-stock"
+                    onClick={[Function]}
+                    type="button"
+                  >
+                    
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+            <withRouter(_withQueryRouter)
+              closeInfo={[Function]}
+              handleSetErrors={[Function]}
+              isEvent={false}
+              isFullyEditable={true}
+              showInfo={[Function]}
+              stock={
+                Object {
+                  "available": 10,
+                  "bookingLimitDatetime": "2019-03-06T23:00:00Z",
+                  "bookingRecapSent": null,
+                  "dateModified": "2019-03-06T15:51:39.253527Z",
+                  "dateModifiedAtLastProvider": "2019-03-06T15:51:39.253504Z",
+                  "eventOccurrenceId": null,
+                  "groupSize": 1,
+                  "id": "ARMQ",
+                  "idAtProviders": null,
+                  "isSoftDeleted": false,
+                  "lastProviderId": null,
+                  "modelName": "Stock",
+                  "offerId": "AUSQ",
+                  "price": 17,
+                }
+              }
+              stocks={
+                Array [
+                  Object {
+                    "available": 10,
+                    "bookingLimitDatetime": "2019-03-06T23:00:00Z",
+                    "bookingRecapSent": null,
+                    "dateModified": "2019-03-06T15:51:39.253527Z",
+                    "dateModifiedAtLastProvider": "2019-03-06T15:51:39.253504Z",
+                    "eventOccurrenceId": null,
+                    "groupSize": 1,
+                    "id": "ARMQ",
+                    "idAtProviders": null,
+                    "isSoftDeleted": false,
+                    "lastProviderId": null,
+                    "modelName": "Stock",
+                    "offerId": "AUSQ",
+                    "price": 17,
+                  },
+                ]
+              }
+            />
+          </table>
+        </div>,
+        <button
+          className="button is-secondary is-pulled-right"
+          id="close-manager"
+          onClick={[Function]}
+          type="button"
+        >
+          Fermer
+        </button>,
+      ],
+      "className": "stocks-manager",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": <div
+            className="content"
+          >
+            <div />
+          </div>,
+          "className": "info is-invisible",
+        },
+        "ref": null,
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <div />,
+            "className": "content",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": null,
+            },
+            "ref": null,
+            "rendered": null,
+            "type": "div",
+          },
+          "type": "div",
+        },
+        "type": "div",
+      },
+      null,
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <HeroSection
+              subtitle={null}
+              title="Prix"
+            />,
+            <table
+              className="table is-hoverable stocks-table small"
+            >
+              <thead>
+                <tr>
+                  <td>
+                    Prix
+                  </td>
+                  <td>
+                    Date Limite de Réservation
+                  </td>
+                  <td>
+                    Stock total
+                  </td>
+                  <td>
+                    Stock restant
+                  </td>
+                  <td>
+                    Réservations
+                  </td>
+                  <td>
+                    Modifier
+                  </td>
+                  <td>
+                    Supprimer
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  className=""
+                >
+                  <td
+                    colSpan="10"
+                  >
+                    <button
+                      className="button is-secondary"
+                      disabled={true}
+                      id="add-stock"
+                      onClick={[Function]}
+                      type="button"
+                    >
+                      
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+              <withRouter(_withQueryRouter)
+                closeInfo={[Function]}
+                handleSetErrors={[Function]}
+                isEvent={false}
+                isFullyEditable={true}
+                showInfo={[Function]}
+                stock={
+                  Object {
+                    "available": 10,
+                    "bookingLimitDatetime": "2019-03-06T23:00:00Z",
+                    "bookingRecapSent": null,
+                    "dateModified": "2019-03-06T15:51:39.253527Z",
+                    "dateModifiedAtLastProvider": "2019-03-06T15:51:39.253504Z",
+                    "eventOccurrenceId": null,
+                    "groupSize": 1,
+                    "id": "ARMQ",
+                    "idAtProviders": null,
+                    "isSoftDeleted": false,
+                    "lastProviderId": null,
+                    "modelName": "Stock",
+                    "offerId": "AUSQ",
+                    "price": 17,
+                  }
+                }
+                stocks={
+                  Array [
+                    Object {
+                      "available": 10,
+                      "bookingLimitDatetime": "2019-03-06T23:00:00Z",
+                      "bookingRecapSent": null,
+                      "dateModified": "2019-03-06T15:51:39.253527Z",
+                      "dateModifiedAtLastProvider": "2019-03-06T15:51:39.253504Z",
+                      "eventOccurrenceId": null,
+                      "groupSize": 1,
+                      "id": "ARMQ",
+                      "idAtProviders": null,
+                      "isSoftDeleted": false,
+                      "lastProviderId": null,
+                      "modelName": "Stock",
+                      "offerId": "AUSQ",
+                      "price": 17,
+                    },
+                  ]
+                }
+              />
+            </table>,
+          ],
+          "className": "stocks-table-wrapper",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "children": null,
+              "subtitle": null,
+              "title": "Prix",
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <thead>
+                  <tr>
+                    <td>
+                      Prix
+                    </td>
+                    <td>
+                      Date Limite de Réservation
+                    </td>
+                    <td>
+                      Stock total
+                    </td>
+                    <td>
+                      Stock restant
+                    </td>
+                    <td>
+                      Réservations
+                    </td>
+                    <td>
+                      Modifier
+                    </td>
+                    <td>
+                      Supprimer
+                    </td>
+                  </tr>
+                </thead>,
+                <tbody>
+                  <tr
+                    className=""
+                  >
+                    <td
+                      colSpan="10"
+                    >
+                      <button
+                        className="button is-secondary"
+                        disabled={true}
+                        id="add-stock"
+                        onClick={[Function]}
+                        type="button"
+                      >
+                        
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>,
+                undefined,
+                Array [
+                  <withRouter(_withQueryRouter)
+                    closeInfo={[Function]}
+                    handleSetErrors={[Function]}
+                    isEvent={false}
+                    isFullyEditable={true}
+                    showInfo={[Function]}
+                    stock={
+                      Object {
+                        "available": 10,
+                        "bookingLimitDatetime": "2019-03-06T23:00:00Z",
+                        "bookingRecapSent": null,
+                        "dateModified": "2019-03-06T15:51:39.253527Z",
+                        "dateModifiedAtLastProvider": "2019-03-06T15:51:39.253504Z",
+                        "eventOccurrenceId": null,
+                        "groupSize": 1,
+                        "id": "ARMQ",
+                        "idAtProviders": null,
+                        "isSoftDeleted": false,
+                        "lastProviderId": null,
+                        "modelName": "Stock",
+                        "offerId": "AUSQ",
+                        "price": 17,
+                      }
+                    }
+                    stocks={
+                      Array [
+                        Object {
+                          "available": 10,
+                          "bookingLimitDatetime": "2019-03-06T23:00:00Z",
+                          "bookingRecapSent": null,
+                          "dateModified": "2019-03-06T15:51:39.253527Z",
+                          "dateModifiedAtLastProvider": "2019-03-06T15:51:39.253504Z",
+                          "eventOccurrenceId": null,
+                          "groupSize": 1,
+                          "id": "ARMQ",
+                          "idAtProviders": null,
+                          "isSoftDeleted": false,
+                          "lastProviderId": null,
+                          "modelName": "Stock",
+                          "offerId": "AUSQ",
+                          "price": 17,
+                        },
+                      ]
+                    }
+                  />,
+                ],
+                false,
+              ],
+              "className": "table is-hoverable stocks-table small",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <tr>
+                    <td>
+                      Prix
+                    </td>
+                    <td>
+                      Date Limite de Réservation
+                    </td>
+                    <td>
+                      Stock total
+                    </td>
+                    <td>
+                      Stock restant
+                    </td>
+                    <td>
+                      Réservations
+                    </td>
+                    <td>
+                      Modifier
+                    </td>
+                    <td>
+                      Supprimer
+                    </td>
+                  </tr>,
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      false,
+                      <td>
+                        Prix
+                      </td>,
+                      <td>
+                        Date Limite de Réservation
+                      </td>,
+                      <td>
+                        Stock total
+                      </td>,
+                      <td>
+                        Stock restant
+                      </td>,
+                      <td>
+                        Réservations
+                      </td>,
+                      <td>
+                        Modifier
+                      </td>,
+                      <td>
+                        Supprimer
+                      </td>,
+                    ],
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    false,
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Prix",
+                      },
+                      "ref": null,
+                      "rendered": "Prix",
+                      "type": "td",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Date Limite de Réservation",
+                      },
+                      "ref": null,
+                      "rendered": "Date Limite de Réservation",
+                      "type": "td",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Stock total",
+                      },
+                      "ref": null,
+                      "rendered": "Stock total",
+                      "type": "td",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Stock restant",
+                      },
+                      "ref": null,
+                      "rendered": "Stock restant",
+                      "type": "td",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Réservations",
+                      },
+                      "ref": null,
+                      "rendered": "Réservations",
+                      "type": "td",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Modifier",
+                      },
+                      "ref": null,
+                      "rendered": "Modifier",
+                      "type": "td",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Supprimer",
+                      },
+                      "ref": null,
+                      "rendered": "Supprimer",
+                      "type": "td",
+                    },
+                  ],
+                  "type": "tr",
+                },
+                "type": "thead",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <tr
+                    className=""
+                  >
+                    <td
+                      colSpan="10"
+                    >
+                      <button
+                        className="button is-secondary"
+                        disabled={true}
+                        id="add-stock"
+                        onClick={[Function]}
+                        type="button"
+                      >
+                        
+                      </button>
+                    </td>
+                  </tr>,
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <td
+                      colSpan="10"
+                    >
+                      <button
+                        className="button is-secondary"
+                        disabled={true}
+                        id="add-stock"
+                        onClick={[Function]}
+                        type="button"
+                      >
+                        
+                      </button>
+                    </td>,
+                    "className": "",
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <button
+                        className="button is-secondary"
+                        disabled={true}
+                        id="add-stock"
+                        onClick={[Function]}
+                        type="button"
+                      >
+                        
+                      </button>,
+                      "colSpan": "10",
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "",
+                        "className": "button is-secondary",
+                        "disabled": true,
+                        "id": "add-stock",
+                        "onClick": [Function],
+                        "type": "button",
+                      },
+                      "ref": null,
+                      "rendered": "",
+                      "type": "button",
+                    },
+                    "type": "td",
+                  },
+                  "type": "tr",
+                },
+                "type": "tbody",
+              },
+              undefined,
+              Object {
+                "instance": null,
+                "key": "ARMQ",
+                "nodeType": "function",
+                "props": Object {
+                  "closeInfo": [Function],
+                  "handleSetErrors": [Function],
+                  "isEvent": false,
+                  "isFullyEditable": true,
+                  "showInfo": [Function],
+                  "stock": Object {
+                    "available": 10,
+                    "bookingLimitDatetime": "2019-03-06T23:00:00Z",
+                    "bookingRecapSent": null,
+                    "dateModified": "2019-03-06T15:51:39.253527Z",
+                    "dateModifiedAtLastProvider": "2019-03-06T15:51:39.253504Z",
+                    "eventOccurrenceId": null,
+                    "groupSize": 1,
+                    "id": "ARMQ",
+                    "idAtProviders": null,
+                    "isSoftDeleted": false,
+                    "lastProviderId": null,
+                    "modelName": "Stock",
+                    "offerId": "AUSQ",
+                    "price": 17,
+                  },
+                  "stocks": Array [
+                    Object {
+                      "available": 10,
+                      "bookingLimitDatetime": "2019-03-06T23:00:00Z",
+                      "bookingRecapSent": null,
+                      "dateModified": "2019-03-06T15:51:39.253527Z",
+                      "dateModifiedAtLastProvider": "2019-03-06T15:51:39.253504Z",
+                      "eventOccurrenceId": null,
+                      "groupSize": 1,
+                      "id": "ARMQ",
+                      "idAtProviders": null,
+                      "isSoftDeleted": false,
+                      "lastProviderId": null,
+                      "modelName": "Stock",
+                      "offerId": "AUSQ",
+                      "price": 17,
+                    },
+                  ],
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              false,
+            ],
+            "type": "table",
+          },
+        ],
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Fermer",
+          "className": "button is-secondary is-pulled-right",
+          "id": "close-manager",
+          "onClick": [Function],
+          "type": "button",
+        },
+        "ref": null,
+        "rendered": "Fermer",
+        "type": "button",
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <div
+            className="info is-invisible"
+          >
+            <div
+              className="content"
+            >
+              <div />
+            </div>
+          </div>,
+          null,
+          <div
+            className="stocks-table-wrapper"
+          >
+            <HeroSection
+              subtitle={null}
+              title="Prix"
+            />
+            <table
+              className="table is-hoverable stocks-table small"
+            >
+              <thead>
+                <tr>
+                  <td>
+                    Prix
+                  </td>
+                  <td>
+                    Date Limite de Réservation
+                  </td>
+                  <td>
+                    Stock total
+                  </td>
+                  <td>
+                    Stock restant
+                  </td>
+                  <td>
+                    Réservations
+                  </td>
+                  <td>
+                    Modifier
+                  </td>
+                  <td>
+                    Supprimer
+                  </td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  className=""
+                >
+                  <td
+                    colSpan="10"
+                  >
+                    <button
+                      className="button is-secondary"
+                      disabled={true}
+                      id="add-stock"
+                      onClick={[Function]}
+                      type="button"
+                    >
+                      
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+              <withRouter(_withQueryRouter)
+                closeInfo={[Function]}
+                handleSetErrors={[Function]}
+                isEvent={false}
+                isFullyEditable={true}
+                showInfo={[Function]}
+                stock={
+                  Object {
+                    "available": 10,
+                    "bookingLimitDatetime": "2019-03-06T23:00:00Z",
+                    "bookingRecapSent": null,
+                    "dateModified": "2019-03-06T15:51:39.253527Z",
+                    "dateModifiedAtLastProvider": "2019-03-06T15:51:39.253504Z",
+                    "eventOccurrenceId": null,
+                    "groupSize": 1,
+                    "id": "ARMQ",
+                    "idAtProviders": null,
+                    "isSoftDeleted": false,
+                    "lastProviderId": null,
+                    "modelName": "Stock",
+                    "offerId": "AUSQ",
+                    "price": 17,
+                  }
+                }
+                stocks={
+                  Array [
+                    Object {
+                      "available": 10,
+                      "bookingLimitDatetime": "2019-03-06T23:00:00Z",
+                      "bookingRecapSent": null,
+                      "dateModified": "2019-03-06T15:51:39.253527Z",
+                      "dateModifiedAtLastProvider": "2019-03-06T15:51:39.253504Z",
+                      "eventOccurrenceId": null,
+                      "groupSize": 1,
+                      "id": "ARMQ",
+                      "idAtProviders": null,
+                      "isSoftDeleted": false,
+                      "lastProviderId": null,
+                      "modelName": "Stock",
+                      "offerId": "AUSQ",
+                      "price": 17,
+                    },
+                  ]
+                }
+              />
+            </table>
+          </div>,
+          <button
+            className="button is-secondary is-pulled-right"
+            id="close-manager"
+            onClick={[Function]}
+            type="button"
+          >
+            Fermer
+          </button>,
+        ],
+        "className": "stocks-manager",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <div
+              className="content"
+            >
+              <div />
+            </div>,
+            "className": "info is-invisible",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <div />,
+              "className": "content",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": null,
+              },
+              "ref": null,
+              "rendered": null,
+              "type": "div",
+            },
+            "type": "div",
+          },
+          "type": "div",
+        },
+        null,
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <HeroSection
+                subtitle={null}
+                title="Prix"
+              />,
+              <table
+                className="table is-hoverable stocks-table small"
+              >
+                <thead>
+                  <tr>
+                    <td>
+                      Prix
+                    </td>
+                    <td>
+                      Date Limite de Réservation
+                    </td>
+                    <td>
+                      Stock total
+                    </td>
+                    <td>
+                      Stock restant
+                    </td>
+                    <td>
+                      Réservations
+                    </td>
+                    <td>
+                      Modifier
+                    </td>
+                    <td>
+                      Supprimer
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    className=""
+                  >
+                    <td
+                      colSpan="10"
+                    >
+                      <button
+                        className="button is-secondary"
+                        disabled={true}
+                        id="add-stock"
+                        onClick={[Function]}
+                        type="button"
+                      >
+                        
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+                <withRouter(_withQueryRouter)
+                  closeInfo={[Function]}
+                  handleSetErrors={[Function]}
+                  isEvent={false}
+                  isFullyEditable={true}
+                  showInfo={[Function]}
+                  stock={
+                    Object {
+                      "available": 10,
+                      "bookingLimitDatetime": "2019-03-06T23:00:00Z",
+                      "bookingRecapSent": null,
+                      "dateModified": "2019-03-06T15:51:39.253527Z",
+                      "dateModifiedAtLastProvider": "2019-03-06T15:51:39.253504Z",
+                      "eventOccurrenceId": null,
+                      "groupSize": 1,
+                      "id": "ARMQ",
+                      "idAtProviders": null,
+                      "isSoftDeleted": false,
+                      "lastProviderId": null,
+                      "modelName": "Stock",
+                      "offerId": "AUSQ",
+                      "price": 17,
+                    }
+                  }
+                  stocks={
+                    Array [
+                      Object {
+                        "available": 10,
+                        "bookingLimitDatetime": "2019-03-06T23:00:00Z",
+                        "bookingRecapSent": null,
+                        "dateModified": "2019-03-06T15:51:39.253527Z",
+                        "dateModifiedAtLastProvider": "2019-03-06T15:51:39.253504Z",
+                        "eventOccurrenceId": null,
+                        "groupSize": 1,
+                        "id": "ARMQ",
+                        "idAtProviders": null,
+                        "isSoftDeleted": false,
+                        "lastProviderId": null,
+                        "modelName": "Stock",
+                        "offerId": "AUSQ",
+                        "price": 17,
+                      },
+                    ]
+                  }
+                />
+              </table>,
+            ],
+            "className": "stocks-table-wrapper",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "children": null,
+                "subtitle": null,
+                "title": "Prix",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <thead>
+                    <tr>
+                      <td>
+                        Prix
+                      </td>
+                      <td>
+                        Date Limite de Réservation
+                      </td>
+                      <td>
+                        Stock total
+                      </td>
+                      <td>
+                        Stock restant
+                      </td>
+                      <td>
+                        Réservations
+                      </td>
+                      <td>
+                        Modifier
+                      </td>
+                      <td>
+                        Supprimer
+                      </td>
+                    </tr>
+                  </thead>,
+                  <tbody>
+                    <tr
+                      className=""
+                    >
+                      <td
+                        colSpan="10"
+                      >
+                        <button
+                          className="button is-secondary"
+                          disabled={true}
+                          id="add-stock"
+                          onClick={[Function]}
+                          type="button"
+                        >
+                          
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>,
+                  undefined,
+                  Array [
+                    <withRouter(_withQueryRouter)
+                      closeInfo={[Function]}
+                      handleSetErrors={[Function]}
+                      isEvent={false}
+                      isFullyEditable={true}
+                      showInfo={[Function]}
+                      stock={
+                        Object {
+                          "available": 10,
+                          "bookingLimitDatetime": "2019-03-06T23:00:00Z",
+                          "bookingRecapSent": null,
+                          "dateModified": "2019-03-06T15:51:39.253527Z",
+                          "dateModifiedAtLastProvider": "2019-03-06T15:51:39.253504Z",
+                          "eventOccurrenceId": null,
+                          "groupSize": 1,
+                          "id": "ARMQ",
+                          "idAtProviders": null,
+                          "isSoftDeleted": false,
+                          "lastProviderId": null,
+                          "modelName": "Stock",
+                          "offerId": "AUSQ",
+                          "price": 17,
+                        }
+                      }
+                      stocks={
+                        Array [
+                          Object {
+                            "available": 10,
+                            "bookingLimitDatetime": "2019-03-06T23:00:00Z",
+                            "bookingRecapSent": null,
+                            "dateModified": "2019-03-06T15:51:39.253527Z",
+                            "dateModifiedAtLastProvider": "2019-03-06T15:51:39.253504Z",
+                            "eventOccurrenceId": null,
+                            "groupSize": 1,
+                            "id": "ARMQ",
+                            "idAtProviders": null,
+                            "isSoftDeleted": false,
+                            "lastProviderId": null,
+                            "modelName": "Stock",
+                            "offerId": "AUSQ",
+                            "price": 17,
+                          },
+                        ]
+                      }
+                    />,
+                  ],
+                  false,
+                ],
+                "className": "table is-hoverable stocks-table small",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <tr>
+                      <td>
+                        Prix
+                      </td>
+                      <td>
+                        Date Limite de Réservation
+                      </td>
+                      <td>
+                        Stock total
+                      </td>
+                      <td>
+                        Stock restant
+                      </td>
+                      <td>
+                        Réservations
+                      </td>
+                      <td>
+                        Modifier
+                      </td>
+                      <td>
+                        Supprimer
+                      </td>
+                    </tr>,
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": Array [
+                        false,
+                        <td>
+                          Prix
+                        </td>,
+                        <td>
+                          Date Limite de Réservation
+                        </td>,
+                        <td>
+                          Stock total
+                        </td>,
+                        <td>
+                          Stock restant
+                        </td>,
+                        <td>
+                          Réservations
+                        </td>,
+                        <td>
+                          Modifier
+                        </td>,
+                        <td>
+                          Supprimer
+                        </td>,
+                      ],
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      false,
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "Prix",
+                        },
+                        "ref": null,
+                        "rendered": "Prix",
+                        "type": "td",
+                      },
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "Date Limite de Réservation",
+                        },
+                        "ref": null,
+                        "rendered": "Date Limite de Réservation",
+                        "type": "td",
+                      },
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "Stock total",
+                        },
+                        "ref": null,
+                        "rendered": "Stock total",
+                        "type": "td",
+                      },
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "Stock restant",
+                        },
+                        "ref": null,
+                        "rendered": "Stock restant",
+                        "type": "td",
+                      },
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "Réservations",
+                        },
+                        "ref": null,
+                        "rendered": "Réservations",
+                        "type": "td",
+                      },
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "Modifier",
+                        },
+                        "ref": null,
+                        "rendered": "Modifier",
+                        "type": "td",
+                      },
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "Supprimer",
+                        },
+                        "ref": null,
+                        "rendered": "Supprimer",
+                        "type": "td",
+                      },
+                    ],
+                    "type": "tr",
+                  },
+                  "type": "thead",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <tr
+                      className=""
+                    >
+                      <td
+                        colSpan="10"
+                      >
+                        <button
+                          className="button is-secondary"
+                          disabled={true}
+                          id="add-stock"
+                          onClick={[Function]}
+                          type="button"
+                        >
+                          
+                        </button>
+                      </td>
+                    </tr>,
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <td
+                        colSpan="10"
+                      >
+                        <button
+                          className="button is-secondary"
+                          disabled={true}
+                          id="add-stock"
+                          onClick={[Function]}
+                          type="button"
+                        >
+                          
+                        </button>
+                      </td>,
+                      "className": "",
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": <button
+                          className="button is-secondary"
+                          disabled={true}
+                          id="add-stock"
+                          onClick={[Function]}
+                          type="button"
+                        >
+                          
+                        </button>,
+                        "colSpan": "10",
+                      },
+                      "ref": null,
+                      "rendered": Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "",
+                          "className": "button is-secondary",
+                          "disabled": true,
+                          "id": "add-stock",
+                          "onClick": [Function],
+                          "type": "button",
+                        },
+                        "ref": null,
+                        "rendered": "",
+                        "type": "button",
+                      },
+                      "type": "td",
+                    },
+                    "type": "tr",
+                  },
+                  "type": "tbody",
+                },
+                undefined,
+                Object {
+                  "instance": null,
+                  "key": "ARMQ",
+                  "nodeType": "function",
+                  "props": Object {
+                    "closeInfo": [Function],
+                    "handleSetErrors": [Function],
+                    "isEvent": false,
+                    "isFullyEditable": true,
+                    "showInfo": [Function],
+                    "stock": Object {
+                      "available": 10,
+                      "bookingLimitDatetime": "2019-03-06T23:00:00Z",
+                      "bookingRecapSent": null,
+                      "dateModified": "2019-03-06T15:51:39.253527Z",
+                      "dateModifiedAtLastProvider": "2019-03-06T15:51:39.253504Z",
+                      "eventOccurrenceId": null,
+                      "groupSize": 1,
+                      "id": "ARMQ",
+                      "idAtProviders": null,
+                      "isSoftDeleted": false,
+                      "lastProviderId": null,
+                      "modelName": "Stock",
+                      "offerId": "AUSQ",
+                      "price": 17,
+                    },
+                    "stocks": Array [
+                      Object {
+                        "available": 10,
+                        "bookingLimitDatetime": "2019-03-06T23:00:00Z",
+                        "bookingRecapSent": null,
+                        "dateModified": "2019-03-06T15:51:39.253527Z",
+                        "dateModifiedAtLastProvider": "2019-03-06T15:51:39.253504Z",
+                        "eventOccurrenceId": null,
+                        "groupSize": 1,
+                        "id": "ARMQ",
+                        "idAtProviders": null,
+                        "isSoftDeleted": false,
+                        "lastProviderId": null,
+                        "modelName": "Stock",
+                        "offerId": "AUSQ",
+                        "price": 17,
+                      },
+                    ],
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": [Function],
+                },
+                false,
+              ],
+              "type": "table",
+            },
+          ],
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Fermer",
+            "className": "button is-secondary is-pulled-right",
+            "id": "close-manager",
+            "onClick": [Function],
+            "type": "button",
+          },
+          "ref": null,
+          "rendered": "Fermer",
+          "type": "button",
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
+}
+`;
+
+exports[`src | components | pages | Offer | StocksManager | StocksManager should match the snapshot when managing an event 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <StocksManager
@@ -13,6 +1496,11 @@ ShallowWrapper {
         "pathname": "/offres/AWHA",
         "search": "?gestion",
         "state": undefined,
+      }
+    }
+    product={
+      Object {
+        "id": "ABDD",
       }
     }
     query={
@@ -102,10 +1590,13 @@ ShallowWrapper {
                   Date Limite de Réservation
                 </td>
                 <td>
-                  Places affectées
+                  Stock total
                 </td>
                 <td>
-                  Places restantes
+                  Stock restant
+                </td>
+                <td>
+                  Réservations
                 </td>
                 <td>
                   Modifier
@@ -269,10 +1760,13 @@ ShallowWrapper {
                     Date Limite de Réservation
                   </td>
                   <td>
-                    Places affectées
+                    Stock total
                   </td>
                   <td>
-                    Places restantes
+                    Stock restant
+                  </td>
+                  <td>
+                    Réservations
                   </td>
                   <td>
                     Modifier
@@ -395,10 +1889,13 @@ ShallowWrapper {
                       Date Limite de Réservation
                     </td>
                     <td>
-                      Places affectées
+                      Stock total
                     </td>
                     <td>
-                      Places restantes
+                      Stock restant
+                    </td>
+                    <td>
+                      Réservations
                     </td>
                     <td>
                       Modifier
@@ -509,10 +2006,13 @@ ShallowWrapper {
                       Date Limite de Réservation
                     </td>
                     <td>
-                      Places affectées
+                      Stock total
                     </td>
                     <td>
-                      Places restantes
+                      Stock restant
+                    </td>
+                    <td>
+                      Réservations
                     </td>
                     <td>
                       Modifier
@@ -551,10 +2051,13 @@ ShallowWrapper {
                         Date Limite de Réservation
                       </td>,
                       <td>
-                        Places affectées
+                        Stock total
                       </td>,
                       <td>
-                        Places restantes
+                        Stock restant
+                      </td>,
+                      <td>
+                        Réservations
                       </td>,
                       <td>
                         Modifier
@@ -684,10 +2187,10 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
-                        "children": "Places affectées",
+                        "children": "Stock total",
                       },
                       "ref": null,
-                      "rendered": "Places affectées",
+                      "rendered": "Stock total",
                       "type": "td",
                     },
                     Object {
@@ -695,10 +2198,21 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
-                        "children": "Places restantes",
+                        "children": "Stock restant",
                       },
                       "ref": null,
-                      "rendered": "Places restantes",
+                      "rendered": "Stock restant",
+                      "type": "td",
+                    },
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Réservations",
+                      },
+                      "ref": null,
+                      "rendered": "Réservations",
                       "type": "td",
                     },
                     Object {
@@ -938,10 +2452,13 @@ ShallowWrapper {
                     Date Limite de Réservation
                   </td>
                   <td>
-                    Places affectées
+                    Stock total
                   </td>
                   <td>
-                    Places restantes
+                    Stock restant
+                  </td>
+                  <td>
+                    Réservations
                   </td>
                   <td>
                     Modifier
@@ -1105,10 +2622,13 @@ ShallowWrapper {
                       Date Limite de Réservation
                     </td>
                     <td>
-                      Places affectées
+                      Stock total
                     </td>
                     <td>
-                      Places restantes
+                      Stock restant
+                    </td>
+                    <td>
+                      Réservations
                     </td>
                     <td>
                       Modifier
@@ -1231,10 +2751,13 @@ ShallowWrapper {
                         Date Limite de Réservation
                       </td>
                       <td>
-                        Places affectées
+                        Stock total
                       </td>
                       <td>
-                        Places restantes
+                        Stock restant
+                      </td>
+                      <td>
+                        Réservations
                       </td>
                       <td>
                         Modifier
@@ -1345,10 +2868,13 @@ ShallowWrapper {
                         Date Limite de Réservation
                       </td>
                       <td>
-                        Places affectées
+                        Stock total
                       </td>
                       <td>
-                        Places restantes
+                        Stock restant
+                      </td>
+                      <td>
+                        Réservations
                       </td>
                       <td>
                         Modifier
@@ -1387,10 +2913,13 @@ ShallowWrapper {
                           Date Limite de Réservation
                         </td>,
                         <td>
-                          Places affectées
+                          Stock total
                         </td>,
                         <td>
-                          Places restantes
+                          Stock restant
+                        </td>,
+                        <td>
+                          Réservations
                         </td>,
                         <td>
                           Modifier
@@ -1520,10 +3049,10 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": "Places affectées",
+                          "children": "Stock total",
                         },
                         "ref": null,
-                        "rendered": "Places affectées",
+                        "rendered": "Stock total",
                         "type": "td",
                       },
                       Object {
@@ -1531,10 +3060,21 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": "Places restantes",
+                          "children": "Stock restant",
                         },
                         "ref": null,
-                        "rendered": "Places restantes",
+                        "rendered": "Stock restant",
+                        "type": "td",
+                      },
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "Réservations",
+                        },
+                        "ref": null,
+                        "rendered": "Réservations",
                         "type": "td",
                       },
                       Object {

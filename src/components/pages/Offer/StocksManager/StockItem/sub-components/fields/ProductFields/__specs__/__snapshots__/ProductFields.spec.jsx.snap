@@ -99,6 +99,12 @@ ShallowWrapper {
         >
           1
         </td>,
+        <td
+          className="is-small bookings-count"
+          id="bookings-count"
+        >
+          5256
+        </td>,
       ],
     },
     "ref": null,
@@ -282,6 +288,19 @@ ShallowWrapper {
         "rendered": 1,
         "type": "td",
       },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": 5256,
+          "className": "is-small bookings-count",
+          "id": "bookings-count",
+        },
+        "ref": null,
+        "rendered": 5256,
+        "type": "td",
+      },
     ],
     "type": Symbol(react.fragment),
   },
@@ -355,6 +374,12 @@ ShallowWrapper {
             id="remaining-stock"
           >
             1
+          </td>,
+          <td
+            className="is-small bookings-count"
+            id="bookings-count"
+          >
+            5256
           </td>,
         ],
       },
@@ -537,6 +562,19 @@ ShallowWrapper {
           },
           "ref": null,
           "rendered": 1,
+          "type": "td",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": 5256,
+            "className": "is-small bookings-count",
+            "id": "bookings-count",
+          },
+          "ref": null,
+          "rendered": 5256,
           "type": "td",
         },
       ],
