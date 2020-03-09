@@ -48,7 +48,7 @@ class Discovery extends PureComponent {
     } = this.props
     const { location: prevLocation } = prevProps
 
-    if (prevLocation.pathname !== location.pathname && location.pathname === '/decouverte') {
+    if (prevLocation.pathname !== location.pathname && location.pathname === '/decouverte-v2') {
       redirectToFirstRecommendationIfNeeded(recommendations)
     }
 
