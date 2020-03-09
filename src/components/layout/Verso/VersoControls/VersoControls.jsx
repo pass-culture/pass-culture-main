@@ -9,7 +9,7 @@ import FinishableContainer from '../../Finishable/FinishableContainer'
 import ShareButtonContainer from '../../Share/ShareButton/ShareButtonContainer'
 
 const VersoControls = ({ isBooked }) => (
-  <FinishableContainer isBooked={isBooked}>
+  <FinishableContainer>
     <ul className="verso-controls">
       <li>
         <WalletContainer />

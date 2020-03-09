@@ -36,7 +36,6 @@ ShallowWrapper {
           <withRouter(WithTracking(Connect(CancellingAction))) />
         </li>
       </ul>,
-      "isBooked": true,
     },
     "ref": null,
     "rendered": Object {
@@ -172,7 +171,6 @@ ShallowWrapper {
             <withRouter(WithTracking(Connect(CancellingAction))) />
           </li>
         </ul>,
-        "isBooked": true,
       },
       "ref": null,
       "rendered": Object {
@@ -352,7 +350,6 @@ ShallowWrapper {
           <withRouter(Connect(BookingAction)) />
         </li>
       </ul>,
-      "isBooked": false,
     },
     "ref": null,
     "rendered": Object {
@@ -488,7 +485,6 @@ ShallowWrapper {
             <withRouter(Connect(BookingAction)) />
           </li>
         </ul>,
-        "isBooked": false,
       },
       "ref": null,
       "rendered": Object {

@@ -2,8 +2,8 @@ import { mapStateToProps } from '../BookingActionContainer'
 
 describe('components | BookingActionContainer', () => {
   describe('mapStateToProps', () => {
-    describe('not isBookable', () => {
-      it('should return true when offer is not bookable and offer is not fully booked', () => {
+    describe('when offer is not bookable', () => {
+      it('should return true', () => {
         // given
         const ownProps = {
           location: {
@@ -30,85 +30,33 @@ describe('components | BookingActionContainer', () => {
         expect(props.offerCannotBeBooked).toBe(true)
       })
 
-      it('should return true when offer is not bookable and offer is fully booked', () => {
-        // given
-        const ownProps = {
-          location: {
-            pathname: '/fake-url',
-            search: '',
-          },
-          match: {
-            params: {
-              offerId: 'AE',
+      describe('when offer is bookable', () => {
+        it('should return false', () => {
+          // given
+          const ownProps = {
+            location: {
+              pathname: '/fake-url',
+              search: '',
             },
-          },
-        }
-        const state = {
-          data: {
-            offers: [{ id: 'AE', isBookable: false }],
-            stocks: [{ id: 'BE', offerId: 'AE' }],
-          },
-        }
-
-        // when
-        const props = mapStateToProps(state, ownProps)
-
-        // then
-        expect(props.offerCannotBeBooked).toBe(true)
-      })
-
-      it('should return true when offer is bookable and offer is fully booked', () => {
-        // given
-        const ownProps = {
-          location: {
-            pathname: '/fake-url',
-            search: '',
-          },
-          match: {
-            params: {
-              offerId: 'AE',
+            match: {
+              params: {
+                offerId: 'AE',
+              },
             },
-          },
-        }
-        const state = {
-          data: {
-            offers: [{ id: 'AE', isBookable: false }],
-            stocks: [{ id: 'BE', offerId: 'AE' }],
-          },
-        }
-
-        // when
-        const props = mapStateToProps(state, ownProps)
-
-        // then
-        expect(props.offerCannotBeBooked).toBe(true)
-      })
-
-      it('should return false when offer is bookable and offer is not fully booked', () => {
-        // given
-        const ownProps = {
-          location: {
-            pathname: '/fake-url',
-            search: '',
-          },
-          match: {
-            params: {
-              offerId: 'AE',
+          }
+          const state = {
+            data: {
+              offers: [{ id: 'AE', isBookable: true }],
+              stocks: [{ id: 'BE', offerId: 'AE' }],
             },
-          },
-        }
-        const state = {
-          data: {
-            offers: [{ id: 'AE', isBookable: true }],
-            stocks: [{ id: 'BE', offerId: 'AE' }],
-          },
-        }
+          }
 
-        // when
-        const props = mapStateToProps(state, ownProps)
+          // when
+          const props = mapStateToProps(state, ownProps)
 
-        // then
-        expect(props.offerCannotBeBooked).toBe(false)
+          // then
+          expect(props.offerCannotBeBooked).toBe(false)
+        })
       })
     })
 

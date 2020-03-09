@@ -31,20 +31,17 @@ describe('src | helpers | getPriceRangeFromStocks', () => {
         // Given
         const stocks = [
           {},
-          { price: 0, isBookable: true },
+          { price: 0, isBookable: false },
+          { price: 1, isBookable: true },
           { price: 15.99, isBookable: true },
           { price: 100, isBookable: true },
-          { price: 22.5, isBookable: false },
-          { price: 0, isBookable: false },
-          { price: 0, isBookable: true },
-          { price: 56, isBookable: true },
         ]
 
         // When
         const result = getPriceRangeFromStocks(stocks)
 
         // Then
-        expect(result).toStrictEqual([0, 100])
+        expect(result).toStrictEqual([1, 100])
       })
     })
   })

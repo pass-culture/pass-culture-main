@@ -7,7 +7,7 @@ import { selectBookingById } from '../../../selectors/data/bookingsSelectors'
 import { selectOfferById } from '../../../selectors/data/offersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
-  const { isBooked, match } = ownProps
+  const { match } = ownProps
   const { params } = match
   const { bookingId, offerId: offerIdQueryParam } = params
 
@@ -19,11 +19,12 @@ export const mapStateToProps = (state, ownProps) => {
     const { offerId: offerIdFromStock } = stock
     offerId = offerIdFromStock
   }
-  const offer = selectOfferById(state, offerId)
-  const isOfferNotBookable = Boolean(offer) && !offer.isBookable
+  const offer = selectOfferById(state, offerId) || {}
+  const isOfferTuto = Object.keys(offer).length == 0
+  const isOfferBookable = !isOfferTuto && offer.isBookable
 
   return {
-    offerCannotBeBooked: isBooked ? false : isOfferNotBookable,
+    offerCanBeBooked: isOfferTuto ? true : isOfferBookable,
   }
 }
 
