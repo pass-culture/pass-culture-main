@@ -49,7 +49,7 @@ if [[ $# -gt 2 ]] && [[ "$1" == "-r" ]]; then
   export SCALINGO_REGION=$2
   shift 2
 else
-  export SCALINGO_REGION=agora-fr1
+  export SCALINGO_REGION=osc-fr1
 fi
 
 if [[ $# -gt 2 ]] && [[ "$1" == "-t" ]]; then
