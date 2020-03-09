@@ -18,7 +18,6 @@ from routes.serialization.recommendation_serialize import serialize_recommendati
 from utils.config import BLOB_SIZE
 from utils.feature import feature_required
 from utils.human_ids import dehumanize
-from utils.logger import logger
 from utils.rest import expect_json_data
 
 DEFAULT_PAGE = 1
@@ -97,16 +96,10 @@ def put_recommendations_v2():
         offer_id,
         mediation_id
     )
-    logger.debug(lambda: '(special) requested_recommendation %s' %
-                 requested_recommendation)
 
     created_recommendations = create_recommendations_for_discovery_v2(limit=BLOB_SIZE,
                                                                       user=current_user,
                                                                       seen_recommendation_ids=seen_recommendation_ids)
-
-    logger.debug(lambda: '(new recos)' + str([(reco, reco.mediation, reco.dateRead)
-                                              for reco in created_recommendations]))
-    logger.debug(lambda: '(new reco) count %i', len(created_recommendations))
 
     recommendations = move_tutorial_recommendations_first(created_recommendations,
                                                           seen_recommendation_ids,
@@ -114,11 +107,6 @@ def put_recommendations_v2():
     if requested_recommendation:
         recommendations = move_requested_recommendation_first(created_recommendations,
                                                               requested_recommendation)
-
-    logger.debug(lambda: '(recap reco) '
-                         + str([(reco, reco.mediation, reco.dateRead, reco.offer)
-                                for reco in recommendations])
-                         + str(len(recommendations)))
 
     return jsonify(serialize_recommendations(recommendations, current_user)), 200
 
@@ -148,8 +136,6 @@ def put_recommendations():
         offer_id,
         mediation_id
     )
-    logger.debug(lambda: '(special) requested_recommendation %s' %
-                         requested_recommendation)
 
     request_page = request.args.get('page')
     request_seed = request.args.get('seed')
@@ -162,20 +148,11 @@ def put_recommendations():
                                                                    user=current_user,
                                                                    pagination_params=pagination_params)
 
-    logger.debug(lambda: '(new recos)' + str([(reco, reco.mediation, reco.dateRead)
-                                              for reco in created_recommendations]))
-    logger.debug(lambda: '(new reco) count %i', len(created_recommendations))
-
     recommendations = move_tutorial_recommendations_first(created_recommendations,
                                                           seen_recommendation_ids,
                                                           current_user)
     if requested_recommendation:
         recommendations = move_requested_recommendation_first(created_recommendations,
                                                               requested_recommendation)
-
-    logger.debug(lambda: '(recap reco) '
-                         + str([(reco, reco.mediation, reco.dateRead, reco.offer)
-                                for reco in recommendations])
-                         + str(len(recommendations)))
 
     return jsonify(serialize_recommendations(recommendations, current_user)), 200
