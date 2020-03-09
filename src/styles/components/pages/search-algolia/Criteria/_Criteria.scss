@@ -1,14 +1,20 @@
-.criteria-item-list {
-  background-color: $white;
-  height: 100vh;
+.criteria-page {
   display: flex;
   flex-direction: column;
+  height: 100%;
+}
+
+.criteria-item-list {
+  background-color: $white;
+  height: 100%;
   overflow: scroll;
+
+  li {
+    padding: rem(14px) 0;
+  }
 }
 
 .criteria-item {
-  height: rem(48px);
-  margin-top: rem(28px);
   display: flex;
   align-items: center;
 }

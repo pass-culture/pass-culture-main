@@ -1,7 +1,11 @@
 .ci-wrapper {
   background: $white;
   text-align: center;
-  padding: rem(23px) 0;
+  margin: rem(23px) 0;
+
+  &:first-child {
+    margin-top: rem(60px);
+  }
 }
 
 .ci-link-label {

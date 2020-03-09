@@ -7,7 +7,7 @@ export const Criteria = props => {
   const { match, history, activeCriterionLabel, onCriterionSelection, title, criteria } = props
 
   return (
-    <div>
+    <div className="criteria-page">
       <Header
         backTo="/recherche-offres"
         closeTo=""
