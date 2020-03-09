@@ -58,13 +58,11 @@ class Discovery extends PureComponent {
   }
 
   componentWillUnmount() {
-    const { deleteTutorials, tutorials, resetRecommendations } = this.props
+    const { deleteTutorials, tutorials } = this.props
 
     if (tutorials.length > 0) {
       deleteTutorials(tutorials)
     }
-
-    resetRecommendations()
   }
 
   handleFail = () => {
@@ -193,7 +191,6 @@ Discovery.propTypes = {
   redirectHome: PropTypes.func.isRequired,
   redirectToFirstRecommendationIfNeeded: PropTypes.func.isRequired,
   resetReadRecommendations: PropTypes.func.isRequired,
-  resetRecommendations: PropTypes.func.isRequired,
   saveLastRecommendationsRequestTimestamp: PropTypes.func.isRequired,
   seed: PropTypes.number.isRequired,
   seedLastRequestTimestamp: PropTypes.number.isRequired,

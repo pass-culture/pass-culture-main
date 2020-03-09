@@ -130,9 +130,6 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
     dispatch(updateSeed(Math.random()))
     dispatch(updatePage(1))
   },
-  resetRecommendations: () => {
-    dispatch(assignData({ recommendations: [] }))
-  },
 })
 
 export default compose(

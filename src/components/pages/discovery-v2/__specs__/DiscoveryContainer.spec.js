@@ -445,5 +445,18 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         })
       })
     })
+
+    describe('when mapping resetRecommandations', () => {
+      it('should delete all recommandations in the store', () => {
+        // when
+        mapDispatchToProps(dispatch, props).resetRecommendations()
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith({
+          patch: { recommendations: [] },
+          type: 'ASSIGN_DATA',
+        })
+      })
+    })
   })
 })
