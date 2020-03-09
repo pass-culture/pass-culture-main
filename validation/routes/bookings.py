@@ -5,7 +5,7 @@ from domain.expenses import is_eligible_to_physical_offers_capping, is_eligible_
 from domain.user_activation import is_activation_booking
 from models import ApiErrors, Booking, RightsType
 from models.api_errors import ResourceGoneError, ForbiddenError
-from repository.payment_queries import get_payment_by_booking_id
+from repository import payment_queries
 from repository.stock_queries import find_stock_by_id
 from repository.venue_queries import find_by_id, find_by_offer_id
 from utils.rest import ensure_current_user_has_rights
@@ -134,7 +134,7 @@ def check_booking_token_is_usable(booking: Booking):
 
 def check_booking_token_is_keepable(booking: Booking):
     resource_gone_error = ResourceGoneError()
-    booking_payment = get_payment_by_booking_id(booking.id)
+    booking_payment = payment_queries.find_by_booking_id(booking.id)
 
     if booking_payment is not None:
         resource_gone_error.add_error('payment', "Le remboursement est en cours de traitement")

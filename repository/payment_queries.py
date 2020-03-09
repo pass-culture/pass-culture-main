@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from flask import render_template
 from sqlalchemy import text
@@ -43,9 +43,8 @@ def get_payments_by_message_id(payment_message_id: str) -> List[Payment]:
     return payment_query.all()
 
 
-def get_payment_by_booking_id(id: str) -> List[Payment]:
-    payment_query = Payment.query.filter_by(bookingId=id).first()
-    return payment_query
+def find_by_booking_id(booking_id: int) -> Optional[Payment]:
+    return Payment.query.filter_by(bookingId=booking_id).first()
 
 
 def find_not_processable_with_bank_information():

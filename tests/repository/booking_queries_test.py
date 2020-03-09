@@ -4,17 +4,20 @@ from decimal import Decimal
 import pytest
 from freezegun import freeze_time
 
-from models import ThingType, Booking, EventType
-from models.api_errors import ResourceNotFoundError, ApiErrors
-from repository import booking_queries
-from repository import repository
+from models import Booking, EventType, ThingType
+from models.api_errors import ApiErrors, ResourceNotFoundError
+from repository import booking_queries, repository
+from scripts import beneficiary
 from tests.conftest import clean_database
-from tests.model_creators.activity_creators import create_booking_activity, save_all_activities
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
-    create_venue, \
-    create_deposit, create_payment, create_recommendation
-from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_offer, \
-    create_stock_with_thing_offer, create_offer_with_thing_product, create_offer_with_event_product
+from tests.model_creators.activity_creators import create_booking_activity, \
+    save_all_activities
+from tests.model_creators.generic_creators import create_booking, \
+    create_deposit, create_offerer, create_payment, create_recommendation, \
+    create_stock, create_user, create_venue
+from tests.model_creators.specific_creators import \
+    create_offer_with_event_product, create_offer_with_thing_product, \
+    create_stock_from_offer, create_stock_with_event_offer, \
+    create_stock_with_thing_offer
 
 NOW = datetime.utcnow()
 two_days_ago = NOW - timedelta(days=2)
@@ -1618,3 +1621,48 @@ class FindNotUsedAndNotCancelledBookingsAssociatedToOutdatedStocksTest:
         assert booking1 in bookings
         assert booking2 in bookings
         assert booking3 not in bookings
+
+
+class FindByTokenTest:
+    @clean_database
+    def test_should_return_a_booking_when_valid_token_is_given(self, app):
+        # Given
+        beneficiary = create_user()
+        create_deposit(beneficiary)
+        valid_booking = create_booking(user=beneficiary, token='123456', is_used=True)
+        repository.save(valid_booking)
+
+        # When
+        booking = booking_queries.find_by_token(token=valid_booking.token)
+
+        # Then
+        assert booking == valid_booking
+
+    @clean_database
+    def test_should_return_nothing_when_invalid_token_is_given(self, app):
+        # Given
+        invalid_token = 'fake_token'
+        beneficiary = create_user()
+        create_deposit(beneficiary)
+        valid_booking = create_booking(user=beneficiary, token='123456', is_used=True)
+        repository.save(valid_booking)
+
+        # When
+        booking = booking_queries.find_by_token(token=invalid_token)
+
+        # Then
+        assert booking is None
+
+    @clean_database
+    def test_should_return_nothing_when_valid_token_is_given_but_its_not_used(self, app):
+        # Given
+        beneficiary = create_user()
+        create_deposit(beneficiary)
+        valid_booking = create_booking(user=beneficiary, token='123456', is_used=False)
+        repository.save(valid_booking)
+
+        # When
+        booking = booking_queries.find_by_token(token=valid_booking.token)
+
+        # Then
+        assert booking is None

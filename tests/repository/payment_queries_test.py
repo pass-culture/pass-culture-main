@@ -1,15 +1,18 @@
 import uuid
 from decimal import Decimal
 
-from models.payment_status import TransactionStatus, PaymentStatus
+from models.payment_status import PaymentStatus, TransactionStatus
 from repository import repository
-from repository.payment_queries import find_message_checksum, find_error_payments, find_retry_payments, \
-    find_payments_by_message, get_payments_by_message_id, find_not_processable_with_bank_information
+from repository.payment_queries import \
+    find_error_payments, find_message_checksum, \
+    find_not_processable_with_bank_information, find_payments_by_message, \
+    find_retry_payments, find_by_booking_id, get_payments_by_message_id
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
-    create_deposit, \
-    create_payment, create_payment_message, create_bank_information
-from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
+from tests.model_creators.generic_creators import create_bank_information, \
+    create_booking, create_deposit, create_offerer, create_payment, \
+    create_payment_message, create_user, create_venue
+from tests.model_creators.specific_creators import \
+    create_offer_with_thing_product, create_stock_from_offer
 
 
 class FindMessageChecksumTest:
@@ -317,3 +320,37 @@ class FindNotProcessableWithBankInformationTest:
         # Then
         assert not_processable_payment in payments_to_retry
 
+
+class FindByBookingIdTest:
+    @clean_database
+    def test_should_return_a_payment_when_valid_booking_id_is_given(self, app):
+        # Given
+        beneficiary = create_user()
+        create_deposit(beneficiary)
+        offerer = create_offerer()
+        booking = create_booking(user=beneficiary)
+        valid_payment = create_payment(booking=booking, offerer=offerer)
+        repository.save(valid_payment)
+
+        # When
+        payment = find_by_booking_id(booking_id=booking.id)
+
+        # Then
+        assert payment == valid_payment
+
+    @clean_database
+    def test_should_return_nothing_when_invalid_booking_id_is_given(self, app):
+        # Given
+        invalid_booking_id = '99999'
+        beneficiary = create_user()
+        create_deposit(beneficiary)
+        offerer = create_offerer()
+        booking = create_booking(user=beneficiary)
+        valid_payment = create_payment(booking=booking, offerer=offerer)
+        repository.save(valid_payment)
+
+        # When
+        payment = find_by_booking_id(booking_id=invalid_booking_id)
+
+        # Then
+        assert payment is None
