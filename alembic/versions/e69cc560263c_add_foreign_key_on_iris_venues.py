@@ -16,8 +16,8 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column('iris_venues', sa.Column('venueId', sa.BigInteger, nullable=False))
-    op.add_column('iris_venues', sa.Column('venueId', sa.BigInteger, nullable=False))
+    op.alter_column('iris_venues','venueId', nullable=False)
+    op.add_column('iris_venues','irisId', nullable=False)
 
     op.create_foreign_key(
         'iris_venues_irisId_fkey',
@@ -32,7 +32,7 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_column('iris_venues', 'venueId')
-    op.drop_column('iris_venues', 'irisId')
+    op.alter_column('iris_venues', 'venueId', nullable= True)
+    op.drop_column('iris_venues', 'irisId', nullable= True)
     op.drop_constraint('iris_venues_irisId_fkey', 'iris_venues', type_='foreignkey')
     op.drop_constraint('iris_venues_venueId_fkey', 'iris_venues', type_='foreignkey')
