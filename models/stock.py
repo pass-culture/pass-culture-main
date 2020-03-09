@@ -95,9 +95,11 @@ class Stock(PcObject,
 
     @property
     def isBookable(self):
-        if self.bookingLimitDatetime and self.bookingLimitDatetime < datetime.utcnow():
+        if self.hasBookingLimitDatetimePassed:
             return False
         if not self.offer.venue.managingOfferer.isActive:
+            return False
+        if self.offer.venue.managingOfferer.validationToken:
             return False
         if self.offer.venue.validationToken:
             return False

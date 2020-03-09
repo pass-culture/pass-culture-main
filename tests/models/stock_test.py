@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 
 import pytest
-from pytest import approx
 from freezegun import freeze_time
+from pytest import approx
 
 from models import ApiErrors
 from models.pc_object import DeletedRecordException
@@ -271,18 +271,6 @@ class StockRemainingQuantityTest:
 
 
 class IsBookableTest:
-    def test_should_return_true_when_stock_requirements_are_fulfilled(self):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-
-        # When
-        stock = create_stock(offer=offer)
-
-        # Then
-        assert stock.isBookable
-
     def test_should_return_false_when_booking_limit_datetime_has_passed(self):
         # Given
         limit_datetime = datetime.utcnow() - timedelta(days=2)
@@ -292,6 +280,18 @@ class IsBookableTest:
 
         # When
         stock = create_stock(offer=offer, booking_limit_datetime=limit_datetime)
+
+        # Then
+        assert not stock.isBookable
+
+    def test_should_return_false_when_offerer_is_not_validated(self):
+        # Given
+        offerer = create_offerer(validation_token='validation_token')
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+
+        # When
+        stock = create_stock(offer=offer)
 
         # Then
         assert not stock.isBookable
@@ -369,6 +369,33 @@ class IsBookableTest:
 
         # Then
         assert not stock.isBookable
+
+    def test_should_return_true_when_stock_is_unlimited(self):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+
+        # When
+        stock = create_stock(offer=offer, available=None)
+        # TODO: to correct with remainingQuantity bug
+        stock.remainingQuantity = 0
+
+        # Then
+        assert stock.isBookable
+
+    def test_should_return_true_when_stock_requirements_are_fulfilled(self):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+
+        # When
+        stock = create_stock(offer=offer)
+
+        # Then
+        assert stock.isBookable
+
 
 class hasBookingLimitDatetimePassedTest:
     @freeze_time('2019-07-10')

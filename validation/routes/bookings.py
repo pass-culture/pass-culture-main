@@ -6,9 +6,10 @@ from domain.expenses import is_eligible_to_digital_offers_capping, \
     is_eligible_to_physical_offers_capping
 from domain.user_activation import is_activation_booking
 from models import ApiErrors, Booking, RightsType
-from models import User
 from models.api_errors import ResourceGoneError, ForbiddenError
 from models.stock import Stock
+from models.user import User
+from repository import booking_queries
 from repository import payment_queries, stock_queries, venue_queries
 from utils.rest import ensure_current_user_has_rights
 
@@ -20,13 +21,14 @@ def check_has_stock_id(stock_id: int) -> None:
         raise api_errors
 
 
-def check_quantity_is_valid(quantity: int, is_duo: bool):
-    is_valid_quantity_for_duo_offer = (quantity in (1, 2) and is_duo)
-    is_valid_quantity_for_solo_offer = (quantity == 1 and not is_duo)
+def check_quantity_is_valid(quantity: int, stock: Stock):
+    offer_is_duo = stock.offer.isDuo
+    is_valid_quantity_for_duo_offer = (quantity in (1, 2) and offer_is_duo)
+    is_valid_quantity_for_solo_offer = (quantity == 1 and not offer_is_duo)
 
     if not is_valid_quantity_for_duo_offer and not is_valid_quantity_for_solo_offer:
         api_errors = ApiErrors()
-        api_errors.add_error('quantity', "Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO.")
+        api_errors.add_error('quantity', "Vous devez réserver une place ou deux dans le cas d'une offre DUO.")
         raise api_errors
 
 
@@ -55,8 +57,9 @@ def check_offer_is_active(stock: Stock) -> None:
         raise api_errors
 
 
-def check_already_booked(stock_already_booked_by_user: bool):
-    if stock_already_booked_by_user:
+def check_already_booked(stock: Stock, user: User):
+    is_stock_already_booked_by_user = booking_queries.is_stock_already_booked_by_user(stock, user)
+    if is_stock_already_booked_by_user:
         api_errors = ApiErrors()
         api_errors.add_error('stockId', "Cette offre a déja été reservée par l'utilisateur")
         raise api_errors

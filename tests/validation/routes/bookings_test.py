@@ -10,7 +10,7 @@ from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
-    create_user_offerer, create_payment
+    create_user_offerer, create_payment, create_deposit
 from tests.model_creators.specific_creators import create_booking_for_thing, create_stock_from_offer, \
     create_product_with_thing_type, create_product_with_event_type, create_offer_with_thing_product, \
     create_offer_with_event_product
@@ -23,7 +23,7 @@ from validation.routes.bookings import check_expenses_limits, \
     check_booking_is_not_used, \
     check_booking_token_is_usable, \
     check_booking_token_is_keepable, \
-    check_is_not_activation_booking, check_stock_is_bookable
+    check_is_not_activation_booking, check_stock_is_bookable, check_already_booked
 
 
 class CheckExpenseLimitsTest:
@@ -298,77 +298,107 @@ class CheckRightsToGetBookingsCsvTest:
 
 
 class CheckQuantityIsValidTest:
-    def test_raise_error_when_booking_quantity_is_None_or_zero(self):
+    @clean_database
+    def test_raise_error_when_booking_quantity_is_None_or_zero(self, app):
         # given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue, is_duo=False)
+        stock = create_stock(offer=offer)
+        repository.save(stock)
         quantity = 0
-        is_duo = False
 
         # when
         with pytest.raises(ApiErrors) as api_errors:
-            check_quantity_is_valid(quantity, is_duo)
+            check_quantity_is_valid(quantity, stock)
 
         # then
         assert api_errors.value.errors['quantity'] == [
-            "Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO."]
+            "Vous devez réserver une place ou deux dans le cas d'une offre DUO."]
 
-    def test_raise_error_when_booking_quantity_is_bigger_than_one_and_offer_is_not_duo(self):
+    @clean_database
+    def test_raise_error_when_booking_quantity_is_bigger_than_one_and_offer_is_not_duo(self, app):
         # given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue, is_duo=False)
+        stock = create_stock(offer=offer)
+        repository.save(stock)
         quantity = 2
-        is_duo = False
 
         # when
         with pytest.raises(ApiErrors) as api_errors:
-            check_quantity_is_valid(quantity, is_duo)
+            check_quantity_is_valid(quantity, stock)
 
         # then
         assert api_errors.value.errors['quantity'] == [
-            "Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO."]
+            "Vous devez réserver une place ou deux dans le cas d'une offre DUO."]
 
-    def test_does_not_raise_an_error_when_booking_quantity_is_one_and_offer_is_not_duo(self):
+    @clean_database
+    def test_does_not_raise_an_error_when_booking_quantity_is_one_and_offer_is_not_duo(self, app):
         # given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue, is_duo=False)
+        stock = create_stock(offer=offer)
+        repository.save(stock)
         quantity = 1
-        is_duo = False
 
         # when
         try:
-            check_quantity_is_valid(quantity, is_duo)
+            check_quantity_is_valid(quantity, stock)
         except ApiErrors:
             # then
             pytest.fail('Booking for single offer must not raise any exceptions')
 
-    def test_raise_error_when_booking_quantity_is_more_than_two_and_offer_is_duo(self):
+    @clean_database
+    def test_raise_error_when_booking_quantity_is_more_than_two_and_offer_is_duo(self, app):
         # given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue, is_duo=True)
+        stock = create_stock(offer=offer)
+        repository.save(stock)
         quantity = 3
-        is_duo = True
 
         # when
         with pytest.raises(ApiErrors) as api_errors:
-            check_quantity_is_valid(quantity, is_duo)
+            check_quantity_is_valid(quantity, stock)
 
         # then
         assert api_errors.value.errors['quantity'] == [
-            "Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO."]
+            "Vous devez réserver une place ou deux dans le cas d'une offre DUO."]
 
-    def test_does_not_raise_an_error_when_booking_quantity_is_one_and_offer_is_duo(self):
+    @clean_database
+    def test_does_not_raise_an_error_when_booking_quantity_is_one_and_offer_is_duo(self, app):
         # given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue, is_duo=True)
+        stock = create_stock(offer=offer)
+        repository.save(stock)
         quantity = 1
-        is_duo = True
 
         # when
         try:
-            check_quantity_is_valid(quantity, is_duo)
+            check_quantity_is_valid(quantity, stock)
         except ApiErrors:
             # then
             pytest.fail('Booking for duo offers must not raise any exceptions')
 
-    def test_does_not_raise_an_error_when_booking_quantity_is_two_and_offer_is_duo(self):
+    @clean_database
+    def test_does_not_raise_an_error_when_booking_quantity_is_two_and_offer_is_duo(self, app):
         # given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue, is_duo=True)
+        stock = create_stock(offer=offer)
+        repository.save(stock)
         quantity = 2
-        is_duo = True
 
         # when
         try:
-            check_quantity_is_valid(quantity, is_duo)
+            check_quantity_is_valid(quantity, stock)
         except ApiErrors:
             # then
             pytest.fail('Booking for duo offers must not raise any exceptions')
@@ -579,3 +609,39 @@ class CheckStockIsBookableTest:
 
         # Then
         assert error.value.errors == {'stock': ["Ce stock n'est pas réservable"]}
+
+
+class CheckAlreadyBookedTest:
+    @clean_database
+    def test_should_not_raise_exception_when_user_has_never_book_a_stock(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer)
+        repository.save(user, stock)
+
+        # When
+        check_already_booked(stock, user)
+
+        # Then
+        assert True
+
+    @clean_database
+    def test_should_raise_exception_when_user_has_already_book(self, app):
+        # Given
+        user = create_user()
+        create_deposit(user)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer)
+        booking = create_booking(user, stock=stock)
+        repository.save(user, stock, booking)
+
+        # When
+        with pytest.raises(ApiErrors) as error:
+            check_already_booked(stock, user)
+
+        assert error.value.errors == {'stockId': ["Cette offre a déja été reservée par l'utilisateur"]}

@@ -194,6 +194,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                     'isDigital',
                     'isEvent',
                     'hasBookingLimitDatetimesPassed',
+                    'isBookable',
                     "isFullyBooked",
                     "offerType",
                     {
@@ -232,6 +233,7 @@ WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = [
                 "includes": [
                     'isDigital',
                     'isEvent',
+                    'isBookable',
                     'hasBookingLimitDatetimesPassed',
                     "isFullyBooked",
                     "offerType",

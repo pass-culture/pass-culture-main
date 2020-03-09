@@ -40,11 +40,8 @@ from validation.routes.bookings import check_already_booked, \
     check_existing_stock, check_expenses_limits, \
     check_has_stock_id, \
     check_is_not_activation_booking, \
-    check_not_soft_deleted_stock, \
-    check_offer_date, check_offer_is_active, \
     check_rights_to_get_bookings_csv, \
-    check_stock_booking_limit_date, \
-    check_stock_venue_is_validated, check_stock_is_bookable
+    check_stock_is_bookable
 from validation.routes.users_authentifications import check_user_is_logged_in_or_email_is_provided, \
     login_or_api_key_required_v2
 from validation.routes.users_authorizations import \
@@ -141,11 +138,9 @@ def create_booking():
     stock = Stock.query.filter_by(id=dehumanize(stock_id)).first()
     check_existing_stock(stock)
 
-    stock_already_booked_by_user = booking_queries.is_stock_already_booked_by_user(stock, current_user)
-    check_already_booked(stock_already_booked_by_user)
+    check_already_booked(stock, current_user)
 
-    offer_is_duo = stock.offer.isDuo
-    check_quantity_is_valid(quantity, offer_is_duo)
+    check_quantity_is_valid(quantity, stock)
 
     check_can_book_free_offer(stock, current_user)
 

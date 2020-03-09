@@ -234,7 +234,7 @@ class Post:
             # Then
             assert response.status_code == 400
             assert response.json['quantity'] == [
-                "Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO."]
+                "Vous devez réserver une place ou deux dans le cas d'une offre DUO."]
 
         @clean_database
         def when_negative_quantity(self, app):
@@ -260,7 +260,7 @@ class Post:
             # Then
             assert response.status_code == 400
             assert response.json['quantity'] == [
-                "Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO."]
+                "Vous devez réserver une place ou deux dans le cas d'une offre DUO."]
 
         @clean_database
         def when_offer_is_inactive(self, app):
@@ -361,7 +361,7 @@ class Post:
             # Then
             assert response.status_code == 400
             assert response.json['quantity'] == [
-                "Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO."]
+                "Vous devez réserver une place ou deux dans le cas d'une offre DUO."]
 
         @clean_database
         def when_quantity_is_more_than_one_and_offer_is_not_duo(self, app):
@@ -387,7 +387,7 @@ class Post:
             # Then
             assert response.status_code == 400
             assert response.json['quantity'] == [
-                "Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO."]
+                "Vous devez réserver une place ou deux dans le cas d'une offre DUO."]
 
         @clean_database
         def when_quantity_is_more_than_two_and_offer_is_duo(self, app):
@@ -413,7 +413,7 @@ class Post:
             # Then
             assert response.status_code == 400
             assert response.json['quantity'] == [
-                "Vous devez réserver au moins une place ou deux dans le cas d'une offre DUO."]
+                "Vous devez réserver une place ou deux dans le cas d'une offre DUO."]
 
         @clean_database
         def when_event_occurrence_beginning_datetime_has_passed(self, app):
@@ -700,31 +700,6 @@ class Post:
             thing_offer = create_offer_with_thing_product(venue)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer)
             create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
-            create_deposit(user)
-            repository.save(stock, user)
-
-            booking_json = {
-                'stockId': humanize(stock.id),
-                'recommendationId': None,
-                'quantity': 1
-            }
-
-            # When
-            response = TestClient(app.test_client()) \
-                .with_auth(user.email) \
-                .post('/bookings', json=booking_json)
-
-            # Then
-            assert response.status_code == 201
-
-        @clean_database
-        def when_stock_is_unlimited(self, app):
-            # Given
-            user = create_user()
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            thing_offer = create_offer_with_thing_product(venue)
-            stock = create_stock_with_thing_offer(offerer, venue, thing_offer, available=None)
             create_deposit(user)
             repository.save(stock, user)
 
