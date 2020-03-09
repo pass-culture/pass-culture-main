@@ -58,6 +58,7 @@ class TiteLiveStocks(LocalProvider):
         stock.available = int(stock_information['available'])
         stock.bookingLimitDatetime = None
         stock.offerId = self.offer_id
+        stock.dateModified = datetime.now()
 
     def fill_offer_attributes(self, offer: Offer, stock_information: dict):
         offer.name = self.product.name

@@ -1,4 +1,7 @@
+from datetime import datetime, date, timedelta
 from unittest.mock import patch, call
+
+from freezegun import freeze_time
 
 from local_providers import TiteLiveStocks
 from models import Offer, Stock
@@ -10,11 +13,10 @@ from tests.model_creators.specific_creators import create_product_with_thing_typ
 
 
 @clean_database
-@patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-@patch('local_providers.local_provider.send_venue_provider_data_to_redis')
+@patch('local_providers.local_provider.feature_queries.is_active', return_value=False)
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attributes(stub_get_stocks_information,
-                                                                                   stub_redis,
+                                                                                   stub_feature_queries,
                                                                                    app):
     # Given
     stub_get_stocks_information.return_value = iter([{
@@ -55,10 +57,9 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attribut
 
 
 @clean_database
-@patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-@patch('local_providers.local_provider.send_venue_provider_data_to_redis')
+@patch('local_providers.local_provider.feature_queries.is_active', return_value=False)
 @patch('local_providers.titelive_stocks.get_stocks_information')
-def test_titelive_stock_provider_update_1_stock_and_1_offer(stub_get_stocks_information, stub_redis, app):
+def test_titelive_stock_provider_update_1_stock_and_1_offer(stub_get_stocks_information, stub_feature_queries, app):
     # Given
     stub_get_stocks_information.return_value = iter([{
         "ref": "0002730757438",
@@ -90,13 +91,47 @@ def test_titelive_stock_provider_update_1_stock_and_1_offer(stub_get_stocks_info
     assert stock.available == 10
     assert Offer.query.count() == 1
 
+@freeze_time('2019-01-03 12:00:00')
+@clean_database
+@patch('local_providers.local_provider.feature_queries.is_active', return_value=False)
+@patch('local_providers.titelive_stocks.get_stocks_information')
+def test_titelive_stock_provider_always_update_the_stock_modification_date(stub_get_stocks_information, stub_feature_queries, app):
+    # Given
+    stub_get_stocks_information.return_value = iter([{
+        "ref": "0002730757438",
+        "available": 2,
+        "price": 4500,
+        "validUntil": "2019-10-31T15:10:27Z"
+    }])
+
+    offerer = create_offerer()
+    venue = create_venue(offerer, siret='77567146400110')
+
+    titelive_stocks_provider = get_provider_by_local_class('TiteLiveStocks')
+    titelive_stocks_provider.isActive = True
+    venue_provider = create_venue_provider(venue,
+                                           titelive_stocks_provider, is_active=True,
+                                           venue_id_at_offer_provider='77567146400110')
+    product = create_product_with_thing_type(id_at_providers='0002730757438')
+    offer = create_offer_with_thing_product(venue, product=product, id_at_providers='0002730757438@77567146400110')
+    yesterday = date.today() - timedelta(days=1)
+    stock = create_stock(offer=offer, id_at_providers='0002730757438@77567146400110', available=2, date_modified=yesterday)
+    repository.save(product, venue_provider, stock)
+
+    titelive_stocks = TiteLiveStocks(venue_provider)
+
+    # When
+    titelive_stocks.updateObjects()
+
+    # Then
+    stock = Stock.query.one()
+    assert stock.dateModified == datetime.now()
 
 @clean_database
 @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-@patch('local_providers.local_provider.send_venue_provider_data_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(stub_get_stocks_information,
-                                                                            stub_redis,
+                                                                            stub_feature_queries,
                                                                             app):
     # Given
     stub_get_stocks_information.return_value = iter([{
@@ -130,10 +165,9 @@ def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(stub
 
 @clean_database
 @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-@patch('local_providers.local_provider.send_venue_provider_data_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_create_2_stocks_and_2_offers_even_if_existing_offer_on_same_product(
-        stub_get_stocks_information, stub_redis, app):
+        stub_get_stocks_information, stub_feature_queries, app):
     # Given
     stub_get_stocks_information.side_effect = [
         iter([{
@@ -174,10 +208,9 @@ def test_titelive_stock_provider_create_2_stocks_and_2_offers_even_if_existing_o
 
 @clean_database
 @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-@patch('local_providers.local_provider.send_venue_provider_data_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_create_nothing_if_titelive_api_returns_no_results(stub_get_stocks_information,
-                                                                                   stub_redis,
+                                                                                   stub_feature_queries,
                                                                                    app):
     # Given
     stub_get_stocks_information.return_value = iter([])
@@ -206,10 +239,9 @@ def test_titelive_stock_provider_create_nothing_if_titelive_api_returns_no_resul
 
 @clean_database
 @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-@patch('local_providers.local_provider.send_venue_provider_data_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_deactivate_offer_if_stock_available_equals_0(stub_get_stocks_information,
-                                                                              stub_redis,
+                                                                              stub_feature_queries,
                                                                               app):
     # Given
     stub_get_stocks_information.return_value = iter([{
@@ -244,9 +276,8 @@ def test_titelive_stock_provider_deactivate_offer_if_stock_available_equals_0(st
 
 @clean_database
 @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-@patch('local_providers.local_provider.send_venue_provider_data_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
-def test_titelive_stock_provider_iterates_over_pagination(stub_get_stocks_information, stub_redis, app):
+def test_titelive_stock_provider_iterates_over_pagination(stub_get_stocks_information, stub_feature_queries, app):
     # Given
     stub_get_stocks_information.side_effect = [
         iter([{
@@ -290,10 +321,9 @@ def test_titelive_stock_provider_iterates_over_pagination(stub_get_stocks_inform
 
 @clean_database
 @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-@patch('local_providers.local_provider.send_venue_provider_data_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
 def test_titelive_stock_provider_return_last_elements_as_last_seen_isbn(stub_get_stocks_information,
-                                                                        stub_redis,
+                                                                        stub_feature_queries,
                                                                         app):
     # Given
     stub_get_stocks_information.return_value = iter([{
@@ -328,9 +358,8 @@ def test_titelive_stock_provider_return_last_elements_as_last_seen_isbn(stub_get
 
 @clean_database
 @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
-@patch('local_providers.local_provider.send_venue_provider_data_to_redis')
 @patch('local_providers.titelive_stocks.get_stocks_information')
-def test_should_activate_offer_when_stocks_are_refilled(stub_get_stocks_information, stub_redis, app):
+def test_should_activate_offer_when_stocks_are_refilled(stub_get_stocks_information, stub_feature_queries, app):
     # Given
     stub_get_stocks_information.side_effect = [
         iter([{
