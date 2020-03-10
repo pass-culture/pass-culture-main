@@ -20,10 +20,11 @@ from tests.model_creators.specific_creators import \
     create_stock_with_thing_offer
 
 NOW = datetime.utcnow()
-two_days_ago = NOW - timedelta(days=2)
-four_days_ago = NOW - timedelta(days=4)
-five_days_ago = NOW - timedelta(days=5)
-three_days_ago = NOW - timedelta(days=3)
+ONE_DAY_AGO = NOW - timedelta(days=1)
+TWO_DAYS_AGO = NOW - timedelta(days=2)
+THREE_DAYS_AGO = NOW - timedelta(days=3)
+FOUR_DAYS_AGO = NOW - timedelta(days=4)
+FIVE_DAYS_AGO = NOW - timedelta(days=5)
 
 
 class FindAllOffererBookingsByVenueIdTest:
@@ -45,7 +46,6 @@ class FindAllOffererBookingsByVenueIdTest:
         booking1 = create_booking(user=user, stock=stock1, venue=venue1, quantity=2, recommendation=None)
         booking2 = create_booking(user=user, stock=stock2, venue=venue2, quantity=2, recommendation=None)
         booking3 = create_booking(user=user, stock=stock3, venue=venue3, quantity=2, recommendation=None)
-
         repository.save(booking1, booking2, booking3)
 
         # when
@@ -58,7 +58,7 @@ class FindAllOffererBookingsByVenueIdTest:
     def test_returns_expected_bookings_on_given_venue(self, app):
         # given
         user = create_user()
-        create_deposit(user, amount=1600)
+        create_deposit(user)
         offerer1 = create_offerer(siren='123456789')
         offerer2 = create_offerer(siren='987654321')
         venue1 = create_venue(offerer1, siret=offerer1.siren + '12345')
@@ -86,9 +86,9 @@ class FindAllOffererBookingsByVenueIdTest:
     def test_returns_bookings_on_given_venue_and_thing_offer_and_date(self, app):
         # given
         user = create_user()
-        create_deposit(user=user, amount=1600)
-        offerer = create_offerer(siren='123456789')
-        venue = create_venue(offerer=offerer, siret=offerer.siren + '12345')
+        create_deposit(user=user)
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
         target_offer = create_offer_with_thing_product(venue)
         other_offer = create_offer_with_thing_product(venue)
         target_stock = create_stock_from_offer(target_offer, available=100, price=20)
@@ -123,13 +123,10 @@ class FindAllOffererBookingsByVenueIdTest:
                                          quantity=2,
                                          recommendation=None,
                                          date_created=datetime(2020, 6, 1))
-
         repository.save(other_booking_1, other_booking_2, other_booking_3, target_booking_1, target_booking_2)
 
-        target_offer_id = target_offer.id
-
         # when
-        bookings = booking_queries.find_all_bookings_info(offerer.id, venue_id=venue.id, offer_id=target_offer_id,
+        bookings = booking_queries.find_all_bookings_info(offerer.id, venue_id=venue.id, offer_id=target_offer.id,
                                                           date_from=datetime(2020, 6, 1), date_to=datetime(2020, 6, 30))
 
         # then
@@ -141,14 +138,11 @@ class FindAllOffererBookingsByVenueIdTest:
     def test_returns_bookings_on_given_venue_and_event_offer_and_date(self, app):
         # given
         user = create_user()
-        now = datetime.utcnow()
-        create_deposit(user, amount=1600)
-        offerer = create_offerer(siren='offerer')
-        venue = create_venue(offerer, siret=offerer.siren + '12345')
-
+        create_deposit(user)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
         target_offer = create_offer_with_event_product(venue)
         other_offer = create_offer_with_event_product(venue)
-
         target_stock = create_stock_from_offer(target_offer, available=150, price=16,
                                                beginning_datetime=datetime.strptime("2020-06-01T20:00:00.000Z",
                                                                                     "%Y-%m-%dT%H:%M:%S.%fZ"))
@@ -161,19 +155,15 @@ class FindAllOffererBookingsByVenueIdTest:
         other_stock_3 = create_stock_from_offer(other_offer, available=150, price=16,
                                                 beginning_datetime=datetime.strptime("2020-07-02T20:00:00.000Z",
                                                                                      "%Y-%m-%dT%H:%M:%S.%fZ"))
-
         target_booking = create_booking(user=user, stock=target_stock, venue=venue, quantity=3, recommendation=None)
         other_booking_1 = create_booking(user=user, stock=other_stock_1, venue=venue, quantity=2, recommendation=None)
         other_booking_2 = create_booking(user=user, stock=other_stock_2, venue=venue, quantity=2, recommendation=None)
         other_booking_3 = create_booking(user=user, stock=other_stock_3, venue=venue, quantity=2, recommendation=None)
-
         repository.save(other_booking_1, other_booking_2,
                         target_booking, other_booking_3)
 
-        target_offer_id = target_offer.id
-
         # when
-        bookings = booking_queries.find_all_bookings_info(offerer.id, venue_id=venue.id, offer_id=target_offer_id,
+        bookings = booking_queries.find_all_bookings_info(offerer.id, venue_id=venue.id, offer_id=target_offer.id,
                                                           date_from='2020-06-01T20:00:00.000Z',
                                                           date_to='2020-05-01T20:00:00.000Z')
 
@@ -184,7 +174,7 @@ class FindAllOffererBookingsByVenueIdTest:
     def test_should_return_only_expected_attributes(self, app):
         # Given
         user = create_user(last_name='Doe', first_name='John', email='john.doe@example.com')
-        deposit = create_deposit(user)
+        create_deposit(user)
         offerer = create_offerer()
         venue = create_venue(offerer, name='La petite librairie')
         offer = create_offer_with_thing_product(venue, thing_name='Test Book')
@@ -192,8 +182,7 @@ class FindAllOffererBookingsByVenueIdTest:
         booking = create_booking(user, stock=stock, is_used=True,
                                  date_created=datetime(2018, 1, 29),
                                  amount=Decimal(9.90))
-
-        repository.save(deposit, booking)
+        repository.save(booking)
 
         # When
         bookings = booking_queries.find_all_bookings_info(offerer.id)
@@ -217,9 +206,8 @@ class FindAllDigitalBookingsForOffererTest:
     def test_returns_bookings_linked_to_digital_venue(self, app):
         # given
         user = create_user()
-        now = datetime.utcnow()
-        create_deposit(user, amount=1600)
-        offerer1 = create_offerer(siren='123456789')
+        create_deposit(user)
+        offerer1 = create_offerer()
         digital_venue = create_venue(offerer1, siret=None, is_virtual=True)
         physical_venue = create_venue(offerer1, siret=offerer1.siren + '12345')
         stock1 = create_stock_with_event_offer(
@@ -230,7 +218,6 @@ class FindAllDigitalBookingsForOffererTest:
                                              recommendation=None)
         booking_for_physical = create_booking(user=user, stock=stock2, venue=physical_venue, quantity=2,
                                               recommendation=None)
-
         repository.save(booking_for_digital, booking_for_physical)
 
         # when
@@ -243,23 +230,17 @@ class FindAllDigitalBookingsForOffererTest:
     def test_returns_only_bookings_for_specified_offerer(self, app):
         # given
         user = create_user()
-        now = datetime.utcnow()
-        create_deposit(user, amount=1600)
-
+        create_deposit(user)
         target_offerer = create_offerer(siren='123456789')
         other_offerer = create_offerer(siren='567891234')
-
         target_digital_venue = create_venue(target_offerer, siret=None, is_virtual=True)
         other_digital_venue = create_venue(other_offerer, siret=None, is_virtual=True)
-
         target_stock = create_stock_with_event_offer(target_offerer, target_digital_venue, price=2, available=100)
         other_stock = create_stock_with_thing_offer(other_offerer, other_digital_venue, price=3, available=100)
-
         target_booking = create_booking(user=user, stock=target_stock, venue=target_digital_venue, quantity=3,
                                         recommendation=None)
         other_booking = create_booking(user=user, stock=other_stock, venue=other_digital_venue, quantity=2,
                                        recommendation=None)
-
         repository.save(target_booking, other_booking)
 
         # when
@@ -272,15 +253,14 @@ class FindAllDigitalBookingsForOffererTest:
     def test_returns_only_bookings_for_specified_offerer_and_offer(self, app):
         # Given
         user = create_user()
-        deposit = create_deposit(user, amount=1600)
-        offerer = create_offerer(siren='123456789')
+        create_deposit(user)
+        offerer = create_offerer()
         digital_venue = create_venue(offerer, siret=None, is_virtual=True)
         stock1 = create_stock_with_event_offer(offerer, digital_venue, price=2, available=100)
         stock2 = create_stock_with_thing_offer(offerer, digital_venue, price=3, available=100)
         booking1 = create_booking(user=user, stock=stock1, venue=digital_venue, quantity=2)
         booking2 = create_booking(user=user, stock=stock2, venue=digital_venue, quantity=3)
-
-        repository.save(deposit, booking1, booking2)
+        repository.save(booking1, booking2)
 
         # When
         bookings = booking_queries.find_all_bookings_info(offerer.id,
@@ -294,9 +274,8 @@ class FindAllDigitalBookingsForOffererTest:
     def test_returns_only_bookings_for_specified_offerer_and_thing_offer_and_booking_date(self, app):
         # given
         user = create_user()
-        now = datetime.utcnow()
-        create_deposit(user, amount=1600)
-        offerer1 = create_offerer(siren='123456789')
+        create_deposit(user)
+        offerer1 = create_offerer()
         digital_venue_for_offerer1 = create_venue(offerer1, siret=None, is_virtual=True)
         stock1 = create_stock_with_event_offer(offerer1, digital_venue_for_offerer1, price=2, available=100)
         stock2 = create_stock_with_thing_offer(offerer1, digital_venue_for_offerer1, price=3, available=100)
@@ -310,7 +289,6 @@ class FindAllDigitalBookingsForOffererTest:
                                               recommendation=None, date_created=datetime(2020, 7, 31))
         booking_for_offerer5 = create_booking(user=user, stock=stock1, venue=digital_venue_for_offerer1, quantity=2,
                                               recommendation=None, date_created=datetime(2020, 6, 30))
-
         repository.save(booking_for_offerer1, booking_for_offerer2, booking_for_offerer3, booking_for_offerer4,
                         booking_for_offerer5)
 
@@ -330,7 +308,7 @@ class FindAllDigitalBookingsForOffererTest:
 @clean_database
 def test_find_all_ongoing_bookings(app):
     # Given
-    offerer = create_offerer(siren='985281920')
+    offerer = create_offerer()
     repository.save(offerer)
     venue = create_venue(offerer)
     stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
@@ -338,9 +316,7 @@ def test_find_all_ongoing_bookings(app):
     cancelled_booking = create_booking(user=user, stock=stock, is_cancelled=True)
     validated_booking = create_booking(user=user, stock=stock, is_used=True)
     ongoing_booking = create_booking(user=user, stock=stock, is_cancelled=False, is_used=False)
-    repository.save(ongoing_booking)
-    repository.save(validated_booking)
-    repository.save(cancelled_booking)
+    repository.save(ongoing_booking, validated_booking, cancelled_booking)
 
     # When
     all_ongoing_bookings = booking_queries.find_ongoing_bookings_by_stock(stock)
@@ -354,22 +330,19 @@ class FindFinalOffererBookingsTest:
     def test_returns_bookings_for_given_offerer(self, app):
         # Given
         user = create_user()
-        deposit = create_deposit(user, amount=500)
-
+        create_deposit(user)
         offerer1 = create_offerer(siren='123456789')
         venue = create_venue(offerer1, siret=offerer1.siren + '12345')
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(offerer1, venue, offer)
         booking1 = create_booking(user=user, is_used=True, stock=stock, venue=venue)
         booking2 = create_booking(user=user, is_used=True, stock=stock, venue=venue)
-
         offerer2 = create_offerer(siren='987654321')
         venue = create_venue(offerer2, siret=offerer2.siren + '12345')
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(offerer2, venue, offer)
         booking3 = create_booking(user=user, is_used=True, stock=stock, venue=venue)
-
-        repository.save(deposit, booking1, booking2, booking3)
+        repository.save(booking1, booking2, booking3)
 
         # When
         bookings = booking_queries.find_eligible_bookings_for_offerer(offerer1.id)
@@ -383,21 +356,18 @@ class FindFinalOffererBookingsTest:
     def test_returns_bookings_with_payment_first_ordered_by_date_created(self, app):
         # Given
         user = create_user()
-        deposit = create_deposit(user, amount=500)
-
-        offerer = create_offerer(siren='123456789')
-        venue = create_venue(offerer, siret=offerer.siren + '12345')
+        create_deposit(user)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(offerer, venue, offer)
-        booking1 = create_booking(user=user, date_created=five_days_ago, is_used=True, stock=stock, venue=venue)
-        booking2 = create_booking(user=user, date_created=two_days_ago, is_used=True, stock=stock, venue=venue)
-        booking3 = create_booking(user=user, date_created=four_days_ago, is_used=True, stock=stock, venue=venue)
-        booking4 = create_booking(user=user, date_created=three_days_ago, is_used=True, stock=stock, venue=venue)
+        booking1 = create_booking(user=user, date_created=FIVE_DAYS_AGO, is_used=True, stock=stock, venue=venue)
+        booking2 = create_booking(user=user, date_created=TWO_DAYS_AGO, is_used=True, stock=stock, venue=venue)
+        booking3 = create_booking(user=user, date_created=FOUR_DAYS_AGO, is_used=True, stock=stock, venue=venue)
+        booking4 = create_booking(user=user, date_created=THREE_DAYS_AGO, is_used=True, stock=stock, venue=venue)
         payment1 = create_payment(booking4, offerer, 5)
         payment2 = create_payment(booking3, offerer, 5)
-
-        repository.save(deposit, booking1, booking2, booking3,
-                        booking4, payment1, payment2)
+        repository.save(booking1, booking2, payment1, payment2)
 
         # When
         bookings = booking_queries.find_eligible_bookings_for_offerer(offerer.id)
@@ -412,16 +382,14 @@ class FindFinalOffererBookingsTest:
     def test_returns_not_cancelled_bookings_for_offerer(self, app):
         # Given
         user = create_user()
-        deposit = create_deposit(user, amount=500)
-
-        offerer1 = create_offerer(siren='123456789')
+        create_deposit(user)
+        offerer1 = create_offerer()
         venue = create_venue(offerer1)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(offerer1, venue, offer)
         booking1 = create_booking(user=user, is_used=True, stock=stock, venue=venue)
         booking2 = create_booking(user=user, is_cancelled=True, is_used=True, stock=stock, venue=venue)
-
-        repository.save(deposit, booking1, booking2)
+        repository.save(booking1, booking2)
 
         # When
         bookings = booking_queries.find_eligible_bookings_for_offerer(offerer1.id)
@@ -434,16 +402,14 @@ class FindFinalOffererBookingsTest:
     def test_returns_only_used_bookings(self, app):
         # Given
         user = create_user()
-        deposit = create_deposit(user, amount=500)
-
-        offerer1 = create_offerer(siren='123456789')
+        create_deposit(user)
+        offerer1 = create_offerer()
         venue = create_venue(offerer1)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(offerer1, venue, offer)
         booking1 = create_booking(user=user, is_used=True, stock=stock, venue=venue)
         booking2 = create_booking(user=user, is_used=False, stock=stock, venue=venue)
-
-        repository.save(deposit, booking1, booking2)
+        repository.save(booking1, booking2)
 
         # When
         bookings = booking_queries.find_eligible_bookings_for_offerer(offerer1.id)
@@ -458,22 +424,19 @@ class FindFinalVenueBookingsTest:
     def test_returns_bookings_for_given_venue_ordered_by_date_created(self, app):
         # Given
         user = create_user()
-        deposit = create_deposit(user, amount=500)
-
+        create_deposit(user)
         offerer1 = create_offerer(siren='123456789')
         venue1 = create_venue(offerer1, siret=offerer1.siren + '12345')
         offer = create_offer_with_thing_product(venue1)
         stock = create_stock_with_thing_offer(offerer1, venue1, offer)
         booking1 = create_booking(user=user, date_created=datetime(2019, 1, 1), is_used=True, stock=stock, venue=venue1)
         booking2 = create_booking(user=user, date_created=datetime(2019, 1, 2), is_used=True, stock=stock, venue=venue1)
-
         offerer2 = create_offerer(siren='987654321')
         venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
         offer = create_offer_with_thing_product(venue2)
         stock = create_stock_with_thing_offer(offerer2, venue2, offer)
         booking3 = create_booking(user=user, is_used=True, stock=stock, venue=venue2)
-
-        repository.save(deposit, booking1, booking2, booking3)
+        repository.save(booking1, booking2, booking3)
 
         # When
         bookings = booking_queries.find_eligible_bookings_for_venue(venue1.id)
@@ -488,20 +451,15 @@ class FindFinalVenueBookingsTest:
     def test_returns_only_bookings_on_events_finished_more_than_two_days_ago(self, app):
         # Given
         user = create_user()
-        now = datetime.utcnow()
-        deposit = create_deposit(user, amount=500)
-
-        offerer1 = create_offerer(siren='123456789')
+        create_deposit(user)
+        offerer1 = create_offerer()
         venue = create_venue(offerer1)
         offer = create_offer_with_event_product(venue)
-        stock1 = create_stock(
-            offer=offer, end_datetime=now - timedelta(days=3))
-        stock2 = create_stock(
-            offer=offer, end_datetime=now - timedelta(days=1))
+        stock1 = create_stock(offer=offer, end_datetime=THREE_DAYS_AGO)
+        stock2 = create_stock(offer=offer, end_datetime=ONE_DAY_AGO)
         booking1 = create_booking(user=user, is_used=False, stock=stock1, venue=venue)
         booking2 = create_booking(user=user, is_used=False, stock=stock2, venue=venue)
-
-        repository.save(deposit, booking1, booking2)
+        repository.save(booking1, booking2)
 
         # When
         bookings = booking_queries.find_eligible_bookings_for_offerer(offerer1.id)
@@ -516,9 +474,9 @@ class FindDateUsedTest:
     def test_returns_date_used_if_not_none(self, app):
         # given
         user = create_user()
-        deposit = create_deposit(user, amount=500)
+        create_deposit(user)
         booking = create_booking(user=user, date_used=datetime(2018, 2, 12), is_used=True)
-        repository.save(user, deposit, booking)
+        repository.save(booking)
 
         # when
         date_used = booking_queries.find_date_used(booking)
@@ -530,9 +488,9 @@ class FindDateUsedTest:
     def test_returns_none_when_date_used_is_none(self, app):
         # given
         user = create_user()
-        deposit = create_deposit(user, amount=500)
+        create_deposit(user)
         booking = create_booking(user=user)
-        repository.save(user, deposit, booking)
+        repository.save(booking)
 
         # when
         date_used = booking_queries.find_date_used(booking)
@@ -544,14 +502,10 @@ class FindDateUsedTest:
     def test_find_date_used_on_booking_returns_none_if_no_update_recorded_in_activity_table(self, app):
         # given
         user = create_user()
-        deposit = create_deposit(user, amount=500)
+        create_deposit(user)
         booking = create_booking(user=user)
-        repository.save(user, deposit, booking)
-
-        activity_insert = create_booking_activity(
-            booking, 'booking', 'insert', issued_at=datetime(2018, 1, 28)
-        )
-
+        repository.save(booking)
+        activity_insert = create_booking_activity(booking, 'booking', 'insert', issued_at=datetime(2018, 1, 28))
         save_all_activities(activity_insert)
 
         # when
@@ -566,7 +520,7 @@ class FindUserActivationBookingTest:
     def test_returns_activation_thing_booking_linked_to_user(self, app):
         # given
         user = create_user()
-        offerer = create_offerer(siren='123456789', name='pass Culture')
+        offerer = create_offerer()
         venue_online = create_venue(offerer, siret=None, is_virtual=True)
         activation_offer = create_offer_with_thing_product(
             venue_online, thing_type=ThingType.ACTIVATION)
@@ -585,7 +539,7 @@ class FindUserActivationBookingTest:
     def test_returns_activation_event_booking_linked_to_user(self, app):
         # given
         user = create_user()
-        offerer = create_offerer(siren='123456789', name='pass Culture')
+        offerer = create_offerer()
         venue_online = create_venue(offerer, siret=None, is_virtual=True)
         activation_offer = create_offer_with_event_product(
             venue_online, event_type=EventType.ACTIVATION)
@@ -604,7 +558,7 @@ class FindUserActivationBookingTest:
     def test_returns_false_is_no_booking_exists_on_such_stock(self, app):
         # given
         user = create_user()
-        offerer = create_offerer(siren='123456789', name='pass Culture')
+        offerer = create_offerer()
         venue_online = create_venue(offerer, siret=None, is_virtual=True)
         book_offer = create_offer_with_thing_product(
             venue_online, thing_type=ThingType.LIVRE_EDITION)
@@ -625,7 +579,7 @@ class GetExistingTokensTest:
     def test_returns_a_set_of_tokens(self, app):
         # given
         user = create_user()
-        offerer = create_offerer(siren='123456789', name='pass Culture')
+        offerer = create_offerer()
         venue_online = create_venue(offerer, siret=None, is_virtual=True)
         book_offer = create_offer_with_thing_product(
             venue_online, thing_type=ThingType.LIVRE_EDITION)
@@ -656,7 +610,7 @@ class FindAllActiveByUserIdTest:
     def test_returns_a_list_of_not_cancelled_bookings(self, app):
         # given
         user = create_user()
-        offerer = create_offerer(siren='123456789', name='pass Culture')
+        offerer = create_offerer()
         venue_online = create_venue(offerer, siret=None, is_virtual=True)
         book_offer = create_offer_with_thing_product(
             venue_online, thing_type=ThingType.LIVRE_EDITION)
@@ -704,11 +658,11 @@ class FindByTest:
             repository.save(booking)
 
             # when
-            with pytest.raises(ResourceNotFoundError) as e:
+            with pytest.raises(ResourceNotFoundError) as resource_not_found_error:
                 booking_queries.find_by('UNKNOWN')
 
             # then
-            assert e.value.errors['global'] == [
+            assert resource_not_found_error.value.errors['global'] == [
                 "Cette contremarque n'a pas été trouvée"]
 
     class ByTokenAndEmailTest:
@@ -771,11 +725,11 @@ class FindByTest:
             repository.save(booking)
 
             # when
-            with pytest.raises(ResourceNotFoundError) as e:
+            with pytest.raises(ResourceNotFoundError) as resource_not_found_error:
                 booking_queries.find_by(booking.token, email='other.user@example.com')
 
             # then
-            assert e.value.errors['global'] == [
+            assert resource_not_found_error.value.errors['global'] == [
                 "Cette contremarque n'a pas été trouvée"]
 
     class ByTokenAndEmailAndOfferIdTest:
@@ -824,12 +778,12 @@ class FindByTest:
             repository.save(booking)
 
             # when
-            with pytest.raises(ResourceNotFoundError) as e:
-                result = booking_queries.find_by(
+            with pytest.raises(ResourceNotFoundError) as resource_not_found_error:
+                booking_queries.find_by(
                     booking.token, email='user@example.com', offer_id=1234)
 
             # then
-            assert e.value.errors['global'] == [
+            assert resource_not_found_error.value.errors['global'] == [
                 "Cette contremarque n'a pas été trouvée"]
 
 
@@ -841,8 +795,8 @@ class SaveBookingTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_from_offer(offer, price=0, available=1)
-        user_cancelled = create_user(email='cancelled@booking.com')
-        user_booked = create_user(email='booked@email.com')
+        user_cancelled = create_user(email='cancelled@example.com')
+        user_booked = create_user(email='booked@example.com')
         cancelled_booking = create_booking(user=user_cancelled, stock=stock, is_cancelled=True)
         repository.save(cancelled_booking)
         booking = create_booking(user=user_booked, stock=stock, is_cancelled=False)
@@ -861,18 +815,18 @@ class SaveBookingTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_from_offer(offer, price=0, available=1)
-        user1 = create_user(email='cancelled@booking.com')
-        user2 = create_user(email='booked@email.com')
+        user1 = create_user(email='cancelled@example.com')
+        user2 = create_user(email='booked@example.com')
         booking1 = create_booking(user=user1, stock=stock, is_cancelled=False)
         repository.save(booking1)
         booking2 = create_booking(user=user2, stock=stock, is_cancelled=False)
 
         # When
-        with pytest.raises(ApiErrors) as e:
+        with pytest.raises(ApiErrors) as api_errors:
             repository.save(booking2)
 
         # Then
-        assert e.value.errors['global'] == [
+        assert api_errors.value.errors['global'] == [
             'La quantité disponible pour cette offre est atteinte.']
 
 
@@ -915,7 +869,7 @@ class CountNonCancelledBookingsTest:
     def test_returns_zero_if_two_users_have_activation_booking(self, app):
         # Given
         user1 = create_user()
-        user2 = create_user(email='e@mail.com')
+        user2 = create_user(email='user2@example.com')
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer1 = create_offer_with_thing_product(
@@ -991,7 +945,7 @@ class CountNonCancelledBookingsByDepartementTest:
     def test_returns_zero_if_users_only_have_activation_bookings(self, app):
         # Given
         user1 = create_user(departement_code='76')
-        user2 = create_user(departement_code='76', email='e@mail.com')
+        user2 = create_user(departement_code='76', email='user2@example.com')
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer1 = create_offer_with_thing_product(
@@ -1144,12 +1098,10 @@ class GetAllCancelledBookingsByDepartementCountTest:
         # Given
         user_in_76 = create_user(departement_code='76', email='user-76@example.net')
         user_in_41 = create_user(departement_code='41', email='user-41@example.net')
-
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
-
         booking1 = create_booking(user=user_in_76, stock=stock, is_cancelled=True)
         booking2 = create_booking(user=user_in_41, stock=stock, is_cancelled=True)
         booking3 = create_booking(user=user_in_41, stock=stock, is_cancelled=False)
@@ -1164,8 +1116,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
     @clean_database
     def test_returns_zero_if_only_activation_bookings(self, app):
         # Given
-        user = create_user(departement_code='41', email='user-41@example.net')
-
+        user = create_user(departement_code='41')
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='78000')
         offer1 = create_offer_with_thing_product(
@@ -1174,7 +1125,6 @@ class GetAllCancelledBookingsByDepartementCountTest:
             venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
-
         booking1 = create_booking(user=user, stock=stock1, is_cancelled=True)
         booking2 = create_booking(user=user, stock=stock2, is_cancelled=True)
         repository.save(booking1, booking2)
@@ -1202,13 +1152,11 @@ class CountAllBookingsTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock_from_offer(offer, price=0, available=1)
-        user1 = create_user(email='used_booking@booking.com')
-        user2 = create_user(email='booked@email.com')
-        one_day_before_stock_last_update = datetime.utcnow() - timedelta(days=2)
-        booking1 = create_booking(user=user1, stock=stock, date_used=one_day_before_stock_last_update,
-                                  is_cancelled=False,
-                                  is_used=True)
-        repository.save(booking1)
+        user1 = create_user(email='used_booking@example.com')
+        user2 = create_user(email='booked@example.com')
+        booking = create_booking(user=user1, stock=stock, date_used=TWO_DAYS_AGO,
+                                 is_cancelled=False, is_used=True)
+        repository.save(booking)
         booking2 = create_booking(user=user2, stock=stock, is_cancelled=False, is_used=False)
 
         # When
@@ -1308,12 +1256,10 @@ class CountBookingsByDepartementTest:
         # Given
         user_in_76 = create_user(departement_code='76', email='user-76@example.net')
         user_in_41 = create_user(departement_code='41', email='user-41@example.net')
-
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
-
         booking1 = create_booking(user=user_in_76, stock=stock)
         booking2 = create_booking(user=user_in_41, stock=stock, is_cancelled=True)
         repository.save(booking1, booking2)
@@ -1322,12 +1268,12 @@ class CountBookingsByDepartementTest:
         number_of_bookings = booking_queries.count_by_departement('76')
 
         # Then
+        assert number_of_bookings == 1
 
     @clean_database
     def test_returns_0_when_bookings_are_on_activation_offers(self, app):
         # Given
         user = create_user(departement_code='76')
-
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer1 = create_offer_with_thing_product(
@@ -1336,7 +1282,6 @@ class CountBookingsByDepartementTest:
             venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
-
         booking1 = create_booking(user=user, stock=stock1)
         booking2 = create_booking(user=user, stock=stock1)
         repository.save(booking1, booking2)
@@ -1353,13 +1298,13 @@ class FindAllNotUsedAndNotCancelledTest:
     def test_return_no_booking_if_only_used(self, app):
         # Given
         user = create_user()
-        deposit = create_deposit(user)
+        create_deposit(user)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
         booking = create_booking(user=user, date_used=datetime(2019, 10, 12), is_used=True, stock=stock)
-        repository.save(user, deposit, booking)
+        repository.save(booking)
 
         # When
         bookings = booking_queries.find_not_used_and_not_cancelled()
@@ -1371,13 +1316,13 @@ class FindAllNotUsedAndNotCancelledTest:
     def test_return_no_booking_if_only_cancelled(self, app):
         # Given
         user = create_user()
-        deposit = create_deposit(user)
+        create_deposit(user)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
         booking = create_booking(user=user, is_cancelled=True, stock=stock)
-        repository.save(user, deposit, booking)
+        repository.save(booking)
 
         # When
         bookings = booking_queries.find_not_used_and_not_cancelled()
@@ -1389,13 +1334,13 @@ class FindAllNotUsedAndNotCancelledTest:
     def test_return_no_booking_if_used_but_cancelled(self, app):
         # Given
         user = create_user()
-        deposit = create_deposit(user)
+        create_deposit(user)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
         booking = create_booking(user=user, is_cancelled=True, is_used=True, stock=stock)
-        repository.save(user, deposit, booking)
+        repository.save(booking)
 
         # When
         bookings = booking_queries.find_not_used_and_not_cancelled()
@@ -1407,7 +1352,7 @@ class FindAllNotUsedAndNotCancelledTest:
     def test_return_1_booking_if_not_used_and_not_cancelled(self, app):
         # Given
         user = create_user()
-        deposit = create_deposit(user)
+        create_deposit(user)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
@@ -1415,7 +1360,7 @@ class FindAllNotUsedAndNotCancelledTest:
         booking1 = create_booking(user=user, is_cancelled=False, is_used=False, stock=stock)
         booking2 = create_booking(user=user, is_used=True, stock=stock)
         booking3 = create_booking(user=user, is_cancelled=True, stock=stock)
-        repository.save(user, deposit, booking1, booking2, booking3)
+        repository.save(booking1, booking2, booking3)
 
         # When
         bookings = booking_queries.find_not_used_and_not_cancelled()
@@ -1438,7 +1383,7 @@ class GetValidBookingsByUserId:
         deposit2 = create_deposit(user2)
         booking1 = create_booking(user=user1, stock=stock)
         booking2 = create_booking(user=user2, stock=stock)
-        repository.save(user1, user2, deposit1, deposit2, booking1, booking2)
+        repository.save(booking1, booking2)
 
         # When
         bookings = booking_queries.find_for_my_bookings_page(user1.id)
@@ -1450,7 +1395,7 @@ class GetValidBookingsByUserId:
     def test_should_return_bookings_by_type_other_than_ACTIVATION(self, app):
         # Given
         user = create_user()
-        deposit = create_deposit(user)
+        create_deposit(user)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer1 = create_offer_with_event_product(
@@ -1465,7 +1410,7 @@ class GetValidBookingsByUserId:
         booking1 = create_booking(user=user, stock=stock1)
         booking2 = create_booking(user=user, stock=stock2)
         booking3 = create_booking(user=user, stock=stock3)
-        repository.save(user, deposit, booking1, booking2, booking3)
+        repository.save(booking1, booking2, booking3)
 
         # When
         bookings = booking_queries.find_for_my_bookings_page(user.id)
@@ -1477,7 +1422,7 @@ class GetValidBookingsByUserId:
     def test_should_return_bookings_when_there_is_one_cancelled_booking(self, app):
         # Given
         user = create_user()
-        deposit = create_deposit(user)
+        create_deposit(user)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
@@ -1487,7 +1432,7 @@ class GetValidBookingsByUserId:
         booking1 = create_booking(user=user, is_cancelled=True, stock=stock)
         booking2 = create_booking(user=user, is_cancelled=False, stock=stock)
         booking3 = create_booking(user=user, is_cancelled=False, stock=stock2)
-        repository.save(user, deposit, booking1, booking2, booking3)
+        repository.save(booking1, booking2, booking3)
 
         # When
         bookings = booking_queries.find_for_my_bookings_page(user.id)
@@ -1499,14 +1444,14 @@ class GetValidBookingsByUserId:
     def test_should_return_most_recent_booking_when_two_cancelled_on_same_stock(self, app):
         # Given
         user = create_user()
-        deposit = create_deposit(user)
+        create_deposit(user)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
-        booking1 = create_booking(user=user, date_created=two_days_ago, is_cancelled=True, stock=stock)
-        booking2 = create_booking(user=user, date_created=three_days_ago, is_cancelled=True, stock=stock)
-        repository.save(user, deposit, booking1, booking2)
+        booking1 = create_booking(user=user, date_created=TWO_DAYS_AGO, is_cancelled=True, stock=stock)
+        booking2 = create_booking(user=user, date_created=THREE_DAYS_AGO, is_cancelled=True, stock=stock)
+        repository.save(booking1, booking2)
 
         # When
         bookings = booking_queries.find_for_my_bookings_page(user.id)
@@ -1522,7 +1467,7 @@ class GetValidBookingsByUserId:
         five_days = NOW + timedelta(days=5)
         three_days = NOW + timedelta(days=3)
         user = create_user()
-        deposit = create_deposit(user)
+        create_deposit(user)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer1 = create_offer_with_event_product(venue)
@@ -1540,13 +1485,13 @@ class GetValidBookingsByUserId:
                                   recommendation=create_recommendation(user=user, offer=offer2))
         booking3 = create_booking(user=user, stock=stock3,
                                   recommendation=create_recommendation(user=user, offer=offer3))
-        repository.save(user, deposit, booking1, booking2, booking3)
+        repository.save(booking1, booking2, booking3)
 
         # When
         bookings = booking_queries.find_for_my_bookings_page(user.id)
 
         # Then
-        assert bookings == [booking2, booking3, booking1]
+        assert bookings == [booking1, booking3, booking2]
 
 
 class FindNotUsedAndNotCancelledBookingsAssociatedToOutdatedStocksTest:

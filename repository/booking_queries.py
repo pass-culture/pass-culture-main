@@ -1,21 +1,16 @@
 from collections import namedtuple
 from datetime import datetime, timedelta
-from typing import Set, List, Union
+from typing import List, Set, Union
 
 from sqlalchemy import func
 from sqlalchemy.orm import Query
 
-from domain.keywords import create_get_filter_matching_ts_query_in_any_model
 from domain.stocks import STOCK_DELETION_DELAY
-from models import Booking, EventType, Offer, Offerer, Payment, Product, Recommendation, Stock, ThingType, User, Venue
+from models import Booking, EventType, Offer, Offerer, Payment, \
+    Recommendation, Stock, ThingType, User, Venue
 from models.api_errors import ResourceNotFoundError
 from models.db import db
 from repository import offer_queries
-
-get_filter_matching_ts_query_for_booking = create_get_filter_matching_ts_query_in_any_model(
-    Product,
-    Venue
-)
 
 
 def _query_keep_on_non_activation_offers() -> Query:
@@ -207,7 +202,7 @@ def find_date_used(booking: Booking) -> datetime:
 
 def find_user_activation_booking(user: User) -> Booking:
     is_activation_offer = (Offer.type == str(ThingType.ACTIVATION)) | (
-            Offer.type == str(EventType.ACTIVATION))
+        Offer.type == str(EventType.ACTIVATION))
 
     return Booking.query \
         .join(User) \
@@ -239,7 +234,7 @@ def _query_non_cancelled_non_activation_bookings() -> Query:
 
 def _query_keep_only_used_or_finished_bookings_on_non_activation_offers() -> Query:
     booking_on_event_finished_more_than_two_days_ago = (
-            datetime.utcnow() > Stock.endDatetime + STOCK_DELETION_DELAY)
+        datetime.utcnow() > Stock.endDatetime + STOCK_DELETION_DELAY)
 
     return _query_keep_on_non_activation_offers() \
         .join(Venue) \

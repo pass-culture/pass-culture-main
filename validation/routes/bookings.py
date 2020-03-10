@@ -1,31 +1,31 @@
 from datetime import datetime
+from typing import Callable, Dict
 
 from domain.bookings import BOOKING_CANCELLATION_DELAY
-from domain.expenses import is_eligible_to_physical_offers_capping, is_eligible_to_digital_offers_capping
+from domain.expenses import is_eligible_to_digital_offers_capping, \
+    is_eligible_to_physical_offers_capping
 from domain.user_activation import is_activation_booking
-from models import ApiErrors, Booking, RightsType
-from models.api_errors import ResourceGoneError, ForbiddenError
-from repository import payment_queries
-from repository.stock_queries import find_stock_by_id
-from repository.venue_queries import find_by_id, find_by_offer_id
+from models import ApiErrors, Booking, RightsType, Stock, User
+from models.api_errors import ForbiddenError, ResourceGoneError
+from repository import payment_queries, stock_queries, venue_queries
 from utils.rest import ensure_current_user_has_rights
 
 
-def check_has_stock_id(stock_id):
+def check_has_stock_id(stock_id: int) -> None:
     if stock_id is None:
         api_errors = ApiErrors()
-        api_errors.add_error('stockId', 'Vous devez préciser un identifiant d\'offre')
+        api_errors.add_error('stockId', "Vous devez préciser un identifiant d'offre")
         raise api_errors
 
 
-def check_has_quantity(quantity):
+def check_has_quantity(quantity: int) -> None:
     if quantity is None or quantity <= 0:
         api_errors = ApiErrors()
         api_errors.add_error('quantity', 'Vous devez préciser une quantité pour la réservation')
         raise api_errors
 
 
-def check_booking_quantity_limit(quantity, is_duo):
+def check_booking_quantity_limit(quantity: int, is_duo: bool) -> None:
     if quantity > 1 and is_duo is False:
         api_errors = ApiErrors()
         api_errors.add_error('quantity', "Vous ne pouvez pas réserver plus d'une offre à la fois")
@@ -37,21 +37,21 @@ def check_booking_quantity_limit(quantity, is_duo):
         raise api_errors
 
 
-def check_existing_stock(stock):
+def check_existing_stock(stock: Stock) -> None:
     if stock is None:
         api_errors = ApiErrors()
         api_errors.add_error('stockId', 'stockId ne correspond à aucun stock')
         raise api_errors
 
 
-def check_not_soft_deleted_stock(stock):
+def check_not_soft_deleted_stock(stock: Stock) -> None:
     if stock.isSoftDeleted:
         api_errors = ApiErrors()
         api_errors.add_error('stockId', "Cette date a été retirée. Elle n'est plus disponible.")
         raise api_errors
 
 
-def check_offer_is_active(stock):
+def check_offer_is_active(stock: Stock) -> None:
     soft_deleted_stock = stock.isSoftDeleted
     inactive_offerer = not stock.resolvedOffer.venue.managingOfferer.isActive
     inactive_offer = not stock.resolvedOffer.isActive
@@ -62,7 +62,7 @@ def check_offer_is_active(stock):
         raise api_errors
 
 
-def check_already_booked(user_bookings):
+def check_already_booked(user_bookings: Booking) -> None:
     already_booked = len(user_bookings) > 0
     if already_booked:
         api_errors = ApiErrors()
@@ -70,15 +70,15 @@ def check_already_booked(user_bookings):
         raise api_errors
 
 
-def check_stock_venue_is_validated(stock):
+def check_stock_venue_is_validated(stock: Stock) -> None:
     if not stock.resolvedOffer.venue.isValidated:
         api_errors = ApiErrors()
         api_errors.add_error('stockId',
-                            'Vous ne pouvez pas encore réserver cette offre, son lieu est en attente de validation')
+                             'Vous ne pouvez pas encore réserver cette offre, son lieu est en attente de validation')
         raise api_errors
 
 
-def check_stock_booking_limit_date(stock):
+def check_stock_booking_limit_date(stock: Stock) -> None:
     stock_has_expired = stock.bookingLimitDatetime is not None and stock.bookingLimitDatetime < datetime.utcnow()
 
     if stock_has_expired:
@@ -87,7 +87,7 @@ def check_stock_booking_limit_date(stock):
         raise api_errors
 
 
-def check_offer_date(stock):
+def check_offer_date(stock: Stock) -> None:
     stock_has_expired = stock.beginningDatetime is not None and stock.beginningDatetime < datetime.utcnow()
 
     if stock_has_expired:
@@ -96,7 +96,7 @@ def check_offer_date(stock):
         raise api_errors
 
 
-def check_expenses_limits(expenses: dict, booking: Booking, find_stock=find_stock_by_id):
+def check_expenses_limits(expenses: Dict, booking: Booking, find_stock: Callable[..., Stock] = stock_queries.find_stock_by_id) -> None:
     stock = find_stock(booking.stockId)
     offer = stock.resolvedOffer
 
@@ -115,7 +115,7 @@ def check_expenses_limits(expenses: dict, booking: Booking, find_stock=find_stoc
             )
 
 
-def check_booking_token_is_usable(booking: Booking):
+def check_booking_token_is_usable(booking: Booking) -> None:
     resource_gone_error = ResourceGoneError()
     if booking.isUsed:
         resource_gone_error.add_error('booking', 'Cette réservation a déjà été validée')
@@ -124,15 +124,15 @@ def check_booking_token_is_usable(booking: Booking):
         resource_gone_error.add_error('booking', 'Cette réservation a été annulée')
         raise resource_gone_error
     event_starts_in_more_than_72_hours = booking.stock.beginningDatetime and (
-            booking.stock.beginningDatetime > (datetime.utcnow() + BOOKING_CANCELLATION_DELAY))
+        booking.stock.beginningDatetime > (datetime.utcnow() + BOOKING_CANCELLATION_DELAY))
     if event_starts_in_more_than_72_hours:
         errors = ForbiddenError()
         errors.add_error('beginningDatetime',
-                        'Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l\'évènement')
+                         "Vous ne pouvez pas valider cette contremarque plus de 72h avant le début de l'évènement")
         raise errors
 
 
-def check_booking_token_is_keepable(booking: Booking):
+def check_booking_token_is_keepable(booking: Booking) -> None:
     resource_gone_error = ResourceGoneError()
     booking_payment = payment_queries.find_by_booking_id(booking.id)
 
@@ -149,38 +149,39 @@ def check_booking_token_is_keepable(booking: Booking):
         raise resource_gone_error
 
 
-def check_booking_is_cancellable_by_user(booking, is_user_cancellation):
+def check_booking_is_cancellable_by_user(booking: Booking, is_user_cancellation: bool) -> None:
     api_errors = ApiErrors()
 
     if booking.isUsed:
-        api_errors.add_error('booking', "Impossible d\'annuler une réservation consommée")
+        api_errors.add_error('booking', "Impossible d'annuler une réservation consommée")
         raise api_errors
 
     if is_user_cancellation:
         if not booking.isUserCancellable:
             api_errors.add_error('booking',
-                                "Impossible d\'annuler une réservation moins de 72h avant le début de l'évènement")
+                                 "Impossible d'annuler une réservation moins de 72h avant le début de l'évènement")
             raise api_errors
 
 
-def check_is_not_activation_booking(booking: Booking):
+def check_is_not_activation_booking(booking: Booking) -> None:
     if is_activation_booking(booking):
         error = ForbiddenError()
         error.add_error('booking', "Impossible d'annuler une offre d'activation")
         raise error
 
 
-def check_email_and_offer_id_for_anonymous_user(email, offer_id):
+def check_email_and_offer_id_for_anonymous_user(email: str, offer_id: int) -> None:
     api_errors = ApiErrors()
     if not email:
         api_errors.add_error('email',
-                            "L'adresse email qui a servie à la réservation est obligatoire dans l'URL [?email=<email>]")
+                             "L'adresse email qui a servie à la réservation est obligatoire dans l'URL [?email=<email>]")
     if not offer_id:
         api_errors.add_error('offer_id', "L'id de l'offre réservée est obligatoire dans l'URL [?offer_id=<id>]")
     if api_errors.errors:
         raise api_errors
 
-def check_rights_to_get_bookings_csv(user, venue_id=None, offer_id=None):
+
+def check_rights_to_get_bookings_csv(user: User, venue_id: int = None, offer_id: int = None) -> None:
     if user.isAdmin:
         api_errors = ApiErrors()
         api_errors.add_error(
@@ -190,7 +191,7 @@ def check_rights_to_get_bookings_csv(user, venue_id=None, offer_id=None):
         raise api_errors
 
     if venue_id:
-        venue = find_by_id(venue_id)
+        venue = venue_queries.find_by_id(venue_id)
         if venue is None:
             api_errors = ApiErrors()
             api_errors.add_error('venueId', "Ce lieu n'existe pas.")
@@ -198,7 +199,7 @@ def check_rights_to_get_bookings_csv(user, venue_id=None, offer_id=None):
         ensure_current_user_has_rights(user=user, rights=RightsType.editor, offerer_id=venue.managingOffererId)
 
     if offer_id:
-        venue = find_by_offer_id(offer_id)
+        venue = venue_queries.find_by_offer_id(offer_id)
         if venue is None:
             api_errors = ApiErrors()
             api_errors.add_error('offerId', "Cette offre n'existe pas.")
@@ -206,7 +207,7 @@ def check_rights_to_get_bookings_csv(user, venue_id=None, offer_id=None):
         ensure_current_user_has_rights(user=user, rights=RightsType.editor, offerer_id=venue.managingOffererId)
 
 
-def check_booking_is_not_already_cancelled(booking: Booking):
+def check_booking_is_not_already_cancelled(booking: Booking) -> None:
     if booking.isCancelled:
         api_errors = ResourceGoneError()
         api_errors.add_error(
@@ -216,11 +217,11 @@ def check_booking_is_not_already_cancelled(booking: Booking):
         raise api_errors
 
 
-def check_booking_is_not_used(booking: Booking):
+def check_booking_is_not_used(booking: Booking) -> None:
     if booking.isUsed:
         api_errors = ForbiddenError()
         api_errors.add_error(
             'global',
-            "Impossible d\'annuler une réservation consommée"
+            "Impossible d'annuler une réservation consommée"
         )
         raise api_errors
