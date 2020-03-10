@@ -120,6 +120,10 @@ class Stock(PcObject,
         return False
 
     @property
+    def bookingsQuantity(self):
+        return sum([booking.quantity for booking in self.bookings if not booking.isCancelled])
+
+    @property
     def resolvedOffer(self):
         return self.offer or self.eventOccurrence.offer
 

@@ -426,3 +426,55 @@ class hasBookingLimitDatetimePassedTest:
 
         # Then
         assert not stock.hasBookingLimitDatetimePassed
+
+class bookingsQuantityTest:
+    @clean_database
+    def test_should_return_0_when_no_bookings(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock_from_offer(offer)
+
+        # When
+        repository.save(stock)
+
+        # Then
+        assert stock.bookingsQuantity == 0
+
+    @clean_database
+    def test_should_return_the_quantity_of_bookings(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock_from_offer(offer, price=0)
+        repository.save(stock)
+        user = create_user()
+        booking1 = create_booking(user=user, stock=stock, quantity=1)
+        booking2 = create_booking(user=user, stock=stock, quantity=2)
+
+        # When
+        repository.save(booking1, booking2)
+
+        # Then
+        assert stock.bookingsQuantity == 3
+
+    @clean_database
+    def test_should_not_include_cancelled_booking(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock_from_offer(offer, price=0)
+        repository.save(stock)
+        user = create_user()
+        booking1 = create_booking(user=user, stock=stock, quantity=1)
+        cancelled_booking = create_booking(user=user, is_cancelled=True, stock=stock, quantity=2)
+
+        # When
+        repository.save(booking1, cancelled_booking)
+
+        # Then
+        assert stock.bookingsQuantity == 1
+

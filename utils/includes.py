@@ -70,7 +70,7 @@ OFFER_INCLUDES = [
     },
     {
         "key": "stocks",
-        "includes": ['isBookable']
+        "includes": ["bookingsQuantity", 'isBookable']
     },
     {
         "key": "venue",
@@ -260,6 +260,7 @@ WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = [
     "qrCode",
     "thumbUrl"
 ]
+
 
 WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
     "completedUrl",
