@@ -9,7 +9,8 @@ from connectors.redis import add_offer_id, get_offer_ids, delete_offer_ids, \
     delete_venue_providers, send_venue_provider_data_to_redis, add_to_indexed_offers, \
     delete_indexed_offers, \
     check_offer_exists, get_offer_details, delete_all_indexed_offers, add_venue_provider_currently_in_sync, \
-    delete_venue_provider_currently_in_sync, get_number_of_venue_providers_currently_in_sync
+    delete_venue_provider_currently_in_sync, get_number_of_venue_providers_currently_in_sync, add_offer_ids_in_error, \
+    get_offer_ids_in_error, delete_offer_ids_in_error
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_venue_provider, create_venue, create_user, create_offerer, \
@@ -374,3 +375,46 @@ class GetNumberOfVenueProvidersCurrentlyInSync:
         # Then
         client.hlen.assert_called_once_with('venue_providers_in_sync')
         assert number_of_venue_providers_currently_in_sync == 10
+
+
+class AddOfferIdInErrorTest:
+    @patch('connectors.redis.redis')
+    def test_should_add_offer_id_in_error(self, mock_redis):
+        # Given
+        client = MagicMock()
+        client.rpush = MagicMock()
+
+        # When
+        add_offer_ids_in_error(client=client, offer_ids=[1, 2])
+
+        # Then
+        client.rpush.assert_called_once_with('offer_ids_in_error', [1, 2])
+
+
+class GetOfferIdsInErrorTest:
+    @patch('connectors.redis.redis')
+    def test_should_get_offer_ids_in_error(self, mock_redis):
+        # Given
+        client = MagicMock()
+        client.lrange = MagicMock()
+
+        # When
+        get_offer_ids_in_error(client=client)
+
+        # Then
+        client.lrange.assert_called_once_with('offer_ids_in_error', 0, 1000)
+
+
+class DeleteOfferIdsInErrorTest:
+    @patch('connectors.redis.REDIS_OFFER_IDS_IN_ERROR_CHUNK_SIZE', return_value=1000)
+    @patch('connectors.redis.redis')
+    def test_should_delete_given_range_of_offer_ids_in_error(self, mock_redis, mock_redis_lrange_end):
+        # Given
+        client = MagicMock()
+        client.ltrim = MagicMock()
+
+        # When
+        delete_offer_ids_in_error(client=client)
+
+        # Then
+        client.ltrim.assert_called_once_with('offer_ids_in_error', mock_redis_lrange_end, -1)

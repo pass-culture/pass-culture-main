@@ -1,13 +1,15 @@
 from datetime import datetime
 from typing import List
 
+from algoliasearch.exceptions import AlgoliaException
 from redis import Redis
 from redis.client import Pipeline
 
 from algolia.domain.rules_engine import is_eligible_for_indexing, is_eligible_for_reindexing
 from algolia.infrastructure.api import add_objects, delete_objects
 from algolia.infrastructure.builder import build_object
-from connectors.redis import add_to_indexed_offers, check_offer_exists, delete_indexed_offers, get_offer_details
+from connectors.redis import add_to_indexed_offers, check_offer_exists, delete_indexed_offers, get_offer_details, \
+    add_offer_ids_in_error
 from models import Offer
 from repository import offer_queries
 from utils.human_ids import humanize
@@ -41,7 +43,7 @@ def process_eligible_offers(client: Redis, offer_ids: List[int], from_provider_u
                 offers_to_delete.append(offer.id)
 
     if len(offers_to_add) > 0:
-        _process_adding(pipeline=pipeline, adding_objects=offers_to_add)
+        _process_adding(pipeline=pipeline, client=client, offer_ids=offer_ids, adding_objects=offers_to_add)
 
     if len(offers_to_delete) > 0:
         _process_deleting(client=client, offer_ids_to_delete=offers_to_delete)
@@ -77,15 +79,25 @@ def _build_offer_details_to_be_indexed(offer: Offer) -> dict:
     }
 
 
-def _process_adding(pipeline: Pipeline, adding_objects: List[dict]) -> None:
-    add_objects(objects=adding_objects)
-    logger.info(f'[ALGOLIA] {len(adding_objects)} objects were indexed!')
-    pipeline.execute()
-    pipeline.reset()
+def _process_adding(pipeline: Pipeline, client: Redis, offer_ids: List[int], adding_objects: List[dict]) -> None:
+    try:
+        add_objects(objects=adding_objects)
+        logger.info(f'[ALGOLIA] {len(adding_objects)} objects were indexed!')
+        pipeline.execute()
+        pipeline.reset()
+    except AlgoliaException as error:
+        logger.error(f'[ALGOLIA] error when adding objects {error}')
+        add_offer_ids_in_error(client=client, offer_ids=offer_ids)
+        pipeline.reset()
+        pass
 
 
 def _process_deleting(client: Redis, offer_ids_to_delete: List[int]) -> None:
     humanized_offer_ids_to_delete = [humanize(offer_id) for offer_id in offer_ids_to_delete]
-    delete_objects(object_ids=humanized_offer_ids_to_delete)
-    delete_indexed_offers(client=client, offer_ids=offer_ids_to_delete)
-    logger.info(f'[ALGOLIA] {len(offer_ids_to_delete)} objects were deleted from index!')
+    try:
+        delete_objects(object_ids=humanized_offer_ids_to_delete)
+        delete_indexed_offers(client=client, offer_ids=offer_ids_to_delete)
+        logger.info(f'[ALGOLIA] {len(offer_ids_to_delete)} objects were deleted from index!')
+    except AlgoliaException as error:
+        logger.error(f'[ALGOLIA] error when deleting objects {error}')
+        add_offer_ids_in_error(client=client, offer_ids=offer_ids_to_delete)

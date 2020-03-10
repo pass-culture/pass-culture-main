@@ -12,12 +12,14 @@ from utils.human_ids import humanize
 from utils.logger import logger
 
 REDIS_OFFER_IDS_CHUNK_SIZE = int(os.environ.get('REDIS_OFFER_IDS_CHUNK_SIZE', 1000))
+REDIS_OFFER_IDS_IN_ERROR_CHUNK_SIZE = int(os.environ.get('REDIS_OFFER_IDS_IN_ERROR_CHUNK_SIZE', 1000))
 REDIS_VENUE_IDS_CHUNK_SIZE = int(os.environ.get('REDIS_VENUE_IDS_CHUNK_SIZE', 1000))
 REDIS_VENUE_PROVIDERS_CHUNK_SIZE = int(os.environ.get('REDIS_VENUE_PROVIDERS_LRANGE_END', 1))
 
 
 class RedisBucket(Enum):
     REDIS_LIST_OFFER_IDS_NAME = 'offer_ids'
+    REDIS_LIST_OFFER_IDS_IN_ERROR_NAME = 'offer_ids_in_error'
     REDIS_LIST_VENUE_IDS_NAME = 'venue_ids'
     REDIS_LIST_VENUE_PROVIDERS_NAME = 'venue_providers'
     REDIS_HASHMAP_INDEXED_OFFERS_NAME = 'indexed_offers'
@@ -172,5 +174,29 @@ def delete_venue_provider_currently_in_sync(client: Redis, venue_provider_id: in
 def get_number_of_venue_providers_currently_in_sync(client: Redis) -> int:
     try:
         return client.hlen(RedisBucket.REDIS_HASHMAP_VENUE_PROVIDERS_IN_SYNC_NAME.value)
+    except redis.exceptions.RedisError as error:
+        logger.error(f'[REDIS] {error}')
+
+
+def add_offer_ids_in_error(client: Redis, offer_ids: List[int]) -> None:
+    try:
+        client.rpush(RedisBucket.REDIS_LIST_OFFER_IDS_IN_ERROR_NAME.value, offer_ids)
+        logger.debug(f'[REDIS] {len(offer_ids)} in error were added')
+    except redis.exceptions.RedisError as error:
+        logger.error(f'[REDIS] {error}')
+
+
+def get_offer_ids_in_error(client: Redis) -> List[int]:
+    try:
+        offer_ids = client.lrange(RedisBucket.REDIS_LIST_OFFER_IDS_IN_ERROR_NAME.value, 0, REDIS_OFFER_IDS_CHUNK_SIZE)
+        return offer_ids
+    except redis.exceptions.RedisError as error:
+        logger.error(f'[REDIS] {error}')
+
+
+def delete_offer_ids_in_error(client: Redis) -> None:
+    try:
+        client.ltrim(RedisBucket.REDIS_LIST_OFFER_IDS_IN_ERROR_NAME.value, REDIS_OFFER_IDS_IN_ERROR_CHUNK_SIZE, -1)
+        logger.debug('[REDIS] offer ids in error were deleted')
     except redis.exceptions.RedisError as error:
         logger.error(f'[REDIS] {error}')

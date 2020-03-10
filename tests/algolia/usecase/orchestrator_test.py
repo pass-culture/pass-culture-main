@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch, call, MagicMock
 
+from algoliasearch.exceptions import AlgoliaException
 from freezegun import freeze_time
 
 from algolia.usecase.orchestrator import delete_expired_offers, process_eligible_offers
@@ -15,6 +16,7 @@ TOMORROW = datetime.now() + timedelta(days=1)
 
 class ProcessEligibleOffersTest:
     @clean_database
+    @patch('algolia.usecase.orchestrator.add_offer_ids_in_error')
     @patch('algolia.usecase.orchestrator.delete_indexed_offers')
     @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
     @patch('algolia.usecase.orchestrator.delete_objects')
@@ -28,6 +30,7 @@ class ProcessEligibleOffersTest:
                                                                                   mock_delete_objects,
                                                                                   mock_add_to_indexed_offers,
                                                                                   mock_delete_indexed_offers,
+                                                                                  mock_add_offer_ids_in_error,
                                                                                   app):
         # Given
         client = MagicMock()
@@ -69,8 +72,10 @@ class ProcessEligibleOffersTest:
         mock_delete_objects.assert_not_called()
         mock_pipeline.execute.assert_called_once()
         mock_pipeline.reset.assert_called_once()
+        mock_add_offer_ids_in_error.assert_not_called()
 
     @clean_database
+    @patch('algolia.usecase.orchestrator.add_offer_ids_in_error')
     @patch('algolia.usecase.orchestrator.delete_indexed_offers')
     @patch('algolia.usecase.orchestrator.check_offer_exists')
     @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
@@ -84,6 +89,7 @@ class ProcessEligibleOffersTest:
                                                                                           mock_add_to_indexed_offers,
                                                                                           mock_check_offer_exists,
                                                                                           mock_delete_indexed_offers,
+                                                                                          mock_add_offer_ids_in_error,
                                                                                           app):
         # Given
         client = MagicMock()
@@ -121,6 +127,7 @@ class ProcessEligibleOffersTest:
         ]
         mock_pipeline.execute.assert_not_called()
         mock_pipeline.reset.assert_not_called()
+        mock_add_offer_ids_in_error.assert_not_called()
 
     @clean_database
     @patch('algolia.usecase.orchestrator.delete_indexed_offers')
@@ -165,6 +172,59 @@ class ProcessEligibleOffersTest:
         mock_add_to_indexed_offers.assert_not_called()
         mock_delete_objects.assert_not_called()
         mock_delete_indexed_offers.assert_not_called()
+        mock_pipeline.execute.assert_not_called()
+        mock_pipeline.reset.assert_not_called()
+
+    @clean_database
+    @patch('algolia.usecase.orchestrator.add_offer_ids_in_error')
+    @patch('algolia.usecase.orchestrator.delete_indexed_offers')
+    @patch('algolia.usecase.orchestrator.check_offer_exists')
+    @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
+    @patch('algolia.usecase.orchestrator.delete_objects')
+    @patch('algolia.usecase.orchestrator.add_objects')
+    @patch('algolia.usecase.orchestrator.build_object', return_value={'fake': 'test'})
+    def test_should_add_offer_ids_in_error_when_deleting_objects_failed(self,
+                                                                        mock_build_object,
+                                                                        mock_add_objects,
+                                                                        mock_delete_objects,
+                                                                        mock_add_to_indexed_offers,
+                                                                        mock_check_offer_exists,
+                                                                        mock_delete_indexed_offers,
+                                                                        mock_add_offer_ids_in_error,
+                                                                        app):
+        # Given
+        client = MagicMock()
+        client.pipeline = MagicMock()
+        client.pipeline.return_value = MagicMock()
+        mock_pipeline = client.pipeline()
+        mock_pipeline.execute = MagicMock()
+        mock_pipeline.reset = MagicMock()
+        offerer = create_offerer(is_active=True, validation_token=None)
+        venue = create_venue(offerer=offerer, validation_token=None)
+        offer1 = create_offer_with_thing_product(venue=venue, is_active=True)
+        stock1 = create_stock(offer=offer1, booking_limit_datetime=TOMORROW, available=0)
+        offer2 = create_offer_with_thing_product(venue=venue, is_active=True)
+        stock2 = create_stock(offer=offer2, booking_limit_datetime=TOMORROW, available=0)
+        repository.save(stock1, stock2)
+        mock_check_offer_exists.side_effect = [
+            True,
+            True
+        ]
+        mock_delete_objects.side_effect = [AlgoliaException]
+
+        # When
+        process_eligible_offers(client=client, offer_ids=[offer1.id, offer2.id], from_provider_update=False)
+
+        # Then
+        mock_build_object.assert_not_called()
+        mock_add_objects.assert_not_called()
+        mock_add_to_indexed_offers.assert_not_called()
+        mock_delete_objects.assert_called_once()
+        assert mock_delete_objects.call_args_list == [
+            call(object_ids=[humanize(offer1.id), humanize(offer2.id)])
+        ]
+        mock_delete_indexed_offers.assert_not_called()
+        mock_add_offer_ids_in_error.assert_called_once_with(client=client, offer_ids=[offer1.id, offer2.id])
         mock_pipeline.execute.assert_not_called()
         mock_pipeline.reset.assert_not_called()
 
@@ -491,8 +551,68 @@ class ProcessEligibleOffersTest:
         assert mock_pipeline.reset.call_count == 1
         assert mock_delete_objects.call_count == 0
 
+    @clean_database
+    @patch('algolia.usecase.orchestrator.add_offer_ids_in_error')
+    @patch('algolia.usecase.orchestrator.delete_indexed_offers')
+    @patch('algolia.usecase.orchestrator.add_to_indexed_offers')
+    @patch('algolia.usecase.orchestrator.delete_objects')
+    @patch('algolia.usecase.orchestrator.add_objects')
+    @patch('algolia.usecase.orchestrator.check_offer_exists')
+    @patch('algolia.usecase.orchestrator.build_object', return_value={'fake': 'test'})
+    def test_should_add_offer_ids_in_error_when_adding_objects_failed(self,
+                                                                      mock_build_object,
+                                                                      mock_check_offer_exists,
+                                                                      mock_add_objects,
+                                                                      mock_delete_objects,
+                                                                      mock_add_to_indexed_offers,
+                                                                      mock_delete_indexed_offers,
+                                                                      mock_add_offer_ids_in_error,
+                                                                      app):
+        # Given
+        client = MagicMock()
+        client.pipeline = MagicMock()
+        client.pipeline.return_value = MagicMock()
+        mock_pipeline = client.pipeline()
+        mock_pipeline.execute = MagicMock()
+        mock_pipeline.reset = MagicMock()
+        offerer = create_offerer(is_active=True, validation_token=None)
+        venue = create_venue(offerer=offerer, validation_token=None)
+        offer1 = create_offer_with_thing_product(venue=venue, is_active=True)
+        stock1 = create_stock(offer=offer1, booking_limit_datetime=TOMORROW, available=10)
+        offer2 = create_offer_with_thing_product(venue=venue, is_active=True)
+        stock2 = create_stock(offer=offer2, booking_limit_datetime=TOMORROW, available=10)
+        repository.save(stock1, stock2)
+        mock_check_offer_exists.side_effect = [False, False]
+        mock_add_objects.side_effect = [AlgoliaException]
 
-class OrchestrateDeleteExpiredOffersTest:
+        # When
+        process_eligible_offers(client=client, offer_ids=[offer1.id, offer2.id], from_provider_update=False)
+
+        # Then
+        assert mock_build_object.call_count == 2
+        mock_add_objects.assert_called_once_with(objects=[
+            {'fake': 'test'},
+            {'fake': 'test'}
+        ])
+        assert mock_add_to_indexed_offers.call_count == 2
+        assert mock_add_to_indexed_offers.call_args_list == [
+            call(pipeline=mock_pipeline,
+                 offer_details={'name': 'Test Book', 'dates': [], 'prices': [10.0]},
+                 offer_id=offer1.id),
+            call(pipeline=mock_pipeline,
+                 offer_details={'name': 'Test Book', 'dates': [], 'prices': [10.0]},
+                 offer_id=offer2.id),
+        ]
+        mock_delete_indexed_offers.assert_not_called()
+        mock_delete_objects.assert_not_called()
+        mock_pipeline.execute.assert_not_called()
+        mock_pipeline.reset.assert_called_once()
+        assert mock_add_offer_ids_in_error.call_args_list == [
+            call(client=client, offer_ids=[offer1.id, offer2.id])
+        ]
+
+
+class DeleteExpiredOffersTest:
     @patch('algolia.usecase.orchestrator.delete_indexed_offers')
     @patch('algolia.usecase.orchestrator.check_offer_exists')
     @patch('algolia.usecase.orchestrator.delete_objects')

@@ -2,7 +2,7 @@ import os
 
 from flask import current_app as app
 
-from algolia.infrastructure.api import clean_algolia_index
+from algolia.infrastructure.api import clear_index
 from algolia.usecase.orchestrator import process_eligible_offers
 from connectors.redis import delete_all_indexed_offers
 from models import Offer
@@ -15,6 +15,6 @@ def create_industrial_algolia_indexed_objects():
     if algolia_trigger_indexation == '1':
         logger.info('create_industrial_algolia_objects')
         offer_ids = Offer.query.with_entities(Offer.id).all()
-        clean_algolia_index()
+        clear_index()
         delete_all_indexed_offers(client=app.redis_client)
         process_eligible_offers(client=app.redis_client, offer_ids=offer_ids, from_provider_update=False)
