@@ -141,8 +141,7 @@ class Put:
                                  (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             # When
@@ -170,8 +169,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, offer)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, offer)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
@@ -198,8 +197,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, stock)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, stock)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
@@ -227,8 +226,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, stock)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, stock)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
@@ -257,8 +256,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, stock, mediation)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, stock, mediation)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             DiscoveryView.refresh(concurrently=False)
@@ -296,8 +295,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, stock)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, stock)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             DiscoveryView.refresh(concurrently=False)
@@ -337,8 +336,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, stock, mediation)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, stock, mediation)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             DiscoveryView.refresh(concurrently=False)
@@ -377,8 +376,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, stock)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, stock)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
@@ -411,10 +410,10 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(stock_venue_not_validated, stock_venue_validated, user,venue_validated, venue_not_validated, iris)
+            repository.save(stock_venue_not_validated, stock_venue_validated, user)
 
-            iris_venue_not_validated = create_iris_venue(iris.id, venue_not_validated.id)
-            iris_venue_validated = create_iris_venue(iris.id, venue_validated.id)
+            iris_venue_not_validated = create_iris_venue(iris, venue_not_validated)
+            iris_venue_validated = create_iris_venue(iris, venue_validated)
 
             repository.save(iris_venue_not_validated, iris_venue_validated)
 
@@ -454,8 +453,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, stock1, mediation1, stock2, mediation2, mediation3)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, stock1, mediation1, stock2, mediation2, mediation3)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             DiscoveryView.refresh(concurrently=False)
@@ -505,8 +504,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, stock1, stock2, stock3, stock4)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, stock1, stock2, stock3, stock4)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             DiscoveryView.refresh(concurrently=False)
@@ -561,8 +560,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, event_stock, stock_thing)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, event_stock, stock_thing)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             DiscoveryView.refresh(concurrently=False)
@@ -597,8 +596,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, stock1, mediation1, stock2, mediation2, recommendation)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, stock1, mediation1, stock2, mediation2, recommendation)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             DiscoveryView.refresh(concurrently=False)
@@ -632,8 +631,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, stock_thing, mediation)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, stock_thing, mediation)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
@@ -662,8 +661,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, stock_thing, mediation)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, stock_thing, mediation)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             mediation_id = mediation.id
@@ -694,8 +693,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, stock_thing, mediation)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, stock_thing, mediation)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             offer_thing_id = offer_thing.id
@@ -730,8 +729,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, stock1, inactive_mediation, active_mediation, invalid_recommendation)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, stock1, inactive_mediation, active_mediation, invalid_recommendation)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             DiscoveryView.refresh(concurrently=False)
@@ -776,8 +775,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, stock1, stock2, stock3, stock4, user)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, stock1, stock2, stock3, stock4, user)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             DiscoveryView.refresh(concurrently=False)
@@ -816,8 +815,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, stock1, stock2, stock3, stock4, user)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, stock1, stock2, stock3, stock4, user)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             upsert_tuto_mediations()
@@ -870,8 +869,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, stock, recommendation)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, stock, recommendation)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             # When
@@ -899,8 +898,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, stock, recommendation)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, stock, recommendation)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             # when
@@ -942,8 +941,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             DiscoveryView.refresh(concurrently=False)
@@ -984,8 +983,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, recommendation)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, recommendation)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             DiscoveryView.refresh(concurrently=False)
@@ -1022,8 +1021,8 @@ class Put:
                                      (2.795697, 47.894173), (2.795697, 50.994169)])
 
             iris = create_iris(venue_polygon)
-            repository.save(venue, iris, user, stock, booking)
-            iris_venue = create_iris_venue(iris.id, venue.id)
+            repository.save(user, stock, booking)
+            iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
             DiscoveryView.refresh(concurrently=False)

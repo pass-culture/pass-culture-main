@@ -32,9 +32,9 @@ class GetOffersForRecommendationV3Test:
         polygon = POLYGON_TEST
 
         user_location_iris = create_iris(polygon)
-        repository.save(user, stock, stock_activation, mediation1, mediation2, venue, user_location_iris)
+        repository.save(user, stock, stock_activation, mediation1, mediation2)
 
-        iris_venue = create_iris_venue(user_location_iris.id, venue.id)
+        iris_venue = create_iris_venue(user_location_iris, venue)
         repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
@@ -64,9 +64,9 @@ class GetOffersForRecommendationV3Test:
         polygon = POLYGON_TEST
 
         iris = create_iris(polygon)
-        repository.save(user, stock_93, stock_activation_93, venue_93, iris)
+        repository.save(user, stock_93, stock_activation_93)
 
-        iris_venue = create_iris_venue(iris.id, venue_93.id)
+        iris_venue = create_iris_venue(iris, venue_93)
         repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
@@ -94,9 +94,9 @@ class GetOffersForRecommendationV3Test:
         polygon = POLYGON_TEST
 
         iris = create_iris(polygon)
-        repository.save(user, stock, venue, iris)
+        repository.save(user, stock)
 
-        iris_venue = create_iris_venue(iris.id, venue.id)
+        iris_venue = create_iris_venue(iris, venue)
         repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
@@ -121,9 +121,9 @@ class GetOffersForRecommendationV3Test:
         polygon = POLYGON_TEST
 
         iris = create_iris(polygon)
-        repository.save(user, stock1, stock2, venue, iris)
+        repository.save(user, stock1, stock2)
 
-        iris_venue = create_iris_venue(iris.id, venue.id)
+        iris_venue = create_iris_venue(iris, venue)
         repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
@@ -163,9 +163,9 @@ class GetOffersForRecommendationV3Test:
         polygon = POLYGON_TEST
 
         iris = create_iris(polygon)
-        repository.save(user, stock1, stock2, stock3, venue, iris)
+        repository.save(user, stock1, stock2, stock3)
 
-        iris_venue = create_iris_venue(iris.id, venue.id)
+        iris_venue = create_iris_venue(iris, venue)
         repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
@@ -205,9 +205,9 @@ class GetOffersForRecommendationV3Test:
         polygon = POLYGON_TEST
 
         iris = create_iris(polygon)
-        repository.save(user, stock1, stock2, stock3, stock4, stock5, stock6, user, iris)
+        repository.save(user, stock1, stock2, stock3, stock4, stock5, stock6, user)
 
-        iris_venue = create_iris_venue(iris.id, venue.id)
+        iris_venue = create_iris_venue(iris, venue)
         repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
@@ -240,9 +240,9 @@ class GetOffersForRecommendationV3Test:
         polygon = POLYGON_TEST
 
         iris = create_iris(polygon)
-        repository.save(user, booking1, booking2, venue, iris)
+        repository.save(user, booking1, booking2)
 
-        iris_venue = create_iris_venue(iris.id, venue.id)
+        iris_venue = create_iris_venue(iris, venue)
         repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
@@ -275,9 +275,9 @@ class GetOffersForRecommendationV3Test:
         polygon = POLYGON_TEST
 
         iris = create_iris(polygon)
-        repository.save(user, stock1, stock2, venue, iris)
+        repository.save(user, stock1, stock2)
 
-        iris_venue = create_iris_venue(iris.id, venue.id)
+        iris_venue = create_iris_venue(iris, venue)
         repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
@@ -315,9 +315,9 @@ class GetOffersForRecommendationV3Test:
         polygon = POLYGON_TEST
 
         iris = create_iris(polygon)
-        repository.save(user, stock1, stock2, stock3, venue, iris)
+        repository.save(user, stock1, stock2, stock3)
 
-        iris_venue = create_iris_venue(iris.id, venue.id)
+        iris_venue = create_iris_venue(iris, venue)
         repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
@@ -343,9 +343,9 @@ class GetOffersForRecommendationV3Test:
         polygon = POLYGON_TEST
 
         iris = create_iris(polygon)
-        repository.save(user, booking, venue, iris)
+        repository.save(user, booking)
 
-        iris_venue = create_iris_venue(iris.id, venue.id)
+        iris_venue = create_iris_venue(iris, venue)
         repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
@@ -372,9 +372,9 @@ class GetOffersForRecommendationV3Test:
         polygon = POLYGON_TEST
 
         iris = create_iris(polygon)
-        repository.save(user, favorite, venue, iris)
+        repository.save(user, favorite)
 
-        iris_venue = create_iris_venue(iris.id, venue.id)
+        iris_venue = create_iris_venue(iris, venue)
         repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
@@ -402,9 +402,9 @@ class GetOffersForRecommendationV3Test:
         venue_location_iris = create_iris(polygon)
         user_location_iris = create_iris(polygon2)
 
-        repository.save(user, stock, venue, venue_location_iris, user_location_iris)
+        repository.save(user, stock)
 
-        iris_venue = create_iris_venue(venue_location_iris.id, venue.id)
+        iris_venue = create_iris_venue(venue_location_iris, venue)
         repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
@@ -432,9 +432,9 @@ class GetOffersForRecommendationV3Test:
         venue_location_iris = create_iris(polygon)
         user_location_iris = create_iris(polygon2)
 
-        repository.save(user, stock, venue, venue_location_iris, user_location_iris)
+        repository.save(user, stock)
 
-        iris_venue = create_iris_venue(venue_location_iris.id, venue.id)
+        iris_venue = create_iris_venue(venue_location_iris, venue)
         repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)

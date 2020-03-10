@@ -1,16 +1,10 @@
-from typing import List
-from unittest.mock import patch
-
-from shapely.geometry import Polygon
-
-from models import Offerer, Stock
 from models.discovery_view import DiscoveryView
 from recommendations_engine.recommendations import create_recommendations_for_discovery_v3
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_mediation, \
     create_offerer, create_recommendation, \
-    create_stock, create_user, create_venue, create_iris, create_iris_venue
+    create_user, create_venue, create_iris, create_iris_venue
 from tests.model_creators.specific_creators import \
     create_offer_with_thing_product, create_stock_from_offer
 from tests.test_utils import POLYGON_TEST
@@ -34,8 +28,8 @@ class CreateRecommendationsForDiscoveryTest:
         mediation3 = create_mediation(offer2, is_active=True)
 
         iris = create_iris(POLYGON_TEST)
-        repository.save(user, stock1, mediation1, stock2, mediation2, mediation3, venue, iris)
-        iris_venue = create_iris_venue(iris.id, venue.id)
+        repository.save(user, stock1, mediation1, stock2, mediation2, mediation3)
+        iris_venue = create_iris_venue(iris, venue)
         repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
@@ -70,8 +64,8 @@ class CreateRecommendationsForDiscoveryTest:
         recommendation = create_recommendation(offer=offer2, user=user, mediation=mediation2, search="bla")
 
         iris = create_iris(POLYGON_TEST)
-        repository.save(user, stock1, mediation1, stock2, mediation2, recommendation, venue, iris)
-        iris_venue = create_iris_venue(iris.id, venue.id)
+        repository.save(user, stock1, mediation1, stock2, mediation2, recommendation)
+        iris_venue = create_iris_venue(iris, venue)
         repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)

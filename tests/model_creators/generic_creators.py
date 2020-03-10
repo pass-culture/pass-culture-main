@@ -608,8 +608,8 @@ def create_iris(polygon: Polygon, iris_code: str = '123456789') -> IrisFrance:
     return iris
 
 
-def create_iris_venue(iris_id: int, venue_id: int) -> IrisVenues:
+def create_iris_venue(iris: IrisFrance, venue: Venue) -> IrisVenues:
     iris_venue = IrisVenues()
-    iris_venue.venueId = venue_id
-    iris_venue.irisId = iris_id
+    iris_venue.venue = venue
+    iris_venue.iris = iris
     return iris_venue

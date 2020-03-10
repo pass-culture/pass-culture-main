@@ -88,11 +88,9 @@ class DeleteVenueFromIrisVenuesTest:
         iris_1 = create_iris(polygon_1)
         iris_2 = create_iris(polygon_2)
 
-        repository.save(iris_1, iris_2, venue_1, venue_2)
+        iris_venue_1 = create_iris_venue(iris_1, venue_1)
 
-        iris_venue_1 = create_iris_venue(iris_1.id, venue_1.id)
-
-        iris_venue_2 = create_iris_venue(iris_2.id, venue_2.id)
+        iris_venue_2 = create_iris_venue(iris_2, venue_2)
 
         repository.save(iris_venue_1, iris_venue_2)
 
@@ -175,9 +173,7 @@ class FindVenuesLocatedNearIrisTest:
 
         iris = create_iris(polygon)
 
-        repository.save(iris, venue)
-
-        iris_venue = create_iris_venue(iris.id, venue.id)
+        iris_venue = create_iris_venue(iris, venue)
 
         repository.save(iris_venue)
 
