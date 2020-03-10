@@ -67,6 +67,7 @@ def get_offer_ids(client: Redis) -> List[int]:
         return offer_ids
     except redis.exceptions.RedisError as error:
         logger.error(f'[REDIS] {error}')
+        return []
 
 
 def get_venue_ids(client: Redis) -> List[int]:
@@ -75,6 +76,7 @@ def get_venue_ids(client: Redis) -> List[int]:
         return venue_ids
     except redis.exceptions.RedisError as error:
         logger.error(f'[REDIS] {error}')
+        return []
 
 
 def get_venue_providers(client: Redis) -> List[dict]:
@@ -84,6 +86,7 @@ def get_venue_providers(client: Redis) -> List[dict]:
         return [json.loads(venue_provider) for venue_provider in venue_providers_as_string]
     except redis.exceptions.RedisError as error:
         logger.error(f'[REDIS] {error}')
+        return []
 
 
 def delete_offer_ids(client: Redis) -> None:
@@ -133,6 +136,7 @@ def check_offer_exists(client: Redis, offer_id: int) -> bool:
         return offer_exist
     except redis.exceptions.RedisError as error:
         logger.error(f'[REDIS] {error}')
+        return False
 
 
 def get_offer_details(client: Redis, offer_id: int) -> Dict:
@@ -144,6 +148,7 @@ def get_offer_details(client: Redis, offer_id: int) -> Dict:
         return dict()
     except redis.exceptions.RedisError as error:
         logger.error(f'[REDIS] {error}')
+        return dict()
 
 
 def delete_all_indexed_offers(client: Redis) -> None:
@@ -176,6 +181,7 @@ def get_number_of_venue_providers_currently_in_sync(client: Redis) -> int:
         return client.hlen(RedisBucket.REDIS_HASHMAP_VENUE_PROVIDERS_IN_SYNC_NAME.value)
     except redis.exceptions.RedisError as error:
         logger.error(f'[REDIS] {error}')
+        return 0
 
 
 def add_offer_ids_in_error(client: Redis, offer_ids: List[int]) -> None:
@@ -192,6 +198,7 @@ def get_offer_ids_in_error(client: Redis) -> List[int]:
         return offer_ids
     except redis.exceptions.RedisError as error:
         logger.error(f'[REDIS] {error}')
+        return []
 
 
 def delete_offer_ids_in_error(client: Redis) -> None:

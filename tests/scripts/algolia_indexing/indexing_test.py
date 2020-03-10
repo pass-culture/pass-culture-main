@@ -4,7 +4,7 @@ from scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_b
     batch_indexing_offers_in_algolia_by_venue, \
     batch_indexing_offers_in_algolia_from_database, \
     batch_deleting_expired_offers_in_algolia, _process_venue_provider, \
-    batch_indexing_offers_in_algolia_by_venue_provider
+    batch_indexing_offers_in_algolia_by_venue_provider, batch_processing_offer_ids_in_error
 
 
 class BatchIndexingOffersInAlgoliaByOfferTest:
@@ -293,3 +293,55 @@ class BatchDeletingExpiredOffersInAlgoliaTest:
 
         # Then
         assert mock_delete_expired_offers.call_count == 2
+
+
+class BatchProcessingOfferIdsInErrorTest:
+    @patch('scripts.algolia_indexing.indexing.get_offer_ids_in_error')
+    def test_should_retrieve_offer_ids_in_error(self, mock_get_offer_ids_in_error):
+        # Given
+        client = MagicMock()
+        mock_get_offer_ids_in_error.return_value = []
+
+        # When
+        batch_processing_offer_ids_in_error(client=client)
+
+        # Then
+        mock_get_offer_ids_in_error.assert_called_once()
+
+    @patch('scripts.algolia_indexing.indexing.delete_offer_ids_in_error')
+    @patch('scripts.algolia_indexing.indexing.process_eligible_offers')
+    @patch('scripts.algolia_indexing.indexing.get_offer_ids_in_error')
+    def test_should_delete_offer_ids_in_error_when_at_least_one_offer_id(self,
+                                                                         mock_get_offer_ids_in_error,
+                                                                         mock_process_eligible_offers,
+                                                                         mock_delete_offer_ids_in_error):
+        # Given
+        client = MagicMock()
+        mock_get_offer_ids_in_error.return_value = [1]
+
+        # When
+        batch_processing_offer_ids_in_error(client=client)
+
+        # Then
+        mock_get_offer_ids_in_error.assert_called_once_with(client=client)
+        mock_process_eligible_offers.assert_called_once_with(client=client, offer_ids=[1], from_provider_update=False)
+        mock_delete_offer_ids_in_error.assert_called_once_with(client=client)
+
+    @patch('scripts.algolia_indexing.indexing.delete_offer_ids_in_error')
+    @patch('scripts.algolia_indexing.indexing.process_eligible_offers')
+    @patch('scripts.algolia_indexing.indexing.get_offer_ids_in_error')
+    def test_should_not_delete_offer_ids_in_error_when_no_offer_id(self,
+                                                                   mock_get_offer_ids_in_error,
+                                                                   mock_process_eligible_offers,
+                                                                   mock_delete_offer_ids_in_error):
+        # Given
+        client = MagicMock()
+        mock_get_offer_ids_in_error.return_value = []
+
+        # When
+        batch_processing_offer_ids_in_error(client=client)
+
+        # Then
+        mock_get_offer_ids_in_error.assert_called_once_with(client=client)
+        mock_delete_offer_ids_in_error.assert_not_called()
+        mock_process_eligible_offers.assert_not_called()

@@ -10,7 +10,7 @@ from connectors.redis import \
     delete_venue_providers, \
     get_offer_ids, \
     delete_venue_provider_currently_in_sync, \
-    delete_offer_ids
+    delete_offer_ids, get_offer_ids_in_error, delete_offer_ids_in_error
 from repository import offer_queries
 from utils.converter import from_tuple_to_int
 from utils.logger import logger
@@ -109,6 +109,13 @@ def batch_deleting_expired_offers_in_algolia(client: Redis) -> None:
             has_still_offers = False
             logger.info('[ALGOLIA] deleting expired offers finished!')
         page += 1
+
+
+def batch_processing_offer_ids_in_error(client: Redis):
+    offer_ids_in_error = get_offer_ids_in_error(client=client)
+    if len(offer_ids_in_error) > 0:
+        process_eligible_offers(client=client, offer_ids=offer_ids_in_error, from_provider_update=False)
+        delete_offer_ids_in_error(client=client)
 
 
 def _process_venue_provider(client: Redis, provider_id: str, venue_provider_id: int, venue_id: int) -> None:
