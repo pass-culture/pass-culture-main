@@ -28,7 +28,7 @@ def test_should_update_booking_when_valid_token_is_given_and_no_payment_associat
 
 
 @clean_database
-def test_should_doing_nothing_when_valid_token_is_given_but_there_is_a_payment_already(app):
+def test_should_do_nothing_when_valid_token_is_given_but_the_booking_is_linked_to_a_payment(app):
     # Given
     token = '123456'
     beneficiary = create_user()

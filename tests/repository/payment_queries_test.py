@@ -290,7 +290,7 @@ class FindNotProcessableWithBankInformationTest:
 
 class FindByBookingIdTest:
     @clean_database
-    def test_should_return_a_payment_when_valid_booking_id_is_given(self, app):
+    def test_should_return_a_payment_when_one_linked_to_booking(self, app):
         # Given
         beneficiary = create_user()
         create_deposit(beneficiary)
@@ -306,7 +306,7 @@ class FindByBookingIdTest:
         assert payment == valid_payment
 
     @clean_database
-    def test_should_return_nothing_when_invalid_booking_id_is_given(self, app):
+    def test_should_return_nothing_when_no_payment_linked_to_booking(self, app):
         # Given
         invalid_booking_id = '99999'
         beneficiary = create_user()

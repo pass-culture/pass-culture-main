@@ -2,7 +2,7 @@ from repository import booking_queries, payment_queries, repository
 
 
 def canceling_token_validation(token: str) -> None:
-    booking = booking_queries.find_by_token(token)
+    booking = booking_queries.find_used_by_token(token)
 
     if booking:
         payment = payment_queries.find_by_booking_id(booking_id=booking.id)
@@ -14,6 +14,6 @@ def canceling_token_validation(token: str) -> None:
 
             print(f'The token ({token}) is cancelled')
         else:
-            print(f"There is a payment associated with this token ({token}), so we don't cancelled this token")
+            print(f"We did not cancelled the booking whose token is {token} because it has been already paid")
     else:
         print(f'The token ({token}) is invalid')

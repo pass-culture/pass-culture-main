@@ -276,7 +276,7 @@ def find_not_used_and_not_cancelled_bookings_associated_to_outdated_stock() -> L
         .all()
 
 
-def find_by_token(token: str) -> Booking:
+def find_used_by_token(token: str) -> Booking:
     return Booking.query \
         .filter_by(token=token) \
         .filter_by(isUsed=True) \

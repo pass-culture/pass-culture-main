@@ -1578,7 +1578,7 @@ class FindByTokenTest:
         repository.save(valid_booking)
 
         # When
-        booking = booking_queries.find_by_token(token=valid_booking.token)
+        booking = booking_queries.find_used_by_token(token=valid_booking.token)
 
         # Then
         assert booking == valid_booking
@@ -1593,7 +1593,7 @@ class FindByTokenTest:
         repository.save(valid_booking)
 
         # When
-        booking = booking_queries.find_by_token(token=invalid_token)
+        booking = booking_queries.find_used_by_token(token=invalid_token)
 
         # Then
         assert booking is None
@@ -1607,7 +1607,7 @@ class FindByTokenTest:
         repository.save(valid_booking)
 
         # When
-        booking = booking_queries.find_by_token(token=valid_booking.token)
+        booking = booking_queries.find_used_by_token(token=valid_booking.token)
 
         # Then
         assert booking is None
