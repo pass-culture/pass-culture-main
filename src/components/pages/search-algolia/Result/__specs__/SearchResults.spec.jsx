@@ -10,7 +10,6 @@ import state from '../../../../../mocks/state'
 import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import RelativeFooterContainer from '../../../../layout/RelativeFooter/RelativeFooterContainer'
-import Spinner from '../../../../layout/Spinner/Spinner'
 import Result from '../Result'
 import SearchAlgoliaDetailsContainer from '../ResultDetail/ResultDetailContainer'
 import SearchResults from '../SearchResults'
@@ -43,7 +42,7 @@ describe('components | SearchResults', () => {
       },
       history: {
         search: '',
-        replace
+        replace,
       },
       location: {
         search: '',
@@ -58,6 +57,15 @@ describe('components | SearchResults', () => {
       },
       redirectToSearchMainPage: jest.fn(),
     }
+    fetchAlgolia.mockReturnValue(
+      new Promise(resolve => {
+        resolve({
+          hits: [],
+          nbHits: 0,
+          page: 0,
+        })
+      })
+    )
   })
 
   afterEach(() => {
@@ -108,15 +116,6 @@ describe('components | SearchResults', () => {
       // then
       const results = wrapper.find(Result)
       expect(results).toHaveLength(0)
-    })
-
-    it('should not display waiting spinner', () => {
-      // when
-      const wrapper = shallow(<SearchResults {...props} />)
-
-      // then
-      const spinner = wrapper.find(Spinner)
-      expect(spinner).toHaveLength(0)
     })
 
     it('should display a footer', () => {
@@ -193,15 +192,6 @@ describe('components | SearchResults', () => {
       describe('when page query param is provided', () => {
         it('should fetch data using page query param value minus 1 when value is positive', () => {
           // given
-          fetchAlgolia.mockReturnValue(
-            new Promise(resolve => {
-              resolve({
-                hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
-                nbHits: 2,
-                page: 0,
-              })
-            })
-          )
           parse.mockReturnValue({
             'mots-cles': 'une librairie',
             page: 1,
@@ -214,7 +204,7 @@ describe('components | SearchResults', () => {
           expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, [])
         })
 
-        it('should fetch data using page 0 when page query param value is negative', async () => {
+        it('should fetch data using page 0 when page query param value is negative', () => {
           // given
           fetchAlgolia.mockReturnValue(
             new Promise(resolve => {
@@ -231,30 +221,21 @@ describe('components | SearchResults', () => {
           })
 
           // when
-          await shallow(<SearchResults {...props} />)
+          shallow(<SearchResults {...props} />)
 
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, [])
         })
 
-        it('should fetch data using page 0 when page query param value is not a valid value', async () => {
+        it('should fetch data using page 0 when page query param value is not a valid value', () => {
           // given
-          fetchAlgolia.mockReturnValue(
-            new Promise(resolve => {
-              resolve({
-                hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
-                nbHits: 2,
-                page: 0,
-              })
-            })
-          )
           parse.mockReturnValue({
             'mots-cles': 'une librairie',
             page: 'invalid value',
           })
 
           // when
-          await shallow(<SearchResults {...props} />)
+          shallow(<SearchResults {...props} />)
 
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, [])
@@ -262,17 +243,8 @@ describe('components | SearchResults', () => {
       })
 
       describe('when geolocation is activated', () => {
-        it('should fetch data using geolocation coordinates', async () => {
+        it('should fetch data using geolocation coordinates', () => {
           // given
-          fetchAlgolia.mockReturnValue(
-            new Promise(resolve => {
-              resolve({
-                hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
-                nbHits: 2,
-                page: 0,
-              })
-            })
-          )
           parse.mockReturnValue({
             'mots-cles': 'une librairie',
             page: 1,
@@ -284,7 +256,7 @@ describe('components | SearchResults', () => {
           }
 
           // when
-          await shallow(<SearchResults {...props} />)
+          shallow(<SearchResults {...props} />)
 
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith(
@@ -300,17 +272,8 @@ describe('components | SearchResults', () => {
       })
 
       describe('when filter is provided', () => {
-        it('should fetch data using provided filter', async () => {
+        it('should fetch data using provided filter', () => {
           // given
-          fetchAlgolia.mockReturnValue(
-            new Promise(resolve => {
-              resolve({
-                hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
-                nbHits: 2,
-                page: 0,
-              })
-            })
-          )
           parse.mockReturnValue({
             'mots-cles': 'une librairie',
             page: 1,
@@ -318,7 +281,7 @@ describe('components | SearchResults', () => {
           props.categoriesFilter = ['Cinéma']
 
           // when
-          await shallow(<SearchResults {...props} />)
+          shallow(<SearchResults {...props} />)
 
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, ['Cinéma'])
@@ -329,11 +292,6 @@ describe('components | SearchResults', () => {
     describe('when no keywords in url', () => {
       it('should clear all query params', () => {
         // given
-        fetchAlgolia.mockReturnValue({
-          hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
-          nbHits: 2,
-          page: 0,
-        })
         parse.mockReturnValue({
           page: 1,
         })
@@ -342,14 +300,13 @@ describe('components | SearchResults', () => {
         shallow(<SearchResults {...props} />)
 
         // then
-        expect(fetchAlgolia).not.toHaveBeenCalledWith()
-        expect(clear).toHaveBeenCalledWith()
+        expect(fetchAlgolia).toHaveBeenCalledWith('', 0, null, [])
       })
     })
   })
 
   describe('when searching', () => {
-    it('should not trigger search request when no keywords', () => {
+    it('should trigger search request when keywords have been provided', () => {
       // given
       const wrapper = shallow(<SearchResults {...props} />)
       const form = wrapper.find('form')
@@ -358,19 +315,20 @@ describe('components | SearchResults', () => {
       form.simulate('submit', {
         target: {
           keywords: {
-            value: '',
+            value: 'un livre très cherché',
           },
         },
         preventDefault: jest.fn(),
       })
 
       // then
-      expect(fetchAlgolia).not.toHaveBeenCalledWith()
+      expect(fetchAlgolia).toHaveBeenCalledWith('un livre très cherché', 0, null, [])
     })
 
-    it('should not trigger search request when keywords contains only spaces', () => {
+    it('should trigger search request when keywords contains only spaces', () => {
       // given
       const wrapper = shallow(<SearchResults {...props} />)
+      wrapper.setState({ searchedKeywords: 'different previous search' })
       const form = wrapper.find('form')
 
       // when
@@ -384,33 +342,27 @@ describe('components | SearchResults', () => {
       })
 
       // then
-      expect(fetchAlgolia).not.toHaveBeenCalledWith()
+      expect(fetchAlgolia).toHaveBeenNthCalledWith(2, '', 0, null, [])
     })
 
-    it('should trigger search request when keywords have been provided', async () => {
+    it('should trigger search request when no keywords', () => {
       // given
       const wrapper = shallow(<SearchResults {...props} />)
+      wrapper.setState({ searchedKeywords: 'different previous search' })
       const form = wrapper.find('form')
-      fetchAlgolia.mockReturnValue(
-        new Promise(resolve => {
-          resolve({
-            hits: [],
-            nbHits: 0,
-          })
-        })
-      )
+
       // when
-      await form.simulate('submit', {
+      form.simulate('submit', {
         target: {
           keywords: {
-            value: 'un livre très cherché',
+            value: '',
           },
         },
         preventDefault: jest.fn(),
       })
 
       // then
-      expect(fetchAlgolia).toHaveBeenCalledWith('un livre très cherché', 0, null, [])
+      expect(fetchAlgolia).toHaveBeenNthCalledWith(2, '', 0, null, [])
     })
 
     it('should display search keywords and number of results when 0 result', async () => {
@@ -485,8 +437,45 @@ describe('components | SearchResults', () => {
       expect(resultTitle).toHaveLength(1)
     })
 
+    it('should only display number of results when no search keywords', async () => {
+      // given
+      const wrapper = shallow(<SearchResults {...props} />)
+      wrapper.setState({ searchedKeywords: 'different previous search' })
+      const form = wrapper.find('form')
+      fetchAlgolia.mockReturnValueOnce(
+        new Promise(resolve => {
+          resolve({
+            hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+            page: 0,
+            nbHits: 2,
+            nbPages: 0,
+            hitsPerPage: 2,
+            processingTimeMS: 1,
+            query: '',
+            params: 'hitsPerPage=2',
+          })
+        })
+      )
+
+      // when
+      await form.simulate('submit', {
+        target: {
+          keywords: {
+            value: '',
+          },
+        },
+        preventDefault: jest.fn(),
+      })
+
+      // then
+      const resultTitle = wrapper.findWhere(node => node.text() === '2 résultats').first()
+      expect(resultTitle).toHaveLength(1)
+    })
+
     it('should not display results when no results', () => {
       // given
+      const wrapper = shallow(<SearchResults {...props} />)
+      const form = wrapper.find('form')
       fetchAlgolia.mockReturnValue({
         hits: [],
         page: 0,
@@ -495,10 +484,8 @@ describe('components | SearchResults', () => {
         hitsPerPage: 2,
         processingTimeMS: 1,
         query: '',
-        params: 'query=&hitsPerPage=2',
+        params: 'hitsPerPage=2',
       })
-      const wrapper = shallow(<SearchResults {...props} />)
-      const form = wrapper.find('form')
 
       // when
       form.simulate('submit', {
@@ -518,7 +505,7 @@ describe('components | SearchResults', () => {
     it('should display results when search succeeded with at least one result', async () => {
       // given
       const offer = { objectID: 'AE', offer: { name: 'Livre de folie' } }
-      fetchAlgolia.mockReturnValue(
+      fetchAlgolia.mockReturnValueOnce(
         new Promise(resolve => {
           resolve({
             hits: [offer],
@@ -557,12 +544,12 @@ describe('components | SearchResults', () => {
       const offer1 = { objectID: 'AE', offer: { name: 'Livre de folie' } }
       const offer2 = { objectID: 'AF', offer: { name: 'Livre bien' } }
       const offer3 = { objectID: 'AG', offer: { name: 'Livre nul' } }
-      fetchAlgolia.mockReturnValue(
+      fetchAlgolia.mockReturnValueOnce(
         new Promise(resolve => {
           resolve({
             hits: [offer1, offer2],
             page: 0,
-            nbHits: 1,
+            nbHits: 2,
             nbPages: 0,
             hitsPerPage: 2,
             processingTimeMS: 1,
@@ -589,7 +576,7 @@ describe('components | SearchResults', () => {
       expect(resultsFirstFetch).toHaveLength(2)
 
       // when
-      fetchAlgolia.mockReturnValue(
+      await fetchAlgolia.mockReturnValueOnce(
         new Promise(resolve => {
           resolve({
             hits: [offer3],
@@ -630,7 +617,7 @@ describe('components | SearchResults', () => {
       // given
       const offer1 = { objectID: 'AE', offer: { name: 'Livre de folie de la librairie' } }
       const offer2 = { objectID: 'AF', offer: { name: 'Livre bien de la librairie' } }
-      fetchAlgolia.mockReturnValue(
+      fetchAlgolia.mockReturnValueOnce(
         new Promise(resolve => {
           resolve({
             hits: [offer1, offer2],
@@ -662,7 +649,7 @@ describe('components | SearchResults', () => {
       expect(resultsFirstFetch).toHaveLength(2)
 
       // when
-      fetchAlgolia.mockReturnValue(
+      fetchAlgolia.mockReturnValueOnce(
         new Promise(resolve => {
           resolve({
             hits: [offer1, offer2],
@@ -676,7 +663,7 @@ describe('components | SearchResults', () => {
           })
         })
       )
-      await form.simulate('submit', {
+      form.simulate('submit', {
         target: {
           keywords: {
             value: 'librairie',
@@ -717,7 +704,7 @@ describe('components | SearchResults', () => {
       )
     })
 
-    it('should display search keywords in url when fetch succeeded', async () => {
+    it('should display search keywords in url when fetch succeeded', () => {
       // given
       const wrapper = shallow(<SearchResults {...props} />)
       const form = wrapper.find('form')
@@ -737,7 +724,7 @@ describe('components | SearchResults', () => {
       )
 
       // when
-      await form.simulate('submit', {
+      form.simulate('submit', {
         target: {
           keywords: {
             value: 'librairie',
@@ -747,7 +734,7 @@ describe('components | SearchResults', () => {
       })
 
       // then
-      expect(replace).toHaveBeenCalledWith({search: "?mots-cles=librairie"})
+      expect(replace).toHaveBeenCalledWith({ search: '?mots-cles=librairie' })
     })
 
     describe('reset cross', () => {
@@ -780,11 +767,11 @@ describe('components | SearchResults', () => {
         expect(resetButton).toHaveLength(1)
       })
 
-      it('should clear text input when clicking on reset cross', async () => {
+      it('should clear text input when clicking on reset cross', () => {
         // given
         const history = createMemoryHistory()
         history.push('/recherche-offres/resultats?mots-cles=librairie&page=2')
-        const wrapper = await mount(
+        const wrapper = mount(
           <Router history={history}>
             <SearchResults {...props} />
           </Router>
@@ -864,7 +851,7 @@ describe('components | SearchResults', () => {
     })
 
     describe('come back icon', () => {
-      it('should render an icon to come back to search main page when a research has been made', async () => {
+      it('should render an icon to come back to search main page when a research has been made', () => {
         // given
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
@@ -881,7 +868,7 @@ describe('components | SearchResults', () => {
         })
 
         // when
-        const wrapper = await shallow(<SearchResults {...props} />)
+        const wrapper = shallow(<SearchResults {...props} />)
 
         // then
         const form = wrapper.find('form')
@@ -926,7 +913,7 @@ describe('components | SearchResults', () => {
     })
 
     describe('header', () => {
-      it('should not render header when search has been made', async () => {
+      it('should not render header when search has been made', () => {
         // given
         history.push('/recherche-offres/resultats?mots-cles=librairie&page=1')
         const offer1 = { objectID: 'AE', offer: { name: 'Livre de folie de la librairie' } }
@@ -953,7 +940,7 @@ describe('components | SearchResults', () => {
         const form = wrapper.find('form')
 
         // when
-        await form.simulate('submit', {
+        form.simulate('submit', {
           target: {
             keywords: {
               value: 'librairie',

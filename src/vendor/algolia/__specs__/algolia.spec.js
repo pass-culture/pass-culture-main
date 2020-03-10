@@ -14,19 +14,6 @@ jest.mock('../../../utils/config', () => ({
 }))
 
 describe('fetchAlgolia', () => {
-  it('should not call Algolia when no keyword is provided', () => {
-    // Given
-    const initIndex = jest.fn()
-    algoliasearch.mockReturnValue({ initIndex })
-
-    // When
-    fetchAlgolia('', 0, null)
-
-    // Then
-    expect(algoliasearch).not.toHaveBeenCalled()
-    expect(initIndex).not.toHaveBeenCalled()
-  })
-
   it('should call Algolia with provided keywords and page number', () => {
     // Given
     const initIndex = jest.fn()
@@ -48,6 +35,22 @@ describe('fetchAlgolia', () => {
     expect(search).toHaveBeenCalledWith({
       query: searchedKeywords,
       page: pageRequested,
+    })
+  })
+
+  it('should call Algolia whithout query parameter when no keyword is provided', () => {
+    // Given
+    const initIndex = jest.fn()
+    algoliasearch.mockReturnValue({ initIndex })
+    const search = jest.fn()
+    initIndex.mockReturnValue({ search })
+
+    // When
+    fetchAlgolia('', 0, null)
+
+    // Then
+    expect(search).toHaveBeenCalledWith({
+      page: 0,
     })
   })
 

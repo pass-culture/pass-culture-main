@@ -90,7 +90,7 @@ describe('components | Home', () => {
     expect(resettedInput.is(':focus')).toBe(true)
   })
 
-  it('should not redirect to result page if search is empty', () => {
+  it('should redirect to result page without "mots-cles" query param if search is empty', () => {
     // Given
     const wrapper = shallow(<Home {...props} />)
     const form = wrapper.find('form')
@@ -100,7 +100,7 @@ describe('components | Home', () => {
     })
 
     // Then
-    expect(props.history.push).not.toHaveBeenCalled()
+    expect(props.history.push).toHaveBeenCalledWith('/recherche-offres/resultats')
   })
 
   it('should redirect to result page if search is made', () => {

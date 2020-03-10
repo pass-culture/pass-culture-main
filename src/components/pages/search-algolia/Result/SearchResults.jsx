@@ -30,14 +30,10 @@ class SearchResults extends PureComponent {
   componentDidMount() {
     const { query } = this.props
     const queryParams = query.parse()
-    const keywords = queryParams['mots-cles']
+    const keywords = queryParams['mots-cles'] || ''
 
-    if (keywords != null) {
-      const { currentPage } = this.state
-      this.fetchOffers(keywords, currentPage)
-    } else {
-      query.clear()
-    }
+    const { currentPage } = this.state
+    this.fetchOffers(keywords, currentPage)
   }
 
   showFailModal = () => {
@@ -47,30 +43,22 @@ class SearchResults extends PureComponent {
   handleOnSubmit = event => {
     event.preventDefault()
     const { history } = this.props
-    const { currentPage, searchedKeywords } = this.state
-    const keywords = event.target.keywords.value
-    const keywordsTrimmed = keywords.trim()
-    history.replace({ search: '?mots-cles=' + keywords })
+    const { searchedKeywords } = this.state
+    const keywordsToSearch = event.target.keywords.value
+    const trimmedKeywordsToSearch = keywordsToSearch.trim()
+    trimmedKeywordsToSearch && history.replace({ search: '?mots-cles=' + trimmedKeywordsToSearch })
 
-    if (searchedKeywords === keywordsTrimmed) {
-      return
-    }
-
-    if (keywordsTrimmed !== '') {
-      if (searchedKeywords !== keywordsTrimmed) {
-        this.setState(
-          {
-            currentPage: 0,
-            results: [],
-          },
-          () => {
-            const { currentPage } = this.state
-            this.fetchOffers(keywords, currentPage)
-          }
-        )
-      } else {
-        this.fetchOffers(keywords, currentPage)
-      }
+    if (searchedKeywords !== trimmedKeywordsToSearch) {
+      this.setState(
+        {
+          currentPage: 0,
+          results: [],
+        },
+        () => {
+          const { currentPage } = this.state
+          this.fetchOffers(trimmedKeywordsToSearch, currentPage)
+        }
+      )
     }
   }
 
@@ -144,7 +132,10 @@ class SearchResults extends PureComponent {
   }
 
   render() {
-    const { geolocation, history: { search } } = this.props
+    const {
+      geolocation,
+      history: { search },
+    } = this.props
     const {
       currentPage,
       keywordsToSearch,
@@ -214,10 +205,11 @@ class SearchResults extends PureComponent {
             <div className="home-results-wrapper">
               {isLoading && <Spinner label="Recherche en cours" />}
               <h1 className="home-results-title">
-                {searchedKeywords &&
-                `"${searchedKeywords}" : ${resultsCount} ${
-                  resultsCount > 1 ? 'résultats' : 'résultat'
-                }`}
+                {searchedKeywords
+                  ? `"${searchedKeywords}" : ${resultsCount} ${
+                      resultsCount > 1 ? 'résultats' : 'résultat'
+                    }`
+                  : `${resultsCount} ${resultsCount > 1 ? 'résultats' : 'résultat'}`}
               </h1>
               {results.length > 0 && (
                 <InfiniteScroll
@@ -277,7 +269,7 @@ SearchResults.propTypes = {
   }),
   history: PropTypes.shape({
     replace: PropTypes.func.isRequired,
-    search: PropTypes.string.isRequired
+    search: PropTypes.string.isRequired,
   }).isRequired,
   isSearchAroundMe: PropTypes.bool,
   match: PropTypes.shape().isRequired,

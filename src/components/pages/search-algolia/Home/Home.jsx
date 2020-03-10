@@ -18,9 +18,9 @@ export class Home extends PureComponent {
     event.preventDefault()
     const { history } = this.props
     const { keywordsToSearch } = this.state
-    if (keywordsToSearch) {
-      history.push(`/recherche-offres/resultats?mots-cles=${keywordsToSearch}`)
-    }
+    keywordsToSearch
+      ? history.push(`/recherche-offres/resultats?mots-cles=${keywordsToSearch}`)
+      : history.push(`/recherche-offres/resultats`)
   }
 
   handleResetButtonClick = () => {
