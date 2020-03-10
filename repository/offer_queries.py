@@ -24,6 +24,7 @@ from models.feature import FeatureToggle
 from repository import feature_queries
 from repository.booking_queries import get_only_offer_ids_from_bookings
 from repository.favorite_queries import get_only_offer_ids_from_favorites
+from repository.iris_venues_queries import find_venues_located_near_iris
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from repository.venue_queries import get_only_venue_ids_for_department_codes
 from utils.distance import get_sql_geo_distance_in_kilometers
@@ -498,3 +499,31 @@ def get_paginated_expired_offer_ids(limit: int, page: int) -> List[tuple]:
         .offset(page * limit) \
         .limit(limit) \
         .all()
+
+
+def get_offers_for_recommendation_v3(user: User, user_iris_id: int = None,
+                                     limit: int = None, seen_recommendation_ids: List[int] = []) -> List:
+    favorite_offers_ids = get_only_offer_ids_from_favorites(user)
+
+    booked_offers_ids = get_only_offer_ids_from_bookings(user)
+
+    discovery_view_query = DiscoveryView.query \
+        .filter(DiscoveryView.id.notin_(favorite_offers_ids)) \
+        .filter(DiscoveryView.id.notin_(seen_recommendation_ids)) \
+        .filter(DiscoveryView.id.notin_(booked_offers_ids))
+
+    venue_ids = find_venues_located_near_iris(user_iris_id)
+
+    discovery_view_query = keep_only_offers_from_venues_located_near_to_user_or_national(discovery_view_query,
+                                                                                         venue_ids)
+    discovery_view_query = discovery_view_query.order_by(DiscoveryView.offerDiscoveryOrder)
+
+    if limit:
+        discovery_view_query = discovery_view_query.limit(limit)
+
+    return discovery_view_query.all()
+
+
+def keep_only_offers_from_venues_located_near_to_user_or_national(query: BaseQuery,
+                                                                  venue_ids: List[int] = []) -> BaseQuery:
+    return query.filter(or_(DiscoveryView.venueId.in_(venue_ids), DiscoveryView.isNational == True))

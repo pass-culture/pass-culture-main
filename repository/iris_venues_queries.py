@@ -36,9 +36,14 @@ def delete_venue_from_iris_venues(venue_id: int) -> None:
     repository.delete(*iris_venues_to_delete)
 
 
-def link_user_to_iris(latitude: float, longitude: float) -> List:
+def link_user_to_iris(latitude: float, longitude: float) -> int:
     query = f'''SELECT id FROM iris_france 
     WHERE ST_CONTAINS(shape, ST_SetSRID(ST_MakePoint({longitude}, {latitude}), 4326))
     ORDER BY id;'''
 
     return db.session.execute(query).scalar()
+
+
+def find_venues_located_near_iris(iris_id: int) -> List[int]:
+    iris_venues = IrisVenues.query.filter_by(irisId=iris_id).all()
+    return [iris_venue.venueId for iris_venue in iris_venues]

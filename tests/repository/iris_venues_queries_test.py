@@ -3,7 +3,7 @@ from shapely.geometry import Polygon
 from models import IrisVenues
 from repository import repository
 from repository.iris_venues_queries import find_irises_located_near_venue, insert_venue_in_iris_venue, \
-    delete_venue_from_iris_venues, link_user_to_iris
+    delete_venue_from_iris_venues, link_user_to_iris, find_venues_located_near_iris
 
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_venue, create_offerer, create_iris, create_iris_venue
@@ -162,3 +162,42 @@ class LinkUserToIrisTest:
 
         # Then
         assert iris_id is None
+
+
+class FindVenuesLocatedNearIrisTest:
+    @clean_database
+    def test_should_return_ids_list_of_venues_located_near_given_iris(self, app):
+        # given
+        offerer = create_offerer()
+        venue = create_venue(offerer, siret='12345678912345')
+
+        polygon = Polygon([(0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)])
+
+        iris = create_iris(polygon)
+
+        repository.save(iris, venue)
+
+        iris_venue = create_iris_venue(iris.id, venue.id)
+
+        repository.save(iris_venue)
+
+        # when
+        venues_ids = find_venues_located_near_iris(iris.id)
+
+        # then
+        assert venues_ids == [venue.id]
+
+    @clean_database
+    def test_should_return_empty_list_when_no_venue_found_near_given_iris(self, app):
+        # given
+        polygon = Polygon([(0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)])
+
+        iris = create_iris(polygon)
+
+        repository.save(iris)
+
+        # when
+        venues_ids = find_venues_located_near_iris(iris.id)
+
+        # then
+        assert venues_ids == []

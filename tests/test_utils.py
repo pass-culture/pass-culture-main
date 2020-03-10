@@ -1,6 +1,8 @@
 from typing import List
 from unittest.mock import Mock
 
+from shapely.geometry import Polygon
+
 from models import Booking
 from models.feature import Feature, FeatureToggle
 from repository import repository
@@ -51,3 +53,6 @@ def fake(object_type):
             return isinstance(other_object, object_type)
 
     return FakeObject()
+
+
+POLYGON_TEST = Polygon([(2.195693, 49.994169), (2.195693, 47.894173), (2.595697, 47.894173), (2.595697, 49.994169)])
