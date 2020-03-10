@@ -60,8 +60,8 @@ def parse_timedelta(string):
     return timedelta(**config)
 
 
-def get_format_timedelta_string (string):
-    today_date = datetime.today().replace(hour=0,minute=0,second=0,microsecond=0)
+def get_format_timedelta_string(string):
+    today_date = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
     schedule_date = today_date + parse_timedelta(string)
     return schedule_date.strftime(SCHEDULE_FORMAT)
 
@@ -77,7 +77,7 @@ def read_date(date_string):
 
 
 def trim_with_elipsis(string, length):
-    length_wo_elipsis = length-1
+    length_wo_elipsis = length - 1
     return string[:length_wo_elipsis] + (string[length_wo_elipsis:] and '…')
 
 
@@ -90,7 +90,8 @@ def get_date_time_range(date_string, schedule_string, duration_string):
             month = matches[2]
             year = matches[3]
             day_strings = [
-                year + '-' + parse_datetime(month, date_formats=['%B']).strftime('%m') + '-' + str(day) for day in range(
+                year + '-' + parse_datetime(month, date_formats=['%B']).strftime('%m') + '-' + str(day) for day in
+                range(
                     int(matches[0]), int(matches[1])
                 )
             ]
@@ -113,7 +114,7 @@ def get_date_time_range(date_string, schedule_string, duration_string):
     # DETERMINE DURATION
     duration = parse_timedelta(duration_string)
     # CONCAT
-    date_time_ranges = [None]*(len(day_strings))
+    date_time_ranges = [None] * (len(day_strings))
     for (index, day_string) in list(enumerate(day_strings)):
         start_date_string = day_string + 'T' + format_start_hour_string + 'Z'
         start_date = read_date(start_date_string)
@@ -128,7 +129,7 @@ def get_date_time_range(date_string, schedule_string, duration_string):
 
 
 def get_matched_string_index(target_string, strings):
-    distances = map(lambda string:edit_distance(string, target_string), strings)
+    distances = map(lambda string: edit_distance(string, target_string), strings)
     return min(enumerate(distances), key=itemgetter(1))[0]
 
 
@@ -158,3 +159,7 @@ def remove_single_letters_for_search(array_of_keywords):
 
 def format_decimal(dec):
     return babel_format_decimal(dec, locale='fr_FR')
+
+
+def pluralize(number_of_occurence: int, word: str) -> str:
+    return f'{word}s' if number_of_occurence > 1 else word

@@ -120,7 +120,7 @@ class Put:
             assert offers[1].isActive == True
 
         @clean_database
-        def when_activating_all_venue_offers_returns_a_stock_alert_message(self, app):
+        def when_activating_all_venue_offers_returns_a_availability_message(self, app):
             # Given
             user = create_user(email='test@example.net')
             offerer = create_offerer()
@@ -142,7 +142,7 @@ class Put:
 
             # Then
             assert response.status_code == 200
-            assert response.json[0]['stockAlertMessage'] == 'encore 22 places'
+            assert response.json[0]['availabilityMessage'] == 'Encore 22 stocks restant'
 
         @patch('routes.venues.feature_queries.is_active', return_value=True)
         @patch('routes.venues.redis.add_venue_id')
@@ -199,11 +199,11 @@ class Put:
             assert response.json[1]['isActive'] == False
 
             offers = Offer.query.all()
-            assert offers[0].isActive == False
-            assert offers[1].isActive == False
+            assert not offers[0].isActive
+            assert not offers[1].isActive
 
         @clean_database
-        def when_deactivating_all_venue_offers_returns_a_stock_alert_message(self, app):
+        def when_deactivating_all_venue_offers_returns_an_availability_message(self, app):
             # Given
             user = create_user(email='test@example.net')
             offerer = create_offerer()
@@ -211,9 +211,7 @@ class Put:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
             stock = create_stock_from_offer(offer, available=0)
-            repository.save(
-                stock, user_offerer, venue
-            )
+            repository.save(stock, user_offerer)
 
             api_url = API_URL + humanize(venue.id) + '/offers/deactivate'
 
@@ -223,7 +221,7 @@ class Put:
 
             # Then
             assert response.status_code == 200
-            assert response.json[0]['stockAlertMessage'] == 'plus de places pour toutes les dates'
+            assert response.json[0]['availabilityMessage'] == 'Plus de stock restant'
 
         @patch('routes.venues.feature_queries.is_active', return_value=True)
         @patch('routes.venues.redis.add_venue_id')

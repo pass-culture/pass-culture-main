@@ -1,18 +1,18 @@
 from datetime import datetime
 from typing import List, Optional
 
-from sqlalchemy import BigInteger, Column, DateTime, desc, ForeignKey, String
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, String
 from sqlalchemy import and_, ARRAY, Boolean, CheckConstraint, false, Integer, Text, TEXT
 from sqlalchemy.orm import column_property, relationship
 from sqlalchemy.sql import select, func
 
 from domain.bookings import filter_bookings_to_compute_remaining_stock
 from domain.keywords import create_ts_vector_and_table_args
-from models.mediation import Mediation
 from models.criterion import Criterion
 from models.db import db, Model
 from models.deactivable_mixin import DeactivableMixin
 from models.extra_data_mixin import ExtraDataMixin
+from models.mediation import Mediation
 from models.offer_criterion import OfferCriterion
 from models.offer_type import ThingType, EventType, ProductType
 from models.pc_object import PcObject
@@ -20,7 +20,7 @@ from models.providable_mixin import ProvidableMixin
 from models.stock import Stock
 from models.versioned_mixin import VersionedMixin
 from utils.date import DateTimes
-from utils.inflect_engine import pluralize
+from utils.string_processing import pluralize
 
 
 class Offer(PcObject,
@@ -125,10 +125,6 @@ class Offer(PcObject,
         return DateTimes(start, end)
 
     @property
-    def hasActiveMediation(self) -> bool:
-        return any(map(lambda m: m.isActive, self.mediations))
-
-    @property
     def isEvent(self) -> bool:
         return ProductType.is_event(self.type)
 
@@ -162,7 +158,8 @@ class Offer(PcObject,
 
     @property
     def isFullyBooked(self) -> bool:
-        if self._has_unlimited_stock():
+        has_unlimited_stock = any(map(lambda s: s.available is None, self.stocks))
+        if has_unlimited_stock:
             return False
 
         bookable_stocks = list(filter(lambda stock: stock.isBookable, self.stocks))
@@ -176,14 +173,6 @@ class Offer(PcObject,
         return total_booked_quantity >= available_stocks
 
     @property
-    def lastStock(self) -> Stock:
-        query = Stock.queryNotSoftDeleted()
-        return query.join(Offer) \
-            .filter(Offer.id == self.id) \
-            .order_by(desc(Stock.bookingLimitDatetime)) \
-            .first()
-
-    @property
     def activeStocks(self) -> List[Stock]:
         return [stock for stock in self.stocks if not stock.isSoftDeleted]
 
@@ -195,18 +184,46 @@ class Offer(PcObject,
                 return possible_type.as_dict()
 
     @property
+    def availabilityMessage(self) -> str:
+        if not self.activeStocks:
+            return 'Pas encore de stock'
+
+        incoming_stocks = list(filter(lambda stock: not stock.hasBookingLimitDatetimePassed, self.activeStocks))
+        if not incoming_stocks:
+            return 'Stock expiré'
+
+        offer_has_at_least_one_unlimited_stock = any(map(lambda stock: stock.available is None, incoming_stocks))
+        if offer_has_at_least_one_unlimited_stock:
+            return 'Stock restant illimité'
+
+        stock_remaining_quantity = sum(map(lambda stock: stock.remainingQuantity, incoming_stocks))
+
+        if stock_remaining_quantity == 0:
+            return 'Plus de stock restant'
+
+        count_stocks_with_no_remaining_quantity = len(
+            list(filter(lambda stock: stock.remainingQuantity == 0, incoming_stocks)))
+        has_at_least_one_stock_with_remaining_quantity = count_stocks_with_no_remaining_quantity != len(incoming_stocks)
+
+        if has_at_least_one_stock_with_remaining_quantity and count_stocks_with_no_remaining_quantity > 0:
+            return f"Plus de stock restant pour" \
+                   f" {count_stocks_with_no_remaining_quantity}" \
+                   f" {pluralize(stock_remaining_quantity, 'date')}"
+
+        return f"Encore {stock_remaining_quantity} {pluralize(stock_remaining_quantity, 'stock')} restant"
+
+    @property
     def stockAlertMessage(self) -> str:
-        non_deleted_stocks = [stock for stock in self.stocks if not stock.isSoftDeleted]
-        total_number_stocks = len(non_deleted_stocks)
+        total_number_stocks = len(self.activeStocks)
         number_of_empty_stocks = len(
-            list(filter(lambda s: s.available == 0 or s.remainingQuantity == 0, non_deleted_stocks)))
+            list(filter(lambda s: s.available == 0 or s.remainingQuantity == 0, self.activeStocks)))
         remaining_for_all_stocks = sum(
-            map(lambda s: s.remainingQuantity, filter(lambda s: s.available, non_deleted_stocks)))
+            map(lambda s: s.remainingQuantity, filter(lambda s: s.available, self.activeStocks)))
 
         if total_number_stocks == 0:
             return 'pas encore de stock' if self.isThing else 'pas encore de places'
 
-        if all([s.available is None for s in non_deleted_stocks]):
+        if all([s.available is None for s in self.activeStocks]):
             return 'illimité'
 
         if self.isFullyBooked:
@@ -223,14 +240,12 @@ class Offer(PcObject,
 
     @property
     def thumb_url(self) -> str:
-        if self.hasActiveMediation:
+        offer_has_active_mediation = any(map(lambda mediation: mediation.isActive, self.mediations))
+        if offer_has_active_mediation:
             return self.activeMediation.thumbUrl
         if self.product:
             return self.product.thumbUrl
         return ''
-
-    def _has_unlimited_stock(self):
-        return any(map(lambda s: s.available is None, self.stocks))
 
     @property
     def is_offline_only(self) -> bool:

@@ -20,12 +20,179 @@ five_days_from_now = now + timedelta(days=5)
 ten_days_from_now = now + timedelta(days=10)
 
 
+class AvailabilityMessageTest:
+    class NoAvailableStockTest:
+        @clean_database
+        def when_no_stock_created(self, app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue=venue)
+
+            repository.save(user, offer)
+
+            # When
+            availability_message = offer.availabilityMessage
+
+            # Then
+            assert availability_message == 'Pas encore de stock'
+
+        @clean_database
+        def when_stocks_have_been_deleted(self, app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue=venue)
+            stock = create_stock(offer=offer, is_soft_deleted=True)
+
+            repository.save(user, stock)
+
+            # When
+            availability_message = offer.availabilityMessage
+
+            # Then
+            assert availability_message == 'Pas encore de stock'
+
+    class SomeRemainingStocksTest:
+        @clean_database
+        def when_offer_is_a_thing(self, app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue=venue)
+            stock = create_stock(offer=offer, available=12, price=0)
+            booking = create_booking(user, stock=stock, quantity=5)
+
+            repository.save(user, booking)
+
+            # When
+            availability_message = offer.availabilityMessage
+
+            # Then
+            assert availability_message == 'Encore 7 stocks restant'
+
+        @clean_database
+        def when_offer_is_an_offer_with_several_stock(self, app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue=venue)
+            stock1 = create_stock(offer=offer, available=12, price=0)
+            stock2 = create_stock(offer=offer, available=6)
+            booking = create_booking(user, stock=stock1, quantity=5)
+
+            repository.save(user, booking, stock2)
+
+            # When
+            availability_message = offer.availabilityMessage
+
+            # Then
+            assert availability_message == 'Encore 13 stocks restant'
+
+    class NoRemainingStocksTest:
+        @clean_database
+        def when_all_stocks_have_been_booked_for_event_offer(self, app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue=venue)
+            stock1 = create_stock(offer=offer, available=5, price=0)
+            stock2 = create_stock(offer=offer, available=6, price=0)
+            stock3 = create_stock(offer=offer, available=23, price=0)
+            booking1 = create_booking(user, stock=stock1, quantity=5)
+            booking2 = create_booking(user, stock=stock2, quantity=6)
+
+            repository.save(user, booking1, booking2, stock3)
+
+            # When
+            availability_message = offer.availabilityMessage
+
+            # Then
+            assert availability_message == 'Plus de stock restant pour 2 dates'
+
+        @clean_database
+        def when_all_stock_have_been_booked_for_thing_offer(self, app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue=venue)
+            stock = create_stock(offer=offer, available=5, price=0)
+            booking = create_booking(user, stock=stock, quantity=5)
+
+            repository.save(user, booking)
+
+            # When
+            availability_message = offer.availabilityMessage
+
+            # Then
+            assert availability_message == 'Plus de stock restant'
+
+        @clean_database
+        def when_event_has_no_quantity_for_all_stocks(self, app):
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue)
+            stock = create_stock(offer=offer, available=0)
+            repository.save(stock)
+
+            # When
+            availability_message = offer.availabilityMessage
+
+            # Then
+            assert availability_message == 'Plus de stock restant'
+
+    class WhenStockIsUnlimitedTest:
+        @clean_database
+        def when_at_least_one_stock_is_unlimited(self, app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue=venue)
+            stock1 = create_stock(offer=offer, available=None)
+            stock2 = create_stock(offer=offer, available=13)
+
+            repository.save(user, stock1, stock2)
+
+            # When
+            availability_message = offer.availabilityMessage
+
+            # Then
+            assert availability_message == 'Stock restant illimité'
+
+    class WhenStocksAreExpiredTest:
+        @clean_database
+        def when_all_stocks_have_passed_booking_limit_datetime(self, app):
+            # Given
+            yesterday = datetime.utcnow() - timedelta(days=1)
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue=venue)
+            stock1 = create_stock(offer=offer, available=12, booking_limit_datetime=yesterday)
+            stock2 = create_stock(offer=offer, available=13, booking_limit_datetime=yesterday)
+
+            repository.save(user, stock1, stock2)
+
+            # When
+            availability_message = offer.availabilityMessage
+
+            # Then
+            assert availability_message == 'Stock expiré'
+
+
 class AddStockAlertMessageToOfferTest:
     class ThingOfferTest:
         @clean_database
         def test_check_offer_with_no_stock(self, app):
             # given
-            user = create_user(email='user@test.com')
+            user = create_user(email='user@example.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue=venue)
@@ -41,7 +208,7 @@ class AddStockAlertMessageToOfferTest:
         @clean_database
         def test_check_offer_with_all_stocks_unlimited(self, app):
             # given
-            user = create_user(email='user@test.com')
+            user = create_user(email='user@example.com')
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -64,7 +231,7 @@ class AddStockAlertMessageToOfferTest:
         @clean_database
         def test_check_offer_with_one_unlimited_and_one_available_zero_stock(self, app):
             # given
-            user = create_user(email='user@test.com')
+            user = create_user(email='user@example.com')
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -87,7 +254,7 @@ class AddStockAlertMessageToOfferTest:
         @clean_database
         def test_check_offer_with_one_available_zero_and_one_sold_out_stock(self, app):
             # given
-            user = create_user(email='user@test.com')
+            user = create_user(email='user@example.com')
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -110,7 +277,7 @@ class AddStockAlertMessageToOfferTest:
         @clean_database
         def test_check_offer_with_all_sold_out_stocks(self, app):
             # given
-            user = create_user(email='user@test.com')
+            user = create_user(email='user@example.com')
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -135,7 +302,7 @@ class AddStockAlertMessageToOfferTest:
         @clean_database
         def test_check_offer_with_all_remaining_stocks(self, app):
             # given
-            user = create_user(email='user@test.com')
+            user = create_user(email='user@example.com')
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -160,7 +327,7 @@ class AddStockAlertMessageToOfferTest:
         @clean_database
         def test_check_offer_with_one_sold_out_and_one_remaining_stock(self, app):
             # given
-            user = create_user(email='user@test.com')
+            user = create_user(email='user@example.com')
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -183,7 +350,7 @@ class AddStockAlertMessageToOfferTest:
         @clean_database
         def test_check_offer_with_two_sold_out_one_unlimited_and_one_remaining_stocks(self, app):
             # given
-            user = create_user(email='user@test.com')
+            user = create_user(email='user@example.com')
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -212,7 +379,7 @@ class AddStockAlertMessageToOfferTest:
         @clean_database
         def test_check_offer_with_no_stock(self, app):
             # given
-            user = create_user(email='user@test.com')
+            user = create_user(email='user@example.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
@@ -228,7 +395,7 @@ class AddStockAlertMessageToOfferTest:
         @clean_database
         def test_check_offer_with_all_stocks_unlimited(self, app):
             # given
-            user = create_user(email='user@test.com')
+            user = create_user(email='user@example.com')
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -251,7 +418,7 @@ class AddStockAlertMessageToOfferTest:
         @clean_database
         def test_check_offer_with_one_unlimited_and_one_available_zero_stock(self, app):
             # given
-            user = create_user(email='user@test.com')
+            user = create_user(email='user@example.com')
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -274,7 +441,7 @@ class AddStockAlertMessageToOfferTest:
         @clean_database
         def test_check_offer_with_one_available_zero_and_one_sold_out_stock(self, app):
             # given
-            user = create_user(email='user@test.com')
+            user = create_user(email='user@example.com')
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -297,7 +464,7 @@ class AddStockAlertMessageToOfferTest:
         @clean_database
         def test_check_offer_with_all_sold_out_stocks(self, app):
             # given
-            user = create_user(email='user@test.com')
+            user = create_user(email='user@example.com')
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -322,7 +489,7 @@ class AddStockAlertMessageToOfferTest:
         @clean_database
         def test_check_offer_with_all_remaining_stocks(self, app):
             # given
-            user = create_user(email='user@test.com')
+            user = create_user(email='user@example.com')
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -347,7 +514,7 @@ class AddStockAlertMessageToOfferTest:
         @clean_database
         def test_check_offer_with_one_sold_out_and_one_remaining_stock(self, app):
             # given
-            user = create_user(email='user@test.com')
+            user = create_user(email='user@example.com')
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -370,7 +537,7 @@ class AddStockAlertMessageToOfferTest:
         @clean_database
         def test_check_offer_with_two_sold_out_one_unlimited_and_one_remaining_stocks(self, app):
             # given
-            user = create_user(email='user@test.com')
+            user = create_user(email='user@example.com')
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -398,7 +565,7 @@ class AddStockAlertMessageToOfferTest:
         @clean_database
         def test_check_offer_with_used_stocks_before_stock_last_update(self, app):
             # given
-            user = create_user(email='user@test.com')
+            user = create_user(email='user@example.com')
             user2 = create_user(email='user2@test.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
