@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
+from unittest.mock import Mock
 
 import pytest
 
@@ -35,10 +36,11 @@ class CheckExpenseLimitsTest:
         }
         booking = Booking(from_dict={'stockId': humanize(123), 'amount': 11, 'quantity': 1})
         stock = create_booking_for_thing(product_type=ThingType.LIVRE_EDITION).stock
+        mocked_query = Mock(return_value=stock)
 
         # when
         with pytest.raises(ApiErrors) as api_errors:
-            check_expenses_limits(expenses, booking, stock)
+            check_expenses_limits(expenses, booking, mocked_query)
 
         # then
         assert api_errors.value.errors['global'] == ['Le plafond de %s € pour les biens culturels ne vous permet pas ' \
@@ -52,10 +54,11 @@ class CheckExpenseLimitsTest:
         }
         booking = Booking(from_dict={'stockId': humanize(123), 'amount': 11, 'quantity': 1})
         stock = create_booking_for_thing(url='http://on.line', product_type=ThingType.JEUX_VIDEO).stock
+        mocked_query = Mock(return_value=stock)
 
         # when
         with pytest.raises(ApiErrors) as api_errors:
-            check_expenses_limits(expenses, booking, stock)
+            check_expenses_limits(expenses, booking, mocked_query)
 
         # then
         assert api_errors.value.errors['global'] == ['Le plafond de %s € pour les offres numériques ne vous permet pas ' \
@@ -68,11 +71,11 @@ class CheckExpenseLimitsTest:
             'digital': {'max': SUBVENTION_DIGITAL_THINGS, 'actual': 90}
         }
         booking = Booking(from_dict={'stockId': humanize(123), 'amount': 11, 'quantity': 1})
-        stock = create_booking_for_thing(url='http://on.line', product_type=ThingType.JEUX_VIDEO).stock
+        mocked_query = Mock()
 
         # when
         try:
-            check_expenses_limits(expenses, booking, stock)
+            check_expenses_limits(expenses, booking, mocked_query)
         except ApiErrors:
             # then
             pytest.fail('Booking for events must not raise any exceptions')

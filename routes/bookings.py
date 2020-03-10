@@ -157,7 +157,7 @@ def create_booking():
 
     bookings = booking_queries.find_active_bookings_by_user_id(current_user.id)
     expenses = get_expenses(bookings)
-    check_expenses_limits(expenses, new_booking, stock)
+    check_expenses_limits(expenses, new_booking)
     repository.save(new_booking)
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
