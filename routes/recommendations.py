@@ -12,7 +12,9 @@ from recommendations_engine import create_recommendations_for_discovery, \
     create_recommendations_for_search, \
     get_recommendation_search_params, \
     give_requested_recommendation_to_user
+from recommendations_engine.recommendations import create_recommendations_for_discovery_v3
 from repository import repository
+from repository.iris_venues_queries import link_user_to_iris
 from repository.recommendation_queries import update_read_recommendations
 from routes.serialization.recommendation_serialize import serialize_recommendations, serialize_recommendation
 from utils.config import BLOB_SIZE
@@ -163,4 +165,40 @@ def put_recommendations():
 @login_required
 @expect_json_data
 def put_recommendations_v3():
-    return {}, 200
+    json_keys = request.json.keys()
+    latitude = request.args.get('latitude')
+    longitude = request.args.get('longitude')
+    user_iris_id = link_user_to_iris(latitude, longitude) if latitude and longitude else None
+
+    if 'readRecommendations' in json_keys:
+        update_read_recommendations(request.json['readRecommendations'])
+
+    if 'seenRecommendationIds' in json_keys:
+        humanized_seen_recommendation_ids = request.json['seenRecommendationIds']
+        seen_recommendation_ids = list(
+            map(dehumanize, humanized_seen_recommendation_ids))
+    else:
+        seen_recommendation_ids = []
+
+    offer_id = dehumanize(request.args.get('offerId'))
+    mediation_id = dehumanize(request.args.get('mediationId'))
+
+    requested_recommendation = give_requested_recommendation_to_user(
+        current_user,
+        offer_id,
+        mediation_id
+    )
+
+    created_recommendations = create_recommendations_for_discovery_v3(limit=BLOB_SIZE,
+                                                                      user=current_user,
+                                                                      user_iris_id= user_iris_id,
+                                                                      seen_recommendation_ids=seen_recommendation_ids)
+
+    recommendations = move_tutorial_recommendations_first(created_recommendations,
+                                                          seen_recommendation_ids,
+                                                          current_user)
+    if requested_recommendation:
+        recommendations = move_requested_recommendation_first(created_recommendations,
+                                                              requested_recommendation)
+
+    return jsonify(serialize_recommendations(recommendations, current_user)), 200
