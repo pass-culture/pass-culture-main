@@ -34,8 +34,7 @@ class RedisTest:
 
 
 class AddOfferIdTest:
-    @patch('connectors.redis.redis')
-    def test_should_add_offer_id(self, mock_redis):
+    def test_should_add_offer_id(self):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()
@@ -49,8 +48,7 @@ class AddOfferIdTest:
 
 class GetOfferIdsTest:
     @patch('connectors.redis.REDIS_OFFER_IDS_CHUNK_SIZE', return_value=1000)
-    @patch('connectors.redis.redis')
-    def test_should_return_offer_ids_from_list(self, mock_redis, mock_redis_lrange_end):
+    def test_should_return_offer_ids_from_list(self, mock_redis_lrange_end):
         # Given
         client = MagicMock()
         client.lrange = MagicMock()
@@ -61,13 +59,21 @@ class GetOfferIdsTest:
         # Then
         client.lrange.assert_called_once_with('offer_ids', 0, mock_redis_lrange_end)
 
+    def test_should_return_empty_array_when_exception(self):
+        # Given
+        client = MagicMock()
+        client.lrange = MagicMock()
+        client.lrange.side_effect = redis.exceptions.RedisError
+
+        # When
+        result = get_offer_ids(client=client)
+
+        # Then
+        assert result == []
+
 
 class DeleteOfferIdsTest:
-    @patch('connectors.redis.REDIS_OFFER_IDS_CHUNK_SIZE', return_value=500)
-    @patch('connectors.redis.redis')
-    def test_should_delete_given_range_of_offer_ids_from_redis(self,
-                                                               mock_redis,
-                                                               mock_redis_lrange_end):
+    def test_should_delete_given_range_of_offer_ids_from_redis(self):
         # Given
         client = MagicMock()
         client.ltrim = MagicMock()
@@ -76,12 +82,11 @@ class DeleteOfferIdsTest:
         delete_offer_ids(client=client)
 
         # Then
-        client.ltrim.assert_called_once_with('offer_ids', mock_redis_lrange_end, -1)
+        client.ltrim.assert_called_once_with('offer_ids', 1000, -1)
 
 
 class AddVenueIdTest:
-    @patch('connectors.redis.redis')
-    def test_should_add_venue_id_when_algolia_feature_is_enabled(self, mock_redis):
+    def test_should_add_venue_id_when_algolia_feature_is_enabled(self):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()
@@ -94,9 +99,7 @@ class AddVenueIdTest:
 
 
 class GetVenueIdsTest:
-    @patch('connectors.redis.REDIS_VENUE_IDS_CHUNK_SIZE', return_value=1000)
-    @patch('connectors.redis.redis')
-    def test_should_return_venue_ids_from_list(self, mock_redis, mock_redis_lrange_end):
+    def test_should_return_venue_ids(self):
         # Given
         client = MagicMock()
         client.lrange = MagicMock()
@@ -105,13 +108,23 @@ class GetVenueIdsTest:
         get_venue_ids(client=client)
 
         # Then
-        client.lrange.assert_called_once_with('venue_ids', 0, mock_redis_lrange_end)
+        client.lrange.assert_called_once_with('venue_ids', 0, 1000)
+
+    def test_should_return_empty_array_when_exception(self):
+        # Given
+        client = MagicMock()
+        client.lrange = MagicMock()
+        client.lrange.side_effect = redis.exceptions.RedisError
+
+        # When
+        result = get_venue_ids(client=client)
+
+        # Then
+        assert result == []
 
 
 class DeleteVenueIdsTest:
-    @patch('connectors.redis.REDIS_VENUE_IDS_CHUNK_SIZE', return_value=1000)
-    @patch('connectors.redis.redis')
-    def test_should_delete_given_venue_ids_from_list(self, mock_redis, mock_redis_lrange_end):
+    def test_should_delete_given_venue_ids_from_list(self):
         # Given
         client = MagicMock()
         client.ltrim = MagicMock()
@@ -120,13 +133,12 @@ class DeleteVenueIdsTest:
         delete_venue_ids(client=client)
 
         # Then
-        client.ltrim.assert_called_once_with('venue_ids', mock_redis_lrange_end, -1)
+        client.ltrim.assert_called_once_with('venue_ids', 1000, -1)
 
 
 class AddVenueProviderTest:
-    @patch('connectors.redis.redis')
     @clean_database
-    def test_should_add_venue_provider(self, mock_redis, app):
+    def test_should_add_venue_provider(self, app):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()
@@ -171,8 +183,7 @@ class AddVenueProviderTest:
 
 class GetVenueProvidersTest:
     @patch('connectors.redis.REDIS_VENUE_PROVIDERS_CHUNK_SIZE', 2)
-    @patch('connectors.redis.redis')
-    def test_should_return_venue_providers_from_list(self, mock_redis):
+    def test_should_return_venue_providers(self):
         # Given
         client = MagicMock()
         client.lrange = MagicMock()
@@ -191,11 +202,21 @@ class GetVenueProvidersTest:
             {'id': 2, 'providerId': 7, 'venueId': 9}
         ]
 
+    def test_should_return_empty_array_when_exception(self):
+        # Given
+        client = MagicMock()
+        client.lrange = MagicMock()
+        client.lrange.side_effect = redis.exceptions.RedisError
+
+        # When
+        result = get_venue_providers(client=client)
+
+        # Then
+        assert result == []
+
 
 class DeleteVenueProvidersTest:
-    @patch('connectors.redis.REDIS_VENUE_PROVIDERS_CHUNK_SIZE', 2)
-    @patch('connectors.redis.redis')
-    def test_should_delete_venue_providers(self, mock_redis):
+    def test_should_delete_venue_providers(self):
         # Given
         client = MagicMock()
         client.ltrim = MagicMock()
@@ -204,12 +225,11 @@ class DeleteVenueProvidersTest:
         delete_venue_providers(client=client)
 
         # Then
-        client.ltrim.assert_called_once_with('venue_providers', 2, -1)
+        client.ltrim.assert_called_once_with('venue_providers', 1, -1)
 
 
 class AddToIndexedOffersTest:
-    @patch('connectors.redis.redis')
-    def test_should_add_to_indexed_offers(self, mock_redis, app):
+    def test_should_add_to_indexed_offers(self, app):
         # Given
         client = MagicMock()
         client.hset = MagicMock()
@@ -229,9 +249,8 @@ class AddToIndexedOffersTest:
 
 
 class DeleteIndexedOffersTest:
-    @patch('connectors.redis.redis')
     @clean_database
-    def test_should_delete_indexed_offers(self, mock_redis, app):
+    def test_should_delete_indexed_offers(self, app):
         # Given
         client = MagicMock()
         client.hdel = MagicMock()
@@ -245,8 +264,7 @@ class DeleteIndexedOffersTest:
 
 
 class CheckOfferExistsTest:
-    @patch('connectors.redis.redis')
-    def test_should_return_true_when_offer_exists(self, mock_redis, app):
+    def test_should_return_true_when_offer_exists(self):
         # Given
         client = MagicMock()
         client.hexists = MagicMock()
@@ -259,8 +277,7 @@ class CheckOfferExistsTest:
         client.hexists.assert_called_once_with('indexed_offers', 1)
         assert result
 
-    @patch('connectors.redis.redis')
-    def test_should_return_false_when_offer_not_exists(self, mock_redis, app):
+    def test_should_return_false_when_offer_not_exists(self):
         # Given
         client = MagicMock()
         client.hexists = MagicMock()
@@ -273,10 +290,21 @@ class CheckOfferExistsTest:
         client.hexists.assert_called_once_with('indexed_offers', 1)
         assert not result
 
+    def test_should_return_false_when_exception(self):
+        # Given
+        client = MagicMock()
+        client.hexists = MagicMock()
+        client.hexists.side_effect = redis.exceptions.RedisError
+
+        # When
+        result = check_offer_exists(client=client, offer_id=1)
+
+        # Then
+        assert not result
+
 
 class GetOfferDetailsTest:
-    @patch('connectors.redis.redis')
-    def test_should_return_offer_details_when_offer_exists(self, mock_redis, app):
+    def test_should_return_offer_details_when_offer_exists(self):
         # Given
         client = MagicMock()
         client.hget = MagicMock()
@@ -289,8 +317,7 @@ class GetOfferDetailsTest:
         client.hget.assert_called_once_with('indexed_offers', 1)
         assert result == {'dateRange': ["2020-01-01 10:00:00", "2020-01-06 12:00:00"], 'name': 'super offre'}
 
-    @patch('connectors.redis.redis')
-    def test_should_return_empty_dict_when_offer_does_exists(self, mock_redis, app):
+    def test_should_return_empty_dict_when_offer_does_exists(self):
         # Given
         client = MagicMock()
         client.hget = MagicMock()
@@ -303,10 +330,21 @@ class GetOfferDetailsTest:
         client.hget.assert_called_once_with('indexed_offers', 1)
         assert result == {}
 
+    def test_should_return_empty_dict_when_exception(self):
+        # Given
+        client = MagicMock()
+        client.hget = MagicMock()
+        client.hget.side_effect = redis.exceptions.RedisError
+
+        # When
+        result = get_offer_details(client=client, offer_id=1)
+
+        # Then
+        assert result == {}
+
 
 class DeleteAllIndexedOffersTest:
-    @patch('connectors.redis.redis')
-    def test_should_delete_all_indexed_offers(self, mock_redis, app):
+    def test_should_delete_all_indexed_offers(self):
         # Given
         client = MagicMock()
         client.delete = MagicMock()
@@ -319,8 +357,7 @@ class DeleteAllIndexedOffersTest:
 
 
 class AddVenueProviderCurrentlyInSyncTest:
-    @patch('connectors.redis.redis')
-    def test_should_add_venue_provider_currently_in_sync_to_hashmap(self, mock_redis, app):
+    def test_should_add_venue_provider_currently_in_sync_to_hashmap(self):
         # Given
         client = MagicMock()
         client.hset = MagicMock()
@@ -333,8 +370,7 @@ class AddVenueProviderCurrentlyInSyncTest:
 
 
 class DeleteVenueProviderCurrentlyInSyncTest:
-    @patch('connectors.redis.redis')
-    def test_should_retrieve_container_id_of_venue_provider_currently_in_sync(self, mock_redis, app):
+    def test_should_retrieve_container_id_of_venue_provider_currently_in_sync(self):
         # Given
         client = MagicMock()
         client.hget = MagicMock()
@@ -346,8 +382,7 @@ class DeleteVenueProviderCurrentlyInSyncTest:
         # Then
         client.hget.assert_called_once_with('venue_providers_in_sync', 1)
 
-    @patch('connectors.redis.redis')
-    def test_should_delete_venue_provider_currently_in_sync_from_hashmap(self, mock_redis, app):
+    def test_should_delete_venue_provider_currently_in_sync_from_hashmap(self):
         # Given
         client = MagicMock()
         client.hget = MagicMock()
@@ -362,8 +397,7 @@ class DeleteVenueProviderCurrentlyInSyncTest:
 
 
 class GetNumberOfVenueProvidersCurrentlyInSync:
-    @patch('connectors.redis.redis')
-    def test_should_return_number_of_venue_providers_currently_in_sync(self, mock_redis, app):
+    def test_should_return_number_of_venue_providers_currently_in_sync(self):
         # Given
         client = MagicMock()
         client.hlen = MagicMock()
@@ -376,10 +410,21 @@ class GetNumberOfVenueProvidersCurrentlyInSync:
         client.hlen.assert_called_once_with('venue_providers_in_sync')
         assert number_of_venue_providers_currently_in_sync == 10
 
+    def test_should_return_zero_when_exception(self):
+        # Given
+        client = MagicMock()
+        client.hlen = MagicMock()
+        client.hlen.side_effect = redis.exceptions.RedisError
+
+        # When
+        number_of_venue_providers_currently_in_sync = get_number_of_venue_providers_currently_in_sync(client=client)
+
+        # Then
+        assert number_of_venue_providers_currently_in_sync == 0
+
 
 class AddOfferIdInErrorTest:
-    @patch('connectors.redis.redis')
-    def test_should_add_offer_id_in_error(self, mock_redis):
+    def test_should_add_offer_id_in_error(self):
         # Given
         client = MagicMock()
         client.rpush = MagicMock()
@@ -392,8 +437,7 @@ class AddOfferIdInErrorTest:
 
 
 class GetOfferIdsInErrorTest:
-    @patch('connectors.redis.redis')
-    def test_should_get_offer_ids_in_error(self, mock_redis):
+    def test_should_get_offer_ids_in_error(self):
         # Given
         client = MagicMock()
         client.lrange = MagicMock()
@@ -404,11 +448,21 @@ class GetOfferIdsInErrorTest:
         # Then
         client.lrange.assert_called_once_with('offer_ids_in_error', 0, 1000)
 
+    def test_should_return_empty_array_when_exception(self):
+        # Given
+        client = MagicMock()
+        client.lrange = MagicMock()
+        client.lrange.side_effect = redis.exceptions.RedisError
+
+        # When
+        offer_ids = get_offer_ids_in_error(client=client)
+
+        # Then
+        assert offer_ids == []
+
 
 class DeleteOfferIdsInErrorTest:
-    @patch('connectors.redis.REDIS_OFFER_IDS_IN_ERROR_CHUNK_SIZE', return_value=1000)
-    @patch('connectors.redis.redis')
-    def test_should_delete_given_range_of_offer_ids_in_error(self, mock_redis, mock_redis_lrange_end):
+    def test_should_delete_given_range_of_offer_ids_in_error(self):
         # Given
         client = MagicMock()
         client.ltrim = MagicMock()
@@ -417,4 +471,4 @@ class DeleteOfferIdsInErrorTest:
         delete_offer_ids_in_error(client=client)
 
         # Then
-        client.ltrim.assert_called_once_with('offer_ids_in_error', mock_redis_lrange_end, -1)
+        client.ltrim.assert_called_once_with('offer_ids_in_error', 1000, -1)
