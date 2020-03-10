@@ -156,3 +156,11 @@ def put_recommendations():
                                                               requested_recommendation)
 
     return jsonify(serialize_recommendations(recommendations, current_user)), 200
+
+
+@app.route('/recommendations/v3', methods=['PUT'])
+@feature_required(feature_toggle=FeatureToggle.RECOMMENDATIONS_WITH_GEOLOCATION)
+@login_required
+@expect_json_data
+def put_recommendations_v3():
+    return {}, 200
