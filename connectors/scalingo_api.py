@@ -27,8 +27,7 @@ def run_process_in_one_off_container(command: str) -> str:
                                  json=command_parameters,
                                  headers={'Authorization': f'Bearer {app_bearer_token}'})
     if api_response.status_code != 200:
-        raise ScalingoApiException(f'Error getting bearer token with status {api_response.status_code}:'
-                                   f' {api_response.json()}')
+        raise ScalingoApiException(f'Error getting bearer token with status {api_response.status_code}')
     json_response = api_response.json()
     return json_response["container"]["id"]
 
@@ -39,7 +38,6 @@ def _get_application_bearer_token() -> str:
     api_response = requests.post(f'{SCALINGO_AUTH_URL}{bearer_token_endpoint}',
                                  auth=(None, application_token))
     if api_response.status_code != 200:
-        raise ScalingoApiException(f'Error getting bearer token with status {api_response.status_code}:'
-                                   f' {api_response.json()}')
+        raise ScalingoApiException(f'Error getting bearer token with status {api_response.status_code}')
     json_response = api_response.json()
     return json_response['token']

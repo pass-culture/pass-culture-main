@@ -35,8 +35,7 @@ class GetApplicationBearerTokenTest:
             _get_application_bearer_token()
 
         # Then
-        assert str(exception.value) == "Error getting bearer token with status 400:" \
-                                       " {'error': 'error in application token'}"
+        assert str(exception.value) == "Error getting bearer token with status 400"
 
 
 class RunProcessInOneOffContainerTest:
@@ -79,4 +78,4 @@ class RunProcessInOneOffContainerTest:
             run_process_in_one_off_container('command_line')
 
         # Then
-        assert str(exception.value) == "Error getting bearer token with status 400: {'error': 'error in run app'}"
+        assert str(exception.value) == "Error getting bearer token with status 400"
