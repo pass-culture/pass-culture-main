@@ -17,7 +17,7 @@ from models.allocine_venue_provider import AllocineVenueProvider
 from models.email import EmailStatus
 from domain.payments import PaymentDetails
 from models.payment_status import TransactionStatus
-from scripts.import_iris import WGS_SPATIAL_REFERENCE_IDENTIFIER, create_centroid_from_polygon
+from scripts.iris.import_iris import WGS_SPATIAL_REFERENCE_IDENTIFIER, create_centroid_from_polygon
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_stock_with_thing_offer
 from utils.token import random_token
 

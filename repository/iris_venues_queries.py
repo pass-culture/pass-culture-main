@@ -7,7 +7,7 @@ from repository import repository
 MAXIMUM_DISTANCE_IN_METERS = 100000
 
 
-def find_irises_located_near_venue(venue_id: int) -> List:
+def find_ids_of_irises_located_near_venue(venue_id: int) -> List:
     search_radius = MAXIMUM_DISTANCE_IN_METERS
     query = f''' WITH venue_coordinates AS (SELECT longitude, latitude from venue WHERE id = {venue_id})
                  SELECT id FROM iris_france, venue_coordinates

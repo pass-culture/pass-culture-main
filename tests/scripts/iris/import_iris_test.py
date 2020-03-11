@@ -5,7 +5,7 @@ import geopandas as gpd
 from shapely.geometry import Polygon, Point
 
 from models import IrisFrance
-from scripts.import_iris import read_iris_shape_file, import_iris_shape_file_to_table, fill_iris_from, \
+from scripts.iris.import_iris import read_iris_shape_file, import_iris_shape_file_to_table, fill_iris_from, \
     create_centroid_from_polygon
 from tests.conftest import clean_database
 

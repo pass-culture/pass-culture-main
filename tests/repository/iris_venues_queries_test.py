@@ -2,7 +2,7 @@ from shapely.geometry import Polygon
 
 from models import IrisVenues
 from repository import repository
-from repository.iris_venues_queries import find_irises_located_near_venue, insert_venue_in_iris_venue, \
+from repository.iris_venues_queries import find_ids_of_irises_located_near_venue, insert_venue_in_iris_venue, \
     delete_venue_from_iris_venues, get_iris_containing_user_location, find_venues_located_near_iris
 
 from tests.conftest import clean_database
@@ -30,7 +30,7 @@ class FindIrisesLocatedNearVenueTest:
         repository.save(iris_amiens, iris_beauvais, venue_in_paris)
 
         # when
-        iris_id = find_irises_located_near_venue(venue_in_paris.id)
+        iris_id = find_ids_of_irises_located_near_venue(venue_in_paris.id)
 
         # then
         assert iris_id == [iris_beauvais.id]
@@ -44,7 +44,7 @@ class FindIrisesLocatedNearVenueTest:
         repository.save(venue_in_paris)
 
         # when
-        iris_id = find_irises_located_near_venue(venue_in_paris.id)
+        iris_id = find_ids_of_irises_located_near_venue(venue_in_paris.id)
 
         # then
         assert iris_id == []
