@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, false, BigInteger
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, BigInteger, true
 
 from models.venue_provider import VenueProvider
 
@@ -9,8 +9,8 @@ class AllocineVenueProvider(VenueProvider):
     id = Column(BigInteger, ForeignKey('venue_provider.id'), primary_key=True)
 
     isDuo = Column(Boolean,
-                   default=False,
-                   server_default=false(),
+                   default=True,
+                   server_default=true(),
                    nullable=False)
 
     available = Column(Integer, nullable=True)
