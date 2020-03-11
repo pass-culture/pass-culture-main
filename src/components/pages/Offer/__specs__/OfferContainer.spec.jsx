@@ -1,5 +1,6 @@
 import { mapDispatchToProps, mapStateToProps, mergeProps } from '../OfferContainer'
 import state from '../../../utils/mocks/state'
+import { showNotification } from 'pass-culture-shared'
 
 describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
   let props
@@ -367,6 +368,22 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
           },
           type: 'MERGE_FORM_OFFER_ISDUO',
         })
+      })
+    })
+
+    describe('showValidationNotification', () => {
+      it('should display a validation message', () => {
+        // when
+        props.showValidationNotification()
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith(
+          showNotification({
+            text:
+              'Votre offre a bien été créée. L’offre peut mettre quelques minutes pour être disponible dans l’application.',
+            type: 'success',
+          })
+        )
       })
     })
   })

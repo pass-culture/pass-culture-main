@@ -18,7 +18,7 @@ import {
   selectVenuesByOffererIdAndOfferType,
 } from '../../../selectors/data/venuesSelectors'
 import { selectOfferers } from '../../../selectors/data/offerersSelectors'
-import { mergeForm } from 'pass-culture-shared'
+import { mergeForm, showNotification } from 'pass-culture-shared'
 import { selectStocksByOfferId } from '../../../selectors/data/stocksSelectors'
 import { selectProviders } from '../../../selectors/data/providersSelectors'
 import { selectOfferById } from '../../../selectors/data/offersSelectors'
@@ -103,6 +103,26 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
+export const mapDispatchToProps = dispatch => ({
+  showValidationNotification: () => {
+    dispatch(
+      showNotification({
+        text:
+          'Votre offre a bien été créée. L’offre peut mettre quelques minutes pour être disponible dans l’application.',
+        type: 'success',
+      })
+    )
+  },
+
+  updateFormSetIsDuo: isDuo => {
+    dispatch(
+      mergeForm('offer', {
+        isDuo: isDuo,
+      })
+    )
+  },
+})
+
 export const mergeProps = (stateProps, dispatchProps, ownProps) => {
   return {
     ...stateProps,
@@ -116,16 +136,6 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
     },
   }
 }
-
-export const mapDispatchToProps = dispatch => ({
-  updateFormSetIsDuo: isDuo => {
-    dispatch(
-      mergeForm('offer', {
-        isDuo: isDuo,
-      })
-    )
-  },
-})
 
 export default compose(
   withTracking('Offer'),

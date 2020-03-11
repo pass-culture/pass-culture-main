@@ -44,6 +44,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         translate: () => ({ venue: 'AQ ' }),
       },
       selectedOfferType: {},
+      showValidationNotification: jest.fn(),
       offer: {
         name: 'Super Livre',
         lastProvider: null,
@@ -119,6 +120,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           selectedOfferType: {},
           trackCreateOffer: jest.fn(),
           trackModifyOffer: jest.fn(),
+          showValidationNotification: jest.fn(),
         }
 
         const wrapper = shallow(<Offer {...initialProps} />)
@@ -131,6 +133,20 @@ describe('src | components | pages | Offer | Offer ', () => {
 
         // then
         expect(queryChangeToReadOnly).toHaveBeenCalledWith(queryParams, offer)
+      })
+    })
+
+    describe('when the offer is successfully created', () => {
+      it('should display a success notification', () => {
+        const wrapper = shallow(<Offer {...props} />)
+
+        // when
+        const offer = { id: 'SN' }
+        const action = { config: { method: 'POST' }, payload: { datum: offer } }
+        wrapper.instance().onHandleFormSuccess({}, action)
+
+        // then
+        expect(props.showValidationNotification).toHaveBeenCalledWith()
       })
     })
   })

@@ -210,8 +210,15 @@ class Offer extends PureComponent {
   }
 
   onHandleFormSuccess = (state, action) => {
-    const { offer, query, trackCreateOffer, trackModifyOffer } = this.props
+    const {
+      offer,
+      query,
+      trackCreateOffer,
+      trackModifyOffer,
+      showValidationNotification,
+    } = this.props
 
+    showValidationNotification()
     const { isCreatedEntity } = query.context()
     const previousOfferId = offer && offer.id
     const {
@@ -824,6 +831,7 @@ Offer.propTypes = {
   location: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,
   selectedOfferType: PropTypes.shape().isRequired,
+  showValidationNotification: PropTypes.func.isRequired,
   trackCreateOffer: PropTypes.func.isRequired,
   trackModifyOffer: PropTypes.func.isRequired,
   venuesMatchingOfferType: PropTypes.arrayOf(PropTypes.shape()),
