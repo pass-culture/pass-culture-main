@@ -445,3 +445,121 @@ class GetOffersForRecommendationV3Test:
 
         # Then
         assert offers == [offer]
+
+    @clean_database
+    def test_should_not_return_offers_having_only_soft_deleted_stocks(self, app):
+        # Given
+        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
+                             latitude=49.894171)
+        offer = create_offer_with_thing_product(venue=venue, product=product)
+        stock = create_stock_from_offer(offer, available=2, soft_deleted=True)
+        create_mediation(stock.offer)
+
+        polygon = POLYGON_TEST
+
+        iris = create_iris(polygon)
+        repository.save(user, stock)
+
+        iris_venue = create_iris_venue(iris, venue)
+        repository.save(iris_venue)
+
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        offers = get_offers_for_recommendation_v3(user_iris_id=iris.id,
+                                                  user=user)
+
+        # Then
+        assert len(offers) == 0
+
+    @clean_database
+    def test_should_not_return_offers_from_non_validated_venue(self, app):
+        # Given
+        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
+                             latitude=49.894171, validation_token='nimportequoi')
+        offer = create_offer_with_thing_product(venue=venue, product=product)
+        stock = create_stock_from_offer(offer, available=2)
+        create_mediation(stock.offer)
+
+        polygon = POLYGON_TEST
+
+        iris = create_iris(polygon)
+        repository.save(user, stock)
+
+        iris_venue = create_iris_venue(iris, venue)
+        repository.save(iris_venue)
+
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        offers = get_offers_for_recommendation_v3(user_iris_id=iris.id,
+                                                  user=user)
+
+        # Then
+        assert len(offers) == 0
+
+    @clean_database
+    def test_should_not_return_offers_from_non_validated_offerers(self, app):
+        # Given
+        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+        offerer = create_offerer(validation_token='nimportequoi')
+        user = create_user()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
+                             latitude=49.894171)
+        offer = create_offer_with_thing_product(venue=venue, product=product)
+        stock = create_stock_from_offer(offer, available=2)
+        create_mediation(stock.offer)
+
+        polygon = POLYGON_TEST
+
+        iris = create_iris(polygon)
+        repository.save(user, stock)
+
+        iris_venue = create_iris_venue(iris, venue)
+        repository.save(iris_venue)
+
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        offers = get_offers_for_recommendation_v3(user_iris_id=iris.id,
+                                                  user=user)
+
+        # Then
+        assert len(offers) == 0
+
+    @clean_database
+    def test_should_not_return_offers_having_only_stocks_with_past_booking_limit_date_time(self,app):
+        # Given
+        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
+                             latitude=49.894171)
+        offer = create_offer_with_thing_product(venue=venue, product=product)
+        one_day_ago = datetime.utcnow() - timedelta(days=1)
+        stock = create_stock_from_offer(offer, available=2, booking_limit_datetime=one_day_ago)
+        create_mediation(stock.offer)
+
+        polygon = POLYGON_TEST
+
+        iris = create_iris(polygon)
+        repository.save(user, stock)
+
+        iris_venue = create_iris_venue(iris, venue)
+        repository.save(iris_venue)
+
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        offers = get_offers_for_recommendation_v3(user_iris_id=iris.id,
+                                                  user=user)
+
+        # Then
+        assert len(offers) == 0
+

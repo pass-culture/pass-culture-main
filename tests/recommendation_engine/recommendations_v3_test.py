@@ -45,35 +45,3 @@ class CreateRecommendationsForDiscoveryTest:
         assert mediation3.id in mediations
         assert humanize(mediation2.id) not in mediations
         assert humanize(mediation1.id) not in mediations
-
-    @clean_database
-    def test_should_include_recommendations_on_offers_previously_displayed_in_search_results(
-            self, app):
-        # Given
-        seen_recommendation_ids = []
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer1 = create_offer_with_thing_product(venue, thumb_count=0)
-        stock1 = create_stock_from_offer(offer1, price=0)
-        mediation1 = create_mediation(offer1, is_active=True)
-        offer2 = create_offer_with_thing_product(venue, thumb_count=0)
-        stock2 = create_stock_from_offer(offer2, price=0)
-        mediation2 = create_mediation(offer2, is_active=True)
-
-        recommendation = create_recommendation(offer=offer2, user=user, mediation=mediation2, search="bla")
-
-        iris = create_iris(POLYGON_TEST)
-        repository.save(user, stock1, mediation1, stock2, mediation2, recommendation)
-        iris_venue = create_iris_venue(iris, venue)
-        repository.save(iris_venue)
-
-        DiscoveryView.refresh(concurrently=False)
-
-        # When
-        recommendations = create_recommendations_for_discovery_v3(seen_recommendation_ids=seen_recommendation_ids,
-                                                                  user_iris_id=iris.id,
-                                                                  user=user)
-
-        # Then
-        assert len(recommendations) == 2

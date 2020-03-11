@@ -191,7 +191,7 @@ def put_recommendations_v3():
 
     created_recommendations = create_recommendations_for_discovery_v3(limit=BLOB_SIZE,
                                                                       user=current_user,
-                                                                      user_iris_id= user_iris_id,
+                                                                      user_iris_id=user_iris_id,
                                                                       seen_recommendation_ids=seen_recommendation_ids)
 
     recommendations = move_tutorial_recommendations_first(created_recommendations,
