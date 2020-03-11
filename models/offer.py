@@ -213,32 +213,6 @@ class Offer(PcObject,
         return f"Encore {stock_remaining_quantity} {pluralize(stock_remaining_quantity, 'stock')} restant"
 
     @property
-    def stockAlertMessage(self) -> str:
-        total_number_stocks = len(self.activeStocks)
-        number_of_empty_stocks = len(
-            list(filter(lambda s: s.available == 0 or s.remainingQuantity == 0, self.activeStocks)))
-        remaining_for_all_stocks = sum(
-            map(lambda s: s.remainingQuantity, filter(lambda s: s.available, self.activeStocks)))
-
-        if total_number_stocks == 0:
-            return 'pas encore de stock' if self.isThing else 'pas encore de places'
-
-        if all([s.available is None for s in self.activeStocks]):
-            return 'illimité'
-
-        if self.isFullyBooked:
-            return 'plus de stock' if self.isThing else 'plus de places pour toutes les dates'
-
-        if number_of_empty_stocks >= 1:
-            offer_word = pluralize(number_of_empty_stocks, 'offre')
-            stock_or_place = 'stock' if self.isThing else 'places'
-            return f'plus de {stock_or_place} pour {number_of_empty_stocks} {offer_word}'
-
-        if not self.isFullyBooked:
-            remaining_stock_word = 'en stock' if self.isThing else pluralize(remaining_for_all_stocks, 'place')
-            return f'encore {remaining_for_all_stocks} {remaining_stock_word}'
-
-    @property
     def thumb_url(self) -> str:
         offer_has_active_mediation = any(map(lambda mediation: mediation.isActive, self.mediations))
         if offer_has_active_mediation:
