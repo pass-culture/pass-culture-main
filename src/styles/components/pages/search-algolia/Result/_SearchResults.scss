@@ -4,6 +4,13 @@
   align-items: center;
 }
 
+.home-search-spinner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+}
+
 @media screen and (max-width: $iphone5-width) and (max-height: $iphone5-height) {
   .spr-text-input-form {
     padding: 0.75rem 0;

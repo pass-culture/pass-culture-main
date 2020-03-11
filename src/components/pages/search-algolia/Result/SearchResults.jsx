@@ -203,7 +203,9 @@ class SearchResults extends PureComponent {
             </form>
 
             <div className="home-results-wrapper">
-              {isLoading && <Spinner label="Recherche en cours" />}
+              <div className="home-search-spinner">
+                {isLoading && <Spinner label="Recherche en cours" />}
+              </div>
               <h1 className="home-results-title">
                 {this.getNumberOfResultsToDisplay()}
               </h1>
@@ -211,7 +213,6 @@ class SearchResults extends PureComponent {
                 <InfiniteScroll
                   getScrollParent={this.getScrollParent}
                   hasMore={!isLoading && (currentPage + 1 < totalPagesNumber)}
-                  loader={<Spinner key="loader" />}
                   loadMore={this.fetchNextOffers}
                   pageStart={currentPage}
                   threshold={100}
