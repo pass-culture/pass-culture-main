@@ -161,15 +161,3 @@
   border-top: 1px solid $grey-even-more-light;
   width: 90%;
 }
-
-@media screen and (max-width: $iphone5) {
-  .home-filter-list {
-    .ci-wrapper {
-      margin: rem(20px) 0;
-
-      &:first-child {
-        margin-top: rem(20px);
-      }
-    }
-  }
-}
