@@ -288,7 +288,7 @@ class CheckOfferExistsTest:
 
         # Then
         client.hexists.assert_called_once_with('indexed_offers', 1)
-        assert not result
+        assert result is False
 
     def test_should_return_false_when_exception(self):
         # Given
@@ -300,7 +300,7 @@ class CheckOfferExistsTest:
         result = check_offer_exists(client=client, offer_id=1)
 
         # Then
-        assert not result
+        assert result is False
 
 
 class GetOfferDetailsTest:
