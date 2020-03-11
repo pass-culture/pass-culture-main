@@ -19,7 +19,7 @@ END $$;
 DO $$ DECLARE
   r RECORD;
 BEGIN
-  FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+  FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tableowner != 'admin_patroni') LOOP
     EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.tablename) || ' CASCADE';
   END LOOP;
 END $$;
@@ -37,6 +37,7 @@ BEGIN
       AND n.nspname = 'public'
       AND t.typname not like 'gbtree%'
       AND pg_catalog.pg_type_is_visible(t.oid)
+      AND t.typowner not in (SELECT oid FROM pg_catalog.pg_roles WHERE rolname like 'admin_patroni')
   ) LOOP
     EXECUTE 'DROP TYPE IF EXISTS ' || quote_ident(r.typename) || ' CASCADE';
   END LOOP;
