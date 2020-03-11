@@ -69,6 +69,7 @@ class OfferItem extends PureComponent {
   render() {
     const {
       aggregatedStock,
+      availabilityMessage,
       location: { search },
       maxDate,
       mediations,
@@ -76,7 +77,6 @@ class OfferItem extends PureComponent {
       offerTypeLabel,
       offerer,
       product,
-      stockAlertMessage,
       stocks,
       venue,
     } = this.props
@@ -158,10 +158,9 @@ class OfferItem extends PureComponent {
             <li>
               {maxDate && `jusqu’au ${maxDate.format('DD/MM/YYYY')}`}
             </li>
-            {stockAlertMessage &&
-              <li>
-                {stockAlertMessage}
-              </li>}
+            {availabilityMessage && <li>
+              {availabilityMessage}
+                                    </li>}
             <li>
               {priceMin === priceMax ? (
                 <Price value={priceMin || 0} />
@@ -235,6 +234,7 @@ class OfferItem extends PureComponent {
 
 OfferItem.propTypes = {
   aggregatedStock: PropTypes.shape().isRequired,
+  availabilityMessage: PropTypes.string.isRequired,
   location: PropTypes.shape({
     search: PropTypes.string.isRequired,
   }).isRequired,
@@ -244,7 +244,6 @@ OfferItem.propTypes = {
   offerTypeLabel: PropTypes.string.isRequired,
   offerer: PropTypes.shape().isRequired,
   product: PropTypes.shape().isRequired,
-  stockAlertMessage: PropTypes.string.isRequired,
   stocks: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   trackActivateOffer: PropTypes.func.isRequired,
   trackDeactivateOffer: PropTypes.func.isRequired,

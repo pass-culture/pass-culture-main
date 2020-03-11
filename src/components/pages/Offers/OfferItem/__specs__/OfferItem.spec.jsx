@@ -35,7 +35,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       offerTypeLabel: 'fake label',
       offerer: {},
       product: {},
-      stockAlertMessage: 'fake alert message',
+      availabilityMessage: 'Encore 7 stocks restant',
       stocks: [],
       venue: {
         name: 'Paris',
@@ -57,7 +57,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
   })
 
   describe('render', () => {
-
     describe('thumb Component', () => {
       it('should render a Thumb Component with the given url when offer has an active mediation', () => {
         // given
@@ -236,7 +235,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
           // then
           expect(addMediationsLink).toHaveLength(1)
-          expect(addMediationsLink.prop('className')).toBe('button is-small is-secondary add-mediations-link')
+          expect(addMediationsLink.prop('className')).toBe(
+            'button is-small is-secondary add-mediations-link'
+          )
           expect(addMediationsLink.prop('to')).toBe('/offres/M4')
           expect(icon.prop('svg')).toBe('ico-stars')
           expect(textSpan.text()).toBe('Accroches')
@@ -256,8 +257,12 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
           // thenu
           expect(addMediationsLink).toHaveLength(1)
-          expect(addMediationsLink.prop('className')).toBe('button is-small is-primary is-outlined add-mediations-link')
-          expect(addMediationsLink.prop('to')).toBe('/offres/GH/accroches/nouveau?orderBy=offer.id+desc')
+          expect(addMediationsLink.prop('className')).toBe(
+            'button is-small is-primary is-outlined add-mediations-link'
+          )
+          expect(addMediationsLink.prop('to')).toBe(
+            '/offres/GH/accroches/nouveau?orderBy=offer.id+desc'
+          )
           expect(icon.prop('svg')).toBe('ico-stars')
           expect(textSpan.text()).toBe('Ajouter une Accroche')
         })
@@ -400,7 +405,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           offerType: { label: 'Conférence — Débat — Dédicace' },
         }
         props.stocks = []
-        props.stockAlertMessage = 'plus de places'
+        props.availabilityMessage = 'Plus de stock restant'
         props.offer = activeOfferWithActiveMediation
 
         // when
@@ -409,10 +414,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
         // then
         const ulElements = wrapper.find('ul')
         const stockAvailabilityElement = ulElements
-        .at(1)
-        .find('li')
-        .at(3)
-        expect(stockAvailabilityElement.text()).toBe('plus de places')
+          .at(1)
+          .find('li')
+          .at(3)
+        expect(stockAvailabilityElement.text()).toBe('Plus de stock restant')
       })
 
       it('should display the correct text when 1 ticket is available', () => {
@@ -421,7 +426,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           offerType: { label: 'Conférence — Débat — Dédicace' },
         }
         props.stocks = [{}]
-        props.stockAlertMessage = 'encore 1 place'
+        props.availabilityMessage = 'Encore 1 stock restant'
         props.offer = activeOfferWithActiveMediation
 
         // when
@@ -430,10 +435,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
         // then
         const ulElements = wrapper.find('ul')
         const stockAvailabilityElement = ulElements
-        .at(1)
-        .find('li')
-        .at(3)
-        expect(stockAvailabilityElement.text()).toBe('encore 1 place')
+          .at(1)
+          .find('li')
+          .at(3)
+        expect(stockAvailabilityElement.text()).toBe('Encore 1 stock restant')
       })
 
       it('should display the correct text when 2 tickets are available', () => {
@@ -442,7 +447,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           offerType: { label: 'Conférence — Débat — Dédicace' },
         }
         props.stocks = [{}, {}]
-        props.stockAlertMessage = 'encore 2 places'
+        props.availabilityMessage = 'Encore 2 stocks restant'
         props.offer = activeOfferWithActiveMediation
 
         // when
@@ -451,10 +456,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
         // then
         const ulElements = wrapper.find('ul')
         const stockAvailabilityElement = ulElements
-        .at(1)
-        .find('li')
-        .at(3)
-        expect(stockAvailabilityElement.text()).toBe('encore 2 places')
+          .at(1)
+          .find('li')
+          .at(3)
+        expect(stockAvailabilityElement.text()).toBe('Encore 2 stocks restant')
       })
 
       it('should display the correct text "2 dates" on the link redirecting to the offer management', () => {
@@ -489,10 +494,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
         // then
         const ulElements = wrapper.find('ul')
         const navLinkComponent = ulElements
-        .at(1)
-        .find('li')
-        .at(1)
-        .find(NavLink)
+          .at(1)
+          .find('li')
+          .at(1)
+          .find(NavLink)
         expect(navLinkComponent.prop('className')).toBe('has-text-primary')
         expect(navLinkComponent.prop('to')).toBe('/offres/M4?gestion')
         expect(navLinkComponent.text()).toBe('2 dates')
@@ -506,7 +511,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           offerType: { label: 'Une place de cinéma' },
         }
         props.stocks = []
-        props.stockAlertMessage = 'plus de stock'
+        props.availabilityMessage = 'Plus de stock restant'
         props.offer = activeThingOfferWithActiveMediation
 
         // when
@@ -515,10 +520,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
         // then
         const ulElements = wrapper.find('ul')
         const stockAvailabilityElement = ulElements
-        .at(1)
-        .find('li')
-        .at(3)
-        expect(stockAvailabilityElement.text()).toBe('plus de stock')
+          .at(1)
+          .find('li')
+          .at(3)
+        expect(stockAvailabilityElement.text()).toBe('Plus de stock restant')
       })
 
       it('should display the correct text "1 prix" on the link redirecting to the offer management', () => {
@@ -553,10 +558,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
         // then
         const ulElements = wrapper.find('ul')
         const navLinkComponent = ulElements
-        .at(1)
-        .find('li')
-        .at(1)
-        .find(NavLink)
+          .at(1)
+          .find('li')
+          .at(1)
+          .find(NavLink)
         expect(navLinkComponent.prop('className')).toBe('has-text-primary')
         expect(navLinkComponent.prop('to')).toBe('/offres/THING?gestion')
         expect(navLinkComponent.text()).toBe('1 prix')
@@ -575,7 +580,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
       wrapper.instance().handleOnDeactivateClick()
 
       // then
-      expect(props.trackDeactivateOffer).toHaveBeenCalledWith(activeThingOfferWithActiveMediation.id)
+      expect(props.trackDeactivateOffer).toHaveBeenCalledWith(
+        activeThingOfferWithActiveMediation.id
+      )
     })
 
     it('should track activate offer when offer is inactive', () => {

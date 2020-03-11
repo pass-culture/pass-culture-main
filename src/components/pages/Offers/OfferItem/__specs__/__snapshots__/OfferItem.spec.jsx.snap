@@ -5,6 +5,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <OfferItem
     aggregatedStock={Object {}}
+    availabilityMessage="Encore 7 stocks restant"
     dispatch={[MockFunction]}
     location={
       Object {
@@ -54,7 +55,6 @@ ShallowWrapper {
     offerTypeLabel="fake label"
     offerer={Object {}}
     product={Object {}}
-    stockAlertMessage="fake alert message"
     stocks={Array []}
     trackActivateOffer={[MockFunction]}
     trackDeactivateOffer={[MockFunction]}
@@ -144,7 +144,7 @@ ShallowWrapper {
               jusqu’au undefined
             </li>
             <li>
-              fake alert message
+              Encore 7 stocks restant
             </li>
             <li>
               <Price
@@ -293,7 +293,7 @@ ShallowWrapper {
                 jusqu’au undefined
               </li>
               <li>
-                fake alert message
+                Encore 7 stocks restant
               </li>
               <li>
                 <Price
@@ -535,7 +535,7 @@ ShallowWrapper {
                   jusqu’au undefined
                 </li>,
                 <li>
-                  fake alert message
+                  Encore 7 stocks restant
                 </li>,
                 <li>
                   <Price
@@ -617,10 +617,10 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": "fake alert message",
+                  "children": "Encore 7 stocks restant",
                 },
                 "ref": null,
-                "rendered": "fake alert message",
+                "rendered": "Encore 7 stocks restant",
                 "type": "li",
               },
               Object {
@@ -1035,7 +1035,7 @@ ShallowWrapper {
                 jusqu’au undefined
               </li>
               <li>
-                fake alert message
+                Encore 7 stocks restant
               </li>
               <li>
                 <Price
@@ -1184,7 +1184,7 @@ ShallowWrapper {
                   jusqu’au undefined
                 </li>
                 <li>
-                  fake alert message
+                  Encore 7 stocks restant
                 </li>
                 <li>
                   <Price
@@ -1426,7 +1426,7 @@ ShallowWrapper {
                     jusqu’au undefined
                   </li>,
                   <li>
-                    fake alert message
+                    Encore 7 stocks restant
                   </li>,
                   <li>
                     <Price
@@ -1508,10 +1508,10 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": "fake alert message",
+                    "children": "Encore 7 stocks restant",
                   },
                   "ref": null,
-                  "rendered": "fake alert message",
+                  "rendered": "Encore 7 stocks restant",
                   "type": "li",
                 },
                 Object {

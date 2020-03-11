@@ -43,7 +43,7 @@ export const mapStateToProps = (state, ownProps) => {
   const venue = selectVenueById(state, venueId)
   const offerer = selectOffererById(state, venue.managingOffererId)
 
-  const stockAlertMessage = offer.stockAlertMessage
+  const availabilityMessage = offer.availabilityMessage
 
   return {
     aggregatedStock: selectAggregatedStockByOfferId(state, offerId),
@@ -53,7 +53,7 @@ export const mapStateToProps = (state, ownProps) => {
     stocks: selectStocksByOfferId(state, offerId),
     offerer,
     offerTypeLabel: selectTypeValueByOffer(state, offer),
-    stockAlertMessage,
+    availabilityMessage,
     venue,
   }
 }

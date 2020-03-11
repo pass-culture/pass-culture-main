@@ -19,9 +19,9 @@ describe('src | components | pages | OfferItemContainer', () => {
         offer: {
           offerId: 'UU',
           productId: 'LY',
-          stockAlertMessage: 'encore 10 en stock',
+          availabilityMessage: 'Encore 10 stocks restant',
           venueId: 'DA',
-          type: 'ThingType.JEUX_VIDEO'
+          type: 'ThingType.JEUX_VIDEO',
         },
         stocks: [{}],
       }
@@ -159,13 +159,13 @@ describe('src | components | pages | OfferItemContainer', () => {
       expect(result.offerTypeLabel).toStrictEqual(expected)
     })
 
-    it('should return the value of stockAlertMessage', () => {
+    it('should return the value of availabilityMessage', () => {
       // when
       const result = mapStateToProps(state, ownProps)
-      const expected = 'encore 10 en stock'
+      const expected = 'Encore 10 stocks restant'
 
       // then
-      expect(result.stockAlertMessage).toStrictEqual(expected)
+      expect(result.availabilityMessage).toStrictEqual(expected)
     })
 
     it('should return an object of prop venue', () => {
