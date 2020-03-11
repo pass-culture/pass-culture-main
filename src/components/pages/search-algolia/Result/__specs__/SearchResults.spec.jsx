@@ -10,6 +10,7 @@ import state from '../../../../../mocks/state'
 import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import RelativeFooterContainer from '../../../../layout/RelativeFooter/RelativeFooterContainer'
+import Spinner from '../../../../layout/Spinner/Spinner'
 import Result from '../Result'
 import SearchAlgoliaDetailsContainer from '../ResultDetail/ResultDetailContainer'
 import SearchResults from '../SearchResults'
@@ -109,15 +110,6 @@ describe('components | SearchResults', () => {
       expect(submitButton.text()).toBe('Rechercher')
     })
 
-    it('should not display results when no keywords in url', () => {
-      // when
-      const wrapper = shallow(<SearchResults {...props} />)
-
-      // then
-      const results = wrapper.find(Result)
-      expect(results).toHaveLength(0)
-    })
-
     it('should display a footer', () => {
       // when
       const wrapper = shallow(<SearchResults {...props} />)
@@ -129,8 +121,37 @@ describe('components | SearchResults', () => {
       expect(footer.prop('theme')).toBe('white')
     })
 
+    it('should display spinner while loading', () => {
+      // When
+      const wrapper = shallow(<SearchResults {...props} />)
+
+      // Then
+      expect(wrapper.find(Spinner)).toHaveLength(1)
+    })
+
+    it('should not display spinner while loading is over', async () => {
+      // When
+      const wrapper = await shallow(<SearchResults {...props} />)
+
+      // Then
+      expect(wrapper.find(Spinner)).toHaveLength(0)
+    })
+
+    describe('when no keywords in url', () => {
+      it('should fetch data with page 0, given categories and geolocation', () => {
+        props.categoriesFilter = ['Cinéma']
+        props.isSearchAroundMe = true
+
+        // when
+        shallow(<SearchResults {...props} />)
+
+        // then
+        expect(fetchAlgolia).toHaveBeenCalledWith('', 0, props.geolocation, props.categoriesFilter)
+      })
+    })
+
     describe('when keywords in url', () => {
-      it('should fill search input, display keywords, number of results', async () => {
+      it('should fill search input, display keywords, number of results and fetch data with page 0', async () => {
         // given
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
@@ -143,7 +164,6 @@ describe('components | SearchResults', () => {
         )
         parse.mockReturnValue({
           'mots-cles': 'une librairie',
-          page: 0,
         })
 
         // when
@@ -158,6 +178,7 @@ describe('components | SearchResults', () => {
         expect(results).toHaveLength(0)
         expect(searchInput.prop('value')).toBe('une librairie')
         expect(resultTitle).toHaveLength(1)
+        expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, [])
       })
 
       it('should fill search input and display keywords, number of results when results are found', async () => {
@@ -188,119 +209,48 @@ describe('components | SearchResults', () => {
         expect(searchInput.prop('value')).toBe('une librairie')
         expect(resultTitle).toHaveLength(1)
       })
-
-      describe('when page query param is provided', () => {
-        it('should fetch data using page query param value minus 1 when value is positive', () => {
-          // given
-          parse.mockReturnValue({
-            'mots-cles': 'une librairie',
-            page: 1,
-          })
-
-          // when
-          shallow(<SearchResults {...props} />)
-
-          // then
-          expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, [])
-        })
-
-        it('should fetch data using page 0 when page query param value is negative', () => {
-          // given
-          fetchAlgolia.mockReturnValue(
-            new Promise(resolve => {
-              resolve({
-                hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
-                nbHits: 2,
-                page: 0,
-              })
-            })
-          )
-          parse.mockReturnValue({
-            'mots-cles': 'une librairie',
-            page: -1,
-          })
-
-          // when
-          shallow(<SearchResults {...props} />)
-
-          // then
-          expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, [])
-        })
-
-        it('should fetch data using page 0 when page query param value is not a valid value', () => {
-          // given
-          parse.mockReturnValue({
-            'mots-cles': 'une librairie',
-            page: 'invalid value',
-          })
-
-          // when
-          shallow(<SearchResults {...props} />)
-
-          // then
-          expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, [])
-        })
-      })
-
-      describe('when geolocation is activated', () => {
-        it('should fetch data using geolocation coordinates', () => {
-          // given
-          parse.mockReturnValue({
-            'mots-cles': 'une librairie',
-            page: 1,
-          })
-          props.isSearchAroundMe = true
-          props.geolocation = {
-            latitude: 40.1,
-            longitude: 41.1,
-          }
-
-          // when
-          shallow(<SearchResults {...props} />)
-
-          // then
-          expect(fetchAlgolia).toHaveBeenCalledWith(
-            'une librairie',
-            0,
-            {
-              latitude: 40.1,
-              longitude: 41.1,
-            },
-            []
-          )
-        })
-      })
-
-      describe('when filter is provided', () => {
-        it('should fetch data using provided filter', () => {
-          // given
-          parse.mockReturnValue({
-            'mots-cles': 'une librairie',
-            page: 1,
-          })
-          props.categoriesFilter = ['Cinéma']
-
-          // when
-          shallow(<SearchResults {...props} />)
-
-          // then
-          expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, ['Cinéma'])
-        })
-      })
     })
 
-    describe('when no keywords in url', () => {
-      it('should clear all query params', () => {
+    describe('when geolocation is activated', () => {
+      it('should fetch data using geolocation coordinates', () => {
         // given
         parse.mockReturnValue({
-          page: 1,
+          'mots-cles': 'une librairie',
         })
+        props.isSearchAroundMe = true
+        props.geolocation = {
+          latitude: 40.1,
+          longitude: 41.1,
+        }
 
         // when
         shallow(<SearchResults {...props} />)
 
         // then
-        expect(fetchAlgolia).toHaveBeenCalledWith('', 0, null, [])
+        expect(fetchAlgolia).toHaveBeenCalledWith(
+          'une librairie',
+          0,
+          {
+            latitude: 40.1,
+            longitude: 41.1,
+          },
+          []
+        )
+      })
+    })
+    describe('when filter is provided', () => {
+      it('should fetch data using provided filter', () => {
+        // given
+        parse.mockReturnValue({
+          'mots-cles': 'une librairie',
+        })
+        props.categoriesFilter = ['Cinéma']
+
+        // when
+        shallow(<SearchResults {...props} />)
+
+        // then
+        expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, ['Cinéma'])
       })
     })
   })
@@ -643,27 +593,7 @@ describe('components | SearchResults', () => {
         },
         preventDefault: jest.fn(),
       })
-
-      // then
-      const resultsFirstFetch = wrapper.find(Result)
-      expect(resultsFirstFetch).toHaveLength(2)
-
-      // when
-      fetchAlgolia.mockReturnValueOnce(
-        new Promise(resolve => {
-          resolve({
-            hits: [offer1, offer2],
-            page: 0,
-            nbHits: 1,
-            nbPages: 0,
-            hitsPerPage: 2,
-            processingTimeMS: 1,
-            query: 'vas-y',
-            params: 'query=librairie&hitsPerPage=2',
-          })
-        })
-      )
-      form.simulate('submit', {
+      await form.simulate('submit', {
         target: {
           keywords: {
             value: 'librairie',
@@ -673,8 +603,9 @@ describe('components | SearchResults', () => {
       })
 
       // then
-      const resultSecondFetch = wrapper.find(Result)
-      expect(resultSecondFetch).toHaveLength(2)
+      expect(fetchAlgolia).toHaveBeenCalledTimes(2)
+      expect(fetchAlgolia).toHaveBeenNthCalledWith(1, '', 0, null, [])
+      expect(fetchAlgolia).toHaveBeenNthCalledWith(2, 'librairie', 0, null, [])
     })
 
     it('should display an error when search failed', async () => {
@@ -704,7 +635,7 @@ describe('components | SearchResults', () => {
       )
     })
 
-    it('should display search keywords in url when fetch succeeded', () => {
+    it('should call replace to display search keywords in url when fetch succeeded', () => {
       // given
       const wrapper = shallow(<SearchResults {...props} />)
       const form = wrapper.find('form')
@@ -864,7 +795,6 @@ describe('components | SearchResults', () => {
         )
         parse.mockReturnValue({
           'mots-cles': 'une librairie',
-          page: 0,
         })
 
         // when
@@ -889,7 +819,6 @@ describe('components | SearchResults', () => {
         )
         parse.mockReturnValue({
           'mots-cles': 'une librairie',
-          page: 0,
         })
         const redirectToSearchMainPage = jest.fn()
 
@@ -918,7 +847,7 @@ describe('components | SearchResults', () => {
         history.push('/recherche-offres/resultats?mots-cles=librairie&page=1')
         const offer1 = { objectID: 'AE', offer: { name: 'Livre de folie de la librairie' } }
         const offer2 = { objectID: 'AF', offer: { name: 'Livre bien de la librairie' } }
-        fetchAlgolia.mockReturnValue(
+        fetchAlgolia.mockReturnValueOnce(
           new Promise(resolve => {
             resolve({
               hits: [offer1, offer2],

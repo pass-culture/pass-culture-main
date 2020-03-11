@@ -131,20 +131,20 @@ class SearchResults extends PureComponent {
     })
   }
 
+  getNumberOfResultsToDisplay() {
+    const { searchedKeywords, resultsCount } = this.state
+    const pluralizedResultatWord = resultsCount > 1 ? 'résultats' : 'résultat'
+    const numberOfResults = `${resultsCount} ${pluralizedResultatWord}`
+
+    return searchedKeywords ? `"${searchedKeywords}" : ${numberOfResults}` : numberOfResults
+  }
+
   render() {
     const {
       geolocation,
       history: { search },
     } = this.props
-    const {
-      currentPage,
-      keywordsToSearch,
-      isLoading,
-      resultsCount,
-      results,
-      searchedKeywords,
-      totalPagesNumber,
-    } = this.state
+    const { currentPage, keywordsToSearch, isLoading, results, totalPagesNumber } = this.state
 
     return (
       <main className="search-page-algolia">
@@ -205,11 +205,7 @@ class SearchResults extends PureComponent {
             <div className="home-results-wrapper">
               {isLoading && <Spinner label="Recherche en cours" />}
               <h1 className="home-results-title">
-                {searchedKeywords
-                  ? `"${searchedKeywords}" : ${resultsCount} ${
-                      resultsCount > 1 ? 'résultats' : 'résultat'
-                    }`
-                  : `${resultsCount} ${resultsCount > 1 ? 'résultats' : 'résultat'}`}
+                {this.getNumberOfResultsToDisplay()}
               </h1>
               {results.length > 0 && (
                 <InfiniteScroll
