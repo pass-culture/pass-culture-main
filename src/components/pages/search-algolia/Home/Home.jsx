@@ -90,7 +90,6 @@ export class Home extends PureComponent {
             </div>
           </form>
         </div>
-
         <ul className="home-filter-list">
           <CriterionItem
             icon={categoryCriterion.icon}
