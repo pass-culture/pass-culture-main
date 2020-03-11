@@ -1,13 +1,13 @@
 import moment from 'moment'
 
-export const getRemainingStocksCount = (available, remainingQuantity) => {
+export const getFormattedRemainingQuantities = (available, bookingsCount) => {
   const isUnlimitedWithoutTypingValue = available === null
   const isUnlimitedAfterRemovingValue = available === ''
   if (isUnlimitedWithoutTypingValue || isUnlimitedAfterRemovingValue) {
     return 'Illimité'
   }
 
-  return remainingQuantity
+  return available - bookingsCount
 }
 
 export const BOOKING_LIMIT_DATETIME_HOURS = 23

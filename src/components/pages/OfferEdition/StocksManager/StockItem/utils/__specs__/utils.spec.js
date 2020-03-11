@@ -11,7 +11,7 @@ import {
 } from '../utils'
 
 describe('components | OfferEdition | utils', () => {
-  describe('getRemainingStocksCount', () => {
+  describe('getFormattedRemainingQuantities', () => {
     it('should return `Illimité` when available stock is unlimited', () => {
       // given
       const available = null

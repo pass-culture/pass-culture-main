@@ -58,7 +58,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           endDatetime: '2020-01-27T22:00:00Z',
           offerId: 'EM',
           price: 48,
-          remainingQuantity: 9,
         }
 
         props.stockPatch = {
@@ -69,7 +68,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           endDatetime: '2020-01-27T22:00:00Z',
           offerId: 'EM',
           price: 48,
-          remainingQuantity: 9,
         }
 
         props.isEvent = true
@@ -121,7 +119,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           id: 'G9',
           offerId: 'EM',
           price: 48,
-          remainingQuantity: 9,
         }
 
         // then
@@ -249,9 +246,9 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           available: 56,
           beginningDatetime: null,
           bookingLimitDatetime: '2020-01-27T20:00:00Z',
+          bookingsQuantity: 13,
           offerId: 'EM',
           price: 12,
-          remainingQuantity: 31,
         }
 
         props.isEvent = false
@@ -265,7 +262,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           bookingLimitDatetime: '2020-01-27T20:00:00Z',
           offerId: 'EM',
           price: 12,
-          remainingQuantity: 31,
         }
 
         const store = mockStore({
@@ -310,7 +306,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           id: 'G9',
           offerId: 'EM',
           price: 12,
-          remainingQuantity: 31,
         }
 
         // then
@@ -359,7 +354,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
         const remainingStockInput = productFieldsContainerComponent.find('#remaining-stock')
 
         // then
-        expect(remainingStockInput.text()).toStrictEqual('31')
+        expect(remainingStockInput.text()).toStrictEqual('43')
       })
     })
   })
@@ -513,26 +508,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
         expect.any(Function),
         expect.any(Function)
       )
-    })
-
-    it('should update remaining stock when updating total stock', () => {
-      // given
-      props.stockPatch.remainingQuantity = 9
-
-      const availableInput = wrapper
-        .find(Field)
-        .find({ name: 'available' })
-        .find('input')
-
-      availableInput.simulate('change', { target: { value: 100 } })
-
-      // when
-      const submitButton = wrapper.find('button[type="submit"]')
-      submitButton.simulate('click')
-
-      // then
-      const remainingStock = wrapper.find('#remaining-stock')
-      expect(remainingStock.value).toBe(5)
     })
   })
 

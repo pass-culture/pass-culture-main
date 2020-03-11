@@ -19,12 +19,15 @@ describe('src | components | pages | Offer | StocksManager | StockItem | sub-com
       readOnly: false,
       showInfo: jest.fn(),
       stock: {
-        available: 2,
-        remainingQuantity: 1,
         bookingsQuantity: 1,
       },
       timezone: 'UTC',
       venue: {},
+      formProps: {
+        values: {
+          available: 2
+        }
+      }
     }
   })
 
@@ -84,7 +87,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem | sub-com
       expect(numberField.prop('placeholder')).toBe('Illimité')
       expect(numberField.prop('readOnly')).toBe(false)
       expect(numberField.prop('renderValue')).toStrictEqual(expect.any(Function))
-      expect(numberField.prop('title')).toBe('Stock[ou] Place[s] affecté[es]')
+      expect(numberField.prop('title')).toBe('Stock total')
     })
 
     it('should display remaining stock when given', () => {
@@ -105,6 +108,22 @@ describe('src | components | pages | Offer | StocksManager | StockItem | sub-com
       const bookingCountElement = wrapper.find('#bookings-count')
       expect(bookingCountElement).toHaveLength(1)
       expect(bookingCountElement.text()).toBe('1')
+    })
+
+    it('should compute remainingQuantity when updating total stock', () => {
+      // given
+      const wrapper = shallow(<ProductFields {...props} />)
+      const totalStockInput = wrapper
+        .findWhere(node => node.prop('title') === 'Stock total')
+        .first()
+
+      // when
+      props.formProps.values.available = 46
+      console.log(props.formProps.values)
+      wrapper.update()
+      // then
+      const remainingQuantity = wrapper.find('#remaining-stock')
+      expect(remainingQuantity.text()).toBe('45')
     })
   })
 

@@ -6,19 +6,19 @@ import {
   getDatetimeOneDayAfter,
   getDatetimeOneHourAfter,
   getDatetimeAtSpecificHoursAndMinutes,
-  getRemainingStocksCount,
+  getFormattedRemainingQuantities,
   formatPrice,
 } from '../utils'
 
 describe('src | components | pages | Offer | StockItem | utils', () => {
-  describe('getRemainingStocksCount', () => {
+  describe('getFormattedRemainingQuantities', () => {
     it('should return `Illimité` when available stock is unlimited', () => {
       // given
       const available = null
-      const remainingQuantity = 0
+      const bookingsCount = 0
 
       // when
-      const result = getRemainingStocksCount(available, remainingQuantity)
+      const result = getFormattedRemainingQuantities(available, bookingsCount)
 
       // then
       expect(result).toBe('Illimité')
@@ -27,25 +27,25 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
     it('should return 0 when available stock is 0', () => {
       // given
       const available = 0
-      const remainingQuantity = 0
+      const bookingsCount = 0
 
       // when
-      const result = getRemainingStocksCount(available, remainingQuantity)
+      const result = getFormattedRemainingQuantities(available, bookingsCount)
 
       // then
       expect(result).toBe(0)
     })
 
-    it('should return remainingQuantity when available stock is greater than 0', () => {
+    it('should return Remaining Quantities when available stock is greater than 0', () => {
       // given
-      const available = 1
-      const remainingQuantity = 4
+      const available = 10
+      const bookingsCount = 4
 
       // when
-      const result = getRemainingStocksCount(available, remainingQuantity)
+      const result = getFormattedRemainingQuantities(available, bookingsCount)
 
       // then
-      expect(result).toBe(4)
+      expect(result).toBe(6)
     })
   })
 

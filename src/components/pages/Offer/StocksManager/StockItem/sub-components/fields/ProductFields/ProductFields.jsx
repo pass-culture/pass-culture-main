@@ -4,7 +4,11 @@ import React, { PureComponent, Fragment } from 'react'
 import { createParseNumberValue } from 'react-final-form-utils'
 import ReactTooltip from 'react-tooltip'
 
-import { createFormatAvailable, formatPrice, getRemainingStocksCount } from '../../../utils/utils'
+import {
+  createFormatAvailable,
+  formatPrice,
+  getFormattedRemainingQuantities,
+} from '../../../utils/utils'
 import DateField from '../../../../../../../layout/form/fields/DateField'
 import HiddenField from '../../../../../../../layout/form/fields/HiddenField'
 import NumberField from '../../../../../../../layout/form/fields/NumberField'
@@ -95,9 +99,14 @@ class ProductFields extends PureComponent {
   }
 
   render() {
-    const { beginningDatetime, isEvent, readOnly, stock, timezone, venue } = this.props
-    const { available, bookingsQuantity, remainingQuantity } = stock || {}
-    const remainingStocksCount = getRemainingStocksCount(available, remainingQuantity)
+    const { beginningDatetime, isEvent, readOnly, stock, timezone, venue, formProps } = this.props
+    const { values } = formProps
+    const { available } = values
+    const { bookingsQuantity } = stock || {}
+    const formattedRemainingQuantities = getFormattedRemainingQuantities(
+      available,
+      bookingsQuantity
+    )
 
     return (
       <Fragment>
@@ -141,7 +150,7 @@ class ProductFields extends PureComponent {
             placeholder="Illimité"
             readOnly={readOnly}
             renderValue={this.renderNumberFieldValue(readOnly)}
-            title="Stock[ou] Place[s] affecté[es]"
+            title="Stock total"
           />
         </td>
 
@@ -149,7 +158,7 @@ class ProductFields extends PureComponent {
           className="is-small remaining-stock"
           id="remaining-stock"
         >
-          {remainingStocksCount}
+          {formattedRemainingQuantities}
         </td>
 
         <td
@@ -175,6 +184,7 @@ ProductFields.propTypes = {
   assignModalConfig: PropTypes.func.isRequired,
   beginningDatetime: PropTypes.string,
   closeInfo: PropTypes.func.isRequired,
+  formProps: PropTypes.shape().isRequired,
   hasIban: PropTypes.bool.isRequired,
   isEvent: PropTypes.bool,
   readOnly: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),

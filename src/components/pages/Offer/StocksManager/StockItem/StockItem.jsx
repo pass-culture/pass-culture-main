@@ -119,6 +119,7 @@ class StockItem extends PureComponent {
         <ProductFieldsContainer
           beginningDatetime={beginningDatetime}
           closeInfo={closeInfo}
+          formProps={formProps}
           hasIban={hasIban}
           isEvent={isEvent}
           offer={offer}
