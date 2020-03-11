@@ -34,7 +34,7 @@ class SearchResults extends PureComponent {
 
     if (keywords != null) {
       const { currentPage } = this.state
-      this.handleFetchOffers(keywords, currentPage)
+      this.fetchOffers(keywords, currentPage)
     } else {
       query.clear()
     }
@@ -46,9 +46,11 @@ class SearchResults extends PureComponent {
 
   handleOnSubmit = event => {
     event.preventDefault()
+    const { history } = this.props
     const { currentPage, searchedKeywords } = this.state
     const keywords = event.target.keywords.value
     const keywordsTrimmed = keywords.trim()
+    history.replace({ search: '?mots-cles=' + keywords })
 
     if (searchedKeywords === keywordsTrimmed) {
       return
@@ -63,30 +65,22 @@ class SearchResults extends PureComponent {
           },
           () => {
             const { currentPage } = this.state
-            this.handleFetchOffers(keywordsTrimmed, currentPage)
+            this.fetchOffers(keywords, currentPage)
           }
         )
       } else {
-        this.handleFetchOffers(keywordsTrimmed, currentPage)
+        this.fetchOffers(keywords, currentPage)
       }
     }
   }
 
-  handleFetchOffers = (keywords, currentPage) => {
-    if (currentPage > 0) {
-      this.fetchOffers(keywords, currentPage - 1)
-    } else {
-      this.fetchOffers(keywords, 0)
-    }
-  }
-
-  fetchNextOffersPage = currentPage => {
+  fetchNextOffers = currentPage => {
     const { searchedKeywords } = this.state
     this.fetchOffers(searchedKeywords, currentPage)
   }
 
   fetchOffers = (keywords, currentPage) => {
-    const { categoriesFilter, geolocation, history, isSearchAroundMe } = this.props
+    const { categoriesFilter, geolocation, isSearchAroundMe } = this.props
     this.setState({
       isLoading: true,
     })
@@ -105,7 +99,6 @@ class SearchResults extends PureComponent {
           searchedKeywords: keywords,
           totalPagesNumber: nbPages,
         })
-        history.replace({ search: '?mots-cles=' + keywords })
       })
       .catch(() => {
         this.setState({
@@ -229,11 +222,11 @@ class SearchResults extends PureComponent {
               {results.length > 0 && (
                 <InfiniteScroll
                   getScrollParent={this.getScrollParent}
-                  hasMore={currentPage + 1 < totalPagesNumber}
+                  hasMore={!isLoading && (currentPage + 1 < totalPagesNumber)}
                   loader={<Spinner key="loader" />}
-                  loadMore={this.fetchNextOffersPage}
+                  loadMore={this.fetchNextOffers}
                   pageStart={currentPage}
-                  threshold={-10}
+                  threshold={100}
                   useWindow={false}
                 >
                   {results.map(result => (
