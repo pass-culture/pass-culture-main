@@ -87,7 +87,7 @@ describe('components | SearchResults', () => {
       expect(textInput).toHaveLength(1)
       expect(textInput.prop('name')).toBe('keywords')
       expect(textInput.prop('placeholder')).toBe('Artiste, auteur...')
-      expect(textInput.prop('type')).toBe('text')
+      expect(textInput.prop('type')).toBe('search')
     })
 
     it('should display a form element with a submit button', () => {

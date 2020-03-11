@@ -105,6 +105,7 @@ class SearchResults extends PureComponent {
           searchedKeywords: keywords,
           totalPagesNumber: nbPages,
         })
+        history.replace({ search: '?mots-cles=' + keywords })
       })
       .catch(() => {
         this.setState({
@@ -112,7 +113,6 @@ class SearchResults extends PureComponent {
         })
         this.showFailModal()
       })
-    history.replace({ search: '?mots-cles=' + keywords })
   }
 
   getScrollParent = () => document.querySelector('.home-results-wrapper')
@@ -190,7 +190,7 @@ class SearchResults extends PureComponent {
                   onChange={this.handleOnTextInputChange}
                   placeholder="Artiste, auteur..."
                   ref={this.inputRef}
-                  type="text"
+                  type="search"
                   value={keywordsToSearch}
                 />
                 <div className="home-text-input-reset">
