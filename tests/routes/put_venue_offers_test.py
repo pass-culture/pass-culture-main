@@ -120,7 +120,7 @@ class Put:
             assert offers[1].isActive == True
 
         @clean_database
-        def when_activating_all_venue_offers_returns_a_availability_message(self, app):
+        def when_activating_all_venue_offers_returns_an_availability_message(self, app):
             # Given
             user = create_user(email='test@example.net')
             offerer = create_offerer()

@@ -25,12 +25,11 @@ class AvailabilityMessageTest:
         @clean_database
         def when_no_stock_created(self, app):
             # Given
-            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue=venue)
 
-            repository.save(user, offer)
+            repository.save(offer)
 
             # When
             availability_message = offer.availabilityMessage
@@ -47,7 +46,7 @@ class AvailabilityMessageTest:
             offer = create_offer_with_thing_product(venue=venue)
             stock = create_stock(offer=offer, is_soft_deleted=True)
 
-            repository.save(user, stock)
+            repository.save(stock)
 
             # When
             availability_message = offer.availabilityMessage
@@ -66,7 +65,7 @@ class AvailabilityMessageTest:
             stock = create_stock(offer=offer, available=12, price=0)
             booking = create_booking(user, stock=stock, quantity=5)
 
-            repository.save(user, booking)
+            repository.save(booking)
 
             # When
             availability_message = offer.availabilityMessage
@@ -85,7 +84,7 @@ class AvailabilityMessageTest:
             stock2 = create_stock(offer=offer, available=6)
             booking = create_booking(user, stock=stock1, quantity=5)
 
-            repository.save(user, booking, stock2)
+            repository.save(booking, stock2)
 
             # When
             availability_message = offer.availabilityMessage
@@ -100,14 +99,14 @@ class AvailabilityMessageTest:
             user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue=venue)
+            offer = create_offer_with_event_product(venue=venue)
             stock1 = create_stock(offer=offer, available=5, price=0)
             stock2 = create_stock(offer=offer, available=6, price=0)
             stock3 = create_stock(offer=offer, available=23, price=0)
             booking1 = create_booking(user, stock=stock1, quantity=5)
             booking2 = create_booking(user, stock=stock2, quantity=6)
 
-            repository.save(user, booking1, booking2, stock3)
+            repository.save(booking1, booking2, stock3)
 
             # When
             availability_message = offer.availabilityMessage
@@ -125,7 +124,7 @@ class AvailabilityMessageTest:
             stock = create_stock(offer=offer, available=5, price=0)
             booking = create_booking(user, stock=stock, quantity=5)
 
-            repository.save(user, booking)
+            repository.save(booking)
 
             # When
             availability_message = offer.availabilityMessage
@@ -134,12 +133,15 @@ class AvailabilityMessageTest:
             assert availability_message == 'Plus de stock restant'
 
         @clean_database
-        def when_event_has_no_quantity_for_all_stocks(self, app):
+        def when_all_stock_have_been_booked_for_event_offer(self, app):
+            # Given
+            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
-            stock = create_stock(offer=offer, available=0)
-            repository.save(stock)
+            stock = create_stock(offer=offer, available=5, price=0)
+            booking = create_booking(user, stock=stock, quantity=5)
+            repository.save(booking)
 
             # When
             availability_message = offer.availabilityMessage
@@ -151,14 +153,13 @@ class AvailabilityMessageTest:
         @clean_database
         def when_at_least_one_stock_is_unlimited(self, app):
             # Given
-            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue=venue)
             stock1 = create_stock(offer=offer, available=None)
             stock2 = create_stock(offer=offer, available=13)
 
-            repository.save(user, stock1, stock2)
+            repository.save(stock1, stock2)
 
             # When
             availability_message = offer.availabilityMessage
@@ -171,14 +172,13 @@ class AvailabilityMessageTest:
         def when_all_stocks_have_passed_booking_limit_datetime(self, app):
             # Given
             yesterday = datetime.utcnow() - timedelta(days=1)
-            user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue=venue)
             stock1 = create_stock(offer=offer, available=12, booking_limit_datetime=yesterday)
             stock2 = create_stock(offer=offer, available=13, booking_limit_datetime=yesterday)
 
-            repository.save(user, stock1, stock2)
+            repository.save(stock1, stock2)
 
             # When
             availability_message = offer.availabilityMessage
