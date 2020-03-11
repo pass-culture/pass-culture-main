@@ -19,7 +19,7 @@ class AllocineProviderForm extends PureComponent {
 
   handleSubmit = (formValues) => {
     const { createVenueProvider, providerId, venueId } = this.props
-    const { available, isDuo, price } = formValues
+    const { available, isDuo = true, price } = formValues
 
     const payload = {
       available,
@@ -114,6 +114,7 @@ class AllocineProviderForm extends PureComponent {
                 id="apf-is-duo"
                 label="Accepter les réservations DUO"
                 name="isDuo"
+                checked
               />
               <span
                 className="apf-tooltip"

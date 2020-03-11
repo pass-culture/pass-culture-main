@@ -201,7 +201,7 @@ describe('components | AllocineProviderForm', () => {
     expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
       price: 10,
       available: undefined,
-      isDuo: undefined,
+      isDuo: true,
       providerId: 'AA',
       venueId: 'BB',
     })
@@ -222,7 +222,7 @@ describe('components | AllocineProviderForm', () => {
     expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
       price: 0,
       available: undefined,
-      isDuo: undefined,
+      isDuo: true,
       providerId: 'AA',
       venueId: 'BB',
     })
@@ -243,7 +243,7 @@ describe('components | AllocineProviderForm', () => {
     expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
       price: 0.42,
       available: undefined,
-      isDuo: undefined,
+      isDuo: true,
       providerId: 'AA',
       venueId: 'BB',
     })

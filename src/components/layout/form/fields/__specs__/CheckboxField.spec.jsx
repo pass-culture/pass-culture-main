@@ -8,6 +8,7 @@ describe('components | CheckboxField', () => {
   it('should have input type checkbox', () => {
     // given
     const props = {
+      checked: true,
       id: 'checkbox-id',
       name: 'checkbox-name'
     }
@@ -37,11 +38,13 @@ describe('components | CheckboxField', () => {
     expect(input.prop('type')).toBe('checkbox')
     expect(input.prop('name')).toBe('checkbox-name')
     expect(input.prop('id')).toBe('checkbox-id')
+    expect(input.prop('defaultChecked')).toBe(true)
   })
 
   it('should have label tag that has htmlFor prop to checkbox id when label is defined', () => {
     // given
     const props = {
+      checked: false,
       id: 'checkbox-id',
       name: 'checkbox-name',
       label: 'checkbox-label'
@@ -70,5 +73,7 @@ describe('components | CheckboxField', () => {
     // then
     const label = wrapper.find('label')
     expect(label.prop('htmlFor')).toBe('checkbox-id')
+    const input = wrapper.find('input')
+    expect(input.prop('defaultChecked')).toBe(false)
   })
 })
