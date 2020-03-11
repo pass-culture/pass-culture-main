@@ -150,6 +150,54 @@ describe('fetchAlgolia', () => {
     })
   })
 
+  describe('sorting parameter', () => {
+    it('should call Algolia using right index if index suffix is provided', () => {
+      // Given
+      const initIndex = jest.fn()
+      algoliasearch.mockReturnValue({ initIndex })
+      const search = jest.fn()
+      initIndex.mockReturnValue({ search })
+      const searchedKeywords = 'searched keywords'
+      const pageRequested = 0
+      const geolocation = null
+      const categoriesFilter = []
+      const indexSuffix = '_by_proximity'
+
+      // When
+      fetchAlgolia(searchedKeywords, pageRequested, geolocation, categoriesFilter, indexSuffix)
+
+      // Then
+      expect(search).toHaveBeenCalledWith({
+        query: searchedKeywords,
+        page: pageRequested,
+      })
+      expect(initIndex).toHaveBeenCalledWith('indexName_by_proximity')
+    })
+
+    it('should call Algolia using default index if no index suffix is provided', () => {
+      // Given
+      const initIndex = jest.fn()
+      algoliasearch.mockReturnValue({ initIndex })
+      const search = jest.fn()
+      initIndex.mockReturnValue({ search })
+      const searchedKeywords = 'searched keywords'
+      const pageRequested = 0
+      const geolocation = null
+      const categoriesFilter = []
+      const indexSuffix = ''
+
+      // When
+      fetchAlgolia(searchedKeywords, pageRequested, geolocation, categoriesFilter, indexSuffix)
+
+      // Then
+      expect(search).toHaveBeenCalledWith({
+        query: searchedKeywords,
+        page: pageRequested,
+      })
+      expect(initIndex).toHaveBeenCalledWith('indexName')
+    })
+  })
+
   describe('multiple parameters', () => {
     it('should call Algolia with all given search parameters', () => {
       // Given
@@ -164,9 +212,10 @@ describe('fetchAlgolia', () => {
         longitude: 43,
       }
       const categoriesFilter = ['Pratique artistique']
+      const indexSuffix = '_by_price'
 
       // When
-      fetchAlgolia(searchedKeywords, pageRequested, geolocation, categoriesFilter)
+      fetchAlgolia(searchedKeywords, pageRequested, geolocation, categoriesFilter, indexSuffix)
 
       // Then
       expect(search).toHaveBeenCalledWith({
@@ -176,6 +225,7 @@ describe('fetchAlgolia', () => {
         aroundLatLng: '42, 43',
         aroundRadius: 'all',
       })
+      expect(initIndex).toHaveBeenCalledWith('indexName_by_price')
     })
   })
 })

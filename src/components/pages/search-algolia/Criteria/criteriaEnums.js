@@ -83,6 +83,5 @@ export const SORT_CRITERIA = {
     icon: 'ico-price',
     index: '_by_price',
     requiresGeolocation: false,
-
   },
 }

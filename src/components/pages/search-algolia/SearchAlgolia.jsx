@@ -10,14 +10,14 @@ class SearchAlgolia extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
+      categoryCriterion: CATEGORY_CRITERIA.ALL,
       geolocationCriterion: {
         isSearchAroundMe: props.isGeolocationEnabled,
         params: props.isGeolocationEnabled
           ? GEOLOCATION_CRITERIA.AROUND_ME
           : GEOLOCATION_CRITERIA.EVERYWHERE,
       },
-      categoryCriterion: CATEGORY_CRITERIA.ALL,
-      sortCriterion:SORT_CRITERIA.RANDOM,
+      sortCriterion: SORT_CRITERIA.RANDOM,
     }
   }
 
@@ -48,15 +48,15 @@ class SearchAlgolia extends PureComponent {
 
   handleSortCriterionSelection = criterionKey => () => {
     this.setState({
-        sortCriterion:SORT_CRITERIA[criterionKey],
-      })
+      sortCriterion: SORT_CRITERIA[criterionKey],
+    })
     const { redirectToSearchMainPage } = this.props
     redirectToSearchMainPage()
   }
 
   render() {
     const { match, query, redirectToSearchMainPage, history, geolocation } = this.props
-    const { geolocationCriterion, categoryCriterion, sortCriterion } = this.state
+    const { categoryCriterion, geolocationCriterion, sortCriterion } = this.state
 
     return (
       <Switch>
@@ -106,7 +106,7 @@ class SearchAlgolia extends PureComponent {
         </Route>
         <Route path="/recherche-offres/criteres-tri">
           <Criteria
-            activeCriterionLabel={categoryCriterion.label}
+            activeCriterionLabel={sortCriterion.label}
             criteria={SORT_CRITERIA}
             history={history}
             match={match}
@@ -128,7 +128,7 @@ SearchAlgolia.propTypes = {
     latitude: PropTypes.number,
     longitude: PropTypes.number,
   }),
-  history: PropTypes.shape({ push: PropTypes.func, location: PropTypes.shape() }).isRequired,
+  history: PropTypes.shape().isRequired,
   isGeolocationEnabled: PropTypes.bool.isRequired,
   isUserAllowedToSelectCriterion: PropTypes.func.isRequired,
   match: PropTypes.shape().isRequired,

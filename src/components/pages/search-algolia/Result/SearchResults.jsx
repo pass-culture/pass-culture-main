@@ -253,6 +253,7 @@ SearchResults.defaultProps = {
   categoriesFilter: [],
   geolocation: { longitude: null, latitude: null },
   isSearchAroundMe: false,
+  sortingIndexSuffix: ''
 }
 
 SearchResults.propTypes = {
@@ -262,19 +263,16 @@ SearchResults.propTypes = {
     longitude: PropTypes.number,
   }),
   history: PropTypes.shape({
-    replace: PropTypes.func.isRequired,
-    search: PropTypes.string.isRequired,
+    replace: PropTypes.func,
+    search: PropTypes.string
   }).isRequired,
   isSearchAroundMe: PropTypes.bool,
   match: PropTypes.shape().isRequired,
   query: PropTypes.shape({
-    clear: PropTypes.func,
-    change: PropTypes.func,
     parse: PropTypes.func,
   }).isRequired,
   redirectToSearchMainPage: PropTypes.func.isRequired,
-  search: PropTypes.string.isRequired,
-  sortingIndexSuffix: PropTypes.string.isRequired,
+  sortingIndexSuffix: PropTypes.string,
 }
 
 export default SearchResults

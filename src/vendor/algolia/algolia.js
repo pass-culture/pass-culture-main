@@ -5,11 +5,16 @@ import {
   WEBAPP_ALGOLIA_INDEX_NAME,
   WEBAPP_ALGOLIA_SEARCH_API_KEY,
 } from '../../utils/config'
+import { FACETS } from './facets'
+import { FILTERS } from './filters'
 
-const CATEGORY_FACET = `offer.label`
-const UNLIMITED_RADIUS = 'all'
-
-export const fetchAlgolia = (keywords = '', page = 0, geolocationCoordinates, categories = [], indexSuffix='') => {
+export const fetchAlgolia = (
+  keywords = '',
+  page = 0,
+  geolocationCoordinates,
+  categories = [],
+  indexSuffix = ''
+) => {
   if (!keywords) return
 
   const searchParameters = {
@@ -20,7 +25,7 @@ export const fetchAlgolia = (keywords = '', page = 0, geolocationCoordinates, ca
   }
 
   const client = algoliasearch(WEBAPP_ALGOLIA_APPLICATION_ID, WEBAPP_ALGOLIA_SEARCH_API_KEY)
-  const index = client.initIndex(WEBAPP_ALGOLIA_INDEX_NAME+indexSuffix)
+  const index = client.initIndex(WEBAPP_ALGOLIA_INDEX_NAME + indexSuffix)
   return index.search(searchParameters)
 }
 
@@ -33,18 +38,18 @@ const buildQueryParameter = keywords => {
 const buildCategoryFilterParameter = categories => {
   if (categories.length > 0) {
     return {
-      filters: categories.map(category => `${CATEGORY_FACET}:"${category}"`).join(' OR '),
+      filters: categories.map(category => `${FACETS.CATEGORY_FACET}:"${category}"`).join(' OR '),
     }
   }
 }
 
-const buildGeolocationParameter = geolocationCoordinates => {
-  if (geolocationCoordinates) {
-    const { longitude, latitude } = geolocationCoordinates
+const buildGeolocationParameter = coordinates => {
+  if (coordinates) {
+    const { longitude, latitude } = coordinates
     if (latitude && longitude) {
       return {
         aroundLatLng: `${latitude}, ${longitude}`,
-        aroundRadius: UNLIMITED_RADIUS,
+        aroundRadius: FILTERS.UNLIMITED_RADIUS,
       }
     }
   }

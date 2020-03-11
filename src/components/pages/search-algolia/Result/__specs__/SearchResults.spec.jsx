@@ -37,6 +37,7 @@ describe('components | SearchResults', () => {
     parse = jest.fn().mockReturnValue({})
     replace = jest.fn()
     props = {
+      categoriesFilter: null,
       geolocation: {
         latitude: 40.1,
         longitude: 41.1,
@@ -45,9 +46,7 @@ describe('components | SearchResults', () => {
         search: '',
         replace,
       },
-      location: {
-        search: '',
-      },
+      isSearchAroundMe: false,
       match: {
         params: {},
       },
@@ -57,6 +56,7 @@ describe('components | SearchResults', () => {
         parse,
       },
       redirectToSearchMainPage: jest.fn(),
+      sortingIndexSuffix: null
     }
     fetchAlgolia.mockReturnValue(
       new Promise(resolve => {
@@ -138,15 +138,16 @@ describe('components | SearchResults', () => {
     })
 
     describe('when no keywords in url', () => {
-      it('should fetch data with page 0, given categories and geolocation', () => {
+      it('should fetch data with page 0, given categories, geolocation, sorting criteria', () => {
         props.categoriesFilter = ['Cinéma']
         props.isSearchAroundMe = true
+        props.sortingIndexSuffix = '_by_proximity'
 
         // when
         shallow(<SearchResults {...props} />)
 
         // then
-        expect(fetchAlgolia).toHaveBeenCalledWith('', 0, props.geolocation, props.categoriesFilter)
+        expect(fetchAlgolia).toHaveBeenCalledWith('', 0, props.geolocation, props.categoriesFilter, '_by_proximity')
       })
     })
 
@@ -178,7 +179,7 @@ describe('components | SearchResults', () => {
         expect(results).toHaveLength(0)
         expect(searchInput.prop('value')).toBe('une librairie')
         expect(resultTitle).toHaveLength(1)
-        expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, [])
+        expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, null, null)
       })
 
       it('should fill search input and display keywords, number of results when results are found', async () => {
@@ -211,13 +212,24 @@ describe('components | SearchResults', () => {
       })
     })
 
-    describe('when geolocation is activated', () => {
-      it('should fetch data using geolocation coordinates', () => {
+    describe('when geolocation', () => {
+      it('should fetch data using geolocation coordinates when geolocation is enabled', async () => {
         // given
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              nbHits: 2,
+              page: 0,
+            })
+          })
+        )
         parse.mockReturnValue({
           'mots-cles': 'une librairie',
         })
         props.isSearchAroundMe = true
+        props.categoriesFilter = null
+        props.sortingIndexSuffix = null
         props.geolocation = {
           latitude: 40.1,
           longitude: 41.1,
@@ -227,30 +239,115 @@ describe('components | SearchResults', () => {
         shallow(<SearchResults {...props} />)
 
         // then
-        expect(fetchAlgolia).toHaveBeenCalledWith(
-          'une librairie',
-          0,
-          {
-            latitude: 40.1,
-            longitude: 41.1,
-          },
-          []
-        )
+        expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, { latitude: 40.1, longitude: 41.1 }, null, null)
       })
     })
-    describe('when filter is provided', () => {
-      it('should fetch data using provided filter', () => {
+
+    describe('when category filter', () => {
+      it('should fetch data using category filter when provided', async () => {
         // given
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              nbHits: 2,
+              page: 0,
+            })
+          })
+        )
         parse.mockReturnValue({
           'mots-cles': 'une librairie',
+          page: 1,
         })
         props.categoriesFilter = ['Cinéma']
+        props.isSearchAroundMe = false
+        props.sortingIndexSuffix = null
 
         // when
-        shallow(<SearchResults {...props} />)
+        await shallow(<SearchResults {...props} />)
 
         // then
-        expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, ['Cinéma'])
+        expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, ['Cinéma'], null)
+      })
+
+      it('should fetch data not using category filter when not provided', async () => {
+        // given
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              nbHits: 2,
+              page: 0,
+            })
+          })
+        )
+        parse.mockReturnValue({
+          'mots-cles': 'une librairie',
+          page: 1,
+        })
+        props.categoriesFilter = null
+        props.isSearchAroundMe = false
+        props.sortingIndexSuffix = null
+
+        // when
+        await shallow(<SearchResults {...props} />)
+
+        // then
+        expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, null, null)
+      })
+    })
+
+    describe('when sorting filter', () => {
+      it('should fetch data using sorting filter when provided', async () => {
+        // given
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              nbHits: 2,
+              page: 0,
+            })
+          })
+        )
+        parse.mockReturnValue({
+          'mots-cles': 'une librairie',
+          page: 1,
+        })
+        props.categoriesFilter = null
+        props.isSearchAroundMe = false
+        props.sortingIndexSuffix = '_by_proximity'
+
+        // when
+        await shallow(<SearchResults {...props} />)
+
+        // then
+        expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, null, '_by_proximity')
+      })
+
+      it('should fetch data not using sorting filter when not provided', async () => {
+        // given
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              nbHits: 2,
+              page: 0,
+            })
+          })
+        )
+        parse.mockReturnValue({
+          'mots-cles': 'une librairie',
+          page: 1,
+        })
+        props.categoriesFilter = null
+        props.isSearchAroundMe = false
+        props.sortingIndexSuffix = null
+
+        // when
+        await shallow(<SearchResults {...props} />)
+
+        // then
+        expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, null, null)
       })
     })
   })
@@ -272,7 +369,7 @@ describe('components | SearchResults', () => {
       })
 
       // then
-      expect(fetchAlgolia).toHaveBeenCalledWith('un livre très cherché', 0, null, [])
+      expect(fetchAlgolia).toHaveBeenCalledWith('un livre très cherché', 0, null, null, null)
     })
 
     it('should trigger search request when keywords contains only spaces', () => {
@@ -292,7 +389,7 @@ describe('components | SearchResults', () => {
       })
 
       // then
-      expect(fetchAlgolia).toHaveBeenNthCalledWith(2, '', 0, null, [])
+      expect(fetchAlgolia).toHaveBeenNthCalledWith(2, '', 0, null, null, null)
     })
 
     it('should trigger search request when no keywords', () => {
@@ -312,7 +409,7 @@ describe('components | SearchResults', () => {
       })
 
       // then
-      expect(fetchAlgolia).toHaveBeenNthCalledWith(2, '', 0, null, [])
+      expect(fetchAlgolia).toHaveBeenCalledWith('', 0, null, null, null)
     })
 
     it('should display search keywords and number of results when 0 result', async () => {
@@ -465,7 +562,7 @@ describe('components | SearchResults', () => {
             hitsPerPage: 2,
             processingTimeMS: 1,
             query: 'librairie',
-            params: "query='librairie'&hitsPerPage=2",
+            params: 'query=\'librairie\'&hitsPerPage=2',
           })
         })
       )
@@ -504,7 +601,7 @@ describe('components | SearchResults', () => {
             hitsPerPage: 2,
             processingTimeMS: 1,
             query: 'librairie',
-            params: "query='librairie'&hitsPerPage=2",
+            params: 'query=\'librairie\'&hitsPerPage=2',
           })
         })
       )
@@ -536,7 +633,7 @@ describe('components | SearchResults', () => {
             hitsPerPage: 2,
             processingTimeMS: 1,
             query: 'vas-y',
-            params: "query='vas-y'&hitsPerPage=2",
+            params: 'query=\'vas-y\'&hitsPerPage=2',
           })
         })
       )
@@ -588,7 +685,7 @@ describe('components | SearchResults', () => {
       await form.simulate('submit', {
         target: {
           keywords: {
-            value: 'librairie',
+            value: '',
           },
         },
         preventDefault: jest.fn(),
@@ -604,8 +701,8 @@ describe('components | SearchResults', () => {
 
       // then
       expect(fetchAlgolia).toHaveBeenCalledTimes(2)
-      expect(fetchAlgolia).toHaveBeenNthCalledWith(1, '', 0, null, [])
-      expect(fetchAlgolia).toHaveBeenNthCalledWith(2, 'librairie', 0, null, [])
+      expect(fetchAlgolia).toHaveBeenNthCalledWith(1, '', 0, null, null, null)
+      expect(fetchAlgolia).toHaveBeenNthCalledWith(2, 'librairie', 0, null, null, null)
     })
 
     it('should display an error when search failed', async () => {
@@ -631,7 +728,7 @@ describe('components | SearchResults', () => {
       // then
       await toast.info
       expect(toast.info).toHaveBeenCalledWith(
-        "La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard."
+        'La recherche n\'a pas pu aboutir, veuillez ré-essayer plus tard.'
       )
     })
 

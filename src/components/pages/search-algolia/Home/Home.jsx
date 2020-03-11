@@ -113,7 +113,6 @@ export class Home extends PureComponent {
             selectedFilter={sortCriterion.label}
           />
         </ul>
-
         <RelativeFooterContainer
           extraClassName="dotted-top-red"
           theme="white"
@@ -125,18 +124,18 @@ export class Home extends PureComponent {
 
 Home.propTypes = {
   categoryCriterion: PropTypes.shape({
-    label: PropTypes.string.isRequired,
     icon: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
   }).isRequired,
   geolocationCriterion: PropTypes.shape({
     params: PropTypes.shape({
-      label: PropTypes.string.isRequired,
       icon: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
     }),
   }).isRequired,
   history: PropTypes.shape({ push: PropTypes.func }).isRequired,
   sortCriterion: PropTypes.shape({
-    label: PropTypes.string.isRequired,
     icon: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
   }).isRequired,
 }

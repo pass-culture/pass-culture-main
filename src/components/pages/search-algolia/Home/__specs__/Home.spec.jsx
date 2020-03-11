@@ -5,24 +5,29 @@ import { Router } from 'react-router-dom'
 
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import { Home } from '../Home'
+import { CriterionItem } from '../CriterionItem/CriterionItem'
 
 describe('components | Home', () => {
   let props
   beforeEach(() => {
     props = {
-      history: {
-        push: jest.fn(),
+      categoryCriterion: {
+        icon: 'ico-gem-stone',
+        label: 'Toutes les catégories',
       },
       geolocationCriterion: {
         isSearchAroundMe: false,
         params: {
-          label: 'Partout',
           icon: 'ico-globe',
+          label: 'Partout',
         },
       },
-      categoryCriterion: {
-        label: 'Toutes les catégories',
-        icon: 'ico-gem-stone',
+      history: {
+        push: jest.fn(),
+      },
+      sortCriterion: {
+        icon: 'ico-random',
+        label: 'Au hasard',
       },
     }
   })
@@ -54,12 +59,13 @@ describe('components | Home', () => {
 
     // then
     const header = wrapper.find(HeaderContainer).first()
+    expect(header.prop('title')).toBe('Recherche')
     expect(header.prop('closeTo')).toBe('/decouverte')
     expect(header.prop('closeTitle')).toBe('Retourner à la page découverte')
   })
 
   it('should clear text input when clicking on reset cross', async () => {
-    // Given
+    // given
     const history = createMemoryHistory()
     history.push('/recherche-offres')
     const wrapper = await mount(
@@ -77,17 +83,17 @@ describe('components | Home', () => {
     })
     const resetButton = wrapper.findWhere(node => node.prop('type') === 'reset').first()
 
-    // When
+    // when
     resetButton.simulate('click')
 
     // then
     const expectedMissingResetButton = wrapper
       .findWhere(node => node.prop('type') === 'reset')
       .first()
-    const resettedInput = form.find('input').first()
+    const resetInput = form.find('input').first()
     expect(expectedMissingResetButton).toHaveLength(0)
-    expect(resettedInput.instance().value).toBe('')
-    expect(resettedInput.is(':focus')).toBe(true)
+    expect(resetInput.instance().value).toBe('')
+    expect(resetInput.is(':focus')).toBe(true)
   })
 
   it('should redirect to result page without "mots-cles" query param if search is empty', () => {
@@ -124,5 +130,26 @@ describe('components | Home', () => {
     expect(props.history.push).toHaveBeenCalledWith(
       '/recherche-offres/resultats?mots-cles=search keyword'
     )
+  })
+
+  it('should render a list of CriterionItem with the right props', () => {
+    // when
+    const wrapper = shallow(<Home {...props} />)
+
+    // then
+    const criterionItems = wrapper.find(CriterionItem)
+    expect(criterionItems).toHaveLength(3)
+    expect(criterionItems.at(0).prop('icon')).toBe('ico-gem-stone')
+    expect(criterionItems.at(0).prop('label')).toBe('Je cherche')
+    expect(criterionItems.at(0).prop('linkTo')).toBe('/recherche-offres/criteres-categorie')
+    expect(criterionItems.at(0).prop('selectedFilter')).toBe('Toutes les catégories')
+    expect(criterionItems.at(1).prop('icon')).toBe('ico-globe')
+    expect(criterionItems.at(1).prop('label')).toBe('Où')
+    expect(criterionItems.at(1).prop('linkTo')).toBe('/recherche-offres/criteres-localisation')
+    expect(criterionItems.at(1).prop('selectedFilter')).toBe('Partout')
+    expect(criterionItems.at(2).prop('icon')).toBe('ico-random')
+    expect(criterionItems.at(2).prop('label')).toBe('Trier par')
+    expect(criterionItems.at(2).prop('linkTo')).toBe('/recherche-offres/criteres-tri')
+    expect(criterionItems.at(2).prop('selectedFilter')).toBe('Au hasard')
   })
 })
