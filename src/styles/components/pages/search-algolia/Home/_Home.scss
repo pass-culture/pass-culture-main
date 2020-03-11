@@ -76,7 +76,10 @@
   border-top-right-radius: 0;
   display: flex;
   justify-content: flex-end;
-  width: 10%;
+
+  img {
+    margin-left: rem(16px);
+  }
 }
 
 .home-text-input-wrapper {
@@ -160,4 +163,14 @@
 .search-criteria-separator {
   border-top: 1px solid $grey-even-more-light;
   width: 90%;
+}
+
+@media screen and (max-width: $iphone5-width) and (max-height: $iphone5-height) {
+  .header-search-main-page {
+    height: rem(30px);
+  }
+
+  .home-text-input-form {
+    padding: rem(12px) 0;
+  }
 }
