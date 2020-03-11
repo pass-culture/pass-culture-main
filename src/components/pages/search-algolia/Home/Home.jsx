@@ -124,6 +124,7 @@ export class Home extends PureComponent {
 
 Home.propTypes = {
   categoryCriterion: PropTypes.shape({
+    filters: PropTypes.arrayOf(String),
     icon: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
   }).isRequired,
@@ -131,11 +132,14 @@ Home.propTypes = {
     params: PropTypes.shape({
       icon: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
+      requiresGeolocation: PropTypes.bool.isRequired,
     }),
   }).isRequired,
   history: PropTypes.shape({ push: PropTypes.func }).isRequired,
   sortCriterion: PropTypes.shape({
     icon: PropTypes.string.isRequired,
+    index: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
+    requiresGeolocation: PropTypes.bool.isRequired,
   }).isRequired,
 }

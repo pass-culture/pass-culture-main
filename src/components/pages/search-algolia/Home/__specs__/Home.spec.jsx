@@ -12,6 +12,7 @@ describe('components | Home', () => {
   beforeEach(() => {
     props = {
       categoryCriterion: {
+        filters: [],
         icon: 'ico-gem-stone',
         label: 'Toutes les catégories',
       },
@@ -20,14 +21,17 @@ describe('components | Home', () => {
         params: {
           icon: 'ico-globe',
           label: 'Partout',
+          requiresGeolocation: false
         },
       },
       history: {
         push: jest.fn(),
       },
       sortCriterion: {
+        index: '',
         icon: 'ico-random',
         label: 'Au hasard',
+        requiresGeolocation: false
       },
     }
   })
