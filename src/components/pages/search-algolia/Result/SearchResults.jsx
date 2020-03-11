@@ -183,7 +183,7 @@ class SearchResults extends PureComponent {
                   onChange={this.handleOnTextInputChange}
                   placeholder="Artiste, auteur..."
                   ref={this.inputRef}
-                  type="search"
+                  type="text"
                   value={keywordsToSearch}
                 />
                 <div className="home-text-input-reset">
