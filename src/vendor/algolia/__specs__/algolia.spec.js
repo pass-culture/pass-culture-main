@@ -38,7 +38,7 @@ describe('fetchAlgolia', () => {
     })
   })
 
-  it('should call Algolia whithout query parameter when no keyword is provided', () => {
+  it('should call Algolia without query parameter when no keyword is provided', () => {
     // Given
     const initIndex = jest.fn()
     algoliasearch.mockReturnValue({ initIndex })
@@ -50,6 +50,7 @@ describe('fetchAlgolia', () => {
 
     // Then
     expect(search).toHaveBeenCalledWith({
+      query: '',
       page: 0,
     })
   })

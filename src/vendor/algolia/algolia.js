@@ -15,8 +15,6 @@ export const fetchAlgolia = (
   categories = [],
   indexSuffix = ''
 ) => {
-  if (!keywords) return
-
   const searchParameters = {
     page: page,
     ...buildQueryParameter(keywords),
@@ -30,9 +28,7 @@ export const fetchAlgolia = (
 }
 
 const buildQueryParameter = keywords => {
-  if (keywords) {
-    return { query: keywords }
-  }
+  return { query: keywords }
 }
 
 const buildCategoryFilterParameter = categories => {
