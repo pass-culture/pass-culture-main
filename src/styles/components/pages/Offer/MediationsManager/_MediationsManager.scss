@@ -1,0 +1,34 @@
+.mediation-manager {
+  .info-message {
+    background: #FFEA00;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    padding: 12px 15px;
+  }
+
+  ul.mediations-list {
+    list-style: none;
+
+    li {
+      display: inline-block;
+      height: 250px;
+
+      img {
+        height: 200px;
+      }
+
+      .field {
+        .field-body {
+          margin-left: auto;
+          margin-right: auto;
+          width: 90%;
+        }
+
+        .checkbox {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+}
+

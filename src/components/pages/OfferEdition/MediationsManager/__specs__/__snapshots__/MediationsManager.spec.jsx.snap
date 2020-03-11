@@ -574,3 +574,701 @@ ShallowWrapper {
   Symbol(enzyme.__childContext__): null,
 }
 `;
+
+exports[`src | components | pages | OfferEdition | MediationsManager | MediationsManager should match the snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <MediationsManager
+    atLeastOneActiveMediation={false}
+    hasMediations={false}
+    mediations={Array []}
+    offer={Object {}}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <p
+          className="info-message"
+        >
+          Ajoutez une accroche pour mettre cette offre en avant dans l'application
+        </p>,
+        <div
+          className="box content has-text-centered"
+        >
+          <div
+            className="section small-text align-left"
+          >
+            <p>
+              <b>
+                L’accroche permet d’afficher votre offre "à la une" de l’app
+              </b>
+              , et la rend visuellement plus attrayante. C’est une image (et bientôt 
+              une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.
+            </p>
+            <p>
+              Les accroches font la 
+              <b>
+                spécificité du pass Culture
+              </b>
+              . Prenez le
+              temps de les choisir avec soin !
+            </p>
+          </div>
+          <ul
+            className="mediations-list"
+          />
+          <p>
+            <NavLink
+              activeClassName="active"
+              aria-current="page"
+              className="button is-primary "
+              to="/offres/undefined/accroches/nouveau"
+            >
+              <span
+                className="icon"
+              >
+                <Icon
+                  svg="ico-stars-w"
+                />
+              </span>
+              <span>
+                Ajouter une accroche
+              </span>
+            </NavLink>
+          </p>
+        </div>,
+      ],
+      "className": "mediation-manager",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Ajoutez une accroche pour mettre cette offre en avant dans l'application",
+          "className": "info-message",
+        },
+        "ref": null,
+        "rendered": "Ajoutez une accroche pour mettre cette offre en avant dans l'application",
+        "type": "p",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <div
+              className="section small-text align-left"
+            >
+              <p>
+                <b>
+                  L’accroche permet d’afficher votre offre "à la une" de l’app
+                </b>
+                , et la rend visuellement plus attrayante. C’est une image (et bientôt 
+                une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.
+              </p>
+              <p>
+                Les accroches font la 
+                <b>
+                  spécificité du pass Culture
+                </b>
+                . Prenez le
+                temps de les choisir avec soin !
+              </p>
+            </div>,
+            <ul
+              className="mediations-list"
+            />,
+            <p>
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                className="button is-primary "
+                to="/offres/undefined/accroches/nouveau"
+              >
+                <span
+                  className="icon"
+                >
+                  <Icon
+                    svg="ico-stars-w"
+                  />
+                </span>
+                <span>
+                  Ajouter une accroche
+                </span>
+              </NavLink>
+            </p>,
+          ],
+          "className": "box content has-text-centered",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <p>
+                  <b>
+                    L’accroche permet d’afficher votre offre "à la une" de l’app
+                  </b>
+                  , et la rend visuellement plus attrayante. C’est une image (et bientôt 
+                  une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.
+                </p>,
+                <p>
+                  Les accroches font la 
+                  <b>
+                    spécificité du pass Culture
+                  </b>
+                  . Prenez le
+                  temps de les choisir avec soin !
+                </p>,
+              ],
+              "className": "section small-text align-left",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <b>
+                      L’accroche permet d’afficher votre offre "à la une" de l’app
+                    </b>,
+                    ", et la rend visuellement plus attrayante. C’est une image (et bientôt ",
+                    "une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.",
+                  ],
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "L’accroche permet d’afficher votre offre \\"à la une\\" de l’app",
+                    },
+                    "ref": null,
+                    "rendered": "L’accroche permet d’afficher votre offre \\"à la une\\" de l’app",
+                    "type": "b",
+                  },
+                  ", et la rend visuellement plus attrayante. C’est une image (et bientôt ",
+                  "une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.",
+                ],
+                "type": "p",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    "Les accroches font la ",
+                    <b>
+                      spécificité du pass Culture
+                    </b>,
+                    ". Prenez le",
+                    "temps de les choisir avec soin !",
+                  ],
+                },
+                "ref": null,
+                "rendered": Array [
+                  "Les accroches font la ",
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "spécificité du pass Culture",
+                    },
+                    "ref": null,
+                    "rendered": "spécificité du pass Culture",
+                    "type": "b",
+                  },
+                  ". Prenez le",
+                  "temps de les choisir avec soin !",
+                ],
+                "type": "p",
+              },
+            ],
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [],
+              "className": "mediations-list",
+            },
+            "ref": null,
+            "rendered": Array [],
+            "type": "ul",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <NavLink
+                activeClassName="active"
+                aria-current="page"
+                className="button is-primary "
+                to="/offres/undefined/accroches/nouveau"
+              >
+                <span
+                  className="icon"
+                >
+                  <Icon
+                    svg="ico-stars-w"
+                  />
+                </span>
+                <span>
+                  Ajouter une accroche
+                </span>
+              </NavLink>,
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "activeClassName": "active",
+                "aria-current": "page",
+                "children": Array [
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-stars-w"
+                    />
+                  </span>,
+                  <span>
+                    Ajouter une accroche
+                  </span>,
+                ],
+                "className": "button is-primary ",
+                "to": "/offres/undefined/accroches/nouveau",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <Icon
+                      svg="ico-stars-w"
+                    />,
+                    "className": "icon",
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "svg": "ico-stars-w",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  "type": "span",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Ajouter une accroche",
+                  },
+                  "ref": null,
+                  "rendered": "Ajouter une accroche",
+                  "type": "span",
+                },
+              ],
+              "type": [Function],
+            },
+            "type": "p",
+          },
+        ],
+        "type": "div",
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <p
+            className="info-message"
+          >
+            Ajoutez une accroche pour mettre cette offre en avant dans l'application
+          </p>,
+          <div
+            className="box content has-text-centered"
+          >
+            <div
+              className="section small-text align-left"
+            >
+              <p>
+                <b>
+                  L’accroche permet d’afficher votre offre "à la une" de l’app
+                </b>
+                , et la rend visuellement plus attrayante. C’est une image (et bientôt 
+                une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.
+              </p>
+              <p>
+                Les accroches font la 
+                <b>
+                  spécificité du pass Culture
+                </b>
+                . Prenez le
+                temps de les choisir avec soin !
+              </p>
+            </div>
+            <ul
+              className="mediations-list"
+            />
+            <p>
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                className="button is-primary "
+                to="/offres/undefined/accroches/nouveau"
+              >
+                <span
+                  className="icon"
+                >
+                  <Icon
+                    svg="ico-stars-w"
+                  />
+                </span>
+                <span>
+                  Ajouter une accroche
+                </span>
+              </NavLink>
+            </p>
+          </div>,
+        ],
+        "className": "mediation-manager",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Ajoutez une accroche pour mettre cette offre en avant dans l'application",
+            "className": "info-message",
+          },
+          "ref": null,
+          "rendered": "Ajoutez une accroche pour mettre cette offre en avant dans l'application",
+          "type": "p",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <div
+                className="section small-text align-left"
+              >
+                <p>
+                  <b>
+                    L’accroche permet d’afficher votre offre "à la une" de l’app
+                  </b>
+                  , et la rend visuellement plus attrayante. C’est une image (et bientôt 
+                  une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.
+                </p>
+                <p>
+                  Les accroches font la 
+                  <b>
+                    spécificité du pass Culture
+                  </b>
+                  . Prenez le
+                  temps de les choisir avec soin !
+                </p>
+              </div>,
+              <ul
+                className="mediations-list"
+              />,
+              <p>
+                <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="button is-primary "
+                  to="/offres/undefined/accroches/nouveau"
+                >
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-stars-w"
+                    />
+                  </span>
+                  <span>
+                    Ajouter une accroche
+                  </span>
+                </NavLink>
+              </p>,
+            ],
+            "className": "box content has-text-centered",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <p>
+                    <b>
+                      L’accroche permet d’afficher votre offre "à la une" de l’app
+                    </b>
+                    , et la rend visuellement plus attrayante. C’est une image (et bientôt 
+                    une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.
+                  </p>,
+                  <p>
+                    Les accroches font la 
+                    <b>
+                      spécificité du pass Culture
+                    </b>
+                    . Prenez le
+                    temps de les choisir avec soin !
+                  </p>,
+                ],
+                "className": "section small-text align-left",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      <b>
+                        L’accroche permet d’afficher votre offre "à la une" de l’app
+                      </b>,
+                      ", et la rend visuellement plus attrayante. C’est une image (et bientôt ",
+                      "une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.",
+                    ],
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "L’accroche permet d’afficher votre offre \\"à la une\\" de l’app",
+                      },
+                      "ref": null,
+                      "rendered": "L’accroche permet d’afficher votre offre \\"à la une\\" de l’app",
+                      "type": "b",
+                    },
+                    ", et la rend visuellement plus attrayante. C’est une image (et bientôt ",
+                    "une phrase ou une vidéo) intrigante, percutante, séduisante... en un mot : accrocheuse.",
+                  ],
+                  "type": "p",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": Array [
+                      "Les accroches font la ",
+                      <b>
+                        spécificité du pass Culture
+                      </b>,
+                      ". Prenez le",
+                      "temps de les choisir avec soin !",
+                    ],
+                  },
+                  "ref": null,
+                  "rendered": Array [
+                    "Les accroches font la ",
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "spécificité du pass Culture",
+                      },
+                      "ref": null,
+                      "rendered": "spécificité du pass Culture",
+                      "type": "b",
+                    },
+                    ". Prenez le",
+                    "temps de les choisir avec soin !",
+                  ],
+                  "type": "p",
+                },
+              ],
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [],
+                "className": "mediations-list",
+              },
+              "ref": null,
+              "rendered": Array [],
+              "type": "ul",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <NavLink
+                  activeClassName="active"
+                  aria-current="page"
+                  className="button is-primary "
+                  to="/offres/undefined/accroches/nouveau"
+                >
+                  <span
+                    className="icon"
+                  >
+                    <Icon
+                      svg="ico-stars-w"
+                    />
+                  </span>
+                  <span>
+                    Ajouter une accroche
+                  </span>
+                </NavLink>,
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "activeClassName": "active",
+                  "aria-current": "page",
+                  "children": Array [
+                    <span
+                      className="icon"
+                    >
+                      <Icon
+                        svg="ico-stars-w"
+                      />
+                    </span>,
+                    <span>
+                      Ajouter une accroche
+                    </span>,
+                  ],
+                  "className": "button is-primary ",
+                  "to": "/offres/undefined/accroches/nouveau",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <Icon
+                        svg="ico-stars-w"
+                      />,
+                      "className": "icon",
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "svg": "ico-stars-w",
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    "type": "span",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "Ajouter une accroche",
+                    },
+                    "ref": null,
+                    "rendered": "Ajouter une accroche",
+                    "type": "span",
+                  },
+                ],
+                "type": [Function],
+              },
+              "type": "p",
+            },
+          ],
+          "type": "div",
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
+}
+`;
