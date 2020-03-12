@@ -103,6 +103,7 @@ class ProductFields extends PureComponent {
     const { values } = formProps
     const { available } = values
     const { bookingsQuantity } = stock || {}
+
     const formattedRemainingQuantities = getFormattedRemainingQuantities(
       available,
       bookingsQuantity

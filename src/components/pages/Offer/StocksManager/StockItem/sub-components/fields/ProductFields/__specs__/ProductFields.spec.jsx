@@ -25,9 +25,9 @@ describe('src | components | pages | Offer | StocksManager | StockItem | sub-com
       venue: {},
       formProps: {
         values: {
-          available: 2
-        }
-      }
+          available: 2,
+        },
+      },
     }
   })
 
@@ -113,14 +113,16 @@ describe('src | components | pages | Offer | StocksManager | StockItem | sub-com
     it('should compute remainingQuantity when updating total stock', () => {
       // given
       const wrapper = shallow(<ProductFields {...props} />)
-      const totalStockInput = wrapper
-        .findWhere(node => node.prop('title') === 'Stock total')
-        .first()
 
       // when
-      props.formProps.values.available = 46
-      console.log(props.formProps.values)
-      wrapper.update()
+      wrapper.setProps({
+        formProps: {
+          values: {
+            available: 46,
+          },
+        },
+      })
+
       // then
       const remainingQuantity = wrapper.find('#remaining-stock')
       expect(remainingQuantity.text()).toBe('45')
