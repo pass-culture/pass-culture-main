@@ -72,11 +72,18 @@ def batch_indexing_offers_in_algolia_by_venue(client: Redis) -> None:
         delete_venue_ids(client=client)
 
 
-def batch_indexing_offers_in_algolia_from_database(client: Redis, limit: int = 10000, page: int = 0) -> None:
+def batch_indexing_offers_in_algolia_from_database(client: Redis,
+                                                   limit: int = 10000,
+                                                   page: int = 0,
+                                                   ending_page: int = None) -> None:
     page_number = page
     has_still_offers = True
 
     while has_still_offers:
+        if ending_page:
+            if ending_page == page_number:
+                break
+
         offer_ids_as_tuple = offer_queries.get_paginated_active_offer_ids(limit=limit, page=page_number)
         offer_ids_as_int = from_tuple_to_int(offer_ids=offer_ids_as_tuple)
 

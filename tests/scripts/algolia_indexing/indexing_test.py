@@ -114,59 +114,6 @@ class BatchIndexingOffersInAlgoliaByVenueProviderTest:
         mock_process_eligible_offers.assert_not_called()
 
 
-class ProcessVenueProviderTest:
-    @patch('scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE', 3)
-    @patch('scripts.algolia_indexing.indexing.delete_venue_provider_currently_in_sync')
-    @patch('scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id')
-    @patch('scripts.algolia_indexing.indexing.process_eligible_offers')
-    def test_should_index_offers_when_at_least_one_venue_provider(self,
-                                                                  mock_process_eligible_offers,
-                                                                  mock_get_paginated_offer_ids,
-                                                                  mock_delete_venue_provider_currently_in_sync):
-        # Given
-        client = MagicMock()
-        mock_get_paginated_offer_ids.side_effect = [
-            [(1,), (2,), (3,)],
-            [(4,)],
-            [],
-        ]
-
-        # When
-        _process_venue_provider(client=client, venue_provider_id=1, provider_id='2', venue_id=5)
-
-        # Then
-        assert mock_get_paginated_offer_ids.call_count == 3
-        assert mock_process_eligible_offers.call_count == 2
-        assert mock_process_eligible_offers.call_args_list == [
-            call(client=client, offer_ids=[1, 2, 3], from_provider_update=True),
-            call(client=client, offer_ids=[4], from_provider_update=True),
-        ]
-        mock_delete_venue_provider_currently_in_sync.assert_called_once_with(
-            client=client,
-            venue_provider_id=1
-        )
-
-    @patch('scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE', 3)
-    @patch('scripts.algolia_indexing.indexing.delete_venue_provider_currently_in_sync')
-    @patch('scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id',
-           return_value=Exception)
-    def test_should_delete_venue_provider_currently_in_sync_when_exception_is_raised(self,
-                                                                                     mock_get_paginated_offer_ids,
-                                                                                     mock_delete_venue_provider_currently_in_sync):
-        # Given
-        client = MagicMock()
-
-        # When
-        _process_venue_provider(client=client, venue_provider_id=1, provider_id='2', venue_id=5)
-
-        # Then
-        assert mock_get_paginated_offer_ids.call_count == 1
-        mock_delete_venue_provider_currently_in_sync.assert_called_once_with(
-            client=client,
-            venue_provider_id=1
-        )
-
-
 class BatchIndexingOffersInAlgoliaByVenueTest:
     @patch('scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE', 1)
     @patch('scripts.algolia_indexing.indexing.delete_venue_ids')
@@ -237,7 +184,7 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
         ]
 
         # When
-        batch_indexing_offers_in_algolia_from_database(client=client, limit=1, page=0)
+        batch_indexing_offers_in_algolia_from_database(client=client, limit=1, page=0, ending_page=None)
 
         # Then
         assert mock_get_paginated_active_offer_ids.call_count == 2
@@ -261,7 +208,7 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
         ]
 
         # When
-        batch_indexing_offers_in_algolia_from_database(client=client, limit=1, page=0)
+        batch_indexing_offers_in_algolia_from_database(client=client, limit=1, page=0, ending_page=None)
 
         # Then
         assert mock_get_paginated_active_offer_ids.call_count == 3
@@ -269,6 +216,30 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
         assert mock_process_eligible_offers.call_args_list == [
             call(client=client, offer_ids=[1], from_provider_update=False),
             call(client=client, offer_ids=[2], from_provider_update=False)
+        ]
+
+    @patch('scripts.algolia_indexing.indexing.offer_queries.get_paginated_active_offer_ids')
+    @patch('scripts.algolia_indexing.indexing.process_eligible_offers')
+    def test_should_index_offers_from_first_page_only_when_ending_page_is_provided(self,
+                                                                                   mock_process_eligible_offers,
+                                                                                   mock_get_paginated_active_offer_ids,
+                                                                                   app):
+        # Given
+        client = MagicMock()
+        mock_get_paginated_active_offer_ids.side_effect = [
+            [(1,)],
+            [(2,)],
+            []
+        ]
+
+        # When
+        batch_indexing_offers_in_algolia_from_database(client=client, limit=1, page=0, ending_page=1)
+
+        # Then
+        assert mock_get_paginated_active_offer_ids.call_count == 1
+        assert mock_process_eligible_offers.call_count == 1
+        assert mock_process_eligible_offers.call_args_list == [
+            call(client=client, offer_ids=[1], from_provider_update=False),
         ]
 
 
@@ -345,3 +316,56 @@ class BatchProcessingOfferIdsInErrorTest:
         mock_get_offer_ids_in_error.assert_called_once_with(client=client)
         mock_delete_offer_ids_in_error.assert_not_called()
         mock_process_eligible_offers.assert_not_called()
+
+
+class ProcessVenueProviderTest:
+    @patch('scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE', 3)
+    @patch('scripts.algolia_indexing.indexing.delete_venue_provider_currently_in_sync')
+    @patch('scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id')
+    @patch('scripts.algolia_indexing.indexing.process_eligible_offers')
+    def test_should_index_offers_when_at_least_one_venue_provider(self,
+                                                                  mock_process_eligible_offers,
+                                                                  mock_get_paginated_offer_ids,
+                                                                  mock_delete_venue_provider_currently_in_sync):
+        # Given
+        client = MagicMock()
+        mock_get_paginated_offer_ids.side_effect = [
+            [(1,), (2,), (3,)],
+            [(4,)],
+            [],
+        ]
+
+        # When
+        _process_venue_provider(client=client, venue_provider_id=1, provider_id='2', venue_id=5)
+
+        # Then
+        assert mock_get_paginated_offer_ids.call_count == 3
+        assert mock_process_eligible_offers.call_count == 2
+        assert mock_process_eligible_offers.call_args_list == [
+            call(client=client, offer_ids=[1, 2, 3], from_provider_update=True),
+            call(client=client, offer_ids=[4], from_provider_update=True),
+        ]
+        mock_delete_venue_provider_currently_in_sync.assert_called_once_with(
+            client=client,
+            venue_provider_id=1
+        )
+
+    @patch('scripts.algolia_indexing.indexing.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE', 3)
+    @patch('scripts.algolia_indexing.indexing.delete_venue_provider_currently_in_sync')
+    @patch('scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id',
+           return_value=Exception)
+    def test_should_delete_venue_provider_currently_in_sync_when_exception_is_raised(self,
+                                                                                     mock_get_paginated_offer_ids,
+                                                                                     mock_delete_venue_provider_currently_in_sync):
+        # Given
+        client = MagicMock()
+
+        # When
+        _process_venue_provider(client=client, venue_provider_id=1, provider_id='2', venue_id=5)
+
+        # Then
+        assert mock_get_paginated_offer_ids.call_count == 1
+        mock_delete_venue_provider_currently_in_sync.assert_called_once_with(
+            client=client,
+            venue_provider_id=1
+        )
