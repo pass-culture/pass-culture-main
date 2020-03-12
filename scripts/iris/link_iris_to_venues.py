@@ -3,16 +3,18 @@ from repository.iris_venues_queries import find_ids_of_irises_located_near_venue
 
 
 def link_irises_to_existing_physical_venues():
-    venues = _find_all_venues_to_link()
-    for venue in venues:
-        iris_ids = find_ids_of_irises_located_near_venue(venue.id)
-        insert_venue_in_iris_venue(venue.id, iris_ids)
+    venue_ids = _find_all_venue_ids_to_link()
+    for venue_id in venue_ids:
+        iris_ids = find_ids_of_irises_located_near_venue(venue_id)
+        insert_venue_in_iris_venue(venue_id, iris_ids)
 
 
-def _find_all_venues_to_link():
-    return Venue.query\
+def _find_all_venue_ids_to_link():
+    venues = Venue.query \
         .join(Offerer) \
         .filter(Venue.isVirtual == False) \
         .filter(Venue.validationToken == None) \
         .filter(Offerer.validationToken == None) \
+        .with_entities(Venue.id) \
         .all()
+    return [venue.id for venue in venues]
