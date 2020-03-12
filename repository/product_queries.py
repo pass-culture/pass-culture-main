@@ -23,7 +23,8 @@ def delete_unwanted_existing_product(isbn: str):
 
     if product_has_at_least_one_booking:
         offers = get_offers_by_product_id(product.id)
-        update_is_active_status(offers, False)
+        offers = update_is_active_status(offers, False)
+        repository.save(*offers)
         raise ProductWithBookingsException
 
     objects_to_delete = []
