@@ -146,7 +146,7 @@ class ProductFields extends PureComponent {
         <td className="tooltiped">
           <NumberField
             format={createFormatAvailable()}
-            min="0"
+            min={bookingsQuantity}
             name="available"
             placeholder="Illimité"
             readOnly={readOnly}
@@ -159,7 +159,7 @@ class ProductFields extends PureComponent {
           className="is-small remaining-stock"
           id="remaining-stock"
         >
-          {formattedRemainingQuantities}
+          {formattedRemainingQuantities || ''}
         </td>
 
         <td

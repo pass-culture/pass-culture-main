@@ -26,7 +26,8 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
   beforeEach(() => {
     query = {
       changeToCreation: jest.fn(),
-      context: () => ({}),
+      changeToReadOnly: jest.fn(),
+      context: jest.fn().mockReturnValue({}),
     }
     props = {
       dispatch: jest.fn(),
@@ -42,7 +43,7 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
         id: 'ABDD',
       },
       query,
-      shouldPreventCreationOfSecondStock: false,
+      creationOfSecondStockIsPrevented: false,
       stocks: [stock],
     }
   })
@@ -79,6 +80,36 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
       expect(query.changeToCreation).toHaveBeenCalledWith(null, {
         key: 'stock',
       })
+    })
+  })
+
+  describe('handleShouldPreventCreationOfSecondNotEventStock', () => {
+    it('should do nothing when creationOfSecondStockIsPrevented is false', () => {
+      // given
+      props.creationOfSecondStockIsPrevented = false
+      const wrapper = shallow(<StocksManager {...props} />)
+
+      // when
+      const result = wrapper.instance().handleShouldPreventCreationOfSecondNotEventStock()
+
+      // then
+      expect(result).toBeUndefined()
+    })
+
+    it('should call query changeToReadOnly when isCreatedEntity', () => {
+      // given
+      props.creationOfSecondStockIsPrevented = true
+      props.query.context.mockReturnValue({
+        isCreatedEntity: true,
+      })
+
+      const wrapper = shallow(<StocksManager {...props} />)
+
+      // when
+      wrapper.instance().handleShouldPreventCreationOfSecondNotEventStock()
+
+      // then
+      expect(query.changeToReadOnly).toHaveBeenCalledWith(null, { key: 'stock' })
     })
   })
 

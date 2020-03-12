@@ -127,6 +127,30 @@ describe('src | components | pages | Offer | StocksManager | StockItem | sub-com
       const remainingQuantity = wrapper.find('#remaining-stock')
       expect(remainingQuantity.text()).toBe('45')
     })
+
+    it('should prevent user from entering a totalStock less than bookingsQuantity', () => {
+      // given
+      const wrapper = shallow(<ProductFields {...props} />)
+
+      // when
+      wrapper.setProps({
+        formProps: {
+          values: {
+            available: 10,
+          },
+        },
+        stock: {
+          bookingsQuantity: 3,
+        },
+      })
+
+      // then
+      const stockTotalInput = wrapper
+        .findWhere(node => node.prop('title') === 'Stock total')
+        .first()
+
+      expect(stockTotalInput.prop('min')).toBe(3)
+    })
   })
 
   describe('when componentWillUnmount', () => {

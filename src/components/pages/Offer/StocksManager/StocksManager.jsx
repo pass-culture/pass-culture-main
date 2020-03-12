@@ -59,14 +59,18 @@ class StocksManager extends PureComponent {
   }
 
   handleEnterKey() {
-    const { location, query } = this.props
+    const { location, query, creationOfSecondStockIsPrevented } = this.props
     const { search } = location
     const allStocksReadOnly = !/stock([A-Z0-9]*)=(creation|modification)/.test(search)
 
     // Dirty DOM selectors ? Could try to pass back a react dom ref
     // to this parent component otherwise, but code would be more
     // complicated
+
     if (allStocksReadOnly) {
+      if (creationOfSecondStockIsPrevented) {
+        return
+      }
       const addStockElement = document.getElementById('add-stock')
       if (addStockElement) {
         addStockElement.focus()
@@ -79,10 +83,10 @@ class StocksManager extends PureComponent {
   }
 
   handleShouldPreventCreationOfSecondNotEventStock = () => {
-    const { shouldPreventCreationOfSecondStock, query } = this.props
+    const { creationOfSecondStockIsPrevented, query } = this.props
     const { isCreatedEntity } = query.context({ key: 'stock' })
 
-    if (!shouldPreventCreationOfSecondStock) {
+    if (!creationOfSecondStockIsPrevented) {
       return
     }
 
@@ -180,7 +184,7 @@ class StocksManager extends PureComponent {
       product,
       provider,
       query,
-      shouldPreventCreationOfSecondStock,
+      creationOfSecondStockIsPrevented,
       stocks,
     } = this.props
     const { errors, info } = this.state
@@ -228,7 +232,7 @@ class StocksManager extends PureComponent {
               <tbody>
                 <tr
                   className={classnames({
-                    inactive: shouldPreventCreationOfSecondStock,
+                    inactive: creationOfSecondStockIsPrevented,
                   })}
                 >
                   <td colSpan="10">
@@ -290,10 +294,10 @@ StocksManager.defaultProps = {
 }
 
 StocksManager.propTypes = {
+  creationOfSecondStockIsPrevented: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired,
   isEvent: PropTypes.bool.isRequired,
   query: PropTypes.shape().isRequired,
-  shouldPreventCreationOfSecondStock: PropTypes.bool.isRequired,
   stocks: PropTypes.arrayOf(PropTypes.shape()),
 }
 

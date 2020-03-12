@@ -4,6 +4,7 @@ exports[`src | components | pages | Offer | StocksManager | StocksManager should
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <StocksManager
+    creationOfSecondStockIsPrevented={false}
     dispatch={[MockFunction]}
     isEvent={false}
     location={
@@ -23,10 +24,33 @@ ShallowWrapper {
     query={
       Object {
         "changeToCreation": [MockFunction],
-        "context": [Function],
+        "changeToReadOnly": [MockFunction],
+        "context": [MockFunction] {
+          "calls": Array [
+            Array [
+              Object {
+                "key": "stock",
+              },
+            ],
+            Array [
+              Object {
+                "key": "stock",
+              },
+            ],
+          ],
+          "results": Array [
+            Object {
+              "type": "return",
+              "value": Object {},
+            },
+            Object {
+              "type": "return",
+              "value": Object {},
+            },
+          ],
+        },
       }
     }
-    shouldPreventCreationOfSecondStock={false}
     stocks={
       Array [
         Object {
@@ -1487,6 +1511,7 @@ exports[`src | components | pages | Offer | StocksManager | StocksManager should
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <StocksManager
+    creationOfSecondStockIsPrevented={false}
     dispatch={[MockFunction]}
     isEvent={true}
     location={
@@ -1506,10 +1531,33 @@ ShallowWrapper {
     query={
       Object {
         "changeToCreation": [MockFunction],
-        "context": [Function],
+        "changeToReadOnly": [MockFunction],
+        "context": [MockFunction] {
+          "calls": Array [
+            Array [
+              Object {
+                "key": "stock",
+              },
+            ],
+            Array [
+              Object {
+                "key": "stock",
+              },
+            ],
+          ],
+          "results": Array [
+            Object {
+              "type": "return",
+              "value": Object {},
+            },
+            Object {
+              "type": "return",
+              "value": Object {},
+            },
+          ],
+        },
       }
     }
-    shouldPreventCreationOfSecondStock={false}
     stocks={
       Array [
         Object {
