@@ -73,10 +73,10 @@ def batch_indexing_offers_in_algolia_by_venue(client: Redis) -> None:
 
 
 def batch_indexing_offers_in_algolia_from_database(client: Redis,
+                                                   ending_page: int = None,
                                                    limit: int = 10000,
-                                                   page: int = 0,
-                                                   ending_page: int = None) -> None:
-    page_number = page
+                                                   starting_page: int = 0) -> None:
+    page_number = starting_page
     has_still_offers = True
 
     while has_still_offers:

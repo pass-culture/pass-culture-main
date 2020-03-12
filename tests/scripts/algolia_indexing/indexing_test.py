@@ -184,7 +184,7 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
         ]
 
         # When
-        batch_indexing_offers_in_algolia_from_database(client=client, limit=1, page=0, ending_page=None)
+        batch_indexing_offers_in_algolia_from_database(client=client, ending_page=None, limit=1, starting_page=0)
 
         # Then
         assert mock_get_paginated_active_offer_ids.call_count == 2
@@ -208,7 +208,7 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
         ]
 
         # When
-        batch_indexing_offers_in_algolia_from_database(client=client, limit=1, page=0, ending_page=None)
+        batch_indexing_offers_in_algolia_from_database(client=client, ending_page=None, limit=1, starting_page=0)
 
         # Then
         assert mock_get_paginated_active_offer_ids.call_count == 3
@@ -233,7 +233,7 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
         ]
 
         # When
-        batch_indexing_offers_in_algolia_from_database(client=client, limit=1, page=0, ending_page=1)
+        batch_indexing_offers_in_algolia_from_database(client=client, ending_page=1, limit=1, starting_page=0)
 
         # Then
         assert mock_get_paginated_active_offer_ids.call_count == 1
