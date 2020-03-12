@@ -71,7 +71,7 @@ class AvailabilityMessageTest:
             availability_message = offer.availabilityMessage
 
             # Then
-            assert availability_message == 'Encore 7 stocks restant'
+            assert availability_message == 'Encore 7 stocks restants'
 
         @clean_database
         def when_offer_is_an_offer_with_several_stock(self, app):
@@ -90,7 +90,7 @@ class AvailabilityMessageTest:
             availability_message = offer.availabilityMessage
 
             # Then
-            assert availability_message == 'Encore 13 stocks restant'
+            assert availability_message == 'Encore 13 stocks restants'
 
     class NoRemainingStocksTest:
         @clean_database

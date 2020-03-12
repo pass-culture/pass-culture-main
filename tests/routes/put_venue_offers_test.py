@@ -142,7 +142,7 @@ class Put:
 
             # Then
             assert response.status_code == 200
-            assert response.json[0]['availabilityMessage'] == 'Encore 22 stocks restant'
+            assert response.json[0]['availabilityMessage'] == 'Encore 22 stocks restants'
 
         @patch('routes.venues.feature_queries.is_active', return_value=True)
         @patch('routes.venues.redis.add_venue_id')

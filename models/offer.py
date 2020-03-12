@@ -158,7 +158,7 @@ class Offer(PcObject,
 
     @property
     def isFullyBooked(self) -> bool:
-        has_unlimited_stock = any(map(lambda s: s.available is None, self.stocks))
+        has_unlimited_stock = any(map(lambda stock: stock.available is None, self.stocks))
         if has_unlimited_stock:
             return False
 
@@ -196,9 +196,9 @@ class Offer(PcObject,
         if offer_has_at_least_one_unlimited_stock:
             return 'Stock restant illimité'
 
-        stock_remaining_quantity = sum(map(lambda stock: stock.remainingQuantity, incoming_stocks))
+        stocks_remaining_quantity = sum(map(lambda stock: stock.remainingQuantity, incoming_stocks))
 
-        if stock_remaining_quantity == 0:
+        if stocks_remaining_quantity == 0:
             return 'Plus de stock restant'
 
         count_stocks_with_no_remaining_quantity = len(
@@ -208,9 +208,11 @@ class Offer(PcObject,
         if has_at_least_one_stock_with_remaining_quantity and count_stocks_with_no_remaining_quantity > 0:
             return f"Plus de stock restant pour" \
                    f" {count_stocks_with_no_remaining_quantity}" \
-                   f" {pluralize(stock_remaining_quantity, 'date')}"
+                   f" {pluralize(stocks_remaining_quantity, 'date')}"
 
-        return f"Encore {stock_remaining_quantity} {pluralize(stock_remaining_quantity, 'stock')} restant"
+        return f"Encore {stocks_remaining_quantity}" \
+               f" {pluralize(stocks_remaining_quantity, 'stock')}" \
+               f" {pluralize(stocks_remaining_quantity, 'restant')}"
 
     @property
     def thumb_url(self) -> str:
