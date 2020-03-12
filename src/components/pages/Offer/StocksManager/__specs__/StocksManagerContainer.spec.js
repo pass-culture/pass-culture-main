@@ -54,7 +54,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
           id: 'B1',
           lastProviderId: 'C1',
         },
-        creationOfSecondStockIsPrevented: false,
+        isCreationOfSecondStockPrevented: false,
         provider: undefined,
         stocks: [
           {
@@ -64,7 +64,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
       })
     })
 
-    describe('creationOfSecondStockIsPrevented', () => {
+    describe('isCreationOfSecondStockPrevented', () => {
       it('should be false when offer is an event', () => {
         // given
         state.data.offers[0].isEvent = true
@@ -77,7 +77,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
         const result = mapStateToProps(state, props)
 
         // then
-        expect(result).toHaveProperty('creationOfSecondStockIsPrevented', false)
+        expect(result).toHaveProperty('isCreationOfSecondStockPrevented', false)
       })
 
       it('should be false when stocks are equal to zero', () => {
@@ -93,7 +93,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
         const result = mapStateToProps(state, props)
 
         // then
-        expect(result).toHaveProperty('creationOfSecondStockIsPrevented', false)
+        expect(result).toHaveProperty('isCreationOfSecondStockPrevented', false)
       })
 
       it('should be true when offer is a thing and stocks is superior to zero', () => {
@@ -108,7 +108,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
         const result = mapStateToProps(state, props)
 
         // then
-        expect(result).toHaveProperty('creationOfSecondStockIsPrevented', true)
+        expect(result).toHaveProperty('isCreationOfSecondStockPrevented', true)
       })
     })
   })
