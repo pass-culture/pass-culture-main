@@ -1,7 +1,7 @@
 """allocine_venue_provider_is_duo
 
 Revision ID: d8b5cd0e73d2
-Revises: b25450206c2b
+Revises: 1f446f8a334d
 Create Date: 2020-03-11 13:47:42.938609
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 from sqlalchemy.sql import expression
 
 revision = 'd8b5cd0e73d2'
-down_revision = 'b25450206c2b'
+down_revision = '1f446f8a334d'
 branch_labels = None
 depends_on = None
 
