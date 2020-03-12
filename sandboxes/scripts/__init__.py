@@ -1,1 +1,2 @@
-from sandboxes.scripts import sandbox_industrial, sandbox_testing, sandbox_payment, sandbox_activation, sandbox_allocine, sandbox_beneficiary_import
+from sandboxes.scripts import sandbox_industrial, sandbox_testing, sandbox_payment, sandbox_activation, \
+    sandbox_allocine, sandbox_beneficiary_import, sandbox_iris
