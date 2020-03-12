@@ -113,6 +113,75 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
     })
   })
 
+  describe('handleEnterKey', () => {
+    describe('when all stocks are read only', () => {
+      beforeEach(() => {
+        props.location.search = '?gestion&lieu=CU'
+      })
+      it('should do nothing when creationOfSecondStockIsPrevented', () => {
+        // given
+        props.creationOfSecondStockIsPrevented = true
+        const wrapper = shallow(<StocksManager {...props} />)
+
+        // when
+        const result = wrapper.instance().handleEnterKey()
+
+        // then
+        expect(result).toBeUndefined()
+      })
+
+      it('should call focus on add-stock element when it exists', () => {
+        // given
+        let spy = jest.spyOn(document, 'getElementById')
+        const wrapper = shallow(<StocksManager {...props} />)
+        let addStockElement = {}
+
+        spy.mockReturnValue(addStockElement)
+        addStockElement.focus = () => {}
+        jest.spyOn(addStockElement, 'focus')
+
+        // when
+        wrapper.instance().handleEnterKey()
+
+        // then
+        expect(addStockElement.focus).toHaveBeenCalledWith()
+      })
+
+      it('should call query changeToCreation with proper params when creation is not prevented', () => {
+        // given
+        props.creationOfSecondStockIsPrevented = false
+        const wrapper = shallow(<StocksManager {...props} />)
+
+        // when
+        wrapper.instance().handleEnterKey()
+
+        // then
+        expect(query.changeToCreation).toHaveBeenCalledWith(null, { key: 'stock' })
+      })
+    })
+
+    describe('when all stocks are not read only', () => {
+      it('should click on submit button', () => {
+        // given
+        props.location.search = '?gestion&lieu=CU&stockMU=modification'
+        const wrapper = shallow(<StocksManager {...props} />)
+
+        let spy = jest.spyOn(document, 'querySelector')
+        let submitElement = {}
+
+        spy.mockReturnValue(submitElement)
+        submitElement.click = () => {}
+        jest.spyOn(submitElement, 'click')
+
+        // when
+        wrapper.instance().handleEnterKey()
+
+        // then
+        expect(submitElement.click).toHaveBeenCalledWith()
+      })
+    })
+  })
+
   describe('render', () => {
     it('should return a error message', () => {
       // given
