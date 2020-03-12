@@ -36,7 +36,7 @@ class TiteLiveStocks(LocalProvider):
             self.titelive_stock = next(self.data)
 
         self.last_seen_isbn = str(self.titelive_stock['ref'])
-        self.product = product_queries.find_thing_product_by_isbn_only_for_type_book(self.titelive_stock['ref'])
+        self.product = product_queries.find_active_book_product_by_isbn(self.titelive_stock['ref'])
 
         if not self.product:
             return []

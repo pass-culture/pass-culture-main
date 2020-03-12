@@ -1,13 +1,16 @@
 import pytest
 
-from models import Product, Offer, Stock, Mediation, Recommendation, Favorite
+from models import Favorite, Mediation, Offer, Product, Recommendation, Stock
+from models.offer_type import ThingType
 from repository import repository
-from repository.product_queries import delete_unwanted_existing_product
+from repository.product_queries import delete_unwanted_existing_product, \
+    find_active_book_product_by_isbn
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
-    create_venue, \
-    create_recommendation, create_favorite, create_mediation
-from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
+from tests.model_creators.generic_creators import create_booking, \
+    create_favorite, create_mediation, create_offerer, create_recommendation, \
+    create_stock, create_user, create_venue
+from tests.model_creators.specific_creators import \
+    create_offer_with_thing_product, create_product_with_thing_type
 
 
 class DeleteUnwantedExistingProductTest:
@@ -129,3 +132,32 @@ class DeleteUnwantedExistingProductTest:
         assert Mediation.query.count() == 0
         assert Recommendation.query.count() == 0
         assert Favorite.query.count() == 0
+
+
+class FindActiveBookProductByIsbnTest:
+    @clean_database
+    def test_should_return_active_book_product_when_existing_isbn_is_given(self, app):
+        # Given
+        isbn = '1111111111111'
+        product = create_product_with_thing_type(id_at_providers=isbn, thing_type=ThingType.LIVRE_EDITION)
+        repository.save(product)
+
+        # When
+        existing_product = find_active_book_product_by_isbn('1111111111111')
+
+        # Then
+        assert existing_product == product
+
+    @clean_database
+    def test_should_return_nothing_when_non_existing_isbn_is_given(self, app):
+        # Given
+        invalid_isbn = '99999999999'
+        valid_isbn = '1111111111111'
+        product = create_product_with_thing_type(id_at_providers=valid_isbn, thing_type=ThingType.LIVRE_EDITION)
+        repository.save(product)
+
+        # When
+        existing_product = find_active_book_product_by_isbn(invalid_isbn)
+
+        # Then
+        assert existing_product is None

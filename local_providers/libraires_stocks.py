@@ -36,7 +36,7 @@ class LibrairesStocks(LocalProvider):
             self.libraires_stock = next(self.libraires_stock_data)
 
         self.last_processed_isbn = str(self.libraires_stock['ref'])
-        self.product = product_queries.find_thing_product_by_isbn_only_for_type_book(self.libraires_stock['ref'])
+        self.product = product_queries.find_active_book_product_by_isbn(self.libraires_stock['ref'])
         if not self.product:
             return []
 

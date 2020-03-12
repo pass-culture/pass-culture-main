@@ -1,5 +1,7 @@
+from typing import Optional
+
 from domain.offers import update_is_active_status
-from models import Product, ThingType, Offer, Stock, Booking
+from models import Booking, Offer, Product, Stock, ThingType
 from repository import repository
 from repository.favorite_queries import get_favorites_for_offers
 from repository.mediation_queries import get_mediations_for_offers
@@ -14,12 +16,12 @@ class ProductWithBookingsException(Exception):
 
 def delete_unwanted_existing_product(isbn: str):
     product_has_at_least_one_booking = Product.query \
-                                           .filter_by(idAtProviders=isbn) \
-                                           .join(Offer) \
-                                           .join(Stock) \
-                                           .join(Booking) \
-                                           .count() > 0
-    product = find_thing_product_by_isbn_only_for_type_book(isbn)
+        .filter_by(idAtProviders=isbn) \
+        .join(Offer) \
+        .join(Stock) \
+        .join(Booking) \
+        .count() > 0
+    product = find_active_book_product_by_isbn(isbn)
 
     if product_has_at_least_one_booking:
         offers = get_offers_by_product_id(product.id)
@@ -48,7 +50,8 @@ def find_by_id(product_id: int) -> Product:
     return Product.query.get(product_id)
 
 
-def find_thing_product_by_isbn_only_for_type_book(isbn: str) -> Product:
-    return Product.query.filter((Product.type == str(ThingType.LIVRE_EDITION)) &
-                                (Product.idAtProviders == isbn)) \
+def find_active_book_product_by_isbn(isbn: str) -> Optional[Product]:
+    return Product.query \
+        .filter(Product.type == str(ThingType.LIVRE_EDITION)) \
+        .filter(Product.idAtProviders == isbn) \
         .one_or_none()
