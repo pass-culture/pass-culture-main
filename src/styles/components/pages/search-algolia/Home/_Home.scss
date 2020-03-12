@@ -20,7 +20,7 @@
   padding: 0;
   background: none;
   align-items: flex-end;
-  height: rem(50px);
+  height: rem(30px);
   width: 90%;
   margin: 0 auto;
 
@@ -106,7 +106,7 @@
 .home-text-input-form {
   display: flex;
   justify-content: center;
-  padding: rem(24px) 0;
+  padding: rem(12px) 0;
   align-items: center;
 }
 
@@ -172,5 +172,9 @@
 
   .home-text-input-form {
     padding: rem(12px) 0;
+  }
+
+  footer {
+    height: $footer-height / 2;
   }
 }

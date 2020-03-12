@@ -1,7 +1,7 @@
 .spr-text-input-form {
-  background: linear-gradient(108deg, $primary -6%, #D0005F 103%);
-  padding: 1.5rem 0;
   align-items: center;
+  background: linear-gradient(108deg, $primary -6%, #D0005F 103%);
+  padding: 0.75rem 0;
 }
 
 .home-search-spinner {
@@ -14,6 +14,10 @@
 @media screen and (max-width: $iphone5-width) and (max-height: $iphone5-height) {
   .spr-text-input-form {
     padding: 0.75rem 0;
+  }
+
+  footer {
+    height: $footer-height / 2;
   }
 }
 

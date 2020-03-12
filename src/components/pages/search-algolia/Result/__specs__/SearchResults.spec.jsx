@@ -95,7 +95,7 @@ describe('components | SearchResults', () => {
       const textInput = form.find('input')
       expect(textInput).toHaveLength(1)
       expect(textInput.prop('name')).toBe('keywords')
-      expect(textInput.prop('placeholder')).toBe('Artiste, auteur...')
+      expect(textInput.prop('placeholder')).toBe('Titre, artiste...')
       expect(textInput.prop('type')).toBe('text')
     })
 
