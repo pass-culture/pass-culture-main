@@ -3,7 +3,7 @@ from shapely.geometry import Polygon
 from models import IrisVenues
 from repository import repository
 from repository.iris_venues_queries import find_irises_located_near_venue, insert_venue_in_iris_venue, \
-    delete_venue_from_iris_venues, link_user_to_iris, find_venues_located_near_iris
+    delete_venue_from_iris_venues, get_iris_containing_user_location, find_venues_located_near_iris
 
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_venue, create_offerer, create_iris, create_iris_venue
@@ -105,7 +105,7 @@ class DeleteVenueFromIrisVenuesTest:
         assert iris_venue[0].irisId == iris_2.id
 
 
-class LinkUserToIrisTest:
+class GetIrisContainingUserLocationTest:
     @clean_database
     def test_should_link_user_to_iris_when_his_location_is_in_one_iris(self, app):
         # Given
@@ -122,7 +122,7 @@ class LinkUserToIrisTest:
         repository.save(iris_1, iris_2)
 
         # When
-        iris_id = link_user_to_iris(user_latitude, user_longitude)
+        iris_id = get_iris_containing_user_location(user_latitude, user_longitude)
 
         # Then
         assert iris_id == iris_2.id
@@ -144,7 +144,7 @@ class LinkUserToIrisTest:
         repository.save(iris_1, iris_2)
 
         # When
-        iris_id = link_user_to_iris(user_latitude, user_longitude)
+        iris_id = get_iris_containing_user_location(user_latitude, user_longitude)
 
         # Then
         assert iris_id == iris_1.id
@@ -156,7 +156,7 @@ class LinkUserToIrisTest:
         user_longitude = 0
 
         # When
-        iris_id = link_user_to_iris(user_latitude, user_longitude)
+        iris_id = get_iris_containing_user_location(user_latitude, user_longitude)
 
         # Then
         assert iris_id is None
@@ -194,6 +194,14 @@ class FindVenuesLocatedNearIrisTest:
 
         # when
         venues_ids = find_venues_located_near_iris(iris.id)
+
+        # then
+        assert venues_ids == []
+
+    @clean_database
+    def test_should_return_empty_list_when_iris_does_not_exist(self, app):
+        # when
+        venues_ids = find_venues_located_near_iris(None)
 
         # then
         assert venues_ids == []

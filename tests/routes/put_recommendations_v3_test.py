@@ -87,6 +87,31 @@ class Put:
             assert all('isBookable' in stock for stock in stocks)
 
         @clean_database
+        def when_user_is_not_located(self, app):
+            # given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer1 = create_offer_with_thing_product(venue)
+            create_mediation(offer1)
+            stock1 = create_stock_from_offer(offer1, price=0)
+
+            repository.save(user, stock1)
+
+            DiscoveryView.refresh(concurrently=False)
+
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
+
+            # when
+            response = auth_request.put(RECOMMENDATION_URL_V3,
+                                        json={'seenRecommendationIds': []})
+
+            # then
+            assert response.status_code == 200
+            response_json = response.json
+            assert len(response_json) == 0
+
+        @clean_database
         def when_a_recommendation_is_requested(self, app):
             # given
             user = create_user()
