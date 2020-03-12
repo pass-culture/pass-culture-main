@@ -104,6 +104,24 @@ class DeleteVenueFromIrisVenuesTest:
         assert iris_venue[0].venueId == venue_2.id
         assert iris_venue[0].irisId == iris_2.id
 
+    @clean_database
+    def test_should_not_delete_from_iris_venues_if_venue_id_is_none(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer, siret='12345678912345')
+        polygon = Polygon([(0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)])
+        iris = create_iris(polygon)
+
+        iris_venue = create_iris_venue(iris, venue)
+
+        repository.save(iris_venue)
+
+        # When
+        delete_venue_from_iris_venues(None)
+
+        # Then
+        assert IrisVenues.query.count() == 1
+
 
 class GetIrisContainingUserLocationTest:
     @clean_database

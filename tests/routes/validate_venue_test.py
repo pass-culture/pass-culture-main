@@ -46,6 +46,24 @@ class Get:
                 call(client=app.redis_client, venue_id=venue.id)
             ]
 
+        @clean_database
+        @patch('routes.validate.link_venue_to_iris_if_valid')
+        def expect_link_venue_to_iris_if_valid_to_be_called_for_validated_venue(self, mocked_link_venue_to_iris_if_valid, app):
+            # Given
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            venue.generate_validation_token()
+            repository.save(venue)
+
+            token = venue.validationToken
+
+            # When
+            response = TestClient(app.test_client()).get('/validate/venue?token={}'.format(token))
+
+            # Then
+            assert response.status_code == 202
+            mocked_link_venue_to_iris_if_valid.assert_called_once_with(venue)
+
     class Returns400:
         @clean_database
         def when_no_validation_token_is_provided(self, app):

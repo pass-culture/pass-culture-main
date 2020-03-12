@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 
 from connectors import redis
 from domain.admin_emails import send_venue_validation_email
-from domain.iris import link_venue_to_irises
+from domain.iris import link_venue_to_irises, link_venue_to_iris_if_valid
 from domain.offers import update_is_active_status
 from domain.venues import is_algolia_indexing
 from models.feature import FeatureToggle
@@ -51,7 +51,8 @@ def create_venue():
         venue.generate_validation_token()
 
     repository.save(venue)
-    link_venue_to_irises(venue)
+
+    link_venue_to_iris_if_valid(venue)
 
     if not venue.isValidated:
         try:
@@ -77,7 +78,7 @@ def edit_venue(venueId):
         delete_venue_from_iris_venues(venue.id)
 
     repository.save(venue)
-    link_venue_to_irises(venue)
+    link_venue_to_iris_if_valid(venue)
 
     if is_algolia_indexing(previous_venue, request.json):
         if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):

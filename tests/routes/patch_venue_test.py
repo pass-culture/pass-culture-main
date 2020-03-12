@@ -33,11 +33,11 @@ class Patch:
 
         @clean_database
         @patch('routes.venues.delete_venue_from_iris_venues')
-        @patch('routes.venues.link_venue_to_irises')
+        @patch('routes.venues.link_venue_to_iris_if_valid')
         def when_venue_is_physical_expect_delete_venue_from_iris_venues_and_link_venue_to_irises_to_be_called(self,
-                                                                                                mock_link_venue_to_irises,
-                                                                                                mock_delete_venue_from_iris_venues,
-                                                                                                app):
+                                                                                                              mock_link_venue_to_iris_if_valid,
+                                                                                                              mock_delete_venue_from_iris_venues,
+                                                                                                              app):
             # Given
             offerer = create_offerer()
             user = create_user(email='user.pro@test.com')
@@ -54,7 +54,7 @@ class Patch:
 
             # Then
             mock_delete_venue_from_iris_venues.assert_called_once_with(venue.id)
-            mock_link_venue_to_irises.assert_called_once_with(venue)
+            mock_link_venue_to_iris_if_valid.assert_called_once_with(venue)
 
         @clean_database
         @patch('routes.venues.delete_venue_from_iris_venues')

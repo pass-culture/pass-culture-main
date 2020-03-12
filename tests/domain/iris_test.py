@@ -1,8 +1,8 @@
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from shapely.geometry import Polygon
 
-from domain.iris import link_venue_to_irises
+from domain.iris import link_venue_to_irises, link_venue_to_iris_if_valid
 from models import IrisVenues
 from repository import repository
 from tests.conftest import clean_database
@@ -10,7 +10,7 @@ from tests.model_creators.generic_creators import create_offerer, create_venue, 
 
 
 class LinkVenueToIrisesTest:
-    def test_should_not_add_venue_to_iris_venues_when_venue_is_virtual(self,app):
+    def test_should_not_add_venue_to_iris_venues_when_venue_is_virtual(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, is_virtual=True)
@@ -20,7 +20,6 @@ class LinkVenueToIrisesTest:
 
         # Then
         assert IrisVenues.query.count() == 0
-
 
     @clean_database
     @patch('domain.iris.find_ids_of_irises_located_near_venue')
@@ -44,3 +43,61 @@ class LinkVenueToIrisesTest:
 
         # Then
         assert IrisVenues.query.count() == 2
+
+
+class LinkVenueToIrisIfValidTest:
+    def test_should_link_venue_to_iris_when_venue_and_offerer_are_validated(self):
+        # Given
+        mock_link_to_irises = MagicMock()
+        venue = MagicMock()
+        venue.isValidated = True
+        venue.managingOfferer = MagicMock()
+        venue.managingOfferer.isValidated = True
+
+        # When
+        link_venue_to_iris_if_valid(venue, mock_link_to_irises)
+
+        # Then
+        mock_link_to_irises.assert_called_once_with(venue)
+
+    def test_should_not_link_venue_to_iris_when_venue_is_not_validated_and_offerer_is_validated(self):
+        # Given
+        mock_link_to_irises = MagicMock()
+        venue = MagicMock()
+        venue.isValidated = False
+        venue.managingOfferer = MagicMock()
+        venue.managingOfferer.isValidated = True
+
+        # When
+        link_venue_to_iris_if_valid(venue, mock_link_to_irises)
+
+        # Then
+        mock_link_to_irises.assert_not_called()
+
+    def test_should_not_link_venue_to_iris_when_venue_is_validated_and_offerer_is_not_validated(self):
+        # Given
+        mock_link_to_irises = MagicMock()
+        venue = MagicMock()
+        venue.isValidated = True
+        venue.managingOfferer = MagicMock()
+        venue.managingOfferer.isValidated = False
+
+        # When
+        link_venue_to_iris_if_valid(venue, mock_link_to_irises)
+
+        # Then
+        mock_link_to_irises.assert_not_called()
+
+    def test_should_not_link_venue_to_iris_when_venue_is_not_validated_and_offerer_is_not_validated(self):
+        # Given
+        mock_link_to_irises = MagicMock()
+        venue = MagicMock()
+        venue.isValidated = False
+        venue.managingOfferer = MagicMock()
+        venue.managingOfferer.isValidated = False
+
+        # When
+        link_venue_to_iris_if_valid(venue, mock_link_to_irises)
+
+        # Then
+        mock_link_to_irises.assert_not_called()

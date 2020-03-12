@@ -518,9 +518,9 @@ def create_venue(offerer: Offerer,
     venue.managingOfferer = offerer
     venue.name = name
     venue.publicName = public_name
-    venue.siret = siret
     venue.thumbCount = thumb_count
     venue.validationToken = validation_token
+    venue.siret = siret
 
     if not is_virtual:
         venue.address = address

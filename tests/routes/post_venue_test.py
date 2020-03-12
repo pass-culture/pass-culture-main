@@ -75,8 +75,9 @@ class Post:
             assert 'validationToken' not in json
 
         @clean_database
-        @patch('routes.venues.link_venue_to_irises')
-        def when_user_has_rights_and_siret_expect_link_venue_to_irises(self, mock_link_venue_to_irises, app):
+        @patch('routes.venues.link_venue_to_iris_if_valid')
+        def when_offerer_is_validated_and_venue_with_siret_add_to_iris_venue(self, mock_link_venue_to_iris_if_valid,
+                                                                             app):
             # given
             offerer = create_offerer(siren='302559178')
             user = create_user(email='user.pro@test.com')
@@ -102,7 +103,7 @@ class Post:
             venue = Venue.query.filter_by(id=dehumanize(id)).one()
 
             # then
-            mock_link_venue_to_irises.assert_called_once_with(venue)
+            mock_link_venue_to_iris_if_valid.assert_called_once_with(venue)
 
     class Returns400:
         @clean_database
