@@ -158,6 +158,7 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
 .search-criteria-separator {
@@ -177,4 +178,12 @@
   footer {
     height: $footer-height / 2;
   }
+}
+
+.home-main-search-button-wrapper {
+  background-color: white;
+  padding-bottom: rem(20px);
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }

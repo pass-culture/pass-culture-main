@@ -50,6 +50,7 @@ export class Home extends PureComponent {
           />
           <form
             className="home-text-input-form"
+            id="home-form"
             onSubmit={this.handleOnSubmit}
           >
             <div className="home-text-input-wrapper">
@@ -80,14 +81,6 @@ export class Home extends PureComponent {
                 )}
               </div>
             </div>
-            <div className="home-search-button-wrapper">
-              <button
-                className="home-search-button"
-                type="submit"
-              >
-                {'Rechercher'}
-              </button>
-            </div>
           </form>
         </div>
         <ul className="home-filter-list">
@@ -112,6 +105,15 @@ export class Home extends PureComponent {
             selectedFilter={sortCriterion.label}
           />
         </ul>
+        <div className="home-main-search-button-wrapper">
+          <button
+            className="home-search-button"
+            form="home-form"
+            type="submit"
+          >
+            {'Rechercher'}
+          </button>
+        </div>
         <RelativeFooterContainer
           extraClassName="dotted-top-red"
           theme="white"
