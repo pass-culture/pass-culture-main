@@ -59,22 +59,20 @@ class StocksManager extends PureComponent {
   }
 
   handleEnterKey() {
-    const { location, query, creationOfSecondStockIsPrevented } = this.props
+    const { location, query, isCreationOfSecondStockPrevented } = this.props
     const { search } = location
-    const allStocksReadOnly = !/stock([A-Z0-9]*)=(creation|modification)/.test(search)
+    const isCreatingOrUpdating = !/stock([A-Z0-9]*)=(creation|modification)/.test(search)
 
-    // Dirty DOM selectors ? Could try to pass back a react dom ref
-    // to this parent component otherwise, but code would be more
-    // complicated
-
-    if (allStocksReadOnly) {
-      if (creationOfSecondStockIsPrevented) {
+    if (isCreatingOrUpdating) {
+      if (isCreationOfSecondStockPrevented) {
         return
       }
-      const addStockElement = document.getElementById('add-stock')
-      if (addStockElement) {
-        addStockElement.focus()
+
+      const addStockButton = document.getElementById('add-stock')
+      if (addStockButton) {
+        addStockButton.focus()
       }
+
       query.changeToCreation(null, { key: 'stock' })
     } else {
       const submitButton = document.querySelector('button[type="submit"]')
@@ -83,14 +81,10 @@ class StocksManager extends PureComponent {
   }
 
   handleShouldPreventCreationOfSecondNotEventStock = () => {
-    const { creationOfSecondStockIsPrevented, query } = this.props
+    const { isCreationOfSecondStockPrevented, query } = this.props
     const { isCreatedEntity } = query.context({ key: 'stock' })
 
-    if (!creationOfSecondStockIsPrevented) {
-      return
-    }
-
-    if (isCreatedEntity) {
+    if (isCreationOfSecondStockPrevented && isCreatedEntity) {
       query.changeToReadOnly(null, { key: 'stock' })
     }
   }
@@ -184,7 +178,7 @@ class StocksManager extends PureComponent {
       product,
       provider,
       query,
-      creationOfSecondStockIsPrevented,
+      isCreationOfSecondStockPrevented,
       stocks,
     } = this.props
     const { errors, info } = this.state
@@ -232,7 +226,7 @@ class StocksManager extends PureComponent {
               <tbody>
                 <tr
                   className={classnames({
-                    inactive: creationOfSecondStockIsPrevented,
+                    inactive: isCreationOfSecondStockPrevented,
                   })}
                 >
                   <td colSpan="10">
@@ -294,8 +288,8 @@ StocksManager.defaultProps = {
 }
 
 StocksManager.propTypes = {
-  creationOfSecondStockIsPrevented: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired,
+  isCreationOfSecondStockPrevented: PropTypes.bool.isRequired,
   isEvent: PropTypes.bool.isRequired,
   query: PropTypes.shape().isRequired,
   stocks: PropTypes.arrayOf(PropTypes.shape()),

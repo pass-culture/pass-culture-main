@@ -18,13 +18,14 @@ export const mapStateToProps = (state, ownProps) => {
 
   const offer = selectOfferById(state, offerId)
 
+  // wtf
   if (!offer) {
     return {}
   }
 
   const product = selectProductById(state, get(offer, 'productId'))
   const stocks = selectStocksByOfferId(state, offerId)
-  const creationOfSecondStockIsPrevented = offer.isThing && stocks.length > 0
+  const isCreationOfSecondStockPrevented = offer.isThing && stocks.length > 0
   const provider = selectProviderById(state, product && product.lastProviderId)
 
   return {
@@ -32,7 +33,7 @@ export const mapStateToProps = (state, ownProps) => {
     offer,
     product,
     provider,
-    creationOfSecondStockIsPrevented,
+    isCreationOfSecondStockPrevented,
     stocks,
   }
 }

@@ -43,7 +43,7 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
         id: 'ABDD',
       },
       query,
-      creationOfSecondStockIsPrevented: false,
+      isCreationOfSecondStockPrevented: false,
       stocks: [stock],
     }
   })
@@ -84,9 +84,9 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
   })
 
   describe('handleShouldPreventCreationOfSecondNotEventStock', () => {
-    it('should do nothing when creationOfSecondStockIsPrevented is false', () => {
+    it('should do nothing when isCreationOfSecondStockPrevented is false', () => {
       // given
-      props.creationOfSecondStockIsPrevented = false
+      props.isCreationOfSecondStockPrevented = false
       const wrapper = shallow(<StocksManager {...props} />)
 
       // when
@@ -98,7 +98,7 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
 
     it('should call query changeToReadOnly when isCreatedEntity', () => {
       // given
-      props.creationOfSecondStockIsPrevented = true
+      props.isCreationOfSecondStockPrevented = true
       props.query.context.mockReturnValue({
         isCreatedEntity: true,
       })
@@ -118,9 +118,9 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
       beforeEach(() => {
         props.location.search = '?gestion&lieu=CU'
       })
-      it('should do nothing when creationOfSecondStockIsPrevented', () => {
+      it('should do nothing when isCreationOfSecondStockPrevented', () => {
         // given
-        props.creationOfSecondStockIsPrevented = true
+        props.isCreationOfSecondStockPrevented = true
         const wrapper = shallow(<StocksManager {...props} />)
 
         // when
@@ -149,7 +149,7 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
 
       it('should call query changeToCreation with proper params when creation is not prevented', () => {
         // given
-        props.creationOfSecondStockIsPrevented = false
+        props.isCreationOfSecondStockPrevented = false
         const wrapper = shallow(<StocksManager {...props} />)
 
         // when
