@@ -23,6 +23,7 @@ from sandboxes.scripts.creators.industrial.create_industrial_thing_products impo
 from sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import *
 from sandboxes.scripts.creators.industrial.create_industrial_venues import *
 from sandboxes.scripts.creators.industrial.create_industrial_webapp_users import *
+from sandboxes.scripts.creators.industrial.create_industrial_iris import *
 
 
 def save_industrial_sandbox():
@@ -88,3 +89,5 @@ def save_industrial_sandbox():
     create_industrial_activation_offers()
 
     create_industrial_algolia_indexed_objects()
+
+    create_industrial_iris(FILE_PATH)
