@@ -6,7 +6,6 @@ import BetaPageContainer from '../pages/beta-page/BetaPageContainer'
 import MyBookingsContainer from '../pages/my-bookings/MyBookingsContainer'
 import DiscoveryContainer from '../pages/discovery/DiscoveryContainer'
 import DiscoveryContainerV2 from '../pages/discovery-v2/DiscoveryContainer'
-import DiscoveryContainerV3 from '../pages/discovery-v3/DiscoveryContainer'
 import MyFavoritesContainer from '../pages/my-favorites/MyFavoritesContainer'
 import ForgotPassword from '../pages/forgot-password/ForgotPassword'
 import OfferContainer from '../pages/offer/OfferContainer'
@@ -61,7 +60,14 @@ const routes = [
   {
     component: OfferContainer,
     path:
-      '/offre/:details(details|transition)?/:offerId([A-Z0-9]+)?/:mediationId(vide|[A-Z0-9]+)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?',
+      '/offre' +
+      '/:details(details|transition)?' +
+      '/:offerId([A-Z0-9]+)?' +
+      '/:mediationId(vide|[A-Z0-9]+)?' +
+      '/:booking(reservation)?' +
+      '/:bookingId([A-Z0-9]+)?' +
+      '/:cancellation(annulation)?' +
+      '/:confirmation(confirmation)?',
     title: 'Détail de l’offre',
   },
   /* ---------------------------------------------------
@@ -75,7 +81,14 @@ const routes = [
     component: DiscoveryContainer,
     icon: 'ico-offres',
     path:
-      '/decouverte/:offerId(tuto|[A-Z0-9]+)?/:mediationId(vide|fin|[A-Z0-9]+)?/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?',
+      '/decouverte' +
+      '/:offerId(tuto|[A-Z0-9]+)?' +
+      '/:mediationId(vide|fin|[A-Z0-9]+)?' +
+      '/:details(details|transition)?' +
+      '/:booking(reservation)?' +
+      '/:bookingId([A-Z0-9]+)?' +
+      '/:cancellation(annulation)?' +
+      '/:confirmation(confirmation)?',
     title: 'Les offres',
   },
   {
@@ -99,7 +112,15 @@ const routes = [
     featureName: 'SEARCH_LEGACY',
     icon: 'ico-search',
     path:
-      '/recherche/:results(resultats)?/:category?/:details(details|transition)?/:offerId([A-Z0-9]+)?/:mediationId(vide|[A-Z0-9]+)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?',
+      '/recherche' +
+      '/:results(resultats)?' +
+      '/:category?/:details(details|transition)?' +
+      '/:offerId([A-Z0-9]+)?' +
+      '/:mediationId(vide|[A-Z0-9]+)?' +
+      '/:booking(reservation)?' +
+      '/:bookingId([A-Z0-9]+)?' +
+      '/:cancellation(annulation)?' +
+      '/:confirmation(confirmation)?',
     title: 'Recherche',
   },
   {
@@ -107,21 +128,44 @@ const routes = [
     featureName: 'SEARCH_ALGOLIA',
     icon: 'ico-search',
     path:
-      '/recherche-offres/:resultats?/:details(details|transition)?/:offerId([A-Z0-9]+)?/:mediationId(vide|[A-Z0-9]+)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?',
+      '/recherche-offres' +
+      '/(resultats|criteres-localisation|criteres-categorie|criteres-tri)?' +
+      '/(filtres)?' +
+      '/(localisation)?' +
+      '/:details(details|transition)?' +
+      '/:offerId([A-Z0-9]+)?' +
+      '/:mediationId(vide|[A-Z0-9]+)?' +
+      '/:booking(reservation)?' +
+      '/:bookingId([A-Z0-9]+)?' +
+      '/:cancellation(annulation)?' +
+      '/:confirmation(confirmation)?',
     title: 'Recherche',
   },
   {
     component: MyBookingsContainer,
     icon: 'ico-calendar-white',
     path:
-      '/reservations/:details(details|transition)?/:bookingId([A-Z0-9]+)?/:booking(reservation)?/:cancellation(annulation)?/:confirmation(confirmation)?/:qrcode(qrcode)?',
+      '/reservations' +
+      '/:details(details|transition)?' +
+      '/:bookingId([A-Z0-9]+)?' +
+      '/:booking(reservation)?' +
+      '/:cancellation(annulation)?' +
+      '/:confirmation(confirmation)?' +
+      '/:qrcode(qrcode)?',
     title: 'Mes réservations',
   },
   {
     component: MyFavoritesContainer,
     icon: 'ico-like-empty',
     path:
-      '/favoris/:details(details|transition)?/:offerId([A-Z0-9]+)?/:mediationId(vide|[A-Z0-9]+)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?',
+      '/favoris' +
+      '/:details(details|transition)?' +
+      '/:offerId([A-Z0-9]+)?' +
+      '/:mediationId(vide|[A-Z0-9]+)?' +
+      '/:booking(reservation)?' +
+      '/:bookingId([A-Z0-9]+)?' +
+      '/:cancellation(annulation)?' +
+      '/:confirmation(confirmation)?',
     title: 'Mes favoris',
   },
   {

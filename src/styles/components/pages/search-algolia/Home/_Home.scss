@@ -14,44 +14,35 @@
 
 .home-header-wrapper {
   background: linear-gradient(108deg, $primary -6%, #D0005F 103%);
-}
 
-.header-search-main-page {
-  padding: 0;
-  background: none;
-  align-items: flex-end;
-  height: rem(30px);
-  width: 90%;
-  margin: 0 auto;
-
-  .header-title {
-    font-size: rem(18px);
-  }
-
-  .close-link {
-    border-radius: 0;
-    display: flex;
+  .header-search-main-page {
     padding: 0;
-    text-align: center;
-    width: auto;
-    height: rem(22px);
-    justify-content: center;
-    align-items: center;
+    background: none;
+    align-items: flex-end;
+    height: rem(30px);
+    width: 90%;
+    margin: 0 auto;
 
-    .close-link-img {
-      height: rem(15px);
-      width: rem(16px);
+    .header-title {
+      font-size: rem(18px);
+    }
+
+    .close-link {
+      border-radius: 0;
+      display: flex;
+      padding: 0;
+      text-align: center;
+      width: auto;
+      height: rem(22px);
+      justify-content: center;
+      align-items: center;
+
+      .close-link-img {
+        height: rem(15px);
+        width: rem(16px);
+      }
     }
   }
-}
-
-.home-search-button-wrapper {
-  bottom: $footer-height + rem(20px);
-  display: flex;
-  justify-content: center;
-  position: absolute;
-  z-index: 2;
-  width: 100%;
 }
 
 .home-search-button {
@@ -65,7 +56,9 @@
 }
 
 .home-minimize-search-button {
-  width: 40%;
+  display: flex;
+  justify-content: center;
+  width: 30%;
 }
 
 .home-text-input-back {

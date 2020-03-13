@@ -29,8 +29,10 @@ export const fetchAlgolia = (
 
 const buildCategoryFilterParameter = categories => {
   if (categories.length > 0) {
-    return {
-      filters: categories.map(category => `${FACETS.CATEGORY_FACET}:"${category}"`).join(' OR '),
+    if (categories[0] !== '') {
+      return {
+        filters: categories.map(category => `${FACETS.CATEGORY_FACET}:"${category}"`).join(' OR '),
+      }
     }
   }
 }

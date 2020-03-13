@@ -143,6 +143,26 @@ describe('fetchAlgolia', () => {
         filters: 'offer.label:"Spectacle" OR offer.label:"Abonnement spectacles"'
       })
     })
+
+    it('should call Algolia with no filter if one category is an empty string', () => {
+      // Given
+      const initIndex = jest.fn()
+      algoliasearch.mockReturnValue({ initIndex })
+      const search = jest.fn()
+      initIndex.mockReturnValue({ search })
+      const searchedKeywords = 'searched keywords'
+      const pageRequested = 0
+      const geolocation = null
+      const categoriesFilter = ['']
+
+      // When
+      fetchAlgolia(searchedKeywords, pageRequested, geolocation, categoriesFilter)
+
+      // Then
+      expect(search).toHaveBeenCalledWith(searchedKeywords, {
+        page: pageRequested,
+      })
+    })
   })
 
   describe('sorting parameter', () => {

@@ -6,7 +6,7 @@ import CloseLink from '../CloseLink/CloseLink'
 import Header from '../Header'
 import SubmitButton from '../SubmitButton/SubmitButton'
 
-describe('src | components | layout | Header | Header', () => {
+describe('components | Header', () => {
   let props
 
   beforeEach(() => {
@@ -26,15 +26,7 @@ describe('src | components | layout | Header | Header', () => {
     }
   })
 
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<Header {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
-  describe('render()', () => {
+  describe('render', () => {
     it('should display the header by default', () => {
       // when
       const wrapper = shallow(<Header {...props} />)
@@ -84,6 +76,33 @@ describe('src | components | layout | Header | Header', () => {
       // then
       const submitButton = wrapper.find(SubmitButton)
       expect(submitButton).toHaveLength(1)
+    })
+
+    it('should display a reset button when a reset function is provided', () => {
+      // given
+      props.reset = () => {}
+
+      // when
+      const wrapper = shallow(<Header {...props} />)
+
+      // then
+      const reset = wrapper.findWhere(node => node.text() === 'Réinitialiser').first().find('button')
+      expect(reset).toHaveLength(1)
+      expect(reset.prop('className')).toBe('reset-button')
+      expect(reset.prop('onClick')).toStrictEqual(props.reset)
+      expect(reset.prop('type')).toBe('button')
+    })
+
+    it('should not display a reset button when no reset function is provided', () => {
+      // given
+      props.reset = null
+
+      // when
+      const wrapper = shallow(<Header {...props} />)
+
+      // then
+      const reset = wrapper.findWhere(node => node.text() === 'Réinitialiser').first().find('button')
+      expect(reset).toHaveLength(0)
     })
   })
 })

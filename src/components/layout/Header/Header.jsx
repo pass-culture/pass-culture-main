@@ -58,6 +58,7 @@ class Header extends PureComponent {
       closeTo,
       extraClassName,
       submitDisabled,
+      reset,
       title,
       useSubmit,
     } = this.props
@@ -90,6 +91,17 @@ class Header extends PureComponent {
             <SubmitButton disabled={!submitDisabled} />
           </div>
         )}
+        {reset && (
+          <div className="header-end">
+            <button
+              className="reset-button"
+              onClick={reset}
+              type="button"
+            >
+              {'Réinitialiser'}
+            </button>
+          </div>
+        )}
       </header>
     )
   }
@@ -103,6 +115,7 @@ Header.defaultProps = {
   closeTitle: 'Retourner à la page découverte',
   closeTo: '/decouverte',
   extraClassName: '',
+  reset: null,
   shouldBackFromDetails: false,
   submitDisabled: true,
   useSubmit: false,
@@ -129,6 +142,7 @@ Header.propTypes = {
       details: PropTypes.string,
     }).isRequired,
   }).isRequired,
+  reset: PropTypes.func,
   shouldBackFromDetails: PropTypes.bool,
   submitDisabled: PropTypes.bool,
   title: PropTypes.string.isRequired,

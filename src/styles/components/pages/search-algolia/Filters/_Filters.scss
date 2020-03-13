@@ -1,0 +1,50 @@
+.search-filters-page {
+  @extend .page;
+
+  background: $white;
+  display: flex;
+  flex-direction: column;
+  position: static;
+}
+
+.sf-content-wrapper {
+  flex-grow: 1;
+  padding: rem(24px);
+  overflow-y: auto;
+}
+
+.sf-header-wrapper {
+  height: rem(40px);
+}
+
+.sf-button-wrapper {
+  display: flex;
+  justify-content: center;
+  padding-bottom: rem(20px);
+}
+
+.sf-button {
+  background-color: $primary;
+  border-radius: 2rem;
+  font-size: rem(16px);
+  font-weight: 700;
+  height: rem(48px);
+  width: 90%;
+}
+
+.sf-geolocation-button {
+  color: black;
+  font-size: rem(16px);
+  font-weight: 600;
+  margin-top: rem(20px);
+}
+
+.sf-geolocation-title {
+  font-weight: 500;
+  margin-top: rem(20px);
+}
+
+.sf-filter-separator {
+  border: rem(0.5px) solid $grey-even-more-light;
+  margin-top: rem(20px);
+}

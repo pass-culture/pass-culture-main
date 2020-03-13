@@ -70,3 +70,9 @@ $button-size: $header-height - 0.75rem;
     right: 1rem;
   }
 }
+
+.reset-button {
+  font-size: rem(16px);
+  font-weight: 500;
+  padding-right: rem(12px);
+}

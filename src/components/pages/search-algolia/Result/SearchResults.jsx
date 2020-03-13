@@ -11,6 +11,7 @@ import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFoot
 import Spinner from '../../../layout/Spinner/Spinner'
 import Result from './Result'
 import SearchAlgoliaDetailsContainer from './ResultDetail/ResultDetailContainer'
+import FiltersContainer from '../Filters/FiltersContainer'
 
 class SearchResults extends PureComponent {
   constructor(props) {
@@ -31,7 +32,6 @@ class SearchResults extends PureComponent {
     const { query } = this.props
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles'] || ''
-
     const { currentPage } = this.state
     this.fetchOffers(keywords, currentPage)
   }
@@ -65,6 +65,16 @@ class SearchResults extends PureComponent {
   fetchNextOffers = currentPage => {
     const { searchedKeywords } = this.state
     this.fetchOffers(searchedKeywords, currentPage)
+  }
+
+  getFilteredOffers = (offers) => {
+    const { hits, nbHits, nbPages } = offers
+    this.setState({
+      currentPage: 0,
+      resultsCount: nbHits,
+      results: hits,
+      totalPagesNumber: nbPages,
+    })
   }
 
   fetchOffers = (keywords, currentPage) => {
@@ -131,7 +141,7 @@ class SearchResults extends PureComponent {
     })
   }
 
-  getNumberOfResultsToDisplay() {
+  getNumberOfResultsToDisplay = () => {
     const { searchedKeywords, resultsCount } = this.state
     const pluralizedResultatWord = resultsCount > 1 ? 'résultats' : 'résultat'
     const numberOfResults = `${resultsCount} ${pluralizedResultatWord}`
@@ -139,12 +149,43 @@ class SearchResults extends PureComponent {
     return searchedKeywords ? `"${searchedKeywords}" : ${numberOfResults}` : numberOfResults
   }
 
+  handleGoToFilters = () => {
+    const { history } = this.props
+    const { location } = history
+    const { pathname, search } = location
+    history.push(`${pathname}/filtres${search}`)
+  }
+
+  buildInitialFilters = () => {
+    const { query } = this.props
+    const queryParams = query.parse()
+    const autourDeMoi = queryParams['autour-de-moi']
+    const sortCriteria = queryParams['tri']
+    const categories = queryParams['categories']
+
+    return {
+      categories: categories && categories.split(';'),
+      isSearchAroundMe: autourDeMoi === 'oui',
+      sortCriteria
+    }
+  }
+
   render() {
     const {
       geolocation,
-      history: { search },
+      history,
+      match,
+      query
     } = this.props
-    const { currentPage, keywordsToSearch, isLoading, results, totalPagesNumber } = this.state
+    const {
+      currentPage,
+      keywordsToSearch,
+      isLoading,
+      results,
+      resultsCount,
+      totalPagesNumber
+    } = this.state
+    const { search } = history
 
     return (
       <main className="search-page-algolia">
@@ -192,18 +233,22 @@ class SearchResults extends PureComponent {
                   )}
                 </div>
               </div>
-              <div className="home-search-button-wrapper">
+              <div className="sr-filter-button-wrapper">
                 <button
-                  className="home-search-button home-minimize-search-button"
-                  type="submit"
+                  className="sr-filter-button"
+                  onClick={this.handleGoToFilters}
+                  type="button"
                 >
-                  {'Rechercher'}
+                  <Icon
+                    alt="Filtrer les résultats"
+                    svg="filtrer"
+                  />
+                  {'Filtrer'}
                 </button>
               </div>
             </form>
-
             <div className="home-results-wrapper">
-              <div className="home-search-spinner">
+              <div className="sr-spinner">
                 {isLoading && <Spinner label="Recherche en cours" />}
               </div>
               <h1 className="home-results-title">
@@ -241,8 +286,22 @@ class SearchResults extends PureComponent {
             />
             <SearchAlgoliaDetailsContainer />
           </Route>
+          <Route path="/recherche-offres/resultats/filtres">
+            <FiltersContainer
+              getFilteredOffers={this.getFilteredOffers}
+              history={history}
+              initialFilters={this.buildInitialFilters()}
+              match={match}
+              offers={{
+                hits: results,
+                nbHits: resultsCount,
+                nbPages: totalPagesNumber,
+              }}
+              query={query}
+              showFailModal={this.showFailModal}
+            />
+          </Route>
         </Switch>
-
         <RelativeFooterContainer
           extraClassName="dotted-top-red"
           theme="white"
@@ -265,10 +324,7 @@ SearchResults.propTypes = {
     latitude: PropTypes.number,
     longitude: PropTypes.number,
   }),
-  history: PropTypes.shape({
-    replace: PropTypes.func,
-    search: PropTypes.string
-  }).isRequired,
+  history: PropTypes.shape().isRequired,
   isSearchAroundMe: PropTypes.bool,
   match: PropTypes.shape().isRequired,
   query: PropTypes.shape({

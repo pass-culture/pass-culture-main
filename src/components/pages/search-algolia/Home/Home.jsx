@@ -4,6 +4,7 @@ import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import Icon from '../../../layout/Icon/Icon'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 import { CriterionItem } from './CriterionItem/CriterionItem'
+import { checkIfAroundMe } from '../utils/checkIfAroundMe'
 
 export class Home extends PureComponent {
   constructor(props) {
@@ -16,11 +17,16 @@ export class Home extends PureComponent {
 
   handleOnSubmit = event => {
     event.preventDefault()
-    const { history } = this.props
+    const { categoryCriterion, geolocationCriterion, history, sortCriterion } = this.props
     const { keywordsToSearch } = this.state
-    keywordsToSearch
-      ? history.push(`/recherche-offres/resultats?mots-cles=${keywordsToSearch}`)
-      : history.push(`/recherche-offres/resultats`)
+    const autourDeMoi = checkIfAroundMe(geolocationCriterion.isSearchAroundMe)
+    const categories = categoryCriterion.filters.join(';')
+    const tri = sortCriterion.index
+
+    history.push({
+      pathname: '/recherche-offres/resultats',
+      search: `?mots-cles=${keywordsToSearch}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${categories}`,
+    })
   }
 
   handleResetButtonClick = () => {
@@ -130,6 +136,7 @@ Home.propTypes = {
     label: PropTypes.string.isRequired,
   }).isRequired,
   geolocationCriterion: PropTypes.shape({
+    isSearchAroundMe: PropTypes.bool.isRequired,
     params: PropTypes.shape({
       icon: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,

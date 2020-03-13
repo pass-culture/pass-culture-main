@@ -100,26 +100,16 @@ describe('components | Home', () => {
     expect(resetInput.is(':focus')).toBe(true)
   })
 
-  it('should redirect to result page without "mots-cles" query param if search is empty', () => {
-    // Given
-    const wrapper = shallow(<Home {...props} />)
-    const form = wrapper.find('form')
-    // When
-    form.simulate('submit', {
-      preventDefault: jest.fn(),
-    })
-
-    // Then
-    expect(props.history.push).toHaveBeenCalledWith('/recherche-offres/resultats')
-  })
-
-  it('should redirect to result page if search is made', () => {
-    // Given
+  it('should redirect to result page when search is triggered with no search around me', () => {
+    // given
+    props.geolocationCriterion.isSearchAroundMe = false
+    props.categoryCriterion.filters = ['Musée', 'Cinéma']
+    props.sortCriterion.index = '_by_price'
     const wrapper = shallow(<Home {...props} />)
     const form = wrapper.find('form')
     const input = form.find('input')
 
-    // When
+    // when
     input.simulate('change', {
       target: {
         value: 'search keyword',
@@ -130,10 +120,36 @@ describe('components | Home', () => {
       preventDefault: jest.fn(),
     })
 
-    // Then
-    expect(props.history.push).toHaveBeenCalledWith(
-      '/recherche-offres/resultats?mots-cles=search keyword'
-    )
+    // then
+    expect(props.history.push).toHaveBeenCalledWith({
+      pathname: '/recherche-offres/resultats',
+      search: '?mots-cles=search keyword&autour-de-moi=non&tri=_by_price&categories=Musée;Cinéma'
+    })
+  })
+
+  it('should redirect to result page when search is triggered with search around me', () => {
+    // given
+    props.geolocationCriterion.isSearchAroundMe = true
+    const wrapper = shallow(<Home {...props} />)
+    const form = wrapper.find('form')
+    const input = form.find('input')
+
+    // when
+    input.simulate('change', {
+      target: {
+        value: 'search keyword',
+      },
+      preventDefault: jest.fn(),
+    })
+    form.simulate('submit', {
+      preventDefault: jest.fn(),
+    })
+
+    // then
+    expect(props.history.push).toHaveBeenCalledWith({
+      pathname: '/recherche-offres/resultats',
+      search: '?mots-cles=search keyword&autour-de-moi=oui&tri=&categories='
+    })
   })
 
   it('should render a list of CriterionItem with the right props', () => {

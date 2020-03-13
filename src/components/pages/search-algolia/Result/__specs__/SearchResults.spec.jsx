@@ -14,6 +14,7 @@ import Spinner from '../../../../layout/Spinner/Spinner'
 import Result from '../Result'
 import SearchAlgoliaDetailsContainer from '../ResultDetail/ResultDetailContainer'
 import SearchResults from '../SearchResults'
+import FiltersContainer from '../../Filters/FiltersContainer'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
@@ -30,12 +31,15 @@ describe('components | SearchResults', () => {
   let clear
   let parse
   let replace
+  let push
 
   beforeEach(() => {
     change = jest.fn()
     clear = jest.fn()
     parse = jest.fn().mockReturnValue({})
     replace = jest.fn()
+    push = jest.fn()
+
     props = {
       categoriesFilter: null,
       geolocation: {
@@ -43,6 +47,11 @@ describe('components | SearchResults', () => {
         longitude: 41.1,
       },
       history: {
+        location: {
+          pathname: '/fake-url',
+          search: '?mots-cles=librairie'
+        },
+        push,
         search: '',
         replace,
       },
@@ -99,15 +108,14 @@ describe('components | SearchResults', () => {
       expect(textInput.prop('type')).toBe('text')
     })
 
-    it('should display a form element with a submit button', () => {
+    it('should display a form element with a filter button', () => {
       // when
       const wrapper = shallow(<SearchResults {...props} />)
 
       // then
       const form = wrapper.find('form')
-      const submitButton = form.findWhere(node => node.prop('type') === 'submit').first()
+      const submitButton = form.findWhere(node => node.text() === 'Filtrer').first()
       expect(submitButton).toHaveLength(1)
-      expect(submitButton.text()).toBe('Rechercher')
     })
 
     it('should display a footer', () => {
@@ -998,6 +1006,55 @@ describe('components | SearchResults', () => {
         const header = wrapper.find(HeaderContainer)
         expect(header).toHaveLength(1)
       })
+    })
+
+    it('should render filters page when current route is /recherche-offres/resultats/filtres', () => {
+      // given
+      history.push('/recherche-offres/resultats/filtres')
+      props.query.parse.mockReturnValue({
+        'categories': 'Musée;Cinéma',
+        'mots-cles': 'librairie',
+        'tri': '_by_price'
+      })
+
+      // when
+      const wrapper = mount(
+        <Router history={history}>
+          <Provider store={store}>
+            <SearchResults {...props} />
+          </Provider>
+        </Router>
+      )
+
+      // then
+      const filtersContainer = wrapper.find(FiltersContainer)
+      expect(filtersContainer).toHaveLength(1)
+      expect(filtersContainer.prop('getFilteredOffers')).toStrictEqual(expect.any(Function))
+      expect(filtersContainer.prop('history')).toStrictEqual(props.history)
+      expect(filtersContainer.prop('initialFilters')).toStrictEqual({
+        categories: ['Musée', 'Cinéma'],
+        isSearchAroundMe: false,
+        sortCriteria: '_by_price'
+      })
+      expect(filtersContainer.prop('match')).toStrictEqual(props.match)
+      expect(filtersContainer.prop('offers')).toStrictEqual({ hits: [], nbHits: 0, nbPages: 0 })
+      expect(filtersContainer.prop('query')).toStrictEqual(props.query)
+      expect(filtersContainer.prop('showFailModal')).toStrictEqual(expect.any(Function))
+    })
+  })
+
+  describe('when filtering', () => {
+    it('should redirect to filters page', () => {
+      // given
+      const wrapper = shallow(<SearchResults {...props} />)
+      const form = wrapper.find('form')
+      const filterButton = form.find('.sr-filter-button')
+
+      // when
+      filterButton.simulate('click')
+
+      // then
+      expect(push).toHaveBeenCalledWith('/fake-url/filtres?mots-cles=librairie')
     })
   })
 })

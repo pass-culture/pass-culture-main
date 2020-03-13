@@ -4,13 +4,13 @@ import Header from '../../../layout/Header/Header'
 import Icon from '../../../layout/Icon/Icon'
 
 export const Criteria = props => {
-  const { match, history, activeCriterionLabel, onCriterionSelection, title, criteria } = props
+  const { backTo, match, history, activeCriterionLabel, onCriterionSelection, title, criteria } = props
 
   return (
     <div className="criteria-page">
       <Header
-        backTo="/recherche-offres"
-        closeTo=""
+        backTo={backTo}
+        closeTo={null}
         extraClassName="criteria-header"
         history={history}
         location={history.location}
@@ -53,6 +53,7 @@ export const Criteria = props => {
 
 Criteria.propTypes = {
   activeCriterionLabel: PropTypes.string.isRequired,
+  backTo: PropTypes.string.isRequired,
   criteria: PropTypes.objectOf((propValue, key, componentName, location, propFullName) => {
     if (!propValue[key].label || !propValue[key].icon) {
       return new Error(
