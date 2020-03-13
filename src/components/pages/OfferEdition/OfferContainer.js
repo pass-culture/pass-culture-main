@@ -18,7 +18,7 @@ import {
   selectVenuesByOffererIdAndOfferType,
 } from '../../../selectors/data/venuesSelectors'
 import { selectOfferers } from '../../../selectors/data/offerersSelectors'
-import { mergeForm } from 'pass-culture-shared'
+import { mergeForm, showNotification } from 'pass-culture-shared'
 import { selectStocksByOfferId } from '../../../selectors/data/stocksSelectors'
 import { selectProviders } from '../../../selectors/data/providersSelectors'
 import { selectOfferById } from '../../../selectors/data/offersSelectors'
@@ -38,7 +38,7 @@ export const mapStateToProps = (state, ownProps) => {
   const productId = get(offer, 'productId')
   const product = selectProductById(state, productId)
   const formVenueId = get(state, 'form.offer.venueId')
-  const venueId = (offer) ? offer.venueId : ''
+  const venueId = offer ? offer.venueId : ''
   const venue = selectVenueById(state, venueId)
   const isVenueVirtual = get(venue, 'isVirtual')
   const types = selectTypesByIsVenueVirtual(state, isVenueVirtual)
@@ -117,6 +117,16 @@ export const mapDispatchToProps = dispatch => ({
     dispatch(
       mergeForm('offer', {
         isDuo: isDuo,
+      })
+    )
+  },
+
+  showOfferModificationValidationNotification: () => {
+    dispatch(
+      showNotification({
+        text:
+          'Votre offre a bien été modifiée. L’offre peut mettre quelques minutes pour être disponible dans l’application.',
+        type: 'success',
       })
     )
   },

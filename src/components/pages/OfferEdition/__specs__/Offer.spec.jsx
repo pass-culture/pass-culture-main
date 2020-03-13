@@ -50,6 +50,7 @@ describe('components | OfferEdition | Offer ', () => {
         translate: () => ({ venue: 'AQ ' }),
       },
       selectedOfferType: {},
+      showOfferModificationValidationNotification: () => {},
       offer: {
         id: 'SN',
         name: 'Super Livre',
@@ -87,6 +88,26 @@ describe('components | OfferEdition | Offer ', () => {
 
         // then
         expect(history.push).toHaveBeenCalledWith('/offres/26B')
+      })
+
+      it('should display a validation modification notification', () => {
+        // given
+        const showOfferModificationValidationNotificationStub = jest.fn()
+        const showOfferModificationErrorNotificationStub = jest.fn()
+
+        props.showOfferModificationValidationNotification = showOfferModificationValidationNotificationStub
+        props.showOfferModificationErrorNotification = showOfferModificationErrorNotificationStub
+
+        props.offer.id = '26B'
+        props.match.params = {}
+
+        const wrapper = shallow(<Offer {...props} />)
+
+        // when
+        wrapper.instance().onHandleFormSuccess({})
+
+        // then
+        expect(props.showOfferModificationValidationNotification).toHaveBeenCalledWith()
       })
     })
   })

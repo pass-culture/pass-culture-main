@@ -83,6 +83,7 @@ ShallowWrapper {
       }
     }
     selectedOfferType={Object {}}
+    showOfferModificationValidationNotification={[Function]}
     trackCreateOffer={[MockFunction]}
     trackModifyOffer={[MockFunction]}
     venuesMatchingOfferType={Array []}

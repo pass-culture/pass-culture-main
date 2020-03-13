@@ -1,5 +1,6 @@
 import { mapDispatchToProps, mapStateToProps, mergeProps } from '../OfferContainer'
 import state from '../../../utils/mocks/state'
+import { showNotification } from 'pass-culture-shared'
 
 describe('components | OfferEdition | OfferContainer ', () => {
   let props
@@ -308,21 +309,21 @@ describe('components | OfferEdition | OfferContainer ', () => {
 
       // then
       expect(result).toHaveProperty('offer', {
-          bookingEmail: 'booking.email@test.com',
-          dateCreated: '2019-03-07T10:39:23.560392Z',
-          dateModifiedAtLastProvider: '2019-03-07T10:40:05.443621Z',
-          id: 'UU',
-          idAtProviders: null,
-          isActive: true,
-          isEvent: false,
-          isThing: true,
-          lastProviderId: null,
-          mediationsIds: ['H4'],
-          modelName: 'Offer',
-          productId: 'LY',
-          stocksIds: ['MU'],
-          venueId: 'DA',
-        })
+        bookingEmail: 'booking.email@test.com',
+        dateCreated: '2019-03-07T10:39:23.560392Z',
+        dateModifiedAtLastProvider: '2019-03-07T10:40:05.443621Z',
+        id: 'UU',
+        idAtProviders: null,
+        isActive: true,
+        isEvent: false,
+        isThing: true,
+        lastProviderId: null,
+        mediationsIds: ['H4'],
+        modelName: 'Offer',
+        productId: 'LY',
+        stocksIds: ['MU'],
+        venueId: 'DA',
+      })
     })
 
     it('should return the venue linked to the offer', () => {
@@ -369,7 +370,6 @@ describe('components | OfferEdition | OfferContainer ', () => {
           trackCreateOffer: jest.fn(),
           trackModifyOffer: jest.fn(),
         }
-
 
         // when
         const result = mapStateToProps(state, props)
@@ -428,6 +428,22 @@ describe('components | OfferEdition | OfferContainer ', () => {
     beforeEach(() => {
       dispatch = jest.fn()
       props = mapDispatchToProps(dispatch)
+    })
+
+    describe('showOfferModificationValidationNotification', () => {
+      it('should display a validation message', () => {
+        // when
+        props.showOfferModificationValidationNotification()
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith(
+          showNotification({
+            text:
+              'Votre offre a bien été modifiée. L’offre peut mettre quelques minutes pour être disponible dans l’application.',
+            type: 'success',
+          })
+        )
+      })
     })
 
     describe('updateFormSetIsDuo', () => {
