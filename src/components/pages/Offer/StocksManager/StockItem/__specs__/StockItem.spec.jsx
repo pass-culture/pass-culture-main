@@ -55,6 +55,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           available: 10,
           beginningDatetime: '2020-01-20T20:00:00Z',
           bookingLimitDatetime: '2020-01-27T20:00:00Z',
+          bookingsQuantity: 1,
           endDatetime: '2020-01-27T22:00:00Z',
           offerId: 'EM',
           price: 48,
@@ -302,6 +303,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
         const expected = {
           available: 56,
           beginningDatetime: null,
+          bookingsQuantity: 13,
           bookingLimitDatetime: '2020-01-27T20:00:00Z',
           id: 'G9',
           offerId: 'EM',
