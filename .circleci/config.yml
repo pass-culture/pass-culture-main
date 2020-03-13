@@ -323,7 +323,7 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y realpath
             curl -O https://cli-dl.scalingo.io/install && bash install
-            ./pc -e testing sandbox --name=testing
+            ./pc -e testing sandbox --name=industrial
       - run:
           name: Notify PC Ops Bot
           when: on_fail
