@@ -28,19 +28,24 @@ def process_offers_by_venue_provider():
 
 @app.manager.option('-ca',
                     '--clear-algolia',
-                    help='Clear algolia index before indexing offers')
+                    help='Clear algolia index before indexing offers',
+                    type=bool)
 @app.manager.option('-cr',
                     '--clear-redis',
-                    help='Clear redis indexed offers before indexing offers')
+                    help='Clear redis indexed offers before indexing offers',
+                    type=bool)
 @app.manager.option('-ep',
                     '--ending-page',
-                    help='Ending page for indexing offers')
+                    help='Ending page for indexing offers',
+                    type=int)
 @app.manager.option('-l',
                     '--limit',
-                    help='Number of offers per page')
+                    help='Number of offers per page',
+                    type=int)
 @app.manager.option('-sp',
                     '--starting-page',
-                    help='Starting page for indexing offers')
+                    help='Starting page for indexing offers',
+                    type=int)
 def process_offers_from_database(clear_algolia: bool = False,
                                  clear_redis: bool = False,
                                  ending_page: int = None,
