@@ -68,7 +68,7 @@ class SearchResults extends PureComponent {
   }
 
   fetchOffers = (keywords, currentPage) => {
-    const { categoriesFilter, geolocation, isSearchAroundMe , sortingIndexSuffix } = this.props
+    const { categoriesFilter, geolocation, isSearchAroundMe, sortingIndexSuffix } = this.props
     this.setState({
       isLoading: true,
     })
@@ -230,7 +230,9 @@ class SearchResults extends PureComponent {
               )}
             </div>
           </Route>
-          <Route path="/recherche-offres/resultats/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?">
+          <Route
+            path="/recherche-offres/resultats/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+          >
             <HeaderContainer
               closeTitle="Retourner à la page découverte"
               closeTo="/decouverte"

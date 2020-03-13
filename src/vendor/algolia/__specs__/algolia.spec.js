@@ -32,9 +32,8 @@ describe('fetchAlgolia', () => {
       WEBAPP_ALGOLIA_SEARCH_API_KEY
     )
     expect(initIndex).toHaveBeenCalledWith(WEBAPP_ALGOLIA_INDEX_NAME)
-    expect(search).toHaveBeenCalledWith({
-      query: searchedKeywords,
-      page: pageRequested,
+    expect(search).toHaveBeenCalledWith(searchedKeywords, {
+      page: pageRequested
     })
   })
 
@@ -49,9 +48,8 @@ describe('fetchAlgolia', () => {
     fetchAlgolia('', 0, null)
 
     // Then
-    expect(search).toHaveBeenCalledWith({
-      query: '',
-      page: 0,
+    expect(search).toHaveBeenCalledWith('', {
+      page: 0
     })
   })
 
@@ -73,11 +71,10 @@ describe('fetchAlgolia', () => {
       fetchAlgolia(searchedKeywords, 0, geolocation)
 
       // then
-      expect(search).toHaveBeenCalledWith({
-        query: searchedKeywords,
+      expect(search).toHaveBeenCalledWith(searchedKeywords, {
         page: pageRequested,
         aroundLatLng: '42, 43',
-        aroundRadius: 'all',
+        aroundRadius: 'all'
       })
     })
 
@@ -98,9 +95,8 @@ describe('fetchAlgolia', () => {
       fetchAlgolia(searchedKeywords, 0, geolocation)
 
       // then
-      expect(search).toHaveBeenCalledWith({
-        query: searchedKeywords,
-        page: pageRequested,
+      expect(search).toHaveBeenCalledWith(searchedKeywords, {
+        page: pageRequested
       })
     })
   })
@@ -121,10 +117,9 @@ describe('fetchAlgolia', () => {
       fetchAlgolia(searchedKeywords, pageRequested, geolocation, categoriesFilter)
 
       // Then
-      expect(search).toHaveBeenCalledWith({
-        query: searchedKeywords,
+      expect(search).toHaveBeenCalledWith(searchedKeywords, {
         page: pageRequested,
-        filters: 'offer.label:"Pratique artistique"',
+        filters: 'offer.label:"Pratique artistique"'
       })
     })
 
@@ -143,10 +138,9 @@ describe('fetchAlgolia', () => {
       fetchAlgolia(searchedKeywords, pageRequested, geolocation, categoriesFilter)
 
       // Then
-      expect(search).toHaveBeenCalledWith({
-        query: searchedKeywords,
+      expect(search).toHaveBeenCalledWith(searchedKeywords, {
         page: pageRequested,
-        filters: 'offer.label:"Spectacle" OR offer.label:"Abonnement spectacles"',
+        filters: 'offer.label:"Spectacle" OR offer.label:"Abonnement spectacles"'
       })
     })
   })
@@ -168,9 +162,8 @@ describe('fetchAlgolia', () => {
       fetchAlgolia(searchedKeywords, pageRequested, geolocation, categoriesFilter, indexSuffix)
 
       // Then
-      expect(search).toHaveBeenCalledWith({
-        query: searchedKeywords,
-        page: pageRequested,
+      expect(search).toHaveBeenCalledWith(searchedKeywords, {
+        page: pageRequested
       })
       expect(initIndex).toHaveBeenCalledWith('indexName_by_proximity')
     })
@@ -191,9 +184,8 @@ describe('fetchAlgolia', () => {
       fetchAlgolia(searchedKeywords, pageRequested, geolocation, categoriesFilter, indexSuffix)
 
       // Then
-      expect(search).toHaveBeenCalledWith({
-        query: searchedKeywords,
-        page: pageRequested,
+      expect(search).toHaveBeenCalledWith(searchedKeywords, {
+        page: pageRequested
       })
       expect(initIndex).toHaveBeenCalledWith('indexName')
     })
@@ -219,12 +211,11 @@ describe('fetchAlgolia', () => {
       fetchAlgolia(searchedKeywords, pageRequested, geolocation, categoriesFilter, indexSuffix)
 
       // Then
-      expect(search).toHaveBeenCalledWith({
-        query: searchedKeywords,
+      expect(search).toHaveBeenCalledWith(searchedKeywords, {
         page: pageRequested,
         filters: 'offer.label:"Pratique artistique"',
         aroundLatLng: '42, 43',
-        aroundRadius: 'all',
+        aroundRadius: 'all'
       })
       expect(initIndex).toHaveBeenCalledWith('indexName_by_price')
     })

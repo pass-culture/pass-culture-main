@@ -17,18 +17,14 @@ export const fetchAlgolia = (
 ) => {
   const searchParameters = {
     page: page,
-    ...buildQueryParameter(keywords),
     ...buildCategoryFilterParameter(categories),
     ...buildGeolocationParameter(geolocationCoordinates),
   }
 
   const client = algoliasearch(WEBAPP_ALGOLIA_APPLICATION_ID, WEBAPP_ALGOLIA_SEARCH_API_KEY)
   const index = client.initIndex(WEBAPP_ALGOLIA_INDEX_NAME + indexSuffix)
-  return index.search(searchParameters)
-}
 
-const buildQueryParameter = keywords => {
-  return { query: keywords }
+  return index.search(keywords, searchParameters)
 }
 
 const buildCategoryFilterParameter = categories => {
