@@ -1,0 +1,1127 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | discovery | Deck | Navigation snapshot should match the snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <Navigation
+    distanceClue=""
+    flipHandler={[MockFunction]}
+    handleGoNext={null}
+    handleGoPrevious={null}
+    height={500}
+    offerId=""
+    priceRange={Array []}
+    separator="-"
+    trackConsultOffer={[MockFunction]}
+    verticalSlideRatio={0.3}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": <div
+        className="controls flex-columns items-end wrap-3 mosaicx2-background"
+      >
+        <span />
+        <div
+          className="flex-rows"
+        >
+          <Draggable
+            allowAnyClick={false}
+            axis="y"
+            bounds={
+              Object {
+                "bottom": 0,
+                "left": 0,
+                "right": 0,
+                "top": 0,
+              }
+            }
+            cancel={null}
+            defaultClassName="react-draggable"
+            defaultClassNameDragged="react-draggable-dragged"
+            defaultClassNameDragging="react-draggable-dragging"
+            defaultPosition={
+              Object {
+                "x": 0,
+                "y": 0,
+              }
+            }
+            disabled={false}
+            enableUserSelectHack={true}
+            grid={null}
+            handle={null}
+            offsetParent={null}
+            onDrag={[Function]}
+            onMouseDown={[Function]}
+            onStart={[Function]}
+            onStop={[Function]}
+            position={null}
+            scale={1}
+            transform={null}
+          >
+            <div
+              id="dragButton"
+            >
+              <button
+                className="button to-recto"
+                id="deck-open-verso-button"
+                onClick={[Function]}
+                onDragLeave={[Function]}
+                type="button"
+              >
+                <Icon
+                  alt="Plus d'infos"
+                  className=" "
+                  svg="ico-slide-up"
+                />
+              </button>
+              <div
+                className="clue"
+              >
+                <withRouter(Connect(Finishable))>
+                  <Price
+                    className=""
+                    free="Gratuit"
+                    id="deck-navigation-offer-price"
+                    value={Array []}
+                  />
+                  
+                  <div
+                    className="separator"
+                  >
+                    -
+                  </div>
+                  <div>
+                    
+                  </div>
+                </withRouter(Connect(Finishable))>
+              </div>
+            </div>
+          </Draggable>
+        </div>
+        <span />
+      </div>,
+      "id": "deck-navigation",
+    },
+    "ref": null,
+    "rendered": Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <span />,
+          <div
+            className="flex-rows"
+          >
+            <Draggable
+              allowAnyClick={false}
+              axis="y"
+              bounds={
+                Object {
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0,
+                  "top": 0,
+                }
+              }
+              cancel={null}
+              defaultClassName="react-draggable"
+              defaultClassNameDragged="react-draggable-dragged"
+              defaultClassNameDragging="react-draggable-dragging"
+              defaultPosition={
+                Object {
+                  "x": 0,
+                  "y": 0,
+                }
+              }
+              disabled={false}
+              enableUserSelectHack={true}
+              grid={null}
+              handle={null}
+              offsetParent={null}
+              onDrag={[Function]}
+              onMouseDown={[Function]}
+              onStart={[Function]}
+              onStop={[Function]}
+              position={null}
+              scale={1}
+              transform={null}
+            >
+              <div
+                id="dragButton"
+              >
+                <button
+                  className="button to-recto"
+                  id="deck-open-verso-button"
+                  onClick={[Function]}
+                  onDragLeave={[Function]}
+                  type="button"
+                >
+                  <Icon
+                    alt="Plus d'infos"
+                    className=" "
+                    svg="ico-slide-up"
+                  />
+                </button>
+                <div
+                  className="clue"
+                >
+                  <withRouter(Connect(Finishable))>
+                    <Price
+                      className=""
+                      free="Gratuit"
+                      id="deck-navigation-offer-price"
+                      value={Array []}
+                    />
+                    
+                    <div
+                      className="separator"
+                    >
+                      -
+                    </div>
+                    <div>
+                      
+                    </div>
+                  </withRouter(Connect(Finishable))>
+                </div>
+              </div>
+            </Draggable>
+          </div>,
+          <span />,
+        ],
+        "className": "controls flex-columns items-end wrap-3 mosaicx2-background",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {},
+          "ref": null,
+          "rendered": null,
+          "type": "span",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": <Draggable
+              allowAnyClick={false}
+              axis="y"
+              bounds={
+                Object {
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0,
+                  "top": 0,
+                }
+              }
+              cancel={null}
+              defaultClassName="react-draggable"
+              defaultClassNameDragged="react-draggable-dragged"
+              defaultClassNameDragging="react-draggable-dragging"
+              defaultPosition={
+                Object {
+                  "x": 0,
+                  "y": 0,
+                }
+              }
+              disabled={false}
+              enableUserSelectHack={true}
+              grid={null}
+              handle={null}
+              offsetParent={null}
+              onDrag={[Function]}
+              onMouseDown={[Function]}
+              onStart={[Function]}
+              onStop={[Function]}
+              position={null}
+              scale={1}
+              transform={null}
+            >
+              <div
+                id="dragButton"
+              >
+                <button
+                  className="button to-recto"
+                  id="deck-open-verso-button"
+                  onClick={[Function]}
+                  onDragLeave={[Function]}
+                  type="button"
+                >
+                  <Icon
+                    alt="Plus d'infos"
+                    className=" "
+                    svg="ico-slide-up"
+                  />
+                </button>
+                <div
+                  className="clue"
+                >
+                  <withRouter(Connect(Finishable))>
+                    <Price
+                      className=""
+                      free="Gratuit"
+                      id="deck-navigation-offer-price"
+                      value={Array []}
+                    />
+                    
+                    <div
+                      className="separator"
+                    >
+                      -
+                    </div>
+                    <div>
+                      
+                    </div>
+                  </withRouter(Connect(Finishable))>
+                </div>
+              </div>
+            </Draggable>,
+            "className": "flex-rows",
+          },
+          "ref": null,
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "class",
+            "props": Object {
+              "allowAnyClick": false,
+              "axis": "y",
+              "bounds": Object {
+                "bottom": 0,
+                "left": 0,
+                "right": 0,
+                "top": 0,
+              },
+              "cancel": null,
+              "children": <div
+                id="dragButton"
+              >
+                <button
+                  className="button to-recto"
+                  id="deck-open-verso-button"
+                  onClick={[Function]}
+                  onDragLeave={[Function]}
+                  type="button"
+                >
+                  <Icon
+                    alt="Plus d'infos"
+                    className=" "
+                    svg="ico-slide-up"
+                  />
+                </button>
+                <div
+                  className="clue"
+                >
+                  <withRouter(Connect(Finishable))>
+                    <Price
+                      className=""
+                      free="Gratuit"
+                      id="deck-navigation-offer-price"
+                      value={Array []}
+                    />
+                    
+                    <div
+                      className="separator"
+                    >
+                      -
+                    </div>
+                    <div>
+                      
+                    </div>
+                  </withRouter(Connect(Finishable))>
+                </div>
+              </div>,
+              "defaultClassName": "react-draggable",
+              "defaultClassNameDragged": "react-draggable-dragged",
+              "defaultClassNameDragging": "react-draggable-dragging",
+              "defaultPosition": Object {
+                "x": 0,
+                "y": 0,
+              },
+              "disabled": false,
+              "enableUserSelectHack": true,
+              "grid": null,
+              "handle": null,
+              "offsetParent": null,
+              "onDrag": [Function],
+              "onMouseDown": [Function],
+              "onStart": [Function],
+              "onStop": [Function],
+              "position": null,
+              "scale": 1,
+              "transform": null,
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <button
+                    className="button to-recto"
+                    id="deck-open-verso-button"
+                    onClick={[Function]}
+                    onDragLeave={[Function]}
+                    type="button"
+                  >
+                    <Icon
+                      alt="Plus d'infos"
+                      className=" "
+                      svg="ico-slide-up"
+                    />
+                  </button>,
+                  <div
+                    className="clue"
+                  >
+                    <withRouter(Connect(Finishable))>
+                      <Price
+                        className=""
+                        free="Gratuit"
+                        id="deck-navigation-offer-price"
+                        value={Array []}
+                      />
+                      
+                      <div
+                        className="separator"
+                      >
+                        -
+                      </div>
+                      <div>
+                        
+                      </div>
+                    </withRouter(Connect(Finishable))>
+                  </div>,
+                ],
+                "id": "dragButton",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <Icon
+                      alt="Plus d'infos"
+                      className=" "
+                      svg="ico-slide-up"
+                    />,
+                    "className": "button to-recto",
+                    "id": "deck-open-verso-button",
+                    "onClick": [Function],
+                    "onDragLeave": [Function],
+                    "type": "button",
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "alt": "Plus d'infos",
+                      "className": " ",
+                      "svg": "ico-slide-up",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
+                  "type": "button",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <withRouter(Connect(Finishable))>
+                      <Price
+                        className=""
+                        free="Gratuit"
+                        id="deck-navigation-offer-price"
+                        value={Array []}
+                      />
+                      
+                      <div
+                        className="separator"
+                      >
+                        -
+                      </div>
+                      <div>
+                        
+                      </div>
+                    </withRouter(Connect(Finishable))>,
+                    "className": "clue",
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "function",
+                    "props": Object {
+                      "children": Array [
+                        <Price
+                          className=""
+                          free="Gratuit"
+                          id="deck-navigation-offer-price"
+                          value={Array []}
+                        />,
+                        "",
+                        <div
+                          className="separator"
+                        >
+                          -
+                        </div>,
+                        <div>
+                          
+                        </div>,
+                      ],
+                    },
+                    "ref": null,
+                    "rendered": Array [
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "className": "",
+                          "free": "Gratuit",
+                          "id": "deck-navigation-offer-price",
+                          "value": Array [],
+                        },
+                        "ref": null,
+                        "rendered": null,
+                        "type": [Function],
+                      },
+                      "",
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "-",
+                          "className": "separator",
+                        },
+                        "ref": null,
+                        "rendered": "-",
+                        "type": "div",
+                      },
+                      Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "host",
+                        "props": Object {
+                          "children": "",
+                        },
+                        "ref": null,
+                        "rendered": "",
+                        "type": "div",
+                      },
+                    ],
+                    "type": [Function],
+                  },
+                  "type": "div",
+                },
+              ],
+              "type": "div",
+            },
+            "type": [Function],
+          },
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {},
+          "ref": null,
+          "rendered": null,
+          "type": "span",
+        },
+      ],
+      "type": "div",
+    },
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": <div
+          className="controls flex-columns items-end wrap-3 mosaicx2-background"
+        >
+          <span />
+          <div
+            className="flex-rows"
+          >
+            <Draggable
+              allowAnyClick={false}
+              axis="y"
+              bounds={
+                Object {
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0,
+                  "top": 0,
+                }
+              }
+              cancel={null}
+              defaultClassName="react-draggable"
+              defaultClassNameDragged="react-draggable-dragged"
+              defaultClassNameDragging="react-draggable-dragging"
+              defaultPosition={
+                Object {
+                  "x": 0,
+                  "y": 0,
+                }
+              }
+              disabled={false}
+              enableUserSelectHack={true}
+              grid={null}
+              handle={null}
+              offsetParent={null}
+              onDrag={[Function]}
+              onMouseDown={[Function]}
+              onStart={[Function]}
+              onStop={[Function]}
+              position={null}
+              scale={1}
+              transform={null}
+            >
+              <div
+                id="dragButton"
+              >
+                <button
+                  className="button to-recto"
+                  id="deck-open-verso-button"
+                  onClick={[Function]}
+                  onDragLeave={[Function]}
+                  type="button"
+                >
+                  <Icon
+                    alt="Plus d'infos"
+                    className=" "
+                    svg="ico-slide-up"
+                  />
+                </button>
+                <div
+                  className="clue"
+                >
+                  <withRouter(Connect(Finishable))>
+                    <Price
+                      className=""
+                      free="Gratuit"
+                      id="deck-navigation-offer-price"
+                      value={Array []}
+                    />
+                    
+                    <div
+                      className="separator"
+                    >
+                      -
+                    </div>
+                    <div>
+                      
+                    </div>
+                  </withRouter(Connect(Finishable))>
+                </div>
+              </div>
+            </Draggable>
+          </div>
+          <span />
+        </div>,
+        "id": "deck-navigation",
+      },
+      "ref": null,
+      "rendered": Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <span />,
+            <div
+              className="flex-rows"
+            >
+              <Draggable
+                allowAnyClick={false}
+                axis="y"
+                bounds={
+                  Object {
+                    "bottom": 0,
+                    "left": 0,
+                    "right": 0,
+                    "top": 0,
+                  }
+                }
+                cancel={null}
+                defaultClassName="react-draggable"
+                defaultClassNameDragged="react-draggable-dragged"
+                defaultClassNameDragging="react-draggable-dragging"
+                defaultPosition={
+                  Object {
+                    "x": 0,
+                    "y": 0,
+                  }
+                }
+                disabled={false}
+                enableUserSelectHack={true}
+                grid={null}
+                handle={null}
+                offsetParent={null}
+                onDrag={[Function]}
+                onMouseDown={[Function]}
+                onStart={[Function]}
+                onStop={[Function]}
+                position={null}
+                scale={1}
+                transform={null}
+              >
+                <div
+                  id="dragButton"
+                >
+                  <button
+                    className="button to-recto"
+                    id="deck-open-verso-button"
+                    onClick={[Function]}
+                    onDragLeave={[Function]}
+                    type="button"
+                  >
+                    <Icon
+                      alt="Plus d'infos"
+                      className=" "
+                      svg="ico-slide-up"
+                    />
+                  </button>
+                  <div
+                    className="clue"
+                  >
+                    <withRouter(Connect(Finishable))>
+                      <Price
+                        className=""
+                        free="Gratuit"
+                        id="deck-navigation-offer-price"
+                        value={Array []}
+                      />
+                      
+                      <div
+                        className="separator"
+                      >
+                        -
+                      </div>
+                      <div>
+                        
+                      </div>
+                    </withRouter(Connect(Finishable))>
+                  </div>
+                </div>
+              </Draggable>
+            </div>,
+            <span />,
+          ],
+          "className": "controls flex-columns items-end wrap-3 mosaicx2-background",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {},
+            "ref": null,
+            "rendered": null,
+            "type": "span",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <Draggable
+                allowAnyClick={false}
+                axis="y"
+                bounds={
+                  Object {
+                    "bottom": 0,
+                    "left": 0,
+                    "right": 0,
+                    "top": 0,
+                  }
+                }
+                cancel={null}
+                defaultClassName="react-draggable"
+                defaultClassNameDragged="react-draggable-dragged"
+                defaultClassNameDragging="react-draggable-dragging"
+                defaultPosition={
+                  Object {
+                    "x": 0,
+                    "y": 0,
+                  }
+                }
+                disabled={false}
+                enableUserSelectHack={true}
+                grid={null}
+                handle={null}
+                offsetParent={null}
+                onDrag={[Function]}
+                onMouseDown={[Function]}
+                onStart={[Function]}
+                onStop={[Function]}
+                position={null}
+                scale={1}
+                transform={null}
+              >
+                <div
+                  id="dragButton"
+                >
+                  <button
+                    className="button to-recto"
+                    id="deck-open-verso-button"
+                    onClick={[Function]}
+                    onDragLeave={[Function]}
+                    type="button"
+                  >
+                    <Icon
+                      alt="Plus d'infos"
+                      className=" "
+                      svg="ico-slide-up"
+                    />
+                  </button>
+                  <div
+                    className="clue"
+                  >
+                    <withRouter(Connect(Finishable))>
+                      <Price
+                        className=""
+                        free="Gratuit"
+                        id="deck-navigation-offer-price"
+                        value={Array []}
+                      />
+                      
+                      <div
+                        className="separator"
+                      >
+                        -
+                      </div>
+                      <div>
+                        
+                      </div>
+                    </withRouter(Connect(Finishable))>
+                  </div>
+                </div>
+              </Draggable>,
+              "className": "flex-rows",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "class",
+              "props": Object {
+                "allowAnyClick": false,
+                "axis": "y",
+                "bounds": Object {
+                  "bottom": 0,
+                  "left": 0,
+                  "right": 0,
+                  "top": 0,
+                },
+                "cancel": null,
+                "children": <div
+                  id="dragButton"
+                >
+                  <button
+                    className="button to-recto"
+                    id="deck-open-verso-button"
+                    onClick={[Function]}
+                    onDragLeave={[Function]}
+                    type="button"
+                  >
+                    <Icon
+                      alt="Plus d'infos"
+                      className=" "
+                      svg="ico-slide-up"
+                    />
+                  </button>
+                  <div
+                    className="clue"
+                  >
+                    <withRouter(Connect(Finishable))>
+                      <Price
+                        className=""
+                        free="Gratuit"
+                        id="deck-navigation-offer-price"
+                        value={Array []}
+                      />
+                      
+                      <div
+                        className="separator"
+                      >
+                        -
+                      </div>
+                      <div>
+                        
+                      </div>
+                    </withRouter(Connect(Finishable))>
+                  </div>
+                </div>,
+                "defaultClassName": "react-draggable",
+                "defaultClassNameDragged": "react-draggable-dragged",
+                "defaultClassNameDragging": "react-draggable-dragging",
+                "defaultPosition": Object {
+                  "x": 0,
+                  "y": 0,
+                },
+                "disabled": false,
+                "enableUserSelectHack": true,
+                "grid": null,
+                "handle": null,
+                "offsetParent": null,
+                "onDrag": [Function],
+                "onMouseDown": [Function],
+                "onStart": [Function],
+                "onStop": [Function],
+                "position": null,
+                "scale": 1,
+                "transform": null,
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": Array [
+                    <button
+                      className="button to-recto"
+                      id="deck-open-verso-button"
+                      onClick={[Function]}
+                      onDragLeave={[Function]}
+                      type="button"
+                    >
+                      <Icon
+                        alt="Plus d'infos"
+                        className=" "
+                        svg="ico-slide-up"
+                      />
+                    </button>,
+                    <div
+                      className="clue"
+                    >
+                      <withRouter(Connect(Finishable))>
+                        <Price
+                          className=""
+                          free="Gratuit"
+                          id="deck-navigation-offer-price"
+                          value={Array []}
+                        />
+                        
+                        <div
+                          className="separator"
+                        >
+                          -
+                        </div>
+                        <div>
+                          
+                        </div>
+                      </withRouter(Connect(Finishable))>
+                    </div>,
+                  ],
+                  "id": "dragButton",
+                },
+                "ref": null,
+                "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <Icon
+                        alt="Plus d'infos"
+                        className=" "
+                        svg="ico-slide-up"
+                      />,
+                      "className": "button to-recto",
+                      "id": "deck-open-verso-button",
+                      "onClick": [Function],
+                      "onDragLeave": [Function],
+                      "type": "button",
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "alt": "Plus d'infos",
+                        "className": " ",
+                        "svg": "ico-slide-up",
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
+                    "type": "button",
+                  },
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <withRouter(Connect(Finishable))>
+                        <Price
+                          className=""
+                          free="Gratuit"
+                          id="deck-navigation-offer-price"
+                          value={Array []}
+                        />
+                        
+                        <div
+                          className="separator"
+                        >
+                          -
+                        </div>
+                        <div>
+                          
+                        </div>
+                      </withRouter(Connect(Finishable))>,
+                      "className": "clue",
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "children": Array [
+                          <Price
+                            className=""
+                            free="Gratuit"
+                            id="deck-navigation-offer-price"
+                            value={Array []}
+                          />,
+                          "",
+                          <div
+                            className="separator"
+                          >
+                            -
+                          </div>,
+                          <div>
+                            
+                          </div>,
+                        ],
+                      },
+                      "ref": null,
+                      "rendered": Array [
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "function",
+                          "props": Object {
+                            "className": "",
+                            "free": "Gratuit",
+                            "id": "deck-navigation-offer-price",
+                            "value": Array [],
+                          },
+                          "ref": null,
+                          "rendered": null,
+                          "type": [Function],
+                        },
+                        "",
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "host",
+                          "props": Object {
+                            "children": "-",
+                            "className": "separator",
+                          },
+                          "ref": null,
+                          "rendered": "-",
+                          "type": "div",
+                        },
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "host",
+                          "props": Object {
+                            "children": "",
+                          },
+                          "ref": null,
+                          "rendered": "",
+                          "type": "div",
+                        },
+                      ],
+                      "type": [Function],
+                    },
+                    "type": "div",
+                  },
+                ],
+                "type": "div",
+              },
+              "type": [Function],
+            },
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {},
+            "ref": null,
+            "rendered": null,
+            "type": "span",
+          },
+        ],
+        "type": "div",
+      },
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
+}
+`;

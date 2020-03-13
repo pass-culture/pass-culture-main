@@ -6,6 +6,7 @@ import BetaPageContainer from '../pages/beta-page/BetaPageContainer'
 import MyBookingsContainer from '../pages/my-bookings/MyBookingsContainer'
 import DiscoveryContainer from '../pages/discovery/DiscoveryContainer'
 import DiscoveryContainerV2 from '../pages/discovery-v2/DiscoveryContainer'
+import DiscoveryContainerV3 from '../pages/discovery-v3/DiscoveryContainer'
 import MyFavoritesContainer from '../pages/my-favorites/MyFavoritesContainer'
 import ForgotPassword from '../pages/forgot-password/ForgotPassword'
 import OfferContainer from '../pages/offer/OfferContainer'
@@ -84,6 +85,14 @@ const routes = [
     path:
       '/decouverte-v2/:offerId(tuto|[A-Z0-9]+)?/:mediationId(vide|fin|[A-Z0-9]+)?/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?',
     title: 'Les offres v2',
+  },
+  {
+    component: DiscoveryContainerV3,
+    featureName: 'RECOMMENDATIONS_WITH_GEOLOCATION',
+    icon: 'ico-offres',
+    path:
+      '/decouverte-v3/:offerId(tuto|[A-Z0-9]+)?/:mediationId(vide|fin|[A-Z0-9]+)?/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?',
+    title: 'Les offres v3',
   },
   {
     component: SearchContainer,

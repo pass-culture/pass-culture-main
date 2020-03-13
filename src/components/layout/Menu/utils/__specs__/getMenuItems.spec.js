@@ -1,5 +1,6 @@
 import DiscoveryContainer from '../../../../pages/discovery/DiscoveryContainer'
 import DiscoveryContainerV2 from '../../../../pages/discovery-v2/DiscoveryContainer'
+import DiscoveryContainerV3 from '../../../../pages/discovery-v3/DiscoveryContainer'
 import MyFavoritesContainer from '../../../../pages/my-favorites/MyFavoritesContainer'
 import MyBookingsContainer from '../../../../pages/my-bookings/MyBookingsContainer'
 import ProfileContainer from '../../../../pages/profile/ProfileContainer'
@@ -46,6 +47,13 @@ describe('getMenuItemsFromRoutes', () => {
         featureName: 'RECOMMENDATIONS_WITH_DISCOVERY_VIEW',
         path: '/decouverte-v2',
         title: 'Les offres v2',
+      },
+      {
+        component: DiscoveryContainerV3,
+        icon: 'ico-offres',
+        featureName: 'RECOMMENDATIONS_WITH_GEOLOCATION',
+        path: '/decouverte-v3',
+        title: 'Les offres v3',
       },
       {
         component: SearchContainer,
