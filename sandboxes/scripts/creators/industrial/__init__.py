@@ -12,6 +12,7 @@ from sandboxes.scripts.creators.industrial.create_industrial_event_occurrences i
 from sandboxes.scripts.creators.industrial.create_industrial_event_offers import *
 from sandboxes.scripts.creators.industrial.create_industrial_event_products import *
 from sandboxes.scripts.creators.industrial.create_industrial_event_stocks import *
+from sandboxes.scripts.creators.industrial.create_industrial_iris_venues import create_industrial_iris_venues
 from sandboxes.scripts.creators.industrial.create_industrial_mediations import *
 from sandboxes.scripts.creators.industrial.create_industrial_offerers_with_pro_users import *
 from sandboxes.scripts.creators.industrial.create_industrial_payments import *
@@ -91,3 +92,5 @@ def save_industrial_sandbox():
     create_industrial_algolia_indexed_objects()
 
     create_industrial_iris(FILE_PATH)
+    
+    create_industrial_iris_venues()

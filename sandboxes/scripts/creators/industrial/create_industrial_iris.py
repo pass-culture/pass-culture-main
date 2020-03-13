@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from scripts.import_iris import import_iris_shape_file_to_table
+from scripts.iris.import_iris import import_iris_shape_file_to_table
 from utils.logger import logger
 
 FILE_PATH = Path(os.path.dirname(os.path.realpath('sandboxes/iris/metropole.shp')))
