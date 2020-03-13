@@ -49,3 +49,11 @@ BEGIN
     EXECUTE 'DROP VIEW IF EXISTS ' || quote_ident(r.table_name) || ' CASCADE';
   END LOOP;
 END $$;
+
+DO $$ DECLARE
+  r RECORD;
+BEGIN
+  FOR r IN (SELECT matviewname FROM pg_matviews WHERE schemaname = 'public') LOOP
+    EXECUTE 'DROP MATERIALIZED VIEW IF EXISTS ' || quote_ident(r.matviewname) || ' CASCADE';
+  END LOOP;
+END $$;
