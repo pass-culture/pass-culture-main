@@ -13,7 +13,6 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
     dateModified: '2019-03-06T15:51:39.253527Z',
     dateModifiedAtLastProvider: '2019-03-06T15:51:39.253504Z',
     eventOccurrenceId: null,
-    groupSize: 1,
     id: 'ARMQ',
     idAtProviders: null,
     isSoftDeleted: false,

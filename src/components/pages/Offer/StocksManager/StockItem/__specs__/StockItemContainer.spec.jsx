@@ -55,7 +55,6 @@ describe('stockItemContainer', () => {
             bookingRecapSent: null,
             dateModified: '2019-03-07T10:40:07.318721Z',
             dateModifiedAtLastProvider: '2019-03-07T10:40:07.318695Z',
-            groupSize: 1,
             id: 'MU',
             idAtProviders: null,
             isSoftDeleted: false,

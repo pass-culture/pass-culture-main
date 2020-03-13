@@ -1,7 +1,5 @@
 import React from 'react'
 import { mount, shallow } from 'enzyme'
-import { Icon } from 'pass-culture-shared'
-
 import { NavLink } from 'react-router-dom'
 import Dotdotdot from 'react-dotdotdot'
 import Thumb from '../../../../../components/layout/Thumb'
@@ -351,53 +349,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
       expect(infosSubItems.at(2).text()).toBe('Lieu : lieu de ouf')
     })
 
-    it('should display the number of participants eligible to the offer and user picto when 1 participant', () => {
-      // given
-      props.aggregatedStock = {
-        available: 0,
-        groupSizeMin: 1,
-        groupSizeMax: 5,
-        priceMin: 0,
-        priceMax: 0,
-      }
-
-      // when
-      const wrapper = shallow(<OfferItem {...props} />)
-
-      // then
-      const offerInfosElement = wrapper.find('ul.infos').at(1)
-      const offerInfosSubElements = offerInfosElement.find('li')
-      expect(offerInfosSubElements.at(0).prop('title')).toBe('entre 1 et 5 personnes')
-
-      const userPictoComponent = offerInfosSubElements.at(0).find(Icon)
-      expect(userPictoComponent.prop('svg')).toBe('picto-user')
-    })
-
-    it('should display the number of participants eligible to the offer and group picto when more than 1 participants', () => {
-      // given
-      props.aggregatedStock = {
-        available: 0,
-        groupSizeMin: 2,
-        groupSizeMax: 5,
-        priceMin: 0,
-        priceMax: 0,
-      }
-
-      // when
-      const wrapper = shallow(<OfferItem {...props} />)
-
-      // then
-      const offerInfosElement = wrapper.find('ul.infos').at(1)
-      const offerInfosSubElements = offerInfosElement.find('li')
-      expect(offerInfosSubElements.at(0).prop('title')).toBe('entre 2 et 5 personnes')
-
-      const userPictoComponent = offerInfosSubElements.at(0).find(Icon)
-      expect(userPictoComponent.prop('svg')).toBe('picto-group')
-
-      const numberOfParticipantsLabel = offerInfosSubElements.at(0).find('p')
-      expect(numberOfParticipantsLabel.text()).toBe('2 - 5')
-    })
-
     describe('when offer is an event product ', () => {
       it('should display the correct text when 0 ticket available', () => {
         // given
@@ -416,7 +367,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         const stockAvailabilityElement = ulElements
           .at(1)
           .find('li')
-          .at(3)
+          .at(2)
         expect(stockAvailabilityElement.text()).toBe('Plus de stock restant')
       })
 
@@ -437,7 +388,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         const stockAvailabilityElement = ulElements
           .at(1)
           .find('li')
-          .at(3)
+          .at(2)
         expect(stockAvailabilityElement.text()).toBe('Encore 1 stock restant')
       })
 
@@ -458,7 +409,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         const stockAvailabilityElement = ulElements
           .at(1)
           .find('li')
-          .at(3)
+          .at(2)
         expect(stockAvailabilityElement.text()).toBe('Encore 2 stocks restant')
       })
 
@@ -496,7 +447,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         const navLinkComponent = ulElements
           .at(1)
           .find('li')
-          .at(1)
+          .at(0)
           .find(NavLink)
         expect(navLinkComponent.prop('className')).toBe('has-text-primary')
         expect(navLinkComponent.prop('to')).toBe('/offres/M4?gestion')
@@ -522,7 +473,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         const stockAvailabilityElement = ulElements
           .at(1)
           .find('li')
-          .at(3)
+          .at(2)
         expect(stockAvailabilityElement.text()).toBe('Plus de stock restant')
       })
 
@@ -560,7 +511,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         const navLinkComponent = ulElements
           .at(1)
           .find('li')
-          .at(1)
+          .at(0)
           .find(NavLink)
         expect(navLinkComponent.prop('className')).toBe('has-text-primary')
         expect(navLinkComponent.prop('to')).toBe('/offres/THING?gestion')

@@ -29,19 +29,6 @@ class OfferItem extends PureComponent {
     isActive ? trackDeactivateOffer(id) : trackActivateOffer(id)
   }
 
-  buildNumberOfParticipantsLabel = (groupSizeMin, groupSizeMax) => {
-    return groupSizeMin === groupSizeMax ? `${groupSizeMin}` : `${groupSizeMin} - ${groupSizeMax}`
-  }
-
-  buildNumberOfParticipantsTitle = (groupSizeMin, groupSizeMax) => {
-    const groupLabel =
-      groupSizeMin === groupSizeMax
-        ? `minimum ${pluralize(groupSizeMin, 'personnes')}`
-        : `entre ${groupSizeMin} et ${groupSizeMax} personnes`
-
-    return groupSizeMin > 0 ? groupLabel : null
-  }
-
   buildProductNavLinkLabel = (offer, stockSize) => {
     if (offer.isThing) {
       return `${stockSize} prix`
@@ -82,7 +69,7 @@ class OfferItem extends PureComponent {
     } = this.props
 
     const { isNew, name } = offer || {}
-    const { groupSizeMin, groupSizeMax, priceMin, priceMax } = aggregatedStock || {}
+    const { priceMin, priceMax } = aggregatedStock || {}
     const thumbUrl = this.getThumbUrl()
     const numberOfMediations = get(mediations, 'length')
     const remainingStockQuantity = get(stocks, 'length')
@@ -135,18 +122,6 @@ class OfferItem extends PureComponent {
                 <div className="recently-added" />
               </li>
             )}
-            <li title={this.buildNumberOfParticipantsTitle(groupSizeMin, groupSizeMax)}>
-              {groupSizeMin === 1 && <Icon svg="picto-user" />}
-              {groupSizeMin > 1 && (
-                <div>
-                  <Icon svg="picto-group" />
-                  {', '}
-                  <p>
-                    {this.buildNumberOfParticipantsLabel(groupSizeMin, groupSizeMax)}
-                  </p>
-                </div>
-              )}
-            </li>
             <li>
               <NavLink
                 className="has-text-primary"

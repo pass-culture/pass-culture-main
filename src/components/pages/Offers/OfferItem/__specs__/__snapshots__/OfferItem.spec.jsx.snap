@@ -127,9 +127,6 @@ ShallowWrapper {
           <ul
             className="infos"
           >
-            <li
-              title={null}
-            />
             <li>
               <NavLink
                 activeClassName="active"
@@ -276,9 +273,6 @@ ShallowWrapper {
             <ul
               className="infos"
             >
-              <li
-                title={null}
-              />
               <li>
                 <NavLink
                   activeClassName="active"
@@ -518,9 +512,6 @@ ShallowWrapper {
             "props": Object {
               "children": Array [
                 undefined,
-                <li
-                  title={null}
-                />,
                 <li>
                   <NavLink
                     activeClassName="active"
@@ -551,24 +542,6 @@ ShallowWrapper {
             "ref": null,
             "rendered": Array [
               undefined,
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": Array [
-                    false,
-                    false,
-                  ],
-                  "title": null,
-                },
-                "ref": null,
-                "rendered": Array [
-                  false,
-                  false,
-                ],
-                "type": "li",
-              },
               Object {
                 "instance": null,
                 "key": undefined,
@@ -1018,9 +991,6 @@ ShallowWrapper {
             <ul
               className="infos"
             >
-              <li
-                title={null}
-              />
               <li>
                 <NavLink
                   activeClassName="active"
@@ -1167,9 +1137,6 @@ ShallowWrapper {
               <ul
                 className="infos"
               >
-                <li
-                  title={null}
-                />
                 <li>
                   <NavLink
                     activeClassName="active"
@@ -1409,9 +1376,6 @@ ShallowWrapper {
               "props": Object {
                 "children": Array [
                   undefined,
-                  <li
-                    title={null}
-                  />,
                   <li>
                     <NavLink
                       activeClassName="active"
@@ -1442,24 +1406,6 @@ ShallowWrapper {
               "ref": null,
               "rendered": Array [
                 undefined,
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": Array [
-                      false,
-                      false,
-                    ],
-                    "title": null,
-                  },
-                  "ref": null,
-                  "rendered": Array [
-                    false,
-                    false,
-                  ],
-                  "type": "li",
-                },
                 Object {
                   "instance": null,
                   "key": undefined,
