@@ -7,15 +7,15 @@ describe('src | components | pages | Mediation', () => {
   let createOrUpdateMediation
   let getMediation
   let getOffer
-  let showFailDataNotification
-  let showSuccessDataNotification
+  let showOfferModificationErrorNotification
+  let showOfferModificationValidationNotification
 
   beforeEach(() => {
     createOrUpdateMediation = jest.fn()
     getMediation = jest.fn()
     getOffer = jest.fn()
-    showFailDataNotification = jest.fn()
-    showSuccessDataNotification = jest.fn()
+    showOfferModificationErrorNotification = jest.fn()
+    showOfferModificationValidationNotification = jest.fn()
 
     props = {
       createOrUpdateMediation,
@@ -30,8 +30,8 @@ describe('src | components | pages | Mediation', () => {
       mediation: {},
       offer: {},
       offerer: {},
-      showFailDataNotification,
-      showSuccessDataNotification,
+      showOfferModificationErrorNotification,
+      showOfferModificationValidationNotification,
     }
   })
 
@@ -211,7 +211,7 @@ describe('src | components | pages | Mediation', () => {
       wrapper.instance().handleFailData(wrapper.state(), action)
 
       // then
-      expect(showFailDataNotification).toHaveBeenCalledWith('erreur')
+      expect(showOfferModificationErrorNotification).toHaveBeenCalledWith('erreur')
     })
 
     it('should show thumbUrl fail notification when error from thumb occurs', () => {
@@ -229,7 +229,7 @@ describe('src | components | pages | Mediation', () => {
       wrapper.instance().handleFailData(wrapper.state(), action)
 
       // then
-      expect(showFailDataNotification).toHaveBeenCalledWith('erreur')
+      expect(showOfferModificationErrorNotification).toHaveBeenCalledWith('erreur')
     })
   })
 

@@ -48,7 +48,7 @@ export const mapDispatchToProps = dispatch => {
         })
       )
     },
-    showFailDataNotification: error => {
+    showOfferModificationErrorNotification: error => {
       dispatch(
         showNotification({
           text: error,
@@ -56,11 +56,12 @@ export const mapDispatchToProps = dispatch => {
         })
       )
     },
-    showSuccessDataNotification: () => {
+    showOfferModificationValidationNotification: () => {
       dispatch(
         showNotification({
           tag: 'mediations-manager',
-          text: 'Votre accroche a bien été enregistrée',
+          text:
+            'Votre offre a bien été modifiée. L’offre peut mettre quelques minutes pour être disponible dans l’application.',
           type: 'success',
         })
       )

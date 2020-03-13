@@ -22,8 +22,8 @@ ShallowWrapper {
     mediation={Object {}}
     offer={Object {}}
     offerer={Object {}}
-    showFailDataNotification={[MockFunction]}
-    showSuccessDataNotification={[MockFunction]}
+    showOfferModificationErrorNotification={[MockFunction]}
+    showOfferModificationValidationNotification={[MockFunction]}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

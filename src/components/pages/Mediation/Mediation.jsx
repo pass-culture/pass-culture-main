@@ -59,7 +59,7 @@ class Mediation extends PureComponent {
   }
 
   handleFailData = (state, action) => {
-    const { history, offer, showFailDataNotification } = this.props
+    const { history, offer, showOfferModificationErrorNotification } = this.props
     const {
       payload: { errors },
     } = action
@@ -72,16 +72,16 @@ class Mediation extends PureComponent {
       } else if (errors && errors.thumbUrl && errors.thumbUrl[0]) {
         error = errors.thumbUrl[0]
       }
-      showFailDataNotification(error)
+      showOfferModificationErrorNotification(error)
     })
   }
 
   handleSuccessData = () => {
-    const { history, offer, showSuccessDataNotification } = this.props
+    const { history, offer, showOfferModificationValidationNotification } = this.props
 
     this.setState({ isLoading: false }, () => {
       history.push(`/offres/${offer.id}`)
-      showSuccessDataNotification()
+      showOfferModificationValidationNotification()
     })
   }
 
@@ -461,8 +461,8 @@ Mediation.propTypes = {
   mediation: PropTypes.shape(),
   offer: PropTypes.shape().isRequired,
   offerer: PropTypes.shape().isRequired,
-  showFailDataNotification: PropTypes.func.isRequired,
-  showSuccessDataNotification: PropTypes.func.isRequired,
+  showOfferModificationErrorNotification: PropTypes.func.isRequired,
+  showOfferModificationValidationNotification: PropTypes.func.isRequired,
 }
 
 export default Mediation

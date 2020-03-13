@@ -19,8 +19,8 @@ describe('src | components | pages | MediationContainer', () => {
       expect(result).toStrictEqual({
         getOffer: expect.any(Function),
         getMediation: expect.any(Function),
-        showFailDataNotification: expect.any(Function),
-        showSuccessDataNotification: expect.any(Function),
+        showOfferModificationErrorNotification: expect.any(Function),
+        showOfferModificationValidationNotification: expect.any(Function),
         createOrUpdateMediation: expect.any(Function),
       })
     })
@@ -94,14 +94,14 @@ describe('src | components | pages | MediationContainer', () => {
     })
   })
 
-  describe('showFailDataNotification', () => {
+  describe('showOfferModificationErrorNotification', () => {
     it('should dispatch an action to trigger fail data notification', () => {
       // given
-      const { showFailDataNotification } = mapDispatchToProps(dispatch, props)
+      const { showOfferModificationErrorNotification } = mapDispatchToProps(dispatch, props)
       const error = 'my error'
 
       // when
-      showFailDataNotification(error)
+      showOfferModificationErrorNotification(error)
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
@@ -114,19 +114,20 @@ describe('src | components | pages | MediationContainer', () => {
     })
   })
 
-  describe('showSuccessDataNotification', () => {
+  describe('showOfferModificationValidationNotification', () => {
     it('should dispatch an action to trigger sucess notification display', () => {
       // given
-      const { showSuccessDataNotification } = mapDispatchToProps(dispatch, props)
+      const { showOfferModificationValidationNotification } = mapDispatchToProps(dispatch, props)
 
       // when
-      showSuccessDataNotification()
+      showOfferModificationValidationNotification()
 
       // then
       expect(dispatch).toHaveBeenCalledWith({
         patch: {
           tag: 'mediations-manager',
-          text: 'Votre accroche a bien été enregistrée',
+          text:
+            'Votre offre a bien été modifiée. L’offre peut mettre quelques minutes pour être disponible dans l’application.',
           type: 'success',
         },
         type: 'SHOW_NOTIFICATION',
