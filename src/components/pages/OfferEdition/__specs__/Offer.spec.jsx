@@ -1,6 +1,6 @@
 import React from 'react'
 import { shallow } from 'enzyme'
-import { Field, Form } from 'pass-culture-shared'
+import { Field, Form, showModal } from 'pass-culture-shared'
 
 import Offer from '../Offer'
 import MediationsManager from '../MediationsManager/MediationsManagerContainer'
@@ -8,6 +8,7 @@ import HeroSection from '../../../layout/HeroSection/HeroSection'
 import LocalProviderInformation from '../LocalProviderInformation/LocalProviderInformationContainer'
 import { VenueName } from '../VenueName'
 import { OffererName } from '../OffererName'
+import StocksManagerContainer from '../../Offer/StocksManager/StocksManagerContainer'
 
 describe('components | OfferEdition | Offer ', () => {
   let dispatch
@@ -42,7 +43,10 @@ describe('components | OfferEdition | Offer ', () => {
         change: () => ({}),
         changeToReadOnly: () => ({}),
         context: () => ({}),
-        parse: () => ({ lieu: 'AQ' }),
+        parse: () => ({
+          lieu: 'AQ',
+          gestion: 'gestion',
+        }),
         translate: () => ({ venue: 'AQ ' }),
       },
       selectedOfferType: {},
@@ -84,6 +88,25 @@ describe('components | OfferEdition | Offer ', () => {
         // then
         expect(history.push).toHaveBeenCalledWith('/offres/26B')
       })
+    })
+  })
+
+  describe('handleShowStocksManager', () => {
+    it('should pass offerId as a props to the StocksManagerContainer', () => {
+      // given
+      const wrapper = shallow(<Offer {...props} />)
+      props.match.params.offerId = 'N9'
+
+      // when
+      wrapper.instance().handleShowStocksManager()
+
+      // then
+      const modalParams = {
+        isUnclosable: true,
+      }
+      expect(props.dispatch).toHaveBeenCalledWith(
+        showModal(<StocksManagerContainer offerId="N9" />, modalParams)
+      )
     })
   })
 

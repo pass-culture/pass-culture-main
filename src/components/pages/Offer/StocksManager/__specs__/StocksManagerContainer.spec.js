@@ -12,11 +12,9 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
         products: [{ id: 'B1', lastProviderId: 'C1' }],
         stocks: [{ offerId: 'A1' }],
       },
-      modal: {
-        config: { offerId: 'A1' },
-      },
     }
     props = {
+      offerId: 'A1',
       match: {},
     }
   })
@@ -24,9 +22,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
   describe('mapStateToProps', () => {
     it('should return an empty object when offer was not found', () => {
       // given
-      props.match.params = {
-        offerId: 'A2',
-      }
+      props.offerId = 'A2'
 
       // when
       const result = mapStateToProps(state, props)
@@ -36,11 +32,6 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
     })
 
     it('should return an object when offer was found', () => {
-      // given
-      props.match.params = {
-        offerId: 'A1',
-      }
-
       // when
       const result = mapStateToProps(state, props)
 
@@ -72,9 +63,6 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
         // given
         state.data.offers[0].isEvent = true
         state.data.offers[0].isThing = false
-        props.match.params = {
-          offerId: 'A1',
-        }
 
         // when
         const result = mapStateToProps(state, props)
@@ -88,9 +76,6 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
         state.data.offers[0].isEvent = true
         state.data.offers[0].isThing = false
         state.data.stocks = []
-        props.match.params = {
-          offerId: 'A1',
-        }
 
         // when
         const result = mapStateToProps(state, props)
@@ -103,9 +88,6 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
         // given
         state.data.offers[0].isEvent = false
         state.data.offers[0].isThing = true
-        props.match.params = {
-          offerId: 'A1',
-        }
 
         // when
         const result = mapStateToProps(state, props)

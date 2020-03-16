@@ -17,8 +17,23 @@ ShallowWrapper {
               "type": "RESET_FORM",
             },
           ],
+          Array [
+            Object {
+              "$modal": <withRouter(_withQueryRouter)
+                offerId="creation"
+              />,
+              "config": Object {
+                "isUnclosable": true,
+              },
+              "type": "SHOW_MODAL",
+            },
+          ],
         ],
         "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
           Object {
             "type": "return",
             "value": undefined,

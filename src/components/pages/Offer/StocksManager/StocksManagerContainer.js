@@ -9,8 +9,8 @@ import { selectStocksByOfferId } from '../../../../selectors/data/stocksSelector
 import { selectProviderById } from '../../../../selectors/data/providersSelectors'
 import { selectOfferById } from '../../../../selectors/data/offersSelectors'
 
-export const mapStateToProps = state => {
-  const offerId = state.modal.config.offerId
+export const mapStateToProps = (state, ownProps) => {
+  const { offerId } = ownProps
   const offer = selectOfferById(state, offerId)
 
   // wtf

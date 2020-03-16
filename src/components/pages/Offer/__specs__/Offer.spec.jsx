@@ -161,10 +161,9 @@ describe('src | components | pages | Offer | Offer ', () => {
       // then
       const modalParams = {
         isUnclosable: true,
-        offerId: 'N9',
       }
       expect(props.dispatch).toHaveBeenCalledWith(
-        showModal(<StocksManagerContainer />, modalParams)
+        showModal(<StocksManagerContainer offerId="N9" />, modalParams)
       )
     })
   })

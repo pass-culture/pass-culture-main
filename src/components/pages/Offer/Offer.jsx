@@ -247,9 +247,8 @@ class Offer extends PureComponent {
       return
     }
     dispatch(
-      showModal(<StocksManagerContainer />, {
+      showModal(<StocksManagerContainer offerId={offerId} />, {
         isUnclosable: true,
-        offerId: offerId,
       })
     )
   }
