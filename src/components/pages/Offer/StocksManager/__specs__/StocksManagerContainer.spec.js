@@ -12,6 +12,9 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
         products: [{ id: 'B1', lastProviderId: 'C1' }],
         stocks: [{ offerId: 'A1' }],
       },
+      modal: {
+        config: { offerId: 'A1' },
+      },
     }
     props = {
       match: {},

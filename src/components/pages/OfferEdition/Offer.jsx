@@ -17,7 +17,7 @@ import { Link, NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
 import MediationsManager from './MediationsManager/MediationsManagerContainer'
-import StocksManagerContainer from './StocksManager/StocksManagerContainer'
+import StocksManagerContainer from '../Offer/StocksManager/StocksManagerContainer'
 import HeroSection from '../../layout/HeroSection/HeroSection'
 import Main from '../../layout/Main'
 import { musicOptions, showOptions } from '../../../utils/edd'

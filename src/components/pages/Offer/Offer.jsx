@@ -240,14 +240,16 @@ class Offer extends PureComponent {
   }
 
   handleShowStocksManager = () => {
-    const { dispatch, query } = this.props
+    const { dispatch, query, match } = this.props
     const { gestion } = query.parse()
+    const offerId = match.params.offerId
     if (typeof gestion === 'undefined') {
       return
     }
     dispatch(
       showModal(<StocksManagerContainer />, {
         isUnclosable: true,
+        offerId: offerId,
       })
     )
   }
