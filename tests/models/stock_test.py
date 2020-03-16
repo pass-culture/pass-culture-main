@@ -25,7 +25,8 @@ def test_beginning_datetime_cannot_be_after_end_datetime(app):
     now = datetime.utcnow()
     beginning = now - timedelta(days=5)
     end = beginning - timedelta(days=1)
-    stock = create_stock(offer=offer, beginning_datetime=beginning, end_datetime=end)
+    stock = create_stock(
+        offer=offer, beginning_datetime=beginning, end_datetime=end)
 
     # when
     with pytest.raises(ApiErrors) as e:
@@ -43,7 +44,8 @@ def test_date_modified_should_be_updated_if_available_changed(app):
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_offer_with_thing_product(venue)
-    stock = create_stock(offer=offer, date_modified=datetime(2018, 2, 12), available=1)
+    stock = create_stock(
+        offer=offer, date_modified=datetime(2018, 2, 12), available=1)
     repository.save(stock)
 
     # when
@@ -62,7 +64,8 @@ def test_date_modified_should_not_be_updated_if_price_changed(app):
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_offer_with_thing_product(venue)
-    stock = create_stock(offer=offer, date_modified=datetime(2018, 2, 12), available=1, price=1)
+    stock = create_stock(offer=offer, date_modified=datetime(
+        2018, 2, 12), available=1, price=1)
     repository.save(stock)
 
     # when
@@ -161,10 +164,14 @@ def test_available_stocks_can_be_changed_even_when_bookings_with_cancellations_e
     repository.save(stock)
     user1 = create_user()
     user2 = create_user(email='test@mail.com')
-    cancelled_booking1 = create_booking(user=user1, stock=stock, is_cancelled=True, quantity=1)
-    cancelled_booking2 = create_booking(user=user1, stock=stock, is_cancelled=True, quantity=1)
-    booking1 = create_booking(user=user1, stock=stock, is_cancelled=False, quantity=1)
-    booking2 = create_booking(user=user2, stock=stock, is_cancelled=False, quantity=1)
+    cancelled_booking1 = create_booking(
+        user=user1, stock=stock, is_cancelled=True, quantity=1)
+    cancelled_booking2 = create_booking(
+        user=user1, stock=stock, is_cancelled=True, quantity=1)
+    booking1 = create_booking(user=user1, stock=stock,
+                              is_cancelled=False, quantity=1)
+    booking2 = create_booking(user=user2, stock=stock,
+                              is_cancelled=False, quantity=1)
     repository.save(cancelled_booking1, cancelled_booking2, booking1, booking2)
     stock.available = 3
 
@@ -185,7 +192,8 @@ def test_update_available_stocks_even_when_is_less_than_number_of_bookings(app):
     stock = create_stock_from_offer(offer, available=2, price=0)
     repository.save(stock)
     user = create_user()
-    booking = create_booking(user=user, stock=stock, is_cancelled=False, quantity=2)
+    booking = create_booking(user=user, stock=stock,
+                             is_cancelled=False, quantity=2)
     repository.save(booking)
     stock.available = 1
 
@@ -194,6 +202,26 @@ def test_update_available_stocks_even_when_is_less_than_number_of_bookings(app):
 
     # Then
     assert Stock.query.get(stock.id).available == 1
+
+
+@clean_database
+def test_stock_cannot_have_an_available_less_than_booking_count(app):
+    # given
+    user = create_user()
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_offer_with_thing_product(venue)
+    stock = create_stock_from_offer(offer, price=0, available=10)
+    booking = create_booking(user=user, stock=stock, quantity=5)
+    repository.save(booking)
+    stock.available = 4
+
+    # when
+    with pytest.raises(ApiErrors) as e:
+        repository.save(stock)
+
+    # then
+    assert e.value.errors['available'] == ['Le stock total ne peut être inférieur au nombre de réservations']
 
 
 class StockRemainingQuantityTest:
@@ -220,8 +248,10 @@ class StockRemainingQuantityTest:
         stock = create_stock_from_offer(offer, available=2, price=0)
         repository.save(stock)
         user = create_user()
-        booking1 = create_booking(user=user, stock=stock, is_cancelled=False, quantity=1)
-        booking2 = create_booking(user=user, stock=stock, is_cancelled=False, quantity=1)
+        booking1 = create_booking(
+            user=user, stock=stock, is_cancelled=False, quantity=1)
+        booking2 = create_booking(
+            user=user, stock=stock, is_cancelled=False, quantity=1)
 
         # When
         repository.save(booking1, booking2)
@@ -238,8 +268,10 @@ class StockRemainingQuantityTest:
         stock = create_stock_from_offer(offer, available=2, price=0)
         repository.save(stock)
         user = create_user()
-        booking1 = create_booking(user=user, stock=stock, is_cancelled=False, is_used=False, quantity=1)
-        booking2 = create_booking(user=user, stock=stock, is_cancelled=False, is_used=False, quantity=1)
+        booking1 = create_booking(
+            user=user, stock=stock, is_cancelled=False, is_used=False, quantity=1)
+        booking2 = create_booking(
+            user=user, stock=stock, is_cancelled=False, is_used=False, quantity=1)
         repository.save(booking1, booking2)
         stock.available = 1
 
@@ -261,7 +293,8 @@ class StockRemainingQuantityTest:
         booking1 = create_booking(user=user, stock=stock, date_used=datetime.utcnow() - timedelta(days=1),
                                   is_cancelled=False,
                                   is_used=True, quantity=1)
-        booking2 = create_booking(user=user, stock=stock, is_cancelled=False, is_used=False, quantity=1)
+        booking2 = create_booking(
+            user=user, stock=stock, is_cancelled=False, is_used=False, quantity=1)
 
         # When
         repository.save(booking1, booking2)
@@ -279,7 +312,8 @@ class IsBookableTest:
         offer = create_offer_with_thing_product(venue)
 
         # When
-        stock = create_stock(offer=offer, booking_limit_datetime=limit_datetime)
+        stock = create_stock(
+            offer=offer, booking_limit_datetime=limit_datetime)
 
         # Then
         assert not stock.isBookable
@@ -352,7 +386,8 @@ class IsBookableTest:
         expired_stock_date = datetime.utcnow() - timedelta(days=2)
 
         # When
-        stock = create_stock(offer=offer, beginning_datetime=expired_stock_date)
+        stock = create_stock(
+            offer=offer, beginning_datetime=expired_stock_date)
 
         # Then
         assert not stock.isBookable

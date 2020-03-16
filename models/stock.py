@@ -62,15 +62,17 @@ class Stock(PcObject,
                          backref='stocks')
 
     price = Column(Numeric(10, 2),
-                   CheckConstraint('price >= 0', name='check_price_is_not_negative'),
+                   CheckConstraint(
+                       'price >= 0', name='check_price_is_not_negative'),
                    nullable=False)
 
     available = Column(Integer,
                        nullable=True)
 
     remainingQuantity = column_property(
-        select([func.greatest(available - func.coalesce(func.sum(Booking.quantity), 0), 0)])
-            .where(
+        select(
+            [func.greatest(available - func.coalesce(func.sum(Booking.quantity), 0), 0)])
+        .where(
             and_(
                 Booking.stockId == id,
                 or_(
@@ -135,14 +137,13 @@ class Stock(PcObject,
     def restize_internal_error(ie):
         if 'check_stock' in str(ie.orig):
             if 'available_too_low' in str(ie.orig):
-                return ['available', 'la quantité pour cette offre'
-                        + ' ne peut pas être inférieure'
-                        + ' au nombre de réservations existantes.']
+                return ['available', 'Le stock total ne peut être inférieur au nombre de réservations']
             elif 'bookingLimitDatetime_too_late' in str(ie.orig):
                 return ['bookingLimitDatetime',
                         'La date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement']
             else:
-                logger.error("Unexpected error in patch stocks: " + pformat(ie))
+                logger.error(
+                    "Unexpected error in patch stocks: " + pformat(ie))
         return PcObject.restize_internal_error(ie)
 
 
@@ -152,14 +153,30 @@ def page_defaults(mapper, configuration, target):
     # for eventOccurrences
     if target.beginningDatetime and not target.bookingLimitDatetime:
         target.bookingLimitDatetime = target.beginningDatetime \
-                                          .replace(hour=23) \
-                                          .replace(minute=59) - timedelta(days=3)
+            .replace(hour=23) \
+            .replace(minute=59) - timedelta(days=3)
 
 
 Stock.trig_ddl = """
     CREATE OR REPLACE FUNCTION check_stock()
     RETURNS TRIGGER AS $$
     BEGIN
+      IF
+       NOT NEW.available IS NULL
+       AND
+        (
+         (
+          SELECT SUM(booking.quantity)
+          FROM booking
+          WHERE "stockId"=NEW.id
+          AND NOT booking."isCancelled"
+         ) > NEW.available
+        )
+      THEN
+       RAISE EXCEPTION 'available_too_low'
+       USING HINT = 'stock.available cannot be lower than number of bookings';
+      END IF;
+
       IF NOT NEW."bookingLimitDatetime" IS NULL AND
          NOT NEW."beginningDatetime" IS NULL AND
          NEW."bookingLimitDatetime" > NEW."beginningDatetime" THEN
