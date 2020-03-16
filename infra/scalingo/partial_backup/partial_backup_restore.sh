@@ -15,6 +15,8 @@ echo "- Restore data :"
 time pg_restore -d $tunnel_database_url --no-owner -j 8 --no-privileges $BACKUP_PATH/data.pgdump  || failure_alert "Restore raw data"
 echo "- Restore post-data :"
 time psql $tunnel_database_url -f $BACKUP_PATH/post_data.sql || failure_alert "Restore post data"
+echo "- Refresh discovery view :"
+time psql $tunnel_database_url -c "REFRESH MATERIALIZED VIEW discovery_view;"
 
 script_duration=$((`date +%s`-$script_start_time))
 backup_file_timestamp=$(stat $BACKUP_PATH/data.pgdump -c %y)
