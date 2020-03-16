@@ -33,7 +33,7 @@ class Patch:
 
         @clean_database
         @patch('routes.venues.delete_venue_from_iris_venues')
-        @patch('routes.venues.link_venue_to_iris_if_valid')
+        @patch('routes.venues.link_valid_venue_to_irises')
         def when_venue_is_physical_expect_delete_venue_from_iris_venues_and_link_venue_to_irises_to_be_called(self,
                                                                                                               mock_link_venue_to_iris_if_valid,
                                                                                                               mock_delete_venue_from_iris_venues,

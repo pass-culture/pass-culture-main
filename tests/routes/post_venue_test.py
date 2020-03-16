@@ -75,7 +75,7 @@ class Post:
             assert 'validationToken' not in json
 
         @clean_database
-        @patch('routes.venues.link_venue_to_iris_if_valid')
+        @patch('routes.venues.link_valid_venue_to_irises')
         def when_offerer_is_validated_and_venue_with_siret_add_to_iris_venue(self, mock_link_venue_to_iris_if_valid,
                                                                              app):
             # given

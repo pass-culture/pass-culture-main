@@ -47,7 +47,7 @@ class Get:
             ]
 
         @clean_database
-        @patch('routes.validate.link_venue_to_iris_if_valid')
+        @patch('routes.validate.link_valid_venue_to_irises')
         def expect_link_venue_to_iris_if_valid_to_be_called_for_validated_venue(self, mocked_link_venue_to_iris_if_valid, app):
             # Given
             offerer = create_offerer()
@@ -58,7 +58,7 @@ class Get:
             token = venue.validationToken
 
             # When
-            response = TestClient(app.test_client()).get('/validate/venue?token={}'.format(token))
+            response = TestClient(app.test_client()).get(f'/validate/venue?token={token}')
 
             # Then
             assert response.status_code == 202
@@ -78,7 +78,7 @@ class Get:
         @clean_database
         def when_validation_token_is_unknown(self, app):
             # When
-            response = TestClient(app.test_client()).get('/validate/venue?token={}'.format('12345'))
+            response = TestClient(app.test_client()).get(f'/validate/venue?token=12345')
 
             # Then
             assert response.status_code == 404

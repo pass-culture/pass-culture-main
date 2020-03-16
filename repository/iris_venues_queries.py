@@ -29,7 +29,7 @@ def insert_venue_in_iris_venue(venue_id: int, iris_ids_near_venue: List[int]) ->
     repository.save(*irises_venues)
 
 
-def delete_venue_from_iris_venues(venue_id: Optional[int]) -> None:
+def delete_venue_from_iris_venues(venue_id: int) -> None:
     iris_venues_to_delete = IrisVenues.query \
         .filter_by(venueId=venue_id) \
         .all()

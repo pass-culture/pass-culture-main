@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 
 from connectors import redis
 from domain.admin_emails import maybe_send_offerer_validation_email
-from domain.iris import link_venue_to_iris_if_valid
+from domain.iris import link_valid_venue_to_irises
 from domain.payments import read_message_name_in_message_file, \
     generate_file_checksum
 from domain.user_emails import send_validation_confirmation_email_to_pro, \
@@ -51,7 +51,7 @@ def validate_new_offerer(token):
     offerer.validationToken = None
 
     for venue in offerer.managedVenues:
-        link_venue_to_iris_if_valid(venue)
+        link_valid_venue_to_irises(venue)
 
     repository.save(offerer)
 
@@ -69,7 +69,7 @@ def validate_venue():
     venue = Venue.query.filter_by(validationToken=token).first()
     check_venue_found(venue)
     venue.validationToken = None
-    link_venue_to_iris_if_valid(venue)
+    link_valid_venue_to_irises(venue)
     repository.save(venue)
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_venue_id(client=app.redis_client, venue_id=venue.id)

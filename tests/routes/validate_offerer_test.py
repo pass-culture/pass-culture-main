@@ -26,7 +26,7 @@ class Get:
                 .first().validationToken
 
             # When
-            response = TestClient(app.test_client()).get('/validate/offerer/' + token,
+            response = TestClient(app.test_client()).get(f'/validate/offerer/{token}',
                                                          headers={'origin': 'http://localhost:3000'})
 
             # Then
@@ -36,7 +36,7 @@ class Get:
                 .first()
             assert offerer.isValidated
 
-        @patch('routes.validate.link_venue_to_iris_if_valid')
+        @patch('routes.validate.link_valid_venue_to_irises')
         @clean_database
         def expect_link_venue_to_iris_if_valid_to_have_been_called_for_every_venue(self, mocked_link_venue_to_iris_if_valid, app):
             # Given
