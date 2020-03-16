@@ -3,6 +3,7 @@ import moment from 'moment'
 export const getFormattedRemainingQuantities = (available, bookingsCount) => {
   const isUnlimitedWithoutTypingValue = available === null
   const isUnlimitedAfterRemovingValue = available === ''
+
   if (isUnlimitedWithoutTypingValue || isUnlimitedAfterRemovingValue) {
     return 'Illimité'
   }

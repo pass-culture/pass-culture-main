@@ -109,6 +109,9 @@ class ProductFields extends PureComponent {
       bookingsQuantity
     )
 
+    const isRemainingQuantityValid =
+      formattedRemainingQuantities || formattedRemainingQuantities == 0
+
     return (
       <Fragment>
         <td title="Gratuit si vide">
@@ -155,12 +158,16 @@ class ProductFields extends PureComponent {
           />
         </td>
 
-        <td
-          className="is-small remaining-stock"
-          id="remaining-stock"
-        >
-          {formattedRemainingQuantities || ''}
-        </td>
+        {isRemainingQuantityValid ? (
+          <td
+            className="is-small remaining-stock"
+            id="remaining-stock"
+          >
+            {formattedRemainingQuantities}
+          </td>
+        ) : (
+          <td className="is-small remaining-stock" />
+        )}
 
         <td
           className="is-small bookings-count"
