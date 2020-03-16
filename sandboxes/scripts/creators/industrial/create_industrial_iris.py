@@ -4,7 +4,7 @@ from pathlib import Path
 from scripts.iris.import_iris import import_iris_shape_file_to_table
 from utils.logger import logger
 
-FILE_PATH = Path(os.path.dirname(os.path.realpath('sandboxes/iris/metropole.shp')))
+FILE_PATH = Path(os.path.dirname(os.path.realpath('sandboxes/iris/paris.shp')))
 
 
 def create_industrial_iris(file_path: str):
@@ -12,4 +12,4 @@ def create_industrial_iris(file_path: str):
 
     import_iris_shape_file_to_table(file_path)
 
-    logger.info('created 1000 metropole iris data'.format())
+    logger.info('created 1000 paris iris data')
