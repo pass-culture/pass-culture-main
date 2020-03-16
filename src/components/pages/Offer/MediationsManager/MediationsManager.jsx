@@ -7,9 +7,9 @@ import MediationItem from './MediationItem/MediationItem'
 import PropTypes from 'prop-types'
 
 class MediationsManager extends PureComponent {
-  hasNoActiveMediation() {
+  hasAtLeastOneActiveMediation() {
     const { hasMediations, atLeastOneActiveMediation } = this.props
-    return !(hasMediations && atLeastOneActiveMediation)
+    return hasMediations && atLeastOneActiveMediation
   }
 
   render() {
@@ -18,7 +18,7 @@ class MediationsManager extends PureComponent {
 
     return (
       <div className="mediation-manager">
-        {this.hasNoActiveMediation() && (
+        {!this.hasAtLeastOneActiveMediation() && (
           <p className="info-message">
             {"Ajoutez une accroche pour mettre cette offre en avant dans l'application"}
           </p>

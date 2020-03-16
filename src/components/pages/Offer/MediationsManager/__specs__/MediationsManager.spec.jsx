@@ -44,7 +44,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
         expect(informationMessageWrapper.exists()).toBe(true)
       })
 
-      it('should a NavLink with a icon and info message inside', () => {
+      it('should render a NavLink with a icon and info message inside', () => {
         // given
         props.offer = {
           id: 'ABC',
@@ -55,8 +55,8 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
         const wrapper = shallow(<MediationsManager {...props} />)
 
         // then
-        const lienAjoutAccroche = wrapper.find(NavLink)
-        expect(lienAjoutAccroche.exists()).toBe(true)
+        const addMediationLink = wrapper.find(NavLink)
+        expect(addMediationLink.exists()).toBe(true)
         const spans = wrapper.find('span')
         expect(spans).toHaveLength(2)
         expect(spans.at(0).find(Icon)).toHaveLength(1)
