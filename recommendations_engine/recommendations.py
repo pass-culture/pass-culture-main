@@ -22,6 +22,7 @@ from validation.routes.recommendations import check_distance_is_digit, \
 MAX_OF_MAX_DISTANCE = "20000"
 
 
+#TODO remove this function and its tests once v3 is the only route
 def give_requested_recommendation_to_user(user, offer_id, mediation_id):
     recommendation = None
 

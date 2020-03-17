@@ -174,20 +174,11 @@ def put_recommendations_v3():
         update_read_recommendations(request.json['readRecommendations'])
 
     if 'seenRecommendationIds' in json_keys:
-        humanized_seen_recommendation_ids = request.json['seenRecommendationIds']
+        seen_recommendation_human_ids = request.json['seenRecommendationIds']
         seen_recommendation_ids = list(
-            map(dehumanize, humanized_seen_recommendation_ids))
+            map(dehumanize, seen_recommendation_human_ids))
     else:
         seen_recommendation_ids = []
-
-    offer_id = dehumanize(request.args.get('offerId'))
-    mediation_id = dehumanize(request.args.get('mediationId'))
-
-    requested_recommendation = give_requested_recommendation_to_user(
-        current_user,
-        offer_id,
-        mediation_id
-    )
 
     created_recommendations = create_recommendations_for_discovery_v3(limit=BLOB_SIZE,
                                                                       user=current_user,
@@ -197,8 +188,5 @@ def put_recommendations_v3():
     recommendations = move_tutorial_recommendations_first(created_recommendations,
                                                           seen_recommendation_ids,
                                                           current_user)
-    if requested_recommendation:
-        recommendations = move_requested_recommendation_first(created_recommendations,
-                                                              requested_recommendation)
 
     return jsonify(serialize_recommendations(recommendations, current_user)), 200
