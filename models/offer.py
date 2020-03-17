@@ -208,7 +208,7 @@ class Offer(PcObject,
         if has_at_least_one_stock_with_remaining_quantity and count_stocks_with_no_remaining_quantity > 0:
             return f"Plus de stock restant pour" \
                    f" {count_stocks_with_no_remaining_quantity}" \
-                   f" {pluralize(stocks_remaining_quantity, 'date')}"
+                   f" {pluralize(count_stocks_with_no_remaining_quantity, 'date')}"
 
         return f"Encore {stocks_remaining_quantity}" \
                f" {pluralize(stocks_remaining_quantity, 'stock')}" \

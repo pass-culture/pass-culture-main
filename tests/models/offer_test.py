@@ -94,6 +94,26 @@ class AvailabilityMessageTest:
 
     class NoRemainingStocksTest:
         @clean_database
+        def when_one_stock_has_been_booked_for_event_offer(self, app):
+            # Given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_event_product(venue=venue)
+            stock1 = create_stock(offer=offer, available=5, price=0)
+            stock2 = create_stock(offer=offer, available=6, price=0)
+            stock3 = create_stock(offer=offer, available=23, price=0)
+            booking1 = create_booking(user, stock=stock1, quantity=5)
+
+            repository.save(booking1, stock2, stock3)
+
+            # When
+            availability_message = offer.availabilityMessage
+
+            # Then
+            assert availability_message == 'Plus de stock restant pour 1 date'
+
+        @clean_database
         def when_all_stocks_have_been_booked_for_event_offer(self, app):
             # Given
             user = create_user()
