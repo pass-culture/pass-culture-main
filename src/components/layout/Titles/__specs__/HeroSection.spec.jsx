@@ -1,9 +1,9 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import HeroSection from '../HeroSection'
+import Titles from '../Titles'
 
-describe('src | components | layout | HeroSection', () => {
+describe('src | components | layout | Titles', () => {
   it('should match the snapshot', () => {
     // given
     const props = {
@@ -12,7 +12,7 @@ describe('src | components | layout | HeroSection', () => {
     }
 
     // when
-    const wrapper = shallow(<HeroSection {...props}> </HeroSection>)
+    const wrapper = shallow(<Titles {...props}> </Titles>)
 
     // then
     expect(wrapper).toMatchSnapshot()
@@ -28,7 +28,7 @@ describe('src | components | layout | HeroSection', () => {
         }
 
         // when
-        const wrapper = shallow(<HeroSection {...props} />)
+        const wrapper = shallow(<Titles {...props} />)
         const subtitle = wrapper.find('h2')
 
         // then

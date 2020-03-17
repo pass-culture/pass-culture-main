@@ -118,28 +118,29 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "children": Array [
-        <HeroSection
+        <Titles
+          action={
+            <NavLink
+              activeClassName="active"
+              aria-current="page"
+              className="cta link is-primary"
+              to="/offres/creation"
+            >
+              <span
+                className="icon"
+              >
+                <Icon
+                  svg="ico-offres-w"
+                />
+              </span>
+              <span>
+                Créer une offre
+              </span>
+            </NavLink>
+          }
           subtitle={null}
           title="Vos offres"
-        >
-          <NavLink
-            activeClassName="active"
-            aria-current="page"
-            className="cta button is-primary"
-            to="/offres/creation"
-          >
-            <span
-              className="icon"
-            >
-              <Icon
-                svg="ico-offres-w"
-              />
-            </span>
-            <span>
-              Créer une offre
-            </span>
-          </NavLink>
-        </HeroSection>,
+        />,
         <form
           className="section"
           onSubmit={[Function]}
@@ -258,10 +259,10 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "children": <NavLink
+          "action": <NavLink
             activeClassName="active"
             aria-current="page"
-            className="cta button is-primary"
+            className="cta link is-primary"
             to="/offres/creation"
           >
             <span
@@ -279,68 +280,7 @@ ShallowWrapper {
           "title": "Vos offres",
         },
         "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "function",
-          "props": Object {
-            "activeClassName": "active",
-            "aria-current": "page",
-            "children": Array [
-              <span
-                className="icon"
-              >
-                <Icon
-                  svg="ico-offres-w"
-                />
-              </span>,
-              <span>
-                Créer une offre
-              </span>,
-            ],
-            "className": "cta button is-primary",
-            "to": "/offres/creation",
-          },
-          "ref": null,
-          "rendered": Array [
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": <Icon
-                  svg="ico-offres-w"
-                />,
-                "className": "icon",
-              },
-              "ref": null,
-              "rendered": Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "function",
-                "props": Object {
-                  "svg": "ico-offres-w",
-                },
-                "ref": null,
-                "rendered": null,
-                "type": [Function],
-              },
-              "type": "span",
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "Créer une offre",
-              },
-              "ref": null,
-              "rendered": "Créer une offre",
-              "type": "span",
-            },
-          ],
-          "type": [Function],
-        },
+        "rendered": null,
         "type": [Function],
       },
       Object {
@@ -794,28 +734,29 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "children": Array [
-          <HeroSection
+          <Titles
+            action={
+              <NavLink
+                activeClassName="active"
+                aria-current="page"
+                className="cta link is-primary"
+                to="/offres/creation"
+              >
+                <span
+                  className="icon"
+                >
+                  <Icon
+                    svg="ico-offres-w"
+                  />
+                </span>
+                <span>
+                  Créer une offre
+                </span>
+              </NavLink>
+            }
             subtitle={null}
             title="Vos offres"
-          >
-            <NavLink
-              activeClassName="active"
-              aria-current="page"
-              className="cta button is-primary"
-              to="/offres/creation"
-            >
-              <span
-                className="icon"
-              >
-                <Icon
-                  svg="ico-offres-w"
-                />
-              </span>
-              <span>
-                Créer une offre
-              </span>
-            </NavLink>
-          </HeroSection>,
+          />,
           <form
             className="section"
             onSubmit={[Function]}
@@ -934,10 +875,10 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "children": <NavLink
+            "action": <NavLink
               activeClassName="active"
               aria-current="page"
-              className="cta button is-primary"
+              className="cta link is-primary"
               to="/offres/creation"
             >
               <span
@@ -955,68 +896,7 @@ ShallowWrapper {
             "title": "Vos offres",
           },
           "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "function",
-            "props": Object {
-              "activeClassName": "active",
-              "aria-current": "page",
-              "children": Array [
-                <span
-                  className="icon"
-                >
-                  <Icon
-                    svg="ico-offres-w"
-                  />
-                </span>,
-                <span>
-                  Créer une offre
-                </span>,
-              ],
-              "className": "cta button is-primary",
-              "to": "/offres/creation",
-            },
-            "ref": null,
-            "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": <Icon
-                    svg="ico-offres-w"
-                  />,
-                  "className": "icon",
-                },
-                "ref": null,
-                "rendered": Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "function",
-                  "props": Object {
-                    "svg": "ico-offres-w",
-                  },
-                  "ref": null,
-                  "rendered": null,
-                  "type": [Function],
-                },
-                "type": "span",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "Créer une offre",
-                },
-                "ref": null,
-                "rendered": "Créer une offre",
-                "type": "span",
-              },
-            ],
-            "type": [Function],
-          },
+          "rendered": null,
           "type": [Function],
         },
         Object {

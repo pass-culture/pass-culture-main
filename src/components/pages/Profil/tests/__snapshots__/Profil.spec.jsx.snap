@@ -31,7 +31,8 @@ ShallowWrapper {
         "path": "/accueil",
       },
       "children": Array [
-        <HeroSection
+        <Titles
+          action={null}
           subtitle={null}
           title="Profil"
         />,
@@ -56,7 +57,7 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "children": null,
+          "action": null,
           "subtitle": null,
           "title": "Profil",
         },
@@ -103,7 +104,8 @@ ShallowWrapper {
           "path": "/accueil",
         },
         "children": Array [
-          <HeroSection
+          <Titles
+            action={null}
             subtitle={null}
             title="Profil"
           />,
@@ -128,7 +130,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "children": null,
+            "action": null,
             "subtitle": null,
             "title": "Profil",
           },

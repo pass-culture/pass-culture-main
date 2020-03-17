@@ -19,21 +19,21 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "children": Array [
-        <HeroSection
+        <Titles
+          action={null}
           subtitle={null}
           title="Suivi des remboursements"
+        />,
+        <p
+          className="advice"
         >
-          <p
-            className="subtitle"
-          >
-            Téléchargez le récapitulatif des remboursements de vos offres.
-          </p>
-          <p
-            className="subtitle"
-          >
-            Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
-          </p>
-        </HeroSection>,
+          Téléchargez le récapitulatif des remboursements de vos offres.
+        </p>,
+        <p
+          className="advice"
+        >
+          Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
+        </p>,
         <hr />,
         <div
           className="control flex-columns items-center flex-end"
@@ -66,49 +66,37 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "children": Array [
-            <p
-              className="subtitle"
-            >
-              Téléchargez le récapitulatif des remboursements de vos offres.
-            </p>,
-            <p
-              className="subtitle"
-            >
-              Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
-            </p>,
-          ],
+          "action": null,
           "subtitle": null,
           "title": "Suivi des remboursements",
         },
         "ref": null,
-        "rendered": Array [
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "Téléchargez le récapitulatif des remboursements de vos offres.",
-              "className": "subtitle",
-            },
-            "ref": null,
-            "rendered": "Téléchargez le récapitulatif des remboursements de vos offres.",
-            "type": "p",
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
-              "className": "subtitle",
-            },
-            "ref": null,
-            "rendered": "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
-            "type": "p",
-          },
-        ],
+        "rendered": null,
         "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Téléchargez le récapitulatif des remboursements de vos offres.",
+          "className": "advice",
+        },
+        "ref": null,
+        "rendered": "Téléchargez le récapitulatif des remboursements de vos offres.",
+        "type": "p",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
+          "className": "advice",
+        },
+        "ref": null,
+        "rendered": "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
+        "type": "p",
       },
       Object {
         "instance": null,
@@ -196,21 +184,21 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "children": Array [
-          <HeroSection
+          <Titles
+            action={null}
             subtitle={null}
             title="Suivi des remboursements"
+          />,
+          <p
+            className="advice"
           >
-            <p
-              className="subtitle"
-            >
-              Téléchargez le récapitulatif des remboursements de vos offres.
-            </p>
-            <p
-              className="subtitle"
-            >
-              Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
-            </p>
-          </HeroSection>,
+            Téléchargez le récapitulatif des remboursements de vos offres.
+          </p>,
+          <p
+            className="advice"
+          >
+            Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
+          </p>,
           <hr />,
           <div
             className="control flex-columns items-center flex-end"
@@ -243,49 +231,37 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "children": Array [
-              <p
-                className="subtitle"
-              >
-                Téléchargez le récapitulatif des remboursements de vos offres.
-              </p>,
-              <p
-                className="subtitle"
-              >
-                Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
-              </p>,
-            ],
+            "action": null,
             "subtitle": null,
             "title": "Suivi des remboursements",
           },
           "ref": null,
-          "rendered": Array [
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "Téléchargez le récapitulatif des remboursements de vos offres.",
-                "className": "subtitle",
-              },
-              "ref": null,
-              "rendered": "Téléchargez le récapitulatif des remboursements de vos offres.",
-              "type": "p",
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
-                "className": "subtitle",
-              },
-              "ref": null,
-              "rendered": "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
-              "type": "p",
-            },
-          ],
+          "rendered": null,
           "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Téléchargez le récapitulatif des remboursements de vos offres.",
+            "className": "advice",
+          },
+          "ref": null,
+          "rendered": "Téléchargez le récapitulatif des remboursements de vos offres.",
+          "type": "p",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
+            "className": "advice",
+          },
+          "ref": null,
+          "rendered": "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
+          "type": "p",
         },
         Object {
           "instance": null,

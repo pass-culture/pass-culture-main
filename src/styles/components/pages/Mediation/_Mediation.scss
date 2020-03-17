@@ -21,15 +21,12 @@
 }
 
 .mediation-page {
-  .hero-section {
-    p {
-      margin: 15px 0;
-      line-height: 1.2;
-    }
+  p {
+    margin-bottom: rem(15px);
+  }
 
-    a {
-      color: $red;
-    }
+  a {
+    color: $red;
   }
 }
 

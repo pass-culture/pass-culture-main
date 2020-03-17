@@ -23,16 +23,16 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "children": Array [
-        <HeroSection
+        <Titles
+          action={null}
           subtitle={null}
           title="Guichet"
+        />,
+        <p
+          className="advice"
         >
-          <p
-            className="subtitle"
-          >
-            Enregistrez les codes de réservations présentés par les porteurs du pass.
-          </p>
-        </HeroSection>,
+          Enregistrez les codes de réservations présentés par les porteurs du pass.
+        </p>,
         <div
           className="section form"
         >
@@ -82,28 +82,25 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "children": <p
-            className="subtitle"
-          >
-            Enregistrez les codes de réservations présentés par les porteurs du pass.
-          </p>,
+          "action": null,
           "subtitle": null,
           "title": "Guichet",
         },
         "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "Enregistrez les codes de réservations présentés par les porteurs du pass.",
-            "className": "subtitle",
-          },
-          "ref": null,
-          "rendered": "Enregistrez les codes de réservations présentés par les porteurs du pass.",
-          "type": "p",
-        },
+        "rendered": null,
         "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Enregistrez les codes de réservations présentés par les porteurs du pass.",
+          "className": "advice",
+        },
+        "ref": null,
+        "rendered": "Enregistrez les codes de réservations présentés par les porteurs du pass.",
+        "type": "p",
       },
       Object {
         "instance": null,
@@ -238,16 +235,16 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "children": Array [
-          <HeroSection
+          <Titles
+            action={null}
             subtitle={null}
             title="Guichet"
+          />,
+          <p
+            className="advice"
           >
-            <p
-              className="subtitle"
-            >
-              Enregistrez les codes de réservations présentés par les porteurs du pass.
-            </p>
-          </HeroSection>,
+            Enregistrez les codes de réservations présentés par les porteurs du pass.
+          </p>,
           <div
             className="section form"
           >
@@ -297,28 +294,25 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "children": <p
-              className="subtitle"
-            >
-              Enregistrez les codes de réservations présentés par les porteurs du pass.
-            </p>,
+            "action": null,
             "subtitle": null,
             "title": "Guichet",
           },
           "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "Enregistrez les codes de réservations présentés par les porteurs du pass.",
-              "className": "subtitle",
-            },
-            "ref": null,
-            "rendered": "Enregistrez les codes de réservations présentés par les porteurs du pass.",
-            "type": "p",
-          },
+          "rendered": null,
           "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Enregistrez les codes de réservations présentés par les porteurs du pass.",
+            "className": "advice",
+          },
+          "ref": null,
+          "rendered": "Enregistrez les codes de réservations présentés par les porteurs du pass.",
+          "type": "p",
         },
         Object {
           "instance": null,

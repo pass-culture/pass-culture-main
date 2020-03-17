@@ -6,7 +6,7 @@ import PropTypes from 'prop-types'
 
 import StockInformationMessage from './StockItem/utils/StockInformationMessage'
 import StockItemContainer from './StockItem/StockItemContainer'
-import HeroSection from '../../../layout/HeroSection/HeroSection'
+import Titles from '../../../layout/Titles/Titles'
 
 class StocksManager extends PureComponent {
   constructor() {
@@ -196,7 +196,7 @@ class StocksManager extends PureComponent {
           </div>
         )}
         <div className="stocks-table-wrapper">
-          <HeroSection
+          <Titles
             subtitle={get(product, 'name')}
             title={isEvent ? 'Dates, horaires et prix' : get(product, 'id') && 'Prix'}
           />

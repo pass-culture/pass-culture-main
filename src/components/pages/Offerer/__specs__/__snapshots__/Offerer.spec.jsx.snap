@@ -72,16 +72,16 @@ ShallowWrapper {
         "path": "/structures",
       },
       "children": Array [
-        <HeroSection
+        <Titles
+          action={null}
           subtitle="fake offerer name"
           title="Structure"
+        />,
+        <p
+          className="advice"
         >
-          <p
-            className="subtitle"
-          >
-            Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
-          </p>
-        </HeroSection>,
+          Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
+        </p>,
         <withRouter(Connect(_Form))
           BlockComponent={null}
           Tag="form"
@@ -220,28 +220,25 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "children": <p
-            className="subtitle"
-          >
-            Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
-          </p>,
+          "action": null,
           "subtitle": "fake offerer name",
           "title": "Structure",
         },
         "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
-            "className": "subtitle",
-          },
-          "ref": null,
-          "rendered": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
-          "type": "p",
-        },
+        "rendered": null,
         "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
+          "className": "advice",
+        },
+        "ref": null,
+        "rendered": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
+        "type": "p",
       },
       Object {
         "instance": null,
@@ -747,16 +744,16 @@ ShallowWrapper {
           "path": "/structures",
         },
         "children": Array [
-          <HeroSection
+          <Titles
+            action={null}
             subtitle="fake offerer name"
             title="Structure"
+          />,
+          <p
+            className="advice"
           >
-            <p
-              className="subtitle"
-            >
-              Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
-            </p>
-          </HeroSection>,
+            Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
+          </p>,
           <withRouter(Connect(_Form))
             BlockComponent={null}
             Tag="form"
@@ -895,28 +892,25 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "children": <p
-              className="subtitle"
-            >
-              Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
-            </p>,
+            "action": null,
             "subtitle": "fake offerer name",
             "title": "Structure",
           },
           "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
-              "className": "subtitle",
-            },
-            "ref": null,
-            "rendered": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
-            "type": "p",
-          },
+          "rendered": null,
           "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
+            "className": "advice",
+          },
+          "ref": null,
+          "rendered": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
+          "type": "p",
         },
         Object {
           "instance": null,

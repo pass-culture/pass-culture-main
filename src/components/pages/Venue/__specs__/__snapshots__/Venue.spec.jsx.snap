@@ -93,16 +93,16 @@ ShallowWrapper {
         "path": "/structures/APEQ",
       },
       "children": Array [
-        <HeroSection
+        <Titles
+          action={false}
           subtitle={null}
           title="Lieu"
+        />,
+        <p
+          className="advice"
         >
-          <p
-            className="subtitle"
-          >
-            Ajoutez un lieu où accéder à vos offres.
-          </p>
-        </HeroSection>,
+          Ajoutez un lieu où accéder à vos offres.
+        </p>,
         false,
         <ReactFinalForm
           decorators={
@@ -132,34 +132,25 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "children": Array [
-            <p
-              className="subtitle"
-            >
-              Ajoutez un lieu où accéder à vos offres.
-            </p>,
-            false,
-          ],
+          "action": false,
           "subtitle": null,
           "title": "Lieu",
         },
         "ref": null,
-        "rendered": Array [
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "Ajoutez un lieu où accéder à vos offres.",
-              "className": "subtitle",
-            },
-            "ref": null,
-            "rendered": "Ajoutez un lieu où accéder à vos offres.",
-            "type": "p",
-          },
-          false,
-        ],
+        "rendered": null,
         "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Ajoutez un lieu où accéder à vos offres.",
+          "className": "advice",
+        },
+        "ref": null,
+        "rendered": "Ajoutez un lieu où accéder à vos offres.",
+        "type": "p",
       },
       false,
       Object {
@@ -197,16 +188,16 @@ ShallowWrapper {
           "path": "/structures/APEQ",
         },
         "children": Array [
-          <HeroSection
+          <Titles
+            action={false}
             subtitle={null}
             title="Lieu"
+          />,
+          <p
+            className="advice"
           >
-            <p
-              className="subtitle"
-            >
-              Ajoutez un lieu où accéder à vos offres.
-            </p>
-          </HeroSection>,
+            Ajoutez un lieu où accéder à vos offres.
+          </p>,
           false,
           <ReactFinalForm
             decorators={
@@ -236,34 +227,25 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "children": Array [
-              <p
-                className="subtitle"
-              >
-                Ajoutez un lieu où accéder à vos offres.
-              </p>,
-              false,
-            ],
+            "action": false,
             "subtitle": null,
             "title": "Lieu",
           },
           "ref": null,
-          "rendered": Array [
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "Ajoutez un lieu où accéder à vos offres.",
-                "className": "subtitle",
-              },
-              "ref": null,
-              "rendered": "Ajoutez un lieu où accéder à vos offres.",
-              "type": "p",
-            },
-            false,
-          ],
+          "rendered": null,
           "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Ajoutez un lieu où accéder à vos offres.",
+            "className": "advice",
+          },
+          "ref": null,
+          "rendered": "Ajoutez un lieu où accéder à vos offres.",
+          "type": "p",
         },
         false,
         Object {

@@ -1,9 +1,14 @@
+import { mount, shallow } from 'enzyme'
+import { createBrowserHistory } from 'history'
 import React from 'react'
-import { shallow } from 'enzyme'
+import { Provider } from 'react-redux'
+import { Router } from 'react-router'
 import { NavLink } from 'react-router-dom'
+import * as reactReduxLogin from 'with-react-redux-login'
+import configureStore from '../../../../utils/store'
+import OfferItem from '../OfferItem/OfferItemContainer'
 
 import Offers, { createLinkToOfferCreation } from '../Offers'
-import OfferItem from '../OfferItem/OfferItemContainer'
 import mockedOffers from './offersMock'
 
 describe('src | components | pages | Offers | Offers', () => {
@@ -186,59 +191,83 @@ describe('src | components | pages | Offers | Offers', () => {
       describe('when user is not admin ', () => {
         it('should display a link to create an offer', () => {
           // given
-          props.currentUser = {
-            isAdmin: false,
-          }
+          props.currentUser.isAdmin = false
+          const store = configureStore().store
+          const history = createBrowserHistory()
+          jest
+            .spyOn(reactReduxLogin, 'selectCurrentUser')
+            .mockReturnValue({ currentUser: props.currentUser })
+          const wrapper = mount(
+            <Provider store={store}>
+              <Router history={history}>
+                <Offers {...props} />
+              </Router>
+            </Provider>
+          )
+          const offerCreationLink = wrapper.find({ children: 'Créer une offre' })
 
           // when
-          const wrapper = shallow(<Offers {...props} />)
-          const navLink = wrapper.find(NavLink)
+          offerCreationLink.simulate('click', { button: 0 })
 
           // then
-          expect(navLink).toHaveLength(1)
-          expect(navLink.props().to).toStrictEqual('/offres/creation')
+          expect(history.location.pathname + history.location.search).toStrictEqual(
+            '/offres/creation'
+          )
         })
       })
 
       describe('when structure (or offererId)', () => {
         it('should render link properly', () => {
           // given
-          props.query.parse = () => ({ structure: 'XY' })
+          const store = configureStore().store
+          const history = createBrowserHistory()
+          jest
+            .spyOn(reactReduxLogin, 'selectCurrentUser')
+            .mockReturnValue({ currentUser: props.currentUser })
+          jest.spyOn(props.query, 'parse').mockReturnValue({ structure: 'XY' })
+          const wrapper = mount(
+            <Provider store={store}>
+              <Router history={history}>
+                <Offers {...props} />
+              </Router>
+            </Provider>
+          )
+          const offerCreationLink = wrapper.find({ children: 'Créer une offre' })
 
           // when
-          const wrapper = shallow(<Offers {...props} />)
-          const navLink = wrapper.find(NavLink)
-          const span = wrapper
-            .find(NavLink)
-            .find('span')
-            .at(1)
+          offerCreationLink.simulate('click', { button: 0 })
 
           // then
-          expect(navLink).toHaveLength(1)
-          expect(navLink.props().to).toStrictEqual('/offres/creation?structure=XY')
-          expect(span.text()).toBe('Créer une offre')
+          expect(history.location.pathname + history.location.search).toStrictEqual(
+            '/offres/creation?structure=XY'
+          )
         })
       })
       describe('when lieu or (VenueId)', () => {
         it('should render link properly', () => {
           // given
-          props.currentUser = {
-            isAdmin: false,
-          }
-          props.query.parse = () => ({ lieu: 'G6' })
+          const store = configureStore().store
+          const history = createBrowserHistory()
+          jest
+            .spyOn(reactReduxLogin, 'selectCurrentUser')
+            .mockReturnValue({ currentUser: props.currentUser })
+          jest.spyOn(props.query, 'parse').mockReturnValue({ lieu: 'G6' })
+          const wrapper = mount(
+            <Provider store={store}>
+              <Router history={history}>
+                <Offers {...props} />
+              </Router>
+            </Provider>
+          )
+          const offerCreationLink = wrapper.find({ children: 'Créer une offre' })
 
           // when
-          const wrapper = shallow(<Offers {...props} />)
-          const navLink = wrapper.find(NavLink)
-          const span = wrapper
-            .find(NavLink)
-            .find('span')
-            .at(1)
+          offerCreationLink.simulate('click', { button: 0 })
 
           // then
-          expect(navLink).toHaveLength(1)
-          expect(navLink.props().to).toStrictEqual('/offres/creation?lieu=G6')
-          expect(span.text()).toBe('Créer une offre')
+          expect(history.location.pathname + history.location.search).toStrictEqual(
+            '/offres/creation?lieu=G6'
+          )
         })
       })
     })

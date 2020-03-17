@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 
-import HeroSection from '../../layout/HeroSection/HeroSection'
+import Titles from '../../layout/Titles/Titles'
 import Main from '../../layout/Main'
 import UploadThumbContainer from '../../layout/UploadThumb/UploadThumbContainer'
 import CanvasTools from '../../../utils/canvas'
@@ -376,32 +376,31 @@ class Mediation extends PureComponent {
         handleDataRequest={this.onHandleDataRequest}
         name="mediation"
       >
-        <HeroSection title={`${isNew ? 'Créez' : 'Modifiez'} une accroche`}>
-          <p className="subtitle">
-            {'Ajoutez un visuel marquant pour mettre en avant cette offre.'}
-          </p>
-          <p>
-            <b>
-              {'L’accroche permet d’afficher votre offre "à la une" de l’app, '}
-            </b>
-            {
-              'et la rend visuellement plus attrayante. C’est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...'
-            }
-            <br />
-            {'en un mot : accrocheuse.'}
-          </p>
-          <p>
-            {
-              'Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! '
-            }
-          </p>
-          <p>
-            {'Utilisateurs avancés : vous pouvez '}
-            <a href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip">
-              {'télécharger ici les gabarits Illustrator et Photoshop.'}
-            </a>
-          </p>
-        </HeroSection>
+        <Titles title={`${isNew ? 'Créez' : 'Modifiez'} une accroche`} />
+        <p className="advice">
+          {'Ajoutez un visuel marquant pour mettre en avant cette offre.'}
+        </p>
+        <p>
+          <b>
+            {'L’accroche permet d’afficher votre offre "à la une" de l’app, '}
+          </b>
+          {
+            'et la rend visuellement plus attrayante. C’est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...'
+          }
+          <br />
+          {'en un mot : accrocheuse.'}
+        </p>
+        <p>
+          {
+            'Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! '
+          }
+        </p>
+        <p>
+          {'Utilisateurs avancés : vous pouvez '}
+          <a href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip">
+            {'télécharger ici les gabarits Illustrator et Photoshop.'}
+          </a>
+        </p>
 
         <div className="section">
           <label className="label">

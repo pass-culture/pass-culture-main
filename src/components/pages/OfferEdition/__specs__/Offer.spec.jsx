@@ -4,7 +4,7 @@ import { Field, Form, showModal } from 'pass-culture-shared'
 
 import Offer from '../Offer'
 import MediationsManager from '../MediationsManager/MediationsManagerContainer'
-import HeroSection from '../../../layout/HeroSection/HeroSection'
+import Titles from '../../../layout/Titles/Titles'
 import LocalProviderInformation from '../LocalProviderInformation/LocalProviderInformationContainer'
 import { VenueName } from '../VenueName'
 import { OffererName } from '../OffererName'
@@ -415,10 +415,10 @@ describe('components | OfferEdition | Offer ', () => {
           const wrapper = shallow(<Offer {...props} />)
 
           // when
-          const preview_section = wrapper.find(HeroSection)
+          const preview_section = wrapper.find(Titles)
 
           // then
-          const preview_link = preview_section.find('OfferPreviewLink')
+          const preview_link = preview_section.dive().find('OfferPreviewLink')
           expect(preview_link.prop('href')).toMatch('/offre/details/VAG/MED')
         })
 

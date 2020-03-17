@@ -4,7 +4,7 @@ import { getRequestErrorStringFromErrors } from 'pass-culture-shared'
 import { NavLink } from 'react-router-dom'
 import DeskState from './DeskState/DeskState'
 import Main from '../../layout/Main'
-import HeroSection from '../../layout/HeroSection/HeroSection'
+import Titles from '../../layout/Titles/Titles'
 
 const CODE_MAX_LENGTH = 6
 const CODE_REGEX_VALIDATION = /[^a-z0-9]/i
@@ -185,11 +185,10 @@ class Desk extends React.PureComponent {
 
     return (
       <Main name="desk">
-        <HeroSection title="Guichet">
-          <p className="subtitle">
-            {'Enregistrez les codes de réservations présentés par les porteurs du pass.'}
-          </p>
-        </HeroSection>
+        <Titles title="Guichet" />
+        <p className="advice">
+          {'Enregistrez les codes de réservations présentés par les porteurs du pass.'}
+        </p>
         <div className="section form">
           <p className="subtitle is-medium has-text-weight-bold">
             {'Scannez un code-barres ou saisissez-le ci-dessous :'}

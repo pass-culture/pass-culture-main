@@ -2,14 +2,14 @@ import classnames from 'classnames'
 import { Field, Form } from 'pass-culture-shared'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-
-import { OffererClass } from './OffererClass'
+import { formatPatch } from '../../../utils/formatPatch'
+import Main from '../../layout/Main'
+import Titles from '../../layout/Titles/Titles'
 import CreationControl from './CreationControl/CreationControl'
 import ModificationControl from './ModificationControl/ModificationControl'
+
+import { OffererClass } from './OffererClass'
 import Venues from './Venues/Venues'
-import HeroSection from '../../layout/HeroSection/HeroSection'
-import Main from '../../layout/Main'
-import { formatPatch } from '../../../utils/formatPatch'
 
 const OFFERER_CREATION_PATCH_KEYS = ['address', 'city', 'name', 'siren', 'postalCode']
 const OFFERER_MODIFICATION_PATCH_KEYS = ['bic', 'iban', 'rib']
@@ -79,14 +79,13 @@ class Offerer extends PureComponent {
         handleDataRequest={this.onHandleDataRequest}
         name="offerer"
       >
-        <HeroSection
+        <Titles
           subtitle={offerer.name}
           title="Structure"
-        >
-          <p className="subtitle">
-            {'Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.'}
-          </p>
-        </HeroSection>
+        />
+        <p className="advice">
+          {'Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.'}
+        </p>
 
         <Form
           action={`/offerers/${offerer.id || ''}`}

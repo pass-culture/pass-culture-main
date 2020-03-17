@@ -1,12 +1,11 @@
 import React from 'react'
 import { shallow } from 'enzyme'
-import { Field, Form, showModal } from 'pass-culture-shared'
+import { Field, Form } from 'pass-culture-shared'
 
+import Titles from '../../../layout/Titles/Titles'
 import Offer from '../Offer'
 import MediationsManager from '../MediationsManager/MediationsManagerContainer'
-import HeroSection from '../../../layout/HeroSection/HeroSection'
 import LocalProviderInformation from '../LocalProviderInformation/LocalProviderInformationContainer'
-import StocksManagerContainer from '../StocksManager/StocksManagerContainer'
 
 describe('src | components | pages | Offer | Offer ', () => {
   let dispatch
@@ -305,7 +304,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         const wrapper = shallow(<Offer {...props} />)
 
         // when
-        const preview_section = wrapper.find(HeroSection)
+        const preview_section = wrapper.find(Titles)
         const preview_link = preview_section.find('OfferPreviewLink')
 
         // then
@@ -534,10 +533,10 @@ describe('src | components | pages | Offer | Offer ', () => {
         const wrapper = shallow(<Offer {...props} />)
 
         // when
-        const preview_section = wrapper.find(HeroSection)
+        const preview_section = wrapper.find(Titles)
 
         // then
-        const preview_link = preview_section.find('OfferPreviewLink')
+        const preview_link = preview_section.dive().find('OfferPreviewLink')
         expect(preview_link.prop('href')).toMatch('/offre/details/VAG/MED')
       })
     })

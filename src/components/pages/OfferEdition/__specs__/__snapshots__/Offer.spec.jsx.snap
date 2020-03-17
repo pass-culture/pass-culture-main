@@ -107,16 +107,16 @@ ShallowWrapper {
         "path": "/offres",
       },
       "children": Array [
-        <HeroSection
+        <Titles
+          action={null}
           subtitle="Super Livre"
           title="Détails de l’offre"
+        />,
+        <p
+          className="advice"
         >
-          <p
-            className="subtitle"
-          >
-            Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
-          </p>
-        </HeroSection>,
+          Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
+        </p>,
         <withRouter(Connect(_Form))
           BlockComponent={null}
           Tag={null}
@@ -340,34 +340,25 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "children": Array [
-            undefined,
-            <p
-              className="subtitle"
-            >
-              Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
-            </p>,
-          ],
+          "action": null,
           "subtitle": "Super Livre",
           "title": "Détails de l’offre",
         },
         "ref": null,
-        "rendered": Array [
-          undefined,
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.",
-              "className": "subtitle",
-            },
-            "ref": null,
-            "rendered": "Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.",
-            "type": "p",
-          },
-        ],
+        "rendered": null,
         "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.",
+          "className": "advice",
+        },
+        "ref": null,
+        "rendered": "Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.",
+        "type": "p",
       },
       Object {
         "instance": null,
@@ -1411,16 +1402,16 @@ ShallowWrapper {
           "path": "/offres",
         },
         "children": Array [
-          <HeroSection
+          <Titles
+            action={null}
             subtitle="Super Livre"
             title="Détails de l’offre"
+          />,
+          <p
+            className="advice"
           >
-            <p
-              className="subtitle"
-            >
-              Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
-            </p>
-          </HeroSection>,
+            Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
+          </p>,
           <withRouter(Connect(_Form))
             BlockComponent={null}
             Tag={null}
@@ -1644,34 +1635,25 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "children": Array [
-              undefined,
-              <p
-                className="subtitle"
-              >
-                Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.
-              </p>,
-            ],
+            "action": null,
             "subtitle": "Super Livre",
             "title": "Détails de l’offre",
           },
           "ref": null,
-          "rendered": Array [
-            undefined,
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.",
-                "className": "subtitle",
-              },
-              "ref": null,
-              "rendered": "Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.",
-              "type": "p",
-            },
-          ],
+          "rendered": null,
           "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.",
+            "className": "advice",
+          },
+          "ref": null,
+          "rendered": "Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.",
+          "type": "p",
         },
         Object {
           "instance": null,

@@ -5,7 +5,7 @@ import React, { PureComponent } from 'react'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { NavLink } from 'react-router-dom'
 
-import HeroSection from '../../layout/HeroSection/HeroSection'
+import Titles from '../../layout/Titles/Titles'
 import Spinner from '../../layout/Spinner'
 import Main from '../../layout/Main'
 
@@ -159,26 +159,29 @@ class Offers extends PureComponent {
 
     const [orderName, orderDirection] = (orderBy || '').split('+')
 
+    const actionLink = !isAdmin && (
+      <NavLink
+        className="cta link is-primary"
+        to={createOfferTo}
+      >
+        <span className="icon">
+          <Icon svg="ico-offres-w" />
+        </span>
+        <span>
+          {'Créer une offre'}
+        </span>
+      </NavLink>
+    )
+
     return (
       <Main
         id="offers"
         name="offers"
       >
-        <HeroSection title="Vos offres">
-          {!isAdmin && (
-            <NavLink
-              className="cta button is-primary"
-              to={createOfferTo}
-            >
-              <span className="icon">
-                <Icon svg="ico-offres-w" />
-              </span>
-              <span>
-                {'Créer une offre'}
-              </span>
-            </NavLink>
-          )}
-        </HeroSection>
+        <Titles
+          action={actionLink}
+          title="Vos offres"
+        />
         <form
           className="section"
           onSubmit={this.handleOnSubmit}

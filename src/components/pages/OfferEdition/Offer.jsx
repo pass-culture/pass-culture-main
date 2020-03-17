@@ -1,5 +1,4 @@
 import get from 'lodash.get'
-import PropTypes from 'prop-types'
 import {
   Field,
   Form,
@@ -10,32 +9,29 @@ import {
   showModal,
   SubmitButton,
 } from 'pass-culture-shared'
-
-import React, { PureComponent, Fragment } from 'react'
-import ReactToolTip from 'react-tooltip'
+import PropTypes from 'prop-types'
+import React, { Fragment, PureComponent } from 'react'
 import { Link, NavLink } from 'react-router-dom'
+import ReactToolTip from 'react-tooltip'
 import { requestData } from 'redux-saga-data'
-
-import MediationsManager from './MediationsManager/MediationsManagerContainer'
-import StocksManagerContainer from '../Offer/StocksManager/StocksManagerContainer'
-import HeroSection from '../../layout/HeroSection/HeroSection'
-import Main from '../../layout/Main'
-import { musicOptions, showOptions } from '../../../utils/edd'
-import { offerNormalizer } from '../../../utils/normalizers'
 
 import { OFFERERS_API_PATH } from '../../../config/apiPaths'
 import { CGU_URL } from '../../../utils/config'
-
-import { getDurationInHours, getDurationInMinutes } from './utils/duration'
-import isTiteLiveOffer from './utils/isTiteLiveOffer'
-import isAllocineOffer from './utils/isAllocineOffer'
-import LocalProviderInformation from './LocalProviderInformation/LocalProviderInformationContainer'
+import MediationsManager from './MediationsManager/MediationsManagerContainer'
+import StocksManagerContainer from '../Offer/StocksManager/StocksManagerContainer'
+import Main from '../../layout/Main'
+import { musicOptions, showOptions } from '../../../utils/edd'
+import { offerNormalizer } from '../../../utils/normalizers'
+import Titles from '../../layout/Titles/Titles'
+import Insert from '../../layout/Insert/Insert'
 import { buildWebappDiscoveryUrl } from '../../layout/OfferPreviewLink/buildWebappDiscoveryUrl'
 import OfferPreviewLink from '../../layout/OfferPreviewLink/OfferPreviewLink'
-import Insert from '../../layout/Insert/Insert'
-
 import offerIsRefundable from './domain/offerIsRefundable'
+import LocalProviderInformation from './LocalProviderInformation/LocalProviderInformationContainer'
 import { OffererName } from './OffererName'
+import { getDurationInHours, getDurationInMinutes } from './utils/duration'
+import isAllocineOffer from './utils/isAllocineOffer'
+import isTiteLiveOffer from './utils/isTiteLiveOffer'
 import { VenueName } from './VenueName'
 
 const DURATION_LIMIT_TIME = 100
@@ -308,6 +304,16 @@ class Offer extends PureComponent {
 
     const displayDigitalOfferInformationMessage = !offerIsRefundable(selectedOfferType, venue)
 
+    const actionLink = offer && mediationId && (
+      <div className="title-action-links">
+        <OfferPreviewLink
+          className="cta link"
+          href={offerWebappUrl}
+          onClick={this.handlePreviewClick()}
+        />
+      </div>
+    )
+
     return (
       <Main
         backTo={{ path: '/offres', label: 'Vos offres' }}
@@ -315,26 +321,16 @@ class Offer extends PureComponent {
         id="offer"
         name="offer"
       >
-        <HeroSection
+        <Titles
+          action={actionLink}
           subtitle={offerName && offerName}
           title={title}
-        >
-          {offer && mediationId && (
-            <div className="title-action-links">
-              <OfferPreviewLink
-                className="cta button"
-                href={offerWebappUrl}
-                onClick={this.handlePreviewClick()}
-              />
-            </div>
-          )}
-
-          <p className="subtitle">
-            {
-              'Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.'
-            }
-          </p>
-        </HeroSection>
+        />
+        <p className="advice">
+          {
+            'Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.'
+          }
+        </p>
         <Form
           action={formApiPath}
           handleSuccess={this.onHandleFormSuccess}

@@ -23,19 +23,19 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "children": Array [
-        <HeroSection
+        <Titles
+          action={null}
           subtitle={null}
           title="Suivi des réservations"
+        />,
+        <p
+          className="advice"
         >
-          <p
-            className="subtitle"
-          >
-            Téléchargez le récapitulatif des réservations de vos offres.
-            <br />
-            <br />
-            Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
-          </p>
-        </HeroSection>,
+          Téléchargez le récapitulatif des réservations de vos offres.
+          <br />
+          <br />
+          Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
+        </p>,
         <Insert
           className="blue-insert"
           icon="picto-info-solid-black"
@@ -65,57 +65,51 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "children": <p
-            className="subtitle"
-          >
-            Téléchargez le récapitulatif des réservations de vos offres.
-            <br />
-            <br />
-            Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
-          </p>,
+          "action": null,
           "subtitle": null,
           "title": "Suivi des réservations",
         },
         "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": Array [
-              "Téléchargez le récapitulatif des réservations de vos offres.",
-              <br />,
-              <br />,
-              "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
-            ],
-            "className": "subtitle",
-          },
-          "ref": null,
-          "rendered": Array [
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
             "Téléchargez le récapitulatif des réservations de vos offres.",
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {},
-              "ref": null,
-              "rendered": null,
-              "type": "br",
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {},
-              "ref": null,
-              "rendered": null,
-              "type": "br",
-            },
+            <br />,
+            <br />,
             "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
           ],
-          "type": "p",
+          "className": "advice",
         },
-        "type": [Function],
+        "ref": null,
+        "rendered": Array [
+          "Téléchargez le récapitulatif des réservations de vos offres.",
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {},
+            "ref": null,
+            "rendered": null,
+            "type": "br",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {},
+            "ref": null,
+            "rendered": null,
+            "type": "br",
+          },
+          "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
+        ],
+        "type": "p",
       },
       Object {
         "instance": null,
@@ -204,19 +198,19 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "children": Array [
-          <HeroSection
+          <Titles
+            action={null}
             subtitle={null}
             title="Suivi des réservations"
+          />,
+          <p
+            className="advice"
           >
-            <p
-              className="subtitle"
-            >
-              Téléchargez le récapitulatif des réservations de vos offres.
-              <br />
-              <br />
-              Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
-            </p>
-          </HeroSection>,
+            Téléchargez le récapitulatif des réservations de vos offres.
+            <br />
+            <br />
+            Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
+          </p>,
           <Insert
             className="blue-insert"
             icon="picto-info-solid-black"
@@ -246,57 +240,51 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "children": <p
-              className="subtitle"
-            >
-              Téléchargez le récapitulatif des réservations de vos offres.
-              <br />
-              <br />
-              Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.
-            </p>,
+            "action": null,
             "subtitle": null,
             "title": "Suivi des réservations",
           },
           "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": Array [
-                "Téléchargez le récapitulatif des réservations de vos offres.",
-                <br />,
-                <br />,
-                "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
-              ],
-              "className": "subtitle",
-            },
-            "ref": null,
-            "rendered": Array [
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
               "Téléchargez le récapitulatif des réservations de vos offres.",
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {},
-                "ref": null,
-                "rendered": null,
-                "type": "br",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {},
-                "ref": null,
-                "rendered": null,
-                "type": "br",
-              },
+              <br />,
+              <br />,
               "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
             ],
-            "type": "p",
+            "className": "advice",
           },
-          "type": [Function],
+          "ref": null,
+          "rendered": Array [
+            "Téléchargez le récapitulatif des réservations de vos offres.",
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {},
+              "ref": null,
+              "rendered": null,
+              "type": "br",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {},
+              "ref": null,
+              "rendered": null,
+              "type": "br",
+            },
+            "Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.",
+          ],
+          "type": "p",
         },
         Object {
           "instance": null,

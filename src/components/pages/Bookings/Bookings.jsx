@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 
 import DownloadButtonContainer from '../../layout/DownloadButton/DownloadButtonContainer'
 import Main from '../../layout/Main'
-import HeroSection from '../../layout/HeroSection/HeroSection'
+import Titles from '../../layout/Titles/Titles'
 import Insert from '../../layout/Insert/Insert'
 import FilterByVenueContainer from './FilterByVenue/FilterByVenueContainer'
 
@@ -12,17 +12,16 @@ import FilterByOfferContainer from './FilterByOffer/FilterByOfferContainer'
 
 const Bookings = ({ pathToCsvFile, showButtons, showOfferSection }) => (
   <Main name="bookings">
-    <HeroSection title="Suivi des réservations">
-      <p className="subtitle">
-        {'Téléchargez le récapitulatif des réservations de vos offres.'}
-        <br />
-        <br />
-        {'Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.'}
-      </p>
-    </HeroSection>
+    <Titles title="Suivi des réservations" />
+    <p className="advice">
+      {'Téléchargez le récapitulatif des réservations de vos offres.'}
+      <br />
+      <br />
+      {'Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.'}
+    </p>
     <Insert
-      className='blue-insert'
-      icon='picto-info-solid-black'
+      className="blue-insert"
+      icon="picto-info-solid-black"
     >
       {'Les'}
       <b>

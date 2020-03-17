@@ -1,11 +1,10 @@
-import React from 'react'
 import { shallow } from 'enzyme'
-
-import Reimbursements from '../Reimbursements'
-import HeroSection from '../../../layout/HeroSection/HeroSection'
-import DownloadButtonContainer from '../../../layout/DownloadButton/DownloadButtonContainer'
+import React from 'react'
 import { API_URL } from '../../../../utils/config'
 import DisplayButtonContainer from '../../../layout/CsvTableButton/CsvTableButtonContainer'
+import DownloadButtonContainer from '../../../layout/DownloadButton/DownloadButtonContainer'
+
+import Reimbursements from '../Reimbursements'
 
 describe('src | components | pages | Reimbursements', () => {
   it('should match the snapshot', () => {
@@ -25,24 +24,20 @@ describe('src | components | pages | Reimbursements', () => {
       expect(wrapper.prop('name')).toBe('reimbursements')
     })
 
-    it('should render a HeroSection containing two paragraphs with the right information', () => {
+    it('should display the right informations', () => {
       // when
       const wrapper = shallow(<Reimbursements />)
 
       // then
-      const heroSection = wrapper.find(HeroSection)
-      expect(heroSection).toHaveLength(1)
-      expect(heroSection.prop('title')).toBe('Suivi des remboursements')
-      const paragraphs = heroSection.find('p')
-      expect(paragraphs).toHaveLength(2)
-      expect(paragraphs.at(0).prop('className')).toBe('subtitle')
-      expect(paragraphs.at(0).text()).toBe(
-        'Téléchargez le récapitulatif des remboursements de vos offres.'
-      )
-      expect(paragraphs.at(1).prop('className')).toBe('subtitle')
-      expect(paragraphs.at(1).text()).toBe(
-        'Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.'
-      )
+      const downloadInformation = wrapper.find({
+        children: 'Téléchargez le récapitulatif des remboursements de vos offres.',
+      })
+      const fileFormatInformation = wrapper.find({
+        children:
+          'Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.',
+      })
+      expect(downloadInformation).toHaveLength(1)
+      expect(fileFormatInformation).toHaveLength(1)
     })
 
     it('should render a DownloadButtonContainer with the right props', () => {

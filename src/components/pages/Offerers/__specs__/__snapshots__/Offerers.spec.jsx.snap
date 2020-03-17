@@ -72,35 +72,12 @@ ShallowWrapper {
     "nodeType": "function",
     "props": Object {
       "children": Array [
-        <HeroSection
-          subtitle={null}
-          title="Votre structure juridique"
-        >
-          <p
-            className="subtitle"
-          >
-            Pour présenter vos offres, vous devez d’abord 
-            <a
-              href="/structures/AE/lieux/creation"
-            >
-              créer un nouveau lieu 
-            </a>
-             lié à une structure.
-            <br />
-            Sans lieu, vous pouvez uniquement 
-            <a
-              href="/offres/creation"
-            >
-              ajouter des offres numériques.
-            </a>
-          </p>
-          <div
-            className="title-action-links"
-          >
+        <Titles
+          action={
             <NavLink
               activeClassName="active"
               aria-current="page"
-              className="cta button is-primary is-outlined"
+              className="cta link is-primary is-outlined"
               to="/structures/creation"
             >
               + Ajouter une structure
@@ -116,8 +93,28 @@ ShallowWrapper {
                 />
               </span>
             </NavLink>
-          </div>
-        </HeroSection>,
+          }
+          subtitle={null}
+          title="Votre structure juridique"
+        />,
+        <p
+          className="advice"
+        >
+          Pour présenter vos offres, vous devez d’abord 
+          <a
+            href="/structures/AE/lieux/creation"
+          >
+            créer un nouveau lieu 
+          </a>
+           lié à une structure.
+          <br />
+          Sans lieu, vous pouvez uniquement 
+          <a
+            href="/offres/creation"
+          >
+            ajouter des offres numériques.
+          </a>
+        </p>,
         <ReactFinalForm
           initialValues={
             Object {
@@ -174,208 +171,95 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "children": Array [
-            <p
-              className="subtitle"
+          "action": <NavLink
+            activeClassName="active"
+            aria-current="page"
+            className="cta link is-primary is-outlined"
+            to="/structures/creation"
+          >
+            + Ajouter une structure
+            <span
+              className="tip-icon"
+              data-place="bottom"
+              data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>"
+              data-type="info"
             >
-              Pour présenter vos offres, vous devez d’abord 
-              <a
-                href="/structures/AE/lieux/creation"
-              >
-                créer un nouveau lieu 
-              </a>
-               lié à une structure.
-              <br />
-              Sans lieu, vous pouvez uniquement 
-              <a
-                href="/offres/creation"
-              >
-                ajouter des offres numériques.
-              </a>
-            </p>,
-            <div
-              className="title-action-links"
-            >
-              <NavLink
-                activeClassName="active"
-                aria-current="page"
-                className="cta button is-primary is-outlined"
-                to="/structures/creation"
-              >
-                + Ajouter une structure
-                <span
-                  className="tip-icon"
-                  data-place="bottom"
-                  data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>"
-                  data-type="info"
-                >
-                  <Icon
-                    png={null}
-                    svg="picto-tip"
-                  />
-                </span>
-              </NavLink>
-            </div>,
-          ],
+              <Icon
+                png={null}
+                svg="picto-tip"
+              />
+            </span>
+          </NavLink>,
           "subtitle": null,
           "title": "Votre structure juridique",
         },
         "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            "Pour présenter vos offres, vous devez d’abord ",
+            <a
+              href="/structures/AE/lieux/creation"
+            >
+              créer un nouveau lieu 
+            </a>,
+            " lié à une structure.",
+            <br />,
+            "Sans lieu, vous pouvez uniquement ",
+            <a
+              href="/offres/creation"
+            >
+              ajouter des offres numériques.
+            </a>,
+          ],
+          "className": "advice",
+        },
+        "ref": null,
         "rendered": Array [
+          "Pour présenter vos offres, vous devez d’abord ",
           Object {
             "instance": null,
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": Array [
-                "Pour présenter vos offres, vous devez d’abord ",
-                <a
-                  href="/structures/AE/lieux/creation"
-                >
-                  créer un nouveau lieu 
-                </a>,
-                " lié à une structure.",
-                <br />,
-                "Sans lieu, vous pouvez uniquement ",
-                <a
-                  href="/offres/creation"
-                >
-                  ajouter des offres numériques.
-                </a>,
-              ],
-              "className": "subtitle",
+              "children": "créer un nouveau lieu ",
+              "href": "/structures/AE/lieux/creation",
             },
             "ref": null,
-            "rendered": Array [
-              "Pour présenter vos offres, vous devez d’abord ",
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "créer un nouveau lieu ",
-                  "href": "/structures/AE/lieux/creation",
-                },
-                "ref": null,
-                "rendered": "créer un nouveau lieu ",
-                "type": "a",
-              },
-              " lié à une structure.",
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {},
-                "ref": null,
-                "rendered": null,
-                "type": "br",
-              },
-              "Sans lieu, vous pouvez uniquement ",
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "ajouter des offres numériques.",
-                  "href": "/offres/creation",
-                },
-                "ref": null,
-                "rendered": "ajouter des offres numériques.",
-                "type": "a",
-              },
-            ],
-            "type": "p",
+            "rendered": "créer un nouveau lieu ",
+            "type": "a",
           },
+          " lié à une structure.",
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {},
+            "ref": null,
+            "rendered": null,
+            "type": "br",
+          },
+          "Sans lieu, vous pouvez uniquement ",
           Object {
             "instance": null,
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": <NavLink
-                activeClassName="active"
-                aria-current="page"
-                className="cta button is-primary is-outlined"
-                to="/structures/creation"
-              >
-                + Ajouter une structure
-                <span
-                  className="tip-icon"
-                  data-place="bottom"
-                  data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>"
-                  data-type="info"
-                >
-                  <Icon
-                    png={null}
-                    svg="picto-tip"
-                  />
-                </span>
-              </NavLink>,
-              "className": "title-action-links",
+              "children": "ajouter des offres numériques.",
+              "href": "/offres/creation",
             },
             "ref": null,
-            "rendered": Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "function",
-              "props": Object {
-                "activeClassName": "active",
-                "aria-current": "page",
-                "children": Array [
-                  "+ Ajouter une structure",
-                  <span
-                    className="tip-icon"
-                    data-place="bottom"
-                    data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>"
-                    data-type="info"
-                  >
-                    <Icon
-                      png={null}
-                      svg="picto-tip"
-                    />
-                  </span>,
-                ],
-                "className": "cta button is-primary is-outlined",
-                "to": "/structures/creation",
-              },
-              "ref": null,
-              "rendered": Array [
-                "+ Ajouter une structure",
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": <Icon
-                      png={null}
-                      svg="picto-tip"
-                    />,
-                    "className": "tip-icon",
-                    "data-place": "bottom",
-                    "data-tip": "<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>",
-                    "data-type": "info",
-                  },
-                  "ref": null,
-                  "rendered": Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "function",
-                    "props": Object {
-                      "png": null,
-                      "svg": "picto-tip",
-                    },
-                    "ref": null,
-                    "rendered": null,
-                    "type": [Function],
-                  },
-                  "type": "span",
-                },
-              ],
-              "type": [Function],
-            },
-            "type": "div",
+            "rendered": "ajouter des offres numériques.",
+            "type": "a",
           },
         ],
-        "type": [Function],
+        "type": "p",
       },
       Object {
         "instance": null,
@@ -468,35 +352,12 @@ ShallowWrapper {
       "nodeType": "function",
       "props": Object {
         "children": Array [
-          <HeroSection
-            subtitle={null}
-            title="Votre structure juridique"
-          >
-            <p
-              className="subtitle"
-            >
-              Pour présenter vos offres, vous devez d’abord 
-              <a
-                href="/structures/AE/lieux/creation"
-              >
-                créer un nouveau lieu 
-              </a>
-               lié à une structure.
-              <br />
-              Sans lieu, vous pouvez uniquement 
-              <a
-                href="/offres/creation"
-              >
-                ajouter des offres numériques.
-              </a>
-            </p>
-            <div
-              className="title-action-links"
-            >
+          <Titles
+            action={
               <NavLink
                 activeClassName="active"
                 aria-current="page"
-                className="cta button is-primary is-outlined"
+                className="cta link is-primary is-outlined"
                 to="/structures/creation"
               >
                 + Ajouter une structure
@@ -512,8 +373,28 @@ ShallowWrapper {
                   />
                 </span>
               </NavLink>
-            </div>
-          </HeroSection>,
+            }
+            subtitle={null}
+            title="Votre structure juridique"
+          />,
+          <p
+            className="advice"
+          >
+            Pour présenter vos offres, vous devez d’abord 
+            <a
+              href="/structures/AE/lieux/creation"
+            >
+              créer un nouveau lieu 
+            </a>
+             lié à une structure.
+            <br />
+            Sans lieu, vous pouvez uniquement 
+            <a
+              href="/offres/creation"
+            >
+              ajouter des offres numériques.
+            </a>
+          </p>,
           <ReactFinalForm
             initialValues={
               Object {
@@ -570,208 +451,95 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "children": Array [
-              <p
-                className="subtitle"
+            "action": <NavLink
+              activeClassName="active"
+              aria-current="page"
+              className="cta link is-primary is-outlined"
+              to="/structures/creation"
+            >
+              + Ajouter une structure
+              <span
+                className="tip-icon"
+                data-place="bottom"
+                data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>"
+                data-type="info"
               >
-                Pour présenter vos offres, vous devez d’abord 
-                <a
-                  href="/structures/AE/lieux/creation"
-                >
-                  créer un nouveau lieu 
-                </a>
-                 lié à une structure.
-                <br />
-                Sans lieu, vous pouvez uniquement 
-                <a
-                  href="/offres/creation"
-                >
-                  ajouter des offres numériques.
-                </a>
-              </p>,
-              <div
-                className="title-action-links"
-              >
-                <NavLink
-                  activeClassName="active"
-                  aria-current="page"
-                  className="cta button is-primary is-outlined"
-                  to="/structures/creation"
-                >
-                  + Ajouter une structure
-                  <span
-                    className="tip-icon"
-                    data-place="bottom"
-                    data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>"
-                    data-type="info"
-                  >
-                    <Icon
-                      png={null}
-                      svg="picto-tip"
-                    />
-                  </span>
-                </NavLink>
-              </div>,
-            ],
+                <Icon
+                  png={null}
+                  svg="picto-tip"
+                />
+              </span>
+            </NavLink>,
             "subtitle": null,
             "title": "Votre structure juridique",
           },
           "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              "Pour présenter vos offres, vous devez d’abord ",
+              <a
+                href="/structures/AE/lieux/creation"
+              >
+                créer un nouveau lieu 
+              </a>,
+              " lié à une structure.",
+              <br />,
+              "Sans lieu, vous pouvez uniquement ",
+              <a
+                href="/offres/creation"
+              >
+                ajouter des offres numériques.
+              </a>,
+            ],
+            "className": "advice",
+          },
+          "ref": null,
           "rendered": Array [
+            "Pour présenter vos offres, vous devez d’abord ",
             Object {
               "instance": null,
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": Array [
-                  "Pour présenter vos offres, vous devez d’abord ",
-                  <a
-                    href="/structures/AE/lieux/creation"
-                  >
-                    créer un nouveau lieu 
-                  </a>,
-                  " lié à une structure.",
-                  <br />,
-                  "Sans lieu, vous pouvez uniquement ",
-                  <a
-                    href="/offres/creation"
-                  >
-                    ajouter des offres numériques.
-                  </a>,
-                ],
-                "className": "subtitle",
+                "children": "créer un nouveau lieu ",
+                "href": "/structures/AE/lieux/creation",
               },
               "ref": null,
-              "rendered": Array [
-                "Pour présenter vos offres, vous devez d’abord ",
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "créer un nouveau lieu ",
-                    "href": "/structures/AE/lieux/creation",
-                  },
-                  "ref": null,
-                  "rendered": "créer un nouveau lieu ",
-                  "type": "a",
-                },
-                " lié à une structure.",
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {},
-                  "ref": null,
-                  "rendered": null,
-                  "type": "br",
-                },
-                "Sans lieu, vous pouvez uniquement ",
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "ajouter des offres numériques.",
-                    "href": "/offres/creation",
-                  },
-                  "ref": null,
-                  "rendered": "ajouter des offres numériques.",
-                  "type": "a",
-                },
-              ],
-              "type": "p",
+              "rendered": "créer un nouveau lieu ",
+              "type": "a",
             },
+            " lié à une structure.",
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {},
+              "ref": null,
+              "rendered": null,
+              "type": "br",
+            },
+            "Sans lieu, vous pouvez uniquement ",
             Object {
               "instance": null,
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": <NavLink
-                  activeClassName="active"
-                  aria-current="page"
-                  className="cta button is-primary is-outlined"
-                  to="/structures/creation"
-                >
-                  + Ajouter une structure
-                  <span
-                    className="tip-icon"
-                    data-place="bottom"
-                    data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>"
-                    data-type="info"
-                  >
-                    <Icon
-                      png={null}
-                      svg="picto-tip"
-                    />
-                  </span>
-                </NavLink>,
-                "className": "title-action-links",
+                "children": "ajouter des offres numériques.",
+                "href": "/offres/creation",
               },
               "ref": null,
-              "rendered": Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "function",
-                "props": Object {
-                  "activeClassName": "active",
-                  "aria-current": "page",
-                  "children": Array [
-                    "+ Ajouter une structure",
-                    <span
-                      className="tip-icon"
-                      data-place="bottom"
-                      data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>"
-                      data-type="info"
-                    >
-                      <Icon
-                        png={null}
-                        svg="picto-tip"
-                      />
-                    </span>,
-                  ],
-                  "className": "cta button is-primary is-outlined",
-                  "to": "/structures/creation",
-                },
-                "ref": null,
-                "rendered": Array [
-                  "+ Ajouter une structure",
-                  Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "children": <Icon
-                        png={null}
-                        svg="picto-tip"
-                      />,
-                      "className": "tip-icon",
-                      "data-place": "bottom",
-                      "data-tip": "<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>",
-                      "data-type": "info",
-                    },
-                    "ref": null,
-                    "rendered": Object {
-                      "instance": null,
-                      "key": undefined,
-                      "nodeType": "function",
-                      "props": Object {
-                        "png": null,
-                        "svg": "picto-tip",
-                      },
-                      "ref": null,
-                      "rendered": null,
-                      "type": [Function],
-                    },
-                    "type": "span",
-                  },
-                ],
-                "type": [Function],
-              },
-              "type": "div",
+              "rendered": "ajouter des offres numériques.",
+              "type": "a",
             },
           ],
-          "type": [Function],
+          "type": "p",
         },
         Object {
           "instance": null,

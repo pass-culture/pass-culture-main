@@ -64,10 +64,10 @@ describe('src | components | pages | Offerers | Offerers', () => {
 
         // when
         const wrapper = shallow(<Offerers {...props} />)
-        const heroSection = wrapper.find('HeroSection').props()
+        const titles = wrapper.find('Titles').props()
 
         // then
-        expect(heroSection.title).toStrictEqual('Votre structure juridique')
+        expect(titles.title).toStrictEqual('Votre structure juridique')
       })
 
       it('should display Vos structures when many offerers', () => {
@@ -77,10 +77,10 @@ describe('src | components | pages | Offerers | Offerers', () => {
 
         // when
         const wrapper = shallow(<Offerers {...props} />)
-        const heroSection = wrapper.find('HeroSection').props()
+        const titles = wrapper.find('Titles').props()
 
         // then
-        expect(heroSection.title).toStrictEqual('Vos structures juridiques')
+        expect(titles.title).toStrictEqual('Vos structures juridiques')
       })
     })
 

@@ -30,7 +30,6 @@
     font-size: $size-1;
     font-weight: $weight-normal;
     line-height: 38px;
-    margin-bottom: 2rem;
   }
 
   h2 {
@@ -39,30 +38,6 @@
 
     line-height: 22px;
     font-size: 1.125rem;
-  }
-
-  .cta {
-    border: 0;
-    line-height: 22px;
-    position: absolute;
-    right: 0;
-    top: -3px;
-
-    img {
-      height: 20px;
-      margin-right: 0.5rem;
-      width: 20px;
-    }
-  }
-
-  .subtitle {
-    font-size: 1.25rem;
-    a {
-      border-bottom: 1px solid;
-      &:hover {
-        color: $primary;
-      }
-    }
   }
 
   .tip-icon {
@@ -76,7 +51,8 @@
     justify-content: flex-start;
     top: 0px;
 
-    .button {
+    .link {
+      display: flex;
       font-weight: $weight-semibold;
       font-size: 14px;
       background-color: transparent;
@@ -87,5 +63,19 @@
         color: $primary;
       }
     }
+  }
+}
+
+.cta {
+  border: 0;
+  line-height: rem(22px);
+  position: absolute;
+  right: 0;
+  top: -3px;
+
+  img {
+    height: rem(20px);
+    margin-right: rem(8px);
+    width: rem(20px);
   }
 }

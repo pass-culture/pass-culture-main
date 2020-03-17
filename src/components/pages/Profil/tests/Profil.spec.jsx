@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 import Profil from '../Profil'
 import { Form } from 'react-final-form'
 import TextField from '../../../layout/form/fields/TextField'
-import HeroSection from '../../../layout/HeroSection/HeroSection'
+import Titles from '../../../layout/Titles/Titles'
 
 describe('src | components | pages | Profil', () => {
   let dispatch
@@ -28,14 +28,14 @@ describe('src | components | pages | Profil', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  it('should render a HeroSection component with right properties', () => {
+  it('should render a Titles component with right properties', () => {
     // when
     const wrapper = shallow(<Profil {...props} />)
 
     // then
-    const heroSectionComponent = wrapper.find(HeroSection)
-    expect(heroSectionComponent).toHaveLength(1)
-    expect(heroSectionComponent.prop('title')).toBe('Profil')
+    const titlesComponent = wrapper.find(Titles)
+    expect(titlesComponent).toHaveLength(1)
+    expect(titlesComponent.prop('title')).toBe('Profil')
   })
 
   it('should render three TextField components with the right properties', () => {

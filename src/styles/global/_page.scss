@@ -106,3 +106,16 @@
     }
   }
 }
+
+.advice {
+  font-size: rem(20px);
+  margin-bottom: rem(32px);
+
+  a {
+    border-bottom: 1px solid;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+}

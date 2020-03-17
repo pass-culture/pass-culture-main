@@ -5,7 +5,7 @@ import { requestData } from 'redux-saga-data'
 import classnames from 'classnames'
 import { showNotification } from 'pass-culture-shared'
 
-import HeroSection from '../../layout/HeroSection/HeroSection'
+import Titles from '../../layout/Titles/Titles'
 import Main from '../../layout/Main'
 import TextField from '../../layout/form/fields/TextField'
 import { version } from '../../../../package.json'
@@ -113,7 +113,7 @@ class Profil extends PureComponent {
         backTo={backTo}
         name="profile"
       >
-        <HeroSection title="Profil" />
+        <Titles title="Profil" />
         <Form
           initialValues={currentUser}
           onSubmit={this.handleOnSubmit}

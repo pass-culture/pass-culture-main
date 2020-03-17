@@ -44,35 +44,35 @@ ShallowWrapper {
         "path": "/offres/AGKA",
       },
       "children": Array [
-        <HeroSection
+        <Titles
+          action={null}
           subtitle={null}
           title="Modifiez une accroche"
+        />,
+        <p
+          className="advice"
         >
-          <p
-            className="subtitle"
+          Ajoutez un visuel marquant pour mettre en avant cette offre.
+        </p>,
+        <p>
+          <b>
+            L’accroche permet d’afficher votre offre "à la une" de l’app, 
+          </b>
+          et la rend visuellement plus attrayante. C’est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...
+          <br />
+          en un mot : accrocheuse.
+        </p>,
+        <p>
+          Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! 
+        </p>,
+        <p>
+          Utilisateurs avancés : vous pouvez 
+          <a
+            href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip"
           >
-            Ajoutez un visuel marquant pour mettre en avant cette offre.
-          </p>
-          <p>
-            <b>
-              L’accroche permet d’afficher votre offre "à la une" de l’app, 
-            </b>
-            et la rend visuellement plus attrayante. C’est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...
-            <br />
-            en un mot : accrocheuse.
-          </p>
-          <p>
-            Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! 
-          </p>
-          <p>
-            Utilisateurs avancés : vous pouvez 
-            <a
-              href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip"
-            >
-              télécharger ici les gabarits Illustrator et Photoshop.
-            </a>
-          </p>
-        </HeroSection>,
+            télécharger ici les gabarits Illustrator et Photoshop.
+          </a>
+        </p>,
         <div
           className="section"
         >
@@ -139,34 +139,39 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "children": Array [
-            <p
-              className="subtitle"
-            >
-              Ajoutez un visuel marquant pour mettre en avant cette offre.
-            </p>,
-            <p>
-              <b>
-                L’accroche permet d’afficher votre offre "à la une" de l’app, 
-              </b>
-              et la rend visuellement plus attrayante. C’est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...
-              <br />
-              en un mot : accrocheuse.
-            </p>,
-            <p>
-              Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! 
-            </p>,
-            <p>
-              Utilisateurs avancés : vous pouvez 
-              <a
-                href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip"
-              >
-                télécharger ici les gabarits Illustrator et Photoshop.
-              </a>
-            </p>,
-          ],
+          "action": null,
           "subtitle": null,
           "title": "Modifiez une accroche",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Ajoutez un visuel marquant pour mettre en avant cette offre.",
+          "className": "advice",
+        },
+        "ref": null,
+        "rendered": "Ajoutez un visuel marquant pour mettre en avant cette offre.",
+        "type": "p",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <b>
+              L’accroche permet d’afficher votre offre "à la une" de l’app, 
+            </b>,
+            "et la rend visuellement plus attrayante. C’est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...",
+            <br />,
+            "en un mot : accrocheuse.",
+          ],
         },
         "ref": null,
         "rendered": Array [
@@ -175,99 +180,68 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "Ajoutez un visuel marquant pour mettre en avant cette offre.",
-              "className": "subtitle",
+              "children": "L’accroche permet d’afficher votre offre \\"à la une\\" de l’app, ",
             },
             "ref": null,
-            "rendered": "Ajoutez un visuel marquant pour mettre en avant cette offre.",
-            "type": "p",
+            "rendered": "L’accroche permet d’afficher votre offre \\"à la une\\" de l’app, ",
+            "type": "b",
           },
+          "et la rend visuellement plus attrayante. C’est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...",
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {},
+            "ref": null,
+            "rendered": null,
+            "type": "br",
+          },
+          "en un mot : accrocheuse.",
+        ],
+        "type": "p",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! ",
+        },
+        "ref": null,
+        "rendered": "Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! ",
+        "type": "p",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            "Utilisateurs avancés : vous pouvez ",
+            <a
+              href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip"
+            >
+              télécharger ici les gabarits Illustrator et Photoshop.
+            </a>,
+          ],
+        },
+        "ref": null,
+        "rendered": Array [
+          "Utilisateurs avancés : vous pouvez ",
           Object {
             "instance": null,
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": Array [
-                <b>
-                  L’accroche permet d’afficher votre offre "à la une" de l’app, 
-                </b>,
-                "et la rend visuellement plus attrayante. C’est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...",
-                <br />,
-                "en un mot : accrocheuse.",
-              ],
+              "children": "télécharger ici les gabarits Illustrator et Photoshop.",
+              "href": "https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip",
             },
             "ref": null,
-            "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "L’accroche permet d’afficher votre offre \\"à la une\\" de l’app, ",
-                },
-                "ref": null,
-                "rendered": "L’accroche permet d’afficher votre offre \\"à la une\\" de l’app, ",
-                "type": "b",
-              },
-              "et la rend visuellement plus attrayante. C’est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...",
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {},
-                "ref": null,
-                "rendered": null,
-                "type": "br",
-              },
-              "en un mot : accrocheuse.",
-            ],
-            "type": "p",
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! ",
-            },
-            "ref": null,
-            "rendered": "Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! ",
-            "type": "p",
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": Array [
-                "Utilisateurs avancés : vous pouvez ",
-                <a
-                  href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip"
-                >
-                  télécharger ici les gabarits Illustrator et Photoshop.
-                </a>,
-              ],
-            },
-            "ref": null,
-            "rendered": Array [
-              "Utilisateurs avancés : vous pouvez ",
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "télécharger ici les gabarits Illustrator et Photoshop.",
-                  "href": "https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip",
-                },
-                "ref": null,
-                "rendered": "télécharger ici les gabarits Illustrator et Photoshop.",
-                "type": "a",
-              },
-            ],
-            "type": "p",
+            "rendered": "télécharger ici les gabarits Illustrator et Photoshop.",
+            "type": "a",
           },
         ],
-        "type": [Function],
+        "type": "p",
       },
       Object {
         "instance": null,
@@ -515,35 +489,35 @@ ShallowWrapper {
           "path": "/offres/AGKA",
         },
         "children": Array [
-          <HeroSection
+          <Titles
+            action={null}
             subtitle={null}
             title="Modifiez une accroche"
+          />,
+          <p
+            className="advice"
           >
-            <p
-              className="subtitle"
+            Ajoutez un visuel marquant pour mettre en avant cette offre.
+          </p>,
+          <p>
+            <b>
+              L’accroche permet d’afficher votre offre "à la une" de l’app, 
+            </b>
+            et la rend visuellement plus attrayante. C’est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...
+            <br />
+            en un mot : accrocheuse.
+          </p>,
+          <p>
+            Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! 
+          </p>,
+          <p>
+            Utilisateurs avancés : vous pouvez 
+            <a
+              href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip"
             >
-              Ajoutez un visuel marquant pour mettre en avant cette offre.
-            </p>
-            <p>
-              <b>
-                L’accroche permet d’afficher votre offre "à la une" de l’app, 
-              </b>
-              et la rend visuellement plus attrayante. C’est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...
-              <br />
-              en un mot : accrocheuse.
-            </p>
-            <p>
-              Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! 
-            </p>
-            <p>
-              Utilisateurs avancés : vous pouvez 
-              <a
-                href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip"
-              >
-                télécharger ici les gabarits Illustrator et Photoshop.
-              </a>
-            </p>
-          </HeroSection>,
+              télécharger ici les gabarits Illustrator et Photoshop.
+            </a>
+          </p>,
           <div
             className="section"
           >
@@ -610,34 +584,39 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "children": Array [
-              <p
-                className="subtitle"
-              >
-                Ajoutez un visuel marquant pour mettre en avant cette offre.
-              </p>,
-              <p>
-                <b>
-                  L’accroche permet d’afficher votre offre "à la une" de l’app, 
-                </b>
-                et la rend visuellement plus attrayante. C’est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...
-                <br />
-                en un mot : accrocheuse.
-              </p>,
-              <p>
-                Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! 
-              </p>,
-              <p>
-                Utilisateurs avancés : vous pouvez 
-                <a
-                  href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip"
-                >
-                  télécharger ici les gabarits Illustrator et Photoshop.
-                </a>
-              </p>,
-            ],
+            "action": null,
             "subtitle": null,
             "title": "Modifiez une accroche",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Ajoutez un visuel marquant pour mettre en avant cette offre.",
+            "className": "advice",
+          },
+          "ref": null,
+          "rendered": "Ajoutez un visuel marquant pour mettre en avant cette offre.",
+          "type": "p",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <b>
+                L’accroche permet d’afficher votre offre "à la une" de l’app, 
+              </b>,
+              "et la rend visuellement plus attrayante. C’est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...",
+              <br />,
+              "en un mot : accrocheuse.",
+            ],
           },
           "ref": null,
           "rendered": Array [
@@ -646,99 +625,68 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "Ajoutez un visuel marquant pour mettre en avant cette offre.",
-                "className": "subtitle",
+                "children": "L’accroche permet d’afficher votre offre \\"à la une\\" de l’app, ",
               },
               "ref": null,
-              "rendered": "Ajoutez un visuel marquant pour mettre en avant cette offre.",
-              "type": "p",
+              "rendered": "L’accroche permet d’afficher votre offre \\"à la une\\" de l’app, ",
+              "type": "b",
             },
+            "et la rend visuellement plus attrayante. C’est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...",
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {},
+              "ref": null,
+              "rendered": null,
+              "type": "br",
+            },
+            "en un mot : accrocheuse.",
+          ],
+          "type": "p",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! ",
+          },
+          "ref": null,
+          "rendered": "Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! ",
+          "type": "p",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              "Utilisateurs avancés : vous pouvez ",
+              <a
+                href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip"
+              >
+                télécharger ici les gabarits Illustrator et Photoshop.
+              </a>,
+            ],
+          },
+          "ref": null,
+          "rendered": Array [
+            "Utilisateurs avancés : vous pouvez ",
             Object {
               "instance": null,
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": Array [
-                  <b>
-                    L’accroche permet d’afficher votre offre "à la une" de l’app, 
-                  </b>,
-                  "et la rend visuellement plus attrayante. C’est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...",
-                  <br />,
-                  "en un mot : accrocheuse.",
-                ],
+                "children": "télécharger ici les gabarits Illustrator et Photoshop.",
+                "href": "https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip",
               },
               "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "L’accroche permet d’afficher votre offre \\"à la une\\" de l’app, ",
-                  },
-                  "ref": null,
-                  "rendered": "L’accroche permet d’afficher votre offre \\"à la une\\" de l’app, ",
-                  "type": "b",
-                },
-                "et la rend visuellement plus attrayante. C’est une image (et bientôt une phrase ou une vidéo) intrigante, percutante, séduisante...",
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {},
-                  "ref": null,
-                  "rendered": null,
-                  "type": "br",
-                },
-                "en un mot : accrocheuse.",
-              ],
-              "type": "p",
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! ",
-              },
-              "ref": null,
-              "rendered": "Les accroches font la spécificité du pass Culture. Prenez le temps de les choisir avec soin ! ",
-              "type": "p",
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": Array [
-                  "Utilisateurs avancés : vous pouvez ",
-                  <a
-                    href="https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip"
-                  >
-                    télécharger ici les gabarits Illustrator et Photoshop.
-                  </a>,
-                ],
-              },
-              "ref": null,
-              "rendered": Array [
-                "Utilisateurs avancés : vous pouvez ",
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "télécharger ici les gabarits Illustrator et Photoshop.",
-                    "href": "https://pass.culture.fr/assets/docs/PassCulture-accroche-template-20181114.zip",
-                  },
-                  "ref": null,
-                  "rendered": "télécharger ici les gabarits Illustrator et Photoshop.",
-                  "type": "a",
-                },
-              ],
-              "type": "p",
+              "rendered": "télécharger ici les gabarits Illustrator et Photoshop.",
+              "type": "a",
             },
           ],
-          "type": [Function],
+          "type": "p",
         },
         Object {
           "instance": null,

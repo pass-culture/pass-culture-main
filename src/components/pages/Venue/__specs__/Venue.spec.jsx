@@ -1,17 +1,16 @@
 import { mount, shallow } from 'enzyme'
+import { createBrowserHistory, createMemoryHistory } from 'history'
 import React from 'react'
 import { Form } from 'react-final-form'
+import { Provider } from 'react-redux'
+import { Router } from 'react-router-dom'
 import * as reactReduxLogin from 'with-react-redux-login'
+import configureStore from '../../../../utils/store'
+import AddressField from '../fields/LocationFields/AddressField'
+import LocationFields from '../fields/LocationFields/LocationFields'
 
 import Venue from '../Venue'
 import VenueProvidersManagerContainer from '../VenueProvidersManager/VenueProvidersManagerContainer'
-import HeroSection from '../../../../components/layout/HeroSection/HeroSection'
-import { NavLink, Router } from 'react-router-dom'
-import configureStore from '../../../../utils/store'
-import { createBrowserHistory } from 'history'
-import { Provider } from 'react-redux'
-import LocationFields from '../fields/LocationFields/LocationFields'
-import AddressField from '../fields/LocationFields/AddressField'
 
 describe('src | components | pages | Venue', () => {
   let push
@@ -110,14 +109,13 @@ describe('src | components | pages | Venue', () => {
         expect(wrapper.state('isRequestPending')).toBe(false)
       })
 
-      it('should display a paragraph with proper title', () => {
+      it('should display proper title', () => {
         // when
         const wrapper = shallow(<Venue {...props} />)
 
         // then
-        const heroSection = wrapper.find(HeroSection)
-        expect(heroSection.find('p').prop('className')).toBe('subtitle')
-        expect(heroSection.find('p').text()).toBe('Ajoutez un lieu où accéder à vos offres.')
+        const title = wrapper.find({ children: 'Ajoutez un lieu où accéder à vos offres.' })
+        expect(title).toHaveLength(1)
       })
 
       it('should build the proper backTo link', () => {
@@ -169,13 +167,15 @@ describe('src | components | pages | Venue', () => {
       it('should be able to edit address field when venue has no SIRET', () => {
         // given
         props.formInitialValues = {
-          siret: null
+          siret: null,
         }
 
-        reactReduxLogin.selectCurrentUser = jest.fn().mockReturnValue({ currentUser: 'fakeUser' })
+        jest
+          .spyOn(reactReduxLogin, 'selectCurrentUser')
+          .mockReturnValue({ currentUser: 'fakeUser' })
 
         props.venue = {
-          publicName: 'fake public name'
+          publicName: 'fake public name',
         }
 
         const { store } = configureStore()
@@ -230,15 +230,38 @@ describe('src | components | pages | Venue', () => {
 
       describe('create new offer link', () => {
         it('should redirect to offer creation page', () => {
+          // given
+          jest
+            .spyOn(reactReduxLogin, 'selectCurrentUser')
+            .mockReturnValue({ currentUser: 'fakeUser' })
+
+          props.venue = {
+            publicName: 'fake public name',
+          }
+
+          const { store } = configureStore()
+          const history = createMemoryHistory()
+          history.push('/structures/APEQ/lieux/CM')
+
+          let wrapper = mount(
+            <Provider store={store}>
+              <Router history={history}>
+                <Venue
+                  {...props}
+                  history={history}
+                />
+              </Router>
+            </Provider>
+          )
+          const createOfferLink = wrapper.find({ children: 'Créer une offre' })
+
           // when
-          const wrapper = shallow(<Venue {...props} />)
-          const createOfferLink = wrapper.find('#action-create-offer')
-          const navLink = createOfferLink.find(NavLink)
-          const spanText = navLink.find('span')
+          createOfferLink.simulate('click', { button: 0 })
 
           // then
-          expect(spanText.at(1).text()).toBe('Créer une offre')
-          expect(navLink.at(0).prop('to')).toBe('/offres/creation?lieu=CM&structure=APEQ')
+          expect(`${history.location.pathname}${history.location.search}`).toBe(
+            '/offres/creation?lieu=CM&structure=APEQ'
+          )
         })
       })
     })

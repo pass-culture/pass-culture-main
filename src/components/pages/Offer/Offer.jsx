@@ -18,7 +18,7 @@ import { requestData } from 'redux-saga-data'
 
 import MediationsManager from './MediationsManager/MediationsManagerContainer'
 import StocksManagerContainer from './StocksManager/StocksManagerContainer'
-import HeroSection from '../../layout/HeroSection/HeroSection'
+import Titles from '../../layout/Titles/Titles'
 import Main from '../../layout/Main'
 import { musicOptions, showOptions } from '../../../utils/edd'
 import { offerNormalizer } from '../../../utils/normalizers'
@@ -391,6 +391,14 @@ class Offer extends PureComponent {
 
     const displayDigitalOfferInformationMessage = !offerIsRefundable(selectedOfferType, venue)
 
+    const actionLink = offer && mediationId && (
+      <OfferPreviewLink
+        className="cta link"
+        href={offerWebappUrl}
+        onClick={this.handleHrefClick()}
+      />
+    )
+
     return (
       <Main
         backTo={{ path: '/offres', label: 'Vos offres' }}
@@ -398,26 +406,16 @@ class Offer extends PureComponent {
         id="offer"
         name="offer"
       >
-        <HeroSection
+        <Titles
+          action={actionLink}
           subtitle={offerName && offerName}
           title={title}
-        >
-          {offer && mediationId && (
-            <div className="title-action-links">
-              <OfferPreviewLink
-                className="cta button"
-                href={offerWebappUrl}
-                onClick={this.handleHrefClick()}
-              />
-            </div>
-          )}
-
-          <p className="subtitle">
-            {
-              'Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.'
-            }
-          </p>
-        </HeroSection>
+        />
+        <p className="advice">
+          {
+            'Renseignez les détails de cette offre, puis mettez-la en avant en ajoutant une ou plusieurs accroches.'
+          }
+        </p>
         <Form
           action={formApiPath}
           handleSuccess={this.onHandleFormSuccess}

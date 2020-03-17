@@ -1,20 +1,20 @@
 import PropTypes from 'prop-types'
-import React, { PureComponent, Fragment } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { NavLink } from 'react-router-dom'
-
-import OffererItemContainer from './OffererItem/OffererItemContainer'
-import PendingOffererItem from './OffererItem/PendingOffererItem'
-import HeroSection from '../../layout/HeroSection/HeroSection'
+import { selectOfferers } from '../../../selectors/data/offerersSelectors'
+import { mapApiToBrowser } from '../../../utils/translate'
+import TextField from '../../layout/form/fields/TextField'
 import Icon from '../../layout/Icon'
 import Main from '../../layout/Main'
 import Spinner from '../../layout/Spinner'
-import TextField from '../../layout/form/fields/TextField'
-import { mapApiToBrowser } from '../../../utils/translate'
+import Titles from '../../layout/Titles/Titles'
+
+import OffererItemContainer from './OffererItem/OffererItemContainer'
+import PendingOffererItem from './OffererItem/PendingOffererItem'
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 import userHasNoOffersInAPhysicalVenueYet from './utils/userHasNoOffersInAPhysicalVenueYet'
-import { selectOfferers } from '../../../selectors/data/offerersSelectors'
 
 class Offerers extends PureComponent {
   constructor(props) {
@@ -154,41 +154,44 @@ class Offerers extends PureComponent {
 
     const url = createVenueForOffererUrl(offerers)
 
+    const actionLink = (
+      <NavLink
+        className="cta link is-primary is-outlined"
+        to="/structures/creation"
+      >
+        {'+ Ajouter une structure'}
+        <span
+          className="tip-icon"
+          data-place="bottom"
+          data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>"
+          data-type="info"
+        >
+          <Icon svg="picto-tip" />
+        </span>
+      </NavLink>
+    )
+
     return (
       <Main
         id="offerers"
         name="offerers"
       >
-        <HeroSection title={sectionTitle}>
-          <p className="subtitle">
-            {'Pour présenter vos offres, vous devez d’abord '}
-            <a href={url}>
-              {'créer un nouveau lieu '}
-            </a>
-            {' lié à une structure.'}
-            <br />
-            {'Sans lieu, vous pouvez uniquement '}
-            <a href="/offres/creation">
-              {'ajouter des offres numériques.'}
-            </a>
-          </p>
-          <div className="title-action-links">
-            <NavLink
-              className="cta button is-primary is-outlined"
-              to="/structures/creation"
-            >
-              {'+ Ajouter une structure'}
-              <span
-                className="tip-icon"
-                data-place="bottom"
-                data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>"
-                data-type="info"
-              >
-                <Icon svg="picto-tip" />
-              </span>
-            </NavLink>
-          </div>
-        </HeroSection>
+        <Titles
+          action={actionLink}
+          title={sectionTitle}
+        />
+        <p className="advice">
+          {'Pour présenter vos offres, vous devez d’abord '}
+          <a href={url}>
+            {'créer un nouveau lieu '}
+          </a>
+          {' lié à une structure.'}
+          <br />
+          {'Sans lieu, vous pouvez uniquement '}
+          <a href="/offres/creation">
+            {'ajouter des offres numériques.'}
+          </a>
+        </p>
 
         <Form
           initialValues={initialValues}

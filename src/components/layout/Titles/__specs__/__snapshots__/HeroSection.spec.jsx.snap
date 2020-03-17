@@ -1,14 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | layout | HeroSection should match the snapshot 1`] = `
+exports[`src | components | layout | Titles should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <HeroSection
+  Symbol(enzyme.__unrendered__): <Titles
+    action={null}
     subtitle="Fake subtitle"
     title="Fake title"
   >
      
-  </HeroSection>,
+  </Titles>,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],
@@ -37,7 +38,7 @@ ShallowWrapper {
         <h1>
           Fake title
         </h1>,
-        " ",
+        null,
       ],
       "className": "section hero-section",
     },
@@ -89,7 +90,7 @@ ShallowWrapper {
         "rendered": "Fake title",
         "type": "h1",
       },
-      " ",
+      null,
     ],
     "type": "div",
   },
@@ -113,7 +114,7 @@ ShallowWrapper {
           <h1>
             Fake title
           </h1>,
-          " ",
+          null,
         ],
         "className": "section hero-section",
       },
@@ -165,7 +166,7 @@ ShallowWrapper {
           "rendered": "Fake title",
           "type": "h1",
         },
-        " ",
+        null,
       ],
       "type": "div",
     },
