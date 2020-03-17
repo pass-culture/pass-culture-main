@@ -59,12 +59,12 @@ class StocksManager extends PureComponent {
   }
 
   handleEnterKey() {
-    const { location, query, isCreationOfSecondStockPrevented } = this.props
+    const { location, query, isStockCreationAllowed } = this.props
     const { search } = location
     const isCreatingOrUpdating = !/stock([A-Z0-9]*)=(creation|modification)/.test(search)
 
     if (isCreatingOrUpdating) {
-      if (isCreationOfSecondStockPrevented) {
+      if (!isStockCreationAllowed) {
         return
       }
 
@@ -81,10 +81,10 @@ class StocksManager extends PureComponent {
   }
 
   handleShouldPreventCreationOfSecondNotEventStock = () => {
-    const { isCreationOfSecondStockPrevented, query } = this.props
+    const { isStockCreationAllowed, query } = this.props
     const { isCreatedEntity } = query.context({ key: 'stock' })
 
-    if (isCreationOfSecondStockPrevented && isCreatedEntity) {
+    if (!isStockCreationAllowed && isCreatedEntity) {
       query.changeToReadOnly(null, { key: 'stock' })
     }
   }
@@ -172,15 +172,7 @@ class StocksManager extends PureComponent {
   }
 
   render() {
-    const {
-      isEvent,
-      offer,
-      product,
-      provider,
-      query,
-      isCreationOfSecondStockPrevented,
-      stocks,
-    } = this.props
+    const { isEvent, offer, product, provider, query, isStockCreationAllowed, stocks } = this.props
     const { errors, info } = this.state
     const { isCreatedEntity, readOnly } = query.context({ key: 'stock' })
 
@@ -226,7 +218,7 @@ class StocksManager extends PureComponent {
               <tbody>
                 <tr
                   className={classnames({
-                    inactive: isCreationOfSecondStockPrevented,
+                    inactive: !isStockCreationAllowed,
                   })}
                 >
                   <td colSpan="10">
@@ -289,8 +281,11 @@ StocksManager.defaultProps = {
 
 StocksManager.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  isCreationOfSecondStockPrevented: PropTypes.bool.isRequired,
   isEvent: PropTypes.bool.isRequired,
+  isStockCreationAllowed: PropTypes.bool.isRequired,
+  offer: PropTypes.shape().isRequired,
+  product: PropTypes.shape().isRequired,
+  provider: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,
   stocks: PropTypes.arrayOf(PropTypes.shape()),
 }

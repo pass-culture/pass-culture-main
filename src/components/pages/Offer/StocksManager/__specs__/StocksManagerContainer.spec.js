@@ -48,7 +48,7 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
           id: 'B1',
           lastProviderId: 'C1',
         },
-        isCreationOfSecondStockPrevented: false,
+        isStockCreationAllowed: true,
         provider: undefined,
         stocks: [
           {
@@ -58,8 +58,8 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
       })
     })
 
-    describe('isCreationOfSecondStockPrevented', () => {
-      it('should be false when offer is an event', () => {
+    describe('isStockCreationAllowed', () => {
+      it('should be true when offer is an event', () => {
         // given
         state.data.offers[0].isEvent = true
         state.data.offers[0].isThing = false
@@ -68,32 +68,33 @@ describe('src | components | pages | Offer | StocksManagerContainer | mapStateTo
         const result = mapStateToProps(state, props)
 
         // then
-        expect(result).toHaveProperty('isCreationOfSecondStockPrevented', false)
+        expect(result).toHaveProperty('isStockCreationAllowed', true)
       })
 
-      it('should be false when stocks are equal to zero', () => {
+      it('should be true when there is no stock', () => {
         // given
-        state.data.offers[0].isEvent = true
-        state.data.offers[0].isThing = false
+        state.data.offers[0].isEvent = false
+        state.data.offers[0].isThing = true
         state.data.stocks = []
 
         // when
         const result = mapStateToProps(state, props)
 
         // then
-        expect(result).toHaveProperty('isCreationOfSecondStockPrevented', false)
+        expect(result).toHaveProperty('isStockCreationAllowed', true)
       })
 
-      it('should be true when offer is a thing and stocks is superior to zero', () => {
+      it('should be false when offer is a thing and there is one stock', () => {
         // given
         state.data.offers[0].isEvent = false
         state.data.offers[0].isThing = true
+        state.data.stocks = [{ offerId: 'A1' }]
 
         // when
         const result = mapStateToProps(state, props)
 
         // then
-        expect(result).toHaveProperty('isCreationOfSecondStockPrevented', true)
+        expect(result).toHaveProperty('isStockCreationAllowed', false)
       })
     })
   })

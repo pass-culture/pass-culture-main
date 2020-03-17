@@ -5,8 +5,8 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <StocksManager
     dispatch={[MockFunction]}
-    isCreationOfSecondStockPrevented={false}
     isEvent={false}
+    isStockCreationAllowed={true}
     location={
       Object {
         "hash": "",
@@ -1512,8 +1512,8 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <StocksManager
     dispatch={[MockFunction]}
-    isCreationOfSecondStockPrevented={false}
     isEvent={true}
+    isStockCreationAllowed={true}
     location={
       Object {
         "hash": "",

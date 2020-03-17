@@ -243,14 +243,13 @@ class Offer extends PureComponent {
     const { dispatch, query, match } = this.props
     const { gestion } = query.parse()
     const offerId = match.params.offerId
-    if (typeof gestion === 'undefined') {
-      return
+    if (typeof gestion !== 'undefined') {
+      dispatch(
+        showModal(<StocksManagerContainer offerId={offerId} />, {
+          isUnclosable: true,
+        })
+      )
     }
-    dispatch(
-      showModal(<StocksManagerContainer offerId={offerId} />, {
-        isUnclosable: true,
-      })
-    )
   }
 
   setDefaultBookingEmailIfNew(prevProps) {

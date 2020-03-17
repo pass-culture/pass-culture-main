@@ -43,7 +43,7 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
         id: 'ABDD',
       },
       query,
-      isCreationOfSecondStockPrevented: false,
+      isStockCreationAllowed: true,
       stocks: [stock],
     }
   })
@@ -84,9 +84,9 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
   })
 
   describe('handleShouldPreventCreationOfSecondNotEventStock', () => {
-    it('should do nothing when isCreationOfSecondStockPrevented is false', () => {
+    it('when the creation of second stock is allowed', () => {
       // given
-      props.isCreationOfSecondStockPrevented = false
+      props.isStockCreationAllowed = true
       const wrapper = shallow(<StocksManager {...props} />)
 
       // when
@@ -96,9 +96,9 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
       expect(result).toBeUndefined()
     })
 
-    it('should call query changeToReadOnly when isCreatedEntity', () => {
+    it('when the creation of second stock is not allowed', () => {
       // given
-      props.isCreationOfSecondStockPrevented = true
+      props.isStockCreationAllowed = false
       props.query.context.mockReturnValue({
         isCreatedEntity: true,
       })
@@ -118,9 +118,9 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
       beforeEach(() => {
         props.location.search = '?gestion&lieu=CU'
       })
-      it('should do nothing when isCreationOfSecondStockPrevented', () => {
+      it('should do nothing when stock creation is not allowed', () => {
         // given
-        props.isCreationOfSecondStockPrevented = true
+        props.isStockCreationAllowed = false
         const wrapper = shallow(<StocksManager {...props} />)
 
         // when
@@ -147,9 +147,9 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
         expect(addStockElement.focus).toHaveBeenCalledWith()
       })
 
-      it('should call query changeToCreation with proper params when creation is not prevented', () => {
+      it('should call query changeToCreation with proper params when creation is allowed', () => {
         // given
-        props.isCreationOfSecondStockPrevented = false
+        props.isStockCreationAllowed = true
         const wrapper = shallow(<StocksManager {...props} />)
 
         // when
