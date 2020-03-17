@@ -6,7 +6,6 @@ import { updateSeedLastRequestTimestamp } from '../../../reducers/pagination'
 import { selectReadRecommendations } from '../../../selectors/data/readRecommendationsSelectors'
 import { selectRecommendations } from '../../../selectors/data/recommendationsSelectors'
 import { selectSeedLastRequestTimestamp } from '../../../selectors/pagination/paginationSelector'
-import getOfferIdAndMediationIdApiPathQueryString from '../../../utils/getOfferIdAndMediationIdApiPathQueryString'
 import { recommendationNormalizer } from '../../../utils/normalizers'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 import Discovery from './Discovery'
@@ -14,6 +13,7 @@ import selectCurrentRecommendation from './selectors/selectCurrentRecommendation
 import selectTutorials from './selectors/selectTutorials'
 import {
   checkIfShouldReloadRecommendationsBecauseOfLongTime,
+  getOfferIdAndMediationIdAndCoordinatesApiPathQueryString,
   isDiscoveryStartupUrl,
 } from './utils/utils'
 import { selectUserGeolocation } from '../../../selectors/geolocationSelectors'
@@ -60,7 +60,7 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
     const seenRecommendationIds =
       (shouldReloadRecommendations && []) ||
       (recommendations && recommendations.map(reco => reco.id))
-    let queryParams = getOfferIdAndMediationIdApiPathQueryString(
+    let queryParams = getOfferIdAndMediationIdAndCoordinatesApiPathQueryString(
       match,
       currentRecommendation,
       coordinates

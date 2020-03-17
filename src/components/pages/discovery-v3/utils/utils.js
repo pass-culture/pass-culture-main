@@ -2,8 +2,9 @@ import selectCurrentRecommendation from '../selectors/selectCurrentRecommendatio
 import selectNextRecommendation from '../selectors/selectNextRecommendation'
 import selectPreviousRecommendation from '../selectors/selectPreviousRecommendation'
 
-export const MINIMUM_DELAY_BEFORE_RELOAD_RECOMMENDATION_3_HOURS = 3 * 60 * 60 * 1000
+export const DEFAULT_VIEW_IDENTIFIERS = ['fin', 'tuto', 'vide']
 export const MINIMUM_DELAY_BEFORE_UPDATING_SEED_3_HOURS = 3 * 60 * 60 * 1000
+export const MINIMUM_DELAY_BEFORE_RELOAD_RECOMMENDATION_3_HOURS = 3 * 60 * 60 * 1000
 
 export const isDiscoveryStartupUrl = match => {
   const { params, url } = match
@@ -42,4 +43,45 @@ export const getRecommendationSelectorByCardPosition = position => {
     default:
       return noop
   }
+}
+
+export const getOfferIdAndMediationIdAndCoordinatesApiPathQueryString = (
+  match,
+  currentRecommendation,
+  coordinates
+) => {
+  const isValid = match && typeof match === 'object' && !Array.isArray(match)
+  if (!isValid) return ''
+
+  const { params: { mediationId: pMediationId, offerId: pOfferId } = {} } = match || {}
+  const { longitude: longitude, latitude: latitude } = coordinates || {}
+
+  const offerId =
+    typeof pOfferId === 'string' &&
+    pOfferId.trim() !== '' &&
+    !DEFAULT_VIEW_IDENTIFIERS.includes(pOfferId) &&
+    pOfferId
+
+  const mediationId =
+    typeof pMediationId === 'string' &&
+    pMediationId.trim() !== '' &&
+    !DEFAULT_VIEW_IDENTIFIERS.includes(pMediationId) &&
+    pMediationId
+
+  const isSameRecoAsMatchParams =
+    currentRecommendation &&
+    currentRecommendation.mediationId === mediationId &&
+    currentRecommendation.offerId === offerId
+
+  if (isSameRecoAsMatchParams) return ''
+
+  const params = [
+    (offerId && `offerId=${offerId}`) || null,
+    (mediationId && `mediationId=${mediationId}`) || null,
+    (longitude && `longitude=${longitude}`) || null,
+    (latitude && `latitude=${latitude}`) || null,
+  ]
+
+  const query = params.filter(s => s).join('&')
+  return query
 }
