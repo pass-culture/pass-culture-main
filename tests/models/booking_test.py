@@ -41,6 +41,50 @@ def test_booking_completed_url_gets_normalized():
 
 
 @clean_database
+def test_raises_error_on_booking_when_total_stock_is_less_than_bookings_count(app):
+    # Given
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_offer_with_thing_product(venue)
+    stock = create_stock_from_offer(offer, price=0, available=1)
+    user1 = create_user(email='used_booking@example.com')
+    user2 = create_user(email='booked@example.com')
+    repository.save(stock)
+
+    booking1 = create_booking(user=user1,
+                              stock=stock)
+    repository.save(booking1)
+    booking2 = create_booking(user=user2,
+                              stock=stock)
+    # When
+    with pytest.raises(ApiErrors) as e:
+        repository.save(booking2)
+
+    # Then
+    assert e.value.errors['global'] == ['La quantité disponible pour cette offre est atteinte.']
+
+
+@clean_database
+def test_raises_error_on_event_booking_when_beginning_date_time_is_in_the_past(app):
+    # Given
+    four_days_ago = datetime.utcnow() - timedelta(days=4)
+    five_days_ago = datetime.utcnow() - timedelta(days=5)
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+    offer = create_offer_with_event_product(venue, event_name='Event Name')
+    user = create_user()
+    stock = create_stock(offer=offer, price=0, beginning_datetime=five_days_ago, end_datetime=four_days_ago)
+    repository.save(stock)
+
+    booking = create_booking(user=user, stock=stock)
+    # When
+    with pytest.raises(ApiErrors) as e:
+        repository.save(booking)
+    # Then
+    assert e.value.errors['beginningDateTimePassed'] == ['La date de début de cet évènement est passée.']
+
+
+@clean_database
 def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_is_after_last_update_on_stock(app):
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -144,7 +188,7 @@ class BookingThumbUrlTest:
         # then
         assert booking.thumbUrl is None
 
-    
+
     @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
     def test_model_thumbUrl_should_have_no_thumb_when_no_thumb_on_mediation_nor_recommendation_and_mediation_thumb_count_is_0(self, get_storage_base_url):
         # given

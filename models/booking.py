@@ -108,6 +108,9 @@ class Booking(PcObject, Model, VersionedMixin):
         elif 'insufficientFunds' in str(ie.orig):
             return ['insufficientFunds',
                     "Le solde de votre pass est insuffisant pour réserver cette offre."]
+        elif 'beginningDateTimePassed' in str(ie.orig):
+            return ['beginningDateTimePassed',
+                    "La date de début de cet évènement est passée."]
         return PcObject.restize_integrity_error(ie)
 
     @property
@@ -226,6 +229,11 @@ Booking.trig_ddl = """
       IF (SELECT get_wallet_balance(NEW."userId", false) < 0)
       THEN RAISE EXCEPTION 'insufficientFunds'
                  USING HINT = 'The user does not have enough credit to book';
+      END IF;
+      
+      IF EXISTS (SELECT "beginningDatetime" FROM stock WHERE id=NEW."stockId" AND "beginningDatetime" < NOW())
+      THEN RAISE EXCEPTION 'beginningDateTimePassed'
+                 USING HINT = 'The beginning date time for this event has passed';
       END IF;
 
       RETURN NEW;
