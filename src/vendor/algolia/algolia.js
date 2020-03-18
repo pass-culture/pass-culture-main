@@ -8,12 +8,13 @@ import {
 import { FACETS } from './facets'
 import { FILTERS } from './filters'
 
-export const fetchAlgolia = (
-  keywords = '',
-  page = 0,
-  geolocationCoordinates,
-  categories = [],
-  indexSuffix = ''
+export const fetchAlgolia = ({
+                               categories = [],
+                               geolocationCoordinates = null,
+                               indexSuffix = '',
+                               keywords = '',
+                               page = 0,
+                             } = {}
 ) => {
   const searchParameters = {
     page: page,
@@ -31,7 +32,7 @@ const buildCategoryFilterParameter = categories => {
   if (categories.length > 0) {
     if (categories[0] !== '') {
       return {
-        filters: categories.map(category => `${FACETS.CATEGORY_FACET}:"${category}"`).join(' OR '),
+        filters: categories.map(category => `${FACETS.CATEGORY}:"${category}"`).join(' OR '),
       }
     }
   }

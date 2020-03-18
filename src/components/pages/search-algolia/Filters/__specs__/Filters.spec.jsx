@@ -20,7 +20,6 @@ describe('components | Filters', () => {
         latitude: 40,
         longitude: 41
       },
-      getFilteredOffers: jest.fn(),
       history: {
         location: {
           pathname: '',
@@ -49,7 +48,8 @@ describe('components | Filters', () => {
         parse: jest.fn()
       },
       redirectToSearchFiltersPage: jest.fn(),
-      showFailModal: jest.fn()
+      showFailModal: jest.fn(),
+      updateFilteredOffers: jest.fn()
     }
   })
 
@@ -122,7 +122,13 @@ describe('components | Filters', () => {
           everywhereButton.simulate('click')
 
           // then
-          expect(fetchAlgolia).toHaveBeenCalledWith('librairie', 0, null, ['Musée', 'Cinéma'], '_by_price')
+          expect(fetchAlgolia).toHaveBeenCalledWith({
+            categories: ['Musée', 'Cinéma'],
+            geolocationCoordinates: null,
+            indexSuffix: '_by_price',
+            keywords: 'librairie',
+            page: 0,
+          })
           expect(props.redirectToSearchFiltersPage).toHaveBeenCalledWith()
           expect(props.history.replace).toHaveBeenCalledWith({ search: '?mots-cles=librairie&autour-de-moi=non&tri=_by_price&categories=Musée;Cinéma' })
         })
@@ -166,10 +172,13 @@ describe('components | Filters', () => {
           aroundMeButton.simulate('click')
 
           // then
-          expect(fetchAlgolia).toHaveBeenCalledWith('librairie', 0, {
-            latitude: 40,
-            longitude: 41
-          }, ['Musée'], '_by_price')
+          expect(fetchAlgolia).toHaveBeenCalledWith({
+            categories: ['Musée'],
+            geolocationCoordinates: { latitude: 40, longitude: 41 },
+            indexSuffix: '_by_price',
+            keywords: 'librairie',
+            page: 0,
+          })
           expect(props.redirectToSearchFiltersPage).toHaveBeenCalledWith()
           expect(props.history.replace).toHaveBeenCalledWith({ search: '?mots-cles=librairie&autour-de-moi=oui&tri=_by_price&categories=Musée' })
         })
@@ -306,7 +315,7 @@ describe('components | Filters', () => {
         resultsButton.simulate('click')
 
         // then
-        expect(props.getFilteredOffers).toHaveBeenCalledWith({ hits: [], nbHits: 1000, nbPages: 0 })
+        expect(props.updateFilteredOffers).toHaveBeenCalledWith({ hits: [], nbHits: 1000, nbPages: 0 })
       })
 
       it('should redirect to results page with query param when clicking on display results button', () => {
@@ -371,7 +380,13 @@ describe('components | Filters', () => {
             resetButton.simulate('click')
 
             // then
-            expect(fetchAlgolia).toHaveBeenCalledWith('librairie', 0, { latitude: 40, longitude: 41 }, ['Musée'], '_by_price')
+            expect(fetchAlgolia).toHaveBeenCalledWith({
+              categories: ['Musée'],
+              geolocationCoordinates: { latitude: 40, longitude: 41 },
+              indexSuffix: '_by_price',
+              keywords: 'librairie',
+              page: 0
+            })
           })
         })
         describe('when multiple categories', () => {
@@ -408,7 +423,13 @@ describe('components | Filters', () => {
             resetButton.simulate('click')
 
             // then
-            expect(fetchAlgolia).toHaveBeenCalledWith('librairie', 0, { latitude: 40, longitude: 41 }, ['Musée', 'Cinéma'], '_by_price')
+            expect(fetchAlgolia).toHaveBeenCalledWith({
+              categories: ['Musée', 'Cinéma'],
+              geolocationCoordinates: { latitude: 40, longitude: 41 },
+              indexSuffix: '_by_price',
+              keywords: 'librairie',
+              page: 0,
+            })
           })
         })
       })

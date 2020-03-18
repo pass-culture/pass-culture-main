@@ -155,7 +155,13 @@ describe('components | SearchResults', () => {
         shallow(<SearchResults {...props} />)
 
         // then
-        expect(fetchAlgolia).toHaveBeenCalledWith('', 0, props.geolocation, props.categoriesFilter, '_by_proximity')
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          categories: props.categoriesFilter,
+          keywords: '',
+          indexSuffix: '_by_proximity',
+          geolocationCoordinates: props.geolocation,
+          page: 0
+        })
       })
     })
 
@@ -187,7 +193,13 @@ describe('components | SearchResults', () => {
         expect(results).toHaveLength(0)
         expect(searchInput.prop('value')).toBe('une librairie')
         expect(resultTitle).toHaveLength(1)
-        expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, null, null)
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          categories: null,
+          geolocationCoordinates: null,
+          indexSuffix: null,
+          keywords: 'une librairie',
+          page: 0
+        })
       })
 
       it('should fill search input and display keywords, number of results when results are found', async () => {
@@ -247,7 +259,13 @@ describe('components | SearchResults', () => {
         shallow(<SearchResults {...props} />)
 
         // then
-        expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, { latitude: 40.1, longitude: 41.1 }, null, null)
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          categories: null,
+          geolocationCoordinates: { latitude: 40.1, longitude: 41.1 },
+          indexSuffix: null,
+          keywords: 'une librairie',
+          page: 0
+        })
       })
     })
 
@@ -275,7 +293,13 @@ describe('components | SearchResults', () => {
         await shallow(<SearchResults {...props} />)
 
         // then
-        expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, ['Cinéma'], null)
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          categories: ['Cinéma'],
+          geolocationCoordinates: null,
+          indexSuffix: null,
+          keywords: 'une librairie',
+          page: 0
+        })
       })
 
       it('should fetch data not using category filter when not provided', async () => {
@@ -301,7 +325,13 @@ describe('components | SearchResults', () => {
         await shallow(<SearchResults {...props} />)
 
         // then
-        expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, null, null)
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          categories: null,
+          geolocationCoordinates: null,
+          indexSuffix: null,
+          keywords: 'une librairie',
+          page: 0
+        })
       })
     })
 
@@ -329,7 +359,13 @@ describe('components | SearchResults', () => {
         await shallow(<SearchResults {...props} />)
 
         // then
-        expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, null, '_by_proximity')
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          categories: null,
+          geolocationCoordinates: null,
+          indexSuffix: '_by_proximity',
+          keywords: 'une librairie',
+          page: 0
+        })
       })
 
       it('should fetch data not using sorting filter when not provided', async () => {
@@ -355,7 +391,13 @@ describe('components | SearchResults', () => {
         await shallow(<SearchResults {...props} />)
 
         // then
-        expect(fetchAlgolia).toHaveBeenCalledWith('une librairie', 0, null, null, null)
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          categories: null,
+          geolocationCoordinates: null,
+          indexSuffix: null,
+          keywords: 'une librairie',
+          page: 0
+        })
       })
     })
   })
@@ -377,7 +419,13 @@ describe('components | SearchResults', () => {
       })
 
       // then
-      expect(fetchAlgolia).toHaveBeenCalledWith('un livre très cherché', 0, null, null, null)
+      expect(fetchAlgolia).toHaveBeenCalledWith({
+        categories: null,
+        geolocationCoordinates: null,
+        indexSuffix: null,
+        keywords: 'un livre très cherché',
+        page: 0
+      })
     })
 
     it('should trigger search request when keywords contains only spaces', () => {
@@ -397,7 +445,13 @@ describe('components | SearchResults', () => {
       })
 
       // then
-      expect(fetchAlgolia).toHaveBeenNthCalledWith(2, '', 0, null, null, null)
+      expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
+        categories: null,
+        geolocationCoordinates: null,
+        indexSuffix: null,
+        keywords: '',
+        page: 0
+      })
     })
 
     it('should trigger search request when no keywords', () => {
@@ -417,7 +471,13 @@ describe('components | SearchResults', () => {
       })
 
       // then
-      expect(fetchAlgolia).toHaveBeenCalledWith('', 0, null, null, null)
+      expect(fetchAlgolia).toHaveBeenCalledWith({
+        categories: null,
+        geolocationCoordinates: null,
+        indexSuffix: null,
+        keywords: '',
+        page: 0
+      })
     })
 
     it('should display search keywords and number of results when 0 result', async () => {
@@ -709,8 +769,20 @@ describe('components | SearchResults', () => {
 
       // then
       expect(fetchAlgolia).toHaveBeenCalledTimes(2)
-      expect(fetchAlgolia).toHaveBeenNthCalledWith(1, '', 0, null, null, null)
-      expect(fetchAlgolia).toHaveBeenNthCalledWith(2, 'librairie', 0, null, null, null)
+      expect(fetchAlgolia).toHaveBeenNthCalledWith(1, {
+        categories: null,
+        geolocationCoordinates: null,
+        indexSuffix: null,
+        keywords: '',
+        page: 0
+      })
+      expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
+        categories: null,
+        geolocationCoordinates: null,
+        indexSuffix: null,
+        keywords: 'librairie',
+        page: 0
+      })
     })
 
     it('should display an error when search failed', async () => {
@@ -1029,7 +1101,7 @@ describe('components | SearchResults', () => {
       // then
       const filtersContainer = wrapper.find(FiltersContainer)
       expect(filtersContainer).toHaveLength(1)
-      expect(filtersContainer.prop('getFilteredOffers')).toStrictEqual(expect.any(Function))
+      expect(filtersContainer.prop('updateFilteredOffers')).toStrictEqual(expect.any(Function))
       expect(filtersContainer.prop('history')).toStrictEqual(props.history)
       expect(filtersContainer.prop('initialFilters')).toStrictEqual({
         categories: ['Musée', 'Cinéma'],

@@ -27,8 +27,13 @@ export class Filters extends PureComponent {
 
   fetchOffers = (keywords, geolocation = null, categories, indexSuffix) => {
     const { showFailModal } = this.props
-    fetchAlgolia(keywords, 0, geolocation, categories, indexSuffix)
-      .then(offers => {
+    fetchAlgolia({
+      categories,
+      geolocationCoordinates: geolocation,
+      indexSuffix,
+      keywords,
+      page: 0
+    }).then(offers => {
         this.setState({
           offers: offers
         })
@@ -77,7 +82,7 @@ export class Filters extends PureComponent {
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles'] || ''
 
-    const { categories, isSearchAroundMe, sortCriteria} = currentFilters
+    const { categories, isSearchAroundMe, sortCriteria } = currentFilters
     isSearchAroundMe ?
       this.fetchOffers(keywords, geolocation, categories, sortCriteria) :
       this.fetchOffers(keywords, null, categories, sortCriteria)
@@ -91,10 +96,10 @@ export class Filters extends PureComponent {
   }
 
   handleFilterOffers = () => {
-    const { history, getFilteredOffers } = this.props
+    const { history, updateFilteredOffers } = this.props
     const { location: { search = '' } } = history
     const { offers } = this.state
-    getFilteredOffers(offers)
+    updateFilteredOffers(offers)
     history.push(`/recherche-offres/resultats${search}`)
   }
 
@@ -189,7 +194,6 @@ Filters.defaultProps = {
 
 Filters.propTypes = {
   geolocation: PropTypes.shape().isRequired,
-  getFilteredOffers: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   initialFilters: PropTypes.shape(),
   isGeolocationEnabled: PropTypes.bool.isRequired,
@@ -198,5 +202,6 @@ Filters.propTypes = {
   offers: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,
   redirectToSearchFiltersPage: PropTypes.func.isRequired,
-  showFailModal: PropTypes.func.isRequired
+  showFailModal: PropTypes.func.isRequired,
+  updateFilteredOffers: PropTypes.func.isRequired
 }

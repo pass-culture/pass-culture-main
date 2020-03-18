@@ -22,19 +22,21 @@ describe('components | FiltersContainer', () => {
       })
     })
 
-    it('should redirect to filters page', () => {
-      // given
-      const push = jest.fn()
-      const props = { history: { location: { search: '?mots-cles=librairie' }, push } }
-      const state = {
-        geolocation: { latitude: 48.8533261, longitude: 2.3451865 },
-      }
+    describe('redirectToSearchFiltersPage', () => {
+      it('should redirect to filters page', () => {
+        // given
+        const push = jest.fn()
+        const props = { history: { location: { search: '?mots-cles=librairie' }, push } }
+        const state = {
+          geolocation: { latitude: 48.8533261, longitude: 2.3451865 },
+        }
 
-      // when
-      mapStateToProps(state, props).redirectToSearchFiltersPage()
+        // when
+        mapStateToProps(state, props).redirectToSearchFiltersPage()
 
-      // then
-      expect(push).toHaveBeenCalledWith('/recherche-offres/resultats/filtres?mots-cles=librairie')
+        // then
+        expect(push).toHaveBeenCalledWith('/recherche-offres/resultats/filtres?mots-cles=librairie')
+      })
     })
   })
 })

@@ -1,3 +1,3 @@
 export const FACETS = {
-  CATEGORY_FACET: 'offer.label'
+  CATEGORY: 'offer.label'
 }

@@ -67,7 +67,7 @@ class SearchResults extends PureComponent {
     this.fetchOffers(searchedKeywords, currentPage)
   }
 
-  getFilteredOffers = (offers) => {
+  updateFilteredOffers = (offers) => {
     const { hits, nbHits, nbPages } = offers
     this.setState({
       currentPage: 0,
@@ -84,20 +84,25 @@ class SearchResults extends PureComponent {
     })
     const geolocationCoordinates = isSearchAroundMe ? geolocation : null
 
-    fetchAlgolia(keywords, currentPage, geolocationCoordinates, categoriesFilter, sortingIndexSuffix)
-      .then(offers => {
-        const { results } = this.state
-        const { hits, nbHits, nbPages } = offers
-        this.setState({
-          currentPage: currentPage,
-          keywordsToSearch: keywords,
-          isLoading: false,
-          resultsCount: nbHits,
-          results: [...results, ...hits],
-          searchedKeywords: keywords,
-          totalPagesNumber: nbPages,
-        })
+    fetchAlgolia({
+      keywords,
+      page: currentPage,
+      geolocationCoordinates,
+      categories: categoriesFilter,
+      indexSuffix: sortingIndexSuffix
+    }).then(offers => {
+      const { results } = this.state
+      const { hits, nbHits, nbPages } = offers
+      this.setState({
+        currentPage: currentPage,
+        keywordsToSearch: keywords,
+        isLoading: false,
+        resultsCount: nbHits,
+        results: [...results, ...hits],
+        searchedKeywords: keywords,
+        totalPagesNumber: nbPages,
       })
+    })
       .catch(() => {
         this.setState({
           isLoading: false,
@@ -288,7 +293,6 @@ class SearchResults extends PureComponent {
           </Route>
           <Route path="/recherche-offres/resultats/filtres">
             <FiltersContainer
-              getFilteredOffers={this.getFilteredOffers}
               history={history}
               initialFilters={this.buildInitialFilters()}
               match={match}
@@ -299,6 +303,7 @@ class SearchResults extends PureComponent {
               }}
               query={query}
               showFailModal={this.showFailModal}
+              updateFilteredOffers={this.updateFilteredOffers}
             />
           </Route>
         </Switch>
