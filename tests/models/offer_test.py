@@ -114,7 +114,7 @@ class AvailabilityMessageTest:
             assert availability_message == 'Plus de stock restant pour 1 date'
 
         @clean_database
-        def when_one_stock_has_been_booked_for_event_offer_and_reamining_is_unlimited(self, app):
+        def when_one_stock_has_been_booked_for_event_offer_and_remaining_is_unlimited(self, app):
             # Given
             user = create_user()
             offerer = create_offerer()
