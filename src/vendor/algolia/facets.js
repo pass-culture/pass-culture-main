@@ -1,3 +1,4 @@
 export const FACETS = {
-  CATEGORY: 'offer.label'
+  OFFER_IS_DIGITAL: 'offer.isDigital',
+  OFFER_LABEL: 'offer.label'
 }

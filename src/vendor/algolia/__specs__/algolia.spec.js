@@ -14,62 +14,75 @@ jest.mock('../../../utils/config', () => ({
 }))
 
 describe('fetchAlgolia', () => {
-  it('should call Algolia with provided keywords and page number', () => {
-    // given
-    const initIndex = jest.fn()
+  let initIndex
+  let search
+
+  beforeEach(() => {
+    initIndex = jest.fn()
     algoliasearch.mockReturnValue({ initIndex })
-    const search = jest.fn()
+    search = jest.fn()
     initIndex.mockReturnValue({ search })
-    const searchedKeywords = 'searched keywords'
-    const pageRequested = 0
-
-    // when
-    fetchAlgolia({
-      geolocationCoordinates: null,
-      keywords: searchedKeywords,
-      page: pageRequested,
-    })
-
-    // then
-    expect(algoliasearch).toHaveBeenCalledWith(
-      WEBAPP_ALGOLIA_APPLICATION_ID,
-      WEBAPP_ALGOLIA_SEARCH_API_KEY
-    )
-    expect(initIndex).toHaveBeenCalledWith(WEBAPP_ALGOLIA_INDEX_NAME)
-    expect(search).toHaveBeenCalledWith(searchedKeywords, {
-      page: pageRequested
-    })
   })
 
-  it('should call Algolia without query parameter when no keyword is provided', () => {
+  it('should call Algolia with provided keywords and default page number', () => {
     // given
     const initIndex = jest.fn()
     algoliasearch.mockReturnValue({ initIndex })
     const search = jest.fn()
     initIndex.mockReturnValue({ search })
+    const keywords = 'searched keywords'
 
     // when
     fetchAlgolia({
-      geolocationCoordinates: null,
-      keywords: '',
-      page: 0,
+      keywords: keywords,
     })
 
     // then
-    expect(search).toHaveBeenCalledWith('', {
+    expect(search).toHaveBeenCalledWith(keywords, {
       page: 0
     })
   })
 
-  describe('geolocation parameters', () => {
+  describe('keywords', () => {
+    it('should call Algolia with provided keywords', () => {
+      // given
+      const keywords = 'searched keywords'
+
+      // when
+      fetchAlgolia({
+        geolocationCoordinates: null,
+        keywords: keywords,
+      })
+
+      // then
+      expect(algoliasearch).toHaveBeenCalledWith(
+        WEBAPP_ALGOLIA_APPLICATION_ID,
+        WEBAPP_ALGOLIA_SEARCH_API_KEY
+      )
+      expect(initIndex).toHaveBeenCalledWith(WEBAPP_ALGOLIA_INDEX_NAME)
+      expect(search).toHaveBeenCalledWith(keywords, {
+        page: 0
+      })
+    })
+
+    it('should call Algolia without query parameter when no keyword is provided', () => {
+      // when
+      fetchAlgolia({
+        keywords: '',
+        page: 0,
+      })
+
+      // then
+      expect(search).toHaveBeenCalledWith('', {
+        page: 0
+      })
+    })
+  })
+
+  describe('geolocation', () => {
     it('should call Algolia with geolocation coordinates when latitude and longitude are provided', () => {
       // given
-      const initIndex = jest.fn()
-      algoliasearch.mockReturnValue({ initIndex })
-      const search = jest.fn()
-      initIndex.mockReturnValue({ search })
-      const searchedKeywords = 'searched keywords'
-      const pageRequested = 0
+      const keywords = 'searched keywords'
       const geolocation = {
         latitude: 42,
         longitude: 43,
@@ -78,26 +91,20 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         geolocationCoordinates: geolocation,
-        keywords: searchedKeywords,
-        page: 0
+        keywords: keywords,
       })
 
       // then
-      expect(search).toHaveBeenCalledWith(searchedKeywords, {
-        page: pageRequested,
+      expect(search).toHaveBeenCalledWith(keywords, {
         aroundLatLng: '42, 43',
-        aroundRadius: 'all'
+        aroundRadius: 'all',
+        page: 0
       })
     })
 
     it('should not call Algolia with geolocation coordinates when latitude and longitude are not valid', () => {
       // given
-      const initIndex = jest.fn()
-      algoliasearch.mockReturnValue({ initIndex })
-      const search = jest.fn()
-      initIndex.mockReturnValue({ search })
-      const searchedKeywords = 'searched keywords'
-      const pageRequested = 0
+      const keywords = 'searched keywords'
       const geolocation = {
         latitude: null,
         longitude: null,
@@ -106,183 +113,195 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         geolocationCoordinates: geolocation,
-        keywords: searchedKeywords,
+        keywords: keywords,
+      })
+
+      // then
+      expect(search).toHaveBeenCalledWith(keywords, {
         page: 0
       })
+    })
+  })
+
+  describe('categories', () => {
+    it('should call Algolia with no facetFilters parameter when no category is provided', () => {
+      // given
+      const keywords = 'searched keywords'
+      const categories = []
+
+      // when
+      fetchAlgolia({
+        categories: categories,
+        keywords: keywords,
+      })
 
       // then
-      expect(search).toHaveBeenCalledWith(searchedKeywords, {
-        page: pageRequested
+      expect(search).toHaveBeenCalledWith(keywords, {
+        page: 0
+      })
+    })
+
+    it('should call Algolia with facetFilters parameter when one category is provided', () => {
+      // given
+      const keywords = 'searched keywords'
+      const categories = ['Pratique artistique']
+
+      // when
+      fetchAlgolia({
+        categories: categories,
+        keywords: keywords
+      })
+
+      // then
+      expect(search).toHaveBeenCalledWith(keywords, {
+        facetFilters: [["offer.label:Pratique artistique"]],
+        page: 0,
+      })
+    })
+
+    it('should call Algolia with facetFilters parameter when multiple categories are provided', () => {
+      // given
+      const keywords = 'searched keywords'
+      const categories = ['Spectacle', 'Abonnement spectacles']
+
+      // when
+      fetchAlgolia({
+        categories: categories,
+        keywords: keywords,
+      })
+
+      // then
+      expect(search).toHaveBeenCalledWith(keywords, {
+        facetFilters: [["offer.label:Spectacle", "offer.label:Abonnement spectacles"]],
+        page: 0
       })
     })
   })
 
-  describe('categories filter parameter', () => {
-    it('should call Algolia with filter parameter if one category is provided', () => {
+  describe('sorting', () => {
+    it('should call Algolia with given index when index suffix is provided', () => {
       // given
-      const initIndex = jest.fn()
-      algoliasearch.mockReturnValue({ initIndex })
-      const search = jest.fn()
-      initIndex.mockReturnValue({ search })
-      const searchedKeywords = 'searched keywords'
-      const pageRequested = 0
-      const geolocation = null
-      const categoriesFilter = ['Pratique artistique']
-
-      // when
-      fetchAlgolia({
-        categories: categoriesFilter,
-        geolocationCoordinates: geolocation,
-        keywords: searchedKeywords,
-        page: pageRequested
-      })
-
-      // then
-      expect(search).toHaveBeenCalledWith(searchedKeywords, {
-        page: pageRequested,
-        filters: 'offer.label:"Pratique artistique"'
-      })
-    })
-
-    it('should call Algolia with formatted filter parameter if multiple categories are provided', () => {
-      // given
-      const initIndex = jest.fn()
-      algoliasearch.mockReturnValue({ initIndex })
-      const search = jest.fn()
-      initIndex.mockReturnValue({ search })
-      const searchedKeywords = 'searched keywords'
-      const pageRequested = 0
-      const geolocation = null
-      const categoriesFilter = ['Spectacle', 'Abonnement spectacles']
-
-      // when
-      fetchAlgolia({
-        categories: categoriesFilter,
-        geolocationCoordinates: geolocation,
-        keywords: searchedKeywords,
-        page: pageRequested
-      })
-
-      // then
-      expect(search).toHaveBeenCalledWith(searchedKeywords, {
-        page: pageRequested,
-        filters: 'offer.label:"Spectacle" OR offer.label:"Abonnement spectacles"'
-      })
-    })
-
-    it('should call Algolia with no filter if one category is an empty string', () => {
-      // given
-      const initIndex = jest.fn()
-      algoliasearch.mockReturnValue({ initIndex })
-      const search = jest.fn()
-      initIndex.mockReturnValue({ search })
-      const searchedKeywords = 'searched keywords'
-      const pageRequested = 0
-      const geolocation = null
-      const categoriesFilter = ['']
-
-      // when
-      fetchAlgolia({
-        categories: categoriesFilter,
-        geolocationCoordinates: geolocation,
-        keywords: searchedKeywords,
-        page: pageRequested
-      })
-
-      // then
-      expect(search).toHaveBeenCalledWith(searchedKeywords, {
-        page: pageRequested,
-      })
-    })
-  })
-
-  describe('sorting parameter', () => {
-    it('should call Algolia using right index if index suffix is provided', () => {
-      // given
-      const initIndex = jest.fn()
-      algoliasearch.mockReturnValue({ initIndex })
-      const search = jest.fn()
-      initIndex.mockReturnValue({ search })
-      const searchedKeywords = 'searched keywords'
-      const pageRequested = 0
-      const geolocation = null
-      const categoriesFilter = []
+      const keywords = 'searched keywords'
       const indexSuffix = '_by_proximity'
 
       // when
       fetchAlgolia({
-        categories: categoriesFilter,
-        geolocationCoordinates: geolocation,
         indexSuffix: indexSuffix,
-        keywords: searchedKeywords,
-        page: pageRequested
+        keywords: keywords,
       })
 
       // then
-      expect(search).toHaveBeenCalledWith(searchedKeywords, {
-        page: pageRequested
+      expect(search).toHaveBeenCalledWith(keywords, {
+        page: 0
       })
       expect(initIndex).toHaveBeenCalledWith('indexName_by_proximity')
     })
 
-    it('should call Algolia using default index if no index suffix is provided', () => {
+    it('should call Algolia using default index when no index suffix is provided', () => {
       // given
-      const initIndex = jest.fn()
-      algoliasearch.mockReturnValue({ initIndex })
-      const search = jest.fn()
-      initIndex.mockReturnValue({ search })
-      const searchedKeywords = 'searched keywords'
-      const pageRequested = 0
-      const geolocation = null
-      const categoriesFilter = []
-      const indexSuffix = ''
+      const keywords = 'searched keywords'
 
       // when
       fetchAlgolia({
-        categories: categoriesFilter,
-        geolocationCoordinates: geolocation,
-        indexSuffix: indexSuffix,
-        keywords: searchedKeywords,
-        page: pageRequested
+        keywords: keywords
       })
 
       // then
-      expect(search).toHaveBeenCalledWith(searchedKeywords, {
-        page: pageRequested
+      expect(search).toHaveBeenCalledWith(keywords, {
+        page: 0
       })
       expect(initIndex).toHaveBeenCalledWith('indexName')
+    })
+  })
+
+  describe('offer types', () => {
+    it('should call Algolia with no facetFilters parameter when no offer type is provided', () => {
+      // given
+      const keywords = 'searched keywords'
+      const offerTypes = null
+
+      // when
+      fetchAlgolia({
+        keywords: keywords,
+        offerTypes: offerTypes
+      })
+
+      // then
+      expect(search).toHaveBeenCalledWith(keywords, {
+        page: 0
+      })
+    })
+
+    it('should call Algolia with facetFilters parameter when offer is digital', () => {
+      // given
+      const keywords = 'searched keywords'
+      const offerTypes = {
+        isDigital: true
+      }
+
+      // when
+      fetchAlgolia({
+        keywords: keywords,
+        offerTypes: offerTypes
+      })
+
+      // then
+      expect(search).toHaveBeenCalledWith(keywords, {
+        facetFilters: ["offer.isDigital:true"],
+        page: 0
+      })
+    })
+
+    it('should call Algolia with empty facetFilters parameter when offer is not digital', () => {
+      // given
+      const keywords = 'searched keywords'
+      const offerTypes = {
+        isDigital: false
+      }
+
+      // when
+      fetchAlgolia({
+        keywords: keywords,
+        offerTypes: offerTypes
+      })
+
+      // then
+      expect(search).toHaveBeenCalledWith(keywords, {
+        facetFilters: [],
+        page: 0
+      })
     })
   })
 
   describe('multiple parameters', () => {
     it('should call Algolia with all given search parameters', () => {
       // given
-      const initIndex = jest.fn()
-      algoliasearch.mockReturnValue({ initIndex })
-      const search = jest.fn()
-      initIndex.mockReturnValue({ search })
-      const searchedKeywords = 'searched keywords'
-      const pageRequested = 2
+      const keywords = 'searched keywords'
+      const page = 2
       const geolocation = {
         latitude: 42,
         longitude: 43,
       }
-      const categoriesFilter = ['Pratique artistique']
+      const categories = ['Pratique artistique', 'Musée']
       const indexSuffix = '_by_price'
+      const offerTypes = {
+        isDigital: true
+      }
 
       // when
       fetchAlgolia({
-        categories: categoriesFilter,
+        categories: categories,
         geolocationCoordinates: geolocation,
         indexSuffix: indexSuffix,
-        keywords: searchedKeywords,
-        page: pageRequested
+        keywords: keywords,
+        offerTypes: offerTypes,
+        page: page
       })
 
       // then
-      expect(search).toHaveBeenCalledWith(searchedKeywords, {
-        page: pageRequested,
-        filters: 'offer.label:"Pratique artistique"',
+      expect(search).toHaveBeenCalledWith(keywords, {
+        page: page,
+        facetFilters: [["offer.label:Pratique artistique", "offer.label:Musée"], "offer.isDigital:true"],
         aroundLatLng: '42, 43',
         aroundRadius: 'all'
       })

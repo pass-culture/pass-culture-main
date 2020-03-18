@@ -1,0 +1,30 @@
+.fc-label {
+  border: 2px solid $grey-even-more-light;
+  border-radius: 24px;
+  display: inline-block;
+  font-size: rem(16px);
+  font-weight: 700;
+  padding: rem(10px) rem(24px);
+}
+
+.fc-icon-check {
+  height: rem(16px);
+  margin-right: rem(5px);
+  width: rem(16px);
+}
+
+.fc-label-checked {
+  border: 2px solid $primary;
+  border-radius: 24px;
+  color: $primary;
+  display: inline-block;
+  font-weight: 700;
+  font-size: rem(16px);
+  padding: rem(10px) rem(24px) rem(10px) rem(5px);
+}
+
+.filter-checkbox-wrapper {
+  input {
+    display: none;
+  }
+}

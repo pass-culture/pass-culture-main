@@ -18,6 +18,11 @@ class SearchResults extends PureComponent {
     super(props)
     this.state = {
       currentPage: 0,
+      filters: {
+        offerTypes: {
+          isDigital: false
+        }
+      },
       keywordsToSearch: '',
       isLoading: false,
       resultsCount: 0,
@@ -85,6 +90,12 @@ class SearchResults extends PureComponent {
     })
   }
 
+  updateFilters = (filters) => {
+    this.setState({
+      filters: filters
+    })
+  }
+
   fetchOffers = (keywords, currentPage) => {
     const { categoriesFilter, geolocation, isSearchAroundMe, sortingIndexSuffix } = this.props
     this.setState({
@@ -93,11 +104,11 @@ class SearchResults extends PureComponent {
     const geolocationCoordinates = isSearchAroundMe ? geolocation : null
 
     fetchAlgolia({
-      keywords,
-      page: currentPage,
-      geolocationCoordinates,
       categories: categoriesFilter,
-      indexSuffix: sortingIndexSuffix
+      geolocationCoordinates,
+      indexSuffix: sortingIndexSuffix,
+      keywords,
+      page: currentPage
     }).then(offers => {
       const { results } = this.state
       const { hits, nbHits, nbPages } = offers
@@ -110,8 +121,7 @@ class SearchResults extends PureComponent {
         searchedKeywords: keywords,
         totalPagesNumber: nbPages,
       })
-    })
-      .catch(() => {
+    }).catch(() => {
         this.setState({
           isLoading: false,
         })
@@ -170,14 +180,18 @@ class SearchResults extends PureComponent {
   }
 
   buildInitialFilters = () => {
+    const { filters } = this.state
     const { query } = this.props
     const queryParams = query.parse()
     const autourDeMoi = queryParams['autour-de-moi']
     const sortCriteria = queryParams['tri']
     const categories = queryParams['categories']
 
+    const splitIfAtLeastOneCategory = categories && categories.length > 0 && categories.split(';')
+
     return {
-      categories: categories && categories.split(';'),
+      ...filters,
+      categories: splitIfAtLeastOneCategory,
       isSearchAroundMe: autourDeMoi === 'oui',
       sortCriteria
     }
@@ -315,6 +329,7 @@ class SearchResults extends PureComponent {
               query={query}
               showFailModal={this.showFailModal}
               updateFilteredOffers={this.updateFilteredOffers}
+              updateFilters={this.updateFilters}
             />
           </Route>
         </Switch>

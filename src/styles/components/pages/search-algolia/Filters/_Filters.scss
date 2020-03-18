@@ -44,8 +44,9 @@
 }
 
 .sf-geolocation-title {
+  font-size: rem(18px);
   font-weight: 500;
-  margin-top: rem(10px);
+  margin-top: rem(20px);
 }
 
 .sf-geolocation-button {
@@ -55,10 +56,29 @@
   margin-top: rem(20px);
 }
 
-
 .sf-filter-separator {
   border: rem(0.5px) solid $grey-even-more-light;
   margin-top: rem(20px);
+}
+
+.sf-offer-type-title {
+  display: inline-block;
+  font-size: rem(18px);
+  font-weight: 500;
+  margin-top: rem(20px);
+}
+
+.sf-offer-type-wrapper {
+  display: flex;
+  flex-direction: row;
+  margin-top: rem(20px);
+}
+
+.sf-offer-type-counter {
+  color: $primary-error;
+  font-size: rem(18px);
+  font-weight: 500;
+  margin-left: rem(5px);
 }
 
 @media screen and (max-width: $iphone6) {

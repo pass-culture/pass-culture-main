@@ -725,6 +725,9 @@ describe('components | SearchResults', () => {
       expect(resultSecondFetch).toHaveLength(1)
       expect(wrapper.state()).toStrictEqual({
         currentPage: 0,
+        filters: {
+          offerTypes: { isDigital: false }
+        },
         keywordsToSearch: 'vas-y',
         isLoading: false,
         results: [{ objectID: 'AG', offer: { name: 'Livre nul' } }],
@@ -1114,17 +1117,21 @@ describe('components | SearchResults', () => {
       // then
       const filtersContainer = wrapper.find(FiltersContainer)
       expect(filtersContainer).toHaveLength(1)
-      expect(filtersContainer.prop('updateFilteredOffers')).toStrictEqual(expect.any(Function))
       expect(filtersContainer.prop('history')).toStrictEqual(props.history)
       expect(filtersContainer.prop('initialFilters')).toStrictEqual({
         categories: ['Musée', 'Cinéma'],
         isSearchAroundMe: false,
+        offerTypes: {
+          isDigital: false
+        },
         sortCriteria: '_by_price'
       })
       expect(filtersContainer.prop('match')).toStrictEqual(props.match)
       expect(filtersContainer.prop('offers')).toStrictEqual({ hits: [], nbHits: 0, nbPages: 0 })
       expect(filtersContainer.prop('query')).toStrictEqual(props.query)
       expect(filtersContainer.prop('showFailModal')).toStrictEqual(expect.any(Function))
+      expect(filtersContainer.prop('updateFilteredOffers')).toStrictEqual(expect.any(Function))
+      expect(filtersContainer.prop('updateFilters')).toStrictEqual(expect.any(Function))
     })
   })
 

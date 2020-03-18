@@ -6,38 +6,38 @@ import { Criteria } from '../Criteria/Criteria'
 import { Route, Switch } from 'react-router'
 import { GEOLOCATION_CRITERIA } from '../Criteria/criteriaEnums'
 import { checkIfAroundMe } from '../utils/checkIfAroundMe'
+import FilterCheckbox from './FilterCheckbox/FilterCheckbox'
 
 export class Filters extends PureComponent {
   constructor(props) {
     super(props)
+
+    const { categories, isSearchAroundMe, offerTypes, sortCriteria } = props.initialFilters
     this.state = {
-      currentFilters: {
-        categories: props.initialFilters.categories,
-        isSearchAroundMe: props.initialFilters.isSearchAroundMe,
-        sortCriteria: props.initialFilters.sortCriteria
-      },
-      initialFilters: {
-        categories: props.initialFilters.categories,
-        isSearchAroundMe: props.initialFilters.isSearchAroundMe,
-        sortCriteria: props.initialFilters.sortCriteria
+      filters: {
+        categories: categories,
+        isSearchAroundMe: isSearchAroundMe,
+        offerTypes: offerTypes,
+        sortCriteria: sortCriteria
       },
       offers: props.offers
     }
   }
 
-  fetchOffers = (keywords, geolocation = null, categories, indexSuffix) => {
+  fetchOffers = ({ keywords, geolocation = null, categories, indexSuffix, offerTypes }) => {
     const { showFailModal } = this.props
     fetchAlgolia({
       categories,
       geolocationCoordinates: geolocation,
       indexSuffix,
       keywords,
+      offerTypes,
       page: 0
     }).then(offers => {
-        this.setState({
-          offers: offers
-        })
+      this.setState({
+        offers: offers
       })
+    })
       .catch(() => {
         showFailModal()
       })
@@ -49,13 +49,13 @@ export class Filters extends PureComponent {
       isGeolocationEnabled,
       redirectToSearchFiltersPage
     } = this.props
-    const { currentFilters } = this.state
+    const { filters } = this.state
 
     if (!isUserAllowedToSelectCriterion(criterionKey, isGeolocationEnabled)) return
 
     this.setState({
-      currentFilters: {
-        ...currentFilters,
+      filters: {
+        ...filters,
         isSearchAroundMe: GEOLOCATION_CRITERIA[criterionKey].label === GEOLOCATION_CRITERIA.AROUND_ME.label
       }
     }, () => {
@@ -65,11 +65,14 @@ export class Filters extends PureComponent {
   }
 
   resetFilters = () => {
-    const { initialFilters } = this.state
+    const { initialFilters } = this.props
 
     this.setState({
-      currentFilters: {
-        ...initialFilters
+      filters: {
+        ...initialFilters,
+        offerTypes: {
+          isDigital: false
+        }
       },
     }, () => {
       this.process()
@@ -78,27 +81,29 @@ export class Filters extends PureComponent {
 
   process = () => {
     const { history, geolocation, query } = this.props
-    const { currentFilters } = this.state
+    const { filters } = this.state
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles'] || ''
 
-    const { categories, isSearchAroundMe, sortCriteria } = currentFilters
+    const { categories, isSearchAroundMe, offerTypes, sortCriteria } = filters
     isSearchAroundMe ?
-      this.fetchOffers(keywords, geolocation, categories, sortCriteria) :
-      this.fetchOffers(keywords, null, categories, sortCriteria)
+      this.fetchOffers({ keywords, geolocation, categories, indexSuffix: sortCriteria, offerTypes }) :
+      this.fetchOffers({ keywords, categories, indexSuffix: sortCriteria, offerTypes })
 
-    const autourDeMoi = checkIfAroundMe(currentFilters.isSearchAroundMe)
-    const category = currentFilters.categories !== '' ? currentFilters.categories.join(';') : ''
-    const tri = currentFilters.sortCriteria
+    const autourDeMoi = checkIfAroundMe(filters.isSearchAroundMe)
+    const category = filters.categories !== '' ? filters.categories.join(';') : ''
+    const tri = filters.sortCriteria
     history.replace({
       search: `?mots-cles=${keywords}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${category}`
     })
   }
 
   handleFilterOffers = () => {
-    const { history, updateFilteredOffers } = this.props
+    const { history, updateFilteredOffers, updateFilters } = this.props
     const { location: { search = '' } } = history
-    const { offers } = this.state
+    const { filters, offers } = this.state
+
+    updateFilters(filters)
     updateFilteredOffers(offers)
     history.push(`/recherche-offres/resultats${search}`)
   }
@@ -118,19 +123,51 @@ export class Filters extends PureComponent {
   }
 
   buildGeolocationFilter = () => {
-    const { currentFilters } = this.state
-    return currentFilters.isSearchAroundMe ? 'Autour de moi' : 'Partout'
+    const { filters } = this.state
+    return filters.isSearchAroundMe ? 'Autour de moi' : 'Partout'
   }
 
   getActiveCriterionLabel = () => {
-    const { currentFilters } = this.state
-    return currentFilters.isSearchAroundMe ? GEOLOCATION_CRITERIA.AROUND_ME.label : GEOLOCATION_CRITERIA.EVERYWHERE.label
+    const { filters } = this.state
+    return filters.isSearchAroundMe ? GEOLOCATION_CRITERIA.AROUND_ME.label : GEOLOCATION_CRITERIA.EVERYWHERE.label
+  }
+
+  handleOnChange = event => {
+    const { name, checked } = event.target
+    const { filters } = this.state
+
+    this.setState({
+      filters: {
+        ...filters,
+        offerTypes: {
+          [name]: checked
+        }
+      }
+    }, () => {
+      this.process()
+    })
+  }
+
+  getNumberOfOfferTypesSelected = () => {
+    const { filters } = this.state
+    const { offerTypes } = filters
+    let counter = 0
+
+    Object.keys(offerTypes).forEach((key) => {
+       if (offerTypes[key] === true){
+         counter++
+       }
+    })
+    return counter
   }
 
   render() {
+    const { filters } = this.state
+    const { offerTypes } = filters
     const { history, match } = this.props
     const { location } = history
     const { search = '' } = location
+    const numberOfOfferTypesSelected = this.getNumberOfOfferTypesSelected()
 
     return (
       <main className="search-filters-page">
@@ -167,8 +204,29 @@ export class Filters extends PureComponent {
                 >
                   {this.buildGeolocationFilter()}
                 </button>
+                <div className="sf-filter-separator" />
               </li>
-              <div className="sf-filter-separator" />
+              <li>
+                <h4 className='sf-offer-type-title'>
+                  {'Type d\'offre'}
+                </h4>
+                {numberOfOfferTypesSelected > 0 && (
+                  <span className='sf-offer-type-counter'>
+                      {`(${numberOfOfferTypesSelected})`}
+                  </span>
+                )}
+                <div className='sf-offer-type-wrapper'>
+                  <FilterCheckbox
+                    checked={offerTypes.isDigital}
+                    className={`${offerTypes.isDigital ? 'fc-label-checked' : 'fc-label'}`}
+                    id='isDigital'
+                    label='Offres numériques'
+                    name='isDigital'
+                    onChange={this.handleOnChange}
+                  />
+                </div>
+                <div className="sf-filter-separator" />
+              </li>
             </ul>
             <div className="sf-button-wrapper">
               <button
@@ -203,5 +261,6 @@ Filters.propTypes = {
   query: PropTypes.shape().isRequired,
   redirectToSearchFiltersPage: PropTypes.func.isRequired,
   showFailModal: PropTypes.func.isRequired,
-  updateFilteredOffers: PropTypes.func.isRequired
+  updateFilteredOffers: PropTypes.func.isRequired,
+  updateFilters: PropTypes.func.isRequired
 }
