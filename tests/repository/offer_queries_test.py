@@ -19,7 +19,8 @@ from repository.offer_queries import department_or_national_offers, \
     _order_by_occurs_soon_or_is_thing_then_randomize, \
     get_paginated_offer_ids_by_venue_id, \
     get_offers_by_ids, \
-    get_paginated_expired_offer_ids
+    get_paginated_expired_offer_ids, _order_by_is_digital_then_randomize, order_by_with_criteria_and_is_digital, \
+    get_active_offers_with_digital_first
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_criterion, create_user, create_offerer, \
     create_venue, create_user_offerer, create_mediation, create_favorite, create_provider
@@ -1404,6 +1405,527 @@ class GetActiveOffersTest:
         assert len(offers3) == 0
 
 
+class GetActiveOffersWithDigitalFirstTest:
+    @clean_database
+    def test_should_return_events_happening_after_end_of_quarantine_date_before_others(self, app):
+        # Given
+        next_week = datetime.utcnow() + timedelta(days=7)
+        in_two_months = datetime.utcnow() + timedelta(days=60)
+
+        user = create_user()
+        offerer = create_offerer()
+        virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        physical_venue = create_venue(offerer)
+
+        online_offer1 = create_offer_with_thing_product(venue=virtual_venue, thing_type=ThingType.JEUX_VIDEO_ABO,
+                                                        url='http://example.com', is_national=True)
+        online_offer2 = create_offer_with_thing_product(venue=virtual_venue, thing_type=ThingType.LIVRE_AUDIO,
+                                                        url='http://example.com', is_national=True)
+        offline_event_offer1 = create_offer_with_event_product(venue=physical_venue,
+                                                               event_type=EventType.SPECTACLE_VIVANT)
+        offline_event_offer2 = create_offer_with_event_product(venue=physical_venue,
+                                                               event_type=EventType.SPECTACLE_VIVANT)
+        online_offer1_stock = create_stock_from_offer(online_offer1, price=0)
+        online_offer2_stock = create_stock_from_offer(online_offer2, price=0)
+        offline_event_offer1_stock = create_stock_from_offer(offline_event_offer1, price=0,
+                                                             beginning_datetime=next_week)
+        offline_event_offer2_stock = create_stock_from_offer(offline_event_offer2, price=0,
+                                                             beginning_datetime=in_two_months)
+        mediation1 = create_mediation(online_offer1)
+        mediation2 = create_mediation(online_offer2)
+        mediation3 = create_mediation(offline_event_offer1)
+        mediation4 = create_mediation(offline_event_offer2)
+        repository.save(mediation1, mediation2, mediation3, mediation4, online_offer1_stock,
+                        online_offer2_stock,
+                        offline_event_offer1_stock,
+                        offline_event_offer2_stock)
+
+        end_of_quarantine_date = datetime.utcnow() + timedelta(days=45)
+
+        # When
+        offers = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                      pagination_params={'seed': 0.9, 'page': 1},
+                                                      offer_id=None,
+                                                      user=user,
+                                                      end_of_quarantine_date=end_of_quarantine_date)
+
+        # Then
+        assert len(offers) == 4
+        online_offers = offers[:2]
+        assert online_offer1 in online_offers
+        assert online_offer2 in online_offers
+        offline_offers = offers[2:]
+        assert offline_offers == [offline_event_offer2, offline_event_offer1]
+
+    @clean_database
+    def test_should_return_online_offers_first(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        physical_venue = create_venue(offerer)
+
+        online_offer1 = create_offer_with_thing_product(venue=virtual_venue, thing_type=ThingType.JEUX_VIDEO_ABO,
+                                                        url='http://example.com', is_national=True)
+        online_offer2 = create_offer_with_thing_product(venue=virtual_venue, thing_type=ThingType.LIVRE_AUDIO,
+                                                        url='http://example.com', is_national=True)
+        offline_thing_offer = create_offer_with_thing_product(venue=physical_venue, thing_type=ThingType.LIVRE_EDITION)
+        offline_event_offer = create_offer_with_event_product(venue=physical_venue,
+                                                              event_type=EventType.SPECTACLE_VIVANT)
+        online_offer1_stock = create_stock_from_offer(online_offer1, price=0)
+        online_offer2_stock = create_stock_from_offer(online_offer2, price=0)
+        offline_thing_offer_stock = create_stock_from_offer(offline_thing_offer, price=0)
+        offline_event_offer_stock = create_stock_from_offer(offline_event_offer, price=0)
+        mediation1 = create_mediation(online_offer1)
+        mediation2 = create_mediation(online_offer2)
+        mediation3 = create_mediation(offline_thing_offer)
+        mediation4 = create_mediation(offline_event_offer)
+        repository.save(mediation1, mediation2, mediation3, mediation4, online_offer1_stock,
+                        online_offer2_stock,
+                        offline_thing_offer_stock,
+                        offline_event_offer_stock)
+
+        # When
+        offers = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                      pagination_params={'seed': 0.9, 'page': 1},
+                                                      offer_id=None,
+                                                      user=user)
+
+        # Then
+        assert len(offers) == 4
+        online_offers = offers[:2]
+        assert online_offer1 in online_offers
+        assert online_offer2 in online_offers
+        offline_offers = offers[2:]
+        assert offline_thing_offer in offline_offers
+        assert offline_event_offer in offline_offers
+
+    @clean_database
+    def test_should_return_online_offer_with_bonus_criteria_first(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        physical_venue = create_venue(offerer)
+
+        online_offer1 = create_offer_with_thing_product(venue=virtual_venue, thing_type=ThingType.JEUX_VIDEO_ABO,
+                                                        url='http://example.com', is_national=True)
+        online_offer2 = create_offer_with_thing_product(venue=virtual_venue, thing_type=ThingType.LIVRE_AUDIO,
+                                                        url='http://example.com', is_national=True)
+        offline_thing_offer = create_offer_with_thing_product(venue=physical_venue, thing_type=ThingType.LIVRE_EDITION)
+        offline_event_offer = create_offer_with_event_product(venue=physical_venue,
+                                                              event_type=EventType.SPECTACLE_VIVANT)
+        online_offer1_stock = create_stock_from_offer(online_offer1, price=0)
+        online_offer2_stock = create_stock_from_offer(online_offer2, price=0)
+        offline_thing_offer_stock = create_stock_from_offer(offline_thing_offer, price=0)
+        offline_event_offer_stock = create_stock_from_offer(offline_event_offer, price=0)
+        mediation1 = create_mediation(online_offer1)
+        mediation2 = create_mediation(online_offer2)
+        mediation3 = create_mediation(offline_thing_offer)
+        mediation4 = create_mediation(offline_event_offer)
+
+        criterion_positive1 = create_criterion(name='positive', score_delta=1)
+        criterion_positive2 = create_criterion(name='positive', score_delta=2)
+
+        online_offer2.criteria = [criterion_positive1]
+        offline_event_offer.criteria = [criterion_positive2]
+
+        repository.save(mediation1, mediation2, mediation3, mediation4, online_offer1_stock,
+                        online_offer2_stock,
+                        offline_thing_offer_stock,
+                        offline_event_offer_stock)
+
+        # When
+        offers = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                      pagination_params={'seed': 0.9, 'page': 1},
+                                                      offer_id=None,
+                                                      user=user)
+
+        # Then
+        assert offers == [online_offer2, online_offer1, offline_event_offer, offline_thing_offer]
+
+    @clean_database
+    def test_when_department_code_00(self, app):
+        # Given
+        offerer = create_offerer(siren='123456789')
+        user = create_user()
+        venue_34 = create_venue(offerer, postal_code='34000', departement_code='34', siret=offerer.siren + '11111')
+        venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '22222')
+        venue_75 = create_venue(offerer, postal_code='75000', departement_code='75', siret=offerer.siren + '33333')
+        offer_34 = create_offer_with_thing_product(venue=venue_34)
+        offer_93 = create_offer_with_thing_product(venue=venue_93)
+        offer_75 = create_offer_with_thing_product(venue=venue_75)
+        stock_34 = create_stock_from_offer(offer_34)
+        stock_93 = create_stock_from_offer(offer_93)
+        stock_75 = create_stock_from_offer(offer_75)
+        create_mediation(stock_34.offer)
+        create_mediation(stock_93.offer)
+        create_mediation(stock_75.offer)
+
+        repository.save(stock_34, stock_93, stock_75)
+
+        # When
+        offers = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                      offer_id=None,
+                                                      pagination_params={'seed': 0.9, 'page': 1},
+                                                      user=user)
+
+        # Then
+        assert offer_34 in offers
+        assert offer_93 in offers
+        assert offer_75 in offers
+
+    @clean_database
+    def test_should_not_return_activation_event(self, app):
+        # Given
+        offerer = create_offerer(siren='123456789')
+        user = create_user()
+        venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '33333')
+        offer_93 = create_offer_with_event_product(venue_93, thumb_count=1)
+        offer_activation_93 = create_offer_with_event_product(venue_93, event_type=EventType.ACTIVATION,
+                                                              thumb_count=1)
+        stock_93 = create_stock_from_offer(offer_93)
+        stock_activation_93 = create_stock_from_offer(offer_activation_93)
+        create_mediation(stock_93.offer)
+        create_mediation(stock_activation_93.offer)
+
+        repository.save(stock_93, stock_activation_93)
+
+        # When
+        offers = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                      offer_id=None,
+                                                      pagination_params={'seed': 0.9, 'page': 1},
+                                                      user=user)
+
+        # Then
+        assert offer_93 in offers
+        assert offer_activation_93 not in offers
+
+    @clean_database
+    def test_should_not_return_activation_thing(self, app):
+        # Given
+        offerer = create_offerer(siren='123456789')
+        user = create_user()
+        venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '33333')
+        offer_93 = create_offer_with_thing_product(venue=venue_93, thumb_count=1)
+        offer_activation_93 = create_offer_with_thing_product(venue=venue_93, thing_type=ThingType.ACTIVATION,
+                                                              thumb_count=1)
+        stock_93 = create_stock_from_offer(offer_93)
+        stock_activation_93 = create_stock_from_offer(offer_activation_93)
+        create_mediation(stock_93.offer)
+        create_mediation(stock_activation_93.offer)
+
+        repository.save(stock_93, stock_activation_93)
+
+        # When
+        offers = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                      offer_id=None,
+                                                      pagination_params={'seed': 0.9, 'page': 1},
+                                                      user=user)
+
+        # Then
+        assert offer_93 in offers
+        assert offer_activation_93 not in offers
+
+    @clean_database
+    def test_should_return_offers_with_stock(self, app):
+        # Given
+        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+        offer = create_offer_with_thing_product(venue=venue, product=product)
+        stock = create_stock_from_offer(offer, available=2)
+        create_mediation(stock.offer)
+        repository.save(stock)
+
+        # When
+        offers = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                      offer_id=None,
+                                                      pagination_params={'seed': 0.9, 'page': 1},
+                                                      user=user)
+
+        # Then
+        assert len(offers) == 1
+
+    @clean_database
+    def test_should_return_offers_with_mediation_only(app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+        stock1 = create_stock_with_thing_offer(offerer, venue, name='thing_with_mediation')
+        stock2 = create_stock_with_thing_offer(offerer, venue, name='thing_without_mediation')
+        create_mediation(stock1.offer)
+        repository.save(stock1, stock2)
+
+        # When
+        offers = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                      offer_id=None,
+                                                      pagination_params={'seed': 0.9, 'page': 1},
+                                                      user=user)
+
+        # Then
+        assert len(offers) == 1
+        assert offers[0].name == 'thing_with_mediation'
+
+    @clean_database
+    def test_should_not_return_offers_with_no_stock(self, app):
+        # Given
+        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+        offer = create_offer_with_thing_product(venue=venue, product=product)
+        stock = create_stock_from_offer(offer, available=2, price=0)
+        booking1 = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
+        booking2 = create_booking(user=user, stock=stock, quantity=2, venue=venue)
+        create_mediation(stock.offer)
+        repository.save(booking1, booking2)
+
+        # When
+        offers = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                      offer_id=None,
+                                                      pagination_params={'seed': 0.9, 'page': 1},
+                                                      user=user)
+
+        # Then
+        assert len(offers) == 0
+
+    @clean_database
+    def test_should_return_same_number_of_recommendation(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+
+        stock1 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
+        stock2 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
+        stock3 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.AUDIOVISUEL)
+        stock4 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX)
+        create_mediation(stock1.offer)
+        create_mediation(stock2.offer)
+        create_mediation(stock3.offer)
+        create_mediation(stock4.offer)
+
+        repository.save(stock1, stock2, stock3, stock4)
+
+        # When
+        offers = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                      offer_id=None,
+                                                      pagination_params={'seed': 0.9, 'page': 1},
+                                                      user=user)
+
+        # Then
+        assert len(offers) == 4
+
+    @clean_database
+    def test_with_criteria_should_return_offer_with_highest_base_score_first(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+
+        offer1 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.JEUX_VIDEO, thumb_count=1)
+        stock1 = create_stock_from_offer(offer1, price=0)
+        offer1.criteria = [create_criterion(name='negative', score_delta=-1)]
+
+        offer2 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.JEUX_VIDEO, thumb_count=1)
+        stock2 = create_stock_from_offer(offer2, price=0)
+        offer2.criteria = [create_criterion(name='positive', score_delta=1)]
+
+        create_mediation(stock1.offer)
+        create_mediation(stock2.offer)
+
+        repository.save(stock1, stock2)
+
+        # When
+        offers = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                      offer_id=None,
+                                                      pagination_params={'seed': 0.9, 'page': 1},
+                                                      user=user)
+
+        # Then
+        assert offers == [offer2, offer1]
+
+    @clean_database
+    def test_should_return_offers_in_the_same_order_given_the_same_seed(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+
+        offer1 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
+        stock1 = create_stock_from_offer(offer1, price=0)
+
+        offer2 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
+        stock2 = create_stock_from_offer(offer2, price=0)
+
+        offer3 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
+        stock3 = create_stock_from_offer(offer3, price=0)
+
+        offer4 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
+        stock4 = create_stock_from_offer(offer4, price=0)
+
+        create_mediation(stock1.offer)
+        create_mediation(stock2.offer)
+        create_mediation(stock3.offer)
+        create_mediation(stock4.offer)
+
+        repository.save(stock1, stock2, stock3, stock4)
+
+        pagination_params = {'seed': 0.5, 'page': 1}
+        offers_1 = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                        offer_id=None,
+                                                        pagination_params=pagination_params,
+                                                        user=user)
+
+        offers_2 = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                        offer_id=None,
+                                                        pagination_params=pagination_params,
+                                                        user=user)
+
+        offers_3 = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                        offer_id=None,
+                                                        pagination_params=pagination_params,
+                                                        user=user)
+
+        # When
+        offers_4 = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                        offer_id=None,
+                                                        pagination_params=pagination_params,
+                                                        user=user)
+
+        # Then
+        assert offers_1 == offers_4
+        assert offers_2 == offers_4
+        assert offers_3 == offers_4
+
+    @clean_database
+    def test_should_return_offers_not_in_the_same_order_given_different_seeds(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+
+        offer1 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
+        stock1 = create_stock_from_offer(offer1, price=0)
+
+        offer2 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
+        stock2 = create_stock_from_offer(offer2, price=0)
+
+        offer3 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
+        stock3 = create_stock_from_offer(offer3, price=0)
+
+        offer4 = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
+        stock4 = create_stock_from_offer(offer4, price=0)
+
+        create_mediation(stock1.offer)
+        create_mediation(stock2.offer)
+        create_mediation(stock3.offer)
+        create_mediation(stock4.offer)
+
+        repository.save(stock1, stock2, stock3, stock4)
+
+        offers_1 = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                        offer_id=None,
+                                                        pagination_params={'seed': 0.9, 'page': 1},
+                                                        user=user)
+
+        # When
+        offers_2 = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                        offer_id=None,
+                                                        pagination_params={'seed': -0.8, 'page': 1},
+                                                        user=user)
+
+        # Then
+        assert offers_1 != offers_2
+
+    @clean_database
+    def test_should_not_return_booked_offers(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+        offer = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
+        stock = create_stock_from_offer(offer, price=0)
+        user = create_user()
+        booking = create_booking(user=user, stock=stock)
+        create_mediation(stock.offer)
+        repository.save(booking)
+
+        # When
+        offers = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                      offer_id=None,
+                                                      pagination_params={'seed': 0.9, 'page': 1},
+                                                      user=user)
+
+        # Then
+        assert offers == []
+
+    @clean_database
+    def test_should_not_return_favorite_offers(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+
+        offer = create_offer_with_thing_product(venue=venue, thing_type=ThingType.CINEMA_ABO)
+        stock = create_stock_from_offer(offer, price=0)
+        mediation = create_mediation(stock.offer)
+        favorite = create_favorite(mediation=mediation, offer=offer, user=user)
+
+        repository.save(favorite)
+
+        # When
+        offers = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                      pagination_params={'seed': 0.9, 'page': 1},
+                                                      offer_id=None,
+                                                      user=user)
+
+        # Then
+        assert offers == []
+
+    @clean_database
+    def test_should_return_different_offers_when_different_page_and_same_seed(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer)
+        offer1 = create_offer_with_thing_product(idx=1, venue=venue)
+        offer2 = create_offer_with_thing_product(idx=2, venue=venue)
+        offer3 = create_offer_with_thing_product(idx=3, venue=venue)
+        offer4 = create_offer_with_thing_product(idx=4, venue=venue)
+        stock1 = create_stock_from_offer(offer1)
+        stock2 = create_stock_from_offer(offer2)
+        stock3 = create_stock_from_offer(offer3)
+        stock4 = create_stock_from_offer(offer4)
+        create_mediation(offer1)
+        create_mediation(offer2)
+        create_mediation(offer3)
+        create_mediation(offer4)
+        repository.save(stock1, stock2, stock3, stock4)
+
+        # When
+        offers1 = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                       limit=2,
+                                                       pagination_params={'page': 1, 'seed': 1},
+                                                       user=user)
+        offers2 = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                       limit=2,
+                                                       pagination_params={'page': 2, 'seed': 1},
+                                                       user=user)
+        offers3 = get_active_offers_with_digital_first(departement_codes=['00'],
+                                                       limit=2,
+                                                       pagination_params={'page': 3, 'seed': 1},
+                                                       user=user)
+
+        # Then
+        assert len(offers1) == 2
+        assert offers1 != offers2
+        assert len(offers2) == 2
+        assert len(offers3) == 0
+
+
 def _create_event_stock_and_offer_for_date(venue, date):
     product = create_product_with_event_type()
     offer = create_offer_with_event_product(venue=venue, product=product)
@@ -1900,4 +2422,3 @@ class GetPaginatedExpiredOfferIdsTest:
         assert len(results) == 1
         assert offer1 in results
         assert offer2 not in results
-

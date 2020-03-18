@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from functools import partial
 from typing import List
 
 from flask_sqlalchemy import BaseQuery
@@ -85,6 +86,34 @@ def _order_by_occurs_soon_or_is_thing_then_randomize():
     return [desc(_build_occurs_soon_or_is_thing_predicate()), func.random()]
 
 
+def order_by_with_criteria_and_is_digital(end_of_quarantine_date: datetime):
+    order_offers = _order_by_is_digital_then_randomize(end_of_quarantine_date)[:]
+    order_by_criteria = desc(Offer.baseScore)
+    order_offers.insert(-1, order_by_criteria)
+    return order_offers
+
+
+def _order_by_is_digital_and_criteria(order_by: List):
+    return func.row_number() \
+        .over(order_by=order_by())
+
+
+def _order_by_is_digital_then_randomize(end_of_quarantine_date: datetime):
+    return [_build_is_digital_predicate(),
+            desc(_build_is_happening_after_quarantine_predicate(end_of_quarantine_date)),
+            func.random()]
+
+
+def _build_is_happening_after_quarantine_predicate(end_of_quarantine_date: datetime = datetime.utcnow()):
+    return Stock.query.filter(Stock.offerId == Offer.id) \
+        .filter(Stock.beginningDatetime > end_of_quarantine_date) \
+        .exists()
+
+
+def _build_is_digital_predicate():
+    return text("offer.url NULLS LAST")
+
+
 def get_offers_for_recommendation(user: User,
                                   departement_codes: List[str] = None,
                                   limit: int = None,
@@ -125,6 +154,27 @@ def get_active_offers(user, pagination_params, departement_codes=None, offer_id=
     active_offer_ids = get_active_offers_ids_query(user, departement_codes, offer_id)
     query = Offer.query.filter(Offer.id.in_(active_offer_ids))
     query = query.order_by(_round_robin_by_type_onlineness_and_criteria(order_by))
+    query = query.options(joinedload('mediations'),
+                          joinedload('product'))
+
+    if limit:
+        query = _get_paginated_active_offers(limit, page, query)
+    return query.all()
+
+
+def get_active_offers_with_digital_first(user, pagination_params, departement_codes=None, offer_id=None, limit=None,
+                                         order_by=order_by_with_criteria_and_is_digital,
+                                         end_of_quarantine_date: datetime = datetime.utcnow()):
+    seed_number = pagination_params.get('seed')
+    page = pagination_params.get('page')
+    sql = text(f'SET SEED TO {seed_number}')
+    db.session.execute(sql)
+
+    order_by_with_date = partial(order_by, end_of_quarantine_date=end_of_quarantine_date)
+
+    active_offer_ids = get_active_offers_ids_query(user, departement_codes, offer_id)
+    query = Offer.query.filter(Offer.id.in_(active_offer_ids))
+    query = query.order_by(_order_by_is_digital_and_criteria(order_by_with_date))
     query = query.options(joinedload('mediations'),
                           joinedload('product'))
 
