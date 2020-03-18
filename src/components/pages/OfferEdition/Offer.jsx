@@ -307,7 +307,7 @@ class Offer extends PureComponent {
     const actionLink = offer && mediationId && (
       <div className="title-action-links">
         <OfferPreviewLink
-          className="cta link"
+          className="link"
           href={offerWebappUrl}
           onClick={this.handlePreviewClick()}
         />
@@ -571,7 +571,6 @@ class Offer extends PureComponent {
                       </span>
                     </label>
                     <span
-                      className="tip-icon"
                       data-place="bottom"
                       data-tip={
                         "En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l'accompagnateur."

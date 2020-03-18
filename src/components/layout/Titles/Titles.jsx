@@ -7,15 +7,17 @@ const Titles = ({ action, subtitle, title }) => (
       <div className="section-icon" />
     </div>
 
-    {subtitle && <h2>
-      {subtitle.toUpperCase()}
-                 </h2>}
+    <div className="title-subtitle-link-block">
+      {subtitle && <h2>
+        {subtitle.toUpperCase()}
+                   </h2>}
+      {action && <div className="title-action-links">
+        {action}
+                 </div>}
+    </div>
     <h1>
       {title}
     </h1>
-    {action && <div className="title-action-links">
-      {action}
-               </div>}
   </div>
 )
 

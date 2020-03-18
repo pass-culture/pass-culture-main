@@ -12,7 +12,6 @@ const OfferPreviewLink = ({ className, offerWebappUrl, onClick }) => {
       target="_blank"
     >
       <span
-        className="tip-icon"
         data-place="bottom"
         data-tip="<p>Ouvrir un nouvel onglet avec la prévisualisation de l'offre</p>"
         data-type="info"

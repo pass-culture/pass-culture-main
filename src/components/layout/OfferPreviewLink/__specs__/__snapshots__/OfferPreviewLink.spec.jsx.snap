@@ -24,7 +24,6 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <span
-          className="tip-icon"
           data-place="bottom"
           data-tip="<p>Ouvrir un nouvel onglet avec la prévisualisation de l'offre</p>"
           data-type="info"
@@ -53,7 +52,6 @@ ShallowWrapper {
             png={null}
             svg="ico-eye"
           />,
-          "className": "tip-icon",
           "data-place": "bottom",
           "data-tip": "<p>Ouvrir un nouvel onglet avec la prévisualisation de l'offre</p>",
           "data-type": "info",
@@ -85,7 +83,6 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <span
-            className="tip-icon"
             data-place="bottom"
             data-tip="<p>Ouvrir un nouvel onglet avec la prévisualisation de l'offre</p>"
             data-type="info"
@@ -114,7 +111,6 @@ ShallowWrapper {
               png={null}
               svg="ico-eye"
             />,
-            "className": "tip-icon",
             "data-place": "bottom",
             "data-tip": "<p>Ouvrir un nouvel onglet avec la prévisualisation de l'offre</p>",
             "data-type": "info",

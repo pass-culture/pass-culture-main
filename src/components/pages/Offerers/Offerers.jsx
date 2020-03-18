@@ -156,12 +156,11 @@ class Offerers extends PureComponent {
 
     const actionLink = (
       <NavLink
-        className="cta link is-primary is-outlined"
+        className="link is-primary is-outlined"
         to="/structures/creation"
       >
         {'+ Ajouter une structure'}
         <span
-          className="tip-icon"
           data-place="bottom"
           data-tip="<p>Ajouter les SIREN des structures que vous souhaitez gérer au global avec ce compte (par exemple, un réseau de grande distribution ou de franchisés).</p>"
           data-type="info"

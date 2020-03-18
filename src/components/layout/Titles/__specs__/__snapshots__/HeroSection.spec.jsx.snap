@@ -32,13 +32,16 @@ ShallowWrapper {
             className="section-icon"
           />
         </div>,
-        <h2>
-          FAKE SUBTITLE
-        </h2>,
+        <div
+          className="title-subtitle-link-block"
+        >
+          <h2>
+            FAKE SUBTITLE
+          </h2>
+        </div>,
         <h1>
           Fake title
         </h1>,
-        null,
       ],
       "className": "section hero-section",
     },
@@ -73,11 +76,30 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": "FAKE SUBTITLE",
+          "children": Array [
+            <h2>
+              FAKE SUBTITLE
+            </h2>,
+            null,
+          ],
+          "className": "title-subtitle-link-block",
         },
         "ref": null,
-        "rendered": "FAKE SUBTITLE",
-        "type": "h2",
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "FAKE SUBTITLE",
+            },
+            "ref": null,
+            "rendered": "FAKE SUBTITLE",
+            "type": "h2",
+          },
+          null,
+        ],
+        "type": "div",
       },
       Object {
         "instance": null,
@@ -90,7 +112,6 @@ ShallowWrapper {
         "rendered": "Fake title",
         "type": "h1",
       },
-      null,
     ],
     "type": "div",
   },
@@ -108,13 +129,16 @@ ShallowWrapper {
               className="section-icon"
             />
           </div>,
-          <h2>
-            FAKE SUBTITLE
-          </h2>,
+          <div
+            className="title-subtitle-link-block"
+          >
+            <h2>
+              FAKE SUBTITLE
+            </h2>
+          </div>,
           <h1>
             Fake title
           </h1>,
-          null,
         ],
         "className": "section hero-section",
       },
@@ -149,11 +173,30 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "FAKE SUBTITLE",
+            "children": Array [
+              <h2>
+                FAKE SUBTITLE
+              </h2>,
+              null,
+            ],
+            "className": "title-subtitle-link-block",
           },
           "ref": null,
-          "rendered": "FAKE SUBTITLE",
-          "type": "h2",
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "FAKE SUBTITLE",
+              },
+              "ref": null,
+              "rendered": "FAKE SUBTITLE",
+              "type": "h2",
+            },
+            null,
+          ],
+          "type": "div",
         },
         Object {
           "instance": null,
@@ -166,7 +209,6 @@ ShallowWrapper {
           "rendered": "Fake title",
           "type": "h1",
         },
-        null,
       ],
       "type": "div",
     },
