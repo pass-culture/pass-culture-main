@@ -1,7 +1,7 @@
 """add_geolocation_feature_flipping
 
 Revision ID: 1f446f8a334d
-Revises: b25450206c2b
+Revises: 9366fb8f8fe9
 Create Date: 2020-03-10 10:00:36.296104
 
 """
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '1f446f8a334d'
-down_revision = 'd8b5cd0e73d2'
+down_revision = '9366fb8f8fe9'
 branch_labels = None
 depends_on = None
 
