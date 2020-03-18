@@ -16,32 +16,6 @@ OFFERER_INCLUDES = [
     "-validationToken"
 ]
 
-EVENT_INCLUDES = [
-    {
-        "key": "occurrences",
-        "includes": [
-            {
-                "key": "stock",
-                "includes": [
-                    {
-                        "key": "offerer",
-                        "includes": OFFERER_INCLUDES
-                    }
-                ]
-            },
-            'venue'
-        ]
-    },
-    {
-        "key": "mediations",
-        "includes": ["thumbUrl"]
-    },
-    "offers",
-    "-type",
-    "offerType",
-    "thumbUrl"
-]
-
 OFFER_INCLUDES = [
     "isDigital",
     "isEditable",
@@ -70,7 +44,11 @@ OFFER_INCLUDES = [
     },
     {
         "key": "stocks",
-        "includes": ["bookingsQuantity", 'isBookable']
+        "includes": [
+            'bookingsQuantity',
+            'isBookable',
+            'remainingQuantity'
+        ]
     },
     {
         "key": "venue",
@@ -115,7 +93,10 @@ FAVORITE_INCLUDES = [
             },
             {
                 "key": "stocks",
-                "includes": ["isBookable"]
+                "includes": [
+                    'isBookable',
+                    'remainingQuantity'
+                ]
             },
             {
                 "key": "venue",
@@ -148,7 +129,10 @@ RECOMMENDATION_INCLUDES = [
             },
             {
                 "key": "stocks",
-                "includes": ["isBookable"]
+                "includes": [
+                    'isBookable',
+                    'remainingQuantity'
+                ]
             },
             {
                 "key": "venue",
@@ -187,7 +171,8 @@ WEBAPP_GET_BOOKING_INCLUDES = [
     {
         "key": "stock",
         "includes": [
-            "isBookable",
+            'isBookable',
+            'remainingQuantity',
             {
                 "key": "offer",
                 "includes": [
@@ -203,7 +188,10 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                     },
                     {
                         "key": "stocks",
-                        "includes": ["isBookable"]
+                        "includes": [
+                            'isBookable',
+                            'remainingQuantity'
+                        ]
                     },
                     {
                         "key": "venue",
@@ -227,7 +215,8 @@ WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = [
     {
         "key": "stock",
         "includes": [
-            "isBookable",
+            'isBookable',
+            'remainingQuantity',
             {
                 "key": "offer",
                 "includes": [
@@ -243,7 +232,10 @@ WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = [
                     },
                     {
                         "key": "stocks",
-                        "includes": ["isBookable"]
+                        "includes": [
+                            'isBookable',
+                            'remainingQuantity'
+                        ]
                     },
                     {
                         "key": "venue",
@@ -285,7 +277,10 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
                     },
                     {
                         "key": "stocks",
-                        "includes": ["isBookable"]
+                        "includes": [
+                            'isBookable',
+                            'remainingQuantity'
+                        ]
                     },
                     {
                         "key": "venue",
@@ -302,7 +297,10 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
     },
     {
         "key": "stock",
-        "includes": ["isBookable"]
+        "includes": [
+            'isBookable',
+            'remainingQuantity'
+        ]
     },
     "thumbUrl",
     {

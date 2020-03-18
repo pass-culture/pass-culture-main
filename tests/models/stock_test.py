@@ -357,15 +357,18 @@ class IsBookableTest:
         # Then
         assert not stock.isBookable
 
-    def test_should_return_false_when_no_remaining_stock(self):
+    @clean_database
+    def test_should_return_false_when_no_remaining_stock(self, app):
         # Given
+        user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
 
         # When
-        stock = create_stock(offer=offer, available=10)
-        stock.remainingQuantity = 0
+        stock = create_stock(offer=offer, available=10, price=0)
+        booking = create_booking(user, stock=stock, quantity=10)
+        repository.save(booking)
 
         # Then
         assert not stock.isBookable
@@ -377,9 +380,7 @@ class IsBookableTest:
         offer = create_offer_with_event_product(venue)
 
         # When
-        stock = create_stock(offer=offer, available=None)
-        # TODO: to correct with remainingQuantity bug
-        stock.remainingQuantity = 0
+        stock = create_stock(offer=offer, available=None, price=0)
 
         # Then
         assert stock.isBookable

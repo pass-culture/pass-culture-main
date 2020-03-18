@@ -198,23 +198,23 @@ class Offer(PcObject,
         if not incoming_stocks:
             return 'Stock expiré'
 
-        offer_has_at_least_one_unlimited_stock = any(map(lambda stock: stock.available is None, incoming_stocks))
-        if offer_has_at_least_one_unlimited_stock:
-            return 'Stock restant illimité'
-
-        stocks_remaining_quantity = sum(map(lambda stock: stock.remainingQuantity, incoming_stocks))
-
-        if stocks_remaining_quantity == 0:
-            return 'Plus de stock restant'
-
         count_stocks_with_no_remaining_quantity = len(
-            list(filter(lambda stock: stock.remainingQuantity == 0, incoming_stocks)))
+            list(filter(lambda stock: stock.available is not None and stock.remainingQuantity == 0, incoming_stocks)))
         has_at_least_one_stock_with_remaining_quantity = count_stocks_with_no_remaining_quantity != len(incoming_stocks)
 
         if has_at_least_one_stock_with_remaining_quantity and count_stocks_with_no_remaining_quantity > 0:
             return f"Plus de stock restant pour" \
                    f" {count_stocks_with_no_remaining_quantity}" \
                    f" {pluralize(count_stocks_with_no_remaining_quantity, 'date')}"
+
+        if count_stocks_with_no_remaining_quantity == len(incoming_stocks):
+            return 'Plus de stock restant'
+
+        offer_has_at_least_one_unlimited_stock = any(map(lambda stock: stock.available is None, incoming_stocks))
+        if offer_has_at_least_one_unlimited_stock:
+            return 'Stock restant illimité'
+
+        stocks_remaining_quantity = sum(map(lambda stock: stock.remainingQuantity, incoming_stocks))
 
         return f"Encore {stocks_remaining_quantity}" \
                f" {pluralize(stocks_remaining_quantity, 'stock')}" \
