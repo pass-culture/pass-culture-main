@@ -48,6 +48,7 @@ class BuildObjectTest:
             'objectID': 'AM',
             'offer': {
                 'author': None,
+                'category': 'MUSIQUE',
                 'dateCreated': 1577872800.0,
                 'dateRange': ['2019-11-01 10:00:00', '2019-12-01 10:00:00'],
                 'dates': [1572602400.0],
@@ -55,6 +56,9 @@ class BuildObjectTest:
                 'id': 'AM',
                 'isbn': None,
                 'isDuo': False,
+                'isDigital': False,
+                'isEvent': True,
+                'isThing': False,
                 'label': 'Concert ou festival',
                 'name': 'Event name',
                 'musicSubType': None,

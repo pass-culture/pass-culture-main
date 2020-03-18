@@ -14,7 +14,7 @@ from models.deactivable_mixin import DeactivableMixin
 from models.extra_data_mixin import ExtraDataMixin
 from models.mediation import Mediation
 from models.offer_criterion import OfferCriterion
-from models.offer_type import ThingType, EventType, ProductType
+from models.offer_type import ThingType, EventType, ProductType, Category
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.stock import Stock
@@ -182,6 +182,12 @@ class Offer(PcObject,
         for possible_type in all_types:
             if str(possible_type) == self.type:
                 return possible_type.as_dict()
+
+    @property
+    def offer_category(self) -> str:
+        for category in Category:
+            if self.offerType['appLabel'] in category.value:
+                return category.name
 
     @property
     def availabilityMessage(self) -> str:

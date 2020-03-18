@@ -906,3 +906,19 @@ class ThumbUrlTest:
 
         # then
         assert offer.thumb_url == ''
+
+
+class OfferTypeTest:
+    @clean_database
+    def test_should_return_matching_category_given_offer_app_label(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(thing_type=ThingType.JEUX, venue=venue)
+        repository.save(offer)
+
+        # When
+        category = offer.offer_category
+
+        # Then
+        assert category == 'JEUX_VIDEO'

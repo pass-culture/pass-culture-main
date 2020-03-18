@@ -1,3 +1,4 @@
+import enum
 from enum import Enum
 from typing import List
 
@@ -308,3 +309,22 @@ class ProductType:
                 return True
 
         return False
+
+
+class Category(enum.Enum):
+    CINEMA = ['Cinéma', "Carte d'abonnement cinéma"]
+    CONFERENCE = ['Conférences, rencontres et découverte des métiers']
+    INSTRUMENT = ['Instrument de musique']
+    JEUX_VIDEO = [
+        'Jeux - événement, rencontre ou concours',
+        'Jeux - abonnements',
+        'Jeu vidéo en ligne',
+        'Support physique',
+    ]
+    FILM = ['Film']
+    LECON = ['Pratique artistique']
+    LIVRE = ['Livre audio numérique', 'Livre ou carte lecture']
+    MUSIQUE = ['Concert ou festival', 'Abonnements concerts', 'Musique']
+    PRESSE = ['Presse en ligne']
+    SPECTACLE = ['Spectacle', 'Abonnement spectacles']
+    VISITE = ['Musée, arts visuels et patrimoine']
