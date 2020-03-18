@@ -369,6 +369,43 @@ class BookingThingOfferQRCodeGenerationTest:
         assert booking.qrCode is None
 
 
+class BookingIsPossibleTest:
+        @clean_database
+        def when_there_is_too_many_bookings_but_not_used (self, app):
+            # Given
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue)
+            user = create_user()
+            stock = create_stock(offer=offer, price=0, available=10)
+
+            date_used_before_last_stock_update = datetime.utcnow() - timedelta(hours=73)
+            last_update = datetime.utcnow() - timedelta(hours=74)
+
+            # When
+            stock.dateModified = last_update
+            repository.save(stock)
+            booking = create_booking(
+                user,
+                stock=stock,
+                quantity=10,
+                is_used=True,
+                date_used=date_used_before_last_stock_update)
+            repository.save(booking)
+
+            booking2 = create_booking(
+                user,
+                stock=stock,
+                quantity=1,
+                is_used=True,
+                date_used=datetime.utcnow())
+            repository.save(booking2)
+
+            # Then
+            created_stock = Stock.query.first()
+            assert len(created_stock.bookings) == 2
+
+
 class BookingIsCancellableTest:
     def test_booking_on_event_with_begining_date_in_more_than_72_hours_is_cancellable(self):
         # Given
