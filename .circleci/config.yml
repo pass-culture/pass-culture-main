@@ -60,7 +60,7 @@ jobs:
             docker login -u passcultureapp -p $DOCKERHUB_PASSWORD
             docker push passcultureapp/api-flask:latest
 
-  tests-metabase:
+  tests-data-analytics:
     docker:
       - image: circleci/python:3.7.6
         environment:
@@ -83,8 +83,8 @@ jobs:
       - run:
           name: Initialize data
           command: |
-            git clone https://github.com/betagouv/pass-culture-metabase.git
-            cd pass-culture-metabase
+            git clone https://github.com/betagouv/pass-culture-data-analytics.git
+            cd pass-culture-data-analytics
             cp install_models.py ../install_models.py;
             cd ..
             . venv/bin/activate
@@ -92,7 +92,7 @@ jobs:
       - run:
           name: Run tests
           command: |
-            cd pass-culture-metabase
+            cd pass-culture-data-analytics
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
@@ -266,4 +266,4 @@ workflows:
     jobs:
       - functional-tests-webapp
       - functional-tests-pro
-      - tests-metabase
+      - tests-data-analytics
