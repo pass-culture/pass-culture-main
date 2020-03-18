@@ -968,16 +968,13 @@ class GetAllCancelledBookingsCountTest:
     @clean_database
     def test_returns_0_if_no_cancelled_bookings(self, app):
         # Given
-        less_than_48_hours_ago = datetime.utcnow() - timedelta(hours=47)
         offerer = create_offerer()
         venue = create_venue(offerer)
         event_offer = create_offer_with_event_product(venue)
         event_stock = create_stock(
             offer=event_offer,
             price=0,
-            beginning_datetime=less_than_48_hours_ago,
-            end_datetime=less_than_48_hours_ago + timedelta(hours=1),
-            booking_limit_datetime=less_than_48_hours_ago - timedelta(hours=1)
+            beginning_datetime=datetime.utcnow() + timedelta(hours=20)
         )
         user = create_user()
         booking = create_booking(user=user, stock=event_stock, is_cancelled=False)
@@ -992,16 +989,14 @@ class GetAllCancelledBookingsCountTest:
     @clean_database
     def test_returns_1_if_one_cancelled_bookings(self, app):
         # Given
-        less_than_48_hours_ago = datetime.utcnow() - timedelta(hours=47)
+        beginning_datetime = datetime.utcnow() + timedelta(hours=4)
         offerer = create_offerer()
         venue = create_venue(offerer)
         event_offer = create_offer_with_event_product(venue)
         event_stock = create_stock(
             offer=event_offer,
             price=0,
-            beginning_datetime=less_than_48_hours_ago,
-            end_datetime=less_than_48_hours_ago + timedelta(hours=1),
-            booking_limit_datetime=less_than_48_hours_ago - timedelta(hours=1)
+            beginning_datetime=beginning_datetime,
         )
         user = create_user()
         booking = create_booking(user=user, stock=event_stock, is_cancelled=True)
@@ -1016,7 +1011,7 @@ class GetAllCancelledBookingsCountTest:
     @clean_database
     def test_returns_zero_if_only_activation_offers(self, app):
         # Given
-        less_than_48_hours_ago = datetime.utcnow() - timedelta(hours=47)
+        beginning_datetime = datetime.utcnow() + timedelta(hours=47)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer1 = create_offer_with_event_product(
@@ -1026,9 +1021,7 @@ class GetAllCancelledBookingsCountTest:
         stock1 = create_stock(
             offer=offer1,
             price=0,
-            beginning_datetime=less_than_48_hours_ago,
-            end_datetime=less_than_48_hours_ago + timedelta(hours=1),
-            booking_limit_datetime=less_than_48_hours_ago - timedelta(hours=1)
+            beginning_datetime=beginning_datetime,
         )
         stock2 = create_stock(offer=offer2, price=0)
         user = create_user()
@@ -1047,16 +1040,14 @@ class GetAllCancelledBookingsByDepartementCountTest:
     @clean_database
     def test_returns_0_if_no_cancelled_bookings(self, app):
         # Given
-        less_than_48_hours_ago = datetime.utcnow() - timedelta(hours=47)
+        beginning_datetime = datetime.utcnow() + timedelta(hours=47)
         offerer = create_offerer()
         venue = create_venue(offerer)
         event_offer = create_offer_with_event_product(venue)
         event_stock = create_stock(
             offer=event_offer,
             price=0,
-            beginning_datetime=less_than_48_hours_ago,
-            end_datetime=less_than_48_hours_ago + timedelta(hours=1),
-            booking_limit_datetime=less_than_48_hours_ago - timedelta(hours=1)
+            beginning_datetime=beginning_datetime,
         )
         user = create_user(departement_code='76')
         booking = create_booking(user=user, stock=event_stock, is_cancelled=False)
@@ -1071,16 +1062,14 @@ class GetAllCancelledBookingsByDepartementCountTest:
     @clean_database
     def test_returns_1_if_one_cancelled_bookings(self, app):
         # Given
-        less_than_48_hours_ago = datetime.utcnow() - timedelta(hours=47)
+        beginning_datetime = datetime.utcnow() + timedelta(hours=47)
         offerer = create_offerer()
         venue = create_venue(offerer)
         event_offer = create_offer_with_event_product(venue)
         event_stock = create_stock(
             offer=event_offer,
             price=0,
-            beginning_datetime=less_than_48_hours_ago,
-            end_datetime=less_than_48_hours_ago + timedelta(hours=1),
-            booking_limit_datetime=less_than_48_hours_ago - timedelta(hours=1)
+            beginning_datetime=beginning_datetime,
         )
         user = create_user(departement_code='76')
         booking = create_booking(user=user, stock=event_stock, is_cancelled=True)
@@ -1145,26 +1134,6 @@ class CountAllBookingsTest:
         assert number_of_bookings == 0
 
     @clean_database
-    def test_saves_booking_when_existing_booking_is_used_and_booking_date_is_before_last_update_on_stock(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, price=0, available=1)
-        user1 = create_user(email='used_booking@example.com')
-        user2 = create_user(email='booked@example.com')
-        booking = create_booking(user=user1, stock=stock, date_used=TWO_DAYS_AGO,
-                                 is_cancelled=False, is_used=True)
-        repository.save(booking)
-        booking2 = create_booking(user=user2, stock=stock, is_cancelled=False, is_used=False)
-
-        # When
-        repository.save(booking2)
-
-        # Then
-        assert Booking.query.filter_by(stock=stock).count() == 2
-
-    @clean_database
     def test_returns_2_when_bookings_cancelled_or_not(self, app):
         # Given
         offerer = create_offerer()
@@ -1201,7 +1170,7 @@ class CountAllBookingsTest:
         assert number_of_bookings == 2
 
     @clean_database
-    def test_returns_zero_when_bookings_are_on_activation_offer(self, app):
+    def test_returns_0_when_bookings_are_on_activation_offer(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)

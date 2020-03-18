@@ -210,18 +210,8 @@ Booking.trig_ddl = """
         lastStockUpdate date := (SELECT "dateModified" FROM stock WHERE id=NEW."stockId");
     BEGIN
       IF EXISTS (SELECT "available" FROM stock WHERE id=NEW."stockId" AND "available" IS NOT NULL)
-         AND (
-            (SELECT "available" FROM stock WHERE id=NEW."stockId") <
-            (
-              SELECT SUM(quantity)
-              FROM booking
-              WHERE "stockId"=NEW."stockId"
-              AND (
-                NOT "isCancelled" AND NOT "isUsed"
-                OR ("isUsed" AND "dateUsed" > lastStockUpdate)
-              )
-            )
-          ) THEN
+         AND ((SELECT "available" FROM stock WHERE id=NEW."stockId")
+              < (SELECT SUM(quantity) FROM booking WHERE "stockId"=NEW."stockId" AND NOT "isCancelled")) THEN
           RAISE EXCEPTION 'tooManyBookings'
                 USING HINT = 'Number of bookings cannot exceed "stock.available"';
       END IF;
