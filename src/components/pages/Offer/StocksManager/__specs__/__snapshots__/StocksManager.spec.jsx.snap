@@ -100,7 +100,8 @@ ShallowWrapper {
         <div
           className="stocks-table-wrapper"
         >
-          <HeroSection
+          <Titles
+            action={null}
             subtitle={null}
             title="Prix"
           />
@@ -255,7 +256,8 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <HeroSection
+            <Titles
+              action={null}
               subtitle={null}
               title="Prix"
             />,
@@ -362,7 +364,7 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "function",
             "props": Object {
-              "children": null,
+              "action": null,
               "subtitle": null,
               "title": "Prix",
             },
@@ -798,7 +800,8 @@ ShallowWrapper {
           <div
             className="stocks-table-wrapper"
           >
-            <HeroSection
+            <Titles
+              action={null}
               subtitle={null}
               title="Prix"
             />
@@ -953,7 +956,8 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              <HeroSection
+              <Titles
+                action={null}
                 subtitle={null}
                 title="Prix"
               />,
@@ -1060,7 +1064,7 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "function",
               "props": Object {
-                "children": null,
+                "action": null,
                 "subtitle": null,
                 "title": "Prix",
               },
