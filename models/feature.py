@@ -29,7 +29,7 @@ class FeatureToggle(enum.Enum):
     WEBAPP_SIGNUP = 'Permettre aux bénéficiaires de créer un compte'
     RECOMMENDATIONS_WITH_DISCOVERY_VIEW = 'Permettre aux utilisateurs d''avoir des recommandations de manière plus rapide'
     RECOMMENDATIONS_WITH_GEOLOCATION = 'Permettre aux utilisateurs d''avoir accès aux offres à 100km de leur position'
-    RECOMMENDATIONS_WITH_DIGITAL_FIRST = 'Permettre aux bénéficiaiers d''avoir des recommendations' \
+    RECOMMENDATIONS_WITH_DIGITAL_FIRST = 'Permettre aux bénéficiaires d''avoir des recommendations' \
                                          ' concernant des offres numériques en priorité'
 
 

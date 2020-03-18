@@ -19,7 +19,7 @@ depends_on = None
 
 
 class FeatureToggle(enum.Enum):
-    RECOMMENDATIONS_WITH_DIGITAL_FIRST = 'Permettre aux bénéficiaiers d''avoir des recommendations' \
+    RECOMMENDATIONS_WITH_DIGITAL_FIRST = 'Permettre aux bénéficiaires d''avoir des recommendations' \
                                          ' concernant des offres numériques en priorité'
 
 
@@ -78,7 +78,7 @@ def downgrade():
     new_enum = sa.Enum(*new_values, name='featuretoggle')
     temporary_enum = sa.Enum(*new_values, name='tmp_featuretoggle')
 
-    op.execute("DELETE FROM feature WHERE name = 'RECOMMENDATIONS_WITH_DISCOVERY_VIEW'")
+    op.execute("DELETE FROM feature WHERE name = 'RECOMMENDATIONS_WITH_DIGITAL_FIRST'")
     temporary_enum.create(op.get_bind(), checkfirst=False)
     op.execute('ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle'
                ' USING name::text::tmp_featuretoggle')
