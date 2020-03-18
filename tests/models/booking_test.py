@@ -369,43 +369,6 @@ class BookingThingOfferQRCodeGenerationTest:
         assert booking.qrCode is None
 
 
-class BookingIsPossibleTest:
-        @clean_database
-        def when_there_is_too_many_bookings_but_not_used (self, app):
-            # Given
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue)
-            user = create_user()
-            stock = create_stock(offer=offer, price=0, available=10)
-
-            date_used_before_last_stock_update = datetime.utcnow() - timedelta(hours=73)
-            last_update = datetime.utcnow() - timedelta(hours=74)
-
-            # When
-            stock.dateModified = last_update
-            repository.save(stock)
-            booking = create_booking(
-                user,
-                stock=stock,
-                quantity=10,
-                is_used=True,
-                date_used=date_used_before_last_stock_update)
-            repository.save(booking)
-
-            booking2 = create_booking(
-                user,
-                stock=stock,
-                quantity=1,
-                is_used=True,
-                date_used=datetime.utcnow())
-            repository.save(booking2)
-
-            # Then
-            created_stock = Stock.query.first()
-            assert len(created_stock.bookings) == 2
-
-
 class BookingIsCancellableTest:
     def test_booking_on_event_with_begining_date_in_more_than_72_hours_is_cancellable(self):
         # Given
@@ -443,3 +406,21 @@ class BookingIsCancellableTest:
 
         # Then
         assert is_cancellable == False
+
+
+
+from models import Booking, Offer, Stock, User, Product, ApiErrors
+from repository import repository
+from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, create_recommendation, create_mediation
+from tests.model_creators.specific_creators import create_stock_from_offer, create_product_with_thing_type, create_product_with_event_type, create_offer_with_thing_product, create_offer_with_event_product
+offerer = create_offerer()
+venue = create_venue(offerer)
+offer = create_offer_with_thing_product(venue)
+stock = create_stock_from_offer(offer, price=0, available=1)
+user1 = create_user(email='used_booking@example.com')
+user2 = create_user(email='booked@example.com')
+repository.save(stock)
+booking1 = create_booking(user=user1, stock=stock)
+repository.save(booking1)
+booking2 = create_booking(user=user2, stock=stock)
+repository.save(booking2)
