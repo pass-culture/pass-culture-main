@@ -227,6 +227,12 @@ describe('components | SearchResults', () => {
           .findWhere(node => node.text() === '"une librairie" : 2 résultats')
           .first()
         expect(results).toHaveLength(2)
+        expect(results.at(0).prop('geolocation')).toStrictEqual(props.geolocation)
+        expect(results.at(0).prop('result')).toStrictEqual({ objectID: 'AA' })
+        expect(results.at(0).prop('search')).toBe(props.history.location.search)
+        expect(results.at(1).prop('geolocation')).toStrictEqual(props.geolocation)
+        expect(results.at(1).prop('result')).toStrictEqual({ objectID: 'BB' })
+        expect(results.at(1).prop('search')).toBe(props.history.location.search)
         expect(searchInput.prop('value')).toBe('une librairie')
         expect(resultTitle).toHaveLength(1)
       })
@@ -830,6 +836,11 @@ describe('components | SearchResults', () => {
           })
         })
       )
+      props.query.parse.mockReturnValue({
+        'autour-de-moi': 'oui',
+        'tri': '_by_price',
+        'categories': 'Musée'
+      })
 
       // when
       form.simulate('submit', {
@@ -842,7 +853,9 @@ describe('components | SearchResults', () => {
       })
 
       // then
-      expect(replace).toHaveBeenCalledWith({ search: '?mots-cles=librairie' })
+      expect(replace).toHaveBeenCalledWith({
+        search: '?mots-cles=librairie&autour-de-moi=oui&tri=_by_price&categories=Musée'
+      })
     })
 
     describe('reset cross', () => {

@@ -37,16 +37,24 @@ class SearchResults extends PureComponent {
   }
 
   showFailModal = () => {
-    toast.info("La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard.")
+    toast.info('La recherche n\'a pas pu aboutir, veuillez ré-essayer plus tard.')
   }
 
   handleOnSubmit = event => {
     event.preventDefault()
-    const { history } = this.props
+    const { history, query } = this.props
     const { searchedKeywords } = this.state
     const keywordsToSearch = event.target.keywords.value
     const trimmedKeywordsToSearch = keywordsToSearch.trim()
-    trimmedKeywordsToSearch && history.replace({ search: '?mots-cles=' + trimmedKeywordsToSearch })
+
+    const queryParams = query.parse()
+    const autourDeMoi = queryParams['autour-de-moi']
+    const categories = queryParams['categories']
+    const tri = queryParams['tri']
+
+    trimmedKeywordsToSearch && history.replace({
+      search: `?mots-cles=${trimmedKeywordsToSearch}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${categories}`
+    })
 
     if (searchedKeywords !== trimmedKeywordsToSearch) {
       this.setState(
@@ -190,7 +198,8 @@ class SearchResults extends PureComponent {
       resultsCount,
       totalPagesNumber
     } = this.state
-    const { search } = history
+    const { location } = history
+    const { search } = location
 
     return (
       <main className="search-page-algolia">
