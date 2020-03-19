@@ -211,27 +211,6 @@ class Patch:
                 assert response.json['email'] == [
                     "L'adresse email qui a servie à la réservation est obligatoire dans l'URL [?email=<email>]"]
 
-            @clean_database
-            def when_there_is_not_enough_available_stock_to_validate_a_booking(self, app):
-                # Given
-                user = create_user()
-                offerer = create_offerer()
-                venue = create_venue(offerer)
-                stock = create_stock_with_event_offer(offerer, venue, price=0)
-                booking = create_booking(user=user, stock=stock, venue=venue)
-                repository.save(booking)
-                url = '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email,
-                                                                       humanize(stock.resolvedOffer.id))
-
-                stock.available = 0
-                repository.save(stock)
-
-                # When
-                response = TestClient(app.test_client()).patch(url)
-
-                # Then
-                assert response.status_code == 400
-                assert response.json['global'] == ["La quantité disponible pour cette offre est atteinte."]
 
     class Returns403:
         class WhenUserIsLoggedIn:

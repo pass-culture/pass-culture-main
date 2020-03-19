@@ -513,7 +513,7 @@ class CheckBookingIsKeepableTest:
         with pytest.raises(ResourceGoneError) as e:
             check_booking_token_is_keepable(booking)
         assert e.value.errors['booking'] == [
-            "Cette réservation n'a encore été validée"]
+            "Cette réservation n'a pas encore été validée"]
 
     def test_raises_resource_gone_error_if_validated_and_cancelled(self, app):
         # Given

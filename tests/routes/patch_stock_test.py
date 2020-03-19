@@ -83,24 +83,6 @@ class Patch:
             assert response.status_code == 200
             assert Stock.query.get(stock_id).price == 120
 
-        @clean_database
-        def when_available_below_number_of_already_existing_bookings(self, app):
-            # given
-            user = create_user()
-            user_admin = create_user(can_book_free_offers=False, email='email@test.com', is_admin=True)
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0, available=1)
-            booking = create_booking(user=user, stock=stock, venue=venue, recommendation=None)
-            repository.save(booking, user_admin)
-
-            # when
-            response = TestClient(app.test_client()).with_auth('email@test.com') \
-                .patch('/stocks/' + humanize(stock.id), json={'available': 0})
-
-            # then
-            assert response.status_code == 200
-            assert 'available' in response.json
 
         @patch('routes.stocks.feature_queries.is_active', return_value=True)
         @patch('routes.stocks.redis.add_offer_id')
@@ -187,6 +169,25 @@ class Patch:
             assert response.json['bookingLimitDatetime'] == [
                 'La date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement'
             ]
+
+        @clean_database
+        def when_available_below_number_of_already_existing_bookings(self, app):
+            # given
+            user = create_user()
+            user_admin = create_user(can_book_free_offers=False, email='email@test.com', is_admin=True)
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_event_offer(offerer, venue, price=0, available=1)
+            booking = create_booking(user=user, stock=stock, venue=venue, recommendation=None)
+            repository.save(booking, user_admin)
+
+            # when
+            response = TestClient(app.test_client()).with_auth('email@test.com') \
+                .patch('/stocks/' + humanize(stock.id), json={'available': 0})
+
+            # then
+            assert response.status_code == 400
+            assert 'available' in response.json
 
         @clean_database
         def when_end_limit_datetime_is_none_for_event(self, app):

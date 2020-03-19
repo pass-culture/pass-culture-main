@@ -137,7 +137,7 @@ def check_booking_token_is_keepable(booking: Booking) -> None:
         raise resource_gone_error
 
     if not booking.isUsed:
-        resource_gone_error.add_error('booking', "Cette réservation n'a encore été validée")
+        resource_gone_error.add_error('booking', "Cette réservation n'a pas encore été validée")
         raise resource_gone_error
 
     if booking.isCancelled:

@@ -163,34 +163,6 @@ class Patch:
                 assert Booking.query.get(booking.id).dateUsed is None
                 assert Booking.query.get(booking.id).isUsed is False
 
-    class Returns400:
-        @clean_database
-        def when_there_is_no_remaining_quantity_after_validating(self, app):
-            # Given
-            user = create_user()
-            pro_user = create_user(email='pro@example.net')
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(pro_user, offerer)
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0)
-            stock.available = 1
-            repository.save(stock)
-            booking = create_booking(user=user, stock=stock, date_used=datetime.utcnow(), is_used=True, venue=venue)
-
-            repository.save(booking, user_offerer)
-
-            repository.save(booking)
-
-            # When
-            stock.available = 0
-            repository.save(stock)
-
-            url = '/v2/bookings/keep/token/{}'.format(booking.token)
-            response = TestClient(app.test_client()).with_auth('pro@example.net').patch(url)
-
-            # Then
-            assert response.status_code == 400
-
     class Returns401:
         @clean_database
         def when_user_not_logged_in_and_doesnt_give_api_key(self, app):
@@ -475,7 +447,7 @@ class Patch:
 
                 # Then
                 assert response.status_code == 410
-                assert response.json['booking'] == ["Cette réservation n'a encore été validée"]
+                assert response.json['booking'] == ["Cette réservation n'a pas encore été validée"]
                 assert Booking.query.get(booking.id).isUsed is False
 
             @clean_database
@@ -568,7 +540,7 @@ class Patch:
                 )
                 # Then
                 assert response.status_code == 410
-                assert response.json['booking'] == ["Cette réservation n'a encore été validée"]
+                assert response.json['booking'] == ["Cette réservation n'a pas encore été validée"]
                 assert Booking.query.get(booking.id).isUsed is False
 
             @clean_database
