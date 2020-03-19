@@ -15,12 +15,16 @@
 
 .sf-header-wrapper {
   header {
-    height: rem(40px);
+    height: rem(45px);
+
+    .header-title {
+      margin-top: rem(5px);
+    }
   }
 
   .back-link {
     position: absolute;
-    top: rem(2px);
+    top: rem(6px);
   }
 }
 
