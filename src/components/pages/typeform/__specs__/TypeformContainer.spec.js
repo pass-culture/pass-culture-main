@@ -1,4 +1,4 @@
-import { getCurrentUserUUID } from 'with-react-redux-login'
+import { getCurrentUserUUID } from '../../../hocs/with-login/with-react-redux-login'
 
 import { mapDispatchToProps, mapStateToProps } from '../TypeformContainer'
 
@@ -68,19 +68,18 @@ describe('src | components |pages | typeform | TypeformContainer', () => {
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
-            config: {
-              apiPath: '/users/current',
-              body: {
-                culturalSurveyId: 1,
-                culturalSurveyFilledDate: '1970-01-19T05:33:21Z',
-                needsToFillCulturalSurvey: false
-              },
-              isMergingDatum: true,
-              method: 'PATCH'
+          config: {
+            apiPath: '/users/current',
+            body: {
+              culturalSurveyId: 1,
+              culturalSurveyFilledDate: '1970-01-19T05:33:21Z',
+              needsToFillCulturalSurvey: false,
             },
-            type: 'REQUEST_DATA_PATCH_/USERS/CURRENT'
-          }
-        )
+            isMergingDatum: true,
+            method: 'PATCH',
+          },
+          type: 'REQUEST_DATA_PATCH_/USERS/CURRENT',
+        })
       })
     })
   })

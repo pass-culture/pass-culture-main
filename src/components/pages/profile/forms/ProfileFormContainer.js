@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { selectCurrentUser } from 'with-react-redux-login'
+import { selectCurrentUser } from '../../../hocs/with-login/with-react-redux-login'
 
 import ProfileForm from './ProfileForm'
 

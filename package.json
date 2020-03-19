@@ -44,7 +44,7 @@
     "reselect": "^4.0.0",
     "uuid": "^3.3.3",
     "with-query-router": "^3.3.1",
-    "with-react-redux-login": "^1.11.1"
+    "with-react-login": "1.11.4"
   },
   "devDependencies": {
     "autoprefixer": "^9.7.0",

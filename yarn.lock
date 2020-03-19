@@ -9622,7 +9622,7 @@ react-popper@^1.0.2:
     typed-styles "^0.0.7"
     warning "^4.0.2"
 
-react-redux@^7.1.0, react-redux@^7.1.1:
+react-redux@^7.1.1:
   version "7.1.1"
   resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-7.1.1.tgz#ce6eee1b734a7a76e0788b3309bf78ff6b34fa0a"
   dependencies:
@@ -9716,6 +9716,15 @@ react-transition-group@^2.6.1:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
+
+react@^16.10.1:
+  version "16.13.0"
+  resolved "https://registry.yarnpkg.com/react/-/react-16.13.0.tgz#d046eabcdf64e457bbeed1e792e235e1b9934cf7"
+  integrity sha512-TSavZz2iSLkq5/oiE7gnFzmURKZMltmi193rm5HEoUDAXpzT9Kzw6oNZnGoai/4+fUnm7FqS5dwgUL34TujcWQ==
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.2"
 
 react@^16.11.0, react@^16.9.0:
   version "16.11.0"
@@ -12492,24 +12501,18 @@ with-query-router@^3.3.1:
     react-router-dom "^5.0.1"
     reselect "^3.0.1"
 
-with-react-login@1.10.0:
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/with-react-login/-/with-react-login-1.10.0.tgz#24ad0dd7b190cecd7c80fbd5d356d584a75951a5"
+with-react-login@1.11.4:
+  version "1.11.4"
+  resolved "https://registry.yarnpkg.com/with-react-login/-/with-react-login-1.11.4.tgz#ae0acfef3af706b296b3d006aaeffd79bac5d8f8"
+  integrity sha512-1YSe8kKSaNVF477q4junsiFwqPw0M4dsRkRGc9UgbKuGWmjig5GlSBchde8v0TcChvDnJaKX1SjkUjtG04vIQA==
   dependencies:
     classnames "2.2.5"
     fetch-normalize-data "1.8.4"
     lodash.uniq "^4.5.0"
     prop-types "^15.7.2"
-    react "^16.9.0"
+    react "^16.10.1"
     reselect "^3.0.1"
     uuid "^3.3.2"
-
-with-react-redux-login@^1.11.1:
-  version "1.11.1"
-  resolved "https://registry.yarnpkg.com/with-react-redux-login/-/with-react-redux-login-1.11.1.tgz#a6225eace6260f6480306ce1daf9b1db127a2434"
-  dependencies:
-    react-redux "^7.1.0"
-    with-react-login "1.10.0"
 
 wordwrap@~0.0.2:
   version "0.0.3"

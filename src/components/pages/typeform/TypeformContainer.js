@@ -1,7 +1,7 @@
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { requestData } from 'redux-thunk-data'
-import { selectCurrentUser } from 'with-react-redux-login'
+import { selectCurrentUser } from '../../hocs/with-login/with-react-redux-login'
 
 import Typeform from './Typeform'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
@@ -15,7 +15,9 @@ export const mapStateToProps = state => {
 
 export const mapDispatchToProps = dispatch => ({
   flagUserHasFilledTypeform: id => {
-    const todayInUtc = moment().utc().format()
+    const todayInUtc = moment()
+      .utc()
+      .format()
 
     dispatch(
       requestData({
@@ -27,7 +29,8 @@ export const mapDispatchToProps = dispatch => ({
         },
         isMergingDatum: true,
         method: 'PATCH',
-      }))
+      })
+    )
   },
 })
 

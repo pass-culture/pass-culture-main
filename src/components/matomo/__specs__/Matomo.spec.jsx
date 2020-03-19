@@ -1,6 +1,6 @@
 import configureMockStore from 'redux-mock-store'
 import { createBrowserHistory } from 'history'
-import { getCurrentUserUUID } from 'with-react-redux-login'
+import { getCurrentUserUUID } from '../../hocs/with-login/with-react-redux-login'
 import { mount } from 'enzyme'
 import { Provider } from 'react-redux'
 import React from 'react'

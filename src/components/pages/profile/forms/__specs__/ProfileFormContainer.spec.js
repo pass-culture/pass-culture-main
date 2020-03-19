@@ -1,4 +1,4 @@
-import { getCurrentUserUUID } from 'with-react-redux-login'
+import { getCurrentUserUUID } from '../../../../hocs/with-login/with-react-redux-login'
 
 import { mapStateToProps } from '../ProfileFormContainer'
 
