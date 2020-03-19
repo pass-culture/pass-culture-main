@@ -55,6 +55,7 @@ export class Home extends PureComponent {
             title="Recherche"
           />
           <form
+            action=""
             className="sh-form"
             id="home-form"
             onSubmit={this.handleOnSubmit}
@@ -69,7 +70,7 @@ export class Home extends PureComponent {
                 onChange={this.handleOnTextInputChange}
                 placeholder="Titre, artiste..."
                 ref={this.inputRef}
-                type="text"
+                type="search"
                 value={keywordsToSearch}
               />
               <div className="sh-reset-wrapper">

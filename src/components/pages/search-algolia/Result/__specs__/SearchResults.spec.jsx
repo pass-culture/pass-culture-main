@@ -105,7 +105,7 @@ describe('components | SearchResults', () => {
       expect(textInput).toHaveLength(1)
       expect(textInput.prop('name')).toBe('keywords')
       expect(textInput.prop('placeholder')).toBe('Titre, artiste...')
-      expect(textInput.prop('type')).toBe('text')
+      expect(textInput.prop('type')).toBe('search')
     })
 
     it('should display a form element with a filter button', () => {
@@ -113,8 +113,7 @@ describe('components | SearchResults', () => {
       const wrapper = shallow(<SearchResults {...props} />)
 
       // then
-      const form = wrapper.find('form')
-      const submitButton = form.findWhere(node => node.text() === 'Filtrer').first()
+      const submitButton = wrapper.findWhere(node => node.text() === 'Filtrer').first()
       expect(submitButton).toHaveLength(1)
     })
 
@@ -1151,8 +1150,7 @@ describe('components | SearchResults', () => {
     it('should redirect to filters page', () => {
       // given
       const wrapper = shallow(<SearchResults {...props} />)
-      const form = wrapper.find('form')
-      const filterButton = form.find('.sr-filter-button')
+      const filterButton = wrapper.find('.sr-filter-button')
 
       // when
       filterButton.simulate('click')

@@ -227,6 +227,7 @@ class SearchResults extends PureComponent {
             path="/recherche-offres/resultats(/menu)?"
           >
             <form
+              action=""
               className="sr-form"
               onSubmit={this.handleOnSubmit}
             >
@@ -247,7 +248,7 @@ class SearchResults extends PureComponent {
                   onChange={this.handleOnTextInputChange}
                   placeholder="Titre, artiste..."
                   ref={this.inputRef}
-                  type="text"
+                  type="search"
                   value={keywordsToSearch}
                 />
                 <div className="sr-reset-wrapper">
@@ -264,21 +265,6 @@ class SearchResults extends PureComponent {
                     </button>
                   )}
                 </div>
-              </div>
-              <div className="sr-filter-wrapper">
-                <button
-                  className="sr-filter-button"
-                  onClick={this.handleGoToFilters}
-                  type="button"
-                >
-                  <Icon
-                    alt="Filtrer les résultats"
-                    svg="filtrer"
-                  />
-                  <span>
-                    {'Filtrer'}
-                  </span>
-                </button>
               </div>
             </form>
             <div className="sr-items-wrapper">
@@ -307,6 +293,21 @@ class SearchResults extends PureComponent {
                   ))}
                 </InfiniteScroll>
               )}
+            </div>
+            <div className="sr-filter-wrapper">
+              <button
+                className="sr-filter-button"
+                onClick={this.handleGoToFilters}
+                type="button"
+              >
+                <Icon
+                  alt="Filtrer les résultats"
+                  svg="filtrer"
+                />
+                <span>
+                  {'Filtrer'}
+                </span>
+              </button>
             </div>
           </Route>
           <Route
