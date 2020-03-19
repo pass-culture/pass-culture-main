@@ -60,13 +60,13 @@ class DeleteUnwantedExistingProductTest:
         assert Stock.query.count() == 0
 
     @clean_database
-    def test_should_not_delete_product_and_deactivate_offer_when_bookings_related_to_offer(self, app):
+    def test_should_set_isGcuCompatible_at_false_in_product_and_deactivate_offer_when_bookings_related_to_offer(self, app):
         # Given
         isbn = '1111111111111'
         user = create_user()
         offerer = create_offerer(siren='775671464')
         venue = create_venue(offerer, name='Librairie Titelive', siret='77567146400110')
-        product = create_product_with_thing_type(id_at_providers=isbn)
+        product = create_product_with_thing_type(id_at_providers=isbn, is_gcu_compatible=True)
         offer = create_offer_with_thing_product(venue, product=product, is_active=True)
         stock = create_stock(offer=offer, price=0)
         booking = create_booking(user=user, is_cancelled=True, stock=stock)
@@ -80,6 +80,7 @@ class DeleteUnwantedExistingProductTest:
         offer = Offer.query.one()
         assert offer.isActive is False
         assert Product.query.one() == product
+        assert not product.isGcuCompatible
 
     @clean_database
     def test_should_delete_product_when_related_offer_has_mediation(self, app):
@@ -158,6 +159,20 @@ class FindActiveBookProductByIsbnTest:
 
         # When
         existing_product = find_active_book_product_by_isbn(invalid_isbn)
+
+        # Then
+        assert existing_product is None
+
+    @clean_database
+    def test_should_not_return_not_gcu_compatible_product(self, app):
+        # Given
+        valid_isbn = '1111111111111'
+        product = create_product_with_thing_type(id_at_providers=valid_isbn, thing_type=ThingType.LIVRE_EDITION,
+                                                 is_gcu_compatible=False)
+        repository.save(product)
+
+        # When
+        existing_product = find_active_book_product_by_isbn(valid_isbn)
 
         # Then
         assert existing_product is None

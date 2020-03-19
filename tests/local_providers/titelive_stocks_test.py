@@ -395,3 +395,37 @@ def test_should_activate_offer_when_stocks_are_refilled(stub_get_stocks_informat
     # Then
     offer = Offer.query.one()
     assert offer.isActive
+
+
+@clean_database
+@patch('local_providers.local_provider.feature_queries.is_active', return_value=False)
+@patch('local_providers.titelive_stocks.get_stocks_information')
+def test_should_not_create_offer_when_product_is_not_gcu_compatible(stub_get_stocks_information, stub_feature_queries,
+                                                                    app):
+    # Given
+    stub_get_stocks_information.return_value = iter([{
+        "ref": "0002730757438",
+        "available": 10,
+        "price": 4500,
+        "validUntil": "2019-10-31T15:10:27Z"
+    }])
+
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+
+    titelive_stocks_provider = get_provider_by_local_class('TiteLiveStocks')
+    titelive_stocks_provider.isActive = True
+    venue_provider = create_venue_provider(venue,
+                                           titelive_stocks_provider, is_active=True,
+                                           venue_id_at_offer_provider='77567146400110')
+    product = create_product_with_thing_type(id_at_providers='0002730757438', is_gcu_compatible=False)
+    repository.save(product, venue_provider)
+
+    titelive_stocks = TiteLiveStocks(venue_provider)
+
+    # When
+    titelive_stocks.updateObjects()
+
+    # Then
+    assert Offer.query.count() == 0
+    assert Stock.query.count() == 0

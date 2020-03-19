@@ -10,7 +10,6 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-from sqlalchemy.sql import expression
 
 revision = '1cc19c292f9b'
 down_revision = '1f446f8a334d'
@@ -19,7 +18,7 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column('product', sa.Column('isGcuCompatible', sa.Boolean, nullable=False, server_default=expression.true()))
+    op.add_column('product', sa.Column('isGcuCompatible', sa.Boolean, nullable=True))
 
 
 def downgrade():
