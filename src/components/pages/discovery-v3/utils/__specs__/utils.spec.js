@@ -1,4 +1,5 @@
 import {
+  getCoordinatesApiPathQueryString,
   getOfferIdAndMediationIdAndCoordinatesApiPathQueryString,
   isDiscoveryStartupUrl,
   MINIMUM_DELAY_BEFORE_RELOAD_RECOMMENDATION_3_HOURS,
@@ -211,6 +212,69 @@ describe('src | components | pages | discovery | tests | helpers', () => {
 
       // Then
       expect(result).toStrictEqual(expected)
+    })
+  })
+
+  describe('getCoordinatesApiPathQueryString', () => {
+    describe('when coordinates are given', () => {
+      it('should return string with latitude and longitude in query params', () => {
+        // Given
+        const coordinates = {
+          longitude: 2.746,
+          latitude: 48.76,
+        }
+
+        const expected = 'longitude=2.746&latitude=48.76'
+
+        // When
+        const result = getCoordinatesApiPathQueryString(coordinates)
+
+        // Then
+        expect(result).toStrictEqual(expected)
+      })
+
+      describe('when no coordinates are given', () => {
+        it('should return empty string', () => {
+          // Given
+          const coordinates = {}
+
+          const expected = ''
+
+          // When
+          const result = getCoordinatesApiPathQueryString(coordinates)
+
+          // Then
+          expect(result).toStrictEqual(expected)
+        })
+      })
+
+      describe('when only one coordonate is given', () => {
+        it('should return empty string when only latitude given', () => {
+          // Given
+          const coordinates = { latitude: 48.931 }
+
+          const expected = ''
+
+          // When
+          const result = getCoordinatesApiPathQueryString(coordinates)
+
+          // Then
+          expect(result).toStrictEqual(expected)
+        })
+
+        it('should return empty string when only longitude given', () => {
+          // Given
+          const coordinates = { longitude: 1.831 }
+
+          const expected = ''
+
+          // When
+          const result = getCoordinatesApiPathQueryString(coordinates)
+
+          // Then
+          expect(result).toStrictEqual(expected)
+        })
+      })
     })
   })
 })

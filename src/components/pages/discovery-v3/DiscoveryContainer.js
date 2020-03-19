@@ -13,7 +13,7 @@ import selectCurrentRecommendation from './selectors/selectCurrentRecommendation
 import selectTutorials from './selectors/selectTutorials'
 import {
   checkIfShouldReloadRecommendationsBecauseOfLongTime,
-  getOfferIdAndMediationIdAndCoordinatesApiPathQueryString,
+  getCoordinatesApiPathQueryString,
   isDiscoveryStartupUrl,
 } from './utils/utils'
 import { selectUserGeolocation } from '../../../selectors/geolocationSelectors'
@@ -56,15 +56,10 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
     shouldReloadRecommendations,
     coordinates
   ) => {
-    const { match } = prevProps
     const seenRecommendationIds =
       (shouldReloadRecommendations && []) ||
       (recommendations && recommendations.map(reco => reco.id))
-    let queryParams = getOfferIdAndMediationIdAndCoordinatesApiPathQueryString(
-      match,
-      currentRecommendation,
-      coordinates
-    )
+    let queryParams = getCoordinatesApiPathQueryString(coordinates)
 
     dispatch(
       requestData({

@@ -85,3 +85,15 @@ export const getOfferIdAndMediationIdAndCoordinatesApiPathQueryString = (
   const query = params.filter(s => s).join('&')
   return query
 }
+
+export const getCoordinatesApiPathQueryString = coordinates => {
+  const { longitude: longitude, latitude: latitude } = coordinates || {}
+
+  const params = [
+    (longitude && latitude && `longitude=${longitude}`) || null,
+    (longitude && latitude && `latitude=${latitude}`) || null,
+  ]
+
+  const query = params.filter(s => s).join('&')
+  return query
+}

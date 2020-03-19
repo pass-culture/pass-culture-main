@@ -289,6 +289,50 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         })
       })
 
+      it('should make request with given geolocation to API', () => {
+        // given
+        const handleRequestSuccess = jest.fn()
+        const handleRequestFail = jest.fn()
+        const currentRecommendation = {
+          id: 'ABC3',
+          index: 1,
+          offerId: 'ABC2',
+        }
+        const recommendations = [{ id: 'AE3', index: 3 }]
+        const readRecommendations = null
+        const shouldReloadRecommendations = false
+        const functions = mapDispatchToProps(dispatch, props)
+        const { loadRecommendations } = functions
+        const coordinates = { latitude: 48.192, longitude: 1.291 }
+
+        // when
+        loadRecommendations(
+          handleRequestSuccess,
+          handleRequestFail,
+          currentRecommendation,
+          recommendations,
+          readRecommendations,
+          shouldReloadRecommendations,
+          coordinates
+        )
+
+        // then
+        expect(dispatch.mock.calls[0][0]).toStrictEqual({
+          config: {
+            apiPath: `/recommendations/v3?longitude=1.291&latitude=48.192`,
+            body: {
+              readRecommendations: null,
+              seenRecommendationIds: ['AE3'],
+            },
+            handleFail: handleRequestFail,
+            handleSuccess: handleRequestSuccess,
+            method: 'PUT',
+            normalizer: recommendationNormalizer,
+          },
+          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS/V3?LONGITUDE=1.291&LATITUDE=48.192',
+        })
+      })
+
       it('should load the recommendations when user is geolocated', () => {
         // given
         const handleRequestSuccess = jest.fn()
