@@ -1,9 +1,9 @@
 .stocks-manager {
-  td.remaining-stock {
-    color: #757575;
+  td.remaining-stock, .bookings-count {
+    color: $grey;
     font-size: 0.75rem;
     font-weight: 500;
-    min-width: 75px;
+    min-width: rem(75px);
   }
 
   .has-text-weight-bold {
@@ -14,7 +14,7 @@
     @extend .is-absolute;
     @extend .level;
 
-    background-color: rgba($black, 0.8);
+    background-color: $black-with-transparency;
     bottom: 0;
     margin-bottom: 0 !important;
     left: 0;
@@ -28,7 +28,7 @@
 
       background-color: $white;
       margin: auto;
-      min-height: 200px;
+      min-height: rem(200px);
       max-width: 50%;
     }
   }
@@ -42,7 +42,7 @@
     }
 
     max-height: 60vh;
-    min-height: 500px;
+    min-height: rem(500px);
     overflow: auto;
 
     table.stocks-table {
@@ -66,7 +66,7 @@
           td {
             text-align: center;
             border: none;
-            max-width: 120px;
+            max-width: rem(120px);
 
             input[type='time'] {
               padding-left: 1rem;
@@ -88,11 +88,11 @@
               color: $black;
             }
 
-            padding: 6px;
+            padding: rem(6px);
           }
 
           td.booking-limit-datetime {
-            max-width: 150px;
+            max-width: rem(150px);
           }
 
           td.tooltiped {
@@ -111,7 +111,7 @@
         tr {
           td {
             vertical-align: middle;
-            font-size: 12px;
+            font-size: rem(12px);
             color: $grey-darkest;
             line-height: normal;
           }

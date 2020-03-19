@@ -9,6 +9,7 @@ $fullhd: $desktop;
 // Colors
 
 $black: hsl(0, 0%, 4%) !default;
+$black-with-transparency: rgba($black, 0.8);
 $black-bis:    hsl(0, 0%, 7%) !default;
 $black-ter:    hsl(0, 0%, 14%) !default;
 $blue-light: rgba(132, 146, 166, 0.94);
