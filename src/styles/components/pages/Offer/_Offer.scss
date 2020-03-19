@@ -1,4 +1,28 @@
 .offer-page {
+  ul.mediations-list {
+    list-style: none;
+
+    li {
+      display: inline-block;
+      height: 250px;
+
+      img {
+        height: 200px;
+      }
+
+      .field {
+        .field-body {
+          margin-left: auto;
+          margin-right: auto;
+          width: 90%;
+        }
+
+        .checkbox {
+          margin-right: 0;
+        }
+      }
+    }
+  }
 
   .offer-form {
     select {
