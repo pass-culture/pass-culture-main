@@ -19,8 +19,7 @@ from repository.offer_queries import department_or_national_offers, \
     _order_by_occurs_soon_or_is_thing_then_randomize, \
     get_paginated_offer_ids_by_venue_id, \
     get_offers_by_ids, \
-    get_paginated_expired_offer_ids, _order_by_is_digital_then_randomize, order_by_with_criteria_and_is_digital, \
-    get_active_offers_with_digital_first
+    get_paginated_expired_offer_ids, get_active_offers_with_digital_first
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_criterion, create_user, create_offerer, \
     create_venue, create_user_offerer, create_mediation, create_favorite, create_provider
