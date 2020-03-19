@@ -38,11 +38,6 @@ def upgrade():
           THEN RAISE EXCEPTION 'insufficientFunds'
                      USING HINT = 'The user does not have enough credit to book';
           END IF;
-          
-          IF EXISTS (SELECT "beginningDatetime" FROM stock WHERE id=NEW."stockId" AND "beginningDatetime" < NOW())
-          THEN RAISE EXCEPTION 'beginningDateTimePassed'
-                     USING HINT = 'The beginning date time for this event has passed';
-          END IF;
 
           RETURN NEW;
         END;
