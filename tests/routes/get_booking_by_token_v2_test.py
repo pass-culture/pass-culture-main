@@ -75,29 +75,6 @@ class Get:
             assert response.status_code == 200
 
         @clean_database
-        def when_there_is_not_enough_available_stock_to_validate_a_booking(self, app):
-            # Given
-            user = create_user()
-            pro_user = create_user(email='pro@example.com', is_admin=False)
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(pro_user, offerer)
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0)
-            booking = create_booking(user=user, stock=stock, venue=venue)
-            repository.save(booking, user_offerer)
-            url = f'/v2/bookings/token/{booking.token}'
-            stock.available = 0
-            repository.save(stock)
-
-            # When
-            response = TestClient(app.test_client()) \
-                .with_auth('pro@example.com') \
-                .get(url)
-
-            # Then
-            assert response.status_code == 200
-
-        @clean_database
         def when_user_has_rights_and_regular_offer_and_token_in_lower_case(self, app):
             # Given
             user = create_user(email='user@example.com', public_name='John Doe')
