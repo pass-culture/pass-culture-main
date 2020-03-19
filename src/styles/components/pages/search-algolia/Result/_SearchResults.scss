@@ -21,15 +21,18 @@
 }
 
 .sr-filter-button {
-  background-color: $primary;
-  border-radius: 2rem;
+  background: linear-gradient(108deg, $primary -6%, #D0005F 103%);
+  border-radius: rem(24px);
   border: 0;
-  display: flex;
   font-size: rem(16px);
   font-weight: 700;
-  height: rem(48px);
-  justify-content: center;
-  width: 30%;
+  height: rem(49px);
+  width: rem(116px);
+
+  span {
+    margin-left: rem(8px);
+    margin-right: rem(8px);
+  }
 }
 
 @media screen and (max-width: $iphone5-width) and (max-height: $iphone5-height) {

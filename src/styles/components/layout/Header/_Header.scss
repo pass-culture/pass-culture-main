@@ -72,7 +72,14 @@ $button-size: $header-height - 0.75rem;
 }
 
 .reset-button {
+  color: $white;
   font-size: rem(16px);
-  font-weight: 500;
-  padding-right: rem(12px);
+  font-stretch: normal;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: normal;
+  position: absolute;
+  right: rem(22px);
+  top: rem(8px);
 }

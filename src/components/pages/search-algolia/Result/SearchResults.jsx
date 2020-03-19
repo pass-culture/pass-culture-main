@@ -257,7 +257,9 @@ class SearchResults extends PureComponent {
                     alt="Filtrer les résultats"
                     svg="filtrer"
                   />
-                  {'Filtrer'}
+                  <span>
+                    {'Filtrer'}
+                  </span>
                 </button>
               </div>
             </form>

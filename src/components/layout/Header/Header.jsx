@@ -92,15 +92,13 @@ class Header extends PureComponent {
           </div>
         )}
         {reset && (
-          <div className="header-end">
-            <button
-              className="reset-button"
-              onClick={reset}
-              type="button"
-            >
-              {'Réinitialiser'}
-            </button>
-          </div>
+          <button
+            className="reset-button"
+            onClick={reset}
+            type="button"
+          >
+            {'Réinitialiser'}
+          </button>
         )}
       </header>
     )

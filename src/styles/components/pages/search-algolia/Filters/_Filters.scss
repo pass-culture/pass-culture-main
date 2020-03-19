@@ -14,7 +14,14 @@
 }
 
 .sf-header-wrapper {
-  height: rem(40px);
+  header {
+    height: rem(40px);
+  }
+
+  .back-link {
+    position: absolute;
+    top: rem(2px);
+  }
 }
 
 .sf-button-wrapper {
@@ -32,6 +39,11 @@
   width: 90%;
 }
 
+.sf-geolocation-title {
+  font-weight: 500;
+  margin-top: rem(10px);
+}
+
 .sf-geolocation-button {
   color: black;
   font-size: rem(16px);
@@ -39,10 +51,6 @@
   margin-top: rem(20px);
 }
 
-.sf-geolocation-title {
-  font-weight: 500;
-  margin-top: rem(20px);
-}
 
 .sf-filter-separator {
   border: rem(0.5px) solid $grey-even-more-light;
