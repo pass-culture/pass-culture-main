@@ -184,7 +184,7 @@ def test_available_stocks_can_be_changed_even_when_bookings_with_cancellations_e
 
 
 @clean_database
-def test_update_available_stocks_even_when_is_less_than_number_of_bookings(app):
+def test_update_available_stocks_should_be_possible_while_more_than_sum_of_bookings_quantity(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -195,13 +195,13 @@ def test_update_available_stocks_even_when_is_less_than_number_of_bookings(app):
     booking = create_booking(user=user, stock=stock,
                              is_cancelled=False, quantity=2)
     repository.save(booking)
-    stock.available = 1
+    stock.available = 3
 
     # When
     repository.save(stock)
 
     # Then
-    assert Stock.query.get(stock.id).available == 1
+    assert Stock.query.get(stock.id).available == 3
 
 
 @clean_database
@@ -259,27 +259,6 @@ class StockRemainingQuantityTest:
         # Then
         assert Stock.query.get(stock.id).remainingQuantity == 0
 
-    @clean_database
-    def test_remaining_quantity_for_stock_is_0_when_there_are_2_bookings_not_used(app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, available=2, price=0)
-        repository.save(stock)
-        user = create_user()
-        booking1 = create_booking(
-            user=user, stock=stock, is_cancelled=False, is_used=False, quantity=1)
-        booking2 = create_booking(
-            user=user, stock=stock, is_cancelled=False, is_used=False, quantity=1)
-        repository.save(booking1, booking2)
-        stock.available = 1
-
-        # When
-        repository.save(stock)
-
-        # Then
-        assert Stock.query.get(stock.id).remainingQuantity == 0
 
     @clean_database
     def test_remaining_quantity_for_stock_is_1_when_there_are_2_bookings_and_1_is_used_before_last_stock_update(app):
