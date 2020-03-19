@@ -27,7 +27,7 @@ ShallowWrapper {
         <p
           className="info-message"
         >
-          Ajoutez une accroche pour mettre cette offre en avant dans l'application
+          Ajoutez une accroche pour mettre cette offre en avant dans l'application.
         </p>,
         <div
           className="box content has-text-centered"
@@ -84,11 +84,11 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": "Ajoutez une accroche pour mettre cette offre en avant dans l'application",
+          "children": "Ajoutez une accroche pour mettre cette offre en avant dans l'application.",
           "className": "info-message",
         },
         "ref": null,
-        "rendered": "Ajoutez une accroche pour mettre cette offre en avant dans l'application",
+        "rendered": "Ajoutez une accroche pour mettre cette offre en avant dans l'application.",
         "type": "p",
       },
       Object {
@@ -352,7 +352,7 @@ ShallowWrapper {
           <p
             className="info-message"
           >
-            Ajoutez une accroche pour mettre cette offre en avant dans l'application
+            Ajoutez une accroche pour mettre cette offre en avant dans l'application.
           </p>,
           <div
             className="box content has-text-centered"
@@ -409,11 +409,11 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "Ajoutez une accroche pour mettre cette offre en avant dans l'application",
+            "children": "Ajoutez une accroche pour mettre cette offre en avant dans l'application.",
             "className": "info-message",
           },
           "ref": null,
-          "rendered": "Ajoutez une accroche pour mettre cette offre en avant dans l'application",
+          "rendered": "Ajoutez une accroche pour mettre cette offre en avant dans l'application.",
           "type": "p",
         },
         Object {
