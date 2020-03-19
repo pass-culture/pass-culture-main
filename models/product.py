@@ -10,7 +10,7 @@ from sqlalchemy import BigInteger, \
     Text
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.expression import false
+from sqlalchemy.sql.expression import false, true
 
 from models.db import Model
 from models.extra_data_mixin import ExtraDataMixin
@@ -59,6 +59,11 @@ class Product(PcObject,
     url = Column(String(255), nullable=True)
 
     durationMinutes = Column(Integer, nullable=True)
+
+    isGcuCompatible = Column(Boolean,
+                             default=True,
+                             server_default=true(),
+                             nullable=False)
 
     isNational = Column(Boolean,
                         server_default=false(),
