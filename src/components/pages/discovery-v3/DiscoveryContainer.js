@@ -13,10 +13,10 @@ import selectCurrentRecommendation from './selectors/selectCurrentRecommendation
 import selectTutorials from './selectors/selectTutorials'
 import {
   checkIfShouldReloadRecommendationsBecauseOfLongTime,
-  getCoordinatesApiPathQueryString,
   isDiscoveryStartupUrl,
 } from './utils/utils'
 import { selectUserGeolocation } from '../../../selectors/geolocationSelectors'
+import { getCoordinatesApiPathQueryString } from './utils/buildApiPathQueryString'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
