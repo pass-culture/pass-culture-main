@@ -20,7 +20,7 @@ class MediationsManager extends PureComponent {
       <div className="mediation-manager">
         {!this.hasAtLeastOneActiveMediation() && (
           <p className="info-message">
-            {"Ajoutez une accroche pour mettre cette offre en avant dans l'application"}
+            {"Ajoutez une accroche pour mettre cette offre en avant dans l'application."}
           </p>
         )}
 

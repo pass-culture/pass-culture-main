@@ -127,7 +127,7 @@ describe('src | components | pages | MediationContainer', () => {
         patch: {
           tag: 'mediations-manager',
           text:
-            'Votre offre a bien été modifiée. L’offre peut mettre quelques minutes pour être disponible dans l’application.',
+            'Votre offre a bien été modifiée. Cette offre peut mettre quelques minutes pour être disponible dans l’application.',
           type: 'success',
         },
         type: 'SHOW_NOTIFICATION',

@@ -37,7 +37,7 @@ describe('src | components | pages | Offer | MediationsManager | MediationsManag
         const informationMessageWrapper = wrapper.findWhere(htmlElement =>
           htmlElement
             .text()
-            .includes("Ajoutez une accroche pour mettre cette offre en avant dans l'application")
+            .includes("Ajoutez une accroche pour mettre cette offre en avant dans l'application.")
         )
 
         // then

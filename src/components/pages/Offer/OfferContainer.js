@@ -108,7 +108,7 @@ export const mapDispatchToProps = dispatch => ({
     dispatch(
       showNotification({
         text:
-          'Votre offre a bien été créée. L’offre peut mettre quelques minutes pour être disponible dans l’application.',
+          'Votre offre a bien été créée. Cette offre peut mettre quelques minutes pour être disponible dans l’application.',
         type: 'success',
       })
     )
