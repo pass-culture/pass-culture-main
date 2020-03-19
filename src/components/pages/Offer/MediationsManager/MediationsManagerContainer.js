@@ -2,8 +2,6 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import { closeNotification, showNotification } from 'pass-culture-shared'
-
 import MediationsManager from './MediationsManager'
 import { selectMediationsByOfferId } from '../../../../selectors/data/mediationsSelectors'
 import { selectOfferById } from '../../../../selectors/data/offersSelectors'
@@ -25,21 +23,7 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export const mapDispatchToProps = dispatch => {
-  return {
-    showNotification: notif => {
-      dispatch(showNotification(notif))
-    },
-    closeNotification: () => {
-      dispatch(closeNotification())
-    },
-  }
-}
-
 export default compose(
   withRouter,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
+  connect(mapStateToProps)
 )(MediationsManager)
