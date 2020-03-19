@@ -60,3 +60,29 @@
   border: rem(0.5px) solid $grey-even-more-light;
   margin-top: rem(20px);
 }
+
+@media screen and (max-width: $iphone6) {
+  .sf-header-wrapper {
+    header {
+      height: rem(42px);
+    }
+
+    .back-link {
+      position: absolute;
+      top: rem(4.5px);
+    }
+  }
+}
+
+@media screen and (max-width: $iphone5-width) and (max-height: $iphone5-height) {
+  .sf-header-wrapper {
+    header {
+      height: rem(45px);
+    }
+
+    .back-link {
+      position: absolute;
+      top: rem(6px);
+    }
+  }
+}
