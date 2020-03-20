@@ -1644,6 +1644,7 @@ class CountNotCancelledBookingsQuantityByStocksTest:
         # Then
         assert result == 15
 
+    @clean_database
     def test_should_return_0_when_no_bookings_found(self, app):
         # Given
         user = create_user()
