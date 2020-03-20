@@ -8,8 +8,9 @@ from models import Offer, Stock
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_stock, create_offerer, create_venue, create_venue_provider
+from tests.model_creators.generic_creators import create_stock, create_offerer, create_venue, create_venue_provider, create_booking, create_user
 from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
+from tests.model_creators.provider_creators import activate_provider
 
 
 @clean_database
@@ -429,3 +430,55 @@ def test_should_not_create_offer_when_product_is_not_gcu_compatible(stub_get_sto
     # Then
     assert Offer.query.count() == 0
     assert Stock.query.count() == 0
+
+
+@clean_database
+@patch('local_providers.titelive_stocks.get_stocks_information')
+def test_titelive_stock_provider_available_stock_is_sum_of_updated_available_and_bookings(stub_get_stocks_information, app):
+    # Given
+    stub_get_stocks_information.side_effect = [
+        iter([{
+            "ref": "9780199536986",
+            "available": 5,
+            "price": 0,
+        }])
+    ]
+    offerer = create_offerer()
+    venue = create_venue(offerer, siret='12345678912345')
+    titelive_stocks_provider = activate_provider('TiteLiveStocks')
+    venue_provider = create_venue_provider(
+        venue,
+        titelive_stocks_provider,
+        is_active=True,
+        venue_id_at_offer_provider='12345678912345'
+    )
+    product = create_product_with_thing_type(id_at_providers='9780199536986')
+
+    repository.save(product, venue_provider)
+
+    titelive_stocks = TiteLiveStocks(venue_provider)
+
+    titelive_stocks.updateObjects()
+
+    booking = create_booking(
+        user=create_user(),
+        quantity=1,
+        stock=Stock.query.one()
+    )
+
+    repository.save(booking)
+
+    stub_get_stocks_information.side_effect = [
+        iter([{
+            "ref": "9780199536986",
+            "available": 66,
+            "price": 0,
+        }])
+    ]
+
+    # When
+    titelive_stocks.updateObjects()
+
+    # Then
+    stock = Stock.query.one()
+    assert stock.available == 67
