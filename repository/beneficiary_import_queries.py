@@ -29,7 +29,8 @@ def save_beneficiary_import_with_status(
         .first()
 
     beneficiary_import = existing_import or BeneficiaryImport()
-    beneficiary_import.beneficiary = user
+    if not beneficiary_import.beneficiary:
+        beneficiary_import.beneficiary = user
     beneficiary_import.demarcheSimplifieeApplicationId = demarche_simplifiee_application_id
     beneficiary_import.setStatus(status=status, detail=detail, author=None)
     repository.save(beneficiary_import)

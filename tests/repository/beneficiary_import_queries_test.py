@@ -135,6 +135,22 @@ class SaveBeneficiaryImportWithStatusTest:
         assert beneficiary_imports[0].currentStatus == ImportStatus.CREATED
         assert beneficiary_imports[0].beneficiary == user
 
+    @clean_database
+    def test_should_not_delete_beneficiary_when_import_already_exists(self, app):
+        # Given
+        two_days_ago = datetime.utcnow() - timedelta(days=2)
+        user = create_user()
+        with freeze_time(two_days_ago):
+            save_beneficiary_import_with_status(ImportStatus.CREATED, 123, user=user)
+
+        # When
+        save_beneficiary_import_with_status(ImportStatus.REJECTED, 123, user=None)
+
+        # Then
+        beneficiary_imports = BeneficiaryImport.query.filter_by(demarcheSimplifieeApplicationId=123).all()
+        assert len(beneficiary_imports) == 1
+        assert beneficiary_imports[0].beneficiary == user
+
 
 class FindApplicationsIdsToRetryTest:
     @clean_database
