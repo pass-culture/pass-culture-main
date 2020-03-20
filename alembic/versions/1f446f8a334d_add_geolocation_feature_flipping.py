@@ -60,7 +60,7 @@ def upgrade():
                   'UPDATE_BOOKING_USED',
                   'WEBAPP_SIGNUP',
                   'RECOMMENDATIONS_WITH_DISCOVERY_VIEW',
-                  'RECOMMENDATIONS_WITH_DIGITAL_FIRST'
+                  'RECOMMENDATIONS_WITH_DIGITAL_FIRST',
                   'RECOMMENDATIONS_WITH_GEOLOCATION')
 
     previous_enum = sa.Enum(*previous_values, name='featuretoggle')
