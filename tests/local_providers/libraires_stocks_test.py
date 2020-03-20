@@ -250,28 +250,20 @@ class LibrairesStocksTest:
                 venue_id_at_offer_provider='12345678912345'
             )
             product = create_product_with_thing_type(id_at_providers='9780199536986')
+
             repository.save(product, venue_provider)
 
             libraires_stocks = LibrairesStocks(venue_provider)
 
             libraires_stocks.updateObjects()
 
-
-            stock = Stock.query.one()
-            print('stock dans le test : ', stock)
-
             booking = create_booking(
                 user=create_user(),
                 quantity=1,
-                stock=stock
+                stock=Stock.query.one()
             )
-            repository.save(booking)
-            booking = Booking.query.one()
-            print('booking dans le test : ', booking)
-            print('booking dans le test : ', booking.stock)
-            stock = Stock.query.one()
-            print('stock dans le test 2 : ', stock.bookings)
 
+            repository.save(booking)
 
             mock_libraires_api_response.return_value = iter([{
                 "ref": "9780199536986",
@@ -283,11 +275,8 @@ class LibrairesStocksTest:
             libraires_stocks.updateObjects()
 
             # Then
-            stocks = Stock.query.all()
-            assert len(stocks) == 1
-            booking = Booking.query.first()
-            print(booking.quantity)
-            assert stocks[0].available == 8
+            stock = Stock.query.one()
+            assert stock.available == 67
 
 
     class WhenSynchronizedTwiceTest:

@@ -1043,7 +1043,8 @@ class GetAllCancelledBookingsByDepartementCountTest:
         beginning_datetime = datetime.utcnow() + timedelta(hours=47)
         offerer = create_offerer()
         venue = create_venue(offerer)
-        event_offer = create_offer_with_event_product(venue)
+        event_offer = create_offer_with_event_
+        product(venue)
         event_stock = create_stock(
             offer=event_offer,
             price=0,
@@ -1621,3 +1622,26 @@ class IsStockAlreadyBookedByUserTest:
 
         # Then
         assert not is_stock_already_booked
+
+class CountNotCancelledBookingsQuantityByStocksTest:
+    @clean_database
+    def test_should_return_sum_of_bookings_quantity_that_are_not_cancelled_for_given_stock(self, app):
+        # Given
+        user = create_user()
+        create_deposit(user)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        stock = create_stock(offer=offer, available=20)
+
+        booking1 = create_booking(user=user, is_cancelled=True, stock=stock, quantity=2)
+        booking2 = create_booking(user=user, is_cancelled=False, stock=stock, quantity=7)
+        booking3 = create_booking(user=user, is_cancelled=False, stock=stock, quantity=8)
+        repository.save(booking1, booking2, booking3)
+
+        # When
+        result = booking_queries.count_not_cancelled_bookings_quantity_by_stocks(stock.id)
+
+        # Then
+        assert result == 15
+
