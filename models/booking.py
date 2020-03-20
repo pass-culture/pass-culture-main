@@ -108,9 +108,6 @@ class Booking(PcObject, Model, VersionedMixin):
         elif 'insufficientFunds' in str(ie.orig):
             return ['insufficientFunds',
                     "Le solde de votre pass est insuffisant pour réserver cette offre."]
-        elif 'beginningDateTimePassed' in str(ie.orig):
-            return ['beginningDateTimePassed',
-                    "La date de début de cet évènement est passée."]
         return PcObject.restize_integrity_error(ie)
 
     @property
@@ -210,10 +207,13 @@ Booking.trig_ddl = """
         lastStockUpdate date := (SELECT "dateModified" FROM stock WHERE id=NEW."stockId");
     BEGIN
       IF EXISTS (SELECT "available" FROM stock WHERE id=NEW."stockId" AND "available" IS NOT NULL)
-         AND ((SELECT "available" FROM stock WHERE id=NEW."stockId")
-              < (SELECT SUM(quantity) FROM booking WHERE "stockId"=NEW."stockId" AND NOT "isCancelled")) THEN
-          RAISE EXCEPTION 'tooManyBookings'
-                USING HINT = 'Number of bookings cannot exceed "stock.available"';
+         AND (
+             (SELECT "available" FROM stock WHERE id=NEW."stockId")
+              <
+              (SELECT SUM(quantity) FROM booking WHERE "stockId"=NEW."stockId" AND NOT "isCancelled")
+              )
+         THEN RAISE EXCEPTION 'tooManyBookings'
+                    USING HINT = 'Number of bookings cannot exceed "stock.available"';
       END IF;
 
       IF (SELECT get_wallet_balance(NEW."userId", false) < 0)

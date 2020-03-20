@@ -62,16 +62,14 @@ class Stock(PcObject,
                          backref='stocks')
 
     price = Column(Numeric(10, 2),
-                   CheckConstraint(
-                       'price >= 0', name='check_price_is_not_negative'),
+                   CheckConstraint('price >= 0', name='check_price_is_not_negative'),
                    nullable=False)
 
     available = Column(Integer,
                        nullable=True)
 
     remainingQuantity = column_property(
-        select(
-            [func.greatest(available - func.coalesce(func.sum(Booking.quantity), 0), 0)])
+        select([func.greatest(available - func.coalesce(func.sum(Booking.quantity), 0), 0)])
         .where(
             and_(
                 Booking.stockId == id,
@@ -142,8 +140,7 @@ class Stock(PcObject,
                 return ['bookingLimitDatetime',
                         'La date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement']
             else:
-                logger.error(
-                    "Unexpected error in patch stocks: " + pformat(ie))
+                logger.error("Unexpected error in patch stocks: " + pformat(ie))
         return PcObject.restize_internal_error(ie)
 
 

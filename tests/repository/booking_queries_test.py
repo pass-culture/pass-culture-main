@@ -1043,8 +1043,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
         beginning_datetime = datetime.utcnow() + timedelta(hours=47)
         offerer = create_offerer()
         venue = create_venue(offerer)
-        event_offer = create_offer_with_event_
-        product(venue)
+        event_offer = create_offer_with_event_product(venue)
         event_stock = create_stock(
             offer=event_offer,
             price=0,
@@ -1640,7 +1639,7 @@ class CountNotCancelledBookingsQuantityByStocksTest:
         repository.save(booking1, booking2, booking3)
 
         # When
-        result = booking_queries.count_not_cancelled_bookings_quantity_by_stocks(stock.id)
+        result = booking_queries.count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
 
         # Then
         assert result == 15
@@ -1657,14 +1656,14 @@ class CountNotCancelledBookingsQuantityByStocksTest:
         repository.save(stock)
 
         # When
-        result = booking_queries.count_not_cancelled_bookings_quantity_by_stocks(stock.id)
+        result = booking_queries.count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
 
         # Then
         assert result == 0
 
     def test_should_return_0_when_no_stock_id(self, app):
         # When
-        result = booking_queries.count_not_cancelled_bookings_quantity_by_stocks(None)
+        result = booking_queries.count_not_cancelled_bookings_quantity_by_stock_id(None)
 
         # Then
         assert result == 0

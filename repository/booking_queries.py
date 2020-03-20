@@ -282,7 +282,7 @@ def find_used_by_token(token: str) -> Booking:
         .filter_by(isUsed=True) \
         .first()
 
-def count_not_cancelled_bookings_quantity_by_stocks(stock_id: int) -> int:
+def count_not_cancelled_bookings_quantity_by_stock_id(stock_id: int) -> int:
     bookings =  Booking.query \
         .join(Stock) \
         .filter(Booking.isCancelled == False) \

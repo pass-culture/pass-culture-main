@@ -9,9 +9,8 @@ from local_providers.providable_info import ProvidableInfo
 from models import VenueProvider, Offer, Stock
 from models.db import Model, db
 from repository import product_queries
-from repository.booking_queries import count_not_cancelled_bookings_quantity_by_stocks
+from repository.booking_queries import count_not_cancelled_bookings_quantity_by_stock_id
 from tests.model_creators.provider_creators import create_providable_info
-
 
 
 class LibrairesStocks(LocalProvider):
@@ -75,7 +74,7 @@ class LibrairesStocks(LocalProvider):
         offer.isActive = offer_has_available_stock
 
     def fill_stock_attributes(self, stock: Stock):
-        bookings_quantity = count_not_cancelled_bookings_quantity_by_stocks(stock.id)
+        bookings_quantity = count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
         stock.available = self.libraires_stock['available'] + bookings_quantity
         stock.bookingLimitDatetime = None
         stock.offerId = self.offer_id

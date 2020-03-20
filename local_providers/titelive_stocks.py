@@ -10,7 +10,7 @@ from models import Offer, VenueProvider
 from models.db import db
 from models.stock import Stock
 from repository import product_queries
-from repository.booking_queries import count_not_cancelled_bookings_quantity_by_stocks
+from repository.booking_queries import count_not_cancelled_bookings_quantity_by_stock_id
 
 PRICE_DIVIDER_TO_EURO = 100
 
@@ -55,7 +55,7 @@ class TiteLiveStocks(LocalProvider):
             self.fill_offer_attributes(stock_or_offer, self.titelive_stock)
 
     def fill_stock_attributes(self, stock: Stock, stock_information: dict):
-        bookings_quantity = count_not_cancelled_bookings_quantity_by_stocks(stock.id)
+        bookings_quantity = count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
         stock.price = int(stock_information['price']) / PRICE_DIVIDER_TO_EURO
         stock.available = int(stock_information['available']) + bookings_quantity
         stock.bookingLimitDatetime = None
