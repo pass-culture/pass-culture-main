@@ -12,23 +12,24 @@ def get_all_application_ids_for_procedure(
 ) -> List[int]:
     current_page = 1
     number_of_pages = 1
-    application_ids_to_process = []
+    application_ids = []
 
     while current_page <= number_of_pages:
         api_response = get_all_applications(procedure_id, token, page=current_page, results_per_page=100)
         number_of_pages = api_response['pagination']['nombre_de_page']
         logger.info('[IMPORT DEMARCHES SIMPLIFIEES] page %s of %s' % (current_page, number_of_pages))
 
-        applications = sorted(api_response['dossiers'],
-                              key=lambda k: datetime.strptime(k['updated_at'], DATE_ISO_FORMAT))
-        needs_processing = [application['id'] for application in applications if
+        needs_processing = [application for application in api_response['dossiers'] if
                             _needs_processing(application, last_update)]
         logger.info('[IMPORT DEMARCHES SIMPLIFIEES] %s applications to process' % len(needs_processing))
-        application_ids_to_process += needs_processing
+        application_ids += needs_processing
 
         current_page += 1
 
-    logger.info('[IMPORT DEMARCHES SIMPLIFIEES] Total : %s applications' % len(application_ids_to_process))
+    logger.info('[IMPORT DEMARCHES SIMPLIFIEES] Total : %s applications' % len(application_ids))
+    sorted_applications = sorted(application_ids,
+                                 key=lambda k: datetime.strptime(k['updated_at'], DATE_ISO_FORMAT))
+    application_ids_to_process = [application['id'] for application in sorted_applications]
     return application_ids_to_process
 
 

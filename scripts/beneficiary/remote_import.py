@@ -118,10 +118,10 @@ def _process_creation(error_messages, information, new_beneficiaries):
             user=new_beneficiary
         )
         new_beneficiaries.append(new_beneficiary)
-    try:
-        send_activation_email(new_beneficiary, send_raw_email)
-    except MailServiceException as e:
-        logger.error('Mail send_activation_email failure', e)
+        try:
+            send_activation_email(new_beneficiary, send_raw_email)
+        except MailServiceException as e:
+            logger.error('Mail send_activation_email failure', e)
 
 
 def _process_duplication(duplicate_users, error_messages, information):

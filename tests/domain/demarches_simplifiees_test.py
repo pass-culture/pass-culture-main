@@ -15,16 +15,19 @@ class GetAllApplicationIdsForProcedureTest:
         self.mock_get_all_applications_for_procedure.side_effect = [
             {
                 "dossiers": [
+                    {"id": 1,
+                     "updated_at": "2018-02-05T16:51:18.293Z",
+                     "state": "closed"},
                     {"id": 2,
-                     "updated_at": "2019-02-04T16:51:18.293Z",
+                     "updated_at": "2019-02-05T16:51:18.293Z",
                      "state": "closed"},
                     {"id": 3,
                      "updated_at": "2019-02-03T16:51:18.293Z",
-                     "state": "initiated"}
+                     "state": "closed"}
                 ],
                 'pagination': {
                     'page': 1,
-                    'resultats_par_page': 2,
+                    'resultats_par_page': 3,
                     'nombre_de_page': 2
                 }
             },
@@ -34,12 +37,12 @@ class GetAllApplicationIdsForProcedureTest:
                      "updated_at": "2019-02-04T16:51:18.293Z",
                      "state": "closed"},
                     {"id": 5,
-                     "updated_at": "2019-02-03T16:51:18.293Z",
+                     "updated_at": "2019-02-01T16:51:18.293Z",
                      "state": "closed"}
                 ],
                 'pagination': {
-                    'page': 1,
-                    'resultats_par_page': 2,
+                    'page': 2,
+                    'resultats_par_page': 3,
                     'nombre_de_page': 2
                 }
             }
@@ -47,12 +50,12 @@ class GetAllApplicationIdsForProcedureTest:
 
         # When
         application_ids = get_all_application_ids_for_procedure(
-            self.PROCEDURE_ID, self.TOKEN, datetime(2019, 1, 1),
+            self.PROCEDURE_ID, self.TOKEN, datetime(2018, 1, 1),
             get_all_applications=self.mock_get_all_applications_for_procedure
         )
 
         # Then
-        assert sorted(application_ids) == [2, 4, 5]
+        assert application_ids == [1, 5, 3, 4, 2]
 
     def test_returns_applications_with_state_closed_only(self):
         # Given
