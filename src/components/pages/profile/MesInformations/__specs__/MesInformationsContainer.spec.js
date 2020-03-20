@@ -1,4 +1,7 @@
-import { getCurrentUserUUID, resolveCurrentUser } from 'with-react-login'
+import {
+  getCurrentUserUUID,
+  resolveCurrentUser,
+} from '../../../../hocs/with-login/with-react-login'
 import getDepartementByCode from '../../../../../utils/getDepartementByCode'
 import {
   getDepartment,
@@ -14,12 +17,6 @@ jest.mock('redux-thunk-data', () => {
     requestData,
   }
 })
-
-jest.mock('with-react-login', () => ({
-  resolveCurrentUser: jest.fn(),
-  selectCurrentUser: jest.requireActual('with-react-login').selectCurrentUser,
-  getCurrentUserUUID: jest.requireActual('with-react-login').getCurrentUserUUID,
-}))
 
 jest.mock('../../../../../utils/getDepartementByCode')
 

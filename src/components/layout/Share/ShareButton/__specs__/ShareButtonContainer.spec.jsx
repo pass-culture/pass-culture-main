@@ -1,10 +1,7 @@
-import { selectCurrentUser } from 'with-react-login'
-
 import { mapStateToProps } from '../ShareButtonContainer'
 import getShareURL from '../../../../../utils/getShareURL'
 import { mapDispatchToProps, mergeProps } from '../ShareButtonContainer'
 
-jest.mock('with-react-login')
 jest.mock('../../../../../utils/getShareURL')
 
 describe('src | components | share | ShareButtonContainer', () => {
@@ -41,7 +38,6 @@ describe('src | components | share | ShareButtonContainer', () => {
         }
 
         // when
-        selectCurrentUser.mockReturnValue({ id: 'myId' })
         const result = mapStateToProps(state, ownProps)
 
         // then
@@ -81,7 +77,6 @@ describe('src | components | share | ShareButtonContainer', () => {
         }
 
         // when
-        selectCurrentUser.mockReturnValue({ id: 'myId' })
         const result = mapStateToProps(state, ownProps)
 
         // then
@@ -122,7 +117,6 @@ describe('src | components | share | ShareButtonContainer', () => {
           }
 
           // when
-          selectCurrentUser.mockReturnValue({ id: 'myId' })
           getShareURL.mockReturnValue('http://fake_shared_url')
 
           // then
@@ -164,7 +158,6 @@ describe('src | components | share | ShareButtonContainer', () => {
         }
 
         // when
-        selectCurrentUser.mockReturnValue({ id: 'myId' })
         const result = mapStateToProps(state, ownProps)
 
         // then
@@ -209,7 +202,6 @@ describe('src | components | share | ShareButtonContainer', () => {
         }
 
         // when
-        selectCurrentUser.mockReturnValue({ id: 'myId' })
         const result = mapStateToProps(state, ownProps)
 
         // then

@@ -2,7 +2,7 @@ import _withLogin, {
   getCurrentUserUUID,
   resolveCurrentUser,
   selectCurrentUser,
-} from 'with-react-login'
+} from '../with-react-login'
 import { connect } from 'react-redux'
 
 const mapStateToProps = state => ({

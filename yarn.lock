@@ -4691,15 +4691,6 @@ fetch-jsonp@^1.0.6:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/fetch-jsonp/-/fetch-jsonp-1.1.3.tgz#9eb9e585ba08aaf700563538d17bbebbcd5a3db2"
 
-fetch-normalize-data@1.8.4:
-  version "1.8.4"
-  resolved "https://registry.yarnpkg.com/fetch-normalize-data/-/fetch-normalize-data-1.8.4.tgz#09c7dc35d4376f860526e3998cb02827c32033c0"
-  dependencies:
-    lodash.uniqby "^4.7.0"
-    re-reselect "^3.4.0"
-    reselect "^3.0.1"
-    uuid "^3.3.2"
-
 fetch-normalize-data@1.9.0:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/fetch-normalize-data/-/fetch-normalize-data-1.9.0.tgz#432a685af22c5e7433dfa4e4489804bf2c4234f0"
@@ -9717,15 +9708,6 @@ react-transition-group@^2.6.1:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react@^16.10.1:
-  version "16.13.0"
-  resolved "https://registry.yarnpkg.com/react/-/react-16.13.0.tgz#d046eabcdf64e457bbeed1e792e235e1b9934cf7"
-  integrity sha512-TSavZz2iSLkq5/oiE7gnFzmURKZMltmi193rm5HEoUDAXpzT9Kzw6oNZnGoai/4+fUnm7FqS5dwgUL34TujcWQ==
-  dependencies:
-    loose-envify "^1.1.0"
-    object-assign "^4.1.1"
-    prop-types "^15.6.2"
-
 react@^16.11.0, react@^16.9.0:
   version "16.11.0"
   resolved "https://registry.yarnpkg.com/react/-/react-16.11.0.tgz#d294545fe62299ccee83363599bf904e4a07fdbb"
@@ -12500,19 +12482,6 @@ with-query-router@^3.3.1:
     react-dom "^16.9.0"
     react-router-dom "^5.0.1"
     reselect "^3.0.1"
-
-with-react-login@1.11.4:
-  version "1.11.4"
-  resolved "https://registry.yarnpkg.com/with-react-login/-/with-react-login-1.11.4.tgz#ae0acfef3af706b296b3d006aaeffd79bac5d8f8"
-  integrity sha512-1YSe8kKSaNVF477q4junsiFwqPw0M4dsRkRGc9UgbKuGWmjig5GlSBchde8v0TcChvDnJaKX1SjkUjtG04vIQA==
-  dependencies:
-    classnames "2.2.5"
-    fetch-normalize-data "1.8.4"
-    lodash.uniq "^4.5.0"
-    prop-types "^15.7.2"
-    react "^16.10.1"
-    reselect "^3.0.1"
-    uuid "^3.3.2"
 
 wordwrap@~0.0.2:
   version "0.0.3"
