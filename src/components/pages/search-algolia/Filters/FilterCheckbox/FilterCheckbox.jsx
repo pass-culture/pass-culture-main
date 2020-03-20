@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 
 const FilterCheckbox = ({ checked, className, id, label, name, onChange }) => {
   return (
-    <div className='filter-checkbox-wrapper'>
+    <div className='fc-wrapper'>
       <input
         checked={checked}
         id={id}

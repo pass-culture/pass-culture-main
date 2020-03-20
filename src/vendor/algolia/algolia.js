@@ -52,15 +52,13 @@ const buildFacetFilters = (categories, offerTypes) => {
 }
 
 const _buildCategoriesPredicate = categories => {
-  const categoriesPredicate = []
-  categories.map(category => categoriesPredicate.push(`${FACETS.OFFER_LABEL}:${category}`))
-  return categoriesPredicate
+  return categories.map(category => `${FACETS.OFFER_LABEL}:${category}`)
 }
 
 const _buildOfferTypesPredicate = offerTypes => {
   const { isDigital } = offerTypes
   if (isDigital) {
-    return `${FACETS.OFFER_IS_DIGITAL}:${offerTypes.isDigital}`
+    return `${FACETS.OFFER_IS_DIGITAL}:${isDigital}`
   }
 }
 
