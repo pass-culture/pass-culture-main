@@ -98,6 +98,9 @@ class SearchResults extends PureComponent {
 
   fetchOffers = (keywords, currentPage) => {
     const { categoriesFilter, geolocation, isSearchAroundMe, sortingIndexSuffix } = this.props
+    const { filters } = this.state
+    const { offerTypes } = filters
+
     this.setState({
       isLoading: true,
     })
@@ -108,6 +111,7 @@ class SearchResults extends PureComponent {
       geolocationCoordinates,
       indexSuffix: sortingIndexSuffix,
       keywords,
+      offerTypes,
       page: currentPage
     }).then(offers => {
       const { results } = this.state
