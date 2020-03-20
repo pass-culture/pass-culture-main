@@ -1,10 +1,10 @@
 from unittest.mock import patch, call
 
 from local_providers.libraires_stocks import LibrairesStocks
-from models import Offer, Stock
+from models import Offer, Stock, Booking
 from repository import repository
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_venue_provider, create_venue, create_offerer, create_stock
+from tests.model_creators.generic_creators import create_venue_provider, create_venue, create_offerer, create_stock, create_booking, create_user
 from tests.model_creators.provider_creators import activate_provider
 from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
@@ -227,6 +227,68 @@ class LibrairesStocksTest:
             assert Stock.query.count() == 2
             assert Offer.query.filter_by(lastProviderId=libraires_stocks_provider.id).count() == 2
             assert libraires_stocks.last_processed_isbn == '1550199555555'
+
+        @clean_database
+        @patch('local_providers.libraires_stocks.get_libraires_stock_information')
+        def test_libraires_stock_provider_available_stock_is_sum_of_updated_available_and_bookings(self,
+                                                                                                   mock_libraires_api_response,
+                                                                                                   app):
+            # Given
+            mock_libraires_api_response.return_value = iter([{
+                "ref": "9780199536986",
+                "available": 5,
+                "price": 0
+            }])
+
+            offerer = create_offerer()
+            venue = create_venue(offerer, siret='12345678912345')
+            libraires_stocks_provider = activate_provider('LibrairesStocks')
+            venue_provider = create_venue_provider(
+                venue,
+                libraires_stocks_provider,
+                is_active=True,
+                venue_id_at_offer_provider='12345678912345'
+            )
+            product = create_product_with_thing_type(id_at_providers='9780199536986')
+            repository.save(product, venue_provider)
+
+            libraires_stocks = LibrairesStocks(venue_provider)
+
+            libraires_stocks.updateObjects()
+
+
+            stock = Stock.query.one()
+            print('stock dans le test : ', stock)
+
+            booking = create_booking(
+                user=create_user(),
+                quantity=1,
+                stock=stock
+            )
+            repository.save(booking)
+            booking = Booking.query.one()
+            print('booking dans le test : ', booking)
+            print('booking dans le test : ', booking.stock)
+            stock = Stock.query.one()
+            print('stock dans le test 2 : ', stock.bookings)
+
+
+            mock_libraires_api_response.return_value = iter([{
+                "ref": "9780199536986",
+                "available": 66,
+                "price": 0
+            }])
+
+            # When
+            libraires_stocks.updateObjects()
+
+            # Then
+            stocks = Stock.query.all()
+            assert len(stocks) == 1
+            booking = Booking.query.first()
+            print(booking.quantity)
+            assert stocks[0].available == 8
+
 
     class WhenSynchronizedTwiceTest:
         @clean_database

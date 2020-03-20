@@ -73,7 +73,14 @@ class LibrairesStocks(LocalProvider):
         offer.isActive = offer_has_available_stock
 
     def fill_stock_attributes(self, stock: Stock):
-        stock.available = self.libraires_stock['available']
+        print("stock in update ", stock)
+        print("offer ", stock.offer)
+        print("bookings ", stock.bookings)
+        print("bookingsQ ", stock.bookingsQuantity)
+        print("available ", self.libraires_stock['available'])
+
+
+        stock.available = self.libraires_stock['available'] + stock.bookingsQuantity
         stock.bookingLimitDatetime = None
         stock.offerId = self.offer_id
         stock.price = self.libraires_stock['price']
