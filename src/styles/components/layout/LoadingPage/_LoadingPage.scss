@@ -1,0 +1,17 @@
+.loading-page {
+  position: absolute;
+  background: linear-gradient(to right, $teaser-gradient-start, $teaser-gradient-end);
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+
+  p {
+    text-align: center;
+  }
+}

@@ -1,6 +1,7 @@
 import { requestData as defaultRequestData } from 'fetch-normalize-data'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
+import LoadingPage from '../../../layout/LoadingPage/LoadingPage'
 
 import resolveCurrentUser from './resolveCurrentUser'
 
@@ -82,7 +83,7 @@ export default (config = {}) => WrappedComponent => {
       const { canRenderChildren, currentUser } = this.state
 
       if (!canRenderChildren || (isRequired && !currentUser)) {
-        return null
+        return <LoadingPage />
       }
 
       return (<WrappedComponent
