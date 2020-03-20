@@ -1645,3 +1645,28 @@ class CountNotCancelledBookingsQuantityByStocksTest:
         # Then
         assert result == 15
 
+    def test_should_return_0_when_no_bookings_found(self, app):
+        # Given
+        user = create_user()
+        create_deposit(user)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        stock = create_stock(offer=offer)
+
+        repository.save(stock)
+
+        # When
+        result = booking_queries.count_not_cancelled_bookings_quantity_by_stocks(stock.id)
+
+        # Then
+        assert result == 0
+
+    def test_should_return_0_when_no_stock_id(self, app):
+        # When
+        result = booking_queries.count_not_cancelled_bookings_quantity_by_stocks(None)
+
+        # Then
+        assert result == 0
+
+
