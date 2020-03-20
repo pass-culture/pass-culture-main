@@ -7,8 +7,8 @@ Create Date: 2020-03-10 10:00:36.296104
 """
 import enum
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '1f446f8a334d'
@@ -39,7 +39,8 @@ def upgrade():
                        'UPDATE_DISCOVERY_VIEW',
                        'UPDATE_BOOKING_USED',
                        'WEBAPP_SIGNUP',
-                       'RECOMMENDATIONS_WITH_DISCOVERY_VIEW')
+                       'RECOMMENDATIONS_WITH_DISCOVERY_VIEW',
+                       'RECOMMENDATIONS_WITH_DIGITAL_FIRST')
 
     new_values = ('BENEFICIARIES_IMPORT',
                   'DEGRESSIVE_REIMBURSEMENT_RATE',
@@ -59,6 +60,7 @@ def upgrade():
                   'UPDATE_BOOKING_USED',
                   'WEBAPP_SIGNUP',
                   'RECOMMENDATIONS_WITH_DISCOVERY_VIEW',
+                  'RECOMMENDATIONS_WITH_DIGITAL_FIRST'
                   'RECOMMENDATIONS_WITH_GEOLOCATION')
 
     previous_enum = sa.Enum(*previous_values, name='featuretoggle')
@@ -66,17 +68,17 @@ def upgrade():
     temporary_enum = sa.Enum(*new_values, name='tmp_featuretoggle')
 
     temporary_enum.create(op.get_bind(), checkfirst=False)
-    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle'
-               ' USING name::text::tmp_featuretoggle')
+    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE TMP_FEATURETOGGLE'
+               ' USING name::TEXT::TMP_FEATURETOGGLE')
     previous_enum.drop(op.get_bind(), checkfirst=False)
     new_enum.create(op.get_bind(), checkfirst=False)
-    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle'
-               ' USING name::text::featuretoggle')
+    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE FEATURETOGGLE'
+               ' USING name::TEXT::FEATURETOGGLE')
     op.execute("""
         INSERT INTO feature (name, description, "isActive")
         VALUES ('%s', '%s', FALSE);
         """ % (
-    FeatureToggle.RECOMMENDATIONS_WITH_GEOLOCATION.name, FeatureToggle.RECOMMENDATIONS_WITH_GEOLOCATION.value))
+        FeatureToggle.RECOMMENDATIONS_WITH_GEOLOCATION.name, FeatureToggle.RECOMMENDATIONS_WITH_GEOLOCATION.value))
     temporary_enum.drop(op.get_bind(), checkfirst=False)
 
 
@@ -98,7 +100,8 @@ def downgrade():
                        'UPDATE_DISCOVERY_VIEW',
                        'UPDATE_BOOKING_USED',
                        'WEBAPP_SIGNUP',
-                       'RECOMMENDATIONS_WITH_DISCOVERY_VIEW')
+                       'RECOMMENDATIONS_WITH_DISCOVERY_VIEW',
+                       'RECOMMENDATIONS_WITH_DIGITAL_FIRST')
 
     new_values = ('BENEFICIARIES_IMPORT',
                   'DEGRESSIVE_REIMBURSEMENT_RATE',
@@ -118,6 +121,7 @@ def downgrade():
                   'UPDATE_BOOKING_USED',
                   'WEBAPP_SIGNUP',
                   'RECOMMENDATIONS_WITH_DISCOVERY_VIEW',
+                  'RECOMMENDATIONS_WITH_DIGITAL_FIRST',
                   'RECOMMENDATIONS_WITH_GEOLOCATION')
 
     previous_enum = sa.Enum(*previous_values, name='featuretoggle')
@@ -126,10 +130,10 @@ def downgrade():
 
     op.execute("DELETE FROM feature WHERE name = 'RECOMMENDATIONS_WITH_GEOLOCATION'")
     temporary_enum.create(op.get_bind(), checkfirst=False)
-    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle'
-               ' USING name::text::tmp_featuretoggle')
+    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE TMP_FEATURETOGGLE'
+               ' USING name::TEXT::TMP_FEATURETOGGLE')
     previous_enum.drop(op.get_bind(), checkfirst=False)
     new_enum.create(op.get_bind(), checkfirst=False)
-    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle'
-               ' USING name::text::featuretoggle')
+    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE FEATURETOGGLE'
+               ' USING name::TEXT::FEATURETOGGLE')
     temporary_enum.drop(op.get_bind(), checkfirst=False)
