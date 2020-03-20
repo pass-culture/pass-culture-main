@@ -14,7 +14,7 @@ from repository.beneficiary_import_queries import is_already_imported, save_bene
     find_applications_ids_to_retry
 from repository.user_queries import find_by_civility, find_user_by_email
 from utils.logger import logger
-from utils.mailing import send_raw_email
+from utils.mailing import send_raw_email, MailServiceException
 
 TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_TOKEN', None)
 PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID', None)
@@ -118,7 +118,10 @@ def _process_creation(error_messages, information, new_beneficiaries):
             user=new_beneficiary
         )
         new_beneficiaries.append(new_beneficiary)
+    try:
         send_activation_email(new_beneficiary, send_raw_email)
+    except MailServiceException as e:
+        logger.error('Mail send_activation_email failure', e)
 
 
 def _process_duplication(duplicate_users, error_messages, information):
