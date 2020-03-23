@@ -457,7 +457,7 @@ describe('components | Filters', () => {
       })
 
       describe('offer type', () => {
-        it('should display a "Type d\'offre" title for offer types filter', () => {
+        it('should display a "Type d\'offres" title for offer types filter', () => {
           // given
           props.history.location.pathname = '/recherche-offres/filtres'
 
@@ -465,7 +465,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const title = wrapper.findWhere(node => node.text() === 'Type d\'offre').first()
+          const title = wrapper.findWhere(node => node.text() === 'Type d\'offres').first()
           expect(title).toHaveLength(1)
         })
 

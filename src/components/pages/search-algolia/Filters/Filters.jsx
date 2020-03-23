@@ -204,11 +204,11 @@ export class Filters extends PureComponent {
                 >
                   {this.buildGeolocationFilter()}
                 </button>
-                <div className="sf-filter-separator" />
+                <span className="sf-filter-separator" />
               </li>
               <li>
                 <h4 className='sf-offer-type-title'>
-                  {'Type d\'offre'}
+                  {'Type d\'offres'}
                 </h4>
                 {numberOfOfferTypesSelected > 0 && (
                   <span className='sf-offer-type-counter'>
@@ -225,7 +225,7 @@ export class Filters extends PureComponent {
                     onChange={this.handleOnChange}
                   />
                 </div>
-                <div className="sf-filter-separator" />
+                <span className="sf-filter-separator" />
               </li>
             </ul>
             <div className="sf-button-wrapper">

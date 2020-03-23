@@ -26,13 +26,14 @@
   overflow-y: auto;
 
   .sf-geolocation-title {
+    font-size: rem(18px);
     font-weight: 500;
   }
 
   .sf-geolocation-button {
     color: black;
     font-size: rem(16px);
-    font-weight: 600;
+    font-weight: 700;
     margin-top: rem(20px);
   }
 
@@ -71,6 +72,7 @@
 }
 
 .sf-filter-separator {
-  border: rem(0.5px) solid $grey-even-more-light;
+  border-top: rem(1px) solid $grey-even-more-light;
+  display: block;
   margin-top: rem(20px);
 }

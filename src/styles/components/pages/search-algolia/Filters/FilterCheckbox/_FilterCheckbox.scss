@@ -1,6 +1,7 @@
 .fc-label {
   border: 2px solid $grey-even-more-light;
   border-radius: 24px;
+  cursor: pointer;
   display: inline-block;
   font-size: rem(16px);
   font-weight: 700;
@@ -9,14 +10,17 @@
 
 .fc-icon-check {
   height: rem(16px);
-  margin-right: rem(5px);
+  margin-right: rem(3px);
+  margin-top: rem(3px);
+  vertical-align: top;
   width: rem(16px);
 }
 
 .fc-label-checked {
   border: 2px solid $primary;
-  border-radius: 24px;
+  border-radius: rem(24px);
   color: $primary;
+  cursor: pointer;
   display: inline-block;
   font-weight: 700;
   font-size: rem(16px);
