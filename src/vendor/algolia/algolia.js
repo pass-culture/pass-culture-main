@@ -9,14 +9,13 @@ import { FACETS } from './facets'
 import { FILTERS } from './filters'
 
 export const fetchAlgolia = ({
-                               categories = [],
-                               geolocationCoordinates = null,
-                               indexSuffix = '',
-                               keywords = '',
-                               offerTypes = null,
-                               page = 0,
-                             } = {}
-) => {
+  categories = [],
+  geolocationCoordinates = null,
+  indexSuffix = '',
+  keywords = '',
+  offerTypes = null,
+  page = 0,
+} = {}) => {
   const searchParameters = {
     page: page,
     ...buildFacetFilters(categories, offerTypes),
@@ -47,12 +46,12 @@ const buildFacetFilters = (categories, offerTypes) => {
   }
 
   return {
-    facetFilters: facetFilters
+    facetFilters,
   }
 }
 
 const _buildCategoriesPredicate = categories => {
-  return categories.map(category => `${FACETS.OFFER_LABEL}:${category}`)
+  return categories.map(category => `${FACETS.OFFER_CATEGORY}:${category}`)
 }
 
 const _buildOfferTypesPredicate = offerTypes => {

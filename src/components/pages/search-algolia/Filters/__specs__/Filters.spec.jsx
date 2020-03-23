@@ -1,13 +1,13 @@
 import { mount, shallow } from 'enzyme'
+import { createBrowserHistory } from 'history'
 import React from 'react'
-import { Filters } from '../Filters'
+import { Router } from 'react-router'
+import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
+import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import { Criteria } from '../../Criteria/Criteria'
 import { GEOLOCATION_CRITERIA } from '../../Criteria/criteriaEnums'
-import HeaderContainer from '../../../../layout/Header/HeaderContainer'
-import { Router } from 'react-router'
-import { createBrowserHistory } from 'history'
-import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import FilterCheckbox from '../FilterCheckbox/FilterCheckbox'
+import { Filters } from '../Filters'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
@@ -19,42 +19,42 @@ describe('components | Filters', () => {
     props = {
       geolocation: {
         latitude: 40,
-        longitude: 41
+        longitude: 41,
       },
       history: {
         location: {
           pathname: '',
-          search: ''
+          search: '',
         },
         listen: jest.fn(),
         push: jest.fn(),
-        replace: jest.fn()
+        replace: jest.fn(),
       },
       initialFilters: {
-        categories: ['Musée', 'Cinéma'],
+        offerCategories: ['VISITE', 'CINEMA'],
         isSearchAroundMe: false,
         offerTypes: {
-          isDigital: false
+          isDigital: false,
         },
-        sortCriteria: '_by_price'
+        sortCriteria: '_by_price',
       },
       isGeolocationEnabled: false,
       isUserAllowedToSelectCriterion: jest.fn(),
       match: {
-        params: {}
+        params: {},
       },
       offers: {
         hits: [],
         nbHits: 0,
-        nbPages: 0
+        nbPages: 0,
       },
       query: {
-        parse: jest.fn()
+        parse: jest.fn(),
       },
       redirectToSearchFiltersPage: jest.fn(),
       showFailModal: jest.fn(),
       updateFilteredOffers: jest.fn(),
-      updateFilters: jest.fn()
+      updateFilters: jest.fn(),
     }
   })
 
@@ -71,7 +71,9 @@ describe('components | Filters', () => {
         // then
         const criteria = wrapper.find(Criteria)
         expect(criteria).toHaveLength(1)
-        expect(criteria.prop('backTo')).toStrictEqual('/recherche-offres/resultats/filtres?mots-cles=librairie')
+        expect(criteria.prop('backTo')).toStrictEqual(
+          '/recherche-offres/resultats/filtres?mots-cles=librairie'
+        )
         expect(criteria.prop('criteria')).toStrictEqual(GEOLOCATION_CRITERIA)
         expect(criteria.prop('history')).toStrictEqual(props.history)
         expect(criteria.prop('match')).toStrictEqual(props.match)
@@ -101,9 +103,9 @@ describe('components | Filters', () => {
           props.isUserAllowedToSelectCriterion.mockReturnValue(true)
           props.query.parse.mockReturnValue({
             'autour-de-moi': 'non',
-            'categories': 'Musée;Cinéma',
+            categories: 'VISITE;CINEMA',
             'mots-cles': 'librairie',
-            'tri': '_by_price'
+            tri: '_by_price',
           })
           fetchAlgolia.mockReturnValue(
             new Promise(resolve => {
@@ -119,14 +121,17 @@ describe('components | Filters', () => {
               <Filters {...props} />
             </Router>
           )
-          const everywhereButton = wrapper.find(Criteria).find('button').at(0)
+          const everywhereButton = wrapper
+            .find(Criteria)
+            .find('button')
+            .first()
 
           // when
           everywhereButton.simulate('click')
 
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith({
-            categories: ['Musée', 'Cinéma'],
+            categories: ['VISITE', 'CINEMA'],
             geolocationCoordinates: null,
             indexSuffix: '_by_price',
             keywords: 'librairie',
@@ -134,7 +139,9 @@ describe('components | Filters', () => {
             page: 0,
           })
           expect(props.redirectToSearchFiltersPage).toHaveBeenCalledWith()
-          expect(props.history.replace).toHaveBeenCalledWith({ search: '?mots-cles=librairie&autour-de-moi=non&tri=_by_price&categories=Musée;Cinéma' })
+          expect(props.history.replace).toHaveBeenCalledWith({
+            search: '?mots-cles=librairie&autour-de-moi=non&tri=_by_price&categories=VISITE;CINEMA',
+          })
         })
       })
 
@@ -145,17 +152,17 @@ describe('components | Filters', () => {
           jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
           props.history.location.pathname = '/recherche-offres/resultats/filtres/localisation'
           props.initialFilters = {
-            categories: ['Musée'],
+            offerCategories: ['VISITE'],
             isSearchAroundMe: false,
             offerTypes: { isDigital: false },
-            sortCriteria: '_by_price'
+            sortCriteria: '_by_price',
           }
           props.isUserAllowedToSelectCriterion.mockReturnValue(true)
           props.query.parse.mockReturnValue({
             'autour-de-moi': 'oui',
-            'categories': 'Musée',
+            categories: 'VISITE',
             'mots-cles': 'librairie',
-            'tri': '_by_price'
+            tri: '_by_price',
           })
           fetchAlgolia.mockReturnValue(
             new Promise(resolve => {
@@ -171,14 +178,17 @@ describe('components | Filters', () => {
               <Filters {...props} />
             </Router>
           )
-          const aroundMeButton = wrapper.find(Criteria).find('button').at(1)
+          const aroundMeButton = wrapper
+            .find(Criteria)
+            .find('button')
+            .at(1)
 
           // when
           aroundMeButton.simulate('click')
 
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith({
-            categories: ['Musée'],
+            categories: ['VISITE'],
             geolocationCoordinates: { latitude: 40, longitude: 41 },
             indexSuffix: '_by_price',
             keywords: 'librairie',
@@ -186,7 +196,9 @@ describe('components | Filters', () => {
             page: 0,
           })
           expect(props.redirectToSearchFiltersPage).toHaveBeenCalledWith()
-          expect(props.history.replace).toHaveBeenCalledWith({ search: '?mots-cles=librairie&autour-de-moi=oui&tri=_by_price&categories=Musée' })
+          expect(props.history.replace).toHaveBeenCalledWith({
+            search: '?mots-cles=librairie&autour-de-moi=oui&tri=_by_price&categories=VISITE',
+          })
         })
       })
     })
@@ -203,7 +215,9 @@ describe('components | Filters', () => {
         // then
         const header = wrapper.find(HeaderContainer)
         expect(header).toHaveLength(1)
-        expect(header.prop('backTo')).toStrictEqual('/recherche-offres/resultats?mots-cles=librairie')
+        expect(header.prop('backTo')).toStrictEqual(
+          '/recherche-offres/resultats?mots-cles=librairie'
+        )
         expect(header.prop('closeTo')).toBeNull()
         expect(header.prop('reset')).toStrictEqual(expect.any(Function))
         expect(header.prop('title')).toStrictEqual('Filtrer')
@@ -218,7 +232,9 @@ describe('components | Filters', () => {
         const wrapper = shallow(<Filters {...props} />)
 
         // then
-        const numberOfResults = wrapper.findWhere(node => node.text() === 'Afficher les 10 résultats').first()
+        const numberOfResults = wrapper
+          .findWhere(node => node.text() === 'Afficher les 10 résultats')
+          .first()
         expect(numberOfResults).toHaveLength(1)
       })
 
@@ -231,7 +247,9 @@ describe('components | Filters', () => {
         const wrapper = shallow(<Filters {...props} />)
 
         // then
-        const numberOfResults = wrapper.findWhere(node => node.text() === 'Afficher les 999+ résultats').first()
+        const numberOfResults = wrapper
+          .findWhere(node => node.text() === 'Afficher les 999+ résultats')
+          .first()
         expect(numberOfResults).toHaveLength(1)
       })
 
@@ -246,7 +264,11 @@ describe('components | Filters', () => {
         resultsButton.simulate('click')
 
         // then
-        expect(props.updateFilteredOffers).toHaveBeenCalledWith({ hits: [], nbHits: 1000, nbPages: 0 })
+        expect(props.updateFilteredOffers).toHaveBeenCalledWith({
+          hits: [],
+          nbHits: 1000,
+          nbPages: 0,
+        })
       })
 
       it('should redirect to results page with query param when clicking on display results button', () => {
@@ -260,7 +282,9 @@ describe('components | Filters', () => {
         resultsButton.simulate('click')
 
         // then
-        expect(props.history.push).toHaveBeenCalledWith('/recherche-offres/resultats?mots-cles=librairie')
+        expect(props.history.push).toHaveBeenCalledWith(
+          '/recherche-offres/resultats?mots-cles=librairie'
+        )
       })
 
       it('should redirect to results page with no query param when clicking on display results button', () => {
@@ -287,10 +311,10 @@ describe('components | Filters', () => {
 
         // then
         expect(props.updateFilters).toHaveBeenCalledWith({
-          categories: ['Musée', 'Cinéma'],
+          offerCategories: ['VISITE', 'CINEMA'],
           isSearchAroundMe: false,
           offerTypes: { isDigital: false },
-          sortCriteria: '_by_price'
+          sortCriteria: '_by_price',
         })
       })
 
@@ -345,7 +369,9 @@ describe('components | Filters', () => {
           button.simulate('click')
 
           // then
-          expect(props.history.push).toHaveBeenCalledWith('/recherche-offres/resultats/filtres/localisation?mots-cles=librairie')
+          expect(props.history.push).toHaveBeenCalledWith(
+            '/recherche-offres/resultats/filtres/localisation?mots-cles=librairie'
+          )
         })
 
         it('should redirect to localisation filter page with no query params when clicking on geolocation filter button', () => {
@@ -359,7 +385,9 @@ describe('components | Filters', () => {
           button.simulate('click')
 
           // then
-          expect(props.history.push).toHaveBeenCalledWith('/recherche-offres/resultats/filtres/localisation')
+          expect(props.history.push).toHaveBeenCalledWith(
+            '/recherche-offres/resultats/filtres/localisation'
+          )
         })
       })
 
@@ -371,13 +399,13 @@ describe('components | Filters', () => {
             jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
             props.history.location.pathname = '/recherche-offres/resultats/filtres'
             props.initialFilters = {
-              categories: ['Musée'],
+              offerCategories: ['VISITE'],
               isSearchAroundMe: true,
               offerTypes: { isDigital: false },
-              sortCriteria: '_by_price'
+              sortCriteria: '_by_price',
             }
             props.query.parse.mockReturnValue({
-              'mots-cles': 'librairie'
+              'mots-cles': 'librairie',
             })
             fetchAlgolia.mockReturnValue(
               new Promise(resolve => {
@@ -393,19 +421,22 @@ describe('components | Filters', () => {
                 <Filters {...props} />
               </Router>
             )
-            const resetButton = wrapper.find(HeaderContainer).find('.reset-button').first()
+            const resetButton = wrapper
+              .find(HeaderContainer)
+              .find('.reset-button')
+              .first()
 
             // when
             resetButton.simulate('click')
 
             // then
             expect(fetchAlgolia).toHaveBeenCalledWith({
-              categories: ['Musée'],
+              categories: ['VISITE'],
               geolocationCoordinates: { latitude: 40, longitude: 41 },
               indexSuffix: '_by_price',
               keywords: 'librairie',
               offerTypes: { isDigital: false },
-              page: 0
+              page: 0,
             })
           })
         })
@@ -416,13 +447,13 @@ describe('components | Filters', () => {
             jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
             props.history.location.pathname = '/recherche-offres/resultats/filtres'
             props.initialFilters = {
-              categories: ['Musée', 'Cinéma'],
+              offerCategories: ['VISITE', 'CINEMA'],
               isSearchAroundMe: true,
               offerTypes: { isDigital: true },
-              sortCriteria: '_by_price'
+              sortCriteria: '_by_price',
             }
             props.query.parse.mockReturnValue({
-              'mots-cles': 'librairie'
+              'mots-cles': 'librairie',
             })
             fetchAlgolia.mockReturnValue(
               new Promise(resolve => {
@@ -438,14 +469,17 @@ describe('components | Filters', () => {
                 <Filters {...props} />
               </Router>
             )
-            const resetButton = wrapper.find(HeaderContainer).find('.reset-button').first()
+            const resetButton = wrapper
+              .find(HeaderContainer)
+              .find('.reset-button')
+              .first()
 
             // when
             resetButton.simulate('click')
 
             // then
             expect(fetchAlgolia).toHaveBeenCalledWith({
-              categories: ['Musée', 'Cinéma'],
+              categories: ['VISITE', 'CINEMA'],
               geolocationCoordinates: { latitude: 40, longitude: 41 },
               indexSuffix: '_by_price',
               keywords: 'librairie',
@@ -465,7 +499,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const title = wrapper.findWhere(node => node.text() === 'Type d\'offres').first()
+          const title = wrapper.findWhere(node => node.text() === "Type d'offre").first()
           expect(title).toHaveLength(1)
         })
 
@@ -476,6 +510,7 @@ describe('components | Filters', () => {
 
           // when
           const wrapper = shallow(<Filters {...props} />)
+          wrapper.setState({ areCategoriesVisible: false })
 
           // then
           const filterCheckbox = wrapper.find(FilterCheckbox)
@@ -495,6 +530,7 @@ describe('components | Filters', () => {
 
           // when
           const wrapper = shallow(<Filters {...props} />)
+          wrapper.setState({ areCategoriesVisible: false })
 
           // then
           const filterCheckbox = wrapper.find(FilterCheckbox)
@@ -512,7 +548,9 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const numberOfOfferTypesSelected = wrapper.findWhere(node => node.text() === '(1)').first()
+          const numberOfOfferTypesSelected = wrapper
+            .findWhere(node => node.text() === '(1)')
+            .first()
           expect(numberOfOfferTypesSelected).toHaveLength(1)
         })
 
@@ -525,8 +563,183 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const numberOfOfferTypesSelected = wrapper.findWhere(node => node.text() === '(1)').first()
+          const numberOfOfferTypesSelected = wrapper
+            .findWhere(node => node.text() === '(1)')
+            .first()
           expect(numberOfOfferTypesSelected).toHaveLength(0)
+        })
+      })
+
+      describe('offer categories', () => {
+        it('should display an accessible "Catégories" title button for offer categories filter', () => {
+          // given
+          props.history.location.pathname = '/recherche-offres/filtres'
+
+          // when
+          const wrapper = shallow(<Filters {...props} />)
+
+          // then
+          const categoriesTitle = wrapper.find({ children: 'Catégories' })
+          const categoriesTitleButton = wrapper.find('button[aria-label="Afficher les catégories"]')
+          expect(categoriesTitle).toHaveLength(1)
+          expect(categoriesTitleButton.prop('aria-label')).toBe('Afficher les catégories')
+          expect(categoriesTitleButton.prop('aria-pressed')).toBe(true)
+        })
+
+        it('should not render FilterCheckbox component when categories filter toggled hidden', () => {
+          // given
+          props.history.location.pathname = '/recherche-offres/filtres'
+          props.initialFilters.offerCategories = []
+          const wrapper = shallow(<Filters {...props} />)
+          const categoriesButton = wrapper.findWhere(node => node.text() === 'Catégories').first()
+          const categoriesWrapper = wrapper.find('[data-test="sf-categories-filter-wrapper"]')
+          const filterCheckboxBeforeClick = categoriesWrapper.find(FilterCheckbox)
+          const categoriesButtonClassNameBeforeClick = categoriesButton.prop('className')
+
+          // when
+          categoriesButton.simulate('click')
+
+          // then
+          const categoriesWrapperAfterClick = wrapper.find(
+            '[data-test="sf-categories-filter-wrapper"]'
+          )
+          const filterCheckboxAfterClick = categoriesWrapperAfterClick.find(FilterCheckbox)
+          expect(filterCheckboxBeforeClick).toHaveLength(11)
+          expect(filterCheckboxAfterClick).toHaveLength(0)
+
+          const categoriesButtonAfterClick = wrapper
+            .findWhere(node => node.text() === 'Catégories')
+            .at(1)
+          expect(categoriesButtonClassNameBeforeClick).toBe('sf-title-wrapper sf-title-drop-down')
+          expect(categoriesButtonAfterClick.prop('className')).toBe(
+            'sf-title-wrapper sf-title-drop-down-flipped'
+          )
+        })
+
+        it('should render one unchecked FilterCheckbox component for each Category Criteria when no category is selected', () => {
+          // given
+          props.history.location.pathname = '/recherche-offres/filtres'
+          props.initialFilters.offerCategories = []
+
+          // when
+          const wrapper = shallow(<Filters {...props} />)
+
+          // then
+          const cinemaFilterCheckbox = wrapper.find('FilterCheckbox[label="Cinéma"]')
+          expect(cinemaFilterCheckbox.prop('checked')).toBe(false)
+          expect(cinemaFilterCheckbox.prop('className')).toBe('fc-label')
+          expect(cinemaFilterCheckbox.prop('id')).toBe('CINEMA')
+          expect(cinemaFilterCheckbox.prop('label')).toBe('Cinéma')
+          expect(cinemaFilterCheckbox.prop('name')).toBe('CINEMA')
+          expect(cinemaFilterCheckbox.prop('onChange')).toStrictEqual(expect.any(Function))
+          expect(wrapper.find('FilterCheckbox[label="Visites, expositions"]').prop('checked')).toBe(
+            false
+          )
+          expect(wrapper.find('FilterCheckbox[label="Musique"]').prop('checked')).toBe(false)
+          expect(wrapper.find('FilterCheckbox[label="Spectacles"]').prop('checked')).toBe(false)
+          expect(wrapper.find('FilterCheckbox[label="Cours, ateliers"]').prop('checked')).toBe(
+            false
+          )
+          expect(wrapper.find('FilterCheckbox[label="Livres"]').prop('checked')).toBe(false)
+          expect(
+            wrapper.find('FilterCheckbox[label="Films, séries, podcasts"]').prop('checked')
+          ).toBe(false)
+          expect(wrapper.find('FilterCheckbox[label="Presse"]').prop('checked')).toBe(false)
+          expect(wrapper.find('FilterCheckbox[label="Jeux vidéos"]').prop('checked')).toBe(false)
+          expect(
+            wrapper.find('FilterCheckbox[label="Conférences, rencontres"]').prop('checked')
+          ).toBe(false)
+          expect(
+            wrapper.find('FilterCheckbox[label="Instruments de musique"]').prop('checked')
+          ).toBe(false)
+        })
+
+        it('should not render FilterCheckbox component for "Toutes les catégories" Criteria', () => {
+          // given
+          props.history.location.pathname = '/recherche-offres/filtres'
+          props.initialFilters.offerCategories = []
+
+          // when
+          const wrapper = shallow(<Filters {...props} />)
+
+          // then
+          const allCategoriesFilterCheckbox = wrapper.find(
+            'FilterCheckbox[label="Toutes les catégories"]'
+          )
+          expect(allCategoriesFilterCheckbox).toHaveLength(0)
+        })
+
+        it('should render a FilterCheckbox component checked when category is selected', () => {
+          // given
+          props.history.location.pathname = '/recherche-offres/filtres'
+          props.initialFilters.offerCategories = ['CINEMA', 'LIVRE']
+
+          // when
+          const wrapper = shallow(<Filters {...props} />)
+
+          // then
+          const categoriesWrapper = wrapper.find('[data-test="sf-categories-filter-wrapper"]')
+          const filterCheckbox = categoriesWrapper.find(FilterCheckbox)
+          expect(filterCheckbox.at(0).prop('checked')).toBe(true)
+          expect(filterCheckbox.at(0).prop('label')).toBe('Cinéma')
+          expect(filterCheckbox.at(0).prop('className')).toBe('fc-label-checked')
+          expect(filterCheckbox.at(1).prop('checked')).toBe(false)
+          expect(filterCheckbox.at(2).prop('checked')).toBe(false)
+          expect(filterCheckbox.at(3).prop('checked')).toBe(false)
+          expect(filterCheckbox.at(4).prop('checked')).toBe(false)
+          expect(filterCheckbox.at(5).prop('checked')).toBe(true)
+          expect(filterCheckbox.at(5).prop('label')).toBe('Livres')
+          expect(filterCheckbox.at(5).prop('className')).toBe('fc-label-checked')
+          expect(filterCheckbox.at(6).prop('checked')).toBe(false)
+          expect(filterCheckbox.at(7).prop('checked')).toBe(false)
+          expect(filterCheckbox.at(8).prop('checked')).toBe(false)
+          expect(filterCheckbox.at(9).prop('checked')).toBe(false)
+          expect(filterCheckbox.at(10).prop('checked')).toBe(false)
+        })
+
+        it('should display the number of selected categories', () => {
+          // given
+          props.history.location.pathname = '/recherche-offres/filtres'
+          props.initialFilters.offerCategories = ['CINEMA', 'LIVRE', 'VISITE']
+
+          // when
+          const wrapper = shallow(<Filters {...props} />)
+
+          // then
+          const numberOfOfferTypesSelected = wrapper
+            .findWhere(node => node.text() === '(3)')
+            .first()
+          expect(numberOfOfferTypesSelected).toHaveLength(1)
+        })
+
+        it('should not display the number of offer types selected when no filter is selected', () => {
+          // given
+          props.history.location.pathname = '/recherche-offres/filtres'
+          props.initialFilters.offerCategories = []
+
+          // when
+          const wrapper = shallow(<Filters {...props} />)
+
+          // then
+          const numberOfOfferTypesSelected = wrapper
+            .findWhere(node => node.text() === '(0)')
+            .first()
+          expect(numberOfOfferTypesSelected).toHaveLength(0)
+        })
+
+        it('should transform array of categories received from props into an object in state', () => {
+          // Given
+          props.history.location.pathname = '/recherche-offres/filtres'
+          props.initialFilters.offerCategories = ['CINEMA', 'VISITE']
+
+          // When
+          const wrapper = shallow(<Filters {...props} />)
+
+          // Then
+          expect(wrapper.state().filters.offerCategories).toStrictEqual({
+            CINEMA: true,
+            VISITE: true,
+          })
         })
       })
     })

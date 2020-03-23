@@ -25,16 +25,28 @@
   padding: rem(24px);
   overflow-y: auto;
 
-  .sf-geolocation-title {
+  .sf-title {
+    display: inline-block;
     font-size: rem(18px);
     font-weight: 500;
   }
 
   .sf-geolocation-button {
+    display: block;
     color: black;
     font-size: rem(16px);
     font-weight: 700;
     margin-top: rem(20px);
+  }
+
+  .sf-filter-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: rem(20px);
+
+    li {
+      margin: rem(6px);
+    }
   }
 
   .sf-offer-type-title {
@@ -48,11 +60,32 @@
     margin-top: rem(20px);
   }
 
-  .sf-offer-type-counter {
+  .sf-selected-filter-counter {
     color: $primary-error;
     font-size: rem(18px);
     font-weight: 500;
     margin-left: rem(5px);
+  }
+
+  .sf-title-wrapper {
+    color: inherit;
+    display: flex;
+    width: 100%;
+    font-size: rem(18px);
+    font-weight: 500;
+    margin-top: rem(20px);
+
+    h4 {
+      font-weight: inherit;
+    }
+  }
+
+  .sf-title-drop-down {
+    background: no-repeat right url('/icons/picto-drop-down.svg');
+  }
+
+  .sf-title-drop-down-flipped {
+    background: no-repeat right url('/icons/picto-drop-down-flipped.svg');
   }
 }
 

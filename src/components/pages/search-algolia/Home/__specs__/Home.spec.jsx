@@ -15,13 +15,14 @@ describe('components | Home', () => {
         filters: [],
         icon: 'ico-gem-stone',
         label: 'Toutes les catégories',
+        facetFilter: '',
       },
       geolocationCriterion: {
         isSearchAroundMe: false,
         params: {
           icon: 'ico-globe',
           label: 'Partout',
-          requiresGeolocation: false
+          requiresGeolocation: false,
         },
       },
       history: {
@@ -31,7 +32,7 @@ describe('components | Home', () => {
         index: '',
         icon: 'ico-random',
         label: 'Au hasard',
-        requiresGeolocation: false
+        requiresGeolocation: false,
       },
     }
   })
@@ -103,7 +104,7 @@ describe('components | Home', () => {
   it('should redirect to result page when search is triggered with no search around me', () => {
     // given
     props.geolocationCriterion.isSearchAroundMe = false
-    props.categoryCriterion.filters = ['Musée', 'Cinéma']
+    props.categoryCriterion.facetFilter = 'CINEMA'
     props.sortCriterion.index = '_by_price'
     const wrapper = shallow(<Home {...props} />)
     const form = wrapper.find('form')
@@ -123,7 +124,7 @@ describe('components | Home', () => {
     // then
     expect(props.history.push).toHaveBeenCalledWith({
       pathname: '/recherche-offres/resultats',
-      search: '?mots-cles=search keyword&autour-de-moi=non&tri=_by_price&categories=Musée;Cinéma'
+      search: '?mots-cles=search keyword&autour-de-moi=non&tri=_by_price&categories=CINEMA',
     })
   })
 
@@ -148,7 +149,7 @@ describe('components | Home', () => {
     // then
     expect(props.history.push).toHaveBeenCalledWith({
       pathname: '/recherche-offres/resultats',
-      search: '?mots-cles=search keyword&autour-de-moi=oui&tri=&categories='
+      search: '?mots-cles=search keyword&autour-de-moi=oui&tri=&categories=',
     })
   })
 

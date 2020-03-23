@@ -39,7 +39,7 @@ describe('fetchAlgolia', () => {
 
     // then
     expect(search).toHaveBeenCalledWith(keywords, {
-      page: 0
+      page: 0,
     })
   })
 
@@ -61,7 +61,7 @@ describe('fetchAlgolia', () => {
       )
       expect(initIndex).toHaveBeenCalledWith(WEBAPP_ALGOLIA_INDEX_NAME)
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
@@ -74,7 +74,7 @@ describe('fetchAlgolia', () => {
 
       // then
       expect(search).toHaveBeenCalledWith('', {
-        page: 0
+        page: 0,
       })
     })
   })
@@ -98,7 +98,7 @@ describe('fetchAlgolia', () => {
       expect(search).toHaveBeenCalledWith(keywords, {
         aroundLatLng: '42, 43',
         aroundRadius: 'all',
-        page: 0
+        page: 0,
       })
     })
 
@@ -118,7 +118,7 @@ describe('fetchAlgolia', () => {
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
   })
@@ -137,32 +137,14 @@ describe('fetchAlgolia', () => {
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
     it('should call Algolia with facetFilters parameter when one category is provided', () => {
       // given
       const keywords = 'searched keywords'
-      const categories = ['Pratique artistique']
-
-      // when
-      fetchAlgolia({
-        categories: categories,
-        keywords: keywords
-      })
-
-      // then
-      expect(search).toHaveBeenCalledWith(keywords, {
-        facetFilters: [["offer.label:Pratique artistique"]],
-        page: 0,
-      })
-    })
-
-    it('should call Algolia with facetFilters parameter when multiple categories are provided', () => {
-      // given
-      const keywords = 'searched keywords'
-      const categories = ['Spectacle', 'Abonnement spectacles']
+      const categories = ['LECON']
 
       // when
       fetchAlgolia({
@@ -172,8 +154,26 @@ describe('fetchAlgolia', () => {
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        facetFilters: [["offer.label:Spectacle", "offer.label:Abonnement spectacles"]],
-        page: 0
+        facetFilters: [['offer.category:LECON']],
+        page: 0,
+      })
+    })
+
+    it('should call Algolia with facetFilters parameter when multiple categories are provided', () => {
+      // given
+      const keywords = 'searched keywords'
+      const categories = ['SPECTACLE', 'LIVRE']
+
+      // when
+      fetchAlgolia({
+        categories: categories,
+        keywords: keywords,
+      })
+
+      // then
+      expect(search).toHaveBeenCalledWith(keywords, {
+        facetFilters: [['offer.category:SPECTACLE', 'offer.category:LIVRE']],
+        page: 0,
       })
     })
   })
@@ -192,7 +192,7 @@ describe('fetchAlgolia', () => {
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
       expect(initIndex).toHaveBeenCalledWith('indexName_by_proximity')
     })
@@ -203,12 +203,12 @@ describe('fetchAlgolia', () => {
 
       // when
       fetchAlgolia({
-        keywords: keywords
+        keywords: keywords,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
       expect(initIndex).toHaveBeenCalledWith('indexName')
     })
@@ -223,12 +223,12 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerTypes: offerTypes
+        offerTypes: offerTypes,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
@@ -236,19 +236,19 @@ describe('fetchAlgolia', () => {
       // given
       const keywords = 'searched keywords'
       const offerTypes = {
-        isDigital: true
+        isDigital: true,
       }
 
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerTypes: offerTypes
+        offerTypes: offerTypes,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        facetFilters: ["offer.isDigital:true"],
-        page: 0
+        facetFilters: ['offer.isDigital:true'],
+        page: 0,
       })
     })
 
@@ -256,19 +256,19 @@ describe('fetchAlgolia', () => {
       // given
       const keywords = 'searched keywords'
       const offerTypes = {
-        isDigital: false
+        isDigital: false,
       }
 
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerTypes: offerTypes
+        offerTypes: offerTypes,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         facetFilters: [],
-        page: 0
+        page: 0,
       })
     })
   })
@@ -282,10 +282,10 @@ describe('fetchAlgolia', () => {
         latitude: 42,
         longitude: 43,
       }
-      const categories = ['Pratique artistique', 'Musée']
+      const categories = ['LECON', 'VISITE']
       const indexSuffix = '_by_price'
       const offerTypes = {
-        isDigital: true
+        isDigital: true,
       }
 
       // when
@@ -295,15 +295,15 @@ describe('fetchAlgolia', () => {
         indexSuffix: indexSuffix,
         keywords: keywords,
         offerTypes: offerTypes,
-        page: page
+        page: page,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         page: page,
-        facetFilters: [["offer.label:Pratique artistique", "offer.label:Musée"], "offer.isDigital:true"],
+        facetFilters: [['offer.category:LECON', 'offer.category:VISITE'], 'offer.isDigital:true'],
         aroundLatLng: '42, 43',
-        aroundRadius: 'all'
+        aroundRadius: 'all',
       })
       expect(initIndex).toHaveBeenCalledWith('indexName_by_price')
     })

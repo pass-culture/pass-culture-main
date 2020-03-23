@@ -73,7 +73,7 @@ class SearchAlgolia extends PureComponent {
         </Route>
         <Route path="/recherche-offres/resultats">
           <SearchResults
-            categoriesFilter={categoryCriterion.filters}
+            categoriesFilter={categoryCriterion.facetFilter ? [categoryCriterion.facetFilter] : []}
             geolocation={geolocation}
             history={history}
             isSearchAroundMe={geolocationCriterion.isSearchAroundMe}
@@ -87,7 +87,7 @@ class SearchAlgolia extends PureComponent {
         <Route path="/recherche-offres/criteres-localisation">
           <Criteria
             activeCriterionLabel={geolocationCriterion.params.label}
-            backTo='/recherche-offres'
+            backTo="/recherche-offres"
             criteria={GEOLOCATION_CRITERIA}
             history={history}
             match={match}
@@ -98,7 +98,7 @@ class SearchAlgolia extends PureComponent {
         <Route path="/recherche-offres/criteres-categorie">
           <Criteria
             activeCriterionLabel={categoryCriterion.label}
-            backTo='/recherche-offres'
+            backTo="/recherche-offres"
             criteria={CATEGORY_CRITERIA}
             history={history}
             match={match}
@@ -109,7 +109,7 @@ class SearchAlgolia extends PureComponent {
         <Route path="/recherche-offres/criteres-tri">
           <Criteria
             activeCriterionLabel={sortCriterion.label}
-            backTo='/recherche-offres'
+            backTo="/recherche-offres"
             criteria={SORT_CRITERIA}
             history={history}
             match={match}

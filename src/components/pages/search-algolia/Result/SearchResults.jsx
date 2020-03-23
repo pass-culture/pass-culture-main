@@ -9,9 +9,9 @@ import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import Icon from '../../../layout/Icon/Icon'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 import Spinner from '../../../layout/Spinner/Spinner'
+import FiltersContainer from '../Filters/FiltersContainer'
 import Result from './Result'
 import SearchAlgoliaDetailsContainer from './ResultDetail/ResultDetailContainer'
-import FiltersContainer from '../Filters/FiltersContainer'
 
 class SearchResults extends PureComponent {
   constructor(props) {
@@ -20,8 +20,9 @@ class SearchResults extends PureComponent {
       currentPage: 0,
       filters: {
         offerTypes: {
-          isDigital: false
-        }
+          isDigital: false,
+        },
+        offerCategories: this.getCategoriesFromUrlOrProps(),
       },
       keywordsToSearch: '',
       isLoading: false,
@@ -41,6 +42,14 @@ class SearchResults extends PureComponent {
     this.fetchOffers(keywords, currentPage)
   }
 
+  getCategoriesFromUrlOrProps() {
+    const { query, categoriesFilter: categoriesFromProps } = this.props
+    const queryParams = query.parse()
+    const categoriesFromUrl = queryParams['categories'] || ''
+
+    return categoriesFromUrl ? categoriesFromUrl.split(';') : categoriesFromProps
+  }
+
   showFailModal = () => {
     toast.info("La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard.")
   }
@@ -48,18 +57,20 @@ class SearchResults extends PureComponent {
   handleOnSubmit = event => {
     event.preventDefault()
     const { history, query } = this.props
-    const { searchedKeywords } = this.state
+    const { searchedKeywords, filters } = this.state
+    const { offerCategories } = filters
     const keywordsToSearch = event.target.keywords.value
     const trimmedKeywordsToSearch = keywordsToSearch.trim()
 
     const queryParams = query.parse()
     const autourDeMoi = queryParams['autour-de-moi']
-    const categories = queryParams['categories']
     const tri = queryParams['tri']
+    const categories = offerCategories.join(';')
 
-    trimmedKeywordsToSearch && history.replace({
-      search: `?mots-cles=${trimmedKeywordsToSearch}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${categories}`
-    })
+    trimmedKeywordsToSearch &&
+      history.replace({
+        search: `?mots-cles=${trimmedKeywordsToSearch}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${categories}`,
+      })
 
     if (searchedKeywords !== trimmedKeywordsToSearch) {
       this.setState(
@@ -80,7 +91,7 @@ class SearchResults extends PureComponent {
     this.fetchOffers(searchedKeywords, currentPage)
   }
 
-  updateFilteredOffers = (offers) => {
+  updateFilteredOffers = offers => {
     const { hits, nbHits, nbPages } = offers
     this.setState({
       currentPage: 0,
@@ -90,42 +101,43 @@ class SearchResults extends PureComponent {
     })
   }
 
-  updateFilters = (filters) => {
+  updateFilters = filters => {
     this.setState({
-      filters: filters
+      filters: filters,
     })
   }
 
   fetchOffers = (keywords, currentPage) => {
-    const { categoriesFilter, geolocation, isSearchAroundMe, sortingIndexSuffix } = this.props
+    const { geolocation, isSearchAroundMe, sortingIndexSuffix } = this.props
     const { filters } = this.state
-    const { offerTypes } = filters
-
+    const { offerCategories, offerTypes } = filters
     this.setState({
       isLoading: true,
     })
     const geolocationCoordinates = isSearchAroundMe ? geolocation : null
 
     fetchAlgolia({
-      categories: categoriesFilter,
+      categories: offerCategories,
       geolocationCoordinates,
       indexSuffix: sortingIndexSuffix,
       keywords,
       offerTypes,
-      page: currentPage
-    }).then(offers => {
-      const { results } = this.state
-      const { hits, nbHits, nbPages } = offers
-      this.setState({
-        currentPage: currentPage,
-        keywordsToSearch: keywords,
-        isLoading: false,
-        resultsCount: nbHits,
-        results: [...results, ...hits],
-        searchedKeywords: keywords,
-        totalPagesNumber: nbPages,
+      page: currentPage,
+    })
+      .then(offers => {
+        const { results } = this.state
+        const { hits, nbHits, nbPages } = offers
+        this.setState({
+          currentPage: currentPage,
+          keywordsToSearch: keywords,
+          isLoading: false,
+          resultsCount: nbHits,
+          results: [...results, ...hits],
+          searchedKeywords: keywords,
+          totalPagesNumber: nbPages,
+        })
       })
-    }).catch(() => {
+      .catch(() => {
         this.setState({
           isLoading: false,
         })
@@ -189,32 +201,23 @@ class SearchResults extends PureComponent {
     const queryParams = query.parse()
     const autourDeMoi = queryParams['autour-de-moi']
     const sortCriteria = queryParams['tri']
-    const categories = queryParams['categories']
-
-    const splitIfAtLeastOneCategory = categories && categories.length > 0 && categories.split(';')
 
     return {
       ...filters,
-      categories: splitIfAtLeastOneCategory,
       isSearchAroundMe: autourDeMoi === 'oui',
-      sortCriteria
+      sortCriteria,
     }
   }
 
   render() {
-    const {
-      geolocation,
-      history,
-      match,
-      query
-    } = this.props
+    const { geolocation, history, match, query } = this.props
     const {
       currentPage,
       keywordsToSearch,
       isLoading,
       results,
       resultsCount,
-      totalPagesNumber
+      totalPagesNumber,
     } = this.state
     const { location } = history
     const { search } = location
@@ -277,7 +280,7 @@ class SearchResults extends PureComponent {
               {results.length > 0 && (
                 <InfiniteScroll
                   getScrollParent={this.getScrollParent}
-                  hasMore={!isLoading && (currentPage + 1 < totalPagesNumber)}
+                  hasMore={!isLoading && currentPage + 1 < totalPagesNumber}
                   loadMore={this.fetchNextOffers}
                   pageStart={currentPage}
                   threshold={100}
@@ -310,9 +313,7 @@ class SearchResults extends PureComponent {
               </button>
             </div>
           </Route>
-          <Route
-            path="/recherche-offres/resultats/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
-          >
+          <Route path="/recherche-offres/resultats/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?">
             <HeaderContainer
               closeTitle="Retourner à la page découverte"
               closeTo="/decouverte"
@@ -351,7 +352,7 @@ SearchResults.defaultProps = {
   categoriesFilter: [],
   geolocation: { longitude: null, latitude: null },
   isSearchAroundMe: false,
-  sortingIndexSuffix: ''
+  sortingIndexSuffix: '',
 }
 
 SearchResults.propTypes = {

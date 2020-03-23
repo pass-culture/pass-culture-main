@@ -20,7 +20,7 @@ export class Home extends PureComponent {
     const { categoryCriterion, geolocationCriterion, history, sortCriterion } = this.props
     const { keywordsToSearch } = this.state
     const autourDeMoi = checkIfAroundMe(geolocationCriterion.isSearchAroundMe)
-    const categories = categoryCriterion.filters.join(';')
+    const categories = categoryCriterion.facetFilter
     const tri = sortCriterion.index
 
     history.push({
@@ -132,6 +132,7 @@ export class Home extends PureComponent {
 
 Home.propTypes = {
   categoryCriterion: PropTypes.shape({
+    facetFilter: PropTypes.string.isRequired,
     filters: PropTypes.arrayOf(String),
     icon: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,

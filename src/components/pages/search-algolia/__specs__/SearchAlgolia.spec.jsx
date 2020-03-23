@@ -46,18 +46,19 @@ describe('components | SearchAlgolia', () => {
       expect(home.prop('categoryCriterion')).toStrictEqual({
         filters: [],
         icon: 'ico-gem-stone',
-        label: 'Toutes les catégories'
+        label: 'Toutes les catégories',
+        facetFilter: '',
       })
       expect(home.prop('geolocationCriterion')).toStrictEqual({
         isSearchAroundMe: false,
-        params: { icon: 'ico-globe', label: 'Partout', requiresGeolocation: false }
+        params: { icon: 'ico-globe', label: 'Partout', requiresGeolocation: false },
       })
       expect(home.prop('history')).toStrictEqual(props.history)
       expect(home.prop('sortCriterion')).toStrictEqual({
         icon: 'ico-random',
         index: '',
         label: 'Au hasard',
-        requiresGeolocation: false
+        requiresGeolocation: false,
       })
     })
 
@@ -75,11 +76,15 @@ describe('components | SearchAlgolia', () => {
       const searchResultsComponent = resultatsRoute.find(SearchResults)
       expect(searchResultsComponent.prop('categoriesFilter')).toStrictEqual([])
       expect(searchResultsComponent.prop('geolocation')).toStrictEqual(props.geolocation)
-      expect(searchResultsComponent.prop('isSearchAroundMe')).toStrictEqual(props.isGeolocationEnabled)
+      expect(searchResultsComponent.prop('isSearchAroundMe')).toStrictEqual(
+        props.isGeolocationEnabled
+      )
       expect(searchResultsComponent.prop('history')).toStrictEqual(props.history)
       expect(searchResultsComponent.prop('match')).toStrictEqual(props.match)
       expect(searchResultsComponent.prop('query')).toStrictEqual(props.query)
-      expect(searchResultsComponent.prop('redirectToSearchMainPage')).toStrictEqual(props.redirectToSearchMainPage)
+      expect(searchResultsComponent.prop('redirectToSearchMainPage')).toStrictEqual(
+        props.redirectToSearchMainPage
+      )
       expect(searchResultsComponent.prop('search')).toStrictEqual(props.history.location.search)
       expect(searchResultsComponent.prop('sortingIndexSuffix')).toStrictEqual('')
     })
@@ -100,7 +105,9 @@ describe('components | SearchAlgolia', () => {
       expect(searchCriteriaLocation.prop('criteria')).toStrictEqual(expect.any(Object))
       expect(searchCriteriaLocation.prop('history')).toStrictEqual(props.history)
       expect(searchCriteriaLocation.prop('match')).toStrictEqual(props.match)
-      expect(searchCriteriaLocation.prop('onCriterionSelection')).toStrictEqual(expect.any(Function))
+      expect(searchCriteriaLocation.prop('onCriterionSelection')).toStrictEqual(
+        expect.any(Function)
+      )
       expect(searchCriteriaLocation.prop('title')).toStrictEqual('Localisation')
     })
 
@@ -116,11 +123,15 @@ describe('components | SearchAlgolia', () => {
       const critereCategorieRoute = routes.at(3)
       expect(critereCategorieRoute.prop('path')).toBe('/recherche-offres/criteres-categorie')
       const searchCriteriaCategory = critereCategorieRoute.find(Criteria)
-      expect(searchCriteriaCategory.prop('activeCriterionLabel')).toStrictEqual('Toutes les catégories')
+      expect(searchCriteriaCategory.prop('activeCriterionLabel')).toStrictEqual(
+        'Toutes les catégories'
+      )
       expect(searchCriteriaCategory.prop('criteria')).toStrictEqual(expect.any(Object))
       expect(searchCriteriaCategory.prop('history')).toStrictEqual(props.history)
       expect(searchCriteriaCategory.prop('match')).toStrictEqual(props.match)
-      expect(searchCriteriaCategory.prop('onCriterionSelection')).toStrictEqual(expect.any(Function))
+      expect(searchCriteriaCategory.prop('onCriterionSelection')).toStrictEqual(
+        expect.any(Function)
+      )
       expect(searchCriteriaCategory.prop('title')).toStrictEqual('Catégories')
     })
 

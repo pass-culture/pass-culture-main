@@ -1,10 +1,10 @@
-import React, { PureComponent } from 'react'
-import HeaderContainer from '../../../layout/Header/HeaderContainer'
-import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import PropTypes from 'prop-types'
-import { Criteria } from '../Criteria/Criteria'
+import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
-import { GEOLOCATION_CRITERIA } from '../Criteria/criteriaEnums'
+import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
+import HeaderContainer from '../../../layout/Header/HeaderContainer'
+import { Criteria } from '../Criteria/Criteria'
+import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA } from '../Criteria/criteriaEnums'
 import { checkIfAroundMe } from '../utils/checkIfAroundMe'
 import FilterCheckbox from './FilterCheckbox/FilterCheckbox'
 
@@ -12,16 +12,26 @@ export class Filters extends PureComponent {
   constructor(props) {
     super(props)
 
-    const { categories, isSearchAroundMe, offerTypes, sortCriteria } = props.initialFilters
+    const { isSearchAroundMe, offerTypes, sortCriteria } = props.initialFilters
     this.state = {
+      areCategoriesVisible: true,
       filters: {
-        categories: categories,
+        offerCategories: this.buildCategoriesStateFromProps(),
         isSearchAroundMe: isSearchAroundMe,
         offerTypes: offerTypes,
-        sortCriteria: sortCriteria
+        sortCriteria: sortCriteria,
       },
-      offers: props.offers
+      offers: props.offers,
     }
+  }
+
+  buildCategoriesStateFromProps = () => {
+    const { initialFilters } = this.props
+
+    return initialFilters.offerCategories.reduce((object, arrayValue) => {
+      object[arrayValue] = true
+      return object
+    }, {})
   }
 
   fetchOffers = ({ keywords, geolocation = null, categories, indexSuffix, offerTypes }) => {
@@ -32,12 +42,13 @@ export class Filters extends PureComponent {
       indexSuffix,
       keywords,
       offerTypes,
-      page: 0
-    }).then(offers => {
-      this.setState({
-        offers: offers
-      })
+      page: 0,
     })
+      .then(offers => {
+        this.setState({
+          offers: offers,
+        })
+      })
       .catch(() => {
         showFailModal()
       })
@@ -47,36 +58,44 @@ export class Filters extends PureComponent {
     const {
       isUserAllowedToSelectCriterion,
       isGeolocationEnabled,
-      redirectToSearchFiltersPage
+      redirectToSearchFiltersPage,
     } = this.props
     const { filters } = this.state
 
     if (!isUserAllowedToSelectCriterion(criterionKey, isGeolocationEnabled)) return
 
-    this.setState({
-      filters: {
-        ...filters,
-        isSearchAroundMe: GEOLOCATION_CRITERIA[criterionKey].label === GEOLOCATION_CRITERIA.AROUND_ME.label
+    this.setState(
+      {
+        filters: {
+          ...filters,
+          isSearchAroundMe:
+            GEOLOCATION_CRITERIA[criterionKey].label === GEOLOCATION_CRITERIA.AROUND_ME.label,
+        },
+      },
+      () => {
+        this.process()
+        redirectToSearchFiltersPage()
       }
-    }, () => {
-      this.process()
-      redirectToSearchFiltersPage()
-    })
+    )
   }
 
   resetFilters = () => {
     const { initialFilters } = this.props
 
-    this.setState({
-      filters: {
-        ...initialFilters,
-        offerTypes: {
-          isDigital: false
-        }
+    this.setState(
+      {
+        filters: {
+          ...initialFilters,
+          offerTypes: {
+            isDigital: false,
+          },
+          offerCategories: this.buildCategoriesStateFromProps(),
+        },
       },
-    }, () => {
-      this.process()
-    })
+      () => {
+        this.process()
+      }
+    )
   }
 
   process = () => {
@@ -85,32 +104,57 @@ export class Filters extends PureComponent {
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles'] || ''
 
-    const { categories, isSearchAroundMe, offerTypes, sortCriteria } = filters
-    isSearchAroundMe ?
-      this.fetchOffers({ keywords, geolocation, categories, indexSuffix: sortCriteria, offerTypes }) :
-      this.fetchOffers({ keywords, categories, indexSuffix: sortCriteria, offerTypes })
+    const { isSearchAroundMe, offerTypes, sortCriteria } = filters
+    const selectedCategories = this.getSelectedCategories()
+    isSearchAroundMe
+      ? this.fetchOffers({
+          keywords,
+          geolocation,
+          categories: selectedCategories,
+          indexSuffix: sortCriteria,
+          offerTypes,
+        })
+      : this.fetchOffers({
+          keywords,
+          categories: selectedCategories,
+          indexSuffix: sortCriteria,
+          offerTypes,
+        })
 
     const autourDeMoi = checkIfAroundMe(filters.isSearchAroundMe)
-    const category = filters.categories !== '' ? filters.categories.join(';') : ''
+    const categoriesQueryParam = selectedCategories.join(';') || ''
     const tri = filters.sortCriteria
     history.replace({
-      search: `?mots-cles=${keywords}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${category}`
+      search: `?mots-cles=${keywords}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${categoriesQueryParam}`,
     })
+  }
+
+  getSelectedCategories = () => {
+    const { filters } = this.state
+    const { offerCategories } = filters
+
+    return Object.keys(offerCategories).filter(categoryKey => offerCategories[categoryKey])
   }
 
   handleFilterOffers = () => {
     const { history, updateFilteredOffers, updateFilters } = this.props
-    const { location: { search = '' } } = history
+    const {
+      location: { search = '' },
+    } = history
     const { filters, offers } = this.state
+    const updatedFilters = { ...filters }
+    updatedFilters.offerCategories = this.getSelectedCategories()
 
-    updateFilters(filters)
+    updateFilters(updatedFilters)
     updateFilteredOffers(offers)
     history.push(`/recherche-offres/resultats${search}`)
   }
 
   handleToGeolocationFilter = () => {
     const { history } = this.props
-    const { location: { search = '' } } = history
+    const {
+      location: { search = '' },
+    } = history
     history.push(`/recherche-offres/resultats/filtres/localisation${search}`)
   }
 
@@ -129,45 +173,72 @@ export class Filters extends PureComponent {
 
   getActiveCriterionLabel = () => {
     const { filters } = this.state
-    return filters.isSearchAroundMe ? GEOLOCATION_CRITERIA.AROUND_ME.label : GEOLOCATION_CRITERIA.EVERYWHERE.label
+    return filters.isSearchAroundMe
+      ? GEOLOCATION_CRITERIA.AROUND_ME.label
+      : GEOLOCATION_CRITERIA.EVERYWHERE.label
   }
 
-  handleOnChange = event => {
+  handleOnTypeChange = event => {
     const { name, checked } = event.target
     const { filters } = this.state
 
-    this.setState({
-      filters: {
-        ...filters,
-        offerTypes: {
-          [name]: checked
-        }
+    this.setState(
+      {
+        filters: {
+          ...filters,
+          offerTypes: {
+            [name]: checked,
+          },
+        },
+      },
+      () => {
+        this.process()
       }
-    }, () => {
-      this.process()
-    })
+    )
   }
 
-  getNumberOfOfferTypesSelected = () => {
+  handleOnCategoryChange = event => {
+    const { name, checked } = event.target
     const { filters } = this.state
-    const { offerTypes } = filters
+
+    this.setState(
+      {
+        filters: {
+          ...filters,
+          offerCategories: {
+            ...filters.offerCategories,
+            [name]: checked,
+          },
+        },
+      },
+      () => {
+        this.process()
+      }
+    )
+  }
+
+  getNumberOfSelectedFilters = filter => {
     let counter = 0
 
-    Object.keys(offerTypes).forEach((key) => {
-       if (offerTypes[key] === true){
-         counter++
-       }
+    Object.keys(filter).forEach(key => {
+      if (filter[key] === true) {
+        counter++
+      }
     })
     return counter
   }
 
+  handleToggleCategories = () => () =>
+    this.setState(prevState => ({ areCategoriesVisible: !prevState.areCategoriesVisible }))
+
   render() {
-    const { filters } = this.state
-    const { offerTypes } = filters
+    const { filters, areCategoriesVisible } = this.state
+    const { offerTypes, offerCategories } = filters
     const { history, match } = this.props
     const { location } = history
     const { search = '' } = location
-    const numberOfOfferTypesSelected = this.getNumberOfOfferTypesSelected()
+    const numberOfOfferTypesSelected = this.getNumberOfSelectedFilters(offerTypes)
+    const numberOfOfferCategoriesSelected = this.getNumberOfSelectedFilters(offerCategories)
 
     return (
       <main className="search-filters-page">
@@ -194,7 +265,7 @@ export class Filters extends PureComponent {
             </div>
             <ul className="sf-content-wrapper">
               <li>
-                <h4 className='sf-geolocation-title'>
+                <h4 className="sf-title">
                   {'Localisation'}
                 </h4>
                 <button
@@ -207,25 +278,76 @@ export class Filters extends PureComponent {
                 <span className="sf-filter-separator" />
               </li>
               <li>
-                <h4 className='sf-offer-type-title'>
-                  {'Type d\'offres'}
-                </h4>
-                {numberOfOfferTypesSelected > 0 && (
-                  <span className='sf-offer-type-counter'>
+                <div className="sf-title-wrapper">
+                  <h4 className="sf-title">
+                    {"Type d'offre"}
+                  </h4>
+                  {numberOfOfferTypesSelected > 0 && (
+                    <span className="sf-selected-filter-counter">
                       {`(${numberOfOfferTypesSelected})`}
-                  </span>
-                )}
-                <div className='sf-offer-type-wrapper'>
+                    </span>
+                  )}
+                </div>
+                <div className="sf-filter-wrapper">
                   <FilterCheckbox
                     checked={offerTypes.isDigital}
                     className={`${offerTypes.isDigital ? 'fc-label-checked' : 'fc-label'}`}
-                    id='isDigital'
-                    label='Offres numériques'
-                    name='isDigital'
-                    onChange={this.handleOnChange}
+                    id="isDigital"
+                    label="Offres numériques"
+                    name="isDigital"
+                    onChange={this.handleOnTypeChange}
                   />
                 </div>
                 <span className="sf-filter-separator" />
+              </li>
+              <li>
+                <button
+                  aria-label="Afficher les catégories"
+                  aria-pressed={areCategoriesVisible}
+                  className={`sf-title-wrapper ${
+                    areCategoriesVisible ? 'sf-title-drop-down' : 'sf-title-drop-down-flipped'
+                  }`}
+                  onClick={this.handleToggleCategories()}
+                  type="button"
+                >
+                  <h4>
+                    {'Catégories'}
+                  </h4>
+                  {numberOfOfferCategoriesSelected > 0 && (
+                    <span className="sf-selected-filter-counter">
+                      {`(${numberOfOfferCategoriesSelected})`}
+                    </span>
+                  )}
+                </button>
+                {areCategoriesVisible && (
+                  <ul
+                    className="sf-filter-wrapper"
+                    data-test="sf-categories-filter-wrapper"
+                  >
+                    {Object.values(CATEGORY_CRITERIA).map(categoryCriterion => {
+                      if (categoryCriterion.label !== CATEGORY_CRITERIA.ALL.label) {
+                        return (
+                          <li key={categoryCriterion.facetFilter}>
+                            <FilterCheckbox
+                              checked={
+                                offerCategories[categoryCriterion.facetFilter] ? true : false
+                              }
+                              className={`${
+                                offerCategories[categoryCriterion.facetFilter]
+                                  ? 'fc-label-checked'
+                                  : 'fc-label'
+                              }`}
+                              id={categoryCriterion.facetFilter}
+                              label={categoryCriterion.label}
+                              name={categoryCriterion.facetFilter}
+                              onChange={this.handleOnCategoryChange}
+                            />
+                          </li>
+                        )
+                      }
+                    })}
+                  </ul>
+                )}
               </li>
             </ul>
             <div className="sf-button-wrapper">
@@ -246,7 +368,8 @@ export class Filters extends PureComponent {
 
 Filters.defaultProps = {
   initialFilters: {
-    isSearchAroundMe: false
+    isSearchAroundMe: false,
+    offerCategories: [],
   },
 }
 
@@ -262,5 +385,5 @@ Filters.propTypes = {
   redirectToSearchFiltersPage: PropTypes.func.isRequired,
   showFailModal: PropTypes.func.isRequired,
   updateFilteredOffers: PropTypes.func.isRequired,
-  updateFilters: PropTypes.func.isRequired
+  updateFilters: PropTypes.func.isRequired,
 }
