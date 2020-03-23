@@ -16,8 +16,8 @@ export const mapStateToProps = (state, ownProps) => {
   const { bookingId, offerId: offerIdQueryParam } = params
   const booking = selectBookingByRouterMatch(state, match)
   const isBookedByCurrentUser = getIsBooked(booking)
-
   let offerId = offerIdQueryParam
+
   if (bookingId) {
     const booking = selectBookingById(state, bookingId)
     const { stockId } = booking
@@ -25,12 +25,12 @@ export const mapStateToProps = (state, ownProps) => {
     const { offerId: offerIdFromStock } = stock
     offerId = offerIdFromStock
   }
+
   const offer = selectOfferById(state, offerId) || {}
   const isOfferTuto = Object.keys(offer).length === 0
-  const isOfferBookable = !isOfferTuto && offer.isBookable
+  const isOfferBookable = offer.isBookable || isBookedByCurrentUser
 
   return {
-    isBookedByCurrentUser,
     offerCanBeBooked: isOfferTuto ? true : isOfferBookable,
   }
 }
