@@ -10,8 +10,11 @@
   flex-direction: column;
   justify-content: center;
   align-content: center;
+  align-items: center;
 
-  p {
-    text-align: center;
+  #loading-animation {
+    width: rem(200px);
+    height: rem(200px);
+    align-content: center;
   }
 }

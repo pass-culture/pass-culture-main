@@ -10,7 +10,7 @@ module.exports = {
   moduleNameMapper: {
     '^react-native$': 'react-native-web',
   },
-  setupFiles: ['<rootDir>/jest-polyfill.js', '<rootDir>/jest.setup.js'],
+  setupFiles: ['<rootDir>/jest-polyfill.js', '<rootDir>/jest.setup.js', 'jest-canvas-mock'],
   testEnvironment: 'jest-environment-jsdom',
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.{js,jsx}',
