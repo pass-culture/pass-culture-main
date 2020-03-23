@@ -1,6 +1,8 @@
 import moment from 'moment'
 
 import {
+  selectBookables,
+  selectBookablesWithoutNotAvailableDate,
   selectBookingById,
   selectBookingByRouterMatch,
   selectBookingsOrderedByBeginningDateTimeAsc,
@@ -938,5 +940,117 @@ describe('selectBookingByRouterMatch', () => {
 
     // then
     expect(result).toStrictEqual({ id: 'AE', stockId: 'CG' })
+  })
+})
+
+describe('selectBookables', () => {
+  it('should return empty array when nothing is found', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [],
+        stocks: [],
+      },
+    }
+    const offer = {}
+
+    // when
+    const result = selectBookables(state, offer)
+
+    // then
+    expect(result).toStrictEqual([])
+  })
+
+  it('should return stocks with completed data', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [
+          {
+            stockId: 'AB',
+          },
+        ],
+        stocks: [
+          {
+            id: 'AB',
+            offerId: 'AA',
+            beginningDatetime: moment(),
+          },
+        ],
+      },
+    }
+    const offer = {
+      id: 'AA',
+    }
+
+    // when
+    const result = selectBookables(state, offer)
+
+    // then
+    expect(result).toStrictEqual([
+      {
+        __modifiers__: ['selectBookables'],
+        beginningDatetime: expect.any(Object),
+        humanBeginningDate: 'Saturday 01/01/2000 à 21:00',
+        id: 'AB',
+        offerId: 'AA',
+        userHasAlreadyBookedThisDate: true,
+        userHasCancelledThisDate: false,
+      },
+    ])
+  })
+})
+
+describe('selectBookablesWithoutNotAvailableDate', () => {
+  it('should return stocks without not available date', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [],
+        stocks: [
+          {
+            id: 'AB',
+            offerId: 'ZZ',
+            remainingQuantityOrUnlimited: 0,
+          },
+          {
+            id: 'AC',
+            offerId: 'AA',
+            remainingQuantityOrUnlimited: 1,
+          },
+          {
+            id: 'AD',
+            offerId: 'AA',
+            remainingQuantityOrUnlimited: 'unlimited',
+          },
+        ],
+      },
+    }
+    const offer = {
+      id: 'AA',
+    }
+
+    // when
+    const result = selectBookablesWithoutNotAvailableDate(state, offer)
+
+    // then
+    expect(result).toStrictEqual([
+      {
+        __modifiers__: ['selectBookables'],
+        id: 'AC',
+        offerId: 'AA',
+        userHasAlreadyBookedThisDate: false,
+        userHasCancelledThisDate: false,
+        remainingQuantityOrUnlimited: 1,
+      },
+      {
+        __modifiers__: ['selectBookables'],
+        id: 'AD',
+        offerId: 'AA',
+        userHasAlreadyBookedThisDate: false,
+        userHasCancelledThisDate: false,
+        remainingQuantityOrUnlimited: 'unlimited',
+      },
+    ])
   })
 })

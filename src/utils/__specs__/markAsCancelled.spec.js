@@ -5,43 +5,75 @@ describe('markAsCancelled', () => {
     // given
     const bookings = [
       {
-        id: 'HQ',
+        stockId: 'DU',
         isCancelled: true,
-        modelName: 'Booking',
-        recommendation: {},
-        stock: {
-          id: 'DU',
-          modelName: 'Stock',
-          offerId: 'CQ',
-        },
-      },
-      {
-        id: 'HY',
-        isCancelled: false,
-        modelName: 'Booking',
-        recommendation: {},
-        stock: {
-          id: 'DQ',
-          modelName: 'Stock',
-          offerId: 'CQ',
-        },
       },
     ]
 
-    const items = [
+    const stocks = [
       {
         id: 'DU',
-        modelName: 'Stock',
-        offerId: 'CQ',
-        price: 23,
-        userHasAlreadyBookedThisDate: true,
       },
     ]
 
     // when
-    const results = markAsCancelled(bookings)(items)
+    const results = markAsCancelled(bookings)(stocks)
 
     // then
-    expect(results[0].userHasAlreadyBookedThisDate).toBe(true)
+    expect(results).toStrictEqual([
+      {
+        id: 'DU',
+        userHasCancelledThisDate: true,
+      },
+    ])
+  })
+
+  it('should return userHasCancelledThisDate as false when the booking has not been cancelled', () => {
+    // given
+    const bookings = [
+      {
+        stockId: 'DU',
+        isCancelled: false,
+      },
+    ]
+
+    const stocks = [
+      {
+        id: 'DU',
+      },
+    ]
+
+    // when
+    const results = markAsCancelled(bookings)(stocks)
+
+    // then
+    expect(results).toStrictEqual([
+      {
+        id: 'DU',
+        userHasCancelledThisDate: false,
+      },
+    ])
+  })
+
+  it('should return userHasCancelledThisDate as false when no booking', () => {
+    // given
+    const bookings = []
+
+    const stocks = [
+      {
+        id: 'DU',
+      },
+    ]
+
+    // when
+    const results = markAsCancelled(bookings)(stocks)
+
+    // then
+    expect(results).toStrictEqual([
+      {
+        id: 'DU',
+        userHasCancelledThisDate: false,
+      },
+    ])
   })
 })

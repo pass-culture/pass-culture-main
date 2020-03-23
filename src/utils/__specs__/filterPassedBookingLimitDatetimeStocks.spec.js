@@ -1,21 +1,13 @@
 import moment from 'moment'
-import filterAvailableStocks from '../filterAvailableStocks'
+import filterPassedBookingLimitDatetimeStocks from '../filterPassedBookingLimitDatetimeStocks'
 
-describe('src | helpers | filterAvailableStocks', () => {
-  it('should return an empty array when stocks is not an array', () => {
-    // when
-    const result = filterAvailableStocks({})
-
-    // then
-    expect(result).toStrictEqual([])
-  })
-
+describe('src | filterPassedBookingLimitDatetimeStocks', () => {
   it('should return an array without null items', () => {
     // given
     const stocks = [{}, null, {}]
 
     // when
-    const result = filterAvailableStocks(stocks)
+    const result = filterPassedBookingLimitDatetimeStocks(stocks)
 
     // then
     expect(result).toStrictEqual([{}, {}])
@@ -31,7 +23,7 @@ describe('src | helpers | filterAvailableStocks', () => {
     ]
 
     // when
-    const result = filterAvailableStocks(stocks)
+    const result = filterPassedBookingLimitDatetimeStocks(stocks)
 
     // then
     expect(result).toHaveLength(1)

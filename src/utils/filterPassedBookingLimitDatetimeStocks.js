@@ -6,14 +6,11 @@ const checkIfStockBookingLimitDatetimeIsAfter = now => stockItem => {
   return moment(stockItem.bookingLimitDatetime).isAfter(now)
 }
 
-const filterAvailableStocks = stocks => {
-  const isValid = stocks && Array.isArray(stocks)
-  if (!isValid) return []
-
+const filterPassedBookingLimitDatetimeStocks = stocks => {
   const now = moment()
   return stocks
     .filter(stockItem => stockItem !== null)
     .filter(checkIfStockBookingLimitDatetimeIsAfter(now))
 }
 
-export default filterAvailableStocks
+export default filterPassedBookingLimitDatetimeStocks
