@@ -1,0 +1,30 @@
+from models import UserOfferer
+from repository import repository
+from scripts.change_some_pro_users_to_beneficiary import change_pro_users_to_beneficiary
+from tests.conftest import clean_database
+from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
+
+
+@clean_database
+def test_should_change_pro_users_to_beneficiary(app):
+    # given
+    offerer_1 = create_offerer(siren='987654321')
+    offerer_2 = create_offerer(siren='567890342')
+    pro_1 = create_user(email='email@example.com', can_book_free_offers=False, needs_to_fill_cultural_survey=False)
+    pro_2 = create_user(email='email2@example.com')
+    user_offerer_1 = create_user_offerer(pro_1, offerer_1)
+    user_offerer_2 = create_user_offerer(pro_1, offerer_2)
+    repository.save(pro_1, pro_2, user_offerer_1, user_offerer_2)
+    pro_users_list_to_change = [pro_2.id, pro_1.id]
+
+    # when
+    change_pro_users_to_beneficiary(pro_users_list_to_change)
+
+    # then
+    assert pro_1.canBookFreeOffers
+    assert pro_1.needsToFillCulturalSurvey
+    assert pro_1.wallet_balance == 500
+    assert pro_2.canBookFreeOffers
+    assert pro_2.needsToFillCulturalSurvey
+    assert pro_2.wallet_balance == 500
+    assert UserOfferer.query.count() == 0
