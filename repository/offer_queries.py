@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Optional
 
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import desc, func, or_, text
@@ -380,11 +380,11 @@ def _has_remaining_stock():
     return is_unlimited_stock | has_remaining_stock
 
 
-def find_searchable_offer(offer_id):
-    return Offer.query.filter_by(id=offer_id) \
-        .join(Venue) \
-        .filter(Venue.validationToken == None) \
-        .first()
+def find_searchable_offer(offer_id: int) -> Optional[Offer]:
+    offer = Offer.query.get(offer_id)
+    if offer and offer.isBookable:
+        return offer
+    return None
 
 
 def _offer_has_bookable_stocks():

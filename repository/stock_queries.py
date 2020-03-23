@@ -1,8 +1,6 @@
-from datetime import datetime
 from typing import List
 
 from models import Stock, Offerer, User, Offer, ThingType, Venue, Product
-from repository import repository
 from utils.human_ids import dehumanize
 
 
@@ -18,18 +16,6 @@ def find_stocks_with_possible_filters(filters, user):
     if 'hasPrice' in filters and filters['hasPrice'].lower() == 'true':
         query = query.filter(Stock.price != None)
     return query
-
-
-def set_booking_recap_sent_and_save(stock):
-    stock.bookingRecapSent = datetime.utcnow()
-    repository.save(stock)
-
-
-def find_stocks_of_finished_events_when_no_recap_sent():
-    return Stock.queryNotSoftDeleted() \
-        .filter((Stock.bookingLimitDatetime < datetime.utcnow()) &
-                (Stock.beginningDatetime < datetime.utcnow()) &
-                (Stock.bookingRecapSent == None))
 
 
 def find_online_activation_stock():

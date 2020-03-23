@@ -1,12 +1,11 @@
 from datetime import datetime, timedelta
 from typing import List
 
-from sqlalchemy import or_, and_
+from sqlalchemy import and_
 from sqlalchemy.sql.expression import literal, select
 
 from models import Offer, \
     Recommendation, \
-    Stock, \
     Booking, \
     Favorite
 from models.api_errors import ResourceNotFoundError
@@ -38,22 +37,6 @@ def count_read_recommendations_for_user(user, limit=None):
             .limit(limit) \
             .from_self()
     return query.count()
-
-
-def count_recommendation(user):
-    return keep_only_bookable_stocks() \
-        .filter((Recommendation.user == user) & (Recommendation.dateRead != None)) \
-        .count()
-
-
-def keep_only_bookable_stocks():
-    stock_is_still_bookable = or_(Stock.bookingLimitDatetime > datetime.utcnow(), Stock.bookingLimitDatetime == None)
-    stock_is_not_soft_deleted = Stock.isSoftDeleted == False
-    return Recommendation.query \
-        .join(Offer) \
-        .join(Stock) \
-        .filter(and_(stock_is_not_soft_deleted,
-                     stock_is_still_bookable))
 
 
 def update_read_recommendations(read_recommendations):

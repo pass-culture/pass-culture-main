@@ -1,44 +1,11 @@
-from datetime import datetime, timedelta
-
 from models import ThingType
 from models.activity import load_activity
 from repository import repository
-from repository.stock_queries import find_stocks_of_finished_events_when_no_recap_sent, \
-    find_online_activation_stock
+from repository.stock_queries import find_online_activation_stock
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue
-from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_from_offer, \
-    create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
-
-
-@clean_database
-def test_find_stocks_of_finished_events_when_no_recap_sent(app):
-    # Given
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer = create_offer_with_event_product(venue)
-    thing_offer = create_offer_with_thing_product(venue)
-    event_occurrence_past = create_event_occurrence(offer, beginning_datetime=datetime.utcnow() - timedelta(hours=48),
-                                                    end_datetime=datetime.utcnow() - timedelta(hours=46))
-    event_occurrence_past_2 = create_event_occurrence(offer, beginning_datetime=datetime.utcnow() - timedelta(hours=10),
-                                                      end_datetime=datetime.utcnow() - timedelta(hours=2))
-    event_occurrence_future = create_event_occurrence(offer, beginning_datetime=datetime.utcnow() + timedelta(hours=46),
-                                                      end_datetime=datetime.utcnow() + timedelta(hours=48))
-    stock_past = create_stock_from_event_occurrence(event_occurrence_past)
-    stock_soft_deleted = create_stock_from_event_occurrence(event_occurrence_past, soft_deleted=True)
-    stock_future = create_stock_from_event_occurrence(event_occurrence_future)
-    stock_thing = create_stock_from_offer(thing_offer)
-    stock_recap_sent = create_stock_from_event_occurrence(event_occurrence_past_2, recap_sent=True)
-    repository.save(stock_past, stock_future, stock_thing, stock_soft_deleted, stock_recap_sent)
-
-    # When
-    stocks = find_stocks_of_finished_events_when_no_recap_sent().all()
-
-    # Then
-    assert stock_past in stocks
-    assert stock_future not in stocks
-    assert stock_thing not in stocks
-    assert stock_soft_deleted not in stocks
+from tests.model_creators.specific_creators import create_stock_from_offer, \
+    create_offer_with_thing_product, create_offer_with_event_product
 
 
 @clean_database

@@ -1,7 +1,7 @@
 """remove_unused_filled
 
 Revision ID: 48440c1d122a
-Revises: d8b5cd0e73d2
+Revises: 1f446f8a334d
 Create Date: 2020-03-13 10:35:58.958527
 
 """
@@ -10,7 +10,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '48440c1d122a'
-down_revision = 'd8b5cd0e73d2'
+down_revision = '1f446f8a334d'
 branch_labels = None
 depends_on = None
 

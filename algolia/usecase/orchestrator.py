@@ -5,7 +5,7 @@ from algoliasearch.exceptions import AlgoliaException
 from redis import Redis
 from redis.client import Pipeline
 
-from algolia.domain.rules_engine import is_eligible_for_indexing, is_eligible_for_reindexing
+from algolia.domain.rules_engine import is_eligible_for_reindexing
 from algolia.infrastructure.api import add_objects, delete_objects
 from algolia.infrastructure.builder import build_object
 from connectors.redis import add_to_indexed_offers, check_offer_exists, delete_indexed_offers, get_offer_details, \
@@ -25,7 +25,7 @@ def process_eligible_offers(client: Redis, offer_ids: List[int], from_provider_u
     for offer in offers:
         offer_exists = check_offer_exists(client=client, offer_id=offer.id)
 
-        if is_eligible_for_indexing(offer):
+        if offer and offer.isBookable:
             if from_provider_update and offer_exists:
                 offer_details = get_offer_details(client=client, offer_id=offer.id)
                 if offer_details and is_eligible_for_reindexing(offer, offer_details):
