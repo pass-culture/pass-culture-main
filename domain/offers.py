@@ -1,8 +1,7 @@
-from datetime import datetime
 from typing import List, Optional
 
 from local_providers import AllocineStocks
-from models import Booking, Offer, Stock, User
+from models import Booking, Offer, User
 
 
 def update_is_active_status(offers: List[Offer], status: bool) -> List[Offer]:
@@ -10,26 +9,6 @@ def update_is_active_status(offers: List[Offer], status: bool) -> List[Offer]:
         offer.isActive = status
 
     return offers
-
-
-def has_remaining_stocks(stocks: List[Stock]) -> bool:
-    remaining_stocks_quantity = 0
-    for stock in stocks:
-        is_unlimited = stock.available is None
-        if is_unlimited:
-            return True
-        remaining_stocks_quantity += stock.remainingQuantity
-    return remaining_stocks_quantity > 0
-
-
-def has_at_least_one_stock_in_the_future(stocks: List[Stock]) -> bool:
-    now = datetime.now()
-
-    for stock in stocks:
-        if stock.bookingLimitDatetime is None or stock.bookingLimitDatetime > now:
-            return True
-
-    return False
 
 
 def is_from_allocine(offer: Offer) -> bool:

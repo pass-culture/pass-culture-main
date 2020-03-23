@@ -1,10 +1,7 @@
 from datetime import datetime
 
-from freezegun import freeze_time
-
 from domain.offers import find_first_matching_booking_from_offer_by_user, \
-    has_at_least_one_stock_in_the_future, \
-    has_remaining_stocks, is_from_allocine, update_is_active_status
+    is_from_allocine, update_is_active_status
 from models import Offer
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import (create_booking,
@@ -68,95 +65,6 @@ class UpdateIsActiveStatusTest:
         # then
         assert any(not updated_offer.isActive for updated_offer in updated_offers)
         assert not booking.isCancelled
-
-
-class HasRemainingStocksTest:
-    def test_should_return_true_when_at_least_one_stock_is_unlimited(self):
-        # Given
-        stock1 = create_stock(available=None)
-        stock2 = create_stock(available=10)
-        stocks = [stock1, stock2]
-
-        # When
-        result = has_remaining_stocks(stocks=stocks)
-
-        # Then
-        assert result is True
-
-    def test_should_return_true_when_at_least_one_stock_is_superior_to_zero(self):
-        # Given
-        stock1 = create_stock(available=0)
-        stock1.remainingQuantity = 0
-        stock2 = create_stock(available=10)
-        stock2.remainingQuantity = 8
-        stocks = [stock1, stock2]
-
-        # When
-        result = has_remaining_stocks(stocks=stocks)
-
-        # Then
-        assert result is True
-
-    def test_should_return_false_when_no_stock_available(self):
-        # Given
-        stock1 = create_stock(available=0)
-        stock1.remainingQuantity = 0
-        stock2 = create_stock(available=0)
-        stock2.remainingQuantity = 0
-        stocks = [stock1, stock2]
-
-        # When
-        result = has_remaining_stocks(stocks=stocks)
-
-        # Then
-        assert result is False
-
-
-class HasStocksInFutureTest:
-    @freeze_time('2020-01-10 10:00:00')
-    def test_should_return_true_when_at_least_one_stock_has_no_booking_limit_date_time(self):
-        # Given
-        stock1 = create_stock(available=0, booking_limit_datetime=None)
-        stock1.remainingQuantity = 0
-        stock2 = create_stock(available=0)
-        stock2.remainingQuantity = 0
-        stocks = [stock1, stock2]
-
-        # When
-        result = has_at_least_one_stock_in_the_future(stocks)
-
-        # Then
-        assert result is True
-
-    @freeze_time('2020-01-10 10:00:00')
-    def test_should_return_true_when_at_least_one_stock_has_a_booking_limit_date_time_after_now(self):
-        # Given
-        stock1 = create_stock(available=0, booking_limit_datetime=datetime(2020, 1, 8, 9, 0, 0))
-        stock1.remainingQuantity = 0
-        stock2 = create_stock(available=0)
-        stock2.remainingQuantity = 0
-        stocks = [stock1, stock2]
-
-        # When
-        result = has_at_least_one_stock_in_the_future(stocks)
-
-        # Then
-        assert result is True
-
-    @freeze_time('2020-01-10 10:00:00')
-    def test_should_return_false_when_stocks_are_expired(self):
-        # Given
-        stock1 = create_stock(available=0, booking_limit_datetime=datetime(2020, 1, 1, 9, 0, 0))
-        stock1.remainingQuantity = 0
-        stock2 = create_stock(available=0, booking_limit_datetime=datetime(2020, 1, 2, 9, 0, 0))
-        stock2.remainingQuantity = 0
-        stocks = [stock1, stock2]
-
-        # When
-        result = has_at_least_one_stock_in_the_future(stocks)
-
-        # Then
-        assert result is False
 
 
 class IsFromAllocineTest:
