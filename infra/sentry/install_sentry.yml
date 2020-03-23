@@ -3,23 +3,28 @@
   hosts: sentry
   become: true
   tasks:
-    - import_tasks: tasks/install_docker.yml
+    - name: Install docker
+      import_tasks: tasks/install_docker.yml
       tags:
         - 'docker'
 
-    - import_tasks: tasks/install_git.yml
+    - name: Install Git to download the source code
+      import_tasks: tasks/install_git.yml
       tags:
         - 'git'
 
-    - import_tasks: tasks/install_sentry.yml
+    - name: Install Sentry
+      import_tasks: tasks/install_sentry.yml
       tags:
         - 'sentry'
 
-    - import_tasks: tasks/firewalld.yml
+    - name: Install firewall rules
+      import_tasks: tasks/firewalld.yml
       tags:
         - 'firewalld'
 
-    - import_tasks: tasks/install_nginx.yml
+    - name: Install Nginx to serve sentry with SSL
+      import_tasks: tasks/install_nginx.yml
       tags:
         - 'nginx'
 
@@ -32,7 +37,8 @@
       shell: openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
       when: dhparams_file.stat.exists == false
 
-    - import_tasks: tasks/certificate.yml
+    - name: Install and renew Certificate
+      import_tasks: tasks/certificate.yml
       tags:
         - 'certificate'
 

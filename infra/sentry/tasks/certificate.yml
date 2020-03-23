@@ -22,13 +22,17 @@
     hour: "2"
     weekday: "1"
     job: "/usr/bin/certbot renew >> /var/log/le-renew.log"
+  tags:
+    - renew-certificate
 
 - name: Add crontab to reload server
   cron:
     minute: "35"
     hour: "2"
     weekday: "1"
-    job: "/usr/sbin/nginx reload"
+    job: "systemctl reload nginx"
+  tags:
+    - renew-certificate
 
 - name: Check if certificate file exists
   stat:
