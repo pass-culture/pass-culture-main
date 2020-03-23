@@ -1,11 +1,13 @@
-- firewalld:
+- name: Allow TCP connections on port 80
+  firewalld:
     port: 80/tcp
     permanent: yes
     state: enabled
   notify: restart_firewalld
   tags: 'firewalld'
 
-- firewalld:
+- name: Allow TCP connections on port 443 (SSL)
+  firewalld:
     port: 443/tcp
     permanent: yes
     state: enabled
