@@ -973,8 +973,7 @@ class GetAllCancelledBookingsCountTest:
         event_offer = create_offer_with_event_product(venue)
         event_stock = create_stock(
             offer=event_offer,
-            price=0,
-            beginning_datetime=datetime.utcnow() + timedelta(hours=20)
+            price=0
         )
         user = create_user()
         booking = create_booking(user=user, stock=event_stock, is_cancelled=False)
@@ -1662,7 +1661,7 @@ class CountNotCancelledBookingsQuantityByStocksTest:
         # Then
         assert result == 0
 
-    def test_should_return_0_when_no_stock_id(self, app):
+    def test_should_return_0_when_no_stock_id_given(self, app):
         # When
         result = booking_queries.count_not_cancelled_bookings_quantity_by_stock_id(None)
 

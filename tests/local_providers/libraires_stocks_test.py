@@ -251,25 +251,26 @@ class LibrairesStocksTest:
             )
             product = create_product_with_thing_type(id_at_providers='9780199536986')
 
-            repository.save(product, venue_provider)
+            offer = create_offer_with_thing_product(venue, product=product,
+                                                    id_at_providers='9780199536986@12345678912345')
 
-            libraires_stocks = LibrairesStocks(venue_provider)
-
-            libraires_stocks.updateObjects()
+            stock = create_stock(offer=offer, id_at_providers='9780199536986@12345678912345', available=20, price=0)
 
             booking = create_booking(
                 user=create_user(),
                 quantity=1,
-                stock=Stock.query.one()
+                stock=stock
             )
 
-            repository.save(booking)
+            repository.save(venue_provider, booking)
 
             mock_libraires_api_response.return_value = iter([{
                 "ref": "9780199536986",
                 "available": 66,
                 "price": 0
             }])
+
+            libraires_stocks = LibrairesStocks(venue_provider)
 
             # When
             libraires_stocks.updateObjects()

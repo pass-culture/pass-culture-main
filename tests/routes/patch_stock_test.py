@@ -171,7 +171,7 @@ class Patch:
             ]
 
         @clean_database
-        def when_available_below_number_of_already_existing_bookings(self, app):
+        def when_available_below_existing_bookings_quantity(self, app):
             # given
             user = create_user()
             user_admin = create_user(can_book_free_offers=False, email='email@test.com', is_admin=True)
@@ -187,7 +187,9 @@ class Patch:
 
             # then
             assert response.status_code == 400
-            assert 'available' in response.json
+            assert response.json['available'] == [
+                'Le stock total ne peut être inférieur au nombre de réservations'
+            ]
 
         @clean_database
         def when_end_limit_datetime_is_none_for_event(self, app):

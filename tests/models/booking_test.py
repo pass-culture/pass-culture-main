@@ -49,11 +49,12 @@ def test_raises_error_on_booking_when_total_stock_is_less_than_bookings_count(ap
     stock = create_stock_from_offer(offer, price=0, available=1)
     user1 = create_user(email='used_booking@example.com')
     user2 = create_user(email='booked@example.com')
-    repository.save(stock)
 
     booking1 = create_booking(user=user1,
                               stock=stock)
+
     repository.save(booking1)
+
     booking2 = create_booking(user=user2,
                               stock=stock)
     # When

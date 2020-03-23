@@ -38,8 +38,8 @@ def upgrade():
        USING HINT = 'stock.available cannot be lower than number of bookings';
       END IF;
 
-      IF NOT NEW."bookingLimitDatetime" IS NULL AND
-         NOT NEW."beginningDatetime" IS NULL AND
+      IF NEW."bookingLimitDatetime" IS NOT NULL AND
+         NEW."beginningDatetime" IS NOT NULL AND
          NEW."bookingLimitDatetime" > NEW."beginningDatetime" THEN
 
       RAISE EXCEPTION 'bookingLimitDatetime_too_late'

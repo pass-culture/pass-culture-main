@@ -454,19 +454,18 @@ def test_titelive_stock_provider_available_stock_is_sum_of_updated_available_and
     )
     product = create_product_with_thing_type(id_at_providers='9780199536986')
 
-    repository.save(product, venue_provider)
+    offer = create_offer_with_thing_product(venue, product=product,
+                                            id_at_providers='9780199536986@12345678912345')
 
-    titelive_stocks = TiteLiveStocks(venue_provider)
-
-    titelive_stocks.updateObjects()
+    stock = create_stock(offer=offer, id_at_providers='9780199536986@12345678912345', available=20, price=0)
 
     booking = create_booking(
         user=create_user(),
         quantity=1,
-        stock=Stock.query.one()
+        stock=stock
     )
 
-    repository.save(booking)
+    repository.save(venue_provider, booking)
 
     stub_get_stocks_information.side_effect = [
         iter([{
@@ -475,6 +474,8 @@ def test_titelive_stock_provider_available_stock_is_sum_of_updated_available_and
             "price": 0,
         }])
     ]
+
+    titelive_stocks = TiteLiveStocks(venue_provider)
 
     # When
     titelive_stocks.updateObjects()

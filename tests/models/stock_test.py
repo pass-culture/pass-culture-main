@@ -198,7 +198,7 @@ def test_available_stocks_can_be_changed_even_when_bookings_with_cancellations_e
 
 
 @clean_database
-def test_update_available_stocks_should_be_possible_while_more_than_sum_of_bookings_quantity(app):
+def test_should_update_stock_available_when_value_is_more_than_sum_of_bookings_quantity(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
@@ -221,7 +221,7 @@ def test_update_available_stocks_should_be_possible_while_more_than_sum_of_booki
 
 
 @clean_database
-def test_stock_cannot_have_an_available_less_than_booking_count(app):
+def test_should_not_update_available_stock_when_value_is_less_than_booking_count(app):
     # given
     user = create_user()
     offerer = create_offerer()

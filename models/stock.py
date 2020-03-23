@@ -15,6 +15,7 @@ from sqlalchemy import BigInteger, \
     or_
 from sqlalchemy.orm import column_property, relationship
 from sqlalchemy.sql import select, func
+from sqlalchemy.event import listens_for
 
 from models.booking import Booking
 from models.db import Model
@@ -144,12 +145,10 @@ class Stock(PcObject,
         return PcObject.restize_internal_error(ie)
 
 
-@event.listens_for(Stock, 'before_insert')
-def page_defaults(mapper, configuration, target):
-    # `bookingLimitDatetime` defaults to midnight before `beginningDatetime`
-    # for eventOccurrences
-    if target.beginningDatetime and not target.bookingLimitDatetime:
-        target.bookingLimitDatetime = target.beginningDatetime \
+@listens_for(Stock, 'before_insert')
+def before_insert(mapper, configuration, self):
+    if self.beginningDatetime and not self.bookingLimitDatetime:
+        self.bookingLimitDatetime = self.beginningDatetime \
             .replace(hour=23) \
             .replace(minute=59) - timedelta(days=3)
 
@@ -174,8 +173,8 @@ Stock.trig_ddl = """
        USING HINT = 'stock.available cannot be lower than number of bookings';
       END IF;
 
-      IF NOT NEW."bookingLimitDatetime" IS NULL AND
-         NOT NEW."beginningDatetime" IS NULL AND
+      IF NEW."bookingLimitDatetime" IS NOT NULL AND
+        NEW."beginningDatetime" IS NOT NULL AND
          NEW."bookingLimitDatetime" > NEW."beginningDatetime" THEN
 
       RAISE EXCEPTION 'bookingLimitDatetime_too_late'
