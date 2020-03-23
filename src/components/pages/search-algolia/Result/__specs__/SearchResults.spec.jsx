@@ -1,5 +1,5 @@
 import { mount, shallow } from 'enzyme'
-import { createMemoryHistory } from 'history'
+import { createBrowserHistory, createMemoryHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
@@ -108,7 +108,7 @@ describe('components | SearchResults', () => {
       expect(textInput.prop('type')).toBe('search')
     })
 
-    it('should display a form element with a filter button', () => {
+    it('should display a filter button', () => {
       // when
       const wrapper = shallow(<SearchResults {...props} />)
 
@@ -1147,16 +1147,32 @@ describe('components | SearchResults', () => {
   })
 
   describe('when filtering', () => {
-    it('should redirect to filters page', () => {
+    it('should redirect to filters page',  () => {
       // given
-      const wrapper = shallow(<SearchResults {...props} />)
-      const filterButton = wrapper.find('.sr-filter-button')
+      const history = createBrowserHistory()
+      history.push("/recherche-offres/resultats?mots-cles=librairie")
+      props.history = history
+      const initialState = {
+        geolocation: {
+          latitude: 40.1,
+          longitude: 41.1,
+        }
+      }
+      const store = configureStore([])(initialState)
+      const wrapper =  mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <SearchResults {...props} />
+          </Router>
+        </Provider>
+      )
+      const filterButton = wrapper.find({children:'Filtrer'})
 
       // when
       filterButton.simulate('click')
 
       // then
-      expect(push).toHaveBeenCalledWith('/fake-url/filtres?mots-cles=librairie')
+      expect(history.location.pathname + history.location.search).toBe("/recherche-offres/resultats/filtres?mots-cles=librairie")
     })
   })
 })
