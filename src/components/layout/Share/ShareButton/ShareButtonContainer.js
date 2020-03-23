@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import { selectCurrentUser } from '../../../hocs/with-login/with-react-redux-login'
+import { selectCurrentUser } from '../../../hocs/with-login/with-login'
 
 import withTracking from '../../../hocs/withTracking'
 import ShareButton from './ShareButton'

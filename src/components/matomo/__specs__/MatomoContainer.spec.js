@@ -1,4 +1,4 @@
-import { getCurrentUserUUID } from '../../hocs/with-login/with-react-redux-login'
+import { getCurrentUserUUID } from '../../hocs/with-login/with-login'
 
 import { mapStateToProps } from '../MatomoContainer'
 

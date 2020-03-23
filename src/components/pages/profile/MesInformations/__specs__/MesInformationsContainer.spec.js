@@ -1,7 +1,4 @@
-import {
-  getCurrentUserUUID,
-  resolveCurrentUser,
-} from '../../../../hocs/with-login/with-react-login'
+import { getCurrentUserUUID, resolveCurrentUser } from '../../../../hocs/with-login/with-login'
 import getDepartementByCode from '../../../../../utils/getDepartementByCode'
 import {
   getDepartment,

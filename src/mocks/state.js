@@ -1,5 +1,5 @@
 import offerTypes from './api/offer_types'
-import { getCurrentUserUUID } from '../components/hocs/with-login/with-react-redux-login'
+import { getCurrentUserUUID } from '../components/hocs/with-login/with-login'
 
 const state = {
   data: {

@@ -1,20 +1,17 @@
-import { requestData as defaultRequestData } from 'fetch-normalize-data'
+import { requestData } from 'redux-thunk-data'
+
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import LoadingPage from '../../../layout/LoadingPage/LoadingPage'
 
 import resolveCurrentUser from './resolveCurrentUser'
+import { connect } from 'react-redux'
+import { selectCurrentUser } from './index'
 
 export default (config = {}) => WrappedComponent => {
-  const { withDispatcher, ...requestDataConfig } = config
-  const { handleFail, handleSuccess } = requestDataConfig
+  const { handleFail, handleSuccess } = config
   const isRequired = typeof config.isRequired === 'undefined' ? true : config.isRequired
-  const currentUserApiPath = config.currentUserApiPath || '/users/current'
-  const requestData = config.requestData || defaultRequestData
-
-  if (!withDispatcher) {
-    throw Error('You need to define a withDispatcher hoc passing a dispatch function')
-  }
+  const currentUserApiPath = '/users/current'
 
   class _withLogin extends PureComponent {
     constructor(props) {
@@ -35,7 +32,7 @@ export default (config = {}) => WrappedComponent => {
             {
               apiPath: currentUserApiPath,
               resolve: resolveCurrentUser,
-              ...requestDataConfig,
+              ...config,
             },
             {
               handleFail: this.handleFailLogin,
@@ -102,5 +99,7 @@ export default (config = {}) => WrappedComponent => {
     initialCurrentUser: PropTypes.shape(),
   }
 
-  return withDispatcher(_withLogin)
+  return connect(state => ({
+    currentUser: selectCurrentUser(state),
+  }))(_withLogin)
 }
