@@ -138,7 +138,7 @@ class Put:
             create_deposit(beneficiary_user, amount=500)
             repository.save(booking, offerer_user)
 
-            booking_offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
+            booking_offerer_id = booking.stock.offer.venue.managingOffererId
             offerer = Offerer.query.filter_by(id=booking_offerer_id).first()
 
             user_offerer = create_user_offerer(offerer_user, offerer)
@@ -174,7 +174,7 @@ class Put:
             create_deposit(beneficiary_user, amount=500)
             repository.save(booking, offerer_user)
 
-            booking_offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
+            booking_offerer_id = booking.stock.offer.venue.managingOffererId
             offerer = Offerer.query.filter_by(id=booking_offerer_id).first()
 
             user_offerer = create_user_offerer(offerer_user, offerer)

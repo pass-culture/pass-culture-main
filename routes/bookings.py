@@ -180,7 +180,7 @@ def create_booking():
 @login_required
 def cancel_booking(booking_id: int):
     booking = booking_queries.find_by_id(dehumanize(booking_id))
-    booking_offerer = booking.stock.resolvedOffer.venue.managingOffererId
+    booking_offerer = booking.stock.offer.venue.managingOffererId
 
     is_offerer_cancellation = current_user.hasRights(
         RightsType.editor, booking_offerer)
@@ -220,7 +220,7 @@ def get_booking_by_token(token: str):
     booking = booking_queries.find_by(booking_token_upper_case, email, offer_id)
     check_booking_token_is_usable(booking)
 
-    offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
+    offerer_id = booking.stock.offer.venue.managingOffererId
 
     current_user_can_validate_booking = check_user_can_validate_bookings(current_user, offerer_id)
 
@@ -238,7 +238,7 @@ def get_booking_by_token_v2(token: str):
     valid_api_key = find_api_key_by_value(app_authorization_api_key)
     booking_token_upper_case = token.upper()
     booking = booking_queries.find_by(booking_token_upper_case)
-    offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
+    offerer_id = booking.stock.offer.venue.managingOffererId
 
     if current_user.is_authenticated:
         # warning : current user is not none when user is not logged in
@@ -263,7 +263,7 @@ def patch_booking_by_token(token: str):
 
     if current_user.is_authenticated:
         ensure_current_user_has_rights(
-            RightsType.editor, booking.stock.resolvedOffer.venue.managingOffererId)
+            RightsType.editor, booking.stock.offer.venue.managingOffererId)
     else:
         check_email_and_offer_id_for_anonymous_user(email, offer_id)
 
@@ -285,7 +285,7 @@ def patch_booking_by_token(token: str):
 def patch_booking_use_by_token(token: str):
     booking_token_upper_case = token.upper()
     booking = booking_queries.find_by(booking_token_upper_case)
-    offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
+    offerer_id = booking.stock.offer.venue.managingOffererId
     valid_api_key = _get_api_key_from_header(request)
 
     if current_user.is_authenticated:
@@ -315,7 +315,7 @@ def patch_cancel_booking_by_token(token: str):
     valid_api_key = find_api_key_by_value(app_authorization_api_key)
     token = token.upper()
     booking = booking_queries.find_by(token)
-    offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
+    offerer_id = booking.stock.offer.venue.managingOffererId
 
     if current_user.is_authenticated:
         ensure_current_user_has_rights(RightsType.editor, offerer_id)
@@ -337,7 +337,7 @@ def patch_cancel_booking_by_token(token: str):
 def patch_booking_keep_by_token(token: str):
     booking_token_upper_case = token.upper()
     booking = booking_queries.find_by(booking_token_upper_case)
-    offerer_id = booking.stock.resolvedOffer.venue.managingOffererId
+    offerer_id = booking.stock.offer.venue.managingOffererId
     valid_api_key = _get_api_key_from_header(request)
 
     if current_user.is_authenticated:
@@ -387,9 +387,9 @@ def _get_api_key_from_header(received_request: Dict) -> ApiKey:
 
 
 def _create_response_to_get_booking_by_token(booking: Booking) -> Dict:
-    offer_name = booking.stock.resolvedOffer.product.name
+    offer_name = booking.stock.offer.product.name
     date = None
-    offer = booking.stock.resolvedOffer
+    offer = booking.stock.offer
     is_event = ProductType.is_event(offer.type)
     if is_event:
         date = serialize(booking.stock.beginningDatetime)

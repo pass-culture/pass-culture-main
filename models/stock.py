@@ -1,4 +1,3 @@
-""" stock """
 from datetime import datetime, timedelta
 from pprint import pformat
 
@@ -66,8 +65,7 @@ class Stock(PcObject,
                    CheckConstraint('price >= 0', name='check_price_is_not_negative'),
                    nullable=False)
 
-    available = Column(Integer,
-                       nullable=True)
+    available = Column(Integer, nullable=True)
 
     remainingQuantity = column_property(
         select([func.greatest(available - func.coalesce(func.sum(Booking.quantity), 0), 0)])
@@ -84,15 +82,7 @@ class Stock(PcObject,
         )
     )
 
-    groupSize = Column(Integer,
-                       nullable=False,
-                       default=1)
-
-    bookingLimitDatetime = Column(DateTime,
-                                  nullable=True)
-
-    bookingRecapSent = Column(DateTime,
-                              nullable=True)
+    bookingLimitDatetime = Column(DateTime, nullable=True)
 
     @property
     def isBookable(self):
@@ -123,10 +113,6 @@ class Stock(PcObject,
     @property
     def bookingsQuantity(self):
         return sum([booking.quantity for booking in self.bookings if not booking.isCancelled])
-
-    @property
-    def resolvedOffer(self):
-        return self.offer or self.eventOccurrence.offer
 
     @classmethod
     def queryNotSoftDeleted(cls):

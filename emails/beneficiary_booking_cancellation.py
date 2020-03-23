@@ -12,7 +12,7 @@ SUPPORT_EMAIL_ADDRESS = os.environ.get('SUPPORT_EMAIL_ADDRESS')
 def make_beneficiary_booking_cancellation_email_data(booking: Booking) -> Dict:
     stock = booking.stock
     beneficiary = booking.user
-    offer = stock.resolvedOffer
+    offer = stock.offer
     beneficiary_email = beneficiary.email
     environment = format_environment_for_email()
     event_date = ''

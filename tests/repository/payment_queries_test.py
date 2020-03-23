@@ -45,9 +45,9 @@ class FindErrorPaymentsTest:
         user = create_user()
         booking = create_booking(user=user)
         create_deposit(user)
-        error_payment1 = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10, status=TransactionStatus.ERROR)
-        error_payment2 = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10, status=TransactionStatus.ERROR)
-        pending_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
+        error_payment1 = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10, status=TransactionStatus.ERROR)
+        error_payment2 = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10, status=TransactionStatus.ERROR)
+        pending_payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
         repository.save(error_payment1, error_payment2, pending_payment)
 
         # When
@@ -64,8 +64,8 @@ class FindErrorPaymentsTest:
         user = create_user()
         booking = create_booking(user=user)
         create_deposit(user)
-        error_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
-        pending_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
+        error_payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
+        pending_payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
         error_status = PaymentStatus()
         error_status.status = TransactionStatus.ERROR
         sent_status = PaymentStatus()
@@ -87,7 +87,7 @@ class FindRetryPaymentsTest:
         user = create_user()
         booking = create_booking(user=user)
         create_deposit(user)
-        offerer = booking.stock.resolvedOffer.venue.managingOfferer
+        offerer = booking.stock.offer.venue.managingOfferer
         retry_payment1 = create_payment(booking, offerer, 10, status=TransactionStatus.RETRY)
         retry_payment2 = create_payment(booking, offerer, 10, status=TransactionStatus.RETRY)
         pending_payment = create_payment(booking, offerer, 10, status=TransactionStatus.PENDING)
@@ -107,9 +107,9 @@ class FindRetryPaymentsTest:
         user = create_user()
         booking = create_booking(user=user)
         create_deposit(user)
-        payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
-        payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
-        pending_payment = create_payment(booking, booking.stock.resolvedOffer.venue.managingOfferer, 10)
+        payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
+        payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
+        pending_payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
         retry_status = PaymentStatus()
         retry_status.status = TransactionStatus.RETRY
         sent_status = PaymentStatus()
@@ -131,7 +131,7 @@ class FindPaymentsByMessageTest:
         user = create_user()
         booking = create_booking(user=user)
         create_deposit(user)
-        offerer = booking.stock.resolvedOffer.venue.managingOfferer
+        offerer = booking.stock.offer.venue.managingOfferer
         transaction1 = create_payment_message(name='XML1')
         transaction2 = create_payment_message(name='XML2')
         transaction3 = create_payment_message(name='XML3')
@@ -159,7 +159,7 @@ class FindPaymentsByMessageTest:
         user = create_user()
         booking = create_booking(user=user)
         create_deposit(user)
-        offerer = booking.stock.resolvedOffer.venue.managingOfferer
+        offerer = booking.stock.offer.venue.managingOfferer
         message1 = create_payment_message(name='XML1')
         message2 = create_payment_message(name='XML2')
         message3 = create_payment_message(name='XML3')

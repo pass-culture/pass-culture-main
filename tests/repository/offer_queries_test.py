@@ -234,10 +234,10 @@ class GetOffersForRecommendationsSearchTest:
         )
 
         # Then
-        assert ok_stock.resolvedOffer in search_result_offers
-        assert ok_stock_with_thing.resolvedOffer in search_result_offers
-        assert ko_stock_before.resolvedOffer not in search_result_offers
-        assert ko_stock_after.resolvedOffer not in search_result_offers
+        assert ok_stock.offer in search_result_offers
+        assert ok_stock_with_thing.offer in search_result_offers
+        assert ko_stock_before.offer not in search_result_offers
+        assert ko_stock_after.offer not in search_result_offers
 
     @clean_database
     def test_should_return_things_and_events_with_name_containing_keywords_when_searching_with_several_partial_keywords(

@@ -25,7 +25,7 @@ class ConcatenatePaymentsWithErrorsAndRetriesTest:
         user = create_user()
         booking = create_booking(user=user)
         deposit = create_deposit(user)
-        offerer = booking.stock.resolvedOffer.venue.managingOfferer
+        offerer = booking.stock.offer.venue.managingOfferer
 
         error_payment = create_payment(booking, offerer, 10)
         retry_payment = create_payment(booking, offerer, 10)

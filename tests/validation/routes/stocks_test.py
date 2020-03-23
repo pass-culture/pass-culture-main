@@ -530,7 +530,7 @@ class GetOnlyFieldsWithValueToBeUpdatedTest:
                                'dateCreated': '2020-01-29T14:33:08.746369Z',
                                'dateModified': '2020-01-29T14:33:08.746382Z',
                                'dateModifiedAtLastProvider': '2020-01-29T14:33:07.803374Z',
-                               'endDatetime': '2020-02-08T14:30:01Z', 'fieldsUpdated': [], 'groupSize': 1, 'id': 'AGXA',
+                               'endDatetime': '2020-02-08T14:30:01Z', 'fieldsUpdated': [], 'id': 'AGXA',
                                'idAtProviders': 'TW92aWU6MjY1NTcy%22222222311111#LOCAL/2020-02-08T15:30:00',
                                'isSoftDeleted': False, 'lastProviderId': 'BY', 'modelName': 'Stock', 'offerId': 'QY',
                                'price': 22.0, 'remainingQuantity': 0}
@@ -550,7 +550,7 @@ class GetOnlyFieldsWithValueToBeUpdatedTest:
                                'dateCreated': '2020-01-29T14:33:08.746369Z',
                                'dateModified': '2020-01-29T14:33:08.746382Z',
                                'dateModifiedAtLastProvider': '2020-01-29T14:33:07.803374Z',
-                               'endDatetime': '2020-02-08T14:30:01Z', 'fieldsUpdated': [], 'groupSize': 1, 'id': 'AGXA',
+                               'endDatetime': '2020-02-08T14:30:01Z', 'fieldsUpdated': [], 'id': 'AGXA',
                                'idAtProviders': 'TW92aWU6MjY1NTcy%22222222311111#LOCAL/2020-02-08T15:30:00',
                                'isSoftDeleted': False, 'lastProviderId': 'BY', 'modelName': 'Stock', 'offerId': 'QY',
                                'price': 22.0, 'remainingQuantity': 0}

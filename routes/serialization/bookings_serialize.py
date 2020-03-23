@@ -9,12 +9,12 @@ def serialize_booking(booking: Booking) -> Dict:
     booking_id = humanize(booking.id)
     user_email = booking.user.email
     is_used = booking.isUsed
-    offer_name = booking.stock.resolvedOffer.product.name
+    offer_name = booking.stock.offer.product.name
     user_name = booking.user.publicName
-    venue_departement_code = booking.stock.resolvedOffer.venue.departementCode
+    venue_departement_code = booking.stock.offer.venue.departementCode
     offer_id = booking.stock.offer.id
-    venue_name = booking.stock.resolvedOffer.venue.name
-    venue_address = booking.stock.resolvedOffer.venue.address
+    venue_name = booking.stock.offer.venue.name
+    venue_address = booking.stock.offer.venue.address
     offer_type = 'EVENEMENT' if booking.stock.offer.isEvent else 'BIEN'
     offer_formula = ''
     if booking.stock.offer.type == str(EventType.CINEMA):
@@ -30,7 +30,7 @@ def serialize_booking(booking: Booking) -> Dict:
         product_isbn = offer_extra_data['isbn']
     date_of_birth = ''
     phone_number = ''
-    if booking.stock.resolvedOffer.product.type == str(EventType.ACTIVATION):
+    if booking.stock.offer.product.type == str(EventType.ACTIVATION):
         date_of_birth = serialize(booking.user.dateOfBirth)
         phone_number = booking.user.phoneNumber
 

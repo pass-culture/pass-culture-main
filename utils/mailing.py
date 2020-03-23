@@ -68,30 +68,6 @@ def resend_email(email: Email) -> bool:
     return False
 
 
-def make_final_recap_email_for_stock_with_event(stock: Stock) -> Dict:
-    booking_is_on_event = stock.beginningDatetime is not None
-    venue = stock.resolvedOffer.venue
-    date_in_tz = get_event_datetime(stock)
-    formatted_datetime = format_datetime(date_in_tz)
-    email_subject = '[Réservations] Récapitulatif pour {} le {}'.format(stock.offer.product.name,
-                                                                        formatted_datetime)
-    stock_bookings = booking_queries.find_ongoing_bookings_by_stock(stock)
-    email_html = render_template('mails/offerer_final_recap_email.html',
-                                 booking_is_on_event=booking_is_on_event,
-                                 number_of_bookings=len(stock_bookings),
-                                 stock_name=stock.offer.product.name,
-                                 stock_date_time=formatted_datetime,
-                                 venue=venue,
-                                 stock_bookings=stock_bookings)
-
-    return {
-        'FromName': 'pass Culture',
-        'FromEmail': SUPPORT_EMAIL_ADDRESS,
-        'Subject': email_subject,
-        'Html-part': email_html,
-    }
-
-
 def build_pc_pro_offer_link(offer: Offer) -> str:
     return f'{PRO_URL}/offres/{humanize(offer.id)}?lieu={humanize(offer.venueId)}' \
            f'&structure={humanize(offer.venue.managingOffererId)}'
@@ -117,7 +93,7 @@ def format_environment_for_email() -> str:
 
 
 def format_booking_date_for_email(booking: Booking) -> str:
-    if booking.stock.resolvedOffer.isEvent:
+    if booking.stock.offer.isEvent:
         date_in_tz = get_event_datetime(booking.stock)
         offer_date = date_in_tz.strftime("%d-%b-%Y")
         return offer_date
@@ -125,7 +101,7 @@ def format_booking_date_for_email(booking: Booking) -> str:
 
 
 def format_booking_hours_for_email(booking: Booking) -> str:
-    if booking.stock.resolvedOffer.isEvent:
+    if booking.stock.offer.isEvent:
         date_in_tz = get_event_datetime(booking.stock)
         event_hour = date_in_tz.hour
         event_minute = date_in_tz.minute
@@ -134,12 +110,12 @@ def format_booking_hours_for_email(booking: Booking) -> str:
 
 
 def make_offerer_booking_recap_email_after_user_action(booking: Booking, is_cancellation=False) -> Dict:
-    venue = booking.stock.resolvedOffer.venue
+    venue = booking.stock.offer.venue
     user = booking.user
     stock_bookings = booking_queries.find_ongoing_bookings_by_stock(
         booking.stock)
-    product = booking.stock.resolvedOffer.product
-    human_offer_id = humanize(booking.stock.resolvedOffer.id)
+    product = booking.stock.offer.product
+    human_offer_id = humanize(booking.stock.offer.id)
     booking_is_on_event = booking.stock.beginningDatetime is not None
 
     if is_cancellation:
@@ -199,8 +175,8 @@ def make_validation_email_object(offerer: Offerer, user_offerer: UserOfferer,
 
 
 def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> Dict:
-    stock_name = booking.stock.resolvedOffer.product.name
-    venue = booking.stock.resolvedOffer.venue
+    stock_name = booking.stock.offer.product.name
+    venue = booking.stock.offer.venue
     user_name = booking.user.publicName
     user_email = booking.user.email
     email_subject = 'Confirmation de votre annulation de réservation pour {}, proposé par {}'.format(stock_name,
@@ -445,7 +421,7 @@ def make_offer_creation_notification_email(offer: Offer, author: User, pro_origi
 def _generate_reservation_email_html_subject(booking: Booking) -> (str, str):
     stock = booking.stock
     user = booking.user
-    venue = stock.resolvedOffer.venue
+    venue = stock.offer.venue
     stock_description = _get_stock_description(stock)
     booking_is_on_event = stock.beginningDatetime is None
 
@@ -455,8 +431,8 @@ def _generate_reservation_email_html_subject(booking: Booking) -> (str, str):
         email_html = render_template('mails/user_confirmation_email_thing.html',
                                      user=user,
                                      booking_token=booking.token,
-                                     thing_name=stock.resolvedOffer.product.name,
-                                     thing_reference=stock.resolvedOffer.product.idAtProviders,
+                                     thing_name=stock.offer.product.name,
+                                     thing_reference=stock.offer.product.idAtProviders,
                                      venue=venue)
     else:
         date_in_tz = get_event_datetime(stock)
@@ -490,8 +466,8 @@ def _get_stock_description(stock: Stock) -> str:
         date_in_tz = get_event_datetime(stock)
         description = '{} le {}'.format(stock.offer.product.name,
                                         format_datetime(date_in_tz))
-    elif ProductType.is_thing(stock.resolvedOffer.type):
-        description = str(stock.resolvedOffer.product.name)
+    elif ProductType.is_thing(stock.offer.type):
+        description = str(stock.offer.product.name)
 
     return description
 

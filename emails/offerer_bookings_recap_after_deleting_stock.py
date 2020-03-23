@@ -11,7 +11,7 @@ def retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookin
                                                                           recipients: str) -> Dict:
     booking = bookings[0]
     stock = booking.stock
-    offer = stock.resolvedOffer
+    offer = stock.offer
     event_date = format_booking_date_for_email(booking)
     event_hour = format_booking_hours_for_email(booking)
     offer_link = build_pc_pro_offer_link(offer)

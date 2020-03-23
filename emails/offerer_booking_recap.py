@@ -9,7 +9,7 @@ from utils.mailing import build_pc_pro_offer_link, format_environment_for_email,
 
 
 def retrieve_data_for_offerer_booking_recap_email(booking: Booking, recipients: List[str]) -> Dict:
-    offer = booking.stock.resolvedOffer
+    offer = booking.stock.offer
     venue_name = offer.venue.name
     offer_name = offer.product.name
     price = 'Gratuit' if booking.stock.price == 0 else str(booking.stock.price)

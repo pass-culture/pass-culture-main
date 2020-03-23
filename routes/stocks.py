@@ -105,7 +105,7 @@ def edit_stock(stock_id):
 
     check_stock_is_updatable(stock)
     check_dates_are_allowed_on_existing_stock(stock_data, stock.offer)
-    offerer_id = stock.resolvedOffer.venue.managingOffererId
+    offerer_id = stock.offer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
 
     stock_from_allocine_provider = stock.idAtProviders is not None
@@ -131,7 +131,7 @@ def edit_stock(stock_id):
 @login_or_api_key_required
 def delete_stock(id):
     stock = load_or_404(Stock, id)
-    offerer_id = stock.resolvedOffer.venue.managingOffererId
+    offerer_id = stock.offer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
     bookings = delete_stock_and_cancel_bookings(stock)
 

@@ -744,7 +744,7 @@ class FindByTest:
 
             # when
             result = booking_queries.find_by(booking.token, email='user@example.com',
-                                             offer_id=stock.resolvedOffer.id)
+                                             offer_id=stock.offer.id)
 
             # then
             assert result.id == booking.id
@@ -761,7 +761,7 @@ class FindByTest:
 
             # when
             result = booking_queries.find_by(booking.token, email='user@example.com',
-                                             offer_id=stock.resolvedOffer.id)
+                                             offer_id=stock.offer.id)
 
             # then
             assert result.id == booking.id

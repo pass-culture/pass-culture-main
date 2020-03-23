@@ -51,7 +51,7 @@ class DigitalThingsReimbursement(ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking: Booking, **kwargs):
-        offer = booking.stock.resolvedOffer
+        offer = booking.stock.offer
         book_offer = offer.type == str(ThingType.LIVRE_EDITION)
         cinema_card_offer = offer.type == str(ThingType.CINEMA_CARD)
         offer_is_an_exception = book_offer or cinema_card_offer
@@ -65,7 +65,7 @@ class PhysicalOffersReimbursement(ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking: Booking, **kwargs):
-        offer = booking.stock.resolvedOffer
+        offer = booking.stock.offer
         book_offer = offer.type == str(ThingType.LIVRE_EDITION)
         cinema_card_offer = offer.type == str(ThingType.CINEMA_CARD)
         offer_is_an_exception = book_offer or cinema_card_offer
@@ -79,7 +79,7 @@ class MaxReimbursementByOfferer(ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking: Booking, **kwargs):
-        if booking.stock.resolvedOffer.product.isDigital:
+        if booking.stock.offer.product.isDigital:
             return False
         else:
             return kwargs['cumulative_value'] > 20000
@@ -92,7 +92,7 @@ class ReimbursementRateByVenueBetween20000And40000(ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking: Booking, **kwargs):
-        if booking.stock.resolvedOffer.product.isDigital:
+        if booking.stock.offer.product.isDigital:
             return False
         else:
             return 20000 < kwargs['cumulative_value'] <= 40000
@@ -105,7 +105,7 @@ class ReimbursementRateByVenueBetween40000And100000(ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking: Booking, **kwargs):
-        if booking.stock.resolvedOffer.product.isDigital:
+        if booking.stock.offer.product.isDigital:
             return False
         else:
             return 40000 < kwargs['cumulative_value'] <= 100000
@@ -118,7 +118,7 @@ class ReimbursementRateByVenueAbove100000(ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking: Booking, **kwargs):
-        if booking.stock.resolvedOffer.product.isDigital:
+        if booking.stock.offer.product.isDigital:
             return False
         else:
             return kwargs['cumulative_value'] > 100000
@@ -131,7 +131,7 @@ class ReimbursementRateForBookAbove20000(ReimbursementRule):
     valid_until = None
 
     def is_relevant(self, booking: Booking, **kwargs):
-        if booking.stock.resolvedOffer.type == str(ThingType.LIVRE_EDITION) \
+        if booking.stock.offer.type == str(ThingType.LIVRE_EDITION) \
                 and kwargs['cumulative_value'] > 20000:
             return True
         else:

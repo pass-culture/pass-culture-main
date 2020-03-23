@@ -3,7 +3,7 @@ from unittest.mock import patch, Mock, call
 from domain.user_emails import send_beneficiary_booking_cancellation_email, \
     send_warning_to_beneficiary_after_pro_booking_cancellation, \
     send_offerer_driven_cancellation_email_to_offerer, \
-    send_booking_confirmation_email_to_beneficiary, send_booking_recap_emails, send_final_booking_recap_email, \
+    send_booking_confirmation_email_to_beneficiary, send_booking_recap_emails, \
     send_validation_confirmation_email_to_pro, send_batch_cancellation_emails_to_users, \
     send_offerer_bookings_recap_email_after_offerer_cancellation, send_user_validation_email, \
     send_venue_validation_confirmation_email, \
@@ -53,7 +53,7 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         venue = create_venue(offerer)
         venue.bookingEmail = 'booking@example.com'
         stock = create_stock_with_event_offer(offerer, venue)
-        stock.resolvedOffer.bookingEmail = 'offer@example.com'
+        stock.offer.bookingEmail = 'offer@example.com'
         booking = create_booking(user=user, stock=stock)
         mocked_send_email = Mock()
 
@@ -66,7 +66,6 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         args = mocked_send_email.call_args
         assert args[1]['data']['To'] == 'offer@example.com, administration@example.com'
 
-
     @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
     @patch('domain.user_emails.make_offerer_driven_cancellation_email_for_offerer', return_value={'Html-part': ''})
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
@@ -78,7 +77,7 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue)
-        stock.resolvedOffer.bookingEmail = None
+        stock.offer.bookingEmail = None
         booking = create_booking(user=user, stock=stock)
         mocked_send_email = Mock()
 
@@ -105,7 +104,7 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
         deposit = create_deposit(user, amount=500)
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue)
-        stock.resolvedOffer.bookingEmail = 'booking@example.com'
+        stock.offer.bookingEmail = 'booking@example.com'
         booking = create_booking(user=user, stock=stock)
         mocked_send_email = Mock()
 
@@ -131,7 +130,7 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
         deposit = create_deposit(user, amount=500)
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue)
-        stock.resolvedOffer.bookingEmail = None
+        stock.offer.bookingEmail = None
         booking = create_booking(user=user, stock=stock)
         mocked_send_email = Mock()
 
@@ -149,7 +148,8 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
 class SendWarningToBeneficiaryAfterProBookingCancellationTest:
     @patch('emails.beneficiary_warning_after_pro_booking_cancellation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('emails.beneficiary_warning_after_pro_booking_cancellation.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @patch('emails.beneficiary_warning_after_pro_booking_cancellation.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('emails.beneficiary_warning_after_pro_booking_cancellation.feature_send_mail_to_users_enabled',
+           return_value=True)
     def test_should_sends_email_to_beneficiary_when_pro_cancels_booking(self, mock_feature_send_mail_to_users_enabled):
         # Given
         user = create_user(email='user@example.com')
@@ -274,73 +274,6 @@ class SendBookingRecapEmailsTest:
         args = mocked_send_email.call_args
         data = args[1]['data']
         assert data['To'] == 'administration@example.com'
-
-
-class SendFinalBookingRecapEmailTest:
-    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @patch('domain.user_emails.set_booking_recap_sent_and_save')
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False)
-    def when_feature_send_mail_to_users_disabled_sends_email_to_pass_culture_dev(self,
-                                                                                 mock_feature_send_mail_to_users_enabled,
-                                                                                 mock_set_booking_recap_sent_and_save,
-                                                                                 app):
-        # given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        stock = create_stock_with_event_offer(offerer, venue, booking_email='offer.booking.email@example.net')
-        mocked_send_email = Mock()
-
-        # when
-        send_final_booking_recap_email(stock, mocked_send_email)
-
-        # then
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'dev@example.com'
-        mock_set_booking_recap_sent_and_save.assert_called_once_with(stock)
-
-    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
-    @patch('domain.user_emails.set_booking_recap_sent_and_save')
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
-    def when_feature_send_mail_to_users_enabled_and_offer_booking_email_sends_to_offerer_and_support(self,
-                                                                                                     mock_feature_send_mail_to_users_enabled,
-                                                                                                     mock_set_booking_recap_sent_and_save):
-        # given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        stock = create_stock_with_event_offer(offerer, venue, booking_email='offer.booking.email@example.net')
-        mocked_send_email = Mock()
-
-        # when
-        send_final_booking_recap_email(stock, mocked_send_email)
-
-        # then
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert 'offer.booking.email@example.net' in args[1]['data']['To']
-        assert 'administration@example.com' in args[1]['data']['To']
-        mock_set_booking_recap_sent_and_save.assert_called_once_with(stock)
-
-    @patch('domain.user_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
-    @patch('domain.user_emails.set_booking_recap_sent_and_save')
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
-    def when_feature_send_mail_to_users_enabled_and_not_offer_booking_email_sends_only_to_administration(self,
-                                                                                                         mock_feature_send_mail_to_users_enabled,
-                                                                                                         mock_set_booking_recap_sent_and_save):
-        # given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        stock = create_stock_with_event_offer(offerer, venue, booking_email=None)
-        mocked_send_email = Mock()
-
-        # when
-        send_final_booking_recap_email(stock, mocked_send_email)
-
-        # then
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        assert args[1]['data']['To'] == 'administration@example.com'
-        mock_set_booking_recap_sent_and_save.assert_called_once_with(stock)
 
 
 class SendValidationConfirmationEmailTest:

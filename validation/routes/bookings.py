@@ -39,24 +39,6 @@ def check_existing_stock(stock: Stock) -> None:
         raise api_errors
 
 
-def check_not_soft_deleted_stock(stock: Stock) -> None:
-    if stock.isSoftDeleted:
-        api_errors = ApiErrors()
-        api_errors.add_error('stockId', "Cette date a été retirée. Elle n'est plus disponible.")
-        raise api_errors
-
-
-def check_offer_is_active(stock: Stock) -> None:
-    soft_deleted_stock = stock.isSoftDeleted
-    inactive_offerer = not stock.resolvedOffer.venue.managingOfferer.isActive
-    inactive_offer = not stock.resolvedOffer.isActive
-
-    if soft_deleted_stock or inactive_offerer or inactive_offer:
-        api_errors = ApiErrors()
-        api_errors.add_error('stockId', "Cette offre a été retirée. Elle n'est plus valable.")
-        raise api_errors
-
-
 def check_already_booked(stock: Stock, user: User):
     is_stock_already_booked_by_user = booking_queries.is_stock_already_booked_by_user(stock, user)
     if is_stock_already_booked_by_user:
@@ -65,36 +47,10 @@ def check_already_booked(stock: Stock, user: User):
         raise api_errors
 
 
-def check_stock_venue_is_validated(stock: Stock) -> None:
-    if not stock.resolvedOffer.venue.isValidated:
-        api_errors = ApiErrors()
-        api_errors.add_error('stockId',
-                             'Vous ne pouvez pas encore réserver cette offre, son lieu est en attente de validation')
-        raise api_errors
-
-
-def check_stock_booking_limit_date(stock: Stock) -> None:
-    stock_has_expired = stock.bookingLimitDatetime is not None and stock.bookingLimitDatetime < datetime.utcnow()
-
-    if stock_has_expired:
-        api_errors = ApiErrors()
-        api_errors.add_error('global', 'La date limite de réservation de cette offre est dépassée')
-        raise api_errors
-
-
-def check_offer_date(stock: Stock) -> None:
-    stock_has_expired = stock.beginningDatetime is not None and stock.beginningDatetime < datetime.utcnow()
-
-    if stock_has_expired:
-        api_errors = ApiErrors()
-        api_errors.add_error('date', "Cette offre n'est plus valable car sa date est passée")
-        raise api_errors
-
-
 def check_expenses_limits(expenses: Dict, booking: Booking,
                           find_stock: Callable[..., Stock] = stock_queries.find_stock_by_id) -> None:
     stock = find_stock(booking.stockId)
-    offer = stock.resolvedOffer
+    offer = stock.offer
 
     if is_eligible_to_physical_offers_capping(offer):
         if (expenses['physical']['actual'] + booking.value) > expenses['physical']['max']:

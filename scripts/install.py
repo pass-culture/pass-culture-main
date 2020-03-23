@@ -28,7 +28,6 @@ def install_scripts():
     import scripts.clean_database
     import scripts.request
     import scripts.sandbox
-    import scripts.send_final_booking_recaps
     import scripts.update_providables
     import scripts.storage
     import scripts.install_data

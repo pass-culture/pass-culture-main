@@ -25,7 +25,7 @@ class Patch:
                 repository.save(booking)
                 booking_id = booking.id
                 url = '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, user.email,
-                                                                       humanize(stock.resolvedOffer.id))
+                                                                       humanize(stock.offer.id))
 
                 # When
                 response = TestClient(app.test_client()).patch(url)
@@ -161,7 +161,7 @@ class Patch:
                 booking = create_booking(user=user, stock=stock, venue=venue)
                 repository.save(booking)
                 url = '/bookings/token/{}?&offer_id={}'.format(booking.token,
-                                                               humanize(stock.resolvedOffer.id))
+                                                               humanize(stock.offer.id))
 
                 # When
                 response = TestClient(app.test_client()).patch(url)
@@ -268,7 +268,7 @@ class Patch:
                 booking = create_booking(user=user, stock=stock, venue=venue)
                 repository.save(booking)
                 url = '/bookings/token/{}?email={}&offer_id={}'.format(booking.token, 'wrong.email@test.com',
-                                                                       humanize(stock.resolvedOffer.id))
+                                                                       humanize(stock.offer.id))
 
                 # When
                 response = TestClient(app.test_client()).patch(url)

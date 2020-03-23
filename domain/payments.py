@@ -70,13 +70,13 @@ class PaymentDetails:
         if payment is not None:
             self.booking_user_id = payment.booking.user.id
             self.booking_user_email = payment.booking.user.email
-            self.offerer_name = payment.booking.stock.resolvedOffer.venue.managingOfferer.name
-            self.offerer_siren = payment.booking.stock.resolvedOffer.venue.managingOfferer.siren
-            self.venue_name = payment.booking.stock.resolvedOffer.venue.name
-            self.venue_siret = payment.booking.stock.resolvedOffer.venue.siret
-            self.venue_humanized_id = humanize(payment.booking.stock.resolvedOffer.venue.id)
-            self.offer_name = payment.booking.stock.resolvedOffer.product.name
-            self.offer_type = payment.booking.stock.resolvedOffer.product.offerType['proLabel']
+            self.offerer_name = payment.booking.stock.offer.venue.managingOfferer.name
+            self.offerer_siren = payment.booking.stock.offer.venue.managingOfferer.siren
+            self.venue_name = payment.booking.stock.offer.venue.name
+            self.venue_siret = payment.booking.stock.offer.venue.siret
+            self.venue_humanized_id = humanize(payment.booking.stock.offer.venue.id)
+            self.offer_name = payment.booking.stock.offer.product.name
+            self.offer_type = payment.booking.stock.offer.product.offerType['proLabel']
             self.booking_date = payment.booking.dateCreated
             self.booking_amount = payment.booking.value
             self.booking_used_date = booking_used_date
@@ -111,7 +111,7 @@ class PaymentDetails:
 
 
 def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> Payment:
-    venue = booking_reimbursement.booking.stock.resolvedOffer.venue
+    venue = booking_reimbursement.booking.stock.offer.venue
 
     payment = Payment()
     payment.booking = booking_reimbursement.booking

@@ -82,7 +82,7 @@ class Booking(PcObject, Model, VersionedMixin):
 
     @property
     def completedUrl(self):
-        offer = self.stock.resolvedOffer
+        offer = self.stock.offer
         url = offer.product.url
         if url is None:
             return None
@@ -140,7 +140,7 @@ class Booking(PcObject, Model, VersionedMixin):
     @property
     def qrCode(self):
         from domain.bookings import generate_qr_code
-        offer = self.stock.resolvedOffer
+        offer = self.stock.offer
         if offer.isEvent:
             return generate_qr_code(self) if self.isEventExpired is False and self.isCancelled is False else None
         return generate_qr_code(self) if self.isUsed is False and self.isCancelled is False else None

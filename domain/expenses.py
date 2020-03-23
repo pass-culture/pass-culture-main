@@ -49,7 +49,7 @@ def _compute_booking_expenses(bookings: List[Booking], get_bookings=lambda b: b)
 def _get_bookings_of_digital_things(bookings: List[Booking]) -> List[Booking]:
     match = []
     for booking in bookings:
-        offer = booking.stock.resolvedOffer
+        offer = booking.stock.offer
         if is_eligible_to_digital_offers_capping(offer):
             match.append(booking)
 
@@ -59,7 +59,7 @@ def _get_bookings_of_digital_things(bookings: List[Booking]) -> List[Booking]:
 def _get_bookings_of_physical_things(bookings: List[Booking]) -> List[Booking]:
     match = []
     for booking in bookings:
-        offer = booking.stock.resolvedOffer
+        offer = booking.stock.offer
         if is_eligible_to_physical_offers_capping(offer):
             match.append(booking)
 

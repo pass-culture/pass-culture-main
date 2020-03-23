@@ -14,7 +14,7 @@ def update_offer_and_booking_status(booking_tokens_file_path: str):
             booking.isCancelled = True
             print(f"[BOOKINGS TOKEN SCAN] Cancelling booking: {booking_token}")
 
-        offer = booking.stock.resolvedOffer
+        offer = booking.stock.offer
         offer.isActive = False
         repository.save(offer, booking)
 

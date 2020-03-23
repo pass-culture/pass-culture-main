@@ -10,7 +10,7 @@ def retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking: B
     user = booking.user
     stock = booking.stock
     bookings = list(filter(lambda ongoing_booking: not ongoing_booking.isCancelled, stock.bookings))
-    offer = stock.resolvedOffer
+    offer = stock.offer
     venue = offer.venue
     departement_code = venue.departementCode or 'numérique'
     price = str(stock.price) if stock.price > 0 else 'Gratuit'
@@ -46,5 +46,5 @@ def retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking: B
 
 
 def _is_offer_active_for_recap(stock: Stock) -> bool:
-    return stock.resolvedOffer.isActive and stock.isBookable \
+    return stock.offer.isActive and stock.isBookable \
            and (stock.available is None or stock.remainingQuantity > 0)

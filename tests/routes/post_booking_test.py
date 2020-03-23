@@ -138,7 +138,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer=offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=200)
-            event_offer = stock.resolvedOffer
+            event_offer = stock.offer
             recommendation = create_recommendation(event_offer, user)
             deposit = create_deposit(user, amount=0)
             repository.save(deposit)
