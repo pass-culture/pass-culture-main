@@ -1,43 +1,121 @@
-.spr-text-input-form {
+.search-results-page {
+  @extend .page;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.sr-items-wrapper {
+  background: $white;
+  flex-grow: 1;
+  overflow-y: auto;
+
+  .sr-items-number {
+    font-size: rem(15px);
+    font-style: italic;
+    font-weight: 600;
+    margin-bottom: rem(12px);
+    padding-left: rem(12px);
+    padding-top: rem(12px);
+    text-transform: uppercase;
+  }
+}
+
+.sr-form {
   align-items: center;
   background: linear-gradient(108deg, $primary -6%, #D0005F 103%);
   padding: 0.75rem 0;
+
+  .sr-input-wrapper {
+    display: flex;
+    height: rem(48px);
+    margin: 0 auto;
+    width: 90%;
+
+    .sr-input-back {
+      background: $white;
+      border-radius: 2rem 0 0 2rem;
+      display: flex;
+      justify-content: flex-end;
+
+      img {
+        margin-left: rem(16px);
+      }
+    }
+
+    .sr-text-input {
+      border: 0;
+      font-size: rem(20px);
+      font-weight: 700;
+      padding: rem(9px);
+      width: 75%;
+
+      &::placeholder {
+        font-size: rem(18px);
+        font-style: italic;
+        font-weight: 400;
+      }
+    }
+
+    .sr-reset-wrapper {
+      align-items: center;
+      background: $white;
+      border-radius: 0 2rem 2rem 0;
+      display: flex;
+      justify-content: center;
+      width: 15%;
+
+      .sr-reset {
+        img {
+          max-width: rem(18px);
+        }
+      }
+    }
+  }
 }
 
 .sr-spinner {
-  position: absolute;
   left: 50%;
+  position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
 }
 
-.sr-filter-button-wrapper {
+.sr-filter-wrapper {
   bottom: $footer-height + rem(20px);
   display: flex;
   justify-content: center;
   position: absolute;
-  z-index: 1;
   width: 100%;
-}
+  z-index: 1;
 
-.sr-filter-button {
-  background: linear-gradient(108deg, $primary -6%, #D0005F 103%);
-  border-radius: rem(24px);
-  border: 0;
-  font-size: rem(16px);
-  font-weight: 700;
-  height: rem(49px);
-  width: rem(116px);
+  .sr-filter-button {
+    background: linear-gradient(108deg, $primary -6%, #D0005F 103%);
+    border-radius: rem(24px);
+    border: 0;
+    font-size: rem(16px);
+    font-weight: 700;
+    height: rem(49px);
+    width: rem(116px);
 
-  span {
-    margin-left: rem(8px);
-    margin-right: rem(8px);
+    span {
+      margin-left: rem(8px);
+      margin-right: rem(8px);
+    }
   }
 }
 
 @media screen and (max-width: $iphone5-width) and (max-height: $iphone5-height) {
-  .spr-text-input-form {
-    padding: 0.75rem 0;
+  .sr-form {
+    .sr-input-wrapper {
+      .sr-text-input {
+        width: 70%;
+      }
+
+      .sr-reset-wrapper {
+        width: 25%;
+      }
+    }
   }
 
   footer {

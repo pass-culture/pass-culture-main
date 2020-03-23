@@ -46,25 +46,25 @@ export class Home extends PureComponent {
     const { keywordsToSearch } = this.state
     const { categoryCriterion, geolocationCriterion, sortCriterion } = this.props
     return (
-      <main className="search-page-algolia">
-        <div className="home-header-wrapper">
+      <main className="search-home-page">
+        <div className="sh-header-wrapper">
           <HeaderContainer
             closeTitle="Retourner à la page découverte"
             closeTo="/decouverte"
-            extraClassName="header-search-main-page"
+            extraClassName="home-header"
             title="Recherche"
           />
           <form
-            className="home-text-input-form"
+            className="sh-form"
             id="home-form"
             onSubmit={this.handleOnSubmit}
           >
-            <div className="home-text-input-wrapper">
-              <div className="home-text-input-back">
+            <div className="sh-input-wrapper">
+              <div className="sh-input-back">
                 <Icon svg="picto-search" />
               </div>
               <input
-                className="home-text-input"
+                className="sh-text-input"
                 name="keywords"
                 onChange={this.handleOnTextInputChange}
                 placeholder="Titre, artiste..."
@@ -72,10 +72,10 @@ export class Home extends PureComponent {
                 type="text"
                 value={keywordsToSearch}
               />
-              <div className="home-text-input-reset">
+              <div className="sh-reset-wrapper">
                 {keywordsToSearch && (
                   <button
-                    className="home-text-input-reset-button"
+                    className="sh-reset-button"
                     onClick={this.handleResetButtonClick}
                     type="reset"
                   >
@@ -89,21 +89,21 @@ export class Home extends PureComponent {
             </div>
           </form>
         </div>
-        <ul className="home-filter-list">
+        <ul className="sh-criteria-list">
           <CriterionItem
             icon={categoryCriterion.icon}
             label="Je cherche"
             linkTo="/recherche-offres/criteres-categorie"
             selectedFilter={categoryCriterion.label}
           />
-          <span className="search-criteria-separator" />
+          <span className="sh-criteria-separator" />
           <CriterionItem
             icon={geolocationCriterion.params.icon}
             label="Où"
             linkTo="/recherche-offres/criteres-localisation"
             selectedFilter={geolocationCriterion.params.label}
           />
-          <span className="search-criteria-separator" />
+          <span className="sh-criteria-separator" />
           <CriterionItem
             icon={sortCriterion.icon}
             label="Trier par"
@@ -111,9 +111,9 @@ export class Home extends PureComponent {
             selectedFilter={sortCriterion.label}
           />
         </ul>
-        <div className="home-main-search-button-wrapper">
+        <div className="sh-search-wrapper">
           <button
-            className="home-search-button"
+            className="sh-search-button"
             form="home-form"
             type="submit"
           >

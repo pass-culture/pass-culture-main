@@ -1,37 +1,37 @@
 .ci-wrapper {
   background: $white;
-  text-align: center;
   margin: rem(23px) 0;
+  text-align: center;
 
   &:first-child {
     margin-top: rem(30px);
   }
-}
 
-.ci-link-label {
-  margin-bottom: rem(13px);
-  color: $grey;
-  font-size: 16px;
+  .ci-link-label {
+    color: $grey;
+    font-size: 16px;
+    margin-bottom: rem(13px);
 
-  span:first-child {
-    margin-right: rem(8px);
+    span:first-child {
+      margin-right: rem(8px);
+    }
   }
-}
 
-.ci-page-link {
-  font-size: rem(22px);
-  font-weight: bold;
-  line-height: 1.18;
-  display: flex;
-  align-items: center;
-  color: $black-light;
-
-  &:visited {
+  .ci-page-link {
+    align-items: center;
     color: $black-light;
-  }
+    display: flex;
+    font-size: rem(22px);
+    font-weight: bold;
+    line-height: 1.18;
 
-  .ci-page-icon {
-    margin-right: rem(12px);
+    &:visited {
+      color: $black-light;
+    }
+
+    .ci-page-icon {
+      margin-right: rem(12px);
+    }
   }
 }
 
@@ -52,14 +52,14 @@
     &:first-child {
       margin-top: rem(15px);
     }
-  }
 
-  .ci-link-label {
-    font-size: rem(14px);
-    margin-bottom: rem(10px);
-  }
+    .ci-link-label {
+      font-size: rem(14px);
+      margin-bottom: rem(10px);
+    }
 
-  .ci-page-link {
-    font-size: rem(18px);
+    .ci-page-link {
+      font-size: rem(18px);
+    }
   }
 }

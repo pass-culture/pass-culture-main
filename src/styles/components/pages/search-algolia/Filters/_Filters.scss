@@ -1,16 +1,8 @@
 .search-filters-page {
-  @extend .page;
-
   background: $white;
   display: flex;
   flex-direction: column;
-  position: static;
-}
-
-.sf-content-wrapper {
-  flex-grow: 1;
-  padding: rem(24px);
-  overflow-y: auto;
+  min-height: 100%;
 }
 
 .sf-header-wrapper {
@@ -18,7 +10,7 @@
     height: rem(45px);
 
     .header-title {
-      margin-top: rem(5px);
+      padding: rem(5px)
     }
   }
 
@@ -28,81 +20,57 @@
   }
 }
 
+.sf-content-wrapper {
+  flex-grow: 1;
+  padding: rem(24px);
+  overflow-y: auto;
+
+  .sf-geolocation-title {
+    font-weight: 500;
+  }
+
+  .sf-geolocation-button {
+    color: black;
+    font-size: rem(16px);
+    font-weight: 600;
+    margin-top: rem(20px);
+  }
+
+  .sf-offer-type-title {
+    display: inline-block;
+    font-size: rem(18px);
+    font-weight: 500;
+    margin-top: rem(20px);
+  }
+
+  .sf-offer-type-wrapper {
+    margin-top: rem(20px);
+  }
+
+  .sf-offer-type-counter {
+    color: $primary-error;
+    font-size: rem(18px);
+    font-weight: 500;
+    margin-left: rem(5px);
+  }
+}
+
 .sf-button-wrapper {
   display: flex;
   justify-content: center;
   padding-bottom: rem(20px);
-}
 
-.sf-button {
-  background-color: $primary;
-  border-radius: 2rem;
-  font-size: rem(16px);
-  font-weight: 700;
-  height: rem(48px);
-  width: 90%;
-}
-
-.sf-geolocation-title {
-  font-size: rem(18px);
-  font-weight: 500;
-  margin-top: rem(20px);
-}
-
-.sf-geolocation-button {
-  color: black;
-  font-size: rem(16px);
-  font-weight: 600;
-  margin-top: rem(20px);
+  .sf-button {
+    background-color: $primary;
+    border-radius: 2rem;
+    font-size: rem(16px);
+    font-weight: 700;
+    height: rem(48px);
+    width: 90%;
+  }
 }
 
 .sf-filter-separator {
   border: rem(0.5px) solid $grey-even-more-light;
   margin-top: rem(20px);
-}
-
-.sf-offer-type-title {
-  display: inline-block;
-  font-size: rem(18px);
-  font-weight: 500;
-  margin-top: rem(20px);
-}
-
-.sf-offer-type-wrapper {
-  display: flex;
-  flex-direction: row;
-  margin-top: rem(20px);
-}
-
-.sf-offer-type-counter {
-  color: $primary-error;
-  font-size: rem(18px);
-  font-weight: 500;
-  margin-left: rem(5px);
-}
-
-@media screen and (max-width: $iphone6) {
-  .sf-header-wrapper {
-    header {
-      height: rem(42px);
-    }
-
-    .back-link {
-      position: absolute;
-      top: rem(4.5px);
-    }
-  }
-}
-
-@media screen and (max-width: $iphone5-width) and (max-height: $iphone5-height) {
-  .sf-header-wrapper {
-    header {
-      height: rem(45px);
-    }
-
-    .back-link {
-      position: absolute;
-      top: rem(6px);
-    }
-  }
 }

@@ -133,7 +133,7 @@ class SearchResults extends PureComponent {
       })
   }
 
-  getScrollParent = () => document.querySelector('.home-results-wrapper')
+  getScrollParent = () => document.querySelector('.sr-wrapper')
 
   handleBackButtonClick = () => {
     const { redirectToSearchMainPage } = this.props
@@ -220,19 +220,19 @@ class SearchResults extends PureComponent {
     const { search } = location
 
     return (
-      <main className="search-page-algolia">
+      <main className="search-results-page">
         <Switch>
           <Route
             exact
             path="/recherche-offres/resultats(/menu)?"
           >
             <form
-              className="spr-text-input-form"
+              className="sr-form"
               onSubmit={this.handleOnSubmit}
             >
-              <div className="home-text-input-wrapper">
+              <div className="sr-input-wrapper">
                 <button
-                  className="home-text-input-back"
+                  className="sr-input-back"
                   onClick={this.handleBackButtonClick}
                   type="button"
                 >
@@ -242,7 +242,7 @@ class SearchResults extends PureComponent {
                   />
                 </button>
                 <input
-                  className="home-text-input"
+                  className="sr-text-input"
                   name="keywords"
                   onChange={this.handleOnTextInputChange}
                   placeholder="Titre, artiste..."
@@ -250,10 +250,10 @@ class SearchResults extends PureComponent {
                   type="text"
                   value={keywordsToSearch}
                 />
-                <div className="home-text-input-reset">
+                <div className="sr-reset-wrapper">
                   {keywordsToSearch && (
                     <button
-                      className="home-text-input-reset-button"
+                      className="sr-reset"
                       onClick={this.handleResetButtonClick}
                       type="reset"
                     >
@@ -265,7 +265,7 @@ class SearchResults extends PureComponent {
                   )}
                 </div>
               </div>
-              <div className="sr-filter-button-wrapper">
+              <div className="sr-filter-wrapper">
                 <button
                   className="sr-filter-button"
                   onClick={this.handleGoToFilters}
@@ -281,11 +281,11 @@ class SearchResults extends PureComponent {
                 </button>
               </div>
             </form>
-            <div className="home-results-wrapper">
+            <div className="sr-items-wrapper">
               <div className="sr-spinner">
                 {isLoading && <Spinner label="Recherche en cours" />}
               </div>
-              <h1 className="home-results-title">
+              <h1 className="sr-items-number">
                 {this.getNumberOfResultsToDisplay()}
               </h1>
               {results.length > 0 && (
