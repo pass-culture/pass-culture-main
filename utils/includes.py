@@ -47,7 +47,8 @@ OFFER_INCLUDES = [
         "includes": [
             'bookingsQuantity',
             'isBookable',
-            'remainingQuantity'
+            'remainingQuantity',
+            'remainingQuantityOrUnlimited'
         ]
     },
     {
@@ -95,7 +96,7 @@ FAVORITE_INCLUDES = [
                 "key": "stocks",
                 "includes": [
                     'isBookable',
-                    'remainingQuantity'
+                    'remainingQuantityOrUnlimited'
                 ]
             },
             {
@@ -131,7 +132,7 @@ RECOMMENDATION_INCLUDES = [
                 "key": "stocks",
                 "includes": [
                     'isBookable',
-                    'remainingQuantity'
+                    'remainingQuantityOrUnlimited'
                 ]
             },
             {
@@ -172,7 +173,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
         "key": "stock",
         "includes": [
             'isBookable',
-            'remainingQuantity',
+            'remainingQuantityOrUnlimited',
             {
                 "key": "offer",
                 "includes": [
@@ -190,7 +191,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                         "key": "stocks",
                         "includes": [
                             'isBookable',
-                            'remainingQuantity'
+                            'remainingQuantityOrUnlimited'
                         ]
                     },
                     {
@@ -216,7 +217,7 @@ WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = [
         "key": "stock",
         "includes": [
             'isBookable',
-            'remainingQuantity',
+            'remainingQuantityOrUnlimited',
             {
                 "key": "offer",
                 "includes": [
@@ -234,7 +235,7 @@ WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = [
                         "key": "stocks",
                         "includes": [
                             'isBookable',
-                            'remainingQuantity'
+                            'remainingQuantityOrUnlimited'
                         ]
                     },
                     {
@@ -279,7 +280,7 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
                         "key": "stocks",
                         "includes": [
                             'isBookable',
-                            'remainingQuantity'
+                            'remainingQuantityOrUnlimited'
                         ]
                     },
                     {
@@ -299,7 +300,7 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
         "key": "stock",
         "includes": [
             'isBookable',
-            'remainingQuantity'
+            'remainingQuantityOrUnlimited'
         ]
     },
     "thumbUrl",
