@@ -1,7 +1,7 @@
 """add_constraint_available_is_too_low_on_stock
 
 Revision ID: 2fb60c9897d3
-Revises: d8b5cd0e73d2
+Revises: 1cc19c292f9b
 Create Date: 2020-03-16 16:11:00.848488
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '2fb60c9897d3'
-down_revision = '1f446f8a334d'
+down_revision = '1cc19c292f9b'
 branch_labels = None
 depends_on = None
 
