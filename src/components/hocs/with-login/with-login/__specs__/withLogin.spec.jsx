@@ -25,7 +25,7 @@ describe('src | components | pages | hocs | with-login | withLogin', () => {
       let handleSuccess = jest.fn()
       let dispatch = jest.fn()
       const wrappedComponent = () => (<h1>
-        {'Hello World today!'}
+        {'Hello World !'}
       </h1>)
       const config = {
         handleFail,
@@ -43,6 +43,10 @@ describe('src | components | pages | hocs | with-login | withLogin', () => {
       // then
       const loadingPage = wrapper.find(LoadingPage)
       expect(loadingPage.exists()).toBe(true)
+      const wrappedComponentInHOC = wrapper.findWhere(htmlElement =>
+        htmlElement.text().includes('Hello World !')
+      )
+      expect(wrappedComponentInHOC.exists()).toBe(false)
     })
   })
 })
