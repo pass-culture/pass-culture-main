@@ -73,13 +73,11 @@ describe('components | FinishableContainer', () => {
           },
         }
 
-        const expectedResult = false
-
         // when
         const props = mapStateToProps(state, ownProps)
 
         // then
-        expect(props.offerCanBeBooked).toBe(expectedResult)
+        expect(props.offerCanBeBooked).toBe(false)
       })
 
       it('should return true when offer is bookable', () => {
