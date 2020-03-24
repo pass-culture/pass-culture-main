@@ -4,10 +4,7 @@ import { compose } from 'redux'
 import Finishable from './Finishable'
 import getIsBooked from '../../../utils/getIsBooked'
 import { selectStockById } from '../../../selectors/data/stocksSelectors'
-import {
-  selectBookingById,
-  selectBookingByRouterMatch,
-} from '../../../selectors/data/bookingsSelectors'
+import { selectBookingByRouterMatch } from '../../../selectors/data/bookingsSelectors'
 import { selectOfferById } from '../../../selectors/data/offersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
@@ -19,7 +16,6 @@ export const mapStateToProps = (state, ownProps) => {
   let offerId = offerIdQueryParam
 
   if (bookingId) {
-    const booking = selectBookingById(state, bookingId)
     const { stockId } = booking
     const stock = selectStockById(state, stockId)
     const { offerId: offerIdFromStock } = stock
