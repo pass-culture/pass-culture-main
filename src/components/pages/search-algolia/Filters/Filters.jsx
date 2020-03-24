@@ -82,12 +82,13 @@ export class Filters extends PureComponent {
   resetFilters = () => {
     const { initialFilters } = this.props
 
-    this.setState(
-      {
+    this.setState({
         filters: {
           ...initialFilters,
           offerTypes: {
             isDigital: false,
+            isEvent: false,
+            isThing: false
           },
           offerCategories: this.buildCategoriesStateFromProps(),
         },
@@ -181,28 +182,26 @@ export class Filters extends PureComponent {
   handleOnTypeChange = event => {
     const { name, checked } = event.target
     const { filters } = this.state
+    const { offerTypes } = filters
 
-    this.setState(
-      {
+    this.setState({
         filters: {
           ...filters,
           offerTypes: {
+            ...offerTypes,
             [name]: checked,
           },
         },
-      },
-      () => {
+      },() => {
         this.process()
-      }
-    )
+    })
   }
 
   handleOnCategoryChange = event => {
     const { name, checked } = event.target
     const { filters } = this.state
 
-    this.setState(
-      {
+    this.setState({
         filters: {
           ...filters,
           offerCategories: {
@@ -210,8 +209,7 @@ export class Filters extends PureComponent {
             [name]: checked,
           },
         },
-      },
-      () => {
+      },() => {
         this.process()
       }
     )
@@ -296,6 +294,22 @@ export class Filters extends PureComponent {
                     label="Offres numériques"
                     name="isDigital"
                     onChange={this.handleOnTypeChange}
+                  />
+                  <FilterCheckbox
+                    checked={offerTypes.isThing}
+                    className={`${offerTypes.isThing ? 'fc-label-checked' : 'fc-label'}`}
+                    id='isThing'
+                    label='Offres physiques'
+                    name='isThing'
+                    onChange={this.handleOnChange}
+                  />
+                  <FilterCheckbox
+                    checked={offerTypes.isEvent}
+                    className={`${offerTypes.isEvent ? 'fc-label-checked' : 'fc-label'}`}
+                    id='isEvent'
+                    label='Sorties'
+                    name='isEvent'
+                    onChange={this.handleOnChange}
                   />
                 </div>
                 <span className="sf-filter-separator" />

@@ -35,6 +35,8 @@ describe('components | Filters', () => {
         isSearchAroundMe: false,
         offerTypes: {
           isDigital: false,
+          isEvent: false,
+          isThing: false
         },
         sortCriteria: '_by_price',
       },
@@ -98,7 +100,8 @@ describe('components | Filters', () => {
         it('should trigger search to Algolia and redirect to filters page when clicking on "Partout" criterion', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
+          })
           props.history.location.pathname = '/recherche-offres/resultats/filtres/localisation'
           props.isUserAllowedToSelectCriterion.mockReturnValue(true)
           props.query.parse.mockReturnValue({
@@ -135,7 +138,11 @@ describe('components | Filters', () => {
             geolocationCoordinates: null,
             indexSuffix: '_by_price',
             keywords: 'librairie',
-            offerTypes: { isDigital: false },
+            offerTypes: {
+              isDigital: false,
+              isEvent: false,
+              isThing: false
+            },
             page: 0,
           })
           expect(props.redirectToSearchFiltersPage).toHaveBeenCalledWith()
@@ -149,7 +156,8 @@ describe('components | Filters', () => {
         it('should trigger search to Algolia and redirect to filters page when clicking on "Autour de moi" criterion', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
+          })
           props.history.location.pathname = '/recherche-offres/resultats/filtres/localisation'
           props.initialFilters = {
             offerCategories: ['VISITE'],
@@ -313,8 +321,12 @@ describe('components | Filters', () => {
         expect(props.updateFilters).toHaveBeenCalledWith({
           offerCategories: ['VISITE', 'CINEMA'],
           isSearchAroundMe: false,
-          offerTypes: { isDigital: false },
-          sortCriteria: '_by_price',
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false
+          },
+          sortCriteria: '_by_price'
         })
       })
 
@@ -396,13 +408,18 @@ describe('components | Filters', () => {
           it('should reset filters and trigger search to Algolia with given category', () => {
             // given
             props.history = createBrowserHistory()
-            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
+            })
             props.history.location.pathname = '/recherche-offres/resultats/filtres'
             props.initialFilters = {
               offerCategories: ['VISITE'],
               isSearchAroundMe: true,
-              offerTypes: { isDigital: false },
-              sortCriteria: '_by_price',
+              offerTypes: {
+                isDigital: false,
+                isEvent: false,
+                isThing: false
+              },
+              sortCriteria: '_by_price'
             }
             props.query.parse.mockReturnValue({
               'mots-cles': 'librairie',
@@ -435,8 +452,12 @@ describe('components | Filters', () => {
               geolocationCoordinates: { latitude: 40, longitude: 41 },
               indexSuffix: '_by_price',
               keywords: 'librairie',
-              offerTypes: { isDigital: false },
-              page: 0,
+              offerTypes: {
+                isDigital: false,
+                isEvent: false,
+                isThing: false
+              },
+              page: 0
             })
           })
         })
@@ -444,13 +465,18 @@ describe('components | Filters', () => {
           it('should reset filters and trigger search to Algolia with given categories', () => {
             // given
             props.history = createBrowserHistory()
-            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
+            })
             props.history.location.pathname = '/recherche-offres/resultats/filtres'
             props.initialFilters = {
               offerCategories: ['VISITE', 'CINEMA'],
               isSearchAroundMe: true,
-              offerTypes: { isDigital: true },
-              sortCriteria: '_by_price',
+              offerTypes: {
+                isDigital: true,
+                isEvent: true,
+                isThing: true
+              },
+              sortCriteria: '_by_price'
             }
             props.query.parse.mockReturnValue({
               'mots-cles': 'librairie',
@@ -483,7 +509,11 @@ describe('components | Filters', () => {
               geolocationCoordinates: { latitude: 40, longitude: 41 },
               indexSuffix: '_by_price',
               keywords: 'librairie',
-              offerTypes: { isDigital: false },
+              offerTypes: {
+                isDigital: false,
+                isEvent: false,
+                isThing: false
+              },
               page: 0,
             })
           })
@@ -503,70 +533,138 @@ describe('components | Filters', () => {
           expect(title).toHaveLength(1)
         })
 
-        it('should render a FilterCheckbox component unchecked when offer filter is not checked', () => {
+        it('should render three FilterCheckbox components unchecked by default', () => {
           // given
           props.history.location.pathname = '/recherche-offres/filtres'
-          props.initialFilters.offerTypes.isDigital = false
+          props.initialFilters.offerTypes = {
+            isDigital: false,
+            isEvent: false,
+            isThing: false,
+          }
 
           // when
           const wrapper = shallow(<Filters {...props} />)
           wrapper.setState({ areCategoriesVisible: false })
 
           // then
-          const filterCheckbox = wrapper.find(FilterCheckbox)
-          expect(filterCheckbox).toHaveLength(1)
-          expect(filterCheckbox.prop('checked')).toBe(false)
-          expect(filterCheckbox.prop('className')).toBe('fc-label')
-          expect(filterCheckbox.prop('id')).toBe('isDigital')
-          expect(filterCheckbox.prop('label')).toBe('Offres numériques')
-          expect(filterCheckbox.prop('name')).toBe('isDigital')
-          expect(filterCheckbox.prop('onChange')).toStrictEqual(expect.any(Function))
+          const filterCheckboxes = wrapper.find(FilterCheckbox)
+          expect(filterCheckboxes).toHaveLength(3)
+          expect(filterCheckboxes.at(0).prop('checked')).toBe(false)
+          expect(filterCheckboxes.at(0).prop('className')).toBe('fc-label')
+          expect(filterCheckboxes.at(0).prop('id')).toBe('isDigital')
+          expect(filterCheckboxes.at(0).prop('label')).toBe('Offres numériques')
+          expect(filterCheckboxes.at(0).prop('name')).toBe('isDigital')
+          expect(filterCheckboxes.at(0).prop('onChange')).toStrictEqual(expect.any(Function))
+          expect(filterCheckboxes.at(1).prop('checked')).toBe(false)
+          expect(filterCheckboxes.at(1).prop('className')).toBe('fc-label')
+          expect(filterCheckboxes.at(1).prop('id')).toBe('isThing')
+          expect(filterCheckboxes.at(1).prop('label')).toBe('Offres physiques')
+          expect(filterCheckboxes.at(1).prop('name')).toBe('isThing')
+          expect(filterCheckboxes.at(1).prop('onChange')).toStrictEqual(expect.any(Function))
+          expect(filterCheckboxes.at(2).prop('checked')).toBe(false)
+          expect(filterCheckboxes.at(2).prop('className')).toBe('fc-label')
+          expect(filterCheckboxes.at(2).prop('id')).toBe('isEvent')
+          expect(filterCheckboxes.at(2).prop('label')).toBe('Sorties')
+          expect(filterCheckboxes.at(2).prop('name')).toBe('isEvent')
+          expect(filterCheckboxes.at(2).prop('onChange')).toStrictEqual(expect.any(Function))
         })
 
-        it('should render a FilterCheckbox component checked when offer filter is checked', () => {
+        it('should render three FilterCheckbox components checked when offer filters are checked', () => {
           // given
           props.history.location.pathname = '/recherche-offres/filtres'
-          props.initialFilters.offerTypes.isDigital = true
+          props.initialFilters.offerTypes = {
+            isDigital: true,
+            isEvent: true,
+            isThing: true,
+          }
 
           // when
           const wrapper = shallow(<Filters {...props} />)
           wrapper.setState({ areCategoriesVisible: false })
 
           // then
-          const filterCheckbox = wrapper.find(FilterCheckbox)
-          expect(filterCheckbox).toHaveLength(1)
-          expect(filterCheckbox.prop('checked')).toBe(true)
-          expect(filterCheckbox.prop('className')).toBe('fc-label-checked')
+          const filterCheckboxes = wrapper.find(FilterCheckbox)
+          expect(filterCheckboxes.at(0).prop('checked')).toBe(true)
+          expect(filterCheckboxes.at(0).prop('className')).toBe('fc-label-checked')
+          expect(filterCheckboxes.at(1).prop('checked')).toBe(true)
+          expect(filterCheckboxes.at(1).prop('className')).toBe('fc-label-checked')
+          expect(filterCheckboxes.at(2).prop('checked')).toBe(true)
+          expect(filterCheckboxes.at(2).prop('className')).toBe('fc-label-checked')
         })
 
-        it('should display the number of offer types selected when filter is checked', () => {
+        it('should display the number of offer types selected when filters are checked', () => {
           // given
           props.history.location.pathname = '/recherche-offres/filtres'
-          props.initialFilters.offerTypes.isDigital = true
+          props.initialFilters.offerTypes = {
+            isDigital: true,
+            isEvent: true,
+            isThing: true,
+          }
 
           // when
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const numberOfOfferTypesSelected = wrapper
-            .findWhere(node => node.text() === '(1)')
-            .first()
+          const numberOfOfferTypesSelected = wrapper.findWhere(node => node.text() === '(3)').first()
           expect(numberOfOfferTypesSelected).toHaveLength(1)
         })
 
-        it('should not display the number of offer types selected when filter is not checked', () => {
+        it('should not display the number of offer types selected when filters are not checked', () => {
           // given
           props.history.location.pathname = '/recherche-offres/filtres'
-          props.initialFilters.offerTypes.isDigital = false
+          props.initialFilters.offerTypes = {
+            isDigital: false,
+            isEvent: false,
+            isThing: false,
+          }
 
           // when
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const numberOfOfferTypesSelected = wrapper
-            .findWhere(node => node.text() === '(1)')
-            .first()
+          const numberOfOfferTypesSelected = wrapper.findWhere(node => node.text() === '(3)').first()
           expect(numberOfOfferTypesSelected).toHaveLength(0)
+        })
+
+        it('should fetch offer when checking digital filter', () => {
+          // Given
+          props.history.location.pathname = '/recherche-offres/filtres'
+          const wrapper = shallow(<Filters {...props} />)
+          const digitalFilter = wrapper.find(FilterCheckbox).at(0)
+          props.query.parse.mockReturnValue({
+            'mots-cles': 'librairies'
+          })
+          fetchAlgolia.mockReturnValue(
+            new Promise(resolve => {
+              resolve({
+                hits: [],
+                nbHits: 0,
+                page: 0,
+              })
+            })
+          )
+
+          // When
+          digitalFilter.simulate('change', {
+            target: {
+              name: 'isDigital',
+              checked: true
+            }
+          })
+
+          // Then
+          expect(fetchAlgolia).toHaveBeenCalledWith({
+            categories: ["Musée", "Cinéma"],
+            geolocationCoordinates: null,
+            indexSuffix: "_by_price",
+            keywords: "librairies",
+            offerTypes: {
+              isDigital: true,
+              isEvent: false,
+              isThing: false
+            },
+            page: 0
+          })
         })
       })
 
