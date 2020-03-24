@@ -9,13 +9,18 @@ import { FACETS } from './facets'
 import { FILTERS } from './filters'
 
 export const fetchAlgolia = ({
-  categories = [],
-  geolocationCoordinates = null,
-  indexSuffix = '',
-  keywords = '',
-  offerTypes = null,
-  page = 0,
-} = {}) => {
+                               categories = [],
+                               geolocationCoordinates = null,
+                               indexSuffix = '',
+                               keywords = '',
+                               offerTypes = {
+                                 isDigital: false,
+                                 isEvent: false,
+                                 isThing: false
+                               },
+                               page = 0,
+                             } = {}
+) => {
   const searchParameters = {
     page: page,
     ...buildFacetFilters(categories, offerTypes),
@@ -37,13 +42,12 @@ const buildFacetFilters = (categories, offerTypes) => {
     const categoriesPredicate = _buildCategoriesPredicate(categories)
     facetFilters.push(categoriesPredicate)
   }
-  if (offerTypes) {
-    const offerTypesPredicate = _buildOfferTypesPredicate(offerTypes)
+  const offerTypesPredicate = _buildOfferTypesPredicate(offerTypes)
 
-    if (offerTypesPredicate) {
-      facetFilters.push(offerTypesPredicate)
-    }
+  if (offerTypesPredicate) {
+    facetFilters.push(...offerTypesPredicate)
   }
+
 
   return {
     facetFilters,
@@ -55,9 +59,27 @@ const _buildCategoriesPredicate = categories => {
 }
 
 const _buildOfferTypesPredicate = offerTypes => {
-  const { isDigital } = offerTypes
+  const { isDigital, isEvent, isThing } = offerTypes
   if (isDigital) {
-    return `${FACETS.OFFER_IS_DIGITAL}:${isDigital}`
+    if (!isEvent && !isThing) {
+      return [`${FACETS.OFFER_IS_DIGITAL}:${isDigital}`]
+    }
+    if (!isEvent && isThing) {
+      return [`${FACETS.OFFER_IS_THING}:${isThing}`]
+    }
+    if (isEvent && !isThing) {
+      return [[`${FACETS.OFFER_IS_DIGITAL}:${isDigital}`, `${FACETS.OFFER_IS_EVENT}:${isEvent}`]]
+    }
+  } else {
+    if (!isEvent && isThing) {
+      return [`${FACETS.OFFER_IS_DIGITAL}:${isDigital}`, `${FACETS.OFFER_IS_THING}:${isThing}`]
+    }
+    if (isEvent && !isThing) {
+      return [`${FACETS.OFFER_IS_EVENT}:${isEvent}`]
+    }
+    if (isEvent && isThing) {
+      return [`${FACETS.OFFER_IS_DIGITAL}:${isDigital}`]
+    }
   }
 }
 
