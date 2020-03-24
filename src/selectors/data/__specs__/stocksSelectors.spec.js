@@ -1,14 +1,14 @@
 import { selectIsEnoughStockForOfferDuo, selectIsStockDuo } from '../stocksSelectors'
 
 describe('selectIsEnoughStockForOfferDuo', () => {
-  it('should return true when there is stock with more than two available', () => {
+  it('should return true when there is stock with more than two remainingQuantityOrUnlimited', () => {
     // given
     const state = {
       data: {
         stocks: [
           {
             offerId: 'AAAA',
-            available: 2,
+            remainingQuantityOrUnlimited: 2,
           },
         ],
       },
@@ -30,7 +30,7 @@ describe('selectIsEnoughStockForOfferDuo', () => {
         stocks: [
           {
             offerId: 'AAAA',
-            available: null,
+            remainingQuantityOrUnlimited: 'unlimited',
           },
         ],
       },
@@ -45,14 +45,14 @@ describe('selectIsEnoughStockForOfferDuo', () => {
     expect(isEnoughStockForOfferDuo).toBe(true)
   })
 
-  it('should return false when there is no stock with more than two available', () => {
+  it('should return false when there is no stock with more than two remainingQuantityOrUnlimited', () => {
     // given
     const state = {
       data: {
         stocks: [
           {
             offerId: 'AAAA',
-            available: 1,
+            remainingQuantityOrUnlimited: 1,
           },
         ],
       },
@@ -74,7 +74,7 @@ describe('selectIsEnoughStockForOfferDuo', () => {
         stocks: [
           {
             offerId: 'AAAA',
-            available: 5,
+            remainingQuantityOrUnlimited: 5,
           },
         ],
       },
@@ -91,7 +91,7 @@ describe('selectIsEnoughStockForOfferDuo', () => {
 })
 
 describe('selectIsStockDuo', () => {
-  it('should be duo if stock available 2 or more and on an offer duo', () => {
+  it('should be duo if stock remainingQuantityOrUnlimited 2 or more and on an offer duo', () => {
     // given
     const state = {
       data: {
@@ -105,7 +105,7 @@ describe('selectIsStockDuo', () => {
           {
             id: 'S1',
             offerId: 'O1',
-            available: 5,
+            remainingQuantityOrUnlimited: 5,
           },
         ],
       },
@@ -135,7 +135,7 @@ describe('selectIsStockDuo', () => {
           {
             id: 'S1',
             offerId: 'O1',
-            available: null,
+            remainingQuantityOrUnlimited: 'unlimited',
           },
         ],
       },
@@ -151,7 +151,7 @@ describe('selectIsStockDuo', () => {
     expect(isStockDuo).toBe(true)
   })
 
-  it('should not be duo if there less than 2 available', () => {
+  it('should not be duo if there less than 2 remainingQuantityOrUnlimited', () => {
     // given
     const state = {
       data: {
@@ -165,7 +165,7 @@ describe('selectIsStockDuo', () => {
           {
             id: 'S1',
             offerId: 'O1',
-            available: 1,
+            remainingQuantityOrUnlimited: 1,
           },
         ],
       },
@@ -195,7 +195,7 @@ describe('selectIsStockDuo', () => {
           {
             id: 'S1',
             offerId: 'O1',
-            available: 2,
+            remainingQuantityOrUnlimited: 2,
           },
         ],
       },

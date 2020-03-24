@@ -1,6 +1,6 @@
 import { mapStateToProps } from '../BookingFormContentContainer'
 
-describe('src | components | layout | Booking | BookingForm | BookingFormContentContainer', () => {
+describe('src | components | BookingFormContentContainer', () => {
   describe('mapStateToProps', () => {
     it('should return an object of props', () => {
       // given
@@ -16,7 +16,7 @@ describe('src | components | layout | Booking | BookingForm | BookingFormContent
             {
               id: 'S1',
               offerId: 'O1',
-              available: 3,
+              remainingQuantityOrUnlimited: 3,
             },
           ],
         },

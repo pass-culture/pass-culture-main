@@ -20,9 +20,7 @@ export const selectIsEnoughStockForOfferDuo = createCachedSelector(
   (state, offerId) => offerId,
   selectStocksByOfferId,
   (offerId, stocks) => {
-    const stocksAvailableForOfferDuo = stocks.filter(
-      stock => stock.available === null || stock.available >= 2
-    )
+    const stocksAvailableForOfferDuo = stocks.filter(isAvailableForDuo)
     return stocksAvailableForOfferDuo.length > 0
   }
 )((state, offerId) => offerId || '')
@@ -31,10 +29,14 @@ export const selectIsStockDuo = createCachedSelector(
   selectStockById,
   (state, stockId, offerId) => selectOfferById(state, offerId),
   (stock, offer) => {
-    const isEnoughAvailable = stock && (stock.available >= 2 || stock.available === null)
+    const isEnoughAvailable = isAvailableForDuo(stock)
     const isOfferDuo = offer && offer.isDuo
     const isStockDuo = isEnoughAvailable && isOfferDuo
 
     return isStockDuo
   }
 )((state, stockId) => stockId || '')
+
+const isAvailableForDuo = stock =>
+  stock &&
+  (stock.remainingQuantityOrUnlimited >= 2 || stock.remainingQuantityOrUnlimited === 'unlimited')

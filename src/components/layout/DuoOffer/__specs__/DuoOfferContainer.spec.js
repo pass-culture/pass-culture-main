@@ -20,7 +20,7 @@ describe('src | components | layout | DuoOffer | DuoOfferContainer', () => {
         ],
         stocks: [
           {
-            available: 2,
+            remainingQuantityOrUnlimited: 2,
             id: 'ABCD',
             offerId: 'AAAA',
           },
@@ -30,7 +30,7 @@ describe('src | components | layout | DuoOffer | DuoOfferContainer', () => {
   })
 
   describe('mapStateToProps', () => {
-    it('should return an object with isDisabled to true when stock is more than 2 and feature enable and is on duo offer', () => {
+    it('should return an object with isDisabled to true when stock is more than 2 and is on duo offer', () => {
       // when
       const props = mapStateToProps(state, ownProps)
 
@@ -44,7 +44,7 @@ describe('src | components | layout | DuoOffer | DuoOfferContainer', () => {
       // given
       state.data.stocks = [
         {
-          available: 1,
+          remainingQuantityOrUnlimited: 1,
           id: 'ABCD',
           offerId: 'AAAA',
         },
