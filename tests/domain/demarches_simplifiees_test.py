@@ -1,10 +1,10 @@
 from datetime import datetime
 from unittest.mock import Mock
 
-from domain.demarches_simplifiees import get_all_application_ids_for_procedure
+from domain.demarches_simplifiees import get_all_application_ids_for_beneficiary_import
 
 
-class GetAllApplicationIdsForProcedureTest:
+class GetAllApplicationIdsForBeneficiaryImportTest:
     def setup_method(self):
         self.PROCEDURE_ID = '123456789'
         self.TOKEN = 'AZERTY123/@.,!é'
@@ -49,7 +49,7 @@ class GetAllApplicationIdsForProcedureTest:
         ]
 
         # When
-        application_ids = get_all_application_ids_for_procedure(
+        application_ids = get_all_application_ids_for_beneficiary_import(
             self.PROCEDURE_ID, self.TOKEN, datetime(2018, 1, 1),
             get_all_applications=self.mock_get_all_applications_for_procedure
         )
@@ -76,7 +76,7 @@ class GetAllApplicationIdsForProcedureTest:
         }]
 
         # When
-        application_ids = get_all_application_ids_for_procedure(
+        application_ids = get_all_application_ids_for_beneficiary_import(
             self.PROCEDURE_ID, self.TOKEN, datetime(2019, 1, 1),
             get_all_applications=self.mock_get_all_applications_for_procedure
         )
@@ -103,7 +103,7 @@ class GetAllApplicationIdsForProcedureTest:
         }]
 
         # When
-        application_ids = get_all_application_ids_for_procedure(
+        application_ids = get_all_application_ids_for_beneficiary_import(
             self.PROCEDURE_ID, self.TOKEN, datetime(2019, 1, 1),
             get_all_applications=self.mock_get_all_applications_for_procedure
         )
@@ -136,7 +136,7 @@ class GetAllApplicationIdsForProcedureTest:
         }]
 
         # When
-        application_ids = get_all_application_ids_for_procedure(
+        application_ids = get_all_application_ids_for_beneficiary_import(
             self.PROCEDURE_ID, self.TOKEN, datetime(2018, 1, 1),
             get_all_applications=self.mock_get_all_applications_for_procedure
         )

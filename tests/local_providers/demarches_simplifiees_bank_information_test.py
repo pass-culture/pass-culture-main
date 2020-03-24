@@ -22,14 +22,14 @@ class TestableBankInformationProvider(BankInformationProvider):
 
 class BankInformationProviderProviderTest:
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_procedure')
+        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_beneficiary_import')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     def test_provider_creates_nothing_if_no_data_retrieved_from_api(self, get_application_details,
-                                                                    get_all_application_ids_for_procedure,
+                                                                    get_all_application_ids_for_beneficiary_import,
                                                                     app):
         # Given
         get_application_details.return_value = {}
-        get_all_application_ids_for_procedure.return_value = []
+        get_all_application_ids_for_beneficiary_import.return_value = []
 
         # When Then
         provider_test(app,
@@ -46,15 +46,15 @@ class BankInformationProviderProviderTest:
                       BankInformation=0)
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_procedure')
+        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_beneficiary_import')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_provider_creates_one_bank_information_with_id_at_prividers_siren_if_request_for_siren(self,
                                                                                                    get_application_details,
-                                                                                                   get_all_application_ids_for_procedure,
+                                                                                                   get_all_application_ids_for_beneficiary_import,
                                                                                                    app):
         # Given
-        get_all_application_ids_for_procedure.return_value = [1]
+        get_all_application_ids_for_beneficiary_import.return_value = [1]
         get_application_details.return_value = {
             "dossier":
                 {
@@ -143,15 +143,15 @@ class BankInformationProviderProviderTest:
         assert local_provider_events[1].type == LocalProviderEventType.SyncEnd
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_procedure')
+        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_beneficiary_import')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_provider_creates_one_bank_information_with_id_at_prividers_siret_if_request_for_siret(self,
                                                                                                    get_application_details,
-                                                                                                   get_all_application_ids_for_procedure,
+                                                                                                   get_all_application_ids_for_beneficiary_import,
                                                                                                    app):
         # Given
-        get_all_application_ids_for_procedure.return_value = [1]
+        get_all_application_ids_for_beneficiary_import.return_value = [1]
         get_application_details.return_value = {
             "dossier":
                 {
@@ -234,16 +234,16 @@ class BankInformationProviderProviderTest:
         assert bank_information.idAtProviders == '79387503000016'
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_procedure')
+        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_beneficiary_import')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_provider_raises_unknown_rib_affiliation_exception_when_rib_affiliation_unknown_but_saves_older_bank_information(
             self,
             get_application_details,
-            get_all_application_ids_for_procedure,
+            get_all_application_ids_for_beneficiary_import,
             app):
         # Given
-        get_all_application_ids_for_procedure.return_value = [2, 1]
+        get_all_application_ids_for_beneficiary_import.return_value = [2, 1]
         get_application_details.side_effect = [
             {
                 "dossier":
@@ -372,16 +372,16 @@ class BankInformationProviderProviderTest:
         assert sync_error.payload == 'unknown RIB affiliation for application id 1'
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_procedure')
+        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_beneficiary_import')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_provider_checks_two_objects_and_creates_two_when_both_rib_affiliations_are_known(
             self,
             get_application_details,
-            get_all_application_ids_for_procedure,
+            get_all_application_ids_for_beneficiary_import,
             app):
         # Given
-        get_all_application_ids_for_procedure.return_value = [1, 2]
+        get_all_application_ids_for_beneficiary_import.return_value = [1, 2]
         get_application_details.side_effect = [
             {
                 "dossier":
@@ -528,16 +528,16 @@ class BankInformationProviderProviderTest:
         assert bank_information2.idAtProviders == '79387503000016'
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_procedure')
+        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_beneficiary_import')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_provider_does_not_create_bank_information_if_siren_unknown(
             self,
             get_application_details,
-            get_all_application_ids_for_procedure,
+            get_all_application_ids_for_beneficiary_import,
             app):
         # Given
-        get_all_application_ids_for_procedure.return_value = [1]
+        get_all_application_ids_for_beneficiary_import.return_value = [1]
         get_application_details.side_effect = [
             {
                 "dossier":
@@ -612,16 +612,16 @@ class BankInformationProviderProviderTest:
         assert len(LocalProviderEvent.query.all()) == 3
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_procedure')
+        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_beneficiary_import')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_provider_updates_existing_bank_information(
             self,
             get_application_details,
-            get_all_application_ids_for_procedure,
+            get_all_application_ids_for_beneficiary_import,
             app):
         # Given
-        get_all_application_ids_for_procedure.return_value = [1]
+        get_all_application_ids_for_beneficiary_import.return_value = [1]
         get_application_details.side_effect = [
             {
                 "dossier":
@@ -702,16 +702,16 @@ class BankInformationProviderProviderTest:
         assert updated_bank_information.bic == "BDFEFR2LCCB"
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_procedure')
+        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_beneficiary_import')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_provider_does_not_save_bank_information_if_wrong_bic_or_iban_but_continues_flow(
             self,
             get_application_details,
-            get_all_application_ids_for_procedure,
+            get_all_application_ids_for_beneficiary_import,
             app):
         # given
-        get_all_application_ids_for_procedure.return_value = [1, 2]
+        get_all_application_ids_for_beneficiary_import.return_value = [1, 2]
         get_application_details.side_effect = [
             {
                 "dossier":
@@ -841,16 +841,16 @@ class BankInformationProviderProviderTest:
         assert local_provider_event.payload == 'ApiErrors'
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_procedure')
+        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_beneficiary_import')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_calls_get_all_application_ids_with_1900_01_01_when_table_bank_information_is_empty(
             self,
             get_application_details,
-            get_all_application_ids_for_procedure,
+            get_all_application_ids_for_beneficiary_import,
             app):
         # given
-        get_all_application_ids_for_procedure.return_value = [1]
+        get_all_application_ids_for_beneficiary_import.return_value = [1]
         get_application_details.return_value = {
             "dossier":
                 {
@@ -912,20 +912,20 @@ class BankInformationProviderProviderTest:
         bank_information_provider.updateObjects()
 
         # then
-        get_all_application_ids_for_procedure.assert_called_with(ANY, ANY,
+        get_all_application_ids_for_beneficiary_import.assert_called_with(ANY, ANY,
                                                                                         datetime(1900, 1, 1))
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_procedure')
+        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_beneficiary_import')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_calls_get_all_application_ids_with_last_update_from_table_bank_information(
             self,
             get_application_details,
-            get_all_application_ids_for_procedure,
+            get_all_application_ids_for_beneficiary_import,
             app):
         # given
-        get_all_application_ids_for_procedure.return_value = [1]
+        get_all_application_ids_for_beneficiary_import.return_value = [1]
         get_application_details.return_value = {
             "dossier":
                 {
@@ -994,19 +994,19 @@ class BankInformationProviderProviderTest:
         bank_information_provider.updateObjects()
 
         # then
-        get_all_application_ids_for_procedure.assert_called_with(ANY, ANY,
+        get_all_application_ids_for_beneficiary_import.assert_called_with(ANY, ANY,
                                                                                         datetime(2019, 1, 1))
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_procedure')
+        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_beneficiary_import')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_provider_creates_one_bank_information_and_format_IBAN_and_BIC(self,
                                                                            get_application_details,
-                                                                           get_all_application_ids_for_procedure,
+                                                                           get_all_application_ids_for_beneficiary_import,
                                                                            app):
         # Given
-        get_all_application_ids_for_procedure.return_value = [1]
+        get_all_application_ids_for_beneficiary_import.return_value = [1]
         get_application_details.return_value = {
             "dossier":
                 {

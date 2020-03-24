@@ -22,13 +22,13 @@ def save_beneficiary_import_with_status(
         status: ImportStatus,
         demarche_simplifiee_application_id: int,
         user: User = None,
-        detail=None,
+        detail: str = None,
 ):
-    existing_import = BeneficiaryImport.query \
+    existing_beneficiary_import = BeneficiaryImport.query \
         .filter_by(demarcheSimplifieeApplicationId=demarche_simplifiee_application_id) \
         .first()
 
-    beneficiary_import = existing_import or BeneficiaryImport()
+    beneficiary_import = existing_beneficiary_import or BeneficiaryImport()
     if not beneficiary_import.beneficiary:
         beneficiary_import.beneficiary = user
     beneficiary_import.demarcheSimplifieeApplicationId = demarche_simplifiee_application_id
