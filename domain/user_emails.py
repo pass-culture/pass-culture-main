@@ -28,8 +28,9 @@ from utils.mailing import ADMINISTRATION_EMAIL_ADDRESS, \
 
 def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool]) -> bool:
     recipients = [ADMINISTRATION_EMAIL_ADDRESS]
-    if booking.stock.offer.bookingEmail:
-        recipients.append(booking.stock.offer.bookingEmail)
+    booking_email = booking.stock.offer.bookingEmail
+    if booking_email:
+        recipients.append(booking_email)
 
     email = retrieve_data_for_offerer_booking_recap_email(booking, recipients)
     return send_email(data=email)

@@ -1,9 +1,7 @@
-from datetime import datetime, timedelta
-
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_recommendation, \
-    create_mediation, create_stock
+    create_mediation
 from tests.model_creators.specific_creators import create_offer_with_event_product
 from utils.human_ids import humanize
 
@@ -15,12 +13,9 @@ class Get:
         @clean_database
         def when_mediation_id_is_not_given(self, app):
             # Given
-            event_begin_date = datetime.utcnow() + timedelta(days=3)
-            event_end_date = datetime.utcnow() + timedelta(days=4)
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
-            create_stock(offer=offer, beginning_datetime=event_begin_date, end_datetime=event_end_date)
             user = create_user(email='user@test.com')
             recommendation = create_recommendation(offer, user)
             repository.save(recommendation)
@@ -39,12 +34,9 @@ class Get:
         @clean_database
         def when_mediation_id_is_given(self, app):
             # Given
-            event_begin_date = datetime.utcnow() + timedelta(days=3)
-            event_end_date = datetime.utcnow() + timedelta(days=4)
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
-            create_stock(offer=offer, beginning_datetime=event_begin_date, end_datetime=event_end_date)
             mediation1 = create_mediation(offer)
             mediation2 = create_mediation(offer)
             user = create_user(email='user@test.com')

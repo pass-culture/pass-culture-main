@@ -132,10 +132,7 @@ class DiscoveryView(Model):
                         OR (SELECT greatest(stock.available - COALESCE(sum(booking.quantity), 0),0)
                               FROM booking
                              WHERE booking."stockId" = stock.id
-                               AND (booking."isUsed" = FALSE
-                                     AND booking."isCancelled" = FALSE
-                                      OR booking."isUsed" = TRUE
-                                     AND booking."dateUsed" > stock."dateModified")
+                               AND booking."isCancelled" = FALSE
                             ) > 0
                         );
             END
