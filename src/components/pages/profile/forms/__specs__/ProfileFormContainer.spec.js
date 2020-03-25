@@ -1,5 +1,3 @@
-import getCurrentUserUUID from '../../../../../selectors/data/currentUserSelector/getCurrentUserUUID'
-
 import { mapStateToProps } from '../ProfileFormContainer'
 
 describe('src | components | pages | profile | forms | ProfileFormContainer', () => {
@@ -9,7 +7,7 @@ describe('src | components | pages | profile | forms | ProfileFormContainer', ()
       const id = '1'
       const publicName = 'fake name'
       const state = {
-        data: { users: [{ currentUserUUID: getCurrentUserUUID(), id, publicName }] },
+        data: { users: [{ id, publicName }] },
       }
 
       // when

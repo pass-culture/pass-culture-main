@@ -1,7 +1,7 @@
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { requestData } from 'redux-thunk-data'
-import selectCurrentUser from '../../../selectors/data/currentUserSelector/selectCurrentUser'
+import { selectCurrentUser } from '../../../selectors/data/usersSelectors'
 
 import Typeform from './Typeform'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'

@@ -1,5 +1,4 @@
-import selectCurrentUser from '../selectCurrentUser'
-import currentUserUUID from '../currentUserUUID'
+import { selectCurrentUser } from '../usersSelectors'
 
 describe('selectCurrentUser', () => {
   describe('when there is no users in state', () => {
@@ -26,7 +25,6 @@ describe('selectCurrentUser', () => {
         data: {
           users: [
             {
-              currentUserUUID: currentUserUUID,
               id: 'FY',
               activity: null,
               canBookFreeOffers: true,
@@ -63,7 +61,6 @@ describe('selectCurrentUser', () => {
 
       // then
       expect(result).toStrictEqual({
-        currentUserUUID: currentUserUUID,
         id: 'FY',
         activity: null,
         canBookFreeOffers: true,

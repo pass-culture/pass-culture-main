@@ -1,5 +1,4 @@
-import getCurrentUserUUID from '../../../../../selectors/data/currentUserSelector/getCurrentUserUUID'
-import resolveCurrentUser from '../../../../../selectors/data/currentUserSelector/resolveCurrentUser'
+import { resolveCurrentUser } from '../../../../../selectors/data/usersSelectors'
 import getDepartementByCode from '../../../../../utils/getDepartementByCode'
 import {
   getDepartment,
@@ -72,7 +71,7 @@ describe('src | components | pages | profile | MesInformations | MesInformations
   describe('mapStateToProps', () => {
     it('should pass user to MesInformations component', () => {
       // Given
-      const user = { id: 'userId', currentUserUUID: getCurrentUserUUID() }
+      const user = { id: 'userId' }
       const state = { data: { users: [user] } }
 
       // When

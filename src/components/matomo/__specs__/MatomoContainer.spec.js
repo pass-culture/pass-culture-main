@@ -1,4 +1,3 @@
-import getCurrentUserUUID from '../../../selectors/data/currentUserSelector/getCurrentUserUUID'
 import { mapStateToProps } from '../MatomoContainer'
 
 describe('src | components | matomo | MatomoContainer', () => {
@@ -10,7 +9,6 @@ describe('src | components | matomo | MatomoContainer', () => {
           users: [
             {
               id: 'Rt4R45ETEs',
-              currentUserUUID: getCurrentUserUUID(),
             },
           ],
         },

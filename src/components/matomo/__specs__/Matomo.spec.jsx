@@ -1,6 +1,5 @@
 import configureMockStore from 'redux-mock-store'
 import { createBrowserHistory } from 'history'
-import getCurrentUserUUID from '../../../selectors/data/currentUserSelector/getCurrentUserUUID'
 import { mount } from 'enzyme'
 import { Provider } from 'react-redux'
 import React from 'react'
@@ -161,7 +160,6 @@ describe('src | components | matomo | Matomo', () => {
         data: {
           users: [
             {
-              currentUserUUID: getCurrentUserUUID(),
               id: '5FYTbfk4TR',
             },
           ],

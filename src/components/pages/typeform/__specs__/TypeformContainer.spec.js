@@ -1,4 +1,3 @@
-import getCurrentUserUUID from '../../../../selectors/data/currentUserSelector/getCurrentUserUUID'
 import { mapDispatchToProps, mapStateToProps } from '../TypeformContainer'
 
 jest.mock('redux-thunk-data', () => {
@@ -29,7 +28,6 @@ describe('src | components |pages | typeform | TypeformContainer', () => {
         data: {
           users: [
             {
-              currentUserUUID: getCurrentUserUUID(),
               needsToFillCulturalSurvey: true,
             },
           ],

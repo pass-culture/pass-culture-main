@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import selectCurrentUser from '../../../selectors/data/currentUserSelector/selectCurrentUser'
+import { selectCurrentUser } from '../../../selectors/data/usersSelectors'
 
 import Menu from './Menu'
 import { toggleOverlay } from '../../../reducers/overlay'
