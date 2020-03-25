@@ -29,6 +29,7 @@
     display: inline-block;
     font-size: rem(18px);
     font-weight: 500;
+    margin-bottom: rem(20px);
   }
 
   .sf-geolocation-button {
@@ -36,13 +37,11 @@
     color: black;
     font-size: rem(16px);
     font-weight: 700;
-    margin-top: rem(20px);
   }
 
   .sf-filter-wrapper {
     display: flex;
     flex-wrap: wrap;
-    margin-top: rem(20px);
 
     li {
       margin: rem(6px) rem(12px) rem(6px) 0;
@@ -61,7 +60,7 @@
     display: flex;
     font-size: rem(18px);
     font-weight: 500;
-    margin-top: rem(20px);
+    margin-bottom: rem(20px);
     width: 100%;
 
     h4 {
@@ -72,7 +71,6 @@
   .sf-title-wrapper {
     font-size: rem(18px);
     font-weight: 500;
-    margin-top: rem(20px);
   }
 
   .sf-title-drop-down {
@@ -103,4 +101,15 @@
   border-top: rem(1px) solid $grey-even-more-light;
   display: block;
   margin-top: rem(20px);
+  margin-bottom: rem(20px);
+}
+
+.sf-slider-wrapper {
+  margin-bottom: rem(30px);
+}
+
+.sf-slider-radius {
+  margin-top: rem(-4px);
+  margin-bottom: rem(17px);
+  text-align: center;
 }

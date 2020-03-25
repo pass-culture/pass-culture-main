@@ -8,6 +8,7 @@ import { Criteria } from '../../Criteria/Criteria'
 import { GEOLOCATION_CRITERIA } from '../../Criteria/criteriaEnums'
 import FilterCheckbox from '../FilterCheckbox/FilterCheckbox'
 import { Filters } from '../Filters'
+import Slider from 'rc-slider'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
@@ -31,6 +32,7 @@ describe('components | Filters', () => {
         replace: jest.fn(),
       },
       initialFilters: {
+        aroundRadius: 0,
         isSearchAroundMe: false,
         offerCategories: ['VISITE', 'CINEMA'],
         offerTypes: {
@@ -96,7 +98,7 @@ describe('components | Filters', () => {
         expect(criteria.prop('activeCriterionLabel')).toStrictEqual('Partout')
       })
 
-      describe('when searching everywhere', () => {
+      describe('when clicking on "Partout"', () => {
         it('should trigger search to Algolia and redirect to filters page when clicking on "Partout" criterion', () => {
           // given
           props.history = createBrowserHistory()
@@ -152,7 +154,7 @@ describe('components | Filters', () => {
         })
       })
 
-      describe('when searching around me', () => {
+      describe('when clicking on "Autour de moi"', () => {
         it('should trigger search to Algolia and redirect to filters page when clicking on "Autour de moi" criterion', () => {
           // given
           props.history = createBrowserHistory()
@@ -160,6 +162,7 @@ describe('components | Filters', () => {
           })
           props.history.location.pathname = '/recherche-offres/resultats/filtres/localisation'
           props.initialFilters = {
+            aroundRadius: 50,
             isSearchAroundMe: false,
             offerCategories: ['VISITE'],
             offerTypes: {
@@ -200,6 +203,7 @@ describe('components | Filters', () => {
 
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith({
+            aroundRadius: 50,
             categories: ['VISITE'],
             geolocationCoordinates: { latitude: 40, longitude: 41 },
             indexSuffix: '_by_price',
@@ -323,6 +327,7 @@ describe('components | Filters', () => {
 
         // then
         expect(props.updateFilters).toHaveBeenCalledWith({
+          aroundRadius: 0,
           isSearchAroundMe: false,
           offerCategories: ['VISITE', 'CINEMA'],
           offerTypes: {
@@ -407,120 +412,94 @@ describe('components | Filters', () => {
         })
       })
 
-      describe('reset filters', () => {
-        describe('when single categorie', () => {
-          it('should reset filters and trigger search to Algolia with given category', () => {
+      describe('radius filter', () => {
+        describe('when geolocation filter is "Partout"', () => {
+          it('should not display a "Rayon" title', () => {
             // given
-            props.history = createBrowserHistory()
-            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-            })
-            props.history.location.pathname = '/recherche-offres/resultats/filtres'
-            props.initialFilters = {
-              isSearchAroundMe: true,
-              offerCategories: ['VISITE'],
-              offerTypes: {
-                isDigital: false,
-                isEvent: false,
-                isThing: false
-              },
-              sortCriteria: '_by_price'
-            }
-            props.query.parse.mockReturnValue({
-              'mots-cles': 'librairie',
-            })
-            fetchAlgolia.mockReturnValue(
-              new Promise(resolve => {
-                resolve({
-                  hits: [],
-                  nbHits: 0,
-                  page: 0,
-                })
-              })
-            )
-            const wrapper = mount(
-              <Router history={props.history}>
-                <Filters {...props} />
-              </Router>
-            )
-            const resetButton = wrapper
-              .find(HeaderContainer)
-              .find('.reset-button')
-              .first()
+            props.history.location.pathname = '/recherche-offres/filtres'
+            props.initialFilters.isSearchAroundMe = false
 
             // when
-            resetButton.simulate('click')
+            const wrapper = shallow(<Filters {...props} />)
 
             // then
-            expect(fetchAlgolia).toHaveBeenCalledWith({
-              categories: ['VISITE'],
-              geolocationCoordinates: { latitude: 40, longitude: 41 },
-              indexSuffix: '_by_price',
-              keywords: 'librairie',
-              offerTypes: {
-                isDigital: false,
-                isEvent: false,
-                isThing: false
-              },
-              page: 0
-            })
+            const title = wrapper.findWhere(node => node.text() === 'Rayon').first()
+            expect(title).toHaveLength(0)
+          })
+
+          it('should not display the kilometers radius value', () => {
+            // given
+            props.history.location.pathname = '/recherche-offres/filtres'
+            props.initialFilters.aroundRadius = 0
+            props.initialFilters.isSearchAroundMe = false
+
+            // when
+            const wrapper = shallow(<Filters {...props} />)
+
+            // then
+            const kilometersRadius = wrapper.findWhere(node => node.text() === '0 km').first()
+            expect(kilometersRadius).toHaveLength(0)
+          })
+
+          it('should not render a Slider component', () => {
+            // given
+            props.history.location.pathname = '/recherche-offres/filtres'
+            props.initialFilters.isSearchAroundMe = false
+
+            // when
+            const wrapper = shallow(<Filters {...props} />)
+
+            // then
+            const slider = wrapper.find(Slider)
+            expect(slider).toHaveLength(0)
           })
         })
 
-        describe('when multiple categories', () => {
-          it('should reset filters and trigger search to Algolia with given categories', () => {
+        describe('when geolocation filter is "Autour de moi"', () => {
+          it('should display a "Rayon" title', () => {
             // given
-            props.history = createBrowserHistory()
-            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-            })
-            props.history.location.pathname = '/recherche-offres/resultats/filtres'
-            props.initialFilters = {
-              isSearchAroundMe: true,
-              offerCategories: ['VISITE', 'CINEMA'],
-              offerTypes: {
-                isDigital: true,
-                isEvent: true,
-                isThing: true
-              },
-              sortCriteria: '_by_price'
-            }
-            props.query.parse.mockReturnValue({
-              'mots-cles': 'librairie',
-            })
-            fetchAlgolia.mockReturnValue(
-              new Promise(resolve => {
-                resolve({
-                  hits: [],
-                  nbHits: 0,
-                  page: 0,
-                })
-              })
-            )
-            const wrapper = mount(
-              <Router history={props.history}>
-                <Filters {...props} />
-              </Router>
-            )
-            const resetButton = wrapper
-              .find(HeaderContainer)
-              .find('.reset-button')
-              .first()
+            props.history.location.pathname = '/recherche-offres/filtres'
+            props.initialFilters.isSearchAroundMe = true
 
             // when
-            resetButton.simulate('click')
+            const wrapper = shallow(<Filters {...props} />)
 
             // then
-            expect(fetchAlgolia).toHaveBeenCalledWith({
-              categories: ['VISITE', 'CINEMA'],
-              geolocationCoordinates: { latitude: 40, longitude: 41 },
-              indexSuffix: '_by_price',
-              keywords: 'librairie',
-              offerTypes: {
-                isDigital: false,
-                isEvent: false,
-                isThing: false
-              },
-              page: 0,
-            })
+            const title = wrapper.findWhere(node => node.text() === 'Rayon').first()
+            expect(title).toHaveLength(1)
+          })
+
+          it('should display the kilometers radius value', () => {
+            // given
+            props.history.location.pathname = '/recherche-offres/filtres'
+            props.initialFilters.aroundRadius = 50
+            props.initialFilters.isSearchAroundMe = true
+
+            // when
+            const wrapper = shallow(<Filters {...props} />)
+
+            // then
+            const kilometersRadius = wrapper.findWhere(node => node.text() === '50 km').first()
+            expect(kilometersRadius).toHaveLength(1)
+          })
+
+          it('should render a Slider component', () => {
+            // given
+            props.history.location.pathname = '/recherche-offres/filtres'
+            props.initialFilters.aroundRadius = 20
+            props.initialFilters.isSearchAroundMe = true
+
+            // when
+            const wrapper = shallow(<Filters {...props} />)
+
+            // then
+            const slider = wrapper.find(Slider)
+            expect(slider).toHaveLength(1)
+            expect(slider.prop('max')).toStrictEqual(100)
+            expect(slider.prop('min')).toStrictEqual(0)
+            expect(slider.prop('onChange')).toStrictEqual(expect.any(Function))
+            expect(slider.prop('onAfterChange')).toStrictEqual(expect.any(Function))
+            expect(slider.prop('value')).toStrictEqual(20)
           })
         })
       })
@@ -855,6 +834,126 @@ describe('components | Filters', () => {
           expect(wrapper.state().filters.offerCategories).toStrictEqual({
             CINEMA: true,
             VISITE: true,
+          })
+        })
+      })
+
+      describe('reset filters', () => {
+        describe('when single categorie', () => {
+          it('should reset filters and trigger search to Algolia with given category', () => {
+            // given
+            props.history = createBrowserHistory()
+            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
+            })
+            props.history.location.pathname = '/recherche-offres/resultats/filtres'
+            props.initialFilters = {
+              isSearchAroundMe: true,
+              offerCategories: ['VISITE'],
+              offerTypes: {
+                isDigital: false,
+                isEvent: false,
+                isThing: false
+              },
+              sortCriteria: '_by_price'
+            }
+            props.query.parse.mockReturnValue({
+              'mots-cles': 'librairie',
+            })
+            fetchAlgolia.mockReturnValue(
+              new Promise(resolve => {
+                resolve({
+                  hits: [],
+                  nbHits: 0,
+                  page: 0,
+                })
+              })
+            )
+            const wrapper = mount(
+              <Router history={props.history}>
+                <Filters {...props} />
+              </Router>
+            )
+            const resetButton = wrapper
+              .find(HeaderContainer)
+              .find('.reset-button')
+              .first()
+
+            // when
+            resetButton.simulate('click')
+
+            // then
+            expect(fetchAlgolia).toHaveBeenCalledWith({
+              aroundRadius: 0,
+              categories: ['VISITE'],
+              geolocationCoordinates: { latitude: 40, longitude: 41 },
+              indexSuffix: '_by_price',
+              keywords: 'librairie',
+              offerTypes: {
+                isDigital: false,
+                isEvent: false,
+                isThing: false
+              },
+              page: 0
+            })
+          })
+        })
+
+        describe('when multiple categories', () => {
+          it('should reset filters and trigger search to Algolia with given categories', () => {
+            // given
+            props.history = createBrowserHistory()
+            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
+            })
+            props.history.location.pathname = '/recherche-offres/resultats/filtres'
+            props.initialFilters = {
+              isSearchAroundMe: true,
+              offerCategories: ['VISITE', 'CINEMA'],
+              offerTypes: {
+                isDigital: true,
+                isEvent: true,
+                isThing: true
+              },
+              sortCriteria: '_by_price'
+            }
+            props.query.parse.mockReturnValue({
+              'mots-cles': 'librairie',
+            })
+            fetchAlgolia.mockReturnValue(
+              new Promise(resolve => {
+                resolve({
+                  hits: [],
+                  nbHits: 0,
+                  page: 0,
+                })
+              })
+            )
+            const wrapper = mount(
+              <Router history={props.history}>
+                <Filters {...props} />
+              </Router>
+            )
+            const resetButton = wrapper
+              .find(HeaderContainer)
+              .find('.reset-button')
+              .first()
+
+            // when
+            resetButton.simulate('click')
+
+            // then
+            expect(fetchAlgolia).toHaveBeenCalledWith({
+              aroundRadius: 0,
+              categories: ['VISITE', 'CINEMA'],
+              geolocationCoordinates: { latitude: 40, longitude: 41 },
+              indexSuffix: '_by_price',
+              keywords: 'librairie',
+              offerTypes: {
+                isDigital: false,
+                isEvent: false,
+                isThing: false
+              },
+              page: 0,
+            })
           })
         })
       })

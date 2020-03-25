@@ -164,6 +164,7 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 0,
           categories: props.categoriesFilter,
           keywords: '',
           indexSuffix: '_by_proximity',
@@ -191,6 +192,7 @@ describe('components | SearchResults', () => {
           })
         )
         parse.mockReturnValue({
+          'autour-de-moi': 'non',
           'mots-cles': 'une librairie',
         })
 
@@ -208,7 +210,6 @@ describe('components | SearchResults', () => {
         expect(resultTitle).toHaveLength(1)
         expect(fetchAlgolia).toHaveBeenCalledWith({
           categories: [],
-          geolocationCoordinates: null,
           indexSuffix: null,
           keywords: 'une librairie',
           offerTypes: {
@@ -283,6 +284,7 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 0,
           categories: [],
           geolocationCoordinates: { latitude: 40.1, longitude: 41.1 },
           indexSuffix: null,
@@ -324,7 +326,6 @@ describe('components | SearchResults', () => {
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
           categories: ['CINEMA'],
-          geolocationCoordinates: null,
           indexSuffix: null,
           keywords: 'une librairie',
           offerTypes: {
@@ -362,7 +363,6 @@ describe('components | SearchResults', () => {
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
           categories: ['CINEMA'],
-          geolocationCoordinates: null,
           indexSuffix: null,
           keywords: 'une librairie',
           offerTypes: { isDigital: false, isEvent: false, isThing: false },
@@ -396,7 +396,6 @@ describe('components | SearchResults', () => {
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
           categories: ['CINEMA'],
-          geolocationCoordinates: null,
           indexSuffix: null,
           keywords: 'une librairie',
           offerTypes: { isDigital: false, isEvent: false, isThing: false },
@@ -428,7 +427,6 @@ describe('components | SearchResults', () => {
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
           categories: [],
-          geolocationCoordinates: null,
           indexSuffix: null,
           keywords: 'une librairie',
           offerTypes: {
@@ -466,7 +464,6 @@ describe('components | SearchResults', () => {
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
           categories: [],
-          geolocationCoordinates: null,
           indexSuffix: '_by_proximity',
           keywords: 'une librairie',
           offerTypes: {
@@ -502,7 +499,6 @@ describe('components | SearchResults', () => {
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
           categories: [],
-          geolocationCoordinates: null,
           indexSuffix: null,
           keywords: 'une librairie',
           offerTypes: {
@@ -535,7 +531,6 @@ describe('components | SearchResults', () => {
       // then
       expect(fetchAlgolia).toHaveBeenCalledWith({
         categories: [],
-        geolocationCoordinates: null,
         indexSuffix: null,
         keywords: 'un livre très cherché',
         offerTypes: {
@@ -567,7 +562,6 @@ describe('components | SearchResults', () => {
       // then
       expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
         categories: [],
-        geolocationCoordinates: null,
         indexSuffix: null,
         keywords: '',
         offerTypes: {
@@ -599,7 +593,6 @@ describe('components | SearchResults', () => {
       // then
       expect(fetchAlgolia).toHaveBeenCalledWith({
         categories: [],
-        geolocationCoordinates: null,
         indexSuffix: null,
         keywords: '',
         offerTypes: {
@@ -857,6 +850,7 @@ describe('components | SearchResults', () => {
       expect(wrapper.state()).toStrictEqual({
         currentPage: 0,
         filters: {
+          aroundRadius: 0,
           offerCategories: [],
           offerTypes: {
             isDigital: false,
@@ -917,7 +911,6 @@ describe('components | SearchResults', () => {
       expect(fetchAlgolia).toHaveBeenCalledTimes(2)
       expect(fetchAlgolia).toHaveBeenNthCalledWith(1, {
         categories: [],
-        geolocationCoordinates: null,
         indexSuffix: null,
         keywords: '',
         offerTypes: {
@@ -929,7 +922,6 @@ describe('components | SearchResults', () => {
       })
       expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
         categories: [],
-        geolocationCoordinates: null,
         indexSuffix: null,
         keywords: 'librairie',
         offerTypes: {
@@ -1321,6 +1313,7 @@ describe('components | SearchResults', () => {
       expect(filtersContainer).toHaveLength(1)
       expect(filtersContainer.prop('history')).toStrictEqual(props.history)
       expect(filtersContainer.prop('initialFilters')).toStrictEqual({
+        aroundRadius: 0,
         offerCategories: ['VISITE', 'CINEMA'],
         isSearchAroundMe: false,
         offerTypes: {

@@ -1,0 +1,55 @@
+.rc-slider {
+  border-radius: rem(6px);
+  box-sizing: border-box;
+  height: rem(14px);
+  margin: auto;
+  position: relative;
+  touch-action: none;
+  width: 85%;
+  -ms-touch-action: none;
+  -webkit-tap-highlight-color: $grey-light;
+}
+
+.rc-slider-rail {
+  background-color: $grey-medium;
+  border-radius: rem(7.5px);
+  height: rem(15px);
+  position: absolute;
+  width: 100%;
+}
+
+.rc-slider-track {
+  background-color: $primary;
+  border-radius: rem(7.5px);
+  height: rem(15px);
+  position: absolute;
+}
+
+.rc-slider-handle {
+  background-color: $white;
+  border-radius: 50%;
+  border: rem(1px) solid $grey-even-more-light;
+  box-shadow: 0 rem(2px) rem(6px) 0 rgba(0, 0, 0, 0.2);
+  height: rem(26px);
+  margin-top: rem(-5px);
+  position: absolute;
+  width: rem(26px);
+  -ms-touch-action: pan-x;
+  cursor: pointer;
+  cursor: -webkit-grab;
+  cursor: grab;
+  touch-action: pan-x;
+}
+
+.rc-slider-handle-dragging.rc-slider-handle-dragging.rc-slider-handle-dragging {
+  border-color: $grey-light;
+  box-shadow: 0 rem(2px) rem(6px) 0 $grey-even-more-light;
+}
+
+.rc-slider-handle:focus {
+  outline: none;
+}
+
+.rc-slider-step {
+  position: absolute;
+}

@@ -7,15 +7,17 @@ import { Criteria } from '../Criteria/Criteria'
 import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA } from '../Criteria/criteriaEnums'
 import { checkIfAroundMe } from '../utils/checkIfAroundMe'
 import FilterCheckbox from './FilterCheckbox/FilterCheckbox'
+import Slider from 'rc-slider'
 
 export class Filters extends PureComponent {
   constructor(props) {
     super(props)
 
-    const { isSearchAroundMe, offerTypes, sortCriteria } = props.initialFilters
+    const { aroundRadius, isSearchAroundMe, offerTypes, sortCriteria } = props.initialFilters
     this.state = {
       areCategoriesVisible: true,
       filters: {
+        aroundRadius: aroundRadius,
         offerCategories: this.buildCategoriesStateFromProps(),
         isSearchAroundMe: isSearchAroundMe,
         offerTypes: offerTypes,
@@ -23,6 +25,7 @@ export class Filters extends PureComponent {
       },
       offers: props.offers,
     }
+    this.handleOnAfterChange = this.handleOnAfterChange.bind(this)
   }
 
   buildCategoriesStateFromProps = () => {
@@ -34,9 +37,10 @@ export class Filters extends PureComponent {
     }, {})
   }
 
-  fetchOffers = ({ keywords, geolocation = null, categories, indexSuffix, offerTypes }) => {
+  fetchOffers = ({ aroundRadius, keywords, geolocation = null, categories, indexSuffix, offerTypes }) => {
     const { showFailModal } = this.props
     fetchAlgolia({
+      aroundRadius,
       categories,
       geolocationCoordinates: geolocation,
       indexSuffix,
@@ -85,6 +89,7 @@ export class Filters extends PureComponent {
     this.setState({
         filters: {
           ...initialFilters,
+          aroundRadius: 0,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -105,10 +110,11 @@ export class Filters extends PureComponent {
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles'] || ''
 
-    const { isSearchAroundMe, offerTypes, sortCriteria } = filters
+    const { aroundRadius, isSearchAroundMe, offerTypes, sortCriteria } = filters
     const selectedCategories = this.getSelectedCategories()
     isSearchAroundMe
       ? this.fetchOffers({
+        aroundRadius,
         keywords,
         geolocation,
         categories: selectedCategories,
@@ -229,9 +235,24 @@ export class Filters extends PureComponent {
   handleToggleCategories = () => () =>
     this.setState(prevState => ({ areCategoriesVisible: !prevState.areCategoriesVisible }))
 
+  handleOnChange = (value) => {
+    const { filters } = this.state
+
+    this.setState({
+      filters: {
+        ...filters,
+        aroundRadius: value
+      },
+    })
+  }
+
+  handleOnAfterChange = () => {
+    this.process()
+  }
+
   render() {
-    const { filters, areCategoriesVisible } = this.state
-    const { offerTypes, offerCategories } = filters
+    const { areCategoriesVisible, filters } = this.state
+    const { aroundRadius, isSearchAroundMe, offerCategories, offerTypes } = filters
     const { history, match } = this.props
     const { location } = history
     const { search = '' } = location
@@ -275,6 +296,26 @@ export class Filters extends PureComponent {
                 </button>
                 <span className="sf-filter-separator" />
               </li>
+              {isSearchAroundMe && (
+                <li>
+                  <h4 className="sf-title">
+                    {'Rayon'}
+                  </h4>
+                  <h4 className="sf-slider-radius">
+                    {`${aroundRadius} km`}
+                  </h4>
+                  <div className="sf-slider-wrapper">
+                    <Slider
+                      max={100}
+                      min={0}
+                      onAfterChange={this.handleOnAfterChange}
+                      onChange={this.handleOnChange}
+                      value={aroundRadius}
+                    />
+                  </div>
+                  <span className="sf-filter-separator" />
+                </li>
+              )}
               <li>
                 <button
                   aria-label="Afficher les catégories"
