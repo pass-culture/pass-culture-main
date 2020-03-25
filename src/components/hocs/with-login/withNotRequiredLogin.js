@@ -1,6 +1,6 @@
 import { compose } from 'redux'
 import { requestData } from 'redux-thunk-data'
-import withLogin from './with-login/withLogin'
+import withLogin from './withLogin'
 
 import { getRedirectToCurrentLocationOrDiscovery } from './helpers'
 import withFrenchQueryRouter from '../withFrenchQueryRouter'

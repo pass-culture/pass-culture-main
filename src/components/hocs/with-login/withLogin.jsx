@@ -2,10 +2,10 @@ import { requestData } from 'redux-thunk-data'
 
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import LoadingPage from '../../../layout/LoadingPage/LoadingPage'
+import LoadingPage from '../../layout/LoadingPage/LoadingPage'
 
 import { connect } from 'react-redux'
-import { selectCurrentUser, resolveCurrentUser } from '../../../../selectors/data/usersSelectors'
+import { selectCurrentUser, resolveCurrentUser } from '../../../selectors/data/usersSelectors'
 
 export default (config = {}) => WrappedComponent => {
   const { handleFail, handleSuccess } = config
