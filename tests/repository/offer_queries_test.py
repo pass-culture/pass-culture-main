@@ -2,6 +2,7 @@ import random
 from datetime import datetime, timedelta
 
 from freezegun import freeze_time
+from sqlalchemy import func
 
 from models import Offer, Stock, Product
 from models.offer_type import EventType, ThingType
@@ -12,14 +13,14 @@ from repository.offer_queries import department_or_national_offers, \
     get_offers_for_recommendations_search, \
     get_active_offers, \
     get_offers_by_venue_id, \
-    _has_remaining_stock, \
     order_by_with_criteria, \
     get_paginated_active_offer_ids, \
     get_paginated_offer_ids_by_venue_id_and_last_provider_id, \
     _order_by_occurs_soon_or_is_thing_then_randomize, \
     get_paginated_offer_ids_by_venue_id, \
     get_offers_by_ids, \
-    get_paginated_expired_offer_ids, get_active_offers_with_digital_first
+    get_paginated_expired_offer_ids, get_active_offers_with_digital_first, \
+    _build_bookings_quantity_subquery
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_criterion, create_user, create_offerer, \
     create_venue, create_user_offerer, create_mediation, create_favorite, create_provider
@@ -724,7 +725,7 @@ class FindOffersTest:
         assert offers[0].venueId == venue.id
 
 
-class HasRemainingStockTest:
+class QueryOfferWithRemainingStocksTest:
     @clean_database
     def test_should_return_0_offer_when_there_is_no_stock(self, app):
         # Given
@@ -755,11 +756,13 @@ class HasRemainingStockTest:
         booking_1 = create_booking(user=user, stock=stock, quantity=2)
         booking_2 = create_booking(user=user, stock=stock, quantity=1)
         repository.save(stock, booking_1, booking_2)
+        bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
         offers_count = Offer.query \
             .join(Stock) \
-            .filter(_has_remaining_stock()) \
+            .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId) \
+            .filter((Stock.available == None) | ((Stock.available - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
@@ -777,40 +780,20 @@ class HasRemainingStockTest:
         booking_1 = create_booking(user=user, stock=stock, quantity=2)
         booking_2 = create_booking(user=user, stock=stock, quantity=1)
         repository.save(stock, booking_1, booking_2)
+        bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
         offers_count = Offer.query \
             .join(Stock) \
-            .filter(_has_remaining_stock()) \
+            .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId) \
+            .filter((Stock.available == None) | ((Stock.available - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
         assert offers_count == 0
 
     @clean_database
-    def test_should_return_1_offer_when_stock_was_updated_after_booking_was_used(self, app):
-        # Given
-        thing = create_product_with_thing_type()
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue=venue, product=thing)
-        stock = create_stock_from_offer(offer, available=1, price=0)
-        booking = create_booking(user=user, stock=stock, is_used=True, quantity=1)
-        stock.dateModified = datetime.utcnow() + timedelta(days=1)
-        repository.save(stock, booking)
-
-        # When
-        offers_count = Offer.query \
-            .join(Stock) \
-            .filter(_has_remaining_stock()) \
-            .count()
-
-        # Then
-        assert offers_count == 1
-
-    @clean_database
-    def test_should_return_1_offer_when_booking_was_cancelled(app):
+    def test_should_return_1_offer_when_booking_was_cancelled(self, app):
         # Given
         user = create_user()
         product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
@@ -820,11 +803,13 @@ class HasRemainingStockTest:
         stock = create_stock_from_offer(offer, available=2)
         booking = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
         repository.save(booking)
+        bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
         offers_count = Offer.query \
             .join(Stock) \
-            .filter(_has_remaining_stock()) \
+            .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId)  \
+            .filter((Stock.available == None) | ((Stock.available - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
@@ -842,11 +827,13 @@ class HasRemainingStockTest:
         booking1 = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
         booking2 = create_booking(user=user, stock=stock, quantity=2, venue=venue)
         repository.save(booking1, booking2)
+        bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
         offers_count = Offer.query \
             .join(Stock) \
-            .filter(_has_remaining_stock()) \
+            .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId) \
+            .filter((Stock.available == None) | ((Stock.available - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
@@ -864,11 +851,13 @@ class HasRemainingStockTest:
         user = create_user()
         booking1 = create_booking(user=user, stock=stock1, quantity=2, venue=venue)
         repository.save(booking1, stock2)
+        bookings_quantity = _build_bookings_quantity_subquery()
 
         # When
         offers_count = Offer.query \
             .join(Stock) \
-            .filter(_has_remaining_stock()) \
+            .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId) \
+            .filter((Stock.available == None) | ((Stock.available - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
@@ -1967,7 +1956,6 @@ class GetPaginatedActiveOfferIdsTest:
 
         # When
         offer_ids = get_paginated_active_offer_ids(limit=2, page=0)
-        print(offer_ids)
 
         # Then
         assert len(offer_ids) == 2

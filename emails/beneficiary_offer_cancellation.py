@@ -46,5 +46,4 @@ def retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking: B
 
 
 def _is_offer_active_for_recap(stock: Stock) -> bool:
-    return stock.offer.isActive and stock.isBookable \
-           and (stock.available is None or stock.remainingQuantity > 0)
+    return stock.isBookable and (stock.available is None or stock.remainingQuantity > 0)

@@ -9,14 +9,10 @@ from sqlalchemy import BigInteger, \
     event, \
     ForeignKey, \
     Integer, \
-    Numeric, \
-    and_, \
-    or_
-from sqlalchemy.orm import column_property, relationship
-from sqlalchemy.sql import select, func
+    Numeric
 from sqlalchemy.event import listens_for
+from sqlalchemy.orm import relationship
 
-from models.booking import Booking
 from models.db import Model
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
@@ -30,7 +26,6 @@ class Stock(PcObject,
             ProvidableMixin,
             SoftDeletableMixin,
             VersionedMixin):
-
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)
@@ -68,7 +63,6 @@ class Stock(PcObject,
     available = Column(Integer, nullable=True)
 
     bookingLimitDatetime = Column(DateTime, nullable=True)
-
 
     @property
     def isBookable(self):
@@ -125,8 +119,8 @@ class Stock(PcObject,
 def before_insert(mapper, configuration, self):
     if self.beginningDatetime and not self.bookingLimitDatetime:
         self.bookingLimitDatetime = self.beginningDatetime \
-            .replace(hour=23) \
-            .replace(minute=59) - timedelta(days=3)
+                                        .replace(hour=23) \
+                                        .replace(minute=59) - timedelta(days=3)
 
 
 Stock.trig_ddl = """

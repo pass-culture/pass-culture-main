@@ -374,12 +374,6 @@ def find_offers_with_filter_parameters(
     return query
 
 
-def _has_remaining_stock():
-    is_unlimited_stock = Stock.available == None
-    has_remaining_stock = Stock.remainingQuantity > 0
-    return is_unlimited_stock | has_remaining_stock
-
-
 def find_searchable_offer(offer_id):
     return Offer.query.filter_by(id=offer_id) \
         .join(Venue) \
@@ -392,13 +386,27 @@ def _offer_has_bookable_stocks():
     stock_can_still_be_booked = (Stock.bookingLimitDatetime > now) | (Stock.bookingLimitDatetime == None)
     event_has_not_began_yet = (Stock.beginningDatetime != None) & (Stock.beginningDatetime > now)
     offer_is_on_a_thing = Stock.beginningDatetime == None
+    bookings_quantity = _build_bookings_quantity_subquery()
+
     return Stock.query \
         .filter(Stock.offerId == Offer.id) \
         .filter(Stock.isSoftDeleted == False) \
         .filter(stock_can_still_be_booked) \
         .filter(event_has_not_began_yet | offer_is_on_a_thing) \
-        .filter(_has_remaining_stock()) \
+        .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId) \
+        .filter((Stock.available == None) | ((Stock.available - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
         .exists()
+
+
+def _build_bookings_quantity_subquery():
+    stock_alias = aliased(Stock)
+    bookings_quantity = Booking.query \
+        .join(stock_alias) \
+        .filter(Booking.isCancelled == False) \
+        .group_by(Booking.stockId) \
+        .with_entities(func.sum(Booking.quantity).label('quantity'), Booking.stockId.label('stockId')) \
+        .subquery()
+    return bookings_quantity
 
 
 def _filter_recommendable_offers_for_search(offer_query):
@@ -431,13 +439,17 @@ def _filter_bookable_stocks_for_discovery(stocks_query):
     has_no_beginning_date_predicate = (Stock.beginningDatetime == None)
     has_no_booking_limit_date_predicate = (Stock.bookingLimitDatetime == None)
     is_not_soft_deleted_predicate = (Stock.isSoftDeleted == False)
+    bookings_quantity = _build_bookings_quantity_subquery()
+    has_remaining_stock = (Stock.available == None) | (
+                (Stock.available - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)
 
-    stocks_query = stocks_query.filter(is_not_soft_deleted_predicate
-                                       & (beginning_date_is_in_the_future_predicate
-                                          | has_no_beginning_date_predicate)
-                                       & (booking_limit_date_is_in_the_future_predicate
-                                          | has_no_booking_limit_date_predicate)
-                                       & _has_remaining_stock())
+    stocks_query = stocks_query.outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId) \
+        .filter(is_not_soft_deleted_predicate
+                & (beginning_date_is_in_the_future_predicate
+                   | has_no_beginning_date_predicate)
+                & (booking_limit_date_is_in_the_future_predicate
+                   | has_no_booking_limit_date_predicate)
+                & has_remaining_stock)
     return stocks_query
 
 
