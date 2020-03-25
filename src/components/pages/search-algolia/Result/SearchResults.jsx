@@ -86,6 +86,7 @@ class SearchResults extends PureComponent {
         }
       )
     }
+    this.inputRef.current.blur()
   }
 
   fetchNextOffers = currentPage => {
