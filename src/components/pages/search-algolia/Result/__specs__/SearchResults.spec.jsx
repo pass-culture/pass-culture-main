@@ -1009,6 +1009,37 @@ describe('components | SearchResults', () => {
       })
     })
 
+    it('should remove focus from input when the form is submited', () => {
+      // given
+      const wrapper = shallow(<SearchResults {...props} />)
+      const instance = wrapper.instance()
+      stubRef(wrapper)
+      const form = wrapper.find('form')
+      fetchAlgolia.mockReturnValue({
+        hits: [],
+        page: 0,
+        nbHits: 0,
+        nbPages: 0,
+        hitsPerPage: 2,
+        processingTimeMS: 1,
+        query: '',
+        params: 'hitsPerPage=2',
+      })
+
+      // when
+      form.simulate('submit', {
+        target: {
+          keywords: {
+            value: '',
+          },
+        },
+        preventDefault: jest.fn(),
+      })
+
+      // then
+      expect(instance.inputRef.current.blur).toHaveBeenCalledWith()
+    })
+
     describe('reset cross', () => {
       it('should not display reset cross when nothing is typed in text input', () => {
         // when
