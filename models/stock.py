@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from pprint import pformat
 
 from sqlalchemy import BigInteger, \
+    Boolean, \
     CheckConstraint, \
     Column, \
     DateTime, \
@@ -63,6 +64,8 @@ class Stock(PcObject,
     available = Column(Integer, nullable=True)
 
     bookingLimitDatetime = Column(DateTime, nullable=True)
+
+    hasBeenMigrated = Column(Boolean, nullable=True)
 
     @property
     def isBookable(self):
