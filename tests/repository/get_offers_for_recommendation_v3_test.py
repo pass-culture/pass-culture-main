@@ -29,19 +29,13 @@ class GetOffersForRecommendationV3Test:
         mediation1 = create_mediation(stock.offer)
         mediation2 = create_mediation(stock_activation.offer)
 
-        polygon = POLYGON_TEST
 
-        user_location_iris = create_iris(polygon)
         repository.save(user, stock, stock_activation, mediation1, mediation2)
-
-        iris_venue = create_iris_venue(user_location_iris, venue)
-        repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
 
         # When
-        offers = get_offers_for_recommendation_v3(user_iris_id=user_location_iris.id,
-                                                  user=user)
+        offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
 
         # Then
         assert offer in offers
@@ -61,19 +55,12 @@ class GetOffersForRecommendationV3Test:
         create_mediation(stock_93.offer)
         create_mediation(stock_activation_93.offer)
 
-        polygon = POLYGON_TEST
-
-        iris = create_iris(polygon)
         repository.save(user, stock_93, stock_activation_93)
-
-        iris_venue = create_iris_venue(iris, venue_93)
-        repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
 
         # When
-        offers = get_offers_for_recommendation_v3(user_iris_id=iris.id,
-                                                  user=user)
+        offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
 
         # Then
         assert offer_93 in offers
@@ -91,19 +78,12 @@ class GetOffersForRecommendationV3Test:
         stock = create_stock_from_offer(offer, available=2)
         create_mediation(stock.offer)
 
-        polygon = POLYGON_TEST
-
-        iris = create_iris(polygon)
         repository.save(user, stock)
-
-        iris_venue = create_iris_venue(iris, venue)
-        repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
 
         # When
-        offers = get_offers_for_recommendation_v3(user_iris_id=iris.id,
-                                                  user=user)
+        offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
 
         # Then
         assert len(offers) == 1
@@ -118,19 +98,13 @@ class GetOffersForRecommendationV3Test:
         stock2 = create_stock_with_thing_offer(offerer, venue, name='thing_without_mediation')
         create_mediation(stock1.offer)
 
-        polygon = POLYGON_TEST
-
-        iris = create_iris(polygon)
         repository.save(user, stock1, stock2)
 
-        iris_venue = create_iris_venue(iris, venue)
-        repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
 
         # When
-        offers = get_offers_for_recommendation_v3(user_iris_id=iris.id,
-                                                  user=user)
+        offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
 
         # Then
         assert len(offers) == 1
@@ -160,19 +134,12 @@ class GetOffersForRecommendationV3Test:
         create_mediation(stock2.offer)
         create_mediation(stock3.offer)
 
-        polygon = POLYGON_TEST
-
-        iris = create_iris(polygon)
         repository.save(user, stock1, stock2, stock3)
-
-        iris_venue = create_iris_venue(iris, venue)
-        repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
 
         # When
-        offers = get_offers_for_recommendation_v3(user_iris_id=iris.id,
-                                                  user=user)
+        offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
 
         # Then
         assert len(offers) == 3
@@ -202,13 +169,7 @@ class GetOffersForRecommendationV3Test:
         create_mediation(stock5.offer)
         create_mediation(stock6.offer)
 
-        polygon = POLYGON_TEST
-
-        iris = create_iris(polygon)
         repository.save(user, stock1, stock2, stock3, stock4, stock5, stock6, user)
-
-        iris_venue = create_iris_venue(iris, venue)
-        repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
 
@@ -217,8 +178,7 @@ class GetOffersForRecommendationV3Test:
                             for o in offers[:4]])) == 4
 
         # When
-        offers = get_offers_for_recommendation_v3(user_iris_id=iris.id,
-                                                  user=user)
+        offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
 
         # Then
         assert len(offers) == 6
@@ -237,19 +197,12 @@ class GetOffersForRecommendationV3Test:
         booking2 = create_booking(user=user, stock=stock, quantity=2, venue=venue)
         create_mediation(stock.offer)
 
-        polygon = POLYGON_TEST
-
-        iris = create_iris(polygon)
         repository.save(user, booking1, booking2)
-
-        iris_venue = create_iris_venue(iris, venue)
-        repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
 
         # When
-        offers = get_offers_for_recommendation_v3(user_iris_id=iris.id,
-                                                  user=user)
+        offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
 
         # Then
         assert len(offers) == 0
@@ -272,19 +225,12 @@ class GetOffersForRecommendationV3Test:
         create_mediation(stock1.offer)
         create_mediation(stock2.offer)
 
-        polygon = POLYGON_TEST
-
-        iris = create_iris(polygon)
         repository.save(user, stock1, stock2)
-
-        iris_venue = create_iris_venue(iris, venue)
-        repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
 
         # When
-        offers = get_offers_for_recommendation_v3(user_iris_id=iris.id,
-                                                  user=user)
+        offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
 
         # Then
         assert offers == [offer2, offer1]
@@ -312,19 +258,12 @@ class GetOffersForRecommendationV3Test:
         create_mediation(stock2.offer)
         create_mediation(stock3.offer)
 
-        polygon = POLYGON_TEST
-
-        iris = create_iris(polygon)
         repository.save(user, stock1, stock2, stock3)
-
-        iris_venue = create_iris_venue(iris, venue)
-        repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
 
         # When
-        offers = get_offers_for_recommendation_v3(user_iris_id=iris.id,
-                                                  user=user)
+        offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
 
         # Then
         assert offers == [offer2, offer3, offer1]
@@ -340,19 +279,12 @@ class GetOffersForRecommendationV3Test:
         booking = create_booking(user=user, stock=stock)
         create_mediation(stock.offer)
 
-        polygon = POLYGON_TEST
-
-        iris = create_iris(polygon)
         repository.save(user, booking)
-
-        iris_venue = create_iris_venue(iris, venue)
-        repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
 
         # When
-        offers = get_offers_for_recommendation_v3(user_iris_id=iris.id,
-                                                  user=user)
+        offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
 
         # Then
         assert offers == []
@@ -369,22 +301,104 @@ class GetOffersForRecommendationV3Test:
         mediation = create_mediation(stock.offer)
         favorite = create_favorite(mediation=mediation, offer=offer, user=user)
 
-        polygon = POLYGON_TEST
-
-        iris = create_iris(polygon)
         repository.save(user, favorite)
-
-        iris_venue = create_iris_venue(iris, venue)
-        repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
 
         # When
-        offers = get_offers_for_recommendation_v3(user_iris_id=iris.id,
-                                                  user=user)
+        offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
 
         # Then
         assert offers == []
+
+    @clean_database
+    def test_should_not_return_offers_having_only_soft_deleted_stocks(self, app):
+        # Given
+        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
+                             latitude=49.894171)
+        offer = create_offer_with_thing_product(venue=venue, product=product)
+        stock = create_stock_from_offer(offer, available=2, soft_deleted=True)
+        create_mediation(stock.offer)
+
+        repository.save(user, stock)
+
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
+
+        # Then
+        assert len(offers) == 0
+
+    @clean_database
+    def test_should_not_return_offers_from_non_validated_venue(self, app):
+        # Given
+        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
+                             latitude=49.894171, validation_token='nimportequoi')
+        offer = create_offer_with_thing_product(venue=venue, product=product)
+        stock = create_stock_from_offer(offer, available=2)
+        create_mediation(stock.offer)
+
+        repository.save(user, stock)
+
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
+
+        # Then
+        assert len(offers) == 0
+
+    @clean_database
+    def test_should_not_return_offers_from_non_validated_offerers(self, app):
+        # Given
+        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+        offerer = create_offerer(validation_token='nimportequoi')
+        user = create_user()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
+                             latitude=49.894171)
+        offer = create_offer_with_thing_product(venue=venue, product=product)
+        stock = create_stock_from_offer(offer, available=2)
+        create_mediation(stock.offer)
+
+        repository.save(user, stock)
+
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
+
+        # Then
+        assert len(offers) == 0
+
+    @clean_database
+    def test_should_not_return_offers_having_only_stocks_with_past_booking_limit_date_time(self, app):
+        # Given
+        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
+                             latitude=49.894171)
+        offer = create_offer_with_thing_product(venue=venue, product=product)
+        one_day_ago = datetime.utcnow() - timedelta(days=1)
+        stock = create_stock_from_offer(offer, available=2, booking_limit_datetime=one_day_ago)
+        create_mediation(stock.offer)
+
+        repository.save(user, stock)
+
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
+
+        # Then
+        assert len(offers) == 0
 
     @clean_database
     def test_should_not_return_offers_from_venue_outside_user_iris(self, app):
@@ -410,8 +424,8 @@ class GetOffersForRecommendationV3Test:
         DiscoveryView.refresh(concurrently=False)
 
         # when
-        offers = get_offers_for_recommendation_v3(user_iris_id=user_location_iris.id,
-                                                  user=user)
+        offers = get_offers_for_recommendation_v3(user=user, user_iris_id=user_location_iris.id,
+                                                  user_is_geolocated=True)
 
         # then
         assert offers == []
@@ -440,126 +454,57 @@ class GetOffersForRecommendationV3Test:
         DiscoveryView.refresh(concurrently=False)
 
         # When
-        offers = get_offers_for_recommendation_v3(user_iris_id=user_location_iris.id,
-                                                  user=user)
+        offers = get_offers_for_recommendation_v3(user=user, user_iris_id=user_location_iris.id,
+                                                  user_is_geolocated=True)
 
         # Then
         assert offers == [offer]
 
     @clean_database
-    def test_should_not_return_offers_having_only_soft_deleted_stocks(self, app):
-        # Given
-        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
-        offerer = create_offerer()
+    def test_should_return_offers_regardless_of_location_when_user_is_not_geolocated(self, app):
+        # given
+        offerer = create_offerer(siren='123456789')
         user = create_user()
-        venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
-                             latitude=49.894171)
-        offer = create_offer_with_thing_product(venue=venue, product=product)
-        stock = create_stock_from_offer(offer, available=2, soft_deleted=True)
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock_from_offer(offer)
         create_mediation(stock.offer)
 
-        polygon = POLYGON_TEST
-
-        iris = create_iris(polygon)
         repository.save(user, stock)
-
-        iris_venue = create_iris_venue(iris, venue)
-        repository.save(iris_venue)
 
         DiscoveryView.refresh(concurrently=False)
 
-        # When
-        offers = get_offers_for_recommendation_v3(user_iris_id=iris.id,
-                                                  user=user)
+        # when
+        offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
 
-        # Then
-        assert len(offers) == 0
+        # then
+        assert len(offers) == 1
 
     @clean_database
-    def test_should_not_return_offers_from_non_validated_venue(self, app):
-        # Given
-        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
-        offerer = create_offerer()
+    def test_should_return_only_national_offers_when_user_is_geolocated_outside_iris(self, app):
+        # given
+        offerer = create_offerer(siren='123456789')
         user = create_user()
-        venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
-                             latitude=49.894171, validation_token='nimportequoi')
-        offer = create_offer_with_thing_product(venue=venue, product=product)
-        stock = create_stock_from_offer(offer, available=2)
-        create_mediation(stock.offer)
+        venue = create_venue(offerer)
+        virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        offer = create_offer_with_thing_product(venue)
+        digital_offer = create_offer_with_thing_product(virtual_venue, thing_type=ThingType.MUSIQUE, url='https://url.com', is_national=True)
+        national_offer = create_offer_with_thing_product(venue, is_national=True)
+        stock = create_stock_from_offer(offer)
+        stock_on_digital_offer = create_stock_from_offer(digital_offer)
+        stock_on_national_offer = create_stock_from_offer(national_offer)
+        create_mediation(offer)
+        create_mediation(digital_offer)
+        create_mediation(national_offer)
 
-        polygon = POLYGON_TEST
-
-        iris = create_iris(polygon)
-        repository.save(user, stock)
-
-        iris_venue = create_iris_venue(iris, venue)
-        repository.save(iris_venue)
+        repository.save(user, stock, stock_on_digital_offer, stock_on_national_offer)
 
         DiscoveryView.refresh(concurrently=False)
 
-        # When
-        offers = get_offers_for_recommendation_v3(user_iris_id=iris.id,
-                                                  user=user)
+        # when
+        offers = get_offers_for_recommendation_v3(user=user, user_iris_id=None, user_is_geolocated=True)
 
-        # Then
-        assert len(offers) == 0
-
-    @clean_database
-    def test_should_not_return_offers_from_non_validated_offerers(self, app):
-        # Given
-        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
-        offerer = create_offerer(validation_token='nimportequoi')
-        user = create_user()
-        venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
-                             latitude=49.894171)
-        offer = create_offer_with_thing_product(venue=venue, product=product)
-        stock = create_stock_from_offer(offer, available=2)
-        create_mediation(stock.offer)
-
-        polygon = POLYGON_TEST
-
-        iris = create_iris(polygon)
-        repository.save(user, stock)
-
-        iris_venue = create_iris_venue(iris, venue)
-        repository.save(iris_venue)
-
-        DiscoveryView.refresh(concurrently=False)
-
-        # When
-        offers = get_offers_for_recommendation_v3(user_iris_id=iris.id,
-                                                  user=user)
-
-        # Then
-        assert len(offers) == 0
-
-    @clean_database
-    def test_should_not_return_offers_having_only_stocks_with_past_booking_limit_date_time(self,app):
-        # Given
-        product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
-        offerer = create_offerer()
-        user = create_user()
-        venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
-                             latitude=49.894171)
-        offer = create_offer_with_thing_product(venue=venue, product=product)
-        one_day_ago = datetime.utcnow() - timedelta(days=1)
-        stock = create_stock_from_offer(offer, available=2, booking_limit_datetime=one_day_ago)
-        create_mediation(stock.offer)
-
-        polygon = POLYGON_TEST
-
-        iris = create_iris(polygon)
-        repository.save(user, stock)
-
-        iris_venue = create_iris_venue(iris, venue)
-        repository.save(iris_venue)
-
-        DiscoveryView.refresh(concurrently=False)
-
-        # When
-        offers = get_offers_for_recommendation_v3(user_iris_id=iris.id,
-                                                  user=user)
-
-        # Then
-        assert len(offers) == 0
-
+        # then
+        assert len(offers) == 2
+        assert digital_offer in offers
+        assert national_offer in offers

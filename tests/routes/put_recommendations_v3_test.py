@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from shapely.geometry import Polygon
 
-from models import Feature, DiscoveryView, Mediation
+from models import Feature, DiscoveryView, Mediation, ThingType
 from models.feature import FeatureToggle
 from repository import repository
 from tests.conftest import TestClient, clean_database
@@ -44,9 +44,16 @@ class Put:
             assert response.status_code == 403
 
     class Returns200:
+        @patch('routes.recommendations.create_recommendations_for_discovery_v3')
+        @patch('routes.recommendations.current_user')
+        @patch('routes.recommendations.move_tutorial_recommendations_first')
+        @patch('routes.recommendations.serialize_recommendations')
         @patch('routes.recommendations.update_read_recommendations')
         @clean_database
-        def when_feature_is_active(self, mock_update_read_recommendations, app):
+        def when_feature_is_active_and_user_is_geolocated(self, mock_update_read_recommendations,
+                                                          mock_serialize_recommendations,
+                                                          mock_move_tutorial_recommendations_first, mock_current_user,
+                                                          mock_create_recommendations_for_discovery_v3, app):
             # Given
             user = create_user()
             offerer = create_offerer()
@@ -82,12 +89,20 @@ class Put:
             # Then
             assert response.status_code == 200
             mock_update_read_recommendations.assert_called_once()
-            recommendations = response.json
-            stocks = recommendations[0]['offer']['stocks']
-            assert all('isBookable' in stock for stock in stocks)
+            mock_create_recommendations_for_discovery_v3.assert_called_once_with(user=mock_current_user,
+                                                                                 user_iris_id=iris.id,
+                                                                                 user_is_geolocated=True,
+                                                                                 seen_recommendation_ids=[],
+                                                                                 limit=30)
 
+        @patch('routes.recommendations.create_recommendations_for_discovery_v3')
+        @patch('routes.recommendations.current_user')
+        @patch('routes.recommendations.move_tutorial_recommendations_first')
+        @patch('routes.recommendations.serialize_recommendations')
         @clean_database
-        def when_user_is_not_located(self, app):
+        def when_feature_is_active_and_user_is_not_located(self, mock_serialize_recommendations,
+                                                           mock_move_tutorial_recommendations_first, mock_current_user,
+                                                           mock_create_recommendations_for_discovery_v3, app):
             # given
             user = create_user()
             offerer = create_offerer()
@@ -108,8 +123,58 @@ class Put:
 
             # then
             assert response.status_code == 200
-            response_json = response.json
-            assert len(response_json) == 0
+            mock_create_recommendations_for_discovery_v3.assert_called_once_with(user=mock_current_user,
+                                                                                 user_iris_id=None,
+                                                                                 user_is_geolocated=False,
+                                                                                 seen_recommendation_ids=[],
+                                                                                 limit=30)
+
+        @patch('routes.recommendations.create_recommendations_for_discovery_v3')
+        @patch('routes.recommendations.current_user')
+        @patch('routes.recommendations.move_tutorial_recommendations_first')
+        @patch('routes.recommendations.serialize_recommendations')
+        @clean_database
+        def when_feature_is_active_and_user_is_located_outside_known_iris(self, mock_serialize_recommendations,
+                                                                          mock_move_tutorial_recommendations_first,
+                                                                          mock_current_user,
+                                                                          mock_create_recommendations_for_discovery_v3,
+                                                                          app):
+            # given
+            user = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            digital_venue = create_venue(offerer, is_virtual=True, siret=None)
+            offer = create_offer_with_thing_product(venue, thing_name='Guitar for dummies')
+            digital_offer = create_offer_with_thing_product(digital_venue, thing_type=ThingType.JEUX_VIDEO,
+                                                            url='https://url.com', is_national=True)
+            mediation = create_mediation(offer, is_active=True)
+            mediation_of_digital_offer = create_mediation(digital_offer, is_active=True)
+
+            stock = create_stock_from_offer(offer, price=14)
+            stock_of_digital_offer = create_stock_from_offer(digital_offer, price=14)
+
+            user_latitude = 0
+            user_longitude = 0
+
+            feature = Feature.query.filter_by(name=FeatureToggle.RECOMMENDATIONS_WITH_GEOLOCATION).first()
+            feature.isActive = True
+
+            repository.save(user, stock, stock_of_digital_offer, mediation, mediation_of_digital_offer, feature)
+            DiscoveryView.refresh(concurrently=False)
+
+            auth_request = TestClient(app.test_client()).with_auth(user.email)
+
+            # when
+            response = auth_request.put(f'{RECOMMENDATION_URL_V3}?longitude={user_longitude}&latitude={user_latitude}',
+                                        json={'seenRecommendationIds': []})
+
+            # then
+            assert response.status_code == 200
+            mock_create_recommendations_for_discovery_v3.assert_called_once_with(user=mock_current_user,
+                                                                                 user_iris_id=None,
+                                                                                 user_is_geolocated=True,
+                                                                                 seen_recommendation_ids=[],
+                                                                                 limit=30)
 
         @clean_database
         def when_tutos_are_not_already_read(self, app):
@@ -145,7 +210,8 @@ class Put:
 
             # when
             auth_request = TestClient(app.test_client()).with_auth(user.email)
-            response = auth_request.put(f'{RECOMMENDATION_URL_V3}?longitude={user_longitude}&latitude={user_latitude}', json={})
+            response = auth_request.put(f'{RECOMMENDATION_URL_V3}?longitude={user_longitude}&latitude={user_latitude}',
+                                        json={})
 
             # then
             assert response.status_code == 200
@@ -202,7 +268,8 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(f'{RECOMMENDATION_URL_V3}?longitude={user_longitude}&latitude={user_latitude}', json=data)
+            response = auth_request.put(f'{RECOMMENDATION_URL_V3}?longitude={user_longitude}&latitude={user_latitude}',
+                                        json=data)
 
             # then
             assert response.status_code == 200
@@ -250,8 +317,12 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            recommendations1 = auth_request.put(f'{RECOMMENDATION_URL_V3}?longitude={user_longitude}&latitude={user_latitude}', json={'seenRecommendationIds': []})
-            recommendations2 = auth_request.put(f'{RECOMMENDATION_URL_V3}?longitude={user_longitude}&latitude={user_latitude}', json={'seenRecommendationIds': []})
+            recommendations1 = auth_request.put(
+                f'{RECOMMENDATION_URL_V3}?longitude={user_longitude}&latitude={user_latitude}',
+                json={'seenRecommendationIds': []})
+            recommendations2 = auth_request.put(
+                f'{RECOMMENDATION_URL_V3}?longitude={user_longitude}&latitude={user_latitude}',
+                json={'seenRecommendationIds': []})
 
             # then
             assert recommendations1.status_code == 200

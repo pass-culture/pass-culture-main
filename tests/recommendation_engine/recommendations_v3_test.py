@@ -1,10 +1,11 @@
+from unittest.mock import patch
+
 from models.discovery_view import DiscoveryView
 from recommendations_engine.recommendations import create_recommendations_for_discovery_v3
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_mediation, \
-    create_offerer, create_recommendation, \
-    create_user, create_venue, create_iris, create_iris_venue
+    create_offerer, create_user, create_venue, create_iris, create_iris_venue
 from tests.model_creators.specific_creators import \
     create_offer_with_thing_product, create_stock_from_offer
 from tests.test_utils import POLYGON_TEST
@@ -35,9 +36,8 @@ class CreateRecommendationsForDiscoveryTest:
         DiscoveryView.refresh(concurrently=False)
 
         # When
-        recommendations = create_recommendations_for_discovery_v3(seen_recommendation_ids=seen_recommendation_ids,
-                                                                  user_iris_id=iris.id,
-                                                                  user=user)
+        recommendations = create_recommendations_for_discovery_v3(user=user, user_iris_id=iris.id,
+                                                                  seen_recommendation_ids=seen_recommendation_ids)
 
         # Then
         mediations = list(map(lambda x: x.mediationId, recommendations))
@@ -45,3 +45,19 @@ class CreateRecommendationsForDiscoveryTest:
         assert mediation3.id in mediations
         assert humanize(mediation2.id) not in mediations
         assert humanize(mediation1.id) not in mediations
+
+    @patch('recommendations_engine.recommendations.get_offers_for_recommendation_v3')
+    def test_requests_offers_with_same_criteria(self, mock_get_offers_for_recommendation_v3):
+        # Given
+        user = create_user()
+
+        # When
+        create_recommendations_for_discovery_v3(user, user_iris_id=1, user_is_geolocated=True,
+                                                seen_recommendation_ids=[], limit=30)
+
+        # Then
+        mock_get_offers_for_recommendation_v3.assert_called_once_with(user=user,
+                                                                      user_iris_id=1,
+                                                                      user_is_geolocated=True,
+                                                                      limit=30,
+                                                                      seen_recommendation_ids=[])

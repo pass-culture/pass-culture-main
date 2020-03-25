@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Optional
 
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import desc, func, or_, text
@@ -532,8 +532,8 @@ def get_paginated_expired_offer_ids(limit: int, page: int) -> List[tuple]:
         .all()
 
 
-def get_offers_for_recommendation_v3(user: User, user_iris_id: int = None,
-                                     limit: int = None, seen_recommendation_ids: List[int] = []) -> List:
+def get_offers_for_recommendation_v3(user: User, user_iris_id: Optional[int] = None, user_is_geolocated: bool = False,
+                                     limit: Optional[int] = None, seen_recommendation_ids: List[int] = []) -> List:
     favorite_offers_ids = get_only_offer_ids_from_favorites(user)
 
     booked_offers_ids = get_only_offer_ids_from_bookings(user)
@@ -543,10 +543,11 @@ def get_offers_for_recommendation_v3(user: User, user_iris_id: int = None,
         .filter(DiscoveryView.id.notin_(seen_recommendation_ids)) \
         .filter(DiscoveryView.id.notin_(booked_offers_ids))
 
-    venue_ids = find_venues_located_near_iris(user_iris_id)
+    if user_is_geolocated:
+        venue_ids = find_venues_located_near_iris(user_iris_id)
+        discovery_view_query = keep_only_offers_from_venues_located_near_to_user_or_national(discovery_view_query,
+                                                                                             venue_ids)
 
-    discovery_view_query = keep_only_offers_from_venues_located_near_to_user_or_national(discovery_view_query,
-                                                                                         venue_ids)
     discovery_view_query = discovery_view_query.order_by(DiscoveryView.offerDiscoveryOrder)
 
     if limit:

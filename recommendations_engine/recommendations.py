@@ -1,6 +1,6 @@
 import random
 from datetime import timedelta
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import dateutil.parser
 
@@ -22,7 +22,7 @@ from validation.routes.recommendations import check_distance_is_digit, \
 MAX_OF_MAX_DISTANCE = "20000"
 
 
-#TODO remove this function and its tests once v3 is the only route
+# TODO remove this function and its tests once v3 is the only route
 def give_requested_recommendation_to_user(user, offer_id, mediation_id):
     recommendation = None
 
@@ -110,9 +110,8 @@ def create_recommendations_for_discovery_v2(user: User,
     return recommendations
 
 
-def create_recommendations_for_discovery_v3(user: User,
-                                            user_iris_id: int = None,
-                                            seen_recommendation_ids: List[int] = [],
+def create_recommendations_for_discovery_v3(user: User, user_iris_id: Optional[int] = None,
+                                            user_is_geolocated: bool = False, seen_recommendation_ids: List[int] = [],
                                             limit: int = 3) -> List[Recommendation]:
     recommendations = []
     tuto_mediations_by_index = {}
@@ -126,7 +125,8 @@ def create_recommendations_for_discovery_v3(user: User,
                                                                      limit=max_tuto_index)
 
     inserted_tuto_mediations = 0
-    offers = get_offers_for_recommendation_v3(user=user, user_iris_id=user_iris_id, limit=limit,
+    offers = get_offers_for_recommendation_v3(user=user, user_iris_id=user_iris_id,
+                                              user_is_geolocated=user_is_geolocated, limit=limit,
                                               seen_recommendation_ids=seen_recommendation_ids)
 
     for (index, offer) in enumerate(offers):

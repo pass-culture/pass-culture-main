@@ -168,6 +168,7 @@ def put_recommendations_v3():
     json_keys = request.json.keys()
     latitude = request.args.get('latitude')
     longitude = request.args.get('longitude')
+    user_is_geolocated = latitude is not None and longitude is not None
     user_iris_id = get_iris_containing_user_location(latitude, longitude) if latitude and longitude else None
 
     if 'readRecommendations' in json_keys:
@@ -180,10 +181,11 @@ def put_recommendations_v3():
     else:
         seen_recommendation_ids = []
 
-    created_recommendations = create_recommendations_for_discovery_v3(limit=BLOB_SIZE,
-                                                                      user=current_user,
+    created_recommendations = create_recommendations_for_discovery_v3(user=current_user,
                                                                       user_iris_id=user_iris_id,
-                                                                      seen_recommendation_ids=seen_recommendation_ids)
+                                                                      user_is_geolocated=user_is_geolocated,
+                                                                      seen_recommendation_ids=seen_recommendation_ids,
+                                                                      limit=BLOB_SIZE)
 
     recommendations = move_tutorial_recommendations_first(created_recommendations,
                                                           seen_recommendation_ids,
