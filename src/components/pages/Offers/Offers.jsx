@@ -161,7 +161,7 @@ class Offers extends PureComponent {
 
     const actionLink = !isAdmin && (
       <NavLink
-        className="cta link is-primary"
+        className="cta button is-primary"
         to={createOfferTo}
       >
         <span className="icon">

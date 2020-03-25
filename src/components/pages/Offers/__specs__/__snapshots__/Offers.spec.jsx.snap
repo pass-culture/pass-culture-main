@@ -123,7 +123,7 @@ ShallowWrapper {
             <NavLink
               activeClassName="active"
               aria-current="page"
-              className="cta link is-primary"
+              className="cta button is-primary"
               to="/offres/creation"
             >
               <span
@@ -262,7 +262,7 @@ ShallowWrapper {
           "action": <NavLink
             activeClassName="active"
             aria-current="page"
-            className="cta link is-primary"
+            className="cta button is-primary"
             to="/offres/creation"
           >
             <span
@@ -739,7 +739,7 @@ ShallowWrapper {
               <NavLink
                 activeClassName="active"
                 aria-current="page"
-                className="cta link is-primary"
+                className="cta button is-primary"
                 to="/offres/creation"
               >
                 <span
@@ -878,7 +878,7 @@ ShallowWrapper {
             "action": <NavLink
               activeClassName="active"
               aria-current="page"
-              className="cta link is-primary"
+              className="cta button is-primary"
               to="/offres/creation"
             >
               <span
