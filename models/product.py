@@ -63,7 +63,7 @@ class Product(PcObject,
     isGcuCompatible = Column(Boolean,
                              default=True,
                              server_default=true(),
-                             nullable=True)
+                             nullable=False)
 
     isNational = Column(Boolean,
                         server_default=false(),
