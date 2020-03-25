@@ -20,7 +20,6 @@ ShallowWrapper {
     }
     readRecommendations={Array []}
     recommendations={Array []}
-    redirectHome={[MockFunction]}
     redirectToFirstRecommendationIfNeeded={
       [MockFunction] {
         "calls": Array [

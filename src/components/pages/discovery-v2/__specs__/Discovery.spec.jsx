@@ -18,7 +18,6 @@ describe('src | components | pages | discovery | Discovery', () => {
       match: {
         params: {},
       },
-      redirectHome: jest.fn(),
       readRecommendations: [],
       recommendations: [],
       redirectToFirstRecommendationIfNeeded: jest.fn(),
@@ -209,25 +208,6 @@ describe('src | components | pages | discovery | Discovery', () => {
           hasError: false,
           isEmpty: true,
           isLoading: false,
-        })
-      })
-    })
-
-    describe('handleFail', () => {
-      it('should redirect home when fetch failed', () => {
-        // given
-        const wrapper = shallow(<Discovery {...props} />)
-
-        // when
-        wrapper.instance().handleFail()
-
-        // then
-        expect(props.redirectHome).toHaveBeenCalledWith()
-        expect(wrapper.state()).toStrictEqual({
-          atWorldsEnd: false,
-          hasError: true,
-          isEmpty: null,
-          isLoading: true,
         })
       })
     })

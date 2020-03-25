@@ -67,10 +67,10 @@ class Discovery extends PureComponent {
     resetRecommendations()
   }
 
-  handleFail = () => {
-    const { redirectHome } = this.props
+  handleFail = (state, action) => {
+    console.log(action.payload.status)
 
-    this.setState({ hasError: true, isLoading: true }, redirectHome)
+    this.setState({ hasError: true, isLoading: true })
   }
 
   handleSuccess = (state, action) => {
@@ -185,7 +185,6 @@ Discovery.propTypes = {
   }).isRequired,
   readRecommendations: PropTypes.arrayOf(PropTypes.shape()),
   recommendations: PropTypes.arrayOf(PropTypes.shape()),
-  redirectHome: PropTypes.func.isRequired,
   redirectToFirstRecommendationIfNeeded: PropTypes.func.isRequired,
   resetReadRecommendations: PropTypes.func.isRequired,
   resetRecommendations: PropTypes.func.isRequired,

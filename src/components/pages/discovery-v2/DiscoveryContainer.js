@@ -72,10 +72,6 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
       })
     )
   },
-  redirectHome: () => {
-    const { history } = prevProps
-    setTimeout(() => history.replace('/connexion'), 2000)
-  },
   redirectToFirstRecommendationIfNeeded: loadedRecommendations => {
     const { match, history } = prevProps
 

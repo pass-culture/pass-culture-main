@@ -280,30 +280,6 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
       })
     })
 
-    describe('when mapping redirectHome', () => {
-      it('should call setTimout 2000 times', () => {
-        // when
-        mapDispatchToProps(dispatch, props).redirectHome()
-
-        // then
-        expect(setTimeout).toHaveBeenCalledTimes(1)
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 2000)
-      })
-
-      it('should replace path by /connexion', () => {
-        // given
-        jest.useFakeTimers()
-
-        // when
-        mapDispatchToProps(dispatch, props).redirectHome()
-        jest.runAllTimers()
-
-        // then
-        expect(replace).toHaveBeenCalledTimes(1)
-        expect(replace).toHaveBeenLastCalledWith('/connexion')
-      })
-    })
-
     describe('when mapping redirectToFirstRecommendationIfNeeded', () => {
       describe('when there are no recommendations', () => {
         it('should return undefined', () => {
