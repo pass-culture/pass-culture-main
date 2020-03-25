@@ -31,8 +31,8 @@ describe('components | Filters', () => {
         replace: jest.fn(),
       },
       initialFilters: {
-        offerCategories: ['VISITE', 'CINEMA'],
         isSearchAroundMe: false,
+        offerCategories: ['VISITE', 'CINEMA'],
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -55,8 +55,8 @@ describe('components | Filters', () => {
       },
       redirectToSearchFiltersPage: jest.fn(),
       showFailModal: jest.fn(),
-      updateFilteredOffers: jest.fn(),
       updateFilters: jest.fn(),
+      updateFilteredOffers: jest.fn(),
     }
   })
 
@@ -160,9 +160,13 @@ describe('components | Filters', () => {
           })
           props.history.location.pathname = '/recherche-offres/resultats/filtres/localisation'
           props.initialFilters = {
-            offerCategories: ['VISITE'],
             isSearchAroundMe: false,
-            offerTypes: { isDigital: false },
+            offerCategories: ['VISITE'],
+            offerTypes: {
+              isDigital: false,
+              isEvent: false,
+              isThing: false
+            },
             sortCriteria: '_by_price',
           }
           props.isUserAllowedToSelectCriterion.mockReturnValue(true)
@@ -200,7 +204,11 @@ describe('components | Filters', () => {
             geolocationCoordinates: { latitude: 40, longitude: 41 },
             indexSuffix: '_by_price',
             keywords: 'librairie',
-            offerTypes: { isDigital: false },
+            offerTypes: {
+              isDigital: false,
+              isEvent: false,
+              isThing: false
+            },
             page: 0,
           })
           expect(props.redirectToSearchFiltersPage).toHaveBeenCalledWith()
@@ -223,9 +231,7 @@ describe('components | Filters', () => {
         // then
         const header = wrapper.find(HeaderContainer)
         expect(header).toHaveLength(1)
-        expect(header.prop('backTo')).toStrictEqual(
-          '/recherche-offres/resultats?mots-cles=librairie'
-        )
+        expect(header.prop('backTo')).toStrictEqual('/recherche-offres/resultats?mots-cles=librairie')
         expect(header.prop('closeTo')).toBeNull()
         expect(header.prop('reset')).toStrictEqual(expect.any(Function))
         expect(header.prop('title')).toStrictEqual('Filtrer')
@@ -290,9 +296,7 @@ describe('components | Filters', () => {
         resultsButton.simulate('click')
 
         // then
-        expect(props.history.push).toHaveBeenCalledWith(
-          '/recherche-offres/resultats?mots-cles=librairie'
-        )
+        expect(props.history.push).toHaveBeenCalledWith('/recherche-offres/resultats?mots-cles=librairie')
       })
 
       it('should redirect to results page with no query param when clicking on display results button', () => {
@@ -319,8 +323,8 @@ describe('components | Filters', () => {
 
         // then
         expect(props.updateFilters).toHaveBeenCalledWith({
-          offerCategories: ['VISITE', 'CINEMA'],
           isSearchAroundMe: false,
+          offerCategories: ['VISITE', 'CINEMA'],
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -403,7 +407,7 @@ describe('components | Filters', () => {
         })
       })
 
-      describe('reset', () => {
+      describe('reset filters', () => {
         describe('when single categorie', () => {
           it('should reset filters and trigger search to Algolia with given category', () => {
             // given
@@ -412,8 +416,8 @@ describe('components | Filters', () => {
             })
             props.history.location.pathname = '/recherche-offres/resultats/filtres'
             props.initialFilters = {
-              offerCategories: ['VISITE'],
               isSearchAroundMe: true,
+              offerCategories: ['VISITE'],
               offerTypes: {
                 isDigital: false,
                 isEvent: false,
@@ -461,6 +465,7 @@ describe('components | Filters', () => {
             })
           })
         })
+
         describe('when multiple categories', () => {
           it('should reset filters and trigger search to Algolia with given categories', () => {
             // given
@@ -469,8 +474,8 @@ describe('components | Filters', () => {
             })
             props.history.location.pathname = '/recherche-offres/resultats/filtres'
             props.initialFilters = {
-              offerCategories: ['VISITE', 'CINEMA'],
               isSearchAroundMe: true,
+              offerCategories: ['VISITE', 'CINEMA'],
               offerTypes: {
                 isDigital: true,
                 isEvent: true,
@@ -529,7 +534,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const title = wrapper.findWhere(node => node.text() === "Type d'offres").first()
+          const title = wrapper.findWhere(node => node.text() === 'Type d\'offres').first()
           expect(title).toHaveLength(1)
         })
 
@@ -544,10 +549,11 @@ describe('components | Filters', () => {
 
           // when
           const wrapper = shallow(<Filters {...props} />)
-          wrapper.setState({ areCategoriesVisible: false })
 
           // then
-          const filterCheckboxes = wrapper.find(FilterCheckbox)
+          const filterCheckboxes = wrapper
+            .find('[data-test="sf-offer-types-filter-wrapper"]')
+            .find(FilterCheckbox)
           expect(filterCheckboxes).toHaveLength(3)
           expect(filterCheckboxes.at(0).prop('checked')).toBe(false)
           expect(filterCheckboxes.at(0).prop('className')).toBe('fc-label')
@@ -569,7 +575,7 @@ describe('components | Filters', () => {
           expect(filterCheckboxes.at(2).prop('onChange')).toStrictEqual(expect.any(Function))
         })
 
-        it('should render three FilterCheckbox components checked when offer filters are checked', () => {
+        it('should render three FilterCheckbox components checked when offer types are checked', () => {
           // given
           props.history.location.pathname = '/recherche-offres/filtres'
           props.initialFilters.offerTypes = {
@@ -580,10 +586,11 @@ describe('components | Filters', () => {
 
           // when
           const wrapper = shallow(<Filters {...props} />)
-          wrapper.setState({ areCategoriesVisible: false })
 
           // then
-          const filterCheckboxes = wrapper.find(FilterCheckbox)
+          const filterCheckboxes = wrapper
+            .find('[data-test="sf-offer-types-filter-wrapper"]')
+            .find(FilterCheckbox)
           expect(filterCheckboxes.at(0).prop('checked')).toBe(true)
           expect(filterCheckboxes.at(0).prop('className')).toBe('fc-label-checked')
           expect(filterCheckboxes.at(1).prop('checked')).toBe(true)
@@ -592,7 +599,7 @@ describe('components | Filters', () => {
           expect(filterCheckboxes.at(2).prop('className')).toBe('fc-label-checked')
         })
 
-        it('should display the number of offer types selected when filters are checked', () => {
+        it('should display the number of offer types selected when checked', () => {
           // given
           props.history.location.pathname = '/recherche-offres/filtres'
           props.initialFilters.offerTypes = {
@@ -609,7 +616,7 @@ describe('components | Filters', () => {
           expect(numberOfOfferTypesSelected).toHaveLength(1)
         })
 
-        it('should not display the number of offer types selected when filters are not checked', () => {
+        it('should not display the number of offer types selected when not checked', () => {
           // given
           props.history.location.pathname = '/recherche-offres/filtres'
           props.initialFilters.offerTypes = {
@@ -626,8 +633,8 @@ describe('components | Filters', () => {
           expect(numberOfOfferTypesSelected).toHaveLength(0)
         })
 
-        it('should fetch offer when checking digital filter', () => {
-          // Given
+        it('should fetch offers when clicking on digital offer type', () => {
+          // given
           props.history.location.pathname = '/recherche-offres/filtres'
           const wrapper = shallow(<Filters {...props} />)
           const digitalFilter = wrapper
@@ -646,7 +653,7 @@ describe('components | Filters', () => {
             })
           )
 
-          // When
+          // when
           digitalFilter.simulate('change', {
             target: {
               name: 'isDigital',
@@ -654,12 +661,12 @@ describe('components | Filters', () => {
             }
           })
 
-          // Then
+          // then
           expect(fetchAlgolia).toHaveBeenCalledWith({
-            categories: ["VISITE", "CINEMA"],
+            categories: ['VISITE', 'CINEMA'],
             geolocationCoordinates: null,
-            indexSuffix: "_by_price",
-            keywords: "librairies",
+            indexSuffix: '_by_price',
+            keywords: 'librairies',
             offerTypes: {
               isDigital: true,
               isEvent: false,
@@ -671,7 +678,7 @@ describe('components | Filters', () => {
       })
 
       describe('offer categories', () => {
-        it('should display an accessible "Catégories" title button for offer categories filter', () => {
+        it('should display an accessible "Catégories" title button', () => {
           // given
           props.history.location.pathname = '/recherche-offres/filtres'
 
@@ -837,14 +844,14 @@ describe('components | Filters', () => {
         })
 
         it('should transform array of categories received from props into an object in state', () => {
-          // Given
+          // given
           props.history.location.pathname = '/recherche-offres/filtres'
           props.initialFilters.offerCategories = ['CINEMA', 'VISITE']
 
-          // When
+          // when
           const wrapper = shallow(<Filters {...props} />)
 
-          // Then
+          // then
           expect(wrapper.state().filters.offerCategories).toStrictEqual({
             CINEMA: true,
             VISITE: true,
