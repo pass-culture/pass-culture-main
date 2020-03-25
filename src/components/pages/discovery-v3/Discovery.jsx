@@ -17,7 +17,7 @@ class Discovery extends PureComponent {
     this.state = {
       atWorldsEnd: false,
       hasError: false,
-      isEmpty: null,
+      isEmpty: false,
       isLoading: false,
     }
   }
@@ -132,29 +132,27 @@ class Discovery extends PureComponent {
 
     return (
       <Fragment>
-        <main className="discovery-page no-padding page with-footer">
-          {!isEmpty && (
-            <Fragment>
-              <Route
-                key="route-discovery-deck"
-                path="/decouverte-v3/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
-                render={this.renderDeck}
-                sensitive
-              />
-              <Route
-                key="route-discovery-booking"
-                path="/decouverte-v3/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
-                render={cancelView ? this.renderBookingCancellation : this.renderBooking}
-                sensitive
-              />
-            </Fragment>
-          )}
-          <AbsoluteFooterContainer
-            areDetailsVisible={isDetailsView(match)}
-            borderTop
-            id="deck-footer"
-          />
-        </main>
+        {!isEmpty && (
+          <main className="discovery-page no-padding page with-footer">
+            <Route
+              key="route-discovery-deck"
+              path="/decouverte-v3/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
+              render={this.renderDeck}
+              sensitive
+            />
+            <Route
+              key="route-discovery-booking"
+              path="/decouverte-v3/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+              render={cancelView ? this.renderBookingCancellation : this.renderBooking}
+              sensitive
+            />
+            <AbsoluteFooterContainer
+              areDetailsVisible={isDetailsView(match)}
+              borderTop
+              id="deck-footer"
+            />
+          </main>
+        )}
         <LoaderContainer
           hasError={hasError}
           isEmpty={isEmpty}

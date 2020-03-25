@@ -1,7 +1,10 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
+import { Route } from 'react-router'
 
 import Discovery from '../Discovery'
+import LoaderContainer from '../../../layout/Loader/LoaderContainer'
+import AbsoluteFooterContainer from '../../../layout/AbsoluteFooter/AbsoluteFooterContainer'
 
 describe('src | components | pages | discovery | Discovery', () => {
   let props
@@ -49,7 +52,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       expect(wrapper.state()).toStrictEqual({
         atWorldsEnd: false,
         hasError: false,
-        isEmpty: null,
+        isEmpty: false,
         isLoading: false,
       })
     })
@@ -88,6 +91,74 @@ describe('src | components | pages | discovery | Discovery', () => {
       expect(props.redirectToFirstRecommendationIfNeeded).toHaveBeenCalledWith(
         props.recommendations
       )
+    })
+
+    it('should display discovery when API is up and data are filled', () => {
+      // given
+      const wrapper = shallow(<Discovery {...props} />)
+
+      // when
+      wrapper.setState({
+        hasError: false,
+        isEmpty: false,
+        isLoading: false,
+      })
+
+      // then
+      expect(wrapper.find(Route)).toHaveLength(2)
+      expect(wrapper.find(AbsoluteFooterContainer)).toHaveLength(1)
+      expect(wrapper.find(LoaderContainer)).toHaveLength(1)
+    })
+
+    it('should display error message when API is down', () => {
+      // given
+      const wrapper = shallow(<Discovery {...props} />)
+
+      // when
+      wrapper.setState({
+        hasError: true,
+        isEmpty: true,
+        isLoading: false,
+      })
+
+      // then
+      expect(wrapper.find(Route)).toHaveLength(0)
+      expect(wrapper.find(AbsoluteFooterContainer)).toHaveLength(0)
+      expect(wrapper.find(LoaderContainer)).toHaveLength(1)
+    })
+
+    it('should display loading message when API is slow', () => {
+      // given
+      const wrapper = shallow(<Discovery {...props} />)
+
+      // when
+      wrapper.setState({
+        hasError: false,
+        isEmpty: true,
+        isLoading: true,
+      })
+
+      // then
+      expect(wrapper.find(Route)).toHaveLength(0)
+      expect(wrapper.find(AbsoluteFooterContainer)).toHaveLength(0)
+      expect(wrapper.find(LoaderContainer)).toHaveLength(1)
+    })
+
+    it('should display no offer message when API returns zero offer', () => {
+      // given
+      const wrapper = shallow(<Discovery {...props} />)
+
+      // when
+      wrapper.setState({
+        hasError: false,
+        isEmpty: true,
+        isLoading: false,
+      })
+
+      // then
+      expect(wrapper.find(Route)).toHaveLength(0)
+      expect(wrapper.find(AbsoluteFooterContainer)).toHaveLength(0)
+      expect(wrapper.find(LoaderContainer)).toHaveLength(1)
     })
   })
 
