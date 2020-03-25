@@ -3,8 +3,8 @@ import React from 'react'
 
 import Icon from '../Icon/Icon'
 
-const Finishable = ({ offerCanBeBooked, children }) =>
-  offerCanBeBooked ? (
+const Finishable = ({ offerCanBeOrIsBooked, children }) =>
+  offerCanBeOrIsBooked ? (
     children
   ) : (
     <div className="finishable">
@@ -18,12 +18,12 @@ const Finishable = ({ offerCanBeBooked, children }) =>
   )
 
 Finishable.defaultProps = {
-  offerCanBeBooked: true,
+  offerCanBeOrIsBooked: true,
 }
 
 Finishable.propTypes = {
   children: PropTypes.node.isRequired,
-  offerCanBeBooked: PropTypes.bool,
+  offerCanBeOrIsBooked: PropTypes.bool,
 }
 
 export default Finishable

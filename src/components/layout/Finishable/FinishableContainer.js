@@ -24,10 +24,10 @@ export const mapStateToProps = (state, ownProps) => {
 
   const offer = selectOfferById(state, offerId) || {}
   const isOfferTuto = Object.keys(offer).length === 0
-  const isOfferBookable = offer.isBookable || isBookedByCurrentUser
+  const isOfferBookableOrBooked = offer.isBookable || isBookedByCurrentUser
 
   return {
-    offerCanBeBooked: isOfferTuto ? true : isOfferBookable,
+    offerCanBeOrIsBooked: isOfferTuto ? true : isOfferBookableOrBooked,
   }
 }
 

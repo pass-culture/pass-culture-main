@@ -15,21 +15,23 @@ describe('components | FinishableContainer', () => {
             stocks: [{}],
           },
         }
+
         const ownProps = {
           match: {
             params: {},
           },
         }
+
         // when
         const props = mapStateToProps(state, ownProps)
 
         // then
-        expect(props.offerCanBeBooked).toBe(true)
+        expect(props.offerCanBeOrIsBooked).toBe(true)
       })
     })
 
     describe('when coming from /reservations', () => {
-      it('should return true when offer has been booked by current user', () => {
+      it('should return true when offer is not bookable but has been booked by current user', () => {
         // given
         getIsBooked.mockReturnValue(true)
 
@@ -52,7 +54,7 @@ describe('components | FinishableContainer', () => {
         const props = mapStateToProps(state, ownProps)
 
         // then
-        expect(props.offerCanBeBooked).toBe(true)
+        expect(props.offerCanBeOrIsBooked).toBe(true)
       })
 
       it('should return false when offer is not bookable anymore and current user has not booked it', () => {
@@ -77,10 +79,10 @@ describe('components | FinishableContainer', () => {
         const props = mapStateToProps(state, ownProps)
 
         // then
-        expect(props.offerCanBeBooked).toBe(false)
+        expect(props.offerCanBeOrIsBooked).toBe(false)
       })
 
-      it('should return true when offer is bookable', () => {
+      it('should return true when offer is bookable and has been booked by current user', () => {
         // given
         const state = {
           data: {
@@ -101,7 +103,7 @@ describe('components | FinishableContainer', () => {
         const props = mapStateToProps(state, ownProps)
 
         // then
-        expect(props.offerCanBeBooked).toBe(true)
+        expect(props.offerCanBeOrIsBooked).toBe(true)
       })
     })
 
@@ -113,14 +115,14 @@ describe('components | FinishableContainer', () => {
         const state = {
           data: {
             bookings: [{ id: 'A1', stockId: 'B1' }],
-            offers: [{ id: 'A1', isBookable: false }],
+            offers: [{ id: 'C1', isBookable: false }],
             stocks: [{ id: 'B1', offerId: 'C1' }],
           },
         }
         const ownProps = {
           match: {
             params: {
-              offerId: 'A1',
+              offerId: 'C1',
             },
           },
         }
@@ -129,7 +131,7 @@ describe('components | FinishableContainer', () => {
         const props = mapStateToProps(state, ownProps)
 
         // then
-        expect(props.offerCanBeBooked).toBe(false)
+        expect(props.offerCanBeOrIsBooked).toBe(false)
       })
 
       it('should return true when offer is bookable', () => {
@@ -139,14 +141,14 @@ describe('components | FinishableContainer', () => {
         const state = {
           data: {
             bookings: [{ id: 'A1', stockId: 'B1' }],
-            offers: [{ id: 'A1', isBookable: true }],
+            offers: [{ id: 'C1', isBookable: true }],
             stocks: [{ id: 'B1', offerId: 'C1' }],
           },
         }
         const ownProps = {
           match: {
             params: {
-              offerId: 'A1',
+              offerId: 'C1',
             },
           },
         }
@@ -155,7 +157,7 @@ describe('components | FinishableContainer', () => {
         const props = mapStateToProps(state, ownProps)
 
         // then
-        expect(props.offerCanBeBooked).toBe(true)
+        expect(props.offerCanBeOrIsBooked).toBe(true)
       })
     })
   })
