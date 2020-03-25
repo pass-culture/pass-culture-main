@@ -18,7 +18,7 @@ describe('components | Finishable', () => {
   describe('when the offer is bookable', () => {
     it('should not render the ribbon', () => {
       // given
-      props.offerCanBeBooked = true
+      props.offerCanBeOrIsBooked = true
 
       // when
       const wrapper = shallow(<Finishable {...props} />)
@@ -31,7 +31,7 @@ describe('components | Finishable', () => {
   describe('when the offer is not bookable', () => {
     it('should render the ribbon', () => {
       // given
-      props.offerCanBeBooked = false
+      props.offerCanBeOrIsBooked = false
 
       // when
       const wrapper = shallow(<Finishable {...props} />)
