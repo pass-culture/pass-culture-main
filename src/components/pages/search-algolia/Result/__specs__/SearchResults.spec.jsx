@@ -159,8 +159,12 @@ describe('components | SearchResults', () => {
           keywords: '',
           indexSuffix: '_by_proximity',
           geolocationCoordinates: props.geolocation,
-          offerTypes: { isDigital: false },
-          page: 0,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false
+          },
+          page: 0
         })
       })
     })
@@ -198,8 +202,12 @@ describe('components | SearchResults', () => {
           geolocationCoordinates: null,
           indexSuffix: null,
           keywords: 'une librairie',
-          offerTypes: { isDigital: false },
-          page: 0,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false
+          },
+          page: 0
         })
       })
 
@@ -270,8 +278,12 @@ describe('components | SearchResults', () => {
           geolocationCoordinates: { latitude: 40.1, longitude: 41.1 },
           indexSuffix: null,
           keywords: 'une librairie',
-          offerTypes: { isDigital: false },
-          page: 0,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false
+          },
+          page: 0
         })
       })
     })
@@ -306,8 +318,12 @@ describe('components | SearchResults', () => {
           geolocationCoordinates: null,
           indexSuffix: null,
           keywords: 'une librairie',
-          offerTypes: { isDigital: false },
-          page: 0,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false
+          },
+          page: 0
         })
       })
 
@@ -406,8 +422,12 @@ describe('components | SearchResults', () => {
           geolocationCoordinates: null,
           indexSuffix: null,
           keywords: 'une librairie',
-          offerTypes: { isDigital: false },
-          page: 0,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false
+          },
+          page: 0
         })
       })
     })
@@ -440,8 +460,12 @@ describe('components | SearchResults', () => {
           geolocationCoordinates: null,
           indexSuffix: '_by_proximity',
           keywords: 'une librairie',
-          offerTypes: { isDigital: false },
-          page: 0,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false
+          },
+          page: 0
         })
       })
 
@@ -472,8 +496,12 @@ describe('components | SearchResults', () => {
           geolocationCoordinates: null,
           indexSuffix: null,
           keywords: 'une librairie',
-          offerTypes: { isDigital: false },
-          page: 0,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false
+          },
+          page: 0
         })
       })
     })
@@ -501,8 +529,12 @@ describe('components | SearchResults', () => {
         geolocationCoordinates: null,
         indexSuffix: null,
         keywords: 'un livre très cherché',
-        offerTypes: { isDigital: false },
-        page: 0,
+        offerTypes: {
+          isDigital: false,
+          isEvent: false,
+          isThing: false
+        },
+        page: 0
       })
     })
 
@@ -528,8 +560,12 @@ describe('components | SearchResults', () => {
         geolocationCoordinates: null,
         indexSuffix: null,
         keywords: '',
-        offerTypes: { isDigital: false },
-        page: 0,
+        offerTypes: {
+          isDigital: false,
+          isEvent: false,
+          isThing: false
+        },
+        page: 0
       })
     })
 
@@ -555,8 +591,12 @@ describe('components | SearchResults', () => {
         geolocationCoordinates: null,
         indexSuffix: null,
         keywords: '',
-        offerTypes: { isDigital: false },
-        page: 0,
+        offerTypes: {
+          isDigital: false,
+          isEvent: false,
+          isThing: false
+        },
+        page: 0
       })
     })
 
@@ -800,8 +840,12 @@ describe('components | SearchResults', () => {
       expect(wrapper.state()).toStrictEqual({
         currentPage: 0,
         filters: {
-          offerTypes: { isDigital: false },
           offerCategories: [],
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false
+          }
         },
         keywordsToSearch: 'vas-y',
         isLoading: false,
@@ -858,16 +902,24 @@ describe('components | SearchResults', () => {
         geolocationCoordinates: null,
         indexSuffix: null,
         keywords: '',
-        offerTypes: { isDigital: false },
-        page: 0,
+        offerTypes: {
+          isDigital: false,
+          isEvent: false,
+          isThing: false
+        },
+        page: 0
       })
       expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
         categories: [],
         geolocationCoordinates: null,
         indexSuffix: null,
         keywords: 'librairie',
-        offerTypes: { isDigital: false },
-        page: 0,
+        offerTypes: {
+          isDigital: false,
+          isEvent: false,
+          isThing: false
+        },
+        page: 0
       })
     })
 
@@ -1199,6 +1251,8 @@ describe('components | SearchResults', () => {
         isSearchAroundMe: false,
         offerTypes: {
           isDigital: false,
+          isEvent: false,
+          isThing: false
         },
         sortCriteria: '_by_price',
       })

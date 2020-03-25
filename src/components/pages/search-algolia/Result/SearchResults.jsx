@@ -21,6 +21,8 @@ class SearchResults extends PureComponent {
       filters: {
         offerTypes: {
           isDigital: false,
+          isEvent: false,
+          isThing: false
         },
         offerCategories: this.getCategoriesFromUrlOrProps(),
       },
@@ -123,8 +125,7 @@ class SearchResults extends PureComponent {
       keywords,
       offerTypes,
       page: currentPage,
-    })
-      .then(offers => {
+    }).then(offers => {
         const { results } = this.state
         const { hits, nbHits, nbPages } = offers
         this.setState({
@@ -136,13 +137,12 @@ class SearchResults extends PureComponent {
           searchedKeywords: keywords,
           totalPagesNumber: nbPages,
         })
-      })
-      .catch(() => {
+      }).catch(() => {
         this.setState({
           isLoading: false,
         })
         this.showFailModal()
-      })
+    })
   }
 
   getScrollParent = () => document.querySelector('.sr-wrapper')
