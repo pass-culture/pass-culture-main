@@ -25,6 +25,15 @@ jest.mock('react-toastify', () => ({
   },
 }))
 
+const stubRef = wrapper => {
+  const instance = wrapper.instance()
+  instance['inputRef'] = {
+    current: {
+      blur: jest.fn()
+    }
+  }
+}
+
 describe('components | SearchResults', () => {
   let props
   let change
@@ -511,8 +520,8 @@ describe('components | SearchResults', () => {
     it('should trigger search request when keywords have been provided', () => {
       // given
       const wrapper = shallow(<SearchResults {...props} />)
+      stubRef(wrapper)
       const form = wrapper.find('form')
-
       // when
       form.simulate('submit', {
         target: {
@@ -541,6 +550,7 @@ describe('components | SearchResults', () => {
     it('should trigger search request when keywords contains only spaces', () => {
       // given
       const wrapper = shallow(<SearchResults {...props} />)
+      stubRef(wrapper)
       wrapper.setState({ searchedKeywords: 'different previous search' })
       const form = wrapper.find('form')
 
@@ -572,6 +582,7 @@ describe('components | SearchResults', () => {
     it('should trigger search request when no keywords', () => {
       // given
       const wrapper = shallow(<SearchResults {...props} />)
+      stubRef(wrapper)
       wrapper.setState({ searchedKeywords: 'different previous search' })
       const form = wrapper.find('form')
 
@@ -603,6 +614,7 @@ describe('components | SearchResults', () => {
     it('should display search keywords and number of results when 0 result', async () => {
       // given
       const wrapper = shallow(<SearchResults {...props} />)
+      stubRef(wrapper)
       const form = wrapper.find('form')
       fetchAlgolia.mockReturnValue(
         new Promise(resolve => {
@@ -639,6 +651,7 @@ describe('components | SearchResults', () => {
     it('should display search keywords and number of results when 2 results', async () => {
       // given
       const wrapper = shallow(<SearchResults {...props} />)
+      stubRef(wrapper)
       const form = wrapper.find('form')
       fetchAlgolia.mockReturnValue(
         new Promise(resolve => {
@@ -675,6 +688,7 @@ describe('components | SearchResults', () => {
     it('should only display number of results when no search keywords', async () => {
       // given
       const wrapper = shallow(<SearchResults {...props} />)
+      stubRef(wrapper)
       wrapper.setState({ searchedKeywords: 'different previous search' })
       const form = wrapper.find('form')
       fetchAlgolia.mockReturnValueOnce(
@@ -710,6 +724,7 @@ describe('components | SearchResults', () => {
     it('should not display results when no results', () => {
       // given
       const wrapper = shallow(<SearchResults {...props} />)
+      stubRef(wrapper)
       const form = wrapper.find('form')
       fetchAlgolia.mockReturnValue({
         hits: [],
@@ -755,6 +770,7 @@ describe('components | SearchResults', () => {
         })
       )
       const wrapper = shallow(<SearchResults {...props} />)
+      stubRef(wrapper)
       const form = wrapper.find('form')
 
       // when
@@ -794,6 +810,7 @@ describe('components | SearchResults', () => {
         })
       )
       const wrapper = shallow(<SearchResults {...props} />)
+      stubRef(wrapper)
       const form = wrapper.find('form')
 
       // when
@@ -875,6 +892,7 @@ describe('components | SearchResults', () => {
         })
       )
       const wrapper = shallow(<SearchResults {...props} />)
+      stubRef(wrapper)
       const form = wrapper.find('form')
 
       // when
@@ -931,6 +949,7 @@ describe('components | SearchResults', () => {
         })
       )
       const wrapper = shallow(<SearchResults {...props} />)
+      stubRef(wrapper)
       const form = wrapper.find('form')
 
       // when
@@ -958,6 +977,7 @@ describe('components | SearchResults', () => {
         categories: 'VISITE',
       })
       const wrapper = shallow(<SearchResults {...props} />)
+      stubRef(wrapper)
       const form = wrapper.find('form')
       fetchAlgolia.mockReturnValue(
         new Promise(resolve => {
