@@ -30,7 +30,7 @@ class Stock(PcObject,
             ProvidableMixin,
             SoftDeletableMixin,
             VersionedMixin):
-    # We redefine this so we can reference it in the baseScore column_property
+
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)

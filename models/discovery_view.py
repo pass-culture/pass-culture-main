@@ -107,7 +107,7 @@ class DiscoveryView(Model):
                );
             END
             $body$
-            LANGUAGE plpgsql;            
+            LANGUAGE plpgsql;
         """)
         return function_name
 
@@ -126,7 +126,7 @@ class DiscoveryView(Model):
                    AND stock."isSoftDeleted" = FALSE
                    AND (stock."beginningDatetime" > NOW()
                         OR stock."beginningDatetime" IS NULL)
-                   AND (stock."bookingLimitDatetime" > NOW() 
+                   AND (stock."bookingLimitDatetime" > NOW()
                         OR stock."bookingLimitDatetime" IS NULL)
                    AND (stock.available IS NULL
                         OR (SELECT greatest(stock.available - COALESCE(sum(booking.quantity), 0),0)
