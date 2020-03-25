@@ -109,18 +109,18 @@ export class Filters extends PureComponent {
     const selectedCategories = this.getSelectedCategories()
     isSearchAroundMe
       ? this.fetchOffers({
-          keywords,
-          geolocation,
-          categories: selectedCategories,
-          indexSuffix: sortCriteria,
-          offerTypes,
-        })
+        keywords,
+        geolocation,
+        categories: selectedCategories,
+        indexSuffix: sortCriteria,
+        offerTypes,
+      })
       : this.fetchOffers({
-          keywords,
-          categories: selectedCategories,
-          indexSuffix: sortCriteria,
-          offerTypes,
-        })
+        keywords,
+        categories: selectedCategories,
+        indexSuffix: sortCriteria,
+        offerTypes,
+      })
 
     const autourDeMoi = checkIfAroundMe(filters.isSearchAroundMe)
     const categoriesQueryParam = selectedCategories.join(';') || ''
@@ -185,15 +185,15 @@ export class Filters extends PureComponent {
     const { offerTypes } = filters
 
     this.setState({
-        filters: {
-          ...filters,
-          offerTypes: {
-            ...offerTypes,
-            [name]: checked,
-          },
+      filters: {
+        ...filters,
+        offerTypes: {
+          ...offerTypes,
+          [name]: checked,
         },
-      },() => {
-        this.process()
+      },
+    }, () => {
+      this.process()
     })
   }
 
@@ -209,7 +209,7 @@ export class Filters extends PureComponent {
             [name]: checked,
           },
         },
-      },() => {
+      }, () => {
         this.process()
       }
     )
@@ -276,45 +276,6 @@ export class Filters extends PureComponent {
                 <span className="sf-filter-separator" />
               </li>
               <li>
-                <div className="sf-title-wrapper">
-                  <h4 className="sf-title">
-                    {"Type d'offre"}
-                  </h4>
-                  {numberOfOfferTypesSelected > 0 && (
-                    <span className="sf-selected-filter-counter">
-                      {`(${numberOfOfferTypesSelected})`}
-                    </span>
-                  )}
-                </div>
-                <div className="sf-filter-wrapper">
-                  <FilterCheckbox
-                    checked={offerTypes.isDigital}
-                    className={`${offerTypes.isDigital ? 'fc-label-checked' : 'fc-label'}`}
-                    id="isDigital"
-                    label="Offres numériques"
-                    name="isDigital"
-                    onChange={this.handleOnTypeChange}
-                  />
-                  <FilterCheckbox
-                    checked={offerTypes.isThing}
-                    className={`${offerTypes.isThing ? 'fc-label-checked' : 'fc-label'}`}
-                    id='isThing'
-                    label='Offres physiques'
-                    name='isThing'
-                    onChange={this.handleOnChange}
-                  />
-                  <FilterCheckbox
-                    checked={offerTypes.isEvent}
-                    className={`${offerTypes.isEvent ? 'fc-label-checked' : 'fc-label'}`}
-                    id='isEvent'
-                    label='Sorties'
-                    name='isEvent'
-                    onChange={this.handleOnChange}
-                  />
-                </div>
-                <span className="sf-filter-separator" />
-              </li>
-              <li>
                 <button
                   aria-label="Afficher les catégories"
                   aria-pressed={areCategoriesVisible}
@@ -362,6 +323,54 @@ export class Filters extends PureComponent {
                     })}
                   </ul>
                 )}
+                <span className="sf-filter-separator" />
+              </li>
+              <li>
+                <div className="sf-title-wrapper">
+                  <h4 className="sf-title">
+                    {'Type d\'offres'}
+                  </h4>
+                  {numberOfOfferTypesSelected > 0 && (
+                    <span className="sf-selected-filter-counter">
+                      {`(${numberOfOfferTypesSelected})`}
+                    </span>
+                  )}
+                </div>
+                <ul
+                  className="sf-filter-wrapper"
+                  data-test="sf-offer-types-filter-wrapper"
+                >
+                  <li>
+                    <FilterCheckbox
+                      checked={offerTypes.isDigital}
+                      className={`${offerTypes.isDigital ? 'fc-label-checked' : 'fc-label'}`}
+                      id="isDigital"
+                      label="Offres numériques"
+                      name="isDigital"
+                      onChange={this.handleOnTypeChange}
+                    />
+                  </li>
+                  <li>
+                    <FilterCheckbox
+                      checked={offerTypes.isThing}
+                      className={`${offerTypes.isThing ? 'fc-label-checked' : 'fc-label'}`}
+                      id='isThing'
+                      label='Offres physiques'
+                      name='isThing'
+                      onChange={this.handleOnTypeChange}
+                    />
+                  </li>
+                  <li>
+                    <FilterCheckbox
+                      checked={offerTypes.isEvent}
+                      className={`${offerTypes.isEvent ? 'fc-label-checked' : 'fc-label'}`}
+                      id='isEvent'
+                      label='Sorties'
+                      name='isEvent'
+                      onChange={this.handleOnTypeChange}
+                    />
+                  </li>
+                </ul>
               </li>
             </ul>
             <div className="sf-button-wrapper">

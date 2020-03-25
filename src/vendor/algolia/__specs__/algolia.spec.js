@@ -478,7 +478,7 @@ describe('fetchAlgolia', () => {
         latitude: 42,
         longitude: 43,
       }
-      const categories = ['Pratique artistique', 'Spectacle']
+      const categories = ['PRATIQUE', 'SPECTACLE']
       const indexSuffix = '_by_price'
       const offerTypes = {
         isDigital: false,
@@ -498,7 +498,7 @@ describe('fetchAlgolia', () => {
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         page: 0,
-        facetFilters: [["offer.label:Pratique artistique", "offer.label:Spectacle"], "offer.isEvent:true"],
+        facetFilters: [["offer.category:PRATIQUE", "offer.category:SPECTACLE"], "offer.isEvent:true"],
         aroundLatLng: '42, 43',
         aroundRadius: 'all'
       })

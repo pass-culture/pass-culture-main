@@ -529,7 +529,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const title = wrapper.findWhere(node => node.text() === "Type d'offre").first()
+          const title = wrapper.findWhere(node => node.text() === "Type d'offres").first()
           expect(title).toHaveLength(1)
         })
 
@@ -630,7 +630,9 @@ describe('components | Filters', () => {
           // Given
           props.history.location.pathname = '/recherche-offres/filtres'
           const wrapper = shallow(<Filters {...props} />)
-          const digitalFilter = wrapper.find(FilterCheckbox).at(0)
+          const digitalFilter = wrapper
+            .find('[data-test="sf-offer-types-filter-wrapper"]')
+            .find(FilterCheckbox).at(0)
           props.query.parse.mockReturnValue({
             'mots-cles': 'librairies'
           })
@@ -654,7 +656,7 @@ describe('components | Filters', () => {
 
           // Then
           expect(fetchAlgolia).toHaveBeenCalledWith({
-            categories: ["Musée", "Cinéma"],
+            categories: ["VISITE", "CINEMA"],
             geolocationCoordinates: null,
             indexSuffix: "_by_price",
             keywords: "librairies",

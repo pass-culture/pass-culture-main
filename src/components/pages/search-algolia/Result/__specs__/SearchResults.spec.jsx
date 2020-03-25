@@ -356,7 +356,7 @@ describe('components | SearchResults', () => {
           geolocationCoordinates: null,
           indexSuffix: null,
           keywords: 'une librairie',
-          offerTypes: { isDigital: false },
+          offerTypes: { isDigital: false, isEvent: false, isThing: false },
           page: 0,
         })
       })
@@ -390,7 +390,7 @@ describe('components | SearchResults', () => {
           geolocationCoordinates: null,
           indexSuffix: null,
           keywords: 'une librairie',
-          offerTypes: { isDigital: false },
+          offerTypes: { isDigital: false, isEvent: false, isThing: false },
           page: 0,
         })
       })
