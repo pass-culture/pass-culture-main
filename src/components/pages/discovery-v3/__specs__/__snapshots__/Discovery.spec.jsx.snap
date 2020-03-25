@@ -89,6 +89,7 @@ ShallowWrapper {
           hasError={false}
           isEmpty={false}
           isLoading={false}
+          statusCode={200}
         />,
       ],
     },
@@ -170,6 +171,7 @@ ShallowWrapper {
           "hasError": false,
           "isEmpty": false,
           "isLoading": false,
+          "statusCode": 200,
         },
         "ref": null,
         "rendered": null,
@@ -208,6 +210,7 @@ ShallowWrapper {
             hasError={false}
             isEmpty={false}
             isLoading={false}
+            statusCode={200}
           />,
         ],
       },
@@ -289,6 +292,7 @@ ShallowWrapper {
             "hasError": false,
             "isEmpty": false,
             "isLoading": false,
+            "statusCode": 200,
           },
           "ref": null,
           "rendered": null,

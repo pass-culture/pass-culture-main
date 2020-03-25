@@ -201,8 +201,4 @@ img {
   background-color: $primary; // fallback to pc-gradient
   z-index: $zindex-application-loader;
   opacity: 1;
-
-  img {
-    margin-bottom: $page-padding;
-  }
 }

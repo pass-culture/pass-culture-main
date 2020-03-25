@@ -2,8 +2,9 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { Transition } from 'react-transition-group'
 
+import AbsoluteFooterContainer from '../AbsoluteFooter/AbsoluteFooterContainer'
 import Icon from '../Icon/Icon'
-import RelativeFooterContainer from '../RelativeFooter/RelativeFooterContainer'
+import LoadingAnimation from '../LoadingPage/LoadingAnimation/LoadingAnimation'
 
 const duration = 500
 
@@ -37,21 +38,37 @@ class Loader extends PureComponent {
     }
   }
 
+  renderIcon = () => {
+    const { isLoading, statusCode } = this.props
+
+    if (isLoading) {
+      return <LoadingAnimation />
+    }
+
+    if (statusCode === 500) {
+      return <Icon svg="logo-error" />
+    }
+  }
+
   renderMessage = () => {
     const {
       hasError,
       isEmpty,
       isLoading,
       match: { params },
+      statusCode,
     } = this.props
     const atDecksEnd = params.mediationId === 'fin'
     const { isFirstLoad } = this.state
 
     if (hasError) {
+      if (statusCode === 500) {
+        return 'Une erreur s’est produite pendant le chargement du carrousel.'
+      }
       return 'Erreur de chargement'
     }
     if (isLoading && (atDecksEnd || isFirstLoad)) {
-      return 'Chargement des offres'
+      return 'Chargement en cours…'
     }
     if (isEmpty && !atDecksEnd) {
       return 'Aucune offre pour le moment ! Revenez bientôt pour découvrir les nouveautés.'
@@ -73,6 +90,7 @@ class Loader extends PureComponent {
     // si il y a aucun produits à afficher pour l'utilisateur
     const showFooter = isEmpty || hasError
     const shouldHide = !(isLoading && (atDecksEnd || isFirstLoad)) && !isEmpty && !hasError
+
     return (
       <Transition
         in={!shouldHide}
@@ -86,18 +104,17 @@ class Loader extends PureComponent {
             style={{ ...defaultStyle, ...transitionStyles[status] }}
           >
             <div className="flex-1 flex-rows flex-center">
-              {isLoading && <Icon
-                alt=""
-                svg="ico-loading-card"
-                            />}
+              {this.renderIcon()}
               <h2 className="fs20 is-normal">
                 {this.renderMessage()}
               </h2>
             </div>
             {showFooter && (
-              <RelativeFooterContainer
-                extraClassName="dotted-top-white"
-                theme="transparent"
+              <AbsoluteFooterContainer
+                areDetailsVisible={false}
+                borderTop
+                colored={false}
+                id="deck-footer"
               />
             )}
           </div>
@@ -110,6 +127,7 @@ class Loader extends PureComponent {
 Loader.defaultProps = {
   hasError: false,
   isEmpty: false,
+  statusCode: 200,
 }
 
 Loader.propTypes = {
@@ -117,6 +135,7 @@ Loader.propTypes = {
   isEmpty: PropTypes.bool,
   isLoading: PropTypes.bool.isRequired,
   match: PropTypes.shape().isRequired,
+  statusCode: PropTypes.number,
 }
 
 export default Loader

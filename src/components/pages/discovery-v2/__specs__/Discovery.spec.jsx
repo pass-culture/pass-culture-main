@@ -54,6 +54,7 @@ describe('src | components | pages | discovery | Discovery', () => {
         hasError: false,
         isEmpty: false,
         isLoading: false,
+        statusCode: 200,
       })
     })
   })
@@ -235,6 +236,7 @@ describe('src | components | pages | discovery | Discovery', () => {
           hasError: false,
           isEmpty: false,
           isLoading: false,
+          statusCode: 200,
         })
       })
 
@@ -257,6 +259,7 @@ describe('src | components | pages | discovery | Discovery', () => {
           hasError: false,
           isEmpty: false,
           isLoading: false,
+          statusCode: 200,
         })
       })
 
@@ -279,6 +282,7 @@ describe('src | components | pages | discovery | Discovery', () => {
           hasError: false,
           isEmpty: true,
           isLoading: false,
+          statusCode: 200,
         })
       })
     })

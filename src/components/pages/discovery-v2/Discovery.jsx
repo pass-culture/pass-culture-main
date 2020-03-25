@@ -19,6 +19,7 @@ class Discovery extends PureComponent {
       hasError: false,
       isEmpty: false,
       isLoading: false,
+      statusCode: 200,
     }
   }
 
@@ -67,8 +68,13 @@ class Discovery extends PureComponent {
     resetRecommendations()
   }
 
-  handleFail = () => {
-    this.setState({ hasError: true, isLoading: true })
+  handleFail = (state, action) => {
+    this.setState({
+      hasError: true,
+      isEmpty: true,
+      isLoading: false,
+      statusCode: action.payload.status,
+    })
   }
 
   handleSuccess = (state, action) => {
@@ -125,7 +131,7 @@ class Discovery extends PureComponent {
 
   render() {
     const { match } = this.props
-    const { hasError, isEmpty, isLoading } = this.state
+    const { hasError, isEmpty, isLoading, statusCode } = this.state
     const cancelView = isCancelView(match)
 
     return (
@@ -155,6 +161,7 @@ class Discovery extends PureComponent {
           hasError={hasError}
           isEmpty={isEmpty}
           isLoading={isLoading}
+          statusCode={statusCode}
         />
       </Fragment>
     )
