@@ -42,7 +42,7 @@ export function getDatetimeAtSpecificHoursAndMinutes(datetime, hours, minutes, t
 export function errorKeyToFrenchKey(errorKey) {
   switch (errorKey) {
     case 'available':
-      return 'Places'
+      return 'Stock total'
     case 'beginningDatetime':
       return 'Date de début'
     case 'bookingLimitDatetime':
