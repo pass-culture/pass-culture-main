@@ -2,6 +2,7 @@ import { mount, shallow } from 'enzyme'
 import React from 'react'
 import { Route, Router } from 'react-router'
 import { Criteria } from '../Criteria/Criteria'
+import { CATEGORY_CRITERIA } from '../Criteria/criteriaEnums'
 import SearchResults from '../Result/SearchResults'
 import SearchAlgolia from '../SearchAlgolia'
 import { Home } from '../Home/Home'
@@ -44,7 +45,6 @@ describe('components | SearchAlgolia', () => {
       const home = routes.at(0).find(Home)
       expect(home).toHaveLength(1)
       expect(home.prop('categoryCriterion')).toStrictEqual({
-        filters: [],
         icon: 'ico-gem-stone',
         label: 'Toutes les catégories',
         facetFilter: '',
@@ -87,6 +87,22 @@ describe('components | SearchAlgolia', () => {
       )
       expect(searchResultsComponent.prop('search')).toStrictEqual(props.history.location.search)
       expect(searchResultsComponent.prop('sortingIndexSuffix')).toStrictEqual('')
+    })
+
+    it('should render search results page with given category when path is /recherche-offres/resultats', () => {
+      // given
+      props.history.location.pathname = 'recherche-offres/resultats'
+      const wrapper = shallow(<SearchAlgolia {...props} />)
+      wrapper.setState({ categoryCriterion: CATEGORY_CRITERIA.CINEMA })
+
+      // when
+      const routes = wrapper.find(Route)
+
+      // then
+      const resultatsRoute = routes.at(1)
+      expect(resultatsRoute.prop('path')).toBe('/recherche-offres/resultats')
+      const searchResultsComponent = resultatsRoute.find(SearchResults)
+      expect(searchResultsComponent.prop('categoriesFilter')).toStrictEqual(['CINEMA'])
     })
 
     it('should render geolocation criteria page when path is /recherche-offres/criteres-localisation', () => {

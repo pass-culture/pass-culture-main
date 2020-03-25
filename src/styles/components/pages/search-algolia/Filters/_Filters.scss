@@ -45,7 +45,7 @@
     margin-top: rem(20px);
 
     li {
-      margin: rem(6px);
+      margin: rem(6px) rem(12px) rem(6px) 0;
     }
   }
 
@@ -90,9 +90,8 @@
 }
 
 .sf-button-wrapper {
-  display: flex;
-  justify-content: center;
-  padding-bottom: rem(20px);
+  padding: 0 rem(24px) rem(20px) rem(24px);
+  width: 100%;
 
   .sf-button {
     background-color: $primary;
@@ -100,7 +99,7 @@
     font-size: rem(16px);
     font-weight: 700;
     height: rem(48px);
-    width: 90%;
+    width: 100%;
   }
 }
 

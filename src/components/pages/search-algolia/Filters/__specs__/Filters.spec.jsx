@@ -678,23 +678,32 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const categoriesWrapper = wrapper.find('[data-test="sf-categories-filter-wrapper"]')
-          const filterCheckbox = categoriesWrapper.find(FilterCheckbox)
-          expect(filterCheckbox.at(0).prop('checked')).toBe(true)
-          expect(filterCheckbox.at(0).prop('label')).toBe('Cinéma')
-          expect(filterCheckbox.at(0).prop('className')).toBe('fc-label-checked')
-          expect(filterCheckbox.at(1).prop('checked')).toBe(false)
-          expect(filterCheckbox.at(2).prop('checked')).toBe(false)
-          expect(filterCheckbox.at(3).prop('checked')).toBe(false)
-          expect(filterCheckbox.at(4).prop('checked')).toBe(false)
-          expect(filterCheckbox.at(5).prop('checked')).toBe(true)
-          expect(filterCheckbox.at(5).prop('label')).toBe('Livres')
-          expect(filterCheckbox.at(5).prop('className')).toBe('fc-label-checked')
-          expect(filterCheckbox.at(6).prop('checked')).toBe(false)
-          expect(filterCheckbox.at(7).prop('checked')).toBe(false)
-          expect(filterCheckbox.at(8).prop('checked')).toBe(false)
-          expect(filterCheckbox.at(9).prop('checked')).toBe(false)
-          expect(filterCheckbox.at(10).prop('checked')).toBe(false)
+          const cinemaCheckbox = wrapper.find('FilterCheckbox[label="Cinéma"]')
+          expect(cinemaCheckbox.prop('checked')).toBe(true)
+          expect(cinemaCheckbox.prop('className')).toBe('fc-label-checked')
+          expect(wrapper.find('FilterCheckbox[label="Visites, expositions"]').prop('checked')).toBe(
+            false
+          )
+          expect(wrapper.find('FilterCheckbox[label="Musique"]').prop('checked')).toBe(false)
+          expect(wrapper.find('FilterCheckbox[label="Spectacles"]').prop('checked')).toBe(false)
+          expect(wrapper.find('FilterCheckbox[label="Cours, ateliers"]').prop('checked')).toBe(
+            false
+          )
+          expect(wrapper.find('FilterCheckbox[label="Livres"]').prop('checked')).toBe(true)
+          expect(wrapper.find('FilterCheckbox[label="Livres"]').prop('className')).toBe(
+            'fc-label-checked'
+          )
+          expect(
+            wrapper.find('FilterCheckbox[label="Films, séries, podcasts"]').prop('checked')
+          ).toBe(false)
+          expect(wrapper.find('FilterCheckbox[label="Presse"]').prop('checked')).toBe(false)
+          expect(wrapper.find('FilterCheckbox[label="Jeux vidéos"]').prop('checked')).toBe(false)
+          expect(
+            wrapper.find('FilterCheckbox[label="Conférences, rencontres"]').prop('checked')
+          ).toBe(false)
+          expect(
+            wrapper.find('FilterCheckbox[label="Instruments de musique"]').prop('checked')
+          ).toBe(false)
         })
 
         it('should display the number of selected categories', () => {
