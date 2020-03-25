@@ -526,7 +526,7 @@ class GetOnlyFieldsWithValueToBeUpdatedTest:
     def when_new_stock_data_contains_only_modified_fields(self):
         # Given
         stock_before_update = {'available': None, 'beginningDatetime': '2020-02-08T14:30:00Z',
-                               'bookingLimitDatetime': '2020-02-08T14:30:00Z', 'bookingRecapSent': None,
+                               'bookingLimitDatetime': '2020-02-08T14:30:00Z',
                                'dateCreated': '2020-01-29T14:33:08.746369Z',
                                'dateModified': '2020-01-29T14:33:08.746382Z',
                                'dateModifiedAtLastProvider': '2020-01-29T14:33:07.803374Z',
@@ -546,7 +546,7 @@ class GetOnlyFieldsWithValueToBeUpdatedTest:
     def when_new_stock_data_contains_all_fields(self):
         # Given
         stock_before_update = {'available': None, 'beginningDatetime': '2020-02-08T14:30:00Z',
-                               'bookingLimitDatetime': '2020-02-08T14:30:00Z', 'bookingRecapSent': None,
+                               'bookingLimitDatetime': '2020-02-08T14:30:00Z',
                                'dateCreated': '2020-01-29T14:33:08.746369Z',
                                'dateModified': '2020-01-29T14:33:08.746382Z',
                                'dateModifiedAtLastProvider': '2020-01-29T14:33:07.803374Z',
