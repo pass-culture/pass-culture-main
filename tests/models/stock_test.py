@@ -242,7 +242,7 @@ def test_should_not_update_available_stock_when_value_is_less_than_booking_count
 
 class StockRemainingQuantityTest:
     @clean_database
-    def test_should_be_2_when_there_is_no_booking(self, app):
+    def test_should_be_equal_to_total_stock_when_there_is_no_booking(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -256,75 +256,7 @@ class StockRemainingQuantityTest:
         assert Stock.query.get(stock.id).remainingQuantity == 2
 
     @clean_database
-    def test_should_be_0_when_there_is_2_bookings(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, available=2, price=0)
-        repository.save(stock)
-        user = create_user()
-        booking1 = create_booking(user=user,
-                                  stock=stock,
-                                  is_cancelled=False,
-                                  quantity=1)
-        booking2 = create_booking(user=user,
-                                  stock=stock,
-                                  is_cancelled=False,
-                                  quantity=1)
-
-        # When
-        repository.save(booking1, booking2)
-
-        # Then
-        assert Stock.query.get(stock.id).remainingQuantity == 0
-
-
-    @clean_database
-    def test_should_be_1_when_there_are_2_bookings_and_1_is_used_before_last_stock_update(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, available=2, price=0)
-        repository.save(stock)
-        user = create_user()
-        booking1 = create_booking(user=user,
-                                  stock=stock,
-                                  date_used=datetime.utcnow() - timedelta(days=1),
-                                  is_cancelled=False,
-                                  is_used=True,
-                                  quantity=1)
-        booking2 = create_booking(user=user,
-                                  stock=stock,
-                                  is_cancelled=False,
-                                  is_used=False,
-                                  quantity=1)
-
-        # When
-        repository.save(booking1, booking2)
-
-        # Then
-        assert Stock.query.get(stock.id).remainingQuantity == 1
-
-
-class StockRemainingQuantityOrUnlimitedTest:
-    @clean_database
-    def test_should_be_2_when_there_is_no_booking(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, available=2, price=0)
-
-        # When
-        repository.save(stock)
-
-        # Then
-        assert Stock.query.get(stock.id).remainingQuantityOrUnlimited == 2
-
-    @clean_database
-    def test_should_be_0_when_there_is_2_bookings(self, app):
+    def test_should_be_0_when_all_stocks_are_booked(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -339,27 +271,7 @@ class StockRemainingQuantityOrUnlimitedTest:
         repository.save(booking1, booking2)
 
         # Then
-        assert Stock.query.get(stock.id).remainingQuantityOrUnlimited == 0
-
-    @clean_database
-    def test_should_be_1_when_there_are_2_bookings_and_1_is_used_before_last_stock_update(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, available=2, price=0)
-        repository.save(stock)
-        user = create_user()
-        booking1 = create_booking(user=user, stock=stock, date_used=datetime.utcnow() - timedelta(days=1),
-                                  is_cancelled=False,
-                                  is_used=True, quantity=1)
-        booking2 = create_booking(user=user, stock=stock, is_cancelled=False, is_used=False, quantity=1)
-
-        # When
-        repository.save(booking1, booking2)
-
-        # Then
-        assert Stock.query.get(stock.id).remainingQuantityOrUnlimited == 1
+        assert Stock.query.get(stock.id).remainingQuantity == 0
 
     @clean_database
     def test_should_be_unlimited_when_stock_is_unlimited(self, app):
@@ -376,7 +288,7 @@ class StockRemainingQuantityOrUnlimitedTest:
         repository.save(booking)
 
         # Then
-        assert Stock.query.get(stock.id).remainingQuantityOrUnlimited == 'unlimited'
+        assert Stock.query.get(stock.id).remainingQuantity == 'unlimited'
 
 
 class IsBookableTest:

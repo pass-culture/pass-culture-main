@@ -67,22 +67,8 @@ class Stock(PcObject,
 
     available = Column(Integer, nullable=True)
 
-    remainingQuantity = column_property(
-        select([func.greatest(available - func.coalesce(func.sum(Booking.quantity), 0), 0)])
-        .where(
-            and_(
-                Booking.stockId == id,
-                or_(
-                    and_(Booking.isUsed == False,
-                         Booking.isCancelled == False),
-                    and_(Booking.isUsed == True,
-                         Booking.dateUsed > dateModified)
-                )
-            )
-        )
-    )
-
     bookingLimitDatetime = Column(DateTime, nullable=True)
+
 
     @property
     def isBookable(self):
@@ -113,6 +99,10 @@ class Stock(PcObject,
     @property
     def bookingsQuantity(self):
         return sum([booking.quantity for booking in self.bookings if not booking.isCancelled])
+
+    @property
+    def remainingQuantity(self):
+        return 'unlimited' if self.available is None else self.available - self.bookingsQuantity
 
     @classmethod
     def queryNotSoftDeleted(cls):
