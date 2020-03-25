@@ -717,9 +717,9 @@ describe('components | Filters', () => {
           const categoriesButtonAfterClick = wrapper
             .findWhere(node => node.text() === 'Catégories')
             .at(1)
-          expect(categoriesButtonClassNameBeforeClick).toBe('sf-title-wrapper sf-title-drop-down')
+          expect(categoriesButtonClassNameBeforeClick).toBe('sf-category-title-wrapper sf-title-drop-down')
           expect(categoriesButtonAfterClick.prop('className')).toBe(
-            'sf-title-wrapper sf-title-drop-down-flipped'
+            'sf-category-title-wrapper sf-title-drop-down-flipped'
           )
         })
 

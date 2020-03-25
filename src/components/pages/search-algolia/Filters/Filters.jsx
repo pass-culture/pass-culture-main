@@ -279,7 +279,7 @@ export class Filters extends PureComponent {
                 <button
                   aria-label="Afficher les catégories"
                   aria-pressed={areCategoriesVisible}
-                  className={`sf-title-wrapper ${
+                  className={`sf-category-title-wrapper ${
                     areCategoriesVisible ? 'sf-title-drop-down' : 'sf-title-drop-down-flipped'
                   }`}
                   onClick={this.handleToggleCategories()}

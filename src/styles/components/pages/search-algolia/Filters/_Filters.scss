@@ -49,17 +49,6 @@
     }
   }
 
-  .sf-offer-type-title {
-    display: inline-block;
-    font-size: rem(18px);
-    font-weight: 500;
-    margin-top: rem(20px);
-  }
-
-  .sf-offer-type-wrapper {
-    margin-top: rem(20px);
-  }
-
   .sf-selected-filter-counter {
     color: $primary-error;
     font-size: rem(18px);
@@ -67,17 +56,23 @@
     margin-left: rem(5px);
   }
 
-  .sf-title-wrapper {
+  .sf-category-title-wrapper {
     color: inherit;
     display: flex;
-    width: 100%;
     font-size: rem(18px);
     font-weight: 500;
     margin-top: rem(20px);
+    width: 100%;
 
     h4 {
-      font-weight: inherit;
+      font-weight: 500;
     }
+  }
+
+  .sf-title-wrapper {
+    font-size: rem(18px);
+    font-weight: 500;
+    margin-top: rem(20px);
   }
 
   .sf-title-drop-down {
