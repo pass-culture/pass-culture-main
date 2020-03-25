@@ -4,9 +4,9 @@ describe('src | filterRemainingStocks', () => {
   it('should return an array containing stocks with remaining quantity', () => {
     // given
     const stocks = [
-      { id: 1, remainingQuantityOrUnlimited: 1 },
-      { id: 2, remainingQuantityOrUnlimited: 'unlimited' },
-      { id: 3, remainingQuantityOrUnlimited: 0 },
+      { id: 1, remainingQuantity: 1 },
+      { id: 2, remainingQuantity: 'unlimited' },
+      { id: 3, remainingQuantity: 0 },
     ]
 
     // when
@@ -15,8 +15,8 @@ describe('src | filterRemainingStocks', () => {
     // then
     expect(result).toHaveLength(2)
     expect(result).toStrictEqual([
-      { id: 1, remainingQuantityOrUnlimited: 1 },
-      { id: 2, remainingQuantityOrUnlimited: 'unlimited' },
+      { id: 1, remainingQuantity: 1 },
+      { id: 2, remainingQuantity: 'unlimited' },
     ])
   })
 })

@@ -1011,17 +1011,17 @@ describe('selectBookablesWithoutNotAvailableDate', () => {
           {
             id: 'AB',
             offerId: 'ZZ',
-            remainingQuantityOrUnlimited: 0,
+            remainingQuantity: 0,
           },
           {
             id: 'AC',
             offerId: 'AA',
-            remainingQuantityOrUnlimited: 1,
+            remainingQuantity: 1,
           },
           {
             id: 'AD',
             offerId: 'AA',
-            remainingQuantityOrUnlimited: 'unlimited',
+            remainingQuantity: 'unlimited',
           },
         ],
       },
@@ -1041,7 +1041,7 @@ describe('selectBookablesWithoutNotAvailableDate', () => {
         offerId: 'AA',
         userHasAlreadyBookedThisDate: false,
         userHasCancelledThisDate: false,
-        remainingQuantityOrUnlimited: 1,
+        remainingQuantity: 1,
       },
       {
         __modifiers__: ['selectBookables'],
@@ -1049,7 +1049,7 @@ describe('selectBookablesWithoutNotAvailableDate', () => {
         offerId: 'AA',
         userHasAlreadyBookedThisDate: false,
         userHasCancelledThisDate: false,
-        remainingQuantityOrUnlimited: 'unlimited',
+        remainingQuantity: 'unlimited',
       },
     ])
   })

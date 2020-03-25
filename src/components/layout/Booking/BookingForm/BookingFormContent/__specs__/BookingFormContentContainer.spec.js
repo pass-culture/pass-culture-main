@@ -16,7 +16,7 @@ describe('src | components | BookingFormContentContainer', () => {
             {
               id: 'S1',
               offerId: 'O1',
-              remainingQuantityOrUnlimited: 3,
+              remainingQuantity: 3,
             },
           ],
         },

@@ -1,8 +1,8 @@
 const filterRemainingStocks = stocks => {
   return stocks.filter(
     stock =>
-      stock.remainingQuantityOrUnlimited &&
-      (stock.remainingQuantityOrUnlimited > 0 || stock.remainingQuantityOrUnlimited === 'unlimited')
+      stock.remainingQuantity &&
+      (stock.remainingQuantity > 0 || stock.remainingQuantity === 'unlimited')
   )
 }
 

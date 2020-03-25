@@ -20,7 +20,7 @@ describe('src | components | layout | DuoOffer | DuoOfferContainer', () => {
         ],
         stocks: [
           {
-            remainingQuantityOrUnlimited: 2,
+            remainingQuantity: 2,
             id: 'ABCD',
             offerId: 'AAAA',
           },
@@ -44,7 +44,7 @@ describe('src | components | layout | DuoOffer | DuoOfferContainer', () => {
       // given
       state.data.stocks = [
         {
-          remainingQuantityOrUnlimited: 1,
+          remainingQuantity: 1,
           id: 'ABCD',
           offerId: 'AAAA',
         },

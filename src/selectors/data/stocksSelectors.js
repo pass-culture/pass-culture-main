@@ -38,5 +38,4 @@ export const selectIsStockDuo = createCachedSelector(
 )((state, stockId) => stockId || '')
 
 const isAvailableForDuo = stock =>
-  stock &&
-  (stock.remainingQuantityOrUnlimited >= 2 || stock.remainingQuantityOrUnlimited === 'unlimited')
+  stock && (stock.remainingQuantity >= 2 || stock.remainingQuantity === 'unlimited')
