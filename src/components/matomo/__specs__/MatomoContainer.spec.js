@@ -1,5 +1,4 @@
-import { getCurrentUserUUID } from '../../hocs/with-login/with-login'
-
+import getCurrentUserUUID from '../../../selectors/data/currentUserSelector/getCurrentUserUUID'
 import { mapStateToProps } from '../MatomoContainer'
 
 describe('src | components | matomo | MatomoContainer', () => {

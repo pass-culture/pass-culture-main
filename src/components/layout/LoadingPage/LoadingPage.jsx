@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import lottie from 'lottie-web'
 import animation from './animation.json'
 
-class Component extends PureComponent {
+class LoadingPage extends PureComponent {
   componentDidMount() {
     lottie.loadAnimation({
       container: document.getElementById('loading-animation'),
@@ -25,4 +25,4 @@ class Component extends PureComponent {
   }
 }
 
-export default Component
+export default LoadingPage

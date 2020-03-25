@@ -4,9 +4,9 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import LoadingPage from '../../../layout/LoadingPage/LoadingPage'
 
-import resolveCurrentUser from './resolveCurrentUser'
+import resolveCurrentUser from '../../../../selectors/data/currentUserSelector/resolveCurrentUser'
 import { connect } from 'react-redux'
-import { selectCurrentUser } from './index'
+import selectCurrentUser from '../../../../selectors/data/currentUserSelector/selectCurrentUser'
 
 export default (config = {}) => WrappedComponent => {
   const { handleFail, handleSuccess } = config

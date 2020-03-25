@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { selectCurrentUser } from '../../hocs/with-login/with-login'
+import selectCurrentUser from '../../../selectors/data/currentUserSelector/selectCurrentUser'
 
 import Profile from './Profile'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'

@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { selectCurrentUser } from '../../../../hocs/with-login/with-login'
+import selectCurrentUser from '../../../../../selectors/data/currentUserSelector/selectCurrentUser'
 
 import Wallet from './Wallet'
 import formatDecimals from '../../../../../utils/numbers/formatDecimals'

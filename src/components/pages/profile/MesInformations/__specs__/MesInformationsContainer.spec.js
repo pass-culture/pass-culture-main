@@ -1,4 +1,5 @@
-import { getCurrentUserUUID, resolveCurrentUser } from '../../../../hocs/with-login/with-login'
+import getCurrentUserUUID from '../../../../../selectors/data/currentUserSelector/getCurrentUserUUID'
+import resolveCurrentUser from '../../../../../selectors/data/currentUserSelector/resolveCurrentUser'
 import getDepartementByCode from '../../../../../utils/getDepartementByCode'
 import {
   getDepartment,

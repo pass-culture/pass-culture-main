@@ -1,4 +1,4 @@
-import currentUserUUID from '../../../../selectors/data/currentUserSelector/currentUserUUID'
+import currentUserUUID from './currentUserUUID'
 
 export default userFromRequest => {
   if (!userFromRequest) {

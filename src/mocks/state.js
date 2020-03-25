@@ -1,5 +1,5 @@
 import offerTypes from './api/offer_types'
-import { getCurrentUserUUID } from '../components/hocs/with-login/with-login'
+import getCurrentUserUUID from '../selectors/data/currentUserSelector/getCurrentUserUUID'
 
 const state = {
   data: {

@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { selectCurrentUser } from '../../hocs/with-login/with-login'
+import selectCurrentUser from '../../../selectors/data/currentUserSelector/selectCurrentUser'
 
 import Menu from './Menu'
 import { toggleOverlay } from '../../../reducers/overlay'
