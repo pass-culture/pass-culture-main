@@ -214,10 +214,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
-<<<<<<< HEAD
-=======
           sortBy: '_by_proximity',
->>>>>>> (PC-3121): refacto
         })
       })
     })
@@ -260,10 +257,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
-<<<<<<< HEAD
-=======
           sortBy: null,
->>>>>>> (PC-3121): refacto
         })
       })
 
@@ -336,10 +330,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
-<<<<<<< HEAD
-=======
           sortBy: null,
->>>>>>> (PC-3121): refacto
         })
       })
     })
@@ -376,10 +367,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
-<<<<<<< HEAD
-=======
           sortBy: null,
->>>>>>> (PC-3121): refacto
         })
       })
 
@@ -476,10 +464,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
-<<<<<<< HEAD
-=======
           sortBy: null
->>>>>>> (PC-3121): refacto
         })
       })
     })
@@ -516,10 +501,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
-<<<<<<< HEAD
-=======
           sortBy: '_by_proximity',
->>>>>>> (PC-3121): refacto
         })
       })
 
@@ -553,10 +535,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
-<<<<<<< HEAD
-=======
           sortBy: null,
->>>>>>> (PC-3121): refacto
         })
       })
     })
@@ -588,10 +567,7 @@ describe('components | SearchResults', () => {
           isThing: false,
         },
         page: 0,
-<<<<<<< HEAD
-=======
         sortBy: null,
->>>>>>> (PC-3121): refacto
       })
     })
 
@@ -622,10 +598,7 @@ describe('components | SearchResults', () => {
           isThing: false,
         },
         page: 0,
-<<<<<<< HEAD
-=======
         sortBy: null,
->>>>>>> (PC-3121): refacto
       })
     })
 
@@ -656,10 +629,7 @@ describe('components | SearchResults', () => {
           isThing: false,
         },
         page: 0,
-<<<<<<< HEAD
-=======
         sortBy: null,
->>>>>>> (PC-3121): refacto
       })
     })
 
@@ -915,14 +885,9 @@ describe('components | SearchResults', () => {
           offerTypes: {
             isDigital: false,
             isEvent: false,
-<<<<<<< HEAD
             isThing: false,
           },
-=======
-            isThing: false
-          },
           sortBy: null
->>>>>>> (PC-3121): refacto
         },
         keywordsToSearch: 'vas-y',
         isLoading: false,
@@ -984,10 +949,7 @@ describe('components | SearchResults', () => {
           isThing: false,
         },
         page: 0,
-<<<<<<< HEAD
-=======
         sortBy: null
->>>>>>> (PC-3121): refacto
       })
       expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
         keywords: 'librairie',
@@ -998,10 +960,7 @@ describe('components | SearchResults', () => {
           isThing: false,
         },
         page: 0,
-<<<<<<< HEAD
-=======
         sortBy: null,
->>>>>>> (PC-3121): refacto
       })
     })
 
