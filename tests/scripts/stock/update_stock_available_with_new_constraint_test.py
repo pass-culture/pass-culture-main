@@ -89,26 +89,26 @@ class UpdateStockAvailableWithNewConstraintTest:
         assert mock_get_stocks_to_check.call_count == 2
         assert mock_get_stocks_to_check.call_args == call(1, 2)
 
-    # @clean_database
-    # def test_update_stock_should_not_update_values_when_called_twice(self, app):
-    #     # Given
-    #     user = create_user()
-    #     offerer = create_offerer()
-    #     venue = create_venue(offerer)
-    #     offer = create_offer_with_thing_product(venue)
-    #     yesterday = datetime.utcnow() - timedelta(days=1)
-    #     stock = create_stock(offer=offer, available=12, price=0, date_modified=datetime.utcnow())
-    #     booking = create_booking(user, stock=stock, quantity=20, is_used=True, date_used=yesterday)
-    #     repository.save(booking)
-    #     update_stock_available_with_new_constraint()
+    @clean_database
+    def test_should_not_update_values_when_called_twice(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        stock = create_stock(offer=offer, available=12, price=0, date_modified=datetime.utcnow())
+        booking = create_booking(user, stock=stock, quantity=20, is_used=True, date_used=yesterday)
+        repository.save(booking)
+        update_stock_available_with_new_constraint()
 
-    #     # When
-    #     update_stock_available_with_new_constraint()
+        # When
+        update_stock_available_with_new_constraint()
 
-    #     # Then
-    #     existing_stock = Stock.query.first()
-    #     assert existing_stock.remainingQuantity == 12
-    #     assert existing_stock.available == 32
+        # Then
+        existing_stock = Stock.query.first()
+        assert existing_stock.remainingQuantity == 12
+        assert existing_stock.available == 32
 
 
 class GetOldRemainingQuantityTest:
@@ -169,11 +169,30 @@ class GetStocksToCheckTest:
     @clean_database
     def test_should_not_return_stock_with_unlimited_quantity(self, app):
         # Given
+        user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, available=None)
-        repository.save(stock)
+        stock = create_stock(offer=offer, price=0, available=None)
+        booking = create_booking(user, stock=stock)
+        repository.save(booking)
+
+        # When
+        stocks = _get_stocks_to_check()
+
+        # Then
+        assert stocks == []
+
+    @clean_database
+    def test_should_not_return_stock_that_has_already_been_migrated(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0, available=10, has_been_migrated=True)
+        booking = create_booking(user, stock=stock)
+        repository.save(booking)
 
         # When
         stocks = _get_stocks_to_check()
