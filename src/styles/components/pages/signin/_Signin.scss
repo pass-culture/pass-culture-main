@@ -30,9 +30,8 @@
   }
 
   .lf-title {
-    font-size: rem(32px);
-    font-style: italic;
-    font-weight: 700;
+    @include h1();
+
     margin-bottom: rem(8px);
   }
 

@@ -22,23 +22,49 @@ describe('layout | Loader', () => {
     }
   })
 
-  it('should display error message when status code is 500', () => {
-    // given
+  it('should display error message and button when status code is 500', () => {
+    // Given
     const history = createBrowserHistory()
     props.hasError = true
     props.statusCode = 500
 
-    // when
+    // When
     const wrapper = mount(
       <Router history={history}>
         <Loader {...props} />
       </Router>
     )
 
-    // then
-    const wording = wrapper.find({
-      children: 'Une erreur s’est produite pendant le chargement du carrousel.',
+    // Then
+    const title = wrapper.find({ children: 'Oops !' })
+    const message = wrapper.find({
+      children: 'Une erreur s’est produite pendant le chargement des offres.',
     })
-    expect(wording).toHaveLength(1)
+    const refresh = wrapper.find('button').find({ children: 'Réessayer' })
+    expect(title).toHaveLength(1)
+    expect(message).toHaveLength(1)
+    expect(refresh).toHaveLength(1)
+  })
+
+  it('should refresh the page when click on the button', () => {
+    // Given
+    const mockLocation = jest.spyOn(location, 'reload')
+    const history = createBrowserHistory()
+    props.hasError = true
+    props.statusCode = 500
+    const wrapper = mount(
+      <Router history={history}>
+        <Loader {...props} />
+      </Router>
+    )
+
+    // When
+    wrapper
+      .find('button')
+      .find({ children: 'Réessayer' })
+      .simulate('click')
+
+    // Then
+    expect(mockLocation).toHaveBeenCalledTimes(1)
   })
 })

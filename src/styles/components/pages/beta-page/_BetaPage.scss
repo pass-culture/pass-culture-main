@@ -16,11 +16,10 @@
 }
 
 .bp-title {
-  font-weight: 800;
-  font-size: rem(32px);
-  line-height: rem(38px);
-  margin-top: rem(100px);
+  @include h1();
+
   margin-bottom: rem(32px);
+  margin-top: rem(100px);
   white-space: pre-wrap;
 }
 

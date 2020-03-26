@@ -64,6 +64,12 @@ a:visited {
   text-decoration: none;
 }
 
+@mixin h1() {
+  font-size: rem(32px);
+  font-style: italic;
+  font-weight: 800;
+}
+
 /* --------------------------------
  Séparation horizontale et verticale
  Avec une bordure en pointillée

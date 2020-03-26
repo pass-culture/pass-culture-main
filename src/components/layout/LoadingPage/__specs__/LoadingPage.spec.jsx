@@ -18,7 +18,7 @@ describe('src | layout | LoadingPage', () => {
     const wrapper = shallow(<LoadingPage />)
 
     // then
-    const loadingMessage = wrapper.find({ children: 'Chargement en cours ...' })
+    const loadingMessage = wrapper.find({ children: 'Chargement en cours…' })
     expect(loadingMessage.exists()).toBe(true)
   })
 })

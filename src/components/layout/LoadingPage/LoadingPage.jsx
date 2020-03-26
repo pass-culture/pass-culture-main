@@ -5,7 +5,7 @@ const LoadingPage = () => (
   <div className="loading-page">
     <LoadingAnimation />
     <p>
-      {'Chargement en cours ...'}
+      {'Chargement en cours…'}
     </p>
   </div>
 )

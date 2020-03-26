@@ -39,6 +39,8 @@ class Loader extends PureComponent {
     }
   }
 
+  handleRefresh = () => window.location.reload()
+
   renderIcon = () => {
     const { isLoading, statusCode } = this.props
 
@@ -48,6 +50,14 @@ class Loader extends PureComponent {
 
     if (statusCode === 500) {
       return <Icon svg="logo-error" />
+    }
+  }
+
+  renderTitle = () => {
+    const { statusCode } = this.props
+
+    if (statusCode === 500) {
+      return 'Oops !'
     }
   }
 
@@ -64,7 +74,7 @@ class Loader extends PureComponent {
 
     if (hasError) {
       if (statusCode === 500) {
-        return 'Une erreur s’est produite pendant le chargement du carrousel.'
+        return 'Une erreur s’est produite pendant le chargement des offres.'
       }
       return 'Erreur de chargement'
     }
@@ -75,6 +85,22 @@ class Loader extends PureComponent {
       return 'Aucune offre pour le moment ! Revenez bientôt pour découvrir les nouveautés.'
     }
     return ''
+  }
+
+  renderRefreshButton = () => {
+    const { statusCode } = this.props
+
+    if (statusCode === 500) {
+      return (
+        <button
+          className="loader-refresh"
+          onClick={this.handleRefresh}
+          type="button"
+        >
+          {'Réessayer'}
+        </button>
+      )
+    }
   }
 
   render() {
@@ -105,9 +131,15 @@ class Loader extends PureComponent {
           >
             {this.renderIcon()}
 
+            <p className="loader-title">
+              {this.renderTitle()}
+            </p>
+
             <p className="loader-message">
               {this.renderMessage()}
             </p>
+
+            {this.renderRefreshButton()}
 
             {showFooter && (
               <AbsoluteFooterContainer
