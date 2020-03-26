@@ -1,5 +1,5 @@
-import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
+import React, { PureComponent } from 'react'
 import { Transition } from 'react-transition-group'
 
 import AbsoluteFooterContainer from '../AbsoluteFooter/AbsoluteFooterContainer'
@@ -33,6 +33,7 @@ class Loader extends PureComponent {
 
   handleFirstLoad = prevProps => {
     const { isLoading } = this.props
+
     if (prevProps.isLoading && !isLoading) {
       this.setState({ isFirstLoad: false })
     }
@@ -99,22 +100,20 @@ class Loader extends PureComponent {
       >
         {status => (
           <div
-            className="flex-rows"
-            id="application-loader"
+            className="loader"
             style={{ ...defaultStyle, ...transitionStyles[status] }}
           >
-            <div className="flex-1 flex-rows flex-center">
-              {this.renderIcon()}
-              <h2 className="fs20 is-normal">
-                {this.renderMessage()}
-              </h2>
-            </div>
+            {this.renderIcon()}
+
+            <p className="loader-message">
+              {this.renderMessage()}
+            </p>
+
             {showFooter && (
               <AbsoluteFooterContainer
                 areDetailsVisible={false}
                 borderTop
                 colored={false}
-                id="deck-footer"
               />
             )}
           </div>

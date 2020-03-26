@@ -188,8 +188,7 @@ img {
   position: relative;
 }
 
-#error-catcher,
-#application-loader {
+#error-catcher {
   @extend .flex-center;
   @extend .flex-rows;
   @extend .text-center;
@@ -198,7 +197,7 @@ img {
   @extend .pc-gradient;
   @extend .is-white-text;
 
-  background-color: $primary; // fallback to pc-gradient
+  background-color: $primary;
   z-index: $zindex-application-loader;
   opacity: 1;
 }

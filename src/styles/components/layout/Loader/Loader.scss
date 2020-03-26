@@ -1,0 +1,19 @@
+.loader {
+  background-color: $primary;
+  background-image: linear-gradient(to bottom right, $primary, $purple-blue);
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: $zindex-application-loader;
+}
+
+.loader-message {
+  color: #FFFFFF;
+  font-size: rem(20px);
+  text-align: center;
+}
