@@ -10,6 +10,7 @@ from models import Booking, EventType, Offer, Offerer, Payment, \
     Recommendation, Stock, ThingType, User, Venue
 from models.api_errors import ResourceNotFoundError
 from models.db import db
+from models.offer_type import ProductType
 from repository import offer_queries
 
 
@@ -136,6 +137,16 @@ def is_stock_already_booked_by_user(stock: Stock, current_user: User) -> bool:
                .filter_by(isCancelled=False) \
                .filter_by(stockId=stock.id) \
                .count() > 0
+
+
+def is_offer_already_booked_by_user(current_user: User, offer: Offer) -> bool:
+    return Booking.query \
+            .filter_by(userId=current_user.id) \
+            .filter_by(isCancelled=False) \
+            .join(Stock) \
+            .join(Offer) \
+            .filter(Offer.id == offer.id) \
+            .count() > 0
 
 
 def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
@@ -281,6 +292,7 @@ def find_used_by_token(token: str) -> Booking:
         .filter_by(token=token) \
         .filter_by(isUsed=True) \
         .first()
+
 
 def count_not_cancelled_bookings_quantity_by_stock_id(stock_id: int) -> int:
     bookings =  Booking.query \

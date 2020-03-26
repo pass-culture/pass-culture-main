@@ -9,6 +9,7 @@ from models import ApiErrors, Booking, RightsType
 from models.api_errors import ResourceGoneError, ForbiddenError
 from models.stock import Stock
 from models.user import User
+from models.offer import Offer
 from repository import booking_queries
 from repository import payment_queries, stock_queries, venue_queries
 from utils.rest import ensure_current_user_has_rights
@@ -44,6 +45,13 @@ def check_already_booked(stock: Stock, user: User):
     if is_stock_already_booked_by_user:
         api_errors = ApiErrors()
         api_errors.add_error('stockId', "Cette offre a déja été reservée par l'utilisateur")
+        raise api_errors
+
+def check_offer_already_booked(offer: Offer, user: User):
+    is_offer_already_booked_by_user = booking_queries.is_offer_already_booked_by_user(user, offer)
+    if is_offer_already_booked_by_user:
+        api_errors = ApiErrors()
+        api_errors.add_error('offerId', "Cette offre a déja été reservée par l'utilisateur à une autre date")
         raise api_errors
 
 

@@ -1582,6 +1582,79 @@ class IsStockAlreadyBookedByUserTest:
         # Then
         assert not is_stock_already_booked
 
+
+class IsOfferAlreadyBookedByUserTest:
+    @clean_database
+    def test_should_return_true_when_booking_exists_for_user_and_offer(self, app):
+        # Given
+        user = create_user()
+        create_deposit(user)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        stock = create_stock_from_offer(offer)
+        booking = create_booking(user=user, stock=stock)
+        repository.save(booking)
+
+        # When
+        is_offer_already_booked = booking_queries.is_offer_already_booked_by_user(user, offer)
+
+        # Then
+        assert is_offer_already_booked
+
+    @clean_database
+    def test_should_return_false_when_no_booking_exists_for_same_user_and_offer(self, app):
+        # Given
+        user = create_user()
+        create_deposit(user)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        repository.save(offer)
+
+        # When
+        is_offer_already_booked = booking_queries.is_offer_already_booked_by_user(user, offer)
+
+        # Then
+        assert not is_offer_already_booked
+
+    @clean_database
+    def test_should_return_false_when_there_is_a_boooking_on_offer_but_from_different_user(self,app):
+        # Given
+        user = create_user()
+        user2 = create_user()
+        create_deposit(user)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        repository.save(offer)
+
+        # When
+        is_offer_already_booked = booking_queries.is_offer_already_booked_by_user(user2, offer)
+
+        # Then
+        assert not is_offer_already_booked
+
+    @clean_database
+    def test_should_return_false_when_a_booking_exists_for_same_user_and_offer_but_is_cancelled(self, app):
+        # Given
+        user = create_user()
+        create_deposit(user)
+        offerer = create_offerer()
+        venue = create_venue(offerer,)
+        offer = create_offer_with_event_product(venue)
+        stock = create_stock_from_offer(offer)
+        booking = create_booking(user=user, stock=stock, is_cancelled=True)
+        repository.save(booking)
+
+        # When
+        is_offer_already_booked = booking_queries.is_offer_already_booked_by_user(user, offer)
+
+        # Then
+        assert not is_offer_already_booked
+
+
+
 class CountNotCancelledBookingsQuantityByStocksTest:
     @clean_database
     def test_should_return_sum_of_bookings_quantity_that_are_not_cancelled_for_given_stock(self, app):

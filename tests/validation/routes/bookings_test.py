@@ -24,7 +24,8 @@ from validation.routes.bookings import check_expenses_limits, \
     check_booking_is_not_used, \
     check_booking_token_is_usable, \
     check_booking_token_is_keepable, \
-    check_is_not_activation_booking, check_stock_is_bookable, check_already_booked
+    check_is_not_activation_booking, check_stock_is_bookable, check_already_booked, \
+    check_offer_already_booked
 
 
 class CheckExpenseLimitsTest:
@@ -648,3 +649,38 @@ class CheckAlreadyBookedTest:
             check_already_booked(stock, user)
 
         assert error.value.errors == {'stockId': ["Cette offre a déja été reservée par l'utilisateur"]}
+
+class CheckOfferAlreadyBookedTest:
+    @clean_database
+    def test_should_not_raise_exception_when_user_has_never_book_this_offer(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer)
+        repository.save(user, stock)
+
+        # When
+        check_offer_already_booked(offer, user)
+
+        # Then
+        assert True
+
+    @clean_database
+    def test_should_raise_exception_when_user_has_already_book_this_offer(self, app):
+        # Given
+        user = create_user()
+        create_deposit(user)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer)
+        booking = create_booking(user, stock=stock)
+        repository.save(user, stock, booking)
+
+        # When
+        with pytest.raises(ApiErrors) as error:
+            check_offer_already_booked(offer, user)
+
+        assert error.value.errors == {'offerId': ["Cette offre a déja été reservée par l'utilisateur à une autre date"]}
