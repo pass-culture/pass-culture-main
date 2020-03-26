@@ -667,20 +667,6 @@ class IsFullyBookedTest:
         # then
         assert offer.isFullyBooked is False
 
-    def test_returns_false_when_stocks_are_booked_before_last_update(self):
-        # given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue=venue)
-        user = create_user()
-        stock1 = create_stock(available=2, date_modified=datetime(2019, 1, 1))
-        create_booking(user=user, date_used=datetime(2018, 1, 1), is_used=True, quantity=1, stock=stock1)
-        create_booking(user=user, date_used=datetime(2019, 2, 1), is_used=True, quantity=1, stock=stock1)
-        offer.stocks = [stock1]
-
-        # then
-        assert offer.isFullyBooked is False
-
 
 class hasBookingLimitDatetimesPassedTest:
     def test_returns_true_when_all_stocks_have_passed_booking_limit_datetime(self):
