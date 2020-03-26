@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 
 import DateField from '../../../../../../../layout/form/fields/DateField'
-import HiddenField from '../../../../../../../layout/form/fields/HiddenField'
 import TimeField from '../../../../../../../layout/form/fields/TimeField'
 
 const EventFields = ({ beginningMinDate, readOnly, stocks, timezone }) => {
@@ -29,16 +28,6 @@ const EventFields = ({ beginningMinDate, readOnly, stocks, timezone }) => {
           readOnly={readOnly}
           required
           title="Heure"
-        />
-      </td>
-      <td>
-        <HiddenField name="endDatetime" />
-        <TimeField
-          name="endTime"
-          patchKey="endDatetime"
-          readOnly={readOnly}
-          required
-          title="Heure de fin"
         />
       </td>
     </Fragment>

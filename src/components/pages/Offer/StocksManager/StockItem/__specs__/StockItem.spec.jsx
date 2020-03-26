@@ -56,7 +56,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           beginningDatetime: '2020-01-20T20:00:00Z',
           bookingLimitDatetime: '2020-01-27T20:00:00Z',
           bookingsQuantity: 1,
-          endDatetime: '2020-01-27T22:00:00Z',
           offerId: 'EM',
           price: 48,
         }
@@ -66,7 +65,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           available: 10,
           beginningDatetime: '2020-01-20T20:00:00Z',
           bookingLimitDatetime: '2020-01-27T20:00:00Z',
-          endDatetime: '2020-01-27T22:00:00Z',
           offerId: 'EM',
           price: 48,
         }
@@ -115,8 +113,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           beginningDatetime: '2020-01-20T20:00:00Z',
           beginningTime: '21:00',
           bookingLimitDatetime: '2020-01-20T20:00:00Z',
-          endDatetime: '2020-01-27T22:00:00Z',
-          endTime: '23:00',
           id: 'G9',
           offerId: 'EM',
           price: 48,
@@ -137,17 +133,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
 
         // then
         expect(beginningTimeInput.props().value).toStrictEqual('21:00')
-      })
-
-      it('should fill the endDatetimeInput input when endTime is updated', () => {
-        // when
-        const endDatetimeInput = eventFieldComponent
-          .find(Field)
-          .find({ name: 'endDatetime' })
-          .find('input')
-
-        // then
-        expect(endDatetimeInput.props().value).toStrictEqual('2020-01-27T22:00:00Z')
       })
 
       it('should fill the beginningDatetimeInput input when beginningDatetime is updated', () => {
@@ -373,7 +358,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
 
       props.stockPatch = {
         beginningDatetime: '2020-01-27T20:00:00Z',
-        endDatetime: '2020-01-27T22:00:00Z',
         offerId: 'EM',
         offererId: 'ZZ',
         price: 0,
@@ -425,8 +409,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           beginningDatetime: '2020-01-27T20:00:00Z',
           beginningTime: '21:00',
           bookingLimitDatetime: '2020-01-27T20:00:00Z',
-          endDatetime: '2020-01-27T22:00:00Z',
-          endTime: '23:00',
           offerId: 'EM',
           offererId: 'ZZ',
           price: 0,
@@ -468,8 +450,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           beginningDatetime: '2020-01-27T20:00:00Z',
           beginningTime: '21:00',
           bookingLimitDatetime: '2020-01-27T20:00:00Z',
-          endDatetime: '2020-01-27T22:00:00Z',
-          endTime: '23:00',
           offerId: 'EM',
           offererId: 'ZZ',
           price: 0,
@@ -479,10 +459,9 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       )
     })
 
-    it('should update bookingLimitDatetime and endDatetime when submitting a beginningDatetime before bookingLimitDatetime (or before initial beginningDatetime ???)', () => {
+    it('should update bookingLimitDatetime when submitting a beginningDatetime before bookingLimitDatetime (or before initial beginningDatetime ???)', () => {
       // given
       props.stockPatch.beginningDatetime = '2020-04-27T20:00:00Z'
-      props.stockPatch.endDatetime = '2020-04-27T22:00:00Z'
 
       const beginningDatetimeInput = wrapper
         .find(Field)
@@ -501,8 +480,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
           beginningDatetime: '2019-03-11T20:00:00.000Z',
           beginningTime: '21:00',
           bookingLimitDatetime: '2019-03-11T20:00:00.000Z',
-          endDatetime: '2019-03-11T22:00:00.000Z',
-          endTime: '23:00',
           offerId: 'EM',
           offererId: 'ZZ',
           price: 0,

@@ -130,11 +130,6 @@ class StocksManager extends PureComponent {
                 <br />
                 {'début'}
               </td>
-              <td>
-                {'Heure de'}
-                <br />
-                {'fin'}
-              </td>
             </Fragment>
           )}
           <td>

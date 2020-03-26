@@ -4,7 +4,6 @@ import 'moment-timezone'
 
 import {
   getDatetimeOneDayAfter,
-  getDatetimeOneHourAfter,
   getDatetimeAtSpecificHoursAndMinutes,
   getFormattedRemainingQuantities,
   formatPrice,
@@ -59,16 +58,6 @@ describe('src | components | pages | Offer | StockItem | utils', () => {
 
       // then
       expect(nextDatetime).toStrictEqual('2019-04-28T19:00:00.000Z')
-    })
-    it('should add one hour to stringify date', () => {
-      // given
-      const datetime = '2019-04-27T19:00:00Z'
-
-      // when
-      const nextDatetime = getDatetimeOneHourAfter(datetime)
-
-      // then
-      expect(nextDatetime).toStrictEqual('2019-04-27T20:00:00.000Z')
     })
     it('should get stringify datetime regarding specified timezone', () => {
       // given

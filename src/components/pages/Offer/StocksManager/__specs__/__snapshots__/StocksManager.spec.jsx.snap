@@ -1612,11 +1612,6 @@ ShallowWrapper {
                     <br />
                     début
                   </td>
-                  <td>
-                    Heure de
-                    <br />
-                    fin
-                  </td>
                 </React.Fragment>
                 <td>
                   Prix
@@ -1781,11 +1776,6 @@ ShallowWrapper {
                       <br />
                       début
                     </td>
-                    <td>
-                      Heure de
-                      <br />
-                      fin
-                    </td>
                   </React.Fragment>
                   <td>
                     Prix
@@ -1908,11 +1898,6 @@ ShallowWrapper {
                         <br />
                         début
                       </td>
-                      <td>
-                        Heure de
-                        <br />
-                        fin
-                      </td>
                     </React.Fragment>
                     <td>
                       Prix
@@ -2023,11 +2008,6 @@ ShallowWrapper {
                         <br />
                         début
                       </td>
-                      <td>
-                        Heure de
-                        <br />
-                        fin
-                      </td>
                     </React.Fragment>
                     <td>
                       Prix
@@ -2067,11 +2047,6 @@ ShallowWrapper {
                           Heure de
                           <br />
                           début
-                        </td>
-                        <td>
-                          Heure de
-                          <br />
-                          fin
                         </td>
                       </React.Fragment>,
                       <td>
@@ -2113,11 +2088,6 @@ ShallowWrapper {
                             <br />
                             début
                           </td>,
-                          <td>
-                            Heure de
-                            <br />
-                            fin
-                          </td>,
                         ],
                       },
                       "ref": null,
@@ -2157,33 +2127,6 @@ ShallowWrapper {
                               "type": "br",
                             },
                             "début",
-                          ],
-                          "type": "td",
-                        },
-                        Object {
-                          "instance": null,
-                          "key": undefined,
-                          "nodeType": "host",
-                          "props": Object {
-                            "children": Array [
-                              "Heure de",
-                              <br />,
-                              "fin",
-                            ],
-                          },
-                          "ref": null,
-                          "rendered": Array [
-                            "Heure de",
-                            Object {
-                              "instance": null,
-                              "key": undefined,
-                              "nodeType": "host",
-                              "props": Object {},
-                              "ref": null,
-                              "rendered": null,
-                              "type": "br",
-                            },
-                            "fin",
                           ],
                           "type": "td",
                         },
@@ -2468,11 +2411,6 @@ ShallowWrapper {
                       <br />
                       début
                     </td>
-                    <td>
-                      Heure de
-                      <br />
-                      fin
-                    </td>
                   </React.Fragment>
                   <td>
                     Prix
@@ -2637,11 +2575,6 @@ ShallowWrapper {
                         <br />
                         début
                       </td>
-                      <td>
-                        Heure de
-                        <br />
-                        fin
-                      </td>
                     </React.Fragment>
                     <td>
                       Prix
@@ -2764,11 +2697,6 @@ ShallowWrapper {
                           <br />
                           début
                         </td>
-                        <td>
-                          Heure de
-                          <br />
-                          fin
-                        </td>
                       </React.Fragment>
                       <td>
                         Prix
@@ -2879,11 +2807,6 @@ ShallowWrapper {
                           <br />
                           début
                         </td>
-                        <td>
-                          Heure de
-                          <br />
-                          fin
-                        </td>
                       </React.Fragment>
                       <td>
                         Prix
@@ -2923,11 +2846,6 @@ ShallowWrapper {
                             Heure de
                             <br />
                             début
-                          </td>
-                          <td>
-                            Heure de
-                            <br />
-                            fin
                           </td>
                         </React.Fragment>,
                         <td>
@@ -2969,11 +2887,6 @@ ShallowWrapper {
                               <br />
                               début
                             </td>,
-                            <td>
-                              Heure de
-                              <br />
-                              fin
-                            </td>,
                           ],
                         },
                         "ref": null,
@@ -3013,33 +2926,6 @@ ShallowWrapper {
                                 "type": "br",
                               },
                               "début",
-                            ],
-                            "type": "td",
-                          },
-                          Object {
-                            "instance": null,
-                            "key": undefined,
-                            "nodeType": "host",
-                            "props": Object {
-                              "children": Array [
-                                "Heure de",
-                                <br />,
-                                "fin",
-                              ],
-                            },
-                            "ref": null,
-                            "rendered": Array [
-                              "Heure de",
-                              Object {
-                                "instance": null,
-                                "key": undefined,
-                                "nodeType": "host",
-                                "props": Object {},
-                                "ref": null,
-                                "rendered": null,
-                                "type": "br",
-                              },
-                              "fin",
                             ],
                             "type": "td",
                           },

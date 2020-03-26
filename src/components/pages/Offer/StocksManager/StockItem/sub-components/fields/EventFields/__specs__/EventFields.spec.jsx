@@ -21,7 +21,7 @@ describe('src | components | pages | Offer | StockItem | EventFields', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  it('should display a DateField to inform about begginning DateTime', () => {
+  it('should display a DateField to inform about beginning DateTime', () => {
     // when
     const wrapper = shallow(<EventFields />)
 
@@ -30,24 +30,13 @@ describe('src | components | pages | Offer | StockItem | EventFields', () => {
     expect(dateField).toHaveLength(1)
   })
 
-  it('should display a TimeField to inform about begginning time hour', () => {
+  it('should display a TimeField to inform about beginning time hour', () => {
     // when
     const wrapper = shallow(<EventFields />)
 
     // then
     const timeField = wrapper.find(TimeField).findWhere(timeFieldComponent => {
       return timeFieldComponent.props().name === 'beginningTime'
-    })
-    expect(timeField).toHaveLength(1)
-  })
-
-  it('should display a TimeField to inform about end time hour', () => {
-    // when
-    const wrapper = shallow(<EventFields />)
-
-    // then
-    const timeField = wrapper.find(TimeField).findWhere(timeFieldComponent => {
-      return timeFieldComponent.props().name === 'endTime'
     })
     expect(timeField).toHaveLength(1)
   })

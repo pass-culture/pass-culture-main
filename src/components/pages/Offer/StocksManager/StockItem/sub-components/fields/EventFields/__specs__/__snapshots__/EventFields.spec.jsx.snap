@@ -66,28 +66,6 @@ ShallowWrapper {
             validate={null}
           />
         </td>,
-        <td>
-          <HiddenField
-            name="endDatetime"
-            validator={[Function]}
-          />
-          <TimeField
-            autoComplete={false}
-            className=""
-            disabled={false}
-            id={null}
-            label=""
-            locale="fr"
-            name="endTime"
-            patchKey="endDatetime"
-            placeholder="Please enter a value"
-            readOnly={true}
-            renderValue={[Function]}
-            required={true}
-            title="Heure de fin"
-            validate={null}
-          />
-        </td>,
       ],
     },
     "ref": null,
@@ -198,75 +176,6 @@ ShallowWrapper {
         },
         "type": "td",
       },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": Array [
-            <HiddenField
-              name="endDatetime"
-              validator={[Function]}
-            />,
-            <TimeField
-              autoComplete={false}
-              className=""
-              disabled={false}
-              id={null}
-              label=""
-              locale="fr"
-              name="endTime"
-              patchKey="endDatetime"
-              placeholder="Please enter a value"
-              readOnly={true}
-              renderValue={[Function]}
-              required={true}
-              title="Heure de fin"
-              validate={null}
-            />,
-          ],
-        },
-        "ref": null,
-        "rendered": Array [
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "class",
-            "props": Object {
-              "name": "endDatetime",
-              "validator": [Function],
-            },
-            "ref": null,
-            "rendered": null,
-            "type": [Function],
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "class",
-            "props": Object {
-              "autoComplete": false,
-              "className": "",
-              "disabled": false,
-              "id": null,
-              "label": "",
-              "locale": "fr",
-              "name": "endTime",
-              "patchKey": "endDatetime",
-              "placeholder": "Please enter a value",
-              "readOnly": true,
-              "renderValue": [Function],
-              "required": true,
-              "title": "Heure de fin",
-              "validate": null,
-            },
-            "ref": null,
-            "rendered": null,
-            "type": [Function],
-          },
-        ],
-        "type": "td",
-      },
     ],
     "type": Symbol(react.fragment),
   },
@@ -314,28 +223,6 @@ ShallowWrapper {
               renderValue={[Function]}
               required={true}
               title="Heure"
-              validate={null}
-            />
-          </td>,
-          <td>
-            <HiddenField
-              name="endDatetime"
-              validator={[Function]}
-            />
-            <TimeField
-              autoComplete={false}
-              className=""
-              disabled={false}
-              id={null}
-              label=""
-              locale="fr"
-              name="endTime"
-              patchKey="endDatetime"
-              placeholder="Please enter a value"
-              readOnly={true}
-              renderValue={[Function]}
-              required={true}
-              title="Heure de fin"
               validate={null}
             />
           </td>,
@@ -447,75 +334,6 @@ ShallowWrapper {
             "rendered": null,
             "type": [Function],
           },
-          "type": "td",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": Array [
-              <HiddenField
-                name="endDatetime"
-                validator={[Function]}
-              />,
-              <TimeField
-                autoComplete={false}
-                className=""
-                disabled={false}
-                id={null}
-                label=""
-                locale="fr"
-                name="endTime"
-                patchKey="endDatetime"
-                placeholder="Please enter a value"
-                readOnly={true}
-                renderValue={[Function]}
-                required={true}
-                title="Heure de fin"
-                validate={null}
-              />,
-            ],
-          },
-          "ref": null,
-          "rendered": Array [
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "class",
-              "props": Object {
-                "name": "endDatetime",
-                "validator": [Function],
-              },
-              "ref": null,
-              "rendered": null,
-              "type": [Function],
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "class",
-              "props": Object {
-                "autoComplete": false,
-                "className": "",
-                "disabled": false,
-                "id": null,
-                "label": "",
-                "locale": "fr",
-                "name": "endTime",
-                "patchKey": "endDatetime",
-                "placeholder": "Please enter a value",
-                "readOnly": true,
-                "renderValue": [Function],
-                "required": true,
-                "title": "Heure de fin",
-                "validate": null,
-              },
-              "ref": null,
-              "rendered": null,
-              "type": [Function],
-            },
-          ],
           "type": "td",
         },
       ],

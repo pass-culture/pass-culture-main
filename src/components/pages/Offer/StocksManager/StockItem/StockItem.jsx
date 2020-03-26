@@ -7,7 +7,6 @@ import EditAndDeleteControl from './sub-components/EditAndDeleteControl/EditAndD
 import EventFields from './sub-components/fields/EventFields/EventFields'
 import adaptBookingLimitDatetimeGivenBeginningDatetime from './decorators/adaptBookingLimitDatetimeGivenBeginningDatetime'
 import bindTimeFieldWithDateField from './decorators/bindTimeFieldWithDateField'
-import fillEndDatimeWhenUpdatingBeginningDatetime from './decorators/fillEndDatimeWhenUpdatingBeginningDatetime'
 import SubmitAndCancelControlContainer from './sub-components/SubmitAndCancelControl/SubmitAndCancelControlContainer'
 import { errorKeyToFrenchKey } from './utils/utils'
 import ProductFieldsContainer from './sub-components/fields/ProductFields/ProductFieldsContainer'
@@ -164,20 +163,9 @@ class StockItem extends PureComponent {
 
     if (isEvent) {
       decorators = decorators.concat([
-        fillEndDatimeWhenUpdatingBeginningDatetime({
-          targetDateName: 'endDatetime',
-          targetTimeName: 'endTime',
-          triggerDateName: 'beginningDatetime',
-          timezone,
-        }),
         bindTimeFieldWithDateField({
           dateName: 'beginningDatetime',
           timeName: 'beginningTime',
-          timezone,
-        }),
-        bindTimeFieldWithDateField({
-          dateName: 'endDatetime',
-          timeName: 'endTime',
           timezone,
         }),
       ])

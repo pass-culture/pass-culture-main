@@ -5,7 +5,6 @@ import {
   DEFAULT_BEGINNING_DATE_TIME_HOURS,
   DEFAULT_BEGINNING_DATE_TIME_MINUTES,
   getDatetimeOneDayAfter,
-  getDatetimeOneHourAfter,
   getDatetimeAtSpecificHoursAndMinutes,
 } from '../utils/utils'
 import { selectStocksByOfferId } from '../../../../../../selectors/data/stocksSelectors'
@@ -23,7 +22,7 @@ const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCachedSelecto
   (state, stock, offerId, offererId) => offererId,
   (state, stock, offerId, offererId, timezone) => timezone,
   (stock, offer, stocks, offerId, offererId, timezone) => {
-    let { available, beginningDatetime, bookingLimitDatetime, endDatetime, id, price } = stock || {}
+    let { available, beginningDatetime, bookingLimitDatetime, id, price } = stock || {}
 
     if (!offer) {
       return {}
@@ -42,13 +41,6 @@ const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCachedSelecto
             DEFAULT_BEGINNING_DATE_TIME_MINUTES,
             timezone
           )
-    }
-
-    if (offer.isEvent && !endDatetime) {
-      // FIXME Should use the offer duration
-      endDatetime = lastStock
-        ? getDatetimeOneDayAfter(lastStock.endDatetime)
-        : getDatetimeOneHourAfter(beginningDatetime)
     }
 
     if (offer.isEvent && bookingLimitDatetime == null) {
@@ -75,7 +67,7 @@ const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCachedSelecto
     }
 
     if (offer.isEvent) {
-      Object.assign(formInitialValues, { beginningDatetime, endDatetime })
+      Object.assign(formInitialValues, { beginningDatetime })
     }
 
     return formInitialValues

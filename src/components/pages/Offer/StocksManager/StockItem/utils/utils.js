@@ -22,12 +22,6 @@ export function getDatetimeOneDayAfter(datetime) {
     .toISOString()
 }
 
-export function getDatetimeOneHourAfter(datetime) {
-  return moment(datetime)
-    .add(1, 'hour')
-    .toISOString()
-}
-
 export function getDatetimeAtSpecificHoursAndMinutes(datetime, hours, minutes, timezone) {
   let datetimeMoment = moment(datetime)
   if (timezone) {
@@ -47,8 +41,6 @@ export function errorKeyToFrenchKey(errorKey) {
       return 'Date de début'
     case 'bookingLimitDatetime':
       return 'Date de réservation'
-    case 'endDatetime':
-      return 'Date de fin'
     case 'price':
       return 'Prix'
     case 'global':
