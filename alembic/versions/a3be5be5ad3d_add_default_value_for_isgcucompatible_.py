@@ -1,7 +1,7 @@
 """add_default_value_for_isGcuCompatible_in_product
 
 Revision ID: a3be5be5ad3d
-Revises: 1f446f8a334d
+Revises: 48440c1d122a
 Create Date: 2020-03-19 15:36:33.558492
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 from sqlalchemy.sql import expression
 
 revision = 'a3be5be5ad3d'
-down_revision = '1f446f8a334d'
+down_revision = '48440c1d122a'
 branch_labels = None
 depends_on = None
 
