@@ -29,8 +29,8 @@ const stubRef = wrapper => {
   const instance = wrapper.instance()
   instance['inputRef'] = {
     current: {
-      blur: jest.fn()
-    }
+      blur: jest.fn(),
+    },
   }
 }
 
@@ -171,9 +171,9 @@ describe('components | SearchResults', () => {
           offerTypes: {
             isDigital: false,
             isEvent: false,
-            isThing: false
+            isThing: false,
           },
-          page: 0
+          page: 0,
         })
       })
     })
@@ -214,9 +214,9 @@ describe('components | SearchResults', () => {
           offerTypes: {
             isDigital: false,
             isEvent: false,
-            isThing: false
+            isThing: false,
           },
-          page: 0
+          page: 0,
         })
       })
 
@@ -290,9 +290,9 @@ describe('components | SearchResults', () => {
           offerTypes: {
             isDigital: false,
             isEvent: false,
-            isThing: false
+            isThing: false,
           },
-          page: 0
+          page: 0,
         })
       })
     })
@@ -330,9 +330,9 @@ describe('components | SearchResults', () => {
           offerTypes: {
             isDigital: false,
             isEvent: false,
-            isThing: false
+            isThing: false,
           },
-          page: 0
+          page: 0,
         })
       })
 
@@ -434,9 +434,9 @@ describe('components | SearchResults', () => {
           offerTypes: {
             isDigital: false,
             isEvent: false,
-            isThing: false
+            isThing: false,
           },
-          page: 0
+          page: 0,
         })
       })
     })
@@ -472,9 +472,9 @@ describe('components | SearchResults', () => {
           offerTypes: {
             isDigital: false,
             isEvent: false,
-            isThing: false
+            isThing: false,
           },
-          page: 0
+          page: 0,
         })
       })
 
@@ -508,9 +508,9 @@ describe('components | SearchResults', () => {
           offerTypes: {
             isDigital: false,
             isEvent: false,
-            isThing: false
+            isThing: false,
           },
-          page: 0
+          page: 0,
         })
       })
     })
@@ -541,9 +541,9 @@ describe('components | SearchResults', () => {
         offerTypes: {
           isDigital: false,
           isEvent: false,
-          isThing: false
+          isThing: false,
         },
-        page: 0
+        page: 0,
       })
     })
 
@@ -573,9 +573,9 @@ describe('components | SearchResults', () => {
         offerTypes: {
           isDigital: false,
           isEvent: false,
-          isThing: false
+          isThing: false,
         },
-        page: 0
+        page: 0,
       })
     })
 
@@ -605,9 +605,9 @@ describe('components | SearchResults', () => {
         offerTypes: {
           isDigital: false,
           isEvent: false,
-          isThing: false
+          isThing: false,
         },
-        page: 0
+        page: 0,
       })
     })
 
@@ -861,8 +861,8 @@ describe('components | SearchResults', () => {
           offerTypes: {
             isDigital: false,
             isEvent: false,
-            isThing: false
-          }
+            isThing: false,
+          },
         },
         keywordsToSearch: 'vas-y',
         isLoading: false,
@@ -923,9 +923,9 @@ describe('components | SearchResults', () => {
         offerTypes: {
           isDigital: false,
           isEvent: false,
-          isThing: false
+          isThing: false,
         },
-        page: 0
+        page: 0,
       })
       expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
         categories: [],
@@ -935,9 +935,9 @@ describe('components | SearchResults', () => {
         offerTypes: {
           isDigital: false,
           isEvent: false,
-          isThing: false
+          isThing: false,
         },
-        page: 0
+        page: 0,
       })
     })
 
@@ -1038,6 +1038,29 @@ describe('components | SearchResults', () => {
 
       // then
       expect(instance.inputRef.current.blur).toHaveBeenCalledWith()
+    })
+
+    it('should remove focus from input when scrolling the results', () => {
+      // given
+      const history = createBrowserHistory()
+      history.push('/recherche-offres/resultats')
+      const wrapper = mount(
+        <Router history={history}>
+          <SearchResults {...props} />
+        </Router>
+      )
+      wrapper.setState({ isLoading: true })
+      const searchResultsWrapper = wrapper.find(SearchResults)
+      const input = searchResultsWrapper.instance().inputRef.current
+      jest.spyOn(input, 'blur').mockImplementationOnce()
+
+      const searchResults = wrapper.find({ children: 'Recherche en cours' })
+
+      // when
+      searchResults.simulate('scroll')
+
+      // then
+      expect(input.blur).toHaveBeenCalledTimes(1)
     })
 
     describe('reset cross', () => {
@@ -1303,7 +1326,7 @@ describe('components | SearchResults', () => {
         offerTypes: {
           isDigital: false,
           isEvent: false,
-          isThing: false
+          isThing: false,
         },
         sortCriteria: '_by_price',
       })

@@ -22,7 +22,7 @@ class SearchResults extends PureComponent {
         offerTypes: {
           isDigital: false,
           isEvent: false,
-          isThing: false
+          isThing: false,
         },
         offerCategories: this.getCategoriesFromUrlOrProps(),
       },
@@ -126,7 +126,8 @@ class SearchResults extends PureComponent {
       keywords,
       offerTypes,
       page: currentPage,
-    }).then(offers => {
+    })
+      .then(offers => {
         const { results } = this.state
         const { hits, nbHits, nbPages } = offers
         this.setState({
@@ -138,12 +139,13 @@ class SearchResults extends PureComponent {
           searchedKeywords: keywords,
           totalPagesNumber: nbPages,
         })
-      }).catch(() => {
+      })
+      .catch(() => {
         this.setState({
           isLoading: false,
         })
         this.showFailModal()
-    })
+      })
   }
 
   getScrollParent = () => document.querySelector('.sr-wrapper')
@@ -210,6 +212,8 @@ class SearchResults extends PureComponent {
     }
   }
 
+  blurInput = () => () => this.inputRef.current.blur()
+
   render() {
     const { geolocation, history, match, query } = this.props
     const {
@@ -271,7 +275,10 @@ class SearchResults extends PureComponent {
                 </div>
               </div>
             </form>
-            <div className="sr-items-wrapper">
+            <div
+              className="sr-items-wrapper"
+              onScroll={this.blurInput()}
+            >
               <div className="sr-spinner">
                 {isLoading && <Spinner label="Recherche en cours" />}
               </div>
