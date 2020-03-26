@@ -13,19 +13,18 @@ export class Filters extends PureComponent {
   constructor(props) {
     super(props)
 
-    const { aroundRadius, isSearchAroundMe, offerTypes, sortCriteria } = props.initialFilters
+    const { aroundRadius, isSearchAroundMe, offerTypes, sortBy } = props.initialFilters
     this.state = {
       areCategoriesVisible: true,
       filters: {
         aroundRadius: aroundRadius,
-        offerCategories: this.buildCategoriesStateFromProps(),
         isSearchAroundMe: isSearchAroundMe,
+        offerCategories: this.buildCategoriesStateFromProps(),
         offerTypes: offerTypes,
-        sortCriteria: sortCriteria,
+        sortBy: sortBy,
       },
       offers: props.offers,
     }
-    this.handleOnAfterChange = this.handleOnAfterChange.bind(this)
   }
 
   buildCategoriesStateFromProps = () => {
@@ -37,16 +36,15 @@ export class Filters extends PureComponent {
     }, {})
   }
 
-  fetchOffers = ({ aroundRadius, keywords, geolocation = null, categories, indexSuffix, offerTypes }) => {
+  fetchOffers = ({ aroundRadius, keywords, geolocation, offerCategories, offerTypes, sortBy }) => {
     const { showFailModal } = this.props
     fetchAlgolia({
       aroundRadius,
-      categories,
-      geolocationCoordinates: geolocation,
-      indexSuffix,
+      geolocation,
       keywords,
+      offerCategories,
       offerTypes,
-      page: 0,
+      sortBy,
     })
       .then(offers => {
         this.setState({
@@ -58,81 +56,55 @@ export class Filters extends PureComponent {
       })
   }
 
-  handleGeolocationCriterionSelection = criterionKey => () => {
-    const {
-      isUserAllowedToSelectCriterion,
-      isGeolocationEnabled,
-      redirectToSearchFiltersPage,
-    } = this.props
-    const { filters } = this.state
-
-    if (!isUserAllowedToSelectCriterion(criterionKey, isGeolocationEnabled)) return
-
-    this.setState(
-      {
-        filters: {
-          ...filters,
-          isSearchAroundMe:
-            GEOLOCATION_CRITERIA[criterionKey].label === GEOLOCATION_CRITERIA.AROUND_ME.label,
-        },
-      },
-      () => {
-        this.process()
-        redirectToSearchFiltersPage()
-      }
-    )
-  }
-
-  resetFilters = () => {
-    const { initialFilters } = this.props
-
-    this.setState({
-        filters: {
-          ...initialFilters,
-          aroundRadius: 0,
-          offerTypes: {
-            isDigital: false,
-            isEvent: false,
-            isThing: false
-          },
-          offerCategories: this.buildCategoriesStateFromProps(),
-        },
-      },
-      () => {
-        this.process()
-      }
-    )
-  }
-
   process = () => {
     const { history, geolocation, query } = this.props
     const { filters } = this.state
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles'] || ''
 
-    const { aroundRadius, isSearchAroundMe, offerTypes, sortCriteria } = filters
-    const selectedCategories = this.getSelectedCategories()
-    isSearchAroundMe
-      ? this.fetchOffers({
+    const { aroundRadius, isSearchAroundMe, offerTypes, sortBy } = filters
+    const offerCategories = this.getSelectedCategories()
+
+    isSearchAroundMe ?
+      this.fetchOffers({
         aroundRadius,
         keywords,
         geolocation,
-        categories: selectedCategories,
-        indexSuffix: sortCriteria,
+        offerCategories,
         offerTypes,
+        sortBy,
       })
       : this.fetchOffers({
         keywords,
-        categories: selectedCategories,
-        indexSuffix: sortCriteria,
+        offerCategories,
         offerTypes,
+        sortBy,
       })
 
     const autourDeMoi = checkIfAroundMe(filters.isSearchAroundMe)
-    const categoriesQueryParam = selectedCategories.join(';') || ''
-    const tri = filters.sortCriteria
+    const categories = offerCategories.join(';') || ''
+    const tri = sortBy
     history.replace({
-      search: `?mots-cles=${keywords}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${categoriesQueryParam}`,
+      search: `?mots-cles=${keywords}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${categories}`,
+    })
+  }
+
+  resetFilters = () => {
+    const { initialFilters } = this.props
+
+    this.setState({
+      filters: {
+        ...initialFilters,
+        aroundRadius: 0,
+        offerCategories: this.buildCategoriesStateFromProps(),
+        offerTypes: {
+          isDigital: false,
+          isEvent: false,
+          isThing: false
+        }
+      },
+    }, () => {
+      this.process()
     })
   }
 
@@ -141,28 +113,6 @@ export class Filters extends PureComponent {
     const { offerCategories } = filters
 
     return Object.keys(offerCategories).filter(categoryKey => offerCategories[categoryKey])
-  }
-
-  handleFilterOffers = () => {
-    const { history, updateFilteredOffers, updateFilters } = this.props
-    const {
-      location: { search = '' },
-    } = history
-    const { filters, offers } = this.state
-    const updatedFilters = { ...filters }
-    updatedFilters.offerCategories = this.getSelectedCategories()
-
-    updateFilters(updatedFilters)
-    updateFilteredOffers(offers)
-    history.push(`/recherche-offres/resultats${search}`)
-  }
-
-  handleToGeolocationFilter = () => {
-    const { history } = this.props
-    const {
-      location: { search = '' },
-    } = history
-    history.push(`/recherche-offres/resultats/filtres/localisation${search}`)
   }
 
   buildNumberOfResults = () => {
@@ -183,6 +133,63 @@ export class Filters extends PureComponent {
     return filters.isSearchAroundMe
       ? GEOLOCATION_CRITERIA.AROUND_ME.label
       : GEOLOCATION_CRITERIA.EVERYWHERE.label
+  }
+
+  getNumberOfSelectedFilters = filter => {
+    let counter = 0
+
+    Object.keys(filter).forEach(key => {
+      if (filter[key] === true) {
+        counter++
+      }
+    })
+    return counter
+  }
+
+  handleGeolocationCriterionSelection = criterionKey => () => {
+    const {
+      isUserAllowedToSelectCriterion,
+      isGeolocationEnabled,
+      redirectToSearchFiltersPage,
+    } = this.props
+    const { filters } = this.state
+
+    if (!isUserAllowedToSelectCriterion(criterionKey, isGeolocationEnabled)) return
+
+    this.setState(
+      {
+        filters: {
+          ...filters,
+          isSearchAroundMe: GEOLOCATION_CRITERIA[criterionKey].label === GEOLOCATION_CRITERIA.AROUND_ME.label
+        },
+      },
+      () => {
+        this.process()
+        redirectToSearchFiltersPage()
+      }
+    )
+  }
+
+  handleToGeolocationFilter = () => {
+    const { history } = this.props
+    const {
+      location: { search = '' },
+    } = history
+    history.push(`/recherche-offres/resultats/filtres/localisation${search}`)
+  }
+
+  handleFilterOffers = () => {
+    const { history, updateFilteredOffers, updateFilters } = this.props
+    const {
+      location: { search = '' },
+    } = history
+    const { filters, offers } = this.state
+    const updatedFilters = { ...filters }
+    updatedFilters.offerCategories = this.getSelectedCategories()
+
+    updateFilters(updatedFilters)
+    updateFilteredOffers(offers)
+    history.push(`/recherche-offres/resultats${search}`)
   }
 
   handleOnTypeChange = event => {
@@ -208,34 +215,23 @@ export class Filters extends PureComponent {
     const { filters } = this.state
 
     this.setState({
-        filters: {
-          ...filters,
-          offerCategories: {
-            ...filters.offerCategories,
-            [name]: checked,
-          },
+      filters: {
+        ...filters,
+        offerCategories: {
+          ...filters.offerCategories,
+          [name]: checked,
         },
-      }, () => {
-        this.process()
-      }
-    )
-  }
-
-  getNumberOfSelectedFilters = filter => {
-    let counter = 0
-
-    Object.keys(filter).forEach(key => {
-      if (filter[key] === true) {
-        counter++
-      }
+      },
+    }, () => {
+      this.process()
     })
-    return counter
   }
 
-  handleToggleCategories = () => () =>
+  handleToggleCategories = () => () => {
     this.setState(prevState => ({ areCategoriesVisible: !prevState.areCategoriesVisible }))
+  }
 
-  handleOnChange = (value) => {
+  handleRadiusSlide = (value) => {
     const { filters } = this.state
 
     this.setState({
@@ -246,7 +242,7 @@ export class Filters extends PureComponent {
     })
   }
 
-  handleOnAfterChange = () => {
+  handleRadiusAfterSlide = () => {
     this.process()
   }
 
@@ -308,8 +304,8 @@ export class Filters extends PureComponent {
                     <Slider
                       max={100}
                       min={0}
-                      onAfterChange={this.handleOnAfterChange}
-                      onChange={this.handleOnChange}
+                      onAfterChange={this.handleRadiusAfterSlide}
+                      onChange={this.handleRadiusSlide}
                       value={aroundRadius}
                     />
                   </div>

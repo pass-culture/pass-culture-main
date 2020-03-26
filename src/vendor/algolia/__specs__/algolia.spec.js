@@ -51,7 +51,7 @@ describe('fetchAlgolia', () => {
 
       // when
       fetchAlgolia({
-        geolocationCoordinates: null,
+        geolocation: null,
         keywords: keywords,
       })
 
@@ -93,7 +93,7 @@ describe('fetchAlgolia', () => {
 
       // when
       fetchAlgolia({
-        geolocationCoordinates: geolocation,
+        geolocation: geolocation,
         keywords: keywords,
       })
 
@@ -116,7 +116,7 @@ describe('fetchAlgolia', () => {
 
       // when
       fetchAlgolia({
-        geolocationCoordinates: geolocation,
+        geolocation: geolocation,
         keywords: keywords,
       })
 
@@ -138,7 +138,7 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         aroundRadius: 15,
-        geolocationCoordinates: geolocation,
+        geolocation: geolocation,
         keywords: keywords,
       })
 
@@ -156,12 +156,12 @@ describe('fetchAlgolia', () => {
     it('should fetch with no facetFilters parameter when no category is provided', () => {
       // given
       const keywords = 'searched keywords'
-      const categories = []
+      const offerCategories = []
 
       // when
       fetchAlgolia({
-        categories: categories,
         keywords: keywords,
+        offerCategories: offerCategories,
       })
 
       // then
@@ -174,12 +174,12 @@ describe('fetchAlgolia', () => {
     it('should fetch with facetFilters parameter when one category is provided', () => {
       // given
       const keywords = 'searched keywords'
-      const categories = ['LECON']
+      const offerCategories = ['LECON']
 
       // when
       fetchAlgolia({
-        categories: categories,
         keywords: keywords,
+        offerCategories: offerCategories,
       })
 
       // then
@@ -192,12 +192,12 @@ describe('fetchAlgolia', () => {
     it('should fetch with facetFilters parameter when multiple categories are provided', () => {
       // given
       const keywords = 'searched keywords'
-      const categories = ['SPECTACLE', 'LIVRE']
+      const offerCategories = ['SPECTACLE', 'LIVRE']
 
       // when
       fetchAlgolia({
-        categories: categories,
         keywords: keywords,
+        offerCategories: offerCategories,
       })
 
       // then
@@ -212,12 +212,12 @@ describe('fetchAlgolia', () => {
     it('should fetch with given index when index suffix is provided', () => {
       // given
       const keywords = 'searched keywords'
-      const indexSuffix = '_by_proximity'
+      const sortBy = '_by_proximity'
 
       // when
       fetchAlgolia({
-        indexSuffix: indexSuffix,
         keywords: keywords,
+        sortBy: sortBy,
       })
 
       // then
@@ -268,6 +268,8 @@ describe('fetchAlgolia', () => {
       const keywords = 'searched keywords'
       const offerTypes = {
         isDigital: true,
+        isEvent: false,
+        isThing: false
       }
 
       // when
@@ -463,26 +465,28 @@ describe('fetchAlgolia', () => {
   describe('multiple parameters', () => {
     it('should fetch with all given search parameters', () => {
       // given
-      const keywords = 'searched keywords'
-      const page = 2
       const geolocation = {
         latitude: 42,
         longitude: 43,
       }
-      const categories = ['LECON', 'VISITE']
-      const indexSuffix = '_by_price'
+      const keywords = 'searched keywords'
+      const offerCategories = ['LECON', 'VISITE']
       const offerTypes = {
         isDigital: true,
+        isEvent: false,
+        isThing: false
       }
+      const page = 2
+      const sortBy = '_by_price'
 
       // when
       fetchAlgolia({
-        categories: categories,
-        geolocationCoordinates: geolocation,
-        indexSuffix: indexSuffix,
+        geolocation: geolocation,
         keywords: keywords,
+        offerCategories: offerCategories,
         offerTypes: offerTypes,
         page: page,
+        sortBy: sortBy,
       })
 
       // then
@@ -497,26 +501,26 @@ describe('fetchAlgolia', () => {
 
     it('should fetch event offers for category spectacle around me ordered by price', () => {
       // given
-      const keywords = ''
       const geolocation = {
         latitude: 42,
         longitude: 43,
       }
-      const categories = ['PRATIQUE', 'SPECTACLE']
-      const indexSuffix = '_by_price'
+      const keywords = ''
+      const offerCategories = ['PRATIQUE', 'SPECTACLE']
       const offerTypes = {
         isDigital: false,
         isEvent: true,
         isThing: false
       }
+      const sortBy = '_by_price'
 
       // when
       fetchAlgolia({
-        categories: categories,
-        geolocationCoordinates: geolocation,
-        indexSuffix: indexSuffix,
+        geolocation: geolocation,
         keywords: keywords,
+        offerCategories: offerCategories,
         offerTypes: offerTypes,
+        sortBy: sortBy,
       })
 
       // then

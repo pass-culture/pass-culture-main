@@ -50,7 +50,11 @@ describe('components | SearchResults', () => {
     push = jest.fn()
 
     props = {
-      categoriesFilter: [],
+      criteria: {
+        categories: [],
+        isSearchAroundMe: false,
+        sortBy: null
+      },
       geolocation: {
         latitude: 40.1,
         longitude: 41.1,
@@ -64,7 +68,6 @@ describe('components | SearchResults', () => {
         search: '',
         replace,
       },
-      isSearchAroundMe: false,
       match: {
         params: {},
       },
@@ -74,7 +77,6 @@ describe('components | SearchResults', () => {
         parse,
       },
       redirectToSearchMainPage: jest.fn(),
-      sortingIndexSuffix: null,
     }
     fetchAlgolia.mockReturnValue(
       new Promise(resolve => {
@@ -153,11 +155,49 @@ describe('components | SearchResults', () => {
       expect(wrapper.find(Spinner)).toHaveLength(0)
     })
 
+    it('should fetch data using query params when provided', async () => {
+      // given
+      fetchAlgolia.mockReturnValue(
+        new Promise(resolve => {
+          resolve({
+            hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+            nbHits: 2,
+            page: 0,
+          })
+        })
+      )
+      parse.mockReturnValue({
+        'categories': 'MUSEE',
+        'mots-cles': 'une librairie',
+        'page': 1,
+        'tri': '_by_price'
+      })
+      props.criteria = {}
+
+      // when
+      await shallow(<SearchResults {...props} />)
+
+      // then
+      expect(fetchAlgolia).toHaveBeenCalledWith({
+        keywords: 'une librairie',
+        offerCategories: ['MUSEE'],
+        offerTypes: {
+          isDigital: false,
+          isEvent: false,
+          isThing: false
+        },
+        page: 0,
+        sortBy: '_by_price',
+      })
+    })
+
     describe('when no keywords in url', () => {
       it('should fetch data with page 0, given categories, geolocation, sorting criteria', () => {
-        props.categoriesFilter = ['Cinéma']
-        props.isSearchAroundMe = true
-        props.sortingIndexSuffix = '_by_proximity'
+        props.criteria = {
+          categories: ['Cinéma'],
+          isSearchAroundMe: true,
+          sortBy: '_by_proximity'
+        }
 
         // when
         shallow(<SearchResults {...props} />)
@@ -165,16 +205,19 @@ describe('components | SearchResults', () => {
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
           aroundRadius: 0,
-          categories: props.categoriesFilter,
+          geolocation: props.geolocation,
           keywords: '',
-          indexSuffix: '_by_proximity',
-          geolocationCoordinates: props.geolocation,
+          offerCategories: ['Cinéma'],
           offerTypes: {
             isDigital: false,
             isEvent: false,
             isThing: false,
           },
           page: 0,
+<<<<<<< HEAD
+=======
+          sortBy: '_by_proximity',
+>>>>>>> (PC-3121): refacto
         })
       })
     })
@@ -209,15 +252,18 @@ describe('components | SearchResults', () => {
         expect(searchInput.prop('value')).toBe('une librairie')
         expect(resultTitle).toHaveLength(1)
         expect(fetchAlgolia).toHaveBeenCalledWith({
-          categories: [],
-          indexSuffix: null,
           keywords: 'une librairie',
+          offerCategories: [],
           offerTypes: {
             isDigital: false,
             isEvent: false,
             isThing: false,
           },
           page: 0,
+<<<<<<< HEAD
+=======
+          sortBy: null,
+>>>>>>> (PC-3121): refacto
         })
       })
 
@@ -270,14 +316,10 @@ describe('components | SearchResults', () => {
           })
         )
         parse.mockReturnValue({
+          'autour-de-moi': 'oui',
           'mots-cles': 'une librairie',
         })
-        props.isSearchAroundMe = true
-        props.sortingIndexSuffix = null
-        props.geolocation = {
-          latitude: 40.1,
-          longitude: 41.1,
-        }
+        props.criteria.isSearchAroundMe = true
 
         // when
         shallow(<SearchResults {...props} />)
@@ -285,16 +327,19 @@ describe('components | SearchResults', () => {
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
           aroundRadius: 0,
-          categories: [],
-          geolocationCoordinates: { latitude: 40.1, longitude: 41.1 },
-          indexSuffix: null,
+          geolocation: { latitude: 40.1, longitude: 41.1 },
           keywords: 'une librairie',
+          offerCategories: [],
           offerTypes: {
             isDigital: false,
             isEvent: false,
             isThing: false,
           },
           page: 0,
+<<<<<<< HEAD
+=======
+          sortBy: null,
+>>>>>>> (PC-3121): refacto
         })
       })
     })
@@ -312,28 +357,29 @@ describe('components | SearchResults', () => {
           })
         )
         parse.mockReturnValue({
+          'categories': '',
           'mots-cles': 'une librairie',
-          page: 1,
-          categories: '',
+          'page': 1,
         })
-        props.categoriesFilter = ['CINEMA']
-        props.isSearchAroundMe = false
-        props.sortingIndexSuffix = null
+        props.criteria.categories = ['CINEMA']
 
         // when
         await shallow(<SearchResults {...props} />)
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
-          categories: ['CINEMA'],
-          indexSuffix: null,
           keywords: 'une librairie',
+          offerCategories: ['CINEMA'],
           offerTypes: {
             isDigital: false,
             isEvent: false,
             isThing: false,
           },
           page: 0,
+<<<<<<< HEAD
+=======
+          sortBy: null,
+>>>>>>> (PC-3121): refacto
         })
       })
 
@@ -353,20 +399,17 @@ describe('components | SearchResults', () => {
           page: 1,
           categories: 'CINEMA',
         })
-        props.categoriesFilter = []
-        props.isSearchAroundMe = false
-        props.sortingIndexSuffix = null
 
         // when
         await shallow(<SearchResults {...props} />)
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
-          categories: ['CINEMA'],
-          indexSuffix: null,
           keywords: 'une librairie',
+          offerCategories: ['CINEMA'],
           offerTypes: { isDigital: false, isEvent: false, isThing: false },
           page: 0,
+          sortBy: null
         })
       })
 
@@ -395,11 +438,11 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
-          categories: ['CINEMA'],
-          indexSuffix: null,
           keywords: 'une librairie',
+          offerCategories: ['CINEMA'],
           offerTypes: { isDigital: false, isEvent: false, isThing: false },
           page: 0,
+          sortBy: null
         })
       })
 
@@ -415,26 +458,28 @@ describe('components | SearchResults', () => {
           })
         )
         parse.mockReturnValue({
+          'categories': '',
           'mots-cles': 'une librairie',
-          page: 1,
-          categories: '',
+          'page': 1,
         })
-        props.categoriesFilter = []
 
         // when
         await shallow(<SearchResults {...props} />)
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
-          categories: [],
-          indexSuffix: null,
           keywords: 'une librairie',
+          offerCategories: [],
           offerTypes: {
             isDigital: false,
             isEvent: false,
             isThing: false,
           },
           page: 0,
+<<<<<<< HEAD
+=======
+          sortBy: null
+>>>>>>> (PC-3121): refacto
         })
       })
     })
@@ -453,25 +498,28 @@ describe('components | SearchResults', () => {
         )
         parse.mockReturnValue({
           'mots-cles': 'une librairie',
-          page: 1,
+          'page': 1,
+          'tri': '_by_proximity'
         })
-        props.isSearchAroundMe = false
-        props.sortingIndexSuffix = '_by_proximity'
+        props.criteria.sortBy = '_by_proximity'
 
         // when
         await shallow(<SearchResults {...props} />)
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
-          categories: [],
-          indexSuffix: '_by_proximity',
           keywords: 'une librairie',
+          offerCategories: [],
           offerTypes: {
             isDigital: false,
             isEvent: false,
             isThing: false,
           },
           page: 0,
+<<<<<<< HEAD
+=======
+          sortBy: '_by_proximity',
+>>>>>>> (PC-3121): refacto
         })
       })
 
@@ -488,25 +536,27 @@ describe('components | SearchResults', () => {
         )
         parse.mockReturnValue({
           'mots-cles': 'une librairie',
-          page: 1,
+          'page': 1,
+          'tri': ''
         })
-        props.isSearchAroundMe = false
-        props.sortingIndexSuffix = null
 
         // when
         await shallow(<SearchResults {...props} />)
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
-          categories: [],
-          indexSuffix: null,
           keywords: 'une librairie',
+          offerCategories: [],
           offerTypes: {
             isDigital: false,
             isEvent: false,
             isThing: false,
           },
           page: 0,
+<<<<<<< HEAD
+=======
+          sortBy: null,
+>>>>>>> (PC-3121): refacto
         })
       })
     })
@@ -530,15 +580,18 @@ describe('components | SearchResults', () => {
 
       // then
       expect(fetchAlgolia).toHaveBeenCalledWith({
-        categories: [],
-        indexSuffix: null,
         keywords: 'un livre très cherché',
+        offerCategories: [],
         offerTypes: {
           isDigital: false,
           isEvent: false,
           isThing: false,
         },
         page: 0,
+<<<<<<< HEAD
+=======
+        sortBy: null,
+>>>>>>> (PC-3121): refacto
       })
     })
 
@@ -561,15 +614,18 @@ describe('components | SearchResults', () => {
 
       // then
       expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
-        categories: [],
-        indexSuffix: null,
         keywords: '',
+        offerCategories: [],
         offerTypes: {
           isDigital: false,
           isEvent: false,
           isThing: false,
         },
         page: 0,
+<<<<<<< HEAD
+=======
+        sortBy: null,
+>>>>>>> (PC-3121): refacto
       })
     })
 
@@ -592,15 +648,18 @@ describe('components | SearchResults', () => {
 
       // then
       expect(fetchAlgolia).toHaveBeenCalledWith({
-        categories: [],
-        indexSuffix: null,
         keywords: '',
+        offerCategories: [],
         offerTypes: {
           isDigital: false,
           isEvent: false,
           isThing: false,
         },
         page: 0,
+<<<<<<< HEAD
+=======
+        sortBy: null,
+>>>>>>> (PC-3121): refacto
       })
     })
 
@@ -758,7 +817,7 @@ describe('components | SearchResults', () => {
             hitsPerPage: 2,
             processingTimeMS: 1,
             query: 'librairie',
-            params: "query='librairie'&hitsPerPage=2",
+            params: 'query=\'librairie\'&hitsPerPage=2',
           })
         })
       )
@@ -798,7 +857,7 @@ describe('components | SearchResults', () => {
             hitsPerPage: 2,
             processingTimeMS: 1,
             query: 'librairie',
-            params: "query='librairie'&hitsPerPage=2",
+            params: 'query=\'librairie\'&hitsPerPage=2',
           })
         })
       )
@@ -831,7 +890,7 @@ describe('components | SearchResults', () => {
             hitsPerPage: 2,
             processingTimeMS: 1,
             query: 'vas-y',
-            params: "query='vas-y'&hitsPerPage=2",
+            params: 'query=\'vas-y\'&hitsPerPage=2',
           })
         })
       )
@@ -851,12 +910,19 @@ describe('components | SearchResults', () => {
         currentPage: 0,
         filters: {
           aroundRadius: 0,
+          isSearchAroundMe: false,
           offerCategories: [],
           offerTypes: {
             isDigital: false,
             isEvent: false,
+<<<<<<< HEAD
             isThing: false,
           },
+=======
+            isThing: false
+          },
+          sortBy: null
+>>>>>>> (PC-3121): refacto
         },
         keywordsToSearch: 'vas-y',
         isLoading: false,
@@ -910,26 +976,32 @@ describe('components | SearchResults', () => {
       // then
       expect(fetchAlgolia).toHaveBeenCalledTimes(2)
       expect(fetchAlgolia).toHaveBeenNthCalledWith(1, {
-        categories: [],
-        indexSuffix: null,
         keywords: '',
+        offerCategories: [],
         offerTypes: {
           isDigital: false,
           isEvent: false,
           isThing: false,
         },
         page: 0,
+<<<<<<< HEAD
+=======
+        sortBy: null
+>>>>>>> (PC-3121): refacto
       })
       expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
-        categories: [],
-        indexSuffix: null,
         keywords: 'librairie',
+        offerCategories: [],
         offerTypes: {
           isDigital: false,
           isEvent: false,
           isThing: false,
         },
         page: 0,
+<<<<<<< HEAD
+=======
+        sortBy: null,
+>>>>>>> (PC-3121): refacto
       })
     })
 
@@ -957,7 +1029,7 @@ describe('components | SearchResults', () => {
       // then
       await toast.info
       expect(toast.info).toHaveBeenCalledWith(
-        "La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard."
+        'La recherche n\'a pas pu aboutir, veuillez ré-essayer plus tard.'
       )
     })
 
@@ -965,8 +1037,8 @@ describe('components | SearchResults', () => {
       // given
       props.query.parse.mockReturnValue({
         'autour-de-moi': 'oui',
-        tri: '_by_price',
-        categories: 'VISITE',
+        'categories': 'VISITE',
+        'tri': '_by_price',
       })
       const wrapper = shallow(<SearchResults {...props} />)
       stubRef(wrapper)
@@ -1001,7 +1073,7 @@ describe('components | SearchResults', () => {
       })
     })
 
-    it('should remove focus from input when the form is submited', () => {
+    it('should remove focus from input when the form is submitted', () => {
       // given
       const wrapper = shallow(<SearchResults {...props} />)
       const instance = wrapper.instance()
@@ -1294,9 +1366,9 @@ describe('components | SearchResults', () => {
       // given
       history.push('/recherche-offres/resultats/filtres')
       props.query.parse.mockReturnValue({
-        categories: 'VISITE;CINEMA',
+        'categories': 'VISITE;CINEMA',
         'mots-cles': 'librairie',
-        tri: '_by_price',
+        'tri': '_by_price',
       })
 
       // when
@@ -1314,14 +1386,14 @@ describe('components | SearchResults', () => {
       expect(filtersContainer.prop('history')).toStrictEqual(props.history)
       expect(filtersContainer.prop('initialFilters')).toStrictEqual({
         aroundRadius: 0,
-        offerCategories: ['VISITE', 'CINEMA'],
         isSearchAroundMe: false,
+        offerCategories: ['VISITE', 'CINEMA'],
         offerTypes: {
           isDigital: false,
           isEvent: false,
           isThing: false,
         },
-        sortCriteria: '_by_price',
+        sortBy: '_by_price',
       })
       expect(filtersContainer.prop('match')).toStrictEqual(props.match)
       expect(filtersContainer.prop('offers')).toStrictEqual({ hits: [], nbHits: 0, nbPages: 0 })

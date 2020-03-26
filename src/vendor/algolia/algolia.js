@@ -10,37 +10,37 @@ import { FILTERS } from './filters'
 
 export const fetchAlgolia = ({
                                aroundRadius = null,
-                               categories = [],
-                               geolocationCoordinates = null,
-                               indexSuffix = '',
+                               geolocation = null,
                                keywords = '',
+                               offerCategories = [],
                                offerTypes = {
                                  isDigital: false,
                                  isEvent: false,
                                  isThing: false
                                },
                                page = 0,
+                               sortBy = ''
                              } = {}
 ) => {
   const searchParameters = {
     page: page,
-    ...buildFacetFilters(categories, offerTypes),
-    ..._buildGeolocationParameter(geolocationCoordinates, aroundRadius),
+    ...buildFacetFilters(offerCategories, offerTypes),
+    ...buildGeolocationParameter(aroundRadius, geolocation),
   }
   const client = algoliasearch(WEBAPP_ALGOLIA_APPLICATION_ID, WEBAPP_ALGOLIA_SEARCH_API_KEY)
-  const index = client.initIndex(WEBAPP_ALGOLIA_INDEX_NAME + indexSuffix)
+  const index = client.initIndex(WEBAPP_ALGOLIA_INDEX_NAME + sortBy)
 
   return index.search(keywords, searchParameters)
 }
 
-const buildFacetFilters = (categories, offerTypes) => {
-  if (categories.length === 0 && offerTypes == null) {
+const buildFacetFilters = (offerCategories, offerTypes) => {
+  if (offerCategories.length === 0 && offerTypes == null) {
     return
   }
 
   const facetFilters = []
-  if (categories.length > 0) {
-    const categoriesPredicate = _buildCategoriesPredicate(categories)
+  if (offerCategories.length > 0) {
+    const categoriesPredicate = _buildOfferCategoriesPredicate(offerCategories)
     facetFilters.push(categoriesPredicate)
   }
   const offerTypesPredicate = _buildOfferTypesPredicate(offerTypes)
@@ -49,14 +49,13 @@ const buildFacetFilters = (categories, offerTypes) => {
     facetFilters.push(...offerTypesPredicate)
   }
 
-
   return {
     facetFilters,
   }
 }
 
-const _buildCategoriesPredicate = categories => {
-  return categories.map(category => `${FACETS.OFFER_CATEGORY}:${category}`)
+const _buildOfferCategoriesPredicate = offerCategories => {
+  return offerCategories.map(category => `${FACETS.OFFER_CATEGORY}:${category}`)
 }
 
 const _buildOfferTypesPredicate = offerTypes => {
@@ -84,9 +83,9 @@ const _buildOfferTypesPredicate = offerTypes => {
   }
 }
 
-const _buildGeolocationParameter = (coordinates, aroundRadius) => {
-  if (coordinates) {
-    const { longitude, latitude } = coordinates
+const buildGeolocationParameter = (aroundRadius, geolocation) => {
+  if (geolocation) {
+    const { longitude, latitude } = geolocation
     if (latitude && longitude) {
       return {
         aroundLatLng: `${latitude}, ${longitude}`,

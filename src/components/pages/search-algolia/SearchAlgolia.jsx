@@ -73,15 +73,17 @@ class SearchAlgolia extends PureComponent {
         </Route>
         <Route path="/recherche-offres/resultats">
           <SearchResults
-            categoriesFilter={categoryCriterion.facetFilter ? [categoryCriterion.facetFilter] : []}
+            criteria={{
+              categories: categoryCriterion.facetFilter ? [categoryCriterion.facetFilter] : [],
+              isSearchAroundMe: geolocationCriterion.isSearchAroundMe,
+              sortBy: sortCriterion.index
+            }}
             geolocation={geolocation}
             history={history}
-            isSearchAroundMe={geolocationCriterion.isSearchAroundMe}
             match={match}
             query={query}
             redirectToSearchMainPage={redirectToSearchMainPage}
             search={history.location.search}
-            sortingIndexSuffix={sortCriterion.index}
           />
         </Route>
         <Route path="/recherche-offres/criteres-localisation">

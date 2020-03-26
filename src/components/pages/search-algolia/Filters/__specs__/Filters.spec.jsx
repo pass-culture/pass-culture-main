@@ -40,7 +40,7 @@ describe('components | Filters', () => {
           isEvent: false,
           isThing: false
         },
-        sortCriteria: '_by_price',
+        sortBy: '_by_price',
       },
       isGeolocationEnabled: false,
       isUserAllowedToSelectCriterion: jest.fn(),
@@ -99,18 +99,17 @@ describe('components | Filters', () => {
       })
 
       describe('when clicking on "Partout"', () => {
-        it('should trigger search to Algolia and redirect to filters page when clicking on "Partout" criterion', () => {
+        it('should trigger search and redirect to filters page when clicking on "Partout" criterion', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-          })
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
           props.history.location.pathname = '/recherche-offres/resultats/filtres/localisation'
           props.isUserAllowedToSelectCriterion.mockReturnValue(true)
           props.query.parse.mockReturnValue({
             'autour-de-moi': 'non',
-            categories: 'VISITE;CINEMA',
+            'categories': 'VISITE;CINEMA',
             'mots-cles': 'librairie',
-            tri: '_by_price',
+            'tri': '_by_price',
           })
           fetchAlgolia.mockReturnValue(
             new Promise(resolve => {
@@ -136,16 +135,14 @@ describe('components | Filters', () => {
 
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith({
-            categories: ['VISITE', 'CINEMA'],
-            geolocationCoordinates: null,
-            indexSuffix: '_by_price',
             keywords: 'librairie',
+            offerCategories: ['VISITE', 'CINEMA'],
             offerTypes: {
               isDigital: false,
               isEvent: false,
               isThing: false
             },
-            page: 0,
+            sortBy: '_by_price',
           })
           expect(props.redirectToSearchFiltersPage).toHaveBeenCalledWith()
           expect(props.history.replace).toHaveBeenCalledWith({
@@ -155,11 +152,10 @@ describe('components | Filters', () => {
       })
 
       describe('when clicking on "Autour de moi"', () => {
-        it('should trigger search to Algolia and redirect to filters page when clicking on "Autour de moi" criterion', () => {
+        it('should trigger search and redirect to filters page when clicking on "Autour de moi" criterion', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-          })
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
           props.history.location.pathname = '/recherche-offres/resultats/filtres/localisation'
           props.initialFilters = {
             aroundRadius: 50,
@@ -170,14 +166,14 @@ describe('components | Filters', () => {
               isEvent: false,
               isThing: false
             },
-            sortCriteria: '_by_price',
+            sortBy: '_by_price',
           }
           props.isUserAllowedToSelectCriterion.mockReturnValue(true)
           props.query.parse.mockReturnValue({
             'autour-de-moi': 'oui',
-            categories: 'VISITE',
+            'categories': 'VISITE',
             'mots-cles': 'librairie',
-            tri: '_by_price',
+            'tri': '_by_price',
           })
           fetchAlgolia.mockReturnValue(
             new Promise(resolve => {
@@ -204,16 +200,15 @@ describe('components | Filters', () => {
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith({
             aroundRadius: 50,
-            categories: ['VISITE'],
-            geolocationCoordinates: { latitude: 40, longitude: 41 },
-            indexSuffix: '_by_price',
+            geolocation: { latitude: 40, longitude: 41 },
             keywords: 'librairie',
+            offerCategories: ['VISITE'],
             offerTypes: {
               isDigital: false,
               isEvent: false,
               isThing: false
             },
-            page: 0,
+            sortBy: '_by_price'
           })
           expect(props.redirectToSearchFiltersPage).toHaveBeenCalledWith()
           expect(props.history.replace).toHaveBeenCalledWith({
@@ -335,7 +330,7 @@ describe('components | Filters', () => {
             isEvent: false,
             isThing: false
           },
-          sortCriteria: '_by_price'
+          sortBy: '_by_price'
         })
       })
 
@@ -642,16 +637,14 @@ describe('components | Filters', () => {
 
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith({
-            categories: ['VISITE', 'CINEMA'],
-            geolocationCoordinates: null,
-            indexSuffix: '_by_price',
             keywords: 'librairies',
+            offerCategories: ['VISITE', 'CINEMA'],
             offerTypes: {
               isDigital: true,
               isEvent: false,
               isThing: false
             },
-            page: 0
+            sortBy: '_by_price'
           })
         })
       })
@@ -854,7 +847,7 @@ describe('components | Filters', () => {
                 isEvent: false,
                 isThing: false
               },
-              sortCriteria: '_by_price'
+              sortBy: '_by_price'
             }
             props.query.parse.mockReturnValue({
               'mots-cles': 'librairie',
@@ -884,16 +877,15 @@ describe('components | Filters', () => {
             // then
             expect(fetchAlgolia).toHaveBeenCalledWith({
               aroundRadius: 0,
-              categories: ['VISITE'],
-              geolocationCoordinates: { latitude: 40, longitude: 41 },
-              indexSuffix: '_by_price',
+              geolocation: { latitude: 40, longitude: 41 },
               keywords: 'librairie',
+              offerCategories: ['VISITE'],
               offerTypes: {
                 isDigital: false,
                 isEvent: false,
                 isThing: false
               },
-              page: 0
+              sortBy: '_by_price',
             })
           })
         })
@@ -913,7 +905,7 @@ describe('components | Filters', () => {
                 isEvent: true,
                 isThing: true
               },
-              sortCriteria: '_by_price'
+              sortBy: '_by_price'
             }
             props.query.parse.mockReturnValue({
               'mots-cles': 'librairie',
@@ -943,16 +935,15 @@ describe('components | Filters', () => {
             // then
             expect(fetchAlgolia).toHaveBeenCalledWith({
               aroundRadius: 0,
-              categories: ['VISITE', 'CINEMA'],
-              geolocationCoordinates: { latitude: 40, longitude: 41 },
-              indexSuffix: '_by_price',
+              geolocation: { latitude: 40, longitude: 41 },
               keywords: 'librairie',
+              offerCategories: ['VISITE', 'CINEMA'],
               offerTypes: {
                 isDigital: false,
                 isEvent: false,
                 isThing: false
               },
-              page: 0,
+              sortBy: '_by_price',
             })
           })
         })

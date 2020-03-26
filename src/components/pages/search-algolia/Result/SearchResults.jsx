@@ -16,16 +16,20 @@ import SearchAlgoliaDetailsContainer from './ResultDetail/ResultDetailContainer'
 class SearchResults extends PureComponent {
   constructor(props) {
     super(props)
+    const { criteria: { categories, isSearchAroundMe, sortBy } } = props
+
     this.state = {
       currentPage: 0,
       filters: {
         aroundRadius: 0,
+        isSearchAroundMe: isSearchAroundMe,
+        offerCategories: this.getCategoriesFromUrlOrProps(categories),
         offerTypes: {
           isDigital: false,
           isEvent: false,
           isThing: false,
         },
-        offerCategories: this.getCategoriesFromUrlOrProps(),
+        sortBy: this.getSortByFromUrlOrProps(sortBy)
       },
       keywordsToSearch: '',
       isLoading: false,
@@ -39,22 +43,32 @@ class SearchResults extends PureComponent {
 
   componentDidMount() {
     const { query } = this.props
+    const { currentPage } = this.state
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles'] || ''
-    const { currentPage } = this.state
     this.fetchOffers(keywords, currentPage)
   }
 
-  getCategoriesFromUrlOrProps() {
-    const { query, categoriesFilter: categoriesFromProps } = this.props
+  getCategoriesFromUrlOrProps = (categoriesFromProps) => {
+    const { query } = this.props
     const queryParams = query.parse()
     const categoriesFromUrl = queryParams['categories'] || ''
 
     return categoriesFromUrl ? categoriesFromUrl.split(';') : categoriesFromProps
   }
 
+  getSortByFromUrlOrProps = (sortByFromProps) => {
+    const { query } = this.props
+    const queryParams = query.parse()
+    const sortByFromUrl = queryParams['tri'] || ''
+
+    return sortByFromUrl ? sortByFromUrl : sortByFromProps
+  }
+
+  getScrollParent = () => document.querySelector('.sr-wrapper')
+
   showFailModal = () => {
-    toast.info("La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard.")
+    toast.info('La recherche n\'a pas pu aboutir, veuillez ré-essayer plus tard.')
   }
 
   handleOnSubmit = event => {
@@ -67,32 +81,24 @@ class SearchResults extends PureComponent {
 
     const queryParams = query.parse()
     const autourDeMoi = queryParams['autour-de-moi']
-    const tri = queryParams['tri']
     const categories = offerCategories.join(';')
+    const tri = queryParams['tri']
 
     trimmedKeywordsToSearch &&
-      history.replace({
-        search: `?mots-cles=${trimmedKeywordsToSearch}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${categories}`,
-      })
+    history.replace({
+      search: `?mots-cles=${trimmedKeywordsToSearch}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${categories}`,
+    })
 
     if (searchedKeywords !== trimmedKeywordsToSearch) {
-      this.setState(
-        {
-          currentPage: 0,
-          results: [],
-        },
-        () => {
-          const { currentPage } = this.state
-          this.fetchOffers(trimmedKeywordsToSearch, currentPage)
-        }
-      )
+      this.setState({
+        currentPage: 0,
+        results: [],
+      }, () => {
+        const { currentPage } = this.state
+        this.fetchOffers(trimmedKeywordsToSearch, currentPage)
+      })
     }
     this.inputRef.current.blur()
-  }
-
-  fetchNextOffers = currentPage => {
-    const { searchedKeywords } = this.state
-    this.fetchOffers(searchedKeywords, currentPage)
   }
 
   updateFilteredOffers = offers => {
@@ -112,47 +118,50 @@ class SearchResults extends PureComponent {
   }
 
   fetchOffers = (keywords, currentPage) => {
-    const { geolocation, isSearchAroundMe, sortingIndexSuffix } = this.props
+    const { geolocation } = this.props
     const { filters } = this.state
-    const { aroundRadius, offerCategories, offerTypes } = filters
+    const { aroundRadius, isSearchAroundMe, offerCategories, offerTypes, sortBy } = filters
+
     this.setState({
       isLoading: true,
     })
-    const parameters = {
-      categories: offerCategories,
-      indexSuffix: sortingIndexSuffix,
-      keywords,
-      offerTypes,
+    const options = {
+      keywords: keywords,
+      offerCategories: offerCategories,
+      offerTypes: offerTypes,
       page: currentPage,
+      sortBy: sortBy,
     }
 
     if (isSearchAroundMe) {
-      parameters.aroundRadius = aroundRadius
-      parameters.geolocationCoordinates = geolocation
+      options.aroundRadius = aroundRadius
+      options.geolocation = geolocation
     }
 
-    fetchAlgolia(parameters).then(offers => {
-        const { results } = this.state
-        const { hits, nbHits, nbPages } = offers
-        this.setState({
-          currentPage: currentPage,
-          keywordsToSearch: keywords,
-          isLoading: false,
-          resultsCount: nbHits,
-          results: [...results, ...hits],
-          searchedKeywords: keywords,
-          totalPagesNumber: nbPages,
-        })
+    fetchAlgolia(options).then(offers => {
+      const { results } = this.state
+      const { hits, nbHits, nbPages } = offers
+      this.setState({
+        currentPage: currentPage,
+        keywordsToSearch: keywords,
+        isLoading: false,
+        resultsCount: nbHits,
+        results: [...results, ...hits],
+        searchedKeywords: keywords,
+        totalPagesNumber: nbPages,
       })
-      .catch(() => {
-        this.setState({
-          isLoading: false,
-        })
-        this.showFailModal()
+    }).catch(() => {
+      this.setState({
+        isLoading: false,
       })
+      this.showFailModal()
+    })
   }
 
-  getScrollParent = () => document.querySelector('.sr-wrapper')
+  fetchNextOffers = currentPage => {
+    const { searchedKeywords } = this.state
+    this.fetchOffers(searchedKeywords, currentPage)
+  }
 
   handleBackButtonClick = () => {
     const { redirectToSearchMainPage } = this.props
@@ -170,7 +179,6 @@ class SearchResults extends PureComponent {
 
   shouldBackFromDetails = () => {
     const { match } = this.props
-
     return Boolean(match.params.details)
   }
 
@@ -207,12 +215,12 @@ class SearchResults extends PureComponent {
     const { query } = this.props
     const queryParams = query.parse()
     const autourDeMoi = queryParams['autour-de-moi']
-    const sortCriteria = queryParams['tri']
+    const tri = queryParams['tri']
 
     return {
       ...filters,
       isSearchAroundMe: autourDeMoi === 'oui',
-      sortCriteria,
+      sortBy: tri,
     }
   }
 
@@ -220,14 +228,7 @@ class SearchResults extends PureComponent {
 
   render() {
     const { geolocation, history, match, query } = this.props
-    const {
-      currentPage,
-      keywordsToSearch,
-      isLoading,
-      results,
-      resultsCount,
-      totalPagesNumber,
-    } = this.state
+    const { currentPage, keywordsToSearch, isLoading, results, resultsCount, totalPagesNumber } = this.state
     const { location } = history
     const { search } = location
 
@@ -325,7 +326,9 @@ class SearchResults extends PureComponent {
               </button>
             </div>
           </Route>
-          <Route path="/recherche-offres/resultats/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?">
+          <Route
+            path="/recherche-offres/resultats/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+          >
             <HeaderContainer
               closeTitle="Retourner à la page découverte"
               closeTo="/decouverte"
@@ -361,26 +364,30 @@ class SearchResults extends PureComponent {
 }
 
 SearchResults.defaultProps = {
-  categoriesFilter: [],
+  criteria: {
+    categories: [],
+    isSearchAroundMe: false,
+    sortBy: '',
+  },
   geolocation: { longitude: null, latitude: null },
-  isSearchAroundMe: false,
-  sortingIndexSuffix: '',
 }
 
 SearchResults.propTypes = {
-  categoriesFilter: PropTypes.arrayOf(PropTypes.string),
+  criteria: PropTypes.shape({
+    categories: PropTypes.array,
+    isSearchAroundMe: PropTypes.bool,
+    sortBy: PropTypes.string,
+  }),
   geolocation: PropTypes.shape({
     latitude: PropTypes.number,
     longitude: PropTypes.number,
   }),
   history: PropTypes.shape().isRequired,
-  isSearchAroundMe: PropTypes.bool,
   match: PropTypes.shape().isRequired,
   query: PropTypes.shape({
     parse: PropTypes.func,
   }).isRequired,
   redirectToSearchMainPage: PropTypes.func.isRequired,
-  sortingIndexSuffix: PropTypes.string,
 }
 
 export default SearchResults
