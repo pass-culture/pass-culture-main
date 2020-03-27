@@ -424,7 +424,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, event_name='Event Name', event_type=EventType.CINEMA)
-            stock = create_stock(offer=offer, beginning_datetime=five_days_ago, end_datetime=four_days_ago)
+            stock = create_stock(offer=offer, beginning_datetime=five_days_ago)
             create_deposit(user)
             repository.save(stock, user)
 

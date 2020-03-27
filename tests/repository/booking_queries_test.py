@@ -447,15 +447,15 @@ class FindFinalVenueBookingsTest:
         assert booking3 not in bookings
 
     @clean_database
-    def test_returns_only_bookings_on_events_finished_more_than_two_days_ago(self, app):
+    def test_returns_only_bookings_on_events_started_more_than_two_days_ago(self, app):
         # Given
         user = create_user()
         create_deposit(user)
         offerer1 = create_offerer()
         venue = create_venue(offerer1)
         offer = create_offer_with_event_product(venue)
-        stock1 = create_stock(offer=offer, end_datetime=THREE_DAYS_AGO)
-        stock2 = create_stock(offer=offer, end_datetime=ONE_DAY_AGO)
+        stock1 = create_stock(offer=offer, beginning_datetime=THREE_DAYS_AGO)
+        stock2 = create_stock(offer=offer, beginning_datetime=ONE_DAY_AGO)
         booking1 = create_booking(user=user, is_used=False, stock=stock1, venue=venue)
         booking2 = create_booking(user=user, is_used=False, stock=stock2, venue=venue)
         repository.save(booking1, booking2)
@@ -1431,21 +1431,17 @@ class GetValidBookingsByUserId:
         # Given
         two_days = NOW + timedelta(days=2, hours=10)
         two_days_bis = NOW + timedelta(days=2, hours=20)
-        five_days = NOW + timedelta(days=5)
         three_days = NOW + timedelta(days=3)
         user = create_user()
         create_deposit(user)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer1 = create_offer_with_event_product(venue)
-        stock1 = create_stock(offer=offer1, beginning_datetime=three_days, end_datetime=five_days,
-                              booking_limit_datetime=NOW)
+        stock1 = create_stock(offer=offer1, beginning_datetime=three_days, booking_limit_datetime=NOW)
         offer2 = create_offer_with_event_product(venue)
-        stock2 = create_stock(offer=offer2, beginning_datetime=two_days, end_datetime=five_days,
-                              booking_limit_datetime=NOW)
+        stock2 = create_stock(offer=offer2, beginning_datetime=two_days, booking_limit_datetime=NOW)
         offer3 = create_offer_with_event_product(venue)
-        stock3 = create_stock(offer=offer3, beginning_datetime=two_days_bis, end_datetime=five_days,
-                              booking_limit_datetime=NOW)
+        stock3 = create_stock(offer=offer3, beginning_datetime=two_days_bis, booking_limit_datetime=NOW)
         booking1 = create_booking(user=user, stock=stock1,
                                   recommendation=create_recommendation(user=user, offer=offer1))
         booking2 = create_booking(user=user, stock=stock2,
@@ -1471,7 +1467,7 @@ class FindNotUsedAndNotCancelledBookingsAssociatedToOutdatedStocksTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, available=10, end_datetime=datetime(2020, 1, 1))
+        stock = create_stock(offer=offer, available=10, beginning_datetime=datetime(2020, 1, 1))
         booking1 = create_booking(user=user, is_cancelled=False, stock=stock)
         booking2 = create_booking(user=user, is_cancelled=True, stock=stock)
         repository.save(booking1, booking2)
@@ -1492,7 +1488,7 @@ class FindNotUsedAndNotCancelledBookingsAssociatedToOutdatedStocksTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, available=10, end_datetime=datetime(2020, 1, 1))
+        stock = create_stock(offer=offer, available=10, beginning_datetime=datetime(2020, 1, 1))
         booking1 = create_booking(user=user, is_used=False, stock=stock)
         booking2 = create_booking(user=user, is_used=True, stock=stock)
         repository.save(booking1, booking2)
@@ -1515,11 +1511,11 @@ class FindNotUsedAndNotCancelledBookingsAssociatedToOutdatedStocksTest:
         offer = create_offer_with_event_product(venue)
         outdated_stock = create_stock(offer=offer,
                                       available=10,
-                                      end_datetime=datetime(2020, 1, 1)
+                                      beginning_datetime=datetime(2020, 1, 1)
                                       )
         valid_stock = create_stock(offer=offer,
                                    available=10,
-                                   end_datetime=datetime(2020, 1, 30)
+                                   beginning_datetime=datetime(2020, 1, 30)
                                    )
         booking1 = create_booking(user=user, is_used=False, is_cancelled=False, stock=outdated_stock)
         booking2 = create_booking(user=user, is_used=False, is_cancelled=False, stock=outdated_stock)

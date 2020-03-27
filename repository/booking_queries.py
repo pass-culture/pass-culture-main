@@ -1,5 +1,5 @@
 from collections import namedtuple
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import List, Set, Union
 
 from sqlalchemy import func
@@ -234,7 +234,7 @@ def _query_non_cancelled_non_activation_bookings() -> Query:
 
 def _query_keep_only_used_or_finished_bookings_on_non_activation_offers() -> Query:
     booking_on_event_finished_more_than_two_days_ago = (
-        datetime.utcnow() > Stock.endDatetime + STOCK_DELETION_DELAY)
+        datetime.utcnow() > Stock.beginningDatetime + STOCK_DELETION_DELAY)
 
     return _query_keep_on_non_activation_offers() \
         .join(Venue) \
@@ -272,7 +272,7 @@ def find_not_used_and_not_cancelled_bookings_associated_to_outdated_stock() -> L
         .join(Stock) \
         .filter(Booking.isUsed == False) \
         .filter(Booking.isCancelled == False) \
-        .filter(Stock.endDatetime + timedelta(hours=48) < datetime.utcnow()) \
+        .filter(Stock.beginningDatetime + STOCK_DELETION_DELAY < datetime.utcnow()) \
         .all()
 
 
