@@ -123,7 +123,6 @@ class Post:
                 'price': 1222,
                 'offerId': humanize(offer.id),
                 'beginningDatetime': serialize(beginningDatetime),
-                'endDatetime': serialize(beginningDatetime + timedelta(days=1)),
                 'bookingLimitDatetime': serialize(beginningDatetime + timedelta(days=2))
             }
 
@@ -175,7 +174,6 @@ class Post:
                 'offerId': humanize(offer.id),
                 'bookingLimitDatetime': None,
                 'beginningDatetime': serialize(beginningDatetime),
-                'endDatetime': serialize(beginningDatetime + timedelta(days=1)),
             }
 
             # When
@@ -187,7 +185,7 @@ class Post:
             assert response.json["bookingLimitDatetime"] == ['Ce paramètre est obligatoire']
 
         @clean_database
-        def when_setting_beginning_and_end_datetimes_on_offer_with_thing(self, app):
+        def when_setting_beginning_datetime_on_offer_with_thing(self, app):
             # Given
             user = create_user(can_book_free_offers=False, email='test@email.fr', is_admin=True)
             offerer = create_offerer()
@@ -200,7 +198,6 @@ class Post:
                 'price': 0,
                 'offerId': humanize(offer.id),
                 'beginningDatetime': serialize(beginningDatetime),
-                'endDatetime': serialize(beginningDatetime + timedelta(days=1)),
                 'bookingLimitDatetime': serialize(beginningDatetime - timedelta(days=2))
             }
 

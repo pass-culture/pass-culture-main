@@ -61,7 +61,6 @@ class DatesHaveChangedTest:
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_event_product(event_name='super offre', venue=venue)
         stock = create_stock(beginning_datetime=datetime(2020, 1, 1),
-                             end_datetime=datetime(2020, 1, 2),
                              offer=offer,
                              price=10)
         repository.save(stock)
@@ -81,7 +80,6 @@ class DatesHaveChangedTest:
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_event_product(event_name='super offre', venue=venue)
         stock = create_stock(beginning_datetime=datetime(2020, 1, 1),
-                             end_datetime=datetime(2020, 1, 2),
                              offer=offer,
                              price=10)
         repository.save(stock)
@@ -121,7 +119,6 @@ class PricesHaveChangedTest:
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_event_product(event_name='super offre', venue=venue)
         stock = create_stock(beginning_datetime=datetime(2020, 1, 1),
-                             end_datetime=datetime(2020, 1, 2),
                              offer=offer,
                              price=12)
         repository.save(stock)

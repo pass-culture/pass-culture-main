@@ -192,23 +192,6 @@ class Patch:
             ]
 
         @clean_database
-        def when_end_limit_datetime_is_none_for_event(self, app):
-            # given
-            user = create_user(can_book_free_offers=False, email='email@test.com', is_admin=True)
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue)
-            repository.save(stock, user)
-
-            # when
-            response = TestClient(app.test_client()).with_auth('email@test.com') \
-                .patch('/stocks/' + humanize(stock.id), json={'endDatetime': None})
-
-            # then
-            assert response.status_code == 400
-            assert response.json['endDatetime'] == ['Ce paramètre est obligatoire']
-
-        @clean_database
         def when_booking_limit_datetime_is_none_for_event(self, app):
             # Given
             user = create_user(can_book_free_offers=False, email='test@email.fr', is_admin=True)
@@ -276,7 +259,7 @@ class Patch:
             # when
             request_update = TestClient(app.test_client()).with_auth(pro.email) \
                 .patch(f'/stocks/{humanized_stock_id}',
-                       json={'available': 5, 'price': 20, 'endDatetime': '2020-02-08T14:30:00Z'})
+                       json={'available': 5, 'price': 20, 'beginningDatetime': '2020-02-08T14:30:00Z'})
 
             # then
             assert request_update.status_code == 400

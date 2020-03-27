@@ -1423,14 +1423,12 @@ class UpdateObjectsTest:
         assert first_stock.available is None
         assert first_stock.price == 10
         assert first_stock.beginningDatetime == datetime(2019, 12, 3, 9, 0)
-        assert first_stock.endDatetime == datetime(2019, 12, 3, 9, 0, 1)
         assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 0)
 
         assert second_stock.offerId == vf_offer.id
         assert second_stock.available is None
         assert second_stock.price == 10
         assert second_stock.beginningDatetime == datetime(2019, 12, 3, 17, 0)
-        assert second_stock.endDatetime == datetime(2019, 12, 3, 17, 0, 1)
         assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 17, 0)
 
     @patch('local_providers.local_provider.feature_queries.is_active', return_value=True)
@@ -1599,21 +1597,18 @@ class UpdateObjectsTest:
         assert first_stock.available is None
         assert first_stock.price == 10
         assert first_stock.beginningDatetime == datetime(2019, 12, 3, 9, 0)
-        assert first_stock.endDatetime == datetime(2019, 12, 3, 10, 50)
         assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 0)
 
         assert second_stock.offerId == vo_offer.id
         assert second_stock.available is None
         assert second_stock.price == 10
         assert second_stock.beginningDatetime == datetime(2019, 12, 3, 17, 0)
-        assert second_stock.endDatetime == datetime(2019, 12, 3, 18, 50)
         assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 17, 0)
 
         assert third_stock.offerId == vf_offer.id
         assert third_stock.available is None
         assert third_stock.price == 10
         assert third_stock.beginningDatetime == datetime(2019, 12, 3, 19, 0)
-        assert third_stock.endDatetime == datetime(2019, 12, 3, 20, 50)
         assert third_stock.bookingLimitDatetime == datetime(2019, 12, 3, 19, 0)
 
     class WhenAllocineStockAreSynchronizedTwice:

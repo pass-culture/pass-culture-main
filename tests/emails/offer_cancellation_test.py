@@ -19,7 +19,6 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
     def test_make_offerer_driven_cancellation_email_for_offerer_event_when_no_other_booking(self, app):
         # Given
         beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-        end_datetime = beginning_datetime + timedelta(hours=1)
         booking_limit_datetime = beginning_datetime - timedelta(hours=1)
 
         user = create_user(email='john@doe.fr', public_name='John Doe')
@@ -27,8 +26,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         venue = create_venue(offerer, name='Le petit théâtre', address='1 rue de la Libération', city='Montreuil',
                              postal_code='93100')
         offer = create_offer_with_event_product(venue, event_name='Le théâtre des ombres')
-        event_occurrence = create_event_occurrence(offer, beginning_datetime=beginning_datetime,
-                                                   end_datetime=end_datetime)
+        event_occurrence = create_event_occurrence(offer, beginning_datetime=beginning_datetime)
         stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10,
                                                    booking_limit_date=booking_limit_datetime)
         booking = create_booking(user=user, stock=stock)

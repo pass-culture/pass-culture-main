@@ -473,12 +473,11 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         offerer = create_offerer()
         venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
         beginning_datetime = datetime(2019, 7, 20, 12, 0, 0)
-        end_datetime = beginning_datetime + timedelta(hours=1)
         booking_limit_datetime = beginning_datetime - timedelta(hours=1)
 
         stock = create_stock_with_event_offer(offerer=None, venue=venue, event_type=EventType.SPECTACLE_VIVANT,
                                               offer_id=1,
-                                              beginning_datetime=beginning_datetime, end_datetime=end_datetime,
+                                              beginning_datetime=beginning_datetime,
                                               booking_limit_datetime=booking_limit_datetime)
         user = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
                            first_name='First', last_name='Last', public_name='Test')

@@ -55,7 +55,7 @@ class IsEligibleForReindexingTest:
         offerer = create_offerer(is_active=True, validation_token=None)
         venue = create_venue(offerer=offerer, validation_token=None)
         offer = create_offer_with_event_product(event_name='super offre', venue=venue)
-        stock = create_stock(beginning_datetime=datetime(2020, 1, 1), end_datetime=datetime(2020, 1, 2), offer=offer)
+        stock = create_stock(beginning_datetime=datetime(2020, 1, 1), offer=offer)
         repository.save(stock)
 
         # When
@@ -75,7 +75,7 @@ class IsEligibleForReindexingTest:
         offerer = create_offerer(is_active=True, validation_token=None)
         venue = create_venue(offerer=offerer, validation_token=None)
         offer = create_offer_with_event_product(event_name='super offre', venue=venue)
-        stock = create_stock(beginning_datetime=datetime(2020, 1, 1), end_datetime=datetime(2020, 1, 2), offer=offer)
+        stock = create_stock(beginning_datetime=datetime(2020, 1, 1), offer=offer)
         repository.save(stock)
 
         # When
@@ -96,7 +96,6 @@ class IsEligibleForReindexingTest:
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_event_product(event_name='super offre', venue=venue)
         stock = create_stock(beginning_datetime=datetime(2020, 1, 1),
-                             end_datetime=datetime(2020, 1, 2),
                              offer=offer,
                              price=10)
         repository.save(stock)
@@ -119,7 +118,6 @@ class IsEligibleForReindexingTest:
         venue = create_venue(offerer=offerer, validation_token=None)
         offer = create_offer_with_event_product(event_name='super offre', venue=venue)
         stock = create_stock(beginning_datetime=datetime(2020, 1, 1),
-                             end_datetime=datetime(2020, 1, 2),
                              offer=offer,
                              price=10)
         repository.save(stock)

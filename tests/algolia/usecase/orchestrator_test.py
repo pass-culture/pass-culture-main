@@ -517,7 +517,6 @@ class ProcessEligibleOffersTest:
         stock = create_stock(available=1,
                              beginning_datetime=datetime(2019, 1, 5),
                              booking_limit_datetime=datetime(2019, 1, 3),
-                             end_datetime=datetime(2019, 1, 7),
                              offer=offer)
         repository.save(stock)
         offer_ids = [offer.id]

@@ -15,7 +15,6 @@ class BuildObjectTest:
     def test_should_return_algolia_object_with_required_information(self, app):
         # Given
         beginning_datetime = datetime(2019, 11, 1, 10, 0, 0)
-        end_datetime = datetime(2019, 12, 1, 10, 0, 0)
         offerer = create_offerer(name='Offerer name', idx=1)
         venue = create_venue(offerer=offerer,
                              city='Paris',
@@ -34,22 +33,18 @@ class BuildObjectTest:
                                                 date_created=datetime(2020, 1, 1, 10, 0, 0))
         stock1 = create_stock(available=10,
                               beginning_datetime=beginning_datetime,
-                              end_datetime=end_datetime,
                               offer=offer,
                               price=10)
         stock2 = create_stock(available=10,
                               beginning_datetime=beginning_datetime,
-                              end_datetime=end_datetime,
                               offer=offer,
                               price=20)
         stock3 = create_stock(available=10,
                               beginning_datetime=beginning_datetime,
-                              end_datetime=end_datetime,
                               offer=offer,
                               price=0)
         stock4 = create_stock(available=10,
                               beginning_datetime=beginning_datetime,
-                              end_datetime=end_datetime,
                               is_soft_deleted=True,
                               offer=offer,
                               price=0)
@@ -303,8 +298,8 @@ class BuildObjectTest:
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_event_product(venue=venue)
-        stock1 = create_stock(beginning_datetime=datetime(2019, 1, 1), end_datetime=datetime(2019, 1, 10), offer=offer)
-        stock2 = create_stock(beginning_datetime=datetime(2019, 1, 2), end_datetime=datetime(2019, 1, 11), offer=offer)
+        stock1 = create_stock(beginning_datetime=datetime(2019, 1, 1), offer=offer)
+        stock2 = create_stock(beginning_datetime=datetime(2019, 1, 2), offer=offer)
         repository.save(stock1, stock2)
 
         # When

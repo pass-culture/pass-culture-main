@@ -62,7 +62,6 @@ class DeleteStockAndCancelBookingsTest:
                 now = datetime.utcnow()
                 self.stock = create_stock(
                     beginning_datetime=now - timedelta(days=1),
-                    end_datetime=now + timedelta(days=1),
                     is_soft_deleted=False
                 )
 
@@ -107,7 +106,6 @@ class DeleteStockAndCancelBookingsTest:
                 now = datetime.utcnow()
                 self.stock = create_stock(
                     beginning_datetime=now - timedelta(days=4),
-                    end_datetime=now - timedelta(days=3),
                     is_soft_deleted=False
                 )
 

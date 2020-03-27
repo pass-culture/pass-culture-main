@@ -265,7 +265,6 @@ def create_stock_from_offer(offer: Offer,
                             soft_deleted: bool = False,
                             booking_limit_datetime: datetime = None,
                             beginning_datetime: datetime = None,
-                            end_datetime: datetime = None,
                             date_modified: datetime = datetime.utcnow()) -> Stock:
     stock = Stock()
     stock.offer = offer
@@ -274,7 +273,6 @@ def create_stock_from_offer(offer: Offer,
     stock.isSoftDeleted = soft_deleted
     stock.bookingLimitDatetime = booking_limit_datetime
     stock.beginningDatetime = beginning_datetime
-    stock.endDatetime = end_datetime
     stock.dateModified = date_modified
 
     return stock

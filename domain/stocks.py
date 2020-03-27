@@ -19,7 +19,7 @@ def delete_stock_and_cancel_bookings(stock: Stock) -> List[Booking]:
 
         return unused_bookings
 
-    limit_date_for_stock_deletion = stock.endDatetime + STOCK_DELETION_DELAY
+    limit_date_for_stock_deletion = stock.beginningDatetime + STOCK_DELETION_DELAY
     now = datetime.utcnow()
 
     if now <= limit_date_for_stock_deletion:

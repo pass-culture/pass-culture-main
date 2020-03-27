@@ -259,8 +259,7 @@ class DateRangeTest:
         offer = Offer()
         offer.stocks = [
             create_stock(offer=offer,
-                         beginning_datetime=datetime(2018, 10, 22, 10, 10, 10),
-                         end_datetime=datetime(2018, 10, 22, 13, 10, 10))
+                         beginning_datetime=datetime(2018, 10, 22, 10, 10, 10))
         ]
 
         # When
@@ -283,25 +282,20 @@ class DateRangeTest:
         # given
         offer = create_offer_with_event_product()
         offer.stocks = [
-            create_stock(offer, beginning_datetime=two_days_ago,
-                         end_datetime=five_days_from_now)
+            create_stock(offer, beginning_datetime=two_days_ago)
         ]
 
         # then
         assert offer.dateRange == DateTimes(two_days_ago, five_days_from_now)
 
-    def test_starts_at_first_beginning_date_time_and_ends_at_last_end_date_time(self):
+    def test_starts_at_first_beginning_date_time(self):
         # given
         offer = create_offer_with_event_product()
         offer.stocks = [
-            create_stock(offer, beginning_datetime=four_days_ago,
-                         end_datetime=five_days_from_now),
-            create_stock(offer, beginning_datetime=four_days_ago,
-                         end_datetime=ten_days_from_now),
-            create_stock(offer, beginning_datetime=two_days_ago,
-                         end_datetime=five_days_from_now),
-            create_stock(offer, beginning_datetime=two_days_ago,
-                         end_datetime=ten_days_from_now)
+            create_stock(offer, beginning_datetime=four_days_ago),
+            create_stock(offer, beginning_datetime=four_days_ago),
+            create_stock(offer, beginning_datetime=two_days_ago),
+            create_stock(offer, beginning_datetime=two_days_ago)
         ]
 
         # then
@@ -312,12 +306,9 @@ class DateRangeTest:
         # given
         offer = create_offer_with_event_product()
         offer.stocks = [
-            create_stock(offer, beginning_datetime=four_days_ago, end_datetime=five_days_from_now,
-                         is_soft_deleted=True),
-            create_stock(offer, beginning_datetime=two_days_ago,
-                         end_datetime=five_days_from_now),
-            create_stock(offer, beginning_datetime=two_days_ago,
-                         end_datetime=ten_days_from_now)
+            create_stock(offer, beginning_datetime=four_days_ago, is_soft_deleted=True),
+            create_stock(offer, beginning_datetime=two_days_ago),
+            create_stock(offer, beginning_datetime=two_days_ago)
         ]
 
         # then
@@ -336,8 +327,7 @@ class DateRangeTest:
         # given
         offer = create_offer_with_event_product()
         offer.stocks = [
-            create_stock(offer, beginning_datetime=two_days_ago,
-                         end_datetime=five_days_from_now, is_soft_deleted=True),
+            create_stock(offer, beginning_datetime=two_days_ago, is_soft_deleted=True),
         ]
 
         # then
@@ -755,36 +745,31 @@ class DateRangeTest:
         # When / Then
         assert offer.dateRange == DateTimes()
 
-    def test_date_range_matches_the_occurrence_when_offer_has_only_one_stock(self):
+    def test_date_range_starts_and_ends_at_beginning_date_time_when_offer_has_only_one_stock(self):
         # Given
         offer = Offer()
         offer.type = str(EventType.CINEMA)
         offer.stocks = [
             create_stock(offer=offer,
-                         beginning_datetime=two_days_ago,
-                         end_datetime=five_days_from_now)
+                         beginning_datetime=two_days_ago)
         ]
 
         # When / Then
-        assert offer.dateRange == DateTimes(two_days_ago, five_days_from_now)
+        assert offer.dateRange == DateTimes(two_days_ago, two_days_ago)
 
-    def test_date_range_starts_at_first_beginning_date_time_and_ends_at_last_end_date_time(self):
+    def test_date_range_starts_at_first_beginning_date_time_and_ends_at_last_beginning_date_time(self):
         # Given
         offer = Offer()
         offer.type = str(EventType.CINEMA)
         offer.stocks = [
-            create_stock(offer=offer, beginning_datetime=two_days_ago,
-                         end_datetime=five_days_from_now),
-            create_stock(offer=offer, beginning_datetime=four_days_ago,
-                         end_datetime=five_days_from_now),
-            create_stock(offer=offer, beginning_datetime=four_days_ago,
-                         end_datetime=ten_days_from_now),
-            create_stock(offer=offer, beginning_datetime=two_days_ago,
-                         end_datetime=ten_days_from_now)
+            create_stock(offer=offer, beginning_datetime=two_days_ago),
+            create_stock(offer=offer, beginning_datetime=four_days_ago),
+            create_stock(offer=offer, beginning_datetime=four_days_ago),
+            create_stock(offer=offer, beginning_datetime=two_days_ago)
         ]
 
         # When / Then
-        assert offer.dateRange == DateTimes(four_days_ago, ten_days_from_now)
+        assert offer.dateRange == DateTimes(four_days_ago, two_days_ago)
 
     def test_date_range_is_empty_when_event_has_no_stocks(self):
         # given

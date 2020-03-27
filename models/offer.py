@@ -121,7 +121,7 @@ class Offer(PcObject,
             return DateTimes()
 
         start = min([stock.beginningDatetime for stock in self.activeStocks])
-        end = max([stock.endDatetime for stock in self.activeStocks])
+        end = max([stock.beginningDatetime for stock in self.activeStocks])
         return DateTimes(start, end)
 
     @property

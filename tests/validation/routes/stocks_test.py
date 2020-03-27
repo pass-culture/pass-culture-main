@@ -82,7 +82,6 @@ class CheckDatesAreAllowedOnNewStockTest:
             data = {
                 'price': 0,
                 'offerId': humanize(offer.id),
-                'endDatetime': serialize(beginningDatetime),
                 'bookingLimitDatetime': serialize(datetime(2019, 2, 14)),
             }
 
@@ -102,7 +101,6 @@ class CheckDatesAreAllowedOnNewStockTest:
                 'price': 0,
                 'offerId': humanize(offer.id),
                 'beginningDatetime': None,
-                'endDatetime': serialize(datetime(2019, 2, 14)),
                 'bookingLimitDatetime': serialize(datetime(2019, 2, 14))
             }
 
@@ -123,7 +121,6 @@ class CheckDatesAreAllowedOnNewStockTest:
             data = {
                 'price': 0,
                 'offerId': humanize(offer.id),
-                'endDatetime': serialize(beginningDatetime),
                 'beginningDatetime': serialize(beginningDatetime)
             }
 
@@ -143,7 +140,6 @@ class CheckDatesAreAllowedOnNewStockTest:
                 'price': 0,
                 'offerId': humanize(offer.id),
                 'bookingLimitDatetime': None,
-                'endDatetime': serialize(datetime(2019, 2, 14)),
                 'beginningDatetime': serialize(datetime(2019, 2, 14))
             }
 
@@ -231,7 +227,6 @@ class CheckDatesAreAllowedOnExistingStockTest:
                 'price': 0,
                 'offerId': humanize(offer.id),
                 'bookingLimitDatetime': None,
-                'endDatetime': serialize(datetime(2019, 2, 14)),
                 'beginningDatetime': serialize(datetime(2019, 2, 14))
             }
 
@@ -358,7 +353,7 @@ class CheckOnlyEditableFieldsWillBeUpdatedTest:
         # Given
         editable_fields = []
 
-        updated_fields = ['price', 'endDatetime']
+        updated_fields = ['price', 'notEditableField']
 
         # When
         with pytest.raises(ApiErrors) as error:
@@ -373,7 +368,7 @@ class CheckOnlyEditableFieldsWillBeUpdatedTest:
         # Given
         editable_fields = ['price', 'bookingLimitDatetime', 'available']
 
-        updated_fields = ['price', 'endDatetime']
+        updated_fields = ['price', 'notEditableField']
 
         # When
         with pytest.raises(ApiErrors) as error:
@@ -421,7 +416,7 @@ class GetOnlyFieldsWithValueToBeUpdatedTest:
                                'dateCreated': '2020-01-29T14:33:08.746369Z',
                                'dateModified': '2020-01-29T14:33:08.746382Z',
                                'dateModifiedAtLastProvider': '2020-01-29T14:33:07.803374Z',
-                               'endDatetime': '2020-02-08T14:30:01Z', 'fieldsUpdated': [], 'id': 'AGXA',
+                               'fieldsUpdated': [], 'id': 'AGXA',
                                'idAtProviders': 'TW92aWU6MjY1NTcy%22222222311111#LOCAL/2020-02-08T15:30:00',
                                'isSoftDeleted': False, 'lastProviderId': 'BY', 'modelName': 'Stock', 'offerId': 'QY',
                                'price': 22.0, 'remainingQuantity': 0}
@@ -441,14 +436,14 @@ class GetOnlyFieldsWithValueToBeUpdatedTest:
                                'dateCreated': '2020-01-29T14:33:08.746369Z',
                                'dateModified': '2020-01-29T14:33:08.746382Z',
                                'dateModifiedAtLastProvider': '2020-01-29T14:33:07.803374Z',
-                               'endDatetime': '2020-02-08T14:30:01Z', 'fieldsUpdated': [], 'id': 'AGXA',
+                               'fieldsUpdated': [], 'id': 'AGXA',
                                'idAtProviders': 'TW92aWU6MjY1NTcy%22222222311111#LOCAL/2020-02-08T15:30:00',
                                'isSoftDeleted': False, 'lastProviderId': 'BY', 'modelName': 'Stock', 'offerId': 'QY',
                                'price': 22.0, 'remainingQuantity': 0}
 
         stock_data = {'available': None, 'bookingLimitDatetime': '2020-02-08T12:30:00Z', 'id': 'AGXA', 'offerId': 'QY',
                       'offererId': 'A4', 'price': 25, 'beginningDatetime': '2020-02-08T14:30:00Z',
-                      'endDatetime': '2020-02-08T14:30:01Z', 'beginningTime': '15:30', 'endTime': '15:30'}
+                      'beginningTime': '15:30'}
 
         # When
         stock_updated_fields = get_only_fields_with_value_to_be_updated(stock_before_update, stock_data)

@@ -19,13 +19,13 @@ TEN_DAYS_FROM_NOW = datetime.utcnow() + timedelta(days=10)
 RECOMMENDATION_URL = '/recommendations'
 
 
-
 class Get:
     class Returns401:
         def when_no_user_is_logged_in(self, app):
             # when
             url = RECOMMENDATION_URL + '?keywords=Training'
-            response = TestClient(app.test_client()).get(url, headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()).get(
+                url, headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 401
@@ -72,10 +72,12 @@ class Get:
             self.in_one_hour = self.now + timedelta(hours=1)
             self.one_day_from_now = self.now + timedelta(days=1)
             self.three_days_from_now = self.now + timedelta(days=3)
-            self.three_days_and_one_hour_from_now = self.three_days_from_now + timedelta(hours=1)
+            self.three_days_and_one_hour_from_now = self.three_days_from_now + \
+                timedelta(hours=1)
             self.five_days_from_now = self.now + timedelta(days=5)
             self.ten_days_from_now = self.now + timedelta(days=10)
-            self.ten_days_and_three_hours_from_now = self.ten_days_from_now + timedelta(hours=3)
+            self.ten_days_and_three_hours_from_now = self.ten_days_from_now + \
+                timedelta(hours=3)
             self.thirty_days_from_now = self.now + timedelta(days=30)
 
             self.offerer = create_offerer()
@@ -122,7 +124,7 @@ class Get:
             mediation = create_mediation(offer)
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(
-                offer, beginning_datetime=TEN_DAYS_FROM_NOW, end_datetime=TWENTY_DAYS_FROM_NOW
+                offer, beginning_datetime=TEN_DAYS_FROM_NOW
             )
             repository.save(stock, recommendation)
 
@@ -162,11 +164,10 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
+            offer = create_offer_with_event_product(
+                venue, event_name='Training in Modern Jazz')
             recommendation = create_recommendation(offer, user, search=search)
-            stock = create_stock_from_offer(
-                offer, beginning_datetime=TEN_DAYS_FROM_NOW, end_datetime=TWENTY_DAYS_FROM_NOW
-            )
+            stock = create_stock_from_offer(offer, beginning_datetime=TEN_DAYS_FROM_NOW)
             repository.save(stock, recommendation)
 
             # when
@@ -187,7 +188,8 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer(validation_token='ABC123')
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
+            offer = create_offer_with_event_product(
+                venue, event_name='Training in Modern Jazz')
             recommendation = create_recommendation(offer, user, search=search)
             stock = create_stock_from_offer(offer)
             repository.save(stock, recommendation)
@@ -206,7 +208,8 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer(validation_token='ABC123')
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='www.test.fr event')
+            offer = create_offer_with_event_product(
+                venue, event_name='www.test.fr event')
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_offer(offer)
             repository.save(stock, recommendation)
@@ -227,7 +230,8 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer(is_active=False)
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
+            offer = create_offer_with_event_product(
+                venue, event_name='Training in Modern Jazz')
             recommendation = create_recommendation(offer, user, search=search)
             stock = create_stock_from_offer(offer)
             repository.save(stock, recommendation)
@@ -246,9 +250,9 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name="L'histoire sans fin")
-            stock = create_stock_from_offer(offer,
-                                            beginning_datetime=TEN_DAYS_FROM_NOW, end_datetime=TWENTY_DAYS_FROM_NOW)
+            offer = create_offer_with_event_product(
+                venue, event_name="L'histoire sans fin")
+            stock = create_stock_from_offer(offer, beginning_datetime=TEN_DAYS_FROM_NOW)
             repository.save(stock, user)
 
             # when
@@ -267,9 +271,9 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name="Vortek's")
-            stock = create_stock_from_offer(offer, beginning_datetime=TEN_DAYS_FROM_NOW,
-                                            end_datetime=TWENTY_DAYS_FROM_NOW)
+            offer = create_offer_with_event_product(
+                venue, event_name="Vortek's")
+            stock = create_stock_from_offer(offer, beginning_datetime=TEN_DAYS_FROM_NOW)
             repository.save(stock, user)
 
             # when
@@ -289,12 +293,12 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Rencontres avec des auteurs')
+            offer = create_offer_with_event_product(
+                venue, event_name='Rencontres avec des auteurs')
             # NOTE: we need to create event occurrence and stock because
             # GET recommendations filter offer without stock
             recommendation = create_recommendation(offer, user, search=search)
-            stock = create_stock_from_offer(offer, beginning_datetime=TEN_DAYS_FROM_NOW,
-                                            end_datetime=TWENTY_DAYS_FROM_NOW)
+            stock = create_stock_from_offer(offer, beginning_datetime=TEN_DAYS_FROM_NOW)
             repository.save(stock, recommendation)
 
             # when
@@ -314,10 +318,10 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Rencontres avec des auteurs')
+            offer = create_offer_with_event_product(
+                venue, event_name='Rencontres avec des auteurs')
             recommendation = create_recommendation(offer, user, search=search)
-            stock = create_stock_from_offer(offer, beginning_datetime=TEN_DAYS_FROM_NOW,
-                                            end_datetime=TWENTY_DAYS_FROM_NOW)
+            stock = create_stock_from_offer(offer, beginning_datetime=TEN_DAYS_FROM_NOW)
             repository.save(stock, recommendation)
 
             # when
@@ -336,10 +340,10 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Rencontres avec des auteurs')
+            offer = create_offer_with_event_product(
+                venue, event_name='Rencontres avec des auteurs')
             recommendation = create_recommendation(offer, user, search=search)
-            stock = create_stock_from_offer(offer, beginning_datetime=TEN_DAYS_FROM_NOW,
-                                            end_datetime=TWENTY_DAYS_FROM_NOW)
+            stock = create_stock_from_offer(offer, beginning_datetime=TEN_DAYS_FROM_NOW)
             repository.save(stock, recommendation)
 
             # when
@@ -359,10 +363,14 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer1 = create_offer_with_event_product(venue, event_name='Rencontres avec des peintres')
-            offer2 = create_offer_with_event_product(venue, event_name='Rencontres avec des auteurs')
-            recommendation1 = create_recommendation(offer1, user, search=search)
-            recommendation2 = create_recommendation(offer2, user, search=search)
+            offer1 = create_offer_with_event_product(
+                venue, event_name='Rencontres avec des peintres')
+            offer2 = create_offer_with_event_product(
+                venue, event_name='Rencontres avec des auteurs')
+            recommendation1 = create_recommendation(
+                offer1, user, search=search)
+            recommendation2 = create_recommendation(
+                offer2, user, search=search)
 
             # NOTE: we need to create event occurrence and stock because
             # GET recommendations filter offer without stock
@@ -370,11 +378,15 @@ class Get:
             event_occurrence2 = create_event_occurrence(offer1)
             event_occurrence3 = create_event_occurrence(offer2)
 
-            stock1 = create_stock_from_event_occurrence(event_occurrence1, price=10, soft_deleted=False)
-            stock2 = create_stock_from_event_occurrence(event_occurrence2, price=20, soft_deleted=True)
-            stock3 = create_stock_from_event_occurrence(event_occurrence3, price=30, soft_deleted=True)
+            stock1 = create_stock_from_event_occurrence(
+                event_occurrence1, price=10, soft_deleted=False)
+            stock2 = create_stock_from_event_occurrence(
+                event_occurrence2, price=20, soft_deleted=True)
+            stock3 = create_stock_from_event_occurrence(
+                event_occurrence3, price=30, soft_deleted=True)
 
-            repository.save(stock1, stock2, stock3, recommendation1, recommendation2)
+            repository.save(stock1, stock2, stock3,
+                            recommendation1, recommendation2)
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email).get(
@@ -390,15 +402,14 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer1 = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
+            offer1 = create_offer_with_event_product(
+                venue, event_name='Training in Modern Jazz')
             offer2 = create_offer_with_event_product(venue, event_name='Training in Modern Jazz',
                                                      event_type=EventType.CINEMA)
             recommendation = create_recommendation(offer1, user)
             recommendation2 = create_recommendation(offer2, user)
-            stock = create_stock_from_offer(offer1, beginning_datetime=TEN_DAYS_FROM_NOW,
-                                            end_datetime=TWENTY_DAYS_FROM_NOW)
-            stock2 = create_stock_from_offer(offer2, beginning_datetime=TEN_DAYS_FROM_NOW,
-                                             end_datetime=TWENTY_DAYS_FROM_NOW)
+            stock = create_stock_from_offer(offer1, beginning_datetime=TEN_DAYS_FROM_NOW)
+            stock2 = create_stock_from_offer(offer2, beginning_datetime=TEN_DAYS_FROM_NOW)
             repository.save(stock, recommendation, stock2, recommendation2)
 
             # when
@@ -415,7 +426,8 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer1 = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
+            offer1 = create_offer_with_event_product(
+                venue, event_name='Training in Modern Jazz')
             offer2 = create_offer_with_event_product(venue, event_name='Training in Modern Jazz',
                                                      event_type=EventType.CINEMA)
             offer3 = create_offer_with_event_product(venue, event_name='Training in Modern Jazz',
@@ -424,16 +436,18 @@ class Get:
             recommendation2 = create_recommendation(offer2, user)
             recommendation3 = create_recommendation(offer3, user)
             stock = create_stock_from_offer(offer1,
-                                            beginning_datetime=TEN_DAYS_FROM_NOW, end_datetime=TWENTY_DAYS_FROM_NOW)
+                                            beginning_datetime=TEN_DAYS_FROM_NOW)
             stock2 = create_stock_from_offer(offer2,
-                                             beginning_datetime=TEN_DAYS_FROM_NOW, end_datetime=TWENTY_DAYS_FROM_NOW)
+                                             beginning_datetime=TEN_DAYS_FROM_NOW)
             stock3 = create_stock_from_offer(offer3,
-                                             beginning_datetime=TEN_DAYS_FROM_NOW, end_datetime=TWENTY_DAYS_FROM_NOW)
-            repository.save(stock, recommendation, stock2, recommendation2, stock3, recommendation3)
+                                             beginning_datetime=TEN_DAYS_FROM_NOW)
+            repository.save(stock, recommendation, stock2,
+                            recommendation2, stock3, recommendation3)
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email).get(
-                RECOMMENDATION_URL + '?categories=%25C3%2589couter%2CApplaudir%2CJouer%2CLire%2CPratiquer%2CRegarder%2CRencontrer'
+                RECOMMENDATION_URL +
+                '?categories=%25C3%2589couter%2CApplaudir%2CJouer%2CLire%2CPratiquer%2CRegarder%2CRencontrer'
             )
 
             # then
@@ -446,15 +460,18 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
+            offer = create_offer_with_event_product(
+                venue, event_name='Training in Modern Jazz')
 
-            event_occurrence = create_event_occurrence(
-                offer, beginning_datetime=self.three_days_from_now, end_datetime=self.three_days_and_one_hour_from_now
+            event_occurrence1 = create_event_occurrence(
+                offer, beginning_datetime=self.three_days_from_now)
+            event_occurrence2 = create_event_occurrence(
+                offer, beginning_datetime=self.three_days_and_one_hour_from_now
             )
-
             recommendation = create_recommendation(offer, user)
-            stock = create_stock_from_event_occurrence(event_occurrence)
-            repository.save(stock, recommendation)
+            stock1 = create_stock_from_event_occurrence(event_occurrence1)
+            stock2 = create_stock_from_event_occurrence(event_occurrence2)
+            repository.save(stock1, stock2, recommendation)
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).get(
@@ -464,7 +481,8 @@ class Get:
             recommendations = response.json
             assert response.status_code == 200
             assert recommendations[0]['offer']['dateRange'] == [
-                strftime(self.three_days_from_now), strftime(self.three_days_and_one_hour_from_now)
+                strftime(self.three_days_from_now), strftime(
+                    self.three_days_and_one_hour_from_now)
             ]
             assert len(response.json) == 1
 
@@ -474,27 +492,32 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='The new film', event_type=EventType.CINEMA)
+            offer = create_offer_with_event_product(
+                venue, event_name='The new film', event_type=EventType.CINEMA)
             offer2 = create_offer_with_event_product(venue, event_name='Spectacle',
                                                      event_type=EventType.SPECTACLE_VIVANT)
-            thing_product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+            thing_product = create_product_with_thing_type(
+                thing_name='Lire un livre', is_national=True)
 
-            thing_offer = create_offer_with_thing_product(venue=venue, product=thing_product)
+            thing_offer = create_offer_with_thing_product(
+                venue=venue, product=thing_product)
 
-            event_occurrence = create_event_occurrence(offer, beginning_datetime=self.three_days_from_now,
-                                                       end_datetime=self.three_days_and_one_hour_from_now)
+            event_occurrence = create_event_occurrence(offer, beginning_datetime=self.three_days_from_now)
 
             recommendation = create_recommendation(offer, user)
             recommendation2 = create_recommendation(thing_offer, user)
             recommendation3 = create_recommendation(offer2, user)
             stock = create_stock_from_event_occurrence(event_occurrence)
             stock1 = create_stock_from_offer(offer2)
-            thing_stock = create_stock(price=12, available=5, offer=thing_offer)
-            repository.save(stock, recommendation, recommendation2, recommendation3, thing_stock, stock1)
+            thing_stock = create_stock(
+                price=12, available=5, offer=thing_offer)
+            repository.save(stock, recommendation, recommendation2,
+                            recommendation3, thing_stock, stock1)
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).get(
-                RECOMMENDATION_URL + '?categories=Lire%2CRegarder' + '&date=%s&days=1-5' % strftime(self.now)
+                RECOMMENDATION_URL + '?categories=Lire%2CRegarder' +
+                '&date=%s&days=1-5' % strftime(self.now)
             )
 
             # Then
@@ -518,8 +541,7 @@ class Get:
             offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz',
                                                     event_type=EventType.CINEMA)
 
-            event_occurrence = create_event_occurrence(offer, beginning_datetime=self.ten_days_from_now,
-                                                       end_datetime=self.ten_days_and_three_hours_from_now)
+            event_occurrence = create_event_occurrence(offer, beginning_datetime=self.ten_days_from_now)
 
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_event_occurrence(event_occurrence)
@@ -527,7 +549,8 @@ class Get:
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).get(
-                RECOMMENDATION_URL + '?date=%s&keywords=Jazz' % strftime(self.ten_days_from_now)
+                RECOMMENDATION_URL +
+                '?date=%s&keywords=Jazz' % strftime(self.ten_days_from_now)
             )
 
             # Then
@@ -546,12 +569,9 @@ class Get:
             concert_offer973 = create_offer_with_event_product(self.venue973, event_name='Kiwi',
                                                                event_type=EventType.MUSIQUE)
 
-            event_occurrence13 = create_event_occurrence(concert_offer13, beginning_datetime=self.in_one_hour,
-                                                         end_datetime=self.ten_days_from_now)
-            event_occurrence75 = create_event_occurrence(concert_offer75, beginning_datetime=self.in_one_hour,
-                                                         end_datetime=self.ten_days_from_now)
-            event_occurrence973 = create_event_occurrence(concert_offer973, beginning_datetime=self.in_one_hour,
-                                                          end_datetime=self.ten_days_from_now)
+            event_occurrence13 = create_event_occurrence(concert_offer13, beginning_datetime=self.in_one_hour)
+            event_occurrence75 = create_event_occurrence(concert_offer75, beginning_datetime=self.in_one_hour)
+            event_occurrence973 = create_event_occurrence(concert_offer973, beginning_datetime=self.in_one_hour)
 
             recommendation13 = create_recommendation(concert_offer13, user)
             recommendation75 = create_recommendation(concert_offer75, user)
@@ -561,7 +581,8 @@ class Get:
             stock75 = create_stock_from_event_occurrence(event_occurrence75)
             stock973 = create_stock_from_event_occurrence(event_occurrence973)
 
-            repository.save(stock13, recommendation13, stock75, recommendation75, stock973, recommendation973)
+            repository.save(stock13, recommendation13, stock75,
+                            recommendation75, stock973, recommendation973)
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).get(
@@ -579,10 +600,10 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
+            offer = create_offer_with_event_product(
+                venue, event_name='Training in Modern Jazz')
 
-            event_occurrence = create_event_occurrence(offer, beginning_datetime=self.three_days_from_now,
-                                                       end_datetime=self.three_days_and_one_hour_from_now)
+            event_occurrence = create_event_occurrence(offer, beginning_datetime=self.three_days_from_now)
 
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_event_occurrence(event_occurrence)
@@ -602,17 +623,16 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='The new film', event_type=EventType.CINEMA)
+            offer = create_offer_with_event_product(
+                venue, event_name='The new film', event_type=EventType.CINEMA)
             offer1 = create_offer_with_event_product(venue, event_name='Activation de votre Pass Culture',
                                                      event_type=EventType.ACTIVATION)
-            event_occurrence = create_event_occurrence(offer, beginning_datetime=self.in_one_hour,
-                                                       end_datetime=self.one_day_from_now)
+            event_occurrence = create_event_occurrence(offer, beginning_datetime=self.in_one_hour)
 
             recommendation = create_recommendation(offer, user)
             recommendation1 = create_recommendation(offer1, user)
             stock = create_stock_from_event_occurrence(event_occurrence)
-            stock1 = create_stock_from_offer(offer1, beginning_datetime=TEN_DAYS_FROM_NOW,
-                                             end_datetime=TWENTY_DAYS_FROM_NOW)
+            stock1 = create_stock_from_offer(offer1, beginning_datetime=TEN_DAYS_FROM_NOW)
             repository.save(stock, stock1, recommendation, recommendation1)
 
             # When
@@ -624,7 +644,7 @@ class Get:
             assert len(response.json) == 2
             recommendations = response.json
             assert set([r['offer']['product']['name'] for r in recommendations]) == \
-                   {'The new film', 'Activation de votre Pass Culture'}
+                {'The new film', 'Activation de votre Pass Culture'}
 
         @clean_database
         def when_searching_by_date_and_type_activation(
@@ -644,25 +664,30 @@ class Get:
                                                                      event_name='Activation de votre Pass Culture',
                                                                      event_type=EventType.ACTIVATION)
 
-            book_thing = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
-            book_thing_offer = create_offer_with_thing_product(venue=venue, product=book_thing)
+            book_thing = create_product_with_thing_type(
+                thing_name='Lire un livre', is_national=True)
+            book_thing_offer = create_offer_with_thing_product(
+                venue=venue, product=book_thing)
             cinema_event_occurrence = create_event_occurrence(cinema_event_offer,
-                                                              beginning_datetime=self.three_days_from_now,
-                                                              end_datetime=self.three_days_and_one_hour_from_now)
+                                                              beginning_datetime=self.three_days_from_now)
             activation_event_occurrence = create_event_occurrence(activation_event_offer,
-                                                                  beginning_datetime=self.three_days_from_now,
-                                                                  end_datetime=self.three_days_and_one_hour_from_now)
+                                                                  beginning_datetime=self.three_days_from_now)
 
-            cinema_recommendation = create_recommendation(cinema_event_offer, user)
+            cinema_recommendation = create_recommendation(
+                cinema_event_offer, user)
             book_recommendation = create_recommendation(book_thing_offer, user)
-            activation_recommendation = create_recommendation(activation_event_offer, user)
+            activation_recommendation = create_recommendation(
+                activation_event_offer, user)
 
-            cinema_event_occurence_stock = create_stock_from_event_occurrence(cinema_event_occurrence)
-            activation_event_occurence_stock = create_stock_from_event_occurrence(activation_event_occurrence)
-            book_thing_stock = create_stock(price=12, available=5, offer=book_thing_offer)
+            cinema_event_occurence_stock = create_stock_from_event_occurrence(
+                cinema_event_occurrence)
+            activation_event_occurence_stock = create_stock_from_event_occurrence(
+                activation_event_occurrence)
+            book_thing_stock = create_stock(
+                price=12, available=5, offer=book_thing_offer)
 
             repository.save(cinema_recommendation, book_recommendation, activation_recommendation,
-                          cinema_event_occurence_stock, activation_event_occurence_stock, book_thing_stock)
+                            cinema_event_occurence_stock, activation_event_occurence_stock, book_thing_stock)
 
             # When
 
@@ -686,8 +711,7 @@ class Get:
             offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz',
                                                     event_type=EventType.CINEMA)
 
-            event_occurrence = create_event_occurrence(offer, beginning_datetime=self.in_one_hour,
-                                                       end_datetime=self.ten_days_from_now)
+            event_occurrence = create_event_occurrence(offer, beginning_datetime=self.in_one_hour)
 
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_event_occurrence(event_occurrence)
@@ -695,7 +719,8 @@ class Get:
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).get(
-                RECOMMENDATION_URL + '?date=%s&keywords=Jazz' % strftime(self.thirty_days_from_now)
+                RECOMMENDATION_URL +
+                '?date=%s&keywords=Jazz' % strftime(self.thirty_days_from_now)
             )
 
             # Then
@@ -708,23 +733,27 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='The new film', event_type=EventType.CINEMA)
-            thing_product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+            offer = create_offer_with_event_product(
+                venue, event_name='The new film', event_type=EventType.CINEMA)
+            thing_product = create_product_with_thing_type(
+                thing_name='Lire un livre', is_national=True)
 
-            thingOffer = create_offer_with_thing_product(venue=venue, product=thing_product)
+            thingOffer = create_offer_with_thing_product(
+                venue=venue, product=thing_product)
 
-            event_occurrence = create_event_occurrence(offer, beginning_datetime=self.three_days_from_now,
-                                                       end_datetime=self.three_days_and_one_hour_from_now)
+            event_occurrence = create_event_occurrence(offer, beginning_datetime=self.three_days_from_now)
 
             recommendation = create_recommendation(offer, user)
             recommendation2 = create_recommendation(thingOffer, user)
             stock = create_stock_from_event_occurrence(event_occurrence)
             thing_stock = create_stock(price=12, available=5, offer=thingOffer)
-            repository.save(stock, recommendation, recommendation2, thing_stock)
+            repository.save(stock, recommendation,
+                            recommendation2, thing_stock)
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).get(
-                RECOMMENDATION_URL + '?categories=Lire%2CRegarder&days=1-5&page=2' + '&date=%s' % strftime(self.now)
+                RECOMMENDATION_URL + '?categories=Lire%2CRegarder&days=1-5&page=2' +
+                '&date=%s' % strftime(self.now)
             )
 
             # Then
@@ -743,12 +772,9 @@ class Get:
             concert_offer973 = create_offer_with_event_product(self.venue973, event_name='Kiwi',
                                                                event_type=EventType.MUSIQUE)
 
-            event_occurrence13 = create_event_occurrence(concert_offer13, beginning_datetime=self.in_one_hour,
-                                                         end_datetime=self.ten_days_from_now)
-            event_occurrence75 = create_event_occurrence(concert_offer75, beginning_datetime=self.in_one_hour,
-                                                         end_datetime=self.ten_days_from_now)
-            event_occurrence973 = create_event_occurrence(concert_offer973, beginning_datetime=self.in_one_hour,
-                                                          end_datetime=self.ten_days_from_now)
+            event_occurrence13 = create_event_occurrence(concert_offer13, beginning_datetime=self.in_one_hour)
+            event_occurrence75 = create_event_occurrence(concert_offer75, beginning_datetime=self.in_one_hour)
+            event_occurrence973 = create_event_occurrence(concert_offer973, beginning_datetime=self.in_one_hour)
 
             recommendation13 = create_recommendation(concert_offer13, user)
             recommendation75 = create_recommendation(concert_offer75, user)
@@ -758,7 +784,8 @@ class Get:
             stock75 = create_stock_from_event_occurrence(event_occurrence75)
             stock973 = create_stock_from_event_occurrence(event_occurrence973)
 
-            repository.save(stock13, recommendation13, stock75, recommendation75, stock973, recommendation973)
+            repository.save(stock13, recommendation13, stock75,
+                            recommendation75, stock973, recommendation973)
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).get(
@@ -775,10 +802,10 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
+            offer = create_offer_with_event_product(
+                venue, event_name='Training in Modern Jazz')
 
-            event_occurrence = create_event_occurrence(offer, beginning_datetime=self.in_one_hour,
-                                                       end_datetime=self.ten_days_from_now)
+            event_occurrence = create_event_occurrence(offer, beginning_datetime=self.in_one_hour)
 
             recommendation = create_recommendation(offer, user)
             stock = create_stock_from_event_occurrence(event_occurrence)
@@ -786,7 +813,8 @@ class Get:
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).get(
-                RECOMMENDATION_URL + '?date=%s&keywords=nekfeu' % strftime(self.ten_days_from_now)
+                RECOMMENDATION_URL +
+                '?date=%s&keywords=nekfeu' % strftime(self.ten_days_from_now)
             )
 
             # Then
@@ -798,24 +826,24 @@ class Get:
             user = create_user(email='test@email.com')
             offerer = create_offerer(name='modern')
             venue1 = create_venue(offerer)
-            venue2 = create_venue(offerer, name='modern', siret="12345678912365")
-            offer1 = create_offer_with_event_product(venue1, event_name='Modern Tango')
-            offer2 = create_offer_with_event_product(venue1, event_name='Training in Modern Jazz')
+            venue2 = create_venue(offerer, name='modern',
+                                  siret="12345678912365")
+            offer1 = create_offer_with_event_product(
+                venue1, event_name='Modern Tango')
+            offer2 = create_offer_with_event_product(
+                venue1, event_name='Training in Modern Jazz')
             offer3 = create_offer_with_event_product(venue1, event_name='Training',
                                                      description='Modern modern Jazz, Salsa & Co')
-            offer4 = create_offer_with_event_product(venue2, event_name='modern Plus')
-            offer5 = create_offer_with_event_product(venue1, event_name='Tango Plus')
+            offer4 = create_offer_with_event_product(
+                venue2, event_name='modern Plus')
+            offer5 = create_offer_with_event_product(
+                venue1, event_name='Tango Plus')
 
-            event_occurrence1 = create_event_occurrence(offer1, beginning_datetime=self.in_one_hour,
-                                                        end_datetime=self.ten_days_from_now)
-            event_occurrence2 = create_event_occurrence(offer2, beginning_datetime=self.in_one_hour,
-                                                        end_datetime=self.ten_days_from_now)
-            event_occurrence3 = create_event_occurrence(offer3, beginning_datetime=self.in_one_hour,
-                                                        end_datetime=self.ten_days_from_now)
-            event_occurrence4 = create_event_occurrence(offer4, beginning_datetime=self.in_one_hour,
-                                                        end_datetime=self.ten_days_from_now)
-            event_occurrence5 = create_event_occurrence(offer5, beginning_datetime=self.in_one_hour,
-                                                        end_datetime=self.ten_days_from_now)
+            event_occurrence1 = create_event_occurrence(offer1, beginning_datetime=self.in_one_hour)
+            event_occurrence2 = create_event_occurrence(offer2, beginning_datetime=self.in_one_hour)
+            event_occurrence3 = create_event_occurrence(offer3, beginning_datetime=self.in_one_hour)
+            event_occurrence4 = create_event_occurrence(offer4, beginning_datetime=self.in_one_hour)
+            event_occurrence5 = create_event_occurrence(offer5, beginning_datetime=self.in_one_hour)
 
             stock1 = create_stock_from_event_occurrence(event_occurrence1)
             stock2 = create_stock_from_event_occurrence(event_occurrence2)
@@ -840,28 +868,29 @@ class Get:
 
         @clean_database
         def when_searching_by_keywords_offer_with_search_feature_deactivated(self, app):
-            deactivate_feature(FeatureToggle.FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE)
+            deactivate_feature(
+                FeatureToggle.FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE)
             user = create_user(email='test@email.com')
             offerer = create_offerer(name='modern')
             venue1 = create_venue(offerer)
-            venue2 = create_venue(offerer, name='modern', siret="12345678912365")
-            offer1 = create_offer_with_event_product(venue1, event_name='modern Tango')
-            offer2 = create_offer_with_event_product(venue1, event_name='Training in Modern Jazz')
+            venue2 = create_venue(offerer, name='modern',
+                                  siret="12345678912365")
+            offer1 = create_offer_with_event_product(
+                venue1, event_name='modern Tango')
+            offer2 = create_offer_with_event_product(
+                venue1, event_name='Training in Modern Jazz')
             offer3 = create_offer_with_event_product(venue1, event_name='Training',
                                                      description='Modern modern Jazz, Salsa & Co')
-            offer4 = create_offer_with_event_product(venue2, event_name='Salsa Plus')
-            offer5 = create_offer_with_event_product(venue1, event_name='Tango Plus')
+            offer4 = create_offer_with_event_product(
+                venue2, event_name='Salsa Plus')
+            offer5 = create_offer_with_event_product(
+                venue1, event_name='Tango Plus')
 
-            event_occurrence1 = create_event_occurrence(offer1, beginning_datetime=self.in_one_hour,
-                                                        end_datetime=self.ten_days_from_now)
-            event_occurrence2 = create_event_occurrence(offer2, beginning_datetime=self.in_one_hour,
-                                                        end_datetime=self.ten_days_from_now)
-            event_occurrence3 = create_event_occurrence(offer3, beginning_datetime=self.in_one_hour,
-                                                        end_datetime=self.ten_days_from_now)
-            event_occurrence4 = create_event_occurrence(offer4, beginning_datetime=self.in_one_hour,
-                                                        end_datetime=self.ten_days_from_now)
-            event_occurrence5 = create_event_occurrence(offer5, beginning_datetime=self.in_one_hour,
-                                                        end_datetime=self.ten_days_from_now)
+            event_occurrence1 = create_event_occurrence(offer1, beginning_datetime=self.in_one_hour)
+            event_occurrence2 = create_event_occurrence(offer2, beginning_datetime=self.in_one_hour)
+            event_occurrence3 = create_event_occurrence(offer3, beginning_datetime=self.in_one_hour)
+            event_occurrence4 = create_event_occurrence(offer4, beginning_datetime=self.in_one_hour)
+            event_occurrence5 = create_event_occurrence(offer5, beginning_datetime=self.in_one_hour)
 
             stock1 = create_stock_from_event_occurrence(event_occurrence1)
             stock2 = create_stock_from_event_occurrence(event_occurrence2)
