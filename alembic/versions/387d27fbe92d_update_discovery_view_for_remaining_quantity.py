@@ -1,7 +1,7 @@
 """update_discovery_view_for_remaining_quantity
 
 Revision ID: 387d27fbe92d
-Revises: 48440c1d122a
+Revises: a3be5be5ad3d
 Create Date: 2020-03-25 13:07:27.703029
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '387d27fbe92d'
-down_revision = '48440c1d122a'
+down_revision = 'a3be5be5ad3d'
 branch_labels = None
 depends_on = None
 
