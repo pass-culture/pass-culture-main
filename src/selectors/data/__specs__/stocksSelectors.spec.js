@@ -1,4 +1,11 @@
-import { selectIsEnoughStockForOfferDuo, selectIsStockDuo } from '../stocksSelectors'
+import moment from 'moment'
+
+import {
+  selectBookables,
+  selectBookablesWithoutDateNotAvailable,
+  selectIsEnoughStockForOfferDuo,
+  selectIsStockDuo,
+} from '../stocksSelectors'
 
 describe('selectIsEnoughStockForOfferDuo', () => {
   it('should return true when there is stock with more than two remainingQuantity', () => {
@@ -200,7 +207,6 @@ describe('selectIsStockDuo', () => {
         ],
       },
     }
-
     const offerId = 'O1'
     const stockId = 'S1'
 
@@ -209,5 +215,118 @@ describe('selectIsStockDuo', () => {
 
     // then
     expect(isStockDuo).toBe(false)
+  })
+})
+
+describe('selectBookables', () => {
+  it('should return empty array when nothing is found', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [],
+        stocks: [],
+      },
+    }
+    const offer = {}
+
+    // when
+    const result = selectBookables(state, offer)
+
+    // then
+    expect(result).toStrictEqual([])
+  })
+
+  it('should return stocks with completed data', () => {
+    // given
+    jest.spyOn(Date, 'now').mockImplementation(() => '2000-01-01T20:00:00Z')
+    const state = {
+      data: {
+        bookings: [
+          {
+            stockId: 'AB',
+          },
+        ],
+        stocks: [
+          {
+            id: 'AB',
+            offerId: 'AA',
+            beginningDatetime: moment(),
+          },
+        ],
+      },
+    }
+    const offer = {
+      id: 'AA',
+    }
+
+    // when
+    const result = selectBookables(state, offer)
+
+    // then
+    expect(result).toStrictEqual([
+      {
+        __modifiers__: ['selectBookables'],
+        beginningDatetime: expect.any(Object),
+        humanBeginningDate: 'Saturday 01/01/2000 à 21:00',
+        id: 'AB',
+        offerId: 'AA',
+        userHasAlreadyBookedThisDate: true,
+        userHasCancelledThisDate: false,
+      },
+    ])
+  })
+})
+
+describe('selectBookablesWithoutDateNotAvailable', () => {
+  it('should return stocks with remaining quantity or unlimited', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [],
+        stocks: [
+          {
+            id: 'AB',
+            offerId: 'ZZ',
+            remainingQuantity: 0,
+          },
+          {
+            id: 'AC',
+            offerId: 'AA',
+            remainingQuantity: 1,
+          },
+          {
+            id: 'AD',
+            offerId: 'AA',
+            remainingQuantity: 'unlimited',
+          },
+        ],
+      },
+    }
+    const offer = {
+      id: 'AA',
+    }
+
+    // when
+    const result = selectBookablesWithoutDateNotAvailable(state, offer)
+
+    // then
+    expect(result).toStrictEqual([
+      {
+        __modifiers__: ['selectBookables'],
+        id: 'AC',
+        offerId: 'AA',
+        userHasAlreadyBookedThisDate: false,
+        userHasCancelledThisDate: false,
+        remainingQuantity: 1,
+      },
+      {
+        __modifiers__: ['selectBookables'],
+        id: 'AD',
+        offerId: 'AA',
+        userHasAlreadyBookedThisDate: false,
+        userHasCancelledThisDate: false,
+        remainingQuantity: 'unlimited',
+      },
+    ])
   })
 })

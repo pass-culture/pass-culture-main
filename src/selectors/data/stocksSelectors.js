@@ -1,6 +1,15 @@
 import createCachedSelector from 're-reselect'
 
 import { selectOfferById } from './offersSelectors'
+import { humanizeBeginningDateTime } from '../../utils/date/humanizeBeginningDateTime'
+import { sortByDateChronologically } from '../../utils/date/sortByDateChronologically'
+import { pipe } from '../../utils/functionnals'
+import { getTimezone, setTimezoneOnBeginningDatetime } from '../../utils/timezone'
+import filterPassedBookingLimitDatetimeStocks from '../../utils/filterPassedBookingLimitDatetimeStocks'
+import { markAsCancelled } from '../../utils/markAsCancelled'
+import { markAsBooked } from '../../utils/markBookingsAsBooked'
+import { addModifierString } from '../../utils/addModifierString'
+import filterRemainingStocks from '../../utils/filterRemainingStocks'
 
 const selectStocks = state => state.data.stocks
 
@@ -39,3 +48,56 @@ export const selectIsStockDuo = createCachedSelector(
 
 const isAvailableForDuo = stock =>
   stock && (stock.remainingQuantity >= 2 || stock.remainingQuantity === 'unlimited')
+
+export const selectBookables = createCachedSelector(
+  state => state.data.bookings,
+  state => state.data.stocks,
+  (state, offer) => offer,
+  (bookings, allStocks, offer) => {
+    let { venue } = offer || {}
+    const stocks = selectStocksByOfferId({ data: { stocks: allStocks } }, offer && offer.id)
+    const { departementCode } = venue || {}
+    const tz = getTimezone(departementCode)
+
+    if (!stocks || !stocks.length) return []
+
+    return pipe(
+      filterPassedBookingLimitDatetimeStocks,
+      setTimezoneOnBeginningDatetime(tz),
+      humanizeBeginningDateTime(),
+      markAsBooked(bookings),
+      markAsCancelled(bookings),
+      addModifierString(),
+      sortByDateChronologically()
+    )(stocks)
+  }
+)((state, offer) => {
+  return (offer && offer.id) || ' '
+})
+
+export const selectBookablesWithoutDateNotAvailable = createCachedSelector(
+  state => state.data.bookings,
+  state => state.data.stocks,
+  (state, offer) => offer,
+  (bookings, allStocks, offer) => {
+    let { venue } = offer || {}
+    const stocks = selectStocksByOfferId({ data: { stocks: allStocks } }, offer && offer.id)
+    const { departementCode } = venue || {}
+    const tz = getTimezone(departementCode)
+
+    if (!stocks || !stocks.length) return []
+
+    return pipe(
+      filterPassedBookingLimitDatetimeStocks,
+      filterRemainingStocks,
+      setTimezoneOnBeginningDatetime(tz),
+      humanizeBeginningDateTime(),
+      markAsBooked(bookings),
+      markAsCancelled(bookings),
+      addModifierString(),
+      sortByDateChronologically()
+    )(stocks)
+  }
+)((state, offer) => {
+  return (offer && offer.id) || ' '
+})

@@ -3,10 +3,8 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { requestData } from 'redux-thunk-data'
 
-import {
-  selectBookables,
-  selectBookingByRouterMatch,
-} from '../../../../../selectors/data/bookingsSelectors'
+import { selectBookables } from '../../../../../selectors/data/stocksSelectors'
+import { selectBookingByRouterMatch } from '../../../../../selectors/data/bookingsSelectors'
 import { selectOfferByRouterMatch } from '../../../../../selectors/data/offersSelectors'
 import { selectDistanceByRouterMatch } from '../../../../../selectors/geolocationSelectors'
 import { selectUserGeolocation } from '../../../../../selectors/geolocationSelectors'

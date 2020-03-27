@@ -2,16 +2,7 @@ import moment from 'moment'
 import createCachedSelector from 're-reselect'
 import { createSelector } from 'reselect'
 
-import filterPassedBookingLimitDatetimeStocks from '../../utils/filterPassedBookingLimitDatetimeStocks'
-import { markAsCancelled } from '../../utils/markAsCancelled'
-import { markAsBooked } from '../../utils/markBookingsAsBooked'
-import { addModifierString } from '../../utils/addModifierString'
-import filterRemainingStocks from '../../utils/filterRemainingStocks'
 import { dateStringPlusTimeZone } from '../../utils/date/date'
-import { humanizeBeginningDateTime } from '../../utils/date/humanizeBeginningDateTime'
-import { sortByDateChronologically } from '../../utils/date/sortByDateChronologically'
-import { pipe } from '../../utils/functionnals'
-import { getTimezone, setTimezoneOnBeginningDatetime } from '../../utils/timezone'
 import { selectOfferById } from './offersSelectors'
 import { selectStockById, selectStocksByOfferId } from './stocksSelectors'
 
@@ -199,57 +190,4 @@ export const selectBookingByRouterMatch = createCachedSelector(
   const { params } = match
   const { bookingId, mediationId, offerId } = params
   return `${bookingId || ' '}${mediationId || ' '}${offerId || ' '}`
-})
-
-export const selectBookables = createCachedSelector(
-  selectBookings,
-  state => state.data.stocks,
-  (state, offer) => offer,
-  (bookings, allStocks, offer) => {
-    let { venue } = offer || {}
-    const stocks = selectStocksByOfferId({ data: { stocks: allStocks } }, offer && offer.id)
-    const { departementCode } = venue || {}
-    const tz = getTimezone(departementCode)
-
-    if (!stocks || !stocks.length) return []
-
-    return pipe(
-      filterPassedBookingLimitDatetimeStocks,
-      setTimezoneOnBeginningDatetime(tz),
-      humanizeBeginningDateTime(),
-      markAsBooked(bookings),
-      markAsCancelled(bookings),
-      addModifierString(),
-      sortByDateChronologically()
-    )(stocks)
-  }
-)((state, offer) => {
-  return (offer && offer.id) || ' '
-})
-
-export const selectBookablesWithoutNotAvailableDate = createCachedSelector(
-  selectBookings,
-  state => state.data.stocks,
-  (state, offer) => offer,
-  (bookings, allStocks, offer) => {
-    let { venue } = offer || {}
-    const stocks = selectStocksByOfferId({ data: { stocks: allStocks } }, offer && offer.id)
-    const { departementCode } = venue || {}
-    const tz = getTimezone(departementCode)
-
-    if (!stocks || !stocks.length) return []
-
-    return pipe(
-      filterPassedBookingLimitDatetimeStocks,
-      filterRemainingStocks,
-      setTimezoneOnBeginningDatetime(tz),
-      humanizeBeginningDateTime(),
-      markAsBooked(bookings),
-      markAsCancelled(bookings),
-      addModifierString(),
-      sortByDateChronologically()
-    )(stocks)
-  }
-)((state, offer) => {
-  return (offer && offer.id) || ' '
 })
