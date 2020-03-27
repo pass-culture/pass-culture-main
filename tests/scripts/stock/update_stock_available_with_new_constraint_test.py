@@ -43,7 +43,7 @@ class UpdateStockAvailableWithNewConstraintTest:
 
 
     @clean_database
-    def test_should_keep_remaining_quantity_when_stock_is_not_full_booked(self, app):
+    def test_should_keep_remaining_quantity_when_stock_is_not_fully_booked(self, app):
         # Given
         user = create_user()
         offerer = create_offerer()
