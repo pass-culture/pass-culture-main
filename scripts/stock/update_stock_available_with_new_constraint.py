@@ -23,6 +23,7 @@ def update_stock_available_with_new_constraint(page_size: int = 100):
             has_stocks_to_check = False
         page += 1
 
+    print(f"[UPDATE STOCK AVAILABLE] {(page + 1) * page_size} stocks checked")
     print("[UPDATE STOCK AVAILABLE] End of script")
 
 
