@@ -32,12 +32,22 @@ class BuildObjectTest:
                                                 event_type=EventType.MUSIQUE,
                                                 thumb_count=1,
                                                 date_created=datetime(2020, 1, 1, 10, 0, 0))
-        stock = create_stock(available=10,
-                             beginning_datetime=beginning_datetime,
-                             end_datetime=end_datetime,
-                             offer=offer,
-                             price=0)
-        repository.save(stock)
+        stock1 = create_stock(available=10,
+                              beginning_datetime=beginning_datetime,
+                              end_datetime=end_datetime,
+                              offer=offer,
+                              price=10)
+        stock2 = create_stock(available=10,
+                              beginning_datetime=beginning_datetime,
+                              end_datetime=end_datetime,
+                              offer=offer,
+                              price=20)
+        stock3 = create_stock(available=10,
+                              beginning_datetime=beginning_datetime,
+                              end_datetime=end_datetime,
+                              offer=offer,
+                              price=0)
+        repository.save(stock1, stock2, stock3)
         humanized_product_id = humanize(offer.product.id)
 
         # When
@@ -51,7 +61,7 @@ class BuildObjectTest:
                 'category': 'MUSIQUE',
                 'dateCreated': 1577872800.0,
                 'dateRange': ['2019-11-01 10:00:00', '2019-12-01 10:00:00'],
-                'dates': [1572602400.0],
+                'dates': [1572602400.0, 1572602400.0, 1572602400.0],
                 'description': 'Un lit sous une rivière',
                 'id': 'AM',
                 'isbn': None,
@@ -64,7 +74,9 @@ class BuildObjectTest:
                 'musicSubType': None,
                 'musicType': None,
                 'performer': None,
-                'price': 0,
+                'prices': [Decimal('0.00'), Decimal('10.00'), Decimal('20.00')],
+                'priceMin': Decimal('0.00'),
+                'priceMax': Decimal('20.00'),
                 'showSubType': None,
                 'showType': None,
                 'speaker': None,
@@ -263,7 +275,7 @@ class BuildObjectTest:
         result = build_object(offer)
 
         # Then
-        assert result['offer']['price'] == Decimal('10.30')
+        assert result['offer']['prices'] == [Decimal('5.00'), Decimal('7.00'), Decimal('10.30')]
 
     @clean_database
     def test_should_return_an_empty_date_range_when_offer_is_thing(self, app):
