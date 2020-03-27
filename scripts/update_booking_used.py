@@ -10,9 +10,9 @@ def update_booking_used_after_stock_occurrence():
     bookings_id_errors = []
 
     for booking in bookings_to_process:
-        if booking.stock.endDatetime:
+        if booking.stock.beginningDatetime:
             now = datetime.utcnow()
-            booking_on_event_considered_used_after_delay = now > booking.stock.endDatetime + \
+            booking_on_event_considered_used_after_delay = now > booking.stock.beginningDatetime + \
                 STOCK_DELETION_DELAY
             if booking_on_event_considered_used_after_delay:
                 booking.isUsed = True

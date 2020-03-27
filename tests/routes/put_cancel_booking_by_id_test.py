@@ -18,13 +18,11 @@ class Put:
         def expect_the_booking_to_have_good_includes(self, app):
             # Given
             in_four_days = datetime.utcnow() + timedelta(days=4)
-            in_five_days = datetime.utcnow() + timedelta(days=5)
             user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
-            event_occurrence = create_event_occurrence(offer, beginning_datetime=in_four_days,
-                                                       end_datetime=in_five_days)
+            event_occurrence = create_event_occurrence(offer, beginning_datetime=in_four_days)
             stock = create_stock_from_event_occurrence(event_occurrence)
             booking = create_booking(user=user, stock=stock, venue=venue)
             create_deposit(user, amount=500)
@@ -48,8 +46,7 @@ class Put:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
-            event_occurrence = create_event_occurrence(offer, beginning_datetime=in_four_days,
-                                                       end_datetime=in_five_days)
+            event_occurrence = create_event_occurrence(offer, beginning_datetime=in_four_days)
             stock = create_stock_from_event_occurrence(event_occurrence)
             booking = create_booking(user=user, stock=stock, venue=venue)
             create_deposit(user, amount=500)
@@ -242,7 +239,7 @@ class Put:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
-            event_occurrence = create_event_occurrence(offer, beginning_datetime=in_one_days, end_datetime=in_five_days)
+            event_occurrence = create_event_occurrence(offer, beginning_datetime=in_one_days)
             stock = create_stock_from_event_occurrence(event_occurrence)
             booking = create_booking(user=user, stock=stock, venue=venue)
             create_deposit(user, amount=500)

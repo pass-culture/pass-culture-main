@@ -327,8 +327,7 @@ class GetOffersForRecommendationsSearchTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue=venue, event_type=type_label)
-        outdated_event_occurrence = create_event_occurrence(offer, beginning_datetime=three_hours_ago,
-                                                            end_datetime=datetime.utcnow())
+        outdated_event_occurrence = create_event_occurrence(offer, beginning_datetime=three_hours_ago)
         stock = create_stock_from_event_occurrence(outdated_event_occurrence, booking_limit_date=None)
 
         repository.save(stock)
@@ -352,10 +351,8 @@ class GetOffersForRecommendationsSearchTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue=venue, event_type=type_label)
-        outdated_event_occurrence = create_event_occurrence(offer, beginning_datetime=three_hours_ago,
-                                                            end_datetime=datetime.utcnow())
-        future_event_occurrence = create_event_occurrence(offer, beginning_datetime=in_three_hours,
-                                                          end_datetime=in_four_hours)
+        outdated_event_occurrence = create_event_occurrence(offer, beginning_datetime=three_hours_ago)
+        future_event_occurrence = create_event_occurrence(offer, beginning_datetime=in_three_hours)
         future_stock = create_stock_from_event_occurrence(future_event_occurrence, booking_limit_date=None)
         outdated_stock = create_stock_from_event_occurrence(outdated_event_occurrence, booking_limit_date=None)
 
@@ -1029,13 +1026,11 @@ class GetActiveOffersTest:
         stock2 = create_stock_with_event_offer(offerer,
                                                venue,
                                                beginning_datetime=datetime.utcnow() + timedelta(days=4),
-                                               end_datetime=datetime.utcnow() + timedelta(days=4, hours=2),
                                                name='event_occurs_soon',
                                                thumb_count=1)
         stock3 = create_stock_with_event_offer(offerer,
                                                venue,
                                                beginning_datetime=datetime.utcnow() + timedelta(days=11),
-                                               end_datetime=datetime.utcnow() + timedelta(days=11, hours=2),
                                                name='event_occurs_later',
                                                thumb_count=1)
         create_mediation(stock1.offer)
@@ -1917,7 +1912,7 @@ class GetActiveOffersWithDigitalFirstTest:
 def _create_event_stock_and_offer_for_date(venue, date):
     product = create_product_with_event_type()
     offer = create_offer_with_event_product(venue=venue, product=product)
-    event_occurrence = create_event_occurrence(offer, beginning_datetime=date, end_datetime=date + timedelta(hours=1))
+    event_occurrence = create_event_occurrence(offer, beginning_datetime=date)
     stock = create_stock_from_event_occurrence(event_occurrence, booking_limit_date=date)
     return stock
 

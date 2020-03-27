@@ -528,8 +528,7 @@ def test_get_offers_for_recommendations_search_only_return_available_offers(app)
     stock_available = create_stock(price=12, available=5, offer=offer_available)
 
     offer_not_available = create_offer_with_event_product(venue=venue, event_name='Training in Modern Jazz')
-    event_occurrence = create_event_occurrence(offer_not_available, beginning_datetime=in_one_hour,
-                                               end_datetime=in_two_hours)
+    event_occurrence = create_event_occurrence(offer_not_available, beginning_datetime=in_one_hour)
     stock_with_no_available = create_stock_from_event_occurrence(event_occurrence, available=0)
     stock_with_one_available = create_stock_from_event_occurrence(event_occurrence, available=1, price=0)
     user = create_user()

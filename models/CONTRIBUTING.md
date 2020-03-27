@@ -47,7 +47,7 @@ def test_date_range_matches_the_occurrence_if_only_one_occurrence():
     offer = Offer()
     offer.product = Product()
     offer.eventOccurrences = [
-        create_event_occurrence(offer, beginning_datetime=two_days_ago, end_datetime=five_days_from_now)
+        create_event_occurrence(offer, beginning_datetime=two_days_ago)
     ]
 
     # then

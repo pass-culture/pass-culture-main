@@ -122,13 +122,11 @@ class GetOffersForRecommendationV3Test:
             stock2 = create_stock_with_event_offer(offerer,
                                                    venue,
                                                    beginning_datetime=datetime.utcnow() + timedelta(days=4),
-                                                   end_datetime=datetime.utcnow() + timedelta(days=4, hours=2),
                                                    name='event_occurs_soon',
                                                    thumb_count=1)
             stock3 = create_stock_with_event_offer(offerer,
                                                    venue,
                                                    beginning_datetime=datetime.utcnow() + timedelta(days=11),
-                                                   end_datetime=datetime.utcnow() + timedelta(days=11, hours=2),
                                                    name='event_occurs_later',
                                                    thumb_count=1)
             create_mediation(stock1.offer)

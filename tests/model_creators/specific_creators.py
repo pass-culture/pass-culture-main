@@ -92,13 +92,11 @@ def create_offer_with_event_product(venue: Venue = None,
 
 
 def create_event_occurrence(offer: Offer,
-                            beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=2),
-                            end_datetime: datetime = datetime.utcnow() + timedelta(hours=5)) -> Dict:
+                            beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=2)) -> Dict:
     event_occurrence = {}
     event_occurrence['offer'] = offer
     event_occurrence['offerId'] = offer.id
     event_occurrence['beginningDatetime'] = beginning_datetime
-    event_occurrence['endDatetime'] = end_datetime
 
     return event_occurrence
 
@@ -241,7 +239,6 @@ def create_stock_from_event_occurrence(event_occurrence: Dict,
                                        booking_limit_date: datetime = None) -> Stock:
     stock = Stock()
     stock.beginningDatetime = event_occurrence['beginningDatetime']
-    stock.endDatetime = event_occurrence['endDatetime']
     stock.offerId = event_occurrence['offerId']
     stock.offer = event_occurrence['offer']
     stock.price = price
@@ -288,7 +285,6 @@ def create_stock_with_event_offer(offerer: Offerer,
                                   name: str = 'Mains, sorts et papiers',
                                   offer_id: int = None,
                                   beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=72),
-                                  end_datetime: datetime = datetime.utcnow() + timedelta(hours=74),
                                   thumb_count: int = 0,
                                   booking_limit_datetime: datetime = datetime.utcnow() + timedelta(hours=71)) -> Stock:
     stock = Stock()
@@ -296,7 +292,6 @@ def create_stock_with_event_offer(offerer: Offerer,
     stock.price = price
     stock.available = available
     stock.beginningDatetime = beginning_datetime
-    stock.endDatetime = end_datetime
     stock.bookingLimitDatetime = booking_limit_datetime
     stock.offer = create_offer_with_event_product(venue, event_name=name, event_type=event_type,
                                                   booking_email=booking_email, is_national=False,

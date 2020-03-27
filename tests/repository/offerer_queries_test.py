@@ -1173,19 +1173,15 @@ def test_find_filtered_offerers_with_offer_status_with_VALID_param_return_filter
     not_available_event = create_offer_with_event_product(venue_with_not_available_event_product)
 
     valid_event_occurrence = create_event_occurrence(valid_event,
-                                                     beginning_datetime=datetime.utcnow() + timedelta(days=4),
-                                                     end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                     beginning_datetime=datetime.utcnow() + timedelta(days=4))
     valid_event_occurrence_soft_deleted = create_event_occurrence(soft_deleted_event,
                                                                   beginning_datetime=datetime.utcnow() + timedelta(
-                                                                      days=4),
-                                                                  end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                                      days=4))
     valid_event_occurrence_not_available = create_event_occurrence(not_available_event,
                                                                    beginning_datetime=datetime.utcnow() + timedelta(
-                                                                       days=4),
-                                                                   end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                                       days=4))
     expired_event_occurence = create_event_occurrence(expired_event,
-                                                      beginning_datetime=datetime(2018, 2, 1),
-                                                      end_datetime=datetime(2018, 3, 2))
+                                                      beginning_datetime=datetime(2018, 2, 1))
 
     valid_stock = create_stock_with_thing_offer(offerer_with_valid_thing_product, venue_with_valid_thing_product,
                                                 valid_thing)
@@ -1259,19 +1255,15 @@ def test_find_filtered_offerers_with_offer_status_with_EXPIRED_param_return_filt
     not_available_event = create_offer_with_event_product(venue_with_not_available_event)
 
     valid_event_occurrence = create_event_occurrence(valid_event,
-                                                     beginning_datetime=datetime.utcnow() + timedelta(days=4),
-                                                     end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                     beginning_datetime=datetime.utcnow() + timedelta(days=4))
     valid_event_occurrence_soft_deleted = create_event_occurrence(soft_deleted_event,
                                                                   beginning_datetime=datetime.utcnow() + timedelta(
-                                                                      days=4),
-                                                                  end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                                      days=4))
     valid_event_occurrence_not_available = create_event_occurrence(not_available_event,
                                                                    beginning_datetime=datetime.utcnow() + timedelta(
-                                                                       days=4),
-                                                                   end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                                       days=4))
     expired_event_occurence = create_event_occurrence(expired_event,
-                                                      beginning_datetime=datetime(2018, 2, 1),
-                                                      end_datetime=datetime(2018, 3, 2))
+                                                      beginning_datetime=datetime(2018, 2, 1))
 
     valid_stock = create_stock_with_thing_offer(offerer_with_valid_thing, venue_with_valid_thing, valid_thing)
     expired_stock = create_stock_with_thing_offer(offerer_with_expired_thing, venue_with_expired_thing, expired_thing,
@@ -1343,19 +1335,15 @@ def test_find_filtered_offerers_with_offer_status_with_WITHOUT_param_return_filt
     not_available_event = create_offer_with_event_product(venue_with_not_available_event)
 
     valid_event_occurrence = create_event_occurrence(valid_event,
-                                                     beginning_datetime=datetime.utcnow() + timedelta(days=4),
-                                                     end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                     beginning_datetime=datetime.utcnow() + timedelta(days=4))
     valid_event_occurrence_soft_deleted = create_event_occurrence(soft_deleted_event,
                                                                   beginning_datetime=datetime.utcnow() + timedelta(
-                                                                      days=4),
-                                                                  end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                                      days=4))
     valid_event_occurrence_not_available = create_event_occurrence(not_available_event,
                                                                    beginning_datetime=datetime.utcnow() + timedelta(
-                                                                       days=4),
-                                                                   end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                                       days=4))
     expired_event_occurence = create_event_occurrence(expired_event,
-                                                      beginning_datetime=datetime(2018, 2, 1),
-                                                      end_datetime=datetime(2018, 3, 2))
+                                                      beginning_datetime=datetime(2018, 2, 1))
 
     valid_stock = create_stock_with_thing_offer(offerer_with_valid_thing, venue_with_valid_thing, valid_thing)
     expired_stock = create_stock_with_thing_offer(offerer_with_expired_thing, venue_with_expired_thing, expired_thing,
@@ -1427,19 +1415,15 @@ def test_find_filtered_offerers_with_offer_status_with_ALL_param_return_filtered
     not_available_event = create_offer_with_event_product(venue_with_not_available_event)
 
     valid_event_occurrence = create_event_occurrence(valid_event,
-                                                     beginning_datetime=datetime.utcnow() + timedelta(days=4),
-                                                     end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                     beginning_datetime=datetime.utcnow() + timedelta(days=4))
     valid_event_occurrence_soft_deleted = create_event_occurrence(soft_deleted_event,
                                                                   beginning_datetime=datetime.utcnow() + timedelta(
-                                                                      days=4),
-                                                                  end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                                      days=4))
     valid_event_occurrence_not_available = create_event_occurrence(not_available_event,
                                                                    beginning_datetime=datetime.utcnow() + timedelta(
-                                                                       days=4),
-                                                                   end_datetime=datetime.utcnow() + timedelta(days=5))
+                                                                       days=4))
     expired_event_occurence = create_event_occurrence(expired_event,
-                                                      beginning_datetime=datetime(2018, 2, 1),
-                                                      end_datetime=datetime(2018, 3, 2))
+                                                      beginning_datetime=datetime(2018, 2, 1))
 
     valid_stock = create_stock_with_thing_offer(offerer_with_valid_thing, venue_with_valid_thing, valid_thing)
     expired_stock = create_stock_with_thing_offer(offerer_with_expired_thing, venue_with_expired_thing, expired_thing,

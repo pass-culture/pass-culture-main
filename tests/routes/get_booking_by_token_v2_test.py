@@ -269,7 +269,7 @@ class Get:
             user_offerer = create_user_offerer(admin_user, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=in_73_hours,
-                                                  end_datetime=in_74_hours, booking_limit_datetime=in_72_hours)
+                                                  booking_limit_datetime=in_72_hours)
             booking = create_booking(user=user, stock=stock, venue=venue)
             repository.save(admin_user, booking, user_offerer)
             url = f'/v2/bookings/token/{booking.token}'

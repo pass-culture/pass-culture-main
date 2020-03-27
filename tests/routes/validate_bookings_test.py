@@ -29,7 +29,6 @@ class Patch:
             user_offerer = create_user_offerer(admin_user, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=Patch.tomorrow,
-                                                  end_datetime=Patch.tomorrow_plus_one_hour,
                                                   booking_limit_datetime=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user=user, stock=stock, venue=venue)
             repository.save(booking, user_offerer)
@@ -53,7 +52,6 @@ class Patch:
             user_offerer = create_user_offerer(admin_user, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=Patch.tomorrow,
-                                                  end_datetime=Patch.tomorrow_plus_one_hour,
                                                   booking_limit_datetime=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user=user, stock=stock, venue=venue)
             repository.save(booking, user_offerer)
@@ -78,8 +76,7 @@ class Patch:
             user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, event_name='Event Name')
-            event_occurrence = create_event_occurrence(offer, beginning_datetime=Patch.tomorrow,
-                                                       end_datetime=Patch.tomorrow_plus_one_hour)
+            event_occurrence = create_event_occurrence(offer, beginning_datetime=Patch.tomorrow)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0,
                                                        booking_limit_date=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user=user, stock=stock, venue=venue)
@@ -102,8 +99,7 @@ class Patch:
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
             activation_offer = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
-            activation_event_occurrence = create_event_occurrence(activation_offer, beginning_datetime=Patch.tomorrow,
-                                                                  end_datetime=Patch.tomorrow_plus_one_hour)
+            activation_event_occurrence = create_event_occurrence(activation_offer, beginning_datetime=Patch.tomorrow)
             stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0,
                                                        booking_limit_date=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user=user, stock=stock, venue=venue)
@@ -132,8 +128,7 @@ class Patch:
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
             activation_offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
-            activation_event_occurrence = create_event_occurrence(activation_offer, beginning_datetime=Patch.tomorrow,
-                                                                  end_datetime=Patch.tomorrow_plus_one_hour)
+            activation_event_occurrence = create_event_occurrence(activation_offer, beginning_datetime=Patch.tomorrow)
             stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0,
                                                        booking_limit_date=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user=user, stock=stock, venue=venue)
@@ -162,7 +157,6 @@ class Patch:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=Patch.tomorrow,
-                                                  end_datetime=Patch.tomorrow_plus_one_hour,
                                                   booking_limit_datetime=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user=user, stock=stock, venue=venue)
             repository.save(booking, admin_user)
@@ -213,8 +207,7 @@ class Patch:
             activation_event_occurrence = create_event_occurrence(activation_offer)
             stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
             activation_offer = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
-            activation_event_occurrence = create_event_occurrence(activation_offer, beginning_datetime=Patch.tomorrow,
-                                                                  end_datetime=Patch.tomorrow_plus_one_hour)
+            activation_event_occurrence = create_event_occurrence(activation_offer, beginning_datetime=Patch.tomorrow)
             stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0,
                                                        booking_limit_date=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user=user, stock=stock, venue=venue)
@@ -236,7 +229,6 @@ class Patch:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=Patch.tomorrow,
-                                                  end_datetime=Patch.tomorrow_plus_one_hour,
                                                   booking_limit_datetime=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user=user, stock=stock, venue=venue)
             repository.save(booking, admin_user)
@@ -259,8 +251,7 @@ class Patch:
             user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, event_name='Event Name')
-            event_occurrence = create_event_occurrence(offer, beginning_datetime=Patch.tomorrow,
-                                                       end_datetime=Patch.tomorrow_plus_one_hour)
+            event_occurrence = create_event_occurrence(offer, beginning_datetime=Patch.tomorrow)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0,
                                                        booking_limit_date=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user=user, stock=stock, venue=venue)
@@ -282,7 +273,6 @@ class Patch:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=Patch.tomorrow,
-                                                  end_datetime=Patch.tomorrow_plus_one_hour,
                                                   booking_limit_datetime=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user=user, stock=stock, venue=venue)
             repository.save(booking, admin_user)
@@ -308,8 +298,7 @@ class Patch:
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
             activation_offer = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
-            activation_event_occurrence = create_event_occurrence(activation_offer, beginning_datetime=Patch.tomorrow,
-                                                                  end_datetime=Patch.tomorrow_plus_one_hour)
+            activation_event_occurrence = create_event_occurrence(activation_offer, beginning_datetime=Patch.tomorrow)
             stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0,
                                                        booking_limit_date=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user=user, stock=stock, venue=venue)
@@ -337,7 +326,6 @@ class Patch:
             user_offerer = create_user_offerer(admin_user, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=Patch.tomorrow,
-                                                  end_datetime=Patch.tomorrow_plus_one_hour,
                                                   booking_limit_datetime=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user=user, stock=stock, venue=venue)
             booking.isCancelled = True
@@ -362,7 +350,6 @@ class Patch:
             user_offerer = create_user_offerer(admin_user, offerer)
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=Patch.tomorrow,
-                                                  end_datetime=Patch.tomorrow_plus_one_hour,
                                                   booking_limit_datetime=Patch.tomorrow_minus_one_hour)
             booking = create_booking(user=user, stock=stock, venue=venue)
             booking.isUsed = True

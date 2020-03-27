@@ -135,7 +135,6 @@ class Delete:
                 offerer, venue,
                 booking_limit_datetime=NOW - timedelta(days=6),
                 beginning_datetime=NOW - timedelta(days=5),
-                end_datetime=NOW - timedelta(days=4)
             )
             repository.save(user, stock, user_offerer)
 

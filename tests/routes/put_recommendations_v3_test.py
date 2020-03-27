@@ -293,8 +293,7 @@ class Put:
                 offer_event = create_offer_with_event_product(venue, thumb_count=1)
                 event_occurrence = create_event_occurrence(
                     offer_event,
-                    beginning_datetime=four_days_from_now,
-                    end_datetime=eight_days_from_now
+                    beginning_datetime=four_days_from_now
                 )
                 event_stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
                 offer_thing = create_offer_with_thing_product(venue)

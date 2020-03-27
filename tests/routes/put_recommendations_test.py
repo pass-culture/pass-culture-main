@@ -269,11 +269,9 @@ class Put:
             four_days_from_now = now + timedelta(days=4)
             eight_days_from_now = now + timedelta(days=8)
             event_occurrence1 = create_event_occurrence(event_offer,
-                                                        beginning_datetime=four_days_from_now,
-                                                        end_datetime=eight_days_from_now)
+                                                        beginning_datetime=four_days_from_now)
             event_occurrence2 = create_event_occurrence(event_offer,
-                                                        beginning_datetime=four_days_from_now,
-                                                        end_datetime=eight_days_from_now)
+                                                        beginning_datetime=four_days_from_now)
             soft_deleted_event_stock = create_stock_from_event_occurrence(event_occurrence1,
                                                                           soft_deleted=True)
             event_stock = create_stock_from_event_occurrence(event_occurrence2,
@@ -401,8 +399,7 @@ class Put:
             offer = create_offer_with_event_product(venue)
             event_occurrence = create_event_occurrence(
                 offer,
-                beginning_datetime=four_days_from_now,
-                end_datetime=eight_days_from_now
+                beginning_datetime=four_days_from_now
             )
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
             repository.save(user, stock)
@@ -432,8 +429,7 @@ class Put:
             offer = create_offer_with_event_product(venue)
             event_occurrence = create_event_occurrence(
                 offer,
-                beginning_datetime=four_days_from_now,
-                end_datetime=eight_days_from_now
+                beginning_datetime=four_days_from_now
             )
             mediation = create_mediation(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
@@ -464,8 +460,7 @@ class Put:
             offer = create_offer_with_event_product(venue, thumb_count=1)
             event_occurrence = create_event_occurrence(
                 offer,
-                beginning_datetime=four_days_from_now,
-                end_datetime=eight_days_from_now
+                beginning_datetime=four_days_from_now
             )
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
             repository.save(user, stock)
@@ -557,8 +552,7 @@ class Put:
             offer3 = create_offer_with_thing_product(venue)
             offer4 = create_offer_with_thing_product(venue)
             now = datetime.utcnow()
-            event_occurrence = create_event_occurrence(offer2, beginning_datetime=now + timedelta(hours=72),
-                                                       end_datetime=now + timedelta(hours=74))
+            event_occurrence = create_event_occurrence(offer2, beginning_datetime=now + timedelta(hours=72))
             create_mediation(offer1)
             create_mediation(offer2)
             create_mediation(offer3)
@@ -607,8 +601,7 @@ class Put:
             offer_event = create_offer_with_event_product(venue)
             event_occurrence = create_event_occurrence(
                 offer_event,
-                beginning_datetime=four_days_from_now,
-                end_datetime=eight_days_from_now
+                beginning_datetime=four_days_from_now
             )
             event_stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
             offer_thing = create_offer_with_thing_product(venue)
@@ -902,7 +895,6 @@ class Put:
             # given
             now = datetime.utcnow()
             four_days_from_now = now + timedelta(days=4)
-            eight_days_from_now = now + timedelta(days=8)
             user = create_user(email='user1@user.fr')
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -912,8 +904,7 @@ class Put:
                 offer_event = create_offer_with_event_product(venue, thumb_count=1)
                 event_occurrence = create_event_occurrence(
                     offer_event,
-                    beginning_datetime=four_days_from_now,
-                    end_datetime=eight_days_from_now
+                    beginning_datetime=four_days_from_now
                 )
                 event_stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
                 offer_thing = create_offer_with_thing_product(venue)

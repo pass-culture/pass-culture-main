@@ -997,8 +997,7 @@ class GetOffersWithUserOffererAndStockCountTest:
         offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1)
         stock2 = create_stock(offer=offer2, booking_limit_datetime=tomorrow,
-                              beginning_datetime=tomorrow + timedelta(hours=1),
-                              end_datetime=tomorrow + timedelta(hours=3))
+                              beginning_datetime=tomorrow + timedelta(hours=1))
         repository.save(stock1, stock2, user_offerer)
 
         # When

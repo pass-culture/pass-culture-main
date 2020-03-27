@@ -344,7 +344,7 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=in_73_hours,
-                                                  end_datetime=in_74_hours, booking_limit_datetime=in_72_hours)
+                                                  booking_limit_datetime=in_72_hours)
             booking = create_booking(user=user, stock=stock, venue=venue)
             repository.save(admin_user, booking)
             url = f'/bookings/token/{booking.token}?email=user@example.com&offer_id={humanize(stock.offerId)}'

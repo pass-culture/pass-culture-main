@@ -47,7 +47,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     query = query.join(Venue, Venue.managingOffererId == Offerer.id) \
         .join(Offer) \
         .join(Stock) \
-        .filter((Stock.beginningDatetime != None) & (Stock.endDatetime != None))
+        .filter((Stock.beginningDatetime != None))
     user = query.first()
 
     for uo in user.UserOfferers:
@@ -59,7 +59,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
                     if offer.isEvent \
                             and offer.stocks:
                         for stock in offer.stocks:
-                            if stock.beginningDatetime and stock.endDatetime:
+                            if stock.beginningDatetime:
                                 return {
                                     "offer": get_offer_helper(offer),
                                     "offerer": get_offerer_helper(uo.offerer),

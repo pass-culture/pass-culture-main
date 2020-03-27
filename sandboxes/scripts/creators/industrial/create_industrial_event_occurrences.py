@@ -34,7 +34,6 @@ def create_industrial_event_occurrences(event_offers_by_name):
             )
             event_occurrences_by_name[name] = create_event_occurrence(
                 beginning_datetime=strftime(beginning_datetime),
-                end_datetime=strftime(beginning_datetime + timedelta(hours=1)),
                 offer=event_offer_with_occurrences
             )
 

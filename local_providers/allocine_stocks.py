@@ -176,13 +176,6 @@ class AllocineStocks(LocalProvider):
         if 'price' not in allocine_stock.fieldsUpdated:
             allocine_stock.price = self.apply_allocine_price_rule(allocine_stock)
 
-        if 'duration' in self.movie_information \
-                and self.movie_information['duration'] is not None:
-            stock_movie_duration = timedelta(minutes=self.movie_information['duration'])
-        else:
-            stock_movie_duration = timedelta(seconds=1)
-        allocine_stock.endDatetime = allocine_stock.beginningDatetime + stock_movie_duration
-
     def apply_allocine_price_rule(self, allocine_stock: Stock) -> int:
         price = None
         for price_rule in self.venue_provider.priceRules:

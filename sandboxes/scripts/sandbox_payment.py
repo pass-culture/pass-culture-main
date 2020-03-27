@@ -64,10 +64,8 @@ def save_offerer_without_iban():
 def save_free_event_offer_with_stocks(venue: Venue):
     free_event_offer = create_offer_with_event_product(venue, event_name='Free event',
                                                        event_type=EventType.SPECTACLE_VIVANT)
-    past_occurrence = create_event_occurrence(free_event_offer, beginning_datetime=now - three_days,
-                                              end_datetime=now - three_days + two_hours)
-    future_occurrence = create_event_occurrence(free_event_offer, beginning_datetime=now + three_days,
-                                                end_datetime=now + three_days + two_hours)
+    past_occurrence = create_event_occurrence(free_event_offer, beginning_datetime=now - three_days)
+    future_occurrence = create_event_occurrence(free_event_offer, beginning_datetime=now + three_days)
     past_free_event_stock = create_stock_from_event_occurrence(past_occurrence, price=0)
     future_free_event_stock = create_stock_from_event_occurrence(future_occurrence, price=0)
     repository.save(past_free_event_stock, future_free_event_stock)
@@ -105,10 +103,8 @@ def save_paid_online_book_offer(venue: Venue):
 def save_paid_reimbursable_event_offer(venue: Venue):
     paid_reimbursable_event_offer = create_offer_with_event_product(venue, event_name='Paid event',
                                                                     event_type=EventType.SPECTACLE_VIVANT)
-    past_occurrence = create_event_occurrence(paid_reimbursable_event_offer, beginning_datetime=now - three_days,
-                                              end_datetime=now - three_days + two_hours)
-    future_occurrence = create_event_occurrence(paid_reimbursable_event_offer, beginning_datetime=now + three_days,
-                                                end_datetime=now + three_days + two_hours)
+    past_occurrence = create_event_occurrence(paid_reimbursable_event_offer, beginning_datetime=now - three_days)
+    future_occurrence = create_event_occurrence(paid_reimbursable_event_offer, beginning_datetime=now + three_days)
     past_event_stock = create_stock_from_event_occurrence(past_occurrence, price=10)
     future_event_stock = create_stock_from_event_occurrence(future_occurrence, price=10)
     repository.save(past_event_stock, future_event_stock)

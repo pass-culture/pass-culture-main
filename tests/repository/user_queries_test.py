@@ -386,8 +386,7 @@ class CountUsersHavingBookedTest:
         offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0, booking_limit_datetime=tomorrow,
-                              beginning_datetime=tomorrow + timedelta(hours=1),
-                              end_datetime=tomorrow + timedelta(hours=3))
+                              beginning_datetime=tomorrow + timedelta(hours=1))
         booking1 = create_booking(user=user1, stock=stock1)
         booking2 = create_booking(user=user2, stock=stock2)
         repository.save(booking1, booking2)
