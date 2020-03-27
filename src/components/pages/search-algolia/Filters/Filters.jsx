@@ -170,7 +170,7 @@ export class Filters extends PureComponent {
     )
   }
 
-  handleToGeolocationFilter = () => {
+  handleGoToGeolocationFilter = () => {
     const { history } = this.props
     const {
       location: { search = '' },
@@ -285,7 +285,7 @@ export class Filters extends PureComponent {
                 </h4>
                 <button
                   className="sf-geolocation-button"
-                  onClick={this.handleToGeolocationFilter}
+                  onClick={this.handleGoToGeolocationFilter}
                   type="button"
                 >
                   {this.buildGeolocationFilter()}

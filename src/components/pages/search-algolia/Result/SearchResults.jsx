@@ -22,7 +22,7 @@ class SearchResults extends PureComponent {
       currentPage: 0,
       filters: {
         aroundRadius: 0,
-        isSearchAroundMe: isSearchAroundMe,
+        isSearchAroundMe: this.getIsSearchAroundMeFromUrlOrProps(isSearchAroundMe),
         offerCategories: this.getCategoriesFromUrlOrProps(categories),
         offerTypes: {
           isDigital: false,
@@ -55,6 +55,14 @@ class SearchResults extends PureComponent {
     const categoriesFromUrl = queryParams['categories'] || ''
 
     return categoriesFromUrl ? categoriesFromUrl.split(';') : categoriesFromProps
+  }
+
+  getIsSearchAroundMeFromUrlOrProps = (isSearchAroundMeFromProps) => {
+    const { query } = this.props
+    const queryParams = query.parse()
+    const isSearchAroundMeFromUrl = queryParams['autour-de-moi'] || ''
+
+    return isSearchAroundMeFromUrl ? isSearchAroundMeFromUrl === 'oui' : isSearchAroundMeFromProps
   }
 
   getSortByFromUrlOrProps = (sortByFromProps) => {
@@ -117,7 +125,7 @@ class SearchResults extends PureComponent {
     })
   }
 
-  fetchOffers = (keywords, currentPage) => {
+  fetchOffers = (keywords, page) => {
     const { geolocation } = this.props
     const { filters } = this.state
     const { aroundRadius, isSearchAroundMe, offerCategories, offerTypes, sortBy } = filters
@@ -126,11 +134,11 @@ class SearchResults extends PureComponent {
       isLoading: true,
     })
     const options = {
-      keywords: keywords,
-      offerCategories: offerCategories,
-      offerTypes: offerTypes,
-      page: currentPage,
-      sortBy: sortBy,
+      keywords,
+      offerCategories,
+      offerTypes,
+      page,
+      sortBy,
     }
 
     if (isSearchAroundMe) {
@@ -142,7 +150,7 @@ class SearchResults extends PureComponent {
       const { results } = this.state
       const { hits, nbHits, nbPages } = offers
       this.setState({
-        currentPage: currentPage,
+        currentPage: page,
         keywordsToSearch: keywords,
         isLoading: false,
         resultsCount: nbHits,
@@ -210,25 +218,11 @@ class SearchResults extends PureComponent {
     history.push(`${pathname}/filtres${search}`)
   }
 
-  buildInitialFilters = () => {
-    const { filters } = this.state
-    const { query } = this.props
-    const queryParams = query.parse()
-    const autourDeMoi = queryParams['autour-de-moi']
-    const tri = queryParams['tri']
-
-    return {
-      ...filters,
-      isSearchAroundMe: autourDeMoi === 'oui',
-      sortBy: tri,
-    }
-  }
-
   blurInput = () => () => this.inputRef.current.blur()
 
   render() {
     const { geolocation, history, match, query } = this.props
-    const { currentPage, keywordsToSearch, isLoading, results, resultsCount, totalPagesNumber } = this.state
+    const { currentPage, filters, keywordsToSearch, isLoading, results, resultsCount, totalPagesNumber } = this.state
     const { location } = history
     const { search } = location
 
@@ -340,7 +334,7 @@ class SearchResults extends PureComponent {
           <Route path="/recherche-offres/resultats/filtres">
             <FiltersContainer
               history={history}
-              initialFilters={this.buildInitialFilters()}
+              initialFilters={filters}
               match={match}
               offers={{
                 hits: results,

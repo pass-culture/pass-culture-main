@@ -167,10 +167,9 @@ describe('components | SearchResults', () => {
         })
       )
       parse.mockReturnValue({
-        'categories': 'MUSEE',
+        categories: 'MUSEE',
         'mots-cles': 'une librairie',
-        'page': 1,
-        'tri': '_by_price'
+        tri: '_by_price'
       })
       props.criteria = {}
 
@@ -348,9 +347,8 @@ describe('components | SearchResults', () => {
           })
         )
         parse.mockReturnValue({
-          'categories': '',
+          categories: '',
           'mots-cles': 'une librairie',
-          'page': 1,
         })
         props.criteria.categories = ['CINEMA']
 
@@ -383,10 +381,10 @@ describe('components | SearchResults', () => {
           })
         )
         parse.mockReturnValue({
-          'mots-cles': 'une librairie',
-          page: 1,
           categories: 'CINEMA',
+          'mots-cles': 'une librairie'
         })
+        props.criteria = {}
 
         // when
         await shallow(<SearchResults {...props} />)
@@ -397,7 +395,6 @@ describe('components | SearchResults', () => {
           offerCategories: ['CINEMA'],
           offerTypes: { isDigital: false, isEvent: false, isThing: false },
           page: 0,
-          sortBy: null
         })
       })
 
@@ -413,13 +410,13 @@ describe('components | SearchResults', () => {
           })
         )
         parse.mockReturnValue({
-          'mots-cles': 'une librairie',
-          page: 1,
           categories: 'CINEMA',
+          'mots-cles': 'une librairie',
         })
-        props.categoriesFilter = ['VISITE']
-        props.isSearchAroundMe = false
-        props.sortingIndexSuffix = null
+        props.criteria = {
+          categories: ['VISITE'],
+          isSearchAroundMe: false,
+        }
 
         // when
         await shallow(<SearchResults {...props} />)
@@ -430,7 +427,6 @@ describe('components | SearchResults', () => {
           offerCategories: ['CINEMA'],
           offerTypes: { isDigital: false, isEvent: false, isThing: false },
           page: 0,
-          sortBy: null
         })
       })
 
@@ -446,9 +442,8 @@ describe('components | SearchResults', () => {
           })
         )
         parse.mockReturnValue({
-          'categories': '',
+          categories: '',
           'mots-cles': 'une librairie',
-          'page': 1,
         })
 
         // when
@@ -470,7 +465,7 @@ describe('components | SearchResults', () => {
     })
 
     describe('when sorting filter', () => {
-      it('should fetch data using sorting filter when provided', async () => {
+      it('should fetch data using sorting filter when provided from url', async () => {
         // given
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
@@ -483,10 +478,42 @@ describe('components | SearchResults', () => {
         )
         parse.mockReturnValue({
           'mots-cles': 'une librairie',
-          'page': 1,
-          'tri': '_by_proximity'
+          tri: '_by_proximity'
         })
+
+        // when
+        await shallow(<SearchResults {...props} />)
+
+        // then
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          keywords: 'une librairie',
+          offerCategories: [],
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false,
+          },
+          page: 0,
+          sortBy: '_by_proximity',
+        })
+      })
+
+      it('should fetch data using sorting filter when provided from prop', async () => {
+        // given
         props.criteria.sortBy = '_by_proximity'
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              nbHits: 2,
+              page: 0,
+            })
+          })
+        )
+        parse.mockReturnValue({
+          'mots-cles': 'une librairie',
+          tri: ''
+        })
 
         // when
         await shallow(<SearchResults {...props} />)
@@ -516,10 +543,13 @@ describe('components | SearchResults', () => {
             })
           })
         )
+        props.criteria = {
+          categories: [],
+          isSearchAroundMe: false
+        }
         parse.mockReturnValue({
           'mots-cles': 'une librairie',
-          'page': 1,
-          'tri': ''
+          tri: ''
         })
 
         // when
@@ -535,7 +565,6 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
-          sortBy: null,
         })
       })
     })
@@ -787,7 +816,7 @@ describe('components | SearchResults', () => {
             hitsPerPage: 2,
             processingTimeMS: 1,
             query: 'librairie',
-            params: 'query=\'librairie\'&hitsPerPage=2',
+            params: "query='librairie'&hitsPerPage=2",
           })
         })
       )
@@ -860,7 +889,7 @@ describe('components | SearchResults', () => {
             hitsPerPage: 2,
             processingTimeMS: 1,
             query: 'vas-y',
-            params: 'query=\'vas-y\'&hitsPerPage=2',
+            params: "query=\"vas-y\"&hitsPerPage=2",
           })
         })
       )
@@ -988,7 +1017,7 @@ describe('components | SearchResults', () => {
       // then
       await toast.info
       expect(toast.info).toHaveBeenCalledWith(
-        'La recherche n\'a pas pu aboutir, veuillez ré-essayer plus tard.'
+        "La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard."
       )
     })
 
@@ -996,8 +1025,8 @@ describe('components | SearchResults', () => {
       // given
       props.query.parse.mockReturnValue({
         'autour-de-moi': 'oui',
-        'categories': 'VISITE',
-        'tri': '_by_price',
+        categories: 'VISITE',
+        tri: '_by_price',
       })
       const wrapper = shallow(<SearchResults {...props} />)
       stubRef(wrapper)

@@ -7,7 +7,6 @@ import {
 } from '../../utils/config'
 import { FACETS } from './facets'
 import { FILTERS } from './filters'
-
 export const fetchAlgolia = ({
                                aroundRadius = null,
                                geolocation = null,
@@ -40,7 +39,7 @@ const buildFacetFilters = (offerCategories, offerTypes) => {
 
   const facetFilters = []
   if (offerCategories.length > 0) {
-    const categoriesPredicate = _buildOfferCategoriesPredicate(offerCategories)
+    const categoriesPredicate = buildOfferCategoriesPredicate(offerCategories)
     facetFilters.push(categoriesPredicate)
   }
   const offerTypesPredicate = _buildOfferTypesPredicate(offerTypes)
@@ -54,7 +53,7 @@ const buildFacetFilters = (offerCategories, offerTypes) => {
   }
 }
 
-const _buildOfferCategoriesPredicate = offerCategories => {
+const buildOfferCategoriesPredicate = offerCategories => {
   return offerCategories.map(category => `${FACETS.OFFER_CATEGORY}:${category}`)
 }
 
@@ -87,9 +86,10 @@ const buildGeolocationParameter = (aroundRadius, geolocation) => {
   if (geolocation) {
     const { longitude, latitude } = geolocation
     if (latitude && longitude) {
+      const aroundRadiusInMeters = aroundRadius * 1000
       return {
         aroundLatLng: `${latitude}, ${longitude}`,
-        aroundRadius: aroundRadius ? aroundRadius * 1000 : FILTERS.UNLIMITED_RADIUS,
+        aroundRadius: aroundRadius ? aroundRadiusInMeters : FILTERS.UNLIMITED_RADIUS,
       }
     }
   }

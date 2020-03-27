@@ -93,8 +93,8 @@ describe('fetchAlgolia', () => {
 
       // when
       fetchAlgolia({
-        geolocation: geolocation,
-        keywords: keywords,
+        geolocation,
+        keywords,
       })
 
       // then
@@ -499,7 +499,7 @@ describe('fetchAlgolia', () => {
       expect(initIndex).toHaveBeenCalledWith('indexName_by_price')
     })
 
-    it('should fetch event offers for category spectacle around me ordered by price', () => {
+    it('should fetch event offers for categories pratique & spectacle around me ordered by price', () => {
       // given
       const geolocation = {
         latitude: 42,
