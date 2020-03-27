@@ -4,6 +4,7 @@ from unittest.mock import Mock
 
 import pytest
 
+from domain.booking import check_already_booked, check_expenses_limits, ExpenseLimitHasBeenReached
 from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS
 from models import ApiErrors, Booking, Stock, Offer, ThingType, User, EventType
 from models.api_errors import ResourceGoneError, ForbiddenError
@@ -16,16 +17,14 @@ from tests.model_creators.specific_creators import create_booking_for_thing, cre
     create_product_with_thing_type, create_product_with_event_type, create_offer_with_thing_product, \
     create_offer_with_event_product
 from utils.human_ids import humanize
-from validation.routes.bookings import check_expenses_limits, \
+from validation.routes.bookings import \
     check_booking_is_cancellable_by_user, \
-    check_quantity_is_valid, \
     check_rights_to_get_bookings_csv, \
     check_booking_is_not_already_cancelled, \
     check_booking_is_not_used, \
     check_booking_token_is_usable, \
     check_booking_token_is_keepable, \
-    check_is_not_activation_booking, check_stock_is_bookable, check_already_booked, \
-    check_offer_already_booked
+    check_is_not_activation_booking
 
 
 class CheckExpenseLimitsTest:
@@ -40,12 +39,12 @@ class CheckExpenseLimitsTest:
         mocked_query = Mock(return_value=stock)
 
         # when
-        with pytest.raises(ApiErrors) as api_errors:
+        with pytest.raises(ExpenseLimitHasBeenReached) as error:
             check_expenses_limits(expenses, booking, mocked_query)
 
         # then
-        assert api_errors.value.errors['global'] == ['Le plafond de %s € pour les biens culturels ne vous permet pas ' \
-                                                     'de réserver cette offre.' % SUBVENTION_PHYSICAL_THINGS]
+        assert error.value.errors['global'] == ['Le plafond de %s € pour les biens culturels ne vous permet pas ' \
+                                                'de réserver cette offre.' % SUBVENTION_PHYSICAL_THINGS]
 
     def test_check_expenses_limits_raises_an_error_when_digital_limit_is_reached(self):
         # given
@@ -649,6 +648,7 @@ class CheckAlreadyBookedTest:
             check_already_booked(stock, user)
 
         assert error.value.errors == {'stockId': ["Cette offre a déja été reservée par l'utilisateur"]}
+
 
 class CheckOfferAlreadyBookedTest:
     @clean_database

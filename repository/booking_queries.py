@@ -6,11 +6,17 @@ from sqlalchemy import func
 from sqlalchemy.orm import Query
 
 from domain.stocks import STOCK_DELETION_DELAY
-from models import Booking, EventType, Offer, Offerer, Payment, \
-    Recommendation, Stock, ThingType, User, Venue
+from models.offer_type import EventType, ThingType
+from models.booking import Booking
+from models.offer import Offer
+from models.offerer import Offerer
+from models.payment import Payment
+from models.recommendation import Recommendation
+from models.stock import Stock
+from models.user import User
+from models.venue import Venue
 from models.api_errors import ResourceNotFoundError
 from models.db import db
-from models.offer_type import ProductType
 from repository import offer_queries
 
 

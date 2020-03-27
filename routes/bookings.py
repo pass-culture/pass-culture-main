@@ -9,12 +9,10 @@ from flask_login import current_user, login_required
 
 from connectors import redis
 from domain.bookings import generate_bookings_details_csv
-from domain.expenses import get_expenses
 from domain.user_activation import create_initial_deposit, is_activation_booking
 from domain.user_emails import send_activation_email, \
-    send_booking_confirmation_email_to_beneficiary, \
-    send_booking_recap_emails, send_booking_cancellation_emails_to_user_and_offerer
-from models import ApiErrors, Booking, EventType, Offerer, RightsType, Stock, ApiKey, User
+    send_booking_cancellation_emails_to_user_and_offerer
+from models import ApiErrors, Booking, EventType, Offerer, RightsType, ApiKey, User
 from models.feature import FeatureToggle
 from models.offer_type import ProductType
 from repository import booking_queries, feature_queries, repository
@@ -22,32 +20,29 @@ from repository.api_key_queries import find_api_key_by_value
 from repository.user_offerer_queries import \
     filter_query_where_user_is_user_offerer_and_is_validated
 from routes.serialization import as_dict, serialize, serialize_booking
+from use_cases.book_an_offer import book_an_offer, Success
+from use_cases.booking_information import BookingInformation
 from utils.human_ids import dehumanize, humanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, \
     WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES, \
     WEBAPP_PATCH_POST_BOOKING_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, expect_json_data
-from utils.token import random_token
-from validation.routes.bookings import check_already_booked, \
-    check_booking_is_cancellable_by_user, \
+from validation.routes.bookings import check_booking_is_cancellable_by_user, \
     check_booking_is_not_already_cancelled, \
     check_booking_is_not_used, \
-    check_quantity_is_valid, \
     check_booking_token_is_keepable, \
     check_booking_token_is_usable, \
     check_email_and_offer_id_for_anonymous_user, \
-    check_existing_stock, check_expenses_limits, \
     check_has_stock_id, \
     check_is_not_activation_booking, \
-    check_rights_to_get_bookings_csv, \
-    check_stock_is_bookable
+    check_rights_to_get_bookings_csv
 from validation.routes.users_authentifications import check_user_is_logged_in_or_email_is_provided, \
     login_or_api_key_required_v2
 from validation.routes.users_authorizations import \
     check_api_key_allows_to_cancel_booking, \
-    check_api_key_allows_to_validate_booking, check_can_book_free_offer, \
-    check_user_can_validate_activation_offer, check_user_can_validate_bookings, \
+    check_api_key_allows_to_validate_booking, check_user_can_validate_activation_offer, \
+    check_user_can_validate_bookings, \
     check_user_can_validate_bookings_v2, check_user_can_cancel_booking_by_id
 
 
@@ -135,45 +130,22 @@ def create_booking():
     recommendation_id = request.json.get('recommendationId')
     quantity = request.json.get('quantity')
     check_has_stock_id(stock_id)
-    stock = Stock.query.filter_by(id=dehumanize(stock_id)).first()
-    check_existing_stock(stock)
 
-    check_already_booked(stock, current_user)
+    booking_information = BookingInformation(
+        dehumanize(stock_id),
+        current_user.id,
+        quantity,
+        dehumanize(recommendation_id)
+    )
 
-    check_quantity_is_valid(quantity, stock)
+    new_booking = book_an_offer(booking_information)
 
-    check_can_book_free_offer(stock, current_user)
-
-    check_stock_is_bookable(stock)
-
-    new_booking = Booking(from_dict={
-        'stockId': stock_id,
-        'amount': stock.price,
-        'token': random_token(),
-        'userId': humanize(current_user.id),
-        'quantity': quantity,
-        'recommendationId': recommendation_id if recommendation_id else None
-    })
-
-    bookings = booking_queries.find_active_bookings_by_user_id(current_user.id)
-    expenses = get_expenses(bookings)
-    check_expenses_limits(expenses, new_booking)
-    repository.save(new_booking)
-
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
-
-    try:
-        send_booking_recap_emails(new_booking, send_raw_email)
-    except MailServiceException as error:
-        app.logger.error('Mail service failure', error)
-
-    try:
-        send_booking_confirmation_email_to_beneficiary(new_booking, send_raw_email)
-    except MailServiceException as error:
-        app.logger.error('Mail service failure', error)
-
-    return jsonify(as_dict(new_booking, includes=WEBAPP_PATCH_POST_BOOKING_INCLUDES)), 201
+    if type(new_booking) == Success:
+        return jsonify(
+            as_dict(new_booking.booking, includes=WEBAPP_PATCH_POST_BOOKING_INCLUDES)
+        ), 201
+    else:
+        return jsonify(new_booking.error_message.errors), 400
 
 
 @app.route('/bookings/<booking_id>/cancel', methods=['PUT'])
