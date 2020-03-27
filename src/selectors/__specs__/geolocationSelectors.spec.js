@@ -135,6 +135,6 @@ describe('selectDistanceByRouterMatch', () => {
     const result = selectDistanceByRouterMatch(state, match)
 
     // then
-    expect(result).toStrictEqual('-')
+    expect(result).toBeUndefined()
   })
 })

@@ -117,7 +117,7 @@
     "lint:js:fix": "yarn lint:js --fix",
     "start": "node scripts/start.js",
     "test:cafe": "testcafe --assertion-timeout 8000 --selector-timeout 20000 -S -s testcafe_screenshots 'chrome:headless' testcafe",
-    "test:unit": "NODE_ICU_DATA=node_modules/full-icu jest --env=jsdom"
+    "test:unit": "NODE_ICU_DATA=node_modules/full-icu TZ=UTC jest --env=jsdom"
   },
   "husky": {
     "hooks": {

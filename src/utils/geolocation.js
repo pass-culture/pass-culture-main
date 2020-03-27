@@ -7,7 +7,7 @@ export const getHumanizeRelativeDistance = (
   userLatitude = null,
   userLongitude = null
 ) => {
-  if (!userLatitude || !userLongitude || !venueLatitude || !venueLongitude) return '-'
+  if (!userLatitude || !userLongitude || !venueLatitude || !venueLongitude) return
 
   const distanceInMeters = computeDistanceInMeters(
     venueLatitude,
@@ -69,7 +69,8 @@ export const humanizeDistance = distance => {
     return `${Math.round(distance / 100) / 10} km`
   }
 
-  return `${Math.round(distance / 1000)} km`
+  const value = `${Math.round(distance / 1000)}`
+  return `${value > 900 ? '900+' : value} km`
 }
 
 export const isGeolocationEnabled = geolocation => {

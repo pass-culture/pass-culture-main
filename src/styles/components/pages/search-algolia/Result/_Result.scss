@@ -1,60 +1,69 @@
 .result {
+  border-bottom: rem(1px) solid $grey-even-more-light;
   display: flex;
+  padding: rem(15px) 0;
 
   a {
     text-decoration: none;
   }
 }
 
-.result-image {
-  background-color: $grey;
+.result-wrapper {
   display: flex;
-  height: rem(150px);
-  width: 30%;
-}
-
-.result-container {
-  @include dotted($primary, left);
-
-  display: flex;
-  flex-direction: column;
+  flex: 3;
+  flex-direction: row;
+  align-items: center;
   justify-content: center;
-  padding: 0.5rem;
-  padding-right: 0;
-  width: 55%;
-}
 
-.result-title {
-  color: $black;
-  font-size: rem(18px);
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+  .result-image {
+    box-shadow: 0 rem(2px) rem(6px) $grey-light;
+    background-color: $grey;
+    border-radius: rem(7.5px);
+    height: rem(68px);
+    margin-right: rem(20px);
+    width: rem(68px);
+  }
 
-.result-type {
-  color: $grey;
-  font-size: rem(13px);
-  font-weight: 600;
-  line-height: rem(16px);
-}
+  .result-container {
+    display: flex;
+    flex: 2;
+    flex-direction: column;
+    flex-wrap: wrap;
+    vertical-align: middle;
 
-.result-date {
-  color: $grey;
-  font-size: rem(13px);
-  line-height: rem(16px);
+    .result-title {
+      color: $black;
+      font-size: rem(16px);
+      font-weight: 700;
+    }
+
+    .result-type {
+      color: $grey;
+      font-size: rem(16px);
+      font-weight: 400;
+      margin-top: rem(6px);
+    }
+
+    .result-date {
+      color: $grey;
+      font-size: rem(16px);
+      font-weight: 400;
+      margin-top: rem(6px);
+    }
+
+    .result-price {
+      color: $black;
+      font-size: rem(14px);
+      font-weight: 500;
+      margin-top: rem(6px);
+    }
+  }
 }
 
 .result-distance {
   color: $grey;
-  font-size: rem(13px);
-  line-height: rem(16px);
-}
-
-.result-arrow {
-  align-items: center;
   display: flex;
-  position: relative;
-  width: 15%;
+  font-size: rem(16px);
+  font-weight: 400;
+  justify-content: flex-end;
 }

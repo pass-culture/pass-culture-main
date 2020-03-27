@@ -49,3 +49,26 @@ export const humanizeDate = (date, timezone) =>
       .tz(timezone)
       .format('dddd DD/MM/YYYY à H:mm')
   )
+
+export const formatResultDate = (departmentCode, dates = []) => {
+  if (dates.length === 0) return null
+  const timezone = getTimezone(departmentCode)
+  let beginningDatetime = new Date(dates[0] * 1000)
+  let endingDatetime = new Date(dates[1] * 1000)
+
+  const locale = 'fr-FR'
+  const day = beginningDatetime.toLocaleString(locale, { timezone, day: '2-digit' })
+  const month = beginningDatetime.toLocaleString(locale, { timezone, month: 'long' })
+  const weekDay = beginningDatetime.toLocaleString(locale, { timezone, weekday: 'short' })
+
+  if (beginningDatetime.getDate() === endingDatetime.getDate()) {
+    const hours = beginningDatetime.getHours()
+    const minutes = beginningDatetime.getMinutes()
+    const hoursWithLeadingZero = hours < 10 ? '0' + hours : hours
+    const minutesWithLeadingZero = minutes < 10 ? '0' + minutes : minutes
+    const monthShortened = beginningDatetime.toLocaleString(locale, { timezone, month: 'short' })
+
+    return `${weekDay.toLowerCase()} ${day} ${monthShortened.toLowerCase()} ${hoursWithLeadingZero}:${minutesWithLeadingZero}`
+  }
+  return `A partir du ${day} ${month}`
+}

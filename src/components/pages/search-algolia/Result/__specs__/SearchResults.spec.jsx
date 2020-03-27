@@ -242,7 +242,7 @@ describe('components | SearchResults', () => {
         const results = wrapper.find(Result)
         const searchInput = wrapper.find('input')
         const resultTitle = wrapper
-          .findWhere(node => node.text() === '"une librairie" : 0 résultat')
+          .findWhere(node => node.text() === '0 résultat')
           .first()
         expect(results).toHaveLength(0)
         expect(searchInput.prop('value')).toBe('une librairie')
@@ -282,7 +282,7 @@ describe('components | SearchResults', () => {
         const results = wrapper.find(Result)
         const searchInput = wrapper.find('input')
         const resultTitle = wrapper
-          .findWhere(node => node.text() === '"une librairie" : 2 résultats')
+          .findWhere(node => node.text() === '2 résultats')
           .first()
         expect(results).toHaveLength(2)
         expect(results.at(0).prop('geolocation')).toStrictEqual(props.geolocation)
@@ -694,7 +694,7 @@ describe('components | SearchResults', () => {
 
       // then
       const resultTitle = wrapper
-        .findWhere(node => node.text() === '"librairie" : 0 résultat')
+        .findWhere(node => node.text() === '0 résultat')
         .first()
       expect(resultTitle).toHaveLength(1)
     })
@@ -731,7 +731,7 @@ describe('components | SearchResults', () => {
 
       // then
       const resultTitle = wrapper
-        .findWhere(node => node.text() === '"librairie" : 2 résultats')
+        .findWhere(node => node.text() === '2 résultats')
         .first()
       expect(resultTitle).toHaveLength(1)
     })

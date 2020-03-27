@@ -8,16 +8,14 @@
 .sr-items-wrapper {
   background: $white;
   flex-grow: 1;
+  padding: rem(21px);
   overflow-y: auto;
 
   .sr-items-number {
-    font-size: rem(15px);
-    font-style: italic;
-    font-weight: 600;
-    margin-bottom: rem(12px);
-    padding-left: rem(12px);
-    padding-top: rem(12px);
-    text-transform: uppercase;
+    color: $grey;
+    font-size: rem(16px);
+    font-weight: 400;
+    margin-bottom: rem(10px);
   }
 }
 

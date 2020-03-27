@@ -1,4 +1,4 @@
-import { computeEndValidityDate, dateStringPlusTimeZone, formatRecommendationDates } from '../date'
+import { computeEndValidityDate, dateStringPlusTimeZone, formatRecommendationDates, formatResultDate } from '../date'
 
 describe('src | utils | date', () => {
   describe('computeEndValidityDate', () => {
@@ -70,6 +70,72 @@ describe('src | utils | date', () => {
 
       // then
       expect(timestamp).toBe('2019-10-10 17:00:00')
+    })
+  })
+
+  describe('formatResultDate', () => {
+    it('should null when no dates', () => {
+      // given
+      const departmentCode = '93'
+      const dates = []
+
+      // when
+      const result = formatResultDate(departmentCode, dates)
+
+      // then
+      expect(result).toBeNull()
+    })
+
+    describe('when hours and minutes superior to zero', () => {
+      it('should return one date when beginning datetime and end datetime are the same day', () => {
+        // given
+        const departmentCode = null
+        const dates = [1585308698, 1585308699]
+
+        // when
+        const result = formatResultDate(departmentCode, dates)
+
+        // then
+        expect(result).toBe('ven. 27 mars 11:31')
+      })
+
+      it('should return from date when beginning datetime and end datetime are not the same day', () => {
+        // given
+        const departmentCode = null
+        const dates = [1585308698, 1585484866]
+
+        // when
+        const result = formatResultDate(departmentCode, dates)
+
+        // then
+        expect(result).toBe('A partir du 27 mars')
+      })
+    })
+
+    describe('when hours and minutes inferior to zero', () => {
+      it('should return date when beginning datetime and end datetime are the same day', () => {
+        // given
+        const departmentCode = null
+        const dates = [1585328400, 1585328401]
+
+        // when
+        const result = formatResultDate(departmentCode, dates)
+
+        // then
+        expect(result).toBe('ven. 27 mars 17:00')
+      })
+
+      it('should return date when beginning datetime and end datetime are not the same day', () => {
+        // given
+        const departmentCode = null
+        const dates = [1585414800, 1593018000]
+
+        // when
+        const result = formatResultDate(departmentCode, dates)
+
+        // then
+        expect(result).toBe('A partir du 28 mars')
+      })
     })
   })
 })

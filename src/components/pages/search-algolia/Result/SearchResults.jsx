@@ -204,11 +204,9 @@ class SearchResults extends PureComponent {
   }
 
   getNumberOfResultsToDisplay = () => {
-    const { searchedKeywords, resultsCount } = this.state
+    const { resultsCount } = this.state
     const pluralizedResultatWord = resultsCount > 1 ? 'résultats' : 'résultat'
-    const numberOfResults = `${resultsCount} ${pluralizedResultatWord}`
-
-    return searchedKeywords ? `"${searchedKeywords}" : ${numberOfResults}` : numberOfResults
+    return `${resultsCount} ${pluralizedResultatWord}`
   }
 
   handleGoToFilters = () => {

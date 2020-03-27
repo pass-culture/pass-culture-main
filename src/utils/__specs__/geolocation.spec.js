@@ -10,8 +10,8 @@ import {
 
 jest.mock('../../utils/getMobileOperatingSystem')
 
-describe('src | utils | geolocation', () => {
-  describe('getHumanizeRelativeDistance()', () => {
+describe('utils | geolocation', () => {
+  describe('getHumanizeRelativeDistance', () => {
     describe('when the user is not geolocalized and the offer address is provided', () => {
       it('should return "-"', () => {
         // given
@@ -22,7 +22,7 @@ describe('src | utils | geolocation', () => {
         const distance = getHumanizeRelativeDistance(venueLatitude, venueLongitude)
 
         // then
-        expect(distance).toBe('-')
+        expect(distance).toBeUndefined()
       })
     })
 
@@ -45,6 +45,44 @@ describe('src | utils | geolocation', () => {
         // then
         expect(distance).toBe('13 km')
       })
+
+      it('should return distance when inferior to 900km', () => {
+        // given
+        const venueLatitude = 50.62925
+        const venueLongitude = 3.057256
+        const userLatitude = 43.610769
+        const userLongitude = 3.876716
+
+        // when
+        const distance = getHumanizeRelativeDistance(
+          venueLatitude,
+          venueLongitude,
+          userLatitude,
+          userLongitude
+        )
+
+        // then
+        expect(distance).toBe('784 km')
+      })
+
+      it('should return "900+ km" when superior to 900km', () => {
+        // given
+        const venueLatitude = 50.62925
+        const venueLongitude = 3.057256
+        const userLatitude = 139.769017
+        const userLongitude = 35.680400
+
+        // when
+        const distance = getHumanizeRelativeDistance(
+          venueLatitude,
+          venueLongitude,
+          userLatitude,
+          userLongitude
+        )
+
+        // then
+        expect(distance).toBe('900+ km')
+      })
     })
 
     describe('when its a digital offer', () => {
@@ -64,7 +102,7 @@ describe('src | utils | geolocation', () => {
         )
 
         // then
-        expect(distance).toBe('-')
+        expect(distance).toBeUndefined()
       })
     })
   })
