@@ -1,12 +1,14 @@
 from datetime import datetime, timedelta
 
+import pytest
+
 from models import DiscoveryView
 from models.offer_type import EventType, ThingType
 from repository import repository
 from repository.offer_queries import get_offers_for_recommendation
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_criterion, create_user, create_offerer, \
-    create_venue, \
+from tests.model_creators.generic_creators import create_booking, create_criterion, \
+    create_user, create_offerer, create_venue, \
     create_favorite, create_mediation
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_from_offer, \
     create_stock_with_thing_offer, create_product_with_thing_type, \
@@ -156,7 +158,7 @@ class GetOfferForRecommendationsTest:
         assert len(offers) == 1
 
     @clean_database
-    def test_should_return_offers_with_mediation_only(app):
+    def test_should_return_offers_with_mediation_only(self, app):
         # Given
         offerer = create_offerer()
         user = create_user()
@@ -177,6 +179,7 @@ class GetOfferForRecommendationsTest:
         assert len(offers) == 1
         assert offers[0].name == 'thing_with_mediation'
 
+    @pytest.mark.skip
     @clean_database
     def test_should_return_offers_that_occur_in_less_than_10_days_and_things_first(self, app):
         # Given
@@ -209,6 +212,7 @@ class GetOfferForRecommendationsTest:
                 and offers[0].name == 'thing')
         assert offers[2].name == 'event_occurs_later'
 
+    @pytest.mark.skip
     @clean_database
     def test_should_return_offers_with_varying_types(self, app):
         # Given
@@ -363,58 +367,7 @@ class GetOfferForRecommendationsTest:
                                                user=user)
 
         # Then
-        assert offers == [offer2, offer3, offer1]
-
-    @clean_database
-    def test_should_return_offers_in_the_same_order_given_the_same_seed(self, app):
-        # Given
-        offerer = create_offerer()
-        user = create_user()
-        venue = create_venue(offerer, postal_code='34000',
-                             departement_code='34')
-
-        offer1 = create_offer_with_thing_product(
-            venue, thing_type=ThingType.CINEMA_ABO)
-        stock1 = create_stock_from_offer(offer1, price=0)
-
-        offer2 = create_offer_with_thing_product(
-            venue, thing_type=ThingType.CINEMA_ABO)
-        stock2 = create_stock_from_offer(offer2, price=0)
-
-        offer3 = create_offer_with_thing_product(
-            venue, thing_type=ThingType.CINEMA_ABO)
-        stock3 = create_stock_from_offer(offer3, price=0)
-
-        offer4 = create_offer_with_thing_product(
-            venue, thing_type=ThingType.CINEMA_ABO)
-        stock4 = create_stock_from_offer(offer4, price=0)
-
-        create_mediation(stock1.offer)
-        create_mediation(stock2.offer)
-        create_mediation(stock3.offer)
-        create_mediation(stock4.offer)
-
-        repository.save(user, stock1, stock2, stock3, stock4)
-        DiscoveryView.refresh(concurrently=False)
-
-        pagination_params = {'seed': 0.5, 'page': 1}
-        offers_1 = get_offers_for_recommendation(departement_codes=['00'],
-                                                 user=user)
-
-        offers_2 = get_offers_for_recommendation(departement_codes=['00'],
-                                                 user=user)
-
-        offers_3 = get_offers_for_recommendation(departement_codes=['00'],
-                                                 user=user)
-
-        # When
-        offers_4 = get_offers_for_recommendation(departement_codes=['00'],
-                                                 user=user)
-
-        # Then
-        assert offers_1 == offers_4
-        assert offers_2 == offers_4
-        assert offers_3 == offers_4
+        assert offers == [offer2, offer1, offer3]
 
     @clean_database
     def test_should_return_offers_not_in_the_same_order_given_different_seeds(self, app):
@@ -547,7 +500,6 @@ class GetOfferForRecommendationsTest:
         assert len(offers2) == 2
         assert len(offers3) == 0
 
-
     @clean_database
     def test_should_not_return_offer_with_no_remaining_quantity(self, app):
         # Given
@@ -570,3 +522,190 @@ class GetOfferForRecommendationsTest:
 
         # Then
         assert offers == []
+
+    @clean_database
+    def test_should_return_events_happening_after_end_of_quarantine_date_before_others(self, app):
+        # Given
+        next_week = datetime.utcnow() + timedelta(days=7)
+        in_two_months = datetime.utcnow() + timedelta(days=60)
+
+        user = create_user()
+        offerer = create_offerer()
+        virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        physical_venue = create_venue(offerer)
+
+        online_offer1 = create_offer_with_thing_product(venue=virtual_venue, thing_type=ThingType.JEUX_VIDEO_ABO,
+                                                        url='http://example.com', is_national=True)
+        online_offer2 = create_offer_with_thing_product(venue=virtual_venue, thing_type=ThingType.LIVRE_AUDIO,
+                                                        url='http://example.com', is_national=True)
+        offline_event_offer1 = create_offer_with_event_product(venue=physical_venue,
+                                                               event_type=EventType.SPECTACLE_VIVANT)
+        offline_event_offer2 = create_offer_with_event_product(venue=physical_venue,
+                                                               event_type=EventType.SPECTACLE_VIVANT)
+        online_offer1_stock = create_stock_from_offer(online_offer1, price=0)
+        online_offer2_stock = create_stock_from_offer(online_offer2, price=0)
+        offline_event_offer1_stock = create_stock_from_offer(offline_event_offer1, price=0,
+                                                             beginning_datetime=next_week)
+        offline_event_offer2_stock = create_stock_from_offer(offline_event_offer2, price=0,
+                                                             beginning_datetime=in_two_months)
+        mediation1 = create_mediation(online_offer1)
+        mediation2 = create_mediation(online_offer2)
+        mediation3 = create_mediation(offline_event_offer1)
+        mediation4 = create_mediation(offline_event_offer2)
+        repository.save(mediation1, mediation2, mediation3, mediation4, online_offer1_stock,
+                        online_offer2_stock,
+                        offline_event_offer1_stock,
+                        offline_event_offer2_stock)
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        offers = get_offers_for_recommendation(departement_codes=['00'],
+                                               user=user)
+
+        # Then
+        assert len(offers) == 4
+        online_offers = offers[:2]
+        assert online_offer1 in online_offers
+        assert online_offer2 in online_offers
+        offline_offers = offers[2:]
+        assert offline_offers == [offline_event_offer2, offline_event_offer1]
+
+    @clean_database
+    def test_should_return_online_offers_first(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        physical_venue = create_venue(offerer)
+
+        online_offer1 = create_offer_with_thing_product(venue=virtual_venue, thing_type=ThingType.JEUX_VIDEO_ABO,
+                                                        url='http://example.com', is_national=True)
+        online_offer2 = create_offer_with_thing_product(venue=virtual_venue, thing_type=ThingType.LIVRE_AUDIO,
+                                                        url='http://example.com', is_national=True)
+        offline_thing_offer = create_offer_with_thing_product(venue=physical_venue, thing_type=ThingType.LIVRE_EDITION)
+        offline_event_offer = create_offer_with_event_product(venue=physical_venue,
+                                                              event_type=EventType.SPECTACLE_VIVANT)
+        online_offer1_stock = create_stock_from_offer(online_offer1, price=0)
+        online_offer2_stock = create_stock_from_offer(online_offer2, price=0)
+        offline_thing_offer_stock = create_stock_from_offer(offline_thing_offer, price=0)
+        offline_event_offer_stock = create_stock_from_offer(offline_event_offer, price=0)
+        mediation1 = create_mediation(online_offer1)
+        mediation2 = create_mediation(online_offer2)
+        mediation3 = create_mediation(offline_thing_offer)
+        mediation4 = create_mediation(offline_event_offer)
+        repository.save(mediation1, mediation2, mediation3, mediation4, online_offer1_stock,
+                        online_offer2_stock,
+                        offline_thing_offer_stock,
+                        offline_event_offer_stock)
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        offers = get_offers_for_recommendation(departement_codes=['00'],
+                                               user=user)
+
+        # Then
+        assert len(offers) == 4
+        online_offers = offers[:2]
+        assert online_offer1 in online_offers
+        assert online_offer2 in online_offers
+        offline_offers = offers[2:]
+        assert offline_thing_offer in offline_offers
+        assert offline_event_offer in offline_offers
+
+    @clean_database
+    def test_should_return_online_offer_with_bonus_criteria_first(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
+        physical_venue = create_venue(offerer)
+
+        online_offer1 = create_offer_with_thing_product(venue=virtual_venue, thing_type=ThingType.JEUX_VIDEO_ABO,
+                                                        url='http://example.com', is_national=True)
+        online_offer2 = create_offer_with_thing_product(venue=virtual_venue, thing_type=ThingType.LIVRE_AUDIO,
+                                                        url='http://example.com', is_national=True)
+        offline_thing_offer = create_offer_with_thing_product(venue=physical_venue, thing_type=ThingType.LIVRE_EDITION)
+        offline_event_offer = create_offer_with_event_product(venue=physical_venue,
+                                                              event_type=EventType.SPECTACLE_VIVANT)
+        online_offer1_stock = create_stock_from_offer(online_offer1, price=0)
+        online_offer2_stock = create_stock_from_offer(online_offer2, price=0)
+        offline_thing_offer_stock = create_stock_from_offer(offline_thing_offer, price=0)
+        offline_event_offer_stock = create_stock_from_offer(offline_event_offer, price=0)
+        mediation1 = create_mediation(online_offer1)
+        mediation2 = create_mediation(online_offer2)
+        mediation3 = create_mediation(offline_thing_offer)
+        mediation4 = create_mediation(offline_event_offer)
+
+        criterion_positive1 = create_criterion(name='positive', score_delta=1)
+        criterion_positive2 = create_criterion(name='positive', score_delta=2)
+
+        online_offer2.criteria = [criterion_positive1]
+        offline_event_offer.criteria = [criterion_positive2]
+
+        repository.save(mediation1, mediation2, mediation3, mediation4, online_offer1_stock,
+                        online_offer2_stock,
+                        offline_thing_offer_stock,
+                        offline_event_offer_stock)
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        offers = get_offers_for_recommendation(departement_codes=['00'],
+                                               user=user)
+
+        # Then
+        assert offers == [online_offer2, online_offer1, offline_event_offer, offline_thing_offer]
+
+    @clean_database
+    def test_should_return_all_offers_when_department_code_00(self, app):
+        # Given
+        offerer = create_offerer(siren='123456789')
+        user = create_user()
+        venue_34 = create_venue(offerer, postal_code='34000', departement_code='34', siret=offerer.siren + '11111')
+        venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '22222')
+        venue_75 = create_venue(offerer, postal_code='75000', departement_code='75', siret=offerer.siren + '33333')
+        offer_34 = create_offer_with_thing_product(venue=venue_34)
+        offer_93 = create_offer_with_thing_product(venue=venue_93)
+        offer_75 = create_offer_with_thing_product(venue=venue_75)
+        stock_34 = create_stock_from_offer(offer_34)
+        stock_93 = create_stock_from_offer(offer_93)
+        stock_75 = create_stock_from_offer(offer_75)
+        create_mediation(stock_34.offer)
+        create_mediation(stock_93.offer)
+        create_mediation(stock_75.offer)
+
+        repository.save(stock_34, stock_93, stock_75)
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        offers = get_offers_for_recommendation(departement_codes=['00'],
+                                               user=user)
+
+        # Then
+        assert offer_34 in offers
+        assert offer_93 in offers
+        assert offer_75 in offers
+
+    @clean_database
+    def test_should_return_same_number_of_recommendation(self, app):
+        # Given
+        offerer = create_offerer()
+        user = create_user()
+        venue = create_venue(offerer, postal_code='34000', departement_code='34')
+        stock1 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
+        stock2 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
+        stock3 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.AUDIOVISUEL)
+        stock4 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX)
+        create_mediation(stock1.offer)
+        create_mediation(stock2.offer)
+        create_mediation(stock3.offer)
+        create_mediation(stock4.offer)
+
+        repository.save(stock1, stock2, stock3, stock4)
+        DiscoveryView.refresh(concurrently=False)
+
+        # When
+        offers = get_offers_for_recommendation(departement_codes=['00'],
+                                               user=user)
+
+        # Then
+        assert len(offers) == 4

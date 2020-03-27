@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from models.discovery_view import DiscoveryView
+from models import DiscoveryView, DiscoveryViewV3
 from recommendations_engine.recommendations import create_recommendations_for_discovery_v3
 from repository import repository
 from tests.conftest import clean_database
@@ -33,7 +33,7 @@ class CreateRecommendationsForDiscoveryTest:
         iris_venue = create_iris_venue(iris, venue)
         repository.save(iris_venue)
 
-        DiscoveryView.refresh(concurrently=False)
+        DiscoveryViewV3.refresh(concurrently=False)
 
         # When
         recommendations = create_recommendations_for_discovery_v3(user=user, user_iris_id=iris.id,

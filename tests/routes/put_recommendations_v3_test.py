@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from shapely.geometry import Polygon
 
-from models import Feature, DiscoveryView, Mediation, ThingType
+from models import Feature, DiscoveryViewV3, Mediation, ThingType
 from models.feature import FeatureToggle
 from repository import repository
 from tests.conftest import TestClient, clean_database
@@ -72,7 +72,7 @@ class Put:
             feature.isActive = True
 
             repository.save(user, stock, mediation, feature, iris_venue)
-            DiscoveryView.refresh(concurrently=False)
+            DiscoveryViewV3.refresh(concurrently=False)
 
             reads = [
                 {"id": humanize(1), "dateRead": "2018-12-17T15:59:11.689000Z"},
@@ -113,7 +113,7 @@ class Put:
 
             repository.save(user, stock1)
 
-            DiscoveryView.refresh(concurrently=False)
+            DiscoveryViewV3.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -160,7 +160,7 @@ class Put:
             feature.isActive = True
 
             repository.save(user, stock, stock_of_digital_offer, mediation, mediation_of_digital_offer, feature)
-            DiscoveryView.refresh(concurrently=False)
+            DiscoveryViewV3.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -204,7 +204,7 @@ class Put:
             iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
-            DiscoveryView.refresh(concurrently=False)
+            DiscoveryViewV3.refresh(concurrently=False)
 
             upsert_tuto_mediations()
 
@@ -312,7 +312,7 @@ class Put:
             iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
-            DiscoveryView.refresh(concurrently=False)
+            DiscoveryViewV3.refresh(concurrently=False)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when

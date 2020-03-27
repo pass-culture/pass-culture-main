@@ -1,14 +1,13 @@
-import os
-
 from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm.scoping import scoped_session
 from sqlalchemy_utils import refresh_materialized_view
 
+from models import DiscoveryView
 from models.db import Model, db
 
 
-class DiscoveryView(Model):
-    __tablename__ = 'discovery_view'
+class DiscoveryViewV3(Model):
+    __tablename__ = 'discovery_view_v3'
 
     venueId = Column(BigInteger, ForeignKey('venue.id'))
 
@@ -28,9 +27,10 @@ class DiscoveryView(Model):
 
     def __init__(self, session: scoped_session):
         self.session = session
+        self.discovery_view = DiscoveryView(session)
 
     def create(self) -> None:
-        get_recommendable_offers_ordered_by_digital_offers = self._create_function_get_recommendable_offers_ordered_by_digital_offers()
+        get_recommendable_offers = self._create_function_get_recommendable_offers()
 
         self.session.execute(f"""
             CREATE MATERIALIZED VIEW IF NOT EXISTS {self.__tablename__} AS
@@ -43,7 +43,7 @@ class DiscoveryView(Model):
                     recommendable_offers.url            AS url,
                     recommendable_offers."isNational"   AS "isNational",
                     offer_mediation.id                  AS "mediationId"
-                FROM (SELECT * FROM {get_recommendable_offers_ordered_by_digital_offers}()) AS recommendable_offers
+                FROM (SELECT * FROM {get_recommendable_offers}()) AS recommendable_offers
                 LEFT OUTER JOIN mediation AS offer_mediation ON recommendable_offers.id = offer_mediation."offerId"
                     AND offer_mediation."isActive"
                 ORDER BY recommendable_offers.partitioned_offers;
@@ -53,11 +53,9 @@ class DiscoveryView(Model):
         """)
         self.session.commit()
 
-    def get_feature_end_of_quarantine_date(self) -> str:
-        return os.environ.get('END_OF_QUARANTINE_DATE', '2020-04-25')
+    def _create_function_get_recommendable_offers(self) -> str:
+        function_name = 'get_recommendable_offers'
 
-    def _create_function_get_recommendable_offers_ordered_by_digital_offers(self) -> str:
-        function_name = 'get_recommendable_offers_ordered_by_digital_offers'
         get_offer_score = self._create_function_get_offer_score()
         offer_has_at_least_one_active_mediation = self._create_function_offer_has_at_least_one_active_mediation()
         offer_has_at_least_one_bookable_stock = self._create_function_offer_has_at_least_one_bookable_stock()
@@ -77,7 +75,7 @@ class DiscoveryView(Model):
             BEGIN
                 RETURN QUERY
                 SELECT
-                    (SELECT * FROM {get_offer_score}(offer.id)) AS criterion_score,
+                    (SELECT * from {get_offer_score}(offer.id)) AS criterion_score,
                     offer.id AS id,
                     offer."venueId" AS "venueId",
                     offer.type AS type,
@@ -108,102 +106,30 @@ class DiscoveryView(Model):
         return function_name
 
     def _order_by_digital_offers(self) -> str:
+        get_offer_score = self._create_function_get_offer_score()
+        event_is_in_less_than_10_days = self._create_function_event_is_in_less_than_10_days()
+
         return f"""
             ROW_NUMBER() OVER (
+                PARTITION BY offer.type, offer.url IS NULL
                 ORDER BY
-                    offer.url IS NOT NULL DESC,
-                    (EXISTS (SELECT 1 FROM stock WHERE stock."offerId" = offer.id AND stock."beginningDatetime" > '{self.get_feature_end_of_quarantine_date()}T00:00:00'::TIMESTAMP)) DESC,
-                    (
-                        SELECT COALESCE(SUM(criterion."scoreDelta"), 0) AS coalesce_1
-                        FROM criterion, offer_criterion
-                        WHERE criterion.id = offer_criterion."criterionId"
-                            AND offer_criterion."offerId" = offer.id
-                    ) DESC,
+                    (EXISTS (SELECT * FROM {event_is_in_less_than_10_days}(offer.id))) DESC,
+                    (SELECT * FROM {get_offer_score}(offer.id)) DESC,
                     RANDOM()
             )
         """
 
     def _create_function_offer_has_at_least_one_bookable_stock(self) -> str:
-        function_name = 'offer_has_at_least_one_bookable_stock'
-        self.session.execute(f"""
-            CREATE OR REPLACE FUNCTION {function_name}(offer_id BIGINT)
-            RETURNS SETOF INTEGER AS $body$
-            BEGIN
-                RETURN QUERY
-                SELECT 1
-                FROM stock
-                WHERE stock."offerId" = offer_id
-                    AND stock."isSoftDeleted" = FALSE
-                    AND (stock."beginningDatetime" > NOW()
-                        OR stock."beginningDatetime" IS NULL)
-                    AND (stock."bookingLimitDatetime" > NOW()
-                        OR stock."bookingLimitDatetime" IS NULL)
-                    AND (stock.quantity IS NULL
-                        OR (
-                            SELECT GREATEST(stock.quantity - COALESCE(SUM(booking.quantity), 0), 0)
-                            FROM booking
-                            WHERE booking."stockId" = stock.id
-                                AND booking."isCancelled" = FALSE
-                        ) > 0
-                    );
-            END
-            $body$
-            LANGUAGE plpgsql;
-        """)
-        return function_name
+        return self.discovery_view._create_function_offer_has_at_least_one_bookable_stock()
 
     def _create_function_offer_has_at_least_one_active_mediation(self) -> str:
-        function_name = 'offer_has_at_least_one_active_mediation'
-        self.session.execute(f"""
-            CREATE OR REPLACE FUNCTION {function_name}(offer_id BIGINT)
-            RETURNS SETOF INTEGER AS $body$
-            BEGIN
-                RETURN QUERY
-                SELECT 1
-                FROM mediation
-                WHERE mediation."offerId" = offer_id
-                    AND mediation."isActive";
-            END
-            $body$
-            LANGUAGE plpgsql;
-        """)
-        return function_name
+        return self.discovery_view._create_function_offer_has_at_least_one_active_mediation()
 
     def _create_function_event_is_in_less_than_10_days(self) -> str:
-        function_name = 'event_is_in_less_than_10_days'
-        self.session.execute(f"""
-            CREATE OR REPLACE FUNCTION {function_name}(offer_id BIGINT)
-            RETURNS SETOF INTEGER AS $body$
-            BEGIN
-                RETURN QUERY
-                SELECT 1
-                FROM stock
-                WHERE stock."offerId" = offer_id
-                    AND (stock."beginningDatetime" IS NULL
-                        OR stock."beginningDatetime" > NOW()
-                    AND stock."beginningDatetime" < NOW() + INTERVAL '10 DAY');
-            END
-            $body$
-            LANGUAGE plpgsql;
-        """)
-        return function_name
+        return self.discovery_view._create_function_event_is_in_less_than_10_days()
 
     def _create_function_get_offer_score(self) -> str:
-        function_name = 'get_offer_score'
-        self.session.execute(f"""
-            CREATE OR REPLACE FUNCTION {function_name}(offer_id BIGINT)
-            RETURNS SETOF BIGINT AS $body$
-            BEGIN
-                RETURN QUERY
-                SELECT COALESCE(SUM(criterion."scoreDelta"), 0)
-                FROM criterion, offer_criterion
-                WHERE criterion.id = offer_criterion."criterionId"
-                    AND offer_criterion."offerId" = offer_id;
-            END
-            $body$
-            LANGUAGE plpgsql;
-        """)
-        return function_name
+        return self.discovery_view._create_function_get_offer_score()
 
     @classmethod
     def refresh(cls, concurrently: bool = True) -> None:

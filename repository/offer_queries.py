@@ -18,7 +18,7 @@ from models import EventType, \
     Stock, \
     ThingType, \
     Venue, \
-    Product, Favorite, Booking, DiscoveryView, User
+    Product, Favorite, Booking, DiscoveryView, DiscoveryViewV3, User
 from models.db import Model, db
 from models.feature import FeatureToggle
 from repository import feature_queries
@@ -550,17 +550,17 @@ def get_offers_for_recommendation_v3(user: User, user_iris_id: Optional[int] = N
 
     booked_offers_ids = get_only_offer_ids_from_bookings(user)
 
-    discovery_view_query = DiscoveryView.query \
-        .filter(DiscoveryView.id.notin_(favorite_offers_ids)) \
-        .filter(DiscoveryView.id.notin_(seen_recommendation_ids)) \
-        .filter(DiscoveryView.id.notin_(booked_offers_ids))
+    discovery_view_query = DiscoveryViewV3.query \
+        .filter(DiscoveryViewV3.id.notin_(favorite_offers_ids)) \
+        .filter(DiscoveryViewV3.id.notin_(seen_recommendation_ids)) \
+        .filter(DiscoveryViewV3.id.notin_(booked_offers_ids))
 
     if user_is_geolocated:
         venue_ids = find_venues_located_near_iris(user_iris_id)
         discovery_view_query = keep_only_offers_from_venues_located_near_to_user_or_national(discovery_view_query,
                                                                                              venue_ids)
 
-    discovery_view_query = discovery_view_query.order_by(DiscoveryView.offerDiscoveryOrder)
+    discovery_view_query = discovery_view_query.order_by(DiscoveryViewV3.offerDiscoveryOrder)
 
     if limit:
         discovery_view_query = discovery_view_query.limit(limit)
@@ -570,4 +570,4 @@ def get_offers_for_recommendation_v3(user: User, user_iris_id: Optional[int] = N
 
 def keep_only_offers_from_venues_located_near_to_user_or_national(query: BaseQuery,
                                                                   venue_ids: List[int] = []) -> BaseQuery:
-    return query.filter(or_(DiscoveryView.venueId.in_(venue_ids), DiscoveryView.isNational == True))
+    return query.filter(or_(DiscoveryViewV3.venueId.in_(venue_ids), DiscoveryViewV3.isNational == True))

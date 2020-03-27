@@ -28,7 +28,7 @@ def install_models():
 
 def install_materialized_views():
     for materialized_view in models.materialized_views:
-        materialized_view.create(session=db.session)
+        materialized_view(session=db.session).create()
 
 
 def install_features():

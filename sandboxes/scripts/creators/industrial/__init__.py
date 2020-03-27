@@ -1,18 +1,20 @@
-from models import DiscoveryView
+from models import DiscoveryView, DiscoveryViewV3
 from sandboxes.scripts.creators.industrial.create_industrial_activation_offers import \
     create_industrial_activation_offers
 from sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
 from sandboxes.scripts.creators.industrial.create_industrial_algolia_objects import \
     create_industrial_algolia_indexed_objects
 from sandboxes.scripts.creators.industrial.create_industrial_bookings import *
-from sandboxes.scripts.creators.industrial.create_industrial_criterion import create_industrial_criteria, \
-    associate_criterion_to_one_offer_with_mediation
+from sandboxes.scripts.creators.industrial.create_industrial_criterion import \
+    associate_criterion_to_one_offer_with_mediation, create_industrial_criteria
 from sandboxes.scripts.creators.industrial.create_industrial_deposits import *
 from sandboxes.scripts.creators.industrial.create_industrial_event_occurrences import *
 from sandboxes.scripts.creators.industrial.create_industrial_event_offers import *
 from sandboxes.scripts.creators.industrial.create_industrial_event_products import *
 from sandboxes.scripts.creators.industrial.create_industrial_event_stocks import *
-from sandboxes.scripts.creators.industrial.create_industrial_iris_venues import create_industrial_iris_venues
+from sandboxes.scripts.creators.industrial.create_industrial_iris import *
+from sandboxes.scripts.creators.industrial.create_industrial_iris_venues import \
+    create_industrial_iris_venues
 from sandboxes.scripts.creators.industrial.create_industrial_mediations import *
 from sandboxes.scripts.creators.industrial.create_industrial_offerers_with_pro_users import *
 from sandboxes.scripts.creators.industrial.create_industrial_payments import *
@@ -24,7 +26,6 @@ from sandboxes.scripts.creators.industrial.create_industrial_thing_products impo
 from sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import *
 from sandboxes.scripts.creators.industrial.create_industrial_venues import *
 from sandboxes.scripts.creators.industrial.create_industrial_webapp_users import *
-from sandboxes.scripts.creators.industrial.create_industrial_iris import *
 
 
 def save_industrial_sandbox():
@@ -72,6 +73,8 @@ def save_industrial_sandbox():
     create_industrial_mediations(offers_by_name)
 
     DiscoveryView.refresh()
+    DiscoveryViewV3.refresh()
+
     recommendations_by_name = create_industrial_recommendations(
         offers_by_name,
         users_by_name
@@ -92,5 +95,5 @@ def save_industrial_sandbox():
     create_industrial_algolia_indexed_objects()
 
     create_industrial_iris(FILE_PATH)
-    
+
     create_industrial_iris_venues()

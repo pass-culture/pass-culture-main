@@ -5,18 +5,21 @@ from flask import Flask
 from mailjet_rest import Client
 from sqlalchemy import orm
 
-from local_providers.provider_manager import synchronize_venue_providers_for_provider, synchronize_data_for_provider
-from models import DiscoveryView
+from local_providers.provider_manager import \
+    synchronize_data_for_provider, synchronize_venue_providers_for_provider
+from models import DiscoveryView, DiscoveryViewV3
 from models.db import db
 from models.feature import FeatureToggle
 from repository.feature_queries import feature_write_dashboard_enabled
 from repository.provider_queries import get_provider_by_local_class
 from repository.user_queries import find_most_recent_beneficiary_creation_date
-from scheduled_tasks.decorators import log_cron, cron_context, cron_require_feature
+from scheduled_tasks.decorators import cron_context, cron_require_feature, \
+    log_cron
 from scripts.beneficiary import remote_import
 from scripts.dashboard.write_dashboard import write_dashboard
-from scripts.update_booking_used import update_booking_used_after_stock_occurrence
-from utils.mailing import MAILJET_API_SECRET, MAILJET_API_KEY
+from scripts.update_booking_used import \
+    update_booking_used_after_stock_occurrence
+from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
 
 
 @log_cron
@@ -70,6 +73,13 @@ def pc_update_recommendations_view(app):
     DiscoveryView.refresh()
 
 
+@log_cron
+@cron_context
+@cron_require_feature(FeatureToggle.RECOMMENDATIONS_WITH_GEOLOCATION)
+def pc_update_recommendations_view_with_geolocation(app):
+    DiscoveryViewV3.refresh()
+
+
 if __name__ == '__main__':
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
@@ -108,6 +118,10 @@ if __name__ == '__main__':
                       day='*', hour='0')
 
     scheduler.add_job(pc_update_recommendations_view, 'cron',
+                      [app],
+                      minute=discovery_view_refresh_frequency)
+
+    scheduler.add_job(pc_update_recommendations_view_with_geolocation, 'cron',
                       [app],
                       minute=discovery_view_refresh_frequency)
 
