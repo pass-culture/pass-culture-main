@@ -19,27 +19,6 @@ from tests.model_creators.specific_creators import (
 
 
 @clean_database
-def test_beginning_datetime_cannot_be_after_end_datetime(app):
-    # given
-    offer = create_offer_with_thing_product(create_venue(create_offerer()))
-    now = datetime.utcnow()
-    beginning = now - timedelta(days=5)
-    end = beginning - timedelta(days=1)
-    stock = create_stock(offer=offer,
-                         beginning_datetime=beginning,
-                         end_datetime=end)
-
-    # when
-    with pytest.raises(ApiErrors) as e:
-        repository.save(stock)
-
-    # then
-    assert e.value.errors['endDatetime'] == [
-        'La date de fin de l’événement doit être postérieure à la date de début'
-    ]
-
-
-@clean_database
 def test_date_modified_should_be_updated_if_available_changed(app):
     # given
     offerer = create_offerer()
@@ -448,6 +427,7 @@ class hasBookingLimitDatetimePassedTest:
 
         # Then
         assert not stock.hasBookingLimitDatetimePassed
+
 
 class bookingsQuantityTest:
     @clean_database

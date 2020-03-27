@@ -211,7 +211,7 @@ class Post:
             # Then
             assert response.status_code == 400
             assert response.json['global'] == [
-                'Impossible de mettre des dates de début et fin si l\'offre ne porte pas sur un évenement'
+                'Impossible de mettre une date de début si l\'offre ne porte pas sur un évenement'
             ]
 
         @clean_database

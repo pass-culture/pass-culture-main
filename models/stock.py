@@ -43,11 +43,6 @@ class Stock(PcObject,
                                index=True,
                                nullable=True)
 
-    endDatetime = Column(DateTime,
-                         CheckConstraint('"endDatetime" > "beginningDatetime"',
-                                         name='check_end_datetime_is_after_beginning_datetime'),
-                         nullable=True)
-
     offerId = Column(BigInteger,
                      ForeignKey('offer.id'),
                      index=True,
