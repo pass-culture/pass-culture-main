@@ -31,6 +31,7 @@ def install_scripts():
     import scripts.update_providables
     import scripts.storage
     import scripts.install_data
+    import scripts.iris.commands
     import scripts.payment.banishment_command
     import scripts.payment.generate_payments
     import scripts.algolia_indexing.commands

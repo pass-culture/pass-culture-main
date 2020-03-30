@@ -2,6 +2,7 @@ from unittest.mock import patch, MagicMock
 
 from shapely.geometry import Polygon
 
+from domain.iris import MAXIMUM_DISTANCE_IN_METERS
 from models import IrisVenues
 from repository import repository
 from scripts.iris.link_iris_to_venues import link_irises_to_existing_physical_venues, _find_all_venue_ids_to_link
@@ -21,7 +22,7 @@ class LinkIrisesToExistingPhysicalVenuesTest:
         repository.save(iris, venue)
 
         # When
-        link_irises_to_existing_physical_venues()
+        link_irises_to_existing_physical_venues(MAXIMUM_DISTANCE_IN_METERS)
 
         # Then
         assert IrisVenues.query.count() == 1
@@ -39,11 +40,11 @@ class LinkIrisesToExistingPhysicalVenuesTest:
         _find_all_venues_to_link.return_value = mocked_venues_to_link
 
         # When
-        link_irises_to_existing_physical_venues()
+        link_irises_to_existing_physical_venues(MAXIMUM_DISTANCE_IN_METERS)
 
         # Then
         assert find_ids_of_irises_located_near_venue.call_count == 5
-        find_ids_of_irises_located_near_venue.assert_called_with(5)
+        find_ids_of_irises_located_near_venue.assert_called_with(5, 100000)
 
     @clean_database
     @patch('scripts.iris.link_iris_to_venues._find_all_venue_ids_to_link')
@@ -59,7 +60,7 @@ class LinkIrisesToExistingPhysicalVenuesTest:
         find_ids_of_irises_located_near_venue.return_value = [1, 2, 3]
 
         # When
-        link_irises_to_existing_physical_venues()
+        link_irises_to_existing_physical_venues(MAXIMUM_DISTANCE_IN_METERS)
 
         # Then
         assert insert_venue_in_iris_venue.call_count == 5

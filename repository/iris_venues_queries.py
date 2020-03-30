@@ -1,14 +1,11 @@
-from typing import List, Optional
+from typing import List
 
 from models import IrisVenues
 from models.db import db
 from repository import repository
 
-MAXIMUM_DISTANCE_IN_METERS = 100000
 
-
-def find_ids_of_irises_located_near_venue(venue_id: int) -> List[int]:
-    search_radius = MAXIMUM_DISTANCE_IN_METERS
+def find_ids_of_irises_located_near_venue(venue_id: int, search_radius: int) -> List[int]:
     query = f''' WITH venue_coordinates AS (SELECT longitude, latitude from venue WHERE id = {venue_id})
                  SELECT id FROM iris_france, venue_coordinates
                  WHERE ST_DISTANCE(centroid, CAST(ST_SetSRID(ST_MakePoint(longitude, latitude), 4326) AS GEOGRAPHY))

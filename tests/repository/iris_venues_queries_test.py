@@ -1,5 +1,6 @@
 from shapely.geometry import Polygon
 
+from domain.iris import MAXIMUM_DISTANCE_IN_METERS
 from models import IrisVenues
 from repository import repository
 from repository.iris_venues_queries import find_ids_of_irises_located_near_venue, insert_venue_in_iris_venue, \
@@ -30,7 +31,7 @@ class FindIrisesLocatedNearVenueTest:
         repository.save(iris_amiens, iris_beauvais, venue_in_paris)
 
         # when
-        iris_id = find_ids_of_irises_located_near_venue(venue_in_paris.id)
+        iris_id = find_ids_of_irises_located_near_venue(venue_in_paris.id, MAXIMUM_DISTANCE_IN_METERS)
 
         # then
         assert iris_id == [iris_beauvais.id]
@@ -44,7 +45,7 @@ class FindIrisesLocatedNearVenueTest:
         repository.save(venue_in_paris)
 
         # when
-        iris_id = find_ids_of_irises_located_near_venue(venue_in_paris.id)
+        iris_id = find_ids_of_irises_located_near_venue(venue_in_paris.id, MAXIMUM_DISTANCE_IN_METERS)
 
         # then
         assert iris_id == []
