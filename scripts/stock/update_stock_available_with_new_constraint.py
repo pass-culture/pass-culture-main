@@ -43,12 +43,15 @@ def _get_stocks_to_check(page: int = 0, page_size: int = 100) -> List[Stock]:
         .filter(Stock.isSoftDeleted == False) \
         .filter(Stock.hasBeenMigrated == None) \
         .order_by(Stock.id) \
+        .group_by(Stock.id) \
         .offset(page * page_size) \
         .limit(page_size) \
         .all()
 
 
 def _update_stock_quantity(stock_to_check: Stock, remaining_quantity_before_new_constraint: int):
+    remaining_quantity_before_new_constraint = remaining_quantity_before_new_constraint \
+        if remaining_quantity_before_new_constraint > 0 else 0
     stock_to_check.available = remaining_quantity_before_new_constraint + stock_to_check.bookingsQuantity
     stock_to_check.hasBeenMigrated = True
     repository.save(stock_to_check)

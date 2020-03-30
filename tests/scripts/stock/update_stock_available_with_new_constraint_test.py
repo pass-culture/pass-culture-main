@@ -41,6 +41,26 @@ class UpdateStockAvailableWithNewConstraintTest:
         assert existing_stock.remainingQuantity == 12
         assert existing_stock.available == 32
 
+    @clean_database
+    def test_should_update_stock_available_when_remaining_quantity_is_negative(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        stock = create_stock(offer=offer, available=1, price=0, date_modified=datetime.utcnow())
+        booking = create_booking(user, stock=stock, quantity=2, is_used=True, date_used=yesterday)
+        booking1 = create_booking(user, stock=stock, quantity=2, is_used=False)
+        repository.save(booking, booking1)
+
+        # When
+        update_stock_available_with_new_constraint()
+
+        # Then
+        existing_stock = Stock.query.first()
+        assert existing_stock.remainingQuantity == 0
+        assert existing_stock.available == 4
 
     @clean_database
     def test_should_keep_remaining_quantity_when_stock_is_not_fully_booked(self, app):
@@ -62,7 +82,6 @@ class UpdateStockAvailableWithNewConstraintTest:
         existing_stock = Stock.query.get(4)
         assert existing_stock.remainingQuantity == 4
         assert existing_stock.available == 10
-
 
     @clean_database
     @patch('scripts.stock.update_stock_available_with_new_constraint._get_stocks_to_check')
@@ -88,6 +107,32 @@ class UpdateStockAvailableWithNewConstraintTest:
         # Then
         assert mock_get_stocks_to_check.call_count == 2
         assert mock_get_stocks_to_check.call_args == call(1, 2)
+
+    @clean_database
+    def test_should_update_all_needed_stocks_when_stock_has_multiple_bookings(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock1 = create_stock(idx=1, offer=offer, available=12, price=0, date_modified=datetime.utcnow())
+        stock2 = create_stock(idx=2, offer=offer, available=10, price=0, date_modified=datetime.utcnow())
+        stock3 = create_stock(idx=3, offer=offer, available=10, price=0, date_modified=datetime.utcnow())
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        bookings = [
+            create_booking(user, stock=stock1, quantity=20, is_used=True, date_used=yesterday),
+            create_booking(user, stock=stock1, quantity=20, is_used=True, date_used=yesterday),
+            create_booking(user, stock=stock2, quantity=8, is_used=True, date_used=yesterday)
+        ]
+        repository.save(*bookings, stock3)
+
+        # When
+        update_stock_available_with_new_constraint(page_size=2)
+
+        # Then
+        assert stock1.hasBeenMigrated is True
+        assert stock2.hasBeenMigrated is True
+        assert stock3.hasBeenMigrated is None
 
     @clean_database
     def test_should_not_update_values_when_called_twice(self, app):
