@@ -1,4 +1,4 @@
-import { computeEndValidityDate, dateStringPlusTimeZone, formatRecommendationDates, formatResultDate } from '../date'
+import { computeEndValidityDate, dateStringPlusTimeZone, formatRecommendationDates, formatSearchResultDate } from '../date'
 
 describe('src | utils | date', () => {
   describe('computeEndValidityDate', () => {
@@ -32,7 +32,6 @@ describe('src | utils | date', () => {
     describe('when there is a date range for Europe/Paris Timezone', () => {
       it('should return the formated date', () => {
         // given
-        process.env.TZ = 'Europe/Amsterdam'
         const departementCode = '93'
         const dateRange = ['2018-10-25T18:00:00Z', '2018-10-26T19:00:00Z']
 
@@ -73,53 +72,53 @@ describe('src | utils | date', () => {
     })
   })
 
-  describe('formatResultDate', () => {
-    it('should null when no dates', () => {
+  describe('formatSearchResultDate', () => {
+    it('should return null when no dates', () => {
       // given
       const departmentCode = '93'
       const dates = []
 
       // when
-      const result = formatResultDate(departmentCode, dates)
+      const result = formatSearchResultDate(departmentCode, dates)
 
       // then
       expect(result).toBeNull()
     })
 
-    describe('when hours and minutes superior to zero', () => {
+    describe('when hours and minutes superior to 10', () => {
       it('should return one date when beginning datetime and end datetime are the same day', () => {
         // given
         const departmentCode = null
-        const dates = [1585308698, 1585308699]
+        const dates = [1585307498, 1585308699]
 
         // when
-        const result = formatResultDate(departmentCode, dates)
+        const result = formatSearchResultDate(departmentCode, dates)
 
         // then
-        expect(result).toBe('ven. 27 mars 11:31')
+        expect(result).toBe('ven. 27 mars 11:11')
       })
 
-      it('should return from date when beginning datetime and end datetime are not the same day', () => {
+      it('should indicate beginning datetime as starting date when beginning datetime and end datetime are not the same day', () => {
         // given
         const departmentCode = null
         const dates = [1585308698, 1585484866]
 
         // when
-        const result = formatResultDate(departmentCode, dates)
+        const result = formatSearchResultDate(departmentCode, dates)
 
         // then
         expect(result).toBe('A partir du 27 mars')
       })
     })
 
-    describe('when hours and minutes inferior to zero', () => {
+    describe('when hours and minutes inferior to 10', () => {
       it('should return date when beginning datetime and end datetime are the same day', () => {
         // given
         const departmentCode = null
         const dates = [1585328400, 1585328401]
 
         // when
-        const result = formatResultDate(departmentCode, dates)
+        const result = formatSearchResultDate(departmentCode, dates)
 
         // then
         expect(result).toBe('ven. 27 mars 17:00')
@@ -131,7 +130,7 @@ describe('src | utils | date', () => {
         const dates = [1585414800, 1593018000]
 
         // when
-        const result = formatResultDate(departmentCode, dates)
+        const result = formatSearchResultDate(departmentCode, dates)
 
         // then
         expect(result).toBe('A partir du 28 mars')

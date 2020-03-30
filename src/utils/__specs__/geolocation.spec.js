@@ -22,7 +22,7 @@ describe('utils | geolocation', () => {
         const distance = getHumanizeRelativeDistance(venueLatitude, venueLongitude)
 
         // then
-        expect(distance).toBeUndefined()
+        expect(distance).toBeNull()
       })
     })
 
@@ -102,7 +102,7 @@ describe('utils | geolocation', () => {
         )
 
         // then
-        expect(distance).toBeUndefined()
+        expect(distance).toBeNull()
       })
     })
   })

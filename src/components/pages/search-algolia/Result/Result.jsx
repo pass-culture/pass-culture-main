@@ -2,9 +2,10 @@ import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { formatResultDate } from '../../../../utils/date/date'
+import { formatSearchResultDate } from '../../../../utils/date/date'
 import { getHumanizeRelativeDistance } from '../../../../utils/geolocation'
 import { DEFAULT_THUMB_URL } from '../../../../utils/thumb'
+import { formatResultPrice } from '../../../../utils/price'
 
 const Result = ({ result, geolocation, search }) => {
   const { _geoloc = {}, objectID, offer } = result
@@ -12,8 +13,9 @@ const Result = ({ result, geolocation, search }) => {
   const { latitude: userLatitude, longitude: userLongitude } = geolocation
   const { lat: venueLatitude, lng: venueLongitude } = _geoloc
   const thumbSrc = thumbUrl !== null ? thumbUrl : DEFAULT_THUMB_URL
-  const formattedDate = formatResultDate(departementCode, dates)
-  const priceLabel = priceMin === 0 ? 'Gratuit' : priceMin === priceMax ? `${priceMin} €` : `A partir de ${priceMin} €`
+  const formattedDate = formatSearchResultDate(departementCode, dates)
+  const formattedPrice = formatResultPrice(priceMin, priceMax)
+  const humanizedDistance = getHumanizeRelativeDistance(userLatitude, userLongitude, venueLatitude, venueLongitude)
 
   return (
     <Link
@@ -43,18 +45,18 @@ const Result = ({ result, geolocation, search }) => {
               </p>
             )}
             <p className="result-price">
-              {priceLabel}
+              {formattedPrice}
             </p>
           </p>
         </div>
-        <div className="result-distance">
-          {getHumanizeRelativeDistance(
-            userLatitude,
-            userLongitude,
-            venueLatitude,
-            venueLongitude
-          )}
-        </div>
+        {geolocation && humanizedDistance && (
+          <div
+            className="result-distance"
+            data-test="result-distance-test"
+          >
+            {humanizedDistance}
+          </div>
+        )}
       </div>
     </Link>
   )

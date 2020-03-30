@@ -70,7 +70,7 @@ describe('components | Result', () => {
     expect(offerPrice).toHaveLength(1)
   })
 
-  it('should render a Link component containing price offer when offer has an unique price', () => {
+  it('should render a Link component containing offer price when offer has an unique price', () => {
     // given
     props.result.offer.priceMin = 5
     props.result.offer.priceMax = 5
@@ -83,7 +83,7 @@ describe('components | Result', () => {
     expect(offerPrice).toHaveLength(1)
   })
 
-  it('should render a Link component containing with no date when no dates', () => {
+  it('should render a Link component with no date when no dates', () => {
     // given
     props.result.offer.dates = []
 
@@ -95,7 +95,7 @@ describe('components | Result', () => {
     expect(offerDate).toHaveLength(0)
   })
 
-  it('should render a Link component containing with date when dates are provided', () => {
+  it('should render a Link component with date when dates are provided', () => {
     // given
     props.result.offer.dates = [1595854599, 1595854599]
 
@@ -105,6 +105,18 @@ describe('components | Result', () => {
     // then
     const offerDate = wrapper.find('[data-test="result-date-test"]')
     expect(offerDate).toHaveLength(1)
+  })
+
+  it('should render a Link component with no distance when distance is not provided', () => {
+    // given
+    props.geolocation = {}
+
+    // when
+    const wrapper = shallow(<Result {...props} />)
+
+    // then
+    const offerDate = wrapper.find('[data-test="result-distance-test"]')
+    expect(offerDate).toHaveLength(0)
   })
 
   it('should render default thumb if no thumb url is specified', () => {

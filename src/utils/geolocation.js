@@ -7,7 +7,7 @@ export const getHumanizeRelativeDistance = (
   userLatitude = null,
   userLongitude = null
 ) => {
-  if (!userLatitude || !userLongitude || !venueLatitude || !venueLongitude) return
+  if (!userLatitude || !userLongitude || !venueLatitude || !venueLongitude) return null
 
   const distanceInMeters = computeDistanceInMeters(
     venueLatitude,

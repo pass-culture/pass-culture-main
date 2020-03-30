@@ -5,6 +5,7 @@ import { getTimezone } from '../timezone'
 import { capitalize } from '../react-form-utils/functions'
 
 const PASS_CULTURE_YEARS_VALIDITY = 2
+const LOCALE = 'fr-FR'
 
 const formatDate = (date, timeZone) => {
   const options = {
@@ -50,23 +51,22 @@ export const humanizeDate = (date, timezone) =>
       .format('dddd DD/MM/YYYY à H:mm')
   )
 
-export const formatResultDate = (departmentCode, dates = []) => {
+export const formatSearchResultDate = (departmentCode, dates = []) => {
   if (dates.length === 0) return null
   const timezone = getTimezone(departmentCode)
   let beginningDatetime = new Date(dates[0] * 1000)
   let endingDatetime = new Date(dates[1] * 1000)
 
-  const locale = 'fr-FR'
-  const day = beginningDatetime.toLocaleString(locale, { timezone, day: '2-digit' })
-  const month = beginningDatetime.toLocaleString(locale, { timezone, month: 'long' })
-  const weekDay = beginningDatetime.toLocaleString(locale, { timezone, weekday: 'short' })
+  const day = beginningDatetime.toLocaleString(LOCALE, { timezone, day: '2-digit' })
+  const month = beginningDatetime.toLocaleString(LOCALE, { timezone, month: 'long' })
+  const weekDay = beginningDatetime.toLocaleString(LOCALE, { timezone, weekday: 'short' })
 
   if (beginningDatetime.getDate() === endingDatetime.getDate()) {
     const hours = beginningDatetime.getHours()
     const minutes = beginningDatetime.getMinutes()
     const hoursWithLeadingZero = hours < 10 ? '0' + hours : hours
     const minutesWithLeadingZero = minutes < 10 ? '0' + minutes : minutes
-    const monthShortened = beginningDatetime.toLocaleString(locale, { timezone, month: 'short' })
+    const monthShortened = beginningDatetime.toLocaleString(LOCALE, { timezone, month: 'short' })
 
     return `${weekDay.toLowerCase()} ${day} ${monthShortened.toLowerCase()} ${hoursWithLeadingZero}:${minutesWithLeadingZero}`
   }

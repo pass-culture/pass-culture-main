@@ -3,6 +3,10 @@
 
   display: flex;
   flex-direction: column;
+
+  .absolute-footer {
+    bottom: calc(#{$footer-height} - #{$page-padding});
+  }
 }
 
 .sr-items-wrapper {
