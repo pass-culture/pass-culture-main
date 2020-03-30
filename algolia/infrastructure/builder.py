@@ -21,7 +21,7 @@ def build_object(offer: Offer) -> Dict:
     show_sub_type = offer.extraData and offer.extraData.get('showSubType')
     music_type = offer.extraData and offer.extraData.get('musicType')
     music_sub_type = offer.extraData and offer.extraData.get('musicSubType')
-    prices = offer.stocks and list(map(lambda stock: stock.price, offer.stocks))
+    prices = offer.stocks and map(lambda stock: stock.price, offer.stocks)
     prices_sorted = sorted(prices, key=float)
     price_min = prices_sorted[0]
     price_max = prices_sorted[-1]
