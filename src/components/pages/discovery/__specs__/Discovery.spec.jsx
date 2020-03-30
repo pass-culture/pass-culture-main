@@ -52,7 +52,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       expect(wrapper.state()).toStrictEqual({
         atWorldsEnd: false,
         hasError: false,
-        isEmpty: null,
+        hasNoMoreRecommendations: false,
         isLoading: false,
       })
     })
@@ -90,27 +90,33 @@ describe('src | components | pages | discovery | Discovery', () => {
       // then
       expect(props.loadRecommendations).not.toHaveBeenCalledWith()
       expect(props.saveLastRecommendationsRequestTimestamp).not.toHaveBeenCalledWith()
-      expect(props.redirectToFirstRecommendationIfNeeded).toHaveBeenCalledWith(props.recommendations)
+      expect(props.redirectToFirstRecommendationIfNeeded).toHaveBeenCalledWith(
+        props.recommendations
+      )
     })
   })
 
   describe('when unmount', () => {
     it('should delete tutorials for current user', () => {
       // given
-      props.tutorials = [{
-        id: 'hello',
-        productOrTutoIdentifier: 'tuto_0',
-      }]
+      props.tutorials = [
+        {
+          id: 'hello',
+          productOrTutoIdentifier: 'tuto_0',
+        },
+      ]
       const wrapper = shallow(<Discovery {...props} />)
 
       // when
       wrapper.unmount()
 
       // then
-      expect(props.deleteTutorials).toHaveBeenCalledWith([{
-        id: 'hello',
-        productOrTutoIdentifier: 'tuto_0',
-      }])
+      expect(props.deleteTutorials).toHaveBeenCalledWith([
+        {
+          id: 'hello',
+          productOrTutoIdentifier: 'tuto_0',
+        },
+      ])
     })
 
     it('should not delete tutorials for current user', () => {
@@ -132,8 +138,8 @@ describe('src | components | pages | discovery | Discovery', () => {
         // given
         const action = {
           payload: {
-            data: [{ id: 'ABC1' }]
-          }
+            data: [{ id: 'ABC1' }],
+          },
         }
         const wrapper = shallow(<Discovery {...props} />)
 
@@ -148,8 +154,8 @@ describe('src | components | pages | discovery | Discovery', () => {
         // given
         const action = {
           payload: {
-            data: []
-          }
+            data: [],
+          },
         }
         props.recommendations = [{ id: 'ABC1' }]
         const wrapper = shallow(<Discovery {...props} />)
@@ -161,8 +167,8 @@ describe('src | components | pages | discovery | Discovery', () => {
         expect(wrapper.state()).toStrictEqual({
           atWorldsEnd: true,
           hasError: false,
-          isEmpty: false,
-          isLoading: false
+          hasNoMoreRecommendations: false,
+          isLoading: false,
         })
       })
 
@@ -170,8 +176,8 @@ describe('src | components | pages | discovery | Discovery', () => {
         // given
         const action = {
           payload: {
-            data: [{ id: 'DEF2' }]
-          }
+            data: [{ id: 'DEF2' }],
+          },
         }
         props.recommendations = [{ id: 'ABC1' }]
         const wrapper = shallow(<Discovery {...props} />)
@@ -183,17 +189,17 @@ describe('src | components | pages | discovery | Discovery', () => {
         expect(wrapper.state()).toStrictEqual({
           atWorldsEnd: false,
           hasError: false,
-          isEmpty: false,
-          isLoading: false
+          hasNoMoreRecommendations: false,
+          isLoading: false,
         })
       })
 
-      it('should set isEmpty state to true when no recommendations have been fetched and no recommendations are loaded', () => {
+      it('should set hasNoMoreRecommendations state to true when no recommendations have been fetched and no recommendations are loaded', () => {
         // given
         const action = {
           payload: {
-            data: []
-          }
+            data: [],
+          },
         }
         props.recommendations = []
         const wrapper = shallow(<Discovery {...props} />)
@@ -205,8 +211,8 @@ describe('src | components | pages | discovery | Discovery', () => {
         expect(wrapper.state()).toStrictEqual({
           atWorldsEnd: true,
           hasError: false,
-          isEmpty: true,
-          isLoading: false
+          hasNoMoreRecommendations: true,
+          isLoading: false,
         })
       })
     })
@@ -224,8 +230,8 @@ describe('src | components | pages | discovery | Discovery', () => {
         expect(wrapper.state()).toStrictEqual({
           atWorldsEnd: false,
           hasError: true,
-          isEmpty: null,
-          isLoading: true
+          hasNoMoreRecommendations: false,
+          isLoading: true,
         })
       })
     })
@@ -236,9 +242,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       // given
       jest
         .spyOn(global.Date, 'now')
-        .mockImplementationOnce(() =>
-          new Date('2019-11-20T13:00:00.000Z').valueOf()
-        )
+        .mockImplementationOnce(() => new Date('2019-11-20T13:00:00.000Z').valueOf())
 
       // when
       const wrapper = shallow(<Discovery {...props} />)
@@ -253,9 +257,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       // given
       jest
         .spyOn(global.Date, 'now')
-        .mockImplementationOnce(() =>
-          new Date('2019-11-20T00:00:00.000Z').valueOf()
-        )
+        .mockImplementationOnce(() => new Date('2019-11-20T00:00:00.000Z').valueOf())
 
       // when
       const wrapper = shallow(<Discovery {...props} />)

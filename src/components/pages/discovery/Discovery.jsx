@@ -17,7 +17,7 @@ class Discovery extends PureComponent {
     this.state = {
       atWorldsEnd: false,
       hasError: false,
-      isEmpty: null,
+      hasNoMoreRecommendations: false,
       isLoading: false,
     }
   }
@@ -80,9 +80,9 @@ class Discovery extends PureComponent {
 
     const { data: loadedRecommendations = [] } = action && action.payload
     const atWorldsEnd = loadedRecommendations.length === 0
-    const isEmpty = (!recommendations || !recommendations.length) && atWorldsEnd
+    const hasNoMoreRecommendations = (!recommendations || !recommendations.length) && atWorldsEnd
 
-    this.setState({ atWorldsEnd, isEmpty, isLoading: false }, () => {
+    this.setState({ atWorldsEnd, hasNoMoreRecommendations, isLoading: false }, () => {
       resetReadRecommendations()
       redirectToFirstRecommendationIfNeeded(loadedRecommendations)
     })
@@ -129,13 +129,13 @@ class Discovery extends PureComponent {
 
   render() {
     const { match } = this.props
-    const { hasError, isEmpty, isLoading } = this.state
+    const { hasError, hasNoMoreRecommendations, isLoading } = this.state
     const cancelView = isCancelView(match)
 
     return (
       <Fragment>
         <main className="discovery-page no-padding page with-footer">
-          {!isEmpty && (
+          {!hasNoMoreRecommendations && (
             <Fragment>
               <Route
                 key="route-discovery-deck"
@@ -159,7 +159,7 @@ class Discovery extends PureComponent {
         </main>
         <LoaderContainer
           hasError={hasError}
-          isEmpty={isEmpty}
+          hasNoMoreRecommendations={hasNoMoreRecommendations}
           isLoading={isLoading}
         />
       </Fragment>

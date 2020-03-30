@@ -87,9 +87,9 @@ ShallowWrapper {
         </main>,
         <withRouter(Loader)
           hasError={false}
-          isEmpty={false}
+          hasError500={false}
+          hasNoMoreRecommendations={false}
           isLoading={false}
-          statusCode={200}
         />,
       ],
     },
@@ -169,9 +169,9 @@ ShallowWrapper {
         "nodeType": "function",
         "props": Object {
           "hasError": false,
-          "isEmpty": false,
+          "hasError500": false,
+          "hasNoMoreRecommendations": false,
           "isLoading": false,
-          "statusCode": 200,
         },
         "ref": null,
         "rendered": null,
@@ -208,9 +208,9 @@ ShallowWrapper {
           </main>,
           <withRouter(Loader)
             hasError={false}
-            isEmpty={false}
+            hasError500={false}
+            hasNoMoreRecommendations={false}
             isLoading={false}
-            statusCode={200}
           />,
         ],
       },
@@ -290,9 +290,9 @@ ShallowWrapper {
           "nodeType": "function",
           "props": Object {
             "hasError": false,
-            "isEmpty": false,
+            "hasError500": false,
+            "hasNoMoreRecommendations": false,
             "isLoading": false,
-            "statusCode": 200,
           },
           "ref": null,
           "rendered": null,

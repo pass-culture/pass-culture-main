@@ -42,21 +42,21 @@ class Loader extends PureComponent {
   handleRefresh = () => window.location.reload()
 
   renderIcon = () => {
-    const { isLoading, statusCode } = this.props
+    const { hasError500, isLoading } = this.props
 
     if (isLoading) {
       return <LoadingAnimation />
     }
 
-    if (statusCode === 500) {
+    if (hasError500) {
       return <Icon svg="logo-error" />
     }
   }
 
   renderTitle = () => {
-    const { statusCode } = this.props
+    const { hasError500 } = this.props
 
-    if (statusCode === 500) {
+    if (hasError500) {
       return 'Oops !'
     }
   }
@@ -64,16 +64,16 @@ class Loader extends PureComponent {
   renderMessage = () => {
     const {
       hasError,
-      isEmpty,
+      hasError500,
+      hasNoMoreRecommendation,
       isLoading,
       match: { params },
-      statusCode,
     } = this.props
     const atDecksEnd = params.mediationId === 'fin'
     const { isFirstLoad } = this.state
 
     if (hasError) {
-      if (statusCode === 500) {
+      if (hasError500) {
         return 'Une erreur s’est produite pendant le chargement des offres.'
       }
       return 'Erreur de chargement'
@@ -81,16 +81,16 @@ class Loader extends PureComponent {
     if (isLoading && (atDecksEnd || isFirstLoad)) {
       return 'Chargement en cours…'
     }
-    if (isEmpty && !atDecksEnd) {
+    if (hasNoMoreRecommendation && !atDecksEnd) {
       return 'Aucune offre pour le moment ! Revenez bientôt pour découvrir les nouveautés.'
     }
     return ''
   }
 
   renderRefreshButton = () => {
-    const { statusCode } = this.props
+    const { hasError500 } = this.props
 
-    if (statusCode === 500) {
+    if (hasError500) {
       return (
         <button
           className="loader-refresh"
@@ -106,7 +106,7 @@ class Loader extends PureComponent {
   render() {
     const {
       hasError,
-      isEmpty,
+      hasNoMoreRecommendation,
       isLoading,
       match: { params },
     } = this.props
@@ -115,8 +115,9 @@ class Loader extends PureComponent {
     // on cache pas le loader
     // si il est en court de chargement et qu'on est à la fin du Deck
     // si il y a aucun produits à afficher pour l'utilisateur
-    const showFooter = isEmpty || hasError
-    const shouldHide = !(isLoading && (atDecksEnd || isFirstLoad)) && !isEmpty && !hasError
+    const showFooter = hasNoMoreRecommendation || hasError
+    const shouldHide =
+      !(isLoading && (atDecksEnd || isFirstLoad)) && !hasNoMoreRecommendation && !hasError
 
     return (
       <Transition
@@ -157,16 +158,16 @@ class Loader extends PureComponent {
 
 Loader.defaultProps = {
   hasError: false,
-  isEmpty: false,
-  statusCode: 200,
+  hasError500: false,
+  hasNoMoreRecommendation: false,
 }
 
 Loader.propTypes = {
   hasError: PropTypes.bool,
-  isEmpty: PropTypes.bool,
+  hasError500: PropTypes.bool,
+  hasNoMoreRecommendation: PropTypes.bool,
   isLoading: PropTypes.bool.isRequired,
   match: PropTypes.shape().isRequired,
-  statusCode: PropTypes.number,
 }
 
 export default Loader

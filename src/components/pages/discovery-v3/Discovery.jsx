@@ -17,9 +17,9 @@ class Discovery extends PureComponent {
     this.state = {
       atWorldsEnd: false,
       hasError: false,
-      isEmpty: false,
+      hasError500: false,
+      hasNoMoreRecommendations: false,
       isLoading: false,
-      statusCode: 200,
     }
   }
 
@@ -71,9 +71,9 @@ class Discovery extends PureComponent {
   handleFail = (state, action) => {
     this.setState({
       hasError: true,
-      isEmpty: true,
+      hasError500: action.payload.status === 500 ? true : false,
+      hasNoMoreRecommendations: true,
       isLoading: false,
-      statusCode: action.payload.status,
     })
   }
 
@@ -86,9 +86,9 @@ class Discovery extends PureComponent {
 
     const { data: loadedRecommendations = [] } = action && action.payload
     const atWorldsEnd = loadedRecommendations.length === 0
-    const isEmpty = (!recommendations || !recommendations.length) && atWorldsEnd
+    const hasNoMoreRecommendations = (!recommendations || !recommendations.length) && atWorldsEnd
 
-    this.setState({ atWorldsEnd, isEmpty, isLoading: false }, () => {
+    this.setState({ atWorldsEnd, hasNoMoreRecommendations, isLoading: false }, () => {
       resetReadRecommendations()
       redirectToFirstRecommendationIfNeeded(loadedRecommendations)
     })
@@ -133,12 +133,12 @@ class Discovery extends PureComponent {
 
   render() {
     const { match } = this.props
-    const { hasError, isEmpty, isLoading, statusCode } = this.state
+    const { hasError, hasNoMoreRecommendations, isLoading, hasError500 } = this.state
     const cancelView = isCancelView(match)
 
     return (
       <Fragment>
-        {!isEmpty && (
+        {!hasNoMoreRecommendations && (
           <main className="discovery-page no-padding page with-footer">
             <Route
               key="route-discovery-deck"
@@ -161,9 +161,9 @@ class Discovery extends PureComponent {
         )}
         <LoaderContainer
           hasError={hasError}
-          isEmpty={isEmpty}
+          hasError500={hasError500}
+          hasNoMoreRecommendations={hasNoMoreRecommendations}
           isLoading={isLoading}
-          statusCode={statusCode}
         />
       </Fragment>
     )

@@ -52,9 +52,9 @@ describe('src | components | pages | discovery | Discovery', () => {
       expect(wrapper.state()).toStrictEqual({
         atWorldsEnd: false,
         hasError: false,
-        isEmpty: false,
+        hasError500: false,
+        hasNoMoreRecommendations: false,
         isLoading: false,
-        statusCode: 200,
       })
     })
   })
@@ -101,7 +101,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       // when
       wrapper.setState({
         hasError: false,
-        isEmpty: false,
+        hasNoMoreRecommendations: false,
         isLoading: false,
       })
 
@@ -118,7 +118,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       // when
       wrapper.setState({
         hasError: true,
-        isEmpty: true,
+        hasNoMoreRecommendations: true,
         isLoading: false,
       })
 
@@ -135,7 +135,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       // when
       wrapper.setState({
         hasError: false,
-        isEmpty: true,
+        hasNoMoreRecommendations: true,
         isLoading: true,
       })
 
@@ -152,7 +152,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       // when
       wrapper.setState({
         hasError: false,
-        isEmpty: true,
+        hasNoMoreRecommendations: true,
         isLoading: false,
       })
 
@@ -234,9 +234,9 @@ describe('src | components | pages | discovery | Discovery', () => {
         expect(wrapper.state()).toStrictEqual({
           atWorldsEnd: true,
           hasError: false,
-          isEmpty: false,
+          hasError500: false,
+          hasNoMoreRecommendations: false,
           isLoading: false,
-          statusCode: 200,
         })
       })
 
@@ -257,13 +257,13 @@ describe('src | components | pages | discovery | Discovery', () => {
         expect(wrapper.state()).toStrictEqual({
           atWorldsEnd: false,
           hasError: false,
-          isEmpty: false,
+          hasError500: false,
+          hasNoMoreRecommendations: false,
           isLoading: false,
-          statusCode: 200,
         })
       })
 
-      it('should set isEmpty state to true when no recommendations have been fetched and no recommendations are loaded', () => {
+      it('should set hasNoMoreRecommendations state to true when no recommendations have been fetched and no recommendations are loaded', () => {
         // given
         const action = {
           payload: {
@@ -280,9 +280,9 @@ describe('src | components | pages | discovery | Discovery', () => {
         expect(wrapper.state()).toStrictEqual({
           atWorldsEnd: true,
           hasError: false,
-          isEmpty: true,
+          hasError500: false,
+          hasNoMoreRecommendations: true,
           isLoading: false,
-          statusCode: 200,
         })
       })
     })

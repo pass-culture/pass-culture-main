@@ -18,7 +18,7 @@ describe('layout | Loader', () => {
           mediationId: 'MEFA',
         },
       },
-      statusCode: 200,
+      hasError500: false,
     }
   })
 
@@ -26,7 +26,7 @@ describe('layout | Loader', () => {
     // Given
     const history = createBrowserHistory()
     props.hasError = true
-    props.statusCode = 500
+    props.hasError500 = true
 
     // When
     const wrapper = mount(
@@ -51,7 +51,7 @@ describe('layout | Loader', () => {
     const mockLocation = jest.spyOn(location, 'reload')
     const history = createBrowserHistory()
     props.hasError = true
-    props.statusCode = 500
+    props.hasError500 = true
     const wrapper = mount(
       <Router history={history}>
         <Loader {...props} />
