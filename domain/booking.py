@@ -7,19 +7,11 @@ from models.user import User
 from repository import booking_queries, stock_queries
 
 
-def check_already_booked(stock: Stock, user: User):
-    is_stock_already_booked_by_user = booking_queries.is_stock_already_booked_by_user(stock, user)
-    if is_stock_already_booked_by_user:
-        offer_is_already_booked = OfferIsAlreadyBooked()
-        offer_is_already_booked.add_error('stockId', "Cette offre a déja été reservée par l'utilisateur")
-        raise offer_is_already_booked
-
-
 def check_offer_already_booked(offer: Offer, user: User):
     is_offer_already_booked_by_user = booking_queries.is_offer_already_booked_by_user(user, offer)
     if is_offer_already_booked_by_user:
         offer_is_already_booked = OfferIsAlreadyBooked()
-        offer_is_already_booked.add_error('stockId', "Cette offre a déja été reservée par l'utilisateur")
+        offer_is_already_booked.add_error('offerId', "Cette offre a déja été reservée par l'utilisateur")
         raise offer_is_already_booked
 
 

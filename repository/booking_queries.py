@@ -137,14 +137,6 @@ def find_from_recommendation(recommendation: Recommendation, user: User) -> List
         .all()
 
 
-def is_stock_already_booked_by_user(stock: Stock, current_user: User) -> bool:
-    return Booking.query \
-               .filter_by(userId=current_user.id) \
-               .filter_by(isCancelled=False) \
-               .filter_by(stockId=stock.id) \
-               .count() > 0
-
-
 def is_offer_already_booked_by_user(current_user: User, offer: Offer) -> bool:
     return Booking.query \
             .filter_by(userId=current_user.id) \

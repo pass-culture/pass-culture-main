@@ -1,7 +1,7 @@
 from flask import current_app as app
 
 from connectors import redis
-from domain.booking import check_already_booked, OfferIsAlreadyBooked, check_existing_stock, StockIdDoesntExist, \
+from domain.booking import OfferIsAlreadyBooked, check_existing_stock, StockIdDoesntExist, \
     check_quantity_is_valid, QuantityIsInvalid, StockIsNotBookable, check_stock_is_bookable, check_offer_already_booked, \
     ExpenseLimitHasBeenReached, check_expenses_limits
 from domain.expenses import get_expenses
@@ -22,7 +22,6 @@ def book_an_offer(booking_information: BookingInformation) -> Response:
     offer = Offer.query.get(stock.offerId)
 
     try:
-        check_already_booked(stock, user)  # todo delete this one
         check_offer_already_booked(offer, user)
         check_existing_stock(stock)
         check_quantity_is_valid(booking_information.quantity, stock)
