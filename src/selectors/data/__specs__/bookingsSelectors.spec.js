@@ -300,7 +300,7 @@ describe('selectUpComingBookings', () => {
 
 describe('selectFinishedEventBookings', () => {
   describe('when bookings are on non cancelled events', () => {
-    it('should return bookings that are not bookable', () => {
+    it('should not return bookings that are not bookable and not expired', () => {
       // given
 
       const offer = {
@@ -333,11 +333,47 @@ describe('selectFinishedEventBookings', () => {
       const results = selectFinishedEventBookings(state)
 
       // then
+      expect(results).toHaveLength(0)
+    })
+
+    it('should return bookings that are not bookable and expired', () => {
+      // given
+
+      const offer = {
+        id: 'o1',
+        hasBookingLimitDatetimesPassed: true,
+        isEvent: true,
+      }
+
+      const stock = {
+        id: 's1',
+        offerId: offer.id,
+      }
+
+      const state = {
+        data: {
+          bookings: [
+            {
+              id: 'b1',
+              isCancelled: false,
+              isEventExpired: true,
+              stockId: stock.id,
+            },
+          ],
+          offers: [offer],
+          stocks: [stock],
+        },
+      }
+
+      // when
+      const results = selectFinishedEventBookings(state)
+
+      // then
       expect(results).toStrictEqual([
         {
           id: 'b1',
           isCancelled: false,
-          isEventExpired: false,
+          isEventExpired: true,
           stockId: stock.id,
         },
       ])
