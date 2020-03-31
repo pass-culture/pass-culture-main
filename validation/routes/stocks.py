@@ -51,7 +51,7 @@ def _forbid_dates_on_stock_for_thing_offer(request_data):
     if 'beginningDatetime' in request_data:
         raise ApiErrors(
             {'global': [
-                'Impossible de mettre une date de début si l\'offre ne porte pas sur un évenement'
+                "Impossible de mettre une date de début si l'offre ne porte pas sur un événement"
             ]})
 
 

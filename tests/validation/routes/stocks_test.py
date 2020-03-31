@@ -35,7 +35,7 @@ class CheckDatesAreAllowedOnNewStockTest:
 
             # Then
             assert e.value.errors['global'] == [
-                'Impossible de mettre une date de début si l\'offre ne porte pas sur un évenement'
+                "Impossible de mettre une date de début si l'offre ne porte pas sur un événement"
             ]
 
 
@@ -166,7 +166,7 @@ class CheckDatesAreAllowedOnExistingStockTest:
 
             # Then
             assert e.value.errors['global'] == [
-                'Impossible de mettre une date de début si l\'offre ne porte pas sur un évenement'
+                "Impossible de mettre une date de début si l'offre ne porte pas sur un événement"
             ]
 
 
