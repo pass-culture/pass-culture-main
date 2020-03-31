@@ -10,5 +10,5 @@ class VersionedMixin(object):
     def activity(self):
         Activity = versioning_manager.activity_cls
         return Activity.query.filter(
-            text("table_name='" + self.__tablename__ + "' AND cast(changed_data->>'id' AS INT) = " + str(self.id))) \
+            text("table_name='" + self.__tablename__ + "' AND cast(old_data->>'id' AS INT) = " + str(self.id))) \
             .order_by(db.desc(Activity.id))
