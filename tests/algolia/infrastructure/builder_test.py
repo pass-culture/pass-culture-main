@@ -66,7 +66,6 @@ class BuildObjectTest:
                 'author': None,
                 'category': 'MUSIQUE',
                 'dateCreated': 1577872800.0,
-                'dateRange': ['2019-11-01 10:00:00', '2019-12-01 10:00:00'],
                 'dates': [1572602400.0, 1572602400.0, 1572602400.0],
                 'description': 'Un lit sous une rivière',
                 'id': 'AM',
@@ -282,21 +281,6 @@ class BuildObjectTest:
 
         # Then
         assert result['offer']['prices'] == [Decimal('5.00'), Decimal('7.00'), Decimal('10.30')]
-
-    @clean_database
-    def test_should_return_an_empty_date_range_when_offer_is_thing(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer = create_offer_with_thing_product(venue=venue)
-        stock = create_stock(offer=offer)
-        repository.save(stock)
-
-        # When
-        result = build_object(offer)
-
-        # Then
-        assert result['offer']['dateRange'] == []
 
     @clean_database
     def test_should_not_return_coordinates_when_one_coordinate_is_missing(self, app):

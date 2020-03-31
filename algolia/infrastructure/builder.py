@@ -10,7 +10,6 @@ def build_object(offer: Offer) -> Dict:
     offerer = venue.managingOfferer
     humanize_offer_id = humanize(offer.id)
     has_coordinates = venue.latitude is not None and venue.longitude is not None
-    date_range = list(map(str, offer.dateRange.datetimes))
     author = offer.extraData and offer.extraData.get('author')
     stage_director = offer.extraData and offer.extraData.get('stageDirector')
     visa = offer.extraData and offer.extraData.get('visa')
@@ -37,7 +36,6 @@ def build_object(offer: Offer) -> Dict:
             'author': author,
             'category': offer.offer_category,
             'dateCreated': date_created,
-            'dateRange': date_range,
             'dates': dates,
             'description': offer.description,
             'id': humanize_offer_id,
