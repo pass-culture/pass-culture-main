@@ -55,7 +55,7 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
     const { match } = prevProps
     const seenRecommendationIds =
       (shouldReloadRecommendations && []) ||
-      (recommendations && recommendations.map(reco => reco.id))
+      (recommendations && recommendations.map(reco => reco.offerId))
     let queryParams = getOfferIdAndMediationIdApiPathQueryString(match, currentRecommendation)
 
     dispatch(

@@ -58,7 +58,7 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
   ) => {
     const seenRecommendationIds =
       (shouldReloadRecommendations && []) ||
-      (recommendations && recommendations.map(reco => reco.id))
+      (recommendations && recommendations.map(reco => reco.offerId))
     let queryParams = getCoordinatesApiPathQueryString(coordinates)
 
     dispatch(

@@ -246,7 +246,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
           index: 1,
           offerId: 'ABC2',
         }
-        const recommendations = [{ id: 'AE3', index: 3 }]
+        const recommendations = [{ id: 'AE3', index: 3, offerId: 'AE4' }]
         const readRecommendations = null
         const shouldReloadRecommendations = false
         const functions = mapDispatchToProps(dispatch, props)
@@ -268,7 +268,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
             apiPath: `/recommendations/v2?`,
             body: {
               readRecommendations: null,
-              seenRecommendationIds: ['AE3'],
+              seenRecommendationIds: ['AE4'],
             },
             handleFail: handleRequestFail,
             handleSuccess: handleRequestSuccess,
