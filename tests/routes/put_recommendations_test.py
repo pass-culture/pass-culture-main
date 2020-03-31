@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
+from models import Feature
+from models.feature import FeatureToggle
 from models.mediation import Mediation
 from models.recommendation import Recommendation
 from repository import repository
@@ -27,6 +29,28 @@ class Put:
 
             # then
             assert response.status_code == 401
+
+    class Returns403:
+        @clean_database
+        def when_feature_is_not_active(self, app):
+            # Given
+            beneficiary = create_user()
+            feature = Feature.query.filter_by(name=FeatureToggle.RECOMMENDATIONS).first()
+            feature.isActive = False
+            repository.save(feature, beneficiary)
+            reads = [
+                {"id": humanize(1), "dateRead": "2018-12-17T15:59:11.689000Z"},
+                {"id": humanize(2), "dateRead": "2018-12-17T15:59:15.689000Z"},
+            ]
+            data = {'readRecommendations': reads}
+            auth_request = TestClient(app.test_client()).with_auth(beneficiary.email)
+
+            # When
+            response = auth_request.put(RECOMMENDATION_URL,
+                                        json=data, headers={'origin': 'http://localhost:3000'})
+
+            # Then
+            assert response.status_code == 403
 
     class Returns404:
         @clean_database
@@ -158,6 +182,27 @@ class Put:
             assert response.status_code == 404
 
     class Returns200:
+        @clean_database
+        def when_feature_is_active(self, app):
+            # Given
+            beneficiary = create_user()
+            feature = Feature.query.filter_by(name=FeatureToggle.RECOMMENDATIONS).first()
+            feature.isActive = True
+            repository.save(feature, beneficiary)
+            reads = [
+                {"id": humanize(1), "dateRead": "2018-12-17T15:59:11.689000Z"},
+                {"id": humanize(2), "dateRead": "2018-12-17T15:59:15.689000Z"},
+            ]
+            data = {'readRecommendations': reads}
+            auth_request = TestClient(app.test_client()).with_auth(beneficiary.email)
+
+            # When
+            response = auth_request.put(RECOMMENDATION_URL,
+                                        json=data, headers={'origin': 'http://localhost:3000'})
+
+            # Then
+            assert response.status_code == 200
+
         @clean_database
         def when_updating_read_recommendations(self, app):
             # given
