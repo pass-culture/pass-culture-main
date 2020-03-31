@@ -59,6 +59,9 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         match: {
           params: {},
         },
+        tracking: {
+          trackEvent: jest.fn(),
+        },
       }
 
       // when
@@ -90,6 +93,79 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         shouldReloadRecommendations: true,
         tutorials: [],
       })
+    })
+    it('should map a tracking event when user activate geolocation', () => {
+      // given
+      const state = {
+        data: {
+          users: [
+            {
+              id: 'A6',
+            },
+          ],
+          recommendations: [],
+        },
+        pagination: {
+          seedLastRequestTimestamp: 11111111112,
+        },
+        geolocation: {
+          longitude: 48.256756,
+          latitude: 2.8796567,
+          watchId: 1,
+        },
+      }
+      const ownProps = {
+        tracking: {
+          trackEvent: jest.fn(),
+        },
+        match: {
+          params: {},
+        },
+      }
+
+      // when
+      mapStateToProps(state, ownProps)
+
+      // then
+      expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
+        action: 'activateGeolocation',
+        name: 'A6',
+      })
+    })
+    it('should  not map a tracking event when user does not activate geolocation', () => {
+      // given
+      const state = {
+        data: {
+          recommendations: [],
+          users: [
+            {
+              id: 'A6',
+            },
+          ],
+        },
+        pagination: {
+          seedLastRequestTimestamp: 11111111112,
+        },
+        geolocation: {
+          longitude: null,
+          latitude: null,
+          watchId: 0,
+        },
+      }
+      const ownProps = {
+        tracking: {
+          trackEvent: jest.fn(),
+        },
+        match: {
+          params: {},
+        },
+      }
+
+      // when
+      mapStateToProps(state, ownProps)
+
+      // then
+      expect(ownProps.tracking.trackEvent).not.toHaveBeenCalledWith()
     })
   })
 
