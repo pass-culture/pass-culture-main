@@ -29,7 +29,7 @@ def upgrade():
                         NEW."cancellationDate" = null;
                     END IF;
                     RETURN NEW;
-                END;
+                END;models/booking.py
             $$ LANGUAGE plpgsql;
         
             DROP TRIGGER IF EXISTS stock_update_cancellation_date ON booking;
