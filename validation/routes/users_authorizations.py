@@ -49,13 +49,6 @@ def check_user_can_validate_activation_offer(user):
         raise forbidden_error
 
 
-def check_can_book_free_offer(stock, user):
-    if not user.canBookFreeOffers and stock.price == 0:
-        api_errors = ApiErrors()
-        api_errors.add_error('cannotBookFreeOffers', 'Votre compte ne vous permet pas de faire de réservation.')
-        raise api_errors
-
-
 def check_user_can_cancel_booking_by_id(is_user_cancellation, is_offerer_cancellation):
     forbidden_error = ForbiddenError()
     if not is_user_cancellation and not is_offerer_cancellation:

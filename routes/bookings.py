@@ -138,14 +138,18 @@ def create_booking():
         dehumanize(recommendation_id)
     )
 
-    new_booking = book_an_offer(booking_information)
+    book_an_offer_response = book_an_offer(booking_information)
 
-    if type(new_booking) == Success:
+    if type(book_an_offer_response) == Success:
+        created_booking = book_an_offer_response.booking
+        if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+            redis.add_offer_id(client=app.redis_client, offer_id=created_booking.stock.offerId)
+
         return jsonify(
-            as_dict(new_booking.booking, includes=WEBAPP_PATCH_POST_BOOKING_INCLUDES)
+            as_dict(created_booking, includes=WEBAPP_PATCH_POST_BOOKING_INCLUDES)
         ), 201
     else:
-        return jsonify(new_booking.error_message.errors), 400
+        return jsonify(book_an_offer_response.error_message.errors), 400
 
 
 @app.route('/bookings/<booking_id>/cancel', methods=['PUT'])

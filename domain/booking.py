@@ -1,7 +1,7 @@
 from typing import Callable, Dict
 
 from domain.expenses import is_eligible_to_physical_offers_capping, is_eligible_to_digital_offers_capping
-from models import Offer, Booking
+from models import Offer, Booking, ApiErrors
 from models.stock import Stock
 from models.user import User
 from repository import booking_queries, stock_queries
@@ -66,6 +66,14 @@ def check_expenses_limits(expenses: Dict, booking: Booking,
         raise expense_limit_has_been_reached
 
 
+def check_can_book_free_offer(stock: Stock, user: User):
+    if not user.canBookFreeOffers and stock.price == 0:
+        cannot_book_free_offers_errors = CannotBookFreeOffers()
+        cannot_book_free_offers_errors.add_error('cannotBookFreeOffers',
+                             'Votre compte ne vous permet pas de faire de réservation.')
+        raise cannot_book_free_offers_errors
+
+
 class ClientError(Exception):
     def __init__(self, errors: dict = None):
         self.errors = errors if errors else {}
@@ -94,4 +102,8 @@ class StockIsNotBookable(ClientError):
 
 
 class ExpenseLimitHasBeenReached(ClientError):
+    pass
+
+
+class CannotBookFreeOffers(ClientError):
     pass

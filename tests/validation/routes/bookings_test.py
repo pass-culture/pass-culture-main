@@ -6,7 +6,7 @@ import pytest
 
 from domain.booking import check_expenses_limits, ExpenseLimitHasBeenReached, \
     check_offer_already_booked, check_quantity_is_valid, QuantityIsInvalid, check_stock_is_bookable, \
-    StockIsNotBookable, OfferIsAlreadyBooked
+    StockIsNotBookable, OfferIsAlreadyBooked, check_can_book_free_offer, CannotBookFreeOffers
 from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS
 from models import ApiErrors, Booking, Stock, Offer, ThingType, User, EventType
 from models.api_errors import ResourceGoneError, ForbiddenError
@@ -634,6 +634,24 @@ class CheckOfferAlreadyBookedTest:
         assert True
 
     @clean_database
+    def test_should_not_raise_exception_when_the_offer_has_been_booked_but_cancelled(self, app):
+        # Given
+        user = create_user()
+        create_deposit(user)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer)
+        booking = create_booking(user, stock=stock, is_cancelled=True)
+        repository.save(user, stock, booking)
+
+        # When
+        check_offer_already_booked(offer, user)
+
+        # Then
+        assert True
+
+    @clean_database
     def test_should_raise_exception_when_user_has_already_book_this_offer(self, app):
         # Given
         user = create_user()
@@ -650,3 +668,41 @@ class CheckOfferAlreadyBookedTest:
             check_offer_already_booked(offer, user)
 
         assert error.value.errors == {'offerId': ["Cette offre a déja été reservée par l'utilisateur"]}
+
+
+class CheckCanBookFreeOfferTest:
+    @clean_database
+    def test_should_not_raise_exception_when_user_can_book_a_free_offer(self, app):
+        # Given
+        user = create_user(can_book_free_offers=True)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        repository.save(user, stock)
+
+        # When
+        check_can_book_free_offer(stock, user)
+
+        # Then
+        assert True
+
+    @clean_database
+    def test_should_raise_exception_when_user_cannot_book_a_free_offer(self, app):
+        # Given
+        user = create_user(can_book_free_offers=False)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        repository.save(user, stock)
+
+        # When
+        with pytest.raises(CannotBookFreeOffers) as error:
+            check_can_book_free_offer(stock, user)
+
+        # Then
+        assert error.value.errors == {
+            'cannotBookFreeOffers':
+                ["Votre compte ne vous permet pas de faire de réservation."]
+        }
