@@ -72,6 +72,9 @@ class Booking(PcObject, Model, VersionedMixin):
                          server_default=expression.false(),
                          default=False)
 
+    cancellationDate = Column(DateTime,
+                      nullable=True)
+
     isUsed = Column(Boolean,
                     nullable=False,
                     default=False)
@@ -233,3 +236,27 @@ Booking.trig_ddl = """
 event.listen(Booking.__table__,
              'after_create',
              DDL(Booking.trig_ddl))
+
+Booking.trig_update_cancellationDate_on_isCancelled_ddl = """
+    CREATE OR REPLACE FUNCTION save_cancellation_date()
+    RETURNS TRIGGER AS $$
+    BEGIN
+        NEW."cancellationDate" = null;
+        IF NEW."isCancelled" IS TRUE THEN
+            NEW."cancellationDate" = NOW();
+        END IF;
+        RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    DROP TRIGGER IF EXISTS stock_update_cancellation_date ON booking;
+
+    CREATE TRIGGER stock_update_cancellation_date
+    BEFORE INSERT OR UPDATE ON booking
+    FOR EACH ROW
+    EXECUTE PROCEDURE save_cancellation_date()
+    """
+
+event.listen(Booking.__table__,
+             'after_create',
+             DDL(Booking.trig_update_cancellationDate_on_isCancelled_ddl))

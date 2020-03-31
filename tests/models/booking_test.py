@@ -2,13 +2,14 @@ from datetime import datetime, timedelta
 from unittest.mock import patch
 
 import pytest
+from freezegun import freeze_time
 
 from models import Booking, Offer, Stock, User, Product, ApiErrors
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
-    create_recommendation, create_mediation
+    create_recommendation, create_mediation, create_deposit
 from tests.model_creators.specific_creators import create_stock_from_offer, create_product_with_thing_type, \
     create_product_with_event_type, create_offer_with_thing_product, create_offer_with_event_product
 
@@ -387,3 +388,37 @@ class BookingIsCancellableTest:
 
         # Then
         assert is_cancellable == False
+
+
+class BookingCancellationDateTest:
+    @clean_database
+    def test_should_update_cancellation_date_when_booking_is_cancelled(self, app):
+        # Given
+        user = create_user()
+        booking = create_booking(user=user, amount=1)
+
+        # When
+        booking.isCancelled = True
+        repository.save(booking)
+
+        # Then
+        updated_booking = Booking.query.first()
+        assert updated_booking.isCancelled
+        assert updated_booking.cancellationDate is not None
+
+    @clean_database
+    def test_should_clear_cancellation_date_when_booking_is_not_cancelled(self, app):
+        # Given
+        user = create_user()
+        deposit = create_deposit(user=user, amount=100)
+        booking = create_booking(user=user, amount=1, is_cancelled=True)
+        repository.save(booking)
+
+        # When
+        booking.isCancelled = False
+        repository.save(booking)
+
+        # Then
+        updated_booking = Booking.query.first()
+        assert updated_booking.isCancelled is False
+        assert updated_booking.cancellationDate is None
