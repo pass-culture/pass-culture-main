@@ -47,7 +47,13 @@ class BuildObjectTest:
                               end_datetime=end_datetime,
                               offer=offer,
                               price=0)
-        repository.save(stock1, stock2, stock3)
+        stock4 = create_stock(available=10,
+                              beginning_datetime=beginning_datetime,
+                              end_datetime=end_datetime,
+                              is_soft_deleted=True,
+                              offer=offer,
+                              price=0)
+        repository.save(stock1, stock2, stock3, stock4)
         humanized_product_id = humanize(offer.product.id)
 
         # When

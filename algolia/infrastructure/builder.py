@@ -21,14 +21,14 @@ def build_object(offer: Offer) -> Dict:
     show_sub_type = offer.extraData and offer.extraData.get('showSubType')
     music_type = offer.extraData and offer.extraData.get('musicType')
     music_sub_type = offer.extraData and offer.extraData.get('musicSubType')
-    prices = offer.stocks and map(lambda stock: stock.price, offer.stocks)
+    active_stocks = offer.activeStocks
+    prices = active_stocks and map(lambda stock: stock.price, active_stocks)
     prices_sorted = sorted(prices, key=float)
     price_min = prices_sorted[0]
     price_max = prices_sorted[-1]
     dates = []
     if offer.isEvent:
-        stocks = offer.activeStocks
-        dates = list(map(lambda stock: datetime.timestamp(stock.beginningDatetime), stocks))
+        dates = list(map(lambda stock: datetime.timestamp(stock.beginningDatetime), active_stocks))
     date_created = datetime.timestamp(offer.dateCreated)
 
     object_to_index = {
