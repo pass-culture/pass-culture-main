@@ -1,5 +1,3 @@
-""" validate """
-
 from flask import current_app as app, jsonify, request
 from flask_login import login_required, current_user
 
@@ -22,7 +20,8 @@ from repository.user_offerer_queries import count_pro_attached_to_offerer
 from utils.config import IS_INTEGRATION
 from utils.mailing import MailServiceException, send_raw_email
 from validation.routes.users import check_validation_token_has_been_already_used
-from validation.routes.validate import check_valid_token_for_user_validation, check_validation_request, check_venue_found
+from validation.routes.validate import check_valid_token_for_user_validation, check_validation_request, \
+    check_venue_found
 
 
 @app.route("/validate/user-offerer/<token>", methods=["GET"])
@@ -47,13 +46,18 @@ def validate_new_offerer(token):
     check_validation_request(token)
     offerer = Offerer.query.filter_by(validationToken=token).first()
     check_validation_token_has_been_already_used(offerer)
-
     offerer.validationToken = None
+    managed_venues = offerer.managedVenues
 
-    for venue in offerer.managedVenues:
+    for venue in managed_venues:
         link_valid_venue_to_irises(venue)
 
     repository.save(offerer)
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+        venue_ids = map(lambda managed_venue: managed_venue.id, managed_venues)
+        sorted_venue_ids = sorted(venue_ids, key=int)
+        for venue_id in sorted_venue_ids:
+            redis.add_venue_id(client=app.redis_client, venue_id=venue_id)
 
     try:
         send_validation_confirmation_email_to_pro(offerer, send_raw_email)
