@@ -6,6 +6,9 @@ import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA, SORT_CRITERIA } from './Criter
 import { Home } from './Home/Home'
 import SearchResults from './Result/SearchResults'
 
+const DEFAULT_META_VIEWPORT_CONTENT =
+  'width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no'
+
 class SearchAlgolia extends PureComponent {
   constructor(props) {
     super(props)
@@ -19,6 +22,30 @@ class SearchAlgolia extends PureComponent {
       },
       sortCriterion: SORT_CRITERIA.RANDOM,
     }
+  }
+
+  componentDidMount() {
+    this.preventWindowResize()
+  }
+
+  componentWillUnmount() {
+    this.resetWindowResize()
+  }
+
+  preventWindowResize() {
+    const pageDefaultHeight = document.querySelector('body').offsetHeight
+    window.onresize = () => {
+      document
+        .querySelector('meta[name=viewport]')
+        .setAttribute('content', `height=${pageDefaultHeight}px, ${DEFAULT_META_VIEWPORT_CONTENT}`)
+    }
+  }
+
+  resetWindowResize() {
+    document
+      .querySelector('meta[name=viewport]')
+      .setAttribute('content', DEFAULT_META_VIEWPORT_CONTENT)
+    window.onresize = null
   }
 
   handleGeolocationCriterionSelection = criterionKey => () => {
@@ -76,7 +103,7 @@ class SearchAlgolia extends PureComponent {
             criteria={{
               categories: categoryCriterion.facetFilter ? [categoryCriterion.facetFilter] : [],
               isSearchAroundMe: geolocationCriterion.isSearchAroundMe,
-              sortBy: sortCriterion.index
+              sortBy: sortCriterion.index,
             }}
             geolocation={geolocation}
             history={history}

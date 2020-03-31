@@ -1,12 +1,13 @@
 import { mount, shallow } from 'enzyme'
+import { createBrowserHistory } from 'history'
+import { JSDOM } from 'jsdom'
 import React from 'react'
 import { Route, Router } from 'react-router'
 import { Criteria } from '../Criteria/Criteria'
 import { CATEGORY_CRITERIA } from '../Criteria/criteriaEnums'
+import { Home } from '../Home/Home'
 import SearchResults from '../Result/SearchResults'
 import SearchAlgolia from '../SearchAlgolia'
-import { Home } from '../Home/Home'
-import { createBrowserHistory } from 'history'
 
 describe('components | SearchAlgolia', () => {
   let props
@@ -80,7 +81,7 @@ describe('components | SearchAlgolia', () => {
         expect(searchResultsComponent.prop('criteria')).toStrictEqual({
           categories: [],
           isSearchAroundMe: props.isGeolocationEnabled,
-          sortBy: ''
+          sortBy: '',
         })
         expect(searchResultsComponent.prop('geolocation')).toStrictEqual(props.geolocation)
         expect(searchResultsComponent.prop('history')).toStrictEqual(props.history)
@@ -108,7 +109,7 @@ describe('components | SearchAlgolia', () => {
         expect(searchResultsComponent.prop('criteria')).toStrictEqual({
           categories: ['CINEMA'],
           isSearchAroundMe: false,
-          sortBy: ''
+          sortBy: '',
         })
       })
     })
@@ -124,13 +125,17 @@ describe('components | SearchAlgolia', () => {
 
         // then
         const critereLocalisationRoute = routes.at(2)
-        expect(critereLocalisationRoute.prop('path')).toBe('/recherche-offres/criteres-localisation')
+        expect(critereLocalisationRoute.prop('path')).toBe(
+          '/recherche-offres/criteres-localisation'
+        )
         const searchCriteriaLocation = critereLocalisationRoute.find(Criteria)
         expect(searchCriteriaLocation.prop('activeCriterionLabel')).toStrictEqual('Partout')
         expect(searchCriteriaLocation.prop('criteria')).toStrictEqual(expect.any(Object))
         expect(searchCriteriaLocation.prop('history')).toStrictEqual(props.history)
         expect(searchCriteriaLocation.prop('match')).toStrictEqual(props.match)
-        expect(searchCriteriaLocation.prop('onCriterionSelection')).toStrictEqual(expect.any(Function))
+        expect(searchCriteriaLocation.prop('onCriterionSelection')).toStrictEqual(
+          expect.any(Function)
+        )
         expect(searchCriteriaLocation.prop('title')).toStrictEqual('Localisation')
       })
     })
@@ -185,6 +190,34 @@ describe('components | SearchAlgolia', () => {
   })
 
   describe('render', () => {
+    it('should define a resize event to prevent page from resizing when Android keyboard is displayed', () => {
+      // When
+      shallow(<SearchAlgolia {...props} />)
+
+      // Then
+      expect(global.window.onresize).not.toBeNull()
+    })
+
+    it('should reset the resize event and meta tag when unmounting', () => {
+      const dom = new JSDOM()
+      global.document = dom.window.document
+      jest
+        .spyOn(global.document, 'querySelector')
+        .mockImplementationOnce()
+        .mockReturnValue(document.createElement('meta'))
+      global.window = dom.window
+
+      // When
+      const wrapper = shallow(<SearchAlgolia {...props} />)
+      wrapper.unmount()
+
+      // Then
+      expect(global.window.onresize).toBeNull()
+      expect(global.document.querySelector().content).toBe(
+        'width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no'
+      )
+    })
+
     it('should select "Autour de moi" if geolocation is enabled', () => {
       // given
       props.isGeolocationEnabled = true
