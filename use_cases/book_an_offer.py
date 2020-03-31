@@ -2,15 +2,23 @@ from flask import current_app as app
 
 from domain.booking import OfferIsAlreadyBooked, check_existing_stock, StockIdDoesntExist, \
     check_quantity_is_valid, QuantityIsInvalid, StockIsNotBookable, check_stock_is_bookable, check_offer_already_booked, \
-    ExpenseLimitHasBeenReached, check_expenses_limits, check_can_book_free_offer, CannotBookFreeOffers
+    ExpenseLimitHasBeenReached, check_expenses_limits, check_can_book_free_offer, CannotBookFreeOffers, \
+    UserHasInsufficientFunds
 from domain.expenses import get_expenses
 from domain.user_emails import send_booking_recap_emails, send_booking_confirmation_email_to_beneficiary
 from models import Booking
 from repository import booking_queries, repository, stock_queries, user_queries, offer_queries
-from use_cases.booking_information import BookingInformation
 from use_cases.generic_response import Response
 from utils.mailing import send_raw_email, MailServiceException
 from utils.token import random_token
+
+
+class BookingInformation(object):
+    def __init__(self, stock_id: int, user_id: int, quantity: int, recommendation_id: int = None):
+        self.stock_id = stock_id
+        self.user_id = user_id
+        self.quantity = quantity
+        self.recommendation_id = recommendation_id
 
 
 def book_an_offer(booking_information: BookingInformation) -> Response:
@@ -40,6 +48,8 @@ def book_an_offer(booking_information: BookingInformation) -> Response:
 
     try:
         check_expenses_limits(expenses, booking)
+    except UserHasInsufficientFunds as error:
+        return Failure(error)
     except ExpenseLimitHasBeenReached as error:
         return Failure(error)
 

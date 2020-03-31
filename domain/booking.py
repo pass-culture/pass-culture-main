@@ -1,7 +1,7 @@
 from typing import Callable, Dict
 
 from domain.expenses import is_eligible_to_physical_offers_capping, is_eligible_to_digital_offers_capping
-from models import Offer, Booking, ApiErrors
+from models import Offer, Booking
 from models.stock import Stock
 from models.user import User
 from repository import booking_queries, stock_queries
@@ -24,12 +24,21 @@ def check_existing_stock(stock: Stock) -> None:
 
 def check_quantity_is_valid(quantity: int, stock: Stock) -> None:
     offer_is_duo = stock.offer.isDuo
-    is_valid_quantity_for_duo_offer = (quantity in (1, 2) and offer_is_duo)
-    is_valid_quantity_for_solo_offer = (quantity == 1 and not offer_is_duo)
 
-    if not is_valid_quantity_for_duo_offer and not is_valid_quantity_for_solo_offer:
+    is_valid_quantity_for_duo_offer = True
+    is_valid_quantity_for_solo_offer = True
+    if offer_is_duo:
+        is_valid_quantity_for_duo_offer = True if quantity in (1, 2) else False
+    else:
+        is_valid_quantity_for_solo_offer = True if quantity == 1 else False
+
+    if not is_valid_quantity_for_duo_offer:
         quantity_is_invalid = QuantityIsInvalid()
         quantity_is_invalid.add_error('quantity', "Vous devez réserver une place ou deux dans le cas d'une offre DUO.")
+        raise quantity_is_invalid
+    if not is_valid_quantity_for_solo_offer:
+        quantity_is_invalid = QuantityIsInvalid()
+        quantity_is_invalid.add_error('quantity', "Vous ne pouvez réserver qu'une place pour cette offre.")
         raise quantity_is_invalid
 
 
@@ -44,6 +53,12 @@ def check_expenses_limits(expenses: Dict, booking: Booking,
                           find_stock: Callable[..., Stock] = stock_queries.find_stock_by_id) -> None:
     stock = find_stock(booking.stockId)
     offer = stock.offer
+
+    if (expenses['all']['actual'] + booking.value) > expenses['all']['max']:
+        user_has_insufficient_funds = UserHasInsufficientFunds()
+        user_has_insufficient_funds.add_error('insufficientFunds',
+                                              'Le solde de votre pass est insuffisant pour réserver cette offre.')
+        raise user_has_insufficient_funds
 
     expense_limit_has_been_reached = ExpenseLimitHasBeenReached()
 
@@ -70,7 +85,7 @@ def check_can_book_free_offer(stock: Stock, user: User):
     if not user.canBookFreeOffers and stock.price == 0:
         cannot_book_free_offers_errors = CannotBookFreeOffers()
         cannot_book_free_offers_errors.add_error('cannotBookFreeOffers',
-                             'Votre compte ne vous permet pas de faire de réservation.')
+                                                 'Votre compte ne vous permet pas de faire de réservation.')
         raise cannot_book_free_offers_errors
 
 
@@ -106,4 +121,8 @@ class ExpenseLimitHasBeenReached(ClientError):
 
 
 class CannotBookFreeOffers(ClientError):
+    pass
+
+
+class UserHasInsufficientFunds(ClientError):
     pass

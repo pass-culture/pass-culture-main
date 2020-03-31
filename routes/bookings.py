@@ -20,8 +20,7 @@ from repository.api_key_queries import find_api_key_by_value
 from repository.user_offerer_queries import \
     filter_query_where_user_is_user_offerer_and_is_validated
 from routes.serialization import as_dict, serialize, serialize_booking
-from use_cases.book_an_offer import book_an_offer, Success
-from use_cases.booking_information import BookingInformation
+from use_cases.book_an_offer import book_an_offer, Success, BookingInformation
 from utils.human_ids import dehumanize, humanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, \
     WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES, \

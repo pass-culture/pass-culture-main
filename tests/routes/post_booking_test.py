@@ -121,18 +121,20 @@ class Post:
             assert response.json['stockId'] == ['Vous devez préciser un identifiant d\'offre']
 
         @clean_database
-        def when_missing_quantity(self, app):
+        def when_offer_is_not_bookable(self, app):
             # Given
+            four_days_ago = datetime.utcnow() - timedelta(days=4)
             user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0)
-            repository.save(user, stock)
+            stock = create_stock_with_thing_offer(offerer, venue, booking_limit_datetime=four_days_ago)
+            create_deposit(user)
+            repository.save(stock, user)
 
             booking_json = {
                 'stockId': humanize(stock.id),
-                'recommendationId': 'AFQA',
-                'quantity': None
+                'recommendationId': None,
+                'quantity': 1
             }
 
             # When
@@ -142,5 +144,4 @@ class Post:
 
             # Then
             assert response.status_code == 400
-            assert response.json['quantity'] == [
-                "Vous devez réserver une place ou deux dans le cas d'une offre DUO."]
+            assert response.json['stock'] == ["Ce stock n'est pas réservable"]

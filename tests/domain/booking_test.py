@@ -6,8 +6,8 @@ import pytest
 
 from domain.booking import check_expenses_limits, ExpenseLimitHasBeenReached, \
     check_offer_already_booked, check_quantity_is_valid, QuantityIsInvalid, check_stock_is_bookable, \
-    StockIsNotBookable, OfferIsAlreadyBooked, check_can_book_free_offer, CannotBookFreeOffers
-from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS
+    StockIsNotBookable, OfferIsAlreadyBooked, check_can_book_free_offer, CannotBookFreeOffers, UserHasInsufficientFunds
+from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS, SUBVENTION_TOTAL
 from models import ApiErrors, Booking, Stock, Offer, ThingType, User, EventType
 from models.api_errors import ResourceGoneError, ForbiddenError
 from repository import repository
@@ -33,6 +33,7 @@ class CheckExpenseLimitsTest:
     def test_raises_an_error_when_physical_limit_is_reached(self):
         # given
         expenses = {
+            'all': {'max': SUBVENTION_TOTAL, 'actual': 200},
             'physical': {'max': SUBVENTION_PHYSICAL_THINGS, 'actual': 190},
             'digital': {'max': SUBVENTION_DIGITAL_THINGS, 'actual': 10}
         }
@@ -51,6 +52,7 @@ class CheckExpenseLimitsTest:
     def test_check_expenses_limits_raises_an_error_when_digital_limit_is_reached(self):
         # given
         expenses = {
+            'all': {'max': SUBVENTION_TOTAL, 'actual': 200},
             'physical': {'max': SUBVENTION_PHYSICAL_THINGS, 'actual': 10},
             'digital': {'max': SUBVENTION_DIGITAL_THINGS, 'actual': 190}
         }
@@ -66,21 +68,21 @@ class CheckExpenseLimitsTest:
         assert error.value.errors['global'] == ['Le plafond de %s € pour les offres numériques ne vous permet pas ' \
                                                 'de réserver cette offre.' % SUBVENTION_DIGITAL_THINGS]
 
-    def test_does_not_raise_an_error_when_actual_expenses_are_lower_than_max(self):
+    def test_should_raise_an_error_when_new_booking_exceed_max_deposit(self):
         # given
         expenses = {
-            'physical': {'max': SUBVENTION_PHYSICAL_THINGS, 'actual': 90},
-            'digital': {'max': SUBVENTION_DIGITAL_THINGS, 'actual': 90}
+            'all': {'max': SUBVENTION_TOTAL, 'actual': 400}
         }
-        booking = Booking(from_dict={'stockId': humanize(123), 'amount': 11, 'quantity': 1})
+        booking = Booking(from_dict={'stockId': humanize(123), 'amount': 1, 'quantity': 120})
         mocked_query = Mock()
 
         # when
-        try:
+        with pytest.raises(UserHasInsufficientFunds) as error:
             check_expenses_limits(expenses, booking, mocked_query)
-        except ApiErrors:
-            # then
-            pytest.fail('Booking for events must not raise any exceptions')
+
+        # then
+        assert error.value.errors['insufficientFunds'] == ['Le solde de votre pass est insuffisant'
+                                                           ' pour réserver cette offre.']
 
 
 class CheckBookingIsCancellableTest:
@@ -319,7 +321,7 @@ class CheckQuantityIsValidTest:
 
         # then
         assert error.value.errors['quantity'] == [
-            "Vous devez réserver une place ou deux dans le cas d'une offre DUO."]
+            "Vous ne pouvez réserver qu'une place pour cette offre."]
 
     @clean_database
     def test_raise_error_when_booking_quantity_is_bigger_than_one_and_offer_is_not_duo(self, app):
@@ -337,7 +339,7 @@ class CheckQuantityIsValidTest:
 
         # then
         assert error.value.errors['quantity'] == [
-            "Vous devez réserver une place ou deux dans le cas d'une offre DUO."]
+            "Vous ne pouvez réserver qu'une place pour cette offre."]
 
     @clean_database
     def test_does_not_raise_an_error_when_booking_quantity_is_one_and_offer_is_not_duo(self, app):
