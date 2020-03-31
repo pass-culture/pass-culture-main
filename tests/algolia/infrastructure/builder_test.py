@@ -306,7 +306,7 @@ class BuildObjectTest:
         result = build_object(offer)
 
         # Then
-        assert result['offer']['dates'] == [1546387200.0, 1546300800.0]
+        assert set(result['offer']['dates']) == {1546387200.0, 1546300800.0}
 
     @clean_database
     def test_should_not_return_event_beginning_datetimes_as_timestamp_when_thing(self, app):
