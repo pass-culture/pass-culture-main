@@ -73,6 +73,10 @@ describe('components | Menu', () => {
               nameKey: 'FAVORITE_OFFER',
               isActive: true,
             },
+            {
+              nameKey: 'RECOMMENDATIONS',
+              isActive: true,
+            },
           ],
         },
       }

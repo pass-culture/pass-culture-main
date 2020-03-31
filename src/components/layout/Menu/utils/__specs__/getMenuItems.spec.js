@@ -37,6 +37,7 @@ describe('getMenuItemsFromRoutes', () => {
     const expected = [
       {
         component: DiscoveryContainer,
+        featureName: 'RECOMMENDATIONS',
         icon: 'ico-offres',
         path: '/decouverte',
         title: 'Les offres',

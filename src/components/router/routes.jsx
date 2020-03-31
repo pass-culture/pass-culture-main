@@ -80,6 +80,7 @@ const routes = [
    ---------------------------------------------------  */
   {
     component: DiscoveryContainer,
+    featureName: 'RECOMMENDATIONS',
     icon: 'ico-offres',
     path:
       '/decouverte' +
