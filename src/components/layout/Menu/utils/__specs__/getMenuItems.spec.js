@@ -47,7 +47,7 @@ describe('getMenuItemsFromRoutes', () => {
         icon: 'ico-offres',
         featureName: 'RECOMMENDATIONS_WITH_DISCOVERY_VIEW',
         path: '/decouverte-v2',
-        title: 'Offres performances',
+        title: 'Les offres',
       },
       {
         component: DiscoveryContainerV3,

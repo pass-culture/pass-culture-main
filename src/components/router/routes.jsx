@@ -99,7 +99,7 @@ const routes = [
     icon: 'ico-offres',
     path:
       '/decouverte-v2/:offerId(tuto|[A-Z0-9]+)?/:mediationId(vide|fin|[A-Z0-9]+)?/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?',
-    title: 'Offres performances',
+    title: 'Les offres',
   },
   {
     component: DiscoveryContainerV3,
