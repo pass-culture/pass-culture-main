@@ -1,7 +1,7 @@
 """add_feature_flipping_for_recommendations_v1
 
 Revision ID: d6206bae00b6
-Revises: a23d7d013abd
+Revises: 85af82acac13
 Create Date: 2020-03-31 09:19:37.380859
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = 'd6206bae00b6'
-down_revision = 'a23d7d013abd'
+down_revision = '85af82acac13'
 branch_labels = None
 depends_on = None
 
