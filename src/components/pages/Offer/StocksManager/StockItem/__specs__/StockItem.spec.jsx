@@ -459,7 +459,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       )
     })
 
-    it('should update bookingLimitDatetime when submitting a beginningDatetime before bookingLimitDatetime (or before initial beginningDatetime ???)', () => {
+    it('should update bookingLimitDatetime when submitting a beginningDatetime before bookingLimitDatetime', () => {
       // given
       props.stockPatch.beginningDatetime = '2020-04-27T20:00:00Z'
 
