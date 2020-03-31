@@ -23,7 +23,15 @@ describe('src | components | matomo | Matomo', () => {
       push: jest.fn(),
     }
     window._paq = fakeMatomo
-    initialState = { data: { users: [] } }
+    initialState = {
+      data: {
+        users: [],
+      },
+      geolocation: {
+        latitude: null,
+        longitude: null,
+      },
+    }
     store = mockStore(initialState)
   })
 
@@ -163,6 +171,10 @@ describe('src | components | matomo | Matomo', () => {
               id: '5FYTbfk4TR',
             },
           ],
+        },
+        geolocation: {
+          latitude: null,
+          longitude: null,
         },
       })
 

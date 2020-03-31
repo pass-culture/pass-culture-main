@@ -17,7 +17,6 @@ import {
 } from './utils/utils'
 import { selectUserGeolocation } from '../../../selectors/geolocationSelectors'
 import { getCoordinatesApiPathQueryString } from './utils/buildApiPathQueryString'
-import { selectCurrentUser } from '../../../selectors/data/usersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
@@ -32,11 +31,7 @@ export const mapStateToProps = (state, ownProps) => {
     checkIfShouldReloadRecommendationsBecauseOfLongTime(state) || hasNoRecommendations
   const seedLastRequestTimestamp = selectSeedLastRequestTimestamp(state)
   const coordinates = selectUserGeolocation(state)
-  const user = selectCurrentUser(state)
-  let userId = user ? user.id : 'ANONYMOUS'
-  if (coordinates.latitude && coordinates.longitude) {
-    ownProps.tracking.trackEvent({ action: 'activateGeolocation', name: userId })
-  }
+
   return {
     coordinates,
     currentRecommendation,
