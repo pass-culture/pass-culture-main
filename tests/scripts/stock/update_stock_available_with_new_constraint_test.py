@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from unittest.mock import patch, call
+from unittest.mock import patch, call, MagicMock
 
 from models import Stock
 from models.db import db
@@ -33,8 +33,11 @@ class UpdateStockAvailableWithNewConstraintTest:
         booking = create_booking(user, stock=stock, quantity=20, is_used=True, date_used=yesterday)
         repository.save(booking)
 
+        mock_application = MagicMock()
+        mock_application.redis_client = MagicMock()
+
         # When
-        update_stock_available_with_new_constraint()
+        update_stock_available_with_new_constraint(mock_application)
 
         # Then
         existing_stock = Stock.query.first()
@@ -54,8 +57,11 @@ class UpdateStockAvailableWithNewConstraintTest:
         booking1 = create_booking(user, stock=stock, quantity=2, is_used=False)
         repository.save(booking, booking1)
 
+        mock_application = MagicMock()
+        mock_application.redis_client = MagicMock()
+
         # When
-        update_stock_available_with_new_constraint()
+        update_stock_available_with_new_constraint(mock_application)
 
         # Then
         existing_stock = Stock.query.first()
@@ -75,8 +81,11 @@ class UpdateStockAvailableWithNewConstraintTest:
         booking_bis = create_booking(user, stock=stock, quantity=4)
         repository.save(booking, booking_bis)
 
+        mock_application = MagicMock()
+        mock_application.redis_client = MagicMock()
+
         # When
-        update_stock_available_with_new_constraint()
+        update_stock_available_with_new_constraint(mock_application)
 
         # Then
         existing_stock = Stock.query.get(4)
@@ -84,8 +93,9 @@ class UpdateStockAvailableWithNewConstraintTest:
         assert existing_stock.available == 10
 
     @clean_database
+    @patch('scripts.stock.update_stock_available_with_new_constraint.redis.add_offer_id')
     @patch('scripts.stock.update_stock_available_with_new_constraint._get_stocks_to_check')
-    def test_should_update_all_needed_stocks_with_pagination(self, mock_get_stocks_to_check, app):
+    def test_should_update_all_needed_stocks_with_pagination(self, mock_get_stocks_to_check, mock_redis_algolia, app):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -101,15 +111,19 @@ class UpdateStockAvailableWithNewConstraintTest:
         repository.save(booking1, booking2, booking3)
         mock_get_stocks_to_check.side_effect = [[stock1, stock2], [stock3]]
 
+        mock_application = MagicMock()
+        mock_application.redis_client = MagicMock()
+
         # When
-        update_stock_available_with_new_constraint(page_size=2)
+        update_stock_available_with_new_constraint(mock_application, page_size=2)
 
         # Then
         assert mock_get_stocks_to_check.call_count == 2
         assert mock_get_stocks_to_check.call_args == call(1, 2)
 
     @clean_database
-    def test_should_update_all_needed_stocks_when_stock_has_multiple_bookings(self, app):
+    @patch('scripts.stock.update_stock_available_with_new_constraint.redis.add_offer_id')
+    def test_should_update_all_needed_stocks_when_stock_has_multiple_bookings(self, mock_redis_algolia, app):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -126,8 +140,11 @@ class UpdateStockAvailableWithNewConstraintTest:
         ]
         repository.save(*bookings, stock3)
 
+        mock_application = MagicMock()
+        mock_application.redis_client = MagicMock()
+
         # When
-        update_stock_available_with_new_constraint(page_size=2)
+        update_stock_available_with_new_constraint(mock_application, page_size=2)
 
         # Then
         assert stock1.hasBeenMigrated is True
@@ -145,15 +162,64 @@ class UpdateStockAvailableWithNewConstraintTest:
         stock = create_stock(offer=offer, available=12, price=0, date_modified=datetime.utcnow())
         booking = create_booking(user, stock=stock, quantity=20, is_used=True, date_used=yesterday)
         repository.save(booking)
-        update_stock_available_with_new_constraint()
+
+        mock_application = MagicMock()
+        mock_application.redis_client = MagicMock()
+        update_stock_available_with_new_constraint(mock_application)
 
         # When
-        update_stock_available_with_new_constraint()
+        update_stock_available_with_new_constraint(mock_application)
 
         # Then
         existing_stock = Stock.query.first()
         assert existing_stock.remainingQuantity == 12
         assert existing_stock.available == 32
+
+    @clean_database
+    def test_should_not_compare_date_used_when_no_value_found(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, available=12, price=0, date_modified=datetime.utcnow())
+        booking = create_booking(user, stock=stock, quantity=20, is_used=True, date_used=None)
+        repository.save(booking)
+
+        mock_application = MagicMock()
+        mock_application.redis_client = MagicMock()
+
+        # When
+        update_stock_available_with_new_constraint(mock_application)
+
+        # Then
+        existing_stock = Stock.query.first()
+        assert existing_stock.remainingQuantity == 12
+        assert existing_stock.available == 32
+
+    @clean_database
+    @patch('scripts.stock.update_stock_available_with_new_constraint.redis.add_offer_id')
+    def test_should_index_offer_to_algolia_when_stock_has_been_updated(self, mock_add_offer_id_algolia,
+                                                                       app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, available=12, price=0, date_modified=datetime.utcnow())
+        booking = create_booking(user, stock=stock, quantity=20, is_used=True, date_used=None)
+        repository.save(booking)
+        offer_id = offer.id
+
+        mock_application = MagicMock()
+        mock_application.redis_client = MagicMock()
+
+        # When
+        update_stock_available_with_new_constraint(mock_application)
+
+        # Then
+        mock_add_offer_id_algolia.assert_called_once_with(client=mock_application.redis_client,
+                                                          offer_id=offer_id)
 
 
 class GetOldRemainingQuantityTest:

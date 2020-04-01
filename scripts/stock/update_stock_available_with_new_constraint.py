@@ -1,10 +1,11 @@
 from typing import List
 
+from connectors import redis
 from models import Stock, Booking
 from repository import repository
 
 
-def update_stock_available_with_new_constraint(page_size: int = 100):
+def update_stock_available_with_new_constraint(application, page_size=100):
     print("[UPDATE STOCK AVAILABLE] Beginning of script")
     page = 0
     has_stocks_to_check = True
@@ -15,7 +16,7 @@ def update_stock_available_with_new_constraint(page_size: int = 100):
         for stock_to_check in stocks_to_check:
             remaining_quantity_before_new_constraint = _get_old_remaining_quantity(stock_to_check)
             if remaining_quantity_before_new_constraint != stock_to_check.remainingQuantity:
-                _update_stock_quantity(stock_to_check, remaining_quantity_before_new_constraint)
+                _update_stock_quantity(stock_to_check, remaining_quantity_before_new_constraint, application)
 
         print(f"[UPDATE STOCK AVAILABLE] Updated page {page} stocks")
 
@@ -31,7 +32,8 @@ def _get_old_remaining_quantity(stock: Stock) -> int:
     old_bookings_quantity = 0
     for booking in stock.bookings:
         if (not booking.isCancelled and not booking.isUsed) \
-                or (booking.isUsed and booking.dateUsed > stock.dateModified):
+                or (booking.isUsed and booking.dateUsed is not None
+                    and booking.dateUsed > stock.dateModified):
             old_bookings_quantity += booking.quantity
     return stock.available - old_bookings_quantity
 
@@ -49,10 +51,10 @@ def _get_stocks_to_check(page: int = 0, page_size: int = 100) -> List[Stock]:
         .all()
 
 
-def _update_stock_quantity(stock_to_check: Stock, remaining_quantity_before_new_constraint: int):
+def _update_stock_quantity(stock_to_check: Stock, remaining_quantity_before_new_constraint: int, application):
     remaining_quantity_before_new_constraint = remaining_quantity_before_new_constraint \
         if remaining_quantity_before_new_constraint > 0 else 0
     stock_to_check.available = remaining_quantity_before_new_constraint + stock_to_check.bookingsQuantity
     stock_to_check.hasBeenMigrated = True
     repository.save(stock_to_check)
-
+    redis.add_offer_id(client=application.redis_client, offer_id=stock_to_check.offerId)
