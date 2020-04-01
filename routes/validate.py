@@ -1,26 +1,31 @@
-from flask import current_app as app, jsonify, request
-from flask_login import login_required, current_user
+from flask import current_app as app
+from flask import jsonify, request
+from flask_login import current_user, login_required
 
 from connectors import redis
 from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.iris import link_valid_venue_to_irises
-from domain.payments import read_message_name_in_message_file, \
-    generate_file_checksum
-from domain.user_emails import send_validation_confirmation_email_to_pro, \
-    send_venue_validation_confirmation_email, \
+from domain.payments import generate_file_checksum, \
+    read_message_name_in_message_file
+from domain.user_emails import \
     send_attachment_validation_email_to_pro_offerer, \
-    send_pro_user_waiting_for_validation_by_admin_email, send_ongoing_offerer_attachment_information_email_to_pro
-from models import ApiErrors, \
-    UserOfferer, Offerer, Venue
-from models.api_errors import ResourceNotFoundError, ForbiddenError
+    send_ongoing_offerer_attachment_information_email_to_pro, \
+    send_pro_user_waiting_for_validation_by_admin_email, \
+    send_validation_confirmation_email_to_pro, \
+    send_venue_validation_confirmation_email
+from models import ApiErrors, Offerer, UserOfferer, Venue
+from models.api_errors import ForbiddenError, ResourceNotFoundError
 from models.feature import FeatureToggle
-from repository import user_offerer_queries, user_queries, repository, feature_queries
+from repository import feature_queries, repository, user_offerer_queries, \
+    user_queries
 from repository.payment_queries import find_message_checksum
 from repository.user_offerer_queries import count_pro_attached_to_offerer
 from utils.config import IS_INTEGRATION
 from utils.mailing import MailServiceException, send_raw_email
-from validation.routes.users import check_validation_token_has_been_already_used
-from validation.routes.validate import check_valid_token_for_user_validation, check_validation_request, \
+from validation.routes.users import \
+    check_validation_token_has_been_already_used
+from validation.routes.validate import check_valid_token_for_user_validation, \
+    check_validation_request, \
     check_venue_found
 
 
@@ -35,8 +40,8 @@ def validate_offerer_attachment(token):
 
     try:
         send_attachment_validation_email_to_pro_offerer(user_offerer, send_raw_email)
-    except MailServiceException as e:
-        app.logger.error('Mail service failure', e)
+    except MailServiceException as mail_service_exception:
+        app.logger.error('Email service failure', mail_service_exception)
 
     return "Validation du rattachement de la structure effectuée", 202
 
@@ -61,8 +66,8 @@ def validate_new_offerer(token):
 
     try:
         send_validation_confirmation_email_to_pro(offerer, send_raw_email)
-    except MailServiceException as e:
-        app.logger.error('Mail service failure', e)
+    except MailServiceException as mail_service_exception:
+        app.logger.error('Email service failure', mail_service_exception)
     return "Validation effectuée", 202
 
 
@@ -80,8 +85,8 @@ def validate_venue():
 
     try:
         send_venue_validation_confirmation_email(venue, send_raw_email)
-    except MailServiceException as e:
-        app.logger.error('Mail service failure', e)
+    except MailServiceException as mail_service_exception:
+        app.logger.error('Email service failure', mail_service_exception)
 
     return "Validation effectuée", 202
 
@@ -110,13 +115,13 @@ def validate_user(token):
                 send_ongoing_offerer_attachment_information_email_to_pro(user_offerer, send_raw_email)
             except MailServiceException as mail_service_exception:
                 app.logger.error('[send_ongoing_offerer_attachment_information_email_to_pro] '
-                                 'Mail service failure', mail_service_exception)
+                                 'Email service failure', mail_service_exception)
         else:
             try:
                 send_pro_user_waiting_for_validation_by_admin_email(user_to_validate, send_raw_email, offerer)
             except MailServiceException as mail_service_exception:
                 app.logger.error('[send_pro_user_waiting_for_validation_by_admin_email] '
-                                 'Mail service failure', mail_service_exception)
+                                 'Email service failure', mail_service_exception)
 
     return '', 204
 
@@ -147,8 +152,8 @@ def _ask_for_validation(offerer: Offerer, user_offerer: UserOfferer):
     try:
         maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
 
-    except MailServiceException as e:
-        app.logger.error('Mail service failure', e)
+    except MailServiceException as mail_service_exception:
+        app.logger.error('Email service failure', mail_service_exception)
 
 
 def _validate_offerer(offerer: Offerer, user_offerer: UserOfferer):
