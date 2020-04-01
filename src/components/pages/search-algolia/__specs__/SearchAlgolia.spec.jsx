@@ -1,6 +1,5 @@
 import { mount, shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
-import { JSDOM } from 'jsdom'
 import React from 'react'
 import { Route, Router } from 'react-router'
 import { Criteria } from '../Criteria/Criteria'
@@ -191,29 +190,35 @@ describe('components | SearchAlgolia', () => {
 
   describe('render', () => {
     it('should define a resize event to prevent page from resizing when Android keyboard is displayed', () => {
-      // When
+      // Given
+      const metaTag = document.createElement('meta')
+      jest
+        .spyOn(document, 'querySelector')
+        .mockReturnValueOnce({ offsetHeight: 123 })
+        .mockReturnValue(metaTag)
       shallow(<SearchAlgolia {...props} />)
 
+      // When
+      window.onresize()
+
       // Then
-      expect(global.window.onresize).not.toBeNull()
+      expect(document.querySelector().content).toMatch(
+        'height=123px, width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no'
+      )
     })
 
     it('should reset the resize event and meta tag when unmounting', () => {
-      const dom = new JSDOM()
-      global.document = dom.window.document
-      jest
-        .spyOn(global.document, 'querySelector')
-        .mockImplementationOnce()
-        .mockReturnValue(document.createElement('meta'))
-      global.window = dom.window
+      // Given
+      const metaTag = document.createElement('meta')
+      jest.spyOn(document, 'querySelector').mockReturnValue(metaTag)
+      const wrapper = shallow(<SearchAlgolia {...props} />)
 
       // When
-      const wrapper = shallow(<SearchAlgolia {...props} />)
       wrapper.unmount()
 
       // Then
-      expect(global.window.onresize).toBeNull()
-      expect(global.document.querySelector().content).toBe(
+      expect(window.onresize).toBeNull()
+      expect(document.querySelector().content).toBe(
         'width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no'
       )
     })
