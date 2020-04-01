@@ -392,13 +392,12 @@ class BookingIsCancellableTest:
 
 class BookingCancellationDateTest:
     @clean_database
-    def test_should_update_cancellation_date_when_booking_is_cancelled(self, app):
+    def test_should_fill_cancellation_date_when_booking_is_cancelled(self, app):
         # Given
         user = create_user()
-        booking = create_booking(user=user, amount=1)
+        booking = create_booking(user=user, amount=1, is_cancelled=True)
 
         # When
-        booking.isCancelled = True
         repository.save(booking)
 
         # Then
@@ -410,7 +409,7 @@ class BookingCancellationDateTest:
     def test_should_clear_cancellation_date_when_booking_is_not_cancelled(self, app):
         # Given
         user = create_user()
-        deposit = create_deposit(user=user, amount=100)
+        create_deposit(user=user, amount=100)
         booking = create_booking(user=user, amount=1, is_cancelled=True)
         repository.save(booking)
 
@@ -422,3 +421,20 @@ class BookingCancellationDateTest:
         updated_booking = Booking.query.first()
         assert updated_booking.isCancelled is False
         assert updated_booking.cancellationDate is None
+
+    @clean_database
+    def test_should_not_update_cancellation_date_when_updating_another_attribute(self, app):
+        # Given
+        user = create_user()
+        booking = create_booking(user=user, amount=1, is_cancelled=True)
+        repository.save(booking)
+        original_cancellation_date = booking.cancellationDate
+
+        # When
+        booking.quantity = 2
+        repository.save(booking)
+
+        # Then
+        updated_booking = Booking.query.first()
+        assert updated_booking.isCancelled is True
+        assert updated_booking.cancellationDate == original_cancellation_date

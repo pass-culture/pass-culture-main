@@ -241,9 +241,10 @@ Booking.trig_update_cancellationDate_on_isCancelled_ddl = """
     CREATE OR REPLACE FUNCTION save_cancellation_date()
     RETURNS TRIGGER AS $$
     BEGIN
-        NEW."cancellationDate" = null;
-        IF NEW."isCancelled" IS TRUE THEN
+        IF NEW."isCancelled" IS TRUE AND OLD."cancellationDate" IS NULL THEN
             NEW."cancellationDate" = NOW();
+        ELSIF NEW."isCancelled" IS FALSE THEN
+            NEW."cancellationDate" = null;
         END IF;
         RETURN NEW;
     END;

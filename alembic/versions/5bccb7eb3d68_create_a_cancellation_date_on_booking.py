@@ -24,7 +24,7 @@ def upgrade():
             RETURNS TRIGGER AS $$
             BEGIN
                 NEW."cancellationDate" = null;
-                IF NEW."isCancelled" IS TRUE THEN
+                IF NEW."isCancelled" IS TRUE AND NEW."isCancelled" != OLD."isCancelled" THEN
                     NEW."cancellationDate" = NOW();
                 END IF;
                 RETURN NEW;

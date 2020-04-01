@@ -82,6 +82,17 @@ def create_beneficiary_import(date: datetime = datetime.utcnow(),
     return beneficiary_import
 
 
+def create_criterion(description: str = None,
+                     name: str = 'best offer',
+                     score_delta: int = 1) -> Criterion:
+    criterion = Criterion()
+    criterion.name = name
+    criterion.description = description
+    criterion.scoreDelta = score_delta
+
+    return criterion
+
+
 def create_booking(user: User,
                    amount: int = None,
                    date_created: datetime = datetime.utcnow(),
@@ -124,17 +135,6 @@ def create_booking(user: User,
     booking.userId = user.id
 
     return booking
-
-
-def create_criterion(description: str = None,
-                     name: str = 'best offer',
-                     score_delta: int = 1) -> Criterion:
-    criterion = Criterion()
-    criterion.name = name
-    criterion.description = description
-    criterion.scoreDelta = score_delta
-
-    return criterion
 
 
 def create_deposit(user: User,
