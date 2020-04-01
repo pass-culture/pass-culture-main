@@ -61,17 +61,16 @@ describe('selectOfferByRouterMatch', () => {
     // given
     const state = {
       data: {
-        bookings: [{ id: 'BF', stock: { offerId: 'AE' } }],
+        bookings: [{ id: 'BF', stockId: 'BE' }],
         favorites: [],
         offers: [{ id: 'AE' }],
         recommendations: [],
-        stocks: [],
+        stocks: [{ id: 'BE', offerId: 'AE' }],
       },
     }
     const match = {
       params: {
         bookingId: 'BF',
-        offerId: 'AE',
       },
     }
 
