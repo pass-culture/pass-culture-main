@@ -26,7 +26,7 @@ describe('src | components | layout | Booking | BookingContainer', () => {
       isCancelled: false,
       isUsed: false,
       stock: {
-        available: 10,
+        quantity: 10,
         bookingLimitDatetime: '2018-11-27T23:59:56.790000Z',
         bookingRecapSent: null,
         dateModified: '2018-10-29T09:44:38.649450Z',

@@ -18,7 +18,7 @@ describe('setTimezoneOnBeginningDatetime', () => {
   it('does nothing if stock as no beginning', () => {
     // given
     const stockWithoutDates = {
-      available: 10,
+      quantity: 10,
       beginningDatetime: null,
       bookingLimitDatetime: null,
       endDatetime: null,
@@ -43,7 +43,7 @@ describe('setTimezoneOnBeginningDatetime', () => {
   it('sets timezones to beginningDatetime', () => {
     // given
     const stockWithDate = {
-      available: 10,
+      quantity: 10,
       beginningDatetime: '2019-04-19T18:30:00Z',
       bookingLimitDatetime: null,
       endDatetime: '2019-04-20T20:00:00Z',

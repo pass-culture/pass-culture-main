@@ -135,7 +135,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 5000,
+              quantity: 5000,
               bookingLimitDatetime: null,
               bookingRecapSent: null,
               dateModified: '2018-09-14T14:04:39.745053Z',
@@ -259,7 +259,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-07-16T09:00:00Z',
               bookingLimitDatetime: '2018-07-15T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:44:29.363515Z',
@@ -276,7 +276,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-07-20T09:00:00Z',
               bookingLimitDatetime: '2018-07-19T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:45:03.054429Z',
@@ -293,7 +293,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-07-22T09:00:00Z',
               bookingLimitDatetime: '2018-07-21T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:45:23.855185Z',
@@ -310,7 +310,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-07-28T09:00:00Z',
               bookingLimitDatetime: '2018-07-27T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:46:15.978327Z',
@@ -327,7 +327,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-13T09:00:00Z',
               bookingLimitDatetime: '2018-08-12T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:48:15.602638Z',
@@ -344,7 +344,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-15T09:00:00Z',
               bookingLimitDatetime: '2018-08-14T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:48:28.035044Z',
@@ -361,7 +361,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-16T09:00:00Z',
               bookingLimitDatetime: '2018-08-15T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:48:36.550855Z',
@@ -378,7 +378,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-17T09:00:00Z',
               bookingLimitDatetime: '2018-08-16T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:48:43.883424Z',
@@ -395,7 +395,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-31T09:00:00Z',
               bookingLimitDatetime: '2018-08-30T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:50:21.271877Z',
@@ -412,7 +412,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-04T09:00:00Z',
               bookingLimitDatetime: '2018-08-03T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:47:09.580985Z',
@@ -429,7 +429,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-10T09:00:00Z',
               bookingLimitDatetime: '2018-08-09T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:47:53.452329Z',
@@ -446,7 +446,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-20T09:00:00Z',
               bookingLimitDatetime: '2018-08-19T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:49:04.470337Z',
@@ -463,7 +463,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-23T09:00:00Z',
               bookingLimitDatetime: '2018-08-22T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:49:22.722363Z',
@@ -480,7 +480,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-25T09:00:00Z',
               bookingLimitDatetime: '2018-08-24T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:49:37.921458Z',
@@ -497,7 +497,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-07-27T09:00:00Z',
               bookingLimitDatetime: '2018-07-26T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:46:07.097204Z',
@@ -514,7 +514,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-07-19T09:00:00Z',
               bookingLimitDatetime: '2018-07-18T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:44:52.786517Z',
@@ -531,7 +531,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-07-18T09:00:00Z',
               bookingLimitDatetime: '2018-07-17T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:44:42.752302Z',
@@ -548,7 +548,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-07-25T09:00:00Z',
               bookingLimitDatetime: '2018-07-24T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:45:47.963543Z',
@@ -565,7 +565,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-07-21T09:00:00Z',
               bookingLimitDatetime: '2018-07-20T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:45:13.540248Z',
@@ -582,7 +582,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-03T09:00:00Z',
               bookingLimitDatetime: '2018-08-02T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:47:02.498244Z',
@@ -599,7 +599,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-09T09:00:00Z',
               bookingLimitDatetime: '2018-08-08T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:47:46.294590Z',
@@ -616,7 +616,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-30T09:00:00Z',
               bookingLimitDatetime: '2018-08-29T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:50:14.378210Z',
@@ -633,7 +633,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-07-23T09:00:00Z',
               bookingLimitDatetime: '2018-07-22T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:45:33.739123Z',
@@ -650,7 +650,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-07-30T09:00:00Z',
               bookingLimitDatetime: '2018-07-29T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:46:31.774257Z',
@@ -667,7 +667,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-07-26T09:00:00Z',
               bookingLimitDatetime: '2018-07-26T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:45:57.570061Z',
@@ -684,7 +684,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-07-29T09:00:00Z',
               bookingLimitDatetime: '2018-07-28T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:46:24.758086Z',
@@ -701,7 +701,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-01T09:00:00Z',
               bookingLimitDatetime: '2018-07-31T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:46:44.083463Z',
@@ -718,7 +718,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-02T09:00:00Z',
               bookingLimitDatetime: '2018-08-01T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:46:52.624299Z',
@@ -735,7 +735,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-05T09:00:00Z',
               bookingLimitDatetime: '2018-08-04T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:47:18.548985Z',
@@ -752,7 +752,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-06T09:00:00Z',
               bookingLimitDatetime: '2018-08-05T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:47:26.614719Z',
@@ -769,7 +769,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-08T09:00:00Z',
               bookingLimitDatetime: '2018-08-07T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:47:39.193338Z',
@@ -786,7 +786,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-11T09:00:00Z',
               bookingLimitDatetime: '2018-08-10T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:48:00.649982Z',
@@ -803,7 +803,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-12T09:00:00Z',
               bookingLimitDatetime: '2018-08-11T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:48:08.740156Z',
@@ -820,7 +820,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-18T09:00:00Z',
               bookingLimitDatetime: '2018-08-17T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:48:50.843896Z',
@@ -837,7 +837,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-19T09:00:00Z',
               bookingLimitDatetime: '2018-08-18T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:48:58.156258Z',
@@ -854,7 +854,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-22T09:00:00Z',
               bookingLimitDatetime: '2018-08-21T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:49:15.933275Z',
@@ -871,7 +871,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-26T09:00:00Z',
               bookingLimitDatetime: '2018-08-25T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:49:46.713178Z',
@@ -888,7 +888,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-29T09:00:00Z',
               bookingLimitDatetime: '2018-08-28T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:50:06.589653Z',
@@ -905,7 +905,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-24T09:00:00Z',
               bookingLimitDatetime: '2018-08-23T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:49:29.789250Z',
@@ -922,7 +922,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-08-27T09:00:00Z',
               bookingLimitDatetime: '2018-08-26T09:00:00Z',
               bookingRecapSent: '2018-10-22T02:49:53.849578Z',
@@ -939,7 +939,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-10-22T09:00:00Z',
               bookingLimitDatetime: '2018-10-20T09:00:00Z',
               bookingRecapSent: null,
@@ -956,7 +956,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-10-24T09:00:00Z',
               bookingLimitDatetime: '2018-10-22T09:00:00Z',
               bookingRecapSent: null,
@@ -973,7 +973,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-10-26T09:00:00Z',
               bookingLimitDatetime: '2018-10-24T09:00:00Z',
               bookingRecapSent: null,
@@ -990,7 +990,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-10-25T09:00:00Z',
               bookingLimitDatetime: '2018-10-23T09:00:00Z',
               bookingRecapSent: null,
@@ -1007,7 +1007,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-10-27T09:00:00Z',
               bookingLimitDatetime: '2018-10-25T09:00:00Z',
               bookingRecapSent: null,
@@ -1024,7 +1024,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-10-28T10:00:00Z',
               bookingLimitDatetime: '2018-10-26T09:00:00Z',
               bookingRecapSent: null,
@@ -1041,7 +1041,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-10-29T10:00:00Z',
               bookingLimitDatetime: '2018-10-27T09:00:00Z',
               bookingRecapSent: null,
@@ -1058,7 +1058,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-10-31T10:00:00Z',
               bookingLimitDatetime: '2018-10-29T10:00:00Z',
               bookingRecapSent: null,
@@ -1075,7 +1075,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-01T10:00:00Z',
               bookingLimitDatetime: '2018-10-30T10:00:00Z',
               bookingRecapSent: null,
@@ -1092,7 +1092,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-02T10:00:00Z',
               bookingLimitDatetime: '2018-10-31T10:00:00Z',
               bookingRecapSent: null,
@@ -1109,7 +1109,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-03T10:00:00Z',
               bookingLimitDatetime: '2018-11-01T10:00:00Z',
               bookingRecapSent: null,
@@ -1126,7 +1126,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-04T10:00:00Z',
               bookingLimitDatetime: '2018-11-02T10:00:00Z',
               bookingRecapSent: null,
@@ -1143,7 +1143,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-05T10:00:00Z',
               bookingLimitDatetime: '2018-11-03T10:00:00Z',
               bookingRecapSent: null,
@@ -1160,7 +1160,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-07T10:00:00Z',
               bookingLimitDatetime: '2018-11-05T10:00:00Z',
               bookingRecapSent: null,
@@ -1177,7 +1177,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-08T10:00:00Z',
               bookingLimitDatetime: '2018-11-06T10:00:00Z',
               bookingRecapSent: null,
@@ -1194,7 +1194,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-09T10:00:00Z',
               bookingLimitDatetime: '2018-11-07T10:00:00Z',
               bookingRecapSent: null,
@@ -1211,7 +1211,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-10T10:00:00Z',
               bookingLimitDatetime: '2018-11-08T10:00:00Z',
               bookingRecapSent: null,
@@ -1228,7 +1228,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-11T10:00:00Z',
               bookingLimitDatetime: '2018-11-09T10:00:00Z',
               bookingRecapSent: null,
@@ -1245,7 +1245,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-12T10:00:00Z',
               bookingLimitDatetime: '2018-11-10T10:00:00Z',
               bookingRecapSent: null,
@@ -1262,7 +1262,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-14T10:00:00Z',
               bookingLimitDatetime: '2018-11-12T10:00:00Z',
               bookingRecapSent: null,
@@ -1279,7 +1279,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-15T10:00:00Z',
               bookingLimitDatetime: '2018-11-13T10:00:00Z',
               bookingRecapSent: null,
@@ -1296,7 +1296,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-16T10:00:00Z',
               bookingLimitDatetime: '2018-11-14T10:00:00Z',
               bookingRecapSent: null,
@@ -1313,7 +1313,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-17T10:00:00Z',
               bookingLimitDatetime: '2018-11-15T10:00:00Z',
               bookingRecapSent: null,
@@ -1330,7 +1330,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-18T10:00:00Z',
               bookingLimitDatetime: '2018-11-16T10:00:00Z',
               bookingRecapSent: null,
@@ -1347,7 +1347,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-19T10:00:00Z',
               bookingLimitDatetime: '2018-11-17T10:00:00Z',
               bookingRecapSent: null,
@@ -1364,7 +1364,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-21T10:00:00Z',
               bookingLimitDatetime: '2018-11-19T10:00:00Z',
               bookingRecapSent: null,
@@ -1381,7 +1381,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-22T10:00:00Z',
               bookingLimitDatetime: '2018-11-20T10:00:00Z',
               bookingRecapSent: null,
@@ -1398,7 +1398,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-23T10:00:00Z',
               bookingLimitDatetime: '2018-11-21T10:00:00Z',
               bookingRecapSent: null,
@@ -1415,7 +1415,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-24T10:00:00Z',
               bookingLimitDatetime: '2018-11-22T10:00:00Z',
               bookingRecapSent: null,
@@ -1432,7 +1432,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-25T10:00:00Z',
               bookingLimitDatetime: '2018-11-23T10:00:00Z',
               bookingRecapSent: null,
@@ -1449,7 +1449,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-26T10:00:00Z',
               bookingLimitDatetime: '2018-11-24T10:00:00Z',
               bookingRecapSent: null,
@@ -1466,7 +1466,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-28T10:00:00Z',
               bookingLimitDatetime: '2018-11-26T10:00:00Z',
               bookingRecapSent: null,
@@ -1483,7 +1483,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-29T10:00:00Z',
               bookingLimitDatetime: '2018-11-27T10:00:00Z',
               bookingRecapSent: null,
@@ -1500,7 +1500,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-11-30T10:00:00Z',
               bookingLimitDatetime: '2018-11-28T10:00:00Z',
               bookingRecapSent: null,
@@ -1628,7 +1628,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 20,
+              quantity: 20,
               beginningDatetime: '2018-12-04T19:30:11Z',
               bookingLimitDatetime: '2018-11-30T19:30:11Z',
               bookingRecapSent: null,
@@ -1759,7 +1759,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-12-30T18:30:39Z',
               bookingLimitDatetime: '2018-12-28T18:30:39Z',
               bookingRecapSent: null,
@@ -1883,7 +1883,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 20,
+              quantity: 20,
               beginningDatetime: '2019-02-07T19:30:13Z',
               bookingLimitDatetime: '2019-02-04T19:30:13Z',
               bookingRecapSent: null,
@@ -2007,7 +2007,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: null,
+              quantity: null,
               bookingLimitDatetime: null,
               bookingRecapSent: null,
               dateModified: '2018-10-10T08:13:20.225082Z',
@@ -2138,7 +2138,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-11-05T19:30:02Z',
               bookingLimitDatetime: '2018-11-03T19:30:02Z',
               bookingRecapSent: null,
@@ -2268,7 +2268,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-20T18:30:54Z',
               bookingLimitDatetime: '2018-11-18T18:30:54Z',
               bookingRecapSent: null,
@@ -2285,7 +2285,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-23T19:30:54Z',
               bookingLimitDatetime: '2018-11-23T19:30:54Z',
               bookingRecapSent: null,
@@ -2302,7 +2302,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-25T15:00:54Z',
               bookingLimitDatetime: '2018-11-25T15:00:54Z',
               bookingRecapSent: null,
@@ -2319,7 +2319,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-21T18:30:54Z',
               bookingLimitDatetime: '2018-11-21T18:30:54Z',
               bookingRecapSent: null,
@@ -2336,7 +2336,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-24T17:00:54Z',
               bookingLimitDatetime: '2018-11-24T17:00:54Z',
               bookingRecapSent: null,
@@ -2353,7 +2353,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-22T18:30:54Z',
               bookingLimitDatetime: '2018-11-22T18:30:54Z',
               bookingRecapSent: null,
@@ -2477,7 +2477,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10,
+              quantity: 10,
               bookingLimitDatetime: null,
               bookingRecapSent: null,
               dateModified: '2018-10-16T13:38:30.713274Z',
@@ -2605,7 +2605,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-23T19:30:26Z',
               bookingLimitDatetime: '2018-11-23T19:30:26Z',
               bookingRecapSent: null,
@@ -2622,7 +2622,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-28T18:30:26Z',
               bookingLimitDatetime: '2018-11-28T18:30:26Z',
               bookingRecapSent: null,
@@ -2639,7 +2639,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-12-02T15:00:26Z',
               bookingLimitDatetime: '2018-12-02T15:00:26Z',
               bookingRecapSent: null,
@@ -2656,7 +2656,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-25T15:00:26Z',
               bookingLimitDatetime: '2018-11-25T15:00:26Z',
               bookingRecapSent: null,
@@ -2673,7 +2673,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-30T19:30:26Z',
               bookingLimitDatetime: '2018-11-30T19:30:26Z',
               bookingRecapSent: null,
@@ -2690,7 +2690,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-24T17:00:26Z',
               bookingLimitDatetime: '2018-11-24T17:00:26Z',
               bookingRecapSent: null,
@@ -2707,7 +2707,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-29T18:30:26Z',
               bookingLimitDatetime: '2018-11-29T18:30:26Z',
               bookingRecapSent: null,
@@ -2724,7 +2724,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-27T18:30:26Z',
               bookingLimitDatetime: '2018-11-27T18:30:26Z',
               bookingRecapSent: null,
@@ -2741,7 +2741,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-12-01T17:00:26Z',
               bookingLimitDatetime: '2018-12-01T17:00:26Z',
               bookingRecapSent: null,
@@ -2865,7 +2865,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 20,
+              quantity: 20,
               beginningDatetime: '2019-02-12T19:30:53Z',
               bookingLimitDatetime: '2019-02-08T19:30:53Z',
               bookingRecapSent: null,
@@ -2995,7 +2995,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-04-05T08:00:09Z',
               bookingLimitDatetime: '2019-04-05T08:00:09Z',
               bookingRecapSent: null,
@@ -3012,7 +3012,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-04-04T12:00:09Z',
               bookingLimitDatetime: '2019-04-04T12:00:09Z',
               bookingRecapSent: null,
@@ -3029,7 +3029,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-04-03T08:00:09Z',
               bookingLimitDatetime: '2019-04-03T08:00:09Z',
               bookingRecapSent: null,
@@ -3046,7 +3046,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-04-02T12:00:09Z',
               bookingLimitDatetime: '2019-04-02T12:00:09Z',
               bookingRecapSent: null,
@@ -3063,7 +3063,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-04-02T08:00:09Z',
               bookingLimitDatetime: '2019-04-02T08:00:09Z',
               bookingRecapSent: null,
@@ -3080,7 +3080,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-04-06T13:00:09Z',
               bookingLimitDatetime: '2019-04-06T13:00:09Z',
               bookingRecapSent: null,
@@ -3097,7 +3097,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-04-05T12:00:09Z',
               bookingLimitDatetime: '2019-04-05T12:00:09Z',
               bookingRecapSent: null,
@@ -3114,7 +3114,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-04-04T08:00:09Z',
               bookingLimitDatetime: '2019-04-04T08:00:09Z',
               bookingRecapSent: null,
@@ -3131,7 +3131,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-04-03T12:30:09Z',
               bookingLimitDatetime: '2019-04-03T12:30:09Z',
               bookingRecapSent: null,
@@ -3261,7 +3261,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 20,
+              quantity: 20,
               beginningDatetime: '2018-11-03T10:00:03Z',
               bookingLimitDatetime: '2018-11-03T10:00:03Z',
               bookingRecapSent: null,
@@ -3278,7 +3278,7 @@ const state = {
               price: 17,
             },
             {
-              available: 20,
+              quantity: 20,
               beginningDatetime: '2018-11-04T10:00:03Z',
               bookingLimitDatetime: '2018-11-04T10:00:03Z',
               bookingRecapSent: null,
@@ -3398,7 +3398,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 20,
+              quantity: 20,
               bookingLimitDatetime: '2018-10-30T23:00:00Z',
               bookingRecapSent: null,
               dateModified: '2018-10-08T15:39:56.756353Z',
@@ -3522,7 +3522,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10,
+              quantity: 10,
               bookingLimitDatetime: null,
               bookingRecapSent: null,
               dateModified: '2018-10-16T13:42:53.079801Z',
@@ -3644,7 +3644,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 3,
+              quantity: 3,
               bookingLimitDatetime: '2018-11-30T23:00:00Z',
               bookingRecapSent: null,
               dateModified: '2018-10-11T15:57:04.294384Z',
@@ -3767,7 +3767,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 21000,
+              quantity: 21000,
               bookingLimitDatetime: '2018-12-29T23:00:00Z',
               bookingRecapSent: null,
               dateModified: '2018-10-23T09:02:15.527823Z',
@@ -3892,7 +3892,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 2,
+              quantity: 2,
               beginningDatetime: '2018-12-04T09:00:47Z',
               bookingLimitDatetime: '2018-11-27T09:00:47Z',
               bookingRecapSent: null,
@@ -3909,7 +3909,7 @@ const state = {
               price: 0,
             },
             {
-              available: 2,
+              quantity: 2,
               beginningDatetime: '2019-02-06T09:00:47Z',
               bookingLimitDatetime: '2019-01-21T09:00:47Z',
               bookingRecapSent: null,
@@ -3926,7 +3926,7 @@ const state = {
               price: 0,
             },
             {
-              available: 2,
+              quantity: 2,
               beginningDatetime: '2019-02-04T09:00:47Z',
               bookingLimitDatetime: '2019-01-21T09:00:47Z',
               bookingRecapSent: null,
@@ -3943,7 +3943,7 @@ const state = {
               price: 0,
             },
             {
-              available: 2,
+              quantity: 2,
               beginningDatetime: '2019-02-05T09:00:47Z',
               bookingLimitDatetime: '2019-01-21T09:00:47Z',
               bookingRecapSent: null,
@@ -4064,7 +4064,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 3,
+              quantity: 3,
               bookingLimitDatetime: '2018-11-30T23:00:00Z',
               bookingRecapSent: null,
               dateModified: '2018-10-10T07:52:11.357141Z',
@@ -4196,7 +4196,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-11-13T18:30:22Z',
               bookingLimitDatetime: '2018-11-12T18:30:22Z',
               bookingRecapSent: null,
@@ -4213,7 +4213,7 @@ const state = {
               price: 15,
             },
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-11-23T19:30:22Z',
               bookingLimitDatetime: '2018-11-22T19:30:22Z',
               bookingRecapSent: null,
@@ -4341,7 +4341,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-12-13T18:30:32Z',
               bookingLimitDatetime: '2018-12-11T18:30:32Z',
               bookingRecapSent: null,
@@ -4358,7 +4358,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-12-16T15:00:32Z',
               bookingLimitDatetime: '2018-12-16T15:00:32Z',
               bookingRecapSent: null,
@@ -4375,7 +4375,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-12-19T18:30:32Z',
               bookingLimitDatetime: '2018-12-19T18:30:32Z',
               bookingRecapSent: null,
@@ -4392,7 +4392,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-12-15T17:00:32Z',
               bookingLimitDatetime: '2018-12-15T17:00:32Z',
               bookingRecapSent: null,
@@ -4409,7 +4409,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-12-20T13:30:32Z',
               bookingLimitDatetime: '2018-12-20T13:30:32Z',
               bookingRecapSent: null,
@@ -4426,7 +4426,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-12-14T19:30:32Z',
               bookingLimitDatetime: '2018-12-14T19:30:32Z',
               bookingRecapSent: null,
@@ -4443,7 +4443,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-12-18T18:30:32Z',
               bookingLimitDatetime: '2018-12-16T18:30:32Z',
               bookingRecapSent: null,
@@ -4460,7 +4460,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-12-21T19:30:32Z',
               bookingLimitDatetime: '2018-12-21T19:30:32Z',
               bookingRecapSent: null,
@@ -4579,7 +4579,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 199992,
+              quantity: 199992,
               bookingLimitDatetime: '2019-08-07T22:00:00Z',
               bookingRecapSent: null,
               dateModified: '2018-10-08T13:25:26.620286Z',
@@ -4710,7 +4710,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 5,
+              quantity: 5,
               beginningDatetime: '2018-11-16T19:00:35Z',
               bookingLimitDatetime: '2018-11-14T19:00:35Z',
               bookingRecapSent: null,
@@ -4727,7 +4727,7 @@ const state = {
               price: 8,
             },
             {
-              available: 5,
+              quantity: 5,
               beginningDatetime: '2018-11-13T19:00:35Z',
               bookingLimitDatetime: '2018-11-11T19:00:35Z',
               bookingRecapSent: null,
@@ -4744,7 +4744,7 @@ const state = {
               price: 8,
             },
             {
-              available: 5,
+              quantity: 5,
               beginningDatetime: '2018-11-15T18:00:35Z',
               bookingLimitDatetime: '2018-11-13T18:00:35Z',
               bookingRecapSent: null,
@@ -4761,7 +4761,7 @@ const state = {
               price: 8,
             },
             {
-              available: 5,
+              quantity: 5,
               beginningDatetime: '2018-11-17T18:00:35Z',
               bookingLimitDatetime: '2018-11-15T18:00:35Z',
               bookingRecapSent: null,
@@ -4892,7 +4892,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-11-21T19:00:00Z',
               bookingLimitDatetime: '2018-11-14T19:00:00Z',
               bookingRecapSent: null,
@@ -4909,7 +4909,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-11-25T14:30:00Z',
               bookingLimitDatetime: '2018-11-18T14:30:00Z',
               bookingRecapSent: null,
@@ -4926,7 +4926,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-12-02T14:30:00Z',
               bookingLimitDatetime: '2018-11-25T14:30:00Z',
               bookingRecapSent: null,
@@ -4943,7 +4943,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-12-08T19:00:00Z',
               bookingLimitDatetime: '2018-12-01T19:00:00Z',
               bookingRecapSent: null,
@@ -4960,7 +4960,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-11-17T19:00:00Z',
               bookingLimitDatetime: '2018-11-10T19:00:00Z',
               bookingRecapSent: null,
@@ -4977,7 +4977,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-11-19T19:00:00Z',
               bookingLimitDatetime: '2018-11-12T19:00:00Z',
               bookingRecapSent: null,
@@ -4994,7 +4994,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-11-24T19:00:00Z',
               bookingLimitDatetime: '2018-11-17T19:00:00Z',
               bookingRecapSent: null,
@@ -5011,7 +5011,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-12-07T19:00:00Z',
               bookingLimitDatetime: '2018-11-30T19:00:00Z',
               bookingRecapSent: null,
@@ -5028,7 +5028,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-11-26T19:00:00Z',
               bookingLimitDatetime: '2018-11-19T19:00:00Z',
               bookingRecapSent: null,
@@ -5045,7 +5045,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-12-01T19:00:00Z',
               bookingLimitDatetime: '2018-11-24T19:00:00Z',
               bookingRecapSent: null,
@@ -5062,7 +5062,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-11-23T19:00:00Z',
               bookingLimitDatetime: '2018-11-16T19:00:00Z',
               bookingRecapSent: null,
@@ -5079,7 +5079,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-11-18T14:30:00Z',
               bookingLimitDatetime: '2018-11-11T14:30:00Z',
               bookingRecapSent: null,
@@ -5096,7 +5096,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-11-28T19:00:00Z',
               bookingLimitDatetime: '2018-11-21T19:00:00Z',
               bookingRecapSent: null,
@@ -5113,7 +5113,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-11-30T19:00:00Z',
               bookingLimitDatetime: '2018-11-23T19:00:00Z',
               bookingRecapSent: null,
@@ -5130,7 +5130,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-12-03T19:00:00Z',
               bookingLimitDatetime: '2018-11-26T19:00:00Z',
               bookingRecapSent: null,
@@ -5147,7 +5147,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-12-05T19:00:00Z',
               bookingLimitDatetime: '2018-11-28T19:00:00Z',
               bookingRecapSent: null,
@@ -5164,7 +5164,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-12-09T14:30:00Z',
               bookingLimitDatetime: '2018-12-02T14:30:00Z',
               bookingRecapSent: null,
@@ -5181,7 +5181,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-11-22T19:00:00Z',
               bookingLimitDatetime: '2018-11-15T19:00:00Z',
               bookingRecapSent: null,
@@ -5198,7 +5198,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-12-06T19:00:00Z',
               bookingLimitDatetime: '2018-11-29T19:00:00Z',
               bookingRecapSent: null,
@@ -5215,7 +5215,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-11-15T19:00:00Z',
               bookingLimitDatetime: '2018-11-08T19:00:00Z',
               bookingRecapSent: null,
@@ -5232,7 +5232,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-11-16T19:00:00Z',
               bookingLimitDatetime: '2018-11-09T19:00:00Z',
               bookingRecapSent: null,
@@ -5249,7 +5249,7 @@ const state = {
               price: 12,
             },
             {
-              available: 4,
+              quantity: 4,
               beginningDatetime: '2018-11-29T19:00:00Z',
               bookingLimitDatetime: '2018-11-22T19:00:00Z',
               bookingRecapSent: null,
@@ -5378,7 +5378,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-01-13T15:00:53Z',
               bookingLimitDatetime: '2019-01-13T15:00:53Z',
               bookingRecapSent: null,
@@ -5395,7 +5395,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-01-16T18:30:53Z',
               bookingLimitDatetime: '2019-01-16T18:30:53Z',
               bookingRecapSent: null,
@@ -5412,7 +5412,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-01-11T19:30:53Z',
               bookingLimitDatetime: '2019-01-11T19:30:53Z',
               bookingRecapSent: null,
@@ -5429,7 +5429,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-01-18T19:30:53Z',
               bookingLimitDatetime: '2019-01-18T19:30:53Z',
               bookingRecapSent: null,
@@ -5446,7 +5446,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-01-10T18:30:53Z',
               bookingLimitDatetime: '2019-01-10T18:30:53Z',
               bookingRecapSent: null,
@@ -5463,7 +5463,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-01-17T18:30:53Z',
               bookingLimitDatetime: '2019-01-17T18:30:53Z',
               bookingRecapSent: null,
@@ -5480,7 +5480,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-01-12T17:00:53Z',
               bookingLimitDatetime: '2019-01-12T17:00:53Z',
               bookingRecapSent: null,
@@ -5497,7 +5497,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-01-15T18:30:53Z',
               bookingLimitDatetime: '2019-01-15T18:30:53Z',
               bookingRecapSent: null,
@@ -5626,7 +5626,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-03-29T19:30:58Z',
               bookingLimitDatetime: '2019-03-29T19:30:58Z',
               bookingRecapSent: null,
@@ -5643,7 +5643,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-03-30T17:00:58Z',
               bookingLimitDatetime: '2019-03-30T17:00:58Z',
               bookingRecapSent: null,
@@ -5660,7 +5660,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-04-04T17:30:58Z',
               bookingLimitDatetime: '2019-04-04T17:30:58Z',
               bookingRecapSent: null,
@@ -5677,7 +5677,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-04-02T17:30:58Z',
               bookingLimitDatetime: '2019-04-02T17:30:58Z',
               bookingRecapSent: null,
@@ -5694,7 +5694,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-04-06T16:00:58Z',
               bookingLimitDatetime: '2019-04-06T16:00:58Z',
               bookingRecapSent: null,
@@ -5711,7 +5711,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-03-31T14:00:58Z',
               bookingLimitDatetime: '2019-03-31T14:00:58Z',
               bookingRecapSent: null,
@@ -5728,7 +5728,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-04-05T18:30:58Z',
               bookingLimitDatetime: '2019-04-05T18:30:58Z',
               bookingRecapSent: null,
@@ -5745,7 +5745,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-04-03T17:30:58Z',
               bookingLimitDatetime: '2019-04-03T17:30:58Z',
               bookingRecapSent: null,
@@ -5871,7 +5871,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-11T17:00:49Z',
               bookingLimitDatetime: '2018-11-11T17:00:49Z',
               bookingRecapSent: null,
@@ -5888,7 +5888,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-07T18:30:49Z',
               bookingLimitDatetime: '2018-11-07T18:30:49Z',
               bookingRecapSent: null,
@@ -5905,7 +5905,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-13T18:30:49Z',
               bookingLimitDatetime: '2018-11-13T18:30:49Z',
               bookingRecapSent: null,
@@ -5922,7 +5922,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-08T18:30:49Z',
               bookingLimitDatetime: '2018-11-08T18:30:49Z',
               bookingRecapSent: null,
@@ -5939,7 +5939,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-10T17:00:49Z',
               bookingLimitDatetime: '2018-11-10T17:00:49Z',
               bookingRecapSent: null,
@@ -5956,7 +5956,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-16T19:30:49Z',
               bookingLimitDatetime: '2018-11-16T19:30:49Z',
               bookingRecapSent: null,
@@ -5973,7 +5973,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-17T17:00:49Z',
               bookingLimitDatetime: '2018-11-17T17:00:49Z',
               bookingRecapSent: null,
@@ -5990,7 +5990,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-09T19:30:49Z',
               bookingLimitDatetime: '2018-11-09T19:30:49Z',
               bookingRecapSent: null,
@@ -6007,7 +6007,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-15T18:30:49Z',
               bookingLimitDatetime: '2018-11-15T18:30:49Z',
               bookingRecapSent: null,
@@ -6135,7 +6135,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-02-10T15:00:32Z',
               bookingLimitDatetime: '2019-02-10T15:00:32Z',
               bookingRecapSent: null,
@@ -6152,7 +6152,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-02-08T19:30:32Z',
               bookingLimitDatetime: '2019-02-06T19:30:32Z',
               bookingRecapSent: null,
@@ -6169,7 +6169,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-02-09T17:00:32Z',
               bookingLimitDatetime: '2019-02-09T17:00:32Z',
               bookingRecapSent: null,
@@ -6186,7 +6186,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-02-12T18:30:32Z',
               bookingLimitDatetime: '2019-02-12T18:30:32Z',
               bookingRecapSent: null,
@@ -6203,7 +6203,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-02-13T18:30:32Z',
               bookingLimitDatetime: '2019-02-13T18:30:32Z',
               bookingRecapSent: null,
@@ -6220,7 +6220,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-02-14T18:30:32Z',
               bookingLimitDatetime: '2019-02-14T18:30:32Z',
               bookingRecapSent: null,
@@ -6350,7 +6350,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 20,
+              quantity: 20,
               beginningDatetime: '2018-11-08T19:30:00Z',
               bookingLimitDatetime: '2018-11-06T23:00:00Z',
               bookingRecapSent: null,
@@ -6367,7 +6367,7 @@ const state = {
               price: 5,
             },
             {
-              available: 20,
+              quantity: 20,
               beginningDatetime: '2018-11-04T19:30:00Z',
               bookingLimitDatetime: '2018-11-02T19:30:00Z',
               bookingRecapSent: null,
@@ -6486,7 +6486,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: null,
+              quantity: null,
               bookingLimitDatetime: null,
               bookingRecapSent: null,
               dateModified: '2018-10-18T13:00:21.307293Z',
@@ -6617,7 +6617,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-11-25T15:00:42Z',
               bookingLimitDatetime: '2018-11-23T15:00:42Z',
               bookingRecapSent: null,
@@ -6634,7 +6634,7 @@ const state = {
               price: 15,
             },
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-11-27T18:00:42Z',
               bookingLimitDatetime: '2018-11-26T18:00:42Z',
               bookingRecapSent: null,
@@ -6753,7 +6753,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: null,
+              quantity: null,
               bookingLimitDatetime: null,
               bookingRecapSent: null,
               dateModified: '2018-10-08T15:06:36.487457Z',
@@ -6878,7 +6878,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-11-07T19:30:11Z',
               bookingLimitDatetime: '2018-11-06T19:30:11Z',
               bookingRecapSent: null,
@@ -7008,7 +7008,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-12-12T13:30:54Z',
               bookingLimitDatetime: '2018-12-10T13:30:54Z',
               bookingRecapSent: null,
@@ -7025,7 +7025,7 @@ const state = {
               price: 15,
             },
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-12-15T18:00:54Z',
               bookingLimitDatetime: '2018-12-14T18:00:54Z',
               bookingRecapSent: null,
@@ -7152,7 +7152,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 20,
+              quantity: 20,
               beginningDatetime: '2018-12-14T19:30:44Z',
               bookingLimitDatetime: '2018-12-12T19:30:44Z',
               bookingRecapSent: null,
@@ -7275,7 +7275,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 100,
+              quantity: 100,
               bookingLimitDatetime: '2018-11-06T23:00:00Z',
               bookingRecapSent: null,
               dateModified: '2018-10-16T13:36:59.501997Z',
@@ -7402,7 +7402,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2018-11-08T19:30:31Z',
               bookingLimitDatetime: '2018-11-08T19:30:31Z',
               bookingRecapSent: null,
@@ -7525,7 +7525,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: null,
+              quantity: null,
               bookingLimitDatetime: null,
               bookingRecapSent: null,
               dateModified: '2018-10-18T12:55:28.298565Z',
@@ -7650,7 +7650,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-11-16T19:30:22Z',
               bookingLimitDatetime: '2018-11-15T19:30:22Z',
               bookingRecapSent: null,
@@ -7780,7 +7780,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 20,
+              quantity: 20,
               beginningDatetime: '2018-11-02T19:30:57Z',
               bookingLimitDatetime: '2018-10-30T19:30:57Z',
               bookingRecapSent: null,
@@ -7797,7 +7797,7 @@ const state = {
               price: 5,
             },
             {
-              available: 20,
+              quantity: 20,
               beginningDatetime: '2018-11-27T19:30:00Z',
               bookingLimitDatetime: '2018-11-25T23:00:00Z',
               bookingRecapSent: null,
@@ -7918,7 +7918,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 7,
+              quantity: 7,
               bookingLimitDatetime: null,
               bookingRecapSent: null,
               dateModified: '2018-09-28T07:25:40.132778Z',
@@ -8048,7 +8048,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 20,
+              quantity: 20,
               beginningDatetime: '2019-03-16T19:30:49Z',
               bookingLimitDatetime: '2019-03-11T19:30:49Z',
               bookingRecapSent: null,
@@ -8178,7 +8178,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-01-26T17:00:42Z',
               bookingLimitDatetime: '2019-01-26T17:00:42Z',
               bookingRecapSent: null,
@@ -8195,7 +8195,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-01-25T19:30:42Z',
               bookingLimitDatetime: '2019-01-25T19:30:42Z',
               bookingRecapSent: null,
@@ -8212,7 +8212,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-01-27T17:00:42Z',
               bookingLimitDatetime: '2019-01-27T17:00:42Z',
               bookingRecapSent: null,
@@ -8229,7 +8229,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-01-29T18:30:42Z',
               bookingLimitDatetime: '2019-01-29T18:30:42Z',
               bookingRecapSent: null,
@@ -8246,7 +8246,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-01-30T18:30:42Z',
               bookingLimitDatetime: '2019-01-30T18:30:42Z',
               bookingRecapSent: null,
@@ -8369,7 +8369,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-10-27T13:00:58Z',
               bookingLimitDatetime: '2018-10-22T13:00:58Z',
               bookingRecapSent: null,
@@ -8386,7 +8386,7 @@ const state = {
               price: 0,
             },
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-10-31T14:00:58Z',
               bookingLimitDatetime: '2018-10-27T13:00:58Z',
               bookingRecapSent: null,
@@ -8517,7 +8517,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-12-08T15:00:37Z',
               bookingLimitDatetime: '2018-11-30T15:00:37Z',
               bookingRecapSent: null,
@@ -8534,7 +8534,7 @@ const state = {
               price: 0,
             },
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-12-09T13:00:37Z',
               bookingLimitDatetime: '2018-11-30T13:00:37Z',
               bookingRecapSent: null,
@@ -8664,7 +8664,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-12-17T18:00:44Z',
               bookingLimitDatetime: '2018-12-15T18:00:44Z',
               bookingRecapSent: null,
@@ -8681,7 +8681,7 @@ const state = {
               price: 15,
             },
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-12-17T20:00:44Z',
               bookingLimitDatetime: '2018-12-15T20:00:44Z',
               bookingRecapSent: null,
@@ -8800,7 +8800,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: null,
+              quantity: null,
               bookingLimitDatetime: null,
               bookingRecapSent: null,
               dateModified: '2018-10-18T15:21:49.229757Z',
@@ -8925,7 +8925,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: null,
+              quantity: null,
               beginningDatetime: '2018-12-14T13:00:43Z',
               bookingLimitDatetime: '2018-12-14T13:00:43Z',
               bookingRecapSent: null,
@@ -9050,7 +9050,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10,
+              quantity: 10,
               bookingLimitDatetime: null,
               bookingRecapSent: null,
               dateModified: '2018-10-16T13:12:52.298240Z',
@@ -9174,7 +9174,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-11-09T13:30:51Z',
               bookingLimitDatetime: '2018-11-07T13:30:51Z',
               bookingRecapSent: null,
@@ -9299,7 +9299,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: null,
+              quantity: null,
               bookingLimitDatetime: null,
               bookingRecapSent: null,
               dateModified: '2018-10-12T14:42:39.704653Z',
@@ -9424,7 +9424,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: null,
+              quantity: null,
               beginningDatetime: '2018-11-30T18:00:23Z',
               bookingLimitDatetime: '2018-11-30T18:00:23Z',
               bookingRecapSent: null,
@@ -9544,7 +9544,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10000,
+              quantity: 10000,
               bookingLimitDatetime: null,
               bookingRecapSent: null,
               dateModified: '2018-10-05T13:12:33.318021Z',
@@ -9670,7 +9670,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-11-14T19:30:17Z',
               bookingLimitDatetime: '2018-11-13T19:30:17Z',
               bookingRecapSent: null,
@@ -9687,7 +9687,7 @@ const state = {
               price: 15,
             },
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-12-12T19:30:17Z',
               bookingLimitDatetime: '2018-12-11T19:30:17Z',
               bookingRecapSent: null,
@@ -9811,7 +9811,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-11-05T19:30:10Z',
               bookingLimitDatetime: '2018-11-04T19:30:10Z',
               bookingRecapSent: null,
@@ -9828,7 +9828,7 @@ const state = {
               price: 15,
             },
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-11-19T19:30:10Z',
               bookingLimitDatetime: '2018-11-18T19:30:10Z',
               bookingRecapSent: null,
@@ -9845,7 +9845,7 @@ const state = {
               price: 15,
             },
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-12-03T19:30:10Z',
               bookingLimitDatetime: '2018-12-02T19:30:10Z',
               bookingRecapSent: null,
@@ -9972,7 +9972,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-03-17T15:00:47Z',
               bookingLimitDatetime: '2019-03-17T15:00:47Z',
               bookingRecapSent: null,
@@ -9989,7 +9989,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-03-22T19:30:47Z',
               bookingLimitDatetime: '2019-03-22T19:30:47Z',
               bookingRecapSent: null,
@@ -10006,7 +10006,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-03-24T15:00:47Z',
               bookingLimitDatetime: '2019-03-24T15:00:47Z',
               bookingRecapSent: null,
@@ -10023,7 +10023,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-03-14T18:30:47Z',
               bookingLimitDatetime: '2019-03-14T18:30:47Z',
               bookingRecapSent: null,
@@ -10040,7 +10040,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-03-19T18:30:47Z',
               bookingLimitDatetime: '2019-03-19T18:30:47Z',
               bookingRecapSent: null,
@@ -10057,7 +10057,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-03-23T17:00:47Z',
               bookingLimitDatetime: '2019-03-23T17:00:47Z',
               bookingRecapSent: null,
@@ -10074,7 +10074,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-03-16T17:00:47Z',
               bookingLimitDatetime: '2019-03-16T17:00:47Z',
               bookingRecapSent: null,
@@ -10091,7 +10091,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-03-21T13:30:47Z',
               bookingLimitDatetime: '2019-03-21T13:30:47Z',
               bookingRecapSent: null,
@@ -10108,7 +10108,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-03-13T18:30:47Z',
               bookingLimitDatetime: '2019-03-11T18:30:47Z',
               bookingRecapSent: null,
@@ -10125,7 +10125,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-03-15T19:30:47Z',
               bookingLimitDatetime: '2019-03-15T19:30:47Z',
               bookingRecapSent: null,
@@ -10142,7 +10142,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-03-20T18:30:47Z',
               bookingLimitDatetime: '2019-03-20T18:30:47Z',
               bookingRecapSent: null,
@@ -10261,7 +10261,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: null,
+              quantity: null,
               bookingLimitDatetime: null,
               bookingRecapSent: null,
               dateModified: '2018-10-07T15:25:15.247783Z',
@@ -10389,7 +10389,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-11-24T16:00:05Z',
               bookingLimitDatetime: '2018-11-22T16:00:05Z',
               bookingRecapSent: null,
@@ -10511,7 +10511,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 3,
+              quantity: 3,
               bookingLimitDatetime: '2018-11-30T23:00:00Z',
               bookingRecapSent: null,
               dateModified: '2018-10-10T06:51:37.449028Z',
@@ -10635,7 +10635,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 100,
+              quantity: 100,
               bookingLimitDatetime: null,
               bookingRecapSent: null,
               dateModified: '2018-10-09T13:51:08.938787Z',
@@ -10765,7 +10765,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-05-17T18:30:23Z',
               bookingLimitDatetime: '2019-05-17T18:30:23Z',
               bookingRecapSent: null,
@@ -10782,7 +10782,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-05-16T17:30:23Z',
               bookingLimitDatetime: '2019-05-16T17:30:23Z',
               bookingRecapSent: null,
@@ -10799,7 +10799,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-05-15T17:30:23Z',
               bookingLimitDatetime: '2019-05-15T17:30:23Z',
               bookingRecapSent: null,
@@ -10816,7 +10816,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-05-18T16:00:23Z',
               bookingLimitDatetime: '2019-05-18T16:00:23Z',
               bookingRecapSent: null,
@@ -10833,7 +10833,7 @@ const state = {
               price: 12,
             },
             {
-              available: 30,
+              quantity: 30,
               beginningDatetime: '2019-05-19T14:00:23Z',
               bookingLimitDatetime: '2019-05-19T14:00:23Z',
               bookingRecapSent: null,
@@ -10957,7 +10957,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10,
+              quantity: 10,
               beginningDatetime: '2018-11-09T19:30:15Z',
               bookingLimitDatetime: '2018-11-08T19:30:15Z',
               bookingRecapSent: null,
@@ -11078,7 +11078,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 12,
+              quantity: 12,
               bookingLimitDatetime: '2018-10-29T23:00:00Z',
               bookingRecapSent: null,
               dateModified: '2018-10-11T12:12:50.208731Z',
@@ -11199,7 +11199,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: null,
+              quantity: null,
               bookingLimitDatetime: null,
               bookingRecapSent: null,
               dateModified: '2018-10-09T14:45:34.349592Z',
@@ -11326,7 +11326,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-10-16T17:30:25Z',
               bookingLimitDatetime: '2018-10-14T17:30:25Z',
               bookingRecapSent: null,
@@ -11343,7 +11343,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-10-23T17:30:25Z',
               bookingLimitDatetime: '2018-10-21T17:30:25Z',
               bookingRecapSent: null,
@@ -11360,7 +11360,7 @@ const state = {
               price: 0,
             },
             {
-              available: 3,
+              quantity: 3,
               beginningDatetime: '2018-10-30T18:30:25Z',
               bookingLimitDatetime: '2018-10-28T18:30:25Z',
               bookingRecapSent: null,
@@ -11489,7 +11489,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 20,
+              quantity: 20,
               beginningDatetime: '2018-12-08T19:30:35Z',
               bookingLimitDatetime: '2018-12-03T19:30:35Z',
               bookingRecapSent: null,
@@ -11612,7 +11612,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: null,
+              quantity: null,
               bookingLimitDatetime: null,
               bookingRecapSent: null,
               dateModified: '2018-10-16T13:32:17.900787Z',
@@ -11743,7 +11743,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 20,
+              quantity: 20,
               beginningDatetime: '2019-01-19T19:30:41Z',
               bookingLimitDatetime: '2019-01-17T19:30:41Z',
               bookingRecapSent: null,
@@ -11869,7 +11869,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 2,
+              quantity: 2,
               beginningDatetime: '2019-04-13T12:00:02Z',
               bookingLimitDatetime: '2019-03-30T13:00:02Z',
               bookingRecapSent: null,
@@ -11886,7 +11886,7 @@ const state = {
               price: 0,
             },
             {
-              available: 2,
+              quantity: 2,
               beginningDatetime: '2019-01-19T13:00:02Z',
               bookingLimitDatetime: '2019-01-05T13:00:02Z',
               bookingRecapSent: null,
@@ -11903,7 +11903,7 @@ const state = {
               price: 0,
             },
             {
-              available: 2,
+              quantity: 2,
               beginningDatetime: '2019-03-16T13:00:02Z',
               bookingLimitDatetime: '2019-03-02T13:00:02Z',
               bookingRecapSent: null,
@@ -11920,7 +11920,7 @@ const state = {
               price: 0,
             },
             {
-              available: 2,
+              quantity: 2,
               beginningDatetime: '2018-12-15T13:00:02Z',
               bookingLimitDatetime: '2018-12-01T13:00:02Z',
               bookingRecapSent: null,
@@ -11937,7 +11937,7 @@ const state = {
               price: 0,
             },
             {
-              available: 2,
+              quantity: 2,
               beginningDatetime: '2019-02-16T13:00:02Z',
               bookingLimitDatetime: '2019-02-02T13:00:02Z',
               bookingRecapSent: null,
@@ -12065,7 +12065,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 20,
+              quantity: 20,
               beginningDatetime: '2019-01-25T19:30:25Z',
               bookingLimitDatetime: '2019-01-21T19:30:25Z',
               bookingRecapSent: null,
@@ -12190,7 +12190,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 20,
+              quantity: 20,
               beginningDatetime: '2019-02-16T19:30:46Z',
               bookingLimitDatetime: '2019-02-12T19:30:46Z',
               bookingRecapSent: null,

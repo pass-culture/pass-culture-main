@@ -89,8 +89,8 @@ describe('src | components | pages | discovery | Deck | Navigation | NavigationC
           recommendations: [{ offerId: 'AE', mediationId: 'FG' }],
           offers: [{ id: 'AE' }],
           stocks: [
-            { offerId: 'AE', price: 1, isBookable: true, available: 1 },
-            { offerId: 'AE', price: 4, isBookable: true, available: 1 },
+            { offerId: 'AE', price: 1, isBookable: true, quantity: 1 },
+            { offerId: 'AE', price: 4, isBookable: true, quantity: 1 },
           ],
         },
         geolocation: {
@@ -123,8 +123,8 @@ describe('src | components | pages | discovery | Deck | Navigation | NavigationC
               recommendations: [{ offerId: 'AE', mediationId: 'FG' }],
               offers: [{ id: 'AE' }],
               stocks: [
-                { offerId: 'AE', price: 1, isBookable: true, available: 1 },
-                { offerId: 'AE', price: 4, isBookable: true, available: 1 },
+                { offerId: 'AE', price: 1, isBookable: true, quantity: 1 },
+                { offerId: 'AE', price: 4, isBookable: true, quantity: 1 },
               ],
             },
             geolocation: {
@@ -157,8 +157,8 @@ describe('src | components | pages | discovery | Deck | Navigation | NavigationC
               recommendations: [{ offerId: 'AE', mediationId: 'FG' }],
               offers: [],
               stocks: [
-                { offerId: 'AE', price: 1, isBookable: true, available: 1 },
-                { offerId: 'AE', price: 4, isBookable: true, available: 1 },
+                { offerId: 'AE', price: 1, isBookable: true, quantity: 1 },
+                { offerId: 'AE', price: 4, isBookable: true, quantity: 1 },
               ],
             },
             geolocation: {

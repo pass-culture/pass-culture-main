@@ -14,7 +14,7 @@ const state = {
         qrCode: 'data:image/png;base64,iVIVhzdjeizfjezfoizejojczez',
         recommendationId: null,
         stock: {
-          available: 10,
+          quantity: 10,
           bookingLimitDatetime: '2018-11-27T23:59:56.790000Z',
           bookingRecapSent: null,
           dateModified: '2018-10-29T09:44:38.649450Z',
@@ -219,7 +219,7 @@ const state = {
           modelName: 'Offer',
           stocks: [
             {
-              available: 10,
+              quantity: 10,
               bookingLimitDatetime: '2018-11-27T23:59:56.790000Z',
               bookingRecapSent: null,
               dateModified: '2018-10-29T09:44:38.649450Z',
@@ -236,7 +236,7 @@ const state = {
               price: 10,
             },
             {
-              available: 15,
+              quantity: 15,
               bookingLimitDatetime: '2018-10-26T23:59:56.790000Z',
               bookingRecapSent: null,
               dateModified: '2018-10-29T09:44:38.709256Z',
@@ -253,7 +253,7 @@ const state = {
               price: 15,
             },
             {
-              available: 100,
+              quantity: 100,
               bookingLimitDatetime: '2018-12-25T23:59:56.790000Z',
               bookingRecapSent: null,
               dateModified: '2018-10-29T09:44:38.752035Z',
@@ -270,7 +270,7 @@ const state = {
               price: 10,
             },
             {
-              available: 100,
+              quantity: 100,
               bookingLimitDatetime: '2018-12-24T23:59:56.790000Z',
               bookingRecapSent: null,
               dateModified: '2018-10-29T09:44:38.808864Z',
@@ -287,7 +287,7 @@ const state = {
               price: 10,
             },
             {
-              available: 90,
+              quantity: 90,
               bookingLimitDatetime: '2018-12-23T23:59:56.790000Z',
               bookingRecapSent: null,
               dateModified: '2018-10-29T09:44:38.848728Z',
@@ -354,7 +354,7 @@ const state = {
     ],
     stocks: [
       {
-        available: 10,
+        quantity: 10,
         bookingLimitDatetime: '2018-11-27T23:59:56.790000Z',
         bookingRecapSent: null,
         dateModified: '2018-10-29T09:44:38.649450Z',
