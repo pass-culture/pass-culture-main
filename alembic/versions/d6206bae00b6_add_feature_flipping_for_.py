@@ -79,7 +79,7 @@ def upgrade():
                ' USING name::TEXT::FEATURETOGGLE')
     op.execute("""
         INSERT INTO feature (name, description, "isActive")
-        VALUES ('%s', '%s', FALSE);
+        VALUES ('%s', '%s', TRUE);
         """ % (
         FeatureToggle.RECOMMENDATIONS.name, FeatureToggle.RECOMMENDATIONS.value))
     temporary_enum.drop(op.get_bind(), checkfirst=False)
