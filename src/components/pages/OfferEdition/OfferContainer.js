@@ -6,13 +6,13 @@ import Offer from './Offer'
 import { withRequiredLogin } from '../../hocs'
 import withTracking from '../../hocs/withTracking'
 
-import selectFormInitialValuesByProductAndOfferAndOffererAndVenue from './utils/selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
+import selectFormInitialValuesByProductAndOfferAndOffererAndVenue from '../../../selectors/selectFormInitialValuesByProductAndOfferAndOffererAndVenue'
 import { selectOffererById } from '../../../selectors/data/offerersSelectors'
 import { selectProductById } from '../../../selectors/data/productsSelectors'
 import { selectMusicSubOptionsByMusicType } from '../../../utils/selectMusicSubOptionsByMusicType'
 import selectShowSubOptionsByShowType from '../../../utils/selectShowSubOptionsByShowType'
 import { selectTypesByIsVenueVirtual } from '../../../selectors/data/typesSelectors'
-import selectTypeByIsVenueVirtualAndOfferTypeValue from './selectTypeByIsVenueVirtualAndOfferTypeValue'
+import selectTypeByIsVenueVirtualAndOfferTypeValue from '../../../selectors/selectTypeByIsVenueVirtualAndOfferTypeValue'
 import {
   selectVenueById,
   selectVenuesByOffererIdAndOfferType,

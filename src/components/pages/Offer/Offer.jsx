@@ -16,8 +16,8 @@ import ReactToolTip from 'react-tooltip'
 import { NavLink } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
-import MediationsManager from './MediationsManager/MediationsManagerContainer'
-import StocksManagerContainer from './StocksManager/StocksManagerContainer'
+import MediationsManager from '../../layout/MediationsManager/MediationsManagerContainer'
+import StocksManagerContainer from '../../layout/StocksManager/StocksManagerContainer'
 import Titles from '../../layout/Titles/Titles'
 import Main from '../../layout/Main'
 import { musicOptions, showOptions } from '../../../utils/edd'
@@ -26,16 +26,16 @@ import { offerNormalizer } from '../../../utils/normalizers'
 import { OFFERERS_API_PATH } from '../../../config/apiPaths'
 import { CGU_URL } from '../../../utils/config'
 
-import { getDurationInHours, getDurationInMinutes } from './utils/duration'
-import isAllocineOffer from './utils/isAllocineOffer'
+import { getDurationInHours, getDurationInMinutes } from '../../utils/OfferAndOfferEdition/duration'
+import isAllocineOffer from '../../utils/OfferAndOfferEdition/isAllocineOffer'
 import isLibrairesOffer from './utils/isLibrairesOffer'
-import isTiteLiveOffer from './utils/isTiteLiveOffer'
-import LocalProviderInformation from './LocalProviderInformation/LocalProviderInformationContainer'
+import isTiteLiveOffer from '../../utils/OfferAndOfferEdition/isTiteLiveOffer'
+import LocalProviderInformation from '../../layout/LocalProviderInformation/LocalProviderInformationContainer'
 import { buildWebappDiscoveryUrl } from '../../layout/OfferPreviewLink/buildWebappDiscoveryUrl'
 import OfferPreviewLink from '../../layout/OfferPreviewLink/OfferPreviewLink'
 import Insert from '../../layout/Insert/Insert'
 
-import offerIsRefundable from './domain/offerIsRefundable'
+import offerIsRefundable from '../domain/offerIsRefundable'
 
 const DURATION_LIMIT_TIME = 100
 

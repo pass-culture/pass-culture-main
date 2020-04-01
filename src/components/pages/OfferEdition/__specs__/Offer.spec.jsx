@@ -3,12 +3,12 @@ import { shallow } from 'enzyme'
 import { Field, Form, showModal } from 'pass-culture-shared'
 
 import Offer from '../Offer'
-import MediationsManager from '../MediationsManager/MediationsManagerContainer'
+import MediationsManager from '../../../layout/MediationsManager/MediationsManagerContainer'
 import Titles from '../../../layout/Titles/Titles'
-import LocalProviderInformation from '../LocalProviderInformation/LocalProviderInformationContainer'
+import LocalProviderInformation from '../../../layout/LocalProviderInformation/LocalProviderInformationContainer'
 import { VenueName } from '../VenueName'
 import { OffererName } from '../OffererName'
-import StocksManagerContainer from '../../Offer/StocksManager/StocksManagerContainer'
+import StocksManagerContainer from '../../../layout/StocksManager/StocksManagerContainer'
 
 describe('components | OfferEdition | Offer ', () => {
   let dispatch

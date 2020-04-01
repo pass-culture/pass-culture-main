@@ -5,9 +5,9 @@ import { showModal } from '../../../../reducers/modal'
 
 import Titles from '../../../layout/Titles/Titles'
 import Offer from '../Offer'
-import MediationsManager from '../MediationsManager/MediationsManagerContainer'
-import LocalProviderInformation from '../LocalProviderInformation/LocalProviderInformationContainer'
-import StocksManagerContainer from '../StocksManager/StocksManagerContainer'
+import MediationsManager from '../../../layout/MediationsManager/MediationsManagerContainer'
+import LocalProviderInformation from '../../../layout/LocalProviderInformation/LocalProviderInformationContainer'
+import StocksManagerContainer from '../../../layout/StocksManager/StocksManagerContainer'
 
 describe('src | components | pages | Offer | Offer ', () => {
   let dispatch
