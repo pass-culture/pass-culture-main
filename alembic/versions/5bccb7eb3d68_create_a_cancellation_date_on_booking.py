@@ -22,13 +22,14 @@ def upgrade():
         BEGIN TRANSACTION;
             CREATE OR REPLACE FUNCTION save_cancellation_date()
             RETURNS TRIGGER AS $$
-            BEGIN
-                NEW."cancellationDate" = null;
-                IF NEW."isCancelled" IS TRUE AND NEW."isCancelled" != OLD."isCancelled" THEN
-                    NEW."cancellationDate" = NOW();
-                END IF;
-                RETURN NEW;
-            END;
+                BEGIN
+                    IF NEW."isCancelled" IS TRUE AND OLD."cancellationDate" IS NULL THEN
+                        NEW."cancellationDate" = NOW();
+                    ELSIF NEW."isCancelled" IS FALSE THEN
+                        NEW."cancellationDate" = null;
+                    END IF;
+                    RETURN NEW;
+                END;
             $$ LANGUAGE plpgsql;
         
             DROP TRIGGER IF EXISTS stock_update_cancellation_date ON booking;
