@@ -60,10 +60,7 @@ class DeleteStockAndCancelBookingsTest:
         class WhenLessThan48HoursAfterItEnds:
             def setup_method(self, method):
                 now = datetime.utcnow()
-                self.stock = create_stock(
-                    beginning_datetime=now - timedelta(days=1),
-                    is_soft_deleted=False
-                )
+                self.stock = create_stock(beginning_datetime=now - timedelta(days=1), is_soft_deleted=False)
 
             def test_the_stock_is_soft_deleted(self):
                 # when
@@ -104,10 +101,7 @@ class DeleteStockAndCancelBookingsTest:
         class WhenMoreThan48HoursAfterItEnds:
             def setup_method(self, method):
                 now = datetime.utcnow()
-                self.stock = create_stock(
-                    beginning_datetime=now - timedelta(days=4),
-                    is_soft_deleted=False
-                )
+                self.stock = create_stock(beginning_datetime=now - timedelta(days=4), is_soft_deleted=False)
 
             def test_the_stock_is_not_soft_deleted(self):
                 # when

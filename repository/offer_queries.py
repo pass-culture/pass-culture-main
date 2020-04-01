@@ -394,7 +394,7 @@ def _offer_has_bookable_stocks():
         .filter(stock_can_still_be_booked) \
         .filter(event_has_not_began_yet | offer_is_on_a_thing) \
         .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId) \
-        .filter((Stock.available == None) | ((Stock.available - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+        .filter((Stock.quantity == None) | ((Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
         .exists()
 
 
@@ -440,8 +440,8 @@ def _filter_bookable_stocks_for_discovery(stocks_query):
     has_no_booking_limit_date_predicate = (Stock.bookingLimitDatetime == None)
     is_not_soft_deleted_predicate = (Stock.isSoftDeleted == False)
     bookings_quantity = _build_bookings_quantity_subquery()
-    has_remaining_stock = (Stock.available == None) | (
-                (Stock.available - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)
+    has_remaining_stock = (Stock.quantity == None) | (
+            (Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)
 
     stocks_query = stocks_query.outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId) \
         .filter(is_not_soft_deleted_predicate

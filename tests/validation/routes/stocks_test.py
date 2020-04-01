@@ -279,7 +279,7 @@ class CheckStockIsUpdatableTest:
         venue = create_venue(offerer)
         provider = get_provider_by_local_class('TiteLiveStocks')
         offer = create_offer_with_thing_product(venue, last_provider_id=provider.id, last_provider=provider)
-        stock = create_stock(offer=offer, available=10, id_at_providers='test')
+        stock = create_stock(quantity=10, id_at_providers='test', offer=offer)
 
         repository.save(stock)
 
@@ -299,7 +299,7 @@ class CheckStockIsUpdatableTest:
         venue = create_venue(offerer)
         provider = get_provider_by_local_class('LibrairesStocks')
         offer = create_offer_with_thing_product(venue, last_provider_id=provider.id, last_provider=provider)
-        stock = create_stock(offer=offer, available=10, id_at_providers='test')
+        stock = create_stock(quantity=10, id_at_providers='test', offer=offer)
 
         repository.save(stock)
 
@@ -318,7 +318,7 @@ class CheckStockIsUpdatableTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, available=10)
+        stock = create_stock(quantity=10, offer=offer)
 
         # When
         try:
@@ -335,7 +335,7 @@ class CheckStockIsUpdatableTest:
         venue = create_venue(offerer)
         provider = get_provider_by_local_class('AllocineStocks')
         offer = create_offer_with_thing_product(venue, last_provider_id=provider.id)
-        stock = create_stock(offer=offer, available=10, id_at_providers='test')
+        stock = create_stock(quantity=10, id_at_providers='test', offer=offer)
 
         repository.save(stock)
 

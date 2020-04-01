@@ -20,9 +20,9 @@ class GetAllUsersWalletBalancesTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock1 = create_stock(price=20, offer=offer)
-        stock2 = create_stock(price=30, offer=offer)
-        stock3 = create_stock(price=40, offer=offer)
+        stock1 = create_stock(offer=offer, price=20)
+        stock2 = create_stock(offer=offer, price=30)
+        stock3 = create_stock(offer=offer, price=40)
         repository.save(stock1, stock2, stock3, user1, user2)
 
         _create_balances_for_user2(stock3, user2, venue)
@@ -43,7 +43,7 @@ class GetAllUsersWalletBalancesTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock3 = create_stock(price=40, offer=offer)
+        stock3 = create_stock(offer=offer, price=40)
         repository.save(stock3, user1, user2)
 
         _create_balances_for_user2(stock3, user2, venue)
@@ -62,9 +62,9 @@ class GetAllUsersWalletBalancesTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock1 = create_stock(price=20, offer=offer)
-        stock2 = create_stock(price=30, offer=offer)
-        stock3 = create_stock(price=40, offer=offer)
+        stock1 = create_stock(offer=offer, price=20)
+        stock2 = create_stock(offer=offer, price=30)
+        stock3 = create_stock(offer=offer, price=40)
         repository.save(stock1, stock2, stock3, user1, user2)
 
         _create_balances_for_user1(stock1, stock2, stock3, user1, venue)
@@ -85,9 +85,9 @@ class GetAllUsersWalletBalancesTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock1 = create_stock(price=20, offer=offer)
-        stock2 = create_stock(price=30, offer=offer)
-        stock3 = create_stock(price=40, offer=offer)
+        stock1 = create_stock(offer=offer, price=20)
+        stock2 = create_stock(offer=offer, price=30)
+        stock3 = create_stock(offer=offer, price=40)
         repository.save(stock1, stock2, stock3, user1, user2)
 
         _create_balances_for_user1(stock1, stock2, stock3, user1, venue)
@@ -385,8 +385,8 @@ class CountUsersHavingBookedTest:
         offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
         offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1, price=0)
-        stock2 = create_stock(offer=offer2, price=0, booking_limit_datetime=tomorrow,
-                              beginning_datetime=tomorrow + timedelta(hours=1))
+        stock2 = create_stock(booking_limit_datetime=tomorrow, beginning_datetime=tomorrow + timedelta(hours=1),
+                              offer=offer2, price=0)
         booking1 = create_booking(user=user1, stock=stock1)
         booking2 = create_booking(user=user2, stock=stock2)
         repository.save(booking1, booking2)

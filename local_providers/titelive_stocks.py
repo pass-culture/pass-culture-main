@@ -57,7 +57,7 @@ class TiteLiveStocks(LocalProvider):
     def fill_stock_attributes(self, stock: Stock, stock_information: dict):
         bookings_quantity = count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
         stock.price = int(stock_information['price']) / PRICE_DIVIDER_TO_EURO
-        stock.available = int(stock_information['available']) + bookings_quantity
+        stock.quantity = int(stock_information['available']) + bookings_quantity
         stock.bookingLimitDatetime = None
         stock.offerId = self.offer_id
         stock.dateModified = datetime.now()

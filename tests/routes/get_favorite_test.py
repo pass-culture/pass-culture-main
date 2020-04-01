@@ -45,7 +45,7 @@ class Get:
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
             favorite = create_favorite(mediation=mediation, offer=offer, user=user)
-            stock = create_stock(price=0, offer=offer)
+            stock = create_stock(offer=offer, price=0)
             booking = create_booking(user=user, stock=stock)
             repository.save(booking, favorite)
             url = f'{API_URL}/favorites/{humanize(favorite.id)}'

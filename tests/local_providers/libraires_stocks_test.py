@@ -86,7 +86,7 @@ class LibrairesStocksTest:
             assert offer.extraData == product.extraData
 
             assert stock.price == 16.5
-            assert stock.available == 10
+            assert stock.quantity == 10
             assert stock.bookingLimitDatetime is None
 
         @clean_database
@@ -109,7 +109,7 @@ class LibrairesStocksTest:
             product = create_product_with_thing_type(id_at_providers='9780199536986')
             offer = create_offer_with_thing_product(venue, product=product,
                                                     id_at_providers='9780199536986@12345678912345')
-            stock = create_stock(offer=offer, id_at_providers='9780199536986@12345678912345', available=20)
+            stock = create_stock(quantity=20, id_at_providers='9780199536986@12345678912345', offer=offer)
 
             repository.save(product, offer, stock)
             libraires_stocks = LibrairesStocks(venue_provider)
@@ -119,7 +119,7 @@ class LibrairesStocksTest:
 
             # Then
             stock = Stock.query.one()
-            assert stock.available == 10
+            assert stock.quantity == 10
             assert Offer.query.count() == 1
 
         @clean_database
@@ -144,7 +144,7 @@ class LibrairesStocksTest:
 
             offer = create_offer_with_thing_product(venue, product=product,
                                                     id_at_providers='9780199536986@12345678912345')
-            stock = create_stock(offer=offer, id_at_providers='9780199536986@12345678912345')
+            stock = create_stock(id_at_providers='9780199536986@12345678912345', offer=offer)
             repository.save(product, venue_provider, stock)
 
             libraires_stocks = LibrairesStocks(venue_provider)
@@ -179,7 +179,7 @@ class LibrairesStocksTest:
 
             offer = create_offer_with_thing_product(venue, product=product, is_active=False,
                                                     id_at_providers='9780199536986@12345678912345')
-            stock = create_stock(offer=offer, id_at_providers='9780199536986@12345678912345', available=0)
+            stock = create_stock(quantity=0, id_at_providers='9780199536986@12345678912345', offer=offer)
             repository.save(offer, stock, product, venue_provider, libraires_stocks_provider)
 
             libraires_stocks = LibrairesStocks(venue_provider)
@@ -254,7 +254,7 @@ class LibrairesStocksTest:
             offer = create_offer_with_thing_product(venue, product=product,
                                                     id_at_providers='9780199536986@12345678912345')
 
-            stock = create_stock(offer=offer, id_at_providers='9780199536986@12345678912345', available=20, price=0)
+            stock = create_stock(quantity=20, id_at_providers='9780199536986@12345678912345', offer=offer, price=0)
 
             booking = create_booking(
                 user=create_user(),
@@ -277,7 +277,7 @@ class LibrairesStocksTest:
 
             # Then
             stock = Stock.query.one()
-            assert stock.available == 67
+            assert stock.quantity == 67
 
 
     class WhenSynchronizedTwiceTest:

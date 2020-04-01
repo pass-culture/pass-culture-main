@@ -55,7 +55,7 @@ class SerializeBookingTest:
         product = create_product_with_thing_type(thing_name='Event Name', thing_type=ThingType.CINEMA_ABO,
                                                  extra_data={'isbn': '123456789'})
         offer = create_offer_with_thing_product(venue, product=product, idx=999)
-        stock = create_stock(price=12, offer=offer)
+        stock = create_stock(offer=offer, price=12)
         booking = create_booking(user=user, quantity=3, stock=stock, venue=venue)
 
         # When
@@ -90,7 +90,7 @@ class SerializeBookingTest:
         product = create_product_with_thing_type(thing_name='Event Name', thing_type=ThingType.CINEMA_ABO,
                                                  extra_data={})
         offer = create_offer_with_thing_product(venue, product=product, idx=999)
-        stock = create_stock(price=12, offer=offer)
+        stock = create_stock(offer=offer, price=12)
         booking = create_booking(user=user, quantity=3, stock=stock, venue=venue)
 
         # When

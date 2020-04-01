@@ -17,11 +17,9 @@ class Get:
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
-            stock = create_stock_with_thing_offer(
-                offerer=offerer, venue=venue, offer=offer, price=0)
+            stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, offer=offer, price=0)
             offer2 = create_offer_with_thing_product(venue)
-            stock2 = create_stock_with_thing_offer(
-                offerer=offerer, venue=venue, offer=offer2, price=0)
+            stock2 = create_stock_with_thing_offer(offerer=offerer, venue=venue, offer=offer2, price=0)
             booking1 = create_booking(user=user1, stock=stock, token='ABCDEF', venue=venue)
             booking2 = create_booking(user=user2, stock=stock, token='GHIJK', venue=venue)
             booking3 = create_booking(user=user1, stock=stock2, token='BBBBB', venue=venue)

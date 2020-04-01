@@ -123,9 +123,7 @@ class Get:
             offer = create_offer_with_event_product(venue, event_name='Training in Modern Jazz')
             mediation = create_mediation(offer)
             recommendation = create_recommendation(offer, user)
-            stock = create_stock_from_offer(
-                offer, beginning_datetime=TEN_DAYS_FROM_NOW
-            )
+            stock = create_stock_from_offer(offer, beginning_datetime=TEN_DAYS_FROM_NOW)
             repository.save(stock, recommendation)
 
             # when
@@ -378,12 +376,9 @@ class Get:
             event_occurrence2 = create_event_occurrence(offer1)
             event_occurrence3 = create_event_occurrence(offer2)
 
-            stock1 = create_stock_from_event_occurrence(
-                event_occurrence1, price=10, soft_deleted=False)
-            stock2 = create_stock_from_event_occurrence(
-                event_occurrence2, price=20, soft_deleted=True)
-            stock3 = create_stock_from_event_occurrence(
-                event_occurrence3, price=30, soft_deleted=True)
+            stock1 = create_stock_from_event_occurrence(event_occurrence1, price=10, soft_deleted=False)
+            stock2 = create_stock_from_event_occurrence(event_occurrence2, price=20, soft_deleted=True)
+            stock3 = create_stock_from_event_occurrence(event_occurrence3, price=30, soft_deleted=True)
 
             repository.save(stock1, stock2, stock3,
                             recommendation1, recommendation2)
@@ -435,12 +430,9 @@ class Get:
             recommendation = create_recommendation(offer1, user)
             recommendation2 = create_recommendation(offer2, user)
             recommendation3 = create_recommendation(offer3, user)
-            stock = create_stock_from_offer(offer1,
-                                            beginning_datetime=TEN_DAYS_FROM_NOW)
-            stock2 = create_stock_from_offer(offer2,
-                                             beginning_datetime=TEN_DAYS_FROM_NOW)
-            stock3 = create_stock_from_offer(offer3,
-                                             beginning_datetime=TEN_DAYS_FROM_NOW)
+            stock = create_stock_from_offer(offer1, beginning_datetime=TEN_DAYS_FROM_NOW)
+            stock2 = create_stock_from_offer(offer2, beginning_datetime=TEN_DAYS_FROM_NOW)
+            stock3 = create_stock_from_offer(offer3, beginning_datetime=TEN_DAYS_FROM_NOW)
             repository.save(stock, recommendation, stock2,
                             recommendation2, stock3, recommendation3)
 
@@ -509,8 +501,7 @@ class Get:
             recommendation3 = create_recommendation(offer2, user)
             stock = create_stock_from_event_occurrence(event_occurrence)
             stock1 = create_stock_from_offer(offer2)
-            thing_stock = create_stock(
-                price=12, available=5, offer=thing_offer)
+            thing_stock = create_stock(quantity=5, offer=thing_offer, price=12)
             repository.save(stock, recommendation, recommendation2,
                             recommendation3, thing_stock, stock1)
 
@@ -679,12 +670,9 @@ class Get:
             activation_recommendation = create_recommendation(
                 activation_event_offer, user)
 
-            cinema_event_occurence_stock = create_stock_from_event_occurrence(
-                cinema_event_occurrence)
-            activation_event_occurence_stock = create_stock_from_event_occurrence(
-                activation_event_occurrence)
-            book_thing_stock = create_stock(
-                price=12, available=5, offer=book_thing_offer)
+            cinema_event_occurence_stock = create_stock_from_event_occurrence(cinema_event_occurrence)
+            activation_event_occurence_stock = create_stock_from_event_occurrence(activation_event_occurrence)
+            book_thing_stock = create_stock(quantity=5, offer=book_thing_offer, price=12)
 
             repository.save(cinema_recommendation, book_recommendation, activation_recommendation,
                             cinema_event_occurence_stock, activation_event_occurence_stock, book_thing_stock)
@@ -746,7 +734,7 @@ class Get:
             recommendation = create_recommendation(offer, user)
             recommendation2 = create_recommendation(thingOffer, user)
             stock = create_stock_from_event_occurrence(event_occurrence)
-            thing_stock = create_stock(price=12, available=5, offer=thingOffer)
+            thing_stock = create_stock(quantity=5, offer=thingOffer, price=12)
             repository.save(stock, recommendation,
                             recommendation2, thing_stock)
 

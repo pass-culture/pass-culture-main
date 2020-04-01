@@ -97,7 +97,7 @@ def create_stock_activity(stock, verb, issued_at=datetime.utcnow, data=None):
 
     base_data = {
         'id': stock.id,
-        'available': stock.available
+        'quantity': stock.quantity
     }
 
     if verb.lower() == 'insert':

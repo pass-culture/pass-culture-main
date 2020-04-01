@@ -374,7 +374,8 @@ class Patch:
                 offerer = create_offerer()
                 admin_user_offerer = create_user_offerer(admin_user, offerer)
                 venue = create_venue(offerer)
-                activation_offer_stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
+                activation_offer_stock = create_stock_with_event_offer(offerer, venue, price=0,
+                                                                       event_type=EventType.ACTIVATION)
 
                 booking = create_booking(user=user, stock=activation_offer_stock, venue=venue)
 

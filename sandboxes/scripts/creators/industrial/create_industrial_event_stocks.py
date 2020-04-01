@@ -42,11 +42,8 @@ def create_industrial_event_stocks(event_occurrences_by_name):
 
         name = event_occurrence_with_stocks_name + " / " + str(available) + " / " + str(price)
 
-        event_stocks_by_name[name] = create_stock_from_event_occurrence(
-            event_occurrence_with_stocks,
-            available=available,
-            price=price
-        )
+        event_stocks_by_name[name] = create_stock_from_event_occurrence(event_occurrence_with_stocks, price=price,
+                                                                        quantity=available)
 
     repository.save(*event_stocks_by_name.values())
 

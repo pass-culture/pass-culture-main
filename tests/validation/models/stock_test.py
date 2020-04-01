@@ -7,19 +7,19 @@ from validation.models.stock import validate
 
 def test_should_return_error_message_when_stock_is_negative():
     # Given
-    stock = create_stock(available=-1)
+    stock = create_stock(quantity=-1)
     api_errors = ApiErrors()
 
     # When
     api_error = validate(stock, api_errors)
 
     # Then
-    assert api_error.errors['available'] == ['Le stock doit être positif']
+    assert api_error.errors['quantity'] == ['Le stock doit être positif']
 
 
 def test_should_not_return_error_message_when_stock_is_positive():
     # Given
-    stock = create_stock(available=1)
+    stock = create_stock(quantity=1)
     api_errors = ApiErrors()
 
     # When
@@ -31,7 +31,7 @@ def test_should_not_return_error_message_when_stock_is_positive():
 
 def test_should_not_return_error_message_when_stock_is_unlimited():
     # Given
-    stock = create_stock(available=None)
+    stock = create_stock(quantity=None)
     api_errors = ApiErrors()
 
     # When

@@ -65,6 +65,6 @@ def _create_allocine_venue_provider(allocine_theater_id: str, payload: Dict, ven
     allocine_venue_provider.providerId = dehumanize(payload['providerId'])
     allocine_venue_provider.venueIdAtOfferProvider = allocine_theater_id
     allocine_venue_provider.isDuo = payload.get('isDuo')
-    allocine_venue_provider.available = payload.get('available')
+    allocine_venue_provider.quantity = payload.get('quantity')
 
     return allocine_venue_provider

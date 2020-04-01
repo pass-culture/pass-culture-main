@@ -351,7 +351,7 @@ def test_find_filtered_venues_with_offer_status_with_VALID_param_return_filtered
                                                       beginning_datetime=datetime(2018, 2, 1))
 
     valid_stock = create_stock_with_thing_offer(offerer, venue_with_valid_thing, valid_thing)
-    expired_stock = create_stock_with_thing_offer(offerer, venue_with_expired_thing, expired_thing, available=0)
+    expired_stock = create_stock_with_thing_offer(offerer, venue_with_expired_thing, expired_thing, quantity=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer, venue_with_soft_deleted_thing, soft_deleted_thing,
                                                              soft_deleted=True)
 
@@ -364,8 +364,7 @@ def test_find_filtered_venues_with_offer_status_with_VALID_param_return_filtered
                                                                   soft_deleted=True,
                                                                   booking_limit_date=datetime.utcnow() + timedelta(
                                                                       days=3))
-    not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available,
-                                                                   available=0,
+    not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available, quantity=0,
                                                                    booking_limit_date=datetime.utcnow() + timedelta(
                                                                        days=3))
 
@@ -422,7 +421,7 @@ def test_find_filtered_venues_with_offer_status_with_EXPIRED_param_return_filter
                                                       beginning_datetime=datetime(2018, 2, 1))
 
     valid_stock = create_stock_with_thing_offer(offerer, venue_with_valid_thing, valid_thing)
-    expired_stock = create_stock_with_thing_offer(offerer, venue_with_expired_thing, expired_thing, available=0)
+    expired_stock = create_stock_with_thing_offer(offerer, venue_with_expired_thing, expired_thing, quantity=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer, venue_with_soft_deleted_thing, soft_deleted_thing,
                                                              soft_deleted=True)
 
@@ -435,8 +434,7 @@ def test_find_filtered_venues_with_offer_status_with_EXPIRED_param_return_filter
                                                                   soft_deleted=True,
                                                                   booking_limit_date=datetime.utcnow() + timedelta(
                                                                       days=3))
-    not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available,
-                                                                   available=0,
+    not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available, quantity=0,
                                                                    booking_limit_date=datetime.utcnow() + timedelta(
                                                                        days=3))
 
@@ -493,7 +491,7 @@ def test_find_filtered_venues_with_offer_status_with_WITHOUT_param_return_filter
                                                       beginning_datetime=datetime(2018, 2, 1))
 
     valid_stock = create_stock_with_thing_offer(offerer, venue_with_valid_thing, valid_thing)
-    expired_stock = create_stock_with_thing_offer(offerer, venue_with_expired_thing, expired_thing, available=0)
+    expired_stock = create_stock_with_thing_offer(offerer, venue_with_expired_thing, expired_thing, quantity=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer, venue_with_soft_deleted_thing, soft_deleted_thing,
                                                              soft_deleted=True)
 
@@ -506,8 +504,7 @@ def test_find_filtered_venues_with_offer_status_with_WITHOUT_param_return_filter
                                                                   soft_deleted=True,
                                                                   booking_limit_date=datetime.utcnow() + timedelta(
                                                                       days=3))
-    not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available,
-                                                                   available=0,
+    not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available, quantity=0,
                                                                    booking_limit_date=datetime.utcnow() + timedelta(
                                                                        days=3))
 
@@ -564,7 +561,7 @@ def test_find_filtered_venues_with_offer_status_with_ALL_param_return_filtered_v
                                                       beginning_datetime=datetime(2018, 2, 1))
 
     valid_stock = create_stock_with_thing_offer(offerer, venue_with_valid_thing, valid_thing)
-    expired_stock = create_stock_with_thing_offer(offerer, venue_with_expired_thing, expired_thing, available=0)
+    expired_stock = create_stock_with_thing_offer(offerer, venue_with_expired_thing, expired_thing, quantity=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer, venue_with_soft_deleted_thing, soft_deleted_thing,
                                                              soft_deleted=True)
 
@@ -577,8 +574,7 @@ def test_find_filtered_venues_with_offer_status_with_ALL_param_return_filtered_v
                                                                   soft_deleted=True,
                                                                   booking_limit_date=datetime.utcnow() + timedelta(
                                                                       days=3))
-    not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available,
-                                                                   available=0,
+    not_available_event_stock = create_stock_from_event_occurrence(valid_event_occurrence_not_available, quantity=0,
                                                                    booking_limit_date=datetime.utcnow() + timedelta(
                                                                        days=3))
 

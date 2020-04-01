@@ -202,7 +202,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTest:
         user = create_user()
         venue = create_venue(offerer, validation_token='XDFCGHVJBK')
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, beginning_datetime=yesterday)
+        stock = create_stock(beginning_datetime=yesterday, offer=offer)
         repository.save(stock)
 
         # When
@@ -452,7 +452,7 @@ class GetOfferersWithOfferAvailableOnDiscoveryCountTestV2:
         offerer = create_offerer()
         venue = create_venue(offerer, validation_token='XDFCGHVJBK')
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, beginning_datetime=yesterday)
+        stock = create_stock(beginning_datetime=yesterday, offer=offer)
         repository.save(stock)
         DiscoveryView.refresh(concurrently=False)
 
@@ -996,8 +996,8 @@ class GetOffersWithUserOffererAndStockCountTest:
         offer1 = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
         offer2 = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
         stock1 = create_stock(offer=offer1)
-        stock2 = create_stock(offer=offer2, booking_limit_datetime=tomorrow,
-                              beginning_datetime=tomorrow + timedelta(hours=1))
+        stock2 = create_stock(booking_limit_datetime=tomorrow, beginning_datetime=tomorrow + timedelta(hours=1),
+                              offer=offer2)
         repository.save(stock1, stock2, user_offerer)
 
         # When
@@ -1098,7 +1098,7 @@ class GetOffersAvailableOnDiscoveryCountTest:
         user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, beginning_datetime=yesterday)
+        stock = create_stock(beginning_datetime=yesterday, offer=offer)
         repository.save(stock)
 
         # When
@@ -1357,7 +1357,7 @@ class GetOffersAvailableOnDiscoveryCountV2Test:
         user = create_user()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, beginning_datetime=yesterday)
+        stock = create_stock(beginning_datetime=yesterday, offer=offer)
         repository.save(stock)
         DiscoveryView.refresh(concurrently=False)
 

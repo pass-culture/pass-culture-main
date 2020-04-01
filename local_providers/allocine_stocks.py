@@ -27,7 +27,7 @@ ORIGINAL_VERSION_SUFFIX = 'VO'
 class AllocineStocks(LocalProvider):
     name = "Allociné"
     can_create = True
-    manually_editable_fields = ['available', 'price', 'bookingLimitDatetime']
+    manually_editable_fields = ['quantity', 'price', 'bookingLimitDatetime']
 
     def __init__(self, allocine_venue_provider: AllocineVenueProvider):
         super().__init__(allocine_venue_provider)
@@ -36,7 +36,7 @@ class AllocineStocks(LocalProvider):
         self.theater_id = allocine_venue_provider.venueIdAtOfferProvider
         self.movies_showtimes = get_movies_showtimes(self.api_key, self.theater_id)
         self.isDuo = allocine_venue_provider.isDuo
-        self.available = allocine_venue_provider.available
+        self.quantity = allocine_venue_provider.quantity
 
         self.movie_information = None
         self.filtered_movie_showtimes = None
@@ -170,8 +170,8 @@ class AllocineStocks(LocalProvider):
         if 'bookingLimitDatetime' not in allocine_stock.fieldsUpdated:
             allocine_stock.bookingLimitDatetime = date_in_utc
 
-        if 'available' not in allocine_stock.fieldsUpdated:
-            allocine_stock.available = self.available
+        if 'quantity' not in allocine_stock.fieldsUpdated:
+            allocine_stock.quantity = self.quantity
 
         if 'price' not in allocine_stock.fieldsUpdated:
             allocine_stock.price = self.apply_allocine_price_rule(allocine_stock)

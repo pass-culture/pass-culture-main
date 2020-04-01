@@ -76,7 +76,7 @@ class GetOffersForRecommendationV3Test:
             venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
                                  latitude=49.894171)
             offer = create_offer_with_thing_product(venue=venue, product=product)
-            stock = create_stock_from_offer(offer, available=2)
+            stock = create_stock_from_offer(offer, quantity=2)
             create_mediation(stock.offer)
 
             repository.save(user, stock)
@@ -119,15 +119,11 @@ class GetOffersForRecommendationV3Test:
             venue = create_venue(offerer, postal_code='34000', departement_code='34')
 
             stock1 = create_stock_with_thing_offer(offerer, venue, name='thing')
-            stock2 = create_stock_with_event_offer(offerer,
-                                                   venue,
+            stock2 = create_stock_with_event_offer(offerer, venue, name='event_occurs_soon',
                                                    beginning_datetime=datetime.utcnow() + timedelta(days=4),
-                                                   name='event_occurs_soon',
                                                    thumb_count=1)
-            stock3 = create_stock_with_event_offer(offerer,
-                                                   venue,
+            stock3 = create_stock_with_event_offer(offerer, venue, name='event_occurs_later',
                                                    beginning_datetime=datetime.utcnow() + timedelta(days=11),
-                                                   name='event_occurs_later',
                                                    thumb_count=1)
             create_mediation(stock1.offer)
             create_mediation(stock2.offer)
@@ -155,8 +151,8 @@ class GetOffersForRecommendationV3Test:
             user = create_user()
             venue = create_venue(offerer, postal_code='34000', departement_code='34')
             stock1 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
-            stock2 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.CINEMA_ABO,
-                                                   url='http://example.com')
+            stock2 = create_stock_with_thing_offer(offerer, venue, name='thing', url='http://example.com',
+                                                   thing_type=ThingType.CINEMA_ABO)
             stock3 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
             stock4 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
             stock5 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.AUDIOVISUEL)
@@ -191,7 +187,7 @@ class GetOffersForRecommendationV3Test:
             user = create_user()
             venue = create_venue(offerer, postal_code='34000', departement_code='34')
             offer = create_offer_with_thing_product(venue=venue, product=product)
-            stock = create_stock_from_offer(offer, available=2, price=0)
+            stock = create_stock_from_offer(offer, price=0, quantity=2)
             booking1 = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
             booking2 = create_booking(user=user, stock=stock, quantity=2, venue=venue)
             create_mediation(stock.offer)
@@ -276,7 +272,7 @@ class GetOffersForRecommendationV3Test:
             venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
                                  latitude=49.894171)
             offer = create_offer_with_thing_product(venue=venue, product=product)
-            stock = create_stock_from_offer(offer, available=2, soft_deleted=True)
+            stock = create_stock_from_offer(offer, quantity=2, soft_deleted=True)
             create_mediation(stock.offer)
 
             repository.save(user, stock)
@@ -298,7 +294,7 @@ class GetOffersForRecommendationV3Test:
             venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
                                  latitude=49.894171, validation_token='nimportequoi')
             offer = create_offer_with_thing_product(venue=venue, product=product)
-            stock = create_stock_from_offer(offer, available=2)
+            stock = create_stock_from_offer(offer, quantity=2)
             create_mediation(stock.offer)
 
             repository.save(user, stock)
@@ -320,7 +316,7 @@ class GetOffersForRecommendationV3Test:
             venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
                                  latitude=49.894171)
             offer = create_offer_with_thing_product(venue=venue, product=product)
-            stock = create_stock_from_offer(offer, available=2)
+            stock = create_stock_from_offer(offer, quantity=2)
             create_mediation(stock.offer)
 
             repository.save(user, stock)
@@ -343,7 +339,7 @@ class GetOffersForRecommendationV3Test:
                                  latitude=49.894171)
             offer = create_offer_with_thing_product(venue=venue, product=product)
             one_day_ago = datetime.utcnow() - timedelta(days=1)
-            stock = create_stock_from_offer(offer, available=2, booking_limit_datetime=one_day_ago)
+            stock = create_stock_from_offer(offer, quantity=2, booking_limit_datetime=one_day_ago)
             create_mediation(stock.offer)
 
             repository.save(user, stock)

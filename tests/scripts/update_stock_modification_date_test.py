@@ -18,14 +18,14 @@ class UpdateStockModificationDateTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, available=10, date_modified=datetime(2019, 10, 13))
+        stock = create_stock(quantity=10, date_modified=datetime(2019, 10, 13), offer=offer)
         repository.save(stock)
 
         activity = create_stock_activity(
             stock=stock,
             verb='update',
             issued_at=datetime(2019, 10, 21),
-            data={"available": 32}
+            data={"quantity": 32}
         )
         save_all_activities(activity)
 
@@ -44,21 +44,21 @@ class UpdateStockModificationDateTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, available=10, date_modified=datetime(2019, 10, 13))
+        stock = create_stock(quantity=10, date_modified=datetime(2019, 10, 13), offer=offer)
         repository.save(stock)
 
         first_activity = create_stock_activity(
             stock=stock,
             verb='update',
             issued_at=datetime(2019, 10, 21),
-            data={"available": 32}
+            data={"quantity": 32}
         )
 
         second_activity = create_stock_activity(
             stock=stock,
             verb='update',
             issued_at=datetime(2019, 12, 25),
-            data={"available": 32}
+            data={"quantity": 32}
         )
         save_all_activities(first_activity, second_activity)
 
@@ -77,22 +77,22 @@ class UpdateStockModificationDateTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        first_stock = create_stock(offer=offer, available=10, date_modified=datetime(2019, 10, 13))
-        second_stock = create_stock(offer=offer, available=10, date_modified=datetime(2018, 10, 13))
+        first_stock = create_stock(quantity=10, date_modified=datetime(2019, 10, 13), offer=offer)
+        second_stock = create_stock(quantity=10, date_modified=datetime(2018, 10, 13), offer=offer)
         repository.save(first_stock, second_stock)
 
         activity_for_first_stock = create_stock_activity(
             stock=first_stock,
             verb='update',
             issued_at=datetime(2019, 10, 21),
-            data={"available": 32}
+            data={"quantity": 32}
         )
 
         activity_for_second_stock = create_stock_activity(
             stock=second_stock,
             verb='update',
             issued_at=datetime(2018, 11, 16),
-            data={"available": 32}
+            data={"quantity": 32}
         )
         save_all_activities(activity_for_first_stock, activity_for_second_stock)
 

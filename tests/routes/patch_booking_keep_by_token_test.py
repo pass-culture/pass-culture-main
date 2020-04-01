@@ -143,7 +143,7 @@ class Patch:
                 user_offerer = create_user_offerer(pro_user, offerer)
                 venue = create_venue(offerer)
                 stock = create_stock_with_event_offer(offerer, venue, price=0)
-                stock.available=1
+                stock.quantity=1
                 repository.save(stock)
 
                 booking = create_booking(user=user, stock=stock, date_used=datetime.utcnow(), is_used=True, venue=venue)

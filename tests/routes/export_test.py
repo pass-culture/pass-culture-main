@@ -698,7 +698,7 @@ def test_get_offerers_return_200_and_filtered_offerers(app):
         validated_venue_with_siret_with_active_offer_thing)
     stock_expired_offer_thing = create_stock_with_thing_offer(
         offerer_2A450_in_date_range_with_validated_venue_with_siret_with_expired_offer_thing,
-        validated_venue_with_siret_with_expired_offer_thing, available=0)
+        validated_venue_with_siret_with_expired_offer_thing, quantity=0)
 
     repository.save(query_user, stock_offer_1, stock_offer_2, stock_offer_3, stock_offer_4, stock_offer_5,
                   stock_offer_6, stock_offer_7,

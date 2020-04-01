@@ -283,10 +283,8 @@ class Put:
                                                         beginning_datetime=four_days_from_now)
             event_occurrence2 = create_event_occurrence(event_offer,
                                                         beginning_datetime=four_days_from_now)
-            soft_deleted_event_stock = create_stock_from_event_occurrence(event_occurrence1,
-                                                                          soft_deleted=True)
-            event_stock = create_stock_from_event_occurrence(event_occurrence2,
-                                                             soft_deleted=False)
+            soft_deleted_event_stock = create_stock_from_event_occurrence(event_occurrence1, soft_deleted=True)
+            event_stock = create_stock_from_event_occurrence(event_occurrence2, soft_deleted=False)
             thing_offer1 = create_offer_with_thing_product(venue)
             thing_offer2 = create_offer_with_thing_product(venue)
             soft_deleted_thing_stock = create_stock_from_offer(thing_offer1, soft_deleted=True)
@@ -403,7 +401,7 @@ class Put:
                 offer,
                 beginning_datetime=four_days_from_now
             )
-            stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
+            stock = create_stock_from_event_occurrence(event_occurrence, price=0, quantity=20)
             repository.save(user, stock)
             DiscoveryView.refresh(concurrently=False)
 
@@ -432,7 +430,7 @@ class Put:
                 beginning_datetime=four_days_from_now
             )
             mediation = create_mediation(offer)
-            stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
+            stock = create_stock_from_event_occurrence(event_occurrence, price=0, quantity=20)
             repository.save(user, stock, mediation)
             DiscoveryView.refresh(concurrently=False)
 
@@ -460,7 +458,7 @@ class Put:
                 offer,
                 beginning_datetime=four_days_from_now
             )
-            stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
+            stock = create_stock_from_event_occurrence(event_occurrence, price=0, quantity=20)
             repository.save(user, stock)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
@@ -552,7 +550,7 @@ class Put:
             create_mediation(offer3)
             create_mediation(offer4)
             stock1 = create_stock_from_offer(offer1, price=0)
-            stock2 = create_stock_from_event_occurrence(event_occurrence, price=0, available=10, soft_deleted=False,
+            stock2 = create_stock_from_event_occurrence(event_occurrence, price=0, quantity=10, soft_deleted=False,
                                                         booking_limit_date=now + timedelta(days=3))
             stock3 = create_stock_from_offer(offer3, price=0)
             stock4 = create_stock_from_offer(offer4, price=0)
@@ -595,7 +593,7 @@ class Put:
                 offer_event,
                 beginning_datetime=four_days_from_now
             )
-            event_stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
+            event_stock = create_stock_from_event_occurrence(event_occurrence, price=0, quantity=20)
             offer_thing = create_offer_with_thing_product(venue)
             stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
             create_mediation(offer_thing)
@@ -880,7 +878,7 @@ class Put:
                     offer_event,
                     beginning_datetime=four_days_from_now
                 )
-                event_stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
+                event_stock = create_stock_from_event_occurrence(event_occurrence, price=0, quantity=20)
                 offer_thing = create_offer_with_thing_product(venue)
                 stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
                 create_mediation(offer_thing)

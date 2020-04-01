@@ -158,7 +158,7 @@ class Offer(PcObject,
 
     @property
     def isFullyBooked(self) -> bool:
-        has_unlimited_stock = any(map(lambda stock: stock.available is None, self.stocks))
+        has_unlimited_stock = any(map(lambda stock: stock.quantity is None, self.stocks))
         if has_unlimited_stock:
             return False
 
@@ -169,7 +169,7 @@ class Offer(PcObject,
             bookings = filter_bookings_to_compute_remaining_stock(stock)
             total_booked_quantity += sum(map(lambda booking: booking.quantity, bookings))
 
-        available_stocks = sum(map(lambda stock: stock.available, bookable_stocks))
+        available_stocks = sum(map(lambda stock: stock.quantity, bookable_stocks))
         return total_booked_quantity >= available_stocks
 
     @property
@@ -199,7 +199,7 @@ class Offer(PcObject,
             return 'Stock expiré'
 
         count_stocks_with_no_remaining_quantity = len(
-            list(filter(lambda stock: stock.available is not None and stock.remainingQuantity == 0, incoming_stocks)))
+            list(filter(lambda stock: stock.quantity is not None and stock.remainingQuantity == 0, incoming_stocks)))
         has_at_least_one_stock_with_remaining_quantity = count_stocks_with_no_remaining_quantity != len(incoming_stocks)
 
         if has_at_least_one_stock_with_remaining_quantity and count_stocks_with_no_remaining_quantity > 0:
@@ -210,7 +210,7 @@ class Offer(PcObject,
         if count_stocks_with_no_remaining_quantity == len(incoming_stocks):
             return 'Plus de stock restant'
 
-        offer_has_at_least_one_unlimited_stock = any(map(lambda stock: stock.available is None, incoming_stocks))
+        offer_has_at_least_one_unlimited_stock = any(map(lambda stock: stock.quantity is None, incoming_stocks))
         if offer_has_at_least_one_unlimited_stock:
             return 'Stock restant illimité'
 

@@ -202,7 +202,7 @@ class GetUsersInformationFromStockBookingsTest:
         venue = create_venue(offerer=offerer, name='Test offerer', booking_email='reservations@test.fr', is_virtual=True, siret=None)
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
+        stock = create_stock_from_offer(thing_offer, price=0, quantity=10, beginning_datetime=beginning_datetime)
         booking_1 = create_booking(user=user_1, stock=stock, venue=venue, token='HELLO0')
         booking_2 = create_booking(user=user_2, stock=stock, venue=venue, token='HELLO1')
         booking_3 = create_booking(user=user_3, stock=stock, venue=venue, token='HELLO2')

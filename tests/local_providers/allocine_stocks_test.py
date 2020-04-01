@@ -1420,13 +1420,13 @@ class UpdateObjectsTest:
         assert vf_offer.name == 'Les Contes de la mère poule - VF'
 
         assert first_stock.offerId == vf_offer.id
-        assert first_stock.available is None
+        assert first_stock.quantity is None
         assert first_stock.price == 10
         assert first_stock.beginningDatetime == datetime(2019, 12, 3, 9, 0)
         assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 0)
 
         assert second_stock.offerId == vf_offer.id
-        assert second_stock.available is None
+        assert second_stock.quantity is None
         assert second_stock.price == 10
         assert second_stock.beginningDatetime == datetime(2019, 12, 3, 17, 0)
         assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 17, 0)
@@ -1594,19 +1594,19 @@ class UpdateObjectsTest:
         assert vo_offer.durationMinutes == 110
 
         assert first_stock.offerId == vf_offer.id
-        assert first_stock.available is None
+        assert first_stock.quantity is None
         assert first_stock.price == 10
         assert first_stock.beginningDatetime == datetime(2019, 12, 3, 9, 0)
         assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 0)
 
         assert second_stock.offerId == vo_offer.id
-        assert second_stock.available is None
+        assert second_stock.quantity is None
         assert second_stock.price == 10
         assert second_stock.beginningDatetime == datetime(2019, 12, 3, 17, 0)
         assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 17, 0)
 
         assert third_stock.offerId == vf_offer.id
-        assert third_stock.available is None
+        assert third_stock.quantity is None
         assert third_stock.price == 10
         assert third_stock.beginningDatetime == datetime(2019, 12, 3, 19, 0)
         assert third_stock.bookingLimitDatetime == datetime(2019, 12, 3, 19, 0)
@@ -2147,8 +2147,8 @@ class UpdateObjectsTest:
             created_stocks = Stock.query.all()
 
             first_stock = created_stocks[0]
-            first_stock.fieldsUpdated = ['available', 'price']
-            first_stock.available = 100
+            first_stock.fieldsUpdated = ['quantity', 'price']
+            first_stock.quantity = 100
             first_stock.price = 20
 
             second_stock = created_stocks[1]
@@ -2163,11 +2163,11 @@ class UpdateObjectsTest:
 
             # Then
             assert len(created_stocks) == 2
-            assert first_stock.available == 100
+            assert first_stock.quantity == 100
             assert first_stock.price == 20
             assert first_stock.bookingLimitDatetime == datetime(2019, 12, 3, 9, 0)
 
-            assert second_stock.available is None
+            assert second_stock.quantity is None
             assert second_stock.price == 10
             assert second_stock.bookingLimitDatetime == datetime(2019, 12, 4, 15, 0)
 
@@ -2871,7 +2871,7 @@ class UpdateObjectsTest:
             repository.save(venue)
 
             allocine_provider = activate_provider('AllocineStocks')
-            allocine_venue_provider = create_allocine_venue_provider(venue, allocine_provider, available=50)
+            allocine_venue_provider = create_allocine_venue_provider(venue, allocine_provider, quantity=50)
             venue_provider_price_rule = create_allocine_venue_provider_price_rule(allocine_venue_provider)
 
             repository.save(allocine_venue_provider, venue_provider_price_rule)
@@ -2882,7 +2882,7 @@ class UpdateObjectsTest:
 
             # Then
             stock = Stock.query.one()
-            assert stock.available == 50
+            assert stock.quantity == 50
 
 
 class GetObjectThumbTest:

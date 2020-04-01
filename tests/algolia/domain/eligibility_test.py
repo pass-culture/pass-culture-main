@@ -42,8 +42,7 @@ class DatesHaveChangedTest:
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_thing_product(thing_name='super offre', venue=venue)
-        stock = create_stock(offer=offer,
-                             price=10)
+        stock = create_stock(offer=offer, price=10)
         repository.save(stock)
         offer_details = {'dates': []}
 
@@ -60,9 +59,7 @@ class DatesHaveChangedTest:
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_event_product(event_name='super offre', venue=venue)
-        stock = create_stock(beginning_datetime=datetime(2020, 1, 1),
-                             offer=offer,
-                             price=10)
+        stock = create_stock(beginning_datetime=datetime(2020, 1, 1), offer=offer, price=10)
         repository.save(stock)
         offer_details = {'dates': [1486290387]}
 
@@ -79,9 +76,7 @@ class DatesHaveChangedTest:
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_event_product(event_name='super offre', venue=venue)
-        stock = create_stock(beginning_datetime=datetime(2020, 1, 1),
-                             offer=offer,
-                             price=10)
+        stock = create_stock(beginning_datetime=datetime(2020, 1, 1), offer=offer, price=10)
         repository.save(stock)
         offer_details = {'dates': [1577836800]}
 
@@ -100,8 +95,7 @@ class PricesHaveChangedTest:
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_thing_product(thing_name='super offre', venue=venue)
-        stock = create_stock(offer=offer,
-                             price=10)
+        stock = create_stock(offer=offer, price=10)
         repository.save(stock)
         offer_details = {'prices': [10]}
 
@@ -118,9 +112,7 @@ class PricesHaveChangedTest:
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_event_product(event_name='super offre', venue=venue)
-        stock = create_stock(beginning_datetime=datetime(2020, 1, 1),
-                             offer=offer,
-                             price=12)
+        stock = create_stock(beginning_datetime=datetime(2020, 1, 1), offer=offer, price=12)
         repository.save(stock)
         offer_details = {'prices': [10]}
 

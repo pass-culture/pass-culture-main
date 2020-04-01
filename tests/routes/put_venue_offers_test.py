@@ -127,7 +127,7 @@ class Put:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
-            stock = create_stock_from_offer(offer, available=22)
+            stock = create_stock_from_offer(offer, quantity=22)
             offer.isActive = False
             repository.save(
                 stock, user_offerer, venue
@@ -210,7 +210,7 @@ class Put:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue)
-            stock = create_stock_from_offer(offer, available=0)
+            stock = create_stock_from_offer(offer, quantity=0)
             repository.save(stock, user_offerer)
 
             api_url = API_URL + humanize(venue.id) + '/offers/deactivate'

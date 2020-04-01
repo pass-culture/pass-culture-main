@@ -37,9 +37,9 @@ def test_find_online_activation_stock(app):
     activation_offer = create_offer_with_thing_product(venue_online, thing_type=ThingType.ACTIVATION)
     other_thing_offer = create_offer_with_thing_product(venue_physical, thing_type=ThingType.ACTIVATION)
     event_offer = create_offer_with_event_product(venue_physical)
-    activation_stock = create_stock_from_offer(activation_offer, available=200, price=0)
-    other_thing_stock = create_stock_from_offer(other_thing_offer, available=100, price=10)
-    event_stock = create_stock_from_offer(event_offer, available=50, price=20)
+    activation_stock = create_stock_from_offer(activation_offer, price=0, quantity=200)
+    other_thing_stock = create_stock_from_offer(other_thing_offer, price=10, quantity=100)
+    event_stock = create_stock_from_offer(event_offer, price=20, quantity=50)
 
     repository.save(other_thing_stock, activation_stock, event_stock)
 
@@ -49,5 +49,5 @@ def test_find_online_activation_stock(app):
     # then
     assert stock.offer.venue.isVirtual == True
     assert stock.offer.type == 'ThingType.ACTIVATION'
-    assert stock.available == 200
+    assert stock.quantity == 200
     assert stock.price == 0

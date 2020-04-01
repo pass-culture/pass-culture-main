@@ -231,18 +231,15 @@ def create_product_with_thing_type(thing_name: str = 'Test Book',
     return product
 
 
-def create_stock_from_event_occurrence(event_occurrence: Dict,
-                                       price: int = 10,
-                                       available: int = 10,
-                                       soft_deleted: bool = False,
-                                       recap_sent: bool = False,
+def create_stock_from_event_occurrence(event_occurrence: Dict, price: int = 10, quantity: int = 10,
+                                       soft_deleted: bool = False, recap_sent: bool = False,
                                        booking_limit_date: datetime = None) -> Stock:
     stock = Stock()
     stock.beginningDatetime = event_occurrence['beginningDatetime']
     stock.offerId = event_occurrence['offerId']
     stock.offer = event_occurrence['offer']
     stock.price = price
-    stock.available = available
+    stock.quantity = quantity
     stock.isSoftDeleted = soft_deleted
 
     if recap_sent:
@@ -256,17 +253,13 @@ def create_stock_from_event_occurrence(event_occurrence: Dict,
     return stock
 
 
-def create_stock_from_offer(offer: Offer,
-                            price: float = 9.90,
-                            available: Optional[int] = 10,
-                            soft_deleted: bool = False,
-                            booking_limit_datetime: datetime = None,
-                            beginning_datetime: datetime = None,
+def create_stock_from_offer(offer: Offer, price: float = 9.90, quantity: Optional[int] = 10, soft_deleted: bool = False,
+                            booking_limit_datetime: datetime = None, beginning_datetime: datetime = None,
                             date_modified: datetime = datetime.utcnow()) -> Stock:
     stock = Stock()
     stock.offer = offer
     stock.price = price
-    stock.available = available
+    stock.quantity = quantity
     stock.isSoftDeleted = soft_deleted
     stock.bookingLimitDatetime = booking_limit_datetime
     stock.beginningDatetime = beginning_datetime
@@ -275,22 +268,17 @@ def create_stock_from_offer(offer: Offer,
     return stock
 
 
-def create_stock_with_event_offer(offerer: Offerer,
-                                  venue: Venue,
-                                  price: int = 10,
-                                  booking_email: str = 'offer.booking.email@example.com',
-                                  available: int = 10,
-                                  is_soft_deleted: bool = False,
-                                  event_type: EventType = EventType.JEUX,
-                                  name: str = 'Mains, sorts et papiers',
-                                  offer_id: int = None,
+def create_stock_with_event_offer(offerer: Offerer, venue: Venue, price: int = 10,
+                                  booking_email: str = 'offer.booking.email@example.com', quantity: int = 10,
+                                  is_soft_deleted: bool = False, event_type: EventType = EventType.JEUX,
+                                  name: str = 'Mains, sorts et papiers', offer_id: int = None,
                                   beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=72),
                                   thumb_count: int = 0,
                                   booking_limit_datetime: datetime = datetime.utcnow() + timedelta(hours=71)) -> Stock:
     stock = Stock()
     stock.offerer = offerer
     stock.price = price
-    stock.available = available
+    stock.quantity = quantity
     stock.beginningDatetime = beginning_datetime
     stock.bookingLimitDatetime = booking_limit_datetime
     stock.offer = create_offer_with_event_product(venue, event_name=name, event_type=event_type,
@@ -302,16 +290,10 @@ def create_stock_with_event_offer(offerer: Offerer,
     return stock
 
 
-def create_stock_with_thing_offer(offerer: Offerer,
-                                  venue: Venue,
-                                  offer: Offer = None,
-                                  price: int = 10,
-                                  available: int = 50,
-                                  name: str = 'Test Book',
-                                  booking_email: str = 'offer.booking.email@example.com',
-                                  soft_deleted: bool = False,
-                                  url: str = None,
-                                  booking_limit_datetime: datetime = None,
+def create_stock_with_thing_offer(offerer: Offerer, venue: Venue, offer: Offer = None, price: int = 10,
+                                  quantity: int = 50, name: str = 'Test Book',
+                                  booking_email: str = 'offer.booking.email@example.com', soft_deleted: bool = False,
+                                  url: str = None, booking_limit_datetime: datetime = None,
                                   thing_type: ThingType = ThingType.AUDIOVISUEL) -> Stock:
     stock = Stock()
     stock.offerer = offerer
@@ -326,7 +308,7 @@ def create_stock_with_thing_offer(offerer: Offerer,
     stock.bookingLimitDatetime = booking_limit_datetime
     stock.offer.url = url
     stock.offer.venue = venue
-    stock.available = available
+    stock.quantity = quantity
     stock.isSoftDeleted = soft_deleted
 
     return stock

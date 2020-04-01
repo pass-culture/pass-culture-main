@@ -19,19 +19,17 @@ from tests.model_creators.specific_creators import (
 
 
 @clean_database
-def test_date_modified_should_be_updated_if_available_changed(app):
+def test_date_modified_should_be_updated_if_quantity_changed(app):
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_offer_with_thing_product(venue)
-    stock = create_stock(offer=offer,
-                         date_modified=datetime(2018, 2, 12),
-                         available=1)
+    stock = create_stock(quantity=1, date_modified=datetime(2018, 2, 12), offer=offer)
     repository.save(stock)
 
     # when
     stock = Stock.query.first()
-    stock.available = 10
+    stock.quantity = 10
     repository.save(stock)
 
     # then
@@ -45,10 +43,7 @@ def test_date_modified_should_not_be_updated_if_price_changed(app):
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_offer_with_thing_product(venue)
-    stock = create_stock(offer=offer,
-                         date_modified=datetime(2018, 2, 12),
-                         available=1,
-                         price=1)
+    stock = create_stock(quantity=1, date_modified=datetime(2018, 2, 12), offer=offer, price=1)
     repository.save(stock)
 
     # when
@@ -87,7 +82,7 @@ def test_populate_dict_on_soft_deleted_object_raises_DeletedRecordException(app)
     repository.save(stock)
     # When
     with pytest.raises(DeletedRecordException):
-        stock.populate_from_dict({"available": 5})
+        stock.populate_from_dict({"quantity": 5})
 
 
 @clean_database
@@ -107,43 +102,43 @@ def test_stock_cannot_have_a_negative_price(app):
 
 
 @clean_database
-def test_stock_cannot_have_a_negative_available_stock(app):
+def test_stock_cannot_have_a_negative_quantity_stock(app):
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_offer_with_thing_product(venue)
-    stock = create_stock_from_offer(offer, available=-4)
+    stock = create_stock_from_offer(offer, quantity=-4)
 
     # when
     with pytest.raises(ApiErrors) as e:
         repository.save(stock)
 
     # then
-    assert e.value.errors['available'] == ["Le stock doit être positif"]
+    assert e.value.errors['quantity'] == ["Le stock doit être positif"]
 
 
 @clean_database
-def test_stock_can_have_an_available_stock_equal_to_zero(app):
+def test_stock_can_have_an_quantity_stock_equal_to_zero(app):
     # given
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_offer_with_thing_product(venue)
-    stock = create_stock_from_offer(offer, available=0)
+    stock = create_stock_from_offer(offer, quantity=0)
 
     # when
     repository.save(stock)
 
     # then
-    assert stock.available == 0
+    assert stock.quantity == 0
 
 
 @clean_database
-def test_available_stocks_can_be_changed_even_when_bookings_with_cancellations_exceed_available(app):
+def test_quantity_stocks_can_be_changed_even_when_bookings_with_cancellations_exceed_quantity(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_offer_with_thing_product(venue)
-    stock = create_stock_from_offer(offer, available=2, price=0)
+    stock = create_stock_from_offer(offer, quantity=2, price=0)
     repository.save(stock)
     user1 = create_user()
     user2 = create_user(email='test@mail.com')
@@ -166,7 +161,7 @@ def test_available_stocks_can_be_changed_even_when_bookings_with_cancellations_e
                               quantity=1)
 
     repository.save(cancelled_booking1, cancelled_booking2, booking1, booking2)
-    stock.available = 3
+    stock.quantity = 3
 
     # When
     try:
@@ -177,12 +172,12 @@ def test_available_stocks_can_be_changed_even_when_bookings_with_cancellations_e
 
 
 @clean_database
-def test_should_update_stock_available_when_value_is_more_than_sum_of_bookings_quantity(app):
+def test_should_update_stock_quantity_when_value_is_more_than_sum_of_bookings_quantity(app):
     # Given
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_offer_with_thing_product(venue)
-    stock = create_stock_from_offer(offer, available=2, price=0)
+    stock = create_stock_from_offer(offer, quantity=2, price=0)
     repository.save(stock)
     user = create_user()
     booking = create_booking(user=user,
@@ -190,33 +185,33 @@ def test_should_update_stock_available_when_value_is_more_than_sum_of_bookings_q
                              is_cancelled=False,
                              quantity=2)
     repository.save(booking)
-    stock.available = 3
+    stock.quantity = 3
 
     # When
     repository.save(stock)
 
     # Then
-    assert Stock.query.get(stock.id).available == 3
+    assert Stock.query.get(stock.id).quantity == 3
 
 
 @clean_database
-def test_should_not_update_available_stock_when_value_is_less_than_booking_count(app):
+def test_should_not_update_quantity_stock_when_value_is_less_than_booking_count(app):
     # given
     user = create_user()
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_offer_with_thing_product(venue)
-    stock = create_stock_from_offer(offer, price=0, available=10)
+    stock = create_stock_from_offer(offer, price=0, quantity=10)
     booking = create_booking(user=user, stock=stock, quantity=5)
     repository.save(booking)
-    stock.available = 4
+    stock.quantity = 4
 
     # when
     with pytest.raises(ApiErrors) as e:
         repository.save(stock)
 
     # then
-    assert e.value.errors['available'] == ['Le stock total ne peut être inférieur au nombre de réservations']
+    assert e.value.errors['quantity'] == ['Le stock total ne peut être inférieur au nombre de réservations']
 
 
 class StockRemainingQuantityTest:
@@ -226,7 +221,7 @@ class StockRemainingQuantityTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, available=2, price=0)
+        stock = create_stock_from_offer(offer, quantity=2, price=0)
 
         # When
         repository.save(stock)
@@ -240,7 +235,7 @@ class StockRemainingQuantityTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, available=2, price=0)
+        stock = create_stock_from_offer(offer, quantity=2, price=0)
         repository.save(stock)
         user = create_user()
         booking1 = create_booking(user=user, stock=stock, is_cancelled=False, quantity=1)
@@ -258,7 +253,7 @@ class StockRemainingQuantityTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, available=None, price=0)
+        stock = create_stock_from_offer(offer, quantity=None, price=0)
         repository.save(stock)
         user = create_user()
         booking = create_booking(user=user, stock=stock, quantity=100)
@@ -279,7 +274,7 @@ class IsBookableTest:
         offer = create_offer_with_thing_product(venue)
 
         # When
-        stock = create_stock(offer=offer, booking_limit_datetime=limit_datetime)
+        stock = create_stock(booking_limit_datetime=limit_datetime, offer=offer)
 
         # Then
         assert not stock.isBookable
@@ -339,7 +334,7 @@ class IsBookableTest:
         offer = create_offer_with_thing_product(venue)
 
         # When
-        stock = create_stock(offer=offer, is_soft_deleted=True)
+        stock = create_stock(is_soft_deleted=True, offer=offer)
 
         # Then
         assert not stock.isBookable
@@ -352,7 +347,7 @@ class IsBookableTest:
         expired_stock_date = datetime.utcnow() - timedelta(days=2)
 
         # When
-        stock = create_stock(offer=offer, beginning_datetime=expired_stock_date)
+        stock = create_stock(beginning_datetime=expired_stock_date, offer=offer)
 
         # Then
         assert not stock.isBookable
@@ -366,7 +361,7 @@ class IsBookableTest:
         offer = create_offer_with_event_product(venue)
 
         # When
-        stock = create_stock(offer=offer, available=10, price=0)
+        stock = create_stock(quantity=10, offer=offer, price=0)
         booking = create_booking(user, stock=stock, quantity=10)
         repository.save(booking)
 
@@ -380,7 +375,7 @@ class IsBookableTest:
         offer = create_offer_with_event_product(venue)
 
         # When
-        stock = create_stock(offer=offer, available=None, price=0)
+        stock = create_stock(quantity=None, offer=offer, price=0)
 
         # Then
         assert stock.isBookable

@@ -27,7 +27,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
                              postal_code='93100')
         offer = create_offer_with_event_product(venue, event_name='Le théâtre des ombres')
         event_occurrence = create_event_occurrence(offer, beginning_datetime=beginning_datetime)
-        stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10,
+        stock = create_stock_from_event_occurrence(event_occurrence, price=20, quantity=10,
                                                    booking_limit_date=booking_limit_datetime)
         booking = create_booking(user=user, stock=stock)
 
@@ -65,7 +65,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         event_occurrence = create_event_occurrence(offer,
                                                    beginning_datetime=datetime(2019, 7, 20, 12, 0, 0,
                                                                                tzinfo=timezone.utc))
-        stock = create_stock_from_event_occurrence(event_occurrence, price=20, available=10)
+        stock = create_stock_from_event_occurrence(event_occurrence, price=20, quantity=10)
         booking1 = create_booking(user=user1, stock=stock, token='98765')
         booking2 = create_booking(user=user2, stock=stock, token='12345')
 
@@ -93,7 +93,7 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
                              postal_code='93100')
         thing_product = create_product_with_thing_type(thing_name='Le récit de voyage')
         offer = create_offer_with_thing_product(venue=venue, product=thing_product)
-        stock = create_stock_from_offer(offer, price=0, available=10)
+        stock = create_stock_from_offer(offer, price=0, quantity=10)
         booking = create_booking(user=user, stock=stock, token='12346')
 
         user2 = create_user(email='bond@james.bond.uk', first_name='James', last_name='Bond',
@@ -331,7 +331,7 @@ class IsOfferActiveForRecapTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=True)
-        stock = create_stock_from_offer(offer, available=2, booking_limit_datetime=datetime.now() + timedelta(days=6))
+        stock = create_stock_from_offer(offer, quantity=2, booking_limit_datetime=datetime.now() + timedelta(days=6))
         repository.save(stock)
 
         # When
@@ -346,7 +346,7 @@ class IsOfferActiveForRecapTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=False)
-        stock = create_stock_from_offer(offer, available=2, booking_limit_datetime=datetime.now() + timedelta(days=6))
+        stock = create_stock_from_offer(offer, quantity=2, booking_limit_datetime=datetime.now() + timedelta(days=6))
         repository.save(stock)
 
         # When
@@ -362,8 +362,7 @@ class IsOfferActiveForRecapTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=True)
-        stock = create_stock_from_offer(offer, price=0,
-                                        available=2,
+        stock = create_stock_from_offer(offer, price=0, quantity=2,
                                         booking_limit_datetime=datetime.now() + timedelta(days=6))
         booking = create_booking(user=user, stock=stock, quantity=2)
         repository.save(booking)
@@ -381,8 +380,7 @@ class IsOfferActiveForRecapTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=True)
-        stock = create_stock_from_offer(offer, price=0,
-                                        available=2,
+        stock = create_stock_from_offer(offer, price=0, quantity=2,
                                         booking_limit_datetime=datetime.now() - timedelta(days=6))
         booking = create_booking(user=user, stock=stock, quantity=2)
         repository.save(booking)
@@ -400,8 +398,7 @@ class IsOfferActiveForRecapTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=True)
-        stock = create_stock_from_offer(offer, price=0,
-                                        available=None)
+        stock = create_stock_from_offer(offer, price=0, quantity=None)
         booking = create_booking(user=user, stock=stock, quantity=2)
         repository.save(booking)
 
@@ -418,8 +415,7 @@ class IsOfferActiveForRecapTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=True)
-        stock = create_stock_from_offer(offer, price=0,
-                                        available=None,
+        stock = create_stock_from_offer(offer, price=0, quantity=None,
                                         booking_limit_datetime=datetime.now() - timedelta(days=6))
         booking = create_booking(user=user, stock=stock, quantity=2)
         repository.save(booking)

@@ -82,9 +82,9 @@ class Get:
             offer1 = create_offer_with_event_product(venue1)
             offer2 = create_offer_with_thing_product(venue1)
             offer3 = create_offer_with_thing_product(venue2)
-            stock1 = create_stock_from_offer(offer1, available=100, price=20)
-            stock2 = create_stock_from_offer(offer2, available=150, price=16)
-            stock3 = create_stock_from_offer(offer3, available=150, price=18)
+            stock1 = create_stock_from_offer(offer1, price=20, quantity=100)
+            stock2 = create_stock_from_offer(offer2, price=16, quantity=150)
+            stock3 = create_stock_from_offer(offer3, price=18, quantity=150)
             booking1 = create_booking(user=user, stock=stock1, token='ABCDEF', venue=venue1)
             booking2 = create_booking(user=user, stock=stock1, token='ABCDEG', venue=venue1)
             booking3 = create_booking(user=user, stock=stock2, token='ABCDEH', venue=venue2)
@@ -119,8 +119,8 @@ class Get:
             offer1 = create_offer_with_event_product(virtual_venue)
             offer2 = create_offer_with_thing_product(physical_venue)
 
-            stock1 = create_stock_from_offer(offer1, available=100, price=20)
-            stock2 = create_stock_from_offer(offer2, available=150, price=16)
+            stock1 = create_stock_from_offer(offer1, price=20, quantity=100)
+            stock2 = create_stock_from_offer(offer2, price=16, quantity=150)
             booking_on_physical_venue = create_booking(user=user, stock=stock1, token='ABCDEF', venue=physical_venue)
             booking_on_digital_venue = create_booking(user=user, stock=stock2, token='ABCDEH', venue=virtual_venue)
 
@@ -152,8 +152,8 @@ class Get:
             target_offer = create_offer_with_thing_product(venue, thing_name='thing')
             other_offer = create_offer_with_thing_product(venue)
 
-            stock1 = create_stock_from_offer(target_offer, available=100, price=20)
-            stock2 = create_stock_from_offer(other_offer, available=150, price=16)
+            stock1 = create_stock_from_offer(target_offer, price=20, quantity=100)
+            stock2 = create_stock_from_offer(other_offer, price=16, quantity=150)
             booking_on_other_offer = create_booking(user=user, stock=stock2, token='ABCDEF', venue=venue)
             booking_on_target_offer_and_date = create_booking(user=user, stock=stock1,
                                                               date_created=datetime.strptime("2020-05-01T00:00:00.000Z",

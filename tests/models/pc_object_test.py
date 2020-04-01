@@ -39,7 +39,7 @@ class SerializeTest:
     def test_on_datetime_list_returns_string_with_date_in_ISO_8601_list(self):
         # Given
         offer = Offer()
-        offer.stocks = [create_stock(offer=offer, beginning_datetime=now)]
+        offer.stocks = [create_stock(beginning_datetime=now, offer=offer)]
 
         # When
         serialized_list = serialize(offer.dateRange)

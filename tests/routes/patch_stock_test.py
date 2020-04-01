@@ -23,19 +23,19 @@ class Patch:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=10, available=10)
+            stock = create_stock_with_event_offer(offerer, venue, price=10, quantity=10)
             repository.save(user, user_offerer, stock)
             humanized_stock_id = humanize(stock.id)
 
             # when
             request_update = TestClient(app.test_client()).with_auth('test@email.com') \
-                .patch('/stocks/' + humanized_stock_id, json={'available': 5, 'price': 20})
+                .patch('/stocks/' + humanized_stock_id, json={'quantity': 5, 'price': 20})
 
             # then
             assert request_update.status_code == 200
             request_after_update = TestClient(app.test_client()).with_auth('test@email.com').get(
                 '/stocks/' + humanized_stock_id)
-            assert request_after_update.json['available'] == 5
+            assert request_after_update.json['quantity'] == 5
             assert request_after_update.json['price'] == 20
 
         @clean_database
@@ -44,19 +44,19 @@ class Patch:
             user = create_user(can_book_free_offers=False, email='test@email.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=10, available=10)
+            stock = create_stock_with_event_offer(offerer, venue, price=10, quantity=10)
             repository.save(user, stock)
             humanized_stock_id = humanize(stock.id)
 
             # when
             request_update = TestClient(app.test_client()).with_auth('test@email.com') \
-                .patch('/stocks/' + humanized_stock_id, json={'available': 5, 'price': 20})
+                .patch('/stocks/' + humanized_stock_id, json={'quantity': 5, 'price': 20})
 
             # then
             assert request_update.status_code == 200
             request_after_update = TestClient(app.test_client()).with_auth('test@email.com').get(
                 '/stocks/' + humanized_stock_id)
-            assert request_after_update.json['available'] == 5
+            assert request_after_update.json['quantity'] == 5
             assert request_after_update.json['price'] == 20
 
         @clean_database
@@ -93,12 +93,12 @@ class Patch:
             offerer = create_offerer()
             create_user_offerer(beneficiary, offerer)
             venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=10, available=10)
+            stock = create_stock_with_event_offer(offerer, venue, price=10, quantity=10)
             repository.save(stock)
 
             # when
             request_update = TestClient(app.test_client()).with_auth(beneficiary.email) \
-                .patch('/stocks/' + humanize(stock.id), json={'available': 5, 'price': 20})
+                .patch('/stocks/' + humanize(stock.id), json={'quantity': 5, 'price': 20})
 
             # then
             assert request_update.status_code == 200
@@ -114,41 +114,41 @@ class Patch:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, last_provider_id=allocine_provider.id,
                                                     id_at_providers='allo')
-            stock = create_stock(offer=offer, available=10, id_at_providers='allo-cine')
+            stock = create_stock(quantity=10, id_at_providers='allo-cine', offer=offer)
 
             repository.save(pro, user_offerer, stock)
             humanized_stock_id = humanize(stock.id)
 
             # when
             request_update = TestClient(app.test_client()).with_auth(pro.email) \
-                .patch(f'/stocks/{humanized_stock_id}', json={'available': 5, 'price': 20})
+                .patch(f'/stocks/{humanized_stock_id}', json={'quantity': 5, 'price': 20})
 
             # then
             assert request_update.status_code == 200
 
             updated_stock = Stock.query.one()
-            assert updated_stock.available == 5
+            assert updated_stock.quantity == 5
             assert updated_stock.price == 20
 
     class Returns400:
         @clean_database
-        def when_wrong_type_for_available(self, app):
+        def when_wrong_type_for_quantity(self, app):
             # given
             user = create_user()
             user_admin = create_user(can_book_free_offers=False, email='email@test.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0, available=1)
+            stock = create_stock_with_event_offer(offerer, venue, price=0, quantity=1)
             booking = create_booking(user=user, stock=stock, venue=venue, recommendation=None)
             repository.save(booking, user_admin)
 
             # when
             response = TestClient(app.test_client()).with_auth('email@test.com') \
-                .patch('/stocks/' + humanize(stock.id), json={'available': ' '})
+                .patch('/stocks/' + humanize(stock.id), json={'quantity': ' '})
 
             # then
             assert response.status_code == 400
-            assert response.json['available'] == ['Saisissez un nombre valide']
+            assert response.json['quantity'] == ['Saisissez un nombre valide']
 
         @clean_database
         def when_booking_limit_datetime_after_beginning_datetime(self, app):
@@ -171,23 +171,23 @@ class Patch:
             ]
 
         @clean_database
-        def when_available_below_existing_bookings_quantity(self, app):
+        def when_quantity_below_existing_bookings_quantity(self, app):
             # given
             user = create_user()
             user_admin = create_user(can_book_free_offers=False, email='email@test.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0, available=1)
+            stock = create_stock_with_event_offer(offerer, venue, price=0, quantity=1)
             booking = create_booking(user=user, stock=stock, venue=venue, recommendation=None)
             repository.save(booking, user_admin)
 
             # when
             response = TestClient(app.test_client()).with_auth('email@test.com') \
-                .patch('/stocks/' + humanize(stock.id), json={'available': 0})
+                .patch('/stocks/' + humanize(stock.id), json={'quantity': 0})
 
             # then
             assert response.status_code == 400
-            assert response.json['available'] == [
+            assert response.json['quantity'] == [
                 'Le stock total ne peut être inférieur au nombre de réservations'
             ]
 
@@ -227,19 +227,19 @@ class Patch:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue, last_provider_id=tite_live_provider.id, last_provider=tite_live_provider)
-            stock = create_stock(offer=offer, available=10)
+            stock = create_stock(quantity=10, offer=offer)
             repository.save(user, user_offerer, stock)
             humanized_stock_id = humanize(stock.id)
 
             # when
             request_update = TestClient(app.test_client()).with_auth('test@email.com') \
-                .patch('/stocks/' + humanized_stock_id, json={'available': 5})
+                .patch('/stocks/' + humanized_stock_id, json={'quantity': 5})
 
             # then
             assert request_update.status_code == 400
             request_after_update = TestClient(app.test_client()).with_auth('test@email.com').get(
                 '/stocks/' + humanized_stock_id)
-            assert request_after_update.json['available'] == 10
+            assert request_after_update.json['quantity'] == 10
             assert request_update.json["global"] == ["Les offres importées ne sont pas modifiables"]
 
         @clean_database
@@ -252,14 +252,14 @@ class Patch:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, last_provider_id=allocine_provider.id,
                                                     id_at_providers='test')
-            stock = create_stock(offer=offer, available=10, id_at_providers='test-test')
+            stock = create_stock(quantity=10, id_at_providers='test-test', offer=offer)
             repository.save(pro, user_offerer, stock)
             humanized_stock_id = humanize(stock.id)
 
             # when
             request_update = TestClient(app.test_client()).with_auth(pro.email) \
                 .patch(f'/stocks/{humanized_stock_id}',
-                       json={'available': 5, 'price': 20, 'beginningDatetime': '2020-02-08T14:30:00Z'})
+                       json={'quantity': 5, 'price': 20, 'beginningDatetime': '2020-02-08T14:30:00Z'})
 
             # then
             assert request_update.status_code == 400
@@ -267,7 +267,7 @@ class Patch:
                 'Pour les offres importées, certains champs ne sont pas modifiables']
 
             existing_stock = Stock.query.one()
-            assert existing_stock.available == 10
+            assert existing_stock.quantity == 10
 
     class Returns403:
         @clean_database
@@ -281,7 +281,7 @@ class Patch:
 
             # when
             response = TestClient(app.test_client()).with_auth('test@email.com') \
-                .patch('/stocks/' + humanize(stock.id), json={'available': 5})
+                .patch('/stocks/' + humanize(stock.id), json={'quantity': 5})
 
             # then
             assert response.status_code == 403

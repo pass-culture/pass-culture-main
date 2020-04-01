@@ -53,7 +53,7 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attribut
     assert offer.extraData == product.extraData
     stock = Stock.query.one()
     assert stock.bookingLimitDatetime is None
-    assert stock.available == 10
+    assert stock.quantity == 10
     assert stock.price == 45
 
 
@@ -79,7 +79,7 @@ def test_titelive_stock_provider_update_1_stock_and_1_offer(stub_get_stocks_info
                                            venue_id_at_offer_provider='77567146400110')
     product = create_product_with_thing_type(id_at_providers='0002730757438')
     offer = create_offer_with_thing_product(venue, product=product, id_at_providers='0002730757438@77567146400110')
-    stock = create_stock(offer=offer, id_at_providers='0002730757438@77567146400110', available=2)
+    stock = create_stock(quantity=2, id_at_providers='0002730757438@77567146400110', offer=offer)
     repository.save(product, venue_provider, stock)
 
     titelive_stocks = TiteLiveStocks(venue_provider)
@@ -89,7 +89,7 @@ def test_titelive_stock_provider_update_1_stock_and_1_offer(stub_get_stocks_info
 
     # Then
     stock = Stock.query.one()
-    assert stock.available == 10
+    assert stock.quantity == 10
     assert Offer.query.count() == 1
 
 @freeze_time('2019-01-03 12:00:00')
@@ -116,7 +116,8 @@ def test_titelive_stock_provider_always_update_the_stock_modification_date(stub_
     product = create_product_with_thing_type(id_at_providers='0002730757438')
     offer = create_offer_with_thing_product(venue, product=product, id_at_providers='0002730757438@77567146400110')
     yesterday = date.today() - timedelta(days=1)
-    stock = create_stock(offer=offer, id_at_providers='0002730757438@77567146400110', available=2, date_modified=yesterday)
+    stock = create_stock(quantity=2, date_modified=yesterday, id_at_providers='0002730757438@77567146400110',
+                         offer=offer)
     repository.save(product, venue_provider, stock)
 
     titelive_stocks = TiteLiveStocks(venue_provider)
@@ -262,7 +263,7 @@ def test_titelive_stock_provider_deactivate_offer_if_stock_available_equals_0(st
                                            venue_id_at_offer_provider='77567146400110')
     product = create_product_with_thing_type(id_at_providers='0002730757438')
     offer = create_offer_with_thing_product(venue, product=product, id_at_providers='0002730757438@77567146400110')
-    stock = create_stock(offer=offer, id_at_providers='0002730757438@77567146400110')
+    stock = create_stock(id_at_providers='0002730757438@77567146400110', offer=offer)
     repository.save(product, venue_provider, stock)
 
     titelive_stocks = TiteLiveStocks(venue_provider)
@@ -457,7 +458,7 @@ def test_titelive_stock_provider_available_stock_is_sum_of_updated_available_and
     offer = create_offer_with_thing_product(venue, product=product,
                                             id_at_providers='9780199536986@12345678912345')
 
-    stock = create_stock(offer=offer, id_at_providers='9780199536986@12345678912345', available=20, price=0)
+    stock = create_stock(quantity=20, id_at_providers='9780199536986@12345678912345', offer=offer, price=0)
 
     booking = create_booking(
         user=create_user(),
@@ -482,4 +483,4 @@ def test_titelive_stock_provider_available_stock_is_sum_of_updated_available_and
 
     # Then
     stock = Stock.query.one()
-    assert stock.available == 67
+    assert stock.quantity == 67

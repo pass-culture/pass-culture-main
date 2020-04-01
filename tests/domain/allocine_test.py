@@ -137,7 +137,7 @@ class GetEditableFieldsForAllocineStocksTest:
         manually_editable_fields = get_editable_fields_for_allocine_stocks()
 
         # Then
-        assert manually_editable_fields == ['available', 'price', 'bookingLimitDatetime']
+        assert manually_editable_fields == ['quantity', 'price', 'bookingLimitDatetime']
 
 
 class GetEditableFieldsForAllocineOfferTest:

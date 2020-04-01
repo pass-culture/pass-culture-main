@@ -13,7 +13,7 @@ class AllocineVenueProvider(VenueProvider):
                    server_default=true(),
                    nullable=False)
 
-    available = Column(Integer, nullable=True)
+    quantity = Column(Integer, nullable=True)
 
     __mapper_args__ = {
         'polymorphic_identity': 'allocine_venue_provider',

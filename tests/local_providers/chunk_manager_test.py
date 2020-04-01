@@ -115,7 +115,7 @@ class SaveChunksTest:
         db.session.refresh(stock)
         offer1.isDuo = True
         offer2.isDuo = True
-        stock.available = 2
+        stock.quantity = 2
         chunk_to_update = {
             '1|Offer': offer1,
             '1|Stock': stock,

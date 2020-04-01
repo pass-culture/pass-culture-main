@@ -128,8 +128,8 @@ class DiscoveryView(Model):
                         OR stock."beginningDatetime" IS NULL)
                    AND (stock."bookingLimitDatetime" > NOW()
                         OR stock."bookingLimitDatetime" IS NULL)
-                   AND (stock.available IS NULL
-                        OR (SELECT greatest(stock.available - COALESCE(sum(booking.quantity), 0),0)
+                   AND (stock.quantity IS NULL
+                        OR (SELECT greatest(stock.quantity - COALESCE(sum(booking.quantity), 0),0)
                               FROM booking
                              WHERE booking."stockId" = stock.id
                                AND booking."isCancelled" = FALSE

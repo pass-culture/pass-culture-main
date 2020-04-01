@@ -36,12 +36,9 @@ class FindAllOffererBookingsByVenueIdTest:
         venue1 = create_venue(offerer1, siret=offerer1.siren + '12345')
         venue2 = create_venue(offerer1, siret=offerer1.siren + '54321')
         venue3 = create_venue(offerer2, siret=offerer2.siren + '12345')
-        stock1 = create_stock_with_event_offer(
-            offerer1, venue1, price=0, available=100)
-        stock2 = create_stock_with_thing_offer(
-            offerer1, venue2, price=0, available=100)
-        stock3 = create_stock_with_thing_offer(
-            offerer2, venue3, price=0, available=100)
+        stock1 = create_stock_with_event_offer(offerer1, venue1, price=0, quantity=100)
+        stock2 = create_stock_with_thing_offer(offerer1, venue2, price=0, quantity=100)
+        stock3 = create_stock_with_thing_offer(offerer2, venue3, price=0, quantity=100)
         booking1 = create_booking(user=user, stock=stock1, venue=venue1, quantity=2, recommendation=None)
         booking2 = create_booking(user=user, stock=stock2, venue=venue2, quantity=2, recommendation=None)
         booking3 = create_booking(user=user, stock=stock3, venue=venue3, quantity=2, recommendation=None)
@@ -65,9 +62,9 @@ class FindAllOffererBookingsByVenueIdTest:
         offer1 = create_offer_with_event_product(venue1)
         offer2 = create_offer_with_thing_product(venue1)
         offer3 = create_offer_with_thing_product(venue2)
-        stock1 = create_stock_from_offer(offer1, available=100, price=20)
-        stock2 = create_stock_from_offer(offer2, available=150, price=16)
-        stock3 = create_stock_from_offer(offer3, available=150, price=16)
+        stock1 = create_stock_from_offer(offer1, price=20, quantity=100)
+        stock2 = create_stock_from_offer(offer2, price=16, quantity=150)
+        stock3 = create_stock_from_offer(offer3, price=16, quantity=150)
         booking1 = create_booking(user=user, stock=stock1, venue=venue1, quantity=2, recommendation=None)
         booking2 = create_booking(user=user, stock=stock2, venue=venue1, quantity=3, recommendation=None)
         booking3 = create_booking(user=user, stock=stock3, venue=venue2, quantity=4, recommendation=None)
@@ -90,8 +87,8 @@ class FindAllOffererBookingsByVenueIdTest:
         venue = create_venue(offerer=offerer)
         target_offer = create_offer_with_thing_product(venue)
         other_offer = create_offer_with_thing_product(venue)
-        target_stock = create_stock_from_offer(target_offer, available=100, price=20)
-        other_stock = create_stock_from_offer(other_offer, available=150, price=16)
+        target_stock = create_stock_from_offer(target_offer, price=20, quantity=100)
+        other_stock = create_stock_from_offer(other_offer, price=16, quantity=150)
         other_booking_1 = create_booking(user=user,
                                          stock=target_stock,
                                          venue=venue,
@@ -142,16 +139,16 @@ class FindAllOffererBookingsByVenueIdTest:
         venue = create_venue(offerer)
         target_offer = create_offer_with_event_product(venue)
         other_offer = create_offer_with_event_product(venue)
-        target_stock = create_stock_from_offer(target_offer, available=150, price=16,
+        target_stock = create_stock_from_offer(target_offer, price=16, quantity=150,
                                                beginning_datetime=datetime.strptime("2020-06-01T20:00:00.000Z",
                                                                                     "%Y-%m-%dT%H:%M:%S.%fZ"))
-        other_stock_1 = create_stock_from_offer(target_offer, available=100, price=20,
+        other_stock_1 = create_stock_from_offer(target_offer, price=20, quantity=100,
                                                 beginning_datetime=datetime.strptime("2020-06-01T16:00:00.000Z",
                                                                                      "%Y-%m-%dT%H:%M:%S.%fZ"))
-        other_stock_2 = create_stock_from_offer(other_offer, available=150, price=16,
+        other_stock_2 = create_stock_from_offer(other_offer, price=16, quantity=150,
                                                 beginning_datetime=datetime.strptime("2020-06-01T18:00:00.000Z",
                                                                                      "%Y-%m-%dT%H:%M:%S.%fZ"))
-        other_stock_3 = create_stock_from_offer(other_offer, available=150, price=16,
+        other_stock_3 = create_stock_from_offer(other_offer, price=16, quantity=150,
                                                 beginning_datetime=datetime.strptime("2020-07-02T20:00:00.000Z",
                                                                                      "%Y-%m-%dT%H:%M:%S.%fZ"))
         target_booking = create_booking(user=user, stock=target_stock, venue=venue, quantity=3, recommendation=None)
@@ -209,10 +206,8 @@ class FindAllDigitalBookingsForOffererTest:
         offerer1 = create_offerer()
         digital_venue = create_venue(offerer1, siret=None, is_virtual=True)
         physical_venue = create_venue(offerer1, siret=offerer1.siren + '12345')
-        stock1 = create_stock_with_event_offer(
-            offerer1, digital_venue, price=2, available=100)
-        stock2 = create_stock_with_thing_offer(
-            offerer1, physical_venue, price=3, available=100)
+        stock1 = create_stock_with_event_offer(offerer1, digital_venue, price=2, quantity=100)
+        stock2 = create_stock_with_thing_offer(offerer1, physical_venue, price=3, quantity=100)
         booking_for_digital = create_booking(user=user, stock=stock1, venue=digital_venue, quantity=3,
                                              recommendation=None)
         booking_for_physical = create_booking(user=user, stock=stock2, venue=physical_venue, quantity=2,
@@ -234,8 +229,8 @@ class FindAllDigitalBookingsForOffererTest:
         other_offerer = create_offerer(siren='567891234')
         target_digital_venue = create_venue(target_offerer, siret=None, is_virtual=True)
         other_digital_venue = create_venue(other_offerer, siret=None, is_virtual=True)
-        target_stock = create_stock_with_event_offer(target_offerer, target_digital_venue, price=2, available=100)
-        other_stock = create_stock_with_thing_offer(other_offerer, other_digital_venue, price=3, available=100)
+        target_stock = create_stock_with_event_offer(target_offerer, target_digital_venue, price=2, quantity=100)
+        other_stock = create_stock_with_thing_offer(other_offerer, other_digital_venue, price=3, quantity=100)
         target_booking = create_booking(user=user, stock=target_stock, venue=target_digital_venue, quantity=3,
                                         recommendation=None)
         other_booking = create_booking(user=user, stock=other_stock, venue=other_digital_venue, quantity=2,
@@ -255,8 +250,8 @@ class FindAllDigitalBookingsForOffererTest:
         create_deposit(user)
         offerer = create_offerer()
         digital_venue = create_venue(offerer, siret=None, is_virtual=True)
-        stock1 = create_stock_with_event_offer(offerer, digital_venue, price=2, available=100)
-        stock2 = create_stock_with_thing_offer(offerer, digital_venue, price=3, available=100)
+        stock1 = create_stock_with_event_offer(offerer, digital_venue, price=2, quantity=100)
+        stock2 = create_stock_with_thing_offer(offerer, digital_venue, price=3, quantity=100)
         booking1 = create_booking(user=user, stock=stock1, venue=digital_venue, quantity=2)
         booking2 = create_booking(user=user, stock=stock2, venue=digital_venue, quantity=3)
         repository.save(booking1, booking2)
@@ -276,8 +271,8 @@ class FindAllDigitalBookingsForOffererTest:
         create_deposit(user)
         offerer1 = create_offerer()
         digital_venue_for_offerer1 = create_venue(offerer1, siret=None, is_virtual=True)
-        stock1 = create_stock_with_event_offer(offerer1, digital_venue_for_offerer1, price=2, available=100)
-        stock2 = create_stock_with_thing_offer(offerer1, digital_venue_for_offerer1, price=3, available=100)
+        stock1 = create_stock_with_event_offer(offerer1, digital_venue_for_offerer1, price=2, quantity=100)
+        stock2 = create_stock_with_thing_offer(offerer1, digital_venue_for_offerer1, price=3, quantity=100)
         booking_for_offerer1 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=2,
                                               recommendation=None, date_created=datetime(2020, 5, 30))
         booking_for_offerer2 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=3,
@@ -454,8 +449,8 @@ class FindFinalVenueBookingsTest:
         offerer1 = create_offerer()
         venue = create_venue(offerer1)
         offer = create_offer_with_event_product(venue)
-        stock1 = create_stock(offer=offer, beginning_datetime=THREE_DAYS_AGO)
-        stock2 = create_stock(offer=offer, beginning_datetime=ONE_DAY_AGO)
+        stock1 = create_stock(beginning_datetime=THREE_DAYS_AGO, offer=offer)
+        stock2 = create_stock(beginning_datetime=ONE_DAY_AGO, offer=offer)
         booking1 = create_booking(user=user, is_used=False, stock=stock1, venue=venue)
         booking2 = create_booking(user=user, is_used=False, stock=stock2, venue=venue)
         repository.save(booking1, booking2)
@@ -523,8 +518,7 @@ class FindUserActivationBookingTest:
         venue_online = create_venue(offerer, siret=None, is_virtual=True)
         activation_offer = create_offer_with_thing_product(
             venue_online, thing_type=ThingType.ACTIVATION)
-        activation_stock = create_stock_from_offer(
-            activation_offer, available=200, price=0)
+        activation_stock = create_stock_from_offer(activation_offer, price=0, quantity=200)
         activation_booking = create_booking(user=user, stock=activation_stock, venue=venue_online)
         repository.save(activation_booking)
 
@@ -542,8 +536,7 @@ class FindUserActivationBookingTest:
         venue_online = create_venue(offerer, siret=None, is_virtual=True)
         activation_offer = create_offer_with_event_product(
             venue_online, event_type=EventType.ACTIVATION)
-        activation_stock = create_stock_from_offer(
-            activation_offer, available=200, price=0)
+        activation_stock = create_stock_from_offer(activation_offer, price=0, quantity=200)
         activation_booking = create_booking(user=user, stock=activation_stock, venue=venue_online)
         repository.save(activation_booking)
 
@@ -561,8 +554,7 @@ class FindUserActivationBookingTest:
         venue_online = create_venue(offerer, siret=None, is_virtual=True)
         book_offer = create_offer_with_thing_product(
             venue_online, thing_type=ThingType.LIVRE_EDITION)
-        book_stock = create_stock_from_offer(
-            book_offer, available=200, price=0)
+        book_stock = create_stock_from_offer(book_offer, price=0, quantity=200)
         book_booking = create_booking(user=user, stock=book_stock, venue=venue_online)
         repository.save(book_booking)
 
@@ -582,8 +574,7 @@ class GetExistingTokensTest:
         venue_online = create_venue(offerer, siret=None, is_virtual=True)
         book_offer = create_offer_with_thing_product(
             venue_online, thing_type=ThingType.LIVRE_EDITION)
-        book_stock = create_stock_from_offer(
-            book_offer, available=200, price=0)
+        book_stock = create_stock_from_offer(book_offer, price=0, quantity=200)
         booking1 = create_booking(user=user, stock=book_stock, venue=venue_online)
         booking2 = create_booking(user=user, stock=book_stock, venue=venue_online)
         booking3 = create_booking(user=user, stock=book_stock, venue=venue_online)
@@ -613,8 +604,7 @@ class FindAllActiveByUserIdTest:
         venue_online = create_venue(offerer, siret=None, is_virtual=True)
         book_offer = create_offer_with_thing_product(
             venue_online, thing_type=ThingType.LIVRE_EDITION)
-        book_stock = create_stock_from_offer(
-            book_offer, available=200, price=0)
+        book_stock = create_stock_from_offer(book_offer, price=0, quantity=200)
         booking1 = create_booking(user=user, is_cancelled=True, stock=book_stock, venue=venue_online)
         booking2 = create_booking(user=user, is_used=True, stock=book_stock, venue=venue_online)
         booking3 = create_booking(user=user, stock=book_stock, venue=venue_online)
@@ -793,7 +783,7 @@ class SaveBookingTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, price=0, available=1)
+        stock = create_stock_from_offer(offer, price=0, quantity=1)
         user_cancelled = create_user(email='cancelled@example.com')
         user_booked = create_user(email='booked@example.com')
         cancelled_booking = create_booking(user=user_cancelled, stock=stock, is_cancelled=True)
@@ -813,7 +803,7 @@ class SaveBookingTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, price=0, available=1)
+        stock = create_stock_from_offer(offer, price=0, quantity=1)
         user1 = create_user(email='cancelled@example.com')
         user2 = create_user(email='booked@example.com')
         booking1 = create_booking(user=user1, stock=stock, is_cancelled=False)
@@ -971,10 +961,7 @@ class GetAllCancelledBookingsCountTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         event_offer = create_offer_with_event_product(venue)
-        event_stock = create_stock(
-            offer=event_offer,
-            price=0
-        )
+        event_stock = create_stock(offer=event_offer, price=0)
         user = create_user()
         booking = create_booking(user=user, stock=event_stock, is_cancelled=False)
         repository.save(booking)
@@ -992,11 +979,7 @@ class GetAllCancelledBookingsCountTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         event_offer = create_offer_with_event_product(venue)
-        event_stock = create_stock(
-            offer=event_offer,
-            price=0,
-            beginning_datetime=beginning_datetime,
-        )
+        event_stock = create_stock(beginning_datetime=beginning_datetime, offer=event_offer, price=0)
         user = create_user()
         booking = create_booking(user=user, stock=event_stock, is_cancelled=True)
         repository.save(booking)
@@ -1017,11 +1000,7 @@ class GetAllCancelledBookingsCountTest:
             venue, event_type=EventType.ACTIVATION)
         offer2 = create_offer_with_thing_product(
             venue, thing_type=ThingType.ACTIVATION)
-        stock1 = create_stock(
-            offer=offer1,
-            price=0,
-            beginning_datetime=beginning_datetime,
-        )
+        stock1 = create_stock(beginning_datetime=beginning_datetime, offer=offer1, price=0)
         stock2 = create_stock(offer=offer2, price=0)
         user = create_user()
         booking1 = create_booking(user=user, stock=stock1, is_cancelled=True)
@@ -1043,11 +1022,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         event_offer = create_offer_with_event_product(venue)
-        event_stock = create_stock(
-            offer=event_offer,
-            price=0,
-            beginning_datetime=beginning_datetime,
-        )
+        event_stock = create_stock(beginning_datetime=beginning_datetime, offer=event_offer, price=0)
         user = create_user(departement_code='76')
         booking = create_booking(user=user, stock=event_stock, is_cancelled=False)
         repository.save(booking)
@@ -1065,11 +1040,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         event_offer = create_offer_with_event_product(venue)
-        event_stock = create_stock(
-            offer=event_offer,
-            price=0,
-            beginning_datetime=beginning_datetime,
-        )
+        event_stock = create_stock(beginning_datetime=beginning_datetime, offer=event_offer, price=0)
         user = create_user(departement_code='76')
         booking = create_booking(user=user, stock=event_stock, is_cancelled=True)
         repository.save(booking)
@@ -1437,11 +1408,11 @@ class GetValidBookingsByUserId:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer1 = create_offer_with_event_product(venue)
-        stock1 = create_stock(offer=offer1, beginning_datetime=three_days, booking_limit_datetime=NOW)
+        stock1 = create_stock(booking_limit_datetime=NOW, beginning_datetime=three_days, offer=offer1)
         offer2 = create_offer_with_event_product(venue)
-        stock2 = create_stock(offer=offer2, beginning_datetime=two_days, booking_limit_datetime=NOW)
+        stock2 = create_stock(booking_limit_datetime=NOW, beginning_datetime=two_days, offer=offer2)
         offer3 = create_offer_with_event_product(venue)
-        stock3 = create_stock(offer=offer3, beginning_datetime=two_days_bis, booking_limit_datetime=NOW)
+        stock3 = create_stock(booking_limit_datetime=NOW, beginning_datetime=two_days_bis, offer=offer3)
         booking1 = create_booking(user=user, stock=stock1,
                                   recommendation=create_recommendation(user=user, offer=offer1))
         booking2 = create_booking(user=user, stock=stock2,
@@ -1467,7 +1438,7 @@ class FindNotUsedAndNotCancelledBookingsAssociatedToOutdatedStocksTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, available=10, beginning_datetime=datetime(2020, 1, 1))
+        stock = create_stock(quantity=10, beginning_datetime=datetime(2020, 1, 1), offer=offer)
         booking1 = create_booking(user=user, is_cancelled=False, stock=stock)
         booking2 = create_booking(user=user, is_cancelled=True, stock=stock)
         repository.save(booking1, booking2)
@@ -1488,7 +1459,7 @@ class FindNotUsedAndNotCancelledBookingsAssociatedToOutdatedStocksTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, available=10, beginning_datetime=datetime(2020, 1, 1))
+        stock = create_stock(quantity=10, beginning_datetime=datetime(2020, 1, 1), offer=offer)
         booking1 = create_booking(user=user, is_used=False, stock=stock)
         booking2 = create_booking(user=user, is_used=True, stock=stock)
         repository.save(booking1, booking2)
@@ -1509,14 +1480,8 @@ class FindNotUsedAndNotCancelledBookingsAssociatedToOutdatedStocksTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        outdated_stock = create_stock(offer=offer,
-                                      available=10,
-                                      beginning_datetime=datetime(2020, 1, 1)
-                                      )
-        valid_stock = create_stock(offer=offer,
-                                   available=10,
-                                   beginning_datetime=datetime(2020, 1, 30)
-                                   )
+        outdated_stock = create_stock(quantity=10, beginning_datetime=datetime(2020, 1, 1), offer=offer)
+        valid_stock = create_stock(quantity=10, beginning_datetime=datetime(2020, 1, 30), offer=offer)
         booking1 = create_booking(user=user, is_used=False, is_cancelled=False, stock=outdated_stock)
         booking2 = create_booking(user=user, is_used=False, is_cancelled=False, stock=outdated_stock)
         booking3 = create_booking(user=user, is_used=False, is_cancelled=False, stock=valid_stock)
@@ -1626,7 +1591,7 @@ class CountNotCancelledBookingsQuantityByStocksTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, available=20)
+        stock = create_stock(quantity=20, offer=offer)
 
         booking1 = create_booking(user=user, is_cancelled=True, stock=stock, quantity=2)
         booking2 = create_booking(user=user, is_cancelled=False, stock=stock, quantity=7)

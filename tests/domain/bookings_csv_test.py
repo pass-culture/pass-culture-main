@@ -40,7 +40,7 @@ class BookingsCSVTest:
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
         venue = create_venue(offerer, name='La petite librairie')
         offer = create_offer_with_thing_product(venue, thing_name='Test Book')
-        stock = create_stock(price=12, available=5, offer=offer)
+        stock = create_stock(quantity=5, offer=offer, price=12)
         booking = create_booking(user=user, stock=stock, date_created=datetime(2010, 1, 1, 0, 0, 0, 0))
         deposit = create_deposit(user=user, amount=100)
 

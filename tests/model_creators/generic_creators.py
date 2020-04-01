@@ -386,21 +386,13 @@ def create_recommendation(offer: Offer = None,
     return recommendation
 
 
-def create_stock(available: int = None,
-                 booking_limit_datetime: datetime = None,
-                 beginning_datetime: datetime = None,
-                 date_created: datetime = datetime.utcnow(),
-                 date_modified: datetime = datetime.utcnow(),
-                 date_modified_at_last_provider: datetime = None,
-                 has_been_migrated: bool = None,
-                 idx: int = None,
-                 id_at_providers: str = None,
-                 is_soft_deleted: bool = False,
-                 last_provider_id: int = None,
-                 offer: Offer = None,
-                 price: int = 10) -> Stock:
+def create_stock(quantity: int = None, booking_limit_datetime: datetime = None, beginning_datetime: datetime = None,
+                 date_created: datetime = datetime.utcnow(), date_modified: datetime = datetime.utcnow(),
+                 date_modified_at_last_provider: datetime = None, has_been_migrated: bool = None, idx: int = None,
+                 id_at_providers: str = None, is_soft_deleted: bool = False, last_provider_id: int = None,
+                 offer: Offer = None, price: int = 10) -> Stock:
     stock = Stock()
-    stock.available = available
+    stock.quantity = quantity
     stock.beginningDatetime = beginning_datetime
     stock.bookingLimitDatetime = booking_limit_datetime
     stock.dateCreated = date_created
@@ -556,12 +548,12 @@ def create_venue_provider(venue: Venue,
 
 
 def create_allocine_venue_provider(venue: Provider, allocine_provider: Venue, is_duo: bool = False,
-                                   available: Optional[int] = None, venue_id_at_offer_provider: str = None) -> AllocineVenueProvider:
+                                   quantity: Optional[int] = None, venue_id_at_offer_provider: str = None) -> AllocineVenueProvider:
     allocine_venue_provider = AllocineVenueProvider()
     allocine_venue_provider.venue = venue
     allocine_venue_provider.provider = allocine_provider
     allocine_venue_provider.isDuo = is_duo
-    allocine_venue_provider.available = available
+    allocine_venue_provider.quantity = quantity
     allocine_venue_provider.venueIdAtOfferProvider = venue_id_at_offer_provider
     return allocine_venue_provider
 

@@ -142,7 +142,7 @@ class GetOfferForRecommendationsTest:
         venue = create_venue(offerer, postal_code='34000',
                              departement_code='34')
         offer = create_offer_with_thing_product(venue=venue, product=product)
-        stock = create_stock_from_offer(offer, available=2)
+        stock = create_stock_from_offer(offer, quantity=2)
         create_mediation(stock.offer)
         repository.save(user, stock)
 
@@ -162,10 +162,8 @@ class GetOfferForRecommendationsTest:
         user = create_user()
         venue = create_venue(offerer, postal_code='34000',
                              departement_code='34')
-        stock1 = create_stock_with_thing_offer(
-            offerer, venue, name='thing_with_mediation')
-        stock2 = create_stock_with_thing_offer(
-            offerer, venue, name='thing_without_mediation')
+        stock1 = create_stock_with_thing_offer(offerer, venue, name='thing_with_mediation')
+        stock2 = create_stock_with_thing_offer(offerer, venue, name='thing_without_mediation')
         create_mediation(stock1.offer)
         repository.save(user, stock1, stock2)
 
@@ -188,16 +186,10 @@ class GetOfferForRecommendationsTest:
                              departement_code='34')
 
         stock1 = create_stock_with_thing_offer(offerer, venue, name='thing')
-        stock2 = create_stock_with_event_offer(offerer,
-                                               venue,
-                                               beginning_datetime=datetime.utcnow() + timedelta(days=4),
-                                               name='event_occurs_soon',
-                                               thumb_count=1)
-        stock3 = create_stock_with_event_offer(offerer,
-                                               venue,
-                                               beginning_datetime=datetime.utcnow() + timedelta(days=11),
-                                               name='event_occurs_later',
-                                               thumb_count=1)
+        stock2 = create_stock_with_event_offer(offerer, venue, name='event_occurs_soon',
+                                               beginning_datetime=datetime.utcnow() + timedelta(days=4), thumb_count=1)
+        stock3 = create_stock_with_event_offer(offerer, venue, name='event_occurs_later',
+                                               beginning_datetime=datetime.utcnow() + timedelta(days=11), thumb_count=1)
         create_mediation(stock1.offer)
         create_mediation(stock2.offer)
         create_mediation(stock3.offer)
@@ -224,18 +216,13 @@ class GetOfferForRecommendationsTest:
         user = create_user()
         venue = create_venue(offerer, postal_code='34000',
                              departement_code='34')
-        stock1 = create_stock_with_thing_offer(
-            offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
-        stock2 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.CINEMA_ABO,
-                                               url='http://example.com')
-        stock3 = create_stock_with_thing_offer(
-            offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
-        stock4 = create_stock_with_thing_offer(
-            offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
-        stock5 = create_stock_with_thing_offer(
-            offerer, venue, name='thing', thing_type=ThingType.AUDIOVISUEL)
-        stock6 = create_stock_with_thing_offer(
-            offerer, venue, name='thing', thing_type=ThingType.JEUX)
+        stock1 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
+        stock2 = create_stock_with_thing_offer(offerer, venue, name='thing', url='http://example.com',
+                                               thing_type=ThingType.CINEMA_ABO)
+        stock3 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
+        stock4 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
+        stock5 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.AUDIOVISUEL)
+        stock6 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX)
         create_mediation(stock1.offer)
         create_mediation(stock2.offer)
         create_mediation(stock3.offer)
@@ -267,7 +254,7 @@ class GetOfferForRecommendationsTest:
         venue = create_venue(offerer, postal_code='34000',
                              departement_code='34')
         offer = create_offer_with_thing_product(venue=venue, product=product)
-        stock = create_stock_from_offer(offer, available=2, price=0)
+        stock = create_stock_from_offer(offer, price=0, quantity=2)
         booking1 = create_booking(
             user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
         booking2 = create_booking(
@@ -291,14 +278,10 @@ class GetOfferForRecommendationsTest:
         venue = create_venue(offerer, postal_code='34000',
                              departement_code='34')
 
-        stock1 = create_stock_with_thing_offer(
-            offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
-        stock2 = create_stock_with_thing_offer(
-            offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
-        stock3 = create_stock_with_thing_offer(
-            offerer, venue, name='thing', thing_type=ThingType.AUDIOVISUEL)
-        stock4 = create_stock_with_thing_offer(
-            offerer, venue, name='thing', thing_type=ThingType.JEUX)
+        stock1 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
+        stock2 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
+        stock3 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.AUDIOVISUEL)
+        stock4 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX)
         create_mediation(stock1.offer)
         create_mediation(stock2.offer)
         create_mediation(stock3.offer)
@@ -574,7 +557,7 @@ class GetOfferForRecommendationsTest:
         user_with_booking = create_user(email='has_bookings@example.com')
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(idx=1, venue=venue)
-        stock = create_stock_from_offer(offer, available=2, price=0, date_modified=datetime.utcnow())
+        stock = create_stock_from_offer(offer, price=0, quantity=2, date_modified=datetime.utcnow())
         booking = create_booking(user_with_booking, stock=stock, quantity=2, is_used=True, date_used=yesterday)
         mediation = create_mediation(offer)
         repository.save(user, booking, mediation)

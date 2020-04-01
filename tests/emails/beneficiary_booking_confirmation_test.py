@@ -19,7 +19,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_an_event(mock
     event_offer = create_offer_with_event_product(venue, event_name='Super événement', idx=34)
     create_mediation(event_offer, idx=22)
     beginning_datetime = datetime(2019, 11, 6, 14, 59, 5, tzinfo=timezone.utc)
-    stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=23.99)
+    stock = create_stock_from_offer(event_offer, price=23.99, beginning_datetime=beginning_datetime)
     booking_datetime = datetime(2019, 10, 3, 13, 24, 6, tzinfo=timezone.utc)
     booking = create_booking(date_created=booking_datetime, user=user, stock=stock, venue=venue, token='ABC123')
 
@@ -69,7 +69,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event(m
     event_offer = create_offer_with_event_product(venue, event_name='Super événement', idx=34)
     create_mediation(event_offer, idx=22)
     beginning_datetime = datetime(2019, 11, 6, 14, 59, 5, tzinfo=timezone.utc)
-    stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=23.99)
+    stock = create_stock_from_offer(event_offer, price=23.99, beginning_datetime=beginning_datetime)
     booking_datetime = datetime(2019, 10, 3, 13, 24, 6, tzinfo=timezone.utc)
     booking = create_booking(date_created=booking_datetime, user=user, stock=stock, venue=venue, quantity=2, token='ABC123')
 
@@ -213,7 +213,8 @@ def test_should_send_email_to_users_address_when_environment_is_production(mock_
     venue = create_venue(offerer)
     event_offer = create_offer_with_event_product(venue)
     create_mediation(event_offer)
-    stock = create_stock_from_offer(event_offer, beginning_datetime=datetime(2019, 10, 3, 13, 24, 6, tzinfo=timezone.utc))
+    stock = create_stock_from_offer(event_offer,
+                                    beginning_datetime=datetime(2019, 10, 3, 13, 24, 6, tzinfo=timezone.utc))
     booking = create_booking(user=user, stock=stock, venue=venue)
 
     # When
@@ -229,7 +230,8 @@ def test_should_return_total_price_for_duo_offers():
     offerer = create_offerer()
     venue = create_venue(offerer)
     event_offer = create_offer_with_event_product(venue)
-    stock = create_stock_from_offer(event_offer, price=15, beginning_datetime=datetime(2019, 10, 3, 13, 24, 6, tzinfo=timezone.utc))
+    stock = create_stock_from_offer(event_offer, price=15,
+                                    beginning_datetime=datetime(2019, 10, 3, 13, 24, 6, tzinfo=timezone.utc))
     booking = create_booking(user=user, stock=stock, quantity=2)
 
     # When

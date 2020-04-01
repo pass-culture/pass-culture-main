@@ -129,18 +129,18 @@ def test_should_return_errors_when_valid_product():
 
 def test_should_return_errors_when_invalid_stock():
     # Given
-    stock = create_stock(available=-1)
+    stock = create_stock(quantity=-1)
 
     # When
     api_errors = validate(stock)
 
     # Then
-    assert api_errors.errors == {'available': ['Le stock doit être positif']}
+    assert api_errors.errors == {'quantity': ['Le stock doit être positif']}
 
 
 def test_should_not_return_errors_when_valid_stock():
     # Given
-    stock = create_stock(available=1)
+    stock = create_stock(quantity=1)
 
     # When
     api_errors = validate(stock)

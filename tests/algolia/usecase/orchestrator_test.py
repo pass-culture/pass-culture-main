@@ -42,11 +42,11 @@ class ProcessEligibleOffersTest:
         offerer = create_offerer(is_active=True, validation_token=None)
         venue = create_venue(offerer=offerer, validation_token=None)
         offer1 = create_offer_with_thing_product(venue=venue, is_active=True)
-        stock1 = create_stock(offer=offer1, booking_limit_datetime=TOMORROW, available=10)
+        stock1 = create_stock(quantity=10, booking_limit_datetime=TOMORROW, offer=offer1)
         offer2 = create_offer_with_thing_product(venue=venue, is_active=True)
-        stock2 = create_stock(offer=offer2, booking_limit_datetime=TOMORROW, available=10)
+        stock2 = create_stock(quantity=10, booking_limit_datetime=TOMORROW, offer=offer2)
         offer3 = create_offer_with_thing_product(venue=venue, is_active=False)
-        stock3 = create_stock(offer=offer3, booking_limit_datetime=TOMORROW, available=10)
+        stock3 = create_stock(quantity=10, booking_limit_datetime=TOMORROW, offer=offer3)
         repository.save(stock1, stock2, stock3)
         mock_check_offer_exists.side_effect = [False, False, False]
 
@@ -101,9 +101,9 @@ class ProcessEligibleOffersTest:
         offerer = create_offerer(is_active=True, validation_token=None)
         venue = create_venue(offerer=offerer, validation_token=None)
         offer1 = create_offer_with_thing_product(venue=venue, is_active=True)
-        stock1 = create_stock(offer=offer1, booking_limit_datetime=TOMORROW, available=0)
+        stock1 = create_stock(quantity=0, booking_limit_datetime=TOMORROW, offer=offer1)
         offer2 = create_offer_with_thing_product(venue=venue, is_active=True)
-        stock2 = create_stock(offer=offer2, booking_limit_datetime=TOMORROW, available=0)
+        stock2 = create_stock(quantity=0, booking_limit_datetime=TOMORROW, offer=offer2)
         repository.save(stock1, stock2)
         mock_check_offer_exists.side_effect = [
             True,
@@ -154,9 +154,9 @@ class ProcessEligibleOffersTest:
         offerer = create_offerer(is_active=True, validation_token=None)
         venue = create_venue(offerer=offerer, validation_token=None)
         offer1 = create_offer_with_thing_product(venue=venue, is_active=True)
-        stock1 = create_stock(offer=offer1, booking_limit_datetime=TOMORROW, available=0)
+        stock1 = create_stock(quantity=0, booking_limit_datetime=TOMORROW, offer=offer1)
         offer2 = create_offer_with_thing_product(venue=venue, is_active=True)
-        stock2 = create_stock(offer=offer2, booking_limit_datetime=TOMORROW, available=0)
+        stock2 = create_stock(quantity=0, booking_limit_datetime=TOMORROW, offer=offer2)
         repository.save(stock1, stock2)
         mock_check_offer_exists.side_effect = [
             False,
@@ -202,9 +202,9 @@ class ProcessEligibleOffersTest:
         offerer = create_offerer(is_active=True, validation_token=None)
         venue = create_venue(offerer=offerer, validation_token=None)
         offer1 = create_offer_with_thing_product(venue=venue, is_active=True)
-        stock1 = create_stock(offer=offer1, booking_limit_datetime=TOMORROW, available=0)
+        stock1 = create_stock(quantity=0, booking_limit_datetime=TOMORROW, offer=offer1)
         offer2 = create_offer_with_thing_product(venue=venue, is_active=True)
-        stock2 = create_stock(offer=offer2, booking_limit_datetime=TOMORROW, available=0)
+        stock2 = create_stock(quantity=0, booking_limit_datetime=TOMORROW, offer=offer2)
         repository.save(stock1, stock2)
         mock_check_offer_exists.side_effect = [
             True,
@@ -253,11 +253,11 @@ class ProcessEligibleOffersTest:
         offerer = create_offerer(is_active=True, validation_token=None)
         venue = create_venue(offerer=offerer, validation_token=None)
         offer1 = create_offer_with_thing_product(thing_name='super offre 1', venue=venue, is_active=True)
-        stock1 = create_stock(offer=offer1, booking_limit_datetime=TOMORROW, available=1)
+        stock1 = create_stock(quantity=1, booking_limit_datetime=TOMORROW, offer=offer1)
         offer2 = create_offer_with_thing_product(thing_name='super offre 2', venue=venue, is_active=True)
-        stock2 = create_stock(offer=offer2, booking_limit_datetime=TOMORROW, available=1)
+        stock2 = create_stock(quantity=1, booking_limit_datetime=TOMORROW, offer=offer2)
         offer3 = create_offer_with_thing_product(thing_name='super offre 3', venue=venue, is_active=True)
-        stock3 = create_stock(offer=offer3, booking_limit_datetime=TOMORROW, available=1)
+        stock3 = create_stock(quantity=1, booking_limit_datetime=TOMORROW, offer=offer3)
         repository.save(stock1, stock2, stock3)
         offer_ids = [offer1.id, offer2.id, offer3.id]
         mock_build_object.side_effect = [
@@ -320,11 +320,11 @@ class ProcessEligibleOffersTest:
         offerer = create_offerer(is_active=True, validation_token=None)
         venue = create_venue(offerer=offerer, validation_token=None)
         offer1 = create_offer_with_thing_product(thing_name='super offre 1', venue=venue, is_active=False)
-        stock1 = create_stock(offer=offer1, booking_limit_datetime=TOMORROW, available=1)
+        stock1 = create_stock(quantity=1, booking_limit_datetime=TOMORROW, offer=offer1)
         offer2 = create_offer_with_thing_product(thing_name='super offre 2', venue=venue, is_active=False)
-        stock2 = create_stock(offer=offer2, booking_limit_datetime=TOMORROW, available=1)
+        stock2 = create_stock(quantity=1, booking_limit_datetime=TOMORROW, offer=offer2)
         offer3 = create_offer_with_thing_product(thing_name='super offre 3', venue=venue, is_active=False)
-        stock3 = create_stock(offer=offer3, booking_limit_datetime=TOMORROW, available=1)
+        stock3 = create_stock(quantity=1, booking_limit_datetime=TOMORROW, offer=offer3)
         repository.save(stock1, stock2, stock3)
         offer_ids = [offer1.id, offer2.id, offer3.id]
         mock_check_offer_exists.side_effect = [True, True, True]
@@ -368,9 +368,9 @@ class ProcessEligibleOffersTest:
         offerer = create_offerer(is_active=True, validation_token=None)
         venue = create_venue(offerer=offerer, validation_token=None)
         offer1 = create_offer_with_thing_product(thing_name='super offre 1', venue=venue, is_active=False)
-        stock1 = create_stock(offer=offer1, booking_limit_datetime=TOMORROW, available=1)
+        stock1 = create_stock(quantity=1, booking_limit_datetime=TOMORROW, offer=offer1)
         offer2 = create_offer_with_thing_product(thing_name='super offre 2', venue=venue, is_active=False)
-        stock2 = create_stock(offer=offer2, booking_limit_datetime=TOMORROW, available=1)
+        stock2 = create_stock(quantity=1, booking_limit_datetime=TOMORROW, offer=offer2)
         repository.save(stock1, stock2)
         offer_ids = [offer1.id, offer2.id]
         mock_check_offer_exists.side_effect = [False, False]
@@ -408,7 +408,7 @@ class ProcessEligibleOffersTest:
         offerer = create_offerer(is_active=True, validation_token=None)
         venue = create_venue(offerer=offerer, validation_token=None)
         offer1 = create_offer_with_thing_product(thing_name='super offre 1', venue=venue, is_active=True)
-        stock1 = create_stock(offer=offer1, booking_limit_datetime=TOMORROW, available=1)
+        stock1 = create_stock(quantity=1, booking_limit_datetime=TOMORROW, offer=offer1)
         repository.save(stock1)
         offer_ids = [offer1.id]
         mock_build_object.side_effect = [
@@ -464,7 +464,7 @@ class ProcessEligibleOffersTest:
         offerer = create_offerer(is_active=True, validation_token=None)
         venue = create_venue(offerer=offerer, validation_token=None)
         offer1 = create_offer_with_thing_product(thing_name='super offre 1', venue=venue, is_active=True)
-        stock1 = create_stock(offer=offer1, booking_limit_datetime=TOMORROW, available=1)
+        stock1 = create_stock(quantity=1, booking_limit_datetime=TOMORROW, offer=offer1)
         repository.save(stock1)
         offer_ids = [offer1.id]
         mock_build_object.side_effect = [
@@ -514,10 +514,8 @@ class ProcessEligibleOffersTest:
                                                 event_name='super offre 1',
                                                 venue=venue,
                                                 is_active=True)
-        stock = create_stock(available=1,
-                             beginning_datetime=datetime(2019, 1, 5),
-                             booking_limit_datetime=datetime(2019, 1, 3),
-                             offer=offer)
+        stock = create_stock(quantity=1, booking_limit_datetime=datetime(2019, 1, 3),
+                             beginning_datetime=datetime(2019, 1, 5), offer=offer)
         repository.save(stock)
         offer_ids = [offer.id]
         mock_build_object.side_effect = [
@@ -577,9 +575,9 @@ class ProcessEligibleOffersTest:
         offerer = create_offerer(is_active=True, validation_token=None)
         venue = create_venue(offerer=offerer, validation_token=None)
         offer1 = create_offer_with_thing_product(venue=venue, is_active=True)
-        stock1 = create_stock(offer=offer1, booking_limit_datetime=TOMORROW, available=10)
+        stock1 = create_stock(quantity=10, booking_limit_datetime=TOMORROW, offer=offer1)
         offer2 = create_offer_with_thing_product(venue=venue, is_active=True)
-        stock2 = create_stock(offer=offer2, booking_limit_datetime=TOMORROW, available=10)
+        stock2 = create_stock(quantity=10, booking_limit_datetime=TOMORROW, offer=offer2)
         repository.save(stock1, stock2)
         mock_check_offer_exists.side_effect = [False, False]
         mock_add_objects.side_effect = [AlgoliaException]

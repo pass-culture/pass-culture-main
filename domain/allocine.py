@@ -30,7 +30,7 @@ def _exclude_movie_showtimes_with_special_event_type(movies_showtime: list) -> l
 
 
 def get_editable_fields_for_allocine_stocks() -> List:
-    return ['available', 'price', 'bookingLimitDatetime']
+    return ['quantity', 'price', 'bookingLimitDatetime']
 
 
 def get_editable_fields_for_allocine_offers() -> dict:

@@ -47,7 +47,7 @@ def test_raises_error_on_booking_when_total_stock_is_less_than_bookings_count(ap
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_offer_with_thing_product(venue)
-    stock = create_stock_from_offer(offer, price=0, available=1)
+    stock = create_stock_from_offer(offer, price=0, quantity=1)
     user1 = create_user(email='used_booking@example.com')
     user2 = create_user(email='booked@example.com')
 
@@ -71,7 +71,7 @@ def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_
     offerer = create_offerer()
     venue = create_venue(offerer)
     offer = create_offer_with_thing_product(venue)
-    stock = create_stock_from_offer(offer, price=0, available=1)
+    stock = create_stock_from_offer(offer, price=0, quantity=1)
     user1 = create_user(email='used_booking@example.com')
     user2 = create_user(email='booked@example.com')
     repository.save(stock)
@@ -106,7 +106,7 @@ class BookingThumbUrlTest:
         product = create_product_with_event_type(thumb_count=1)
         offer = create_offer_with_event_product(product=product, venue=venue)
         mediation = create_mediation(offer=offer, idx=1, thumb_count=1)
-        stock = create_stock(price=12, available=1, offer=offer)
+        stock = create_stock(quantity=1, offer=offer, price=12)
         recommendation = create_recommendation(idx=100, mediation=mediation, offer=offer, user=user)
         recommendation.mediationId = mediation.id
 
@@ -127,7 +127,7 @@ class BookingThumbUrlTest:
         offer = create_offer_with_event_product(product=product, venue=venue)
         inactive_mediation = create_mediation(offer=offer, is_active=False, idx=1, thumb_count=1)
         active_mediation = create_mediation(offer=offer, idx=2, thumb_count=1)
-        stock = create_stock(price=12, available=1, offer=offer)
+        stock = create_stock(quantity=1, offer=offer, price=12)
 
         # when
         booking = create_booking(user=user, stock=stock, venue=venue)
@@ -145,7 +145,7 @@ class BookingThumbUrlTest:
         product = create_product_with_event_type(thumb_count=1)
         product.id = 2
         offer = create_offer_with_event_product(product=product, venue=venue)
-        stock = create_stock(price=12, available=1, offer=offer)
+        stock = create_stock(quantity=1, offer=offer, price=12)
 
         # when
         booking = create_booking(user=user, stock=stock, venue=venue)
@@ -162,7 +162,7 @@ class BookingThumbUrlTest:
         venue = create_venue(offerer)
         product = create_product_with_event_type(thumb_count=0)
         offer = create_offer_with_event_product(product=product, venue=venue)
-        stock = create_stock(price=12, available=1, offer=offer)
+        stock = create_stock(quantity=1, offer=offer, price=12)
 
         # when
         booking = create_booking(user=user, stock=stock, venue=venue)
@@ -180,7 +180,7 @@ class BookingThumbUrlTest:
         product = create_product_with_event_type(thumb_count=0)
         offer = create_offer_with_event_product(product=product, venue=venue)
         mediation = create_mediation(offer=offer, idx=1, thumb_count=0)
-        stock = create_stock(price=12, available=1, offer=offer)
+        stock = create_stock(quantity=1, offer=offer, price=12)
         recommendation = create_recommendation(idx=100, mediation=mediation, offer=offer, user=user)
         recommendation.mediationId = mediation.id
 

@@ -25,7 +25,7 @@ from utils.human_ids import humanize
 def test_create_payment_for_booking_with_common_information(app):
     # given
     user = create_user()
-    stock = create_stock(price=10, available=5)
+    stock = create_stock(quantity=5, price=10)
     booking = create_booking(user=user, quantity=1, stock=stock)
     booking.stock.offer = Offer()
     booking.stock.offer.venue = Venue()
@@ -50,7 +50,7 @@ def test_create_payment_for_booking_with_common_information(app):
 def test_create_payment_for_booking_when_iban_is_on_venue_should_take_payment_info_from_venue(app):
     # given
     user = create_user()
-    stock = create_stock(price=10, available=5)
+    stock = create_stock(quantity=5, price=10)
     offerer = create_offerer(name='Test Offerer')
     venue = create_venue(offerer, name='Test Venue', )
     booking = create_booking(user=user, quantity=1, stock=stock)
@@ -74,7 +74,7 @@ def test_create_payment_for_booking_when_iban_is_on_venue_should_take_payment_in
 def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_info_from_offerer(app):
     # given
     user = create_user()
-    stock = create_stock(price=10, available=5)
+    stock = create_stock(quantity=5, price=10)
     offerer = create_offerer(name='Test Offerer')
     venue = create_venue(offerer, name='Test Venue')
 
@@ -98,7 +98,7 @@ def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_in
 def test_create_payment_for_booking_takes_recipient_name_and_siren_from_offerer(app):
     # given
     user = create_user()
-    stock = create_stock(price=10, available=5)
+    stock = create_stock(quantity=5, price=10)
     booking = create_booking(user=user, quantity=1, stock=stock)
     booking.stock.offer = Offer()
     offerer = create_offerer(name='Test Offerer', siren='123456789')
@@ -122,7 +122,7 @@ def test_create_payment_for_booking_takes_recipient_name_and_siren_from_offerer(
 def test_create_payment_for_booking_with_not_processable_status_when_no_bank_information_linked_to_venue_or_offerer():
     # given
     user = create_user()
-    stock = create_stock(price=10, available=5)
+    stock = create_stock(quantity=5, price=10)
     booking = create_booking(user=user, quantity=1, stock=stock)
     booking.stock.offer = Offer()
     booking.stock.offer.venue = Venue()
@@ -142,7 +142,7 @@ def test_create_payment_for_booking_with_not_processable_status_when_no_bank_inf
 def test_create_payment_for_booking_with_pending_status(app):
     # given
     user = create_user()
-    stock = create_stock(price=10, available=5)
+    stock = create_stock(quantity=5, price=10)
     booking = create_booking(user=user, quantity=1, stock=stock)
     booking.stock.offer = Offer()
     booking.stock.offer.venue = Venue()
@@ -361,7 +361,7 @@ class CreatePaymentDetailsTest:
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(price=12, available=5, offer=offer)
+        stock = create_stock(quantity=5, offer=offer, price=12)
         booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), idx=5, quantity=2)
         payment = create_payment(booking=booking, offerer=offerer, amount=35)
         find_date = Mock()
@@ -381,7 +381,7 @@ class CreatePaymentDetailsTest:
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(price=12, available=5, offer=offer)
+        stock = create_stock(quantity=5, offer=offer, price=12)
         booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), idx=5, quantity=2)
         payment = create_payment(booking, offerer, 35)
         find_date = Mock()
@@ -400,7 +400,7 @@ class CreatePaymentDetailsTest:
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
         venue = create_venue(offerer, name='Jack le Sculpteur', siret='1234567891234', idx=1)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(price=12, available=5, offer=offer)
+        stock = create_stock(quantity=5, offer=offer, price=12)
         booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), idx=5, quantity=2)
         payment = create_payment(booking, offerer, 35)
         find_date = Mock()
@@ -420,7 +420,7 @@ class CreatePaymentDetailsTest:
         offerer = create_offerer(siren='987654321', name='Joe le Libraire')
         venue = create_venue(offerer, name='Jack le Sculpteur', siret='1234567891234')
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(price=12, available=5, offer=offer)
+        stock = create_stock(quantity=5, offer=offer, price=12)
         booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), idx=5, quantity=2)
         payment = create_payment(booking, offerer, 35)
         find_date = Mock()

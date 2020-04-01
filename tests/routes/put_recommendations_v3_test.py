@@ -295,7 +295,7 @@ class Put:
                     offer_event,
                     beginning_datetime=four_days_from_now
                 )
-                event_stock = create_stock_from_event_occurrence(event_occurrence, price=0, available=20)
+                event_stock = create_stock_from_event_occurrence(event_occurrence, price=0, quantity=20)
                 offer_thing = create_offer_with_thing_product(venue)
                 stock_thing = create_stock_with_thing_offer(offerer, venue, offer_thing, price=0)
                 create_mediation(offer_thing)

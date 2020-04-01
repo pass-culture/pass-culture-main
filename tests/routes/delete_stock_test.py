@@ -67,7 +67,7 @@ class Delete:
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, last_provider_id=allocine_provider.id,
                                                     id_at_providers='allo')
-            stock = create_stock(offer=offer, id_at_providers='allo-cine')
+            stock = create_stock(id_at_providers='allo-cine', offer=offer)
             repository.save(user, user_offerer, stock)
 
             # When
@@ -131,11 +131,8 @@ class Delete:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(
-                offerer, venue,
-                booking_limit_datetime=NOW - timedelta(days=6),
-                beginning_datetime=NOW - timedelta(days=5),
-            )
+            stock = create_stock_with_event_offer(offerer, venue, beginning_datetime=NOW - timedelta(days=5),
+                                                  booking_limit_datetime=NOW - timedelta(days=6))
             repository.save(user, stock, user_offerer)
 
             # when

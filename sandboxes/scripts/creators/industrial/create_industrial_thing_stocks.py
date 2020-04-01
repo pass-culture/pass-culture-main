@@ -22,7 +22,7 @@ def create_industrial_thing_stocks(thing_offers_by_name):
 
     for thing_offer_item_with_stocks in thing_offer_items_with_stocks:
         (thing_offer_with_stocks_name, thing_offer_with_stocks) = thing_offer_item_with_stocks
-        available = 10
+        quantity = 10
 
         short_name = get_occurrence_short_name(thing_offer_with_stocks_name)
         price = get_price_by_short_name(short_name)
@@ -31,12 +31,8 @@ def create_industrial_thing_stocks(thing_offers_by_name):
             price = price + price_counter
         short_names_to_increase_price.append(short_name)
 
-        name = thing_offer_with_stocks_name + " / " + str(available) + " / " + str(price)
-        thing_stocks_by_name[name] = create_stock_from_offer(
-            thing_offer_with_stocks,
-            available=available,
-            price=price
-        )
+        name = thing_offer_with_stocks_name + " / " + str(quantity) + " / " + str(price)
+        thing_stocks_by_name[name] = create_stock_from_offer(thing_offer_with_stocks, price=price)
 
     repository.save(*thing_stocks_by_name.values())
 

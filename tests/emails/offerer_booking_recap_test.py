@@ -29,7 +29,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                              departement_code='75', postal_code='75000')
         event_offer = create_offer_with_event_product(venue, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 59, 5, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=0, available=10)
+        stock = create_stock_from_offer(event_offer, price=0, quantity=10, beginning_datetime=beginning_datetime)
         booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
         recipient = ['initial_recipient@example.com']
         stock.bookings = [booking]
@@ -138,7 +138,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                              departement_code='75', postal_code='75000')
         event_offer = create_offer_with_event_product(venue, is_duo=True, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=5.86, available=10)
+        stock = create_stock_from_offer(event_offer, price=5.86, quantity=10, beginning_datetime=beginning_datetime)
         booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
         stock.bookings = [booking]
         recipient = ['initial_recipient@example.com']
@@ -190,7 +190,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         venue = create_venue(offerer, name='Test offerer', is_virtual=True, siret=None, idx=1)
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
+        stock = create_stock_from_offer(thing_offer, price=0, quantity=10, beginning_datetime=beginning_datetime)
         booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
         recipient = ['initial_recipient@example.com']
         stock.bookings = [booking]
@@ -243,7 +243,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         venue = create_venue(offerer, name='Test offerer', is_virtual=True, siret=None, idx=1)
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
+        stock = create_stock_from_offer(thing_offer, price=0, quantity=10, beginning_datetime=beginning_datetime)
         booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
         stock.bookings = [booking]
         recipient = ['initial_recipient@example.com']
@@ -297,7 +297,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                              departement_code='75', postal_code='75000')
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
+        stock = create_stock_from_offer(thing_offer, price=0, quantity=10, beginning_datetime=beginning_datetime)
         booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
         stock.bookings = [booking]
         recipient = ['dev@example.com', 'administration@example.com']
@@ -356,7 +356,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                              departement_code='75', postal_code='75000')
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
+        stock = create_stock_from_offer(thing_offer, price=0, quantity=10, beginning_datetime=beginning_datetime)
         booking_1 = create_booking(user=user_1, stock=stock, venue=venue, token='ACVSDC')
         booking_2 = create_booking(user=user_2, stock=stock, venue=venue, token='TEST95')
         stock.bookings = [booking_1, booking_2]
@@ -420,7 +420,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                              departement_code='75', postal_code='75000')
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=3)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0, available=10)
+        stock = create_stock_from_offer(thing_offer, price=0, quantity=10, beginning_datetime=beginning_datetime)
         booking = create_booking(user=user, stock=stock, venue=venue, token='ACVSDC')
         stock.bookings = [booking]
         recipient = ['initial_recipient@example.com', 'administration@example.com']
@@ -476,8 +476,7 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         booking_limit_datetime = beginning_datetime - timedelta(hours=1)
 
         stock = create_stock_with_event_offer(offerer=None, venue=venue, event_type=EventType.SPECTACLE_VIVANT,
-                                              offer_id=1,
-                                              beginning_datetime=beginning_datetime,
+                                              offer_id=1, beginning_datetime=beginning_datetime,
                                               booking_limit_datetime=booking_limit_datetime)
         user = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
                            first_name='First', last_name='Last', public_name='Test')

@@ -22,8 +22,7 @@ class UpdateBookingUsedTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer,
-                             beginning_datetime=None)
+        stock = create_stock(beginning_datetime=None, offer=offer)
         booking = create_booking(user=user, is_used=False, stock=stock)
         repository.save(user, deposit, booking, stock)
 
@@ -45,8 +44,7 @@ class UpdateBookingUsedTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer,
-                             beginning_datetime=datetime(2019, 10, 9, 10, 20, 00))
+        stock = create_stock(beginning_datetime=datetime(2019, 10, 9, 10, 20, 00), offer=offer)
         booking = create_booking(user=user, is_used=False, stock=stock)
         repository.save(user, deposit, booking, stock)
 
@@ -68,8 +66,7 @@ class UpdateBookingUsedTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer,
-                             beginning_datetime=datetime(2019, 10, 9, 10, 20, 00))
+        stock = create_stock(beginning_datetime=datetime(2019, 10, 9, 10, 20, 00), offer=offer)
         booking = create_booking(user=user, is_used=False, stock=stock)
         repository.save(user, deposit, booking, stock)
 
@@ -90,8 +87,7 @@ class UpdateBookingUsedTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer,
-                             beginning_datetime=datetime(2019, 10, 9, 10, 20, 00))
+        stock = create_stock(beginning_datetime=datetime(2019, 10, 9, 10, 20, 00), offer=offer)
         booking_date = datetime(2019, 10, 12, 12, 20, 0)
         booking = create_booking(user=user, date_used=booking_date, is_used=True, stock=stock)
         repository.save(user, deposit, booking, stock)

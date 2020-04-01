@@ -238,8 +238,7 @@ class SendBookingRecapEmailsTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, booking_email='offer.booking.email@example.net')
-        stock = create_stock_with_thing_offer(offerer, venue, offer,
-                                              booking_email='offer.booking.email@example.net')
+        stock = create_stock_with_thing_offer(offerer, venue, offer, booking_email='offer.booking.email@example.net')
         booking = create_booking(user=user, stock=stock)
         mocked_send_email = Mock()
 

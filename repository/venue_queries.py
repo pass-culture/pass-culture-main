@@ -200,7 +200,7 @@ def _filter_by_offer_status(query, offer_status):
         is_not_soft_deleted_thing = Stock.isSoftDeleted == False
         can_still_be_booked_thing = (
                 (Stock.bookingLimitDatetime == None) | (Stock.bookingLimitDatetime >= datetime.utcnow()))
-        is_available_thing = ((Stock.available == None) | (Stock.available > 0))
+        is_available_thing = ((Stock.quantity == None) | (Stock.quantity > 0))
 
         query_1 = query.join(Stock)
         query_2 = query.join(Stock)

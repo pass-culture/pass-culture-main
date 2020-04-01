@@ -30,7 +30,7 @@ def test_save_activation_sandbox(app):
         UserOfferer=0,
     )
 
-    assert Stock.query.first().available == 10000
+    assert Stock.query.first().quantity == 10000
 
     # teardown
     logger.info = logger_info

@@ -514,7 +514,7 @@ class GetOffersForRecommendationsSearchTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer_with_not_available_stock = create_offer_with_thing_product(venue=venue, product=thing)
-        thing_stock = create_stock_from_offer(offer_with_not_available_stock, available=0)
+        thing_stock = create_stock_from_offer(offer_with_not_available_stock, quantity=0)
 
         repository.save(thing_stock)
 
@@ -620,9 +620,9 @@ class FindActivationOffersTest:
         offer2 = create_offer_with_event_product(venue=venue2, event_type=EventType.ACTIVATION)
         offer3 = create_offer_with_event_product(venue=venue3, event_type=EventType.ACTIVATION)
         offer4 = create_offer_with_event_product(venue=venue3, event_type=EventType.ACTIVATION)
-        stock1 = create_stock_from_offer(offer1, price=0, available=0)
-        stock2 = create_stock_from_offer(offer2, price=0, available=10)
-        stock3 = create_stock_from_offer(offer3, price=0, available=1)
+        stock1 = create_stock_from_offer(offer1, price=0, quantity=0)
+        stock2 = create_stock_from_offer(offer2, price=0, quantity=10)
+        stock3 = create_stock_from_offer(offer3, price=0, quantity=1)
         booking = create_booking(user=user, stock=stock3, quantity=1, venue=venue3)
         repository.save(stock1, stock2, stock3, booking, offer4)
 
@@ -749,7 +749,7 @@ class QueryOfferWithRemainingStocksTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue=venue, product=thing)
-        stock = create_stock_from_offer(offer, available=4, price=0)
+        stock = create_stock_from_offer(offer, price=0, quantity=4)
         booking_1 = create_booking(user=user, stock=stock, quantity=2)
         booking_2 = create_booking(user=user, stock=stock, quantity=1)
         repository.save(stock, booking_1, booking_2)
@@ -759,7 +759,7 @@ class QueryOfferWithRemainingStocksTest:
         offers_count = Offer.query \
             .join(Stock) \
             .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId) \
-            .filter((Stock.available == None) | ((Stock.available - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+            .filter((Stock.quantity == None) | ((Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
@@ -773,7 +773,7 @@ class QueryOfferWithRemainingStocksTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue=venue, product=thing)
-        stock = create_stock_from_offer(offer, available=3, price=0)
+        stock = create_stock_from_offer(offer, price=0, quantity=3)
         booking_1 = create_booking(user=user, stock=stock, quantity=2)
         booking_2 = create_booking(user=user, stock=stock, quantity=1)
         repository.save(stock, booking_1, booking_2)
@@ -783,7 +783,7 @@ class QueryOfferWithRemainingStocksTest:
         offers_count = Offer.query \
             .join(Stock) \
             .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId) \
-            .filter((Stock.available == None) | ((Stock.available - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+            .filter((Stock.quantity == None) | ((Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
@@ -797,7 +797,7 @@ class QueryOfferWithRemainingStocksTest:
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
         offer = create_offer_with_thing_product(venue=venue, product=product)
-        stock = create_stock_from_offer(offer, available=2)
+        stock = create_stock_from_offer(offer, quantity=2)
         booking = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
         repository.save(booking)
         bookings_quantity = _build_bookings_quantity_subquery()
@@ -806,7 +806,7 @@ class QueryOfferWithRemainingStocksTest:
         offers_count = Offer.query \
             .join(Stock) \
             .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId)  \
-            .filter((Stock.available == None) | ((Stock.available - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+            .filter((Stock.quantity == None) | ((Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
@@ -819,7 +819,7 @@ class QueryOfferWithRemainingStocksTest:
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
         offer = create_offer_with_thing_product(venue=venue, product=product)
-        stock = create_stock_from_offer(offer, available=2, price=0)
+        stock = create_stock_from_offer(offer, price=0, quantity=2)
         user = create_user()
         booking1 = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
         booking2 = create_booking(user=user, stock=stock, quantity=2, venue=venue)
@@ -830,7 +830,7 @@ class QueryOfferWithRemainingStocksTest:
         offers_count = Offer.query \
             .join(Stock) \
             .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId) \
-            .filter((Stock.available == None) | ((Stock.available - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+            .filter((Stock.quantity == None) | ((Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
@@ -843,8 +843,8 @@ class QueryOfferWithRemainingStocksTest:
         offerer = create_offerer()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
         offer = create_offer_with_thing_product(venue=venue, product=product)
-        stock1 = create_stock_from_offer(offer, available=2, price=0)
-        stock2 = create_stock_from_offer(offer, available=2, price=0)
+        stock1 = create_stock_from_offer(offer, price=0, quantity=2)
+        stock2 = create_stock_from_offer(offer, price=0, quantity=2)
         user = create_user()
         booking1 = create_booking(user=user, stock=stock1, quantity=2, venue=venue)
         repository.save(booking1, stock2)
@@ -854,7 +854,7 @@ class QueryOfferWithRemainingStocksTest:
         offers_count = Offer.query \
             .join(Stock) \
             .outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId) \
-            .filter((Stock.available == None) | ((Stock.available - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+            .filter((Stock.quantity == None) | ((Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
             .count()
 
         # Then
@@ -981,7 +981,7 @@ class GetActiveOffersTest:
         user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
         offer = create_offer_with_thing_product(venue=venue, product=product)
-        stock = create_stock_from_offer(offer, available=2)
+        stock = create_stock_from_offer(offer, quantity=2)
         create_mediation(stock.offer)
         repository.save(stock)
 
@@ -1023,16 +1023,10 @@ class GetActiveOffersTest:
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
 
         stock1 = create_stock_with_thing_offer(offerer, venue, name='thing')
-        stock2 = create_stock_with_event_offer(offerer,
-                                               venue,
-                                               beginning_datetime=datetime.utcnow() + timedelta(days=4),
-                                               name='event_occurs_soon',
-                                               thumb_count=1)
-        stock3 = create_stock_with_event_offer(offerer,
-                                               venue,
-                                               beginning_datetime=datetime.utcnow() + timedelta(days=11),
-                                               name='event_occurs_later',
-                                               thumb_count=1)
+        stock2 = create_stock_with_event_offer(offerer, venue, name='event_occurs_soon',
+                                               beginning_datetime=datetime.utcnow() + timedelta(days=4), thumb_count=1)
+        stock3 = create_stock_with_event_offer(offerer, venue, name='event_occurs_later',
+                                               beginning_datetime=datetime.utcnow() + timedelta(days=11), thumb_count=1)
         create_mediation(stock1.offer)
         create_mediation(stock2.offer)
         create_mediation(stock3.offer)
@@ -1059,8 +1053,8 @@ class GetActiveOffersTest:
         user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
         stock1 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
-        stock2 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.CINEMA_ABO,
-                                               url='http://example.com')
+        stock2 = create_stock_with_thing_offer(offerer, venue, name='thing', url='http://example.com',
+                                               thing_type=ThingType.CINEMA_ABO)
         stock3 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
         stock4 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.JEUX_VIDEO)
         stock5 = create_stock_with_thing_offer(offerer, venue, name='thing', thing_type=ThingType.AUDIOVISUEL)
@@ -1095,7 +1089,7 @@ class GetActiveOffersTest:
         user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
         offer = create_offer_with_thing_product(venue=venue, product=product)
-        stock = create_stock_from_offer(offer, available=2, price=0)
+        stock = create_stock_from_offer(offer, price=0, quantity=2)
         booking1 = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
         booking2 = create_booking(user=user, stock=stock, quantity=2, venue=venue)
         create_mediation(stock.offer)
@@ -1618,7 +1612,7 @@ class GetActiveOffersWithDigitalFirstTest:
         user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
         offer = create_offer_with_thing_product(venue=venue, product=product)
-        stock = create_stock_from_offer(offer, available=2)
+        stock = create_stock_from_offer(offer, quantity=2)
         create_mediation(stock.offer)
         repository.save(stock)
 
@@ -1660,7 +1654,7 @@ class GetActiveOffersWithDigitalFirstTest:
         user = create_user()
         venue = create_venue(offerer, postal_code='34000', departement_code='34')
         offer = create_offer_with_thing_product(venue=venue, product=product)
-        stock = create_stock_from_offer(offer, available=2, price=0)
+        stock = create_stock_from_offer(offer, price=0, quantity=2)
         booking1 = create_booking(user=user, stock=stock, is_cancelled=True, quantity=2, venue=venue)
         booking2 = create_booking(user=user, stock=stock, quantity=2, venue=venue)
         create_mediation(stock.offer)
@@ -2174,10 +2168,10 @@ class GetPaginatedExpiredOfferIdsTest:
         offer2 = create_offer_with_event_product(is_active=True, venue=venue)
         offer3 = create_offer_with_thing_product(is_active=True, venue=venue)
         offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
-        stock1 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0), offer=offer1)
-        stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 1, 1, 0, 0, 0), offer=offer2)
-        stock3 = create_stock_from_offer(booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0), offer=offer3)
-        stock4 = create_stock_from_offer(booking_limit_datetime=datetime(2020, 1, 3, 0, 0, 0), offer=offer4)
+        stock1 = create_stock_from_offer(offer=offer1, booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0))
+        stock2 = create_stock_from_offer(offer=offer2, booking_limit_datetime=datetime(2019, 1, 1, 0, 0, 0))
+        stock3 = create_stock_from_offer(offer=offer3, booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0))
+        stock4 = create_stock_from_offer(offer=offer4, booking_limit_datetime=datetime(2020, 1, 3, 0, 0, 0))
         repository.save(stock1, stock2, stock3, stock4)
 
         # When
@@ -2199,10 +2193,10 @@ class GetPaginatedExpiredOfferIdsTest:
         offer2 = create_offer_with_event_product(is_active=True, venue=venue)
         offer3 = create_offer_with_thing_product(is_active=True, venue=venue)
         offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
-        stock1 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0), offer=offer1)
-        stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0), offer=offer2)
-        stock3 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0), offer=offer3)
-        stock4 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0), offer=offer4)
+        stock1 = create_stock_from_offer(offer=offer1, booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0))
+        stock2 = create_stock_from_offer(offer=offer2, booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0))
+        stock3 = create_stock_from_offer(offer=offer3, booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0))
+        stock4 = create_stock_from_offer(offer=offer4, booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0))
         repository.save(stock1, stock2, stock3, stock4)
 
         # When
@@ -2224,10 +2218,10 @@ class GetPaginatedExpiredOfferIdsTest:
         offer2 = create_offer_with_event_product(is_active=False, venue=venue)
         offer3 = create_offer_with_thing_product(is_active=False, venue=venue)
         offer4 = create_offer_with_thing_product(is_active=False, venue=venue)
-        stock1 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 21, 0, 0, 0), offer=offer1)
-        stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 22, 0, 0, 0), offer=offer2)
-        stock3 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 23, 0, 0, 0), offer=offer3)
-        stock4 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 24, 0, 0, 0), offer=offer4)
+        stock1 = create_stock_from_offer(offer=offer1, booking_limit_datetime=datetime(2019, 12, 21, 0, 0, 0))
+        stock2 = create_stock_from_offer(offer=offer2, booking_limit_datetime=datetime(2019, 12, 22, 0, 0, 0))
+        stock3 = create_stock_from_offer(offer=offer3, booking_limit_datetime=datetime(2019, 12, 23, 0, 0, 0))
+        stock4 = create_stock_from_offer(offer=offer4, booking_limit_datetime=datetime(2019, 12, 24, 0, 0, 0))
         repository.save(stock1, stock2, stock3, stock4)
 
         # When
@@ -2245,10 +2239,10 @@ class GetPaginatedExpiredOfferIdsTest:
         offer2 = create_offer_with_event_product(is_active=True, venue=venue)
         offer3 = create_offer_with_thing_product(is_active=True, venue=venue)
         offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
-        stock1 = create_stock_from_offer(booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0), offer=offer1)
-        stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0), offer=offer2)
-        stock3 = create_stock_from_offer(booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0), offer=offer3)
-        stock4 = create_stock_from_offer(booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0), offer=offer4)
+        stock1 = create_stock_from_offer(offer=offer1, booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0))
+        stock2 = create_stock_from_offer(offer=offer2, booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0))
+        stock3 = create_stock_from_offer(offer=offer3, booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0))
+        stock4 = create_stock_from_offer(offer=offer4, booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0))
         repository.save(stock1, stock2, stock3, stock4)
 
         # When
@@ -2266,14 +2260,12 @@ class GetPaginatedExpiredOfferIdsTest:
         offer2 = create_offer_with_event_product(is_active=True, venue=venue)
         offer3 = create_offer_with_thing_product(is_active=True, venue=venue)
         offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
-        stock1 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0), offer=offer1)
-        stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 30, 0, 0, 0), offer=offer2)
-        stock3 = create_stock_from_offer(beginning_datetime=None,
-                                         booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0),
-                                         offer=offer3)
-        stock4 = create_stock_from_offer(beginning_datetime=None,
-                                         booking_limit_datetime=datetime(2020, 1, 3, 0, 0, 0),
-                                         offer=offer4)
+        stock1 = create_stock_from_offer(offer=offer1, booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0))
+        stock2 = create_stock_from_offer(offer=offer2, booking_limit_datetime=datetime(2019, 12, 30, 0, 0, 0))
+        stock3 = create_stock_from_offer(offer=offer3, booking_limit_datetime=datetime(2020, 1, 2, 0, 0, 0),
+                                         beginning_datetime=None)
+        stock4 = create_stock_from_offer(offer=offer4, booking_limit_datetime=datetime(2020, 1, 3, 0, 0, 0),
+                                         beginning_datetime=None)
         repository.save(stock1, stock2, stock3, stock4)
 
         # When
@@ -2293,9 +2285,9 @@ class GetPaginatedExpiredOfferIdsTest:
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_event_product(is_active=True, venue=venue)
         offer2 = create_offer_with_event_product(is_active=True, venue=venue)
-        in_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0), offer=offer1)
-        out_of_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 1, 0, 0, 0),
-                                                     offer=offer2)
+        in_range_stock = create_stock_from_offer(offer=offer1, booking_limit_datetime=datetime(2019, 12, 31, 0, 0, 0))
+        out_of_range_stock = create_stock_from_offer(offer=offer2,
+                                                     booking_limit_datetime=datetime(2019, 12, 1, 0, 0, 0))
         repository.save(in_range_stock, out_of_range_stock)
 
         # When
@@ -2313,10 +2305,10 @@ class GetPaginatedExpiredOfferIdsTest:
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_event_product(is_active=True, venue=venue)
         offer2 = create_offer_with_event_product(is_active=True, venue=venue)
-        out_of_range_stock1 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 0),
-                                                      offer=offer1)
-        out_of_range_stock2 = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 29, 0, 0, 0),
-                                                      offer=offer2)
+        out_of_range_stock1 = create_stock_from_offer(offer=offer1,
+                                                      booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 0))
+        out_of_range_stock2 = create_stock_from_offer(offer=offer2,
+                                                      booking_limit_datetime=datetime(2019, 12, 29, 0, 0, 0))
         repository.save(out_of_range_stock1, out_of_range_stock2)
 
         # When
@@ -2332,9 +2324,9 @@ class GetPaginatedExpiredOfferIdsTest:
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_event_product(is_active=True, venue=venue)
         offer2 = create_offer_with_event_product(is_active=True, venue=venue)
-        in_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 30, 10, 1, 0), offer=offer1)
-        out_of_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 59),
-                                                     offer=offer2)
+        in_range_stock = create_stock_from_offer(offer=offer1, booking_limit_datetime=datetime(2019, 12, 30, 10, 1, 0))
+        out_of_range_stock = create_stock_from_offer(offer=offer2,
+                                                     booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 59))
         repository.save(in_range_stock, out_of_range_stock)
 
         # When
@@ -2352,9 +2344,9 @@ class GetPaginatedExpiredOfferIdsTest:
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_event_product(is_active=True, venue=venue)
         offer2 = create_offer_with_event_product(is_active=True, venue=venue)
-        in_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 30, 10, 1, 0), offer=offer1)
-        out_of_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 59),
-                                                     offer=offer2)
+        in_range_stock = create_stock_from_offer(offer=offer1, booking_limit_datetime=datetime(2019, 12, 30, 10, 1, 0))
+        out_of_range_stock = create_stock_from_offer(offer=offer2,
+                                                     booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 59))
         repository.save(in_range_stock, out_of_range_stock)
 
         # When
@@ -2372,9 +2364,9 @@ class GetPaginatedExpiredOfferIdsTest:
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_event_product(is_active=True, venue=venue)
         offer2 = create_offer_with_event_product(is_active=True, venue=venue)
-        in_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 30, 10, 0, 0), offer=offer1)
-        out_of_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 59),
-                                                     offer=offer2)
+        in_range_stock = create_stock_from_offer(offer=offer1, booking_limit_datetime=datetime(2019, 12, 30, 10, 0, 0))
+        out_of_range_stock = create_stock_from_offer(offer=offer2,
+                                                     booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 59))
         repository.save(in_range_stock, out_of_range_stock)
 
         # When
@@ -2392,9 +2384,9 @@ class GetPaginatedExpiredOfferIdsTest:
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_event_product(is_active=True, venue=venue)
         offer2 = create_offer_with_event_product(is_active=True, venue=venue)
-        in_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 31, 10, 0, 0), offer=offer1)
-        out_of_range_stock = create_stock_from_offer(booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 59),
-                                                     offer=offer2)
+        in_range_stock = create_stock_from_offer(offer=offer1, booking_limit_datetime=datetime(2019, 12, 31, 10, 0, 0))
+        out_of_range_stock = create_stock_from_offer(offer=offer2,
+                                                     booking_limit_datetime=datetime(2019, 12, 30, 9, 59, 59))
         repository.save(in_range_stock, out_of_range_stock)
 
         # When

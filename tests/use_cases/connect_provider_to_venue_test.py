@@ -32,7 +32,7 @@ class UseCaseTest:
                     'venueId': humanize(venue.id),
                     'price': '9.99',
                     'isDuo': True,
-                    'available': 50
+                    'quantity': 50
                 }
 
                 # When
@@ -44,7 +44,7 @@ class UseCaseTest:
 
                 assert allocine_venue_provider.venue == venue
                 assert allocine_venue_provider.isDuo
-                assert allocine_venue_provider.available == 50
+                assert allocine_venue_provider.quantity == 50
                 assert venue_provider_price_rule.price == Decimal('9.99')
 
         class WhenProviderIsLibraires:

@@ -56,7 +56,7 @@ class Stock(PcObject,
                    CheckConstraint('price >= 0', name='check_price_is_not_negative'),
                    nullable=False)
 
-    available = Column(Integer, nullable=True)
+    quantity = Column(Integer, nullable=True)
 
     bookingLimitDatetime = Column(DateTime, nullable=True)
 
@@ -78,7 +78,7 @@ class Stock(PcObject,
             return False
         if self.beginningDatetime and self.beginningDatetime < datetime.utcnow():
             return False
-        if self.available is not None and self.remainingQuantity == 0:
+        if self.quantity is not None and self.remainingQuantity == 0:
             return False
         return True
 
@@ -94,7 +94,7 @@ class Stock(PcObject,
 
     @property
     def remainingQuantity(self):
-        return 'unlimited' if self.available is None else self.available - self.bookingsQuantity
+        return 'unlimited' if self.quantity is None else self.quantity - self.bookingsQuantity
 
     @classmethod
     def queryNotSoftDeleted(cls):
@@ -103,8 +103,8 @@ class Stock(PcObject,
     @staticmethod
     def restize_internal_error(ie):
         if 'check_stock' in str(ie.orig):
-            if 'available_too_low' in str(ie.orig):
-                return ['available', 'Le stock total ne peut être inférieur au nombre de réservations']
+            if 'quantity_too_low' in str(ie.orig):
+                return ['quantity', 'Le stock total ne peut être inférieur au nombre de réservations']
             elif 'bookingLimitDatetime_too_late' in str(ie.orig):
                 return ['bookingLimitDatetime',
                         'La date limite de réservation pour cette offre est postérieure à la date de début de l\'évènement']
@@ -126,7 +126,7 @@ Stock.trig_ddl = """
     RETURNS TRIGGER AS $$
     BEGIN
       IF
-       NOT NEW.available IS NULL
+       NOT NEW.quantity IS NULL
        AND
         (
          (
@@ -134,11 +134,11 @@ Stock.trig_ddl = """
           FROM booking
           WHERE "stockId"=NEW.id
           AND NOT booking."isCancelled"
-         ) > NEW.available
+         ) > NEW.quantity
         )
       THEN
-       RAISE EXCEPTION 'available_too_low'
-       USING HINT = 'stock.available cannot be lower than number of bookings';
+       RAISE EXCEPTION 'quantity_too_low'
+       USING HINT = 'stock.quantity cannot be lower than number of bookings';
       END IF;
 
       IF NEW."bookingLimitDatetime" IS NOT NULL AND
@@ -167,7 +167,7 @@ Stock.trig_update_date_ddl = """
     CREATE OR REPLACE FUNCTION save_stock_modification_date()
     RETURNS TRIGGER AS $$
     BEGIN
-      IF NEW.available != OLD.available THEN
+      IF NEW.quantity != OLD.quantity THEN
         NEW."dateModified" = NOW();
       END IF;
       RETURN NEW;

@@ -31,22 +31,10 @@ class BuildObjectTest:
                                                 event_type=EventType.MUSIQUE,
                                                 thumb_count=1,
                                                 date_created=datetime(2020, 1, 1, 10, 0, 0))
-        stock1 = create_stock(available=10,
-                              beginning_datetime=beginning_datetime,
-                              offer=offer,
-                              price=10)
-        stock2 = create_stock(available=10,
-                              beginning_datetime=beginning_datetime,
-                              offer=offer,
-                              price=20)
-        stock3 = create_stock(available=10,
-                              beginning_datetime=beginning_datetime,
-                              offer=offer,
-                              price=0)
-        stock4 = create_stock(available=10,
-                              beginning_datetime=beginning_datetime,
-                              is_soft_deleted=True,
-                              offer=offer,
+        stock1 = create_stock(quantity=10, beginning_datetime=beginning_datetime, offer=offer, price=10)
+        stock2 = create_stock(quantity=10, beginning_datetime=beginning_datetime, offer=offer, price=20)
+        stock3 = create_stock(quantity=10, beginning_datetime=beginning_datetime, offer=offer, price=0)
+        stock4 = create_stock(quantity=10, beginning_datetime=beginning_datetime, is_soft_deleted=True, offer=offer,
                               price=0)
         repository.save(stock1, stock2, stock3, stock4)
         humanized_product_id = humanize(offer.product.id)

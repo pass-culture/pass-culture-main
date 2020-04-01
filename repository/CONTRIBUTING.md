@@ -55,7 +55,7 @@ class FindUserActivationBookingTest:
         offerer = create_offerer(siren='123456789', name='pass Culture')
         venue_online = create_venue(offerer, siret=None, is_virtual=True)
         activation_offer = create_offer_with_thing_product(venue_online, thing_type=ThingType.ACTIVATION)
-        activation_stock = create_stock_from_offer(activation_offer, available=200, price=0)
+        activation_stock = create_stock_from_offer(activation_offer, quantity=200, price=0)
         activation_booking = create_booking(user=user, stock=activation_stock, venue=venue_online)
         repository.save(activation_booking)
 

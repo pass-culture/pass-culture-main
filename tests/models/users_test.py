@@ -114,8 +114,8 @@ class WalletBalanceTest:
 
         deposit1 = create_deposit(user, amount=100)
         deposit2 = create_deposit(user, amount=50)
-        stock1 = create_stock(price=20, offer=offer)
-        stock2 = create_stock(price=30, offer=offer)
+        stock1 = create_stock(offer=offer, price=20)
+        stock2 = create_stock(offer=offer, price=30)
         booking1 = create_booking(user=user, quantity=1, stock=stock1, venue=venue)
         booking2 = create_booking(user=user, quantity=2, stock=stock2, venue=venue)
 
@@ -137,8 +137,8 @@ class WalletBalanceTest:
 
         deposit1 = create_deposit(user, amount=100)
         deposit2 = create_deposit(user, amount=50)
-        stock1 = create_stock(price=20, offer=offer)
-        stock2 = create_stock(price=30, offer=offer)
+        stock1 = create_stock(offer=offer, price=20)
+        stock2 = create_stock(offer=offer, price=30)
         booking1 = create_booking(user=user, is_cancelled=False, quantity=1, stock=stock1, venue=venue)
         booking2 = create_booking(user=user, is_cancelled=True, quantity=2, stock=stock2, venue=venue)
 
@@ -188,9 +188,9 @@ class RealWalletBalanceTest:
 
         deposit1 = create_deposit(user, amount=100)
         deposit2 = create_deposit(user, amount=50)
-        stock1 = create_stock(price=20, offer=offer)
-        stock2 = create_stock(price=30, offer=offer)
-        stock3 = create_stock(price=40, offer=offer)
+        stock1 = create_stock(offer=offer, price=20)
+        stock2 = create_stock(offer=offer, price=30)
+        stock3 = create_stock(offer=offer, price=40)
         booking1 = create_booking(user=user, is_used=True, quantity=1, stock=stock1, venue=venue)
         booking2 = create_booking(user=user, is_used=True, quantity=2, stock=stock2, venue=venue)
         booking3 = create_booking(user=user, is_used=False, quantity=1, stock=stock3, venue=venue)
@@ -213,9 +213,9 @@ class RealWalletBalanceTest:
 
         deposit1 = create_deposit(user, amount=100)
         deposit2 = create_deposit(user, amount=50)
-        stock1 = create_stock(price=20, offer=offer)
-        stock2 = create_stock(price=30, offer=offer)
-        stock3 = create_stock(price=40, offer=offer)
+        stock1 = create_stock(offer=offer, price=20)
+        stock2 = create_stock(offer=offer, price=30)
+        stock3 = create_stock(offer=offer, price=40)
         booking1 = create_booking(user=user, is_cancelled=True, is_used=True, quantity=1, stock=stock1, venue=venue)
         booking2 = create_booking(user=user, is_cancelled=False, is_used=True, quantity=2, stock=stock2, venue=venue)
         booking3 = create_booking(user=user, is_cancelled=False, is_used=True, quantity=1, stock=stock3, venue=venue)

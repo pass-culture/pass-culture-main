@@ -4,7 +4,7 @@ from unittest.mock import patch, call, MagicMock
 from models import Stock
 from models.db import db
 from repository import repository
-from scripts.stock.update_stock_available_with_new_constraint import update_stock_available_with_new_constraint, \
+from scripts.stock.update_stock_quantity_with_new_constraint import update_stock_quantity_with_new_constraint, \
     _get_old_remaining_quantity, _get_stocks_to_check
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_stock, create_booking, \
@@ -22,14 +22,14 @@ class UpdateStockAvailableWithNewConstraintTest:
         db.engine.execute("ALTER TABLE booking ENABLE TRIGGER ALL;")
 
     @clean_database
-    def test_should_update_stock_available_when_bookings_quantity_is_more_than_actual_stock_quantity(self, app):
+    def test_should_update_stock_quantity_when_bookings_quantity_is_more_than_actual_stock_quantity(self, app):
         # Given
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         yesterday = datetime.utcnow() - timedelta(days=1)
-        stock = create_stock(offer=offer, available=12, price=0, date_modified=datetime.utcnow())
+        stock = create_stock(quantity=12, date_modified=datetime.utcnow(), offer=offer, price=0)
         booking = create_booking(user, stock=stock, quantity=20, is_used=True, date_used=yesterday)
         repository.save(booking)
 
@@ -37,22 +37,22 @@ class UpdateStockAvailableWithNewConstraintTest:
         mock_application.redis_client = MagicMock()
 
         # When
-        update_stock_available_with_new_constraint(mock_application)
+        update_stock_quantity_with_new_constraint(mock_application)
 
         # Then
         existing_stock = Stock.query.first()
         assert existing_stock.remainingQuantity == 12
-        assert existing_stock.available == 32
+        assert existing_stock.quantity == 32
 
     @clean_database
-    def test_should_update_stock_available_when_remaining_quantity_is_negative(self, app):
+    def test_should_update_stock_quantity_when_remaining_quantity_is_negative(self, app):
         # Given
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         yesterday = datetime.utcnow() - timedelta(days=1)
-        stock = create_stock(offer=offer, available=1, price=0, date_modified=datetime.utcnow())
+        stock = create_stock(quantity=1, date_modified=datetime.utcnow(), offer=offer, price=0)
         booking = create_booking(user, stock=stock, quantity=2, is_used=True, date_used=yesterday)
         booking1 = create_booking(user, stock=stock, quantity=2, is_used=False)
         repository.save(booking, booking1)
@@ -61,12 +61,12 @@ class UpdateStockAvailableWithNewConstraintTest:
         mock_application.redis_client = MagicMock()
 
         # When
-        update_stock_available_with_new_constraint(mock_application)
+        update_stock_quantity_with_new_constraint(mock_application)
 
         # Then
         existing_stock = Stock.query.first()
         assert existing_stock.remainingQuantity == 0
-        assert existing_stock.available == 4
+        assert existing_stock.quantity == 4
 
     @clean_database
     def test_should_keep_remaining_quantity_when_stock_is_not_fully_booked(self, app):
@@ -75,7 +75,7 @@ class UpdateStockAvailableWithNewConstraintTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(idx=4, offer=offer, available=8, price=0, date_modified=datetime.utcnow())
+        stock = create_stock(quantity=8, date_modified=datetime.utcnow(), idx=4, offer=offer, price=0)
         yesterday = datetime.utcnow() - timedelta(days=1)
         booking = create_booking(user, stock=stock, quantity=2, is_used=True, date_used=yesterday)
         booking_bis = create_booking(user, stock=stock, quantity=4)
@@ -85,25 +85,25 @@ class UpdateStockAvailableWithNewConstraintTest:
         mock_application.redis_client = MagicMock()
 
         # When
-        update_stock_available_with_new_constraint(mock_application)
+        update_stock_quantity_with_new_constraint(mock_application)
 
         # Then
         existing_stock = Stock.query.get(4)
         assert existing_stock.remainingQuantity == 4
-        assert existing_stock.available == 10
+        assert existing_stock.quantity == 10
 
     @clean_database
-    @patch('scripts.stock.update_stock_available_with_new_constraint.redis.add_offer_id')
-    @patch('scripts.stock.update_stock_available_with_new_constraint._get_stocks_to_check')
+    @patch('scripts.stock.update_stock_quantity_with_new_constraint.redis.add_offer_id')
+    @patch('scripts.stock.update_stock_quantity_with_new_constraint._get_stocks_to_check')
     def test_should_update_all_needed_stocks_with_pagination(self, mock_get_stocks_to_check, mock_redis_algolia, app):
         # Given
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock1 = create_stock(idx=1, offer=offer, available=12, price=0, date_modified=datetime.utcnow())
-        stock2 = create_stock(idx=2, offer=offer, available=10, price=0, date_modified=datetime.utcnow())
-        stock3 = create_stock(idx=3, offer=offer, available=4, price=0, date_modified=datetime.utcnow())
+        stock1 = create_stock(quantity=12, date_modified=datetime.utcnow(), idx=1, offer=offer, price=0)
+        stock2 = create_stock(quantity=10, date_modified=datetime.utcnow(), idx=2, offer=offer, price=0)
+        stock3 = create_stock(quantity=4, date_modified=datetime.utcnow(), idx=3, offer=offer, price=0)
         yesterday = datetime.utcnow() - timedelta(days=1)
         booking1 = create_booking(user, stock=stock1, quantity=20, is_used=True, date_used=yesterday)
         booking2 = create_booking(user, stock=stock2, quantity=8, is_used=True, date_used=yesterday)
@@ -115,23 +115,23 @@ class UpdateStockAvailableWithNewConstraintTest:
         mock_application.redis_client = MagicMock()
 
         # When
-        update_stock_available_with_new_constraint(mock_application, page_size=2)
+        update_stock_quantity_with_new_constraint(mock_application, page_size=2)
 
         # Then
         assert mock_get_stocks_to_check.call_count == 2
         assert mock_get_stocks_to_check.call_args == call(1, 2)
 
     @clean_database
-    @patch('scripts.stock.update_stock_available_with_new_constraint.redis.add_offer_id')
+    @patch('scripts.stock.update_stock_quantity_with_new_constraint.redis.add_offer_id')
     def test_should_update_all_needed_stocks_when_stock_has_multiple_bookings(self, mock_redis_algolia, app):
         # Given
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock1 = create_stock(idx=1, offer=offer, available=12, price=0, date_modified=datetime.utcnow())
-        stock2 = create_stock(idx=2, offer=offer, available=10, price=0, date_modified=datetime.utcnow())
-        stock3 = create_stock(idx=3, offer=offer, available=10, price=0, date_modified=datetime.utcnow())
+        stock1 = create_stock(quantity=12, date_modified=datetime.utcnow(), idx=1, offer=offer, price=0)
+        stock2 = create_stock(quantity=10, date_modified=datetime.utcnow(), idx=2, offer=offer, price=0)
+        stock3 = create_stock(quantity=10, date_modified=datetime.utcnow(), idx=3, offer=offer, price=0)
         yesterday = datetime.utcnow() - timedelta(days=1)
         bookings = [
             create_booking(user, stock=stock1, quantity=20, is_used=True, date_used=yesterday),
@@ -144,7 +144,7 @@ class UpdateStockAvailableWithNewConstraintTest:
         mock_application.redis_client = MagicMock()
 
         # When
-        update_stock_available_with_new_constraint(mock_application, page_size=2)
+        update_stock_quantity_with_new_constraint(mock_application, page_size=2)
 
         # Then
         assert stock1.hasBeenMigrated is True
@@ -159,21 +159,21 @@ class UpdateStockAvailableWithNewConstraintTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         yesterday = datetime.utcnow() - timedelta(days=1)
-        stock = create_stock(offer=offer, available=12, price=0, date_modified=datetime.utcnow())
+        stock = create_stock(quantity=12, date_modified=datetime.utcnow(), offer=offer, price=0)
         booking = create_booking(user, stock=stock, quantity=20, is_used=True, date_used=yesterday)
         repository.save(booking)
 
         mock_application = MagicMock()
         mock_application.redis_client = MagicMock()
-        update_stock_available_with_new_constraint(mock_application)
+        update_stock_quantity_with_new_constraint(mock_application)
 
         # When
-        update_stock_available_with_new_constraint(mock_application)
+        update_stock_quantity_with_new_constraint(mock_application)
 
         # Then
         existing_stock = Stock.query.first()
         assert existing_stock.remainingQuantity == 12
-        assert existing_stock.available == 32
+        assert existing_stock.quantity == 32
 
     @clean_database
     def test_should_not_compare_date_used_when_no_value_found(self, app):
@@ -182,7 +182,7 @@ class UpdateStockAvailableWithNewConstraintTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, available=12, price=0, date_modified=datetime.utcnow())
+        stock = create_stock(offer=offer, quantity=12, price=0, date_modified=datetime.utcnow())
         booking = create_booking(user, stock=stock, quantity=20, is_used=True, date_used=None)
         repository.save(booking)
 
@@ -190,15 +190,15 @@ class UpdateStockAvailableWithNewConstraintTest:
         mock_application.redis_client = MagicMock()
 
         # When
-        update_stock_available_with_new_constraint(mock_application)
+        update_stock_quantity_with_new_constraint(mock_application)
 
         # Then
         existing_stock = Stock.query.first()
         assert existing_stock.remainingQuantity == 12
-        assert existing_stock.available == 32
+        assert existing_stock.quantity == 32
 
     @clean_database
-    @patch('scripts.stock.update_stock_available_with_new_constraint.redis.add_offer_id')
+    @patch('scripts.stock.update_stock_quantity_with_new_constraint.redis.add_offer_id')
     def test_should_index_offer_to_algolia_when_stock_has_been_updated(self, mock_add_offer_id_algolia,
                                                                        app):
         # Given
@@ -206,7 +206,7 @@ class UpdateStockAvailableWithNewConstraintTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, available=12, price=0, date_modified=datetime.utcnow())
+        stock = create_stock(offer=offer, quantity=12, price=0, date_modified=datetime.utcnow())
         booking = create_booking(user, stock=stock, quantity=20, is_used=True, date_used=None)
         repository.save(booking)
         offer_id = offer.id
@@ -215,7 +215,7 @@ class UpdateStockAvailableWithNewConstraintTest:
         mock_application.redis_client = MagicMock()
 
         # When
-        update_stock_available_with_new_constraint(mock_application)
+        update_stock_quantity_with_new_constraint(mock_application)
 
         # Then
         mock_add_offer_id_algolia.assert_called_once_with(client=mock_application.redis_client,
@@ -230,7 +230,7 @@ class GetOldRemainingQuantityTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, available=12, price=0, date_modified=datetime.utcnow())
+        stock = create_stock(quantity=12, date_modified=datetime.utcnow(), offer=offer, price=0)
         yesterday = datetime.utcnow() - timedelta(days=1)
         booking_used_before_stock_update = create_booking(user, stock=stock, quantity=2, is_used=True,
                                                           date_used=yesterday)
@@ -251,7 +251,7 @@ class GetStocksToCheckTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, available=12)
+        stock = create_stock(quantity=12, offer=offer)
         repository.save(stock)
 
         # When
@@ -267,7 +267,7 @@ class GetStocksToCheckTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, price=0, available=12, is_soft_deleted=True)
+        stock = create_stock(quantity=12, is_soft_deleted=True, offer=offer, price=0)
         booking = create_booking(user, stock=stock)
         repository.save(booking)
 
@@ -284,7 +284,7 @@ class GetStocksToCheckTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, price=0, available=None)
+        stock = create_stock(quantity=None, offer=offer, price=0)
         booking = create_booking(user, stock=stock)
         repository.save(booking)
 
@@ -301,7 +301,7 @@ class GetStocksToCheckTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, price=0, available=10, has_been_migrated=True)
+        stock = create_stock(quantity=10, has_been_migrated=True, offer=offer, price=0)
         booking = create_booking(user, stock=stock)
         repository.save(booking)
 

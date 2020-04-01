@@ -76,7 +76,7 @@ def save_free_event_offer_with_stocks(venue: Venue):
 def save_non_reimbursable_thing_offer(venue: Venue):
     paid_non_reimbursable_offer = create_offer_with_thing_product(venue, thing_name='Concert en ligne',
                                                                   thing_type=ThingType.JEUX_VIDEO, url='http://my.game.fr')
-    non_reimbursable_stock = create_stock(price=30, offer=paid_non_reimbursable_offer)
+    non_reimbursable_stock = create_stock(offer=paid_non_reimbursable_offer, price=30)
     repository.save(non_reimbursable_stock)
     logger.info('created 1 non reimbursable thing offer with 1 paid stock of 30 €')
     return non_reimbursable_stock
@@ -85,7 +85,7 @@ def save_non_reimbursable_thing_offer(venue: Venue):
 def save_reimbursable_thing_offer(venue: Venue):
     paid_reimbursable_offer = create_offer_with_thing_product(venue, thing_name='Roman cool',
                                                               thing_type=ThingType.LIVRE_EDITION)
-    reimbursable_stock = create_stock(price=30, offer=paid_reimbursable_offer)
+    reimbursable_stock = create_stock(offer=paid_reimbursable_offer, price=30)
     repository.save(reimbursable_stock)
     logger.info('created 1 reimbursable thing offer with 1 paid stock of 30 €')
     return reimbursable_stock
@@ -94,7 +94,7 @@ def save_reimbursable_thing_offer(venue: Venue):
 def save_paid_online_book_offer(venue: Venue):
     paid_reimbursable_offer = create_offer_with_thing_product(venue, thing_name='Roman cool',
                                                               thing_type=ThingType.LIVRE_EDITION, url='https://mycoolbook.fr')
-    reimbursable_stock = create_stock(price=20, offer=paid_reimbursable_offer)
+    reimbursable_stock = create_stock(offer=paid_reimbursable_offer, price=20)
     repository.save(reimbursable_stock)
     logger.info('created 1 online book offer with 1 paid stock of 20 €')
     return reimbursable_stock
