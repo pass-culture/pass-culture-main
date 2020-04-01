@@ -86,7 +86,7 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
     }
     const firstOfferId = loadedRecommendations[0].offerId || 'tuto'
     const firstMediationId = loadedRecommendations[0].mediationId || 'vide'
-    history.replace(`/decouverte-v2/${firstOfferId}/${firstMediationId}`)
+    history.replace(`/decouverte/${firstOfferId}/${firstMediationId}`)
   },
   resetReadRecommendations: () => {
     dispatch(assignData({ readRecommendations: [] }))

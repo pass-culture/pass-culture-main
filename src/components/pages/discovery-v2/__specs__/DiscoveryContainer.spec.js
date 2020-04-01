@@ -335,7 +335,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
           )
 
           // then
-          expect(ownProps.history.replace).toHaveBeenCalledWith('/decouverte-v2/tuto/A9')
+          expect(ownProps.history.replace).toHaveBeenCalledWith('/decouverte/tuto/A9')
         })
 
         it('should redirect to tuto recommendation without mediation', () => {
@@ -358,7 +358,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
           )
 
           // then
-          expect(ownProps.history.replace).toHaveBeenCalledWith('/decouverte-v2/tuto/vide')
+          expect(ownProps.history.replace).toHaveBeenCalledWith('/decouverte/tuto/vide')
         })
 
         it('should delete tutos from store when leaving discovery', () => {

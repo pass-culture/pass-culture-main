@@ -4,8 +4,7 @@ import { Redirect } from 'react-router-dom'
 import ActivationContainer from '../pages/activation/ActivationContainer'
 import BetaPageContainer from '../pages/beta-page/BetaPageContainer'
 import MyBookingsContainer from '../pages/my-bookings/MyBookingsContainer'
-import DiscoveryContainer from '../pages/discovery/DiscoveryContainer'
-import DiscoveryContainerV2 from '../pages/discovery-v2/DiscoveryContainer'
+import DiscoveryRouterContainer from '../hocs/discovery-router/DiscoveryRouterContainer'
 import DiscoveryContainerV3 from '../pages/discovery-v3/DiscoveryContainer'
 import MyFavoritesContainer from '../pages/my-favorites/MyFavoritesContainer'
 import ForgotPassword from '../pages/forgot-password/ForgotPassword'
@@ -79,7 +78,7 @@ const routes = [
    *
    ---------------------------------------------------  */
   {
-    component: DiscoveryContainer,
+    component: DiscoveryRouterContainer,
     featureName: 'RECOMMENDATIONS',
     icon: 'ico-offres',
     path:
@@ -91,14 +90,6 @@ const routes = [
       '/:bookingId([A-Z0-9]+)?' +
       '/:cancellation(annulation)?' +
       '/:confirmation(confirmation)?',
-    title: 'Les offres',
-  },
-  {
-    component: DiscoveryContainerV2,
-    featureName: 'RECOMMENDATIONS_WITH_DISCOVERY_VIEW',
-    icon: 'ico-offres',
-    path:
-      '/decouverte-v2/:offerId(tuto|[A-Z0-9]+)?/:mediationId(vide|fin|[A-Z0-9]+)?/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?',
     title: 'Les offres',
   },
   {
