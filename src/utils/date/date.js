@@ -59,16 +59,16 @@ export const formatSearchResultDate = (departmentCode, dates = []) => {
 
   const day = beginningDatetime.toLocaleString(LOCALE, { timezone, day: '2-digit' })
   const month = beginningDatetime.toLocaleString(LOCALE, { timezone, month: 'long' })
-  const weekDay = beginningDatetime.toLocaleString(LOCALE, { timezone, weekday: 'short' })
 
-  if (beginningDatetime.getDate() === endingDatetime.getDate()) {
+  if (beginningDatetime.getDate() === endingDatetime.getDate() || dates.length === 1) {
     const hours = beginningDatetime.getHours()
     const minutes = beginningDatetime.getMinutes()
     const hoursWithLeadingZero = hours < 10 ? '0' + hours : hours
     const minutesWithLeadingZero = minutes < 10 ? '0' + minutes : minutes
-    const monthShortened = beginningDatetime.toLocaleString(LOCALE, { timezone, month: 'short' })
+    const weekDay = beginningDatetime.toLocaleString(LOCALE, { timezone, weekday: 'long' })
+    const capitalizedWeekDay = weekDay.charAt(0).toUpperCase() + weekDay.slice(1)
 
-    return `${weekDay.toLowerCase()} ${day} ${monthShortened.toLowerCase()} ${hoursWithLeadingZero}:${minutesWithLeadingZero}`
+    return `${capitalizedWeekDay} ${day} ${month} ${hoursWithLeadingZero}:${minutesWithLeadingZero}`
   }
   return `A partir du ${day} ${month}`
 }

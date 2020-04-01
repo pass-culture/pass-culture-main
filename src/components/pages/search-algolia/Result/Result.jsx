@@ -1,62 +1,77 @@
-import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 import { formatSearchResultDate } from '../../../../utils/date/date'
 import { getHumanizeRelativeDistance } from '../../../../utils/geolocation'
-import { DEFAULT_THUMB_URL } from '../../../../utils/thumb'
 import { formatResultPrice } from '../../../../utils/price'
+import { DEFAULT_THUMB_URL } from '../../../../utils/thumb'
 
 const Result = ({ result, geolocation, search }) => {
   const { _geoloc = {}, objectID, offer } = result
-  const { dates, departementCode, id: offerId, label, name, priceMin, priceMax, thumbUrl } = offer
+  const {
+    dates,
+    departementCode,
+    id: offerId,
+    isDuo,
+    label,
+    name,
+    priceMin,
+    priceMax,
+    thumbUrl,
+  } = offer
   const { latitude: userLatitude, longitude: userLongitude } = geolocation
   const { lat: venueLatitude, lng: venueLongitude } = _geoloc
   const thumbSrc = thumbUrl !== null ? thumbUrl : DEFAULT_THUMB_URL
   const formattedDate = formatSearchResultDate(departementCode, dates)
-  const formattedPrice = formatResultPrice(priceMin, priceMax)
-  const humanizedDistance = getHumanizeRelativeDistance(userLatitude, userLongitude, venueLatitude, venueLongitude)
+  const formattedPrice = formatResultPrice(priceMin, priceMax, isDuo)
+  const humanizedDistance = getHumanizeRelativeDistance(
+    userLatitude,
+    userLongitude,
+    venueLatitude,
+    venueLongitude
+  )
 
   return (
     <Link
       key={objectID}
       to={`/recherche-offres/resultats/details/${offerId}${search}`}
     >
-      <div className="result">
-        <div className="result-wrapper">
-          <img
-            alt=""
-            className="result-image"
-            src={thumbSrc}
-          />
-          <p className="result-container">
+      <div className="result-wrapper">
+        <img
+          alt=""
+          className="result-image"
+          src={thumbSrc}
+        />
+        <div className="result-container">
+          <div className="result-header">
             <h1 className="result-title">
               {name}
             </h1>
-            <p className="result-type">
-              {label}
-            </p>
-            {formattedDate && (
-              <p
-                className="result-date"
-                data-test="result-date-test"
+            {geolocation && humanizedDistance && (
+              <span
+                className="result-distance"
+                data-test="result-distance-test"
               >
-                {formattedDate}
-              </p>
+                {humanizedDistance}
+              </span>
             )}
-            <p className="result-price">
-              {formattedPrice}
+          </div>
+          <p className="result-type">
+            {label}
+          </p>
+          {formattedDate && (
+            <p
+              className="result-date"
+              data-test="result-date-test"
+            >
+              {formattedDate}
             </p>
+          )}
+          <p className="result-price">
+            {formattedPrice}
           </p>
         </div>
-        {geolocation && humanizedDistance && (
-          <div
-            className="result-distance"
-            data-test="result-distance-test"
-          >
-            {humanizedDistance}
-          </div>
-        )}
       </div>
     </Link>
   )
@@ -82,6 +97,7 @@ Result.propTypes = {
       dates: PropTypes.arrayOf(PropTypes.number),
       departementCode: PropTypes.number,
       id: PropTypes.string,
+      isDuo: PropTypes.bool,
       label: PropTypes.string,
       name: PropTypes.string,
       prices: PropTypes.arrayOf(PropTypes.number),

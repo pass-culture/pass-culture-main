@@ -15,6 +15,10 @@
   padding: rem(21px);
   overflow-y: auto;
 
+  a:last-child .result-wrapper{
+    margin-bottom: rem(70px);
+  }
+
   .sr-items-number {
     color: $grey;
     font-size: rem(16px);

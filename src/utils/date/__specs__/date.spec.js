@@ -1,4 +1,9 @@
-import { computeEndValidityDate, dateStringPlusTimeZone, formatRecommendationDates, formatSearchResultDate } from '../date'
+import {
+  computeEndValidityDate,
+  dateStringPlusTimeZone,
+  formatRecommendationDates,
+  formatSearchResultDate,
+} from '../date'
 
 describe('src | utils | date', () => {
   describe('computeEndValidityDate', () => {
@@ -89,13 +94,25 @@ describe('src | utils | date', () => {
       it('should return one date when beginning datetime and end datetime are the same day', () => {
         // given
         const departmentCode = null
-        const dates = [1585307498, 1585308699]
+        const dates = [1582801860, 1582805340]
 
         // when
         const result = formatSearchResultDate(departmentCode, dates)
 
         // then
-        expect(result).toBe('ven. 27 mars 11:11')
+        expect(result).toBe('Jeudi 27 février 11:11')
+      })
+
+      it('should return date when there is only one date', () => {
+        // given
+        const departmentCode = null
+        const dates = [1582801860]
+
+        // when
+        const result = formatSearchResultDate(departmentCode, dates)
+
+        // then
+        expect(result).toBe('Jeudi 27 février 11:11')
       })
 
       it('should indicate beginning datetime as starting date when beginning datetime and end datetime are not the same day', () => {
@@ -115,16 +132,28 @@ describe('src | utils | date', () => {
       it('should return date when beginning datetime and end datetime are the same day', () => {
         // given
         const departmentCode = null
-        const dates = [1585328400, 1585328401]
+        const dates = [1582794540, 1582805340]
 
         // when
         const result = formatSearchResultDate(departmentCode, dates)
 
         // then
-        expect(result).toBe('ven. 27 mars 17:00')
+        expect(result).toBe('Jeudi 27 février 09:09')
       })
 
-      it('should return date when beginning datetime and end datetime are not the same day', () => {
+      it('should return date when there is only one date', () => {
+        // given
+        const departmentCode = null
+        const dates = [1582794540]
+
+        // when
+        const result = formatSearchResultDate(departmentCode, dates)
+
+        // then
+        expect(result).toBe('Jeudi 27 février 09:09')
+      })
+
+      it('should indicate beginning datetime as starting date when beginning datetime and end datetime are not the same day', () => {
         // given
         const departmentCode = null
         const dates = [1585414800, 1593018000]
