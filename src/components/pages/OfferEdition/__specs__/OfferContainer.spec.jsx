@@ -140,7 +140,7 @@ describe('components | OfferEdition | OfferContainer ', () => {
         showSubOptions: undefined,
         stocks: [
           {
-            available: 10,
+            quantity: 10,
             bookingLimitDatetime: null,
             bookingRecapSent: null,
             dateModified: '2019-03-07T10:40:07.318721Z',

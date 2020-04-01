@@ -101,11 +101,11 @@ class ProductFields extends PureComponent {
   render() {
     const { beginningDatetime, isEvent, readOnly, stock, timezone, venue, formProps } = this.props
     const { values } = formProps
-    const { available } = values
+    const { quantity } = values
     const { bookingsQuantity } = stock || {}
 
     const formattedRemainingQuantities = getFormattedRemainingQuantities(
-      available,
+      quantity,
       bookingsQuantity
     )
 
@@ -150,7 +150,7 @@ class ProductFields extends PureComponent {
           <NumberField
             format={createFormatAvailable()}
             min={bookingsQuantity}
-            name="available"
+            name="quantity"
             placeholder="Illimité"
             readOnly={readOnly}
             renderValue={this.renderNumberFieldValue(readOnly)}

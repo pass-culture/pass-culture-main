@@ -11,37 +11,37 @@ import {
 
 describe('src | components | pages | Offer | StockItem | utils', () => {
   describe('getFormattedRemainingQuantities', () => {
-    it('should return `Illimité` when available stock is unlimited', () => {
+    it('should return `Illimité` when quantity stock is unlimited', () => {
       // given
-      const available = null
+      const quantity = null
       const bookingsCount = 0
 
       // when
-      const result = getFormattedRemainingQuantities(available, bookingsCount)
+      const result = getFormattedRemainingQuantities(quantity, bookingsCount)
 
       // then
       expect(result).toBe('Illimité')
     })
 
-    it('should return 0 when available stock is 0', () => {
+    it('should return 0 when quantity stock is 0', () => {
       // given
-      const available = 0
+      const quantity = 0
       const bookingsCount = 0
 
       // when
-      const result = getFormattedRemainingQuantities(available, bookingsCount)
+      const result = getFormattedRemainingQuantities(quantity, bookingsCount)
 
       // then
       expect(result).toBe(0)
     })
 
-    it('should return Remaining Quantities when available stock is greater than 0', () => {
+    it('should return Remaining Quantities when quantity stock is greater than 0', () => {
       // given
-      const available = 10
+      const quantity = 10
       const bookingsCount = 4
 
       // when
-      const result = getFormattedRemainingQuantities(available, bookingsCount)
+      const result = getFormattedRemainingQuantities(quantity, bookingsCount)
 
       // then
       expect(result).toBe(6)

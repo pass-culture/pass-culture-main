@@ -19,10 +19,10 @@ class AllocineProviderForm extends PureComponent {
 
   handleSubmit = (formValues) => {
     const { createVenueProvider, providerId, venueId } = this.props
-    const { available, isDuo = true, price } = formValues
+    const { quantity, isDuo = true, price } = formValues
 
     const payload = {
-      available,
+      quantity,
       isDuo,
       price,
       providerId,
@@ -95,17 +95,17 @@ class AllocineProviderForm extends PureComponent {
                 validate={this.required}
               />
             </div>
-            <div className="apf-available-section">
+            <div className="apf-quantity-section">
               <label
-                className="label-available"
-                htmlFor="available"
+                className="label-quantity"
+                htmlFor="quantity"
               >
                 {'Nombre de places/séance'}
               </label>
               <NumberField
                 isDecimal={false}
                 min="0"
-                name="available"
+                name="quantity"
                 placeholder="Illimité"
               />
             </div>

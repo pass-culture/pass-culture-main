@@ -292,7 +292,7 @@ const state = {
     stocks: [
       {
         id: 'MU',
-        available: 10,
+        quantity: 10,
         bookingLimitDatetime: null,
         bookingRecapSent: null,
         dateModified: '2019-03-07T10:40:07.318721Z',
@@ -307,7 +307,7 @@ const state = {
       },
       {
         id: 'MQ',
-        available: 10,
+        quantity: 10,
         bookingLimitDatetime: null,
         bookingRecapSent: null,
         dateModified: '2019-03-07T10:40:07.315722Z',
@@ -322,7 +322,7 @@ const state = {
       },
       {
         id: 'MM',
-        available: 10,
+        quantity: 10,
         bookingLimitDatetime: null,
         bookingRecapSent: null,
         dateModified: '2019-03-07T10:40:07.312234Z',
@@ -337,7 +337,7 @@ const state = {
       },
       {
         id: 'M9',
-        available: 10,
+        quantity: 10,
         bookingLimitDatetime: null,
         bookingRecapSent: null,
         dateModified: '2019-03-07T10:40:07.309108Z',
@@ -352,7 +352,7 @@ const state = {
       },
       {
         id: 'ME',
-        available: 10,
+        quantity: 10,
         bookingLimitDatetime: null,
         bookingRecapSent: null,
         dateModified: '2019-03-07T10:40:07.306052Z',
@@ -367,7 +367,7 @@ const state = {
       },
       {
         id: 'MA',
-        available: 10,
+        quantity: 10,
         bookingLimitDatetime: null,
         bookingRecapSent: null,
         dateModified: '2019-03-07T10:40:07.303564Z',
@@ -382,7 +382,7 @@ const state = {
       },
       {
         id: 'L4',
-        available: 10,
+        quantity: 10,
         bookingLimitDatetime: null,
         bookingRecapSent: null,
         dateModified: '2019-03-07T10:40:07.300968Z',
@@ -1037,7 +1037,7 @@ const state = {
       offerId: 'UU',
       price: 17,
       bookingLimitDatetime: null,
-      available: 10,
+      quantity: 10,
     },
   },
   loading: {

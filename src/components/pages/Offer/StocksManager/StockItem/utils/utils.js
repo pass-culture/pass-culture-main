@@ -1,14 +1,14 @@
 import moment from 'moment'
 
-export const getFormattedRemainingQuantities = (available, bookingsCount) => {
-  const isUnlimitedWithoutTypingValue = available === null
-  const isUnlimitedAfterRemovingValue = available === ''
+export const getFormattedRemainingQuantities = (quantity, bookingsCount) => {
+  const isUnlimitedWithoutTypingValue = quantity === null
+  const isUnlimitedAfterRemovingValue = quantity === ''
 
   if (isUnlimitedWithoutTypingValue || isUnlimitedAfterRemovingValue) {
     return 'Illimité'
   }
 
-  return available - bookingsCount
+  return quantity - bookingsCount
 }
 
 export const BOOKING_LIMIT_DATETIME_HOURS = 23
@@ -35,7 +35,7 @@ export function getDatetimeAtSpecificHoursAndMinutes(datetime, hours, minutes, t
 
 export function errorKeyToFrenchKey(errorKey) {
   switch (errorKey) {
-    case 'available':
+    case 'quantity':
       return 'Stock total'
     case 'beginningDatetime':
       return 'Date de début'

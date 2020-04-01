@@ -25,7 +25,7 @@ export const selectStocksByOfferId = createCachedSelector(
 export const selectAggregatedStockByOfferId = createCachedSelector(selectStocksByOfferId, stocks =>
   stocks.reduce(
     (aggregatedStock, stock) => ({
-      available: aggregatedStock.available + stock.available,
+      quantity: aggregatedStock.quantity + stock.quantity,
       priceMin: aggregatedStock.priceMin
         ? Math.min(aggregatedStock.priceMin, stock.price)
         : stock.price,
@@ -34,7 +34,7 @@ export const selectAggregatedStockByOfferId = createCachedSelector(selectStocksB
         : stock.price,
     }),
     {
-      available: 0,
+      quantity: 0,
       priceMin: 0,
       priceMax: 0,
     }

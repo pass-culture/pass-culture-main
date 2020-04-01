@@ -22,7 +22,7 @@ const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCachedSelecto
   (state, stock, offerId, offererId) => offererId,
   (state, stock, offerId, offererId, timezone) => timezone,
   (stock, offer, stocks, offerId, offererId, timezone) => {
-    let { available, beginningDatetime, bookingLimitDatetime, id, price } = stock || {}
+    let { quantity, beginningDatetime, bookingLimitDatetime, id, price } = stock || {}
 
     if (!offer) {
       return {}
@@ -53,12 +53,12 @@ const selectFormInitialValuesByStockAndOfferIdAndOffererId = createCachedSelecto
       price = ''
     }
 
-    if (typeof available === 'undefined' && lastStock) {
-      available = lastStock.available
+    if (typeof quantity === 'undefined' && lastStock) {
+      quantity = lastStock.quantity
     }
 
     const formInitialValues = {
-      available,
+      quantity,
       bookingLimitDatetime,
       id,
       offerId,

@@ -6,7 +6,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem | selecto
     const offerId = 'UU'
     const managingOffererId = 'BA'
     const stock = {
-      available: 22,
       beginningDatetime: undefined,
       bookingLimitDatetime: '2019-03-13T23:00:00Z',
       bookingRecapSent: null,
@@ -19,6 +18,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem | selecto
       modelName: 'Stock',
       offerId: 'UU',
       price: 17,
+      quantity: 22,
     }
     const state = {
       data: {
@@ -35,12 +35,12 @@ describe('src | components | pages | Offer | StocksManager | StockItem | selecto
       managingOffererId
     )
     const expected = {
-      available: 22,
       bookingLimitDatetime: '2019-03-13T23:00:00Z',
       id: 'MU',
       offerId: 'UU',
       offererId: 'BA',
       price: 17,
+      quantity: 22,
     }
 
     // then
@@ -52,7 +52,6 @@ describe('src | components | pages | Offer | StocksManager | StockItem | selecto
     const offerId = 'AB'
     const managingOffererId = 'CD'
     const stock = {
-      available: 2,
       beginningDatetime: '2020-02-06T10:37:12.683Z',
       bookingLimitDatetime: null,
       bookingRecapSent: null,
@@ -65,6 +64,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem | selecto
       modelName: 'Stock',
       offerId: 'AB',
       price: 10,
+      quantity: 2,
     }
     const state = {
       data: {
@@ -83,13 +83,13 @@ describe('src | components | pages | Offer | StocksManager | StockItem | selecto
 
     // then
     const expected = {
-      available: 2,
       beginningDatetime: '2020-02-06T10:37:12.683Z',
       bookingLimitDatetime: '',
       id: 'MU',
       offerId: 'AB',
       offererId: 'CD',
       price: 10,
+      quantity: 2,
     }
     expect(result).toStrictEqual(expected)
   })

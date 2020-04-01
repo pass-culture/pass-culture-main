@@ -31,7 +31,7 @@ describe('src | components | pages | OfferItemContainer', () => {
       // when
       const result = mapStateToProps(state, ownProps)
       const expected = {
-        available: 0,
+        quantity: 0,
         priceMax: 0,
         priceMin: 0,
       }

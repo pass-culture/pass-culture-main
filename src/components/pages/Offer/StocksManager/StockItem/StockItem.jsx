@@ -67,8 +67,8 @@ class StockItem extends PureComponent {
     if (body.price === '') {
       body.price = 0
     }
-    if (body.available === '') {
-      body.available = null
+    if (body.quantity === '') {
+      body.quantity = null
     }
     if (isEvent && body.bookingLimitDatetime === '') {
       body.bookingLimitDatetime = body.beginningDatetime

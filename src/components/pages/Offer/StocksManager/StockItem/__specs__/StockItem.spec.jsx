@@ -52,21 +52,21 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
 
         const stock = {
           id: 'G9',
-          available: 10,
           beginningDatetime: '2020-01-20T20:00:00Z',
           bookingLimitDatetime: '2020-01-27T20:00:00Z',
           bookingsQuantity: 1,
           offerId: 'EM',
           price: 48,
+          quantity: 10,
         }
 
         props.stockPatch = {
           id: 'G9',
-          available: 10,
           beginningDatetime: '2020-01-20T20:00:00Z',
           bookingLimitDatetime: '2020-01-27T20:00:00Z',
           offerId: 'EM',
           price: 48,
+          quantity: 10,
         }
 
         props.isEvent = true
@@ -109,13 +109,13 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       it('should display event fields and product fields informations', () => {
         // when
         const expected = {
-          available: 10,
           beginningDatetime: '2020-01-20T20:00:00Z',
           beginningTime: '21:00',
           bookingLimitDatetime: '2020-01-20T20:00:00Z',
           id: 'G9',
           offerId: 'EM',
           price: 48,
+          quantity: 10,
         }
 
         // then
@@ -157,15 +157,15 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
         expect(priceInput.props().value).toStrictEqual(48)
       })
 
-      it('should fill the available input when available stock is provided', () => {
+      it('should fill the quantity input when available stock is provided', () => {
         // when
-        const availableInput = wrapper
+        const quantityInput = wrapper
           .find(Field)
-          .find({ name: 'available' })
+          .find({ name: 'quantity' })
           .find('input')
 
         // then
-        expect(availableInput.props().value).toStrictEqual(10)
+        expect(quantityInput.props().value).toStrictEqual(10)
       })
 
       it('should fill the remaining input when remaining stock is provided', () => {
@@ -229,12 +229,12 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
 
         const stock = {
           id: 'G9',
-          available: 56,
           beginningDatetime: null,
           bookingLimitDatetime: '2020-01-27T20:00:00Z',
           bookingsQuantity: 13,
           offerId: 'EM',
           price: 12,
+          quantity: 56,
         }
 
         props.isEvent = false
@@ -243,11 +243,11 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
 
         props.stockPatch = {
           id: 'G9',
-          available: 56,
           beginningDatetime: null,
           bookingLimitDatetime: '2020-01-27T20:00:00Z',
           offerId: 'EM',
           price: 12,
+          quantity: 56,
         }
 
         const store = mockStore({
@@ -286,13 +286,13 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       it('should display product fields informations', () => {
         // when
         const expected = {
-          available: 56,
           beginningDatetime: null,
           bookingsQuantity: 13,
           bookingLimitDatetime: '2020-01-27T20:00:00Z',
           id: 'G9',
           offerId: 'EM',
           price: 12,
+          quantity: 56,
         }
 
         // then
@@ -325,15 +325,15 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
         expect(priceInput.props().value).toStrictEqual(12)
       })
 
-      it('should fill the available input when available stock is provided', () => {
+      it('should fill the quantity input when available stock is provided', () => {
         // when
-        const availableInput = productFieldsContainerComponent
+        const quantityInput = productFieldsContainerComponent
           .find(Field)
-          .find({ name: 'available' })
+          .find({ name: 'quantity' })
           .find('input')
 
         // then
-        expect(availableInput.props().value).toStrictEqual(56)
+        expect(quantityInput.props().value).toStrictEqual(56)
       })
 
       it('should fill the remaining input when remaining stock is provided', () => {
@@ -517,10 +517,10 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       // given
       const wrapper = shallow(<StockItem {...props} />)
       const formValues = {
-        available: '',
         price: '',
         bookingLimitDatetime: '2019-03-13T22:00:00Z',
         beginningDatetime: '2019-03-13T22:00:00Z',
+        quantity: '',
       }
 
       // when
@@ -530,10 +530,10 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       expect(props.updateStockInformations).toHaveBeenCalledWith(
         'DG',
         {
-          available: null,
           price: 0,
           bookingLimitDatetime: '2019-03-13T22:00:00Z',
           beginningDatetime: '2019-03-13T22:00:00Z',
+          quantity: null,
         },
         expect.any(Function),
         expect.any(Function)

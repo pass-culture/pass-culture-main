@@ -25,7 +25,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem | sub-com
       venue: {},
       formProps: {
         values: {
-          available: 2,
+          quantity: 2,
         },
       },
     }
@@ -83,7 +83,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem | sub-com
       const numberField = wrapper.find(NumberField).at(1)
       expect(numberField).toHaveLength(1)
       expect(numberField.prop('format')).toStrictEqual(expect.any(Function))
-      expect(numberField.prop('name')).toBe('available')
+      expect(numberField.prop('name')).toBe('quantity')
       expect(numberField.prop('placeholder')).toBe('Illimité')
       expect(numberField.prop('readOnly')).toBe(false)
       expect(numberField.prop('renderValue')).toStrictEqual(expect.any(Function))
@@ -118,7 +118,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem | sub-com
       wrapper.setProps({
         formProps: {
           values: {
-            available: 46,
+            quantity: 46,
           },
         },
       })
@@ -136,7 +136,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem | sub-com
       wrapper.setProps({
         formProps: {
           values: {
-            available: 10,
+            quantity: 10,
           },
         },
         stock: {

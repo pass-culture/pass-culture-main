@@ -65,21 +65,21 @@ describe('components | AllocineProviderForm', () => {
     expect(priceFieldInput.prop('min')).toBe('0')
   })
 
-  it('should display the available field with default value set to Illimité', () => {
+  it('should display the quantity field with default value set to Illimité', () => {
     // when
     const wrapper = mount(<AllocineProviderForm {...props} />)
 
     // then
-    const availableInputLabel = wrapper.find({
+    const quantityInputLabel = wrapper.find({
       children: `Nombre de places/séance`,
     })
 
-    const availableInput = wrapper
+    const quantityInput = wrapper
       .findWhere(node => node.prop('placeholder') === 'Illimité')
       .first()
 
-    expect(availableInputLabel).toHaveLength(1)
-    expect(availableInput).toHaveLength(1)
+    expect(quantityInputLabel).toHaveLength(1)
+    expect(quantityInput).toHaveLength(1)
   })
 
   it('should display the isDuo checkbox unchecked by default', () => {
@@ -200,7 +200,7 @@ describe('components | AllocineProviderForm', () => {
     // then
     expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
       price: 10,
-      available: undefined,
+      quantity: undefined,
       isDuo: true,
       providerId: 'AA',
       venueId: 'BB',
@@ -221,7 +221,7 @@ describe('components | AllocineProviderForm', () => {
     // then
     expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
       price: 0,
-      available: undefined,
+      quantity: undefined,
       isDuo: true,
       providerId: 'AA',
       venueId: 'BB',
@@ -242,21 +242,21 @@ describe('components | AllocineProviderForm', () => {
     // then
     expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
       price: 0.42,
-      available: undefined,
+      quantity: undefined,
       isDuo: true,
       providerId: 'AA',
       venueId: 'BB',
     })
   })
 
-  it('should not be able to submit when available is filled but price is not', () => {
+  it('should not be able to submit when quantity is filled but price is not', () => {
     // given
     const wrapper = mount(<AllocineProviderForm {...props} />)
     const form = wrapper.find('form')
-    const availableSection = wrapper.findWhere(node => node.text() === 'Nombre de places/séance')
-    const availableInput = availableSection.find(NumberField).find('input')
+    const quantitySection = wrapper.findWhere(node => node.text() === 'Nombre de places/séance')
+    const quantityInput = quantitySection.find(NumberField).find('input')
 
-    availableInput.simulate('change', { target: { value: 10 } })
+    quantityInput.simulate('change', { target: { value: 10 } })
 
     // when
     form.simulate('click')
@@ -306,7 +306,7 @@ describe('components | AllocineProviderForm', () => {
       // given
       const formValues = {
         price: 12,
-        available: 50,
+        quantity: 50,
         isDuo: true
       }
       const wrapper = shallow(<AllocineProviderForm {...props} />)
@@ -317,7 +317,7 @@ describe('components | AllocineProviderForm', () => {
       // then
       expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
         price: 12,
-        available: 50,
+        quantity: 50,
         isDuo: true,
         providerId: 'AA',
         venueId: 'BB',
