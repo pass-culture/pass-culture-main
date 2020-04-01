@@ -1,11 +1,13 @@
 from typing import List
 
+from flask import Flask
+
 from connectors import redis
 from models import Stock, Booking
 from repository import repository
 
 
-def update_stock_available_with_new_constraint(application, page_size=100):
+def update_stock_available_with_new_constraint(application: Flask, page_size=100) -> None:
     print("[UPDATE STOCK AVAILABLE] Beginning of script")
     page = 0
     has_stocks_to_check = True
