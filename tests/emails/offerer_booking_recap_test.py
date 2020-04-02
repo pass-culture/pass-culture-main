@@ -370,41 +370,41 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         email_data_template = retrieve_data_for_offerer_booking_recap_email(booking_1, recipient)
 
         # Then
-        assert email_data_template == {
-            'FromEmail': 'support@example.com',
-            'MJ-TemplateID': 1095029,
-            'MJ-TemplateLanguage': True,
-            'To': 'dev@example.com, administration@example.com',
-            'Vars':
-                {
-                    'nom_offre': 'Test Book',
-                    'nom_lieu': 'Test offerer',
-                    'prix': 'Gratuit',
-                    'date': '',
-                    'heure': '',
-                    'quantity': 1,
-                    'user_firstName': 'Jean',
-                    'user_lastName': 'Dupont',
-                    'user_email': 'test@example.com',
-                    'is_event': 0,
-                    'ISBN': '',
-                    'offer_type': 'book',
-                    'lien_offre_pcpro': 'http://localhost:3001/offres/AE?lieu=AE&structure=AE',
-                    'departement': '75',
-                    'nombre_resa': 2,
-                    'env': '-development',
-                    'contremarque': 'ACVSDC',
-                    'users': [{'firstName': 'Jean',
-                               'lastName': 'Dupont',
-                               'email': 'test@example.com',
-                               'contremarque': 'ACVSDC'},
-                              {'firstName': 'Jaja',
-                               'lastName': 'Dudu',
-                               'email': 'mail@example.com',
-                               'contremarque': 'TEST95'}
-                              ]
-                }
-        }
+        assert email_data_template.get('FromEmail') == 'support@example.com'
+        assert email_data_template.get('MJ-TemplateID') == 1095029
+        assert email_data_template.get('MJ-TemplateLanguage') == True
+        assert email_data_template.get('To') == 'dev@example.com, administration@example.com'
+
+        email_data_template_vars = email_data_template.get('Vars')
+        assert email_data_template_vars.get('nom_offre') == 'Test Book'
+        assert email_data_template_vars.get('nom_lieu') == 'Test offerer'
+        assert email_data_template_vars.get('prix') == 'Gratuit'
+        assert email_data_template_vars.get('date') == ''
+        assert email_data_template_vars.get('heure') == ''
+        assert email_data_template_vars.get('quantity') == 1
+        assert email_data_template_vars.get('user_firstName') == 'Jean'
+        assert email_data_template_vars.get('user_lastName') == 'Dupont'
+        assert email_data_template_vars.get('user_email') == 'test@example.com'
+        assert email_data_template_vars.get('is_event') == 0
+        assert email_data_template_vars.get('ISBN') == ''
+        assert email_data_template_vars.get('offer_type') == 'book'
+        assert email_data_template_vars.get(
+            'lien_offre_pcpro') == 'http://localhost:3001/offres/AE?lieu=AE&structure=AE'
+        assert email_data_template_vars.get('departement') == '75'
+        assert email_data_template_vars.get('nombre_resa') == 2
+        assert email_data_template_vars.get('env') == '-development'
+        assert email_data_template_vars.get('contremarque') == 'ACVSDC'
+
+        assert sorted(email_data_template_vars.get('users'), key=lambda item: item['firstName']) == sorted(
+            [{'firstName': 'Jean',
+              'lastName': 'Dupont',
+              'email': 'test@example.com',
+              'contremarque': 'ACVSDC'},
+             {'firstName': 'Jaja',
+              'lastName': 'Dudu',
+              'email': 'mail@example.com',
+              'contremarque': 'TEST95'}],
+            key=lambda item: item['firstName'])
 
     @patch('emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
@@ -471,7 +471,8 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
     def test_booking_recap_email_html_should_contain_all_bookings_information(app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
+        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000',
+                             city='Test city', departement_code='93')
         beginning_datetime = datetime(2019, 7, 20, 12, 0, 0)
         booking_limit_datetime = beginning_datetime - timedelta(hours=1)
 
@@ -516,7 +517,8 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
     def test_booking_recap_email_html_should_have_unsubscribe_option(app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
+        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000',
+                             city='Test city', departement_code='93')
         stock = create_stock_with_event_offer(offerer=None, venue=venue)
         user = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
                            public_name='Test')
@@ -546,7 +548,8 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
     def test_booking_recap_email_html_should_not_retrieve_cancelled_or_used_bookings(app):
         # Given
         offerer = Offerer()
-        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
+        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000',
+                             city='Test city', departement_code='93')
         stock = create_stock_with_event_offer(offerer=Offerer(), venue=venue)
 
         user1 = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
@@ -576,7 +579,8 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
     def test_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
+        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000',
+                             city='Test city', departement_code='93')
         stock = create_stock_with_event_offer(offerer=None, venue=venue)
         user_1 = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
                              first_name='John', last_name='Doe', public_name='Test')
@@ -612,7 +616,8 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
     def test_offerer_booking_recap_email_for_a_thing_offer_has_action_and_recap_html(app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
+        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000',
+                             city='Test city', departement_code='93')
         thing_offer = create_offer_with_thing_product(venue=None, thing_type=ThingType.AUDIOVISUEL)
         stock = create_stock_with_thing_offer(offerer=None, venue=venue, offer=thing_offer)
         stock.offer.id = 1
@@ -645,7 +650,8 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
     def test_offerer_booking_recap_email_thing_offer_has_recap_table(app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
+        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000',
+                             city='Test city', departement_code='93')
         thing_offer = create_offer_with_thing_product(venue=None, thing_type=ThingType.AUDIOVISUEL)
         stock = create_stock_with_thing_offer(offerer=None, venue=venue, offer=thing_offer)
         stock.offer.id = 1
@@ -675,7 +681,8 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
     def test_offerer_booking_recap_email_thing_offer_does_not_have_validation_tokens(app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
+        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000',
+                             city='Test city', departement_code='93')
         thing_offer = create_offer_with_thing_product(venue=None, thing_type=ThingType.AUDIOVISUEL)
         stock = create_stock_with_thing_offer(offerer=None, venue=venue, offer=thing_offer)
         stock.offer.id = 1
@@ -703,7 +710,8 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
     def test_make_offerer_booking_recap_email_after_user_cancellation_for_physical_venue(app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
+        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000',
+                             city='Test city', departement_code='93')
         event_offer = create_offer_with_event_product(venue, event_name='Test Event')
         now = datetime.utcnow() + timedelta()
         event_occurrence = create_event_occurrence(event_offer, beginning_datetime=now)
@@ -742,7 +750,8 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
     def test_offerer_booking_recap_email_after_user_cancellation_should_have_unsubscribe_option(app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000', city='Test city', departement_code='93')
+        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000',
+                             city='Test city', departement_code='93')
         event_offer = create_offer_with_event_product(venue, event_name='Test Event')
         now = datetime.utcnow() + timedelta()
         event_occurrence = create_event_occurrence(event_offer, beginning_datetime=now)
@@ -803,7 +812,8 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         assert '(Adresse:' not in email_racap_html
 
     @clean_database
-    def test_offerer_email_after_booking_cancellation_by_user_for_event_does_not_contain_address_when_venue_is_virtual(app):
+    def test_offerer_email_after_booking_cancellation_by_user_for_event_does_not_contain_address_when_venue_is_virtual(
+            app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, name='Test offerer', is_virtual=True, siret=None,
