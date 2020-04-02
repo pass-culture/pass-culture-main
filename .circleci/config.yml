@@ -251,11 +251,6 @@ workflows:
   version: 2
   commit:
     jobs:
-      - tests-data-analytics:
-          filters:
-              branches:
-                ignore:
-                  - production
       - build:
           filters:
             branches:
@@ -277,3 +272,4 @@ workflows:
     jobs:
       - functional-tests-webapp
       - functional-tests-pro
+      - tests-data-analytics
