@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "api"
+		},
+		{
+			"path": "pro"
+		},
+		{
+			"path": "webapp"
+		}
+	],
+	"settings": {
+		"workbench.colorCustomizations": {}
+	}
+}
