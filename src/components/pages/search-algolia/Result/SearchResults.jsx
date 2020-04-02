@@ -9,6 +9,8 @@ import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import Icon from '../../../layout/Icon/Icon'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 import Spinner from '../../../layout/Spinner/Spinner'
+import { Criteria } from '../Criteria/Criteria'
+import { SORT_CRITERIA } from '../Criteria/criteriaEnums'
 import FiltersContainer from '../Filters/FiltersContainer'
 import Result from './Result'
 import SearchAlgoliaDetailsContainer from './ResultDetail/ResultDetailContainer'
@@ -87,14 +89,13 @@ class SearchResults extends PureComponent {
     event.preventDefault()
     const { history, query } = this.props
     const { searchedKeywords, filters } = this.state
-    const { offerCategories } = filters
+    const { offerCategories, sortBy: tri } = filters
     const keywordsToSearch = event.target.keywords.value
     const trimmedKeywordsToSearch = keywordsToSearch.trim()
 
     const queryParams = query.parse()
     const autourDeMoi = queryParams['autour-de-moi']
     const categories = offerCategories.join(';')
-    const tri = queryParams['tri']
 
     trimmedKeywordsToSearch &&
       history.replace({
@@ -220,14 +221,39 @@ class SearchResults extends PureComponent {
     return `${resultsCount} ${pluralizedResultatWord}`
   }
 
-  handleGoToFilters = () => {
-    const { history } = this.props
-    const { location } = history
-    const { pathname, search } = location
-    history.push(`${pathname}/filtres${search}`)
+  blurInput = () => () => this.inputRef.current.blur()
+
+  getSortCriterionLabel() {
+    const { filters } = this.state
+    const criterionLabels = Object.keys(SORT_CRITERIA).map(criterionKey => {
+      return SORT_CRITERIA[criterionKey].index === filters.sortBy
+        ? SORT_CRITERIA[criterionKey].label
+        : ''
+    })
+    return criterionLabels.join('')
   }
 
-  blurInput = () => () => this.inputRef.current.blur()
+  handleGoTo = path => () => {
+    const { history } = this.props
+    const { pathname, search } = history.location
+    history.push(`${pathname}/${path}${search}`)
+  }
+
+  handleSortCriterionSelection = criterionKey => () => {
+    const { searchedKeywords } = this.state
+    const { history } = this.props
+    const { search } = history.location
+    this.setState(
+      previousState => ({
+        filters: { ...previousState.filters, sortBy: SORT_CRITERIA[criterionKey].index },
+        results: [],
+      }),
+      () => this.fetchOffers(searchedKeywords, 0)
+    )
+    const queryParams = search.replace(/(tri=)(\w*)/, 'tri=' + SORT_CRITERIA[criterionKey].index)
+
+    history.push(`/recherche-offres/resultats${queryParams}`)
+  }
 
   render() {
     const { geolocation, history, match, query } = this.props
@@ -242,6 +268,7 @@ class SearchResults extends PureComponent {
     } = this.state
     const { location } = history
     const { search } = location
+    const sortCriterionLabel = this.getSortCriterionLabel()
 
     return (
       <main className="search-results-page">
@@ -298,9 +325,21 @@ class SearchResults extends PureComponent {
               <div className="sr-spinner">
                 {isLoading && <Spinner label="Recherche en cours" />}
               </div>
-              <h1 className="sr-items-number">
-                {this.getNumberOfResultsToDisplay()}
-              </h1>
+              <div className="sr-items-header">
+                <span className="sr-items-number">
+                  {this.getNumberOfResultsToDisplay()}
+                </span>
+                <button
+                  className="sr-items-header-button"
+                  onClick={this.handleGoTo('tri')}
+                  type="button"
+                >
+                  <Icon svg="picto-sort" />
+                  <span>
+                    {sortCriterionLabel}
+                  </span>
+                </button>
+              </div>
               {results.length > 0 && (
                 <InfiniteScroll
                   getScrollParent={this.getScrollParent}
@@ -324,7 +363,7 @@ class SearchResults extends PureComponent {
             <div className="sr-filter-wrapper">
               <button
                 className="sr-filter-button"
-                onClick={this.handleGoToFilters}
+                onClick={this.handleGoTo('filtres')}
                 type="button"
               >
                 <Icon
@@ -360,6 +399,17 @@ class SearchResults extends PureComponent {
               showFailModal={this.showFailModal}
               updateFilteredOffers={this.updateFilteredOffers}
               updateFilters={this.updateFilters}
+            />
+          </Route>
+          <Route path="/recherche-offres/resultats/tri">
+            <Criteria
+              activeCriterionLabel={sortCriterionLabel}
+              backTo={`/recherche-offres/resultats${search}`}
+              criteria={SORT_CRITERIA}
+              history={history}
+              match={match}
+              onCriterionSelection={this.handleSortCriterionSelection}
+              title="Trier par"
             />
           </Route>
         </Switch>

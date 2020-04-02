@@ -128,7 +128,7 @@ const routes = [
     path:
       '/recherche-offres' +
       '/(resultats|criteres-localisation|criteres-categorie|criteres-tri)?' +
-      '/(filtres)?' +
+      '/(filtres|tri)?' +
       '/(localisation)?' +
       '/:details(details|transition)?' +
       '/:offerId([A-Z0-9]+)?' +

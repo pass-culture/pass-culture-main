@@ -53,7 +53,7 @@ describe('components | SearchResults', () => {
       criteria: {
         categories: [],
         isSearchAroundMe: false,
-        sortBy: null,
+        sortBy: '',
       },
       geolocation: {
         latitude: 40.1,
@@ -260,7 +260,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
-          sortBy: null,
+          sortBy: '',
         })
       })
 
@@ -334,7 +334,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
-          sortBy: null,
+          sortBy: '',
         })
       })
     })
@@ -372,7 +372,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
-          sortBy: null,
+          sortBy: '',
         })
       })
 
@@ -472,7 +472,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
-          sortBy: null,
+          sortBy: '',
         })
       })
     })
@@ -586,6 +586,33 @@ describe('components | SearchResults', () => {
           page: 0,
         })
       })
+
+      it('should display the sorting filter received from props', () => {
+        // Given
+        props.criteria.sortBy = '_by_price'
+
+        // When
+        const wrapper = shallow(<SearchResults {...props} />)
+
+        // Then
+        const sortButton = wrapper.find({ children: 'Prix' })
+        expect(sortButton).toHaveLength(1)
+      })
+
+      it('should display the sorting filter received from url', () => {
+        // Given
+        props.criteria.sortBy = ''
+        parse.mockReturnValue({
+          tri: '_by_price',
+        })
+
+        // When
+        const wrapper = shallow(<SearchResults {...props} />)
+
+        // Then
+        const sortButton = wrapper.find({ children: 'Prix' })
+        expect(sortButton).toHaveLength(1)
+      })
     })
   })
 
@@ -617,7 +644,7 @@ describe('components | SearchResults', () => {
           isThing: false,
         },
         page: 0,
-        sortBy: null,
+        sortBy: '',
       })
     })
 
@@ -650,7 +677,7 @@ describe('components | SearchResults', () => {
           isThing: false,
         },
         page: 0,
-        sortBy: null,
+        sortBy: '',
       })
     })
 
@@ -683,7 +710,7 @@ describe('components | SearchResults', () => {
           isThing: false,
         },
         page: 0,
-        sortBy: null,
+        sortBy: '',
       })
     })
 
@@ -940,7 +967,7 @@ describe('components | SearchResults', () => {
             isEvent: false,
             isThing: false,
           },
-          sortBy: null,
+          sortBy: '',
         },
         keywordsToSearch: 'vas-y',
         isLoading: false,
@@ -1004,7 +1031,7 @@ describe('components | SearchResults', () => {
           isThing: false,
         },
         page: 0,
-        sortBy: null,
+        sortBy: '',
       })
       expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
         keywords: 'librairie',
@@ -1017,7 +1044,7 @@ describe('components | SearchResults', () => {
           isThing: false,
         },
         page: 0,
-        sortBy: null,
+        sortBy: '',
       })
     })
 
@@ -1451,6 +1478,144 @@ describe('components | SearchResults', () => {
       expect(history.location.pathname + history.location.search).toBe(
         '/recherche-offres/resultats/filtres?mots-cles=librairie'
       )
+    })
+
+    it('should redirect to sort page', () => {
+      // given
+      const history = createBrowserHistory()
+      history.push('/recherche-offres/resultats?mots-cles=librairie')
+      props.history = history
+      const store = configureStore([])({})
+      const wrapper = mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <SearchResults {...props} />
+          </Router>
+        </Provider>
+      )
+      const sortButton = wrapper.find({ children: 'Au hasard' })
+
+      // when
+      sortButton.simulate('click')
+
+      // then
+      expect(history.location.pathname + history.location.search).toBe(
+        '/recherche-offres/resultats/tri?mots-cles=librairie'
+      )
+    })
+
+    it('should change sorting button name after sort criterion selection', () => {
+      // given
+      const history = createBrowserHistory()
+      history.push('/recherche-offres/resultats/tri?mots-cles=librairie&tri=_by_price')
+      props.history = history
+      const store = configureStore([])({})
+      const wrapper = mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <SearchResults {...props} />
+          </Router>
+        </Provider>
+      )
+
+      // when
+      const byProximityButton = wrapper.find({ children: 'Proximité' })
+      byProximityButton.simulate('click')
+
+      // then
+      expect(history.location.pathname + history.location.search).toBe(
+        '/recherche-offres/resultats?mots-cles=librairie&tri=_by_proximity'
+      )
+      const sortButton = wrapper.find({ children: 'Proximité' })
+      expect(sortButton).toHaveLength(1)
+    })
+
+    it('should fetch new results on sort criterion selection', () => {
+      // Given
+      const history = createBrowserHistory()
+      history.push('/recherche-offres/resultats/tri?mots-cles=&tri=_by_price')
+      props.history = history
+      const store = configureStore([])({})
+      const wrapper = mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <SearchResults {...props} />
+          </Router>
+        </Provider>
+      )
+
+      // When
+      const byProximityButton = wrapper.find({ children: 'Proximité' })
+      byProximityButton.simulate('click')
+
+      // Then
+      expect(fetchAlgolia).toHaveBeenCalledTimes(2)
+      expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
+        keywords: '',
+        offerCategories: [],
+        offerTypes: {
+          isDigital: false,
+          isEvent: false,
+          isThing: false,
+        },
+        page: 0,
+        sortBy: '_by_proximity',
+      })
+    })
+
+    it('should replace and not merge results with new ones on sort criterion selection', async () => {
+      // Given
+      const history = createBrowserHistory()
+      fetchAlgolia
+        .mockReturnValueOnce(
+          new Promise(resolve => {
+            resolve({
+              hits: [
+                { objectID: 'AA', offer: { dates: [1586248757] } },
+                {
+                  objectID: 'BB',
+                  offer: { dates: [1586248757] },
+                },
+              ],
+              nbHits: 1,
+              page: 0,
+            })
+          })
+        )
+        .mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [
+                { objectID: 'BB', offer: { dates: [1586248757] } },
+                {
+                  objectID: 'AA',
+                  offer: { dates: [1586248757] },
+                },
+              ],
+              nbHits: 1,
+              page: 0,
+            })
+          })
+        )
+      history.push('/recherche-offres/resultats/tri?mots-cles=&tri=_by_price')
+      props.history = history
+      const store = configureStore([])({})
+      const wrapper = await mount(
+        <Provider store={store}>
+          <Router history={history}>
+            <SearchResults {...props} />
+          </Router>
+        </Provider>
+      )
+
+      // When
+      const byProximityButton = wrapper.find({ children: 'Proximité' })
+      await byProximityButton.simulate('click')
+
+      // Then
+      wrapper.update()
+      const results = wrapper.find(Result)
+      expect(results).toHaveLength(2)
     })
   })
 })
