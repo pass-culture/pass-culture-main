@@ -97,6 +97,12 @@ jobs:
             . venv/bin/activate
             pip install -r requirements.txt
             pytest
+      - run:
+          name: Notify PC Ops Bot
+          when: on_fail
+          command: |
+            export BOT_MESSAGE="'Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL'"
+            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
 
 
   functional-tests-webapp:
@@ -245,6 +251,11 @@ workflows:
   version: 2
   commit:
     jobs:
+      - tests-data-analytics:
+          filters:
+              branches:
+                ignore:
+                  - production
       - build:
           filters:
             branches:
@@ -266,4 +277,3 @@ workflows:
     jobs:
       - functional-tests-webapp
       - functional-tests-pro
-      - tests-data-analytics
