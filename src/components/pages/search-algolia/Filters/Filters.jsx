@@ -1,3 +1,6 @@
+//radiusRevert:
+/* eslint-disable no-unused-vars */
+
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
@@ -65,21 +68,21 @@ export class Filters extends PureComponent {
     const { aroundRadius, isSearchAroundMe, offerTypes, sortBy } = filters
     const offerCategories = this.getSelectedCategories()
 
-    isSearchAroundMe ?
-      this.fetchOffers({
-        aroundRadius,
-        keywords,
-        geolocation,
-        offerCategories,
-        offerTypes,
-        sortBy,
-      })
+    isSearchAroundMe
+      ? this.fetchOffers({
+          aroundRadius,
+          keywords,
+          geolocation,
+          offerCategories,
+          offerTypes,
+          sortBy,
+        })
       : this.fetchOffers({
-        keywords,
-        offerCategories,
-        offerTypes,
-        sortBy,
-      })
+          keywords,
+          offerCategories,
+          offerTypes,
+          sortBy,
+        })
 
     const autourDeMoi = checkIfAroundMe(filters.isSearchAroundMe)
     const categories = offerCategories.join(';') || ''
@@ -92,20 +95,23 @@ export class Filters extends PureComponent {
   resetFilters = () => {
     const { initialFilters } = this.props
 
-    this.setState({
-      filters: {
-        ...initialFilters,
-        aroundRadius: 0,
-        offerCategories: this.buildCategoriesStateFromProps(),
-        offerTypes: {
-          isDigital: false,
-          isEvent: false,
-          isThing: false
-        }
+    this.setState(
+      {
+        filters: {
+          ...initialFilters,
+          //radiusRevert: aroundRadius: 0,
+          offerCategories: this.buildCategoriesStateFromProps(),
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false,
+          },
+        },
       },
-    }, () => {
-      this.process()
-    })
+      () => {
+        this.process()
+      }
+    )
   }
 
   getSelectedCategories = () => {
@@ -160,7 +166,8 @@ export class Filters extends PureComponent {
       {
         filters: {
           ...filters,
-          isSearchAroundMe: GEOLOCATION_CRITERIA[criterionKey].label === GEOLOCATION_CRITERIA.AROUND_ME.label
+          isSearchAroundMe:
+            GEOLOCATION_CRITERIA[criterionKey].label === GEOLOCATION_CRITERIA.AROUND_ME.label,
         },
       },
       () => {
@@ -197,47 +204,53 @@ export class Filters extends PureComponent {
     const { filters } = this.state
     const { offerTypes } = filters
 
-    this.setState({
-      filters: {
-        ...filters,
-        offerTypes: {
-          ...offerTypes,
-          [name]: checked,
+    this.setState(
+      {
+        filters: {
+          ...filters,
+          offerTypes: {
+            ...offerTypes,
+            [name]: checked,
+          },
         },
       },
-    }, () => {
-      this.process()
-    })
+      () => {
+        this.process()
+      }
+    )
   }
 
   handleOnCategoryChange = event => {
     const { name, checked } = event.target
     const { filters } = this.state
 
-    this.setState({
-      filters: {
-        ...filters,
-        offerCategories: {
-          ...filters.offerCategories,
-          [name]: checked,
+    this.setState(
+      {
+        filters: {
+          ...filters,
+          offerCategories: {
+            ...filters.offerCategories,
+            [name]: checked,
+          },
         },
       },
-    }, () => {
-      this.process()
-    })
+      () => {
+        this.process()
+      }
+    )
   }
 
   handleToggleCategories = () => () => {
     this.setState(prevState => ({ areCategoriesVisible: !prevState.areCategoriesVisible }))
   }
 
-  handleRadiusSlide = (value) => {
+  handleRadiusSlide = value => {
     const { filters } = this.state
 
     this.setState({
       filters: {
         ...filters,
-        aroundRadius: value
+        aroundRadius: value,
       },
     })
   }
@@ -292,26 +305,26 @@ export class Filters extends PureComponent {
                 </button>
                 <span className="sf-filter-separator" />
               </li>
-              {isSearchAroundMe && (
-                <li>
-                  <h4 className="sf-title">
-                    {'Rayon'}
-                  </h4>
-                  <h4 className="sf-slider-radius">
-                    {`${aroundRadius} km`}
-                  </h4>
-                  <div className="sf-slider-wrapper">
-                    <Slider
-                      max={100}
-                      min={0}
-                      onAfterChange={this.handleRadiusAfterSlide}
-                      onChange={this.handleRadiusSlide}
-                      value={aroundRadius}
-                    />
-                  </div>
-                  <span className="sf-filter-separator" />
-                </li>
-              )}
+              {/*//radiusRevert:{isSearchAroundMe && (*/}
+              {/*  <li>*/}
+              {/*    <h4 className="sf-title">*/}
+              {/*      {'Rayon'}*/}
+              {/*    </h4>*/}
+              {/*    <h4 className="sf-slider-radius">*/}
+              {/*      {`${aroundRadius} km`}*/}
+              {/*    </h4>*/}
+              {/*    <div className="sf-slider-wrapper">*/}
+              {/*      <Slider*/}
+              {/*        max={100}*/}
+              {/*        min={0}*/}
+              {/*        onAfterChange={this.handleRadiusAfterSlide}*/}
+              {/*        onChange={this.handleRadiusSlide}*/}
+              {/*        value={aroundRadius}*/}
+              {/*      />*/}
+              {/*    </div>*/}
+              {/*    <span className="sf-filter-separator" />*/}
+              {/*  </li>*/}
+              {/*)}*/}
               <li>
                 <button
                   aria-label="Afficher les catégories"
@@ -365,7 +378,7 @@ export class Filters extends PureComponent {
               <li>
                 <div className="sf-title-wrapper">
                   <h4 className="sf-title">
-                    {'Type d\'offres'}
+                    {"Type d'offres"}
                   </h4>
                   {numberOfOfferTypesSelected > 0 && (
                     <span className="sf-selected-filter-counter">
@@ -391,9 +404,9 @@ export class Filters extends PureComponent {
                     <FilterCheckbox
                       checked={offerTypes.isThing}
                       className={`${offerTypes.isThing ? 'fc-label-checked' : 'fc-label'}`}
-                      id='isThing'
-                      label='Offres physiques'
-                      name='isThing'
+                      id="isThing"
+                      label="Offres physiques"
+                      name="isThing"
                       onChange={this.handleOnTypeChange}
                     />
                   </li>
@@ -401,9 +414,9 @@ export class Filters extends PureComponent {
                     <FilterCheckbox
                       checked={offerTypes.isEvent}
                       className={`${offerTypes.isEvent ? 'fc-label-checked' : 'fc-label'}`}
-                      id='isEvent'
-                      label='Sorties'
-                      name='isEvent'
+                      id="isEvent"
+                      label="Sorties"
+                      name="isEvent"
                       onChange={this.handleOnTypeChange}
                     />
                   </li>

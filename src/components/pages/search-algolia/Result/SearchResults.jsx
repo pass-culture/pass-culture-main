@@ -16,12 +16,14 @@ import SearchAlgoliaDetailsContainer from './ResultDetail/ResultDetailContainer'
 class SearchResults extends PureComponent {
   constructor(props) {
     super(props)
-    const { criteria: { categories, isSearchAroundMe, sortBy } } = props
+    const {
+      criteria: { categories, isSearchAroundMe, sortBy },
+    } = props
 
     this.state = {
       currentPage: 0,
       filters: {
-        aroundRadius: 0,
+        //radiusRevert: aroundRadius: 0,
         isSearchAroundMe: this.getIsSearchAroundMeFromUrlOrProps(isSearchAroundMe),
         offerCategories: this.getCategoriesFromUrlOrProps(categories),
         offerTypes: {
@@ -29,7 +31,7 @@ class SearchResults extends PureComponent {
           isEvent: false,
           isThing: false,
         },
-        sortBy: this.getSortByFromUrlOrProps(sortBy)
+        sortBy: this.getSortByFromUrlOrProps(sortBy),
       },
       keywordsToSearch: '',
       isLoading: false,
@@ -49,7 +51,7 @@ class SearchResults extends PureComponent {
     this.fetchOffers(keywords, currentPage)
   }
 
-  getCategoriesFromUrlOrProps = (categoriesFromProps) => {
+  getCategoriesFromUrlOrProps = categoriesFromProps => {
     const { query } = this.props
     const queryParams = query.parse()
     const categoriesFromUrl = queryParams['categories'] || ''
@@ -57,7 +59,7 @@ class SearchResults extends PureComponent {
     return categoriesFromUrl ? categoriesFromUrl.split(';') : categoriesFromProps
   }
 
-  getIsSearchAroundMeFromUrlOrProps = (isSearchAroundMeFromProps) => {
+  getIsSearchAroundMeFromUrlOrProps = isSearchAroundMeFromProps => {
     const { query } = this.props
     const queryParams = query.parse()
     const isSearchAroundMeFromUrl = queryParams['autour-de-moi'] || ''
@@ -65,7 +67,7 @@ class SearchResults extends PureComponent {
     return isSearchAroundMeFromUrl ? isSearchAroundMeFromUrl === 'oui' : isSearchAroundMeFromProps
   }
 
-  getSortByFromUrlOrProps = (sortByFromProps) => {
+  getSortByFromUrlOrProps = sortByFromProps => {
     const { query } = this.props
     const queryParams = query.parse()
     const sortByFromUrl = queryParams['tri'] || ''
@@ -76,7 +78,7 @@ class SearchResults extends PureComponent {
   getScrollParent = () => document.querySelector('.sr-wrapper')
 
   showFailModal = () => {
-    toast.info('La recherche n\'a pas pu aboutir, veuillez ré-essayer plus tard.')
+    toast.info("La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard.")
   }
 
   handleOnSubmit = event => {
@@ -93,18 +95,21 @@ class SearchResults extends PureComponent {
     const tri = queryParams['tri']
 
     trimmedKeywordsToSearch &&
-    history.replace({
-      search: `?mots-cles=${trimmedKeywordsToSearch}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${categories}`,
-    })
+      history.replace({
+        search: `?mots-cles=${trimmedKeywordsToSearch}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${categories}`,
+      })
 
     if (searchedKeywords !== trimmedKeywordsToSearch) {
-      this.setState({
-        currentPage: 0,
-        results: [],
-      }, () => {
-        const { currentPage } = this.state
-        this.fetchOffers(trimmedKeywordsToSearch, currentPage)
-      })
+      this.setState(
+        {
+          currentPage: 0,
+          results: [],
+        },
+        () => {
+          const { currentPage } = this.state
+          this.fetchOffers(trimmedKeywordsToSearch, currentPage)
+        }
+      )
     }
     this.inputRef.current.blur()
   }
@@ -146,24 +151,26 @@ class SearchResults extends PureComponent {
       options.geolocation = geolocation
     }
 
-    fetchAlgolia(options).then(offers => {
-      const { results } = this.state
-      const { hits, nbHits, nbPages } = offers
-      this.setState({
-        currentPage: page,
-        keywordsToSearch: keywords,
-        isLoading: false,
-        resultsCount: nbHits,
-        results: [...results, ...hits],
-        searchedKeywords: keywords,
-        totalPagesNumber: nbPages,
+    fetchAlgolia(options)
+      .then(offers => {
+        const { results } = this.state
+        const { hits, nbHits, nbPages } = offers
+        this.setState({
+          currentPage: page,
+          keywordsToSearch: keywords,
+          isLoading: false,
+          resultsCount: nbHits,
+          results: [...results, ...hits],
+          searchedKeywords: keywords,
+          totalPagesNumber: nbPages,
+        })
       })
-    }).catch(() => {
-      this.setState({
-        isLoading: false,
+      .catch(() => {
+        this.setState({
+          isLoading: false,
+        })
+        this.showFailModal()
       })
-      this.showFailModal()
-    })
   }
 
   fetchNextOffers = currentPage => {
@@ -220,7 +227,15 @@ class SearchResults extends PureComponent {
 
   render() {
     const { geolocation, history, match, query } = this.props
-    const { currentPage, filters, keywordsToSearch, isLoading, results, resultsCount, totalPagesNumber } = this.state
+    const {
+      currentPage,
+      filters,
+      keywordsToSearch,
+      isLoading,
+      results,
+      resultsCount,
+      totalPagesNumber,
+    } = this.state
     const { isSearchAroundMe } = filters
     const { location } = history
     const { search } = location
@@ -319,9 +334,7 @@ class SearchResults extends PureComponent {
               </button>
             </div>
           </Route>
-          <Route
-            path="/recherche-offres/resultats/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
-          >
+          <Route path="/recherche-offres/resultats/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?">
             <HeaderContainer
               closeTitle="Retourner à la page découverte"
               closeTo="/decouverte"

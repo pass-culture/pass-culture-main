@@ -53,7 +53,7 @@ describe('components | SearchResults', () => {
       criteria: {
         categories: [],
         isSearchAroundMe: false,
-        sortBy: null
+        sortBy: null,
       },
       geolocation: {
         latitude: 40.1,
@@ -169,7 +169,7 @@ describe('components | SearchResults', () => {
       parse.mockReturnValue({
         categories: 'MUSEE',
         'mots-cles': 'une librairie',
-        tri: '_by_price'
+        tri: '_by_price',
       })
       props.criteria = {}
 
@@ -183,7 +183,7 @@ describe('components | SearchResults', () => {
         offerTypes: {
           isDigital: false,
           isEvent: false,
-          isThing: false
+          isThing: false,
         },
         page: 0,
         sortBy: '_by_price',
@@ -195,7 +195,7 @@ describe('components | SearchResults', () => {
         props.criteria = {
           categories: ['Cinéma'],
           isSearchAroundMe: true,
-          sortBy: '_by_proximity'
+          sortBy: '_by_proximity',
         }
 
         // when
@@ -203,7 +203,7 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
-          aroundRadius: 0,
+          //radiusRevert: aroundRadius: 0,
           geolocation: props.geolocation,
           keywords: '',
           offerCategories: ['Cinéma'],
@@ -241,9 +241,7 @@ describe('components | SearchResults', () => {
         // then
         const results = wrapper.find(Result)
         const searchInput = wrapper.find('input')
-        const resultTitle = wrapper
-          .findWhere(node => node.text() === '0 résultat')
-          .first()
+        const resultTitle = wrapper.findWhere(node => node.text() === '0 résultat').first()
         expect(results).toHaveLength(0)
         expect(searchInput.prop('value')).toBe('une librairie')
         expect(resultTitle).toHaveLength(1)
@@ -282,9 +280,7 @@ describe('components | SearchResults', () => {
         // then
         const results = wrapper.find(Result)
         const searchInput = wrapper.find('input')
-        const resultTitle = wrapper
-          .findWhere(node => node.text() === '2 résultats')
-          .first()
+        const resultTitle = wrapper.findWhere(node => node.text() === '2 résultats').first()
         expect(results).toHaveLength(2)
         expect(results.at(0).prop('geolocation')).toStrictEqual(props.geolocation)
         expect(results.at(0).prop('result')).toStrictEqual({ objectID: 'AA' })
@@ -318,9 +314,7 @@ describe('components | SearchResults', () => {
         // then
         const results = wrapper.find(Result)
         const searchInput = wrapper.find('input')
-        const resultTitle = wrapper
-          .findWhere(node => node.text() === '2 résultats')
-          .first()
+        const resultTitle = wrapper.findWhere(node => node.text() === '2 résultats').first()
         expect(results).toHaveLength(2)
         expect(results.at(0).prop('geolocation')).toStrictEqual({})
         expect(results.at(0).prop('result')).toStrictEqual({ objectID: 'AA' })
@@ -356,7 +350,7 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
-          aroundRadius: 0,
+          //radiusRevert: aroundRadius: 0,
           geolocation: { latitude: 40.1, longitude: 41.1 },
           keywords: 'une librairie',
           offerCategories: [],
@@ -419,7 +413,7 @@ describe('components | SearchResults', () => {
         )
         parse.mockReturnValue({
           categories: 'CINEMA',
-          'mots-cles': 'une librairie'
+          'mots-cles': 'une librairie',
         })
         props.criteria = {}
 
@@ -496,7 +490,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
-          sortBy: null
+          sortBy: null,
         })
       })
     })
@@ -515,7 +509,7 @@ describe('components | SearchResults', () => {
         )
         parse.mockReturnValue({
           'mots-cles': 'une librairie',
-          tri: '_by_proximity'
+          tri: '_by_proximity',
         })
 
         // when
@@ -549,7 +543,7 @@ describe('components | SearchResults', () => {
         )
         parse.mockReturnValue({
           'mots-cles': 'une librairie',
-          tri: ''
+          tri: '',
         })
 
         // when
@@ -582,11 +576,11 @@ describe('components | SearchResults', () => {
         )
         props.criteria = {
           categories: [],
-          isSearchAroundMe: false
+          isSearchAroundMe: false,
         }
         parse.mockReturnValue({
           'mots-cles': 'une librairie',
-          tri: ''
+          tri: '',
         })
 
         // when
@@ -730,9 +724,7 @@ describe('components | SearchResults', () => {
       })
 
       // then
-      const resultTitle = wrapper
-        .findWhere(node => node.text() === '0 résultat')
-        .first()
+      const resultTitle = wrapper.findWhere(node => node.text() === '0 résultat').first()
       expect(resultTitle).toHaveLength(1)
     })
 
@@ -767,9 +759,7 @@ describe('components | SearchResults', () => {
       })
 
       // then
-      const resultTitle = wrapper
-        .findWhere(node => node.text() === '2 résultats')
-        .first()
+      const resultTitle = wrapper.findWhere(node => node.text() === '2 résultats').first()
       expect(resultTitle).toHaveLength(1)
     })
 
@@ -894,7 +884,7 @@ describe('components | SearchResults', () => {
             hitsPerPage: 2,
             processingTimeMS: 1,
             query: 'librairie',
-            params: 'query=\'librairie\'&hitsPerPage=2',
+            params: "query='librairie'&hitsPerPage=2",
           })
         })
       )
@@ -927,7 +917,7 @@ describe('components | SearchResults', () => {
             hitsPerPage: 2,
             processingTimeMS: 1,
             query: 'vas-y',
-            params: "query=\"vas-y\"&hitsPerPage=2",
+            params: 'query="vas-y"&hitsPerPage=2',
           })
         })
       )
@@ -946,7 +936,7 @@ describe('components | SearchResults', () => {
       expect(wrapper.state()).toStrictEqual({
         currentPage: 0,
         filters: {
-          aroundRadius: 0,
+          //radiusRevert: aroundRadius: 0,
           isSearchAroundMe: false,
           offerCategories: [],
           offerTypes: {
@@ -954,7 +944,7 @@ describe('components | SearchResults', () => {
             isEvent: false,
             isThing: false,
           },
-          sortBy: null
+          sortBy: null,
         },
         keywordsToSearch: 'vas-y',
         isLoading: false,
@@ -1016,7 +1006,7 @@ describe('components | SearchResults', () => {
           isThing: false,
         },
         page: 0,
-        sortBy: null
+        sortBy: null,
       })
       expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
         keywords: 'librairie',
@@ -1392,9 +1382,9 @@ describe('components | SearchResults', () => {
       // given
       history.push('/recherche-offres/resultats/filtres')
       props.query.parse.mockReturnValue({
-        'categories': 'VISITE;CINEMA',
+        categories: 'VISITE;CINEMA',
         'mots-cles': 'librairie',
-        'tri': '_by_price',
+        tri: '_by_price',
       })
 
       // when
@@ -1411,7 +1401,7 @@ describe('components | SearchResults', () => {
       expect(filtersContainer).toHaveLength(1)
       expect(filtersContainer.prop('history')).toStrictEqual(props.history)
       expect(filtersContainer.prop('initialFilters')).toStrictEqual({
-        aroundRadius: 0,
+        //radiusRevert: aroundRadius: 0,
         isSearchAroundMe: false,
         offerCategories: ['VISITE', 'CINEMA'],
         offerTypes: {

@@ -38,7 +38,7 @@ describe('components | Filters', () => {
         offerTypes: {
           isDigital: false,
           isEvent: false,
-          isThing: false
+          isThing: false,
         },
         sortBy: '_by_price',
       },
@@ -107,9 +107,9 @@ describe('components | Filters', () => {
           props.isUserAllowedToSelectCriterion.mockReturnValue(true)
           props.query.parse.mockReturnValue({
             'autour-de-moi': 'non',
-            'categories': 'VISITE;CINEMA',
+            categories: 'VISITE;CINEMA',
             'mots-cles': 'librairie',
-            'tri': '_by_price',
+            tri: '_by_price',
           })
           fetchAlgolia.mockReturnValue(
             new Promise(resolve => {
@@ -140,7 +140,7 @@ describe('components | Filters', () => {
             offerTypes: {
               isDigital: false,
               isEvent: false,
-              isThing: false
+              isThing: false,
             },
             sortBy: '_by_price',
           })
@@ -164,16 +164,16 @@ describe('components | Filters', () => {
             offerTypes: {
               isDigital: false,
               isEvent: false,
-              isThing: false
+              isThing: false,
             },
             sortBy: '_by_price',
           }
           props.isUserAllowedToSelectCriterion.mockReturnValue(true)
           props.query.parse.mockReturnValue({
             'autour-de-moi': 'oui',
-            'categories': 'VISITE',
+            categories: 'VISITE',
             'mots-cles': 'librairie',
-            'tri': '_by_price',
+            tri: '_by_price',
           })
           fetchAlgolia.mockReturnValue(
             new Promise(resolve => {
@@ -206,9 +206,9 @@ describe('components | Filters', () => {
             offerTypes: {
               isDigital: false,
               isEvent: false,
-              isThing: false
+              isThing: false,
             },
-            sortBy: '_by_price'
+            sortBy: '_by_price',
           })
           expect(props.redirectToSearchFiltersPage).toHaveBeenCalledWith()
           expect(props.history.replace).toHaveBeenCalledWith({
@@ -230,7 +230,9 @@ describe('components | Filters', () => {
         // then
         const header = wrapper.find(HeaderContainer)
         expect(header).toHaveLength(1)
-        expect(header.prop('backTo')).toStrictEqual('/recherche-offres/resultats?mots-cles=librairie')
+        expect(header.prop('backTo')).toStrictEqual(
+          '/recherche-offres/resultats?mots-cles=librairie'
+        )
         expect(header.prop('closeTo')).toBeNull()
         expect(header.prop('reset')).toStrictEqual(expect.any(Function))
         expect(header.prop('title')).toStrictEqual('Filtrer')
@@ -295,7 +297,9 @@ describe('components | Filters', () => {
         resultsButton.simulate('click')
 
         // then
-        expect(props.history.push).toHaveBeenCalledWith('/recherche-offres/resultats?mots-cles=librairie')
+        expect(props.history.push).toHaveBeenCalledWith(
+          '/recherche-offres/resultats?mots-cles=librairie'
+        )
       })
 
       it('should redirect to results page with no query param when clicking on display results button', () => {
@@ -328,9 +332,9 @@ describe('components | Filters', () => {
           offerTypes: {
             isDigital: false,
             isEvent: false,
-            isThing: false
+            isThing: false,
           },
-          sortBy: '_by_price'
+          sortBy: '_by_price',
         })
       })
 
@@ -450,7 +454,9 @@ describe('components | Filters', () => {
           })
         })
 
-        describe('when geolocation filter is "Autour de moi"', () => {
+        //radiusRevert: added .skip to describe below and disabled eslint
+        // eslint-disable-next-line jest/no-disabled-tests
+        describe.skip('when geolocation filter is "Autour de moi"', () => {
           it('should display a "Rayon" title', () => {
             // given
             props.history.location.pathname = '/recherche-offres/filtres'
@@ -508,7 +514,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const title = wrapper.findWhere(node => node.text() === 'Type d\'offres').first()
+          const title = wrapper.findWhere(node => node.text() === "Type d'offres").first()
           expect(title).toHaveLength(1)
         })
 
@@ -586,7 +592,9 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const numberOfOfferTypesSelected = wrapper.findWhere(node => node.text() === '(3)').first()
+          const numberOfOfferTypesSelected = wrapper
+            .findWhere(node => node.text() === '(3)')
+            .first()
           expect(numberOfOfferTypesSelected).toHaveLength(1)
         })
 
@@ -603,7 +611,9 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const numberOfOfferTypesSelected = wrapper.findWhere(node => node.text() === '(3)').first()
+          const numberOfOfferTypesSelected = wrapper
+            .findWhere(node => node.text() === '(3)')
+            .first()
           expect(numberOfOfferTypesSelected).toHaveLength(0)
         })
 
@@ -613,9 +623,10 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
           const digitalFilter = wrapper
             .find('[data-test="sf-offer-types-filter-wrapper"]')
-            .find(FilterCheckbox).at(0)
+            .find(FilterCheckbox)
+            .at(0)
           props.query.parse.mockReturnValue({
-            'mots-cles': 'librairies'
+            'mots-cles': 'librairies',
           })
           fetchAlgolia.mockReturnValue(
             new Promise(resolve => {
@@ -631,8 +642,8 @@ describe('components | Filters', () => {
           digitalFilter.simulate('change', {
             target: {
               name: 'isDigital',
-              checked: true
-            }
+              checked: true,
+            },
           })
 
           // then
@@ -642,9 +653,9 @@ describe('components | Filters', () => {
             offerTypes: {
               isDigital: true,
               isEvent: false,
-              isThing: false
+              isThing: false,
             },
-            sortBy: '_by_price'
+            sortBy: '_by_price',
           })
         })
       })
@@ -689,7 +700,9 @@ describe('components | Filters', () => {
           const categoriesButtonAfterClick = wrapper
             .findWhere(node => node.text() === 'Catégories')
             .at(1)
-          expect(categoriesButtonClassNameBeforeClick).toBe('sf-category-title-wrapper sf-title-drop-down')
+          expect(categoriesButtonClassNameBeforeClick).toBe(
+            'sf-category-title-wrapper sf-title-drop-down'
+          )
           expect(categoriesButtonAfterClick.prop('className')).toBe(
             'sf-category-title-wrapper sf-title-drop-down-flipped'
           )
@@ -836,8 +849,7 @@ describe('components | Filters', () => {
           it('should reset filters and trigger search to Algolia with given category', () => {
             // given
             props.history = createBrowserHistory()
-            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-            })
+            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
             props.history.location.pathname = '/recherche-offres/resultats/filtres'
             props.initialFilters = {
               isSearchAroundMe: true,
@@ -845,9 +857,9 @@ describe('components | Filters', () => {
               offerTypes: {
                 isDigital: false,
                 isEvent: false,
-                isThing: false
+                isThing: false,
               },
-              sortBy: '_by_price'
+              sortBy: '_by_price',
             }
             props.query.parse.mockReturnValue({
               'mots-cles': 'librairie',
@@ -876,14 +888,14 @@ describe('components | Filters', () => {
 
             // then
             expect(fetchAlgolia).toHaveBeenCalledWith({
-              aroundRadius: 0,
+              //radiusRevert: aroundRadius: 0,
               geolocation: { latitude: 40, longitude: 41 },
               keywords: 'librairie',
               offerCategories: ['VISITE'],
               offerTypes: {
                 isDigital: false,
                 isEvent: false,
-                isThing: false
+                isThing: false,
               },
               sortBy: '_by_price',
             })
@@ -894,8 +906,7 @@ describe('components | Filters', () => {
           it('should reset filters and trigger search to Algolia with given categories', () => {
             // given
             props.history = createBrowserHistory()
-            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-            })
+            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
             props.history.location.pathname = '/recherche-offres/resultats/filtres'
             props.initialFilters = {
               isSearchAroundMe: true,
@@ -903,9 +914,9 @@ describe('components | Filters', () => {
               offerTypes: {
                 isDigital: true,
                 isEvent: true,
-                isThing: true
+                isThing: true,
               },
-              sortBy: '_by_price'
+              sortBy: '_by_price',
             }
             props.query.parse.mockReturnValue({
               'mots-cles': 'librairie',
@@ -934,14 +945,14 @@ describe('components | Filters', () => {
 
             // then
             expect(fetchAlgolia).toHaveBeenCalledWith({
-              aroundRadius: 0,
+              //radiusRevert: aroundRadius: 0,
               geolocation: { latitude: 40, longitude: 41 },
               keywords: 'librairie',
               offerCategories: ['VISITE', 'CINEMA'],
               offerTypes: {
                 isDigital: false,
                 isEvent: false,
-                isThing: false
+                isThing: false,
               },
               sortBy: '_by_price',
             })
