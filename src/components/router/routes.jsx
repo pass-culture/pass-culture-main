@@ -7,6 +7,7 @@ import MyBookingsContainer from '../pages/my-bookings/MyBookingsContainer'
 import DiscoveryRouterContainer from '../hocs/discovery-router/DiscoveryRouterContainer'
 import DiscoveryContainerV3 from '../pages/discovery-v3/DiscoveryContainer'
 import MyFavoritesContainer from '../pages/my-favorites/MyFavoritesContainer'
+import Tutorials from '../pages/tutorials/Tutorials'
 import ForgotPassword from '../pages/forgot-password/ForgotPassword'
 import OfferContainer from '../pages/offer/OfferContainer'
 import ProfileContainer from '../pages/profile/ProfileContainer'
@@ -46,6 +47,11 @@ const routes = [
     featureName: 'WEBAPP_SIGNUP',
     path: '/inscription',
     title: 'Inscription',
+  },
+  {
+    component: Tutorials,
+    path: '/bienvenue',
+    title: 'Bienvenue',
   },
   {
     component: ForgotPassword,
