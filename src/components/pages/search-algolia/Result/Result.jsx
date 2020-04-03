@@ -25,6 +25,7 @@ const Result = ({ result, geolocation, search }) => {
   const thumbSrc = thumbUrl !== null ? thumbUrl : DEFAULT_THUMB_URL
   const formattedDate = formatSearchResultDate(departementCode, dates)
   const formattedPrice = formatResultPrice(priceMin, priceMax, isDuo)
+  const canDisplayPrice = (priceMin && priceMax) || priceMin === 0
   const humanizedDistance = getHumanizeRelativeDistance(
     userLatitude,
     userLongitude,
@@ -68,9 +69,11 @@ const Result = ({ result, geolocation, search }) => {
               {formattedDate}
             </p>
           )}
-          <p className="result-price">
-            {formattedPrice}
-          </p>
+          {canDisplayPrice && (
+            <p className="result-price">
+              {formattedPrice}
+            </p>
+          )}
         </div>
       </div>
     </Link>

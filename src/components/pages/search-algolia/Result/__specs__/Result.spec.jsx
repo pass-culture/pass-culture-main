@@ -85,6 +85,19 @@ describe('components | Result', () => {
     expect(offerPrice).toHaveLength(1)
   })
 
+  it('should render a Link component  not containing offer price when price is undefined', () => {
+    // given
+    props.result.offer.priceMin = undefined
+    props.result.offer.priceMax = undefined
+
+    // when
+    const wrapper = shallow(<Result {...props} />)
+
+    // then
+    const offerPrice = wrapper.findWhere(node => node.text() === 'undefined €').first()
+    expect(offerPrice).toHaveLength(0)
+  })
+
   it('should render a Link component with no date when no dates', () => {
     // given
     props.result.offer.dates = []
