@@ -74,7 +74,7 @@ describe('components | Menu', () => {
               isActive: true,
             },
             {
-              nameKey: 'RECOMMENDATIONS',
+              nameKey: 'RECOMMENDATIONS_WITH_DISCOVERY_VIEW',
               isActive: true,
             },
           ],
