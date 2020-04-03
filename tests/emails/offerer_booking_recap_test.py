@@ -25,11 +25,10 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         # Given
         user = create_user(email='test@example.com', first_name='John', last_name='Doe')
         offerer = create_offerer(idx=1)
-        venue = create_venue(offerer, name='Test offerer', siret='89765389057043', idx=1,
-                             departement_code='75', postal_code='75000')
+        venue = create_venue(offerer, name='Test offerer', idx=1, postal_code='75000')
         event_offer = create_offer_with_event_product(venue, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 59, 5, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(event_offer, price=0, quantity=10, beginning_datetime=beginning_datetime)
+        stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
         recipient = ['initial_recipient@example.com']
         stock.bookings = [booking]
@@ -84,14 +83,13 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         thing_product = create_product_with_thing_type(thing_name='Le récit de voyage', extra_data=extra_data)
         event_offer = create_offer_with_thing_product(venue=venue, product=thing_product, idx=1)
         stock = create_stock_from_offer(event_offer, price=0)
-        booking = create_booking(user=user, stock=stock, venue=venue, quantity=3, token='ABC123')
-        recipient = ['initial_recipient@example.com']
+        booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
         stock.bookings = [booking]
 
         repository.save(stock)
 
         # When
-        email = retrieve_data_for_offerer_booking_recap_email(booking, recipient)
+        email = retrieve_data_for_offerer_booking_recap_email(booking, [])
 
         # Then
         assert email == {
@@ -116,7 +114,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                     'is_event': 0,
                     'date': '',
                     'heure': '',
-                    'quantity': 3,
+                    'quantity': 1,
                     'offer_type': 'book',
                     'departement': 'numérique',
                     'users': [{'firstName': 'John',
@@ -134,19 +132,17 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         user = create_user(email='test@example.com', first_name='John', last_name='Doe')
         offerer = create_offerer(idx=1)
         deposit = create_deposit(user, amount=50, source='public')
-        venue = create_venue(offerer, name='Test offerer', siret='89765389057043', idx=1,
-                             departement_code='75', postal_code='75000')
+        venue = create_venue(offerer, name='Test offerer', idx=1, postal_code='75000')
         event_offer = create_offer_with_event_product(venue, is_duo=True, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(event_offer, price=5.86, quantity=10, beginning_datetime=beginning_datetime)
+        stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=5.86)
         booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
         stock.bookings = [booking]
-        recipient = ['initial_recipient@example.com']
 
         repository.save(deposit, stock)
 
         # When
-        email = retrieve_data_for_offerer_booking_recap_email(booking, recipient)
+        email = retrieve_data_for_offerer_booking_recap_email(booking, [])
 
         # Then
         assert email == {
@@ -190,16 +186,15 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         venue = create_venue(offerer, name='Test offerer', is_virtual=True, siret=None, idx=1)
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(thing_offer, price=0, quantity=10, beginning_datetime=beginning_datetime)
+        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
-        recipient = ['initial_recipient@example.com']
         stock.bookings = [booking]
 
         repository.save(stock)
 
         # When
         thing_offer.extraData = None
-        email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, recipient)
+        email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, [])
 
         # Then
         assert email_data_template == {
@@ -243,16 +238,15 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         venue = create_venue(offerer, name='Test offerer', is_virtual=True, siret=None, idx=1)
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(thing_offer, price=0, quantity=10, beginning_datetime=beginning_datetime)
+        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
         stock.bookings = [booking]
-        recipient = ['initial_recipient@example.com']
 
         repository.save(stock)
 
         # When
         thing_offer.extraData = {}
-        email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, recipient)
+        email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, [])
 
         # Then
         assert email_data_template == {
@@ -287,114 +281,81 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         }
 
     @patch('emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('repository.feature_queries.IS_PROD', True)
     @clean_database
-    def test_returns_multiple_offer_email_when_production_environment(self, app):
+    def test_returns_recipients_email_when_production_environment(self, app):
         # Given
         user = create_user(email='test@example.com', first_name='John', last_name='Doe')
         offerer = create_offerer(idx=1)
-        venue = create_venue(offerer, name='Test offerer', siret='89765389057043', idx=1,
-                             departement_code='75', postal_code='75000')
+        venue = create_venue(offerer, name='Test offerer', idx=1, postal_code='75000')
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(thing_offer, price=0, quantity=10, beginning_datetime=beginning_datetime)
+        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
         stock.bookings = [booking]
-        recipient = ['dev@example.com', 'administration@example.com']
+        recipients = ['dev@example.com', 'administration@example.com']
 
         repository.save(stock)
 
         # When
         thing_offer.extraData = None
 
-        email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, recipient)
+        email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, recipients)
 
         # Then
-        assert email_data_template == {
-            'FromEmail': 'support@example.com',
-            'MJ-TemplateID': 1095029,
-            'MJ-TemplateLanguage': True,
-            'To': 'dev@example.com, administration@example.com',
-            'Vars':
-                {
-                    'nom_offre': 'Test Book',
-                    'nom_lieu': 'Test offerer',
-                    'prix': 'Gratuit',
-                    'date': '',
-                    'heure': '',
-                    'quantity': 1,
-                    'user_firstName': 'John',
-                    'user_lastName': 'Doe',
-                    'user_email': 'test@example.com',
-                    'is_event': 0,
-                    'ISBN': '',
-                    'offer_type': 'book',
-                    'departement': '75',
-                    'nombre_resa': 1,
-                    'contremarque': 'ABC123',
-                    'env': '-development',
-                    'lien_offre_pcpro': 'http://localhost:3001/offres/AE?lieu=AE&structure=AE',
-                    'users': [{'firstName': 'John',
-                               'lastName': 'Doe',
-                               'email': 'test@example.com',
-                               'contremarque': 'ABC123'}]
-                }
-        }
+        assert email_data_template.get('To') == ', '.join(recipients)
 
     @patch('emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    @patch('utils.mailing.IS_PROD', False)
-    @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
+    @clean_database
+    def test_returns_dev_email_adress_when_feature_send_mail_to_users_disabled(self, app):
+        # Given
+        user = create_user(email='test@example.com', first_name='John', last_name='Doe')
+        offerer = create_offerer(idx=1)
+        venue = create_venue(offerer, name='Test offerer', idx=1, postal_code='75000')
+        thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
+        beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
+        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0)
+        booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
+        stock.bookings = [booking]
+        recipients = ['dev@example.com', 'administration@example.com']
+
+        repository.save(stock)
+
+        # When
+        thing_offer.extraData = None
+
+        email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, recipients)
+
+        # Then
+        assert email_data_template.get('To') != ', '.join(recipients)
+        assert email_data_template.get('To') == 'dev@example.com'
+
+    @patch('emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @clean_database
     def test_returns_email_with_correct_data_when_two_users_book_the_same_offer(self, app):
         # Given
-        user_1 = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
-                             first_name='Jean', last_name='Dupont', public_name='Test')
-        user_2 = create_user(can_book_free_offers=True, departement_code='93', email='mail@example.com',
-                             first_name='Jaja', last_name='Dudu', public_name='Test')
+        user_1 = create_user(email='test@example.com', first_name='Jean', last_name='Dupont')
+        user_2 = create_user(email='mail@example.com', first_name='Jaja', last_name='Dudu')
         offerer = create_offerer(idx=1)
-        venue = create_venue(offerer, name='Test offerer', siret='89765389057043', idx=1,
-                             departement_code='75', postal_code='75000')
+        venue = create_venue(offerer, idx=1, postal_code='75000')
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(thing_offer, price=0, quantity=10, beginning_datetime=beginning_datetime)
+        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0)
         booking_1 = create_booking(user=user_1, stock=stock, venue=venue, token='ACVSDC')
         booking_2 = create_booking(user=user_2, stock=stock, venue=venue, token='TEST95')
         stock.bookings = [booking_1, booking_2]
-        recipient = ['dev@example.com', 'administration@example.com']
 
         repository.save(stock)
 
         # When
         thing_offer.extraData = None
 
-        email_data_template = retrieve_data_for_offerer_booking_recap_email(booking_1, recipient)
+        email_data_template = retrieve_data_for_offerer_booking_recap_email(booking_1, [])
 
         # Then
-        assert email_data_template.get('FromEmail') == 'support@example.com'
-        assert email_data_template.get('MJ-TemplateID') == 1095029
-        assert email_data_template.get('MJ-TemplateLanguage') == True
-        assert email_data_template.get('To') == 'dev@example.com, administration@example.com'
-
         email_data_template_vars = email_data_template.get('Vars')
-        assert email_data_template_vars.get('nom_offre') == 'Test Book'
-        assert email_data_template_vars.get('nom_lieu') == 'Test offerer'
-        assert email_data_template_vars.get('prix') == 'Gratuit'
-        assert email_data_template_vars.get('date') == ''
-        assert email_data_template_vars.get('heure') == ''
-        assert email_data_template_vars.get('quantity') == 1
-        assert email_data_template_vars.get('user_firstName') == 'Jean'
-        assert email_data_template_vars.get('user_lastName') == 'Dupont'
-        assert email_data_template_vars.get('user_email') == 'test@example.com'
-        assert email_data_template_vars.get('is_event') == 0
-        assert email_data_template_vars.get('ISBN') == ''
-        assert email_data_template_vars.get('offer_type') == 'book'
-        assert email_data_template_vars.get(
-            'lien_offre_pcpro') == 'http://localhost:3001/offres/AE?lieu=AE&structure=AE'
-        assert email_data_template_vars.get('departement') == '75'
-        assert email_data_template_vars.get('nombre_resa') == 2
-        assert email_data_template_vars.get('env') == '-development'
-        assert email_data_template_vars.get('contremarque') == 'ACVSDC'
-
         assert sorted(email_data_template_vars.get('users'), key=lambda item: item['firstName']) == sorted(
             [{'firstName': 'Jean',
               'lastName': 'Dupont',
@@ -408,61 +369,29 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
 
     @patch('emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @patch('utils.mailing.IS_PROD', True)
     @clean_database
     def test_returns_email_with_link_to_the_corresponding_offer(self, app):
         # Given
-        user = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
-                           first_name='Jean', last_name='Dupont', public_name='Test')
-
+        user = create_user(email='test@example.com', first_name='Jean', last_name='Dupont')
         offerer = create_offerer(idx=1)
-        venue = create_venue(offerer, name='Test offerer', siret='89765389057043', idx=1,
-                             departement_code='75', postal_code='75000')
+        venue = create_venue(offerer, name='Test offerer', idx=1, postal_code='75000')
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=3)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(thing_offer, price=0, quantity=10, beginning_datetime=beginning_datetime)
+        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue, token='ACVSDC')
         stock.bookings = [booking]
-        recipient = ['initial_recipient@example.com', 'administration@example.com']
 
         repository.save(stock)
 
         # When
         thing_offer.extraData = None
 
-        email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, recipient)
+        email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, [])
 
         # Then
-        assert email_data_template == {
-            'FromEmail': 'support@example.com',
-            'MJ-TemplateID': 1095029,
-            'MJ-TemplateLanguage': True,
-            'To': 'dev@example.com',
-            'Vars':
-                {
-                    'nom_offre': 'Test Book',
-                    'nom_lieu': 'Test offerer',
-                    'prix': 'Gratuit',
-                    'date': '',
-                    'heure': '',
-                    'quantity': 1,
-                    'user_firstName': 'Jean',
-                    'user_lastName': 'Dupont',
-                    'user_email': 'test@example.com',
-                    'is_event': 0,
-                    'ISBN': '',
-                    'offer_type': 'book',
-                    'lien_offre_pcpro': 'http://localhost:3001/offres/AM?lieu=AE&structure=AE',
-                    'departement': '75',
-                    'nombre_resa': 1,
-                    'env': '',
-                    'contremarque': 'ACVSDC',
-                    'users': [{'firstName': 'Jean',
-                               'lastName': 'Dupont',
-                               'email': 'test@example.com',
-                               'contremarque': 'ACVSDC'}]
-                }
-        }
+        assert email_data_template \
+                   .get('Vars') \
+                   .get('lien_offre_pcpro') == 'http://localhost:3001/offres/AM?lieu=AE&structure=AE'
 
 
 class MakeOffererBookingRecapEmailAfterUserActionTest:
@@ -472,17 +401,17 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000',
-                             city='Test city', departement_code='93')
+                             city='Test city')
         beginning_datetime = datetime(2019, 7, 20, 12, 0, 0)
         booking_limit_datetime = beginning_datetime - timedelta(hours=1)
 
-        stock = create_stock_with_event_offer(offerer=None, venue=venue, event_type=EventType.SPECTACLE_VIVANT,
-                                              offer_id=1, beginning_datetime=beginning_datetime,
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, event_type=EventType.SPECTACLE_VIVANT,
+                                              offer_id=1,
+                                              beginning_datetime=beginning_datetime,
                                               booking_limit_datetime=booking_limit_datetime)
-        user = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
-                           first_name='First', last_name='Last', public_name='Test')
-        booking = create_booking(user=user, stock=stock, venue=venue)
-        booking.token = '56789'
+        user = create_user(email='test@example.com',
+                           first_name='First', last_name='Last')
+        booking = create_booking(user=user, stock=stock, venue=venue, token='56789')
 
         # When
         with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking]):
@@ -517,13 +446,10 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
     def test_booking_recap_email_html_should_have_unsubscribe_option(app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000',
-                             city='Test city', departement_code='93')
-        stock = create_stock_with_event_offer(offerer=None, venue=venue)
-        user = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
-                           public_name='Test')
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue)
+        user = create_user()
         booking = create_booking(user=user, stock=stock, venue=venue)
-        booking.token = '56789'
 
         # When
         with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking]):
@@ -548,16 +474,13 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
     def test_booking_recap_email_html_should_not_retrieve_cancelled_or_used_bookings(app):
         # Given
         offerer = Offerer()
-        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000',
-                             city='Test city', departement_code='93')
-        stock = create_stock_with_event_offer(offerer=Offerer(), venue=venue)
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue)
 
-        user1 = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
-                            first_name='First1', last_name='Last1', public_name='Test1')
+        user1 = create_user(first_name='First1')
         booking1 = create_booking(user=user1, stock=stock)
 
-        user2 = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
-                            first_name='First2', last_name='Last2', public_name='Test2')
+        user2 = create_user(first_name='First2')
         booking2 = create_booking(user=user2, stock=stock)
 
         ongoing_bookings = [booking1, booking2]
@@ -579,18 +502,12 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
     def test_offerer_recap_email_future_offer_when_new_booking_with_old_booking(app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000',
-                             city='Test city', departement_code='93')
-        stock = create_stock_with_event_offer(offerer=None, venue=venue)
-        user_1 = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
-                             first_name='John', last_name='Doe', public_name='Test')
-        user_2 = create_user(can_book_free_offers=True, departement_code='93', email='test@example.com',
-                             first_name='Jane', last_name='Doe', public_name='Test 2')
-        user_2.email = 'other_test@example.com'
-        booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
-        booking_1.token = '56789'
-        booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
-        booking_2.token = '67890'
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue)
+        user_1 = create_user(email='test@example.com', first_name='John', last_name='Doe')
+        user_2 = create_user(email='other_test@example.com', first_name='Jane', last_name='Doe')
+        booking_1 = create_booking(user=user_1, stock=stock, venue=venue, token='56789')
+        booking_2 = create_booking(user=user_2, stock=stock, venue=venue, token='67890')
 
         # When
         with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1, booking_2]):
@@ -617,23 +534,19 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000',
-                             city='Test city', departement_code='93')
-        thing_offer = create_offer_with_thing_product(venue=None, thing_type=ThingType.AUDIOVISUEL)
-        stock = create_stock_with_thing_offer(offerer=None, venue=venue, offer=thing_offer)
-        stock.offer.id = 1
-        user1 = create_user(can_book_free_offers=True, departement_code='93', email='test1@email.com',
-                            first_name='Joe', last_name='Dalton', public_name='Test')
-        user2 = create_user(can_book_free_offers=True, departement_code='93', email='test2@email.com',
-                            first_name='Averell', last_name='Dalton', public_name='Test')
-        booking1 = create_booking(user=user1, stock=stock, venue=venue, token='56789')
-        booking2 = create_booking(user=user2, stock=stock, venue=venue, token='12345')
+                             city='Test city')
+        thing_offer = create_offer_with_thing_product(venue=venue, thing_type=ThingType.AUDIOVISUEL, idx=1)
+        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, offer=thing_offer)
+        user1 = create_user(email='test1@email.com', first_name='Joe', last_name='Dalton')
+        user2 = create_user()
+        booking1 = create_booking(user=user1, stock=stock, venue=venue)
+        booking2 = create_booking(user=user2, stock=stock, venue=venue)
 
         # When
         with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking1, booking2]):
             recap_email = make_offerer_booking_recap_email_after_user_action(booking1)
 
         # Then
-
         email_html = _remove_whitespaces(recap_email['Html-part'])
         recap_email_soup = BeautifulSoup(email_html, 'html.parser')
         recap_html = recap_email_soup.find("p", {"id": 'recap'}).text
@@ -650,17 +563,13 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
     def test_offerer_booking_recap_email_thing_offer_has_recap_table(app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000',
-                             city='Test city', departement_code='93')
-        thing_offer = create_offer_with_thing_product(venue=None, thing_type=ThingType.AUDIOVISUEL)
-        stock = create_stock_with_thing_offer(offerer=None, venue=venue, offer=thing_offer)
-        stock.offer.id = 1
-        user1 = create_user(can_book_free_offers=True, departement_code='93', email='test1@email.com',
-                            first_name='Joe', last_name='Dalton', public_name='Test')
-        user2 = create_user(can_book_free_offers=True, departement_code='93', email='test2@email.com',
-                            first_name='Averell', last_name='Dalton', public_name='Test')
-        booking1 = create_booking(user=user1, stock=stock, venue=venue, token='56789')
-        booking2 = create_booking(user=user2, stock=stock, venue=venue, token='12345')
+        venue = create_venue(offerer)
+        thing_offer = create_offer_with_thing_product(venue=venue, thing_type=ThingType.AUDIOVISUEL)
+        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, offer=thing_offer)
+        user1 = create_user(email='test1@email.com', first_name='Joe')
+        user2 = create_user(email='test2@email.com', first_name='Averell')
+        booking1 = create_booking(user=user1, stock=stock, venue=venue)
+        booking2 = create_booking(user=user2, stock=stock, venue=venue)
 
         # When
         with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking1, booking2]):
@@ -681,15 +590,11 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
     def test_offerer_booking_recap_email_thing_offer_does_not_have_validation_tokens(app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000',
-                             city='Test city', departement_code='93')
-        thing_offer = create_offer_with_thing_product(venue=None, thing_type=ThingType.AUDIOVISUEL)
-        stock = create_stock_with_thing_offer(offerer=None, venue=venue, offer=thing_offer)
-        stock.offer.id = 1
-        user1 = create_user(can_book_free_offers=True, departement_code='93', email='test1@email.com',
-                            first_name='Joe', last_name='Dalton', public_name='Test')
-        user2 = create_user(can_book_free_offers=True, departement_code='93', email='test2@email.com',
-                            first_name='Averell', last_name='Dalton', public_name='Test')
+        venue = create_venue(offerer)
+        thing_offer = create_offer_with_thing_product(venue=venue, thing_type=ThingType.AUDIOVISUEL)
+        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, offer=thing_offer)
+        user1 = create_user()
+        user2 = create_user()
         booking1 = create_booking(user=user1, stock=stock, venue=venue, token='56789')
         booking2 = create_booking(user=user2, stock=stock, venue=venue, token='12345')
 
@@ -711,18 +616,15 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000',
-                             city='Test city', departement_code='93')
+                             city='Test city')
         event_offer = create_offer_with_event_product(venue, event_name='Test Event')
         now = datetime.utcnow() + timedelta()
         event_occurrence = create_event_occurrence(event_offer, beginning_datetime=now)
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-        user_1 = create_user(departement_code='93', email='test1@email.com', first_name='John', last_name='Doe',
-                             public_name='Test1')
-        user_2 = create_user(departement_code='93', email='test2@email.com', first_name='Jane', last_name='Doe',
-                             public_name='Test2')
+        user_1 = create_user(email='test1@email.com', first_name='John', last_name='Doe')
+        user_2 = create_user(email='test2@email.com', first_name='Jane', last_name='Doe')
         booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
-        booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
-        booking_2.isCancelled = True
+        booking_2 = create_booking(user=user_2, stock=stock, venue=venue, is_cancelled=True)
         repository.save(booking_1, booking_2)
 
         # When
@@ -750,26 +652,21 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
     def test_offerer_booking_recap_email_after_user_cancellation_should_have_unsubscribe_option(app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, name='Test offerer', address='123 rue test', postal_code='93000',
-                             city='Test city', departement_code='93')
+        venue = create_venue(offerer)
         event_offer = create_offer_with_event_product(venue, event_name='Test Event')
         now = datetime.utcnow() + timedelta()
         event_occurrence = create_event_occurrence(event_offer, beginning_datetime=now)
-        stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-        user_1 = create_user(departement_code='93', email='test1@email.com', public_name='Test1')
-        user_2 = create_user(departement_code='93', email='test2@email.com', public_name='Test2')
-        booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
-        booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
-        booking_2.isCancelled = True
-        repository.save(booking_1, booking_2)
+        stock = create_stock_from_event_occurrence(event_occurrence)
+        user = create_user()
+        booking = create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
+        repository.save(booking)
 
         # When
-        with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1]):
-            recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
+        with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[]):
+            recap_email = make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=True)
 
         # Then
         email_html = _remove_whitespaces(recap_email['Html-part'])
-        parsed_email = BeautifulSoup(email_html, 'html.parser')
 
         # Then
         email_html = _remove_whitespaces(recap_email['Html-part'])
@@ -789,24 +686,19 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
     def test_booking_cancellation_email_of_thing_for_offerer_does_not_show_address_when_virtual_venue(app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, name='Test offerer', is_virtual=True, siret=None,
-                             postal_code=None,
-                             departement_code=None, address=None)
+        venue = create_venue(offerer, name='Test offerer', is_virtual=True, siret=None, postal_code=None, address=None)
         thing_offer = create_offer_with_thing_product(venue, thing_name='Test')
-        stock = create_stock_from_offer(thing_offer, price=0)
-        user_1 = create_user(departement_code='93', email='test1@email.com', public_name='Test1')
-        user_2 = create_user(departement_code='93', email='test2@email.com', public_name='Test2')
-        booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
-        booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
-        booking_2.isCancelled = True
-        repository.save(booking_1, booking_2)
+        stock = create_stock_from_offer(thing_offer)
+        user = create_user()
+        booking = create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
+        repository.save(booking)
 
         # When
-        with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1]):
-            recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
+        with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[]):
+            recap_email = make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=True)
 
-            # Then
-            email_html = BeautifulSoup(recap_email['Html-part'], 'html.parser')
+        # Then
+        email_html = BeautifulSoup(recap_email['Html-part'], 'html.parser')
         email_racap_html = email_html.find('p', {'id': 'recap'}).text
         assert 'Offre numérique proposée par Test offerer' in email_racap_html
         assert '(Adresse:' not in email_racap_html
@@ -816,22 +708,17 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
             app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, name='Test offerer', is_virtual=True, siret=None,
-                             postal_code=None,
-                             departement_code=None, address=None)
+        venue = create_venue(offerer, name='Test offerer', is_virtual=True, siret=None, postal_code=None, address=None)
         event_offer = create_offer_with_event_product(venue, event_name='Test')
         event_occurrence = create_event_occurrence(event_offer, beginning_datetime=datetime.utcnow())
-        stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-        user_1 = create_user(departement_code='93', email='test1@email.com', public_name='Test1')
-        user_2 = create_user(departement_code='93', email='test2@email.com', public_name='Test2')
-        booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
-        booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
-        booking_2.isCancelled = True
-        repository.save(booking_1, booking_2)
+        stock = create_stock_from_event_occurrence(event_occurrence)
+        user = create_user()
+        booking = create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
+        repository.save(booking)
 
         # When
-        with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1]):
-            recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
+        with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[]):
+            recap_email = make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=True)
 
             # Then
             email_html = BeautifulSoup(recap_email['Html-part'], 'html.parser')
@@ -843,19 +730,16 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
     def test_booking_cancellation_email_of_thing_for_offerer_contains_cancellation_subject_without_date(app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, name='Test offerer')
+        venue = create_venue(offerer)
         thing_offer = create_offer_with_thing_product(venue, thing_name='Test')
-        stock = create_stock_from_offer(thing_offer, price=0)
-        user_1 = create_user(departement_code='93', email='test1@email.com', public_name='Test1')
-        user_2 = create_user(departement_code='93', email='test2@email.com', public_name='Test2')
-        booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
-        booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
-        booking_2.isCancelled = True
-        repository.save(booking_1, booking_2)
+        stock = create_stock_from_offer(thing_offer)
+        user = create_user()
+        booking = create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
+        repository.save(booking)
 
         # When
-        with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1]):
-            recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
+        with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[]):
+            recap_email = make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=True)
 
         # Then
         assert recap_email['Subject'] == '[Réservations] Annulation de réservation pour Test'
@@ -865,20 +749,17 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
     def test_booking_cancellation_email_of_event_for_offerer_has_cancellation_subject_with_date(app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, name='Test offerer')
+        venue = create_venue(offerer)
         event_offer = create_offer_with_event_product(venue, event_name='Test')
         event_occurrence = create_event_occurrence(event_offer, beginning_datetime=datetime.utcnow())
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-        user_1 = create_user(departement_code='93', email='test1@email.com', public_name='Test1')
-        user_2 = create_user(departement_code='93', email='test2@email.com', public_name='Test2')
-        booking_1 = create_booking(user=user_1, stock=stock, venue=venue)
-        booking_2 = create_booking(user=user_2, stock=stock, venue=venue)
-        booking_2.isCancelled = True
-        repository.save(booking_1, booking_2)
+        user = create_user()
+        booking = create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
+        repository.save(booking)
 
         # When
-        with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[booking_1]):
-            recap_email = make_offerer_booking_recap_email_after_user_action(booking_2, is_cancellation=True)
+        with patch('utils.mailing.booking_queries.find_ongoing_bookings_by_stock', return_value=[]):
+            recap_email = make_offerer_booking_recap_email_after_user_action(booking, is_cancellation=True)
 
         # Then
         assert recap_email['Subject'] == '[Réservations] Annulation de réservation pour Test - 15 octobre 2018 à 11:21'
@@ -887,16 +768,13 @@ class MakeOffererBookingRecapEmailAfterUserActionTest:
     def test_booking_cancellation_email_for_offerer_has_recap_information_but_no_token(app):
         # Given
         offerer = create_offerer()
-        venue = create_venue(offerer, name='Test offerer', is_virtual=True, siret=None)
+        venue = create_venue(offerer, is_virtual=True, siret=None)
         thing_offer = create_offer_with_thing_product(venue)
         stock = create_stock_from_offer(thing_offer, price=0)
-        user_1 = create_user(departement_code='93', email='test1@email.com', first_name='Jane', last_name='Doe',
-                             public_name='Test1')
-        user_2 = create_user(departement_code='93', email='test2@email.com', first_name='Lucy', last_name='Smith',
-                             public_name='Test2')
+        user_1 = create_user(email='test1@email.com', first_name='Jane', last_name='Doe')
+        user_2 = create_user(email='test2@email.com', first_name='Lucy', last_name='Smith')
         booking_1 = create_booking(user=user_1, stock=stock, venue=venue, token='12345')
-        booking_2 = create_booking(user=user_2, stock=stock, venue=venue, token='56789')
-        booking_2.isCancelled = True
+        booking_2 = create_booking(user=user_2, stock=stock, venue=venue, token='56789', is_cancelled=True)
         repository.save(booking_1, booking_2)
 
         # When

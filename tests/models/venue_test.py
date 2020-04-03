@@ -241,7 +241,7 @@ def test_nOffers(app):
 
 class DepartementCodeTest:
     @clean_database
-    def test_venue_in_overseas_departemenet_has_a_three_digit_departement_code(self, app):
+    def test_venue_in_overseas_department_has_a_three_digit_departement_code(self, app):
         # Given
         offerer = create_offerer(siren='123456789', address='1 rue Test', city='Test city', postal_code='93000',
                                  name='Test offerer')
