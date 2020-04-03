@@ -309,6 +309,63 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
     }
 ]
 
+
+WEBAPP_PATCH_POST_BOOKING_WITH_QR_CODE_INCLUDES = [
+    "completedUrl",
+    "isUserCancellable",
+    {
+        "key": "recommendation",
+        "includes": [
+            "productOrTutoIdentifier",
+            {
+                "key": "offer",
+                "includes": [
+                    "dateRange",
+                    "favorites",
+                    "isEvent",
+                    'hasBookingLimitDatetimesPassed',
+                    "isFullyBooked",
+                    "isThing",
+                    "offerType",
+                    {
+                        "key": "product",
+                        "includes": ["thumbUrl"]
+                    },
+                    {
+                        "key": "stocks",
+                        "includes": [
+                            'isBookable',
+                            'remainingQuantity'
+                        ]
+                    },
+                    {
+                        "key": "venue",
+                        "includes": ['-validationToken']
+                    }
+                ]
+            },
+            {
+                "key": "mediation",
+                "includes": ["thumbUrl"]
+            },
+            "thumbUrl"
+        ]
+    },
+    {
+        "key": "stock",
+        "includes": [
+            'isBookable',
+            'remainingQuantity'
+        ]
+    },
+    "qrCode",
+    "thumbUrl",
+    {
+        "key": "user",
+        "includes": USER_INCLUDES
+    }
+]
+
 VENUE_INCLUDES = [
     'isValidated',
     'bic',

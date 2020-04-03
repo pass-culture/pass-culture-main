@@ -17,7 +17,8 @@ from utils.human_ids import humanize
 class Post:
     class Returns201:
         @clean_database
-        def expect_the_booking_to_have_good_includes(self, app):
+        @patch('routes.bookings.feature_queries.is_active', return_value=False)
+        def expect_the_booking_to_have_good_includes_when_qr_code_feature_is_off(self, qr_code_is_active, app):
             # Given
             offerer = create_offerer()
             venue = create_venue(offerer=offerer)
@@ -41,6 +42,35 @@ class Post:
             # Then
             assert response.status_code == 201
             assert response.json['stock']['isBookable']
+            assert 'qrCode' not in response.json.keys()
+
+        @patch('routes.bookings.feature_queries.is_active', return_value=True)
+        @clean_database
+        def expect_the_booking_to_have_good_includes_when_qr_code_feature_is_on(self, qr_code_is_active, app):
+            # Given
+            offerer = create_offerer()
+            venue = create_venue(offerer=offerer)
+            ok_stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0,
+                                                     booking_limit_datetime=datetime.utcnow() + timedelta(minutes=2))
+            user = create_user()
+            recommendation = create_recommendation(offer=ok_stock.offer, user=user)
+            repository.save(ok_stock, user)
+
+            booking_json = {
+                'stockId': humanize(ok_stock.id),
+                'recommendationId': humanize(recommendation.id),
+                'quantity': 1
+            }
+
+            # When
+            response = TestClient(app.test_client()) \
+                .with_auth(user.email) \
+                .post('/bookings', json=booking_json)
+
+            # Then
+            assert response.status_code == 201
+            assert response.json['stock']['isBookable']
+            assert response.json['qrCode'] is not None
 
         @patch('routes.bookings.feature_queries.is_active', return_value=True)
         @patch('routes.bookings.redis.add_offer_id')

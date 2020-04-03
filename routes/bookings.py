@@ -24,7 +24,8 @@ from use_cases.book_an_offer import book_an_offer, BookingInformation
 from utils.human_ids import dehumanize, humanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, \
     WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES, \
-    WEBAPP_PATCH_POST_BOOKING_INCLUDES
+    WEBAPP_PATCH_POST_BOOKING_INCLUDES, \
+    WEBAPP_PATCH_POST_BOOKING_WITH_QR_CODE_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, expect_json_data
 from validation.routes.bookings import check_booking_is_cancellable_by_user, \
@@ -142,7 +143,12 @@ def create_booking():
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=created_booking.stock.offerId)
 
-    return jsonify(as_dict(created_booking, includes=WEBAPP_PATCH_POST_BOOKING_INCLUDES)), 201
+    if feature_queries.is_active(FeatureToggle.QR_CODE):
+        includes = WEBAPP_PATCH_POST_BOOKING_WITH_QR_CODE_INCLUDES
+    else:
+        includes = WEBAPP_PATCH_POST_BOOKING_INCLUDES
+
+    return jsonify(as_dict(created_booking, includes=includes)), 201
 
 
 @app.route('/bookings/<booking_id>/cancel', methods=['PUT'])
