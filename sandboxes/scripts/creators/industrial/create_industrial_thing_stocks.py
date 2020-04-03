@@ -32,7 +32,7 @@ def create_industrial_thing_stocks(thing_offers_by_name):
         short_names_to_increase_price.append(short_name)
 
         name = thing_offer_with_stocks_name + " / " + str(quantity) + " / " + str(price)
-        thing_stocks_by_name[name] = create_stock_from_offer(thing_offer_with_stocks, price=price)
+        thing_stocks_by_name[name] = create_stock_from_offer(thing_offer_with_stocks, quantity=quantity, price=price)
 
     repository.save(*thing_stocks_by_name.values())
 
