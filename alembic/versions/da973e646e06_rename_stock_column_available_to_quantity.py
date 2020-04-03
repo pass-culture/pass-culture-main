@@ -20,7 +20,7 @@ def upgrade():
 
     op.execute("""
         UPDATE stock
-        SET fieldsUpdated = replace(value, 'available', 'quantity')
+        SET "fieldsUpdated" = replace("fieldsUpdated"::TEXT, 'available', 'quantity')::VARCHAR[]
     """)
 
     op.execute(
@@ -36,7 +36,7 @@ def upgrade():
         $$ LANGUAGE plpgsql;
 
         DROP TRIGGER IF EXISTS stock_update_modification_date ON stock;
-        
+
         CREATE TRIGGER stock_update_modification_date
         BEFORE UPDATE ON stock
         FOR EACH ROW
@@ -87,16 +87,16 @@ def upgrade():
              THEN RAISE EXCEPTION 'tooManyBookings'
                         USING HINT = 'Number of bookings cannot exceed "stock.quantity"';
           END IF;
-    
+
           IF (SELECT get_wallet_balance(NEW."userId", false) < 0)
           THEN RAISE EXCEPTION 'insufficientFunds'
                      USING HINT = 'The user does not have enough credit to book';
           END IF;
-    
+
           RETURN NEW;
         END;
         $$ LANGUAGE plpgsql;
-    
+
         DROP TRIGGER IF EXISTS booking_update ON booking;
         CREATE CONSTRAINT TRIGGER booking_update AFTER INSERT OR UPDATE
         ON booking
@@ -111,7 +111,7 @@ def downgrade():
 
     op.execute("""
         UPDATE stock
-        SET fieldsUpdated = replace(value, 'quantity', 'available')
+        SET "fieldsUpdated" = replace("fieldsUpdated"::TEXT, 'quantity', 'available')::VARCHAR[]
     """)
 
     op.execute(
@@ -127,7 +127,7 @@ def downgrade():
         $$ LANGUAGE plpgsql;
 
         DROP TRIGGER IF EXISTS stock_update_modification_date ON stock;
-        
+
         CREATE TRIGGER stock_update_modification_date
         BEFORE UPDATE ON stock
         FOR EACH ROW
@@ -178,16 +178,16 @@ def downgrade():
              THEN RAISE EXCEPTION 'tooManyBookings'
                         USING HINT = 'Number of bookings cannot exceed "stock.available"';
           END IF;
-    
+
           IF (SELECT get_wallet_balance(NEW."userId", false) < 0)
           THEN RAISE EXCEPTION 'insufficientFunds'
                      USING HINT = 'The user does not have enough credit to book';
           END IF;
-    
+
           RETURN NEW;
         END;
         $$ LANGUAGE plpgsql;
-    
+
         DROP TRIGGER IF EXISTS booking_update ON booking;
         CREATE CONSTRAINT TRIGGER booking_update AFTER INSERT OR UPDATE
         ON booking
