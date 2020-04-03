@@ -18,3 +18,23 @@ test('je vois le texte de la première carte tutoriel', async t => {
 
   await t.expect(tutoText.exists).ok()
 })
+
+test('je vois le texte de la deuxième carte tutoriel en cliquant sur la flèche de la première', async t => {
+  const nextArrow = Selector('.next-arrow')
+
+  await t.click(nextArrow)
+
+  const secondTutoFirstText = Selector('p').withText(
+    'Profite de ces 500€ en réservant sur l’appli des concerts, des cours, des abonnements à une plateforme numérique…'
+  )
+
+  const secondTutoSecondText = Selector('p').withText(
+    'Psst : profite des  offres duo  pour inviter un ami, un voisin ou ta grand-mère !'
+  )
+
+  await t
+    .expect(secondTutoFirstText.exists)
+    .ok()
+    .expect(secondTutoSecondText.exists)
+    .ok()
+})
