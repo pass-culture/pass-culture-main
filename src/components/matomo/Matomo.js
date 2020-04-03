@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import queryString from 'query-string'
 
-const Matomo = ({ location, userId }) => {
+const Matomo = ({ location, userId, coordinates, tracking }) => {
   const Matomo = window._paq
 
   const { pathname, search } = location
@@ -26,11 +26,18 @@ const Matomo = ({ location, userId }) => {
 
   Matomo.push(['trackPageView'])
 
+  if (coordinates.latitude && coordinates.longitude) {
+    tracking.trackEvent({ action: 'activatedGeolocation', name: userId })
+  }
+
   return null
 }
 
 Matomo.propTypes = {
+  coordinates: PropTypes.shape().isRequired,
   location: PropTypes.shape().isRequired,
+  tracking: PropTypes.shape().isRequired,
+  userId: PropTypes.string.isRequired,
 }
 
 export default Matomo
