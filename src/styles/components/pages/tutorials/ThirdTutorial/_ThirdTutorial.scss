@@ -1,0 +1,47 @@
+.third-tutorial {
+  background-image: url('/onboarding-3@3x.jpg');
+  background-color: $background-tuto-purple;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: 100%;
+  height: 100%;
+  width: 100%;
+  line-height: 1.35;
+
+  .third-tutorial-text {
+    margin: 1vh 10% 0;
+
+    &.second-paragraph {
+      margin-top: 3vh;
+    }
+  }
+
+  .text-highlight {
+    padding: rem(1px) rem(5px);
+
+    &::after {
+      padding: rem(0px) rem(1px) rem(2px);
+    }
+
+    &.text-physical-offer {
+      margin-right: rem(5px);
+
+      &::after {
+        width: rem(132px);
+      }
+    }
+
+    &.text-digital-offer {
+      margin-left: rem(4px);
+
+      &::after {
+        width: rem(145px);
+        margin-left: rem(2px);
+      }
+    }
+
+    &.text-go-out::after {
+      width: rem(62px);
+    }
+  }
+}

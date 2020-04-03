@@ -38,3 +38,27 @@ test('je vois le texte de la deuxième carte tutoriel en cliquant sur la flèche
     .expect(secondTutoSecondText.exists)
     .ok()
 })
+
+test('je vois le texte de la troisième carte tutoriel en cliquant sur la flèche de la deuxième', async t => {
+  let nextArrow = Selector('.next-arrow')
+
+  await t.click(nextArrow)
+
+  nextArrow = Selector('.next-arrow')
+
+  await t.click(nextArrow)
+
+  const thirdTutoFirstText = Selector('p').withText(
+    'Tu peux utiliser jusqu’à 200€ en biens physiques (livres, vinyles…) et jusqu’à 200€ en  biens numériques (streaming, jeux vidéo…).'
+  )
+
+  const thirdTutoSecondText = Selector('p').withText(
+    'Aucune limite sur la réservation de sorties (concerts, spectacles…) !'
+  )
+
+  await t
+    .expect(thirdTutoFirstText.exists)
+    .ok()
+    .expect(thirdTutoSecondText.exists)
+    .ok()
+})

@@ -7,7 +7,7 @@ const NON_BREAKING_HYPHEN = '\u2011'
 const SecondTutorial = () => (
   <div className="second-tutorial">
     <Icon
-      className="icon-ticket"
+      className="icon"
       svg="icon-ticket"
     />
     <p className="second-tutorial-text">

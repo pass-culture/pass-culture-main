@@ -6,7 +6,7 @@ const NON_BREAKING_SPACE = '\u00A0'
 const FirstTutorial = () => (
   <div className="first-tutorial">
     <Icon
-      className="icon-calendar"
+      className="icon"
       svg="icon-calendar"
     />
     <p className="first-tutorial-text">
