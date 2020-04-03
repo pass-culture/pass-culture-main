@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '5bccb7eb3d68'
-down_revision = 'd6206bae00b6'
+down_revision = '85af82acac13'
 branch_labels = None
 depends_on = None
 
@@ -31,9 +31,9 @@ def upgrade():
                     RETURN NEW;
                 END;
             $$ LANGUAGE plpgsql;
-        
+
             DROP TRIGGER IF EXISTS stock_update_cancellation_date ON booking;
-        
+
             CREATE TRIGGER stock_update_cancellation_date
             BEFORE INSERT OR UPDATE ON booking
             FOR EACH ROW
