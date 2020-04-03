@@ -189,11 +189,11 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
         stock.bookings = [booking]
-
         repository.save(stock)
 
-        # When
         thing_offer.extraData = None
+
+        # When
         email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, [])
 
         # Then
@@ -346,8 +346,6 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         repository.save(stock)
 
         # When
-        thing_offer.extraData = None
-
         email_data_template = retrieve_data_for_offerer_booking_recap_email(booking_1, [])
 
         # Then
@@ -380,8 +378,6 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         repository.save(stock)
 
         # When
-        thing_offer.extraData = None
-
         email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, [])
 
         # Then
