@@ -13,7 +13,7 @@ fixture('Quand je navigue vers /bienvenue,').beforeEach(async t => {
 
 test('je vois le texte de la première carte tutoriel', async t => {
   const tutoText = Selector('p').withText(
-    "À partir d'aujourd'hui, tu as 2 ans et 500€ crédités directement sur l’appli pour découvrir de nouvelles activités culturelles autour de chez toi et partout en France !"
+    'À partir d’aujourd’hui, tu as 2 ans et 500€ crédités directement sur l’appli pour découvrir de nouvelles activités culturelles autour de chez toi et partout en France !'
   )
 
   await t.expect(tutoText.exists).ok()

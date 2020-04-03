@@ -1,9 +1,6 @@
 .tutorials {
-  background-color: $background-tuto-purple;
-  background-image: url('/onboarding-1@3x.jpg');
-  background-position-x: center;
-  background-position-y: bottom;
-  background-repeat: no-repeat;
+  background: $background-tuto-purple url('/onboarding-1@3x.jpg') no-repeat;
+  background-position: center bottom;
   background-size: contain;
   color: $white;
   font-size: rem(18px);
@@ -17,34 +14,36 @@
   }
 
   .first-tutorial-text {
-    margin: 5.5vh 12vw 0;
+    margin: 5.5vh 12% 0;
+  }
 
-    .text-highlight {
-      color: $purple-blue;
-      font-weight: 500;
-      margin: 0 2px;
-      padding: 1px 3px;
-      position: relative;
-      z-index: 10;
+  .text-highlight {
+    color: $purple-blue;
+    font-weight: 500;
+    margin: 0 rem(1px);
+    padding: rem(1px) rem(3px);
+    position: relative;
+    z-index: 10;
 
-      &::after {
-        background-color: $white;
-        border-radius: 2px;
-        content: '';
-        height: 100%;
-        left:0;
-        position: absolute;
-        width: 100%;
-        z-index: -1;
-      }
+    &::after {
+      background-color: $white;
+      border-radius: 2px;
+      content: '';
+      height: rem(22px);
+      left: 0;
+      padding: rem(1px) rem(3px);
+      position: absolute;
+      top: 0;
+      width: rem(41px);
+      z-index: -1;
+    }
 
-      &.text-2-ans::after {
-        transform: rotate(1deg);
-      }
+    &.text-2-ans::after {
+      transform: rotate(1deg);
+    }
 
-      &.text-500-euros::after {
-        transform: rotate(-1deg);
-      }
+    &.text-500-euros::after {
+      transform: rotate(-1deg);
     }
   }
 
@@ -56,18 +55,18 @@
     left: 50%;
     position: absolute;
     transform: translate(-50%, 0);
+  }
 
-    .slider-point {
-      background-color: $white;
-      border-radius: 8px;
-      height: 8px;
-      margin: 0 5px;
-      opacity: .5;
-      width: 8px;
+  .slider-point {
+    background-color: $white;
+    border-radius: rem(8px);
+    height: rem(8px);
+    margin: 0 rem(5px);
+    opacity: .5;
+    width: rem(8px);
 
-      &.filled {
-        opacity: 1;
-      }
+    &.filled {
+      opacity: 1;
     }
   }
 }
