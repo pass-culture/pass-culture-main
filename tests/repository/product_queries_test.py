@@ -41,6 +41,23 @@ class DeleteUnwantedExistingProductTest:
         assert Product.query.count() == 1
 
     @clean_database
+    def test_should_delete_nothing_when_product_not_found(self, app):
+        # Given
+        isbn = '1111111111111'
+        product = create_product_with_thing_type(
+            id_at_providers=isbn,
+            is_gcu_compatible=False,
+            thing_type=ThingType.LIVRE_EDITION,
+        )
+        repository.save(product)
+
+        # When
+        delete_unwanted_existing_product(isbn)
+
+        # Then
+        assert Product.query.count() == 1
+
+    @clean_database
     def test_should_delete_product_when_it_has_offer_and_stock_but_not_booked(self, app):
         # Given
         isbn = '1111111111111'

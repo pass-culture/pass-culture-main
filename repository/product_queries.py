@@ -23,6 +23,9 @@ def delete_unwanted_existing_product(isbn: str):
         .count() > 0
     product = find_active_book_product_by_isbn(isbn)
 
+    if not product:
+        return
+
     if product_has_at_least_one_booking:
         offers = get_offers_by_product_id(product.id)
         product.isGcuCompatible = False
@@ -31,20 +34,19 @@ def delete_unwanted_existing_product(isbn: str):
         raise ProductWithBookingsException
 
     objects_to_delete = []
-    if product:
-        objects_to_delete.append(product)
-        offers = get_offers_by_product_id(product.id)
-        offer_ids = [offer.id for offer in offers]
-        objects_to_delete = objects_to_delete + offers
-        stocks = get_stocks_for_offers(offer_ids)
-        objects_to_delete = objects_to_delete + stocks
-        recommendations = get_recommendations_for_offers(offer_ids)
-        mediations = get_mediations_for_offers(offer_ids)
-        objects_to_delete = objects_to_delete + mediations
-        favorites = get_favorites_for_offers(offer_ids)
-        objects_to_delete = objects_to_delete + favorites
-        objects_to_delete = objects_to_delete + recommendations
-        repository.delete(*objects_to_delete)
+    objects_to_delete.append(product)
+    offers = get_offers_by_product_id(product.id)
+    offer_ids = [offer.id for offer in offers]
+    objects_to_delete = objects_to_delete + offers
+    stocks = get_stocks_for_offers(offer_ids)
+    objects_to_delete = objects_to_delete + stocks
+    recommendations = get_recommendations_for_offers(offer_ids)
+    mediations = get_mediations_for_offers(offer_ids)
+    objects_to_delete = objects_to_delete + mediations
+    favorites = get_favorites_for_offers(offer_ids)
+    objects_to_delete = objects_to_delete + favorites
+    objects_to_delete = objects_to_delete + recommendations
+    repository.delete(*objects_to_delete)
 
 
 def find_by_id(product_id: int) -> Product:
