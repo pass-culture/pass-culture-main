@@ -1,7 +1,7 @@
 """create_a_cancellation_date_on_booking
 
 Revision ID: 5bccb7eb3d68
-Revises: d6206bae00b6
+Revises: 85af82acac13
 Create Date: 2020-03-31 08:13:48.720708
 
 """

@@ -115,7 +115,6 @@ def put_recommendations_v2():
 
 @app.route('/recommendations', methods=['PUT'])
 @login_required
-@feature_required(feature_toggle=FeatureToggle.RECOMMENDATIONS)
 @expect_json_data
 def put_recommendations():
     json_keys = request.json.keys()
