@@ -4,7 +4,10 @@ import { compose } from 'redux'
 import Finishable from './Finishable'
 import getIsBooked from '../../../utils/getIsBooked'
 import { selectStockById } from '../../../selectors/data/stocksSelectors'
-import { selectBookingByRouterMatch } from '../../../selectors/data/bookingsSelectors'
+import {
+  selectBookingByRouterMatch,
+  selectPassedBookingsByOfferId,
+} from '../../../selectors/data/bookingsSelectors'
 import { selectOfferById } from '../../../selectors/data/offersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
@@ -24,7 +27,13 @@ export const mapStateToProps = (state, ownProps) => {
 
   const offer = selectOfferById(state, offerId) || {}
   const isOfferTuto = Object.keys(offer).length === 0
-  const isOfferBookableOrBooked = offer.isBookable || isBookedByCurrentUser
+  let isOfferBookableOrBooked = offer.isBookable || isBookedByCurrentUser
+
+  let userBookingsForThisOffer = selectPassedBookingsByOfferId(state, offerId)
+
+  if (userBookingsForThisOffer && userBookingsForThisOffer.length) {
+    isOfferBookableOrBooked = false
+  }
 
   return {
     offerCanBeOrIsBooked: isOfferTuto ? true : isOfferBookableOrBooked,
