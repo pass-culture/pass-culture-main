@@ -1,5 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
+
+from freezegun import freeze_time
 
 from algolia.infrastructure.builder import build_object
 from models import EventType
@@ -12,9 +14,11 @@ from utils.human_ids import humanize
 
 class BuildObjectTest:
     @clean_database
+    @freeze_time('2020-10-15 09:00:00')
     def test_should_return_algolia_object_with_required_information(self, app):
         # Given
-        beginning_datetime = datetime(2019, 11, 1, 10, 0, 0)
+        in_four_days = datetime.utcnow() + timedelta(days=4)
+        three_days_ago = datetime.utcnow() + timedelta(days=-3)
         offerer = create_offerer(name='Offerer name', idx=1)
         venue = create_venue(offerer=offerer,
                              city='Paris',
@@ -31,12 +35,28 @@ class BuildObjectTest:
                                                 event_type=EventType.MUSIQUE,
                                                 thumb_count=1,
                                                 date_created=datetime(2020, 1, 1, 10, 0, 0))
-        stock1 = create_stock(quantity=10, beginning_datetime=beginning_datetime, offer=offer, price=10)
-        stock2 = create_stock(quantity=10, beginning_datetime=beginning_datetime, offer=offer, price=20)
-        stock3 = create_stock(quantity=10, beginning_datetime=beginning_datetime, offer=offer, price=0)
-        stock4 = create_stock(quantity=10, beginning_datetime=beginning_datetime, is_soft_deleted=True, offer=offer,
+        stock1 = create_stock(quantity=10,
+                              beginning_datetime=in_four_days,
+                              offer=offer,
+                              price=10)
+        stock2 = create_stock(quantity=10,
+                              beginning_datetime=in_four_days,
+                              offer=offer,
+                              price=20)
+        stock3 = create_stock(quantity=10,
+                              beginning_datetime=in_four_days,
+                              offer=offer,
                               price=0)
-        repository.save(stock1, stock2, stock3, stock4)
+        stock4 = create_stock(quantity=10,
+                              beginning_datetime=in_four_days,
+                              is_soft_deleted=True,
+                              offer=offer,
+                              price=0)
+        stock5 = create_stock(quantity=10,
+                              beginning_datetime=three_days_ago,
+                              offer=offer,
+                              price=0)
+        repository.save(stock1, stock2, stock3, stock4, stock5)
         humanized_product_id = humanize(offer.product.id)
 
         # When
@@ -49,7 +69,7 @@ class BuildObjectTest:
                 'author': None,
                 'category': 'MUSIQUE',
                 'dateCreated': 1577872800.0,
-                'dates': [1572602400.0, 1572602400.0, 1572602400.0],
+                'dates': [1603098000.0, 1603098000.0, 1603098000.0],
                 'description': 'Un lit sous une rivière',
                 'id': 'AM',
                 'isbn': None,
@@ -280,21 +300,24 @@ class BuildObjectTest:
         # Then
         assert '_geoloc' not in result
 
+    @freeze_time('2020-10-15 09:00:00')
     @clean_database
     def test_should_return_event_beginning_datetimes_as_timestamp_when_event(self, app):
         # Given
+        in_four_days = datetime.utcnow() + timedelta(days=4)
+        in_five_days = datetime.utcnow() + timedelta(days=5)
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_event_product(venue=venue)
-        stock1 = create_stock(beginning_datetime=datetime(2019, 1, 1), offer=offer)
-        stock2 = create_stock(beginning_datetime=datetime(2019, 1, 2), offer=offer)
+        stock1 = create_stock(beginning_datetime=in_four_days, offer=offer)
+        stock2 = create_stock(beginning_datetime=in_five_days, offer=offer)
         repository.save(stock1, stock2)
 
         # When
         result = build_object(offer)
 
         # Then
-        assert set(result['offer']['dates']) == {1546387200.0, 1546300800.0}
+        assert set(result['offer']['dates']) == {1603098000.0, 1603184400.0}
 
     @clean_database
     def test_should_not_return_event_beginning_datetimes_as_timestamp_when_thing(self, app):
