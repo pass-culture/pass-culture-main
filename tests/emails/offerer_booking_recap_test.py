@@ -298,8 +298,6 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         repository.save(stock)
 
         # When
-        thing_offer.extraData = None
-
         email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, recipients)
 
         # Then
@@ -323,8 +321,6 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         repository.save(stock)
 
         # When
-        thing_offer.extraData = None
-
         email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, recipients)
 
         # Then
@@ -355,17 +351,17 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         email_data_template = retrieve_data_for_offerer_booking_recap_email(booking_1, [])
 
         # Then
-        email_data_template_vars = email_data_template.get('Vars')
-        assert sorted(email_data_template_vars.get('users'), key=lambda item: item['firstName']) == sorted(
-            [{'firstName': 'Jean',
-              'lastName': 'Dupont',
-              'email': 'test@example.com',
-              'contremarque': 'ACVSDC'},
-             {'firstName': 'Jaja',
-              'lastName': 'Dudu',
-              'email': 'mail@example.com',
-              'contremarque': 'TEST95'}],
-            key=lambda item: item['firstName'])
+        email_data_template_users = email_data_template.get('Vars').get('users')
+        user_jean_dupont = {'firstName': 'Jean',
+                            'lastName': 'Dupont',
+                            'email': 'test@example.com',
+                            'contremarque': 'ACVSDC'}
+        user_jaja_dudu = {'firstName': 'Jaja',
+                          'lastName': 'Dudu',
+                          'email': 'mail@example.com',
+                          'contremarque': 'TEST95'}
+        assert user_jean_dupont in email_data_template_users
+        assert user_jaja_dudu in email_data_template_users
 
     @patch('emails.offerer_booking_recap.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
     @patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
