@@ -14,7 +14,7 @@ class UpdateBookingCancellationDateFromActivityTest:
 
     @staticmethod
     def teardown_method():
-        db.engine.execute("ALTER TABLE booking DISABLE TRIGGER stock_update_cancellation_date;")
+        db.engine.execute("ALTER TABLE booking ENABLE TRIGGER stock_update_cancellation_date;")
 
     @clean_database
     def test_should_fill_cancellation_date_using_activity(self, app):
