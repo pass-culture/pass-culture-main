@@ -1,0 +1,26 @@
+.first-tutorial {
+  background-image: url('/onboarding-1@3x.jpg');
+  background-color: $background-tuto-purple;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: contain;
+  height: 100%;
+  width: 100%;
+
+  .icon-calendar {
+    margin-top: 9vh;
+  }
+
+  .first-tutorial-text {
+    margin: 5.5vh 12% 0;
+  }
+
+  .text-highlight {
+    padding: rem(1px) rem(3px);
+
+    &::after {
+      padding: rem(1px) rem(3px);
+      width: rem(41px);
+    }
+  }
+}

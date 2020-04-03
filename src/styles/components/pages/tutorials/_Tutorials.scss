@@ -1,51 +1,10 @@
 .tutorials {
-  background: $background-tuto-purple url('/onboarding-1@3x.jpg') no-repeat;
-  background-position: center bottom;
-  background-size: contain;
   color: $white;
   font-size: rem(18px);
   height: 100%;
   line-height: 1.25;
   text-align: center;
   width: 100%;
-
-  .calendar {
-    margin-top: 9vh;
-  }
-
-  .first-tutorial-text {
-    margin: 5.5vh 12% 0;
-  }
-
-  .text-highlight {
-    color: $purple-blue;
-    font-weight: 500;
-    margin: 0 rem(1px);
-    padding: rem(1px) rem(3px);
-    position: relative;
-    z-index: 10;
-
-    &::after {
-      background-color: $white;
-      border-radius: 2px;
-      content: '';
-      height: rem(22px);
-      left: 0;
-      padding: rem(1px) rem(3px);
-      position: absolute;
-      top: 0;
-      width: rem(41px);
-      z-index: -1;
-    }
-
-    &.text-2-ans::after {
-      transform: rotate(1deg);
-    }
-
-    &.text-500-euros::after {
-      transform: rotate(-1deg);
-    }
-  }
 
   .slider-points {
     bottom: rem(32px);
@@ -67,6 +26,35 @@
 
     &.filled {
       opacity: 1;
+    }
+  }
+
+  .text-highlight {
+    color: $purple-blue;
+    font-weight: 500;
+    margin: 0 rem(1px);
+    position: relative;
+    z-index: 10;
+
+    &::after {
+      background-color: $white;
+      border-radius: 2px;
+      content: '';
+      height: rem(22px);
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: rem(41px);
+      z-index: -1;
+    }
+
+
+    &.text-first-highlight::after {
+      transform: rotate(1deg);
+    }
+
+    &.text-second-highlight::after {
+      transform: rotate(-1deg);
     }
   }
 }
