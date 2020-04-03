@@ -15,8 +15,12 @@ depends_on = None
 
 
 def upgrade():
+    op.execute("ALTER TABLE stock DISABLE TRIGGER stock_update_modification_date;")
+    op.execute("ALTER TABLE stock DISABLE TRIGGER stock_update;")
+
     op.alter_column('stock', 'available', new_column_name='quantity')
-    op.alter_column('allocine_venue_provider', 'available', new_column_name='quantity')
+    op.alter_column('allocine_venue_provider', 'available',
+                    new_column_name='quantity')
 
     op.execute("""
         UPDATE stock
@@ -104,10 +108,55 @@ def upgrade():
         """
     )
 
+    op.execute(
+        """
+        CREATE OR REPLACE FUNCTION check_stock()
+        RETURNS TRIGGER AS $$
+        BEGIN
+          IF
+          NOT NEW.quantity IS NULL
+          AND
+            (
+            (
+              SELECT SUM(booking.quantity)
+              FROM booking
+              WHERE "stockId"=NEW.id
+              AND NOT booking."isCancelled"
+            ) > NEW.quantity
+            )
+          THEN
+          RAISE EXCEPTION 'quantity_too_low'
+          USING HINT = 'stock.quantity cannot be lower than number of bookings';
+          END IF;
+
+          IF NEW."bookingLimitDatetime" IS NOT NULL AND
+            NEW."beginningDatetime" IS NOT NULL AND
+            NEW."bookingLimitDatetime" > NEW."beginningDatetime" THEN
+
+          RAISE EXCEPTION 'bookingLimitDatetime_too_late'
+          USING HINT = 'bookingLimitDatetime after beginningDatetime';
+          END IF;
+
+          RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+
+        DROP TRIGGER IF EXISTS stock_update ON stock;
+        CREATE CONSTRAINT TRIGGER stock_update AFTER INSERT OR UPDATE
+        ON stock
+        FOR EACH ROW EXECUTE PROCEDURE check_stock()
+      """ + ';')
+    op.execute("ALTER TABLE stock ENABLE TRIGGER stock_update_modification_date;")
+    op.execute("ALTER TABLE stock ENABLE TRIGGER stock_update;")
+
 
 def downgrade():
+    op.execute("ALTER TABLE stock DISABLE TRIGGER stock_update_modification_date;")
+    op.execute("ALTER TABLE stock DISABLE TRIGGER stock_update;")
+
     op.alter_column('stock', 'quantity', new_column_name='available')
-    op.alter_column('allocine_venue_provider', 'quantity', new_column_name='available')
+    op.alter_column('allocine_venue_provider', 'quantity',
+                    new_column_name='available')
 
     op.execute("""
         UPDATE stock
@@ -194,3 +243,44 @@ def downgrade():
         FOR EACH ROW EXECUTE PROCEDURE check_booking()
         """
     )
+
+    op.execute(
+        """
+        CREATE OR REPLACE FUNCTION check_stock()
+        RETURNS TRIGGER AS $$
+        BEGIN
+          IF
+          NOT NEW.available IS NULL
+          AND
+            (
+            (
+              SELECT SUM(booking.quantity)
+              FROM booking
+              WHERE "stockId"=NEW.id
+              AND NOT booking."isCancelled"
+            ) > NEW.available
+            )
+          THEN
+          RAISE EXCEPTION 'available_too_low'
+          USING HINT = 'stock.available cannot be lower than number of bookings';
+          END IF;
+
+          IF NEW."bookingLimitDatetime" IS NOT NULL AND
+            NEW."beginningDatetime" IS NOT NULL AND
+            NEW."bookingLimitDatetime" > NEW."beginningDatetime" THEN
+
+          RAISE EXCEPTION 'bookingLimitDatetime_too_late'
+          USING HINT = 'bookingLimitDatetime after beginningDatetime';
+          END IF;
+
+          RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+
+        DROP TRIGGER IF EXISTS stock_update ON stock;
+        CREATE CONSTRAINT TRIGGER stock_update AFTER INSERT OR UPDATE
+        ON stock
+        FOR EACH ROW EXECUTE PROCEDURE check_stock()
+      """ + ';')
+    op.execute("ALTER TABLE stock ENABLE TRIGGER stock_update_modification_date;")
+    op.execute("ALTER TABLE stock ENABLE TRIGGER stock_update;")

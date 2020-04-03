@@ -1,7 +1,9 @@
 """create_discovery_view_v3
+
 Revision ID: 747f6c0639b0
 Revises: 2b44409d9f54
 Create Date: 2020-04-02 11:57:27.703029
+
 """
 from alembic import op
 import sqlalchemy as sa

@@ -1,7 +1,9 @@
 """create_get_recommendable_offers_ordered_by_digital_offers
+
 Revision ID: 2b44409d9f54
 Revises: da973e646e06
 Create Date: 2020-04-02 11:47:27.703029
+
 """
 from alembic import op
 import sqlalchemy as sa
