@@ -41,9 +41,24 @@
   .sf-filter-wrapper {
     display: flex;
     flex-wrap: wrap;
+    margin-bottom: rem(20px);
 
     li {
       margin: rem(6px) rem(12px) rem(6px) 0;
+    }
+  }
+
+  .sf-offer-duo-wrapper {
+    align-items: center;
+    border-top: rem(1px) solid $grey-even-more-light;
+    display: flex;
+    justify-content: center;
+    padding-top: rem(20px);
+
+    h4 {
+      flex: 2;
+      font-size: rem(18px);
+      font-weight: 500;
     }
   }
 

@@ -9,6 +9,7 @@ import { GEOLOCATION_CRITERIA } from '../../Criteria/criteriaEnums'
 import FilterCheckbox from '../FilterCheckbox/FilterCheckbox'
 import { Filters } from '../Filters'
 import Slider from 'rc-slider'
+import FilterToggle from '../FilterToggle/FilterToggle'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
@@ -35,6 +36,7 @@ describe('components | Filters', () => {
         aroundRadius: 0,
         isSearchAroundMe: false,
         offerCategories: ['VISITE', 'CINEMA'],
+        offerDuo: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -137,6 +139,7 @@ describe('components | Filters', () => {
           expect(fetchAlgolia).toHaveBeenCalledWith({
             keywords: 'librairie',
             offerCategories: ['VISITE', 'CINEMA'],
+            offerDuo: false,
             offerTypes: {
               isDigital: false,
               isEvent: false,
@@ -161,6 +164,7 @@ describe('components | Filters', () => {
             aroundRadius: 50,
             isSearchAroundMe: false,
             offerCategories: ['VISITE'],
+            offerDuo: false,
             offerTypes: {
               isDigital: false,
               isEvent: false,
@@ -203,6 +207,7 @@ describe('components | Filters', () => {
             geolocation: { latitude: 40, longitude: 41 },
             keywords: 'librairie',
             offerCategories: ['VISITE'],
+            offerDuo: false,
             offerTypes: {
               isDigital: false,
               isEvent: false,
@@ -329,6 +334,7 @@ describe('components | Filters', () => {
           aroundRadius: 0,
           isSearchAroundMe: false,
           offerCategories: ['VISITE', 'CINEMA'],
+          offerDuo: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -650,8 +656,82 @@ describe('components | Filters', () => {
           expect(fetchAlgolia).toHaveBeenCalledWith({
             keywords: 'librairies',
             offerCategories: ['VISITE', 'CINEMA'],
+            offerDuo: false,
             offerTypes: {
               isDigital: true,
+              isEvent: false,
+              isThing: false,
+            },
+            sortBy: '_by_price',
+          })
+        })
+      })
+
+      describe('offer duo', () => {
+        it('should display a "Uniquement les offres duo" title for offer duo filter', () => {
+          // given
+          props.history.location.pathname = '/recherche-offres/filtres'
+
+          // when
+          const wrapper = shallow(<Filters {...props} />)
+
+          // then
+          const title = wrapper.findWhere(node => node.text() === "Uniquement les offres duo").first()
+          expect(title).toHaveLength(1)
+        })
+
+        it('should render a FilterToggle component unchecked by default', () => {
+          // given
+          props.history.location.pathname = '/recherche-offres/filtres'
+          props.initialFilters.offerDuo = false
+
+          // when
+          const wrapper = shallow(<Filters {...props} />)
+
+          // then
+          const filterOfferDuo = wrapper
+            .find('[data-test="sf-offer-duo-wrapper-test"]')
+            .find(FilterToggle)
+          expect(filterOfferDuo).toHaveLength(1)
+          expect(filterOfferDuo.prop('checked')).toBe(false)
+          expect(filterOfferDuo.prop('id')).toBe('offerDuo')
+          expect(filterOfferDuo.prop('name')).toBe('offerDuo')
+          expect(filterOfferDuo.prop('onChange')).toStrictEqual(expect.any(Function))
+        })
+
+        it('should fetch offers when clicking on offer duo', () => {
+          // given
+          props.history.location.pathname = '/recherche-offres/filtres'
+          const wrapper = shallow(<Filters {...props} />)
+          const offerDuoFilter = wrapper
+            .find('[data-test="sf-offer-duo-wrapper-test"]')
+            .find(FilterToggle)
+          props.query.parse.mockReturnValue({})
+          fetchAlgolia.mockReturnValue(
+            new Promise(resolve => {
+              resolve({
+                hits: [],
+                nbHits: 0,
+                page: 0,
+              })
+            })
+          )
+
+          // when
+          offerDuoFilter.simulate('change', {
+            target: {
+              name: 'offerDuo',
+              checked: true,
+            },
+          })
+
+          // then
+          expect(fetchAlgolia).toHaveBeenCalledWith({
+            keywords: '',
+            offerCategories: ['VISITE', 'CINEMA'],
+            offerDuo: true,
+            offerTypes: {
+              isDigital: false,
               isEvent: false,
               isThing: false,
             },
@@ -854,6 +934,7 @@ describe('components | Filters', () => {
             props.initialFilters = {
               isSearchAroundMe: true,
               offerCategories: ['VISITE'],
+              offerDuo: false,
               offerTypes: {
                 isDigital: false,
                 isEvent: false,
@@ -891,6 +972,7 @@ describe('components | Filters', () => {
               //radiusRevert: aroundRadius: 0,
               keywords: 'librairie',
               offerCategories: [],
+              offerDuo: false,
               offerTypes: {
                 isDigital: false,
                 isEvent: false,
@@ -947,6 +1029,7 @@ describe('components | Filters', () => {
               //radiusRevert: aroundRadius: 0,
               keywords: 'librairie',
               offerCategories: [],
+              offerDuo: false,
               offerTypes: {
                 isDigital: false,
                 isEvent: false,

@@ -462,6 +462,43 @@ describe('fetchAlgolia', () => {
     })
   })
 
+  describe('offer duo', () => {
+    it('should fetch with empty facetFilters when no offer duo is false', () => {
+      // given
+      const keywords = 'searched keywords'
+
+      // when
+      fetchAlgolia({
+        keywords: keywords,
+        offerDuo: false,
+      })
+
+      // then
+      expect(search).toHaveBeenCalledWith(keywords, {
+        facetFilters: [],
+        page: 0
+      })
+    })
+
+    it('should fetch with facetFilters when offer duo is true', () => {
+      // given
+      const keywords = 'searched keywords'
+      const offerDuo = true
+
+      // when
+      fetchAlgolia({
+        keywords: keywords,
+        offerDuo: offerDuo
+      })
+
+      // then
+      expect(search).toHaveBeenCalledWith(keywords, {
+        facetFilters: ['offer.isDuo:true'],
+        page: 0
+      })
+    })
+  })
+
   describe('multiple parameters', () => {
     it('should fetch with all given search parameters', () => {
       // given
@@ -507,6 +544,7 @@ describe('fetchAlgolia', () => {
       }
       const keywords = ''
       const offerCategories = ['PRATIQUE', 'SPECTACLE']
+      const offerDuo = true
       const offerTypes = {
         isDigital: false,
         isEvent: true,
@@ -516,17 +554,18 @@ describe('fetchAlgolia', () => {
 
       // when
       fetchAlgolia({
-        geolocation: geolocation,
-        keywords: keywords,
-        offerCategories: offerCategories,
-        offerTypes: offerTypes,
-        sortBy: sortBy,
+        geolocation,
+        keywords,
+        offerCategories,
+        offerDuo,
+        offerTypes,
+        sortBy,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         page: 0,
-        facetFilters: [["offer.category:PRATIQUE", "offer.category:SPECTACLE"], "offer.isEvent:true"],
+        facetFilters: [["offer.category:PRATIQUE", "offer.category:SPECTACLE"], "offer.isEvent:true", "offer.isDuo:true"],
         aroundLatLng: '42, 43',
         aroundRadius: 'all'
       })

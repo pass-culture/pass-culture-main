@@ -10,19 +10,20 @@ import { Criteria } from '../Criteria/Criteria'
 import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA } from '../Criteria/criteriaEnums'
 import { checkIfAroundMe } from '../utils/checkIfAroundMe'
 import FilterCheckbox from './FilterCheckbox/FilterCheckbox'
-import Slider from 'rc-slider'
+import FilterToggle from './FilterToggle/FilterToggle'
 
 export class Filters extends PureComponent {
   constructor(props) {
     super(props)
 
-    const { aroundRadius, isSearchAroundMe, offerTypes, sortBy } = props.initialFilters
+    const { aroundRadius, isSearchAroundMe, offerDuo, offerTypes, sortBy } = props.initialFilters
     this.state = {
       areCategoriesVisible: true,
       filters: {
         aroundRadius: aroundRadius,
         isSearchAroundMe: isSearchAroundMe,
         offerCategories: this.buildCategoriesStateFromProps(),
+        offerDuo: offerDuo,
         offerTypes: offerTypes,
         sortBy: sortBy,
       },
@@ -39,13 +40,14 @@ export class Filters extends PureComponent {
     }, {})
   }
 
-  fetchOffers = ({ aroundRadius, keywords, geolocation, offerCategories, offerTypes, sortBy }) => {
+  fetchOffers = ({ aroundRadius, keywords, geolocation, offerCategories, offerDuo, offerTypes, sortBy }) => {
     const { showFailModal } = this.props
     fetchAlgolia({
       aroundRadius,
       geolocation,
       keywords,
       offerCategories,
+      offerDuo,
       offerTypes,
       sortBy,
     })
@@ -65,24 +67,26 @@ export class Filters extends PureComponent {
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles'] || ''
 
-    const { aroundRadius, isSearchAroundMe, offerTypes, sortBy } = filters
+    const { aroundRadius, isSearchAroundMe, offerDuo, offerTypes, sortBy } = filters
     const offerCategories = this.getSelectedCategories()
 
     isSearchAroundMe
       ? this.fetchOffers({
-          aroundRadius,
-          keywords,
-          geolocation,
-          offerCategories,
-          offerTypes,
-          sortBy,
-        })
+        aroundRadius,
+        keywords,
+        geolocation,
+        offerCategories,
+        offerDuo,
+        offerTypes,
+        sortBy,
+      })
       : this.fetchOffers({
-          keywords,
-          offerCategories,
-          offerTypes,
-          sortBy,
-        })
+        keywords,
+        offerCategories,
+        offerDuo,
+        offerTypes,
+        sortBy,
+      })
 
     const autourDeMoi = checkIfAroundMe(filters.isSearchAroundMe)
     const categories = offerCategories.join(';') || ''
@@ -102,6 +106,7 @@ export class Filters extends PureComponent {
           isSearchAroundMe: false,
           //radiusRevert: aroundRadius: 0,
           offerCategories: [],
+          offerDuo: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -256,13 +261,27 @@ export class Filters extends PureComponent {
     })
   }
 
+  handleOnToggle = (event) => {
+    const { name, checked } = event.target
+    const { filters } = this.state
+
+    this.setState({
+      filters: {
+        ...filters,
+        [name]: checked
+      },
+    }, () => {
+      this.process()
+    })
+  }
+
   handleRadiusAfterSlide = () => {
     this.process()
   }
 
   render() {
     const { areCategoriesVisible, filters } = this.state
-    const { aroundRadius, isSearchAroundMe, offerCategories, offerTypes } = filters
+    const { aroundRadius, isSearchAroundMe, offerCategories, offerDuo, offerTypes } = filters
     const { history, match } = this.props
     const { location } = history
     const { search = '' } = location
@@ -379,7 +398,7 @@ export class Filters extends PureComponent {
               <li>
                 <div className="sf-title-wrapper">
                   <h4 className="sf-title">
-                    {"Type d'offres"}
+                    {'Type d\'offres'}
                   </h4>
                   {numberOfOfferTypesSelected > 0 && (
                     <span className="sf-selected-filter-counter">
@@ -422,6 +441,22 @@ export class Filters extends PureComponent {
                     />
                   </li>
                 </ul>
+              </li>
+              <li>
+                <div
+                  className="sf-offer-duo-wrapper"
+                  data-test="sf-offer-duo-wrapper-test"
+                >
+                  <h4>
+                    {'Uniquement les offres duo'}
+                  </h4>
+                  <FilterToggle
+                    checked={offerDuo}
+                    id="offerDuo"
+                    name="offerDuo"
+                    onChange={this.handleOnToggle}
+                  />
+                </div>
               </li>
             </ul>
             <div className="sf-button-wrapper">

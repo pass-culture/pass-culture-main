@@ -12,6 +12,7 @@ export const fetchAlgolia = ({
                                geolocation = null,
                                keywords = '',
                                offerCategories = [],
+                               offerDuo = false,
                                offerTypes = {
                                  isDigital: false,
                                  isEvent: false,
@@ -23,7 +24,7 @@ export const fetchAlgolia = ({
 ) => {
   const searchParameters = {
     page: page,
-    ...buildFacetFilters(offerCategories, offerTypes),
+    ...buildFacetFilters(offerCategories, offerTypes, offerDuo),
     ...buildGeolocationParameter(aroundRadius, geolocation),
   }
   const client = algoliasearch(WEBAPP_ALGOLIA_APPLICATION_ID, WEBAPP_ALGOLIA_SEARCH_API_KEY)
@@ -32,8 +33,8 @@ export const fetchAlgolia = ({
   return index.search(keywords, searchParameters)
 }
 
-const buildFacetFilters = (offerCategories, offerTypes) => {
-  if (offerCategories.length === 0 && offerTypes == null) {
+const buildFacetFilters = (offerCategories, offerTypes, offerDuo) => {
+  if (offerCategories.length === 0 && offerTypes == null && offerDuo === false) {
     return
   }
 
@@ -42,10 +43,15 @@ const buildFacetFilters = (offerCategories, offerTypes) => {
     const categoriesPredicate = buildOfferCategoriesPredicate(offerCategories)
     facetFilters.push(categoriesPredicate)
   }
-  const offerTypesPredicate = _buildOfferTypesPredicate(offerTypes)
 
+  const offerTypesPredicate = buildOfferTypesPredicate(offerTypes)
   if (offerTypesPredicate) {
     facetFilters.push(...offerTypesPredicate)
+  }
+
+  const offerDuoPredicate = buildOfferDuoPredicate(offerDuo)
+  if (offerDuoPredicate){
+    facetFilters.push(offerDuoPredicate)
   }
 
   return {
@@ -57,7 +63,13 @@ const buildOfferCategoriesPredicate = offerCategories => {
   return offerCategories.map(category => `${FACETS.OFFER_CATEGORY}:${category}`)
 }
 
-const _buildOfferTypesPredicate = offerTypes => {
+const buildOfferDuoPredicate = offerDuo => {
+  if (offerDuo) {
+    return `${FACETS.OFFER_IS_DUO}:${offerDuo}`
+  }
+}
+
+const buildOfferTypesPredicate = offerTypes => {
   const { isDigital, isEvent, isThing } = offerTypes
   if (isDigital) {
     if (!isEvent && !isThing) {
