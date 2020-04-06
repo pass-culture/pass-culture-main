@@ -20,19 +20,6 @@
     transform: translate(-50%, 0);
   }
 
-  .slider-point {
-    background-color: $white;
-    border-radius: rem(8px);
-    height: rem(8px);
-    margin: 0 rem(5px);
-    opacity: .5;
-    width: rem(8px);
-
-    &.filled {
-      opacity: 1;
-    }
-  }
-
   .text-highlight {
     color: $purple-blue;
     font-weight: 500;

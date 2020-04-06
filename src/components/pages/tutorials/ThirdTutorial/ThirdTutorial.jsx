@@ -27,11 +27,6 @@ const ThirdTutorial = () => (
       </span>
       {' (concerts, spectacles…) !'}
     </p>
-    <div className="slider-points">
-      <div className="slider-point" />
-      <div className="slider-point" />
-      <div className="slider-point filled" />
-    </div>
   </div>
 )
 

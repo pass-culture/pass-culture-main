@@ -5,17 +5,19 @@ import FirstTutorial from './FirstTutorial/FirstTutorial'
 import Icon from '../../layout/Icon/Icon'
 import SecondTutorial from './SecondTutorial/SecondTutorial'
 import ThirdTutorial from './ThirdTutorial/ThirdTutorial'
+import SliderPoints from './SliderPoints/SliderPoints'
 
 const Tutorials = ({ history }) => {
-  const tutorials = {
-    1: <FirstTutorial />,
-    2: <SecondTutorial />,
-    3: <ThirdTutorial />,
-  }
 
-  const lastTutorialStep = Object.keys(tutorials).length
+  const tutorials = [
+    <FirstTutorial />,
+    <SecondTutorial />,
+    <ThirdTutorial />
+  ]
 
-  let [step, setStep] = useState(1)
+  const lastTutorialStep = tutorials.length -1
+
+  let [step, setStep] = useState(0)
 
   function handleClickNext() {
     if (step === lastTutorialStep) {
@@ -32,7 +34,7 @@ const Tutorials = ({ history }) => {
   return (
     <main className="tutorials">
       {tutorials[step]}
-      {step > 1 && (
+      {step > 0 && (
         <button
           className="previous-arrow"
           onClick={handleClickPrevious}
@@ -54,6 +56,12 @@ const Tutorials = ({ history }) => {
           svg="icon-arrow"
         />
       </button>
+      <div className="slider-points">
+        <SliderPoints
+          currentStep={step}
+          elements={tutorials}
+        />
+      </div>
     </main>
   )
 }

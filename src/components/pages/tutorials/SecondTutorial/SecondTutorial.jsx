@@ -24,11 +24,6 @@ const SecondTutorial = () => (
       </span>
       {` pour inviter un ami, un voisin ou ta grand${NON_BREAKING_HYPHEN}mère !`}
     </p>
-    <div className="slider-points">
-      <div className="slider-point" />
-      <div className="slider-point filled" />
-      <div className="slider-point" />
-    </div>
   </div>
 )
 

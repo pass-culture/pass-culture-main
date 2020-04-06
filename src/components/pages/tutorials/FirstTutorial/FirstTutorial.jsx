@@ -22,11 +22,6 @@ const FirstTutorial = () => (
         ' crédités directement sur l’appli pour découvrir de nouvelles activités culturelles autour de chez toi et partout en France !'
       }
     </p>
-    <div className="slider-points">
-      <div className="slider-point filled" />
-      <div className="slider-point" />
-      <div className="slider-point" />
-    </div>
   </div>
 )
 
