@@ -9,7 +9,7 @@
 }
 
 .teaser-main {
-  background-image: linear-gradient(to right, $teaser-gradient-start, $teaser-gradient-end);
+  background-image: $linear-gradient-to-right;
   display: flex;
   flex-direction: column;
   height: 100%;

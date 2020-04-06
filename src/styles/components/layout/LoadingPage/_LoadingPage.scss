@@ -1,7 +1,7 @@
 .loading-page {
   align-content: center;
   align-items: center;
-  background-image: linear-gradient(to right, $teaser-gradient-start, $teaser-gradient-end);
+  background-image: $linear-gradient-to-right;
   bottom: 0;
   color: $white;
   display: flex;

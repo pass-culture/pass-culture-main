@@ -186,7 +186,7 @@ img {
 }
 
 #root {
-  background: $grey-transition;
+  background-image: $linear-gradient-to-right;
   height: 100%;
   overflow: hidden;
   min-height: 100%;
