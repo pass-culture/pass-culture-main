@@ -41,9 +41,7 @@ module.exports = {
     alias: {
       'react-native': 'react-native-web',
     },
-    plugins: [
-      new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
-    ],
+    plugins: [new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson])],
   },
   module: {
     strictExportPresence: true,
@@ -54,6 +52,7 @@ module.exports = {
         use: [
           {
             options: {
+              cache: true,
               emitError: false,
               emitWarning: true,
               eslintPath: require.resolve('eslint'),
@@ -87,7 +86,7 @@ module.exports = {
           {
             test: /\.s?css$/,
             loaders: ['style-loader', 'css-loader', 'sass-loader'],
-          }
+          },
         ].concat([
           {
             exclude: [/\.js$/, /\.html$/, /\.json$/],
