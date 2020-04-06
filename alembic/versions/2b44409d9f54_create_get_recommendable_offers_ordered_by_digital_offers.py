@@ -83,8 +83,48 @@ def upgrade():
         LANGUAGE plpgsql;
     """)
 
+    op.execute("""
+        DROP MATERIALIZED VIEW discovery_view;
+    """)
+
+    op.execute("""
+        CREATE MATERIALIZED VIEW IF NOT EXISTS discovery_view AS
+            SELECT
+                ROW_NUMBER() OVER ()                AS "offerDiscoveryOrder",
+                recommendable_offers.id             AS id,
+                recommendable_offers."venueId"      AS "venueId",
+                recommendable_offers.type           AS type,
+                recommendable_offers.name           AS name,
+                recommendable_offers.url            AS url,
+                recommendable_offers."isNational"   AS "isNational",
+                offer_mediation.id                  AS "mediationId"
+            FROM (SELECT * FROM get_recommendable_offers_ordered_by_digital_offers()) AS recommendable_offers
+            LEFT OUTER JOIN mediation AS offer_mediation ON recommendable_offers.id = offer_mediation."offerId"
+                AND offer_mediation."isActive"
+            ORDER BY recommendable_offers.partitioned_offers;
+    """)
+
 
 def downgrade():
+    op.execute("""
+        DROP MATERIALIZED VIEW discovery_view;
+    """)
+    op.execute("""
+        CREATE MATERIALIZED VIEW IF NOT EXISTS discovery_view AS
+            SELECT
+                ROW_NUMBER() OVER ()                AS "offerDiscoveryOrder",
+                recommendable_offers.id             AS id,
+                recommendable_offers."venueId"      AS "venueId",
+                recommendable_offers.type           AS type,
+                recommendable_offers.name           AS name,
+                recommendable_offers.url            AS url,
+                recommendable_offers."isNational"   AS "isNational",
+                offer_mediation.id                  AS "mediationId"
+            FROM (SELECT * FROM get_recommendable_offers()) AS recommendable_offers
+            LEFT OUTER JOIN mediation AS offer_mediation ON recommendable_offers.id = offer_mediation."offerId"
+                AND offer_mediation."isActive"
+            ORDER BY recommendable_offers.partitioned_offers;
+    """)
     op.execute("""
         DROP FUNCTION get_recommendable_offers_ordered_by_digital_offers;
     """)
