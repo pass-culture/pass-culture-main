@@ -8,7 +8,7 @@ import {
   selectEventBookingsOfTheWeek,
   selectFinishedEventBookings,
   selectFirstMatchingBookingByOfferId,
-  selectPassedBookingsByOfferId,
+  selectPastBookingByOfferId,
   selectUpComingBookings,
   selectUsedThingBookings,
 } from '../bookingsSelectors'
@@ -973,7 +973,7 @@ describe('selectBookingByRouterMatch', () => {
   })
 })
 
-describe('selectPassedBookingsByOfferId', () => {
+describe('selectPastBookingByOfferId', () => {
   it('should return empty when no booking', () => {
     // given
     const state = {
@@ -985,13 +985,13 @@ describe('selectPassedBookingsByOfferId', () => {
     }
 
     // when
-    const passedBookings = selectPassedBookingsByOfferId(state, 'A1')
+    const pastBooking = selectPastBookingByOfferId(state, 'A1')
 
     // then
-    expect(passedBookings).toStrictEqual([])
+    expect(pastBooking).toBeNull()
   })
 
-  it('should return empty when no bookings matching offer', () => {
+  it('should return empty when no booking matching offer', () => {
     // given
     const state = {
       data: {
@@ -1002,13 +1002,13 @@ describe('selectPassedBookingsByOfferId', () => {
     }
 
     // when
-    const passedBookings = selectPassedBookingsByOfferId(state, 'A1')
+    const pastBooking = selectPastBookingByOfferId(state, 'A1')
 
     // then
-    expect(passedBookings).toStrictEqual([])
+    expect(pastBooking).toBeNull()
   })
 
-  it('should return not cancelled bookings in the passed', () => {
+  it('should return not cancelled booking in the passed', () => {
     // given
     const now = moment()
     const oneDayBeforeNow = now.subtract(1, 'days').format()
@@ -1016,18 +1016,21 @@ describe('selectPassedBookingsByOfferId', () => {
       data: {
         offer: [{ id: 'A1' }],
         stocks: [{ id: 'B1', offerId: 'A1', beginningDatetime: oneDayBeforeNow }],
-        bookings: [{ id: 'C1', stockId: 'B1', isCancelled: false }],
+        bookings: [
+          { id: 'C1', stockId: 'B1', isCancelled: false },
+          { id: 'D1', stockId: 'B1', isCancelled: true },
+        ],
       },
     }
 
     // when
-    const passedBookings = selectPassedBookingsByOfferId(state, 'A1')
+    const pastBooking = selectPastBookingByOfferId(state, 'A1')
 
     // then
-    expect(passedBookings).toStrictEqual([{ id: 'C1', stockId: 'B1', isCancelled: false }])
+    expect(pastBooking).toStrictEqual({ id: 'C1', stockId: 'B1', isCancelled: false })
   })
 
-  it('should not return cancelled bookings', () => {
+  it('should not return cancelled booking', () => {
     // given
     const now = moment()
     const oneDayBeforeNow = now.subtract(1, 'days').format()
@@ -1040,13 +1043,13 @@ describe('selectPassedBookingsByOfferId', () => {
     }
 
     // when
-    const passedBookings = selectPassedBookingsByOfferId(state, 'A1')
+    const pastBooking = selectPastBookingByOfferId(state, 'A1')
 
     // then
-    expect(passedBookings).toStrictEqual([])
+    expect(pastBooking).toBeNull()
   })
 
-  it('should not return valid bookings in the future', () => {
+  it('should not return valid booking in the future', () => {
     // given
     const now = moment()
     const oneDayAfterNow = now.add(1, 'days').format()
@@ -1059,9 +1062,9 @@ describe('selectPassedBookingsByOfferId', () => {
     }
 
     // when
-    const passedBookings = selectPassedBookingsByOfferId(state, 'A1')
+    const pastBooking = selectPastBookingByOfferId(state, 'A1')
 
     // then
-    expect(passedBookings).toStrictEqual([])
+    expect(pastBooking).toBeNull()
   })
 })

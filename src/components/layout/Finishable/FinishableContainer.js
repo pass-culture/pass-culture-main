@@ -6,16 +6,33 @@ import getIsBooked from '../../../utils/getIsBooked'
 import { selectStockById } from '../../../selectors/data/stocksSelectors'
 import {
   selectBookingByRouterMatch,
-  selectPassedBookingsByOfferId,
+  selectPastBookingByOfferId,
 } from '../../../selectors/data/bookingsSelectors'
 import { selectOfferById } from '../../../selectors/data/offersSelectors'
+
+function computeShouldDisplayBanner(offer, userBookingsForThisOffer, offerIsBookedByUser) {
+  const isOfferTuto = Object.keys(offer).length === 0
+
+  let shouldDisplayFinishedBanner = false
+
+  if (isOfferTuto) {
+    shouldDisplayFinishedBanner = false
+  } else if (userBookingsForThisOffer) {
+    shouldDisplayFinishedBanner = true
+  } else {
+    shouldDisplayFinishedBanner = !offer.isBookable && !offerIsBookedByUser
+  }
+  return shouldDisplayFinishedBanner
+}
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
   const { params } = match
   const { bookingId, offerId: offerIdQueryParam } = params
+
   const booking = selectBookingByRouterMatch(state, match)
   const isBookedByCurrentUser = getIsBooked(booking)
+
   let offerId = offerIdQueryParam
 
   if (bookingId) {
@@ -26,17 +43,16 @@ export const mapStateToProps = (state, ownProps) => {
   }
 
   const offer = selectOfferById(state, offerId) || {}
-  const isOfferTuto = Object.keys(offer).length === 0
-  let isOfferBookableOrBooked = offer.isBookable || isBookedByCurrentUser
+  const userBookingsForThisOffer = selectPastBookingByOfferId(state, offerId)
 
-  let userBookingsForThisOffer = selectPassedBookingsByOfferId(state, offerId)
-
-  if (userBookingsForThisOffer && userBookingsForThisOffer.length) {
-    isOfferBookableOrBooked = false
-  }
+  let shouldDisplayFinishedBanner = computeShouldDisplayBanner(
+    offer,
+    userBookingsForThisOffer,
+    isBookedByCurrentUser
+  )
 
   return {
-    offerCanBeOrIsBooked: isOfferTuto ? true : isOfferBookableOrBooked,
+    shouldDisplayFinishedBanner: shouldDisplayFinishedBanner,
   }
 }
 

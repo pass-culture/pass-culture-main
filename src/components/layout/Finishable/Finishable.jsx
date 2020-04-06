@@ -3,10 +3,8 @@ import React from 'react'
 
 import Icon from '../Icon/Icon'
 
-const Finishable = ({ offerCanBeOrIsBooked, children }) =>
-  offerCanBeOrIsBooked ? (
-    children
-  ) : (
+const Finishable = ({ shouldDisplayFinishedBanner, children }) =>
+  shouldDisplayFinishedBanner ? (
     <div className="finishable">
       {children}
       <Icon
@@ -15,15 +13,17 @@ const Finishable = ({ offerCanBeOrIsBooked, children }) =>
         svg="badge-termine"
       />
     </div>
+  ) : (
+    children
   )
 
 Finishable.defaultProps = {
-  offerCanBeOrIsBooked: true,
+  shouldDisplayFinishedBanner: true,
 }
 
 Finishable.propTypes = {
   children: PropTypes.node.isRequired,
-  offerCanBeOrIsBooked: PropTypes.bool,
+  shouldDisplayFinishedBanner: PropTypes.bool,
 }
 
 export default Finishable

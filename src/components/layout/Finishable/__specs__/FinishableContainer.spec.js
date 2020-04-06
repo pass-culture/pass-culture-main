@@ -7,7 +7,7 @@ jest.mock('../../../../utils/getIsBooked')
 describe('components | FinishableContainer', () => {
   describe('mapStateToProps', () => {
     describe('when offer is a tuto', () => {
-      it('should be bookable', () => {
+      it('should not display finished banner', () => {
         // given
         const state = {
           data: {
@@ -27,12 +27,12 @@ describe('components | FinishableContainer', () => {
         const props = mapStateToProps(state, ownProps)
 
         // then
-        expect(props.offerCanBeOrIsBooked).toBe(true)
+        expect(props.shouldDisplayFinishedBanner).toBe(false)
       })
     })
 
     describe('when coming from /reservations', () => {
-      it('should return true when offer is not bookable but has been booked by current user', () => {
+      it('should not display finished banner when offer is not bookable but has been booked by current user', () => {
         // given
         getIsBooked.mockReturnValue(true)
 
@@ -55,10 +55,10 @@ describe('components | FinishableContainer', () => {
         const props = mapStateToProps(state, ownProps)
 
         // then
-        expect(props.offerCanBeOrIsBooked).toBe(true)
+        expect(props.shouldDisplayFinishedBanner).toBe(false)
       })
 
-      it('should return false when offer is not bookable anymore and current user has not booked it', () => {
+      it('should display banner when offer is not bookable anymore and current user has not booked it', () => {
         // given
         getIsBooked.mockReturnValue(false)
         const state = {
@@ -80,7 +80,7 @@ describe('components | FinishableContainer', () => {
         const props = mapStateToProps(state, ownProps)
 
         // then
-        expect(props.offerCanBeOrIsBooked).toBe(false)
+        expect(props.shouldDisplayFinishedBanner).toBe(true)
       })
 
       it('should return true when offer is bookable and has been booked by current user', () => {
@@ -104,12 +104,12 @@ describe('components | FinishableContainer', () => {
         const props = mapStateToProps(state, ownProps)
 
         // then
-        expect(props.offerCanBeOrIsBooked).toBe(true)
+        expect(props.shouldDisplayFinishedBanner).toBe(false)
       })
     })
 
     describe('when coming from other routes', () => {
-      it('should return false when offer is not bookable', () => {
+      it('should display banner when offer is not bookable', () => {
         // given
         getIsBooked.mockReturnValue(false)
 
@@ -132,11 +132,11 @@ describe('components | FinishableContainer', () => {
         const props = mapStateToProps(state, ownProps)
 
         // then
-        expect(props.offerCanBeOrIsBooked).toBe(false)
+        expect(props.shouldDisplayFinishedBanner).toBe(true)
       })
 
       describe('when offer is bookable', () => {
-        it('should return true when offer has never been booked', () => {
+        it('should not display banner when offer has never been booked', () => {
           // given
           getIsBooked.mockReturnValue(false)
 
@@ -159,12 +159,12 @@ describe('components | FinishableContainer', () => {
           const props = mapStateToProps(state, ownProps)
 
           // then
-          expect(props.offerCanBeOrIsBooked).toBe(true)
+          expect(props.shouldDisplayFinishedBanner).toBe(false)
         })
 
-        it('should return false when offer has already been booked', () => {
+        it('should display banner when event offer has already been booked and event is over', () => {
           // given
-          getIsBooked.mockReturnValue(false)
+          getIsBooked.mockReturnValue(true)
 
           const now = moment()
           const oneDayBeforeNow = now.subtract(1, 'days').format()
@@ -179,7 +179,7 @@ describe('components | FinishableContainer', () => {
           const ownProps = {
             match: {
               params: {
-                offerId: 'C1',
+                bookingId: 'A1',
               },
             },
           }
@@ -188,7 +188,7 @@ describe('components | FinishableContainer', () => {
           const props = mapStateToProps(state, ownProps)
 
           // then
-          expect(props.offerCanBeOrIsBooked).toBe(false)
+          expect(props.shouldDisplayFinishedBanner).toBe(true)
         })
       })
     })

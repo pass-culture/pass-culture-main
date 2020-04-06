@@ -158,20 +158,18 @@ export const selectFirstMatchingBookingByOfferId = createCachedSelector(
   }
 )((state, offerId = '') => offerId)
 
-export const selectPassedBookingsByOfferId = createCachedSelector(
+export const selectPastBookingByOfferId = createCachedSelector(
   selectBookings,
   state => state.data.stocks,
   (state, offerId) => offerId,
   (bookings, stocks, offerId) => {
     if (stocks.length === 0) {
-      return []
+      return null
     }
 
     stocks.sort((s1, s2) => {
       return moment(s1.beginningDatetime).diff(moment(s2.beginningDatetime))
     })
-
-    let passedBookings = []
 
     for (let i in stocks) {
       let stock = stocks[i]
@@ -188,12 +186,12 @@ export const selectPassedBookingsByOfferId = createCachedSelector(
           !booking.isCancelled &&
           moment(stock.beginningDatetime).isBefore(moment())
         ) {
-          passedBookings.push(booking)
+          return booking
         }
       }
     }
 
-    return passedBookings
+    return null
   }
 )((state, offerId = '') => offerId)
 

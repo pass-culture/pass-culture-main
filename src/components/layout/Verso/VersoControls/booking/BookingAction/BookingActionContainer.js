@@ -6,7 +6,7 @@ import getPriceRangeFromStocks from '../../../../../../utils/getPriceRangeFromSt
 import { selectOfferById } from '../../../../../../selectors/data/offersSelectors'
 import { selectStocksByOfferId } from '../../../../../../selectors/data/stocksSelectors'
 import BookingAction from './BookingAction'
-import { selectPassedBookingsByOfferId } from '../../../../../../selectors/data/bookingsSelectors'
+import { selectPastBookingByOfferId } from '../../../../../../selectors/data/bookingsSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { location, match } = ownProps
@@ -22,9 +22,9 @@ export const mapStateToProps = (state, ownProps) => {
 
   let offerCannotBeBooked = !offer.isBookable
 
-  let userPassedBookingsForThisOffer = selectPassedBookingsByOfferId(state, offerId)
+  let userPastBookingForThisOffer = selectPastBookingByOfferId(state, offerId)
 
-  if (userPassedBookingsForThisOffer && userPassedBookingsForThisOffer.length) {
+  if (userPastBookingForThisOffer) {
     offerCannotBeBooked = true
   }
 
