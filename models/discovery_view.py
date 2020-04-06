@@ -59,8 +59,7 @@ class DiscoveryView(Model):
     def _create_function_get_recommendable_offers_ordered_by_digital_offers(self) -> str:
         function_name = 'get_recommendable_offers_ordered_by_digital_offers'
         get_offer_score = self._create_function_get_offer_score()
-        offer_has_at_least_one_active_mediation = self._create_function_offer_has_at_least_one_active_mediation()
-        offer_has_at_least_one_bookable_stock = self._create_function_offer_has_at_least_one_bookable_stock()
+        get_active_offers_ids = self._create_function_get_active_offers_ids()
 
         self.session.execute(f"""
             CREATE OR REPLACE FUNCTION {function_name}()
@@ -86,20 +85,7 @@ class DiscoveryView(Model):
                     offer."isNational" AS "isNational",
                     {self._order_by_digital_offers()} AS partitioned_offers
                 FROM offer
-                WHERE offer.id IN (
-                    SELECT DISTINCT ON (offer.id) offer.id
-                    FROM offer
-                    JOIN venue ON offer."venueId" = venue.id
-                    JOIN offerer ON offerer.id = venue."managingOffererId"
-                    WHERE offer."isActive" = TRUE
-                        AND venue."validationToken" IS NULL
-                        AND (EXISTS (SELECT * FROM {offer_has_at_least_one_active_mediation}(offer.id)))
-                        AND (EXISTS (SELECT * FROM {offer_has_at_least_one_bookable_stock}(offer.id)))
-                        AND offerer."isActive" = TRUE
-                        AND offerer."validationToken" IS NULL
-                        AND offer.type != 'ThingType.ACTIVATION'
-                        AND offer.type != 'EventType.ACTIVATION'
-                )
+                WHERE offer.id IN (SELECT * FROM {get_active_offers_ids}(TRUE))
                 ORDER BY {self._order_by_digital_offers()};
             END
             $body$
@@ -183,6 +169,38 @@ class DiscoveryView(Model):
                         OR stock."beginningDatetime" > NOW()
                     AND stock."beginningDatetime" < NOW() + INTERVAL '10 DAY');
             END
+            $body$
+            LANGUAGE plpgsql;
+        """)
+        return function_name
+
+    def _create_function_get_active_offers_ids(self) -> str:
+        function_name = 'get_active_offers_ids'
+        offer_has_at_least_one_active_mediation = self._create_function_offer_has_at_least_one_active_mediation()
+        offer_has_at_least_one_bookable_stock = self._create_function_offer_has_at_least_one_bookable_stock()
+
+        self.session.execute(f"""
+            CREATE OR REPLACE FUNCTION {function_name}(with_mediation bool)
+            RETURNS SETOF BIGINT AS
+            $body$
+            BEGIN
+                RETURN QUERY
+                SELECT DISTINCT ON (offer.id) offer.id
+                FROM offer
+                JOIN venue ON offer."venueId" = venue.id
+                JOIN offerer ON offerer.id = venue."managingOffererId"
+                WHERE offer."isActive" = TRUE
+                    AND venue."validationToken" IS NULL
+                    AND (
+                        NOT with_mediation
+                        OR (with_mediation AND EXISTS (SELECT * FROM {offer_has_at_least_one_active_mediation}(offer.id)))
+                    )
+                    AND (EXISTS (SELECT * FROM {offer_has_at_least_one_bookable_stock}(offer.id)))
+                    AND offerer."isActive" = TRUE
+                    AND offerer."validationToken" IS NULL
+                    AND offer.type != 'ThingType.ACTIVATION'
+                    AND offer.type != 'EventType.ACTIVATION';
+            END;
             $body$
             LANGUAGE plpgsql;
         """)
