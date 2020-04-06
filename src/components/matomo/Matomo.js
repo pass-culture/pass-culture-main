@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types'
 import queryString from 'query-string'
+import { MATOMO_GEOLOCATION_GOAL_ID } from '../../utils/config'
 
-const Matomo = ({ location, userId, coordinates, tracking }) => {
+const Matomo = ({ location, userId, coordinates }) => {
   const Matomo = window._paq
 
   const { pathname, search } = location
@@ -27,7 +28,7 @@ const Matomo = ({ location, userId, coordinates, tracking }) => {
   Matomo.push(['trackPageView'])
 
   if (coordinates.latitude && coordinates.longitude) {
-    tracking.trackEvent({ action: 'activatedGeolocation', name: userId })
+    Matomo.push(['trackGoal', MATOMO_GEOLOCATION_GOAL_ID])
   }
 
   return null
@@ -36,7 +37,6 @@ const Matomo = ({ location, userId, coordinates, tracking }) => {
 Matomo.propTypes = {
   coordinates: PropTypes.shape().isRequired,
   location: PropTypes.shape().isRequired,
-  tracking: PropTypes.shape().isRequired,
   userId: PropTypes.string.isRequired,
 }
 

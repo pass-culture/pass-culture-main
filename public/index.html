@@ -25,6 +25,7 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=AW-706346995"></script>
   <script>
     // Snapchat
+
     (function(e, t, n) {
       if (e.snaptr) return;
       var a = e.snaptr = function() { a.handleRequest ? a.handleRequest.apply(a, arguments) : a.queue.push(arguments) };
@@ -95,6 +96,7 @@
     // FIN du code CNIL
     _paq.push(['trackPageView']);
     _paq.push(['enableLinkTracking']);
+    _paq.push(['trackGoal', "%MATOMO_GEOLOCATION_GOAL_ID%"]);
     (function() {
       var u="%MATOMO_SERVER_URL%";
       _paq.push(['setTrackerUrl', u+'matomo.php']);

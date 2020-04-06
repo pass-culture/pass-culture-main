@@ -17,22 +17,15 @@ describe('src | components | matomo | MatomoContainer', () => {
           longitude: null,
         },
       }
-      const ownProps = {
-        tracking: {
-          trackEvent: jest.fn(),
-        },
-      }
 
       // when
-      const props = mapStateToProps(state, ownProps)
+      const props = mapStateToProps(state)
 
       // then
-      expect(props).toStrictEqual(
-      {
-      "coordinates": {"latitude": null, "longitude": null},
-       "tracking": {"trackEvent": expect.any(Function)},
-        "userId": "Rt4R45ETEs"
-        })
+      expect(props).toStrictEqual({
+        coordinates: { latitude: null, longitude: null },
+        userId: 'Rt4R45ETEs',
+      })
     })
 
     it('should return an object of props when user not logged in', () => {
@@ -46,21 +39,14 @@ describe('src | components | matomo | MatomoContainer', () => {
           longitude: null,
         },
       }
-      const ownProps = {
-        tracking: {
-          trackEvent: jest.fn(),
-        },
-      }
       // when
-      const props = mapStateToProps(state, ownProps)
+      const props = mapStateToProps(state)
 
       // then
-      expect(props).toStrictEqual(
-      {
-      "coordinates": {"latitude": null, "longitude": null},
-       "tracking": {"trackEvent": expect.any(Function)},
-        "userId": "ANONYMOUS"
-        })
+      expect(props).toStrictEqual({
+        coordinates: { latitude: null, longitude: null },
+        userId: 'ANONYMOUS',
+      })
     })
   })
 })

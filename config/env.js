@@ -46,6 +46,7 @@ function getClientEnvironment(publicUrl) {
         ENVIRONMENT_NAME: process.env.ENVIRONMENT_NAME,
         HAS_WORKERS: process.env.HAS_WORKERS || false,
         MATOMO_SERVER_URL: process.env.MATOMO_SERVER_URL,
+        MATOMO_GEOLOCATION_GOAL_ID: process.env.MATOMO_GEOLOCATION_GOAL_ID,
         MAINTENANCE_PAGE_AVAILABLE: process.env.MAINTENANCE_PAGE_AVAILABLE === 'true' || false,
         NODE_ENV: process.env.NODE_ENV || 'development',
         PUBLIC_URL: publicUrl,

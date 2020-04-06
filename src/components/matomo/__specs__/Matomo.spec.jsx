@@ -4,8 +4,11 @@ import { mount } from 'enzyme'
 import { Provider } from 'react-redux'
 import React from 'react'
 import { Router } from 'react-router'
-
 import MatomoContainer from '../MatomoContainer'
+
+jest.mock('../../../utils/config', () => ({
+  MATOMO_GEOLOCATION_GOAL_ID: 1,
+}))
 
 describe('src | components | matomo | Matomo', () => {
   let fakeMatomo
@@ -19,8 +22,6 @@ describe('src | components | matomo | Matomo', () => {
   beforeEach(() => {
     history = createBrowserHistory()
     history.push('/router/path')
-    props = {tracking: {trackEvent: jest.fn()}}
-
     fakeMatomo = {
       push: jest.fn(),
     }
@@ -62,7 +63,7 @@ describe('src | components | matomo | Matomo', () => {
     )
 
     // then
-    expect(props.tracking.trackEvent).toHaveBeenNthCalledWith(1, { action: 'activatedGeolocation', name: 'a1' })
+    expect(fakeMatomo.push).toHaveBeenNthCalledWith(5, ['trackGoal', 1])
   })
 
   it('should not track user geolocation when user is not geolocated', () => {
@@ -90,7 +91,7 @@ describe('src | components | matomo | Matomo', () => {
     )
 
     // then
-    expect(props.tracking.trackEvent).not.toHaveBeenCalledWith()
+    expect(fakeMatomo.push).not.toHaveBeenCalledWith(['trackGoal', 1])
   })
 
   it('should push a new page displayed event', () => {
