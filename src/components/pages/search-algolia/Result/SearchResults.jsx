@@ -236,7 +236,6 @@ class SearchResults extends PureComponent {
       resultsCount,
       totalPagesNumber,
     } = this.state
-    const { isSearchAroundMe } = filters
     const { location } = history
     const { search } = location
 
@@ -309,7 +308,7 @@ class SearchResults extends PureComponent {
                 >
                   {results.map(result => (
                     <Result
-                      geolocation={isSearchAroundMe ? geolocation : {}}
+                      geolocation={geolocation}
                       key={result.objectID}
                       result={result}
                       search={search}

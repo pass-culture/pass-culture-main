@@ -258,7 +258,7 @@ describe('components | SearchResults', () => {
         })
       })
 
-      it('should fill search input and display keywords, number of results when results are found with geolocation', async () => {
+      it('should fill search input and display keywords, number of results when results are found', async () => {
         // given
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
@@ -286,40 +286,6 @@ describe('components | SearchResults', () => {
         expect(results.at(0).prop('result')).toStrictEqual({ objectID: 'AA' })
         expect(results.at(0).prop('search')).toBe(props.history.location.search)
         expect(results.at(1).prop('geolocation')).toStrictEqual(props.geolocation)
-        expect(results.at(1).prop('result')).toStrictEqual({ objectID: 'BB' })
-        expect(results.at(1).prop('search')).toBe(props.history.location.search)
-        expect(searchInput.prop('value')).toBe('une librairie')
-        expect(resultTitle).toHaveLength(1)
-      })
-
-      it('should fill search input and display keywords, number of results when results are found with no geolocation', async () => {
-        // given
-        fetchAlgolia.mockReturnValue(
-          new Promise(resolve => {
-            resolve({
-              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
-              nbHits: 2,
-              page: 0,
-            })
-          })
-        )
-        parse.mockReturnValue({
-          'autour-de-moi': 'non',
-          'mots-cles': 'une librairie',
-        })
-
-        // when
-        const wrapper = await shallow(<SearchResults {...props} />)
-
-        // then
-        const results = wrapper.find(Result)
-        const searchInput = wrapper.find('input')
-        const resultTitle = wrapper.findWhere(node => node.text() === '2 résultats').first()
-        expect(results).toHaveLength(2)
-        expect(results.at(0).prop('geolocation')).toStrictEqual({})
-        expect(results.at(0).prop('result')).toStrictEqual({ objectID: 'AA' })
-        expect(results.at(0).prop('search')).toBe(props.history.location.search)
-        expect(results.at(1).prop('geolocation')).toStrictEqual({})
         expect(results.at(1).prop('result')).toStrictEqual({ objectID: 'BB' })
         expect(results.at(1).prop('search')).toBe(props.history.location.search)
         expect(searchInput.prop('value')).toBe('une librairie')
