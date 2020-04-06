@@ -8,10 +8,7 @@ const isAllocineOffer = (offer = null) => {
     return false
   }
 
-  return lastProvider.name
-    .toLowerCase()
-    .replace('é', 'e')
-    .includes('allocine')
+  return lastProvider.name === 'Allociné'
 }
 
 export default isAllocineOffer

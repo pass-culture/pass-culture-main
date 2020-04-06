@@ -5,7 +5,7 @@ import EventFields from '../EventFields'
 import DateField from '../../../../../../../../layout/form/fields/DateField'
 import TimeField from '../../../../../../../../layout/form/fields/TimeField'
 
-describe('src | components | pages | Offer | StockItem | EventFields', () => {
+describe('src | EventFields', () => {
   it('should match the snapshot', () => {
     // given
     const initialProps = {

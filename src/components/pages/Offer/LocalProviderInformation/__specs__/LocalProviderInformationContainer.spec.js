@@ -1,14 +1,23 @@
 import { mapStateToProps } from '../LocalProviderInformationContainer'
 
-describe('src | components | pages | Offer | LocalProviderInformation | LocalProviderInformationContainer', () => {
+describe('src | LocalProviderInformationContainer', () => {
   let state
   let props
 
   beforeEach(() => {
     state = {
       data: {
-        offers: [{ id: 'UU', name: 'Super Livre', isEvent: true, isThing: false, venueId: 'EFGH', productId: 'AGDK' }],
-        products: [{id: 'AGDK', thumbUrl: 'http://localhost/storage/thumbs/products/AERTR'}]
+        offers: [
+          {
+            id: 'UU',
+            name: 'Super Livre',
+            isEvent: true,
+            isThing: false,
+            venueId: 'EFGH',
+            productId: 'AGDK',
+          },
+        ],
+        products: [{ id: 'AGDK', thumbUrl: 'http://localhost/storage/thumbs/products/AERTR' }],
       },
     }
     props = {
@@ -35,7 +44,7 @@ describe('src | components | pages | Offer | LocalProviderInformation | LocalPro
       expect(result).toStrictEqual({
         offererId: 'ABCD',
         offerName: 'Super Livre',
-        providerInfo: {icon: 'logo-titeLive', name: 'Tite Live'},
+        providerInfo: { icon: 'logo-titeLive', name: 'Tite Live' },
         thumbUrl: 'http://localhost/storage/thumbs/products/AERTR',
         venueId: 'EFGH',
       })

@@ -5,7 +5,7 @@ import MediationsManager from '../MediationsManager'
 import { NavLink } from 'react-router-dom'
 import { Icon } from 'pass-culture-shared'
 
-describe('src | components | pages | Offer | MediationsManager | MediationsManager', () => {
+describe('src | MediationsManager', () => {
   let props
 
   beforeEach(() => {

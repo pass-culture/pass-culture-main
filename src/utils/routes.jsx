@@ -8,8 +8,8 @@ import HomeContainer from '../components/pages/Home/HomeContainer'
 import LostPasswordContainer from '../components/pages/LostPassword/LostPasswordContainer'
 import Mediation from '../components/pages/Mediation/MediationContainer'
 import Offers from '../components/pages/Offers/OffersContainer'
-import Offer from '../components/pages/Offer/OfferCreation/OfferContainer'
-import OfferEdition from '../components/pages/Offer/OfferEdition/OfferContainer'
+import OfferCreation from '../components/pages/Offer/OfferCreation/OfferCreationContainer'
+import OfferEdition from '../components/pages/Offer/OfferEdition/OfferEditionContainer'
 import OffererContainer from '../components/pages/Offerer/OffererContainer'
 import Offerers from '../components/pages/Offerers/OfferersContainer'
 import ProfilContainer from '../components/pages/Profil/ProfilContainer'
@@ -99,7 +99,7 @@ const routes = [
     title: 'Offres',
   },
   {
-    component: Offer,
+    component: OfferCreation,
     path: '/offres/:offerId',
     title: 'Offre',
   },
@@ -114,12 +114,12 @@ const routes = [
     title: 'Accroche',
   },
   {
-    component: Offer,
+    component: OfferCreation,
     path: '/structures/:offererId/offres/:offerId',
     title: 'Offres',
   },
   {
-    component: Offer,
+    component: OfferCreation,
     path: '/structures/:offererId/lieux/:venueId/offres/:offerId',
     title: 'Offres',
   },

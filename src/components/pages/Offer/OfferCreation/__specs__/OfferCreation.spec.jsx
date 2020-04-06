@@ -4,12 +4,12 @@ import { Field, Form } from 'pass-culture-shared'
 import { showModal } from '../../../../../reducers/modal'
 
 import Titles from '../../../../layout/Titles/Titles'
-import Offer from '../Offer'
+import OfferCreation from '../OfferCreation'
 import MediationsManager from '../../MediationsManager/MediationsManagerContainer'
 import LocalProviderInformation from '../../LocalProviderInformation/LocalProviderInformationContainer'
 import StocksManagerContainer from '../../StocksManager/StocksManagerContainer'
 
-describe('src | components | pages | Offer | Offer ', () => {
+describe('src  OfferCreation ', () => {
   let dispatch
   let props
 
@@ -59,7 +59,7 @@ describe('src | components | pages | Offer | Offer ', () => {
 
   it('should match the snapshot', () => {
     // when
-    const wrapper = shallow(<Offer {...props} />)
+    const wrapper = shallow(<OfferCreation {...props} />)
 
     // then
     expect(wrapper).toMatchSnapshot()
@@ -74,7 +74,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         props.match.params = {}
         props.query.changeToReadOnly = queryChangeToReadOnly
 
-        const wrapper = shallow(<Offer {...props} />)
+        const wrapper = shallow(<OfferCreation {...props} />)
 
         // when
         const queryParams = { gestion: '' }
@@ -124,7 +124,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           showValidationNotification: jest.fn(),
         }
 
-        const wrapper = shallow(<Offer {...initialProps} />)
+        const wrapper = shallow(<OfferCreation {...initialProps} />)
 
         // when
         const queryParams = { gestion: '' }
@@ -139,7 +139,7 @@ describe('src | components | pages | Offer | Offer ', () => {
 
     describe('when the offer is successfully created', () => {
       it('should display a success notification', () => {
-        const wrapper = shallow(<Offer {...props} />)
+        const wrapper = shallow(<OfferCreation {...props} />)
 
         // when
         const offer = { id: 'SN' }
@@ -156,7 +156,7 @@ describe('src | components | pages | Offer | Offer ', () => {
     it('should display isNational if admin user', () => {
       // given
       props.currentUser.isAdmin = true
-      const wrapper = shallow(<Offer {...props} />)
+      const wrapper = shallow(<OfferCreation {...props} />)
 
       // when
       const result = wrapper.find(Field).find('[name="isNational"]')
@@ -169,7 +169,7 @@ describe('src | components | pages | Offer | Offer ', () => {
   describe('handleShowStocksManager', () => {
     it('should pass offerId as a props to the StocksManagerContainer', () => {
       // given
-      const wrapper = shallow(<Offer {...props} />)
+      const wrapper = shallow(<OfferCreation {...props} />)
       props.match.params.offerId = 'N9'
 
       // when
@@ -189,7 +189,7 @@ describe('src | components | pages | Offer | Offer ', () => {
     it('should return false without selected offer type', () => {
       // given
       props.selectedOfferType = undefined
-      const wrapper = shallow(<Offer {...props} />)
+      const wrapper = shallow(<OfferCreation {...props} />)
 
       // when
       const result = wrapper.instance().hasConditionalField(null)
@@ -204,7 +204,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         props.selectedOfferType = {
           value: 'ThingType.SPECTACLE_VIVANT_ABO',
         }
-        const wrapper = shallow(<Offer {...props} />)
+        const wrapper = shallow(<OfferCreation {...props} />)
 
         // when
         const result = wrapper.instance().hasConditionalField('showType')
@@ -238,7 +238,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         }
 
         // when
-        const wrapper = shallow(<Offer {...props} />)
+        const wrapper = shallow(<OfferCreation {...props} />)
         const mediationsManagerComponent = wrapper.find(MediationsManager)
 
         // then
@@ -255,7 +255,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           readOnly: false,
         })
         // when
-        const wrapper = shallow(<Offer {...props} />)
+        const wrapper = shallow(<OfferCreation {...props} />)
 
         // then
         expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers')
@@ -273,7 +273,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         }
 
         // when
-        const wrapper = shallow(<Offer {...props} />)
+        const wrapper = shallow(<OfferCreation {...props} />)
 
         // then
         expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers')
@@ -281,7 +281,7 @@ describe('src | components | pages | Offer | Offer ', () => {
 
       it('should display a limited textarea field to define name of the offer', () => {
         // when
-        const wrapper = shallow(<Offer {...props} />)
+        const wrapper = shallow(<OfferCreation {...props} />)
 
         // then
         const field = wrapper.find(Field).at(0)
@@ -303,7 +303,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         props.selectedOfferType = {
           type: 'Event',
         }
-        const wrapper = shallow(<Offer {...props} />)
+        const wrapper = shallow(<OfferCreation {...props} />)
 
         // when
         const preview_section = wrapper.find(Titles)
@@ -326,7 +326,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           }
 
           // when
-          const wrapper = shallow(<Offer {...props} />)
+          const wrapper = shallow(<OfferCreation {...props} />)
 
           // then
           const fieldGroups = wrapper.find('.field-group')
@@ -346,7 +346,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           props.selectedOfferType = {
             type: 'Event',
           }
-          const wrapper = shallow(<Offer {...props} />)
+          const wrapper = shallow(<OfferCreation {...props} />)
 
           // when
           const isDuoCheckbox = wrapper.find('#isDuo')
@@ -370,7 +370,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           }
 
           // when
-          const wrapper = shallow(<Offer {...props} />)
+          const wrapper = shallow(<OfferCreation {...props} />)
 
           // then
           const fieldGroups = wrapper.find('.field-group')
@@ -390,7 +390,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           props.selectedOfferType = {
             type: 'Thing',
           }
-          const wrapper = shallow(<Offer {...props} />)
+          const wrapper = shallow(<OfferCreation {...props} />)
 
           // when
           const isDuoCheckbox = wrapper.find('#isDuo')
@@ -419,7 +419,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           }
 
           // when
-          const wrapper = shallow(<Offer {...props} />)
+          const wrapper = shallow(<OfferCreation {...props} />)
 
           // then
 
@@ -453,7 +453,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           }
 
           // when
-          const wrapper = shallow(<Offer {...props} />)
+          const wrapper = shallow(<OfferCreation {...props} />)
 
           // then
           const insert = wrapper.find('.yellow-insert')
@@ -482,7 +482,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         }
 
         // when
-        const wrapper = shallow(<Offer {...props} />)
+        const wrapper = shallow(<OfferCreation {...props} />)
 
         // then
         expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers/VAG')
@@ -506,7 +506,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         }
 
         // when
-        const wrapper = shallow(<Offer {...props} />)
+        const wrapper = shallow(<OfferCreation {...props} />)
 
         // then
         expect(wrapper.find(Form).prop('action')).toStrictEqual('/offers/VAG')
@@ -532,7 +532,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           },
           mediationsIds: ['MED'],
         }
-        const wrapper = shallow(<Offer {...props} />)
+        const wrapper = shallow(<OfferCreation {...props} />)
 
         // when
         const preview_section = wrapper.find(Titles)
@@ -555,7 +555,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         const expectedOptions = [{ name: 'quel beau théâtre' }, { name: 'quel beau musée' }]
 
         // when
-        const wrapper = shallow(<Offer {...props} />)
+        const wrapper = shallow(<OfferCreation {...props} />)
 
         // then
         const fieldGroups = wrapper.find('.field-group')
@@ -583,7 +583,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         ]
 
         // when
-        const wrapper = shallow(<Offer {...props} />)
+        const wrapper = shallow(<OfferCreation {...props} />)
 
         // then
         const fieldGroups = wrapper.find('.field-group')
@@ -605,7 +605,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         props.isEditableOffer = false
 
         // when
-        const wrapper = shallow(<Offer {...props} />)
+        const wrapper = shallow(<OfferCreation {...props} />)
 
         // then
         const modifyOfferButton = wrapper.find('#modify-offer-button')
@@ -642,7 +642,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         }
 
         // when
-        const wrapper = shallow(<Offer {...props} />)
+        const wrapper = shallow(<OfferCreation {...props} />)
 
         // then
         const localProviderInformationComponent = wrapper.find(LocalProviderInformation)
@@ -665,7 +665,7 @@ describe('src | components | pages | Offer | Offer ', () => {
 
       it('should be possible to manage stocks', () => {
         // when
-        const wrapper = shallow(<Offer {...props} />)
+        const wrapper = shallow(<OfferCreation {...props} />)
 
         // then
         const manageStockButton = wrapper.find('#manage-stocks')
@@ -674,7 +674,7 @@ describe('src | components | pages | Offer | Offer ', () => {
 
       it('should be possible to modify offer', () => {
         // when
-        const wrapper = shallow(<Offer {...props} />)
+        const wrapper = shallow(<OfferCreation {...props} />)
 
         // then
         const modifyOfferButton = wrapper.find('#modify-offer-button')
@@ -691,7 +691,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           }
 
           // when
-          const wrapper = shallow(<Offer {...props} />)
+          const wrapper = shallow(<OfferCreation {...props} />)
 
           // then
           const manageStockButton = wrapper.find('#manage-stocks')
@@ -707,7 +707,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           }
 
           // when
-          const wrapper = shallow(<Offer {...props} />)
+          const wrapper = shallow(<OfferCreation {...props} />)
 
           // then
           const manageStockButton = wrapper.find('#manage-stocks')
@@ -721,7 +721,7 @@ describe('src | components | pages | Offer | Offer ', () => {
           props.offer.lastProvider = null
 
           // when
-          const wrapper = shallow(<Offer {...props} />)
+          const wrapper = shallow(<OfferCreation {...props} />)
 
           // then
           const manageStockButton = wrapper.find('#manage-stocks')
@@ -745,7 +745,7 @@ describe('src | components | pages | Offer | Offer ', () => {
         jest.spyOn(props.query, 'context').mockReturnValue({
           isCreatedEntity: true,
         })
-        const wrapper = shallow(<Offer {...props} />)
+        const wrapper = shallow(<OfferCreation {...props} />)
 
         // when
         wrapper.instance().onHandleFormSuccess(state, action)
@@ -776,7 +776,7 @@ describe('src | components | pages | Offer | Offer ', () => {
             },
           },
         }
-        const wrapper = shallow(<Offer {...props} />)
+        const wrapper = shallow(<OfferCreation {...props} />)
 
         // when
         wrapper.instance().onHandleFormSuccess(state, action)

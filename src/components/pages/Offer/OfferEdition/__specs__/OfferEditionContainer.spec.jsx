@@ -1,8 +1,8 @@
-import { mapDispatchToProps, mapStateToProps, mergeProps } from '../OfferContainer'
+import { mapDispatchToProps, mapStateToProps, mergeProps } from '../OfferEditionContainer'
 import state from '../../../../utils/mocks/state'
 import { showNotification } from 'pass-culture-shared'
 
-describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
+describe('components | OfferEdition | OfferEditionContainer ', () => {
   let props
 
   beforeEach(() => {
@@ -46,7 +46,6 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
         },
         formOffererId: 'BA',
         formVenueId: 'DA',
-        isEditableOffer: undefined,
         musicSubOptions: undefined,
         offer: {
           bookingEmail: 'booking.email@test.com',
@@ -278,6 +277,106 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
         ],
       })
     })
+
+    it('should return initial values for the formular', () => {
+      // when
+      const result = mapStateToProps(state, props)
+
+      // then
+      expect(result).toHaveProperty('formInitialValues', {
+        ageMax: undefined,
+        ageMin: undefined,
+        bookingEmail: 'booking.email@test.com',
+        condition: undefined,
+        description: undefined,
+        durationMinutes: undefined,
+        extraData: undefined,
+        isDuo: undefined,
+        isNational: undefined,
+        mediaUrls: undefined,
+        name: undefined,
+        offererId: 'BA',
+        type: undefined,
+        url: undefined,
+        venueId: 'DA',
+      })
+    })
+
+    it('should return the offer', () => {
+      // when
+      const result = mapStateToProps(state, props)
+
+      // then
+      expect(result).toHaveProperty('offer', {
+        bookingEmail: 'booking.email@test.com',
+        dateCreated: '2019-03-07T10:39:23.560392Z',
+        dateModifiedAtLastProvider: '2019-03-07T10:40:05.443621Z',
+        id: 'UU',
+        idAtProviders: null,
+        isActive: true,
+        isEvent: false,
+        isThing: true,
+        lastProviderId: null,
+        mediationsIds: ['H4'],
+        modelName: 'Offer',
+        productId: 'LY',
+        stocksIds: ['MU'],
+        venueId: 'DA',
+      })
+    })
+
+    it('should return the venue linked to the offer', () => {
+      // when
+      const result = mapStateToProps(state, props)
+
+      // then
+      expect(result).toHaveProperty('venue', {
+        address: null,
+        bookingEmail: 'john.doe@test.com',
+        city: null,
+        comment: null,
+        dateModifiedAtLastProvider: '2019-03-07T10:40:03.234016Z',
+        departementCode: null,
+        id: 'DA',
+        idAtProviders: null,
+        isValidated: true,
+        isVirtual: true,
+        lastProviderId: null,
+        latitude: 48.83638,
+        longitude: 2.40027,
+        managingOffererId: 'BA',
+        modelName: 'Venue',
+        name: 'Le Sous-sol (Offre numérique)',
+        postalCode: null,
+        siret: null,
+        thumbCount: 0,
+        validationToken: null,
+      })
+    })
+
+    describe('when the offer is not found', () => {
+      it('should not fail', () => {
+        // given
+        props = {
+          match: {
+            params: {
+              offerId: '',
+            },
+          },
+          query: {
+            translate: jest.fn(),
+          },
+          trackCreateOffer: jest.fn(),
+          trackModifyOffer: jest.fn(),
+        }
+
+        // when
+        const result = mapStateToProps(state, props)
+
+        // then
+        expect(result).toHaveProperty('venue', undefined)
+      })
+    })
   })
 
   describe('mergeProps', () => {
@@ -297,27 +396,7 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
       // then
       expect(mergedProps).toStrictEqual({
         match: ownProps.match,
-        trackCreateOffer: expect.any(Function),
         trackModifyOffer: expect.any(Function),
-      })
-    })
-
-    it('should map a tracking event for creating an offer', () => {
-      // given
-      const stateProps = {}
-      const ownProps = {
-        tracking: {
-          trackEvent: jest.fn(),
-        },
-      }
-
-      // when
-      mergeProps(stateProps, {}, ownProps).trackCreateOffer('RTgfd67')
-
-      // then
-      expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
-        action: 'createOffer',
-        name: 'RTgfd67',
       })
     })
 
@@ -350,6 +429,22 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
       props = mapDispatchToProps(dispatch)
     })
 
+    describe('showOfferModificationValidationNotification', () => {
+      it('should display a validation message', () => {
+        // when
+        props.showOfferModificationValidationNotification()
+
+        // then
+        expect(dispatch).toHaveBeenCalledWith(
+          showNotification({
+            text:
+              'Votre offre a bien été modifiée. Cette offre peut mettre quelques minutes pour être disponible dans l’application.',
+            type: 'success',
+          })
+        )
+      })
+    })
+
     describe('updateFormSetIsDuo', () => {
       it('should update offer isDuo value in form', () => {
         // given
@@ -367,22 +462,6 @@ describe('src | components | pages | Offer | Offer | OfferContainer ', () => {
           },
           type: 'MERGE_FORM_OFFER_ISDUO',
         })
-      })
-    })
-
-    describe('showValidationNotification', () => {
-      it('should display a validation message', () => {
-        // when
-        props.showValidationNotification()
-
-        // then
-        expect(dispatch).toHaveBeenCalledWith(
-          showNotification({
-            text:
-              'Votre offre a bien été créée. Cette offre peut mettre quelques minutes pour être disponible dans l’application.',
-            type: 'success',
-          })
-        )
       })
     })
   })

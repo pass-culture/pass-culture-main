@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`components | OfferEdition | Offer  should match the snapshot 1`] = `
+exports[`src  OfferCreation  should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <Offer
+  Symbol(enzyme.__unrendered__): <OfferCreation
     currentUser={
       Object {
         "isAdmin": false,
@@ -46,11 +46,7 @@ ShallowWrapper {
         "isDuo": false,
       }
     }
-    history={
-      Object {
-        "push": [MockFunction],
-      }
-    }
+    history={Object {}}
     isEditableOffer={true}
     loadVenue={[MockFunction]}
     location={
@@ -68,7 +64,6 @@ ShallowWrapper {
     mergeOfferError={[MockFunction]}
     offer={
       Object {
-        "id": "SN",
         "lastProvider": null,
         "name": "Super Livre",
       }
@@ -83,7 +78,7 @@ ShallowWrapper {
       }
     }
     selectedOfferType={Object {}}
-    showOfferModificationValidationNotification={[Function]}
+    showValidationNotification={[MockFunction]}
     trackCreateOffer={[MockFunction]}
     trackModifyOffer={[MockFunction]}
     venuesMatchingOfferType={Array []}
@@ -120,7 +115,7 @@ ShallowWrapper {
         <withRouter(Connect(_Form))
           BlockComponent={null}
           Tag={null}
-          action="/offers/SN"
+          action="/offers/undefined"
           className={null}
           errorsPatch={Object {}}
           failNotification="Formulaire non validé"
@@ -132,7 +127,6 @@ ShallowWrapper {
           handleSuccess={[Function]}
           handleSuccessNotification={null}
           handleSuccessRedirect={null}
-          method="PATCH"
           name="offer"
           normalizer={null}
           onEnterKey={null}
@@ -158,7 +152,6 @@ ShallowWrapper {
               layout="horizontal"
               maxLength={90}
               name="name"
-              readOnly={false}
               required={true}
               size="normal"
               storeValue={[Function]}
@@ -173,7 +166,6 @@ ShallowWrapper {
               optionLabel="proLabel"
               optionValue="value"
               placeholder="Sélectionnez un type d’offre"
-              readOnly={Object {}}
               required={true}
               size="normal"
               storeValue={[Function]}
@@ -249,7 +241,36 @@ ShallowWrapper {
             </h2>
             <div
               className="field-group"
-            />
+            >
+              <Field
+                debug={true}
+                displayValue={[Function]}
+                errors={null}
+                label="Structure"
+                layout="horizontal"
+                name="offererId"
+                placeholder="Sélectionnez une structure"
+                readOnly={false}
+                required={true}
+                size="normal"
+                storeValue={[Function]}
+                type="select"
+              />
+              <Field
+                displayValue={[Function]}
+                errors={null}
+                label="Lieu"
+                layout="horizontal"
+                name="venueId"
+                options={Array []}
+                placeholder="Sélectionnez un lieu"
+                readOnly={false}
+                required={true}
+                size="normal"
+                storeValue={[Function]}
+                type="select"
+              />
+            </div>
             <div
               className="field-group"
             >
@@ -283,7 +304,6 @@ ShallowWrapper {
                 layout="horizontal"
                 maxLength={1000}
                 name="description"
-                readOnly={false}
                 rows={5}
                 size="normal"
                 storeValue={[Function]}
@@ -302,17 +322,7 @@ ShallowWrapper {
           >
             <div
               className="control"
-            >
-              <Link
-                className="button is-secondary is-medium"
-                id="cancel-button"
-                replace={false}
-                to="/offres/SN"
-                type="button"
-              >
-                Annuler
-              </Link>
-            </div>
+            />
             <div
               className="control"
             >
@@ -367,7 +377,7 @@ ShallowWrapper {
         "props": Object {
           "BlockComponent": null,
           "Tag": null,
-          "action": "/offers/SN",
+          "action": "/offers/undefined",
           "children": Array [
             <div
               className="field-group offer-form"
@@ -382,7 +392,6 @@ ShallowWrapper {
                 layout="horizontal"
                 maxLength={90}
                 name="name"
-                readOnly={false}
                 required={true}
                 size="normal"
                 storeValue={[Function]}
@@ -397,7 +406,6 @@ ShallowWrapper {
                 optionLabel="proLabel"
                 optionValue="value"
                 placeholder="Sélectionnez un type d’offre"
-                readOnly={Object {}}
                 required={true}
                 size="normal"
                 storeValue={[Function]}
@@ -474,7 +482,36 @@ ShallowWrapper {
               </h2>
               <div
                 className="field-group"
-              />
+              >
+                <Field
+                  debug={true}
+                  displayValue={[Function]}
+                  errors={null}
+                  label="Structure"
+                  layout="horizontal"
+                  name="offererId"
+                  placeholder="Sélectionnez une structure"
+                  readOnly={false}
+                  required={true}
+                  size="normal"
+                  storeValue={[Function]}
+                  type="select"
+                />
+                <Field
+                  displayValue={[Function]}
+                  errors={null}
+                  label="Lieu"
+                  layout="horizontal"
+                  name="venueId"
+                  options={Array []}
+                  placeholder="Sélectionnez un lieu"
+                  readOnly={false}
+                  required={true}
+                  size="normal"
+                  storeValue={[Function]}
+                  type="select"
+                />
+              </div>
               <div
                 className="field-group"
               >
@@ -508,7 +545,6 @@ ShallowWrapper {
                   layout="horizontal"
                   maxLength={1000}
                   name="description"
-                  readOnly={false}
                   rows={5}
                   size="normal"
                   storeValue={[Function]}
@@ -527,17 +563,7 @@ ShallowWrapper {
             >
               <div
                 className="control"
-              >
-                <Link
-                  className="button is-secondary is-medium"
-                  id="cancel-button"
-                  replace={false}
-                  to="/offres/SN"
-                  type="button"
-                >
-                  Annuler
-                </Link>
-              </div>
+              />
               <div
                 className="control"
               >
@@ -564,7 +590,7 @@ ShallowWrapper {
           "handleSuccess": [Function],
           "handleSuccessNotification": null,
           "handleSuccessRedirect": null,
-          "method": "PATCH",
+          "method": undefined,
           "name": "offer",
           "normalizer": null,
           "onEnterKey": null,
@@ -573,6 +599,7 @@ ShallowWrapper {
           "patch": Object {
             "isDuo": false,
           },
+          "readOnly": undefined,
           "successNotification": "Formulaire non validé",
         },
         "ref": null,
@@ -593,7 +620,6 @@ ShallowWrapper {
                   layout="horizontal"
                   maxLength={90}
                   name="name"
-                  readOnly={false}
                   required={true}
                   size="normal"
                   storeValue={[Function]}
@@ -608,7 +634,6 @@ ShallowWrapper {
                   optionLabel="proLabel"
                   optionValue="value"
                   placeholder="Sélectionnez un type d’offre"
-                  readOnly={Object {}}
                   required={true}
                   size="normal"
                   storeValue={[Function]}
@@ -695,7 +720,6 @@ ShallowWrapper {
                   "layout": "horizontal",
                   "maxLength": 90,
                   "name": "name",
-                  "readOnly": false,
                   "required": true,
                   "size": "normal",
                   "storeValue": [Function],
@@ -719,7 +743,7 @@ ShallowWrapper {
                   "optionValue": "value",
                   "options": undefined,
                   "placeholder": "Sélectionnez un type d’offre",
-                  "readOnly": Object {},
+                  "readOnly": undefined,
                   "required": true,
                   "size": "normal",
                   "storeValue": [Function],
@@ -1045,7 +1069,36 @@ ShallowWrapper {
                 </h2>,
                 <div
                   className="field-group"
-                />,
+                >
+                  <Field
+                    debug={true}
+                    displayValue={[Function]}
+                    errors={null}
+                    label="Structure"
+                    layout="horizontal"
+                    name="offererId"
+                    placeholder="Sélectionnez une structure"
+                    readOnly={false}
+                    required={true}
+                    size="normal"
+                    storeValue={[Function]}
+                    type="select"
+                  />
+                  <Field
+                    displayValue={[Function]}
+                    errors={null}
+                    label="Lieu"
+                    layout="horizontal"
+                    name="venueId"
+                    options={Array []}
+                    placeholder="Sélectionnez un lieu"
+                    readOnly={false}
+                    required={true}
+                    size="normal"
+                    storeValue={[Function]}
+                    type="select"
+                  />
+                </div>,
                 false,
                 <div
                   className="field-group"
@@ -1080,7 +1133,6 @@ ShallowWrapper {
                     layout="horizontal"
                     maxLength={1000}
                     name="description"
-                    readOnly={false}
                     rows={5}
                     size="normal"
                     storeValue={[Function]}
@@ -1109,17 +1161,86 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": Array [
+                    <Field
+                      debug={true}
+                      displayValue={[Function]}
+                      errors={null}
+                      label="Structure"
+                      layout="horizontal"
+                      name="offererId"
+                      placeholder="Sélectionnez une structure"
+                      readOnly={false}
+                      required={true}
+                      size="normal"
+                      storeValue={[Function]}
+                      type="select"
+                    />,
                     undefined,
-                    undefined,
-                    undefined,
+                    <Field
+                      displayValue={[Function]}
+                      errors={null}
+                      label="Lieu"
+                      layout="horizontal"
+                      name="venueId"
+                      options={Array []}
+                      placeholder="Sélectionnez un lieu"
+                      readOnly={false}
+                      required={true}
+                      size="normal"
+                      storeValue={[Function]}
+                      type="select"
+                    />,
                   ],
                   "className": "field-group",
                 },
                 "ref": null,
                 "rendered": Array [
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "class",
+                    "props": Object {
+                      "debug": true,
+                      "displayValue": [Function],
+                      "errors": null,
+                      "label": "Structure",
+                      "layout": "horizontal",
+                      "name": "offererId",
+                      "options": undefined,
+                      "placeholder": "Sélectionnez une structure",
+                      "readOnly": false,
+                      "required": true,
+                      "size": "normal",
+                      "storeValue": [Function],
+                      "type": "select",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
                   undefined,
-                  undefined,
-                  undefined,
+                  Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "class",
+                    "props": Object {
+                      "displayValue": [Function],
+                      "errors": null,
+                      "label": "Lieu",
+                      "layout": "horizontal",
+                      "name": "venueId",
+                      "options": Array [],
+                      "placeholder": "Sélectionnez un lieu",
+                      "readOnly": false,
+                      "required": true,
+                      "size": "normal",
+                      "storeValue": [Function],
+                      "type": "select",
+                    },
+                    "ref": null,
+                    "rendered": null,
+                    "type": [Function],
+                  },
                 ],
                 "type": "div",
               },
@@ -1205,7 +1326,6 @@ ShallowWrapper {
                       layout="horizontal"
                       maxLength={1000}
                       name="description"
-                      readOnly={false}
                       rows={5}
                       size="normal"
                       storeValue={[Function]}
@@ -1235,7 +1355,6 @@ ShallowWrapper {
                       "layout": "horizontal",
                       "maxLength": 1000,
                       "name": "description",
-                      "readOnly": false,
                       "rows": 5,
                       "size": "normal",
                       "storeValue": [Function],
@@ -1274,17 +1393,7 @@ ShallowWrapper {
               "children": Array [
                 <div
                   className="control"
-                >
-                  <Link
-                    className="button is-secondary is-medium"
-                    id="cancel-button"
-                    replace={false}
-                    to="/offres/SN"
-                    type="button"
-                  >
-                    Annuler
-                  </Link>
-                </div>,
+                />,
                 <div
                   className="control"
                 >
@@ -1311,34 +1420,11 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": <Link
-                    className="button is-secondary is-medium"
-                    id="cancel-button"
-                    replace={false}
-                    to="/offres/SN"
-                    type="button"
-                  >
-                    Annuler
-                  </Link>,
+                  "children": undefined,
                   "className": "control",
                 },
                 "ref": null,
-                "rendered": Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "class",
-                  "props": Object {
-                    "children": "Annuler",
-                    "className": "button is-secondary is-medium",
-                    "id": "cancel-button",
-                    "replace": false,
-                    "to": "/offres/SN",
-                    "type": "button",
-                  },
-                  "ref": null,
-                  "rendered": "Annuler",
-                  "type": [Function],
-                },
+                "rendered": null,
                 "type": "div",
               },
               Object {
@@ -1415,7 +1501,7 @@ ShallowWrapper {
           <withRouter(Connect(_Form))
             BlockComponent={null}
             Tag={null}
-            action="/offers/SN"
+            action="/offers/undefined"
             className={null}
             errorsPatch={Object {}}
             failNotification="Formulaire non validé"
@@ -1427,7 +1513,6 @@ ShallowWrapper {
             handleSuccess={[Function]}
             handleSuccessNotification={null}
             handleSuccessRedirect={null}
-            method="PATCH"
             name="offer"
             normalizer={null}
             onEnterKey={null}
@@ -1453,7 +1538,6 @@ ShallowWrapper {
                 layout="horizontal"
                 maxLength={90}
                 name="name"
-                readOnly={false}
                 required={true}
                 size="normal"
                 storeValue={[Function]}
@@ -1468,7 +1552,6 @@ ShallowWrapper {
                 optionLabel="proLabel"
                 optionValue="value"
                 placeholder="Sélectionnez un type d’offre"
-                readOnly={Object {}}
                 required={true}
                 size="normal"
                 storeValue={[Function]}
@@ -1544,7 +1627,36 @@ ShallowWrapper {
               </h2>
               <div
                 className="field-group"
-              />
+              >
+                <Field
+                  debug={true}
+                  displayValue={[Function]}
+                  errors={null}
+                  label="Structure"
+                  layout="horizontal"
+                  name="offererId"
+                  placeholder="Sélectionnez une structure"
+                  readOnly={false}
+                  required={true}
+                  size="normal"
+                  storeValue={[Function]}
+                  type="select"
+                />
+                <Field
+                  displayValue={[Function]}
+                  errors={null}
+                  label="Lieu"
+                  layout="horizontal"
+                  name="venueId"
+                  options={Array []}
+                  placeholder="Sélectionnez un lieu"
+                  readOnly={false}
+                  required={true}
+                  size="normal"
+                  storeValue={[Function]}
+                  type="select"
+                />
+              </div>
               <div
                 className="field-group"
               >
@@ -1578,7 +1690,6 @@ ShallowWrapper {
                   layout="horizontal"
                   maxLength={1000}
                   name="description"
-                  readOnly={false}
                   rows={5}
                   size="normal"
                   storeValue={[Function]}
@@ -1597,17 +1708,7 @@ ShallowWrapper {
             >
               <div
                 className="control"
-              >
-                <Link
-                  className="button is-secondary is-medium"
-                  id="cancel-button"
-                  replace={false}
-                  to="/offres/SN"
-                  type="button"
-                >
-                  Annuler
-                </Link>
-              </div>
+              />
               <div
                 className="control"
               >
@@ -1662,7 +1763,7 @@ ShallowWrapper {
           "props": Object {
             "BlockComponent": null,
             "Tag": null,
-            "action": "/offers/SN",
+            "action": "/offers/undefined",
             "children": Array [
               <div
                 className="field-group offer-form"
@@ -1677,7 +1778,6 @@ ShallowWrapper {
                   layout="horizontal"
                   maxLength={90}
                   name="name"
-                  readOnly={false}
                   required={true}
                   size="normal"
                   storeValue={[Function]}
@@ -1692,7 +1792,6 @@ ShallowWrapper {
                   optionLabel="proLabel"
                   optionValue="value"
                   placeholder="Sélectionnez un type d’offre"
-                  readOnly={Object {}}
                   required={true}
                   size="normal"
                   storeValue={[Function]}
@@ -1769,7 +1868,36 @@ ShallowWrapper {
                 </h2>
                 <div
                   className="field-group"
-                />
+                >
+                  <Field
+                    debug={true}
+                    displayValue={[Function]}
+                    errors={null}
+                    label="Structure"
+                    layout="horizontal"
+                    name="offererId"
+                    placeholder="Sélectionnez une structure"
+                    readOnly={false}
+                    required={true}
+                    size="normal"
+                    storeValue={[Function]}
+                    type="select"
+                  />
+                  <Field
+                    displayValue={[Function]}
+                    errors={null}
+                    label="Lieu"
+                    layout="horizontal"
+                    name="venueId"
+                    options={Array []}
+                    placeholder="Sélectionnez un lieu"
+                    readOnly={false}
+                    required={true}
+                    size="normal"
+                    storeValue={[Function]}
+                    type="select"
+                  />
+                </div>
                 <div
                   className="field-group"
                 >
@@ -1803,7 +1931,6 @@ ShallowWrapper {
                     layout="horizontal"
                     maxLength={1000}
                     name="description"
-                    readOnly={false}
                     rows={5}
                     size="normal"
                     storeValue={[Function]}
@@ -1822,17 +1949,7 @@ ShallowWrapper {
               >
                 <div
                   className="control"
-                >
-                  <Link
-                    className="button is-secondary is-medium"
-                    id="cancel-button"
-                    replace={false}
-                    to="/offres/SN"
-                    type="button"
-                  >
-                    Annuler
-                  </Link>
-                </div>
+                />
                 <div
                   className="control"
                 >
@@ -1859,7 +1976,7 @@ ShallowWrapper {
             "handleSuccess": [Function],
             "handleSuccessNotification": null,
             "handleSuccessRedirect": null,
-            "method": "PATCH",
+            "method": undefined,
             "name": "offer",
             "normalizer": null,
             "onEnterKey": null,
@@ -1868,6 +1985,7 @@ ShallowWrapper {
             "patch": Object {
               "isDuo": false,
             },
+            "readOnly": undefined,
             "successNotification": "Formulaire non validé",
           },
           "ref": null,
@@ -1888,7 +2006,6 @@ ShallowWrapper {
                     layout="horizontal"
                     maxLength={90}
                     name="name"
-                    readOnly={false}
                     required={true}
                     size="normal"
                     storeValue={[Function]}
@@ -1903,7 +2020,6 @@ ShallowWrapper {
                     optionLabel="proLabel"
                     optionValue="value"
                     placeholder="Sélectionnez un type d’offre"
-                    readOnly={Object {}}
                     required={true}
                     size="normal"
                     storeValue={[Function]}
@@ -1990,7 +2106,6 @@ ShallowWrapper {
                     "layout": "horizontal",
                     "maxLength": 90,
                     "name": "name",
-                    "readOnly": false,
                     "required": true,
                     "size": "normal",
                     "storeValue": [Function],
@@ -2014,7 +2129,7 @@ ShallowWrapper {
                     "optionValue": "value",
                     "options": undefined,
                     "placeholder": "Sélectionnez un type d’offre",
-                    "readOnly": Object {},
+                    "readOnly": undefined,
                     "required": true,
                     "size": "normal",
                     "storeValue": [Function],
@@ -2340,7 +2455,36 @@ ShallowWrapper {
                   </h2>,
                   <div
                     className="field-group"
-                  />,
+                  >
+                    <Field
+                      debug={true}
+                      displayValue={[Function]}
+                      errors={null}
+                      label="Structure"
+                      layout="horizontal"
+                      name="offererId"
+                      placeholder="Sélectionnez une structure"
+                      readOnly={false}
+                      required={true}
+                      size="normal"
+                      storeValue={[Function]}
+                      type="select"
+                    />
+                    <Field
+                      displayValue={[Function]}
+                      errors={null}
+                      label="Lieu"
+                      layout="horizontal"
+                      name="venueId"
+                      options={Array []}
+                      placeholder="Sélectionnez un lieu"
+                      readOnly={false}
+                      required={true}
+                      size="normal"
+                      storeValue={[Function]}
+                      type="select"
+                    />
+                  </div>,
                   false,
                   <div
                     className="field-group"
@@ -2375,7 +2519,6 @@ ShallowWrapper {
                       layout="horizontal"
                       maxLength={1000}
                       name="description"
-                      readOnly={false}
                       rows={5}
                       size="normal"
                       storeValue={[Function]}
@@ -2404,17 +2547,86 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": Array [
+                      <Field
+                        debug={true}
+                        displayValue={[Function]}
+                        errors={null}
+                        label="Structure"
+                        layout="horizontal"
+                        name="offererId"
+                        placeholder="Sélectionnez une structure"
+                        readOnly={false}
+                        required={true}
+                        size="normal"
+                        storeValue={[Function]}
+                        type="select"
+                      />,
                       undefined,
-                      undefined,
-                      undefined,
+                      <Field
+                        displayValue={[Function]}
+                        errors={null}
+                        label="Lieu"
+                        layout="horizontal"
+                        name="venueId"
+                        options={Array []}
+                        placeholder="Sélectionnez un lieu"
+                        readOnly={false}
+                        required={true}
+                        size="normal"
+                        storeValue={[Function]}
+                        type="select"
+                      />,
                     ],
                     "className": "field-group",
                   },
                   "ref": null,
                   "rendered": Array [
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "class",
+                      "props": Object {
+                        "debug": true,
+                        "displayValue": [Function],
+                        "errors": null,
+                        "label": "Structure",
+                        "layout": "horizontal",
+                        "name": "offererId",
+                        "options": undefined,
+                        "placeholder": "Sélectionnez une structure",
+                        "readOnly": false,
+                        "required": true,
+                        "size": "normal",
+                        "storeValue": [Function],
+                        "type": "select",
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
                     undefined,
-                    undefined,
-                    undefined,
+                    Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "class",
+                      "props": Object {
+                        "displayValue": [Function],
+                        "errors": null,
+                        "label": "Lieu",
+                        "layout": "horizontal",
+                        "name": "venueId",
+                        "options": Array [],
+                        "placeholder": "Sélectionnez un lieu",
+                        "readOnly": false,
+                        "required": true,
+                        "size": "normal",
+                        "storeValue": [Function],
+                        "type": "select",
+                      },
+                      "ref": null,
+                      "rendered": null,
+                      "type": [Function],
+                    },
                   ],
                   "type": "div",
                 },
@@ -2500,7 +2712,6 @@ ShallowWrapper {
                         layout="horizontal"
                         maxLength={1000}
                         name="description"
-                        readOnly={false}
                         rows={5}
                         size="normal"
                         storeValue={[Function]}
@@ -2530,7 +2741,6 @@ ShallowWrapper {
                         "layout": "horizontal",
                         "maxLength": 1000,
                         "name": "description",
-                        "readOnly": false,
                         "rows": 5,
                         "size": "normal",
                         "storeValue": [Function],
@@ -2569,17 +2779,7 @@ ShallowWrapper {
                 "children": Array [
                   <div
                     className="control"
-                  >
-                    <Link
-                      className="button is-secondary is-medium"
-                      id="cancel-button"
-                      replace={false}
-                      to="/offres/SN"
-                      type="button"
-                    >
-                      Annuler
-                    </Link>
-                  </div>,
+                  />,
                   <div
                     className="control"
                   >
@@ -2606,34 +2806,11 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": <Link
-                      className="button is-secondary is-medium"
-                      id="cancel-button"
-                      replace={false}
-                      to="/offres/SN"
-                      type="button"
-                    >
-                      Annuler
-                    </Link>,
+                    "children": undefined,
                     "className": "control",
                   },
                   "ref": null,
-                  "rendered": Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "class",
-                    "props": Object {
-                      "children": "Annuler",
-                      "className": "button is-secondary is-medium",
-                      "id": "cancel-button",
-                      "replace": false,
-                      "to": "/offres/SN",
-                      "type": "button",
-                    },
-                    "ref": null,
-                    "rendered": "Annuler",
-                    "type": [Function],
-                  },
+                  "rendered": null,
                   "type": "div",
                 },
                 Object {

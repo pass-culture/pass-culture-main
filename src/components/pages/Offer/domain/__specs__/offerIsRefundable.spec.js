@@ -1,6 +1,6 @@
 import offerIsRefundable from '../offerIsRefundable'
 
-describe('src | components | pages | Offer | domain | offerIsRefundable', () => {
+describe('src | offerIsRefundable', () => {
   let venue
 
   describe('when venue is physical', () => {

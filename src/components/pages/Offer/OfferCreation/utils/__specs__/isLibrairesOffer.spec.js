@@ -1,6 +1,6 @@
 import isLibrairesOffer from '../isLibrairesOffer'
 
-describe('src | components | pages | Offer | utils | isLibrairesOffer', () => {
+describe('src | isLibrairesOffer', () => {
   it('should return true if last provider name contains libraires', () => {
     // given
     const offer = {

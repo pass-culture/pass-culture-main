@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 import LocalProviderInformation from '../LocalProviderInformation'
 import Thumb from '../../../../layout/Thumb'
 
-describe('src | components | pages | Offer | LocalProviderInformationContainer | LocalProviderInformationContainer', () => {
+describe('src | LocalProviderInformationContainer', () => {
   let props
 
   beforeEach(() => {
@@ -12,7 +12,7 @@ describe('src | components | pages | Offer | LocalProviderInformationContainer |
       offerName: 'Super Livre',
       providerInfo: {
         icon: 'TiteliveStocks',
-        name: 'Tite live'
+        name: 'Tite live',
       },
       thumbUrl: 'http://localhost/storage/thumbs/products/AERTR',
       venueId: 'EARZ',

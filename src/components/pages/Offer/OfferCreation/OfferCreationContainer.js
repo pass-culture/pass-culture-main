@@ -2,7 +2,7 @@ import get from 'lodash.get'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import Offer from './Offer'
+import OfferCreation from './OfferCreation'
 import { withRequiredLogin } from '../../../hocs'
 import withTracking from '../../../hocs/withTracking'
 
@@ -145,4 +145,4 @@ export default compose(
     mapDispatchToProps,
     mergeProps
   )
-)(Offer)
+)(OfferCreation)

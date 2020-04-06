@@ -1,7 +1,7 @@
 import state from '../../../../utils/mocks/state'
 import { mapStateToProps } from '../MediationsManagerContainer'
 
-describe('src | components | pages | Offer | MediationsManager | MediationsMananagerContainer', () => {
+describe('src | MediationsMananagerContainer', () => {
   describe('mapStateToProps', () => {
     it('should return an object of props', () => {
       // given
