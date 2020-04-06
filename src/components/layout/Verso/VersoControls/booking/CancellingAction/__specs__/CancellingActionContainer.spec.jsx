@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { getCancellingUrl, mapDispatchToProps, mapStateToProps } from '../CancellingActionContainer'
+import moment from 'moment/moment'
 
 describe('src | components | layout | Verso | VersoControls | booking | CancellingAction | CancellingActionContainer', () => {
   describe('getCancellingUrl', () => {
@@ -70,9 +71,9 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
       // given
       const state = {
         data: {
-          bookings: [{ id: 'AE', quantity: 1 }],
           offers: [{ id: 'BF', isDuo: false }],
-          stocks: [{ offerId: 'BF', price: 20 }],
+          stocks: [{ id: 'CF', offerId: 'BF', price: 20 }],
+          bookings: [{ id: 'DF', stockId: 'CF', quantity: 1 }],
         },
       }
       const ownProps = {
@@ -82,7 +83,7 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
         },
         match: {
           params: {
-            bookingId: 'AE',
+            bookingId: 'DF',
           },
         },
       }
@@ -92,9 +93,10 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
 
       // then
       expect(props).toStrictEqual({
-        booking: { id: 'AE', quantity: 1 },
+        booking: { id: 'DF', quantity: 1, stockId: 'CF' },
         cancellingUrl: '/reservations/details/GM/reservation/annulation',
         offer: { id: 'BF', isDuo: false },
+        offerCanBeCancelled: true,
         price: 20,
       })
     })
@@ -103,9 +105,9 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
       // given
       const state = {
         data: {
-          bookings: [{ id: 'AE', quantity: 2 }],
           offers: [{ id: 'BF', isDuo: true }],
-          stocks: [{ offerId: 'BF', price: 20 }],
+          stocks: [{ id: 'CF', offerId: 'BF', price: 20 }],
+          bookings: [{ id: 'DF', stockId: 'CF', quantity: 2 }],
         },
       }
       const ownProps = {
@@ -115,7 +117,7 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
         },
         match: {
           params: {
-            bookingId: 'AE',
+            bookingId: 'DF',
           },
         },
       }
@@ -125,10 +127,50 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
 
       // then
       expect(props).toStrictEqual({
-        booking: { id: 'AE', quantity: 2 },
+        booking: { id: 'DF', quantity: 2, stockId: 'CF' },
         cancellingUrl: '/reservations/details/GM/reservation/annulation',
         offer: { id: 'BF', isDuo: true },
+        offerCanBeCancelled: true,
         price: 40,
+      })
+    })
+
+    describe('when offer event is past', () => {
+      it('should not be cancellable anymore', () => {
+        // given
+        const now = moment()
+        const oneDayBeforeNow = now.subtract(1, 'days').format()
+
+        const state = {
+          data: {
+            offers: [{ id: 'BF', isDuo: false }],
+            stocks: [{ id: 'CF', offerId: 'BF', price: 20, beginningDatetime: oneDayBeforeNow }],
+            bookings: [{ id: 'DF', stockId: 'CF', quantity: 1 }],
+          },
+        }
+        const ownProps = {
+          location: {
+            pathname: '/reservations/details/GM',
+            search: '',
+          },
+          match: {
+            params: {
+              bookingId: 'DF',
+            },
+          },
+        }
+
+        // when
+        const props = mapStateToProps(state, ownProps)
+
+        // then
+        expect(props).toStrictEqual({
+          booking: { id: 'DF', quantity: 1, stockId: 'CF' },
+          cancellingUrl: '/reservations/details/GM/reservation/annulation',
+          offer: { id: 'BF', isDuo: false },
+          offerCanBeCancelled: false,
+          price: 20,
+        })
       })
     })
   })

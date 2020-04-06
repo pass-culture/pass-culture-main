@@ -7,6 +7,7 @@ import { Route, Router } from 'react-router'
 import CancellingAction from '../CancellingAction'
 import CancellingActionContainer from '../CancellingActionContainer'
 import getMockStore from '../../../../../../../utils/mockStore'
+import moment from 'moment/moment'
 
 jest.mock('redux-thunk-data', () => {
   const { requestData } = jest.requireActual('fetch-normalize-data')
@@ -37,12 +38,13 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
       },
       match: { params: {} },
       offer: {},
+      offerCanBeCancelled: true,
       openCancelPopin: jest.fn(),
       price: 20,
     }
   })
 
-  describe('when the offer is booking', () => {
+  describe('when the offer is booked', () => {
     it('should render a button to cancelling the booking', () => {
       // when
       const wrapper = shallow(<CancellingAction {...props} />)
@@ -52,9 +54,26 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
     })
   })
 
+  describe('when event offer date is past', () => {
+    it('should display disabled cancel button', () => {
+      // given
+      props.offerCanBeCancelled = false
+
+      // when
+      const wrapper = shallow(<CancellingAction {...props} />)
+
+      // then
+      const button = wrapper.find('button')
+      expect(button.props().disabled).toBe(true)
+    })
+  })
+
   describe('when I click on button for cancelling', () => {
     it('should change the pathname', () => {
       // given
+      const now = moment()
+      const oneDayAfterNow = now.add(1, 'days').format()
+
       const mockHistory = createMemoryHistory()
       mockHistory.push('/reservations/details/b1?param=value')
       const mockStore = getMockStore({
@@ -77,6 +96,7 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
                 id: 's1',
                 offerId: 'o1',
                 price: 20,
+                beginningDatetime: oneDayAfterNow,
               },
             ],
           }

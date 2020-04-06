@@ -36,11 +36,12 @@ class CancellingAction extends PureComponent {
   }
 
   render() {
-    const { price } = this.props
+    const { offerCanBeCancelled, price } = this.props
 
     return (
       <button
         className="ticket-action"
+        disabled={!offerCanBeCancelled}
         onClick={this.handleCancellingAction}
         type="button"
       >
@@ -57,6 +58,10 @@ class CancellingAction extends PureComponent {
       </button>
     )
   }
+}
+
+CancellingAction.defaultProps = {
+  offerCanBeCancelled: true,
 }
 
 CancellingAction.propTypes = {
@@ -77,6 +82,7 @@ CancellingAction.propTypes = {
     }).isRequired,
   }).isRequired,
   offer: PropTypes.shape().isRequired,
+  offerCanBeCancelled: PropTypes.bool,
   openCancelPopin: PropTypes.func.isRequired,
   price: PropTypes.number.isRequired,
 }

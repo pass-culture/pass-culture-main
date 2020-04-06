@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | layout | Verso | VersoControls | booking | CancellingAction | CancellingAction when the offer is booking should render a button to cancelling the booking 1`] = `
+exports[`src | components | layout | Verso | VersoControls | booking | CancellingAction | CancellingAction when the offer is booked should render a button to cancelling the booking 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <CancellingAction
@@ -30,6 +30,7 @@ ShallowWrapper {
       }
     }
     offer={Object {}}
+    offerCanBeCancelled={true}
     openCancelPopin={[MockFunction]}
     price={20}
   />,
@@ -69,6 +70,7 @@ ShallowWrapper {
         </span>,
       ],
       "className": "ticket-action",
+      "disabled": false,
       "onClick": [Function],
       "type": "button",
     },
@@ -167,6 +169,7 @@ ShallowWrapper {
           </span>,
         ],
         "className": "ticket-action",
+        "disabled": false,
         "onClick": [Function],
         "type": "button",
       },

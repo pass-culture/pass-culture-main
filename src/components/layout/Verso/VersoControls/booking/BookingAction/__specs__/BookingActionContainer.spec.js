@@ -1,4 +1,5 @@
 import { mapStateToProps } from '../BookingActionContainer'
+import moment from 'moment/moment'
 
 describe('components | BookingActionContainer', () => {
   describe('mapStateToProps', () => {
@@ -56,6 +57,38 @@ describe('components | BookingActionContainer', () => {
 
           // then
           expect(props.offerCannotBeBooked).toBe(false)
+        })
+        describe('when user has already booked this offer', () => {
+          it('should return true', () => {
+            // given
+            const ownProps = {
+              location: {
+                pathname: '/fake-url',
+                search: '',
+              },
+              match: {
+                params: {
+                  offerId: 'AE',
+                },
+              },
+            }
+
+            const now = moment()
+            const oneDayBeforeNow = now.subtract(1, 'days').format()
+            const state = {
+              data: {
+                offers: [{ id: 'AE', isBookable: true }],
+                stocks: [{ id: 'BE', offerId: 'AE', beginningDatetime: oneDayBeforeNow }],
+                bookings: [{ id: 'CE', stockId: 'BE', isCancelled: false }],
+              },
+            }
+
+            // when
+            const props = mapStateToProps(state, ownProps)
+
+            // then
+            expect(props.offerCannotBeBooked).toBe(true)
+          })
         })
       })
     })

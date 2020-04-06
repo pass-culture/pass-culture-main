@@ -8,7 +8,10 @@ import CancellingAction from './CancellingAction'
 import PopinButton from './PopinButton'
 import { bookingNormalizer } from '../../../../../../utils/normalizers'
 import { closeSharePopin, openSharePopin } from '../../../../../../reducers/share'
-import { selectBookingByRouterMatch } from '../../../../../../selectors/data/bookingsSelectors'
+import {
+  selectBookingByRouterMatch,
+  selectPassedBookingsByOfferId,
+} from '../../../../../../selectors/data/bookingsSelectors'
 import { selectOfferByRouterMatch } from '../../../../../../selectors/data/offersSelectors'
 import { selectStockById } from '../../../../../../selectors/data/stocksSelectors'
 
@@ -33,7 +36,14 @@ export const mapStateToProps = (state, ownProps) => {
   const stock = selectStockById(state, booking.stockId)
   const price = stock.price * booking.quantity
 
-  return { booking, cancellingUrl, offer, price }
+  let offerCanBeCancelled = true
+  let userPassedBookingsForThisOffer = selectPassedBookingsByOfferId(state, offer.id)
+
+  if (userPassedBookingsForThisOffer && userPassedBookingsForThisOffer.length) {
+    offerCanBeCancelled = false
+  }
+
+  return { booking, cancellingUrl, offer, offerCanBeCancelled, price }
 }
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
