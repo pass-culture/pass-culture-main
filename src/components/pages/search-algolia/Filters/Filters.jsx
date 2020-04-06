@@ -99,8 +99,9 @@ export class Filters extends PureComponent {
       {
         filters: {
           ...initialFilters,
+          isSearchAroundMe: false,
           //radiusRevert: aroundRadius: 0,
-          offerCategories: this.buildCategoriesStateFromProps(),
+          offerCategories: [],
           offerTypes: {
             isDigital: false,
             isEvent: false,

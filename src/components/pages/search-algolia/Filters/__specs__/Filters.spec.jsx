@@ -889,9 +889,8 @@ describe('components | Filters', () => {
             // then
             expect(fetchAlgolia).toHaveBeenCalledWith({
               //radiusRevert: aroundRadius: 0,
-              geolocation: { latitude: 40, longitude: 41 },
               keywords: 'librairie',
-              offerCategories: ['VISITE'],
+              offerCategories: [],
               offerTypes: {
                 isDigital: false,
                 isEvent: false,
@@ -946,9 +945,8 @@ describe('components | Filters', () => {
             // then
             expect(fetchAlgolia).toHaveBeenCalledWith({
               //radiusRevert: aroundRadius: 0,
-              geolocation: { latitude: 40, longitude: 41 },
               keywords: 'librairie',
-              offerCategories: ['VISITE', 'CINEMA'],
+              offerCategories: [],
               offerTypes: {
                 isDigital: false,
                 isEvent: false,
