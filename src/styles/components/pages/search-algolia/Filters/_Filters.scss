@@ -21,8 +21,7 @@
 }
 
 .sf-content-wrapper {
-  flex-grow: 1;
-  padding: rem(24px);
+  padding: rem(24px) rem(24px) rem($footer-height + rem(48px));
   overflow-y: auto;
 
   .sf-title {
@@ -83,8 +82,12 @@
 }
 
 .sf-button-wrapper {
-  margin-top: rem(20px);
-  padding: 0 rem(24px) rem(20px) rem(24px);
+  bottom: 0;
+  background: none;
+  display: flex;
+  justify-content: center;
+  padding: 0 rem(24px) rem(24px) rem(24px);
+  position: absolute;
   width: 100%;
 
   .sf-button {
