@@ -7,40 +7,32 @@ import SecondTutorial from './SecondTutorial/SecondTutorial'
 import ThirdTutorial from './ThirdTutorial/ThirdTutorial'
 
 const Tutorials = ({ history }) => {
-  let [displayFirstTutorial, setDisplayFirstTuto] = useState(true)
-  let [displaySecondTutorial, setDisplaySecondTuto] = useState(false)
-  let [displayThirdTutorial, setDisplayThirdTuto] = useState(false)
+  const tutorials = {
+    1: <FirstTutorial />,
+    2: <SecondTutorial />,
+    3: <ThirdTutorial />,
+  }
+
+  const lastTutorialStep = Object.keys(tutorials).length
+
+  let [step, setStep] = useState(1)
 
   function handleClickNext() {
-    if (displayThirdTutorial) {
+    if (step === lastTutorialStep) {
       history.push('/decouverte')
     }
 
-    if (displaySecondTutorial) {
-      setDisplaySecondTuto(false)
-      setDisplayThirdTuto(true)
-    } else {
-      setDisplayFirstTuto(false)
-      setDisplaySecondTuto(true)
-    }
+    setStep(step + 1)
   }
 
   function handleClickPrevious() {
-    if (displayThirdTutorial) {
-      setDisplaySecondTuto(true)
-      setDisplayThirdTuto(false)
-    } else {
-      setDisplaySecondTuto(false)
-      setDisplayFirstTuto(true)
-    }
+    setStep(step - 1)
   }
 
   return (
     <main className="tutorials">
-      {displayFirstTutorial && <FirstTutorial />}
-      {displaySecondTutorial && <SecondTutorial />}
-      {displayThirdTutorial && <ThirdTutorial />}
-      {(displaySecondTutorial || displayThirdTutorial) && (
+      {tutorials[step]}
+      {step > 1 && (
         <button
           className="previous-arrow"
           onClick={handleClickPrevious}
