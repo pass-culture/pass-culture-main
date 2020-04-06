@@ -30,6 +30,7 @@ module.exports = {
           {
             loader: require.resolve('eslint-loader'),
             options: {
+              cache: true,
               // https://github.com/webpack-contrib/eslint-loader#emiterror-default-false
               emitError: false,
               emitWarning: true,
