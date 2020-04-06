@@ -8,8 +8,6 @@ import getDurationFromMinutes from './utils/getDurationFromMinutes'
 import VersoActionsBar from './VersoActionsBar/VersoActionsBar'
 import { capitalize } from '../../../../../utils/react-form-utils/functions'
 
-const UNKNOWN_DISTANCE = '-'
-
 class VersoContentOffer extends PureComponent {
   componentDidMount() {
     const { handleRequestMusicAndShowTypes } = this.props
@@ -97,8 +95,8 @@ class VersoContentOffer extends PureComponent {
           <li key={bookable.id}>
             {capitalize(bookable.humanBeginningDate)}
             {!bookable.userHasCancelledThisDate &&
-              bookable.userHasAlreadyBookedThisDate &&
-              ' (réservé)'}
+            bookable.userHasAlreadyBookedThisDate &&
+            ' (réservé)'}
           </li>
         ))}
         {hasMoreBookables && <li>
@@ -152,14 +150,14 @@ class VersoContentOffer extends PureComponent {
           <h3>
             {'Où ?'}
           </h3>
-          {isNotDigitalOffer && (
+          {isNotDigitalOffer && distance && (
             <span className="vco-distance">
               <Icon
                 className="vco-geolocation-icon"
                 svg="ico-geoloc"
               />
               <span>
-                {distance === UNKNOWN_DISTANCE ? UNKNOWN_DISTANCE : `À ${distance}`}
+                {`À ${distance}`}
               </span>
             </span>
           )}

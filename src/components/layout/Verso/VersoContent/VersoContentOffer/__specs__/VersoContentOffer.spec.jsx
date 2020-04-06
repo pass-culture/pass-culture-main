@@ -286,6 +286,56 @@ describe('components | VersoContentOffer', () => {
     expect(address).toBe('fake name72 rue Carnot93230ROMAINVILLE')
   })
 
+  it('should not render informations regarding offer distance when distance to reach offer is not provided', () => {
+    // given
+    const props = {
+      bookables: [{ id: 1 }, { id: 2 }],
+      distance: null,
+      handleRequestMusicAndShowTypes: jest.fn(),
+      isBookable: false,
+      maxShownDates: 1,
+      offer,
+      userGeolocation: {
+        latitude: null,
+        longitude: null,
+      },
+    }
+
+    // when
+    const wrapper = shallow(<VersoContentOffer {...props} />)
+
+    // then
+    const distance = wrapper
+      .findWhere(node => node.text() === 'À 20km')
+      .first()
+    expect(distance).toHaveLength(0)
+  })
+
+  it('should render informations regarding offer distance when distance to reach offer is provided', () => {
+    // given
+    const props = {
+      bookables: [{ id: 1 }, { id: 2 }],
+      distance: '20km',
+      handleRequestMusicAndShowTypes: jest.fn(),
+      isBookable: false,
+      maxShownDates: 1,
+      offer,
+      userGeolocation: {
+        latitude: null,
+        longitude: null,
+      },
+    }
+
+    // when
+    const wrapper = shallow(<VersoContentOffer {...props} />)
+
+    // then
+    const distance = wrapper
+      .findWhere(node => node.text() === 'À 20km')
+      .first()
+    expect(distance).toHaveLength(1)
+  })
+
   describe('distance informations', () => {
     describe('when it is an event or a cultural thing', () => {
       it('should render distance and itinerary link to the venue', () => {
@@ -355,28 +405,6 @@ describe('components | VersoContentOffer', () => {
         // then
         const distanceVenue = wrapper.find('a').first()
         expect(distanceVenue.props()).toHaveProperty('target', '_blank')
-      })
-
-      it('should remove "À" character when user position is unknown', () => {
-        // given
-        const props = {
-          bookables: [{ id: 1 }, { id: 2 }],
-          distance: '-',
-          handleRequestMusicAndShowTypes: jest.fn(),
-          offer,
-          userGeolocation: {
-            latitude: null,
-            longitude: null,
-          },
-        }
-        navigationLink.mockReturnValue('this is a fake url')
-
-        // when
-        const wrapper = shallow(<VersoContentOffer {...props} />)
-
-        // then
-        const venueDistance = wrapper.find({ children: '-' })
-        expect(venueDistance).toHaveLength(1)
       })
 
       it('should render itinerary link', () => {
@@ -456,6 +484,7 @@ describe('components | VersoContentOffer', () => {
         expect(wrapper.find('a')).toHaveLength(0)
       })
     })
+
   })
 
   describe('when the offer is booked and have a link offer', () => {
