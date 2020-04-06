@@ -61,4 +61,17 @@
       transform: rotate(-1deg);
     }
   }
+
+  .next-arrow {
+    position: absolute;
+    bottom: 128px;
+    right: 21px;
+    transform: rotate(180deg);
+  }
+
+  .previous-arrow {
+    position: absolute;
+    bottom: 128px;
+    left: 21px;
+  }
 }
