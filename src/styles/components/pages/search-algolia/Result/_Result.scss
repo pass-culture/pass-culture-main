@@ -65,17 +65,11 @@
     font-size: rem(16px);
     font-weight: 400;
     margin-left: rem(4px);
-    word-wrap: unset;
-    word-break: unset;
   }
 }
 
 @media screen and (max-width: $iphone5-width) and (max-height: $iphone5-height) {
   .result-header {
-    .result-title {
-      flex: 4;
-    }
-
     .result-distance {
       flex: 3;
     }
