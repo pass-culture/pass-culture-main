@@ -58,7 +58,8 @@ def run_migrations_offline():
         literal_binds=True,
         include_object=include_object,
         include_schemas=True,
-        compare_type=True
+        compare_type=True,
+        transaction_per_migration=True
     )
 
     with context.begin_transaction():
@@ -79,7 +80,8 @@ def run_migrations_online():
             connection=connection,
             target_metadata=target_metadata,
             include_object=include_object,
-            include_schemas=True
+            include_schemas=True,
+            transaction_per_migration=True
         )
 
         with context.begin_transaction():
