@@ -15,12 +15,15 @@ import FiltersContainer from '../Filters/FiltersContainer'
 import Result from './Result'
 import SearchAlgoliaDetailsContainer from './ResultDetail/ResultDetailContainer'
 
+const SEARCH_RESULTS_URI = '/recherche-offres/resultats'
+
 class SearchResults extends PureComponent {
   constructor(props) {
     super(props)
     const {
       criteria: { categories, isSearchAroundMe, sortBy },
     } = props
+    const sortByFromUrlOrProps = this.getSortByFromUrlOrProps(sortBy)
 
     this.state = {
       currentPage: 0,
@@ -35,13 +38,14 @@ class SearchResults extends PureComponent {
           isEvent: false,
           isThing: false,
         },
-        sortBy: this.getSortByFromUrlOrProps(sortBy),
+        sortBy: sortByFromUrlOrProps,
       },
       keywordsToSearch: '',
       isLoading: false,
       resultsCount: 0,
       results: [],
       searchedKeywords: '',
+      sortCriterionLabel: this.getSortCriterionLabelFromIndex(sortByFromUrlOrProps),
       totalPagesNumber: 0,
     }
     this.inputRef = React.createRef()
@@ -52,7 +56,7 @@ class SearchResults extends PureComponent {
     const { currentPage } = this.state
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles'] || ''
-    this.fetchOffers(keywords, currentPage)
+    this.fetchOffers({ keywords, page: currentPage })
   }
 
   getCategoriesFromUrlOrProps = categoriesFromProps => {
@@ -110,7 +114,7 @@ class SearchResults extends PureComponent {
         },
         () => {
           const { currentPage } = this.state
-          this.fetchOffers(trimmedKeywordsToSearch, currentPage)
+          this.fetchOffers({ keywords: trimmedKeywordsToSearch, page: currentPage })
         }
       )
     }
@@ -133,7 +137,7 @@ class SearchResults extends PureComponent {
     })
   }
 
-  fetchOffers = (keywords, page) => {
+  fetchOffers = ({ keywords = '', page = 0 } = {}) => {
     const { geolocation } = this.props
     const { filters } = this.state
     const { aroundRadius, isSearchAroundMe, offerCategories, offerIsDuo, offerIsFree, offerTypes, sortBy } = filters
@@ -180,7 +184,7 @@ class SearchResults extends PureComponent {
 
   fetchNextOffers = currentPage => {
     const { searchedKeywords } = this.state
-    this.fetchOffers(searchedKeywords, currentPage)
+    this.fetchOffers({ keywords: searchedKeywords, page: currentPage })
   }
 
   handleBackButtonClick = () => {
@@ -223,12 +227,9 @@ class SearchResults extends PureComponent {
 
   blurInput = () => () => this.inputRef.current.blur()
 
-  getSortCriterionLabel() {
-    const { filters } = this.state
+  getSortCriterionLabelFromIndex(index) {
     const criterionLabels = Object.keys(SORT_CRITERIA).map(criterionKey => {
-      return SORT_CRITERIA[criterionKey].index === filters.sortBy
-        ? SORT_CRITERIA[criterionKey].label
-        : ''
+      return SORT_CRITERIA[criterionKey].index === index ? SORT_CRITERIA[criterionKey].label : ''
     })
     return criterionLabels.join('')
   }
@@ -243,16 +244,18 @@ class SearchResults extends PureComponent {
     const { searchedKeywords } = this.state
     const { history } = this.props
     const { search } = history.location
+    const sortBy = SORT_CRITERIA[criterionKey].index
     this.setState(
       previousState => ({
-        filters: { ...previousState.filters, sortBy: SORT_CRITERIA[criterionKey].index },
+        filters: { ...previousState.filters, sortBy: sortBy },
         results: [],
+        sortCriterionLabel: this.getSortCriterionLabelFromIndex(sortBy),
       }),
-      () => this.fetchOffers(searchedKeywords, 0)
+      () => this.fetchOffers({ keywords: searchedKeywords })
     )
-    const queryParams = search.replace(/(tri=)(\w*)/, 'tri=' + SORT_CRITERIA[criterionKey].index)
+    const queryParams = search.replace(/(tri=)(\w*)/, 'tri=' + sortBy)
 
-    history.push(`/recherche-offres/resultats${queryParams}`)
+    history.push(`${SEARCH_RESULTS_URI}${queryParams}`)
   }
 
   render() {
@@ -264,18 +267,18 @@ class SearchResults extends PureComponent {
       isLoading,
       results,
       resultsCount,
+      sortCriterionLabel,
       totalPagesNumber,
     } = this.state
     const { location } = history
     const { search } = location
-    const sortCriterionLabel = this.getSortCriterionLabel()
 
     return (
       <main className="search-results-page">
         <Switch>
           <Route
             exact
-            path="/recherche-offres/resultats(/menu)?"
+            path={`${SEARCH_RESULTS_URI}(/menu)?`}
           >
             <form
               action=""
@@ -376,7 +379,9 @@ class SearchResults extends PureComponent {
               </button>
             </div>
           </Route>
-          <Route path="/recherche-offres/resultats/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?">
+          <Route
+            path={`${SEARCH_RESULTS_URI}/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
+          >
             <HeaderContainer
               closeTitle="Retourner à la page découverte"
               closeTo="/decouverte"
@@ -385,7 +390,7 @@ class SearchResults extends PureComponent {
             />
             <SearchAlgoliaDetailsContainer />
           </Route>
-          <Route path="/recherche-offres/resultats/filtres">
+          <Route path={`${SEARCH_RESULTS_URI}/filtres`}>
             <FiltersContainer
               history={history}
               initialFilters={filters}
@@ -401,10 +406,10 @@ class SearchResults extends PureComponent {
               updateFilters={this.updateFilters}
             />
           </Route>
-          <Route path="/recherche-offres/resultats/tri">
+          <Route path={`${SEARCH_RESULTS_URI}/tri`}>
             <Criteria
               activeCriterionLabel={sortCriterionLabel}
-              backTo={`/recherche-offres/resultats${search}`}
+              backTo={`${SEARCH_RESULTS_URI}${search}`}
               criteria={SORT_CRITERIA}
               history={history}
               match={match}
