@@ -61,7 +61,7 @@ export class Filters extends PureComponent {
       })
   }
 
-  process = () => {
+  findOffersAndUpdateUrl = () => {
     const { history, geolocation, query } = this.props
     const { filters } = this.state
     const queryParams = query.parse()
@@ -115,7 +115,7 @@ export class Filters extends PureComponent {
         },
       },
       () => {
-        this.process()
+        this.findOffersAndUpdateUrl()
       }
     )
   }
@@ -177,7 +177,7 @@ export class Filters extends PureComponent {
         },
       },
       () => {
-        this.process()
+        this.findOffersAndUpdateUrl()
         redirectToSearchFiltersPage()
       }
     )
@@ -221,7 +221,7 @@ export class Filters extends PureComponent {
         },
       },
       () => {
-        this.process()
+        this.findOffersAndUpdateUrl()
       }
     )
   }
@@ -241,13 +241,27 @@ export class Filters extends PureComponent {
         },
       },
       () => {
-        this.process()
+        this.findOffersAndUpdateUrl()
       }
     )
   }
 
   handleToggleCategories = () => () => {
     this.setState(prevState => ({ areCategoriesVisible: !prevState.areCategoriesVisible }))
+  }
+
+  handleOnToggle = (event) => {
+    const { name, checked } = event.target
+    const { filters } = this.state
+
+    this.setState({
+      filters: {
+        ...filters,
+        [name]: checked
+      },
+    }, () => {
+      this.findOffersAndUpdateUrl()
+    })
   }
 
   handleRadiusSlide = value => {
@@ -261,22 +275,8 @@ export class Filters extends PureComponent {
     })
   }
 
-  handleOnToggle = (event) => {
-    const { name, checked } = event.target
-    const { filters } = this.state
-
-    this.setState({
-      filters: {
-        ...filters,
-        [name]: checked
-      },
-    }, () => {
-      this.process()
-    })
-  }
-
   handleRadiusAfterSlide = () => {
-    this.process()
+    this.findOffersAndUpdateUrl()
   }
 
   render() {
@@ -477,15 +477,34 @@ export class Filters extends PureComponent {
 
 Filters.defaultProps = {
   initialFilters: {
+    // revert-to-include -> aroundRadius: 100,
     isSearchAroundMe: false,
     offerCategories: [],
+    offerDuo: false,
+    offerTypes: {
+      isDigital: false,
+      isEvent: false,
+      isThing: false
+    },
+    sortBy: ''
   },
 }
 
 Filters.propTypes = {
   geolocation: PropTypes.shape().isRequired,
   history: PropTypes.shape().isRequired,
-  initialFilters: PropTypes.shape(),
+  initialFilters: PropTypes.shape({
+    aroundRadius: PropTypes.number,
+    isSearchAroundMe: PropTypes.bool,
+    offerCategories: PropTypes.arrayOf(PropTypes.string),
+    offerDuo: PropTypes.bool,
+    offerTypes: PropTypes.shape({
+      isDigital: PropTypes.bool,
+      isEvent: PropTypes.bool,
+      isThing: PropTypes.bool
+    }),
+    sortBy: PropTypes.string
+  }),
   isGeolocationEnabled: PropTypes.bool.isRequired,
   isUserAllowedToSelectCriterion: PropTypes.func.isRequired,
   match: PropTypes.shape().isRequired,
