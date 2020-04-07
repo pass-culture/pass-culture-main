@@ -13,6 +13,7 @@ export const fetchAlgolia = ({
                                keywords = '',
                                offerCategories = [],
                                offerDuo = false,
+                               offerFree = false,
                                offerTypes = {
                                  isDigital: false,
                                  isEvent: false,
@@ -25,6 +26,7 @@ export const fetchAlgolia = ({
   const searchParameters = {
     page: page,
     ...buildFacetFilters(offerCategories, offerTypes, offerDuo),
+    ...buildNumericFilters(offerFree),
     ...buildGeolocationParameter(aroundRadius, geolocation),
   }
   const client = algoliasearch(WEBAPP_ALGOLIA_APPLICATION_ID, WEBAPP_ALGOLIA_SEARCH_API_KEY)
@@ -39,6 +41,7 @@ const buildFacetFilters = (offerCategories, offerTypes, offerDuo) => {
   }
 
   const facetFilters = []
+
   if (offerCategories.length > 0) {
     const categoriesPredicate = buildOfferCategoriesPredicate(offerCategories)
     facetFilters.push(categoriesPredicate)
@@ -54,9 +57,19 @@ const buildFacetFilters = (offerCategories, offerTypes, offerDuo) => {
     facetFilters.push(offerDuoPredicate)
   }
 
-  return {
-    facetFilters,
+  const atLeastOneFacetFilter = facetFilters.length > 0
+  return atLeastOneFacetFilter ? { facetFilters } : {}
+}
+
+const buildNumericFilters = offerFree => {
+  const numericFilters = []
+  const offerFreePredicate = buildOfferFreePredicate(offerFree)
+  if (offerFreePredicate){
+    numericFilters.push(offerFreePredicate)
   }
+
+  const atListOneNumericFilter = numericFilters.length > 0
+  return atListOneNumericFilter ? { numericFilters } : {}
 }
 
 const buildOfferCategoriesPredicate = offerCategories => {
@@ -66,6 +79,12 @@ const buildOfferCategoriesPredicate = offerCategories => {
 const buildOfferDuoPredicate = offerDuo => {
   if (offerDuo) {
     return `${FACETS.OFFER_IS_DUO}:${offerDuo}`
+  }
+}
+
+const buildOfferFreePredicate = offerFree => {
+  if (offerFree) {
+    return `${FACETS.OFFER_IS_FREE} = 0`
   }
 }
 

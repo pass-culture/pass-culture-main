@@ -27,6 +27,7 @@ class SearchResults extends PureComponent {
         isSearchAroundMe: this.getIsSearchAroundMeFromUrlOrProps(isSearchAroundMe),
         offerCategories: this.getCategoriesFromUrlOrProps(categories),
         offerDuo: false,
+        offerFree: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -134,7 +135,7 @@ class SearchResults extends PureComponent {
   fetchOffers = (keywords, page) => {
     const { geolocation } = this.props
     const { filters } = this.state
-    const { aroundRadius, isSearchAroundMe, offerCategories, offerDuo, offerTypes, sortBy } = filters
+    const { aroundRadius, isSearchAroundMe, offerCategories, offerDuo, offerFree, offerTypes, sortBy } = filters
 
     this.setState({
       isLoading: true,
@@ -143,6 +144,7 @@ class SearchResults extends PureComponent {
       keywords,
       offerCategories,
       offerDuo,
+      offerFree,
       offerTypes,
       page,
       sortBy,

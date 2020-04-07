@@ -181,6 +181,7 @@ describe('components | SearchResults', () => {
         keywords: 'une librairie',
         offerCategories: ['MUSEE'],
         offerDuo: false,
+        offerFree: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -209,6 +210,7 @@ describe('components | SearchResults', () => {
           keywords: '',
           offerCategories: ['Cinéma'],
           offerDuo: false,
+          offerFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -251,6 +253,7 @@ describe('components | SearchResults', () => {
           keywords: 'une librairie',
           offerCategories: [],
           offerDuo: false,
+          offerFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -324,6 +327,7 @@ describe('components | SearchResults', () => {
           keywords: 'une librairie',
           offerCategories: [],
           offerDuo: false,
+          offerFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -361,6 +365,7 @@ describe('components | SearchResults', () => {
           keywords: 'une librairie',
           offerCategories: ['CINEMA'],
           offerDuo: false,
+          offerFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -396,6 +401,7 @@ describe('components | SearchResults', () => {
           keywords: 'une librairie',
           offerCategories: ['CINEMA'],
           offerDuo: false,
+          offerFree: false,
           offerTypes: { isDigital: false, isEvent: false, isThing: false },
           page: 0,
         })
@@ -429,6 +435,7 @@ describe('components | SearchResults', () => {
           keywords: 'une librairie',
           offerCategories: ['CINEMA'],
           offerDuo: false,
+          offerFree: false,
           offerTypes: { isDigital: false, isEvent: false, isThing: false },
           page: 0,
         })
@@ -458,6 +465,7 @@ describe('components | SearchResults', () => {
           keywords: 'une librairie',
           offerCategories: [],
           offerDuo: false,
+          offerFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -494,6 +502,7 @@ describe('components | SearchResults', () => {
           keywords: 'une librairie',
           offerCategories: [],
           offerDuo: false,
+          offerFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -529,6 +538,7 @@ describe('components | SearchResults', () => {
           keywords: 'une librairie',
           offerCategories: [],
           offerDuo: false,
+          offerFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -567,6 +577,7 @@ describe('components | SearchResults', () => {
           keywords: 'une librairie',
           offerCategories: [],
           offerDuo: false,
+          offerFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -599,6 +610,7 @@ describe('components | SearchResults', () => {
         keywords: 'un livre très cherché',
         offerCategories: [],
         offerDuo: false,
+        offerFree: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -631,6 +643,7 @@ describe('components | SearchResults', () => {
         keywords: '',
         offerCategories: [],
         offerDuo: false,
+        offerFree: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -663,6 +676,7 @@ describe('components | SearchResults', () => {
         keywords: '',
         offerCategories: [],
         offerDuo: false,
+        offerFree: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -920,6 +934,7 @@ describe('components | SearchResults', () => {
           isSearchAroundMe: false,
           offerCategories: [],
           offerDuo: false,
+          offerFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -982,6 +997,7 @@ describe('components | SearchResults', () => {
         keywords: '',
         offerCategories: [],
         offerDuo: false,
+        offerFree: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -994,6 +1010,7 @@ describe('components | SearchResults', () => {
         keywords: 'librairie',
         offerCategories: [],
         offerDuo: false,
+        offerFree: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -1388,6 +1405,7 @@ describe('components | SearchResults', () => {
         isSearchAroundMe: false,
         offerCategories: ['VISITE', 'CINEMA'],
         offerDuo: false,
+        offerFree: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,

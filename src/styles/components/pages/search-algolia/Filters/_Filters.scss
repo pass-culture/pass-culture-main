@@ -48,12 +48,13 @@
     }
   }
 
-  .sf-offer-duo-wrapper {
+  .sf-offer-price-wrapper {
     align-items: center;
     border-top: rem(1px) solid $grey-even-more-light;
     display: flex;
     justify-content: center;
     padding-top: rem(20px);
+    padding-bottom: rem(20px);
 
     h4 {
       flex: 2;

@@ -37,6 +37,7 @@ describe('components | Filters', () => {
         isSearchAroundMe: false,
         offerCategories: ['VISITE', 'CINEMA'],
         offerDuo: false,
+        offerFree: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -140,6 +141,7 @@ describe('components | Filters', () => {
             keywords: 'librairie',
             offerCategories: ['VISITE', 'CINEMA'],
             offerDuo: false,
+            offerFree: false,
             offerTypes: {
               isDigital: false,
               isEvent: false,
@@ -165,6 +167,7 @@ describe('components | Filters', () => {
             isSearchAroundMe: false,
             offerCategories: ['VISITE'],
             offerDuo: false,
+            offerFree: false,
             offerTypes: {
               isDigital: false,
               isEvent: false,
@@ -208,6 +211,7 @@ describe('components | Filters', () => {
             keywords: 'librairie',
             offerCategories: ['VISITE'],
             offerDuo: false,
+            offerFree: false,
             offerTypes: {
               isDigital: false,
               isEvent: false,
@@ -335,6 +339,7 @@ describe('components | Filters', () => {
           isSearchAroundMe: false,
           offerCategories: ['VISITE', 'CINEMA'],
           offerDuo: false,
+          offerFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -657,6 +662,7 @@ describe('components | Filters', () => {
             keywords: 'librairies',
             offerCategories: ['VISITE', 'CINEMA'],
             offerDuo: false,
+            offerFree: false,
             offerTypes: {
               isDigital: true,
               isEvent: false,
@@ -680,7 +686,7 @@ describe('components | Filters', () => {
           expect(title).toHaveLength(1)
         })
 
-        it('should render a FilterToggle component unchecked by default', () => {
+        it('should render a FilterToggle component for offer duo unchecked by default', () => {
           // given
           props.history.location.pathname = '/recherche-offres/filtres'
           props.initialFilters.offerDuo = false
@@ -730,6 +736,81 @@ describe('components | Filters', () => {
             keywords: '',
             offerCategories: ['VISITE', 'CINEMA'],
             offerDuo: true,
+            offerFree: false,
+            offerTypes: {
+              isDigital: false,
+              isEvent: false,
+              isThing: false,
+            },
+            sortBy: '_by_price',
+          })
+        })
+      })
+
+      describe('offer free', () => {
+        it('should display a "Uniquement les offres gratuites" title for offer free filter', () => {
+          // given
+          props.history.location.pathname = '/recherche-offres/filtres'
+
+          // when
+          const wrapper = shallow(<Filters {...props} />)
+
+          // then
+          const title = wrapper.findWhere(node => node.text() === "Uniquement les offres gratuites").first()
+          expect(title).toHaveLength(1)
+        })
+
+        it('should render a FilterToggle component for offer free unchecked by default', () => {
+          // given
+          props.history.location.pathname = '/recherche-offres/filtres'
+          props.initialFilters.offerFree = false
+
+          // when
+          const wrapper = shallow(<Filters {...props} />)
+
+          // then
+          const filterOfferFree = wrapper
+            .find('[data-test="sf-offer-free-wrapper-test"]')
+            .find(FilterToggle)
+          expect(filterOfferFree).toHaveLength(1)
+          expect(filterOfferFree.prop('checked')).toBe(false)
+          expect(filterOfferFree.prop('id')).toBe('offerFree')
+          expect(filterOfferFree.prop('name')).toBe('offerFree')
+          expect(filterOfferFree.prop('onChange')).toStrictEqual(expect.any(Function))
+        })
+
+        it('should fetch offers when clicking on offer free', () => {
+          // given
+          props.history.location.pathname = '/recherche-offres/filtres'
+          const wrapper = shallow(<Filters {...props} />)
+          const offerFreeFilter = wrapper
+            .find('[data-test="sf-offer-free-wrapper-test"]')
+            .find(FilterToggle)
+          props.query.parse.mockReturnValue({})
+          fetchAlgolia.mockReturnValue(
+            new Promise(resolve => {
+              resolve({
+                hits: [],
+                nbHits: 0,
+                page: 0,
+              })
+            })
+          )
+
+          // when
+          offerFreeFilter.simulate('change', {
+            target: {
+              name: 'offerFree',
+              checked: true,
+            },
+          })
+
+          // then
+          expect(fetchAlgolia).toHaveBeenCalledWith({
+            keywords: '',
+            offerCategories: ['VISITE', 'CINEMA'],
+            offerDuo: false,
+            offerFree: true,
             offerTypes: {
               isDigital: false,
               isEvent: false,
@@ -935,6 +1016,7 @@ describe('components | Filters', () => {
               isSearchAroundMe: true,
               offerCategories: ['VISITE'],
               offerDuo: false,
+              offerFree: false,
               offerTypes: {
                 isDigital: false,
                 isEvent: false,
@@ -973,6 +1055,7 @@ describe('components | Filters', () => {
               keywords: 'librairie',
               offerCategories: [],
               offerDuo: false,
+              offerFree: false,
               offerTypes: {
                 isDigital: false,
                 isEvent: false,
@@ -992,6 +1075,8 @@ describe('components | Filters', () => {
             props.initialFilters = {
               isSearchAroundMe: true,
               offerCategories: ['VISITE', 'CINEMA'],
+              offerDuo: false,
+              offerFree: false,
               offerTypes: {
                 isDigital: true,
                 isEvent: true,
@@ -1030,6 +1115,7 @@ describe('components | Filters', () => {
               keywords: 'librairie',
               offerCategories: [],
               offerDuo: false,
+              offerFree: false,
               offerTypes: {
                 isDigital: false,
                 isEvent: false,
