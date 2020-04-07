@@ -16,15 +16,15 @@ export class Filters extends PureComponent {
   constructor(props) {
     super(props)
 
-    const { aroundRadius, isSearchAroundMe, offerDuo, offerFree, offerTypes, sortBy } = props.initialFilters
+    const { aroundRadius, isSearchAroundMe, offerIsDuo, offerIsFree, offerTypes, sortBy } = props.initialFilters
     this.state = {
       areCategoriesVisible: true,
       filters: {
         aroundRadius: aroundRadius,
         isSearchAroundMe: isSearchAroundMe,
         offerCategories: this.buildCategoriesStateFromProps(),
-        offerFree: offerFree,
-        offerDuo: offerDuo,
+        offerIsFree: offerIsFree,
+        offerIsDuo: offerIsDuo,
         offerTypes: offerTypes,
         sortBy: sortBy,
       },
@@ -41,15 +41,15 @@ export class Filters extends PureComponent {
     }, {})
   }
 
-  fetchOffers = ({ aroundRadius, keywords, geolocation, offerCategories, offerDuo, offerFree, offerTypes, sortBy }) => {
+  fetchOffers = ({ aroundRadius, keywords, geolocation, offerCategories, offerIsDuo, offerIsFree, offerTypes, sortBy }) => {
     const { showFailModal } = this.props
     fetchAlgolia({
       aroundRadius,
       geolocation,
       keywords,
       offerCategories,
-      offerDuo,
-      offerFree,
+      offerIsDuo,
+      offerIsFree,
       offerTypes,
       sortBy,
     })
@@ -69,7 +69,7 @@ export class Filters extends PureComponent {
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles'] || ''
 
-    const { aroundRadius, isSearchAroundMe, offerDuo, offerFree, offerTypes, sortBy } = filters
+    const { aroundRadius, isSearchAroundMe, offerIsDuo, offerIsFree, offerTypes, sortBy } = filters
     const offerCategories = this.getSelectedCategories()
 
     isSearchAroundMe
@@ -78,16 +78,16 @@ export class Filters extends PureComponent {
         keywords,
         geolocation,
         offerCategories,
-        offerDuo,
-        offerFree,
+        offerIsDuo,
+        offerIsFree,
         offerTypes,
         sortBy,
       })
       : this.fetchOffers({
         keywords,
         offerCategories,
-        offerDuo,
-        offerFree,
+        offerIsDuo,
+        offerIsFree,
         offerTypes,
         sortBy,
       })
@@ -110,8 +110,8 @@ export class Filters extends PureComponent {
           isSearchAroundMe: false,
           //radiusRevert: aroundRadius: 0,
           offerCategories: [],
-          offerDuo: false,
-          offerFree: false,
+          offerIsDuo: false,
+          offerIsFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -286,7 +286,7 @@ export class Filters extends PureComponent {
 
   render() {
     const { areCategoriesVisible, filters } = this.state
-    const { aroundRadius, isSearchAroundMe, offerCategories, offerDuo, offerFree, offerTypes } = filters
+    const { aroundRadius, isSearchAroundMe, offerCategories, offerIsDuo, offerIsFree, offerTypes } = filters
     const { history, match } = this.props
     const { location } = history
     const { search = '' } = location
@@ -456,9 +456,9 @@ export class Filters extends PureComponent {
                     {'Uniquement les offres duo'}
                   </h4>
                   <FilterToggle
-                    checked={offerDuo}
-                    id="offerDuo"
-                    name="offerDuo"
+                    checked={offerIsDuo}
+                    id="offerIsDuo"
+                    name="offerIsDuo"
                     onChange={this.handleOnToggle}
                   />
                 </div>
@@ -472,9 +472,9 @@ export class Filters extends PureComponent {
                     {'Uniquement les offres gratuites'}
                   </h4>
                   <FilterToggle
-                    checked={offerFree}
-                    id="offerFree"
-                    name="offerFree"
+                    checked={offerIsFree}
+                    id="offerIsFree"
+                    name="offerIsFree"
                     onChange={this.handleOnToggle}
                   />
                 </div>
@@ -501,8 +501,8 @@ Filters.defaultProps = {
     // revert-to-include -> aroundRadius: 100,
     isSearchAroundMe: false,
     offerCategories: [],
-    offerDuo: false,
-    offerFree: false,
+    offerIsDuo: false,
+    offerIsFree: false,
     offerTypes: {
       isDigital: false,
       isEvent: false,
@@ -519,8 +519,8 @@ Filters.propTypes = {
     aroundRadius: PropTypes.number,
     isSearchAroundMe: PropTypes.bool,
     offerCategories: PropTypes.arrayOf(PropTypes.string),
-    offerDuo: PropTypes.bool,
-    offerFree: PropTypes.bool,
+    offerIsDuo: PropTypes.bool,
+    offerIsFree: PropTypes.bool,
     offerTypes: PropTypes.shape({
       isDigital: PropTypes.bool,
       isEvent: PropTypes.bool,

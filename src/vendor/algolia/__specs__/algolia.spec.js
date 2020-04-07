@@ -457,7 +457,7 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerDuo: false,
+        offerIsDuo: false,
       })
 
       // then
@@ -469,12 +469,12 @@ describe('fetchAlgolia', () => {
     it('should fetch with facetFilters when offer duo is true', () => {
       // given
       const keywords = 'searched keywords'
-      const offerDuo = true
+      const offerIsDuo = true
 
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerDuo: offerDuo
+        offerIsDuo: offerIsDuo
       })
 
       // then
@@ -489,12 +489,12 @@ describe('fetchAlgolia', () => {
     it('should fetch with no numericFilters when offer is not free', () => {
       // given
       const keywords = 'searched keywords'
-      const offerFree = false
+      const offerIsFree = false
 
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerFree: offerFree,
+        offerIsFree: offerIsFree,
       })
 
       // then
@@ -506,12 +506,12 @@ describe('fetchAlgolia', () => {
     it('should fetch with numericFilters when offer is free', () => {
       // given
       const keywords = 'searched keywords'
-      const offerFree = true
+      const offerIsFree = true
 
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerFree: offerFree,
+        offerIsFree: offerIsFree,
       })
 
       // then
@@ -567,7 +567,7 @@ describe('fetchAlgolia', () => {
       }
       const keywords = ''
       const offerCategories = ['PRATIQUE', 'SPECTACLE']
-      const offerDuo = false
+      const offerIsDuo = false
       const offerTypes = {
         isDigital: false,
         isEvent: true,
@@ -580,7 +580,7 @@ describe('fetchAlgolia', () => {
         geolocation,
         keywords,
         offerCategories,
-        offerDuo,
+        offerIsDuo,
         offerTypes,
         sortBy,
       })
@@ -603,8 +603,8 @@ describe('fetchAlgolia', () => {
       }
       const keywords = ''
       const offerCategories = ['PRATIQUE', 'SPECTACLE']
-      const offerDuo = true
-      const offerFree = true
+      const offerIsDuo = true
+      const offerIsFree = true
       const offerTypes = {
         isDigital: false,
         isEvent: true,
@@ -617,8 +617,8 @@ describe('fetchAlgolia', () => {
         geolocation,
         keywords,
         offerCategories,
-        offerDuo,
-        offerFree,
+        offerIsDuo,
+        offerIsFree,
         offerTypes,
         sortBy,
       })

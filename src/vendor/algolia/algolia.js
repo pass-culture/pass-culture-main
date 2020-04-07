@@ -7,13 +7,14 @@ import {
 } from '../../utils/config'
 import { FACETS } from './facets'
 import { FILTERS } from './filters'
+
 export const fetchAlgolia = ({
                                aroundRadius = null,
                                geolocation = null,
                                keywords = '',
                                offerCategories = [],
-                               offerDuo = false,
-                               offerFree = false,
+                               offerIsDuo = false,
+                               offerIsFree = false,
                                offerTypes = {
                                  isDigital: false,
                                  isEvent: false,
@@ -25,8 +26,8 @@ export const fetchAlgolia = ({
 ) => {
   const searchParameters = {
     page: page,
-    ...buildFacetFilters(offerCategories, offerTypes, offerDuo),
-    ...buildNumericFilters(offerFree),
+    ...buildFacetFilters(offerCategories, offerTypes, offerIsDuo),
+    ...buildNumericFilters(offerIsFree),
     ...buildGeolocationParameter(aroundRadius, geolocation),
   }
   const client = algoliasearch(WEBAPP_ALGOLIA_APPLICATION_ID, WEBAPP_ALGOLIA_SEARCH_API_KEY)
@@ -35,8 +36,8 @@ export const fetchAlgolia = ({
   return index.search(keywords, searchParameters)
 }
 
-const buildFacetFilters = (offerCategories, offerTypes, offerDuo) => {
-  if (offerCategories.length === 0 && offerTypes == null && offerDuo === false) {
+const buildFacetFilters = (offerCategories, offerTypes, offerIsDuo) => {
+  if (offerCategories.length === 0 && offerTypes == null && offerIsDuo === false) {
     return
   }
 
@@ -52,20 +53,20 @@ const buildFacetFilters = (offerCategories, offerTypes, offerDuo) => {
     facetFilters.push(...offerTypesPredicate)
   }
 
-  const offerDuoPredicate = buildOfferDuoPredicate(offerDuo)
-  if (offerDuoPredicate){
-    facetFilters.push(offerDuoPredicate)
+  const offerIsDuoPredicate = buildOfferIsDuoPredicate(offerIsDuo)
+  if (offerIsDuoPredicate){
+    facetFilters.push(offerIsDuoPredicate)
   }
 
   const atLeastOneFacetFilter = facetFilters.length > 0
   return atLeastOneFacetFilter ? { facetFilters } : {}
 }
 
-const buildNumericFilters = offerFree => {
+const buildNumericFilters = offerIsFree => {
   const numericFilters = []
-  const offerFreePredicate = buildOfferFreePredicate(offerFree)
-  if (offerFreePredicate){
-    numericFilters.push(offerFreePredicate)
+  const offerIsFreePredicate = buildOfferIsFreePredicate(offerIsFree)
+  if (offerIsFreePredicate){
+    numericFilters.push(offerIsFreePredicate)
   }
 
   const atListOneNumericFilter = numericFilters.length > 0
@@ -76,14 +77,14 @@ const buildOfferCategoriesPredicate = offerCategories => {
   return offerCategories.map(category => `${FACETS.OFFER_CATEGORY}:${category}`)
 }
 
-const buildOfferDuoPredicate = offerDuo => {
-  if (offerDuo) {
-    return `${FACETS.OFFER_IS_DUO}:${offerDuo}`
+const buildOfferIsDuoPredicate = offerIsDuo => {
+  if (offerIsDuo) {
+    return `${FACETS.OFFER_IS_DUO}:${offerIsDuo}`
   }
 }
 
-const buildOfferFreePredicate = offerFree => {
-  if (offerFree) {
+const buildOfferIsFreePredicate = offerIsFree => {
+  if (offerIsFree) {
     return `${FACETS.OFFER_IS_FREE} = 0`
   }
 }

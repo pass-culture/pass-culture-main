@@ -180,8 +180,8 @@ describe('components | SearchResults', () => {
       expect(fetchAlgolia).toHaveBeenCalledWith({
         keywords: 'une librairie',
         offerCategories: ['MUSEE'],
-        offerDuo: false,
-        offerFree: false,
+        offerIsDuo: false,
+        offerIsFree: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -209,8 +209,8 @@ describe('components | SearchResults', () => {
           geolocation: props.geolocation,
           keywords: '',
           offerCategories: ['Cinéma'],
-          offerDuo: false,
-          offerFree: false,
+          offerIsDuo: false,
+          offerIsFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -252,8 +252,8 @@ describe('components | SearchResults', () => {
         expect(fetchAlgolia).toHaveBeenCalledWith({
           keywords: 'une librairie',
           offerCategories: [],
-          offerDuo: false,
-          offerFree: false,
+          offerIsDuo: false,
+          offerIsFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -326,8 +326,8 @@ describe('components | SearchResults', () => {
           geolocation: { latitude: 40.1, longitude: 41.1 },
           keywords: 'une librairie',
           offerCategories: [],
-          offerDuo: false,
-          offerFree: false,
+          offerIsDuo: false,
+          offerIsFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -364,8 +364,8 @@ describe('components | SearchResults', () => {
         expect(fetchAlgolia).toHaveBeenCalledWith({
           keywords: 'une librairie',
           offerCategories: ['CINEMA'],
-          offerDuo: false,
-          offerFree: false,
+          offerIsDuo: false,
+          offerIsFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -400,8 +400,8 @@ describe('components | SearchResults', () => {
         expect(fetchAlgolia).toHaveBeenCalledWith({
           keywords: 'une librairie',
           offerCategories: ['CINEMA'],
-          offerDuo: false,
-          offerFree: false,
+          offerIsDuo: false,
+          offerIsFree: false,
           offerTypes: { isDigital: false, isEvent: false, isThing: false },
           page: 0,
         })
@@ -434,8 +434,8 @@ describe('components | SearchResults', () => {
         expect(fetchAlgolia).toHaveBeenCalledWith({
           keywords: 'une librairie',
           offerCategories: ['CINEMA'],
-          offerDuo: false,
-          offerFree: false,
+          offerIsDuo: false,
+          offerIsFree: false,
           offerTypes: { isDigital: false, isEvent: false, isThing: false },
           page: 0,
         })
@@ -464,8 +464,8 @@ describe('components | SearchResults', () => {
         expect(fetchAlgolia).toHaveBeenCalledWith({
           keywords: 'une librairie',
           offerCategories: [],
-          offerDuo: false,
-          offerFree: false,
+          offerIsDuo: false,
+          offerIsFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -501,8 +501,8 @@ describe('components | SearchResults', () => {
         expect(fetchAlgolia).toHaveBeenCalledWith({
           keywords: 'une librairie',
           offerCategories: [],
-          offerDuo: false,
-          offerFree: false,
+          offerIsDuo: false,
+          offerIsFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -537,8 +537,8 @@ describe('components | SearchResults', () => {
         expect(fetchAlgolia).toHaveBeenCalledWith({
           keywords: 'une librairie',
           offerCategories: [],
-          offerDuo: false,
-          offerFree: false,
+          offerIsDuo: false,
+          offerIsFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -576,8 +576,8 @@ describe('components | SearchResults', () => {
         expect(fetchAlgolia).toHaveBeenCalledWith({
           keywords: 'une librairie',
           offerCategories: [],
-          offerDuo: false,
-          offerFree: false,
+          offerIsDuo: false,
+          offerIsFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -609,8 +609,8 @@ describe('components | SearchResults', () => {
       expect(fetchAlgolia).toHaveBeenCalledWith({
         keywords: 'un livre très cherché',
         offerCategories: [],
-        offerDuo: false,
-        offerFree: false,
+        offerIsDuo: false,
+        offerIsFree: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -642,8 +642,8 @@ describe('components | SearchResults', () => {
       expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
         keywords: '',
         offerCategories: [],
-        offerDuo: false,
-        offerFree: false,
+        offerIsDuo: false,
+        offerIsFree: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -675,8 +675,8 @@ describe('components | SearchResults', () => {
       expect(fetchAlgolia).toHaveBeenCalledWith({
         keywords: '',
         offerCategories: [],
-        offerDuo: false,
-        offerFree: false,
+        offerIsDuo: false,
+        offerIsFree: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -933,8 +933,8 @@ describe('components | SearchResults', () => {
           //radiusRevert: aroundRadius: 0,
           isSearchAroundMe: false,
           offerCategories: [],
-          offerDuo: false,
-          offerFree: false,
+          offerIsDuo: false,
+          offerIsFree: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -996,8 +996,8 @@ describe('components | SearchResults', () => {
       expect(fetchAlgolia).toHaveBeenNthCalledWith(1, {
         keywords: '',
         offerCategories: [],
-        offerDuo: false,
-        offerFree: false,
+        offerIsDuo: false,
+        offerIsFree: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -1009,8 +1009,8 @@ describe('components | SearchResults', () => {
       expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
         keywords: 'librairie',
         offerCategories: [],
-        offerDuo: false,
-        offerFree: false,
+        offerIsDuo: false,
+        offerIsFree: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -1404,8 +1404,8 @@ describe('components | SearchResults', () => {
         //radiusRevert: aroundRadius: 0,
         isSearchAroundMe: false,
         offerCategories: ['VISITE', 'CINEMA'],
-        offerDuo: false,
-        offerFree: false,
+        offerIsDuo: false,
+        offerIsFree: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
