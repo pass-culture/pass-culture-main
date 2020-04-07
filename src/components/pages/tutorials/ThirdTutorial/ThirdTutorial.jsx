@@ -14,7 +14,7 @@ const ThirdTutorial = () => (
       <span className="text-highlight text-physical-offer text-first-highlight">
         {`biens${NON_BREAKING_SPACE}physiques`}
       </span>
-      {'(livres, vinyles…) et jusqu’à 200€ en'}
+      {'(livres, vinyles…) et jusqu’à 200€ en '}
       <span className="text-highlight text-digital-offer text-second-highlight">
         {`biens${NON_BREAKING_SPACE}numériques`}
       </span>
