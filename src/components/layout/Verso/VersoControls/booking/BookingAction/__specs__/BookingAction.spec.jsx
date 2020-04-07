@@ -8,7 +8,7 @@ import BookingAction from '../BookingAction'
 import BookingActionContainer from '../BookingActionContainer'
 import getMockStore from '../../../../../../../utils/mockStore'
 import Price from '../../../../../Price/Price'
-import { selectOfferById } from '../../../../../../../selectors/data/offersSelectors'
+import { selectOfferByRouterMatch } from '../../../../../../../selectors/data/offersSelectors'
 
 jest.mock('redux-thunk-data', () => {
   const { requestData } = jest.requireActual('fetch-normalize-data')
@@ -74,7 +74,7 @@ describe('components | BookingAction', () => {
   describe('when I click on button for booking', () => {
     it('should render the booking layout', () => {
       // given
-      selectOfferById.mockReturnValueOnce({
+      selectOfferByRouterMatch.mockReturnValueOnce({
         isBookable: true,
       })
 

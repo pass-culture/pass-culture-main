@@ -82,8 +82,7 @@ class Booking extends PureComponent {
 
   handleReturnToDetails = () => {
     const { history, location, match } = this.props
-    const { bookedPayload } = this.state
-    const nextUrl = handleRedirect(bookedPayload, match, location)
+    const nextUrl = handleRedirect(match, location)
     history.replace(nextUrl)
   }
 
@@ -199,7 +198,7 @@ class Booking extends PureComponent {
                     <BookingForm
                       canSubmitForm={canSubmitForm}
                       className="flex-1 flex-rows flex-center items-center"
-                      formId='form-create-booking'
+                      formId="form-create-booking"
                       initialValues={formInitialValues}
                       isEvent={isEvent}
                       isReadOnly={isReadOnly}
