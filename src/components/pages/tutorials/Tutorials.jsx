@@ -8,14 +8,13 @@ import ThirdTutorial from './ThirdTutorial/ThirdTutorial'
 import SliderPoints from './SliderPoints/SliderPoints'
 
 const Tutorials = ({ history }) => {
-
   const tutorials = [
-    <FirstTutorial />,
-    <SecondTutorial />,
-    <ThirdTutorial />
+    <FirstTutorial key="first-tutorial" />,
+    <SecondTutorial key="second-tutorial" />,
+    <ThirdTutorial key="third-tutorial" />,
   ]
 
-  const lastTutorialStep = tutorials.length -1
+  const lastTutorialStep = tutorials.length - 1
 
   let [step, setStep] = useState(0)
 
