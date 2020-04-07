@@ -4,9 +4,10 @@ from unittest.mock import Mock
 
 import pytest
 
-from domain.booking import check_expenses_limits, ExpenseLimitHasBeenReached, \
+from domain.booking import check_expenses_limits, PhysicalExpenseLimitHasBeenReached, \
     check_offer_already_booked, check_quantity_is_valid, QuantityIsInvalid, check_stock_is_bookable, \
-    StockIsNotBookable, OfferIsAlreadyBooked, check_can_book_free_offer, CannotBookFreeOffers, UserHasInsufficientFunds
+    StockIsNotBookable, OfferIsAlreadyBooked, check_can_book_free_offer, CannotBookFreeOffers, UserHasInsufficientFunds, \
+    DigitalExpenseLimitHasBeenReached
 from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS, SUBVENTION_TOTAL
 from models import ApiErrors, Booking, Stock, Offer, ThingType, User, EventType
 from models.api_errors import ResourceGoneError, ForbiddenError
@@ -42,7 +43,7 @@ class CheckExpenseLimitsTest:
         mocked_query = Mock(return_value=stock)
 
         # when
-        with pytest.raises(ExpenseLimitHasBeenReached) as error:
+        with pytest.raises(PhysicalExpenseLimitHasBeenReached) as error:
             check_expenses_limits(expenses, booking, mocked_query)
 
         # then
@@ -61,7 +62,7 @@ class CheckExpenseLimitsTest:
         mocked_query = Mock(return_value=stock)
 
         # when
-        with pytest.raises(ExpenseLimitHasBeenReached) as error:
+        with pytest.raises(DigitalExpenseLimitHasBeenReached) as error:
             check_expenses_limits(expenses, booking, mocked_query)
 
         # then
@@ -684,7 +685,7 @@ class CheckCanBookFreeOfferTest:
         repository.save(user, stock)
 
         # When
-        check_can_book_free_offer(stock, user)
+        check_can_book_free_offer(user, stock)
 
         # Then
         assert True
@@ -701,7 +702,7 @@ class CheckCanBookFreeOfferTest:
 
         # When
         with pytest.raises(CannotBookFreeOffers) as error:
-            check_can_book_free_offer(stock, user)
+            check_can_book_free_offer(user, stock)
 
         # Then
         assert error.value.errors == {

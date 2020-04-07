@@ -2,8 +2,8 @@ from flask import current_app as app
 
 from domain.booking import OfferIsAlreadyBooked, check_existing_stock, StockIdDoesntExist, \
     check_quantity_is_valid, QuantityIsInvalid, StockIsNotBookable, check_stock_is_bookable, check_offer_already_booked, \
-    ExpenseLimitHasBeenReached, check_expenses_limits, check_can_book_free_offer, CannotBookFreeOffers, \
-    UserHasInsufficientFunds
+    PhysicalExpenseLimitHasBeenReached, check_expenses_limits, check_can_book_free_offer, CannotBookFreeOffers, \
+    UserHasInsufficientFunds, DigitalExpenseLimitHasBeenReached
 from domain.expenses import get_expenses
 from domain.user_emails import send_booking_recap_emails, send_booking_confirmation_email_to_beneficiary
 from models import Booking
@@ -29,7 +29,7 @@ def book_an_offer(booking_information: BookingInformation) -> Response:
         offer = offer_queries.get_offer_by_id(stock.offerId)
         check_offer_already_booked(offer, user)
         check_quantity_is_valid(booking_information.quantity, stock)
-        check_can_book_free_offer(stock, user)
+        check_can_book_free_offer(user, stock)
         check_stock_is_bookable(stock)
     except OfferIsAlreadyBooked as error:
         return Failure(error)
@@ -50,7 +50,9 @@ def book_an_offer(booking_information: BookingInformation) -> Response:
         check_expenses_limits(expenses, booking)
     except UserHasInsufficientFunds as error:
         return Failure(error)
-    except ExpenseLimitHasBeenReached as error:
+    except PhysicalExpenseLimitHasBeenReached as error:
+        return Failure(error)
+    except DigitalExpenseLimitHasBeenReached as error:
         return Failure(error)
 
     repository.save(booking)

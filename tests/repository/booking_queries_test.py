@@ -1577,7 +1577,7 @@ class IsOfferAlreadyBookedByUserTest:
         assert not is_offer_already_booked
 
     @clean_database
-    def test_should_return_false_when_there_is_a_boooking_on_offer_but_from_different_user(self,app):
+    def test_should_return_false_when_there_is_a_booking_on_offer_but_from_different_user(self,app):
         # Given
         user = create_user()
         user2 = create_user()

@@ -72,8 +72,7 @@ class Booking(PcObject, Model, VersionedMixin):
                          server_default=expression.false(),
                          default=False)
 
-    cancellationDate = Column(DateTime,
-                      nullable=True)
+    cancellationDate = Column(DateTime, nullable=True)
 
     isUsed = Column(Boolean,
                     nullable=False,
@@ -244,7 +243,7 @@ Booking.trig_update_cancellationDate_on_isCancelled_ddl = """
         IF NEW."isCancelled" IS TRUE AND OLD."cancellationDate" IS NULL THEN
             NEW."cancellationDate" = NOW();
         ELSIF NEW."isCancelled" IS FALSE THEN
-            NEW."cancellationDate" = null;
+            NEW."cancellationDate" = NULL;
         END IF;
         RETURN NEW;
     END;
