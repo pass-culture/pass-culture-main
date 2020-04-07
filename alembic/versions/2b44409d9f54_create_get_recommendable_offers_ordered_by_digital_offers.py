@@ -82,11 +82,9 @@ def upgrade():
         $body$
         LANGUAGE plpgsql;
     """)
-
     op.execute("""
         DROP MATERIALIZED VIEW discovery_view;
     """)
-
     op.execute("""
         CREATE MATERIALIZED VIEW IF NOT EXISTS discovery_view AS
             SELECT
@@ -102,6 +100,9 @@ def upgrade():
             LEFT OUTER JOIN mediation AS offer_mediation ON recommendable_offers.id = offer_mediation."offerId"
                 AND offer_mediation."isActive"
             ORDER BY recommendable_offers.partitioned_offers;
+    """)
+    op.execute("""
+        CREATE UNIQUE INDEX ON discovery_view ("offerDiscoveryOrder");
     """)
 
 
@@ -124,6 +125,9 @@ def downgrade():
             LEFT OUTER JOIN mediation AS offer_mediation ON recommendable_offers.id = offer_mediation."offerId"
                 AND offer_mediation."isActive"
             ORDER BY recommendable_offers.partitioned_offers;
+    """)
+    op.execute("""
+        CREATE UNIQUE INDEX ON discovery_view ("offerDiscoveryOrder");
     """)
     op.execute("""
         DROP FUNCTION get_recommendable_offers_ordered_by_digital_offers;
