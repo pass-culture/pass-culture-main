@@ -1,10 +1,12 @@
-import withLogin from '../withLogin'
 import { mount } from 'enzyme'
-
+import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
+import { Router } from 'react-router-dom'
 import configureStore from 'redux-mock-store'
+
 import LoadingPage from '../../../layout/LoadingPage/LoadingPage'
+import withLogin from '../withLogin'
 
 jest.mock('redux-thunk-data', () => ({
   ...jest.requireActual('redux-thunk-data'),
@@ -31,12 +33,15 @@ describe('src | components | pages | hocs | with-login | withLogin', () => {
         handleFail,
         handleSuccess,
       }
+      const history = createBrowserHistory()
 
       // when
       const WithLoginComponent = withLogin(config)(wrappedComponent)
       const wrapper = mount(
         <Provider store={store}>
-          <WithLoginComponent dispatch={dispatch} />
+          <Router history={history}>
+            <WithLoginComponent dispatch={dispatch} />
+          </Router>
         </Provider>
       )
 
