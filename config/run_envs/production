@@ -1,6 +1,7 @@
 API_URL='https://backend.passculture.beta.gouv.fr'
 THUMBS_URL='https://storage.gra3.cloud.ovh.net/v1/AUTH_810600e32fdc4cb49a8d15332b68d2cc/storage-pc/thumbs'
 NODE_ENV="production"
+MATOMO_GEOLOCATION_GOAL_ID=10
 MATOMO_SERVER_URL="https://pc-matomo-production.scalingo.io/"
 TYPEFORM_URL_CULTURAL_PRACTICES_POLL="https://passculture.typeform.com/to/Oqu7Ag"
 ENVIRONMENT_NAME="production"
