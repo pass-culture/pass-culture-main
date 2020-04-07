@@ -16,7 +16,7 @@ def check_offer_already_booked(offer: Offer, user: User):
 
 def check_existing_stock(stock: Stock) -> None:
     if stock is None:
-        stock_id_doesnt_exist = StockIdDoesntExist('stockId', 'stockId ne correspond à aucun stock')
+        stock_id_doesnt_exist = StockDoesntExist('stockId', 'stockId ne correspond à aucun stock')
         raise stock_id_doesnt_exist
 
 
@@ -97,7 +97,7 @@ class OfferIsAlreadyBooked(ClientError):
     pass
 
 
-class StockIdDoesntExist(ClientError):
+class StockDoesntExist(ClientError):
     pass
 
 

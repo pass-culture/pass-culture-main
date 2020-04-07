@@ -1,9 +1,13 @@
+import pytest
+
+from domain.booking import StockDoesntExist, OfferIsAlreadyBooked, CannotBookFreeOffers, StockIsNotBookable, \
+    UserHasInsufficientFunds, PhysicalExpenseLimitHasBeenReached, QuantityIsInvalid
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_deposit, create_offerer, create_venue, \
     create_booking, create_stock, create_recommendation
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
-from use_cases.book_an_offer import book_an_offer, Failure, Success, BookingInformation
+from use_cases.book_an_offer import book_an_offer, Success, BookingInformation
 
 
 class BookAnOfferTest:
@@ -52,11 +56,11 @@ class BookAnOfferTest:
         )
 
         # When
-        response = book_an_offer(booking_information)
+        with pytest.raises(StockDoesntExist) as error:
+            book_an_offer(booking_information)
 
         # Then
-        assert type(response) == Failure
-        assert response.error_message.errors == {'stockId': ["stockId ne correspond à aucun stock"]}
+        assert error.value.errors == {'stockId': ["stockId ne correspond à aucun stock"]}
 
     @clean_database
     def test_should_return_failure_when_offer_already_booked_by_user(self, app):
@@ -79,11 +83,11 @@ class BookAnOfferTest:
         )
 
         # When
-        response = book_an_offer(booking_information)
+        with pytest.raises(OfferIsAlreadyBooked) as error:
+            book_an_offer(booking_information)
 
         # Then
-        assert type(response) == Failure
-        assert response.error_message.errors == {'offerId': ["Cette offre a déja été reservée par l'utilisateur"]}
+        assert error.value.errors == {'offerId': ["Cette offre a déja été reservée par l'utilisateur"]}
 
     @clean_database
     def test_should_return_failure_when_user_cannot_book_free_offers_and_offer_is_free(self, app):
@@ -104,12 +108,11 @@ class BookAnOfferTest:
         )
 
         # When
-        response = book_an_offer(booking_information)
+        with pytest.raises(CannotBookFreeOffers) as error:
+            book_an_offer(booking_information)
 
         # Then
-        # Then
-        assert type(response) == Failure
-        assert response.error_message.errors == {'cannotBookFreeOffers': ["Votre compte ne vous permet"
+        assert error.value.errors == {'cannotBookFreeOffers': ["Votre compte ne vous permet"
                                                                           " pas de faire de réservation."]}
 
     @clean_database
@@ -129,11 +132,11 @@ class BookAnOfferTest:
         )
 
         # When
-        response = book_an_offer(booking_information)
+        with pytest.raises(StockIsNotBookable) as error:
+            book_an_offer(booking_information)
 
         # Then
-        assert type(response) == Failure
-        assert response.error_message.errors == {'stock': ["Ce stock n'est pas réservable"]}
+        assert error.value.errors == {'stock': ["Ce stock n'est pas réservable"]}
 
     @clean_database
     def test_should_return_failure_when_user_has_not_enough_credit(self, app):
@@ -152,11 +155,11 @@ class BookAnOfferTest:
         )
 
         # When
-        response = book_an_offer(booking_information)
+        with pytest.raises(UserHasInsufficientFunds) as error:
+            book_an_offer(booking_information)
 
         # Then
-        assert type(response) == Failure
-        assert response.error_message.errors == \
+        assert error.value.errors == \
                {'insufficientFunds':
                    [
                        'Le solde de votre pass est insuffisant'
@@ -184,11 +187,11 @@ class BookAnOfferTest:
         )
 
         # When
-        response = book_an_offer(booking_information)
+        with pytest.raises(PhysicalExpenseLimitHasBeenReached) as error:
+            book_an_offer(booking_information)
 
         # Then
-        assert type(response) == Failure
-        assert response.error_message.errors == \
+        assert error.value.errors == \
                {'global':
                    [
                        'Le plafond de 200 € pour les biens culturels'
@@ -213,10 +216,10 @@ class BookAnOfferTest:
         )
 
         # When
-        response = book_an_offer(booking_information)
+        with pytest.raises(QuantityIsInvalid) as error:
+            book_an_offer(booking_information)
 
         # Then
-        assert type(response) == Failure
-        assert response.error_message.errors == {'quantity':
+        assert error.value.errors == {'quantity':
             [
                 "Vous devez réserver une place ou deux dans le cas d'une offre DUO."]}

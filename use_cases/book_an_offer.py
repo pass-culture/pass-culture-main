@@ -1,9 +1,8 @@
 from flask import current_app as app
 
-from domain.booking import OfferIsAlreadyBooked, check_existing_stock, StockIdDoesntExist, \
-    check_quantity_is_valid, QuantityIsInvalid, StockIsNotBookable, check_stock_is_bookable, check_offer_already_booked, \
-    PhysicalExpenseLimitHasBeenReached, check_expenses_limits, check_can_book_free_offer, CannotBookFreeOffers, \
-    UserHasInsufficientFunds, DigitalExpenseLimitHasBeenReached
+from domain.booking import check_existing_stock, check_quantity_is_valid, check_stock_is_bookable, \
+    check_offer_already_booked, \
+    check_expenses_limits, check_can_book_free_offer
 from domain.expenses import get_expenses
 from domain.user_emails import send_booking_recap_emails, send_booking_confirmation_email_to_beneficiary
 from models import Booking
@@ -22,38 +21,21 @@ class BookingInformation(object):
 
 
 def book_an_offer(booking_information: BookingInformation) -> Response:
-    try:
-        stock = stock_queries.find_stock_by_id(booking_information.stock_id)
-        user = user_queries.find_user_by_id(booking_information.user_id)
-        check_existing_stock(stock)
-        offer = offer_queries.get_offer_by_id(stock.offerId)
-        check_offer_already_booked(offer, user)
-        check_quantity_is_valid(booking_information.quantity, stock)
-        check_can_book_free_offer(user, stock)
-        check_stock_is_bookable(stock)
-    except OfferIsAlreadyBooked as error:
-        return Failure(error)
-    except StockIdDoesntExist as error:
-        return Failure(error)
-    except QuantityIsInvalid as error:
-        return Failure(error)
-    except StockIsNotBookable as error:
-        return Failure(error)
-    except CannotBookFreeOffers as error:
-        return Failure(error)
+    stock = stock_queries.find_stock_by_id(booking_information.stock_id)
+    user = user_queries.find_user_by_id(booking_information.user_id)
+    check_existing_stock(stock)
+    offer = offer_queries.get_offer_by_id(stock.offerId)
+    check_offer_already_booked(offer, user)
+
+    check_quantity_is_valid(booking_information.quantity, stock)
+    check_can_book_free_offer(user, stock)
+    check_stock_is_bookable(stock)
 
     booking = _create_booking_with_booking_information(booking_information, stock)
     bookings = booking_queries.find_active_bookings_by_user_id(booking_information.user_id)
     expenses = get_expenses(bookings)
 
-    try:
-        check_expenses_limits(expenses, booking)
-    except UserHasInsufficientFunds as error:
-        return Failure(error)
-    except PhysicalExpenseLimitHasBeenReached as error:
-        return Failure(error)
-    except DigitalExpenseLimitHasBeenReached as error:
-        return Failure(error)
+    check_expenses_limits(expenses, booking)
 
     repository.save(booking)
 
@@ -85,9 +67,3 @@ class Success(Response):
     def __init__(self, booking: Booking):
         super().__init__()
         self.booking = booking
-
-
-class Failure(Response):
-    def __init__(self, error_message: Exception):
-        super().__init__()
-        self.error_message = error_message
