@@ -103,6 +103,7 @@ def upgrade():
     """)
     op.execute("""
         CREATE UNIQUE INDEX ON discovery_view ("offerDiscoveryOrder");
+        COMMIT;
     """)
 
 
@@ -128,6 +129,7 @@ def downgrade():
     """)
     op.execute("""
         CREATE UNIQUE INDEX ON discovery_view ("offerDiscoveryOrder");
+        COMMIT;
     """)
     op.execute("""
         DROP FUNCTION get_recommendable_offers_ordered_by_digital_offers;
