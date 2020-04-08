@@ -13,21 +13,21 @@ fixture('Quand je navigue vers /bienvenue,').beforeEach(async t => {
 
 test('je vois le texte de la première carte tutoriel', async t => {
   const tutoText = Selector('p').withText(
-    'À partir d’aujourd’hui, tu as 2 ans et 500€ crédités directement sur l’appli pour découvrir de nouvelles activités culturelles autour de chez toi et partout en France !'
+    'À partir d’aujourd’hui, tu as 2 ans et 500 € crédités directement sur l’appli pour découvrir de nouvelles activités culturelles autour de chez toi et partout en France !'
   )
 
   await t.expect(tutoText.exists).ok()
 })
 
 test('je vois le texte de la deuxième carte tutoriel en cliquant sur la flèche de la première', async t => {
-  const nextArrow = Selector('.next-arrow')
+  const nextArrow = Selector('img').withAttribute('alt', 'Suivant')
 
   await t.click(nextArrow)
 
   const secondTutoFirstText = Selector('p')
     .nth(0)
     .withText(
-      'Profite de ces 500€ en réservant sur l’appli des concerts, des cours, des abonnements à une plateforme numérique…'
+      'Profite de ces 500 € en réservant sur l’appli des concerts, des cours, des abonnements à une plateforme numérique…'
     )
 
   const secondTutoSecondText = Selector('p')
@@ -42,18 +42,18 @@ test('je vois le texte de la deuxième carte tutoriel en cliquant sur la flèche
 })
 
 test('je vois le texte de la troisième carte tutoriel en cliquant sur la flèche de la deuxième', async t => {
-  let nextArrow = Selector('.next-arrow')
+  let nextArrow = Selector('img').withAttribute('alt', 'Suivant')
 
   await t.click(nextArrow)
 
-  nextArrow = Selector('.next-arrow')
+  nextArrow = Selector('img').withAttribute('alt', 'Suivant')
 
   await t.click(nextArrow)
 
   const thirdTutoFirstText = Selector('p')
     .nth(0)
     .withText(
-      'Tu peux utiliser jusqu’à 200€ en biens physiques(livres, vinyles…) et jusqu’à 200€ en biens numériques (streaming, jeux vidéo…).'
+      'Tu peux utiliser jusqu’à 200 € en biens physiques(livres, vinyles…) et jusqu’à 200 € en biens numériques (streaming, jeux vidéo…).'
     )
 
   const thirdTutoSecondText = Selector('p')
