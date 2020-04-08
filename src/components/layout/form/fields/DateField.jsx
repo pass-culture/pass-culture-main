@@ -25,14 +25,14 @@ class DateField extends PureComponent {
   )
 
   renderDateInput = dateInputProps => (
-    <div className="flex-columns items-center field-input field-date">
+    <label className="flex-columns items-center field-input field-date">
       <DatePicker {...dateInputProps} />
       <div className="flex-auto" />
       <Icon
         alt="Horaires"
         svg="ico-calendar"
       />
-    </div>
+    </label>
   )
 
   applyTimezoneToDatetime = (inputValue, timezone) => {
@@ -122,10 +122,9 @@ class DateField extends PureComponent {
               <span>
                 {label}
               </span>
-              {required && !readOnly &&
-                <span className="field-asterisk">
-                  {'*'}
-                </span>}
+              {required && !readOnly && <span className="field-asterisk">
+                {'*'}
+                                        </span>}
             </span>
           )}
         </label>

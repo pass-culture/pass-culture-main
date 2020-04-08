@@ -21,6 +21,9 @@
     "jest/prefer-expect-assertions": "off",
     "jest/prefer-inline-snapshots": "off",
     "jsx-a11y/label-has-for": "off",
+    "jsx-a11y/label-has-associated-control": [ 2, {
+      "controlComponents": ["DatePicker"]
+    }],
     "no-var": "error",
     "react/forbid-component-props": "off",
     "react/jsx-curly-brace-presence": [2, { "props": "never", "children": "ignore" }],
