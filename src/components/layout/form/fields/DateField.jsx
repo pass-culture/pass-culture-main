@@ -6,34 +6,14 @@ import DatePicker from 'react-datepicker'
 import { Field } from 'react-final-form'
 import { composeValidators } from 'react-final-form-utils'
 
-import Icon from '../../Icon'
 import getRequiredValidate from '../utils/getRequiredValidate'
+import { InputWithCalendar } from './InputWithCalendar'
 
 class DateField extends PureComponent {
   constructor(props) {
     super(props)
     this.state = { hasPressedDelete: false }
   }
-
-  renderReadOnlyDateInput = ({ formattedSelectedDatetime, name }) => (
-    <input
-      className="field-input field-date"
-      name={name}
-      readOnly
-      value={formattedSelectedDatetime}
-    />
-  )
-
-  renderDateInput = dateInputProps => (
-    <label className="flex-columns items-center field-input field-date">
-      <DatePicker {...dateInputProps} />
-      <div className="flex-auto" />
-      <Icon
-        alt="Horaires"
-        svg="ico-calendar"
-      />
-    </label>
-  )
 
   applyTimezoneToDatetime = (inputValue, timezone) => {
     let selectedDatetime = moment(inputValue)
@@ -104,6 +84,7 @@ class DateField extends PureComponent {
       onChange: this.onDateChange(input),
       onKeyDown: this.onKeyDown(input),
       value: formattedSelectedDatetime,
+      customInput: <InputWithCalendar />,
     }
 
     return (
@@ -131,12 +112,16 @@ class DateField extends PureComponent {
         <div className="field-control">
           <div className="field-value flex-columns items-center">
             <div className="field-inner flex-columns items-center">
-              {readOnly
-                ? this.renderReadOnlyDateInput({
-                    formattedSelectedDatetime,
-                    name,
-                  })
-                : this.renderDateInput(dateInputProps)}
+              {readOnly ? (
+                <input
+                  className="field-input field-date"
+                  name={name}
+                  readOnly
+                  value={formattedSelectedDatetime}
+                />
+              ) : (
+                <DatePicker {...dateInputProps} />
+              )}
             </div>
             {renderValue()}
           </div>
