@@ -41,13 +41,15 @@ class Discovery extends PureComponent {
 
   componentDidUpdate(prevProps) {
     const {
+      history,
       location,
       recommendations,
       redirectToFirstRecommendationIfNeeded,
+      match,
       seedLastRequestTimestamp,
       updateLastRequestTimestamp,
     } = this.props
-    const { location: prevLocation } = prevProps
+    const { location: prevLocation, recommendations: prevRecommendations } = prevProps
 
     if (prevLocation.pathname !== location.pathname && location.pathname === '/decouverte-v3') {
       redirectToFirstRecommendationIfNeeded(recommendations)
@@ -55,6 +57,14 @@ class Discovery extends PureComponent {
 
     if (Date.now() > seedLastRequestTimestamp + MINIMUM_DELAY_BEFORE_UPDATING_SEED_3_HOURS) {
       updateLastRequestTimestamp()
+    }
+    if (prevRecommendations !== recommendations) {
+      const { params } = match
+      const { offerId } = params
+      const isOfferInReco = recommendations.filter(reco => reco.offerId === offerId).length > 0
+      if (recommendations.length > 0 && !isOfferInReco) {
+        history.push('/decouverte-v3')
+      }
     }
   }
 
@@ -180,6 +190,7 @@ Discovery.propTypes = {
   coordinates: PropTypes.shape().isRequired,
   currentRecommendation: PropTypes.shape(),
   deleteTutorials: PropTypes.func.isRequired,
+  history: PropTypes.shape().isRequired,
   loadRecommendations: PropTypes.func.isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
@@ -187,6 +198,7 @@ Discovery.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       view: PropTypes.string,
+      offerId: PropTypes.string,
     }),
   }).isRequired,
   readRecommendations: PropTypes.arrayOf(PropTypes.shape()),

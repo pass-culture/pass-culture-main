@@ -18,6 +18,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       },
       currentRecommendation: {},
       deleteTutorials: jest.fn(),
+      history: { push: jest.fn() },
       loadRecommendations: jest.fn(),
       location: {
         pathname: '',
@@ -329,6 +330,91 @@ describe('src | components | pages | discovery | Discovery', () => {
 
       // then
       expect(props.updateLastRequestTimestamp).not.toHaveBeenCalledWith()
+    })
+
+    describe('when user refresh discovery', () => {
+      it('should redirect to first recommendation when offerID is not in recommendations', () => {
+        // given
+        props.recommendations = [
+          {
+            offerId: 'A1',
+          },
+        ]
+        props.match.params = {
+          offerId: 'A1',
+        }
+        const wrapper = shallow(<Discovery {...props} />)
+        props.recommendations = [
+          {
+            offerId: 'A2',
+          },
+        ]
+
+        // when
+        wrapper.setProps(props)
+
+        // then
+        expect(props.history.push).toHaveBeenCalledWith('/decouverte-v3')
+      })
+
+      it('should not redirect to first recommendation when offerId is in recommendations', () => {
+        // given
+        props.recommendations = [
+          {
+            offerId: 'A1',
+          },
+        ]
+        props.match.params = {
+          offerId: 'A1',
+        }
+        const wrapper = shallow(<Discovery {...props} />)
+
+        // when
+        wrapper.setProps(props)
+
+        // then
+        expect(props.history.push).not.toHaveBeenCalledWith('/decouverte-v3')
+      })
+
+      it('should not redirect to first recommendation when there is no recommendations', () => {
+        // given
+        props.recommendations = [
+          {
+            offerId: 'A1',
+          },
+        ]
+        props.match.params = {
+          offerId: 'A1',
+        }
+        const wrapper = shallow(<Discovery {...props} />)
+        props.recommendations = []
+
+        // when
+        wrapper.setProps(props)
+
+        // then
+        expect(props.history.push).not.toHaveBeenCalledWith('/decouverte-v3')
+      })
+
+      it('should not redirect to first recommendation when there is a change in props other than recommendations', () => {
+        // given
+        props.currentRecommendation = {
+          offerId: 'A1',
+        }
+        props.match.params = {
+          offerId: 'A1',
+        }
+        const wrapper = shallow(<Discovery {...props} />)
+        props.currentRecommendation = {
+          offerId: 'A2',
+        }
+
+        // when
+        wrapper.setProps(props)
+
+        // then
+        expect(props.history.push).not.toHaveBeenCalledWith('/decouverte-v3')
+      })
     })
   })
 })
