@@ -47,6 +47,7 @@ OFFER_INCLUDES = [
         "includes": [
             'bookingsQuantity',
             'isBookable',
+            'isEventExpired',
             'remainingQuantity',
         ]
     },

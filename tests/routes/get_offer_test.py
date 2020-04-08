@@ -4,7 +4,7 @@ from tests.model_creators.generic_creators import create_bank_information, \
     create_booking, create_deposit, create_mediation, create_offerer, \
     create_stock, create_user, create_venue
 from tests.model_creators.specific_creators import \
-    create_offer_with_thing_product
+    create_offer_with_thing_product, create_stock_with_event_offer
 from utils.human_ids import humanize
 
 
@@ -75,3 +75,21 @@ class Get:
             # Then
             assert response.status_code == 200
             assert humanize(booking.id) in response.json['firstMatchingBooking']['id']
+
+        @clean_database
+        def when_returns_an_event_stock(self, app):
+            # Given
+            beneficiary = create_user()
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_event_offer(offerer=offerer, venue=venue)
+            repository.save(beneficiary, stock)
+
+            # When
+            response = TestClient(app.test_client()) \
+                .with_auth(email=beneficiary.email) \
+                .get(f'/offers/{humanize(stock.offer.id)}')
+
+            # Then
+            assert response.status_code == 200
+            assert 'isEventExpired' in response.json['stocks'][0]
