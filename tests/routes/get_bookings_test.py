@@ -37,12 +37,12 @@ class Get:
             assert len(all_bookings) == 2
             assert 'qrCode' not in first_booking
             assert 'completedUrl' in first_booking
-            assert 'isEventExpired' in first_booking
             assert 'isUserCancellable' in first_booking
             assert 'mediation' in first_booking
             assert 'thumbUrl' in first_booking
             assert 'offer' in first_booking['stock']
             assert 'isBookable' in first_booking['stock']
+            assert 'isEventExpired' in first_booking['stock']
             assert 'isDigital' in first_booking['stock']['offer']
             assert 'isEvent' in first_booking['stock']['offer']
             assert 'isFullyBooked' in first_booking['stock']['offer']
@@ -83,12 +83,12 @@ class Get:
             assert response.status_code == 200
             assert 'qrCode' in first_booking
             assert 'completedUrl' in first_booking
-            assert 'isEventExpired' in first_booking
             assert 'isUserCancellable' in first_booking
             assert 'mediation' in first_booking
             assert 'thumbUrl' in first_booking
             assert 'offer' in first_booking['stock']
             assert 'isBookable' in first_booking['stock']
+            assert 'isEventExpired' in first_booking['stock']
             assert 'isDigital' in first_booking['stock']['offer']
             assert 'isEvent' in first_booking['stock']['offer']
             assert 'isFullyBooked' in first_booking['stock']['offer']

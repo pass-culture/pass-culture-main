@@ -96,6 +96,14 @@ class Stock(PcObject,
     def remainingQuantity(self):
         return 'unlimited' if self.quantity is None else self.quantity - self.bookingsQuantity
 
+    @property
+    def isEventExpired(self):
+        if self.beginningDatetime:
+            event_start_time_is_over = self.beginningDatetime <= datetime.utcnow()
+            return event_start_time_is_over
+        else:
+            return False
+
     @classmethod
     def queryNotSoftDeleted(cls):
         return Stock.query.filter_by(isSoftDeleted=False)

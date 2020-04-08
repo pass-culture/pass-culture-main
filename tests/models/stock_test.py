@@ -15,7 +15,7 @@ from tests.model_creators.generic_creators import (create_booking,
                                                    create_venue)
 from tests.model_creators.specific_creators import (
     create_offer_with_event_product, create_offer_with_thing_product,
-    create_stock_from_offer, create_stock_with_event_offer)
+    create_stock_from_offer, create_stock_with_event_offer, create_stock_with_thing_offer)
 
 
 @clean_database
@@ -393,7 +393,7 @@ class IsBookableTest:
         assert stock.isBookable
 
 
-class hasBookingLimitDatetimePassedTest:
+class HasBookingLimitDatetimePassedTest:
     @freeze_time('2019-07-10')
     def test_should_return_true_when_booking_limit_datetime_is_in_the_past(self):
         # Given
@@ -424,7 +424,7 @@ class hasBookingLimitDatetimePassedTest:
         assert not stock.hasBookingLimitDatetimePassed
 
 
-class bookingsQuantityTest:
+class BookingsQuantityTest:
     @clean_database
     def test_should_return_0_when_no_bookings(self, app):
         # Given
@@ -474,4 +474,41 @@ class bookingsQuantityTest:
 
         # Then
         assert stock.bookingsQuantity == 1
+
+class IsEventExpiredTest:
+    def test_isEventExpired_is_false_when_stock_is_not_an_event(self):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue)
+
+        # When
+        is_event_expired = stock.isEventExpired
+
+        # Then
+        assert is_event_expired is False
+
+    def test_isEventExpired_is_false_when_stock_is_an_event_in_the_future(self):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, beginning_datetime=datetime.utcnow() + timedelta(hours=72))
+
+        # When
+        is_event_expired = stock.isEventExpired
+
+        # Then
+        assert is_event_expired is False
+
+    def test_isEventExpired_is_true_when_stock_is_an_event_in_the_past(self):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, beginning_datetime=datetime.utcnow() - timedelta(hours=24))
+
+        # When
+        is_event_expired = stock.isEventExpired
+
+        # Then
+        assert is_event_expired is True
 

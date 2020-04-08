@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from unittest.mock import patch
 
 import pytest
-from freezegun import freeze_time
 
 from models import Booking, Offer, Stock, User, Product, ApiErrors
 from repository import repository
@@ -96,6 +95,7 @@ def test_raises_error_on_booking_when_existing_booking_is_used_and_booking_date_
     # Then
     assert e.value.errors['global'] == ['La quantité disponible pour cette offre est atteinte.']
 
+
 class BookingThumbUrlTest:
     @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
     def test_model_thumbUrl_should_use_mediation_of_recommendation_first_as_thumbUrl(self, get_storage_base_url):
@@ -116,9 +116,9 @@ class BookingThumbUrlTest:
         # then
         assert booking.thumbUrl == "http://localhost/storage/thumbs/mediations/AE"
 
-
     @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
-    def test_model_thumbUrl_should_have_thumbUrl_using_active_mediation_when_no_recommendation(self, get_storage_base_url):
+    def test_model_thumbUrl_should_have_thumbUrl_using_active_mediation_when_no_recommendation(self,
+                                                                                               get_storage_base_url):
         # given
         user = create_user(email='user@example.com')
         offerer = create_offerer()
@@ -135,9 +135,9 @@ class BookingThumbUrlTest:
         # then
         assert booking.thumbUrl == "http://localhost/storage/thumbs/mediations/A9"
 
-
     @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
-    def test_model_thumbUrl_should_have_thumbUrl_using_product_when_no_mediation_nor_recommendation(self, get_storage_base_url):
+    def test_model_thumbUrl_should_have_thumbUrl_using_product_when_no_mediation_nor_recommendation(self,
+                                                                                                    get_storage_base_url):
         # given
         user = create_user(email='user@example.com')
         offerer = create_offerer()
@@ -153,9 +153,9 @@ class BookingThumbUrlTest:
         # then
         assert booking.thumbUrl == "http://localhost/storage/thumbs/products/A9"
 
-
     @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
-    def test_model_thumbUrl_should_have_no_thumb_when_no_mediation_nor_recommendation_and_product_thumb_count_is_0(self, get_storage_base_url):
+    def test_model_thumbUrl_should_have_no_thumb_when_no_mediation_nor_recommendation_and_product_thumb_count_is_0(self,
+                                                                                                                   get_storage_base_url):
         # given
         user = create_user(email='user@example.com')
         offerer = create_offerer()
@@ -170,9 +170,9 @@ class BookingThumbUrlTest:
         # then
         assert booking.thumbUrl is None
 
-
     @patch('models.has_thumb_mixin.get_storage_base_url', return_value='http://localhost/storage')
-    def test_model_thumbUrl_should_have_no_thumb_when_no_thumb_on_mediation_nor_recommendation_and_mediation_thumb_count_is_0(self, get_storage_base_url):
+    def test_model_thumbUrl_should_have_no_thumb_when_no_thumb_on_mediation_nor_recommendation_and_mediation_thumb_count_is_0(
+            self, get_storage_base_url):
         # given
         user = create_user(email='user@example.com')
         offerer = create_offerer()

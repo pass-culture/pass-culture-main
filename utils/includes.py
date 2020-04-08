@@ -166,12 +166,12 @@ USER_INCLUDES = [
 
 WEBAPP_GET_BOOKING_INCLUDES = [
     "completedUrl",
-    'isEventExpired',
     "isUserCancellable",
     {
         "key": "stock",
         "includes": [
             'isBookable',
+            'isEventExpired',
             'remainingQuantity',
             {
                 "key": "offer",
@@ -190,6 +190,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                         "key": "stocks",
                         "includes": [
                             'isBookable',
+                            'isEventExpired',
                             'remainingQuantity'
                         ]
                     },
@@ -210,12 +211,12 @@ WEBAPP_GET_BOOKING_INCLUDES = [
 
 WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = [
     "completedUrl",
-    'isEventExpired',
     "isUserCancellable",
     {
         "key": "stock",
         "includes": [
             'isBookable',
+            'isEventExpired',
             'remainingQuantity',
             {
                 "key": "offer",
@@ -234,6 +235,7 @@ WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = [
                         "key": "stocks",
                         "includes": [
                             'isBookable',
+                            'isEventExpired',
                             'remainingQuantity'
                         ]
                     },
