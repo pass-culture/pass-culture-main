@@ -69,7 +69,7 @@ describe('src | ProductFields', () => {
       expect(dateField).toHaveLength(1)
       expect(dateField.prop('maxDate')).toBeUndefined()
       expect(dateField.prop('name')).toBe('bookingLimitDatetime')
-      expect(dateField.prop('placeholder')).toBe('Laissez vide si pas de limite')
+      expect(dateField.prop('placeholder')).toBe('')
       expect(dateField.prop('readOnly')).toBe(false)
       expect(dateField.prop('renderValue')).toStrictEqual(expect.any(Function))
       expect(dateField.prop('timezone')).toBe('UTC')
