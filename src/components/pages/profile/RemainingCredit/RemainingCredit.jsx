@@ -6,8 +6,7 @@ import formatDecimals from '../../../../utils/numbers/formatDecimals'
 import Icon from '../../../layout/Icon/Icon'
 import getRemainingCreditForGivenCreditLimit from '../utils/utils'
 import CreditGauge from './CreditGauge/CreditGauge'
-
-const NON_BREAKING_SPACE = '\u00A0'
+import { NON_BREAKING_SPACE } from '../../../../utils/specialCharacters'
 
 class RemainingCredit extends PureComponent {
   constructor(props) {

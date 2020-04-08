@@ -1,5 +1,5 @@
 .second-tutorial {
-  background-image: url('/onboarding-2@3x.jpg');
+  background-image: url('/onboarding-2@2x.jpg');
   background-color: $background-tuto-purple;
   background-repeat: no-repeat;
   background-position: center bottom;
@@ -16,12 +16,6 @@
   }
 
   .text-highlight {
-    padding: rem(1px) rem(5px);
-
-    &::after {
-      padding: rem(1px) rem(1px);
-    }
-
     &.text-book-in-app::after {
       width: rem(184px);
     }

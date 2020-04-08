@@ -1,7 +1,7 @@
-import Icon from '../../../layout/Icon/Icon'
 import React from 'react'
 
-const NON_BREAKING_SPACE = '\u00A0'
+import Icon from '../../../layout/Icon/Icon'
+import { NON_BREAKING_SPACE } from '../../../../utils/specialCharacters'
 
 const ThirdTutorial = () => (
   <div className="third-tutorial">
@@ -10,11 +10,11 @@ const ThirdTutorial = () => (
       svg="icon-balance"
     />
     <p className="third-tutorial-text">
-      {'Tu peux utiliser jusqu’à 200€ en '}
+      {`Tu peux utiliser jusqu’à 200${NON_BREAKING_SPACE}€ en `}
       <span className="text-highlight text-physical-offer text-first-highlight">
         {`biens${NON_BREAKING_SPACE}physiques`}
       </span>
-      {'(livres, vinyles…) et jusqu’à 200€ en '}
+      {`(livres, vinyles…) et jusqu’à 200${NON_BREAKING_SPACE}€ en `}
       <span className="text-highlight text-digital-offer text-second-highlight">
         {`biens${NON_BREAKING_SPACE}numériques`}
       </span>

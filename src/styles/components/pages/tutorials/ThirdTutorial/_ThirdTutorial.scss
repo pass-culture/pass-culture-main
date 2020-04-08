@@ -1,5 +1,5 @@
 .third-tutorial {
-  background-image: url('/onboarding-3@3x.jpg');
+  background-image: url('/onboarding-3@2x.jpg');
   background-color: $background-tuto-purple;
   background-repeat: no-repeat;
   background-position: center bottom;
@@ -17,27 +17,17 @@
   }
 
   .text-highlight {
-    padding: rem(1px) rem(5px);
-
-    &::after {
-      padding: rem(0px) rem(1px) rem(2px);
-    }
-
-    &.text-physical-offer {
+    &.text-physical-offer, .text-digital-offer {
       margin-right: rem(5px);
-
-      &::after {
-        width: rem(132px);
-      }
     }
 
-    &.text-digital-offer {
-      margin-left: rem(4px);
+    &.text-physical-offer::after {
+      width: rem(132px);
+    }
 
-      &::after {
-        width: rem(145px);
-        margin-left: rem(2px);
-      }
+    &.text-digital-offer::after {
+      width: rem(145px);
+      margin-left: rem(2px);
     }
 
     &.text-go-out::after {

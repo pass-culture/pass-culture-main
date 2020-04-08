@@ -24,6 +24,7 @@
     color: $purple-blue;
     font-weight: 500;
     margin: 0 rem(1px);
+    padding: rem(1px) rem(4px);
     position: relative;
     z-index: 10;
 
@@ -33,6 +34,7 @@
       content: '';
       height: rem(22px);
       left: 0;
+      padding: rem(1px) 0;
       position: absolute;
       top: 0;
       width: rem(41px);

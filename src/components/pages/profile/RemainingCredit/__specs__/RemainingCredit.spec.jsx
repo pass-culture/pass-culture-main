@@ -4,8 +4,7 @@ import { shallow } from 'enzyme'
 import RemainingCredit from '../RemainingCredit'
 import CreditGauge from '../CreditGauge/CreditGauge'
 import Icon from '../../../../layout/Icon/Icon'
-
-const NON_BREAKING_SPACE = '\u00A0'
+import { NON_BREAKING_SPACE } from '../../../../../utils/specialCharacters'
 
 const READ_MORE_TEXT = `Le but du pass Culture est de renforcer vos pratiques culturelles,
                 mais aussi d’en créer de nouvelles. Ces plafonds ont été mis en place

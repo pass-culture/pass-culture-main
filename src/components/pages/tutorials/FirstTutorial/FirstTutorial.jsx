@@ -1,7 +1,7 @@
-import Icon from '../../../layout/Icon/Icon'
 import React from 'react'
 
-const NON_BREAKING_SPACE = '\u00A0'
+import { NON_BREAKING_SPACE } from '../../../../utils/specialCharacters'
+import Icon from '../../../layout/Icon/Icon'
 
 const FirstTutorial = () => (
   <div className="first-tutorial">
@@ -16,7 +16,7 @@ const FirstTutorial = () => (
       </span>
       {' et '}
       <span className="text-highlight text-second-highlight">
-        {'500€'}
+        {`500${NON_BREAKING_SPACE}€`}
       </span>
       {
         ' crédités directement sur l’appli pour découvrir de nouvelles activités culturelles autour de chez toi et partout en France !'

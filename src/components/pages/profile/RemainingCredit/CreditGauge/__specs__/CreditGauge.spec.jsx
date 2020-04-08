@@ -3,8 +3,7 @@ import { shallow } from 'enzyme'
 
 import CreditGauge, { computeFillingStep } from '../CreditGauge'
 import Icon from '../../../../../layout/Icon/Icon'
-
-const NON_BREAKING_SPACE = '\u00A0'
+import { NON_BREAKING_SPACE } from '../../../../../../utils/specialCharacters'
 
 describe('components | CreditGauge', () => {
   it('should render the gauge picto', () => {
@@ -14,7 +13,7 @@ describe('components | CreditGauge', () => {
       remainingCredit: 12.0,
       detailsText: 'Some explanations',
       creditLimit: 200,
-      picto: 'picto-svg'
+      picto: 'picto-svg',
     }
 
     // When

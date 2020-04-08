@@ -3,8 +3,7 @@ import React from 'react'
 
 import Icon from '../../../../layout/Icon/Icon'
 import formatDecimals from '../../../../../utils/numbers/formatDecimals'
-
-const NON_BREAKING_SPACE = '\u00A0'
+import { NON_BREAKING_SPACE } from '../../../../../utils/specialCharacters'
 
 const CreditGauge = ({ extraClassName, creditLimit, detailsText, picto, remainingCredit }) => {
   const isGaugeEmpty = remainingCredit === 0
@@ -45,7 +44,7 @@ CreditGauge.propTypes = {
   detailsText: PropTypes.string.isRequired,
   extraClassName: PropTypes.string.isRequired,
   picto: PropTypes.string.isRequired,
-  remainingCredit: PropTypes.number.isRequired
+  remainingCredit: PropTypes.number.isRequired,
 }
 
 export default CreditGauge
