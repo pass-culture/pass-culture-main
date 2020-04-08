@@ -2,7 +2,7 @@ import { mount, shallow } from 'enzyme'
 import React from 'react'
 import { Form } from 'react-final-form'
 
-import DateField from '../DateField'
+import DateField from '../DateField/DateField'
 import TimeField from '../TimeField'
 
 describe('src | components | layout | form | TimeField', () => {

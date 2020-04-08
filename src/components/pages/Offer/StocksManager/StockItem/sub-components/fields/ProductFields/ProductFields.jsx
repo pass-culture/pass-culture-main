@@ -9,7 +9,7 @@ import {
   formatPrice,
   getFormattedRemainingQuantities,
 } from '../../../utils/utils'
-import DateField from '../../../../../../../layout/form/fields/DateField'
+import DateField from '../../../../../../../layout/form/fields/DateField/DateField'
 import HiddenField from '../../../../../../../layout/form/fields/HiddenField'
 import NumberField from '../../../../../../../layout/form/fields/NumberField'
 import Icon from '../../../../../../../layout/Icon'

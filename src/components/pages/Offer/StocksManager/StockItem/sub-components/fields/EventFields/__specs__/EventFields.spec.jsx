@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import EventFields from '../EventFields'
-import DateField from '../../../../../../../../layout/form/fields/DateField'
+import DateField from '../../../../../../../../layout/form/fields/DateField/DateField'
 import TimeField from '../../../../../../../../layout/form/fields/TimeField'
 
 describe('src | EventFields', () => {

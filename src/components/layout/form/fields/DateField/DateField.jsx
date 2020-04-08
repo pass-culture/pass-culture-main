@@ -6,7 +6,7 @@ import DatePicker from 'react-datepicker'
 import { Field } from 'react-final-form'
 import { composeValidators } from 'react-final-form-utils'
 
-import getRequiredValidate from '../utils/getRequiredValidate'
+import getRequiredValidate from '../../utils/getRequiredValidate'
 import { InputWithCalendar } from './InputWithCalendar'
 
 class DateField extends PureComponent {

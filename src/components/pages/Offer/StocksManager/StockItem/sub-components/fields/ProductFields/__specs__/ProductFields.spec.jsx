@@ -4,7 +4,7 @@ import ProductFields from '../ProductFields'
 import React from 'react'
 import HiddenField from '../../../../../../../../layout/form/fields/HiddenField'
 import NumberField from '../../../../../../../../layout/form/fields/NumberField'
-import DateField from '../../../../../../../../layout/form/fields/DateField'
+import DateField from '../../../../../../../../layout/form/fields/DateField/DateField'
 
 describe('src | ProductFields', () => {
   let props
