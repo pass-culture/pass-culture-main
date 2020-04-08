@@ -2,12 +2,13 @@ import pytest
 
 from domain.booking import StockDoesntExist, OfferIsAlreadyBooked, CannotBookFreeOffers, StockIsNotBookable, \
     UserHasInsufficientFunds, PhysicalExpenseLimitHasBeenReached, QuantityIsInvalid
+from models import Booking
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_deposit, create_offerer, create_venue, \
     create_booking, create_stock, create_recommendation
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
-from use_cases.book_an_offer import book_an_offer, Success, BookingInformation
+from use_cases.book_an_offer import book_an_offer, BookingInformation
 
 
 class BookAnOfferTest:
@@ -30,10 +31,10 @@ class BookAnOfferTest:
         )
 
         # When
-        response = book_an_offer(booking_information)
+        booking = book_an_offer(booking_information)
 
         # Then
-        assert type(response) == Success
+        assert booking == Booking.query.filter(Booking.isCancelled == False).one()
 
     @clean_database
     def test_should_return_failure_when_stock_id_does_not_match_any_existing_stock(self, app):
@@ -113,7 +114,7 @@ class BookAnOfferTest:
 
         # Then
         assert error.value.errors == {'cannotBookFreeOffers': ["Votre compte ne vous permet"
-                                                                          " pas de faire de réservation."]}
+                                                               " pas de faire de réservation."]}
 
     @clean_database
     def test_should_return_failure_when_stock_is_not_bookable(self, app):

@@ -20,21 +20,13 @@ def check_existing_stock(stock: Stock) -> None:
         raise stock_id_doesnt_exist
 
 
-def check_quantity_is_valid(quantity: int, stock: Stock) -> None:
-    offer_is_duo = stock.offer.isDuo
-
-    is_valid_quantity_for_duo_offer = True
-    is_valid_quantity_for_solo_offer = True
-    if offer_is_duo:
-        is_valid_quantity_for_duo_offer = True if quantity in (1, 2) else False
-    else:
-        is_valid_quantity_for_solo_offer = True if quantity == 1 else False
-
-    if not is_valid_quantity_for_duo_offer:
+def check_quantity_is_valid(quantity: int, offer_is_duo: bool) -> None:
+    if offer_is_duo and quantity not in (1, 2):
         quantity_is_invalid = QuantityIsInvalid('quantity',
                                                 "Vous devez réserver une place ou deux dans le cas d'une offre DUO.")
         raise quantity_is_invalid
-    if not is_valid_quantity_for_solo_offer:
+
+    if not offer_is_duo and quantity != 1:
         quantity_is_invalid = QuantityIsInvalid('quantity', "Vous ne pouvez réserver qu'une place pour cette offre.")
         raise quantity_is_invalid
 
@@ -51,34 +43,30 @@ def check_expenses_limits(expenses: Dict, booking: Booking,
     offer = stock.offer
 
     if (expenses['all']['actual'] + booking.value) > expenses['all']['max']:
-        user_has_insufficient_funds = UserHasInsufficientFunds('insufficientFunds',
-                                                               'Le solde de votre pass est insuffisant pour réserver cette offre.')
-        raise user_has_insufficient_funds
+        raise UserHasInsufficientFunds('insufficientFunds',
+                                       'Le solde de votre pass est insuffisant pour réserver cette offre.')
 
     if is_eligible_to_physical_offers_capping(offer):
         if (expenses['physical']['actual'] + booking.value) > expenses['physical']['max']:
-            physical_expense_limit_has_been_reached = PhysicalExpenseLimitHasBeenReached(
+            raise PhysicalExpenseLimitHasBeenReached(
                 'global',
-                'Le plafond de %s € pour les biens culturels ne vous permet pas ' \
-                'de réserver cette offre.' % expenses['physical']['max']
+                f"Le plafond de {expenses['physical']['max']} € pour les biens culturels ne vous permet pas " \
+                "de réserver cette offre."
             )
-            raise physical_expense_limit_has_been_reached
 
     if is_eligible_to_digital_offers_capping(offer):
         if (expenses['digital']['actual'] + booking.value) > expenses['digital']['max']:
-            digital_expense_limit_has_been_reached = DigitalExpenseLimitHasBeenReached(
+            raise DigitalExpenseLimitHasBeenReached(
                 'global',
-                'Le plafond de %s € pour les offres numériques ne vous permet pas ' \
-                'de réserver cette offre.' % expenses['digital']['max']
+                f"Le plafond de {expenses['digital']['max']} € pour les offres numériques ne vous permet pas " \
+                "de réserver cette offre."
             )
-        raise digital_expense_limit_has_been_reached
 
 
 def check_can_book_free_offer(user: User, stock: Stock):
     if not user.canBookFreeOffers and stock.price == 0:
-        cannot_book_free_offers_errors = CannotBookFreeOffers('cannotBookFreeOffers',
-                                                              'Votre compte ne vous permet pas de faire de réservation.')
-        raise cannot_book_free_offers_errors
+        raise CannotBookFreeOffers('cannotBookFreeOffers',
+                                   'Votre compte ne vous permet pas de faire de réservation.')
 
 
 class ClientError(Exception):

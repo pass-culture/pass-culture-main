@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
+from domain.booking import StockIsNotBookable
 from repository import repository
 from tests.conftest import TestClient, clean_database
 from tests.model_creators.generic_creators import create_deposit, \
@@ -100,34 +101,14 @@ class Post:
 
     class Returns400:
         @clean_database
-        def when_missing_stock_id(self, app):
+        @patch('routes.bookings.book_an_offer',
+               side_effect=StockIsNotBookable('stock', "Ce stock n'est pas réservable"))
+        def when_use_case_raise_stock_is_not_bookable_exception(self, mock_book_an_offer, app):
             # Given
-            user = create_user()
-            repository.save(user)
-
-            booking_json = {
-                'stockId': None,
-                'recommendationId': 'AFQA',
-                'quantity': 2
-            }
-
-            # When
-            response = TestClient(app.test_client()) \
-                .with_auth(user.email) \
-                .post('/bookings', json=booking_json)
-
-            # Then
-            assert response.status_code == 400
-            assert response.json['stockId'] == ['Vous devez préciser un identifiant d\'offre']
-
-        @clean_database
-        def when_offer_is_not_bookable(self, app):
-            # Given
-            four_days_ago = datetime.utcnow() - timedelta(days=4)
             user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
-            stock = create_stock_with_thing_offer(offerer, venue, booking_limit_datetime=four_days_ago)
+            stock = create_stock_with_thing_offer(offerer, venue)
             create_deposit(user)
             repository.save(stock, user)
 

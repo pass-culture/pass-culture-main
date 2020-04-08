@@ -27,7 +27,7 @@ from validation.routes.bookings import \
     check_booking_is_not_used, \
     check_booking_token_is_usable, \
     check_booking_token_is_keepable, \
-    check_is_not_activation_booking
+    check_is_not_activation_booking, check_has_stock_id
 
 
 class CheckExpenseLimitsTest:
@@ -306,107 +306,74 @@ class CheckRightsToGetBookingsCsvTest:
 
 
 class CheckQuantityIsValidTest:
-    @clean_database
-    def test_raise_error_when_booking_quantity_is_None_or_zero(self, app):
+    def test_raise_error_when_booking_quantity_is_zero(self):
         # given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, is_duo=False)
-        stock = create_stock(offer=offer)
-        repository.save(stock)
+        offer_is_duo = False
         quantity = 0
 
         # when
         with pytest.raises(QuantityIsInvalid) as error:
-            check_quantity_is_valid(quantity, stock)
+            check_quantity_is_valid(quantity, offer_is_duo)
 
         # then
-        assert error.value.errors['quantity'] == [
-            "Vous ne pouvez réserver qu'une place pour cette offre."]
+        assert error.value.errors['quantity'] == ["Vous ne pouvez réserver qu'une place pour cette offre."]
 
-    @clean_database
-    def test_raise_error_when_booking_quantity_is_bigger_than_one_and_offer_is_not_duo(self, app):
+    def test_raise_error_when_booking_quantity_is_bigger_than_one_and_offer_is_not_duo(self):
         # given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, is_duo=False)
-        stock = create_stock(offer=offer)
-        repository.save(stock)
+        offer_is_duo = False
         quantity = 2
 
         # when
         with pytest.raises(QuantityIsInvalid) as error:
-            check_quantity_is_valid(quantity, stock)
+            check_quantity_is_valid(quantity, offer_is_duo)
 
         # then
-        assert error.value.errors['quantity'] == [
-            "Vous ne pouvez réserver qu'une place pour cette offre."]
+        assert error.value.errors['quantity'] == ["Vous ne pouvez réserver qu'une place pour cette offre."]
 
-    @clean_database
-    def test_does_not_raise_an_error_when_booking_quantity_is_one_and_offer_is_not_duo(self, app):
+    def test_does_not_raise_an_error_when_booking_quantity_is_one_and_offer_is_not_duo(self):
         # given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, is_duo=False)
-        stock = create_stock(offer=offer)
-        repository.save(stock)
+        offer_is_duo = False
         quantity = 1
 
         # when
         try:
-            check_quantity_is_valid(quantity, stock)
+            check_quantity_is_valid(quantity, offer_is_duo)
         except QuantityIsInvalid:
             # then
             pytest.fail('Booking for single offer must not raise any exceptions')
 
-    @clean_database
-    def test_raise_error_when_booking_quantity_is_more_than_two_and_offer_is_duo(self, app):
+    def test_raise_error_when_booking_quantity_is_more_than_two_and_offer_is_duo(self):
         # given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, is_duo=True)
-        stock = create_stock(offer=offer)
-        repository.save(stock)
+        offer_is_duo = True
         quantity = 3
 
         # when
         with pytest.raises(QuantityIsInvalid) as error:
-            check_quantity_is_valid(quantity, stock)
+            check_quantity_is_valid(quantity, offer_is_duo)
 
         # then
         assert error.value.errors['quantity'] == [
             "Vous devez réserver une place ou deux dans le cas d'une offre DUO."]
 
-    @clean_database
-    def test_does_not_raise_an_error_when_booking_quantity_is_one_and_offer_is_duo(self, app):
+    def test_does_not_raise_an_error_when_booking_quantity_is_one_and_offer_is_duo(self):
         # given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, is_duo=True)
-        stock = create_stock(offer=offer)
-        repository.save(stock)
+        offer_is_duo = True
         quantity = 1
-
         # when
         try:
-            check_quantity_is_valid(quantity, stock)
+            check_quantity_is_valid(quantity, offer_is_duo)
         except QuantityIsInvalid:
             # then
             pytest.fail('Booking for duo offers must not raise any exceptions')
 
-    @clean_database
-    def test_does_not_raise_an_error_when_booking_quantity_is_two_and_offer_is_duo(self, app):
+    def test_does_not_raise_an_error_when_booking_quantity_is_two_and_offer_is_duo(self):
         # given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, is_duo=True)
-        stock = create_stock(offer=offer)
-        repository.save(stock)
+        offer_is_duo = True
         quantity = 2
 
         # when
         try:
-            check_quantity_is_valid(quantity, stock)
+            check_quantity_is_valid(quantity, offer_is_duo)
         except QuantityIsInvalid:
             # then
             pytest.fail('Booking for duo offers must not raise any exceptions')
@@ -709,3 +676,29 @@ class CheckCanBookFreeOfferTest:
             'cannotBookFreeOffers':
                 ["Votre compte ne vous permet pas de faire de réservation."]
         }
+
+
+class CheckHasStockIdTest:
+    def test_should_raise_error_when_no_stock_id_given(self):
+        # Given
+        stock_id = None
+
+        # When
+        with pytest.raises(ApiErrors) as error:
+            check_has_stock_id(stock_id)
+
+        # Then
+        assert error.value.errors == {
+            'stockId':
+                ["Vous devez préciser un identifiant d'offre"]
+        }
+
+    def test_should_do_nothing_when_stock_id_given(self):
+        # Given
+        stock_id = 12
+
+        # When
+        check_has_stock_id(stock_id)
+
+        # Then
+        assert True

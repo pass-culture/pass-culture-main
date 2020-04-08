@@ -20,7 +20,7 @@ from repository.api_key_queries import find_api_key_by_value
 from repository.user_offerer_queries import \
     filter_query_where_user_is_user_offerer_and_is_validated
 from routes.serialization import as_dict, serialize, serialize_booking
-from use_cases.book_an_offer import book_an_offer, Success, BookingInformation
+from use_cases.book_an_offer import book_an_offer, BookingInformation
 from utils.human_ids import dehumanize, humanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, \
     WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES, \
@@ -137,15 +137,12 @@ def create_booking():
         dehumanize(recommendation_id)
     )
 
-    book_an_offer_response = book_an_offer(booking_information)
+    created_booking = book_an_offer(booking_information)
 
-    created_booking = book_an_offer_response.booking
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=created_booking.stock.offerId)
 
-    return jsonify(
-        as_dict(created_booking, includes=WEBAPP_PATCH_POST_BOOKING_INCLUDES)
-    ), 201
+    return jsonify(as_dict(created_booking, includes=WEBAPP_PATCH_POST_BOOKING_INCLUDES)), 201
 
 
 @app.route('/bookings/<booking_id>/cancel', methods=['PUT'])

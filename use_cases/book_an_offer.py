@@ -7,7 +7,6 @@ from domain.expenses import get_expenses
 from domain.user_emails import send_booking_recap_emails, send_booking_confirmation_email_to_beneficiary
 from models import Booking
 from repository import booking_queries, repository, stock_queries, user_queries, offer_queries
-from use_cases.generic_response import Response
 from utils.mailing import send_raw_email, MailServiceException
 from utils.token import random_token
 
@@ -20,14 +19,14 @@ class BookingInformation(object):
         self.recommendation_id = recommendation_id
 
 
-def book_an_offer(booking_information: BookingInformation) -> Response:
+def book_an_offer(booking_information: BookingInformation) -> Booking:
     stock = stock_queries.find_stock_by_id(booking_information.stock_id)
     user = user_queries.find_user_by_id(booking_information.user_id)
     check_existing_stock(stock)
     offer = offer_queries.get_offer_by_id(stock.offerId)
     check_offer_already_booked(offer, user)
 
-    check_quantity_is_valid(booking_information.quantity, stock)
+    check_quantity_is_valid(booking_information.quantity, stock.offer.isDuo)
     check_can_book_free_offer(user, stock)
     check_stock_is_bookable(stock)
 
@@ -49,7 +48,7 @@ def book_an_offer(booking_information: BookingInformation) -> Response:
     except MailServiceException as error:
         app.logger.error('Mail service failure', error)
 
-    return Success(booking=booking)
+    return booking
 
 
 def _create_booking_with_booking_information(booking_information, stock) -> Booking:
@@ -61,9 +60,3 @@ def _create_booking_with_booking_information(booking_information, stock) -> Book
     booking.amount = stock.price
     booking.token = random_token()
     return booking
-
-
-class Success(Response):
-    def __init__(self, booking: Booking):
-        super().__init__()
-        self.booking = booking

@@ -28,6 +28,5 @@ def install_routes():
     import routes.venues
     import routes.health_check
 
-
     if IS_DEV:
         import routes.sandboxes
