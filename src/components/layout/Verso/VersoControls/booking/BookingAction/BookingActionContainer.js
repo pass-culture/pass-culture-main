@@ -18,7 +18,7 @@ export const mapStateToProps = (state, ownProps) => {
   const stocks = selectStocksByOfferId(state, offer.id)
   const priceRange = getPriceRangeFromStocks(stocks)
 
-  const userPastBookingForThisOffer = selectPastBookingByOfferId(state, offerId)
+  const userPastBookingForThisOffer = selectPastBookingByOfferId(state, offer.id)
 
   const offerCannotBeBooked = userPastBookingForThisOffer !== null || !offer.isBookable
 
