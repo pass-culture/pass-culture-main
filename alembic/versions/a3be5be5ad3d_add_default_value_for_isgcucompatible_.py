@@ -16,10 +16,10 @@ depends_on = None
 
 
 def upgrade():
-    # op.alter_column('product', 'isGcuCompatible', nullable=False)
     op.execute('ALTER TABLE product ADD CONSTRAINT check_isCGUCompatible_is_not_null CHECK ("isGcuCompatible" IS NOT NULL) NOT VALID')
     op.alter_column('product', 'isGcuCompatible', server_default=expression.true())
 
 
 def downgrade():
+    op.execute('ALTER TABLE product DROP CONSTRAINT IF EXISTS check_isCGUCompatible_is_not_null')
     op.alter_column('product', 'isGcuCompatible', server_default=None, nullable=True)
