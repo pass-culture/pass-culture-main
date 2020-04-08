@@ -365,10 +365,10 @@ describe('src | components | pages | discovery | Discovery', () => {
         wrapper.setProps(props)
 
         // then
-        expect(props.history.push).not.toHaveBeenCalledWith('/decouverte-v3')
+        expect(props.history.push).not.toHaveBeenCalled()
       })
 
-      it('should not redirect to first recommendation when there is no recommendations', () => {
+      it('should not redirect to first recommendation when reaching end of discovery', () => {
         // given
         props.recommendations = [
           {
@@ -385,14 +385,22 @@ describe('src | components | pages | discovery | Discovery', () => {
         wrapper.setProps(props)
 
         // then
-        expect(props.history.push).not.toHaveBeenCalledWith('/decouverte-v3')
+        expect(props.history.push).not.toHaveBeenCalled()
       })
 
-      it('should not redirect to first recommendation when there is a change in props other than recommendations', () => {
+      it('should not redirect to first recommendation when swiping to next recommendation', () => {
         // given
         props.currentRecommendation = {
           offerId: 'A1',
         }
+        props.recommendations = [
+          {
+            offerId: 'A1',
+          },
+          {
+            offerId: 'A2',
+          },
+        ]
         props.match.params = {
           offerId: 'A1',
         }
@@ -405,7 +413,7 @@ describe('src | components | pages | discovery | Discovery', () => {
         wrapper.setProps(props)
 
         // then
-        expect(props.history.push).not.toHaveBeenCalledWith('/decouverte-v3')
+        expect(props.history.push).not.toHaveBeenCalled()
       })
     })
   })
