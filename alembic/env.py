@@ -84,8 +84,12 @@ def run_migrations_online():
             transaction_per_migration=True
         )
 
+        connection.execute('UPDATE feature SET "isActive" = FALSE WHERE name = \'UPDATE_DISCOVERY_VIEW\'')
+
         with context.begin_transaction():
             context.run_migrations()
+
+        connection.execute('UPDATE feature SET "isActive" = TRUE WHERE name = \'UPDATE_DISCOVERY_VIEW\'')
 
 
 if context.is_offline_mode():
