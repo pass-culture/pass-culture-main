@@ -104,10 +104,7 @@ class ProductFields extends PureComponent {
     const { quantity } = values
     const { bookingsQuantity } = stock || {}
 
-    const formattedRemainingQuantities = getFormattedRemainingQuantities(
-      quantity,
-      bookingsQuantity
-    )
+    const formattedRemainingQuantities = getFormattedRemainingQuantities(quantity, bookingsQuantity)
 
     const isRemainingQuantityValid =
       formattedRemainingQuantities || formattedRemainingQuantities == 0
@@ -140,7 +137,7 @@ class ProductFields extends PureComponent {
           <DateField
             maxDate={isEvent ? moment(beginningDatetime) : undefined}
             name="bookingLimitDatetime"
-            placeholder="Laissez vide si pas de limite"
+            placeholder=""
             readOnly={readOnly}
             renderValue={this.renderDateFieldValue(readOnly, venue)}
             timezone={timezone}
