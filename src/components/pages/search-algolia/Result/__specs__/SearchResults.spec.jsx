@@ -1585,6 +1585,8 @@ describe('components | SearchResults', () => {
       expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
         keywords: '',
         offerCategories: [],
+        offerIsDuo: false,
+        offerIsFree: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
