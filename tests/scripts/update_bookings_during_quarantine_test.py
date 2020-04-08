@@ -3,13 +3,13 @@ from datetime import datetime, timedelta
 
 from domain.payments import create_payment_for_booking
 from domain.reimbursement import BookingReimbursement, ReimbursementRules
-from scripts.update_bookings_during_quarantine import update_booking_status_for_events_happening_during_quarantine
+from scripts.cancel_bookings_during_quarantine import cancel_booking_status_for_events_happening_during_quarantine
 from tests.conftest import clean_database
 from models import Booking
 from repository import repository
 from tests.model_creators.generic_creators import create_user, create_stock, create_booking, create_venue, \
     create_offerer
-from tests.model_creators.specific_creators import create_product_with_event_type, create_offer_with_event_product
+from tests.model_creators.specific_creators import create_offer_with_event_product
 
 
 class UpdateBookingDuringQuarantineTest:
@@ -35,12 +35,12 @@ class UpdateBookingDuringQuarantineTest:
         repository.save(booking)
 
         # When
-        update_booking_status_for_events_happening_during_quarantine()
+        cancel_booking_status_for_events_happening_during_quarantine()
 
         # Then
         booking = Booking.query.one()
-        assert booking.isUsed == False
-        assert booking.dateUsed == None
+        assert booking.isUsed is False
+        assert booking.dateUsed is None
 
     @clean_database
     def test_should_not_update_booking_if_not_happening_during_quarantine(self, app):
@@ -64,11 +64,11 @@ class UpdateBookingDuringQuarantineTest:
         repository.save(booking)
 
         # When
-        update_booking_status_for_events_happening_during_quarantine()
+        cancel_booking_status_for_events_happening_during_quarantine()
 
         # Then
         booking = Booking.query.one()
-        assert booking.isUsed == True
+        assert booking.isUsed is True
         assert booking.dateUsed == date_used
 
     @clean_database
@@ -98,11 +98,10 @@ class UpdateBookingDuringQuarantineTest:
         repository.save(booking, payment)
 
         # When
-        update_booking_status_for_events_happening_during_quarantine()
+        cancel_booking_status_for_events_happening_during_quarantine()
 
         # Then
         bookings = Booking.query.all()
 
-        assert bookings[0].isUsed == True
+        assert bookings[0].isUsed is True
         assert bookings[0].dateUsed == date_used
-
