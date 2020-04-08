@@ -10,19 +10,16 @@ import {
 } from '../../../selectors/data/bookingsSelectors'
 import { selectOfferById } from '../../../selectors/data/offersSelectors'
 
-function computeShouldDisplayBanner(offer, userBookingsForThisOffer, offerIsBookedByUser) {
+function computeShouldDisplayFinishedBanner(offer, userBookingsForThisOffer, offerIsBookedByUser) {
   const isOfferTuto = Object.keys(offer).length === 0
 
-  let shouldDisplayFinishedBanner = false
-
   if (isOfferTuto) {
-    shouldDisplayFinishedBanner = false
+    return false
   } else if (userBookingsForThisOffer) {
-    shouldDisplayFinishedBanner = true
+    return true
   } else {
-    shouldDisplayFinishedBanner = !offer.isBookable && !offerIsBookedByUser
+    return !offer.isBookable && !offerIsBookedByUser
   }
-  return shouldDisplayFinishedBanner
 }
 
 export const mapStateToProps = (state, ownProps) => {
@@ -43,17 +40,15 @@ export const mapStateToProps = (state, ownProps) => {
   }
 
   const offer = selectOfferById(state, offerId) || {}
-  const userBookingsForThisOffer = selectPastBookingByOfferId(state, offerId)
+  const userPastBookingForThisOffer = selectPastBookingByOfferId(state, offerId)
 
-  let shouldDisplayFinishedBanner = computeShouldDisplayBanner(
+  const shouldDisplayFinishedBanner = computeShouldDisplayFinishedBanner(
     offer,
-    userBookingsForThisOffer,
+    userPastBookingForThisOffer,
     isBookedByCurrentUser
   )
 
-  return {
-    shouldDisplayFinishedBanner: shouldDisplayFinishedBanner,
-  }
+  return { shouldDisplayFinishedBanner }
 }
 
 export default compose(

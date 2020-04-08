@@ -1,5 +1,5 @@
 import { mapStateToProps } from '../BookingActionContainer'
-import moment from 'moment/moment'
+import moment from 'moment'
 
 describe('components | BookingActionContainer', () => {
   describe('mapStateToProps', () => {

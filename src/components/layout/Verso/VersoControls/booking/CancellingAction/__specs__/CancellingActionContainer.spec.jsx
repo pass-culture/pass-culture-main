@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { getCancellingUrl, mapDispatchToProps, mapStateToProps } from '../CancellingActionContainer'
-import moment from 'moment/moment'
+import moment from 'moment'
 
 describe('src | components | layout | Verso | VersoControls | booking | CancellingAction | CancellingActionContainer', () => {
   describe('getCancellingUrl', () => {
@@ -72,7 +72,7 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
       const state = {
         data: {
           offers: [{ id: 'BF', isDuo: false }],
-          stocks: [{ id: 'CF', offerId: 'BF', price: 20 }],
+          stocks: [{ id: 'CF', offerId: 'BF', price: 20, beginningDatetime: null }],
           bookings: [{ id: 'DF', stockId: 'CF', quantity: 1 }],
         },
       }

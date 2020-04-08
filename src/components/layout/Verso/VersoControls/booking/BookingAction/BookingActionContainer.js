@@ -20,17 +20,13 @@ export const mapStateToProps = (state, ownProps) => {
   const stocks = selectStocksByOfferId(state, offerId)
   const priceRange = getPriceRangeFromStocks(stocks)
 
-  let offerCannotBeBooked = !offer.isBookable
+  const userPastBookingForThisOffer = selectPastBookingByOfferId(state, offerId)
 
-  let userPastBookingForThisOffer = selectPastBookingByOfferId(state, offerId)
-
-  if (userPastBookingForThisOffer) {
-    offerCannotBeBooked = true
-  }
+  const offerCannotBeBooked = userPastBookingForThisOffer !== null || !offer.isBookable
 
   return {
     bookingUrl,
-    offerCannotBeBooked: offerCannotBeBooked,
+    offerCannotBeBooked,
     priceRange,
   }
 }

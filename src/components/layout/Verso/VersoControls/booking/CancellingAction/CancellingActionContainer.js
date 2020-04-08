@@ -36,12 +36,8 @@ export const mapStateToProps = (state, ownProps) => {
   const stock = selectStockById(state, booking.stockId)
   const price = stock.price * booking.quantity
 
-  let offerCanBeCancelled = true
-  let userPastBookingForThisOffer = selectPastBookingByOfferId(state, offer.id)
-
-  if (userPastBookingForThisOffer) {
-    offerCanBeCancelled = false
-  }
+  const userPastBookingForThisOffer = selectPastBookingByOfferId(state, offer.id)
+  const offerCanBeCancelled = userPastBookingForThisOffer === null
 
   return { booking, cancellingUrl, offer, offerCanBeCancelled, price }
 }
