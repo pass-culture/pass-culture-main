@@ -17,9 +17,10 @@ from utils.human_ids import humanize
 class Post:
     class Returns201:
         @clean_database
-        @patch('routes.bookings.feature_queries.is_active', return_value=False)
+        @patch('routes.bookings.feature_queries.is_active')
         def expect_the_booking_to_have_good_includes_when_qr_code_feature_is_off(self, qr_code_is_active, app):
             # Given
+            qr_code_is_active.return_value=False
             offerer = create_offerer()
             venue = create_venue(offerer=offerer)
             ok_stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0,
@@ -44,10 +45,11 @@ class Post:
             assert response.json['stock']['isBookable']
             assert 'qrCode' not in response.json.keys()
 
-        @patch('routes.bookings.feature_queries.is_active', return_value=True)
+        @patch('routes.bookings.feature_queries.is_active')
         @clean_database
         def expect_the_booking_to_have_good_includes_when_qr_code_feature_is_on(self, qr_code_is_active, app):
             # Given
+            qr_code_is_active.return_value=True
             offerer = create_offerer()
             venue = create_venue(offerer=offerer)
             ok_stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0,
@@ -72,11 +74,12 @@ class Post:
             assert response.json['stock']['isBookable']
             assert response.json['qrCode'] is not None
 
-        @patch('routes.bookings.feature_queries.is_active', return_value=True)
+        @patch('routes.bookings.feature_queries.is_active')
         @patch('routes.bookings.redis.add_offer_id')
         @clean_database
         def when_booking_expect_offer_id_to_be_added_to_redis(self, mock_add_offer_id_to_redis, mock_feature, app):
             # Given
+            mock_feature.return_value=True
             beneficiary = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
@@ -101,11 +104,12 @@ class Post:
             assert response.status_code == 201
             mock_add_offer_id_to_redis.assert_called_once_with(client=app.redis_client, offer_id=thing_stock.offerId)
 
-        @patch('routes.bookings.feature_queries.is_active', return_value=False)
+        @patch('routes.bookings.feature_queries.is_active')
         @patch('routes.bookings.redis.add_offer_id')
         @clean_database
         def when_booking_expect_offer_id_not_to_be_added_to_redis(self, mock_add_offer_id_to_redis, mock_feature, app):
             # Given
+            mock_feature.return_value=False
             beneficiary = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
