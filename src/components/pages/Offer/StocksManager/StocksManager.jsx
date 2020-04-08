@@ -192,7 +192,7 @@ class StocksManager extends PureComponent {
         )}
         <div className="stocks-table-wrapper">
           <Titles
-            subtitle={get(product, 'name')}
+            subtitle={get(offer, 'name')}
             title={isEvent ? 'Dates, horaires et prix' : get(product, 'id') && 'Prix'}
           />
           <table

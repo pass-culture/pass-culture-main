@@ -16,6 +16,11 @@ ShallowWrapper {
         "state": undefined,
       }
     }
+    offer={
+      Object {
+        "name": "OfferName",
+      }
+    }
     product={
       Object {
         "id": "ABDD",
@@ -101,7 +106,7 @@ ShallowWrapper {
         >
           <Titles
             action={null}
-            subtitle={null}
+            subtitle="OfferName"
             title="Prix"
           />
           <table
@@ -255,7 +260,7 @@ ShallowWrapper {
           "children": Array [
             <Titles
               action={null}
-              subtitle={null}
+              subtitle="OfferName"
               title="Prix"
             />,
             <table
@@ -360,7 +365,7 @@ ShallowWrapper {
             "nodeType": "function",
             "props": Object {
               "action": null,
-              "subtitle": null,
+              "subtitle": "OfferName",
               "title": "Prix",
             },
             "ref": null,
@@ -793,7 +798,7 @@ ShallowWrapper {
           >
             <Titles
               action={null}
-              subtitle={null}
+              subtitle="OfferName"
               title="Prix"
             />
             <table
@@ -947,7 +952,7 @@ ShallowWrapper {
             "children": Array [
               <Titles
                 action={null}
-                subtitle={null}
+                subtitle="OfferName"
                 title="Prix"
               />,
               <table
@@ -1052,7 +1057,7 @@ ShallowWrapper {
               "nodeType": "function",
               "props": Object {
                 "action": null,
-                "subtitle": null,
+                "subtitle": "OfferName",
                 "title": "Prix",
               },
               "ref": null,
@@ -1510,6 +1515,11 @@ ShallowWrapper {
         "state": undefined,
       }
     }
+    offer={
+      Object {
+        "name": "OfferName",
+      }
+    }
     product={
       Object {
         "id": "ABDD",
@@ -1595,7 +1605,7 @@ ShallowWrapper {
         >
           <Titles
             action={null}
-            subtitle={null}
+            subtitle="OfferName"
             title="Dates, horaires et prix"
           />
           <table
@@ -1759,7 +1769,7 @@ ShallowWrapper {
           "children": Array [
             <Titles
               action={null}
-              subtitle={null}
+              subtitle="OfferName"
               title="Dates, horaires et prix"
             />,
             <table
@@ -1874,7 +1884,7 @@ ShallowWrapper {
             "nodeType": "function",
             "props": Object {
               "action": null,
-              "subtitle": null,
+              "subtitle": "OfferName",
               "title": "Dates, horaires et prix",
             },
             "ref": null,
@@ -2394,7 +2404,7 @@ ShallowWrapper {
           >
             <Titles
               action={null}
-              subtitle={null}
+              subtitle="OfferName"
               title="Dates, horaires et prix"
             />
             <table
@@ -2558,7 +2568,7 @@ ShallowWrapper {
             "children": Array [
               <Titles
                 action={null}
-                subtitle={null}
+                subtitle="OfferName"
                 title="Dates, horaires et prix"
               />,
               <table
@@ -2673,7 +2683,7 @@ ShallowWrapper {
               "nodeType": "function",
               "props": Object {
                 "action": null,
-                "subtitle": null,
+                "subtitle": "OfferName",
                 "title": "Dates, horaires et prix",
               },
               "ref": null,

@@ -38,6 +38,9 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
         state: undefined,
         key: '4c2v7m',
       },
+      offer: {
+        name: 'OfferName',
+      },
       product: {
         id: 'ABDD',
       },
