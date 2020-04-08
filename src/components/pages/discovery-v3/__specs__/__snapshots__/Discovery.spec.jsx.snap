@@ -13,6 +13,11 @@ ShallowWrapper {
     }
     currentRecommendation={Object {}}
     deleteTutorials={[MockFunction]}
+    history={
+      Object {
+        "push": [MockFunction],
+      }
+    }
     loadRecommendations={[MockFunction]}
     location={
       Object {

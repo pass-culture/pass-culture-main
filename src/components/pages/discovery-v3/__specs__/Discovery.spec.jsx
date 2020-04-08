@@ -41,14 +41,6 @@ describe('src | components | pages | discovery | Discovery', () => {
     }
   })
 
-  it('should match the snapshot', () => {
-    // given
-    const wrapper = shallow(<Discovery {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   describe('constructor', () => {
     it('should initialize state with default values', () => {
       // given
