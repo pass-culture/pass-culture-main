@@ -5,16 +5,17 @@ import { navigateToNewOffererAs } from './helpers/navigations'
 import { getSirenRequestMockAs } from './helpers/sirenes'
 import { createUserRole } from './helpers/roles'
 
-const addressInput = Selector('input#offerer-address')
-const nameInput = Selector('input#offerer-name')
-const sirenInput = Selector('#offerer-siren')
-const sirenErrorInput = Selector('#offerer-siren-error')
-const submitButton = Selector('button.button.is-primary')
+const addressInput = Selector('input[name=address]')
+const nameInput = Selector('input[name=name]')
+const sirenInput = Selector('input[name=siren]')
+const sirenErrorInput = Selector('.field-errors')
+const submitButton = Selector('button[type=submit]')
 
 let user
 let userRole
 let dataFromSandbox
-fixture("En étant sur la page de création d'une structure").beforeEach(async t => {
+
+fixture.only("En étant sur la page de création d'une structure").beforeEach(async t => {
   if (!userRole) {
     dataFromSandbox = await fetchSandbox(
       'pro_04_offerer',
@@ -51,7 +52,7 @@ test('Je ne peux pas créer une nouvelle structure avec un SIREN invalide', asyn
   await t.typeText(sirenInput, '69256356275794356243264').click(submitButton)
 
   // then
-  await t.expect(sirenErrorInput.innerText).contains('Siren invalide')
+  await t.expect(sirenErrorInput.innerText).contains('Ce SIREN n\'est pas reconnu')
 })
 
 test("Je peux créer une nouvelle structure avec un SIREN dont l'adresse n'est pas renvoyée par l'API sirene, et je suis redirigé·e vers mes structures", async t => {

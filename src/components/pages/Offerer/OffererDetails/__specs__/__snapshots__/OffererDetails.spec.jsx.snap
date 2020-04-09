@@ -1,0 +1,1221 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | Offerer | OffererDetails should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <OffererDetails
+    loadOffererById={[Function]}
+    offerer={
+      Offerer {
+        "address": "fake address",
+        "adminUserOfferer": undefined,
+        "bic": "ABC",
+        "city": "",
+        "iban": "DEF",
+        "id": "AA",
+        "name": "fake offerer name",
+        "postalCode": "",
+        "siren": "",
+      }
+    }
+    offererId="AA"
+    venues={
+      Array [
+        Object {},
+      ]
+    }
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "function",
+    "props": Object {
+      "backTo": Object {
+        "label": "Vos structures juridiques",
+        "path": "/structures",
+      },
+      "children": Array [
+        <Titles
+          action={null}
+          subtitle="fake offerer name"
+          title="Structure"
+        />,
+        <p
+          className="subtitle"
+        >
+          Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
+        </p>,
+        <div>
+          <div>
+            <label>
+              SIREN : 
+            </label>
+            <span>
+              
+            </span>
+          </div>
+          <div>
+            <label>
+              Désignation : 
+            </label>
+            <span>
+              fake offerer name
+            </span>
+          </div>
+          <div>
+            <label>
+              Siège social : 
+            </label>
+            <span>
+              fake address
+            </span>
+          </div>
+          <div>
+            <label>
+              Code postal : 
+            </label>
+            <span>
+              
+            </span>
+          </div>
+          <div>
+            <label>
+              Ville : 
+            </label>
+            <span>
+              
+            </span>
+          </div>
+        </div>,
+        <div
+          className="section"
+        >
+          <h2
+            className="main-list-title"
+          >
+            Informations bancaires
+            <span
+              className="is-pulled-right is-size-7 has-text-grey"
+            >
+              Vous avez besoin d'être administrateur de la structure pour modifier ces informations.
+            </span>
+          </h2>
+        </div>,
+        <div>
+          <div>
+            <label>
+              BIC : 
+            </label>
+            <span>
+              ABC
+            </span>
+          </div>
+          <div>
+            <label>
+              IBAN : 
+            </label>
+            <span>
+              DEF
+            </span>
+          </div>
+        </div>,
+        <Venues
+          offererId="AA"
+          venues={
+            Array [
+              Object {},
+            ]
+          }
+        />,
+      ],
+      "name": "offerer",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "action": null,
+          "subtitle": "fake offerer name",
+          "title": "Structure",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
+          "className": "subtitle",
+        },
+        "ref": null,
+        "rendered": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
+        "type": "p",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <div>
+              <label>
+                SIREN : 
+              </label>
+              <span>
+                
+              </span>
+            </div>,
+            <div>
+              <label>
+                Désignation : 
+              </label>
+              <span>
+                fake offerer name
+              </span>
+            </div>,
+            <div>
+              <label>
+                Siège social : 
+              </label>
+              <span>
+                fake address
+              </span>
+            </div>,
+            <div>
+              <label>
+                Code postal : 
+              </label>
+              <span>
+                
+              </span>
+            </div>,
+            <div>
+              <label>
+                Ville : 
+              </label>
+              <span>
+                
+              </span>
+            </div>,
+          ],
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <label>
+                  SIREN : 
+                </label>,
+                <span>
+                  
+                </span>,
+              ],
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "SIREN : ",
+                },
+                "ref": null,
+                "rendered": "SIREN : ",
+                "type": "label",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "",
+                },
+                "ref": null,
+                "rendered": "",
+                "type": "span",
+              },
+            ],
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <label>
+                  Désignation : 
+                </label>,
+                <span>
+                  fake offerer name
+                </span>,
+              ],
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Désignation : ",
+                },
+                "ref": null,
+                "rendered": "Désignation : ",
+                "type": "label",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "fake offerer name",
+                },
+                "ref": null,
+                "rendered": "fake offerer name",
+                "type": "span",
+              },
+            ],
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <label>
+                  Siège social : 
+                </label>,
+                <span>
+                  fake address
+                </span>,
+              ],
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Siège social : ",
+                },
+                "ref": null,
+                "rendered": "Siège social : ",
+                "type": "label",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "fake address",
+                },
+                "ref": null,
+                "rendered": "fake address",
+                "type": "span",
+              },
+            ],
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <label>
+                  Code postal : 
+                </label>,
+                <span>
+                  
+                </span>,
+              ],
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Code postal : ",
+                },
+                "ref": null,
+                "rendered": "Code postal : ",
+                "type": "label",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "",
+                },
+                "ref": null,
+                "rendered": "",
+                "type": "span",
+              },
+            ],
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <label>
+                  Ville : 
+                </label>,
+                <span>
+                  
+                </span>,
+              ],
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Ville : ",
+                },
+                "ref": null,
+                "rendered": "Ville : ",
+                "type": "label",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "",
+                },
+                "ref": null,
+                "rendered": "",
+                "type": "span",
+              },
+            ],
+            "type": "div",
+          },
+        ],
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <h2
+              className="main-list-title"
+            >
+              Informations bancaires
+              <span
+                className="is-pulled-right is-size-7 has-text-grey"
+              >
+                Vous avez besoin d'être administrateur de la structure pour modifier ces informations.
+              </span>
+            </h2>,
+            false,
+          ],
+          "className": "section",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                "Informations bancaires",
+                <span
+                  className="is-pulled-right is-size-7 has-text-grey"
+                >
+                  Vous avez besoin d'être administrateur de la structure pour modifier ces informations.
+                </span>,
+              ],
+              "className": "main-list-title",
+            },
+            "ref": null,
+            "rendered": Array [
+              "Informations bancaires",
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Vous avez besoin d'être administrateur de la structure pour modifier ces informations.",
+                  "className": "is-pulled-right is-size-7 has-text-grey",
+                },
+                "ref": null,
+                "rendered": "Vous avez besoin d'être administrateur de la structure pour modifier ces informations.",
+                "type": "span",
+              },
+            ],
+            "type": "h2",
+          },
+          false,
+        ],
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <div>
+              <label>
+                BIC : 
+              </label>
+              <span>
+                ABC
+              </span>
+            </div>,
+            <div>
+              <label>
+                IBAN : 
+              </label>
+              <span>
+                DEF
+              </span>
+            </div>,
+          ],
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <label>
+                  BIC : 
+                </label>,
+                <span>
+                  ABC
+                </span>,
+              ],
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "BIC : ",
+                },
+                "ref": null,
+                "rendered": "BIC : ",
+                "type": "label",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "ABC",
+                },
+                "ref": null,
+                "rendered": "ABC",
+                "type": "span",
+              },
+            ],
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <label>
+                  IBAN : 
+                </label>,
+                <span>
+                  DEF
+                </span>,
+              ],
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "IBAN : ",
+                },
+                "ref": null,
+                "rendered": "IBAN : ",
+                "type": "label",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "DEF",
+                },
+                "ref": null,
+                "rendered": "DEF",
+                "type": "span",
+              },
+            ],
+            "type": "div",
+          },
+        ],
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "offererId": "AA",
+          "venues": Array [
+            Object {},
+          ],
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+    ],
+    "type": [Function],
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "function",
+      "props": Object {
+        "backTo": Object {
+          "label": "Vos structures juridiques",
+          "path": "/structures",
+        },
+        "children": Array [
+          <Titles
+            action={null}
+            subtitle="fake offerer name"
+            title="Structure"
+          />,
+          <p
+            className="subtitle"
+          >
+            Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
+          </p>,
+          <div>
+            <div>
+              <label>
+                SIREN : 
+              </label>
+              <span>
+                
+              </span>
+            </div>
+            <div>
+              <label>
+                Désignation : 
+              </label>
+              <span>
+                fake offerer name
+              </span>
+            </div>
+            <div>
+              <label>
+                Siège social : 
+              </label>
+              <span>
+                fake address
+              </span>
+            </div>
+            <div>
+              <label>
+                Code postal : 
+              </label>
+              <span>
+                
+              </span>
+            </div>
+            <div>
+              <label>
+                Ville : 
+              </label>
+              <span>
+                
+              </span>
+            </div>
+          </div>,
+          <div
+            className="section"
+          >
+            <h2
+              className="main-list-title"
+            >
+              Informations bancaires
+              <span
+                className="is-pulled-right is-size-7 has-text-grey"
+              >
+                Vous avez besoin d'être administrateur de la structure pour modifier ces informations.
+              </span>
+            </h2>
+          </div>,
+          <div>
+            <div>
+              <label>
+                BIC : 
+              </label>
+              <span>
+                ABC
+              </span>
+            </div>
+            <div>
+              <label>
+                IBAN : 
+              </label>
+              <span>
+                DEF
+              </span>
+            </div>
+          </div>,
+          <Venues
+            offererId="AA"
+            venues={
+              Array [
+                Object {},
+              ]
+            }
+          />,
+        ],
+        "name": "offerer",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "action": null,
+            "subtitle": "fake offerer name",
+            "title": "Structure",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
+            "className": "subtitle",
+          },
+          "ref": null,
+          "rendered": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
+          "type": "p",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <div>
+                <label>
+                  SIREN : 
+                </label>
+                <span>
+                  
+                </span>
+              </div>,
+              <div>
+                <label>
+                  Désignation : 
+                </label>
+                <span>
+                  fake offerer name
+                </span>
+              </div>,
+              <div>
+                <label>
+                  Siège social : 
+                </label>
+                <span>
+                  fake address
+                </span>
+              </div>,
+              <div>
+                <label>
+                  Code postal : 
+                </label>
+                <span>
+                  
+                </span>
+              </div>,
+              <div>
+                <label>
+                  Ville : 
+                </label>
+                <span>
+                  
+                </span>
+              </div>,
+            ],
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <label>
+                    SIREN : 
+                  </label>,
+                  <span>
+                    
+                  </span>,
+                ],
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "SIREN : ",
+                  },
+                  "ref": null,
+                  "rendered": "SIREN : ",
+                  "type": "label",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "",
+                  },
+                  "ref": null,
+                  "rendered": "",
+                  "type": "span",
+                },
+              ],
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <label>
+                    Désignation : 
+                  </label>,
+                  <span>
+                    fake offerer name
+                  </span>,
+                ],
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Désignation : ",
+                  },
+                  "ref": null,
+                  "rendered": "Désignation : ",
+                  "type": "label",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "fake offerer name",
+                  },
+                  "ref": null,
+                  "rendered": "fake offerer name",
+                  "type": "span",
+                },
+              ],
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <label>
+                    Siège social : 
+                  </label>,
+                  <span>
+                    fake address
+                  </span>,
+                ],
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Siège social : ",
+                  },
+                  "ref": null,
+                  "rendered": "Siège social : ",
+                  "type": "label",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "fake address",
+                  },
+                  "ref": null,
+                  "rendered": "fake address",
+                  "type": "span",
+                },
+              ],
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <label>
+                    Code postal : 
+                  </label>,
+                  <span>
+                    
+                  </span>,
+                ],
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Code postal : ",
+                  },
+                  "ref": null,
+                  "rendered": "Code postal : ",
+                  "type": "label",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "",
+                  },
+                  "ref": null,
+                  "rendered": "",
+                  "type": "span",
+                },
+              ],
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <label>
+                    Ville : 
+                  </label>,
+                  <span>
+                    
+                  </span>,
+                ],
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Ville : ",
+                  },
+                  "ref": null,
+                  "rendered": "Ville : ",
+                  "type": "label",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "",
+                  },
+                  "ref": null,
+                  "rendered": "",
+                  "type": "span",
+                },
+              ],
+              "type": "div",
+            },
+          ],
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <h2
+                className="main-list-title"
+              >
+                Informations bancaires
+                <span
+                  className="is-pulled-right is-size-7 has-text-grey"
+                >
+                  Vous avez besoin d'être administrateur de la structure pour modifier ces informations.
+                </span>
+              </h2>,
+              false,
+            ],
+            "className": "section",
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  "Informations bancaires",
+                  <span
+                    className="is-pulled-right is-size-7 has-text-grey"
+                  >
+                    Vous avez besoin d'être administrateur de la structure pour modifier ces informations.
+                  </span>,
+                ],
+                "className": "main-list-title",
+              },
+              "ref": null,
+              "rendered": Array [
+                "Informations bancaires",
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Vous avez besoin d'être administrateur de la structure pour modifier ces informations.",
+                    "className": "is-pulled-right is-size-7 has-text-grey",
+                  },
+                  "ref": null,
+                  "rendered": "Vous avez besoin d'être administrateur de la structure pour modifier ces informations.",
+                  "type": "span",
+                },
+              ],
+              "type": "h2",
+            },
+            false,
+          ],
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": Array [
+              <div>
+                <label>
+                  BIC : 
+                </label>
+                <span>
+                  ABC
+                </span>
+              </div>,
+              <div>
+                <label>
+                  IBAN : 
+                </label>
+                <span>
+                  DEF
+                </span>
+              </div>,
+            ],
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <label>
+                    BIC : 
+                  </label>,
+                  <span>
+                    ABC
+                  </span>,
+                ],
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "BIC : ",
+                  },
+                  "ref": null,
+                  "rendered": "BIC : ",
+                  "type": "label",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "ABC",
+                  },
+                  "ref": null,
+                  "rendered": "ABC",
+                  "type": "span",
+                },
+              ],
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <label>
+                    IBAN : 
+                  </label>,
+                  <span>
+                    DEF
+                  </span>,
+                ],
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "IBAN : ",
+                  },
+                  "ref": null,
+                  "rendered": "IBAN : ",
+                  "type": "label",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "DEF",
+                  },
+                  "ref": null,
+                  "rendered": "DEF",
+                  "type": "span",
+                },
+              ],
+              "type": "div",
+            },
+          ],
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "offererId": "AA",
+            "venues": Array [
+              Object {},
+            ],
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+      ],
+      "type": [Function],
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
+}
+`;

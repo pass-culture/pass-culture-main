@@ -10,7 +10,6 @@ import Mediation from '../components/pages/Mediation/MediationContainer'
 import Offers from '../components/pages/Offers/OffersContainer'
 import OfferCreation from '../components/pages/Offer/OfferCreation/OfferCreationContainer'
 import OfferEdition from '../components/pages/Offer/OfferEdition/OfferEditionContainer'
-import OffererContainer from '../components/pages/Offerer/OffererContainer'
 import Offerers from '../components/pages/Offerers/OfferersContainer'
 import ProfilContainer from '../components/pages/Profil/ProfilContainer'
 import ReimbursementsContainer from '../components/pages/Reimbursements/ReimbursementsContainer'
@@ -19,6 +18,8 @@ import SignupContainer from '../components/pages/Signup/SignupContainer'
 import SignupValidationContainer from '../components/pages/Signup/SignupValidation/SignupValidationContainer'
 import Terms from '../components/pages/Terms/Terms'
 import VenueContainer from '../components/pages/Venue/VenueContainer'
+import OffererCreationContainer from '../components/pages/Offerer/OffererCreation/OffererCreationContainer'
+import OffererDetailsContainer from '../components/pages/Offerer/OffererDetails/OffererDetailsContainer'
 
 const RedirectToConnexionComponent = () => <Redirect to="/connexion" />
 
@@ -69,7 +70,12 @@ const routes = [
     title: 'Structures',
   },
   {
-    component: OffererContainer,
+    component: OffererCreationContainer,
+    path: '/structures/creation',
+    title: 'Structure',
+  },
+  {
+    component: OffererDetailsContainer,
     path: '/structures/:offererId',
     title: 'Structure',
   },

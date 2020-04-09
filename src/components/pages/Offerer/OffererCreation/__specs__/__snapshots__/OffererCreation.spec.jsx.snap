@@ -1,0 +1,206 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | Offerer | OffererCreation | OffererCreation should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <OffererCreation
+    closeNotification={[MockFunction]}
+    createNewOfferer={[MockFunction]}
+    redirectToOfferersList={[MockFunction]}
+    showNotification={[MockFunction]}
+    trackCreateOfferer={[MockFunction]}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "function",
+    "props": Object {
+      "backTo": Object {
+        "label": "Vos structures juridiques",
+        "path": "/structures",
+      },
+      "children": Array [
+        <Titles
+          action={null}
+          subtitle={null}
+          title="Structure"
+        />,
+        <p
+          className="subtitle"
+        >
+          Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
+        </p>,
+        <ReactFinalForm
+          decorators={
+            Array [
+              [Function],
+            ]
+          }
+          onSubmit={[Function]}
+          render={[Function]}
+        />,
+      ],
+      "name": "offerer",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "action": null,
+          "subtitle": null,
+          "title": "Structure",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
+          "className": "subtitle",
+        },
+        "ref": null,
+        "rendered": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
+        "type": "p",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "decorators": Array [
+            [Function],
+          ],
+          "onSubmit": [Function],
+          "render": [Function],
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+    ],
+    "type": [Function],
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "function",
+      "props": Object {
+        "backTo": Object {
+          "label": "Vos structures juridiques",
+          "path": "/structures",
+        },
+        "children": Array [
+          <Titles
+            action={null}
+            subtitle={null}
+            title="Structure"
+          />,
+          <p
+            className="subtitle"
+          >
+            Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
+          </p>,
+          <ReactFinalForm
+            decorators={
+              Array [
+                [Function],
+              ]
+            }
+            onSubmit={[Function]}
+            render={[Function]}
+          />,
+        ],
+        "name": "offerer",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "action": null,
+            "subtitle": null,
+            "title": "Structure",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
+            "className": "subtitle",
+          },
+          "ref": null,
+          "rendered": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
+          "type": "p",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "decorators": Array [
+              [Function],
+            ],
+            "onSubmit": [Function],
+            "render": [Function],
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+      ],
+      "type": [Function],
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
+}
+`;
