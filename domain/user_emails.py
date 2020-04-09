@@ -16,6 +16,7 @@ from emails.offerer_bookings_recap_after_deleting_stock import \
 from emails.offerer_ongoing_attachment import retrieve_data_for_offerer_ongoing_attachment_email
 from emails.pro_reset_password import retrieve_data_for_reset_password_pro_email
 from emails.pro_waiting_validation import retrieve_data_for_pro_user_waiting_offerer_validation_email
+from emails.user_notification_after_stock_update import retrieve_data_to_warn_user_after_stock_update_affecting_booking
 from emails.user_reset_password import retrieve_data_for_reset_password_user_email
 from models import Booking, Offerer, User, Venue, UserOfferer
 from repository.user_queries import find_all_emails_of_user_offerers_admins
@@ -139,6 +140,16 @@ def send_pro_user_waiting_for_validation_by_admin_email(user: User, send_email: 
 def send_activation_email(user: User, send_email: Callable[..., bool]) -> bool:
     activation_email_data = get_activation_email_data(user)
     return send_email(activation_email_data)
+
+
+def send_batch_stock_report_emails_to_users(bookings: List[Booking], send_email: Callable[..., bool]) -> None:
+    for booking in bookings:
+        send_booking_report_emails_to_users(booking, send_email)
+
+
+def send_booking_report_emails_to_users(booking, send_email):
+    email = retrieve_data_to_warn_user_after_stock_update_affecting_booking(booking)
+    send_email(data=email)
 
 
 def _build_recipients_list(booking: Booking) -> str:

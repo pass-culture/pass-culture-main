@@ -6,7 +6,7 @@ from connectors import redis
 from domain.allocine import get_editable_fields_for_allocine_stocks
 from domain.stocks import delete_stock_and_cancel_bookings
 from domain.user_emails import send_batch_cancellation_emails_to_users, \
-    send_offerer_bookings_recap_email_after_offerer_cancellation
+    send_offerer_bookings_recap_email_after_offerer_cancellation, send_batch_stock_report_emails_to_users
 from models import Product
 from models.feature import FeatureToggle
 from models.mediation import Mediation
@@ -14,6 +14,7 @@ from models.stock import Stock
 from models.user_offerer import RightsType
 from models.venue import Venue
 from repository import offerer_queries, repository, feature_queries
+from repository.booking_queries import find_ongoing_bookings_by_stock
 from repository.offer_queries import get_offer_by_id
 from repository.stock_queries import find_stocks_with_possible_filters
 from routes.serialization import as_dict
@@ -93,7 +94,6 @@ def create_stock():
     return jsonify(as_dict(new_stock)), 201
 
 
-# TODO: Si changement d'horaires et qu'il y a des réservations il faut envoyer des mails !
 # TODO: Interdire la modification d'évenements passés
 @app.route('/stocks/<stock_id>', methods=['PATCH'])
 @login_or_api_key_required
@@ -123,6 +123,14 @@ def edit_stock(stock_id):
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
+
+    # TODO ajouter un check uniquement si les dates sont modifiées
+    bookings = find_ongoing_bookings_by_stock(stock)
+    if bookings:
+        try:
+            send_batch_stock_report_emails_to_users(bookings, send_raw_email)
+        except MailServiceException as e:
+            app.logger.error('Mail service failure', e)
 
     return jsonify(as_dict(stock)), 200
 
