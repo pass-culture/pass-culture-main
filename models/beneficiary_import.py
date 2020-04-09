@@ -20,6 +20,8 @@ class BeneficiaryImport(PcObject, Model):
                            index=True,
                            nullable=True)
 
+    procedureId = Column(BigInteger, nullable=True)
+
     beneficiary = relationship('User',
                                foreign_keys=[beneficiaryId],
                                backref='beneficiaryImports')
