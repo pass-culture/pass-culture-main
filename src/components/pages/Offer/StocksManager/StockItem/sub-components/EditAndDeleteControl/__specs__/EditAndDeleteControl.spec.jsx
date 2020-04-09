@@ -86,6 +86,19 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
         expect(wrapper.find('button.edit-stock').prop('disabled')).toBe(false)
         expect(wrapper.find('button.edit-stock').prop('title')).toBe('')
       })
+
+      it('should show delete button enabled with no title', () => {
+        // given
+        props.isEvent = false
+        props.stock.isEventDeletable = true
+
+        // when
+        const wrapper = render(<EditAndDeleteControl {...props} />, createContext())
+
+        // then
+        expect(wrapper.find('button.delete-stock').prop('disabled')).toBe(false)
+        expect(wrapper.find('button.delete-stock').prop('title')).toBe('')
+      })
     })
 
     describe('an event', () => {
@@ -114,6 +127,34 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
         expect(wrapper.find('button.edit-stock').prop('disabled')).toBe(true)
         expect(wrapper.find('button.edit-stock').prop('title')).toBe(
           'Les évènements passés ne sont pas modifiables'
+        )
+      })
+
+      it('should show delete button enabled with no title for a future event', () => {
+        // given
+        props.isEvent = true
+        props.stock.isEventDeletable = true
+
+        // when
+        const wrapper = render(<EditAndDeleteControl {...props} />, createContext())
+
+        // then
+        expect(wrapper.find('button.delete-stock').prop('disabled')).toBe(false)
+        expect(wrapper.find('button.delete-stock').prop('title')).toBe('')
+      })
+
+      it('should show delete button disabled with title for a past event', () => {
+        // given
+        props.isEvent = true
+        props.stock.isEventDeletable = false
+
+        // when
+        const wrapper = render(<EditAndDeleteControl {...props} />, createContext())
+
+        // then
+        expect(wrapper.find('button.delete-stock').prop('disabled')).toBe(true)
+        expect(wrapper.find('button.delete-stock').prop('title')).toBe(
+          'Les évènements terminés depuis plus de 48h ne peuvent être supprimés'
         )
       })
     })

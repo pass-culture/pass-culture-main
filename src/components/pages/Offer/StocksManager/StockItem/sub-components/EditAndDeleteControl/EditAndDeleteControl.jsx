@@ -53,10 +53,8 @@ class EditAndDeleteControl extends PureComponent {
 
   render() {
     const { isEvent, query, stock, tbody } = this.props
-    const { id: stockId } = stock
+    const { id: stockId, isEventExpired, isEventDeletable } = stock
     const { isDeleting } = this.state
-
-    const isEventExpired = stock.isEventExpired
 
     if (!stockId) {
       return null
@@ -97,8 +95,14 @@ class EditAndDeleteControl extends PureComponent {
           {!isDeleting && (
             <button
               className="button is-small is-secondary delete-stock"
+              disabled={!isEventDeletable}
               onClick={this.handleOnDeleteClick}
               style={{ width: '100%' }}
+              title={
+                isEventDeletable
+                  ? ''
+                  : 'Les évènements terminés depuis plus de 48h ne peuvent être supprimés'
+              }
               type="button"
             >
               <span className="icon">
