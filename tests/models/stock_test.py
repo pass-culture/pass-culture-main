@@ -6,7 +6,7 @@ from pytest import approx
 
 from models import ApiErrors
 from models.pc_object import DeletedRecordException
-from models.stock import Stock
+from models.stock import Stock, STOCK_DELETION_DELAY
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import (create_booking,
@@ -475,6 +475,7 @@ class BookingsQuantityTest:
         # Then
         assert stock.bookingsQuantity == 1
 
+
 class IsEventExpiredTest:
     def test_isEventExpired_is_false_when_stock_is_not_an_event(self):
         # Given
@@ -492,7 +493,8 @@ class IsEventExpiredTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, beginning_datetime=datetime.utcnow() + timedelta(hours=72))
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
+                                              beginning_datetime=datetime.utcnow() + timedelta(hours=72))
 
         # When
         is_event_expired = stock.isEventExpired
@@ -504,7 +506,8 @@ class IsEventExpiredTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, beginning_datetime=datetime.utcnow() - timedelta(hours=24))
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
+                                              beginning_datetime=datetime.utcnow() - timedelta(hours=24))
 
         # When
         is_event_expired = stock.isEventExpired
@@ -512,3 +515,57 @@ class IsEventExpiredTest:
         # Then
         assert is_event_expired is True
 
+
+class IsEventDeletableTest:
+    def test_isEventDeletable_is_true_when_stock_is_not_an_event(self):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue)
+
+        # When
+        is_event_deletable = stock.isEventDeletable
+
+        # Then
+        assert is_event_deletable is True
+
+    def test_isEventDeletable_is_true_when_stock_is_an_event_in_the_future(self):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
+                                              beginning_datetime=datetime.utcnow() + timedelta(hours=72))
+
+        # When
+        is_event_deletable = stock.isEventDeletable
+
+        # Then
+        assert is_event_deletable is True
+
+    def test_isEventDeletable_is_true_when_stock_is_expired_since_less_than_stock_deletion_delay(self):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
+                                              beginning_datetime=datetime.utcnow()
+                                                                 - STOCK_DELETION_DELAY
+                                                                 + timedelta(1))
+
+        # When
+        is_event_deletable = stock.isEventDeletable
+
+        # Then
+        assert is_event_deletable is True
+
+    def test_isEventDeletable_is_false_when_stock_is_expired_since_more_than_stock_deletion_delay(self):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
+                                              beginning_datetime=datetime.utcnow() - STOCK_DELETION_DELAY)
+
+        # When
+        is_event_deletable = stock.isEventDeletable
+
+        # Then
+        assert is_event_deletable is False

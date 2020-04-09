@@ -21,6 +21,8 @@ from models.soft_deletable_mixin import SoftDeletableMixin
 from models.versioned_mixin import VersionedMixin
 from utils.logger import logger
 
+STOCK_DELETION_DELAY = timedelta(hours=48)
+
 
 class Stock(PcObject,
             Model,
@@ -103,6 +105,15 @@ class Stock(PcObject,
             return event_start_time_is_over
         else:
             return False
+
+    @property
+    def isEventDeletable(self):
+        if self.beginningDatetime:
+            limit_date_for_stock_deletion = self.beginningDatetime + STOCK_DELETION_DELAY
+            is_stock_deletion_delay_passed = limit_date_for_stock_deletion >= datetime.utcnow()
+            return is_stock_deletion_delay_passed
+        else:
+            return True
 
     @classmethod
     def queryNotSoftDeleted(cls):

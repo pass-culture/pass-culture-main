@@ -1,9 +1,6 @@
-from datetime import datetime, timedelta
 from typing import List, Dict
 
 from models import Booking, Stock, ApiErrors
-
-STOCK_DELETION_DELAY = timedelta(hours=48)
 
 
 def delete_stock_and_cancel_bookings(stock: Stock) -> List[Booking]:
@@ -19,10 +16,7 @@ def delete_stock_and_cancel_bookings(stock: Stock) -> List[Booking]:
 
         return unused_bookings
 
-    limit_date_for_stock_deletion = stock.beginningDatetime + STOCK_DELETION_DELAY
-    now = datetime.utcnow()
-
-    if now <= limit_date_for_stock_deletion:
+    if stock.isEventDeletable:
         stock.isSoftDeleted = True
         for booking in stock.bookings:
             if not booking.isCancelled:

@@ -5,7 +5,6 @@ from typing import List, Set, Union
 from sqlalchemy import func
 from sqlalchemy.orm import Query
 
-from domain.stocks import STOCK_DELETION_DELAY
 from models.offer_type import EventType, ThingType
 from models.booking import Booking
 from models.offer import Offer
@@ -17,6 +16,7 @@ from models.user import User
 from models.venue import Venue
 from models.api_errors import ResourceNotFoundError
 from models.db import db
+from models.stock import STOCK_DELETION_DELAY
 from repository import offer_queries
 
 

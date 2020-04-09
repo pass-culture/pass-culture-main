@@ -92,4 +92,5 @@ class Get:
 
             # Then
             assert response.status_code == 200
+            assert 'isEventDeletable' in response.json['stocks'][0]
             assert 'isEventExpired' in response.json['stocks'][0]

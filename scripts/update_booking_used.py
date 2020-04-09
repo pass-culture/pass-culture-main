@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from domain.stocks import STOCK_DELETION_DELAY
 from repository import repository
 from repository import booking_queries
 
@@ -12,9 +11,7 @@ def update_booking_used_after_stock_occurrence():
     for booking in bookings_to_process:
         if booking.stock.beginningDatetime:
             now = datetime.utcnow()
-            booking_on_event_considered_used_after_delay = now > booking.stock.beginningDatetime + \
-                STOCK_DELETION_DELAY
-            if booking_on_event_considered_used_after_delay:
+            if booking.stock.isEventDeletable is False:
                 booking.isUsed = True
                 booking.dateUsed = now
                 try:

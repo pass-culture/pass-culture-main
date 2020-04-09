@@ -6,6 +6,7 @@ from freezegun import freeze_time
 
 from models import Booking, EventType, ThingType
 from models.api_errors import ApiErrors, ResourceNotFoundError
+from models.stock import STOCK_DELETION_DELAY
 from repository import booking_queries, repository
 from tests.conftest import clean_database
 from tests.model_creators.activity_creators import create_booking_activity, \
@@ -377,16 +378,16 @@ class FindFinalOffererBookingsTest:
         # Given
         user = create_user()
         create_deposit(user)
-        offerer1 = create_offerer()
-        venue = create_venue(offerer1)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock_with_thing_offer(offerer1, venue, offer)
+        stock = create_stock_with_thing_offer(offerer, venue, offer)
         booking1 = create_booking(user=user, is_used=True, stock=stock, venue=venue)
         booking2 = create_booking(user=user, is_cancelled=True, is_used=True, stock=stock, venue=venue)
         repository.save(booking1, booking2)
 
         # When
-        bookings = booking_queries.find_eligible_bookings_for_offerer(offerer1.id)
+        bookings = booking_queries.find_eligible_bookings_for_offerer(offerer.id)
 
         # Then
         assert len(bookings) == 1
@@ -397,20 +398,51 @@ class FindFinalOffererBookingsTest:
         # Given
         user = create_user()
         create_deposit(user)
-        offerer1 = create_offerer()
-        venue = create_venue(offerer1)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_with_thing_offer(offerer1, venue, offer)
-        booking1 = create_booking(user=user, is_used=True, stock=stock, venue=venue)
-        booking2 = create_booking(user=user, is_used=False, stock=stock, venue=venue)
-        repository.save(booking1, booking2)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        thing_offer = create_offer_with_thing_product(venue)
+        thing_stock = create_stock_with_thing_offer(offerer, venue, thing_offer)
+        thing_booking1 = create_booking(user=user, is_used=True, stock=thing_stock, venue=venue)
+        thing_booking2 = create_booking(user=user, is_used=False, stock=thing_stock, venue=venue)
+        repository.save(thing_booking1, thing_booking2)
 
         # When
-        bookings = booking_queries.find_eligible_bookings_for_offerer(offerer1.id)
+        bookings = booking_queries.find_eligible_bookings_for_offerer(offerer.id)
 
         # Then
         assert len(bookings) == 1
-        assert booking1 in bookings
+        assert thing_booking1 in bookings
+
+    @clean_database
+    def test_returns_only_finished_for_more_than_the_deletion_delay_bookings(self, app):
+        # Given
+        user = create_user()
+        create_deposit(user)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        in_the_past_less_than_deletion_delay = datetime.utcnow() - STOCK_DELETION_DELAY + timedelta(days=1)
+        in_the_past_more_than_deletion_delay = datetime.utcnow() - STOCK_DELETION_DELAY
+
+        event_stock_finished_more_than_deletion_delay_ago = \
+            create_stock_with_event_offer(offerer=offerer,
+                                          venue=venue,
+                                          beginning_datetime=in_the_past_more_than_deletion_delay,
+                                          booking_limit_datetime=in_the_past_more_than_deletion_delay)
+        event_stock_finished_less_than_deletion_delay_ago = \
+            create_stock_with_event_offer(offerer=offerer,
+                                          venue=venue,
+                                          beginning_datetime=in_the_past_less_than_deletion_delay,
+                                          booking_limit_datetime=in_the_past_less_than_deletion_delay)
+        event_booking1 = create_booking(user=user, is_used=False, stock=event_stock_finished_more_than_deletion_delay_ago, venue=venue)
+        event_booking2 = create_booking(user=user, is_used=False, stock=event_stock_finished_less_than_deletion_delay_ago, venue=venue)
+        repository.save(event_booking1, event_booking2)
+
+        # When
+        bookings = booking_queries.find_eligible_bookings_for_offerer(offerer.id)
+
+        # Then
+        assert len(bookings) == 1
+        assert event_booking1 in bookings
 
 
 class FindFinalVenueBookingsTest:
