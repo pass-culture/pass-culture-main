@@ -104,7 +104,10 @@ class ProductFields extends PureComponent {
     const { quantity } = values
     const { bookingsQuantity } = stock || {}
 
-    const formattedRemainingQuantities = getFormattedRemainingQuantities(quantity, bookingsQuantity)
+    const formattedRemainingQuantities = getFormattedRemainingQuantities(
+      quantity,
+      bookingsQuantity
+    )
 
     const isRemainingQuantityValid =
       formattedRemainingQuantities || formattedRemainingQuantities == 0

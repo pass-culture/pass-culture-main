@@ -6,8 +6,8 @@ import DatePicker from 'react-datepicker'
 import { Field } from 'react-final-form'
 import { composeValidators } from 'react-final-form-utils'
 
-import getRequiredValidate from '../../utils/getRequiredValidate'
 import { InputWithCalendar } from './InputWithCalendar'
+import getRequiredValidate from '../../utils/getRequiredValidate'
 
 class DateField extends PureComponent {
   constructor(props) {
@@ -103,9 +103,10 @@ class DateField extends PureComponent {
               <span>
                 {label}
               </span>
-              {required && !readOnly && <span className="field-asterisk">
-                {'*'}
-                                        </span>}
+              {required && !readOnly &&
+                <span className="field-asterisk">
+                  {'*'}
+                </span>}
             </span>
           )}
         </label>
