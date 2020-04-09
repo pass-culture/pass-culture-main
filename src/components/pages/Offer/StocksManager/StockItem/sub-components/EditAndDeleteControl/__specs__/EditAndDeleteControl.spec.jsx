@@ -1,13 +1,10 @@
-import { shallow } from 'enzyme'
+import { mount, render, shallow } from 'enzyme'
 import React from 'react'
-import configureStore from 'redux-mock-store'
-import { Provider } from 'react-redux'
 
 import { requestData } from 'redux-saga-data'
 import EditAndDeleteControl from '../EditAndDeleteControl'
-
-const middlewares = []
-const mockStore = configureStore(middlewares)
+import { BrowserRouter } from 'react-router-dom'
+import { shape } from 'prop-types'
 
 jest.mock('redux-saga-data', () => ({
   requestData: jest.fn(),
@@ -15,6 +12,18 @@ jest.mock('redux-saga-data', () => ({
 
 describe('src | components | pages | Offer | StockManager | StockItem | sub-components | EditAndDeleteControl', () => {
   let props
+  const router = {
+    history: new BrowserRouter().history,
+    route: {
+      location: {},
+      match: {},
+    },
+  }
+
+  const createContext = () => ({
+    context: { router },
+    childContextTypes: { router: shape({}) },
+  })
 
   beforeEach(() => {
     props = {
@@ -32,19 +41,16 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
   })
 
   it('should match the snapshot', () => {
-    // given
-    const initialState = {}
-    const store = mockStore(initialState)
-
     // when
-    const wrapper = shallow(
-      <Provider store={store}>
+    const wrapper = mount(
+      <tr>
         <EditAndDeleteControl {...props} />
-      </Provider>
+      </tr>,
+      createContext()
     )
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    expect(wrapper.html()).toMatchSnapshot()
   })
 
   describe('handleOnConfirmDeleteClick()', () => {
@@ -64,6 +70,52 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
         props.formInitialValues.id,
         expect.any(Function)
       )
+    })
+  })
+
+  describe('render()', () => {
+    describe('a thing', () => {
+      it('should show edit button enabled with no title', () => {
+        // given
+        props.isEvent = false
+
+        // when
+        const wrapper = render(<EditAndDeleteControl {...props} />, createContext())
+
+        // then
+        expect(wrapper.find('button.edit-stock').prop('disabled')).toBe(false)
+        expect(wrapper.find('button.edit-stock').prop('title')).toBe('')
+      })
+    })
+
+    describe('an event', () => {
+      it('should show edit button enabled with no title for a future event', () => {
+        // given
+        props.isEvent = true
+        props.stock.isEventExpired = false
+
+        // when
+        const wrapper = render(<EditAndDeleteControl {...props} />, createContext())
+
+        // then
+        expect(wrapper.find('button.edit-stock').prop('disabled')).toBe(false)
+        expect(wrapper.find('button.edit-stock').prop('title')).toBe('')
+      })
+
+      it('should show edit button disabled with title for a past event', () => {
+        // given
+        props.isEvent = true
+        props.stock.isEventExpired = true
+
+        // when
+        const wrapper = render(<EditAndDeleteControl {...props} />, createContext())
+
+        // then
+        expect(wrapper.find('button.edit-stock').prop('disabled')).toBe(true)
+        expect(wrapper.find('button.edit-stock').prop('title')).toBe(
+          'Les évènements passés ne sont pas modifiables'
+        )
+      })
     })
   })
 })

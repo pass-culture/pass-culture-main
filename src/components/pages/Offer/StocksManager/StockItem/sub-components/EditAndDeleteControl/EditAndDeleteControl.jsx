@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { PureComponent, Fragment } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 import { Portal } from 'react-portal'
 
 import DeleteDialog from '../DeleteDialog/DeleteDialog'
@@ -56,6 +56,8 @@ class EditAndDeleteControl extends PureComponent {
     const { id: stockId } = stock
     const { isDeleting } = this.state
 
+    const isEventExpired = stock.isEventExpired
+
     if (!stockId) {
       return null
     }
@@ -80,8 +82,10 @@ class EditAndDeleteControl extends PureComponent {
         <td>
           <button
             className="button is-small is-secondary edit-stock"
+            disabled={isEventExpired}
             id={`edit-stock-${stockId}-button`}
             onClick={this.handleOnClick(query, stockId)}
+            title={isEventExpired ? 'Les évènements passés ne sont pas modifiables' : ''}
             type="button"
           >
             <span className="icon">
