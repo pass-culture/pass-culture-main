@@ -93,7 +93,6 @@ def create_stock():
     return jsonify(as_dict(new_stock)), 201
 
 
-# TODO: Interdire la modification d'évenements passés
 @app.route('/stocks/<stock_id>', methods=['PATCH'])
 @login_or_api_key_required
 @expect_json_data

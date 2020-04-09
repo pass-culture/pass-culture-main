@@ -8,7 +8,8 @@ from repository.provider_queries import get_provider_by_local_class
 from routes.serialization import serialize
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_stock
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product, \
+    create_stock_with_event_offer
 from utils.human_ids import humanize
 from validation.routes.stocks import check_dates_are_allowed_on_new_stock, \
     check_dates_are_allowed_on_existing_stock, \
@@ -313,12 +314,45 @@ class CheckStockIsUpdatableTest:
         ]
 
     @clean_database
+    def test_raise_an_error_when_event_is_expired(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        three_days_ago = datetime.utcnow() + timedelta(days=-3)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, beginning_datetime=three_days_ago, booking_limit_datetime=three_days_ago)
+
+        # When
+        with pytest.raises(ApiErrors) as error:
+            check_stock_is_updatable(stock)
+
+        # Then
+        assert error.value.errors['global'] == [
+            'Les événements passés ne sont pas modifiables'
+        ]
+
+    @clean_database
+    def test_does_not_raise_an_error_when_event_is_not_expired(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        in_three_days = datetime.utcnow() + timedelta(days=3)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, beginning_datetime=in_three_days, booking_limit_datetime=in_three_days)
+
+        # When
+        try:
+            check_stock_is_updatable(stock)
+
+        except ApiErrors:
+            # Then
+            assert pytest.fail("Should not fail with valid params")
+
+    @clean_database
     def test_does_not_raise_an_error_when_offer_is_not_from_provider(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(quantity=10, offer=offer)
+        stock = create_stock(offer=offer)
 
         # When
         try:
@@ -335,7 +369,7 @@ class CheckStockIsUpdatableTest:
         venue = create_venue(offerer)
         provider = get_provider_by_local_class('AllocineStocks')
         offer = create_offer_with_thing_product(venue, last_provider_id=provider.id)
-        stock = create_stock(quantity=10, id_at_providers='test', offer=offer)
+        stock = create_stock(id_at_providers='test', offer=offer)
 
         repository.save(stock)
 

@@ -20,6 +20,11 @@ def check_stock_is_updatable(stock: Stock) -> None:
         api_errors.add_error('global', 'Les offres importées ne sont pas modifiables')
         raise api_errors
 
+    if stock.isEventExpired:
+        api_errors = ApiErrors()
+        api_errors.add_error('global', 'Les événements passés ne sont pas modifiables')
+        raise api_errors
+
 
 def check_request_has_offer_id(request_data: dict):
     if 'offerId' not in request_data:
