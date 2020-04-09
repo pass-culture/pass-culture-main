@@ -3,26 +3,26 @@ from unittest.mock import Mock, patch
 
 from mailjet_rest import Client
 
-from models import BeneficiaryImport, ImportStatus
-from models import User, ApiErrors
+from models import ApiErrors, BeneficiaryImport, ImportStatus, User
 from repository import repository
 from scripts.beneficiary import remote_import
 from scripts.beneficiary.remote_import import parse_beneficiary_information
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user
-from tests.scripts.beneficiary.fixture import make_application_detail, \
-    APPLICATION_DETAIL_STANDARD_RESPONSE
+from tests.scripts.beneficiary.fixture import \
+    APPLICATION_DETAIL_STANDARD_RESPONSE, make_application_detail
 
 NOW = datetime.utcnow()
-datetime_pattern = '%Y-%m-%dT%H:%M:%S.%fZ'
-EIGHT_HOURS_AGO = (NOW - timedelta(hours=8)).strftime(datetime_pattern)
-FOUR_HOURS_AGO = (NOW - timedelta(hours=4)).strftime(datetime_pattern)
-TWO_DAYS_AGO = (NOW - timedelta(hours=48)).strftime(datetime_pattern)
+DATETIME_PATTERN = '%Y-%m-%dT%H:%M:%S.%fZ'
+EIGHT_HOURS_AGO = (NOW - timedelta(hours=8)).strftime(DATETIME_PATTERN)
+FOUR_HOURS_AGO = (NOW - timedelta(hours=4)).strftime(DATETIME_PATTERN)
+TWO_DAYS_AGO = (NOW - timedelta(hours=48)).strftime(DATETIME_PATTERN)
 ONE_WEEK_AGO = NOW - timedelta(days=7)
 
 
 class RunTest:
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
+    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID': '2567158'})
     def test_all_applications_are_processed_once(self, process_beneficiary_application):
         # given
         get_all_application_ids = Mock(return_value=[123, 456, 789])
@@ -52,6 +52,7 @@ class RunTest:
         assert process_beneficiary_application.call_count == 3
 
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
+    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID': '2567158'})
     def test_applications_to_retry_are_processed(self, process_beneficiary_application):
         # given
         get_all_application_ids = Mock(return_value=[123])
@@ -81,11 +82,12 @@ class RunTest:
         assert process_beneficiary_application.call_count == 3
 
     @patch('scripts.beneficiary.remote_import.parse_beneficiary_information')
-    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_REPORT_RECIPIENTS': 'send@report.to'})
+    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_REPORT_RECIPIENTS': 'send@example.com'})
+    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID': '2567158'})
     @clean_database
     def test_an_error_status_is_saved_when_an_application_is_not_parsable(
             self,
-            parse_beneficiary_information,
+            mocked_parse_beneficiary_information,
             app
     ):
         # given
@@ -95,7 +97,7 @@ class RunTest:
         get_details = Mock(side_effect=[make_application_detail(123, 'closed')])
         has_already_been_imported = Mock(return_value=False)
         has_already_been_created = Mock(return_value=False)
-        parse_beneficiary_information.side_effect = [Exception()]
+        mocked_parse_beneficiary_information.side_effect = [Exception()]
 
         # when
         remote_import.run(
@@ -114,6 +116,7 @@ class RunTest:
         assert beneficiary_import.detail == 'Le dossier 123 contient des erreurs et a été ignoré'
 
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
+    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID': '2567158'})
     def test_application_with_known_demarche_simplifiee_application_id_are_not_processed(self,
                                                                                          process_beneficiary_application
                                                                                          ):
@@ -123,7 +126,7 @@ class RunTest:
 
         get_details = Mock(return_value=make_application_detail(123, 'closed'))
         user = User()
-        user.email = 'john.doe@test.com'
+        user.email = 'john.doe@example.com'
         has_already_been_imported = Mock(return_value=True)
         has_already_been_created = Mock(return_value=False)
 
@@ -141,6 +144,7 @@ class RunTest:
         process_beneficiary_application.assert_not_called()
 
     @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
+    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID': '2567158'})
     @clean_database
     def test_application_with_known_email_are_saved_as_rejected(self,
                                                                 process_beneficiary_application,
@@ -151,7 +155,7 @@ class RunTest:
 
         get_details = Mock(return_value=make_application_detail(123, 'closed'))
         user = User()
-        user.email = 'john.doe@test.com'
+        user.email = 'john.doe@example.com'
         has_already_been_imported = Mock(return_value=False)
         has_already_been_created = Mock(return_value=True)
 
@@ -172,6 +176,52 @@ class RunTest:
         assert beneficiary_import.detail == 'Compte existant avec cet email'
         process_beneficiary_application.assert_not_called()
 
+    @patch('scripts.beneficiary.remote_import.process_beneficiary_application')
+    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID': '2567158'})
+    @clean_database
+    def test_beneficiary_is_created_with_procedure_id(
+            self,
+            process_beneficiary_application,
+            app
+    ):
+        # given
+        get_all_application_ids = Mock(return_value=[123])
+        find_applications_ids_to_retry = Mock(return_value=[])
+
+        get_details = Mock(side_effect=[make_application_detail(123, 'closed')])
+        has_already_been_imported = Mock(return_value=False)
+        has_already_been_created = Mock(return_value=False)
+
+        # when
+        remote_import.run(
+            ONE_WEEK_AGO,
+            get_all_applications_ids=get_all_application_ids,
+            get_applications_ids_to_retry=find_applications_ids_to_retry,
+            get_details=get_details,
+            already_imported=has_already_been_imported,
+            already_existing_user=has_already_been_created
+        )
+
+        # then
+        process_beneficiary_application.assert_called_with(
+            information={
+                'last_name': 'Doe',
+                'first_name': 'Jane',
+                'civility': 'Mme',
+                'email': 'jane.doe@test.com',
+                'application_id': 123,
+                'department': '67',
+                'phone': '0123456789',
+                'birth_date': datetime(2000, 5, 1, 0, 0),
+                'activity': 'Étudiant',
+                'postal_code': '67200'
+            },
+            error_messages=[],
+            new_beneficiaries=[],
+            retry_ids=[],
+            procedure_id=2567158
+        )
+
 
 class ProcessBeneficiaryApplicationTest:
     @clean_database
@@ -184,7 +234,7 @@ class ProcessBeneficiaryApplicationTest:
             'last_name': 'Doe',
             'first_name': 'Jane',
             'birth_date': datetime(2000, 5, 1),
-            'email': 'jane.doe@test.com',
+            'email': 'jane.doe@example.com',
             'phone': '0612345678',
             'postal_code': '67200',
             'application_id': 123,
@@ -193,11 +243,11 @@ class ProcessBeneficiaryApplicationTest:
         }
 
         # when
-        remote_import.process_beneficiary_application(information, [], [], [])
+        remote_import.process_beneficiary_application(information, [], [], [], 123456)
 
         # then
         first = User.query.first()
-        assert first.email == 'jane.doe@test.com'
+        assert first.email == 'jane.doe@example.com'
         assert first.wallet_balance == 500
         assert first.civility == 'Mme'
         assert first.activity == 'Étudiant'
@@ -212,7 +262,7 @@ class ProcessBeneficiaryApplicationTest:
             'last_name': 'Doe',
             'first_name': 'Jane',
             'birth_date': datetime(2000, 5, 1),
-            'email': 'jane.doe@test.com',
+            'email': 'jane.doe@example.com',
             'phone': '0612345678',
             'postal_code': '67200',
             'application_id': 123,
@@ -221,11 +271,11 @@ class ProcessBeneficiaryApplicationTest:
         }
 
         # when
-        remote_import.process_beneficiary_application(information, [], [], [])
+        remote_import.process_beneficiary_application(information, [], [], [], 123456)
 
         # then
         beneficiary_import = BeneficiaryImport.query.first()
-        assert beneficiary_import.beneficiary.email == 'jane.doe@test.com'
+        assert beneficiary_import.beneficiary.email == 'jane.doe@example.com'
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert beneficiary_import.demarcheSimplifieeApplicationId == 123
 
@@ -241,7 +291,7 @@ class ProcessBeneficiaryApplicationTest:
             'last_name': 'Doe',
             'first_name': 'Jane',
             'birth_date': datetime(2000, 5, 1),
-            'email': 'jane.doe@test.com',
+            'email': 'jane.doe@example.com',
             'phone': '0612345678',
             'postal_code': '67200',
             'application_id': 123,
@@ -252,7 +302,7 @@ class ProcessBeneficiaryApplicationTest:
         create_beneficiary_from_application.return_value = create_user()
 
         # when
-        remote_import.process_beneficiary_application(information, [], [], [])
+        remote_import.process_beneficiary_application(information, [], [], [], 123456)
 
         # then
         send_activation_email.assert_called()
@@ -270,7 +320,7 @@ class ProcessBeneficiaryApplicationTest:
             'last_name': 'Doe',
             'first_name': 'Jane',
             'birth_date': datetime(2000, 5, 1),
-            'email': 'jane.doe@test.com',
+            'email': 'jane.doe@example.com',
             'phone': '0612345678',
             'postal_code': '67200',
             'application_id': 123,
@@ -283,7 +333,7 @@ class ProcessBeneficiaryApplicationTest:
         error_messages = []
 
         # when
-        remote_import.process_beneficiary_application(information, error_messages, new_beneficiaries, [])
+        remote_import.process_beneficiary_application(information, error_messages, new_beneficiaries, [], 123456)
 
         # then
         send_activation_email.assert_not_called()
@@ -301,7 +351,7 @@ class ProcessBeneficiaryApplicationTest:
             'last_name': 'Doe',
             'first_name': 'Jane',
             'birth_date': datetime(2000, 5, 1),
-            'email': 'jane.doe@test.com',
+            'email': 'jane.doe@example.com',
             'phone': '0612345678',
             'postal_code': '67200',
             'application_id': 123,
@@ -313,7 +363,7 @@ class ProcessBeneficiaryApplicationTest:
         mock = Mock(return_value=[existing_user])
 
         # when
-        remote_import.process_beneficiary_application(information, [], [], [], find_duplicate_users=mock)
+        remote_import.process_beneficiary_application(information, [], [], [], 123456, find_duplicate_users=mock)
 
         # then
         send_activation_email.assert_not_called()
@@ -330,7 +380,7 @@ class ProcessBeneficiaryApplicationTest:
             'last_name': 'Doe',
             'first_name': 'Jane',
             'birth_date': datetime(2000, 5, 1),
-            'email': 'jane.doe@test.com',
+            'email': 'jane.doe@example.com',
             'phone': '0612345678',
             'postal_code': '67200',
             'application_id': 123,
@@ -343,7 +393,7 @@ class ProcessBeneficiaryApplicationTest:
         retry_ids = [123]
 
         # when
-        remote_import.process_beneficiary_application(information, [], [], retry_ids, find_duplicate_users=mock)
+        remote_import.process_beneficiary_application(information, [], [], retry_ids, 123456, find_duplicate_users=mock)
 
         # then
         send_activation_email.assert_called()
@@ -358,7 +408,7 @@ class ProcessBeneficiaryApplicationTest:
             'last_name': 'Doe',
             'first_name': 'Jane',
             'birth_date': datetime(2000, 5, 1),
-            'email': 'jane.doe@test.com',
+            'email': 'jane.doe@example.com',
             'phone': '0612345678',
             'postal_code': '67200',
             'application_id': 123,
@@ -368,7 +418,7 @@ class ProcessBeneficiaryApplicationTest:
         mocked_query = Mock(return_value=[create_user(idx=11), create_user(idx=22)])
 
         # when
-        remote_import.process_beneficiary_application(information, [], [], [], find_duplicate_users=mocked_query)
+        remote_import.process_beneficiary_application(information, [], [], [], 123456, find_duplicate_users=mocked_query)
 
         # then
         beneficiary_import = BeneficiaryImport.query.first()

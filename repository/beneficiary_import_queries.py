@@ -18,12 +18,11 @@ def is_already_imported(application_id: int) -> bool:
     return beneficiary_import.currentStatus != ImportStatus.RETRY
 
 
-def save_beneficiary_import_with_status(
-        status: ImportStatus,
-        demarche_simplifiee_application_id: int,
-        user: User = None,
-        detail: str = None,
-):
+def save_beneficiary_import_with_status(status: ImportStatus,
+                                        demarche_simplifiee_application_id: int,
+                                        demarche_simplifiee_procedure_id: int,
+                                        user: User = None,
+                                        detail: str = None):
     existing_beneficiary_import = BeneficiaryImport.query \
         .filter_by(demarcheSimplifieeApplicationId=demarche_simplifiee_application_id) \
         .first()
@@ -31,8 +30,11 @@ def save_beneficiary_import_with_status(
     beneficiary_import = existing_beneficiary_import or BeneficiaryImport()
     if not beneficiary_import.beneficiary:
         beneficiary_import.beneficiary = user
+
     beneficiary_import.demarcheSimplifieeApplicationId = demarche_simplifiee_application_id
+    beneficiary_import.procedureId = demarche_simplifiee_procedure_id
     beneficiary_import.setStatus(status=status, detail=detail, author=None)
+
     repository.save(beneficiary_import)
 
 
