@@ -1,10 +1,13 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 import { NON_BREAKING_SPACE } from '../../../../utils/specialCharacters'
 import Icon from '../../../layout/Icon/Icon'
+import EnteringSides from '../animationsEnteringSides/EnteringSides'
+import EnteringSidesClassNames from '../animationsEnteringSides/EnteringSidesClassNames'
 
-const FirstTutorial = () => (
-  <div className="first-tutorial">
+const FirstTutorial = ({ enteringSide }) => (
+  <div className={`first-tutorial ${EnteringSidesClassNames[enteringSide]}`}>
     <Icon
       className="icon"
       svg="icon-calendar"
@@ -24,5 +27,9 @@ const FirstTutorial = () => (
     </p>
   </div>
 )
+
+FirstTutorial.propTypes = {
+  enteringSide: PropTypes.oneOf(Object.keys(EnteringSides)).isRequired,
+}
 
 export default FirstTutorial

@@ -2,9 +2,12 @@ import React from 'react'
 
 import Icon from '../../../layout/Icon/Icon'
 import { NON_BREAKING_SPACE, NON_BREAKING_HYPHEN } from '../../../../utils/specialCharacters'
+import PropTypes from 'prop-types'
+import EnteringSides from '../animationsEnteringSides/EnteringSides'
+import EnteringSidesClassNames from '../animationsEnteringSides/EnteringSidesClassNames'
 
-const SecondTutorial = () => (
-  <div className="second-tutorial">
+const SecondTutorial = ({ enteringSide }) => (
+  <div className={`second-tutorial ${EnteringSidesClassNames[enteringSide]}`}>
     <Icon
       className="icon"
       svg="icon-ticket"
@@ -25,5 +28,9 @@ const SecondTutorial = () => (
     </p>
   </div>
 )
+
+SecondTutorial.propTypes = {
+  enteringSide: PropTypes.oneOf(Object.keys(EnteringSides)).isRequired,
+}
 
 export default SecondTutorial

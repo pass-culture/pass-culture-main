@@ -13,7 +13,7 @@ const SliderPoints = ({ currentStep, elements }) => {
 
 SliderPoints.propTypes = {
   currentStep: PropTypes.number.isRequired,
-  elements: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  elements: PropTypes.arrayOf(PropTypes.func).isRequired,
 }
 
 export default SliderPoints

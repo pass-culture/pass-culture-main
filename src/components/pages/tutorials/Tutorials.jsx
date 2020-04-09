@@ -1,42 +1,65 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
-import FirstTutorial from './FirstTutorial/FirstTutorial'
 import Icon from '../../layout/Icon/Icon'
+import FirstTutorial from './FirstTutorial/FirstTutorial'
 import SecondTutorial from './SecondTutorial/SecondTutorial'
 import ThirdTutorial from './ThirdTutorial/ThirdTutorial'
 import SliderPoints from './SliderPoints/SliderPoints'
+import DraggableTutorial from './DraggableTutorial/DraggableTutorial'
+import EnteringSides from './animationsEnteringSides/EnteringSides'
 
 const Tutorials = ({ history }) => {
-  const tutorials = [
-    <FirstTutorial key="first-tutorial" />,
-    <SecondTutorial key="second-tutorial" />,
-    <ThirdTutorial key="third-tutorial" />,
-  ]
+  const tutorials = [FirstTutorial, SecondTutorial, ThirdTutorial]
 
   const lastTutorialStep = tutorials.length - 1
 
   let [step, setStep] = useState(0)
+  let [previousStep, setPreviousStep] = useState(-1)
 
-  function handleClickNext() {
+  function handleGoNext() {
     if (step === lastTutorialStep) {
       history.push('/decouverte')
+    } else {
+      setPreviousStep(step)
+      setStep(step + 1)
     }
-
-    setStep(step + 1)
   }
 
-  function handleClickPrevious() {
+  function handleGoPrevious() {
+    setPreviousStep(step)
     setStep(step - 1)
+  }
+
+  function tutorialToDisplay() {
+    const enteringSide = previousStep < step ? EnteringSides.right : EnteringSides.left
+
+    if (step === 0) {
+      return <FirstTutorial enteringSide={enteringSide} />
+    }
+
+    if (step === 1) {
+      return <SecondTutorial enteringSide={enteringSide} />
+    }
+
+    if (step === 2) {
+      return <ThirdTutorial enteringSide={enteringSide} />
+    }
   }
 
   return (
     <main className="tutorials">
-      {tutorials[step]}
+      <DraggableTutorial
+        handleGoNext={handleGoNext}
+        handleGoPrevious={handleGoPrevious}
+        step={step}
+      >
+        {tutorialToDisplay()}
+      </DraggableTutorial>
       {step > 0 && (
         <button
           className="previous-arrow"
-          onClick={handleClickPrevious}
+          onClick={handleGoPrevious}
           type="button"
         >
           <Icon
@@ -47,7 +70,7 @@ const Tutorials = ({ history }) => {
       )}
       <button
         className="next-arrow"
-        onClick={handleClickNext}
+        onClick={handleGoNext}
         type="button"
       >
         <Icon

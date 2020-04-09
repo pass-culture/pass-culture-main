@@ -1,10 +1,15 @@
 .tutorials {
+  background-color: $background-tuto-purple;
   color: $white;
   font-size: rem(18px);
   height: 100%;
   line-height: 1.25;
   text-align: center;
   width: 100%;
+
+  .tutorial {
+    height: 100%;
+  }
 
   .icon {
     margin-top: 8.5vh;
@@ -62,5 +67,36 @@
     position: absolute;
     bottom: 128px;
     left: 21px;
+  }
+
+  .enter-on-left {
+    animation-name: enter-on-left;
+    animation-iteration-count: 1;
+    animation-duration: .5s;
+  }
+
+  .enter-on-right {
+    animation-name: enter-on-right;
+    animation-iteration-count: 1;
+    animation-duration: .5s;
+  }
+}
+
+
+@keyframes enter-on-right {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes enter-on-left {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
   }
 }

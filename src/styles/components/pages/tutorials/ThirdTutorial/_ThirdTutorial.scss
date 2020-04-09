@@ -1,12 +1,22 @@
 .third-tutorial {
-  background-image: url('/onboarding-3@2x.jpg');
-  background-color: $background-tuto-purple;
-  background-repeat: no-repeat;
-  background-position: center bottom;
-  background-size: 100%;
+  line-height: 1.35;
   height: 100%;
   width: 100%;
-  line-height: 1.35;
+
+  position: relative;
+  &::before {
+    height: 100%;
+    width: 140%;
+    content: "";
+    position: absolute;
+    left: -20%;
+    z-index: -1;
+    background-image: url('/onboarding-3.png');
+    background-color: $background-tuto-purple;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: 92%;
+  }
 
   .third-tutorial-text {
     margin: 1vh 10% 0;

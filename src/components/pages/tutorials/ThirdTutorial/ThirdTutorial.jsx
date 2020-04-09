@@ -2,9 +2,12 @@ import React from 'react'
 
 import Icon from '../../../layout/Icon/Icon'
 import { NON_BREAKING_SPACE } from '../../../../utils/specialCharacters'
+import PropTypes from 'prop-types'
+import EnteringSides from '../animationsEnteringSides/EnteringSides'
+import EnteringSidesClassNames from '../animationsEnteringSides/EnteringSidesClassNames'
 
-const ThirdTutorial = () => (
-  <div className="third-tutorial">
+const ThirdTutorial = ({ enteringSide }) => (
+  <div className={`third-tutorial ${EnteringSidesClassNames[enteringSide]}`}>
     <Icon
       className="icon"
       svg="icon-balance"
@@ -29,5 +32,9 @@ const ThirdTutorial = () => (
     </p>
   </div>
 )
+
+ThirdTutorial.propTypes = {
+  enteringSide: PropTypes.oneOf(Object.keys(EnteringSides)).isRequired,
+}
 
 export default ThirdTutorial
