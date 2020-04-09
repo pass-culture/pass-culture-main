@@ -39,7 +39,7 @@ describe('fetchAlgolia', () => {
 
     // then
     expect(search).toHaveBeenCalledWith(keywords, {
-      page: 0
+      page: 0,
     })
   })
 
@@ -61,7 +61,7 @@ describe('fetchAlgolia', () => {
       )
       expect(initIndex).toHaveBeenCalledWith(WEBAPP_ALGOLIA_INDEX_NAME)
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
@@ -74,7 +74,7 @@ describe('fetchAlgolia', () => {
 
       // then
       expect(search).toHaveBeenCalledWith('', {
-        page: 0
+        page: 0,
       })
     })
   })
@@ -98,7 +98,7 @@ describe('fetchAlgolia', () => {
       expect(search).toHaveBeenCalledWith(keywords, {
         aroundLatLng: '42, 43',
         aroundRadius: 'all',
-        page: 0
+        page: 0,
       })
     })
 
@@ -118,7 +118,7 @@ describe('fetchAlgolia', () => {
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
@@ -141,7 +141,7 @@ describe('fetchAlgolia', () => {
       expect(search).toHaveBeenCalledWith(keywords, {
         aroundLatLng: '42, 43',
         aroundRadius: 15000,
-        page: 0
+        page: 0,
       })
     })
   })
@@ -160,7 +160,7 @@ describe('fetchAlgolia', () => {
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
@@ -215,7 +215,7 @@ describe('fetchAlgolia', () => {
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
       expect(initIndex).toHaveBeenCalledWith('indexName_by_proximity')
     })
@@ -231,7 +231,7 @@ describe('fetchAlgolia', () => {
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
       expect(initIndex).toHaveBeenCalledWith('indexName')
     })
@@ -249,7 +249,7 @@ describe('fetchAlgolia', () => {
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
@@ -259,7 +259,7 @@ describe('fetchAlgolia', () => {
       const offerTypes = {
         isDigital: true,
         isEvent: false,
-        isThing: false
+        isThing: false,
       }
 
       // when
@@ -287,12 +287,12 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerTypes: offerTypes
+        offerTypes: offerTypes,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
@@ -308,13 +308,13 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerTypes: offerTypes
+        offerTypes: offerTypes,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         facetFilters: ['offer.isDigital:false', 'offer.isThing:true'],
-        page: 0
+        page: 0,
       })
     })
 
@@ -330,13 +330,13 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerTypes: offerTypes
+        offerTypes: offerTypes,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         facetFilters: ['offer.isEvent:true'],
-        page: 0
+        page: 0,
       })
     })
 
@@ -352,13 +352,13 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerTypes: offerTypes
+        offerTypes: offerTypes,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         facetFilters: ['offer.isThing:true'],
-        page: 0
+        page: 0,
       })
     })
 
@@ -374,13 +374,13 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerTypes: offerTypes
+        offerTypes: offerTypes,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         facetFilters: [['offer.isDigital:true', 'offer.isEvent:true']],
-        page: 0
+        page: 0,
       })
     })
 
@@ -396,13 +396,13 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerTypes: offerTypes
+        offerTypes: offerTypes,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         facetFilters: ['offer.isDigital:false'],
-        page: 0
+        page: 0,
       })
     })
 
@@ -418,12 +418,12 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerTypes: offerTypes
+        offerTypes: offerTypes,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
@@ -462,7 +462,7 @@ describe('fetchAlgolia', () => {
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
@@ -474,50 +474,74 @@ describe('fetchAlgolia', () => {
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerIsDuo: offerIsDuo
+        offerIsDuo: offerIsDuo,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         facetFilters: ['offer.isDuo:true'],
-        page: 0
+        page: 0,
       })
     })
   })
 
-  describe('offer free', () => {
-    it('should fetch with no numericFilters when offer is not free', () => {
+  describe('offer price', () => {
+    it('should fetch with no numericFilters when no price range is specified and offer is not free', () => {
       // given
       const keywords = 'searched keywords'
-      const offerIsFree = false
+      const priceRange = []
+      const isFree = false
 
       // when
       fetchAlgolia({
         keywords: keywords,
-        offerIsFree: offerIsFree,
+        isFree,
+        priceRange,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0
+        page: 0,
       })
     })
 
-    it('should fetch with numericFilters when offer is free', () => {
+    it('should fetch with numericFilters when offer is free even when priceRange is provided', () => {
       // given
       const keywords = 'searched keywords'
       const offerIsFree = true
+      const priceRange = [0, 500]
 
       // when
       fetchAlgolia({
-        keywords: keywords,
-        offerIsFree: offerIsFree,
+        keywords,
+        offerIsFree,
+        priceRange,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         numericFilters: ['offer.prices = 0'],
-        page: 0
+        page: 0,
+      })
+    })
+
+    it('should fetch with numericFilters range when price range is provided and offer is not free', () => {
+      // given
+      const keywords = 'searched keywords'
+      const offerIsFree = false
+      const priceRange = [0, 50]
+
+      // when
+      fetchAlgolia({
+        keywords,
+        offerIsFree,
+        priceRange,
+      })
+
+      // then
+      expect(search).toHaveBeenCalledWith(keywords, {
+        numericFilters: ['offer.prices: 0 TO 50'],
+        page: 0,
       })
     })
   })
@@ -534,7 +558,7 @@ describe('fetchAlgolia', () => {
       const offerTypes = {
         isDigital: true,
         isEvent: false,
-        isThing: false
+        isThing: false,
       }
       const page = 2
       const sortBy = '_by_price'
@@ -571,7 +595,7 @@ describe('fetchAlgolia', () => {
       const offerTypes = {
         isDigital: false,
         isEvent: true,
-        isThing: false
+        isThing: false,
       }
       const sortBy = '_by_price'
 
@@ -588,9 +612,12 @@ describe('fetchAlgolia', () => {
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         page: 0,
-        facetFilters: [["offer.category:PRATIQUE", "offer.category:SPECTACLE"], "offer.isEvent:true"],
+        facetFilters: [
+          ['offer.category:PRATIQUE', 'offer.category:SPECTACLE'],
+          'offer.isEvent:true',
+        ],
         aroundLatLng: '42, 43',
-        aroundRadius: 'all'
+        aroundRadius: 'all',
       })
       expect(initIndex).toHaveBeenCalledWith('indexName_by_price')
     })
@@ -604,11 +631,11 @@ describe('fetchAlgolia', () => {
       const keywords = ''
       const offerCategories = ['PRATIQUE', 'SPECTACLE']
       const offerIsDuo = true
-      const offerIsFree = true
+      const priceRange = [5, 40]
       const offerTypes = {
         isDigital: false,
         isEvent: true,
-        isThing: false
+        isThing: false,
       }
       const sortBy = '_by_price'
 
@@ -618,7 +645,7 @@ describe('fetchAlgolia', () => {
         keywords,
         offerCategories,
         offerIsDuo,
-        offerIsFree,
+        priceRange,
         offerTypes,
         sortBy,
       })
@@ -626,10 +653,14 @@ describe('fetchAlgolia', () => {
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         page: 0,
-        facetFilters: [["offer.category:PRATIQUE", "offer.category:SPECTACLE"], "offer.isEvent:true", "offer.isDuo:true"],
-        numericFilters: ["offer.prices = 0"],
+        facetFilters: [
+          ['offer.category:PRATIQUE', 'offer.category:SPECTACLE'],
+          'offer.isEvent:true',
+          'offer.isDuo:true',
+        ],
+        numericFilters: ['offer.prices: 5 TO 40'],
         aroundLatLng: '42, 43',
-        aroundRadius: 'all'
+        aroundRadius: 'all',
       })
       expect(initIndex).toHaveBeenCalledWith('indexName_by_price')
     })

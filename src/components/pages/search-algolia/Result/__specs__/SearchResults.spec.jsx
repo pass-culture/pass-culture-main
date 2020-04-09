@@ -190,6 +190,7 @@ describe('components | SearchResults', () => {
           isThing: false,
         },
         page: 0,
+        priceRange: [0, 500],
         sortBy: '_by_price',
       })
     })
@@ -219,6 +220,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
+          priceRange: [0, 500],
           sortBy: '_by_proximity',
         })
       })
@@ -262,6 +264,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
+          priceRange: [0, 500],
           sortBy: '',
         })
       })
@@ -336,6 +339,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
+          priceRange: [0, 500],
           sortBy: '',
         })
       })
@@ -374,6 +378,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
+          priceRange: [0, 500],
           sortBy: '',
         })
       })
@@ -405,6 +410,7 @@ describe('components | SearchResults', () => {
           offerIsDuo: false,
           offerIsFree: false,
           offerTypes: { isDigital: false, isEvent: false, isThing: false },
+          priceRange: [0, 500],
           page: 0,
         })
       })
@@ -439,6 +445,7 @@ describe('components | SearchResults', () => {
           offerIsDuo: false,
           offerIsFree: false,
           offerTypes: { isDigital: false, isEvent: false, isThing: false },
+          priceRange: [0, 500],
           page: 0,
         })
       })
@@ -474,6 +481,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
+          priceRange: [0, 500],
           sortBy: '',
         })
       })
@@ -511,6 +519,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
+          priceRange: [0, 500],
           sortBy: '_by_proximity',
         })
       })
@@ -547,6 +556,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
+          priceRange: [0, 500],
           sortBy: '_by_proximity',
         })
       })
@@ -586,6 +596,7 @@ describe('components | SearchResults', () => {
             isThing: false,
           },
           page: 0,
+          priceRange: [0, 500],
         })
       })
 
@@ -646,6 +657,7 @@ describe('components | SearchResults', () => {
           isThing: false,
         },
         page: 0,
+        priceRange: [0, 500],
         sortBy: '',
       })
     })
@@ -679,6 +691,7 @@ describe('components | SearchResults', () => {
           isThing: false,
         },
         page: 0,
+        priceRange: [0, 500],
         sortBy: '',
       })
     })
@@ -712,6 +725,7 @@ describe('components | SearchResults', () => {
           isThing: false,
         },
         page: 0,
+        priceRange: [0, 500],
         sortBy: '',
       })
     })
@@ -969,6 +983,7 @@ describe('components | SearchResults', () => {
             isEvent: false,
             isThing: false,
           },
+          priceRange: [0, 500],
           sortBy: '',
         },
         keywordsToSearch: 'vas-y',
@@ -1034,6 +1049,7 @@ describe('components | SearchResults', () => {
           isThing: false,
         },
         page: 0,
+        priceRange: [0, 500],
         sortBy: '',
       })
       expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
@@ -1047,6 +1063,7 @@ describe('components | SearchResults', () => {
           isThing: false,
         },
         page: 0,
+        priceRange: [0, 500],
         sortBy: '',
       })
     })
@@ -1441,6 +1458,7 @@ describe('components | SearchResults', () => {
           isEvent: false,
           isThing: false,
         },
+        priceRange: [0, 500],
         sortBy: '_by_price',
       })
       expect(filtersContainer.prop('match')).toStrictEqual(props.match)
@@ -1593,6 +1611,7 @@ describe('components | SearchResults', () => {
           isThing: false,
         },
         page: 0,
+        priceRange: [0, 500],
         sortBy: '_by_proximity',
       })
     })

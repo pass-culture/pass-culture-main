@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 
 import PropTypes from 'prop-types'
+import Slider, { Range } from 'rc-slider'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
 import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
@@ -16,7 +17,15 @@ export class Filters extends PureComponent {
   constructor(props) {
     super(props)
 
-    const { aroundRadius, isSearchAroundMe, offerIsDuo, offerIsFree, offerTypes, sortBy } = props.initialFilters
+    const {
+      aroundRadius,
+      isSearchAroundMe,
+      offerIsDuo,
+      offerIsFree,
+      offerTypes,
+      priceRange,
+      sortBy,
+    } = props.initialFilters
     this.state = {
       areCategoriesVisible: true,
       filters: {
@@ -27,6 +36,7 @@ export class Filters extends PureComponent {
         offerIsDuo: offerIsDuo,
         offerTypes: offerTypes,
         sortBy: sortBy,
+        priceRange: priceRange,
       },
       offers: props.offers,
     }
@@ -41,7 +51,17 @@ export class Filters extends PureComponent {
     }, {})
   }
 
-  fetchOffers = ({ aroundRadius, keywords, geolocation, offerCategories, offerIsDuo, offerIsFree, offerTypes, sortBy }) => {
+  fetchOffers = ({
+    aroundRadius,
+    keywords,
+    geolocation,
+    offerCategories,
+    offerIsDuo,
+    offerIsFree,
+    offerTypes,
+    priceRange,
+    sortBy,
+  }) => {
     const { showFailModal } = this.props
     fetchAlgolia({
       aroundRadius,
@@ -51,6 +71,7 @@ export class Filters extends PureComponent {
       offerIsDuo,
       offerIsFree,
       offerTypes,
+      priceRange,
       sortBy,
     })
       .then(offers => {
@@ -63,34 +84,44 @@ export class Filters extends PureComponent {
       })
   }
 
-  findOffersAndUpdateUrl = () => {
+  handleOffersFetchAndUrlUpdate = () => {
     const { history, geolocation, query } = this.props
     const { filters } = this.state
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles'] || ''
 
-    const { aroundRadius, isSearchAroundMe, offerIsDuo, offerIsFree, offerTypes, sortBy } = filters
+    const {
+      aroundRadius,
+      isSearchAroundMe,
+      offerIsDuo,
+      offerIsFree,
+      offerTypes,
+      priceRange,
+      sortBy,
+    } = filters
     const offerCategories = this.getSelectedCategories()
 
     isSearchAroundMe
       ? this.fetchOffers({
-        aroundRadius,
-        keywords,
-        geolocation,
-        offerCategories,
-        offerIsDuo,
-        offerIsFree,
-        offerTypes,
-        sortBy,
-      })
+          aroundRadius,
+          keywords,
+          geolocation,
+          offerCategories,
+          offerIsDuo,
+          offerIsFree,
+          offerTypes,
+          priceRange,
+          sortBy,
+        })
       : this.fetchOffers({
-        keywords,
-        offerCategories,
-        offerIsDuo,
-        offerIsFree,
-        offerTypes,
-        sortBy,
-      })
+          keywords,
+          offerCategories,
+          offerIsDuo,
+          offerIsFree,
+          offerTypes,
+          priceRange,
+          sortBy,
+        })
 
     const autourDeMoi = checkIfAroundMe(filters.isSearchAroundMe)
     const categories = offerCategories.join(';') || ''
@@ -117,10 +148,11 @@ export class Filters extends PureComponent {
             isEvent: false,
             isThing: false,
           },
+          priceRange: [0, 500],
         },
       },
       () => {
-        this.findOffersAndUpdateUrl()
+        this.handleOffersFetchAndUrlUpdate()
       }
     )
   }
@@ -182,7 +214,7 @@ export class Filters extends PureComponent {
         },
       },
       () => {
-        this.findOffersAndUpdateUrl()
+        this.handleOffersFetchAndUrlUpdate()
         redirectToSearchFiltersPage()
       }
     )
@@ -226,7 +258,7 @@ export class Filters extends PureComponent {
         },
       },
       () => {
-        this.findOffersAndUpdateUrl()
+        this.handleOffersFetchAndUrlUpdate()
       }
     )
   }
@@ -246,7 +278,7 @@ export class Filters extends PureComponent {
         },
       },
       () => {
-        this.findOffersAndUpdateUrl()
+        this.handleOffersFetchAndUrlUpdate()
       }
     )
   }
@@ -255,18 +287,21 @@ export class Filters extends PureComponent {
     this.setState(prevState => ({ areCategoriesVisible: !prevState.areCategoriesVisible }))
   }
 
-  handleOnToggle = (event) => {
+  handleOnToggle = event => {
     const { name, checked } = event.target
     const { filters } = this.state
 
-    this.setState({
-      filters: {
-        ...filters,
-        [name]: checked
+    this.setState(
+      {
+        filters: {
+          ...filters,
+          [name]: checked,
+        },
       },
-    }, () => {
-      this.findOffersAndUpdateUrl()
-    })
+      () => {
+        this.handleOffersFetchAndUrlUpdate()
+      }
+    )
   }
 
   handleRadiusSlide = value => {
@@ -281,12 +316,31 @@ export class Filters extends PureComponent {
   }
 
   handleRadiusAfterSlide = () => {
-    this.findOffersAndUpdateUrl()
+    this.handleOffersFetchAndUrlUpdate()
+  }
+
+  handlePriceSlide = priceRange => {
+    const { filters } = this.state
+
+    this.setState({
+      filters: {
+        ...filters,
+        priceRange,
+      },
+    })
   }
 
   render() {
     const { areCategoriesVisible, filters } = this.state
-    const { aroundRadius, isSearchAroundMe, offerCategories, offerIsDuo, offerIsFree, offerTypes } = filters
+    const {
+      aroundRadius,
+      isSearchAroundMe,
+      offerCategories,
+      offerIsDuo,
+      offerIsFree,
+      offerTypes,
+      priceRange,
+    } = filters
     const { history, match } = this.props
     const { location } = history
     const { search = '' } = location
@@ -335,7 +389,7 @@ export class Filters extends PureComponent {
               {/*    <h4 className="sf-title">*/}
               {/*      {'Rayon'}*/}
               {/*    </h4>*/}
-              {/*    <h4 className="sf-slider-radius">*/}
+              {/*    <h4 className="sf-slider-indicator">*/}
               {/*      {`${aroundRadius} km`}*/}
               {/*    </h4>*/}
               {/*    <div className="sf-slider-wrapper">*/}
@@ -403,7 +457,7 @@ export class Filters extends PureComponent {
               <li>
                 <div className="sf-title-wrapper">
                   <h4 className="sf-title">
-                    {'Type d\'offres'}
+                    {"Type d'offres"}
                   </h4>
                   {numberOfOfferTypesSelected > 0 && (
                     <span className="sf-selected-filter-counter">
@@ -479,6 +533,25 @@ export class Filters extends PureComponent {
                   />
                 </div>
               </li>
+              {!offerIsFree && (
+                <li>
+                  <h4>
+                    {'Prix'}
+                  </h4>
+                  <span className="sf-slider-indicator">
+                    {`${priceRange[0]} € - ${priceRange[1]} €`}
+                  </span>
+                  <Range
+                    allowCross={false}
+                    defaultValue={priceRange}
+                    max={500}
+                    min={0}
+                    onAfterChange={this.handleOffersFetchAndUrlUpdate}
+                    onChange={this.handlePriceSlide}
+                    value={priceRange}
+                  />
+                </li>
+              )}
             </ul>
             <div className="sf-button-wrapper">
               <button
@@ -506,9 +579,10 @@ Filters.defaultProps = {
     offerTypes: {
       isDigital: false,
       isEvent: false,
-      isThing: false
+      isThing: false,
     },
-    sortBy: ''
+    priceRange: [0, 500],
+    sortBy: '',
   },
 }
 
@@ -524,9 +598,10 @@ Filters.propTypes = {
     offerTypes: PropTypes.shape({
       isDigital: PropTypes.bool,
       isEvent: PropTypes.bool,
-      isThing: PropTypes.bool
+      isThing: PropTypes.bool,
     }),
-    sortBy: PropTypes.string
+    priceRange: PropTypes.arrayOf(PropTypes.number),
+    sortBy: PropTypes.string,
   }),
   isGeolocationEnabled: PropTypes.bool.isRequired,
   isUserAllowedToSelectCriterion: PropTypes.func.isRequired,

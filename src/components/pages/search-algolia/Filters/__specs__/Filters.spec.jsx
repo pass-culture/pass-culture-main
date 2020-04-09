@@ -2,6 +2,8 @@ import { mount, shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Router } from 'react-router'
+import { Range } from 'rc-slider'
+
 import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import { Criteria } from '../../Criteria/Criteria'
@@ -43,6 +45,7 @@ describe('components | Filters', () => {
           isEvent: false,
           isThing: false,
         },
+        priceRange: [0, 500],
         sortBy: '_by_price',
       },
       isGeolocationEnabled: false,
@@ -147,6 +150,7 @@ describe('components | Filters', () => {
               isEvent: false,
               isThing: false,
             },
+            priceRange: [0, 500],
             sortBy: '_by_price',
           })
           expect(props.redirectToSearchFiltersPage).toHaveBeenCalledWith()
@@ -173,6 +177,7 @@ describe('components | Filters', () => {
               isEvent: false,
               isThing: false,
             },
+            priceRange: [0, 500],
             sortBy: '_by_price',
           }
           props.isUserAllowedToSelectCriterion.mockReturnValue(true)
@@ -217,6 +222,7 @@ describe('components | Filters', () => {
               isEvent: false,
               isThing: false,
             },
+            priceRange: [0, 500],
             sortBy: '_by_price',
           })
           expect(props.redirectToSearchFiltersPage).toHaveBeenCalledWith()
@@ -345,6 +351,7 @@ describe('components | Filters', () => {
             isEvent: false,
             isThing: false,
           },
+          priceRange: [0, 500],
           sortBy: '_by_price',
         })
       })
@@ -668,6 +675,7 @@ describe('components | Filters', () => {
               isEvent: false,
               isThing: false,
             },
+            priceRange: [0, 500],
             sortBy: '_by_price',
           })
         })
@@ -682,7 +690,9 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const title = wrapper.findWhere(node => node.text() === "Uniquement les offres duo").first()
+          const title = wrapper
+            .findWhere(node => node.text() === 'Uniquement les offres duo')
+            .first()
           expect(title).toHaveLength(1)
         })
 
@@ -742,12 +752,13 @@ describe('components | Filters', () => {
               isEvent: false,
               isThing: false,
             },
+            priceRange: [0, 500],
             sortBy: '_by_price',
           })
         })
       })
 
-      describe('offer free', () => {
+      describe('offer price', () => {
         it('should display a "Uniquement les offres gratuites" title for offer free filter', () => {
           // given
           props.history.location.pathname = '/recherche-offres/filtres'
@@ -756,7 +767,9 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const title = wrapper.findWhere(node => node.text() === "Uniquement les offres gratuites").first()
+          const title = wrapper
+            .findWhere(node => node.text() === 'Uniquement les offres gratuites')
+            .first()
           expect(title).toHaveLength(1)
         })
 
@@ -816,7 +829,100 @@ describe('components | Filters', () => {
               isEvent: false,
               isThing: false,
             },
+            priceRange: [0, 500],
             sortBy: '_by_price',
+          })
+        })
+
+        describe('when free offers only filter is off', () => {
+          it('should display a "Prix" title', () => {
+            // given
+            props.history.location.pathname = '/recherche-offres/filtres'
+            props.initialFilters.offerIsFree = false
+
+            // when
+            const wrapper = shallow(<Filters {...props} />)
+
+            // then
+            const title = wrapper.findWhere(node => node.text() === 'Prix').first()
+            expect(title).toHaveLength(1)
+          })
+
+          it('should display the price range value', () => {
+            // given
+            props.history.location.pathname = '/recherche-offres/filtres'
+            props.initialFilters.offerIsFree = false
+            props.initialFilters.priceRange = [0, 45]
+
+            // when
+            const wrapper = shallow(<Filters {...props} />)
+
+            // then
+            const kilometersRadius = wrapper.findWhere(node => node.text() === '0 € - 45 €').first()
+            expect(kilometersRadius).toHaveLength(1)
+          })
+
+          it('should render a Range slider component', () => {
+            // given
+            props.history.location.pathname = '/recherche-offres/filtres'
+            props.initialFilters.offerIsFree = false
+            props.initialFilters.priceRange = [0, 45]
+
+            // when
+            const wrapper = shallow(<Filters {...props} />)
+
+            // then
+            const rangeSlider = wrapper.find(Range)
+            expect(rangeSlider).toHaveLength(1)
+            expect(rangeSlider.prop('allowCross')).toStrictEqual(false)
+            expect(rangeSlider.prop('defaultValue')).toStrictEqual([0, 45])
+            expect(rangeSlider.prop('max')).toStrictEqual(500)
+            expect(rangeSlider.prop('min')).toStrictEqual(0)
+            expect(rangeSlider.prop('onChange')).toStrictEqual(expect.any(Function))
+            expect(rangeSlider.prop('onAfterChange')).toStrictEqual(expect.any(Function))
+            expect(rangeSlider.prop('value')).toStrictEqual([0, 45])
+          })
+        })
+
+        describe('when free offers only filter is on', () => {
+          it('should not display a "Prix" title', () => {
+            // given
+            props.history.location.pathname = '/recherche-offres/filtres'
+            props.initialFilters.offerIsFree = true
+
+            // when
+            const wrapper = shallow(<Filters {...props} />)
+
+            // then
+            const title = wrapper.findWhere(node => node.text() === 'Prix').first()
+            expect(title).toHaveLength(0)
+          })
+
+          it('should not display the price range value', () => {
+            // given
+            props.history.location.pathname = '/recherche-offres/filtres'
+            props.initialFilters.offerIsFree = true
+            props.initialFilters.priceRange = [5, 35]
+
+            // when
+            const wrapper = shallow(<Filters {...props} />)
+
+            // then
+            const kilometersRadius = wrapper.findWhere(node => node.text() === '5 € - 35 €').first()
+            expect(kilometersRadius).toHaveLength(0)
+          })
+
+          it('should not render a Range slider component', () => {
+            // given
+            props.history.location.pathname = '/recherche-offres/filtres'
+            props.initialFilters.offerIsFree = true
+
+            // when
+            const wrapper = shallow(<Filters {...props} />)
+
+            // then
+            const rangeSlider = wrapper.find(Range)
+            expect(rangeSlider).toHaveLength(0)
           })
         })
       })
@@ -1022,6 +1128,7 @@ describe('components | Filters', () => {
                 isEvent: false,
                 isThing: false,
               },
+              priceRange: [0, 500],
               sortBy: '_by_price',
             }
             props.query.parse.mockReturnValue({
@@ -1061,6 +1168,7 @@ describe('components | Filters', () => {
                 isEvent: false,
                 isThing: false,
               },
+              priceRange: [0, 500],
               sortBy: '_by_price',
             })
           })
@@ -1082,6 +1190,7 @@ describe('components | Filters', () => {
                 isEvent: true,
                 isThing: true,
               },
+              priceRange: [0, 500],
               sortBy: '_by_price',
             }
             props.query.parse.mockReturnValue({
@@ -1121,6 +1230,7 @@ describe('components | Filters', () => {
                 isEvent: false,
                 isThing: false,
               },
+              priceRange: [0, 500],
               sortBy: '_by_price',
             })
           })

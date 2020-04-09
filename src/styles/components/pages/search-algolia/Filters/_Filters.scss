@@ -127,8 +127,10 @@
   margin-bottom: rem(30px);
 }
 
-.sf-slider-radius {
+.sf-slider-indicator {
   margin-top: rem(-4px);
   margin-bottom: rem(17px);
   text-align: center;
+  font-weight: bold;
+  display: block;
 }

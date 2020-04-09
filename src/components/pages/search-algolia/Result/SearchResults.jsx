@@ -38,6 +38,7 @@ class SearchResults extends PureComponent {
           isEvent: false,
           isThing: false,
         },
+        priceRange: [0, 500],
         sortBy: sortByFromUrlOrProps,
       },
       keywordsToSearch: '',
@@ -140,7 +141,16 @@ class SearchResults extends PureComponent {
   fetchOffers = ({ keywords = '', page = 0 } = {}) => {
     const { geolocation } = this.props
     const { filters } = this.state
-    const { aroundRadius, isSearchAroundMe, offerCategories, offerIsDuo, offerIsFree, offerTypes, sortBy } = filters
+    const {
+      aroundRadius,
+      isSearchAroundMe,
+      offerCategories,
+      offerIsDuo,
+      offerIsFree,
+      offerTypes,
+      priceRange,
+      sortBy,
+    } = filters
 
     this.setState({
       isLoading: true,
@@ -152,6 +162,7 @@ class SearchResults extends PureComponent {
       offerIsFree,
       offerTypes,
       page,
+      priceRange,
       sortBy,
     }
 
