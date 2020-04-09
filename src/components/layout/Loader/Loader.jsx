@@ -57,7 +57,9 @@ class Loader extends PureComponent {
     const { hasError500 } = this.props
 
     if (hasError500) {
-      return 'Oops !'
+      return (<p className="loader-title">
+        {'Oops !'}
+      </p>)
     }
   }
 
@@ -132,9 +134,7 @@ class Loader extends PureComponent {
           >
             {this.renderIcon()}
 
-            <p className="loader-title">
-              {this.renderTitle()}
-            </p>
+            {this.renderTitle()}
 
             <p className="loader-message">
               {this.renderMessage()}

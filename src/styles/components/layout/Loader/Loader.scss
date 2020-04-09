@@ -22,7 +22,6 @@
 
 .loader-message {
   color: $white;
-  margin-bottom: rem(48px);
   text-align: center;
   width: rem(240px);
 }
@@ -32,5 +31,6 @@
   border-radius: rem(20px);
   font-size: rem(16px);
   font-weight: 600;
+  margin-top: rem(48px);
   padding: rem(10px) rem(30px);
 }
