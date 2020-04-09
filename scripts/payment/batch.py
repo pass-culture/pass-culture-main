@@ -1,7 +1,10 @@
 import os
 from typing import List, Tuple
 
+from models import Feature
+from models.feature import FeatureToggle
 from models.payment import Payment
+from repository import feature_queries
 from repository.payment_queries import get_payments_by_message_id
 from scripts.payment.batch_steps import generate_new_payments, concatenate_payments_with_errors_and_retries, \
     send_transactions, send_payments_report, send_payments_details, send_wallet_balances, \
@@ -22,7 +25,8 @@ def generate_and_send_payments(payment_message_id: str = None):
     WALLET_BALANCES_RECIPIENTS = parse_email_addresses(os.environ.get('WALLET_BALANCES_RECIPIENTS', None))
 
     logger.info('[BATCH][PAYMENTS] STEP 0 : validate bookings associated to outdated stocks')
-    update_booking_used_after_stock_occurrence()
+    if feature_queries.is_active(FeatureToggle.UPDATE_BOOKING_USED):
+        update_booking_used_after_stock_occurrence()
 
     not_processable_payments, payments_to_send = generate_or_collect_payments(payment_message_id)
 

@@ -5,6 +5,7 @@ from models.feature import FeatureToggle
 from repository import repository
 from scripts.payment.batch import generate_and_send_payments
 from tests.conftest import clean_database
+from tests.test_utils import deactivate_feature
 
 
 class GenerateAndSendPaymentsTest:
@@ -94,3 +95,39 @@ class GenerateAndSendPaymentsTest:
         set_not_processable_payments_with_bank_information_to_retry.assert_not_called()
         concatenate_payments_with_errors_and_retries.assert_not_called()
         update_booking_used_after_stock_occurrence.assert_called_once()
+
+    @patch('os.environ', return_value={
+        'PASS_CULTURE_IBAN': '1234567',
+        'PASS_CULTURE_BIC': '1234567',
+        'PASS_CULTURE_REMITTANCE_CODE': '1234567',
+    })
+    @patch('scripts.payment.batch.update_booking_used_after_stock_occurrence')
+    @patch('scripts.payment.batch.get_payments_by_message_id')
+    @patch('scripts.payment.batch.generate_new_payments', return_value=([], []))
+    @patch('scripts.payment.batch.set_not_processable_payments_with_bank_information_to_retry', return_value=[])
+    @patch('scripts.payment.batch.concatenate_payments_with_errors_and_retries', return_value=[])
+    @patch('scripts.payment.batch.send_transactions', return_value=[])
+    @patch('scripts.payment.batch.send_payments_report', return_value=[])
+    @patch('scripts.payment.batch.send_payments_details', return_value=[])
+    @patch('scripts.payment.batch.send_wallet_balances', return_value=[])
+    @clean_database
+    def test_should_not_update_booking_usage_if_corresponding_feature_is_disabled(self,
+                                                                           send_wallet_balances,
+                                                                           send_payments_details,
+                                                                           send_payments_report,
+                                                                           send_transactions,
+                                                                           concatenate_payments_with_errors_and_retries,
+                                                                           set_not_processable_payments_with_bank_information_to_retry,
+                                                                           generate_new_payments,
+                                                                           get_payments_by_message_id,
+                                                                           update_booking_used_after_stock_occurrence,
+                                                                           environment,
+                                                                           app):
+        # Given
+        deactivate_feature(FeatureToggle.UPDATE_BOOKING_USED)
+
+        # When
+        generate_and_send_payments('ar5y65dtre45')
+
+        # Then
+        update_booking_used_after_stock_occurrence.assert_not_called()
