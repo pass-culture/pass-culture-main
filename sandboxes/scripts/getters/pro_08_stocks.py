@@ -1,4 +1,4 @@
-from models import BankInformation, Stock, ThingType
+from models import BankInformation, StockSQLEntity, ThingType
 
 from models.offer import Offer
 from models.offer_type import EventType
@@ -46,8 +46,8 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
     query = query.join(BankInformation)
     query = query.join(Venue, Venue.managingOffererId == Offerer.id) \
         .join(Offer) \
-        .join(Stock) \
-        .filter((Stock.beginningDatetime != None))
+        .join(StockSQLEntity) \
+        .filter((StockSQLEntity.beginningDatetime != None))
     user = query.first()
 
     for uo in user.UserOfferers:

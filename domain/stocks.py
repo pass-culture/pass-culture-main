@@ -1,10 +1,10 @@
 from datetime import datetime
 from typing import List, Dict
 
-from models import Booking, Stock, ApiErrors
+from models import Booking, StockSQLEntity, ApiErrors
 
 
-def delete_stock_and_cancel_bookings(stock: Stock) -> List[Booking]:
+def delete_stock_and_cancel_bookings(stock: StockSQLEntity) -> List[Booking]:
     unused_bookings = []
 
     if _is_thing(stock):
@@ -57,5 +57,5 @@ class TooLateToDeleteError(ApiErrors):
         )
 
 
-def _is_thing(stock: Stock) -> bool:
+def _is_thing(stock: StockSQLEntity) -> bool:
     return stock.beginningDatetime is None

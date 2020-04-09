@@ -12,7 +12,7 @@ from models import AllocinePivot, AllocineVenueProviderPriceRule, ApiKey, \
     BankInformation, BeneficiaryImport, BeneficiaryImportStatus, Booking, \
     Criterion, Deposit, Email, Favorite, ImportStatus, IrisFrance, IrisVenues, \
     Mediation, Offer, Offerer, Payment, PaymentMessage, PaymentStatus, \
-    Provider, Recommendation, RightsType, Stock, ThingType, User, UserOfferer, \
+    Provider, Recommendation, RightsType, StockSQLEntity, ThingType, User, UserOfferer, \
     Venue, VenueProvider, SeenOffer
 from models.allocine_venue_provider import AllocineVenueProvider
 from models.email import EmailStatus
@@ -112,7 +112,7 @@ def create_booking(user: User,
                    is_used: bool = False,
                    quantity: int = 1,
                    recommendation: Recommendation = None,
-                   stock: Stock = None,
+                   stock: StockSQLEntity = None,
                    token: str = None,
                    venue: Venue = None) -> Booking:
     booking = Booking()
@@ -407,8 +407,8 @@ def create_stock(quantity: int = None, booking_limit_datetime: datetime = None, 
                  date_created: datetime = datetime.utcnow(), date_modified: datetime = datetime.utcnow(),
                  date_modified_at_last_provider: datetime = None, has_been_migrated: bool = None, idx: int = None,
                  id_at_providers: str = None, is_soft_deleted: bool = False, last_provider_id: int = None,
-                 offer: Offer = None, price: int = 10) -> Stock:
-    stock = Stock()
+                 offer: Offer = None, price: int = 10) -> StockSQLEntity:
+    stock = StockSQLEntity()
     stock.quantity = quantity
     stock.beginningDatetime = beginning_datetime
     stock.bookingLimitDatetime = booking_limit_datetime

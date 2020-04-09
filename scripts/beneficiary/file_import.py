@@ -9,7 +9,7 @@ import bcrypt
 from domain.admin_emails import send_users_activation_report
 from domain.password import generate_reset_token, random_password
 from domain.user_activation import generate_activation_users_csv
-from models import User, Booking, Stock
+from models import User, Booking, StockSQLEntity
 from models.booking import ActivationUser
 from repository import booking_queries, repository
 from repository.stock_queries import find_online_activation_stock
@@ -35,7 +35,7 @@ ACTIVATION_USER_RECIPIENTS = parse_email_addresses(
 
 
 def create_users_with_activation_bookings(
-        csv_rows: List[List[str]], stock: Stock, existing_tokens: Set[str],
+        csv_rows: List[List[str]], stock: StockSQLEntity, existing_tokens: Set[str],
         find_user: Callable = find_user_by_email,
         find_activation_booking: Callable = booking_queries.find_user_activation_booking
 ) -> List[Booking]:
@@ -61,7 +61,7 @@ def create_users_with_activation_bookings(
     return bookings
 
 
-def create_booking_for(user: User, stock: Stock, token: str) -> Booking:
+def create_booking_for(user: User, stock: StockSQLEntity, token: str) -> Booking:
     booking = Booking()
     booking.stock = stock
     booking.user = user

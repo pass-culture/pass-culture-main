@@ -9,7 +9,7 @@ from domain.user_emails import send_batch_cancellation_emails_to_users, \
 from models import Product
 from models.feature import FeatureToggle
 from models.mediation import Mediation
-from models.stock import Stock
+from models.stock import StockSQLEntity
 from models.user_offerer import RightsType
 from models.venue import Venue
 from repository import offerer_queries, repository, feature_queries
@@ -42,7 +42,7 @@ search_models = [
 @login_or_api_key_required
 def list_stocks():
     filters = request.args.copy()
-    return handle_rest_get_list(Stock, query=find_stocks_with_possible_filters(filters, current_user), paginate=50)
+    return handle_rest_get_list(StockSQLEntity, query=find_stocks_with_possible_filters(filters, current_user), paginate=50)
 
 
 @app.route('/stocks/<stock_id>',
@@ -84,7 +84,7 @@ def create_stock():
 
     check_stocks_are_editable_for_offer(offer)
 
-    new_stock = Stock(from_dict=request_data)
+    new_stock = StockSQLEntity(from_dict=request_data)
     repository.save(new_stock)
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
@@ -98,7 +98,7 @@ def create_stock():
 @expect_json_data
 def edit_stock(stock_id):
     stock_data = request.json
-    query = Stock.queryNotSoftDeleted().filter_by(id=dehumanize(stock_id))
+    query = StockSQLEntity.queryNotSoftDeleted().filter_by(id=dehumanize(stock_id))
     stock = query.first_or_404()
 
     check_stock_is_updatable(stock)
@@ -138,7 +138,7 @@ def edit_stock(stock_id):
 @app.route('/stocks/<id>', methods=['DELETE'])
 @login_or_api_key_required
 def delete_stock(id):
-    stock = load_or_404(Stock, id)
+    stock = load_or_404(StockSQLEntity, id)
     offerer_id = stock.offer.venue.managingOffererId
     ensure_current_user_has_rights(RightsType.editor, offerer_id)
     bookings = delete_stock_and_cancel_bookings(stock)

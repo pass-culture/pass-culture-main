@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from models import Booking, Offer, Stock, User, Product, ApiErrors
+from models import Booking, Offer, StockSQLEntity, User, Product, ApiErrors
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
@@ -25,7 +25,7 @@ def test_booking_completed_url_gets_normalized():
     offer.id = 1
     offer.product = product
 
-    stock = Stock()
+    stock = StockSQLEntity()
 
     user = User()
     user.email = 'bob@bob.com'
@@ -358,7 +358,7 @@ class BookingIsCancellableTest:
     def test_booking_on_event_with_begining_date_in_more_than_72_hours_is_cancellable(self):
         # Given
         booking = Booking()
-        booking.stock = Stock()
+        booking.stock = StockSQLEntity()
         booking.stock.beginningDatetime = datetime.utcnow() + timedelta(hours=73)
 
         # When
@@ -370,7 +370,7 @@ class BookingIsCancellableTest:
     def test_booking_on_thing_is_cancellable(self):
         # Given
         booking = Booking()
-        booking.stock = Stock()
+        booking.stock = StockSQLEntity()
         booking.stock.offer = Offer()
         booking.stock.offer.product = create_product_with_thing_type()
 
@@ -383,7 +383,7 @@ class BookingIsCancellableTest:
     def test_booking_on_event_is_not_cancellable_if_begining_date_time_before_72_hours(self):
         # Given
         booking = Booking()
-        booking.stock = Stock()
+        booking.stock = StockSQLEntity()
         booking.stock.beginningDatetime = datetime.utcnow() + timedelta(hours=71)
 
         # When

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from models import Stock
+from models import StockSQLEntity
 from models.db import db
 from repository import repository
 from scripts.update_stock_modification_date import update_stock_modification_date_sql_version
@@ -33,7 +33,7 @@ class UpdateStockModificationDateTest:
         update_stock_modification_date_sql_version()
 
         # Then
-        updated_stock = Stock.query.first()
+        updated_stock = StockSQLEntity.query.first()
         assert updated_stock.dateModified == datetime(2019, 10, 21)
         db.engine.execute("ALTER TABLE stock ENABLE TRIGGER stock_update_modification_date;")
 
@@ -66,7 +66,7 @@ class UpdateStockModificationDateTest:
         update_stock_modification_date_sql_version()
 
         # Then
-        updated_stock = Stock.query.first()
+        updated_stock = StockSQLEntity.query.first()
         assert updated_stock.dateModified == datetime(2019, 12, 25)
         db.engine.execute("ALTER TABLE stock ENABLE TRIGGER stock_update_modification_date;")
 
@@ -100,8 +100,8 @@ class UpdateStockModificationDateTest:
         update_stock_modification_date_sql_version()
 
         # Then
-        first_updated_stock = Stock.query.get(first_stock.id)
-        second_updated_stock = Stock.query.get(second_stock.id)
+        first_updated_stock = StockSQLEntity.query.get(first_stock.id)
+        second_updated_stock = StockSQLEntity.query.get(second_stock.id)
         assert first_updated_stock.dateModified == datetime(2019, 10, 21)
         assert second_updated_stock.dateModified == datetime(2018, 11, 16)
         db.engine.execute("ALTER TABLE stock ENABLE TRIGGER stock_update_modification_date;")

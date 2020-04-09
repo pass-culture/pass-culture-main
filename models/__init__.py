@@ -34,7 +34,7 @@ from models.providable_mixin import ProvidableMixin
 from models.provider import Provider
 from models.recommendation import Recommendation
 from models.seen_offers import SeenOffer
-from models.stock import Stock
+from models.stock import StockSQLEntity
 from models.user import User
 from models.user_offerer import RightsType, UserOfferer
 from models.user_session import UserSession
@@ -74,7 +74,7 @@ __all__ = (
     'ProvidableMixin',
     'Booking',
     'Mediation',
-    'Stock',
+    'StockSQLEntity',
     'Offerer',
     'VenueProvider',
     'AllocineVenueProviderPriceRule',
@@ -122,7 +122,7 @@ models = (
     Recommendation,
     Favorite,
     Feature,
-    Stock,
+    StockSQLEntity,
     Booking,
     VenueProvider,
     AllocineVenueProvider,

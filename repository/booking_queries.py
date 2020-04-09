@@ -16,7 +16,7 @@ from models.offerer import Offerer
 from models.payment import Payment
 from models.recommendation import Recommendation
 from models.stock import EVENT_AUTOMATIC_REFUND_DELAY
-from models.stock import Stock
+from models.stock import StockSQLEntity
 from models.user import User
 from models.venue import Venue
 from repository import offer_queries
@@ -28,7 +28,7 @@ def _query_keep_on_non_activation_offers() -> Query:
     offer_types = ['ThingType.ACTIVATION', 'EventType.ACTIVATION']
 
     return Booking.query \
-        .join(Stock) \
+        .join(StockSQLEntity) \
         .join(Offer) \
         .filter(~Offer.type.in_(offer_types))
 
@@ -93,7 +93,7 @@ def find_all_bookings_info(offerer_id: int,
         query = query.filter(Offer.id == offer_id)
         offer = offer_queries.get_offer_by_id(offer_id)
         if offer and offer.isEvent and date_from:
-            query = query.filter(Stock.beginningDatetime == date_from)
+            query = query.filter(StockSQLEntity.beginningDatetime == date_from)
 
         if offer and offer.isThing:
             query = _filter_bookings_by_dates(query, date_from, date_to)
@@ -145,7 +145,7 @@ def is_offer_already_booked_by_user(current_user: User, offer: Offer) -> bool:
     return Booking.query \
            .filter_by(userId=current_user.id) \
            .filter_by(isCancelled=False) \
-           .join(Stock) \
+           .join(StockSQLEntity) \
            .join(Offer) \
            .filter(Offer.id == offer.id) \
            .count() > 0
@@ -160,7 +160,7 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
 
     if offer_id:
         query_offer = Booking.query \
-            .join(Stock) \
+            .join(StockSQLEntity) \
             .join(Offer) \
             .filter_by(id=offer_id)
         query = query.intersect_all(query_offer)
@@ -231,7 +231,7 @@ def _serialize_booking_recap(booking: object) -> BookingRecap:
     )
 
 
-def find_ongoing_bookings_by_stock(stock: Stock) -> List[Booking]:
+def find_ongoing_bookings_by_stock(stock: StockSQLEntity) -> List[Booking]:
     return Booking.query \
         .filter_by(stockId=stock.id, isCancelled=False, isUsed=False) \
         .all()
@@ -272,7 +272,7 @@ def find_user_activation_booking(user: User) -> Booking:
 
     return Booking.query \
         .join(User) \
-        .join(Stock, Booking.stockId == Stock.id) \
+        .join(StockSQLEntity, Booking.stockId == StockSQLEntity.id) \
         .join(Offer) \
         .filter(is_activation_offer) \
         .filter(User.id == user.id) \
@@ -285,7 +285,7 @@ def find_existing_tokens() -> Set[str]:
 
 def _filter_bookings_by_offerer_id(offerer_id: int) -> Query:
     return Booking.query \
-        .join(Stock) \
+        .join(StockSQLEntity) \
         .join(Offer) \
         .join(Venue) \
         .join(User) \
@@ -322,7 +322,7 @@ def find_for_my_bookings_page(user_id: int) -> List[Booking]:
 
 def get_only_offer_ids_from_bookings(user: User) -> List[int]:
     offers_booked = Offer.query \
-        .join(Stock) \
+        .join(StockSQLEntity) \
         .join(Booking) \
         .filter_by(userId=user.id) \
         .with_entities(Offer.id) \
@@ -333,7 +333,7 @@ def get_only_offer_ids_from_bookings(user: User) -> List[int]:
 def find_not_used_and_not_cancelled_bookings_associated_to_outdated_stock() -> List[Booking]:
     booking_on_event_that_should_have_been_refunded = Stock.beginningDatetime + EVENT_AUTOMATIC_REFUND_DELAY
     return Booking.query \
-        .join(Stock) \
+        .join(StockSQLEntity) \
         .filter(Booking.isUsed == False) \
         .filter(Booking.isCancelled == False) \
         .filter(booking_on_event_that_should_have_been_refunded < datetime.utcnow()) \
@@ -349,7 +349,7 @@ def find_used_by_token(token: str) -> Booking:
 
 def count_not_cancelled_bookings_quantity_by_stock_id(stock_id: int) -> int:
     bookings = Booking.query \
-        .join(Stock) \
+        .join(StockSQLEntity) \
         .filter(Booking.isCancelled == False) \
         .filter(Booking.stockId == stock_id) \
         .all()

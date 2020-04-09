@@ -4,7 +4,7 @@ from typing import List
 from sqlalchemy import and_, func
 from sqlalchemy.sql import selectable
 
-from models import Venue, Offer, Stock, Offerer, UserOfferer, User
+from models import Venue, Offer, StockSQLEntity, Offerer, UserOfferer, User
 from models.activity import load_activity
 from models.db import db
 from repository.offerer_queries import _filter_by_sirens
@@ -217,13 +217,13 @@ def _filter_by_offer_status(query, offer_status):
 
     elif offer_status == "VALID" or offer_status == "EXPIRED":
         query = query.join(Offer)
-        is_not_soft_deleted_thing = Stock.isSoftDeleted == False
+        is_not_soft_deleted_thing = StockSQLEntity.isSoftDeleted == False
         can_still_be_booked_thing = (
-            (Stock.bookingLimitDatetime == None) | (Stock.bookingLimitDatetime >= datetime.utcnow()))
-        is_available_thing = ((Stock.quantity == None) | (Stock.quantity > 0))
+            (StockSQLEntity.bookingLimitDatetime == None) | (StockSQLEntity.bookingLimitDatetime >= datetime.utcnow()))
+        is_available_thing = ((StockSQLEntity.quantity == None) | (StockSQLEntity.quantity > 0))
 
-        query_1 = query.join(Stock)
-        query_2 = query.join(Stock)
+        query_1 = query.join(StockSQLEntity)
+        query_2 = query.join(StockSQLEntity)
 
     if offer_status == "VALID":
         query_with_valid_event = query_1.filter(

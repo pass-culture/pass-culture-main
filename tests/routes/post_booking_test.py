@@ -135,8 +135,7 @@ class Post:
 
     class Returns400:
         @clean_database
-        @patch('routes.bookings.book_an_offer',
-               side_effect=StockIsNotBookable('stock', "Ce stock n'est pas réservable"))
+        @patch('routes.bookings.book_an_offer', side_effect=StockIsNotBookable)
         def when_use_case_raise_stock_is_not_bookable_exception(self, mock_book_an_offer, app):
             # Given
             user = create_user()

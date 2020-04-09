@@ -1,4 +1,4 @@
-from models import Stock
+from models import StockSQLEntity
 
 from sandboxes.scripts.save_sandbox import save_sandbox
 from tests.conftest import clean_database
@@ -25,12 +25,12 @@ def test_save_activation_sandbox(app):
         Offerer=1,
         Product=1,
         Recommendation=0,
-        Stock=1,
+        StockSQLEntity=1,
         User=0,
         UserOfferer=0,
     )
 
-    assert Stock.query.first().quantity == 10000
+    assert StockSQLEntity.query.first().quantity == 10000
 
     # teardown
     logger.info = logger_info

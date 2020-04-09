@@ -17,6 +17,7 @@ from models.feature import FeatureToggle
 from models.offer_type import ProductType
 from repository import booking_queries, feature_queries, repository
 from repository.api_key_queries import find_api_key_by_value
+from repository.stock.stock_sql_repository import StockSQLRepository
 from repository.user_offerer_queries import \
     filter_query_where_user_is_user_offerer_and_is_validated
 from routes.serialization import as_dict, serialize, serialize_booking
@@ -147,7 +148,7 @@ def create_booking():
         dehumanize(recommendation_id)
     )
 
-    created_booking = book_an_offer(booking_information)
+    created_booking = book_an_offer(booking_information, StockSQLRepository())
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=created_booking.stock.offerId)

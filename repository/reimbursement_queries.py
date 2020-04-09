@@ -8,7 +8,7 @@ from models import User, Offerer, PaymentStatus
 from models.booking import Booking
 from models.offer import Offer
 from models.payment import Payment
-from models.stock import Stock
+from models.stock import StockSQLEntity
 from models.venue import Venue
 
 
@@ -21,7 +21,7 @@ def find_all_offerer_payments(offerer_id: int) -> List[namedtuple]:
         .join(Booking) \
         .join(User) \
         .reset_joinpoint() \
-        .join(Stock) \
+        .join(StockSQLEntity) \
         .join(Offer) \
         .join(Venue) \
         .filter(Venue.managingOffererId == offerer_id) \

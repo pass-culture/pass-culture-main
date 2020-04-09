@@ -2,7 +2,7 @@ from typing import List
 from unittest.mock import patch
 
 from recommendations_engine import give_requested_recommendation_to_user, create_recommendations_for_discovery
-from models import Offerer, Stock
+from models import Offerer, StockSQLEntity
 from repository import repository, discovery_view_queries
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
@@ -61,7 +61,8 @@ class CreateRecommendationsForDiscoveryTest:
         discovery_view_queries.refresh(concurrently=False)
 
         # When
-        recommendations = create_recommendations_for_discovery(seen_recommendation_ids=seen_recommendation_ids, user=user)
+        recommendations = create_recommendations_for_discovery(seen_recommendation_ids=seen_recommendation_ids,
+                                                               user=user)
 
         # Then
         assert len(recommendations) == 2
@@ -183,7 +184,8 @@ class GiveRequestedRecommendationToUserTest:
         assert result_reco.userId == user2.id
 
 
-def _create_and_save_stock_for_offerer_in_departements(offerer: Offerer, departement_codes: List[str]) -> List[Stock]:
+def _create_and_save_stock_for_offerer_in_departements(offerer: Offerer, departement_codes: List[str]) -> List[
+    StockSQLEntity]:
     stock_list = []
 
     for index, departement_code in enumerate(departement_codes):

@@ -1,4 +1,4 @@
-from models import Stock
+from models import StockSQLEntity
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from scripts.delete_corrupted_allocine_stocks import delete_corrupted_allocine_stocks
@@ -23,7 +23,7 @@ class DeleteCorruptedAllocineStocksTest:
         delete_corrupted_allocine_stocks()
 
         # Then
-        assert Stock.query.count() == 0
+        assert StockSQLEntity.query.count() == 0
 
     @clean_database
     def test_should_not_delete_stock_from_allocine_with_new_id_format(self, app):
@@ -40,7 +40,7 @@ class DeleteCorruptedAllocineStocksTest:
         delete_corrupted_allocine_stocks()
 
         # Then
-        assert Stock.query.count() == 1
+        assert StockSQLEntity.query.count() == 1
 
     @clean_database
     def test_should_not_delete_stock_from_other_provider_than_allocine(self, app):
@@ -57,7 +57,7 @@ class DeleteCorruptedAllocineStocksTest:
         delete_corrupted_allocine_stocks()
 
         # Then
-        assert Stock.query.count() == 1
+        assert StockSQLEntity.query.count() == 1
 
     @clean_database
     def test_should_not_delete_stock_from_allocine_when_not_sof_deleted(self, app):
@@ -74,4 +74,4 @@ class DeleteCorruptedAllocineStocksTest:
         delete_corrupted_allocine_stocks()
 
         # Then
-        assert Stock.query.count() == 1
+        assert StockSQLEntity.query.count() == 1

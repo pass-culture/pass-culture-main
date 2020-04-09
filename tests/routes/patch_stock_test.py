@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from freezegun import freeze_time
 
-from models import Stock, Provider
+from models import StockSQLEntity, Provider
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from routes.serialization import serialize
@@ -83,7 +83,7 @@ class Patch:
 
             # Then
             assert response.status_code == 200
-            assert Stock.query.get(stock_id).price == 120
+            assert StockSQLEntity.query.get(stock_id).price == 120
 
         @patch('routes.stocks.feature_queries.is_active', return_value=True)
         @patch('routes.stocks.redis.add_offer_id')
@@ -127,7 +127,7 @@ class Patch:
             # then
             assert request_update.status_code == 200
 
-            updated_stock = Stock.query.one()
+            updated_stock = StockSQLEntity.query.one()
             assert updated_stock.quantity == 5
             assert updated_stock.price == 20
 
@@ -326,7 +326,7 @@ class Patch:
             assert request_update.json['global'] == [
                 'Pour les offres importées, certains champs ne sont pas modifiables']
 
-            existing_stock = Stock.query.one()
+            existing_stock = StockSQLEntity.query.one()
             assert existing_stock.quantity == 10
 
     class Returns403:

@@ -11,7 +11,7 @@ from domain.allocine import get_movie_poster, get_movies_showtimes
 from local_providers.local_provider import LocalProvider
 from local_providers.price_rule import AllocineStocksPriceRule
 from local_providers.providable_info import ProvidableInfo
-from models import AllocineVenueProvider, EventType, Offer, Product, Stock, \
+from models import AllocineVenueProvider, EventType, Offer, Product, StockSQLEntity, \
     Venue
 from models.db import Model, db
 from models.local_provider_event import LocalProviderEventType
@@ -80,7 +80,7 @@ class AllocineStocks(LocalProvider):
             showtime = self.filtered_movie_showtimes[showtime_number]
             id_at_providers = _build_stock_uuid(self.movie_information, self.venue, showtime)
 
-            stock_providable_information = self.create_providable_info(Stock,
+            stock_providable_information = self.create_providable_info(StockSQLEntity,
                                                                        id_at_providers,
                                                                        datetime.utcnow())
             providable_information_list.append(stock_providable_information)
@@ -94,7 +94,7 @@ class AllocineStocks(LocalProvider):
         if isinstance(pc_object, Offer):
             self.fill_offer_attributes(pc_object)
 
-        if isinstance(pc_object, Stock):
+        if isinstance(pc_object, StockSQLEntity):
             self.fill_stock_attributes(pc_object)
 
     def fill_product_attributes(self, allocine_product: Product):
@@ -150,7 +150,7 @@ class AllocineStocks(LocalProvider):
         else:
             self.last_vf_offer_id = allocine_offer.id
 
-    def fill_stock_attributes(self, allocine_stock: Stock):
+    def fill_stock_attributes(self, allocine_stock: StockSQLEntity):
         showtime_uuid = _get_showtimes_uuid_by_idAtProvider(allocine_stock.idAtProviders)
         showtime = _find_showtime_by_showtime_uuid(self.filtered_movie_showtimes, showtime_uuid)
 
@@ -177,7 +177,7 @@ class AllocineStocks(LocalProvider):
         if 'price' not in allocine_stock.fieldsUpdated:
             allocine_stock.price = self.apply_allocine_price_rule(allocine_stock)
 
-    def apply_allocine_price_rule(self, allocine_stock: Stock) -> int:
+    def apply_allocine_price_rule(self, allocine_stock: StockSQLEntity) -> int:
         price = None
         for price_rule in self.venue_provider.priceRules:
             if price_rule.priceRule(allocine_stock):

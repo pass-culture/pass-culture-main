@@ -1,7 +1,7 @@
 from sqlalchemy import Sequence
 
 from local_providers.chunk_manager import save_chunks
-from models import Offer, Stock
+from models import Offer, StockSQLEntity
 from models.db import db
 from repository import repository
 from tests.conftest import clean_database
@@ -55,7 +55,7 @@ class SaveChunksTest:
 
         chunk_to_insert = {
             '1|Offer': offer,
-            '1|Stock': stock,
+            '1|StockSQLEntity': stock,
         }
         db.session.expunge(offer)
         db.session.expunge(stock)
@@ -67,7 +67,7 @@ class SaveChunksTest:
 
         # Then
         assert Offer.query.count() == 1
-        assert Stock.query.count() == 1
+        assert StockSQLEntity.query.count() == 1
 
     @clean_database
     def test_save_chunks_update_1_offer_in_chunk(self, app):
@@ -118,7 +118,7 @@ class SaveChunksTest:
         stock.quantity = 2
         chunk_to_update = {
             '1|Offer': offer1,
-            '1|Stock': stock,
+            '1|StockSQLEntity': stock,
             '2|Offer': offer2,
         }
         db.session.expunge(offer1)
@@ -134,4 +134,4 @@ class SaveChunksTest:
         offers = Offer.query.all()
         assert len(offers) == 2
         assert any(offer.isDuo for offer in offers)
-        assert Stock.query.count() == 1
+        assert StockSQLEntity.query.count() == 1

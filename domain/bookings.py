@@ -11,7 +11,7 @@ import qrcode.image.svg
 from PIL import Image
 
 from models.booking import Booking
-from models.stock import Stock
+from models.stock import StockSQLEntity
 from utils.string_processing import format_decimal
 
 BOOKING_CANCELLATION_DELAY = timedelta(hours=72)
@@ -71,7 +71,7 @@ def _compute_booking_status_label(booking_info: namedtuple) -> str:
     return "En attente"
 
 
-def filter_bookings_to_compute_remaining_stock(stock: Stock) -> Iterator:
+def filter_bookings_to_compute_remaining_stock(stock: StockSQLEntity) -> Iterator:
     return filter(lambda b: not b.isCancelled
                             and not b.isUsed
                             or (b.isUsed

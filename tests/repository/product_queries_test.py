@@ -1,6 +1,6 @@
 import pytest
 
-from models import Favorite, Mediation, Offer, Product, Recommendation, Stock
+from models import Favorite, Mediation, Offer, Product, Recommendation, StockSQLEntity
 from models.offer_type import ThingType
 from repository import repository
 from repository.product_queries import delete_unwanted_existing_product, \
@@ -74,7 +74,7 @@ class DeleteUnwantedExistingProductTest:
         # Then
         assert Product.query.count() == 0
         assert Offer.query.count() == 0
-        assert Stock.query.count() == 0
+        assert StockSQLEntity.query.count() == 0
 
     @clean_database
     def test_should_set_isGcuCompatible_at_false_in_product_and_deactivate_offer_when_bookings_related_to_offer(self, app):
@@ -120,7 +120,7 @@ class DeleteUnwantedExistingProductTest:
         # Then
         assert Product.query.count() == 0
         assert Offer.query.count() == 0
-        assert Stock.query.count() == 0
+        assert StockSQLEntity.query.count() == 0
         assert Recommendation.query.count() == 0
         assert Mediation.query.count() == 0
 
@@ -146,7 +146,7 @@ class DeleteUnwantedExistingProductTest:
         # Then
         assert Product.query.count() == 0
         assert Offer.query.count() == 0
-        assert Stock.query.count() == 0
+        assert StockSQLEntity.query.count() == 0
         assert Mediation.query.count() == 0
         assert Recommendation.query.count() == 0
         assert Favorite.query.count() == 0

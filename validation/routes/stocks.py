@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from models import ApiErrors, Offer, Stock
+from models import ApiErrors, Offer, StockSQLEntity
 
 
 def check_stocks_are_editable_for_offer(offer: Offer):
@@ -10,7 +10,7 @@ def check_stocks_are_editable_for_offer(offer: Offer):
         raise api_errors
 
 
-def check_stock_is_updatable(stock: Stock) -> None:
+def check_stock_is_updatable(stock: StockSQLEntity) -> None:
     local_class = stock.offer.lastProvider.localClass if stock.offer.lastProvider else ''
     is_titelive_generated_offer = stock.offer.isFromProvider is True and 'TiteLive' in local_class
     is_libraires_generated_offer = stock.offer.isFromProvider is True and 'Libraires' in local_class

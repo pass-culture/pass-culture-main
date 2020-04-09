@@ -12,7 +12,7 @@ def install_scripts():
     from models.booking import Booking
 
     from models.mediation import Mediation
-    from models.stock import Stock
+    from models.stock import StockSQLEntity
     from models.offerer import Offerer
     from models.venue_provider import VenueProvider
     from models.local_provider_event import LocalProviderEvent

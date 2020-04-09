@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch, call, MagicMock
 
-from models import Stock
+from models import StockSQLEntity
 from models.db import db
 from repository import repository
 from scripts.stock.update_stock_quantity_with_new_constraint import update_stock_quantity_with_new_constraint, \
@@ -41,7 +41,7 @@ class UpdateStockAvailableWithNewConstraintTest:
         update_stock_quantity_with_new_constraint(mock_application)
 
         # Then
-        existing_stock = Stock.query.first()
+        existing_stock = StockSQLEntity.query.first()
         assert existing_stock.remainingQuantity == 12
         assert existing_stock.quantity == 32
 
@@ -65,7 +65,7 @@ class UpdateStockAvailableWithNewConstraintTest:
         update_stock_quantity_with_new_constraint(mock_application)
 
         # Then
-        existing_stock = Stock.query.first()
+        existing_stock = StockSQLEntity.query.first()
         assert existing_stock.remainingQuantity == 0
         assert existing_stock.quantity == 4
 
@@ -89,7 +89,7 @@ class UpdateStockAvailableWithNewConstraintTest:
         update_stock_quantity_with_new_constraint(mock_application)
 
         # Then
-        existing_stock = Stock.query.get(4)
+        existing_stock = StockSQLEntity.query.get(4)
         assert existing_stock.remainingQuantity == 4
         assert existing_stock.quantity == 10
 
@@ -172,7 +172,7 @@ class UpdateStockAvailableWithNewConstraintTest:
         update_stock_quantity_with_new_constraint(mock_application)
 
         # Then
-        existing_stock = Stock.query.first()
+        existing_stock = StockSQLEntity.query.first()
         assert existing_stock.remainingQuantity == 12
         assert existing_stock.quantity == 32
 
@@ -194,7 +194,7 @@ class UpdateStockAvailableWithNewConstraintTest:
         update_stock_quantity_with_new_constraint(mock_application)
 
         # Then
-        existing_stock = Stock.query.first()
+        existing_stock = StockSQLEntity.query.first()
         assert existing_stock.remainingQuantity == 12
         assert existing_stock.quantity == 32
 

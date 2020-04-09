@@ -4,7 +4,7 @@ import pandas
 from sqlalchemy import text
 from sqlalchemy.sql import selectable
 
-from models import Offerer, UserOfferer, Venue, Offer, Stock, Booking, EventType, ThingType, User, DiscoveryView
+from models import Offerer, UserOfferer, Venue, Offer, StockSQLEntity, Booking, EventType, ThingType, User, DiscoveryView
 from models.db import db
 from repository import booking_queries
 from repository.booking_queries import count_cancelled as query_count_all_cancelled_bookings
@@ -92,7 +92,7 @@ def get_offerers_with_non_cancelled_bookings_count(departement_code: str = None)
         .join(Offer) \
         .filter(Offer.type != str(ThingType.ACTIVATION)) \
         .filter(Offer.type != str(EventType.ACTIVATION)) \
-        .join(Stock) \
+        .join(StockSQLEntity) \
         .join(Booking) \
         .filter_by(isCancelled=False) \
         .distinct(Offerer.id) \
@@ -108,7 +108,7 @@ def get_offers_with_user_offerer_and_stock_count(departement_code: str = None) -
     return query \
         .join(Offerer) \
         .join(UserOfferer) \
-        .join(Stock, Stock.offerId == Offer.id) \
+        .join(StockSQLEntity, StockSQLEntity.offerId == Offer.id) \
         .filter(Offer.type != str(EventType.ACTIVATION)) \
         .filter(Offer.type != str(ThingType.ACTIVATION)) \
         .distinct(Offer.id) \
@@ -151,7 +151,7 @@ def get_offers_available_on_search_count(departement_code: str = None) -> int:
 
 def get_offers_with_non_cancelled_bookings_count(departement_code: str = None) -> int:
     query = Offer.query \
-        .join(Stock) \
+        .join(StockSQLEntity) \
         .join(Booking)
 
     if departement_code:

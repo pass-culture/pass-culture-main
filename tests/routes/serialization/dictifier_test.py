@@ -1,4 +1,4 @@
-from models import Stock
+from models import StockSQLEntity
 from repository import repository
 from routes.serialization import as_dict
 from tests.conftest import clean_database
@@ -149,7 +149,7 @@ class AsDictTest:
     def test_returns_humanized_ids_for_foreign_keys(self, app):
         # given
         user = create_user(idx=12, postal_code=None)
-        booking = create_booking(user=user, stock=Stock(), idx=13)
+        booking = create_booking(user=user, stock=StockSQLEntity(), idx=13)
         booking.userId = user.id
 
         # when

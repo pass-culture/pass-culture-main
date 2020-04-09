@@ -8,7 +8,7 @@ from flask import current_app as app, render_template
 
 from connectors import api_entreprises
 from domain.postal_code.postal_code import PostalCode
-from models import Booking, Offer, Offerer, Stock, User, UserOfferer, Venue
+from models import Booking, Offer, Offerer, StockSQLEntity, User, UserOfferer, Venue
 from models.email import EmailStatus
 from repository import booking_queries
 from repository import email_queries
@@ -357,7 +357,7 @@ def make_offer_creation_notification_email(offer: Offer, author: User, pro_origi
     }
 
 
-def get_event_datetime(stock: Stock) -> datetime:
+def get_event_datetime(stock: StockSQLEntity) -> datetime:
     if stock.offer.venue.departementCode is not None:
         date_in_utc = stock.beginningDatetime
         date_in_tz = utc_datetime_to_department_timezone(date_in_utc,

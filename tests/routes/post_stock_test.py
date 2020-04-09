@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime
 from unittest.mock import patch
 
-from models import Stock, Provider
+from models import StockSQLEntity, Provider
 from repository import repository
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
@@ -35,7 +35,7 @@ class Post:
             assert response.status_code == 201
             id = response.json['id']
 
-            stock = Stock.query.filter_by(id=dehumanize(id)).first()
+            stock = StockSQLEntity.query.filter_by(id=dehumanize(id)).first()
             assert stock.price == 1222
 
         @patch('routes.stocks.redis.add_offer_id')
@@ -64,7 +64,7 @@ class Post:
             assert response.json["bookingLimitDatetime"] is None
 
             id = response.json['id']
-            stock = Stock.query.filter_by(id=dehumanize(id)).first()
+            stock = StockSQLEntity.query.filter_by(id=dehumanize(id)).first()
             assert stock.price == 0
             assert stock.bookingLimitDatetime is None
 

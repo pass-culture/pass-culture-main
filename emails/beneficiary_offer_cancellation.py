@@ -1,6 +1,6 @@
 from typing import Dict
 
-from models import Booking, Stock
+from models import Booking, StockSQLEntity
 from repository.feature_queries import feature_send_mail_to_users_enabled
 from utils.mailing import build_pc_pro_offer_link, SUPPORT_EMAIL_ADDRESS, extract_users_information_from_bookings, \
     DEV_EMAIL_ADDRESS, format_booking_date_for_email, format_booking_hours_for_email, format_environment_for_email
@@ -45,5 +45,5 @@ def retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking: B
     }
 
 
-def _is_offer_active_for_recap(stock: Stock) -> bool:
+def _is_offer_active_for_recap(stock: StockSQLEntity) -> bool:
     return stock.isBookable and (stock.quantity is None or stock.remainingQuantity > 0)

@@ -1,7 +1,7 @@
 from models.booking import Booking
 from models.offer import Offer
 from models.offerer import Offerer
-from models.stock import Stock
+from models.stock import StockSQLEntity
 from models.user import User
 from models.user_offerer import UserOfferer
 from models.venue import Venue
@@ -13,7 +13,7 @@ from sandboxes.scripts.utils.helpers import get_booking_helper, \
     get_venue_helper
 
 def get_existing_pro_validated_user_with_validated_offerer_with_booking():
-    query = Booking.query.join(Stock) \
+    query = Booking.query.join(StockSQLEntity) \
                          .join(Offer) \
                          .join(Venue) \
                          .join(Offerer) \

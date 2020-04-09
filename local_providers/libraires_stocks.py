@@ -6,7 +6,7 @@ from sqlalchemy import Sequence
 from domain.libraires import get_libraires_stock_information, read_last_modified_date
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
-from models import VenueProvider, Offer, Stock
+from models import VenueProvider, Offer, StockSQLEntity
 from models.db import Model, db
 from repository import product_queries
 from repository.booking_queries import count_not_cancelled_bookings_quantity_by_stock_id
@@ -43,7 +43,7 @@ class LibrairesStocks(LocalProvider):
 
         providable_info_offer = create_providable_info(Offer, f"{self.libraires_stock['ref']}@{self.siret}",
                                                        datetime.utcnow())
-        providable_info_stock = create_providable_info(Stock, f"{self.libraires_stock['ref']}@{self.siret}",
+        providable_info_stock = create_providable_info(StockSQLEntity, f"{self.libraires_stock['ref']}@{self.siret}",
                                                        datetime.utcnow())
 
         return [providable_info_offer, providable_info_stock]
@@ -51,7 +51,7 @@ class LibrairesStocks(LocalProvider):
     def fill_object_attributes(self, pc_object: Model):
         if isinstance(pc_object, Offer):
             self.fill_offer_attributes(pc_object)
-        if isinstance(pc_object, Stock):
+        if isinstance(pc_object, StockSQLEntity):
             self.fill_stock_attributes(pc_object)
 
     def fill_offer_attributes(self, offer: Offer):
@@ -70,7 +70,7 @@ class LibrairesStocks(LocalProvider):
 
         self.offer_id = offer.id
 
-    def fill_stock_attributes(self, stock: Stock):
+    def fill_stock_attributes(self, stock: StockSQLEntity):
         bookings_quantity = count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
         stock.quantity = self.libraires_stock['available'] + bookings_quantity
         stock.bookingLimitDatetime = None

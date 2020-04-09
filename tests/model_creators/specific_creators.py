@@ -3,7 +3,7 @@ import string
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 
-from models import Booking, EventType, Offer, Offerer, Product, Stock, ThingType, User, Venue, Provider
+from models import Booking, EventType, Offer, Offerer, Product, StockSQLEntity, ThingType, User, Venue, Provider
 from utils.token import random_token
 
 
@@ -15,7 +15,7 @@ def create_booking_for_event(amount: int = 50,
                              user: User = None) -> Booking:
     product = Product(from_dict={'type': str(type)})
     offer = Offer()
-    stock = Stock()
+    stock = StockSQLEntity()
     booking = Booking(from_dict={'amount': amount})
     offer.product = product
     stock.offer = offer
@@ -38,7 +38,7 @@ def create_booking_for_thing(amount: int = 50,
                              user: User = None) -> Booking:
     product = Product(from_dict={'url': url, 'type': str(product_type)})
     offer = Offer(from_dict={'url': url, 'type': str(product_type)})
-    stock = Stock()
+    stock = StockSQLEntity()
     booking = Booking(from_dict={'amount': amount})
     offer.product = product
     stock.offer = offer
@@ -237,8 +237,8 @@ def create_product_with_thing_type(thing_name: str = 'Test Book',
 
 def create_stock_from_event_occurrence(event_occurrence: Dict, price: int = 10, quantity: int = 10,
                                        soft_deleted: bool = False, recap_sent: bool = False,
-                                       booking_limit_date: datetime = None) -> Stock:
-    stock = Stock()
+                                       booking_limit_date: datetime = None) -> StockSQLEntity:
+    stock = StockSQLEntity()
     stock.beginningDatetime = event_occurrence['beginningDatetime']
     stock.offerId = event_occurrence['offerId']
     stock.offer = event_occurrence['offer']
@@ -259,8 +259,8 @@ def create_stock_from_event_occurrence(event_occurrence: Dict, price: int = 10, 
 
 def create_stock_from_offer(offer: Offer, price: float = 9.90, quantity: Optional[int] = 10, soft_deleted: bool = False,
                             booking_limit_datetime: datetime = None, beginning_datetime: datetime = None,
-                            date_modified: datetime = datetime.utcnow()) -> Stock:
-    stock = Stock()
+                            date_modified: datetime = datetime.utcnow()) -> StockSQLEntity:
+    stock = StockSQLEntity()
     stock.offer = offer
     stock.price = price
     stock.quantity = quantity
@@ -278,8 +278,8 @@ def create_stock_with_event_offer(offerer: Offerer, venue: Venue, price: int = 1
                                   name: str = 'Mains, sorts et papiers', offer_id: int = None,
                                   beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=72),
                                   thumb_count: int = 0,
-                                  booking_limit_datetime: datetime = datetime.utcnow() + timedelta(hours=71)) -> Stock:
-    stock = Stock()
+                                  booking_limit_datetime: datetime = datetime.utcnow() + timedelta(hours=71)) -> StockSQLEntity:
+    stock = StockSQLEntity()
     stock.offerer = offerer
     stock.price = price
     stock.quantity = quantity
@@ -298,8 +298,8 @@ def create_stock_with_thing_offer(offerer: Offerer, venue: Venue, offer: Offer =
                                   quantity: int = 50, name: str = 'Test Book',
                                   booking_email: str = 'offer.booking.email@example.com', soft_deleted: bool = False,
                                   url: str = None, booking_limit_datetime: datetime = None,
-                                  thing_type: ThingType = ThingType.AUDIOVISUEL) -> Stock:
-    stock = Stock()
+                                  thing_type: ThingType = ThingType.AUDIOVISUEL) -> StockSQLEntity:
+    stock = StockSQLEntity()
     stock.offerer = offerer
     stock.price = price
 

@@ -1,9 +1,13 @@
+from unittest.mock import MagicMock
+
 import pytest
 
 from domain.booking import StockDoesntExist, OfferIsAlreadyBooked, CannotBookFreeOffers, StockIsNotBookable, \
     UserHasInsufficientFunds, PhysicalExpenseLimitHasBeenReached, QuantityIsInvalid
+from domain.stock.stock import Stock
 from models import Booking
 from repository import repository
+from repository.stock.stock_sql_repository import StockSQLRepository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_deposit, create_offerer, create_venue, \
     create_booking, create_stock, create_recommendation
@@ -12,6 +16,10 @@ from use_cases.book_an_offer import book_an_offer, BookingInformation
 
 
 class BookAnOfferTest:
+    def setup_method(self):
+        self.stock_repository = StockSQLRepository()
+        self.stock_repository.find_stock_by_id = MagicMock()
+
     @clean_database
     def test_user_can_book_an_offer(self, app):
         # Given
@@ -27,11 +35,18 @@ class BookAnOfferTest:
         booking_information = BookingInformation(
             stock.id,
             user.id,
-            1
+            stock.quantity
         )
+        expected_stock = Stock(
+            identifier=stock.id,
+            quantity=1,
+            offer=offer,
+            price=50
+        )
+        self.stock_repository.find_stock_by_id.return_value = expected_stock
 
         # When
-        booking = book_an_offer(booking_information)
+        booking = book_an_offer(booking_information=booking_information, stock_repository=self.stock_repository)
 
         # Then
         assert booking == Booking.query.filter(Booking.isCancelled == False).one()
@@ -48,6 +63,7 @@ class BookAnOfferTest:
         create_deposit(user)
         repository.save(booking, user)
         non_existing_stock_id = 666
+        self.stock_repository.find_stock_by_id.side_effect = StockDoesntExist()
 
         booking_information = BookingInformation(
             non_existing_stock_id,
@@ -58,7 +74,7 @@ class BookAnOfferTest:
 
         # When
         with pytest.raises(StockDoesntExist) as error:
-            book_an_offer(booking_information)
+            book_an_offer(booking_information, stock_repository=self.stock_repository)
 
         # Then
         assert error.value.errors == {'stockId': ["stockId ne correspond à aucun stock"]}
@@ -75,6 +91,13 @@ class BookAnOfferTest:
         booking = create_booking(user=user, stock=stock1, is_cancelled=False)
         create_deposit(user)
         repository.save(stock2, booking)
+        expected_stock = Stock(
+            identifier=stock2.id,
+            quantity=1,
+            price=50,
+            offer=offer
+        )
+        self.stock_repository.find_stock_by_id.return_value = expected_stock
 
         booking_information = BookingInformation(
             stock2.id,
@@ -85,7 +108,7 @@ class BookAnOfferTest:
 
         # When
         with pytest.raises(OfferIsAlreadyBooked) as error:
-            book_an_offer(booking_information)
+            book_an_offer(booking_information, stock_repository=self.stock_repository)
 
         # Then
         assert error.value.errors == {'offerId': ["Cette offre a déja été reservée par l'utilisateur"]}
@@ -100,6 +123,13 @@ class BookAnOfferTest:
         stock = create_stock(offer=offer, price=0)
         recommendation = create_recommendation(offer, user)
         repository.save(stock, recommendation)
+        expected_stock = Stock(
+            identifier=stock.id,
+            quantity=1,
+            price=0,
+            offer=offer
+        )
+        self.stock_repository.find_stock_by_id.return_value = expected_stock
 
         booking_information = BookingInformation(
             stock.id,
@@ -110,7 +140,7 @@ class BookAnOfferTest:
 
         # When
         with pytest.raises(CannotBookFreeOffers) as error:
-            book_an_offer(booking_information)
+            book_an_offer(booking_information, stock_repository=self.stock_repository)
 
         # Then
         assert error.value.errors == {'cannotBookFreeOffers': ["Votre compte ne vous permet"
@@ -125,6 +155,13 @@ class BookAnOfferTest:
         thing_offer = create_offer_with_thing_product(venue, is_active=False)
         stock = create_stock(offer=thing_offer)
         repository.save(stock, user)
+        expected_stock = Stock(
+            identifier=stock.id,
+            quantity=1,
+            price=50,
+            offer=thing_offer
+        )
+        self.stock_repository.find_stock_by_id.return_value = expected_stock
 
         booking_information = BookingInformation(
             stock.id,
@@ -134,7 +171,7 @@ class BookAnOfferTest:
 
         # When
         with pytest.raises(StockIsNotBookable) as error:
-            book_an_offer(booking_information)
+            book_an_offer(booking_information, stock_repository=self.stock_repository)
 
         # Then
         assert error.value.errors == {'stock': ["Ce stock n'est pas réservable"]}
@@ -148,6 +185,13 @@ class BookAnOfferTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=600, offer=offer)
         repository.save(user, stock)
+        expected_stock = Stock(
+            identifier=stock.id,
+            quantity=1,
+            price=600,
+            offer=offer
+        )
+        self.stock_repository.find_stock_by_id.return_value = expected_stock
 
         booking_information = BookingInformation(
             stock.id,
@@ -157,7 +201,7 @@ class BookAnOfferTest:
 
         # When
         with pytest.raises(UserHasInsufficientFunds) as error:
-            book_an_offer(booking_information)
+            book_an_offer(booking_information, stock_repository=self.stock_repository)
 
         # Then
         assert error.value.errors == \
@@ -180,6 +224,13 @@ class BookAnOfferTest:
         booking = create_booking(user=user, stock=booked_stock)
         stock = create_stock(offer=offer2, price=12)
         repository.save(booking, stock)
+        expected_stock = Stock(
+            identifier=stock.id,
+            quantity=1,
+            price=12,
+            offer=offer2
+        )
+        self.stock_repository.find_stock_by_id.return_value = expected_stock
 
         booking_information = BookingInformation(
             stock.id,
@@ -189,7 +240,7 @@ class BookAnOfferTest:
 
         # When
         with pytest.raises(PhysicalExpenseLimitHasBeenReached) as error:
-            book_an_offer(booking_information)
+            book_an_offer(booking_information, stock_repository=self.stock_repository)
 
         # Then
         assert error.value.errors == \
@@ -209,6 +260,13 @@ class BookAnOfferTest:
         offer = create_offer_with_event_product(venue, is_duo=True)
         stock = create_stock(offer=offer)
         repository.save(stock, user)
+        expected_stock = Stock(
+            identifier=stock.id,
+            quantity=1,
+            price=50,
+            offer=offer
+        )
+        self.stock_repository.find_stock_by_id.return_value = expected_stock
 
         booking_information = BookingInformation(
             stock.id,
@@ -218,9 +276,9 @@ class BookAnOfferTest:
 
         # When
         with pytest.raises(QuantityIsInvalid) as error:
-            book_an_offer(booking_information)
+            book_an_offer(booking_information, stock_repository=self.stock_repository)
 
         # Then
-        assert error.value.errors == {'quantity':
-            [
-                "Vous devez réserver une place ou deux dans le cas d'une offre DUO."]}
+        assert error.value.errors == {
+            'quantity': ["Vous devez réserver une place ou deux dans le cas d'une offre DUO."]
+        }

@@ -24,11 +24,13 @@ from utils.logger import logger
 EVENT_AUTOMATIC_REFUND_DELAY = timedelta(hours=48)
 
 
-class Stock(PcObject,
-            Model,
-            ProvidableMixin,
-            SoftDeletableMixin,
-            VersionedMixin):
+class StockSQLEntity(PcObject,
+                     Model,
+                     ProvidableMixin,
+                     SoftDeletableMixin,
+                     VersionedMixin):
+    __tablename__ = 'stock'
+    
     id = Column(BigInteger,
                 primary_key=True,
                 autoincrement=True)
@@ -112,7 +114,7 @@ class Stock(PcObject,
 
     @classmethod
     def queryNotSoftDeleted(cls):
-        return Stock.query.filter_by(isSoftDeleted=False)
+        return StockSQLEntity.query.filter_by(isSoftDeleted=False)
 
     @staticmethod
     def restize_internal_error(ie):
@@ -127,7 +129,7 @@ class Stock(PcObject,
         return PcObject.restize_internal_error(ie)
 
 
-@listens_for(Stock, 'before_insert')
+@listens_for(StockSQLEntity, 'before_insert')
 def before_insert(mapper, configuration, self):
     if self.beginningDatetime and not self.bookingLimitDatetime:
         self.bookingLimitDatetime = self.beginningDatetime \
@@ -135,7 +137,7 @@ def before_insert(mapper, configuration, self):
                                         .replace(minute=59) - timedelta(days=3)
 
 
-Stock.trig_ddl = """
+StockSQLEntity.trig_ddl = """
     CREATE OR REPLACE FUNCTION check_stock()
     RETURNS TRIGGER AS $$
     BEGIN
@@ -173,11 +175,11 @@ Stock.trig_ddl = """
     FOR EACH ROW EXECUTE PROCEDURE check_stock()
     """
 
-event.listen(Stock.__table__,
+event.listen(StockSQLEntity.__table__,
              'after_create',
-             DDL(Stock.trig_ddl))
+             DDL(StockSQLEntity.trig_ddl))
 
-Stock.trig_update_date_ddl = """
+StockSQLEntity.trig_update_date_ddl = """
     CREATE OR REPLACE FUNCTION save_stock_modification_date()
     RETURNS TRIGGER AS $$
     BEGIN
@@ -196,6 +198,6 @@ Stock.trig_update_date_ddl = """
     EXECUTE PROCEDURE save_stock_modification_date()
     """
 
-event.listen(Stock.__table__,
+event.listen(StockSQLEntity.__table__,
              'after_create',
-             DDL(Stock.trig_update_date_ddl))
+             DDL(StockSQLEntity.trig_update_date_ddl))

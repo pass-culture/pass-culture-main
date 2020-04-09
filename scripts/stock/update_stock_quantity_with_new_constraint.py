@@ -5,7 +5,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import aliased
 
 from connectors import redis
-from models import Stock, Booking
+from models import StockSQLEntity, Booking
 from repository import repository
 
 
@@ -62,7 +62,7 @@ def update_stock_quantity_with_new_constraint(application: Flask, page_size=100)
     print("[UPDATE STOCK QUANTITY] End of script")
 
 
-def _get_old_remaining_quantity(stock: Stock) -> int:
+def _get_old_remaining_quantity(stock: StockSQLEntity) -> int:
     old_bookings_quantity = 0
     for booking in stock.bookings:
         if (not booking.isCancelled and not booking.isUsed) \
@@ -72,20 +72,20 @@ def _get_old_remaining_quantity(stock: Stock) -> int:
     return stock.quantity - old_bookings_quantity
 
 
-def _get_stocks_to_check(page: int = 0, page_size: int = 100) -> List[Stock]:
-    return Stock.query \
+def _get_stocks_to_check(page: int = 0, page_size: int = 100) -> List[StockSQLEntity]:
+    return StockSQLEntity.query \
         .join(Booking) \
-        .filter(Stock.quantity != None) \
-        .filter(Stock.isSoftDeleted == False) \
-        .filter(Stock.hasBeenMigrated == None) \
-        .order_by(Stock.id) \
-        .group_by(Stock.id) \
+        .filter(StockSQLEntity.quantity != None) \
+        .filter(StockSQLEntity.isSoftDeleted == False) \
+        .filter(StockSQLEntity.hasBeenMigrated == None) \
+        .order_by(StockSQLEntity.id) \
+        .group_by(StockSQLEntity.id) \
         .offset(page * page_size) \
         .limit(page_size) \
         .all()
 
 
-def _update_stock_quantity(stock_to_check: Stock, remaining_quantity_before_new_constraint: int, application):
+def _update_stock_quantity(stock_to_check: StockSQLEntity, remaining_quantity_before_new_constraint: int, application):
     remaining_quantity_before_new_constraint = remaining_quantity_before_new_constraint \
         if remaining_quantity_before_new_constraint > 0 else 0
     stock_to_check.quantity = remaining_quantity_before_new_constraint + stock_to_check.bookingsQuantity

@@ -1,4 +1,4 @@
-from models import Mediation, Offer, Stock, User, Product
+from models import Mediation, Offer, StockSQLEntity, User, Product
 from models.recommendation import Recommendation
 from repository.user_queries import keep_only_webapp_users
 from sandboxes.scripts.utils.bookings import find_offer_compatible_with_bookings, \
@@ -44,9 +44,9 @@ def get_existing_webapp_hbs_user():
 def get_existing_event_offer_with_active_mediation_already_booked_but_cancellable_and_user_hnmm_93():
     offer_with_stock_id_tuples = Offer.query \
         .filter(Offer.mediations.any(Mediation.isActive)) \
-        .join(Stock) \
-        .filter(Stock.beginningDatetime != None) \
-        .add_columns(Stock.id) \
+        .join(StockSQLEntity) \
+        .filter(StockSQLEntity.beginningDatetime != None) \
+        .add_columns(StockSQLEntity.id) \
         .all()
     user = get_existing_webapp_hnmm_user()
     bookings = get_cancellable_bookings_for_user(user)
@@ -65,8 +65,8 @@ def get_existing_digital_offer_with_active_mediation_already_booked_and_user_hnm
     offer_with_stock_id_tuples = Offer.query.outerjoin(Product) \
         .filter(Offer.mediations.any(Mediation.isActive)) \
         .filter(Product.url != None) \
-        .join(Stock, (Offer.id == Stock.offerId)) \
-        .add_columns(Stock.id) \
+        .join(StockSQLEntity, (Offer.id == StockSQLEntity.offerId)) \
+        .add_columns(StockSQLEntity.id) \
         .all()
     user = get_existing_webapp_hnmm_user()
     bookings = get_cancellable_bookings_for_user(user)

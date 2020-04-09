@@ -1,7 +1,7 @@
 from unittest.mock import patch, call
 
 from local_providers.libraires_stocks import LibrairesStocks
-from models import Offer, Stock
+from models import Offer, StockSQLEntity
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_venue_provider, create_venue, create_offerer, create_stock, \
@@ -46,7 +46,7 @@ class LibrairesStocksTest:
 
             assert offer_providable_info.type == Offer
             assert offer_providable_info.id_at_providers == '9780199536986@12345678912345'
-            assert stock_providable_info.type == Stock
+            assert stock_providable_info.type == StockSQLEntity
             assert stock_providable_info.id_at_providers == '9780199536986@12345678912345'
 
     class UpdateObjectsTest:
@@ -78,7 +78,7 @@ class LibrairesStocksTest:
 
             # Then
             offer = Offer.query.first()
-            stock = Stock.query.first()
+            stock = StockSQLEntity.query.first()
 
             assert offer.type == product.type
             assert offer.description == product.description
@@ -119,7 +119,7 @@ class LibrairesStocksTest:
             libraires_stocks.updateObjects()
 
             # Then
-            stock = Stock.query.one()
+            stock = StockSQLEntity.query.one()
             assert stock.quantity == 10
             assert Offer.query.count() == 1
 
@@ -157,7 +157,7 @@ class LibrairesStocksTest:
             libraires_stocks.updateObjects()
 
             # Then
-            assert Stock.query.count() == 2
+            assert StockSQLEntity.query.count() == 2
             assert Offer.query.filter_by(lastProviderId=libraires_stocks_provider.id).count() == 2
             assert libraires_stocks.last_processed_isbn == '1550199555555'
 
@@ -209,7 +209,7 @@ class LibrairesStocksTest:
             libraires_stocks.updateObjects()
 
             # Then
-            stock = Stock.query.one()
+            stock = StockSQLEntity.query.one()
             assert stock.quantity == 67
 
     class WhenSynchronizedTwiceTest:
@@ -247,7 +247,7 @@ class LibrairesStocksTest:
 
             # Then
             offers = Offer.query.all()
-            stocks = Stock.query.all()
+            stocks = StockSQLEntity.query.all()
             assert len(stocks) == 2
             assert len(offers) == 2
             assert mock_libraires_api_response.call_args_list == [call('12345678912345', '', ''),

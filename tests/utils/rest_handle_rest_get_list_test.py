@@ -1,6 +1,6 @@
 import pytest
 
-from models import ApiErrors, Stock
+from models import ApiErrors, StockSQLEntity
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue
@@ -26,7 +26,7 @@ class HandleRestGetListTest:
         repository.save(stock1, stock2, stock3, stock4)
 
         # When
-        request = handle_rest_get_list(Stock)
+        request = handle_rest_get_list(StockSQLEntity)
 
         # Then
         assert '"id":"{}"'.format(humanize(stock1.id)) not in str(request[0].response)
@@ -38,7 +38,7 @@ class HandleRestGetListTest:
     def test_check_order_by(self, app):
         # When
         with pytest.raises(ApiErrors) as e:
-            handle_rest_get_list(Stock, order_by='(SELECT * FROM "user")')
+            handle_rest_get_list(StockSQLEntity, order_by='(SELECT * FROM "user")')
 
         # Then
         assert 'order_by' in e.value.errors

@@ -5,7 +5,7 @@ from sqlalchemy import or_
 
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model
-from models import Offerer, Venue, Offer, UserOfferer, User, Stock, Recommendation, ThingType, EventType
+from models import Offerer, Venue, Offer, UserOfferer, User, StockSQLEntity, Recommendation, ThingType, EventType
 from models import RightsType
 from models.db import db
 
@@ -301,14 +301,14 @@ def _filter_by_offer_status(query, offer_status):
 
     elif offer_status == "VALID" or offer_status == "EXPIRED":
         query = query.join(Offer)
-        can_still_be_booked_event = Stock.bookingLimitDatetime >= datetime.utcnow()
-        is_not_soft_deleted_thing = Stock.isSoftDeleted == False
-        can_still_be_booked_thing = ((Stock.bookingLimitDatetime == None)
-                                     | (Stock.bookingLimitDatetime >= datetime.utcnow()))
-        is_available_thing = ((Stock.quantity == None) | (Stock.quantity > 0))
+        can_still_be_booked_event = StockSQLEntity.bookingLimitDatetime >= datetime.utcnow()
+        is_not_soft_deleted_thing = StockSQLEntity.isSoftDeleted == False
+        can_still_be_booked_thing = ((StockSQLEntity.bookingLimitDatetime == None)
+                                     | (StockSQLEntity.bookingLimitDatetime >= datetime.utcnow()))
+        is_available_thing = ((StockSQLEntity.quantity == None) | (StockSQLEntity.quantity > 0))
 
-        query_1 = query.join(Stock)
-        query_2 = query.join(Stock)
+        query_1 = query.join(StockSQLEntity)
+        query_2 = query.join(StockSQLEntity)
 
     if offer_status == "VALID":
         query_with_valid_event = query_1.filter(is_not_soft_deleted_thing
@@ -383,7 +383,7 @@ def _query_offerers_with_stock():
     return _query_offerers_with_user_offerer() \
         .join(Venue, Venue.managingOffererId == Offerer.id) \
         .join(Offer) \
-        .join(Stock) \
+        .join(StockSQLEntity) \
         .filter(Offer.type != str(ThingType.ACTIVATION)) \
         .filter(Offer.type != str(EventType.ACTIVATION))
 

@@ -8,7 +8,7 @@ from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
 from models import Offer, VenueProvider
 from models.db import db
-from models.stock import Stock
+from models.stock import StockSQLEntity
 from repository import product_queries
 from repository.booking_queries import count_not_cancelled_bookings_quantity_by_stock_id
 
@@ -42,19 +42,19 @@ class TiteLiveStocks(LocalProvider):
         if not self.product:
             return []
 
-        providable_info_stock = self.create_providable_info(Stock, f"{self.titelive_stock['ref']}@{self.venue.siret}",
+        providable_info_stock = self.create_providable_info(StockSQLEntity, f"{self.titelive_stock['ref']}@{self.venue.siret}",
                                                             datetime.utcnow())
         providable_info_offer = self.create_providable_info(Offer, f"{self.titelive_stock['ref']}@{self.venue.siret}",
                                                             datetime.utcnow())
         return [providable_info_offer, providable_info_stock]
 
-    def fill_object_attributes(self, stock_or_offer: Union[Stock, Offer]):
-        if isinstance(stock_or_offer, Stock):
+    def fill_object_attributes(self, stock_or_offer: Union[StockSQLEntity, Offer]):
+        if isinstance(stock_or_offer, StockSQLEntity):
             self.fill_stock_attributes(stock_or_offer, self.titelive_stock)
         elif isinstance(stock_or_offer, Offer):
             self.fill_offer_attributes(stock_or_offer, self.titelive_stock)
 
-    def fill_stock_attributes(self, stock: Stock, stock_information: dict):
+    def fill_stock_attributes(self, stock: StockSQLEntity, stock_information: dict):
         bookings_quantity = count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
         stock.price = int(stock_information['price']) / PRICE_DIVIDER_TO_EURO
         stock.quantity = int(stock_information['available']) + bookings_quantity

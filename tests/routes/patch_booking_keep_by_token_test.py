@@ -1,7 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 
-from models import EventType, Booking, Stock
+from models import EventType, Booking, StockSQLEntity
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
@@ -156,7 +156,7 @@ class Patch:
 
                 url = '/v2/bookings/keep/token/{}'.format(booking.token)
                 response = TestClient(app.test_client()).with_auth('pro@example.net').patch(url)
-                stock = Stock.query.one()
+                stock = StockSQLEntity.query.one()
 
                 # Then
                 assert response.status_code == 204

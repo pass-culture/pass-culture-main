@@ -5,7 +5,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Query
 
 import repository.user_queries as user_repository
-from models import Booking, User, Stock, Offer, ThingType, EventType
+from models import Booking, User, StockSQLEntity, Offer, ThingType, EventType
 from models.db import db
 from repository import booking_queries
 
@@ -59,7 +59,7 @@ def _query_amount_spent_by_departement(departement_code: str) -> Query:
         query = query.join(User) \
             .filter(User.departementCode == departement_code)
 
-    query = query.join(Stock, Stock.id == Booking.stockId) \
+    query = query.join(StockSQLEntity, StockSQLEntity.id == Booking.stockId) \
         .join(Offer) \
         .filter(Offer.type != str(ThingType.ACTIVATION)) \
         .filter(Offer.type != str(EventType.ACTIVATION))

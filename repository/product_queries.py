@@ -1,7 +1,7 @@
 from typing import Optional
 
 from domain.offers import update_is_active_status
-from models import Booking, Offer, Product, Stock, ThingType
+from models import Booking, Offer, Product, StockSQLEntity, ThingType
 from repository import repository
 from repository.favorite_queries import get_favorites_for_offers
 from repository.mediation_queries import get_mediations_for_offers
@@ -18,7 +18,7 @@ def delete_unwanted_existing_product(isbn: str):
     product_has_at_least_one_booking = Product.query \
         .filter_by(idAtProviders=isbn) \
         .join(Offer) \
-        .join(Stock) \
+        .join(StockSQLEntity) \
         .join(Booking) \
         .count() > 0
     product = find_active_book_product_by_isbn(isbn)

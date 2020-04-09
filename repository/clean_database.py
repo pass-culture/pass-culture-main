@@ -10,7 +10,7 @@ from models import ApiKey, \
     Offer, \
     Offerer, \
     Recommendation, \
-    Stock, \
+    StockSQLEntity, \
     User, \
     UserOfferer, \
     UserSession, \
@@ -46,7 +46,7 @@ def clean_all_database(*args, **kwargs):
     Payment.query.delete()
     PaymentMessage.query.delete()
     Booking.query.delete()
-    Stock.query.delete()
+    StockSQLEntity.query.delete()
     Favorite.query.delete()
     Recommendation.query.delete()
     Mediation.query.delete()

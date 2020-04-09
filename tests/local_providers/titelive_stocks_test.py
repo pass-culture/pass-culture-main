@@ -4,7 +4,7 @@ from unittest.mock import patch, call
 from freezegun import freeze_time
 
 from local_providers import TiteLiveStocks
-from models import Offer, Stock
+from models import Offer, StockSQLEntity
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
@@ -52,7 +52,7 @@ def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attribut
     assert offer.venue is not None
     assert offer.bookingEmail == venue.bookingEmail
     assert offer.extraData == product.extraData
-    stock = Stock.query.one()
+    stock = StockSQLEntity.query.one()
     assert stock.bookingLimitDatetime is None
     assert stock.quantity == 10
     assert stock.price == 45
@@ -89,7 +89,7 @@ def test_titelive_stock_provider_update_1_stock_and_1_offer(stub_get_stocks_info
     titelive_stocks.updateObjects()
 
     # Then
-    stock = Stock.query.one()
+    stock = StockSQLEntity.query.one()
     assert stock.quantity == 10
     assert Offer.query.count() == 1
 
@@ -129,7 +129,7 @@ def test_titelive_stock_provider_always_update_the_stock_modification_date(stub_
     titelive_stocks.updateObjects()
 
     # Then
-    stock = Stock.query.one()
+    stock = StockSQLEntity.query.one()
     assert stock.dateModified == datetime.now()
 
 
@@ -165,7 +165,7 @@ def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(stub
     titelive_stocks.updateObjects()
 
     # Then
-    assert Stock.query.count() == 1
+    assert StockSQLEntity.query.count() == 1
     assert Offer.query.count() == 1
 
 
@@ -209,7 +209,7 @@ def test_titelive_stock_provider_create_2_stocks_and_2_offers_even_if_existing_o
 
     # Then
     assert Offer.query.filter_by(lastProviderId=titelive_stocks_provider.id).count() == 2
-    assert Stock.query.count() == 2
+    assert StockSQLEntity.query.count() == 2
 
 
 @clean_database
@@ -240,7 +240,7 @@ def test_titelive_stock_provider_create_nothing_if_titelive_api_returns_no_resul
 
     # Then
     assert Offer.query.filter_by(lastProviderId=titelive_stocks_provider.id).count() == 0
-    assert Stock.query.count() == 0
+    assert StockSQLEntity.query.count() == 0
 
 
 @clean_database
@@ -282,7 +282,7 @@ def test_titelive_stock_provider_iterates_over_pagination(stub_get_stocks_inform
 
     # Then
     assert Offer.query.count() == 2
-    assert Stock.query.count() == 2
+    assert StockSQLEntity.query.count() == 2
     assert stub_get_stocks_information.call_args_list == [call('77567146400110', ''),
                                                           call('77567146400110', '0002730757438'),
                                                           call('77567146400110', '0002736409898')]
@@ -356,7 +356,7 @@ def test_should_not_create_offer_when_product_is_not_gcu_compatible(stub_get_sto
 
     # Then
     assert Offer.query.count() == 0
-    assert Stock.query.count() == 0
+    assert StockSQLEntity.query.count() == 0
 
 
 @clean_database
@@ -409,5 +409,5 @@ def test_titelive_stock_provider_available_stock_is_sum_of_updated_available_and
     titelive_stocks.updateObjects()
 
     # Then
-    stock = Stock.query.one()
+    stock = StockSQLEntity.query.one()
     assert stock.quantity == 67

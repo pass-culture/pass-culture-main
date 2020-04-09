@@ -43,7 +43,7 @@ class Booking(PcObject, Model, VersionedMixin):
                      index=True,
                      nullable=False)
 
-    stock = relationship('Stock',
+    stock = relationship('StockSQLEntity',
                          foreign_keys=[stockId],
                          backref='bookings')
 

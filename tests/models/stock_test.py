@@ -7,7 +7,7 @@ from pytest import approx
 
 from models import ApiErrors
 from models.pc_object import DeletedRecordException
-from models.stock import Stock
+from models.stock import StockSQLEntity
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import (create_booking,
@@ -31,12 +31,12 @@ def test_date_modified_should_be_updated_if_quantity_changed(app):
     repository.save(stock)
 
     # when
-    stock = Stock.query.first()
+    stock = StockSQLEntity.query.first()
     stock.quantity = 10
     repository.save(stock)
 
     # then
-    stock = Stock.query.first()
+    stock = StockSQLEntity.query.first()
     assert stock.dateModified.timestamp() == approx(datetime.now().timestamp())
 
 
@@ -50,12 +50,12 @@ def test_date_modified_should_not_be_updated_if_price_changed(app):
     repository.save(stock)
 
     # when
-    stock = Stock.query.first()
+    stock = StockSQLEntity.query.first()
     stock.price = 5
     repository.save(stock)
 
     # then
-    stock = Stock.query.first()
+    stock = StockSQLEntity.query.first()
     assert stock.dateModified == datetime(2018, 2, 12)
 
 
@@ -69,7 +69,7 @@ def test_queryNotSoftDeleted_should_not_return_soft_deleted(app):
     repository.save(stock)
 
     # When
-    result = Stock.queryNotSoftDeleted().all()
+    result = StockSQLEntity.queryNotSoftDeleted().all()
 
     # Then
     assert not result
@@ -194,7 +194,7 @@ def test_should_update_stock_quantity_when_value_is_more_than_sum_of_bookings_qu
     repository.save(stock)
 
     # Then
-    assert Stock.query.get(stock.id).quantity == 3
+    assert StockSQLEntity.query.get(stock.id).quantity == 3
 
 
 @clean_database
@@ -230,7 +230,7 @@ class StockRemainingQuantityTest:
         repository.save(stock)
 
         # Then
-        assert Stock.query.get(stock.id).remainingQuantity == 2
+        assert StockSQLEntity.query.get(stock.id).remainingQuantity == 2
 
     @clean_database
     def test_should_be_0_when_all_stocks_are_booked(self, app):
@@ -248,7 +248,7 @@ class StockRemainingQuantityTest:
         repository.save(booking1, booking2)
 
         # Then
-        assert Stock.query.get(stock.id).remainingQuantity == 0
+        assert StockSQLEntity.query.get(stock.id).remainingQuantity == 0
 
     @clean_database
     def test_should_be_unlimited_when_stock_is_unlimited(self, app):
@@ -265,7 +265,7 @@ class StockRemainingQuantityTest:
         repository.save(booking)
 
         # Then
-        assert Stock.query.get(stock.id).remainingQuantity == 'unlimited'
+        assert StockSQLEntity.query.get(stock.id).remainingQuantity == 'unlimited'
 
 
 class IsBookableTest:

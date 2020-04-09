@@ -1,4 +1,4 @@
-from models import Stock, EventType, ThingType, Mediation, Offer, Venue, Offerer
+from models import StockSQLEntity, EventType, ThingType, Mediation, Offer, Venue, Offerer
 from models.user import User
 from repository.offer_queries import _filter_bookable_stocks_for_discovery
 from repository.user_queries import keep_only_webapp_users
@@ -7,19 +7,19 @@ from utils.human_ids import humanize
 
 
 def get_query_join_on_event(query):
-    join_on_event = (Offer.id == Stock.offerId)
-    query = query.join(Stock, join_on_event)
+    join_on_event = (Offer.id == StockSQLEntity.offerId)
+    query = query.join(StockSQLEntity, join_on_event)
     return query
 
 
 def get_query_join_on_thing(query):
-    join_on_offer_id = (Offer.id == Stock.offerId)
-    query = query.join(Stock, join_on_offer_id)
+    join_on_offer_id = (Offer.id == StockSQLEntity.offerId)
+    query = query.join(StockSQLEntity, join_on_offer_id)
     return query
 
 
 def get_non_free_offers_query_by_type():
-    filter_not_free_price = (Stock.price > 0)
+    filter_not_free_price = (StockSQLEntity.price > 0)
     filter_not_an_activation_offer = \
         (Offer.type != str(EventType.ACTIVATION)) \
         | (Offer.type != str(ThingType.ACTIVATION))
@@ -47,7 +47,7 @@ def get_non_free_thing_offer_with_active_mediation():
     query = get_non_free_offers_query_by_type()
     offer = query \
         .filter(Offer.url == None) \
-        .filter(Stock.beginningDatetime == None) \
+        .filter(StockSQLEntity.beginningDatetime == None) \
         .filter(Offer.mediations.any(Mediation.isActive == True)) \
         .join(Venue, Venue.id == Offer.venueId) \
         .join(Offerer, Offerer.id == Venue.managingOffererId) \
