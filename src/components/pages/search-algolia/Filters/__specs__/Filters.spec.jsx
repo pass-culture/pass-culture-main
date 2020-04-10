@@ -578,7 +578,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const title = wrapper.findWhere(node => node.text() === 'Type d\'offres').first()
+          const title = wrapper.findWhere(node => node.text() === "Type d'offres").first()
           expect(title).toHaveLength(1)
         })
 
