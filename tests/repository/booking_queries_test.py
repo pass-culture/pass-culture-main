@@ -6,7 +6,7 @@ from freezegun import freeze_time
 
 from models import Booking, EventType, ThingType
 from models.api_errors import ApiErrors, ResourceNotFoundError
-from models.stock import STOCK_DELETION_DELAY
+from models.stock import EVENT_AUTOMATIC_REFUND_DELAY
 from repository import booking_queries, repository
 from tests.conftest import clean_database
 from tests.model_creators.activity_creators import create_booking_activity, \
@@ -414,27 +414,27 @@ class FindFinalOffererBookingsTest:
         assert thing_booking1 in bookings
 
     @clean_database
-    def test_returns_only_finished_for_more_than_the_deletion_delay_bookings(self, app):
+    def test_returns_only_finished_for_more_than_the_automatic_refund_delay_bookings(self, app):
         # Given
         user = create_user()
         create_deposit(user)
         offerer = create_offerer()
         venue = create_venue(offerer)
-        in_the_past_less_than_deletion_delay = datetime.utcnow() - STOCK_DELETION_DELAY + timedelta(days=1)
-        in_the_past_more_than_deletion_delay = datetime.utcnow() - STOCK_DELETION_DELAY
+        in_the_past_less_than_automatic_refund_delay = datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY + timedelta(days=1)
+        in_the_past_more_than_automatic_refund_delay = datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY
 
-        event_stock_finished_more_than_deletion_delay_ago = \
+        event_stock_finished_more_than_automatic_refund_delay_ago = \
             create_stock_with_event_offer(offerer=offerer,
                                           venue=venue,
-                                          beginning_datetime=in_the_past_more_than_deletion_delay,
-                                          booking_limit_datetime=in_the_past_more_than_deletion_delay)
-        event_stock_finished_less_than_deletion_delay_ago = \
+                                          beginning_datetime=in_the_past_more_than_automatic_refund_delay,
+                                          booking_limit_datetime=in_the_past_more_than_automatic_refund_delay)
+        event_stock_finished_less_than_automatic_refund_delay_ago = \
             create_stock_with_event_offer(offerer=offerer,
                                           venue=venue,
-                                          beginning_datetime=in_the_past_less_than_deletion_delay,
-                                          booking_limit_datetime=in_the_past_less_than_deletion_delay)
-        event_booking1 = create_booking(user=user, is_used=False, stock=event_stock_finished_more_than_deletion_delay_ago, venue=venue)
-        event_booking2 = create_booking(user=user, is_used=False, stock=event_stock_finished_less_than_deletion_delay_ago, venue=venue)
+                                          beginning_datetime=in_the_past_less_than_automatic_refund_delay,
+                                          booking_limit_datetime=in_the_past_less_than_automatic_refund_delay)
+        event_booking1 = create_booking(user=user, is_used=False, stock=event_stock_finished_more_than_automatic_refund_delay_ago, venue=venue)
+        event_booking2 = create_booking(user=user, is_used=False, stock=event_stock_finished_less_than_automatic_refund_delay_ago, venue=venue)
         repository.save(event_booking1, event_booking2)
 
         # When

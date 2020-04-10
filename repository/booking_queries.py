@@ -16,7 +16,7 @@ from models.user import User
 from models.venue import Venue
 from models.api_errors import ResourceNotFoundError
 from models.db import db
-from models.stock import STOCK_DELETION_DELAY
+from models.stock import EVENT_AUTOMATIC_REFUND_DELAY
 from repository import offer_queries
 
 
@@ -278,7 +278,7 @@ def find_not_used_and_not_cancelled_bookings_associated_to_outdated_stock() -> L
         .join(Stock) \
         .filter(Booking.isUsed == False) \
         .filter(Booking.isCancelled == False) \
-        .filter(Stock.beginningDatetime + STOCK_DELETION_DELAY < datetime.utcnow()) \
+        .filter(Stock.beginningDatetime + EVENT_AUTOMATIC_REFUND_DELAY < datetime.utcnow()) \
         .all()
 
 

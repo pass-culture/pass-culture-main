@@ -6,7 +6,7 @@ from pytest import approx
 
 from models import ApiErrors
 from models.pc_object import DeletedRecordException
-from models.stock import Stock, STOCK_DELETION_DELAY
+from models.stock import Stock, EVENT_AUTOMATIC_REFUND_DELAY
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import (create_booking,
@@ -542,13 +542,13 @@ class IsEventDeletableTest:
         # Then
         assert is_event_deletable is True
 
-    def test_isEventDeletable_is_true_when_stock_is_expired_since_less_than_stock_deletion_delay(self):
+    def test_isEventDeletable_is_true_when_stock_is_expired_since_less_than_event_automatic_refund_delay(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
                                               beginning_datetime=datetime.utcnow()
-                                                                 - STOCK_DELETION_DELAY
+                                                                 - EVENT_AUTOMATIC_REFUND_DELAY
                                                                  + timedelta(1))
 
         # When
@@ -557,12 +557,12 @@ class IsEventDeletableTest:
         # Then
         assert is_event_deletable is True
 
-    def test_isEventDeletable_is_false_when_stock_is_expired_since_more_than_stock_deletion_delay(self):
+    def test_isEventDeletable_is_false_when_stock_is_expired_since_more_than_event_automatic_refund_delay(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
-                                              beginning_datetime=datetime.utcnow() - STOCK_DELETION_DELAY)
+                                              beginning_datetime=datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY)
 
         # When
         is_event_deletable = stock.isEventDeletable
