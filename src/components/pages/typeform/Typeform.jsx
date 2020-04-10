@@ -16,23 +16,22 @@ const buildTypeformURLWithHiddenFields = userId => {
 class Typeform extends PureComponent {
   constructor(props) {
     super(props)
-    this.typeformElementContainer = null
+    this.typeFormContainer = React.createRef()
     this.uniqId = uuid()
     this.typeformUrl = buildTypeformURLWithHiddenFields(this.uniqId)
   }
 
   componentDidMount() {
     const { needsToFillCulturalSurvey } = this.props
-    if (!needsToFillCulturalSurvey) return
-    const container = this.typeformElementContainer
-    // NOTE Typeform Documentation
-    // https://developer.typeform.com/embed/modes/
-    typeformEmbed.makeWidget(container, this.typeformUrl, {
-      hideFooter: true,
-      hideHeaders: true,
-      onSubmit: this.onSubmitTypeForm,
-      opacity: 100,
-    })
+
+    if (needsToFillCulturalSurvey) {
+      typeformEmbed.makeWidget(this.typeFormContainer.current, this.typeformUrl, {
+        hideFooter: true,
+        hideHeaders: true,
+        onSubmit: this.onSubmitTypeForm,
+        opacity: 100,
+      })
+    }
   }
 
   onSubmitTypeForm = () => {
@@ -40,17 +39,19 @@ class Typeform extends PureComponent {
     flagUserHasFilledTypeform(this.uniqId)
   }
 
-  divRef = elt => {
-    this.typeformElementContainer = elt
-  }
-
   render() {
     const { needsToFillCulturalSurvey } = this.props
-    if (!needsToFillCulturalSurvey) return <Redirect to="/decouverte" />
-    return (<div
-      className="is-overlay react-embed-typeform-container"
-      ref={this.divRef}
-            />)
+
+    if (needsToFillCulturalSurvey) {
+      return (
+        <div
+          className="is-overlay react-embed-typeform-container"
+          ref={this.typeFormContainer}
+        />
+      )
+    } else {
+      return <Redirect to="/bienvenue" />
+    }
   }
 }
 
