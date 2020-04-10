@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 
 import PropTypes from 'prop-types'
-import Slider, { Range } from 'rc-slider'
+import { Range } from 'rc-slider'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
 import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
@@ -535,7 +535,7 @@ export class Filters extends PureComponent {
               </li>
               {!offerIsFree && (
                 <li className="sf-price-slider-wrapper">
-                  <h4>
+                  <h4 className="sf-title">
                     {'Prix'}
                   </h4>
                   <span className="sf-slider-indicator">

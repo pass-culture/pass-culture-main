@@ -834,7 +834,7 @@ describe('components | Filters', () => {
           })
         })
 
-        describe('when free offers only filter is off', () => {
+        describe('when free offers filter is off', () => {
           it('should display a "Prix" title', () => {
             // given
             props.history.location.pathname = '/recherche-offres/filtres'
@@ -883,7 +883,7 @@ describe('components | Filters', () => {
           })
         })
 
-        describe('when free offers only filter is on', () => {
+        describe('when free offers filter is on', () => {
           it('should not display a "Prix" title', () => {
             // given
             props.history.location.pathname = '/recherche-offres/filtres'
