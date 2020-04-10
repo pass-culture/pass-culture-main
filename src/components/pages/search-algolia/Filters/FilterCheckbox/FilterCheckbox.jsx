@@ -7,6 +7,7 @@ const FilterCheckbox = ({ checked, className, id, label, name, onChange }) => {
     <div className='fc-wrapper'>
       <input
         checked={checked}
+        data-test={label}
         id={id}
         name={name}
         onChange={onChange}

@@ -23,14 +23,16 @@ class SearchResults extends PureComponent {
     const {
       criteria: { categories, isSearchAroundMe, sortBy },
     } = props
+    const isSearchAroundMeFromUrlOrProps = this.getIsSearchAroundMeFromUrlOrProps(isSearchAroundMe)
+    const categoriesFromUrlOrProps = this.getCategoriesFromUrlOrProps(categories)
     const sortByFromUrlOrProps = this.getSortByFromUrlOrProps(sortBy)
 
     this.state = {
       currentPage: 0,
       filters: {
         //radiusRevert: aroundRadius: 0,
-        isSearchAroundMe: this.getIsSearchAroundMeFromUrlOrProps(isSearchAroundMe),
-        offerCategories: this.getCategoriesFromUrlOrProps(categories),
+        isSearchAroundMe: isSearchAroundMeFromUrlOrProps,
+        offerCategories: categoriesFromUrlOrProps,
         offerIsDuo: false,
         offerIsFree: false,
         offerTypes: {
@@ -43,6 +45,7 @@ class SearchResults extends PureComponent {
       },
       keywordsToSearch: '',
       isLoading: false,
+      numberOfActiveFilters: this.getNumberOfActiveFilters(isSearchAroundMeFromUrlOrProps, categoriesFromUrlOrProps),
       resultsCount: 0,
       results: [],
       searchedKeywords: '',
@@ -74,6 +77,11 @@ class SearchResults extends PureComponent {
     const isSearchAroundMeFromUrl = queryParams['autour-de-moi'] || ''
 
     return isSearchAroundMeFromUrl ? isSearchAroundMeFromUrl === 'oui' : isSearchAroundMeFromProps
+  }
+
+  getNumberOfActiveFilters = (isSearchAroundMe, categories) => {
+    const numberOfActiveCategories = categories.length
+    return +isSearchAroundMe + numberOfActiveCategories
   }
 
   getSortByFromUrlOrProps = sortByFromProps => {
@@ -135,6 +143,12 @@ class SearchResults extends PureComponent {
   updateFilters = filters => {
     this.setState({
       filters: filters,
+    })
+  }
+
+  updateNumberOfActiveFilters = numberOfFilters => {
+    this.setState({
+      numberOfActiveFilters: numberOfFilters,
     })
   }
 
@@ -276,6 +290,7 @@ class SearchResults extends PureComponent {
       filters,
       keywordsToSearch,
       isLoading,
+      numberOfActiveFilters,
       results,
       resultsCount,
       sortCriterionLabel,
@@ -384,9 +399,17 @@ class SearchResults extends PureComponent {
                   alt="Filtrer les résultats"
                   svg="filtrer"
                 />
-                <span>
+                <span className="sr-filter-button-text">
                   {'Filtrer'}
                 </span>
+                {numberOfActiveFilters > 0 && (
+                  <span
+                    className="sr-filter-button-number"
+                    data-test="sr-filter-button-number"
+                  >
+                    {numberOfActiveFilters}
+                  </span>
+                )}
               </button>
             </div>
           </Route>
@@ -415,6 +438,7 @@ class SearchResults extends PureComponent {
               showFailModal={this.showFailModal}
               updateFilteredOffers={this.updateFilteredOffers}
               updateFilters={this.updateFilters}
+              updateNumberOfActiveFilters={this.updateNumberOfActiveFilters}
             />
           </Route>
           <Route path={`${SEARCH_RESULTS_URI}/tri`}>

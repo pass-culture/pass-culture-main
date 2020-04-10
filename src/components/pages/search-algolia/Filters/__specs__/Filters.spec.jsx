@@ -1,6 +1,8 @@
 import { mount, shallow } from 'enzyme'
+import configureStore from 'redux-mock-store'
 import { createBrowserHistory } from 'history'
 import React from 'react'
+import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 import { Range } from 'rc-slider'
 
@@ -65,6 +67,7 @@ describe('components | Filters', () => {
       showFailModal: jest.fn(),
       updateFilters: jest.fn(),
       updateFilteredOffers: jest.fn(),
+      updateNumberOfActiveFilters: jest.fn(),
     }
   })
 
@@ -290,7 +293,6 @@ describe('components | Filters', () => {
 
       it('should filter offers when clicking on display results button', () => {
         // given
-        props.history.location.pathname = '/recherche-offres/filtres'
         props.offers.nbHits = 1000
         const wrapper = shallow(<Filters {...props} />)
         const resultsButton = wrapper.find('.sf-button')
@@ -304,6 +306,48 @@ describe('components | Filters', () => {
           nbHits: 1000,
           nbPages: 0,
         })
+      })
+
+      it('should pass the number of selected filters when clicking on the results button', () => {
+        // given
+        props.initialFilters.offerCategories = ['VISITE', 'CINEMA']
+        const history = createBrowserHistory()
+        history.push('/recherche-offres/resultats/filtres')
+        props.query.parse.mockReturnValue({
+          'mots-cles': 'librairies',
+        })
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [],
+              nbHits: 0,
+              page: 0,
+            })
+          })
+        )
+        const store = configureStore([])()
+        const wrapper = mount(
+          <Provider store={store}>
+            <Router history={history}>
+              <Filters {...props} />
+            </Router>
+          </Provider>
+        )
+        const resultsButton = wrapper.find('.sf-button')
+        const showCategory = wrapper.find('[data-test="Spectacles"]')
+        const digitalOffers = wrapper.find('[data-test="Offres numériques"]')
+
+        const showCategoryEvent = { target: { name: "SPECTACLE", checked: true } }
+        const digitalOffersEvent = { target: { name: "isDigital", checked: true } }
+
+        showCategory.simulate('change', showCategoryEvent)
+        digitalOffers.simulate('change', digitalOffersEvent)
+
+        // when
+        resultsButton.simulate('click')
+
+        // then
+        expect(props.updateNumberOfActiveFilters).toHaveBeenCalledWith(4)
       })
 
       it('should redirect to results page with query param when clicking on display results button', () => {

@@ -26,17 +26,18 @@ export class Filters extends PureComponent {
       priceRange,
       sortBy,
     } = props.initialFilters
+    const offerCategories = this.buildCategoriesStateFromProps()
     this.state = {
       areCategoriesVisible: true,
       filters: {
-        aroundRadius: aroundRadius,
-        isSearchAroundMe: isSearchAroundMe,
-        offerCategories: this.buildCategoriesStateFromProps(),
-        offerIsFree: offerIsFree,
-        offerIsDuo: offerIsDuo,
-        offerTypes: offerTypes,
-        sortBy: sortBy,
-        priceRange: priceRange,
+        aroundRadius,
+        isSearchAroundMe,
+        offerCategories,
+        offerIsFree,
+        offerIsDuo,
+        offerTypes,
+        priceRange,
+        sortBy,
       },
       offers: props.offers,
     }
@@ -221,17 +222,20 @@ export class Filters extends PureComponent {
   }
 
   handleFilterOffers = () => {
-    const { history, updateFilteredOffers, updateFilters } = this.props
+    const { history, updateFilteredOffers, updateFilters, updateNumberOfActiveFilters } = this.props
     const {
       location: { search = '' },
     } = history
     const { filters, offers } = this.state
     const { nbHits } = offers
+    const { isSearchAroundMe, offerCategories, offerTypes } = filters
     const updatedFilters = { ...filters }
     updatedFilters.offerCategories = this.getSelectedCategories()
 
     updateFilters(updatedFilters)
     updateFilteredOffers(offers)
+    const numberOfActiveFilters = this.getNumberOfSelectedFilters(offerTypes) + this.getNumberOfSelectedFilters(offerCategories) + +isSearchAroundMe
+    updateNumberOfActiveFilters(numberOfActiveFilters)
     history.push(`/recherche-offres/resultats${search}`)
   }
 
@@ -340,6 +344,7 @@ export class Filters extends PureComponent {
     const { search = '' } = location
     const numberOfOfferTypesSelected = this.getNumberOfSelectedFilters(offerTypes)
     const numberOfOfferCategoriesSelected = this.getNumberOfSelectedFilters(offerCategories)
+    const numberOfLocationSelecteed = +isSearchAroundMe
 
     return (
       <main className="search-filters-page">
@@ -369,6 +374,11 @@ export class Filters extends PureComponent {
                 <h4 className="sf-title">
                   {'Localisation'}
                 </h4>
+                {numberOfLocationSelecteed > 0 && (
+                  <span className="sf-selected-filter-counter">
+                      {`(${numberOfLocationSelecteed})`}
+                    </span>
+                )}
                 <button
                   className="sf-geolocation-button"
                   onClick={this.handleGoToGeolocationFilter}
@@ -607,4 +617,5 @@ Filters.propTypes = {
   showFailModal: PropTypes.func.isRequired,
   updateFilteredOffers: PropTypes.func.isRequired,
   updateFilters: PropTypes.func.isRequired,
+  updateNumberOfActiveFilters: PropTypes.func.isRequired,
 }
