@@ -157,6 +157,7 @@ class SearchResults extends PureComponent {
     })
     const options = {
       keywords,
+      geolocation,
       offerCategories,
       offerIsDuo,
       offerIsFree,
@@ -168,7 +169,6 @@ class SearchResults extends PureComponent {
 
     if (isSearchAroundMe) {
       options.aroundRadius = aroundRadius
-      options.geolocation = geolocation
     }
 
     fetchAlgolia(options)

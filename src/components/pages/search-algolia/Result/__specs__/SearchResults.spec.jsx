@@ -180,6 +180,10 @@ describe('components | SearchResults', () => {
 
       // then
       expect(fetchAlgolia).toHaveBeenCalledWith({
+        geolocation: {
+          latitude: 40.1,
+          longitude: 41.1
+        },
         keywords: 'une librairie',
         offerCategories: ['MUSEE'],
         offerIsDuo: false,
@@ -254,6 +258,10 @@ describe('components | SearchResults', () => {
         expect(searchInput.prop('value')).toBe('une librairie')
         expect(resultTitle).toHaveLength(1)
         expect(fetchAlgolia).toHaveBeenCalledWith({
+          geolocation: {
+            latitude: 40.1,
+            longitude: 41.1
+          },
           keywords: 'une librairie',
           offerCategories: [],
           offerIsDuo: false,
@@ -368,6 +376,7 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
+          geolocation: { latitude: 40.1, longitude: 41.1 },
           keywords: 'une librairie',
           offerCategories: ['CINEMA'],
           offerIsDuo: false,
@@ -405,6 +414,7 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
+          geolocation: { latitude: 40.1, longitude: 41.1 },
           keywords: 'une librairie',
           offerCategories: ['CINEMA'],
           offerIsDuo: false,
@@ -440,6 +450,7 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
+          geolocation: { latitude: 40.1, longitude: 41.1 },
           keywords: 'une librairie',
           offerCategories: ['CINEMA'],
           offerIsDuo: false,
@@ -471,6 +482,7 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
+          geolocation: { latitude: 40.1, longitude: 41.1 },
           keywords: 'une librairie',
           offerCategories: [],
           offerIsDuo: false,
@@ -509,6 +521,7 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
+          geolocation: { latitude: 40.1, longitude: 41.1 },
           keywords: 'une librairie',
           offerCategories: [],
           offerIsDuo: false,
@@ -546,6 +559,7 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
+          geolocation: { latitude: 40.1, longitude: 41.1 },
           keywords: 'une librairie',
           offerCategories: [],
           offerIsDuo: false,
@@ -586,6 +600,7 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
+          geolocation: { latitude: 40.1, longitude: 41.1 },
           keywords: 'une librairie',
           offerCategories: [],
           offerIsDuo: false,
@@ -647,6 +662,7 @@ describe('components | SearchResults', () => {
 
       // then
       expect(fetchAlgolia).toHaveBeenCalledWith({
+        geolocation: { latitude: 40.1, longitude: 41.1 },
         keywords: 'un livre très cherché',
         offerCategories: [],
         offerIsDuo: false,
@@ -681,6 +697,7 @@ describe('components | SearchResults', () => {
 
       // then
       expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
+        geolocation: { latitude: 40.1, longitude: 41.1 },
         keywords: '',
         offerCategories: [],
         offerIsDuo: false,
@@ -715,6 +732,7 @@ describe('components | SearchResults', () => {
 
       // then
       expect(fetchAlgolia).toHaveBeenCalledWith({
+        geolocation: { latitude: 40.1, longitude: 41.1 },
         keywords: '',
         offerCategories: [],
         offerIsDuo: false,
@@ -881,7 +899,7 @@ describe('components | SearchResults', () => {
             hitsPerPage: 2,
             processingTimeMS: 1,
             query: 'librairie',
-            params: "query='librairie'&hitsPerPage=2",
+            params: 'query=\'librairie\'&hitsPerPage=2',
           })
         })
       )
@@ -921,7 +939,7 @@ describe('components | SearchResults', () => {
             hitsPerPage: 2,
             processingTimeMS: 1,
             query: 'librairie',
-            params: "query='librairie'&hitsPerPage=2",
+            params: 'query=\'librairie\'&hitsPerPage=2',
           })
         })
       )
@@ -1039,6 +1057,7 @@ describe('components | SearchResults', () => {
       // then
       expect(fetchAlgolia).toHaveBeenCalledTimes(2)
       expect(fetchAlgolia).toHaveBeenNthCalledWith(1, {
+        geolocation: { latitude: 40.1, longitude: 41.1 },
         keywords: '',
         offerCategories: [],
         offerIsDuo: false,
@@ -1053,6 +1072,7 @@ describe('components | SearchResults', () => {
         sortBy: '',
       })
       expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
+        geolocation: { latitude: 40.1, longitude: 41.1 },
         keywords: 'librairie',
         offerCategories: [],
         offerIsDuo: false,
@@ -1092,7 +1112,7 @@ describe('components | SearchResults', () => {
       // then
       await toast.info
       expect(toast.info).toHaveBeenCalledWith(
-        "La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard."
+        'La recherche n\'a pas pu aboutir, veuillez ré-essayer plus tard.'
       )
     })
 
@@ -1601,6 +1621,7 @@ describe('components | SearchResults', () => {
       // Then
       expect(fetchAlgolia).toHaveBeenCalledTimes(2)
       expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
+        geolocation: { latitude: 40.1, longitude: 41.1 },
         keywords: '',
         offerCategories: [],
         offerIsDuo: false,

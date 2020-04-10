@@ -141,6 +141,10 @@ describe('components | Filters', () => {
 
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith({
+            geolocation: {
+              latitude: 40,
+              longitude: 41
+            },
             keywords: 'librairie',
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: false,
@@ -211,7 +215,6 @@ describe('components | Filters', () => {
 
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith({
-            aroundRadius: 50,
             geolocation: { latitude: 40, longitude: 41 },
             keywords: 'librairie',
             offerCategories: ['VISITE'],
@@ -666,6 +669,10 @@ describe('components | Filters', () => {
 
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith({
+            geolocation: {
+              latitude: 40,
+              longitude: 41
+            },
             keywords: 'librairies',
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: false,
@@ -743,6 +750,10 @@ describe('components | Filters', () => {
 
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith({
+            geolocation: {
+              latitude: 40,
+              longitude: 41
+            },
             keywords: '',
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: true,
@@ -820,6 +831,10 @@ describe('components | Filters', () => {
 
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith({
+            geolocation: {
+              latitude: 40,
+              longitude: 41
+            },
             keywords: '',
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: false,
@@ -1118,6 +1133,7 @@ describe('components | Filters', () => {
             jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
             props.history.location.pathname = '/recherche-offres/resultats/filtres'
             props.initialFilters = {
+              aroundRadius: 0,
               isSearchAroundMe: true,
               offerCategories: ['VISITE'],
               offerIsDuo: false,
@@ -1158,6 +1174,10 @@ describe('components | Filters', () => {
             // then
             expect(fetchAlgolia).toHaveBeenCalledWith({
               //radiusRevert: aroundRadius: 0,
+              geolocation: {
+                latitude: 40,
+                longitude: 41
+              },
               keywords: 'librairie',
               offerCategories: [],
               offerIsDuo: false,
@@ -1220,6 +1240,10 @@ describe('components | Filters', () => {
             // then
             expect(fetchAlgolia).toHaveBeenCalledWith({
               //radiusRevert: aroundRadius: 0,
+              geolocation: {
+                latitude: 40,
+                longitude: 41
+              },
               keywords: 'librairie',
               offerCategories: [],
               offerIsDuo: false,

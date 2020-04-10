@@ -92,7 +92,6 @@ export class Filters extends PureComponent {
 
     const {
       aroundRadius,
-      isSearchAroundMe,
       offerIsDuo,
       offerIsFree,
       offerTypes,
@@ -101,27 +100,17 @@ export class Filters extends PureComponent {
     } = filters
     const offerCategories = this.getSelectedCategories()
 
-    isSearchAroundMe
-      ? this.fetchOffers({
-          aroundRadius,
-          keywords,
-          geolocation,
-          offerCategories,
-          offerIsDuo,
-          offerIsFree,
-          offerTypes,
-          priceRange,
-          sortBy,
-        })
-      : this.fetchOffers({
-          keywords,
-          offerCategories,
-          offerIsDuo,
-          offerIsFree,
-          offerTypes,
-          priceRange,
-          sortBy,
-        })
+    this.fetchOffers({
+      //revert aroundRadius,
+      keywords,
+      geolocation,
+      offerCategories,
+      offerIsDuo,
+      offerIsFree,
+      offerTypes,
+      priceRange,
+      sortBy,
+    })
 
     const autourDeMoi = checkIfAroundMe(filters.isSearchAroundMe)
     const categories = offerCategories.join(';') || ''
