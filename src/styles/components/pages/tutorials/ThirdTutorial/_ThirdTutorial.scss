@@ -1,21 +1,21 @@
 .third-tutorial {
-  line-height: 1.35;
   height: 100%;
+  line-height: 1.35;
+  position: relative;
   width: 100%;
 
-  position: relative;
   &::before {
-    height: 100%;
-    width: 140%;
-    content: "";
-    position: absolute;
-    left: -20%;
-    z-index: -1;
-    background-image: url('/onboarding-3.png');
+    background-image: url('/onboarding-3@2x.jpg');
     background-color: $background-tuto-purple;
     background-repeat: no-repeat;
     background-position: center bottom;
     background-size: 92%;
+    content: "";
+    height: 100%;
+    left: -20%;
+    position: absolute;
+    width: 140%;
+    z-index: -1;
   }
 
   .third-tutorial-text {

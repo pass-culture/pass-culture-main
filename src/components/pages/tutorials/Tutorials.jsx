@@ -11,7 +11,6 @@ import EnteringSides from './animationsEnteringSides/EnteringSides'
 
 const Tutorials = ({ history }) => {
   const tutorials = [FirstTutorial, SecondTutorial, ThirdTutorial]
-
   const lastTutorialStep = tutorials.length - 1
 
   let [step, setStep] = useState(0)
@@ -81,7 +80,7 @@ const Tutorials = ({ history }) => {
       <div className="slider-points">
         <SliderPoints
           currentStep={step}
-          elements={tutorials}
+          maxStep={tutorials.length}
         />
       </div>
     </main>

@@ -66,3 +66,20 @@ test('je vois le texte de la troisième carte tutoriel en cliquant sur la flèch
     .expect(thirdTutoSecondText.exists)
     .ok()
 })
+
+test('je peux naviguer entre les différents tutoriels à l’aide du drag and drop', async t => {
+  const firstTutorial = Selector('p').withText('À partir d’aujourd’hui')
+  const secondTutorial = Selector('p')
+    .nth(0)
+    .withText('Profite de ces 500 €')
+
+  await t
+    .drag(firstTutorial, -200, 0)
+    .expect(secondTutorial.exists)
+    .ok()
+
+  await t
+    .drag(secondTutorial, 200, 0)
+    .expect(firstTutorial.exists)
+    .ok()
+})

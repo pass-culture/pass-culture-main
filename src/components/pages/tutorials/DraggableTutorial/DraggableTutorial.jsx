@@ -3,6 +3,15 @@ import PropTypes from 'prop-types'
 import Draggable from 'react-draggable'
 
 const DraggableTutorial = ({ children, handleGoNext, handleGoPrevious, step }) => {
+  const initialPosition = {
+    x: 0,
+    y: 0,
+  }
+
+  function calculateBounds() {
+    return step === 0 ? { right: 0 } : {}
+  }
+
   function handleStopDragging(event, data) {
     const tutorialHorizontalPosition = data.x
     const draggingDistanceToChangeTutorial = 150
@@ -12,16 +21,12 @@ const DraggableTutorial = ({ children, handleGoNext, handleGoPrevious, step }) =
     if (tutorialHorizontalPosition > draggingDistanceToChangeTutorial) handleGoPrevious()
   }
 
-  function calculateBounds() {
-    return step === 0 ? { right: 0 } : {}
-  }
-
   return (
     <Draggable
       axis="x"
       bounds={calculateBounds()}
       onStop={handleStopDragging}
-      position={{ x: 0, y: 0 }}
+      position={initialPosition}
     >
       <div className="tutorial">
         {children}

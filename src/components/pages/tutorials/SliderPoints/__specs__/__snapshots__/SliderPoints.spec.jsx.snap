@@ -5,14 +5,7 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <SliderPoints
     currentStep={2}
-    elements={
-      Array [
-        "Apple",
-        "Banana",
-        "Kiwi",
-        "Ananas",
-      ]
-    }
+    maxStep={4}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -25,7 +18,7 @@ ShallowWrapper {
   },
   Symbol(enzyme.__node__): Object {
     "instance": null,
-    "key": "Apple",
+    "key": "0",
     "nodeType": "host",
     "props": Object {
       "className": "slider-point ",
@@ -37,7 +30,7 @@ ShallowWrapper {
   Symbol(enzyme.__nodes__): Array [
     Object {
       "instance": null,
-      "key": "Apple",
+      "key": "0",
       "nodeType": "host",
       "props": Object {
         "className": "slider-point ",
@@ -48,7 +41,7 @@ ShallowWrapper {
     },
     Object {
       "instance": null,
-      "key": "Banana",
+      "key": "1",
       "nodeType": "host",
       "props": Object {
         "className": "slider-point ",
@@ -59,7 +52,7 @@ ShallowWrapper {
     },
     Object {
       "instance": null,
-      "key": "Kiwi",
+      "key": "2",
       "nodeType": "host",
       "props": Object {
         "className": "slider-point filled",
@@ -70,7 +63,7 @@ ShallowWrapper {
     },
     Object {
       "instance": null,
-      "key": "Ananas",
+      "key": "3",
       "nodeType": "host",
       "props": Object {
         "className": "slider-point ",

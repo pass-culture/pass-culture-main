@@ -6,11 +6,11 @@ import SliderPoints from '../SliderPoints'
 describe('components | SliderPoints', () => {
   it('should have as much bullet points as there are elements and current step point should be filled', () => {
     // given
-    const elements = ['Apple', 'Banana', 'Kiwi', 'Ananas']
+    const maxStep = 4
     const currentStep = 2
 
     const props = {
-      elements,
+      maxStep,
       currentStep,
     }
 
