@@ -441,27 +441,6 @@ class FindFinalVenueBookingsTest:
         assert bookings[1] == booking2
         assert booking3 not in bookings
 
-    @clean_database
-    def test_returns_only_bookings_on_events_started_more_than_two_days_ago(self, app):
-        # Given
-        user = create_user()
-        create_deposit(user)
-        offerer1 = create_offerer()
-        venue = create_venue(offerer1)
-        offer = create_offer_with_event_product(venue)
-        stock1 = create_stock(beginning_datetime=THREE_DAYS_AGO, offer=offer)
-        stock2 = create_stock(beginning_datetime=ONE_DAY_AGO, offer=offer)
-        booking1 = create_booking(user=user, is_used=False, stock=stock1, venue=venue)
-        booking2 = create_booking(user=user, is_used=False, stock=stock2, venue=venue)
-        repository.save(booking1, booking2)
-
-        # When
-        bookings = booking_queries.find_eligible_bookings_for_offerer(offerer1.id)
-
-        # Then
-        assert len(bookings) == 1
-        assert booking1 in bookings
-
 
 class FindDateUsedTest:
     @clean_database

@@ -242,13 +242,10 @@ def _query_non_cancelled_non_activation_bookings() -> Query:
 
 
 def _query_keep_only_used_or_finished_bookings_on_non_activation_offers() -> Query:
-    booking_on_event_finished_more_than_two_days_ago = (
-        datetime.utcnow() > Stock.beginningDatetime + STOCK_DELETION_DELAY)
-
     return _query_keep_on_non_activation_offers() \
         .join(Venue) \
         .filter(Booking.isCancelled == False) \
-        .filter((Booking.isUsed == True) | booking_on_event_finished_more_than_two_days_ago)
+        .filter((Booking.isUsed == True))
 
 
 def find_not_used_and_not_cancelled() -> List[Booking]:
