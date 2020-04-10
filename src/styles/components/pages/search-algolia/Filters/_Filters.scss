@@ -21,7 +21,7 @@
 }
 
 .sf-content-wrapper {
-  padding: rem(24px) rem(24px) rem($footer-height + rem(48px));
+  margin: rem(24px) rem(24px) rem($footer-height + rem(48px));
   overflow-y: auto;
 
   .sf-title {
@@ -133,4 +133,8 @@
   text-align: center;
   font-weight: bold;
   display: block;
+}
+
+.sf-price-slider-wrapper {
+  padding-bottom: rem(5px);
 }

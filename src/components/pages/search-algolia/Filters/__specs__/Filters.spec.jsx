@@ -875,7 +875,6 @@ describe('components | Filters', () => {
             const rangeSlider = wrapper.find(Range)
             expect(rangeSlider).toHaveLength(1)
             expect(rangeSlider.prop('allowCross')).toStrictEqual(false)
-            expect(rangeSlider.prop('defaultValue')).toStrictEqual([0, 45])
             expect(rangeSlider.prop('max')).toStrictEqual(500)
             expect(rangeSlider.prop('min')).toStrictEqual(0)
             expect(rangeSlider.prop('onChange')).toStrictEqual(expect.any(Function))

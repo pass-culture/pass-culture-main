@@ -534,7 +534,7 @@ export class Filters extends PureComponent {
                 </div>
               </li>
               {!offerIsFree && (
-                <li>
+                <li className="sf-price-slider-wrapper">
                   <h4>
                     {'Prix'}
                   </h4>
@@ -543,7 +543,6 @@ export class Filters extends PureComponent {
                   </span>
                   <Range
                     allowCross={false}
-                    defaultValue={priceRange}
                     max={500}
                     min={0}
                     onAfterChange={this.handleOffersFetchAndUrlUpdate}
