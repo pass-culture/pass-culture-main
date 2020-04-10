@@ -76,6 +76,3 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
                 'event_hour': '14h',
             }
         }
-
-    # TODO :
-    # test_should_not_send_email_when_booking_has_been_cancelled

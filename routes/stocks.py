@@ -1,4 +1,3 @@
-
 from flask import current_app as app, jsonify, request
 from flask_login import current_user
 
@@ -124,15 +123,21 @@ def edit_stock(stock_id):
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
-    # TODO ajouter un check uniquement si les dates sont modifiées
-    bookings = find_ongoing_bookings_by_stock(stock)
-    if bookings:
-        try:
-            send_batch_stock_report_emails_to_users(bookings, send_raw_email)
-        except MailServiceException as e:
-            app.logger.error('Mail service failure', e)
+    is_a_report = _check_dates_have_been_modified(stock_data, stock)
+    if is_a_report:
+        bookings = find_ongoing_bookings_by_stock(stock)
+        if bookings:
+            try:
+                send_batch_stock_report_emails_to_users(bookings, send_raw_email)
+            except MailServiceException as e:
+                app.logger.error('Mail service failure', e)
 
     return jsonify(as_dict(stock)), 200
+
+
+def _check_dates_have_been_modified(request_data: dict, stock: Stock):
+    return True if 'beginningDatetime' in request_data \
+                   and request_data['beginningDatetime'] != stock.beginningDatetime else False
 
 
 @app.route('/stocks/<id>', methods=['DELETE'])
