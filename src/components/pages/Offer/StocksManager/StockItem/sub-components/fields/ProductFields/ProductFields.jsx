@@ -104,10 +104,7 @@ class ProductFields extends PureComponent {
     const { quantity } = values
     const { bookingsQuantity } = stock || {}
 
-    const formattedRemainingQuantities = getFormattedRemainingQuantities(
-      quantity,
-      bookingsQuantity
-    )
+    const formattedRemainingQuantities = getFormattedRemainingQuantities(quantity, bookingsQuantity)
 
     const isRemainingQuantityValid =
       formattedRemainingQuantities || formattedRemainingQuantities == 0
@@ -160,17 +157,17 @@ class ProductFields extends PureComponent {
 
         {isRemainingQuantityValid ? (
           <td
-            className="is-small remaining-stock"
+            className="remaining-stock"
             id="remaining-stock"
           >
             {formattedRemainingQuantities}
           </td>
         ) : (
-          <td className="is-small remaining-stock" />
+          <td className="remaining-stock" />
         )}
 
         <td
-          className="is-small bookings-count"
+          className="bookings-count"
           id="bookings-count"
         >
           {bookingsQuantity}

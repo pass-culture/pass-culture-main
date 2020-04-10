@@ -1,10 +1,4 @@
 .stocks-manager {
-  td.remaining-stock, .bookings-count {
-    color: $grey;
-    font-size: 0.75rem;
-    font-weight: 500;
-    min-width: rem(75px);
-  }
 
   .has-text-weight-bold {
     text-transform: uppercase;
@@ -57,52 +51,11 @@
 
           @include dotted($primary, bottom);
 
-          &.inactive {
-            &:hover {
-              background-color: transparent;
-            }
-          }
-
           td {
             text-align: center;
             border: none;
             max-width: rem(140px);
-
-            input[type='time'] {
-              padding-left: 1rem;
-            }
-
-            input[readonly]::placeholder {
-              color: $black;
-            }
-
-            input[readonly]::-webkit-input-placeholder {
-              color: $black;
-            }
-
-            input[readonly]::-moz-placeholder {
-              color: $black;
-            }
-
-            input[readonly]:-moz-placeholder {
-              color: $black;
-            }
-
             padding: rem(6px);
-          }
-
-          td.booking-limit-datetime {
-            max-width: rem(150px);
-          }
-
-          td.tooltiped {
-            white-space: nowrap;
-
-            span.tooltip {
-              background-color: transparent;
-              padding: 0;
-              z-index: 10500;
-            }
           }
         }
       }
@@ -114,6 +67,33 @@
             font-size: rem(12px);
             color: $grey-darkest;
             line-height: normal;
+          }
+        }
+      }
+
+      tbody {
+        &:not(.inactive) {
+          &:hover {
+            background-color: #FAFAFA;
+          }
+        }
+
+        td {
+          font-size: 0.75rem;
+          font-weight: 500;
+
+          &.booking-limit-datetime {
+            max-width: rem(150px);
+          }
+
+          &.tooltiped {
+            white-space: nowrap;
+
+            span.tooltip {
+              background-color: transparent;
+              padding: 0;
+              z-index: 10500;
+            }
           }
         }
       }

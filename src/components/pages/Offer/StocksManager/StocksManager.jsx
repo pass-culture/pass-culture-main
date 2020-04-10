@@ -195,11 +195,7 @@ class StocksManager extends PureComponent {
             subtitle={get(offer, 'name')}
             title={isEvent ? 'Dates, horaires et prix' : get(product, 'id') && 'Prix'}
           />
-          <table
-            className={classnames('table is-hoverable stocks-table', {
-              small: !isEvent,
-            })}
-          >
+          <table className="stocks-table">
             {this.renderTableHead()}
             {provider ? (
               <tbody>
