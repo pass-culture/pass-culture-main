@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from unittest.mock import patch
 
 from models import Stock, Provider
@@ -83,7 +83,6 @@ class Patch:
             assert response.status_code == 200
             assert Stock.query.get(stock_id).price == 120
 
-
         @patch('routes.stocks.feature_queries.is_active', return_value=True)
         @patch('routes.stocks.redis.add_offer_id')
         @clean_database
@@ -129,6 +128,63 @@ class Patch:
             updated_stock = Stock.query.one()
             assert updated_stock.quantity == 5
             assert updated_stock.price == 20
+
+        @clean_database
+        @patch('routes.stocks.check_have_beginning_date_been_modified', return_value=True)
+        @patch('routes.stocks.send_batch_stock_report_emails_to_users')
+        @patch('routes.stocks.send_raw_email')
+        def test_and_send_email_to_users_when_stock_changes_date(self,
+                                                                 email_function,
+                                                                 send_batch_stock_report_emails_to_users,
+                                                                 _check_have_beginning_date_been_modified,
+                                                                 app):
+            # Given
+            user = create_user()
+            user_admin = create_user(can_book_free_offers=False, email='email@test.com', is_admin=True)
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_event_offer(offerer, venue, price=0, quantity=10,
+                                                  booking_limit_datetime=datetime(2020, 4, 11),
+                                                  beginning_datetime=datetime(2020, 4, 13))
+            booking = create_booking(user=user, stock=stock, venue=venue, recommendation=None)
+            booking_cancelled = create_booking(user=user, stock=stock, venue=venue, recommendation=None,
+                                               is_cancelled=True)
+            repository.save(booking, booking_cancelled, user_admin)
+
+            # When
+            request_update = TestClient(app.test_client()).with_auth('email@test.com') \
+                .patch('/stocks/' + humanize(stock.id), json={'beginningDatetime': '2020-04-12T14:30:00Z'})
+
+            # Then
+            assert request_update.status_code == 200
+            _check_have_beginning_date_been_modified.assert_called_once()
+            send_batch_stock_report_emails_to_users.assert_called_once_with([booking], email_function)
+
+        @clean_database
+        @patch('routes.stocks.check_have_beginning_date_been_modified', return_value=True)
+        @patch('domain.user_emails.send_batch_stock_report_emails_to_users')
+        def test_and_dont_send_email_when_date_has_not_been_changed(self,
+                                                                    send_batch_stock_report_emails_to_users,
+                                                                    _check_have_beginning_date_been_modified, app):
+            # Given
+            user = create_user()
+            user_admin = create_user(can_book_free_offers=False, email='email@test.com', is_admin=True)
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            stock = create_stock_with_event_offer(offerer, venue, price=0, quantity=10,
+                                                  booking_limit_datetime=datetime(2020, 4, 11),
+                                                  beginning_datetime=datetime(2020, 4, 13))
+            booking = create_booking(user=user, stock=stock, venue=venue, recommendation=None)
+            repository.save(booking, user_admin)
+
+            # When
+            request_update = TestClient(app.test_client()).with_auth('email@test.com') \
+                .patch('/stocks/' + humanize(stock.id), json={'price': 20})
+
+            # Then
+            assert request_update.status_code == 200
+            _check_have_beginning_date_been_modified.assert_called_once()
+            send_batch_stock_report_emails_to_users.assert_not_called()
 
     class Returns400:
         @clean_database
@@ -226,7 +282,8 @@ class Patch:
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue, last_provider_id=tite_live_provider.id, last_provider=tite_live_provider)
+            offer = create_offer_with_thing_product(venue, last_provider_id=tite_live_provider.id,
+                                                    last_provider=tite_live_provider)
             stock = create_stock(quantity=10, offer=offer)
             repository.save(user, user_offerer, stock)
             humanized_stock_id = humanize(stock.id)

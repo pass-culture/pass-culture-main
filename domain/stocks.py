@@ -34,6 +34,12 @@ def delete_stock_and_cancel_bookings(stock: Stock) -> List[Booking]:
     return unused_bookings
 
 
+def check_have_beginning_date_been_modified(request_data: dict, stock: Stock):
+    print(request_data)
+    return True if 'beginningDatetime' in request_data \
+                   and request_data['beginningDatetime'] != stock.beginningDatetime else False
+
+
 class TooLateToDeleteError(ApiErrors):
     def __init__(self):
         super().__init__(

@@ -148,8 +148,8 @@ def send_batch_stock_report_emails_to_users(bookings: List[Booking], send_email:
 
 
 def send_booking_report_emails_to_users(booking, send_email):
-    email = retrieve_data_to_warn_user_after_stock_update_affecting_booking(booking)
-    send_email(data=email)
+    data = retrieve_data_to_warn_user_after_stock_update_affecting_booking(booking)
+    send_email(data=data)
 
 
 def _build_recipients_list(booking: Booking) -> str:

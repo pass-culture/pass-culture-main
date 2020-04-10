@@ -3,7 +3,9 @@ from datetime import datetime, timedelta
 import pytest
 from freezegun import freeze_time
 
-from domain.stocks import delete_stock_and_cancel_bookings, TooLateToDeleteError
+from domain.stocks import delete_stock_and_cancel_bookings, TooLateToDeleteError, \
+    check_have_beginning_date_been_modified
+from routes.serialization import as_dict
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock
 
 user1 = create_user()
@@ -124,3 +126,28 @@ class DeleteStockAndCancelBookingsTest:
 
                     # then
                     assert all(map(lambda b: not b.isCancelled, bookings))
+
+
+class CheckDateHaveBeenModifiedTest:
+    def setup_method(self):
+        self.stock = create_stock(beginning_datetime=datetime(2020, 4, 12, 12, 0, 0))
+
+    def test_should_return_true_when_beginningdatetime_have_been_changed(self):
+        # Given
+        request_data = as_dict({'beginningDatetime': '2020-04-14T14:30:00Z'})
+
+        # When
+        check_date = check_have_beginning_date_been_modified(request_data, self.stock)
+
+        # Then
+        assert check_date is True
+
+    def test_should_return_false_when_beginningdatetime_have_not_been_changed(self):
+        # Given
+        request_data = as_dict({'price': '5'})
+
+        # When
+        check_date = check_have_beginning_date_been_modified(request_data, self.stock)
+
+        # Then
+        assert check_date is False
