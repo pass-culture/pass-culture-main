@@ -132,7 +132,7 @@ class SaveBeneficiaryImportWithStatusTest:
 
         # then
         beneficiary_import = BeneficiaryImport.query.filter_by(demarcheSimplifieeApplicationId=123).first()
-        assert beneficiary_import.procedureId == 145236
+        assert beneficiary_import.demarcheSimplifieeProcedureId == 145236
 
     @clean_database
     def test_a_status_is_set_on_an_existing_import(self, app):

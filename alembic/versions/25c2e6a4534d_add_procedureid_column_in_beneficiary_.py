@@ -17,8 +17,8 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column('beneficiary_import', sa.Column('procedureId', sa.BigInteger(), nullable=True))
+    op.add_column('beneficiary_import', sa.Column('demarcheSimplifieeProcedureId', sa.Integer(), nullable=True))
 
 
 def downgrade():
-    op.drop_column('beneficiary_import', 'procedureId')
+    op.drop_column('beneficiary_import', 'demarcheSimplifieeProcedureId')

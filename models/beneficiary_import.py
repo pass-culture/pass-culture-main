@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import BigInteger, Column, ForeignKey, desc
+from sqlalchemy import BigInteger, Column, ForeignKey, desc, Integer
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
@@ -21,7 +21,7 @@ class BeneficiaryImport(PcObject, Model):
                            index=True,
                            nullable=True)
 
-    procedureId = Column(BigInteger, nullable=True)
+    demarcheSimplifieeProcedureId = Column(Integer, nullable=True)
 
     beneficiary = relationship('User',
                                foreign_keys=[beneficiaryId],

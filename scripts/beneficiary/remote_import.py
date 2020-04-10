@@ -71,7 +71,6 @@ def process_beneficiary_application(
         procedure_id: int,
         find_duplicate_users: Callable[..., List[User]] = find_by_civility
 ) -> None:
-    print(type(new_beneficiaries))
     duplicate_users = find_duplicate_users(
         information['first_name'],
         information['last_name'],
