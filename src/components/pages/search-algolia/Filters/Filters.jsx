@@ -154,10 +154,13 @@ export class Filters extends PureComponent {
   }
 
   buildNumberOfResults = () => {
-    const { offers } = this.state
-    const { nbHits } = offers
-    const results = nbHits < 1000 ? `${nbHits}` : `999+`
+    const { offers: { nbHits } } = this.state
 
+    if (nbHits === 0) {
+      return 'Aucun résultat'
+    }
+
+    const results = nbHits < 1000 ? `${nbHits}` : `999+`
     return `Afficher les ${results} résultats`
   }
 
@@ -223,6 +226,7 @@ export class Filters extends PureComponent {
       location: { search = '' },
     } = history
     const { filters, offers } = this.state
+    const { nbHits } = offers
     const updatedFilters = { ...filters }
     updatedFilters.offerCategories = this.getSelectedCategories()
 
@@ -320,7 +324,8 @@ export class Filters extends PureComponent {
   }
 
   render() {
-    const { areCategoriesVisible, filters } = this.state
+    const { areCategoriesVisible, filters, offers } = this.state
+    const { nbHits } = offers
     const {
       aroundRadius,
       isSearchAroundMe,
@@ -544,6 +549,7 @@ export class Filters extends PureComponent {
             <div className="sf-button-wrapper">
               <button
                 className="sf-button"
+                disabled={nbHits === 0}
                 onClick={this.handleFilterOffers}
                 type="button"
               >

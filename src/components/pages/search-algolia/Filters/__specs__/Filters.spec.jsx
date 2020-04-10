@@ -108,7 +108,8 @@ describe('components | Filters', () => {
         it('should trigger search and redirect to filters page when clicking on "Partout" criterion', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
+          })
           props.history.location.pathname = '/recherche-offres/resultats/filtres/localisation'
           props.isUserAllowedToSelectCriterion.mockReturnValue(true)
           props.query.parse.mockReturnValue({
@@ -168,7 +169,8 @@ describe('components | Filters', () => {
         it('should trigger search and redirect to filters page when clicking on "Autour de moi" criterion', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
+          })
           props.history.location.pathname = '/recherche-offres/resultats/filtres/localisation'
           props.initialFilters = {
             aroundRadius: 50,
@@ -359,6 +361,47 @@ describe('components | Filters', () => {
         })
       })
 
+      it('should not allow click on display results button when no results', async () => {
+        // given
+        props.history.location.pathname = '/recherche-offres/filtres'
+        props.query.parse.mockReturnValue({
+          'mots-cles': 'librairies',
+        })
+        props.offers = {
+          hits: [{}, {}],
+          nbHits: 2,
+          page: 0
+        }
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [],
+              nbHits: 0,
+              page: 0,
+            })
+          })
+        )
+        const wrapper = shallow(<Filters {...props} />)
+        const offerIsDuoFilter = wrapper
+          .find('[data-test="sf-offer-duo-wrapper-test"]')
+          .find(FilterToggle)
+        await offerIsDuoFilter.simulate('change', {
+          target: {
+            name: 'offerIsDuo',
+            checked: true,
+          },
+        })
+        const resultsButton = wrapper.find('.sf-button')
+
+        // when
+        resultsButton.simulate('click')
+
+        // then
+        expect(props.updateFilters).toHaveBeenCalledTimes(1)
+        expect(props.updateFilteredOffers).toHaveBeenCalledTimes(1)
+        expect(resultsButton.text()).toStrictEqual('Aucun résultat')
+      })
+
       describe('geolocation filter', () => {
         it('should display a "Localisation" title for geolocation filter', () => {
           // given
@@ -535,7 +578,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const title = wrapper.findWhere(node => node.text() === "Type d'offres").first()
+          const title = wrapper.findWhere(node => node.text() === 'Type d\'offres').first()
           expect(title).toHaveLength(1)
         })
 
@@ -1130,7 +1173,8 @@ describe('components | Filters', () => {
           it('should reset filters and trigger search to Algolia with given category', () => {
             // given
             props.history = createBrowserHistory()
-            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
+            })
             props.history.location.pathname = '/recherche-offres/resultats/filtres'
             props.initialFilters = {
               aroundRadius: 0,
@@ -1197,7 +1241,8 @@ describe('components | Filters', () => {
           it('should reset filters and trigger search to Algolia with given categories', () => {
             // given
             props.history = createBrowserHistory()
-            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
+            })
             props.history.location.pathname = '/recherche-offres/resultats/filtres'
             props.initialFilters = {
               isSearchAroundMe: true,
