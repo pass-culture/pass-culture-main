@@ -1,26 +1,36 @@
-import React from 'react'
-import BankInformationLegacy from './BankInformationLegacy'
+import React, { Fragment } from 'react'
 import { Offerer } from '../Offerer'
 import PropTypes from 'prop-types'
 import { ROOT_PATH } from '../../../../../utils/config'
+import { BankInformationLegacy } from './BankInformationLegacy'
 
 const BankInformation = ({ offerer }) => (
-  <div className="section">
+  <div className="section bank-information">
     <h2 className="main-list-title">
       {'Coordonnées bancaires de la structure'}
     </h2>
 
     {offerer.areBankInformationProvided ? (
-      <div>
-        <div>
-          <span>
-            {'BIC : '}
-          </span>
-          <span>
-            {offerer.bic}
-          </span>
-        </div>
-        <div>
+      <Fragment>
+        <a
+          className="bi-external-link bi-external-link--mod-topright"
+          href="google.com"
+          target="_blank"
+        >
+          <img
+            alt="external-site"
+            src={`${ROOT_PATH}/icons/ico-external-site.svg`}
+          />
+          <b>
+            {'Modifier'}
+          </b>
+        </a>
+        <p className="bi-subtitle">
+          {
+            'Les coordonnées bancaires ci dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :'
+          }
+        </p>
+        <div className="bi-field">
           <span>
             {'IBAN : '}
           </span>
@@ -28,13 +38,21 @@ const BankInformation = ({ offerer }) => (
             {offerer.iban}
           </span>
         </div>
-      </div>
+        <div className="bi-field">
+          <span>
+            {'BIC : '}
+          </span>
+          <span>
+            {offerer.bic}
+          </span>
+        </div>
+      </Fragment>
     ) : (
-      <div>
-        <p>
+      <Fragment>
+        <p className="bi-subtitle">
           {'Aucune coordonnée bancaire renseignée'}
         </p>
-        <div>
+        <div className="bi-banner">
           <div>
             <p>
               {'Renseigner vos coordonnées bancaires pour être remboursé de vos offres éligibles'}
@@ -46,6 +64,7 @@ const BankInformation = ({ offerer }) => (
                 src={`${ROOT_PATH}/icons/ico-external-site.svg`}
               />
               <a
+                className="bi-external-link"
                 href="google.com"
                 target="_blank"
               >
@@ -54,7 +73,7 @@ const BankInformation = ({ offerer }) => (
             </p>
           </div>
         </div>
-      </div>
+      </Fragment>
     )}
   </div>
 )

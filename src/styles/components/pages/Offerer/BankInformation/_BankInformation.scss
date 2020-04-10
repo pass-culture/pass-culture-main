@@ -1,0 +1,43 @@
+.bank-information {
+  position: relative;
+
+  .bi-subtitle {
+    color: $grey;
+    margin: 16px 0;
+  }
+
+  .bi-field {
+    margin: 10px 0;
+    > :first-child {
+      color: $grey;
+      margin-right: 5px;
+    }
+  }
+
+  .bi-banner {
+    background: #ffea00;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    padding: 12px 15px;
+
+    > * + * {
+      margin-top: 5px;
+    }
+  }
+
+  .bi-external-link {
+    > img {
+      vertical-align: top;
+      margin-right: 5px;
+    }
+    > b {
+      vertical-align: sub;
+    }
+
+    &.bi-external-link--mod-topright {
+      position: absolute;
+      top: -6px;
+      right: 0;
+    }
+  }
+}
