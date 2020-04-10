@@ -1,10 +1,42 @@
 from typing import List
 
 from flask import Flask
+from sqlalchemy import func
+from sqlalchemy.orm import aliased
 
 from connectors import redis
 from models import Stock, Booking
 from repository import repository
+
+
+def update_stock_quantity_for_negative_remaining_quantity(application: Flask) -> None:
+    stocks = _get_stocks_with_negative_remaining_quantity()
+    for stock in stocks:
+        current_quantity = stock.quantity
+        remaining_quantity_before_new_constraint = _get_old_remaining_quantity(stock)
+        _update_stock_quantity(stock, remaining_quantity_before_new_constraint, application)
+        new_quantity = stock.quantity
+        print(f"Update on stock[{stock.id}], {current_quantity} => {new_quantity}")
+
+
+def _get_stocks_with_negative_remaining_quantity() -> List[Stock]:
+    stock_alias = aliased(Stock)
+    booking_subquery = Booking.query \
+        .filter(Booking.stockId == stock_alias.id) \
+        .filter(Booking.isCancelled == False) \
+        .with_entities(func.sum(Booking.quantity).label('remainingQuantity'),
+                       Booking.stockId.label('stockId')) \
+        .group_by(Booking.stockId) \
+        .subquery()
+
+    stocks = Stock.query \
+        .join(booking_subquery) \
+        .filter(Stock.id == booking_subquery.c.stockId) \
+        .filter(Stock.hasBeenMigrated == None) \
+        .filter(booking_subquery.c.remainingQuantity > Stock.quantity) \
+        .all()
+
+    return stocks
 
 
 def update_stock_quantity_with_new_constraint(application: Flask, page_size=100) -> None:

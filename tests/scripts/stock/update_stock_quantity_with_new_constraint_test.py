@@ -5,7 +5,8 @@ from models import Stock
 from models.db import db
 from repository import repository
 from scripts.stock.update_stock_quantity_with_new_constraint import update_stock_quantity_with_new_constraint, \
-    _get_old_remaining_quantity, _get_stocks_to_check
+    _get_old_remaining_quantity, _get_stocks_to_check, _get_stocks_with_negative_remaining_quantity, \
+    update_stock_quantity_for_negative_remaining_quantity
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_stock, create_booking, \
     create_user
@@ -307,6 +308,109 @@ class GetStocksToCheckTest:
 
         # When
         stocks = _get_stocks_to_check()
+
+        # Then
+        assert stocks == []
+
+
+class UpdateStockQuantityForNegativeRemainingQuantityTest:
+    @staticmethod
+    def setup_method():
+        db.engine.execute("ALTER TABLE booking DISABLE TRIGGER ALL;")
+
+    @staticmethod
+    def teardown_method():
+        db.engine.execute("ALTER TABLE booking ENABLE TRIGGER ALL;")
+
+    @clean_database
+    def test_should_adjust_quantity_to_keep_old_remaining_quantity(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(quantity=1, date_modified=datetime.utcnow(), offer=offer, price=0)
+        booking = create_booking(user, stock=stock, quantity=6)
+        repository.save(booking)
+
+        mock_application = MagicMock()
+        mock_application.redis_client = MagicMock()
+
+        # When
+        update_stock_quantity_for_negative_remaining_quantity(mock_application)
+
+        # Then
+        existing_stock = Stock.query.first()
+        assert existing_stock.remainingQuantity == 0
+        assert existing_stock.quantity == 6
+        assert existing_stock.hasBeenMigrated
+
+    @clean_database
+    def test_should_not_update_stock_when_remaining_quantity_is_positive(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(quantity=8, date_modified=datetime.utcnow(), offer=offer, price=0)
+        booking = create_booking(user, stock=stock, quantity=6)
+        booking_bis = create_booking(user, stock=stock, quantity=4, is_cancelled=True)
+        repository.save(booking, booking_bis)
+
+        mock_application = MagicMock()
+        mock_application.redis_client = MagicMock()
+
+        # When
+        update_stock_quantity_for_negative_remaining_quantity(mock_application)
+
+        # Then
+        existing_stock = Stock.query.first()
+        assert existing_stock.remainingQuantity == 2
+        assert existing_stock.quantity == 8
+        assert not existing_stock.hasBeenMigrated
+
+
+class GetStocksWithNegativeRemainingQuantityTest:
+    @staticmethod
+    def setup_method():
+        db.engine.execute("ALTER TABLE booking DISABLE TRIGGER ALL;")
+
+    @staticmethod
+    def teardown_method():
+        db.engine.execute("ALTER TABLE booking ENABLE TRIGGER ALL;")
+
+    @clean_database
+    def test_should_return_stock_with_negative_remaining_quantity(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        stock = create_stock(quantity=1, date_modified=datetime.utcnow(), offer=offer, price=0)
+        booking = create_booking(user, stock=stock, quantity=2, is_used=True, date_used=yesterday)
+        booking1 = create_booking(user, stock=stock, quantity=2, is_used=False)
+        repository.save(booking, booking1)
+
+        # When
+        stocks = _get_stocks_with_negative_remaining_quantity()
+
+        # Then
+        assert stocks == [stock]
+
+    @clean_database
+    def test_should_not_return_stock_with_positive_remaining_quantity(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(quantity=5, offer=offer, price=0)
+        booking = create_booking(user, stock=stock, quantity=2)
+        repository.save(booking)
+
+        # When
+        stocks = _get_stocks_with_negative_remaining_quantity()
 
         # Then
         assert stocks == []
