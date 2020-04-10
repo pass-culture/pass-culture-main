@@ -8,7 +8,7 @@ from scripts.deactivate_offers_during_quatantine.deactivate_offers import \
     deactivate_offers_with_max_stock_date_between_today_and_end_of_quarantine
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_stock
-from tests.model_creators.specific_creators import create_offer_with_event_product
+from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
 
 FIRST_DAY_AFTER_QUARANTINE = datetime(2020, 4, 16)
 TODAY = datetime(2020, 4, 10)
@@ -33,7 +33,6 @@ class GetOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
         # Then
         assert offers == []
 
-
     @clean_database
     def test_should_get_offer_with_a_date_between_today_and_15_04(self, app):
         # Given
@@ -49,7 +48,6 @@ class GetOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
 
         # Then
         assert offers == [offer]
-
 
     @clean_database
     def test_should_not_get_offer_with_a_date_after_15_04(self, app):
@@ -67,7 +65,6 @@ class GetOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
         # Then
         assert offers == []
 
-
     @clean_database
     def test_should_not_get_offer_with_a_date_between_today_and_the_15_04_and_another_after_15_04(self, app):
         # Given
@@ -84,6 +81,23 @@ class GetOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
 
         # Then
         assert offers == []
+
+    @clean_database
+    def test_should_not_get_offers_on_things(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, beginning_datetime=None)
+
+        repository.save(stock)
+
+        # When
+        offers = get_offers_with_max_stock_date_between_today_and_end_of_quarantine(FIRST_DAY_AFTER_QUARANTINE, TODAY)
+
+        # Then
+        assert offers == []
+
 
 class DeactivateOffersTest:
     @clean_database
