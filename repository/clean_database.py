@@ -25,7 +25,8 @@ from models import ApiKey, \
     Criterion, \
     AllocineVenueProviderPriceRule, \
     AllocinePivot, VenueProvider, \
-    IrisFrance, IrisVenues, VenueType
+    IrisFrance, IrisVenues, \
+    SeenOffers, VenueType
 
 from models.activity import load_activity
 from models.allocine_venue_provider import AllocineVenueProvider
@@ -51,6 +52,7 @@ def clean_all_database(*args, **kwargs):
     Mediation.query.delete()
     OfferCriterion.query.delete()
     Criterion.query.delete()
+    SeenOffers.query.delete()
     Offer.query.delete()
     Product.query.delete()
     BankInformation.query.delete()
