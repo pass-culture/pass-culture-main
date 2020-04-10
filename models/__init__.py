@@ -33,6 +33,7 @@ from models.product import BookFormat, Product
 from models.providable_mixin import ProvidableMixin
 from models.provider import Provider
 from models.recommendation import Recommendation
+from models.seen_offers import SeenOffers
 from models.stock import Stock
 from models.user import User
 from models.user_offerer import RightsType, UserOfferer
@@ -93,7 +94,8 @@ __all__ = (
     'User',
     'UserSession',
     'Venue',
-    'VenueType'
+    'VenueType',
+    'SeenOffers'
 )
 
 # Order matters
@@ -130,7 +132,8 @@ models = (
     Payment,
     PaymentStatus,
     IrisFrance,
-    IrisVenues
+    IrisVenues,
+    SeenOffers
 )
 
 materialized_views = (
