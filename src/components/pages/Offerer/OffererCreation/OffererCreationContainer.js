@@ -34,7 +34,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
     dispatch(closeNotification())
   },
   redirectToOfferersList: () => {
-    ownProps.history.push('/structures')
+    ownProps.history.replace('/structures')
   },
 })
 
