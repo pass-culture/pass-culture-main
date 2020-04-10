@@ -1,0 +1,587 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | Offerer | BankInformation  should match snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <BankInformation
+    offerer={
+      OffererClass {
+        "address": "fake address",
+        "adminUserOfferer": undefined,
+        "areBankInformationProvided": [Function],
+        "bic": "ABC",
+        "iban": "DEF",
+        "id": "AA",
+        "isIdOrNameDefined": [Function],
+        "name": "fake offerer name",
+        "siren": "",
+      }
+    }
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "host",
+    "props": Object {
+      "children": Array [
+        <h2
+          className="main-list-title"
+        >
+          Coordonnées bancaires de la structure
+        </h2>,
+        <React.Fragment>
+          <a
+            className="bi-external-link bi-external-link--mod-topright"
+            href="google.com"
+            target="_blank"
+          >
+            <img
+              alt="external-site"
+              src="http://localhost/icons/ico-external-site.svg"
+            />
+            <b>
+              Modifier
+            </b>
+          </a>
+          <p
+            className="bi-subtitle"
+          >
+            Les coordonnées bancaires ci dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :
+          </p>
+          <div
+            className="bi-field"
+          >
+            <span>
+              IBAN : 
+            </span>
+            <span>
+              DEF
+            </span>
+          </div>
+          <div
+            className="bi-field"
+          >
+            <span>
+              BIC : 
+            </span>
+            <span>
+              ABC
+            </span>
+          </div>
+        </React.Fragment>,
+      ],
+      "className": "bank-information",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Coordonnées bancaires de la structure",
+          "className": "main-list-title",
+        },
+        "ref": null,
+        "rendered": "Coordonnées bancaires de la structure",
+        "type": "h2",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "children": Array [
+            <a
+              className="bi-external-link bi-external-link--mod-topright"
+              href="google.com"
+              target="_blank"
+            >
+              <img
+                alt="external-site"
+                src="http://localhost/icons/ico-external-site.svg"
+              />
+              <b>
+                Modifier
+              </b>
+            </a>,
+            <p
+              className="bi-subtitle"
+            >
+              Les coordonnées bancaires ci dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :
+            </p>,
+            <div
+              className="bi-field"
+            >
+              <span>
+                IBAN : 
+              </span>
+              <span>
+                DEF
+              </span>
+            </div>,
+            <div
+              className="bi-field"
+            >
+              <span>
+                BIC : 
+              </span>
+              <span>
+                ABC
+              </span>
+            </div>,
+          ],
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <img
+                  alt="external-site"
+                  src="http://localhost/icons/ico-external-site.svg"
+                />,
+                <b>
+                  Modifier
+                </b>,
+              ],
+              "className": "bi-external-link bi-external-link--mod-topright",
+              "href": "google.com",
+              "target": "_blank",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "alt": "external-site",
+                  "src": "http://localhost/icons/ico-external-site.svg",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": "img",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Modifier",
+                },
+                "ref": null,
+                "rendered": "Modifier",
+                "type": "b",
+              },
+            ],
+            "type": "a",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Les coordonnées bancaires ci dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :",
+              "className": "bi-subtitle",
+            },
+            "ref": null,
+            "rendered": "Les coordonnées bancaires ci dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :",
+            "type": "p",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <span>
+                  IBAN : 
+                </span>,
+                <span>
+                  DEF
+                </span>,
+              ],
+              "className": "bi-field",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "IBAN : ",
+                },
+                "ref": null,
+                "rendered": "IBAN : ",
+                "type": "span",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "DEF",
+                },
+                "ref": null,
+                "rendered": "DEF",
+                "type": "span",
+              },
+            ],
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <span>
+                  BIC : 
+                </span>,
+                <span>
+                  ABC
+                </span>,
+              ],
+              "className": "bi-field",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "BIC : ",
+                },
+                "ref": null,
+                "rendered": "BIC : ",
+                "type": "span",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "ABC",
+                },
+                "ref": null,
+                "rendered": "ABC",
+                "type": "span",
+              },
+            ],
+            "type": "div",
+          },
+        ],
+        "type": Symbol(react.fragment),
+      },
+    ],
+    "type": "div",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          <h2
+            className="main-list-title"
+          >
+            Coordonnées bancaires de la structure
+          </h2>,
+          <React.Fragment>
+            <a
+              className="bi-external-link bi-external-link--mod-topright"
+              href="google.com"
+              target="_blank"
+            >
+              <img
+                alt="external-site"
+                src="http://localhost/icons/ico-external-site.svg"
+              />
+              <b>
+                Modifier
+              </b>
+            </a>
+            <p
+              className="bi-subtitle"
+            >
+              Les coordonnées bancaires ci dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :
+            </p>
+            <div
+              className="bi-field"
+            >
+              <span>
+                IBAN : 
+              </span>
+              <span>
+                DEF
+              </span>
+            </div>
+            <div
+              className="bi-field"
+            >
+              <span>
+                BIC : 
+              </span>
+              <span>
+                ABC
+              </span>
+            </div>
+          </React.Fragment>,
+        ],
+        "className": "bank-information",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Coordonnées bancaires de la structure",
+            "className": "main-list-title",
+          },
+          "ref": null,
+          "rendered": "Coordonnées bancaires de la structure",
+          "type": "h2",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "children": Array [
+              <a
+                className="bi-external-link bi-external-link--mod-topright"
+                href="google.com"
+                target="_blank"
+              >
+                <img
+                  alt="external-site"
+                  src="http://localhost/icons/ico-external-site.svg"
+                />
+                <b>
+                  Modifier
+                </b>
+              </a>,
+              <p
+                className="bi-subtitle"
+              >
+                Les coordonnées bancaires ci dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :
+              </p>,
+              <div
+                className="bi-field"
+              >
+                <span>
+                  IBAN : 
+                </span>
+                <span>
+                  DEF
+                </span>
+              </div>,
+              <div
+                className="bi-field"
+              >
+                <span>
+                  BIC : 
+                </span>
+                <span>
+                  ABC
+                </span>
+              </div>,
+            ],
+          },
+          "ref": null,
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <img
+                    alt="external-site"
+                    src="http://localhost/icons/ico-external-site.svg"
+                  />,
+                  <b>
+                    Modifier
+                  </b>,
+                ],
+                "className": "bi-external-link bi-external-link--mod-topright",
+                "href": "google.com",
+                "target": "_blank",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "alt": "external-site",
+                    "src": "http://localhost/icons/ico-external-site.svg",
+                  },
+                  "ref": null,
+                  "rendered": null,
+                  "type": "img",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Modifier",
+                  },
+                  "ref": null,
+                  "rendered": "Modifier",
+                  "type": "b",
+                },
+              ],
+              "type": "a",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Les coordonnées bancaires ci dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :",
+                "className": "bi-subtitle",
+              },
+              "ref": null,
+              "rendered": "Les coordonnées bancaires ci dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :",
+              "type": "p",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <span>
+                    IBAN : 
+                  </span>,
+                  <span>
+                    DEF
+                  </span>,
+                ],
+                "className": "bi-field",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "IBAN : ",
+                  },
+                  "ref": null,
+                  "rendered": "IBAN : ",
+                  "type": "span",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "DEF",
+                  },
+                  "ref": null,
+                  "rendered": "DEF",
+                  "type": "span",
+                },
+              ],
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <span>
+                    BIC : 
+                  </span>,
+                  <span>
+                    ABC
+                  </span>,
+                ],
+                "className": "bi-field",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "BIC : ",
+                  },
+                  "ref": null,
+                  "rendered": "BIC : ",
+                  "type": "span",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "ABC",
+                  },
+                  "ref": null,
+                  "rendered": "ABC",
+                  "type": "span",
+                },
+              ],
+              "type": "div",
+            },
+          ],
+          "type": Symbol(react.fragment),
+        },
+      ],
+      "type": "div",
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+}
+`;

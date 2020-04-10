@@ -1,8 +1,10 @@
-import React, { Fragment } from 'react'
 import { Offerer } from '../Offerer'
 import PropTypes from 'prop-types'
-import { ROOT_PATH } from '../../../../../utils/config'
+import { ROOT_PATH, DMS_RIB_OFFERER_PROCEDURE_PATH } from '../../../../../utils/config'
 import { BankInformationLegacy } from './BankInformationLegacy'
+import React, { Fragment } from "react"
+
+const DMS_LINK = `https://www.demarches-simplifiees.fr/commencer/${DMS_RIB_OFFERER_PROCEDURE_PATH}`
 
 const BankInformation = ({ offerer }) => (
   <div className="section bank-information">
@@ -14,7 +16,8 @@ const BankInformation = ({ offerer }) => (
       <Fragment>
         <a
           className="bi-external-link bi-external-link--mod-topright"
-          href="google.com"
+          href={DMS_LINK}
+          rel="noopener noreferrer"
           target="_blank"
         >
           <img
@@ -53,25 +56,26 @@ const BankInformation = ({ offerer }) => (
           {'Aucune coordonnée bancaire renseignée'}
         </p>
         <div className="bi-banner">
-          <div>
-            <p>
-              {'Renseigner vos coordonnées bancaires pour être remboursé de vos offres éligibles'}
-            </p>
+          <p>
+            {'Renseigner vos coordonnées bancaires pour être remboursé de vos offres éligibles'}
+          </p>
 
-            <p>
+          <p>
+            <a
+              className="bi-external-link"
+              href={DMS_LINK}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
               <img
                 alt="external-site"
                 src={`${ROOT_PATH}/icons/ico-external-site.svg`}
               />
-              <a
-                className="bi-external-link"
-                href="google.com"
-                target="_blank"
-              >
+              <b>
                 {'Renseigner les coordonnées bancaires de la structure'}
-              </a>
-            </p>
-          </div>
+              </b>
+            </a>
+          </p>
         </div>
       </Fragment>
     )}

@@ -26,6 +26,7 @@ export const {
   SENTRY_SERVER_URL_FOR_PRO,
   URL_FOR_MAINTENANCE,
   MAINTENANCE_PAGE_AVAILABLE,
+  DMS_RIB_OFFERER_PROCEDURE_PATH,
 } = process.env
 
 function getMobileOperatingSystem() {
@@ -76,11 +77,11 @@ if (typeof window !== 'undefined' && window.cordova) {
     // CALC_ROOT_PATH = window.location.href.split('/').slice(0, 10).join('/')
     CALC_ROOT_PATH = window.location.href.match(/file:\/\/(.*)\/www/)[0]
   }
-  window.addEventListener('keyboardWillShow', function() {
+  window.addEventListener('keyboardWillShow', function () {
     console.log('Keyboard show')
     document.body.className += ' softkeyboard'
   })
-  window.addEventListener('keyboardWillHide', function() {
+  window.addEventListener('keyboardWillHide', function () {
     console.log('Keyboard Hide')
     document.body.className = document.body.className
       .split(' ')
