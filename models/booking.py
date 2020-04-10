@@ -228,7 +228,9 @@ Booking.trig_ddl = """
     $$ LANGUAGE plpgsql;
 
     DROP TRIGGER IF EXISTS booking_update ON booking;
-    CREATE CONSTRAINT TRIGGER booking_update AFTER INSERT OR UPDATE
+    CREATE CONSTRAINT TRIGGER booking_update 
+    AFTER INSERT 
+    OR UPDATE OF quantity, amount, "isCancelled", "isUsed", "userId"  
     ON booking
     FOR EACH ROW EXECUTE PROCEDURE check_booking()
     """
