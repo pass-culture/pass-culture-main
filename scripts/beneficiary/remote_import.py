@@ -29,7 +29,7 @@ def run(
         already_imported: Callable[..., bool] = is_already_imported,
         already_existing_user: Callable[..., User] = find_user_by_email
 ) -> None:
-    procedure_id = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID', None)
+    procedure_id = int(os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID', None))
     logger.info('[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées')
     error_messages = []
     new_beneficiaries = []

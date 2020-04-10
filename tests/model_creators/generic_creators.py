@@ -1,24 +1,26 @@
+import os
 from datetime import datetime, timedelta
 from hashlib import sha256
 from typing import Optional
 
-
 from geoalchemy2.shape import from_shape
 from shapely.geometry import Polygon
 
+from domain.payments import PaymentDetails
 from local_providers.price_rule import PriceRule
-from models import ApiKey, BankInformation, BeneficiaryImport, \
-    BeneficiaryImportStatus, Booking, Criterion, Deposit, \
-    Email, Favorite, ImportStatus, Mediation, Offer, Offerer, \
-    Payment, PaymentMessage, PaymentStatus, Provider, \
-    Recommendation, RightsType, Stock, ThingType, User, \
-    UserOfferer, Venue, AllocineVenueProviderPriceRule, AllocinePivot, VenueProvider, IrisFrance, IrisVenues
+from models import AllocinePivot, AllocineVenueProviderPriceRule, ApiKey, \
+    BankInformation, BeneficiaryImport, BeneficiaryImportStatus, Booking, \
+    Criterion, Deposit, Email, Favorite, ImportStatus, IrisFrance, IrisVenues, \
+    Mediation, Offer, Offerer, Payment, PaymentMessage, PaymentStatus, \
+    Provider, Recommendation, RightsType, Stock, ThingType, User, UserOfferer, \
+    Venue, VenueProvider
 from models.allocine_venue_provider import AllocineVenueProvider
 from models.email import EmailStatus
-from domain.payments import PaymentDetails
 from models.payment_status import TransactionStatus
-from scripts.iris.import_iris import WGS_SPATIAL_REFERENCE_IDENTIFIER, create_centroid_from_polygon
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_stock_with_thing_offer
+from scripts.iris.import_iris import WGS_SPATIAL_REFERENCE_IDENTIFIER, \
+    create_centroid_from_polygon
+from tests.model_creators.specific_creators import \
+    create_offer_with_thing_product, create_stock_with_thing_offer
 from utils.token import random_token
 
 API_URL = 'http://localhost:5000'
@@ -26,6 +28,7 @@ DEFAULT_USER = User()
 PLAIN_DEFAULT_TESTING_PASSWORD = 'user@AZERTY123'
 DEFAULT_USER.setPassword(PLAIN_DEFAULT_TESTING_PASSWORD)
 HASHED_DEFAULT_TESTING_PASSWORD = DEFAULT_USER.password
+DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID = int(os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID', 88))
 
 
 def create_api_key(idx: int = None,
@@ -64,6 +67,7 @@ def create_bank_information(application_id: int = 1,
 
 def create_beneficiary_import(date: datetime = datetime.utcnow(),
                               demarche_simplifiee_application_id: int = 99,
+                              demarche_simplifiee_procedure_id: int = DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID,
                               detail: str = None,
                               idx: int = None,
                               status: ImportStatus = ImportStatus.CREATED,
@@ -77,6 +81,7 @@ def create_beneficiary_import(date: datetime = datetime.utcnow(),
     beneficiary_import.id = idx
     beneficiary_import.beneficiary = user
     beneficiary_import.demarcheSimplifieeApplicationId = demarche_simplifiee_application_id
+    beneficiary_import.demarcheSimplifieeProcedureId = demarche_simplifiee_procedure_id
     beneficiary_import.statuses = [import_status]
 
     return beneficiary_import

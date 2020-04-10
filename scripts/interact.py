@@ -22,6 +22,7 @@ from recommendations_engine import *
 from local_providers import *
 from models import *
 from repository.offer_queries import *
+from repository.user_queries import *
 from sandboxes import *
 from sqlalchemy import *
 from utils.config import *
@@ -32,4 +33,5 @@ from utils.import_module import *
 from utils.includes import *
 from utils.logger import *
 from utils.token import *
+from scripts.beneficiary import remote_import
 from scripts.booking import *
