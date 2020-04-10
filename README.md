@@ -196,7 +196,7 @@ La politique de tagging de version est la suivante :
 Pour poser un tag sur une version :
 
 S'assurer d'avoir bien commité ses fichiers.
-Checkout de master sur pass-culture-main, pass-culture-api, pass-culture-webapp et pass-culture-pro. 
+Checkout de master sur pass-culture-main, pass-culture-api, pass-culture-webapp et pass-culture-pro.
 
 ```bash
 pc -t I.P.S tag
@@ -204,15 +204,15 @@ pc -t I.P.S tag
 
 La seule branche devant être taguée de cette façon est master. Pour les hotfixes, voir plus bas.
 
-Le fichier version.txt de l'API est mis à jours ainsi que le package.json de Webapp et Pro. 
-Le tag est posé sur les branches locales checkout (de préférence master): Api, Webapp et Pro. 
-Elles sont ensuite poussées sur le repository distant. 
+Le fichier version.txt de l'API est mis à jours ainsi que le package.json de Webapp et Pro.
+Le tag est posé sur les branches locales checkout (de préférence master): Api, Webapp et Pro.
+Elles sont ensuite poussées sur le repository distant.
 Les tests sont enfin joués et on déploie sur Testing.
 
 ## Hotfixes
 
 Pour tagguer les hotfixes, commencer par se placer sur la dernière version déployée en production ou en staging à
-l'aide d'un ```git checkout vI.P.S``` sur chacun de projets. En effet nous voulons déployer uniquement ce qui est en Prod + nos commits de hotfix. 
+l'aide d'un ```git checkout vI.P.S``` sur chacun de projets. En effet nous voulons déployer uniquement ce qui est en Prod + nos commits de hotfix.
 
 Une fois le tag checked-out, commiter le fix du bug puis lancer la commande de création de branches de hotfixes et de tag pour chacun des projets :
 
@@ -221,14 +221,14 @@ Une fois le tag checked-out, commiter le fix du bug puis lancer la commande de c
 Une fois les tests de la CI passés, on peut déployer ce tag.
 
 Le tag déployé, il faut reporter les commits des hotfixs sur les branches masters des différents projets
-pour qu'il soient présent lors des prochaines livraison, sinon il seront écrasés. 
+pour qu'il soient présent lors des prochaines livraison, sinon il seront écrasés.
 Il faut aussi penser à supprimer les branches de hotfixs.
 
 ## Deploy
 
 Pré-requis : installer [jq](https://stedolan.github.io/jq/download/)
 
-En premier lieu: 
+En premier lieu:
  - bien vérifier qu'on a, en local, **main** et tous les submodules **(api, pro, webapp)** à jour par rapport à **master**
  - de là on peut poser un tag `pc -t I.P.S. tag` (pour savoir le tag précédent, il suffit de faire un `git tag` dans pass-culture-main)
  - se rendre sur CircleCI pour vérifier qu'il y a un job lancé par submodule **(api, pro, webapp)**, ainsi que **main** qui a également lancé autant de jobs qu'il y a de submodules,
@@ -281,7 +281,7 @@ avec `x.x.x`, étant la nouvelle version déployée sur pass-culture-shared.
 pc -e <testing|staging|production> psql
 ```
 
-ou 
+ou
 
 ```bash
 pc -e <testing|staging|production> pgcli
@@ -439,69 +439,6 @@ docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt -v ~/pass-cult
 Puis mettre dans le crontab pour le renouvellement :
 ```bash
 docker run -it --rm -v ~/pass-culture-main/certs:/etc/letsencrypt -v ~/pass-culture-main/certs-data:/data/letsencrypt deliverous/certbot renew --verbose --webroot --webroot-path=/data/letsencrypt
-```
-
-## Version mobile (outdated, but can be useful someday)
-
-### Emuler avec Cordova
-
-```bash
-yarn global add cordova-cli
-```
-
-```bash
-cd webapp && cordova run ios
-```
-
-<!--
-iPhone-5s, 11.2
-iPhone-6, 11.2
-iPhone-6-Plus, 11.2
-iPhone-6s, 11.2
-iPhone-6s-Plus, 11.2
-iPhone-7, 11.2
-iPhone-7-Plus, 11.2
-iPhone-SE, 11.2
-iPad-Air, 11.2
-iPad-Air-2, 11.2
-iPad--5th-generation-, 11.2
-iPad-Pro--12-9-inch---2nd-generation-, 11.2
-iPad-Pro--10-5-inch-, 11.2
-Apple-TV-1080p, tvOS 11.2
-Apple-TV-4K-4K, tvOS 11.2
-Apple-TV-4K-1080p, tvOS 11.2
-iPhone-8, 11.2
-iPhone-8-Plus, 11.2
-iPhone-X, 11.2
-iPad-Pro--9-7-inch-, 11.2
-iPad-Pro, 11.2
-Apple-Watch-38mm, watchOS 4.2
-Apple-Watch-42mm, watchOS 4.2
-Apple-Watch-Series-2-38mm, watchOS 4.2
-Apple-Watch-Series-2-42mm, watchOS 4.2
-Apple-Watch-Series-3-38mm, watchOS 4.2
-Apple-Watch-Series-3-42mm, watchOS 4.2
--->
-
-### Développer en Android
-
-Vous pouvez utiliser une ptite config ngrok pour l'api et la webapp par exemple:
-```bash
-cd webapp/ && yarn run ngrok
-```
-
-Ensuite il faut lancer l'application configurée avec ces tunnels:
-```bash
-pc start-browser-webapp -t
-```
-
-Vous pourrez alors utiliser l'url ngrok webapp pour dans votre navigateur android.
-
-### Déployer le FRONTEND MOBILE
-
-Pour déployer une nouvelle version phonegap (par default c'est en staging)
-```bash
-pc build-pg
 ```
 
 ## Lancer les tests de performance
