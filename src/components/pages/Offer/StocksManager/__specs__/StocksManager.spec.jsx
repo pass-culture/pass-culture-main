@@ -201,5 +201,20 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
       // then
       expect(errorMessage).toBe('global : Mon message d’erreur custom')
     })
+
+    it('should return a success message', () => {
+      // given
+      props.query = { context: () => ({}) }
+      const wrapper = shallow(<StocksManager {...props} />)
+      wrapper.setState({
+        editSuccess: true,
+      })
+
+      // when
+      const successMessage = wrapper.find('.is-success').text()
+
+      // then
+      expect(successMessage).toBe('Les modifications ont été enregistrées.')
+    })
   })
 })

@@ -27,6 +27,17 @@
     }
   }
 
+  .notification {
+    max-height: 40px;
+
+    &.fade-out {
+      margin: 0;
+      max-height: 0;
+      padding: 0;
+      transition: all 0.5s ease-in;
+    }
+  }
+
   .stocks-table-wrapper {
     display: flex;
     flex-direction: column;

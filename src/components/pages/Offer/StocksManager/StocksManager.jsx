@@ -12,6 +12,7 @@ class StocksManager extends PureComponent {
   constructor() {
     super()
     this.state = {
+      editSuccess: false,
       errors: null,
       info: null,
     }
@@ -93,6 +94,13 @@ class StocksManager extends PureComponent {
     this.setState({ errors })
   }
 
+  onHandleEditSuccess = () => {
+    this.setState({ editSuccess: true })
+    setTimeout(() => {
+      this.setState({ editSuccess: false })
+    }, 2000)
+  }
+
   closeInfo = () => {
     this.setState({ info: null })
   }
@@ -168,7 +176,7 @@ class StocksManager extends PureComponent {
 
   render() {
     const { isEvent, offer, product, provider, query, isStockCreationAllowed, stocks } = this.props
-    const { errors, info } = this.state
+    const { editSuccess, errors, info } = this.state
     const { isCreatedEntity, readOnly } = query.context({ key: 'stock' })
 
     return (
@@ -190,6 +198,11 @@ class StocksManager extends PureComponent {
             ))}
           </div>
         )}
+
+        <div className={classnames('notification is-success', { 'fade-out': !editSuccess })}>
+          {'Les modifications ont été enregistrées.'}
+        </div>
+
         <div className="stocks-table-wrapper">
           <Titles
             subtitle={get(offer, 'name')}
@@ -240,6 +253,7 @@ class StocksManager extends PureComponent {
             {stocks.map(stock => (
               <StockItemContainer
                 closeInfo={this.closeInfo}
+                handleEditSuccess={this.onHandleEditSuccess}
                 handleSetErrors={this.onHandleSetErrors}
                 isEvent={isEvent}
                 isFullyEditable={!provider}

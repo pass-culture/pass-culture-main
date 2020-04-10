@@ -102,6 +102,11 @@ ShallowWrapper {
         </div>,
         null,
         <div
+          className="notification is-success fade-out"
+        >
+          Les modifications ont été enregistrées.
+        </div>,
+        <div
           className="stocks-table-wrapper"
         >
           <Titles
@@ -110,7 +115,7 @@ ShallowWrapper {
             title="Prix"
           />
           <table
-            className="table is-hoverable stocks-table small"
+            className="stocks-table"
           >
             <thead>
               <tr>
@@ -158,6 +163,7 @@ ShallowWrapper {
             </tbody>
             <withRouter(_withQueryRouter)
               closeInfo={[Function]}
+              handleEditSuccess={[Function]}
               handleSetErrors={[Function]}
               isEvent={false}
               isFullyEditable={true}
@@ -257,6 +263,18 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
+          "children": "Les modifications ont été enregistrées.",
+          "className": "notification is-success fade-out",
+        },
+        "ref": null,
+        "rendered": "Les modifications ont été enregistrées.",
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
           "children": Array [
             <Titles
               action={null}
@@ -264,7 +282,7 @@ ShallowWrapper {
               title="Prix"
             />,
             <table
-              className="table is-hoverable stocks-table small"
+              className="stocks-table"
             >
               <thead>
                 <tr>
@@ -312,6 +330,7 @@ ShallowWrapper {
               </tbody>
               <withRouter(_withQueryRouter)
                 closeInfo={[Function]}
+                handleEditSuccess={[Function]}
                 handleSetErrors={[Function]}
                 isEvent={false}
                 isFullyEditable={true}
@@ -426,6 +445,7 @@ ShallowWrapper {
                 Array [
                   <withRouter(_withQueryRouter)
                     closeInfo={[Function]}
+                    handleEditSuccess={[Function]}
                     handleSetErrors={[Function]}
                     isEvent={false}
                     isFullyEditable={true}
@@ -470,7 +490,7 @@ ShallowWrapper {
                 ],
                 false,
               ],
-              "className": "table is-hoverable stocks-table small",
+              "className": "stocks-table",
             },
             "ref": null,
             "rendered": Array [
@@ -710,6 +730,7 @@ ShallowWrapper {
                 "nodeType": "function",
                 "props": Object {
                   "closeInfo": [Function],
+                  "handleEditSuccess": [Function],
                   "handleSetErrors": [Function],
                   "isEvent": false,
                   "isFullyEditable": true,
@@ -794,6 +815,11 @@ ShallowWrapper {
           </div>,
           null,
           <div
+            className="notification is-success fade-out"
+          >
+            Les modifications ont été enregistrées.
+          </div>,
+          <div
             className="stocks-table-wrapper"
           >
             <Titles
@@ -802,7 +828,7 @@ ShallowWrapper {
               title="Prix"
             />
             <table
-              className="table is-hoverable stocks-table small"
+              className="stocks-table"
             >
               <thead>
                 <tr>
@@ -850,6 +876,7 @@ ShallowWrapper {
               </tbody>
               <withRouter(_withQueryRouter)
                 closeInfo={[Function]}
+                handleEditSuccess={[Function]}
                 handleSetErrors={[Function]}
                 isEvent={false}
                 isFullyEditable={true}
@@ -949,6 +976,18 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
+            "children": "Les modifications ont été enregistrées.",
+            "className": "notification is-success fade-out",
+          },
+          "ref": null,
+          "rendered": "Les modifications ont été enregistrées.",
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
             "children": Array [
               <Titles
                 action={null}
@@ -956,7 +995,7 @@ ShallowWrapper {
                 title="Prix"
               />,
               <table
-                className="table is-hoverable stocks-table small"
+                className="stocks-table"
               >
                 <thead>
                   <tr>
@@ -1004,6 +1043,7 @@ ShallowWrapper {
                 </tbody>
                 <withRouter(_withQueryRouter)
                   closeInfo={[Function]}
+                  handleEditSuccess={[Function]}
                   handleSetErrors={[Function]}
                   isEvent={false}
                   isFullyEditable={true}
@@ -1118,6 +1158,7 @@ ShallowWrapper {
                   Array [
                     <withRouter(_withQueryRouter)
                       closeInfo={[Function]}
+                      handleEditSuccess={[Function]}
                       handleSetErrors={[Function]}
                       isEvent={false}
                       isFullyEditable={true}
@@ -1162,7 +1203,7 @@ ShallowWrapper {
                   ],
                   false,
                 ],
-                "className": "table is-hoverable stocks-table small",
+                "className": "stocks-table",
               },
               "ref": null,
               "rendered": Array [
@@ -1402,6 +1443,7 @@ ShallowWrapper {
                   "nodeType": "function",
                   "props": Object {
                     "closeInfo": [Function],
+                    "handleEditSuccess": [Function],
                     "handleSetErrors": [Function],
                     "isEvent": false,
                     "isFullyEditable": true,
@@ -1601,6 +1643,11 @@ ShallowWrapper {
         </div>,
         null,
         <div
+          className="notification is-success fade-out"
+        >
+          Les modifications ont été enregistrées.
+        </div>,
+        <div
           className="stocks-table-wrapper"
         >
           <Titles
@@ -1609,7 +1656,7 @@ ShallowWrapper {
             title="Dates, horaires et prix"
           />
           <table
-            className="table is-hoverable stocks-table"
+            className="stocks-table"
           >
             <thead>
               <tr>
@@ -1667,6 +1714,7 @@ ShallowWrapper {
             </tbody>
             <withRouter(_withQueryRouter)
               closeInfo={[Function]}
+              handleEditSuccess={[Function]}
               handleSetErrors={[Function]}
               isEvent={true}
               isFullyEditable={true}
@@ -1766,6 +1814,18 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
+          "children": "Les modifications ont été enregistrées.",
+          "className": "notification is-success fade-out",
+        },
+        "ref": null,
+        "rendered": "Les modifications ont été enregistrées.",
+        "type": "div",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
           "children": Array [
             <Titles
               action={null}
@@ -1773,7 +1833,7 @@ ShallowWrapper {
               title="Dates, horaires et prix"
             />,
             <table
-              className="table is-hoverable stocks-table"
+              className="stocks-table"
             >
               <thead>
                 <tr>
@@ -1831,6 +1891,7 @@ ShallowWrapper {
               </tbody>
               <withRouter(_withQueryRouter)
                 closeInfo={[Function]}
+                handleEditSuccess={[Function]}
                 handleSetErrors={[Function]}
                 isEvent={true}
                 isFullyEditable={true}
@@ -1955,6 +2016,7 @@ ShallowWrapper {
                 Array [
                   <withRouter(_withQueryRouter)
                     closeInfo={[Function]}
+                    handleEditSuccess={[Function]}
                     handleSetErrors={[Function]}
                     isEvent={true}
                     isFullyEditable={true}
@@ -1999,7 +2061,7 @@ ShallowWrapper {
                 ],
                 false,
               ],
-              "className": "table is-hoverable stocks-table",
+              "className": "stocks-table",
             },
             "ref": null,
             "rendered": Array [
@@ -2316,6 +2378,7 @@ ShallowWrapper {
                 "nodeType": "function",
                 "props": Object {
                   "closeInfo": [Function],
+                  "handleEditSuccess": [Function],
                   "handleSetErrors": [Function],
                   "isEvent": true,
                   "isFullyEditable": true,
@@ -2400,6 +2463,11 @@ ShallowWrapper {
           </div>,
           null,
           <div
+            className="notification is-success fade-out"
+          >
+            Les modifications ont été enregistrées.
+          </div>,
+          <div
             className="stocks-table-wrapper"
           >
             <Titles
@@ -2408,7 +2476,7 @@ ShallowWrapper {
               title="Dates, horaires et prix"
             />
             <table
-              className="table is-hoverable stocks-table"
+              className="stocks-table"
             >
               <thead>
                 <tr>
@@ -2466,6 +2534,7 @@ ShallowWrapper {
               </tbody>
               <withRouter(_withQueryRouter)
                 closeInfo={[Function]}
+                handleEditSuccess={[Function]}
                 handleSetErrors={[Function]}
                 isEvent={true}
                 isFullyEditable={true}
@@ -2565,6 +2634,18 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
+            "children": "Les modifications ont été enregistrées.",
+            "className": "notification is-success fade-out",
+          },
+          "ref": null,
+          "rendered": "Les modifications ont été enregistrées.",
+          "type": "div",
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
             "children": Array [
               <Titles
                 action={null}
@@ -2572,7 +2653,7 @@ ShallowWrapper {
                 title="Dates, horaires et prix"
               />,
               <table
-                className="table is-hoverable stocks-table"
+                className="stocks-table"
               >
                 <thead>
                   <tr>
@@ -2630,6 +2711,7 @@ ShallowWrapper {
                 </tbody>
                 <withRouter(_withQueryRouter)
                   closeInfo={[Function]}
+                  handleEditSuccess={[Function]}
                   handleSetErrors={[Function]}
                   isEvent={true}
                   isFullyEditable={true}
@@ -2754,6 +2836,7 @@ ShallowWrapper {
                   Array [
                     <withRouter(_withQueryRouter)
                       closeInfo={[Function]}
+                      handleEditSuccess={[Function]}
                       handleSetErrors={[Function]}
                       isEvent={true}
                       isFullyEditable={true}
@@ -2798,7 +2881,7 @@ ShallowWrapper {
                   ],
                   false,
                 ],
-                "className": "table is-hoverable stocks-table",
+                "className": "stocks-table",
               },
               "ref": null,
               "rendered": Array [
@@ -3115,6 +3198,7 @@ ShallowWrapper {
                   "nodeType": "function",
                   "props": Object {
                     "closeInfo": [Function],
+                    "handleEditSuccess": [Function],
                     "handleSetErrors": [Function],
                     "isEvent": true,
                     "isFullyEditable": true,

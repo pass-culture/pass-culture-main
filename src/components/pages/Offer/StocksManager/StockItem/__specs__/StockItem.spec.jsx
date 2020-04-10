@@ -12,7 +12,6 @@ import { Route, Router, Switch } from 'react-router-dom'
 import { Field } from 'react-final-form'
 import Offer from '../../ValueObjects/Offer'
 
-
 describe('src | components | pages | Offer | StocksManager | StockItem', () => {
   let props
 
@@ -20,6 +19,7 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
     props = {
       closeInfo: jest.fn(),
       dispatch: jest.fn(),
+      handleEditSuccess: jest.fn(),
       handleSetErrors: jest.fn(),
       hasIban: false,
       history: { push: jest.fn() },
@@ -567,12 +567,61 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
   })
 
   describe('handleRequestSuccess', () => {
-    it('redirect to gestion at patch success', () => {
+    it('should set state isRequestPending to false', () => {
       // given
       const wrapper = shallow(<StockItem {...props} />)
 
       // when
-      wrapper.instance().handleRequestSuccess(jest.fn())
+      wrapper.instance().handleRequestSuccess()
+
+      // then
+      expect(wrapper.state(['isRequestPending'])).toBe(false)
+    })
+
+    it('should change updated stock to readonly', () => {
+      // given
+      const wrapper = shallow(<StockItem {...props} />)
+
+      // when
+      wrapper.instance().handleRequestSuccess()
+
+      // then
+      expect(props.query.changeToReadOnly).toHaveBeenCalledWith(null, {
+        id: 'DG',
+        key: 'stock',
+      })
+    })
+
+    it('should call handleEditSuccess function', () => {
+      // given
+      const wrapper = shallow(<StockItem {...props} />)
+
+      // when
+      wrapper.instance().handleRequestSuccess()
+
+      // then
+      expect(props.handleEditSuccess).toHaveBeenCalledWith()
+    })
+  })
+
+  describe('handleRequestFail', () => {
+    it('should set state isRequestPending to false', () => {
+      // given
+      const wrapper = shallow(<StockItem {...props} />)
+
+      // when
+      wrapper.instance().handleRequestSuccess()
+
+      // then
+      expect(wrapper.state(['isRequestPending'])).toBe(false)
+    })
+
+    it('should change updated stock to readonly', () => {
+      // given
+      const wrapper = shallow(<StockItem {...props} />)
+
+      // when
+      wrapper.instance().handleRequestSuccess()
 
       // then
       expect(props.query.changeToReadOnly).toHaveBeenCalledWith(null, {
