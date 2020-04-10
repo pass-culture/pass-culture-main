@@ -1,6 +1,6 @@
 import React from 'react'
 import { shallow, mount } from 'enzyme'
-import { MemoryRouter, Redirect } from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
 
 import Typeform from '../Typeform'
@@ -9,27 +9,6 @@ const history = createBrowserHistory()
 history.push('/typeform')
 
 describe('src | components | pages | typeform | Typeform', () => {
-  it('should match the snapshots with required props', () => {
-    // given
-    const props = {
-      flagUserHasFilledTypeform: jest.fn(),
-      needsToFillCulturalSurvey: true,
-    }
-
-    // when
-    const wrapper = shallow(
-      <MemoryRouter
-        initialEntries={['/typeform']}
-        keyLength={0}
-      >
-        <Typeform {...props} />
-      </MemoryRouter>
-    )
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   describe('when user has filled the cultural survey', () => {
     it('should redirect to /bienvenue when user has filled the cultural survey', () => {
       // given
