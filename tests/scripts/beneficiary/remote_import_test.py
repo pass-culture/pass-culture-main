@@ -243,7 +243,8 @@ class ProcessBeneficiaryApplicationTest:
         }
 
         # when
-        remote_import.process_beneficiary_application(information, [], [], [], 123456)
+        remote_import.process_beneficiary_application(information, error_messages=[], new_beneficiaries=[],
+                                                      retry_ids=[], procedure_id=123456)
 
         # then
         first = User.query.first()
@@ -271,7 +272,8 @@ class ProcessBeneficiaryApplicationTest:
         }
 
         # when
-        remote_import.process_beneficiary_application(information, [], [], [], 123456)
+        remote_import.process_beneficiary_application(information, error_messages=[], new_beneficiaries=[],
+                                                      retry_ids=[], procedure_id=123456)
 
         # then
         beneficiary_import = BeneficiaryImport.query.first()
@@ -302,7 +304,8 @@ class ProcessBeneficiaryApplicationTest:
         create_beneficiary_from_application.return_value = create_user()
 
         # when
-        remote_import.process_beneficiary_application(information, [], [], [], 123456)
+        remote_import.process_beneficiary_application(information, error_messages=[], new_beneficiaries=[],
+                                                      retry_ids=[], procedure_id=123456)
 
         # then
         send_activation_email.assert_called()
@@ -333,7 +336,8 @@ class ProcessBeneficiaryApplicationTest:
         error_messages = []
 
         # when
-        remote_import.process_beneficiary_application(information, error_messages, new_beneficiaries, [], 123456)
+        remote_import.process_beneficiary_application(information, error_messages, new_beneficiaries, retry_ids=[],
+                                                      procedure_id=123456)
 
         # then
         send_activation_email.assert_not_called()
@@ -363,7 +367,8 @@ class ProcessBeneficiaryApplicationTest:
         mock = Mock(return_value=[existing_user])
 
         # when
-        remote_import.process_beneficiary_application(information, [], [], [], 123456, find_duplicate_users=mock)
+        remote_import.process_beneficiary_application(information, error_messages=[], new_beneficiaries=[],
+                                                      retry_ids=[], procedure_id=123456, find_duplicate_users=mock)
 
         # then
         send_activation_email.assert_not_called()
@@ -393,7 +398,9 @@ class ProcessBeneficiaryApplicationTest:
         retry_ids = [123]
 
         # when
-        remote_import.process_beneficiary_application(information, [], [], retry_ids, 123456, find_duplicate_users=mock)
+        remote_import.process_beneficiary_application(information, error_messages=[], new_beneficiaries=[],
+                                                      retry_ids=retry_ids, procedure_id=123456,
+                                                      find_duplicate_users=mock)
 
         # then
         send_activation_email.assert_called()
@@ -418,7 +425,9 @@ class ProcessBeneficiaryApplicationTest:
         mocked_query = Mock(return_value=[create_user(idx=11), create_user(idx=22)])
 
         # when
-        remote_import.process_beneficiary_application(information, [], [], [], 123456, find_duplicate_users=mocked_query)
+        remote_import.process_beneficiary_application(information, error_messages=[], new_beneficiaries=[],
+                                                      retry_ids=[], procedure_id=123456,
+                                                      find_duplicate_users=mocked_query)
 
         # then
         beneficiary_import = BeneficiaryImport.query.first()
