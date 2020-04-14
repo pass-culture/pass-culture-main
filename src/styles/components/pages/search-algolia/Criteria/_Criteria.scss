@@ -9,6 +9,8 @@
   background-color: $white;
   height: 100%;
   overflow: scroll;
+  padding-top: rem(15px);
+  padding-bottom: rem(15px);
 
   li {
     padding: rem(4px) 0;
@@ -29,23 +31,19 @@
 }
 
 .criteria-item-icon {
-  width: rem(24px);
-  height: rem(24px);
+  height: rem(48px);
+  width: rem(48px);
 }
 
-.criteria-item-icon-bg {
-  margin: rem(0 20px);
-  height: rem(40px);
-  width: rem(40px);
-  background-color: $grey-even-more-light;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.criteria-item-icon-active {
+  filter: invert(22%) sepia(100%) saturate(6963%) hue-rotate(331deg) brightness(89%) contrast(107%);
+  height: rem(48px);
+  width: rem(48px);
 }
 
-.criteria-active-icon {
-  border: rem(2px) solid $primary;
+.criteria-item-icon-wrapper {
+  padding-left: rem(20px);
+  padding-right: rem(20px);
 }
 
 .criteria-item-label {

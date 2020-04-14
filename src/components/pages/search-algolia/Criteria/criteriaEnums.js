@@ -1,33 +1,41 @@
 export const GEOLOCATION_CRITERIA = {
-  EVERYWHERE: { label: 'Partout', icon: 'ico-globe', requiresGeolocation: false },
-  AROUND_ME: { label: 'Autour de moi', icon: 'ico-aroundme', requiresGeolocation: true },
+  EVERYWHERE: {
+    label: 'Partout',
+    icon: 'ico-everywhere',
+    requiresGeolocation: false
+  },
+  AROUND_ME: {
+    label: 'Autour de moi',
+    icon: 'ico-around-me',
+    requiresGeolocation: true
+  }
 }
 
 export const CATEGORY_CRITERIA = {
-  ALL: { label: 'Toutes les catégories', icon: 'ico-gem-stone', facetFilter: '' },
+  ALL: { label: 'Toutes les catégories', icon: 'ico-all', facetFilter: '' },
   CINEMA: {
     label: 'Cinéma',
-    icon: 'ico-popcorn',
+    icon: 'ico-cinema',
     facetFilter: 'CINEMA',
   },
   EXHIBITION: {
     label: 'Visites, expositions',
-    icon: 'ico-star-struck',
+    icon: 'ico-exposition',
     facetFilter: 'VISITE',
   },
   MUSIC: {
     label: 'Musique',
-    icon: 'ico-headphone',
+    icon: 'ico-music',
     facetFilter: 'MUSIQUE',
   },
   SHOW: {
     label: 'Spectacles',
-    icon: 'ico-studio-microphone',
+    icon: 'ico-show',
     facetFilter: 'SPECTACLE',
   },
   LESSON: {
     label: 'Cours, ateliers',
-    icon: 'ico-performing-arts',
+    icon: 'ico-arts',
     facetFilter: 'LECON',
   },
   BOOK: {
@@ -37,7 +45,7 @@ export const CATEGORY_CRITERIA = {
   },
   FILM: {
     label: 'Films, séries, podcasts',
-    icon: 'ico-film-frames',
+    icon: 'ico-movie',
     facetFilter: 'FILM',
   },
   PRESS: {
@@ -52,14 +60,14 @@ export const CATEGORY_CRITERIA = {
   },
   CONFERENCE: {
     label: 'Conférences, rencontres',
-    icon: 'ico-busts-in-silhouette',
+    icon: 'ico-conference',
     facetFilter: 'CONFERENCE',
   },
   INSTRUMENT: {
     label: 'Instruments de musique',
-    icon: 'ico-drum',
+    icon: 'ico-instrument',
     facetFilter: 'INSTRUMENT',
-  },
+  }
 }
 
 export const SORT_CRITERIA = {
@@ -71,7 +79,7 @@ export const SORT_CRITERIA = {
   },
   NEAR_ME: {
     label: 'Proximité',
-    icon: 'ico-nearme',
+    icon: 'ico-proximity',
     index: '_by_proximity',
     requiresGeolocation: true,
   },

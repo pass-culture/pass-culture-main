@@ -46,13 +46,13 @@ describe('components | SearchAlgolia', () => {
         const home = routes.at(0).find(Home)
         expect(home).toHaveLength(1)
         expect(home.prop('categoryCriterion')).toStrictEqual({
-          icon: 'ico-gem-stone',
+          icon: 'ico-all',
           label: 'Toutes les catégories',
           facetFilter: '',
         })
         expect(home.prop('geolocationCriterion')).toStrictEqual({
           isSearchAroundMe: false,
-          params: { icon: 'ico-globe', label: 'Partout', requiresGeolocation: false },
+          params: { icon: 'ico-everywhere', label: 'Partout', requiresGeolocation: false },
         })
         expect(home.prop('history')).toStrictEqual(props.history)
         expect(home.prop('sortCriterion')).toStrictEqual({
