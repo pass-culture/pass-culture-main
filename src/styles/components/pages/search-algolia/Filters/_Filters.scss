@@ -140,6 +140,12 @@
   display: block;
 }
 
+.sf-price-slider-wrapper {
+  padding-bottom: rem(5px);
+  padding-top: rem(20px);
+  border-top: rem(1px) solid $grey-even-more-light;
+}
+
 .sf-space-wrapper {
   padding-top: rem($footer-height + rem(48px))
 }
