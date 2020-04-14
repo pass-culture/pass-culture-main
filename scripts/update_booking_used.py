@@ -11,7 +11,7 @@ def update_booking_used_after_stock_occurrence():
     for booking in bookings_to_process:
         if booking.stock.beginningDatetime:
             now = datetime.utcnow()
-            if booking.stock.isEventDeletable is False:
+            if booking.isEventDeletable is False:
                 booking.isUsed = True
                 booking.dateUsed = now
                 try:

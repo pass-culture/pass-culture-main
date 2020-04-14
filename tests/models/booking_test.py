@@ -10,7 +10,10 @@ from tests.model_creators.generic_creators import create_booking, create_user, c
     create_venue, \
     create_recommendation, create_mediation, create_deposit
 from tests.model_creators.specific_creators import create_stock_from_offer, create_product_with_thing_type, \
-    create_product_with_event_type, create_offer_with_thing_product, create_offer_with_event_product
+    create_product_with_event_type, create_offer_with_thing_product, create_offer_with_event_product, \
+    create_stock_with_thing_offer, create_stock_with_event_offer
+
+EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST = timedelta(hours=72)
 
 
 def test_booking_completed_url_gets_normalized():
@@ -438,3 +441,119 @@ class BookingCancellationDateTest:
         updated_booking = Booking.query.first()
         assert updated_booking.isCancelled is True
         assert updated_booking.cancellationDate == original_cancellation_date
+
+
+class IsEventExpiredTest:
+    def test_is_not_expired_when_stock_is_not_an_event(self):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue)
+        booking = create_booking(user=user, stock=stock)
+
+        # When
+        is_event_expired = booking.isEventExpired
+
+        # Then
+        assert is_event_expired is False
+
+    def test_is_not_expired_when_stock_is_an_event_in_the_future(self):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        three_days_from_now = datetime.utcnow() + timedelta(hours=72)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
+                                              beginning_datetime=three_days_from_now)
+        booking = create_booking(user=user, stock=stock)
+
+        # When
+        is_event_expired = booking.isEventExpired
+
+        # Then
+        assert is_event_expired is False
+
+    def test_is_expired_when_stock_is_an_event_in_the_past(self):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        one_day_in_the_past = datetime.utcnow() - timedelta(hours=24)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
+                                              beginning_datetime=one_day_in_the_past)
+        booking = create_booking(user=user, stock=stock)
+
+        # When
+        is_event_expired = booking.isEventExpired
+
+        # Then
+        assert is_event_expired is True
+
+
+class IsEventDeletableTest:
+    @patch('models.stock.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    def test_is_deletable_when_stock_is_not_an_event(self):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue)
+        booking = create_booking(user=user, stock=stock)
+
+        # When
+        is_event_deletable = booking.isEventDeletable
+
+        # Then
+        assert is_event_deletable is True
+
+    @patch('models.stock.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    def test_is_deletable_when_stock_is_an_event_in_the_future(self):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        three_days_from_now = datetime.utcnow() + timedelta(hours=72)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
+                                              beginning_datetime=three_days_from_now)
+        booking = create_booking(user=user, stock=stock)
+
+        # When
+        is_event_deletable = booking.isEventDeletable
+
+        # Then
+        assert is_event_deletable is True
+
+    @patch('models.stock.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    def test_is_deletable_when_stock_is_expired_since_less_than_event_automatic_refund_delay(self):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        expired_date_but_not_automaticaly_refunded = datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST + timedelta(1)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
+                                              beginning_datetime=expired_date_but_not_automaticaly_refunded)
+        booking = create_booking(user=user, stock=stock)
+
+        # When
+        is_event_deletable = booking.isEventDeletable
+
+        # Then
+        assert is_event_deletable is True
+
+    @patch('models.stock.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    def test_is_not_deletable_when_stock_is_expired_since_more_than_event_automatic_refund_delay(self):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        expired_date_and_automaticaly_refunded = datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
+                                              beginning_datetime=expired_date_and_automaticaly_refunded)
+        booking = create_booking(user=user, stock=stock)
+
+        # When
+        is_event_deletable = booking.isEventDeletable
+
+        # Then
+        assert is_event_deletable is False

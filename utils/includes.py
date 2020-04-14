@@ -168,6 +168,7 @@ USER_INCLUDES = [
 
 WEBAPP_GET_BOOKING_INCLUDES = [
     "completedUrl",
+    'isEventExpired',
     "isUserCancellable",
     {
         "key": "stock",
@@ -178,10 +179,10 @@ WEBAPP_GET_BOOKING_INCLUDES = [
             {
                 "key": "offer",
                 "includes": [
-                    'isDigital',
-                    'isEvent',
                     'hasBookingLimitDatetimesPassed',
                     'isBookable',
+                    'isDigital',
+                    'isEvent',
                     "isFullyBooked",
                     "offerType",
                     {
@@ -211,52 +212,8 @@ WEBAPP_GET_BOOKING_INCLUDES = [
     "thumbUrl"
 ]
 
-WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = [
-    "completedUrl",
-    "isUserCancellable",
-    {
-        "key": "stock",
-        "includes": [
-            'isBookable',
-            'isEventExpired',
-            'remainingQuantity',
-            {
-                "key": "offer",
-                "includes": [
-                    'isDigital',
-                    'isEvent',
-                    'isBookable',
-                    'hasBookingLimitDatetimesPassed',
-                    "isFullyBooked",
-                    "offerType",
-                    {
-                        "key": "product",
-                        "includes": ["thumbUrl"]
-                    },
-                    {
-                        "key": "stocks",
-                        "includes": [
-                            'isBookable',
-                            'isEventExpired',
-                            'remainingQuantity'
-                        ]
-                    },
-                    {
-                        "key": "venue",
-                        "includes": ['-validationToken']
-                    }
-                ]
-            },
-        ]
-    },
-    {
-        "key": "mediation",
-        "includes": ['thumbUrl']
-    },
-    "qrCode",
-    "thumbUrl"
-]
-
+WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = WEBAPP_GET_BOOKING_INCLUDES.copy()
+WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES.append("qrCode")
 
 WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
     "completedUrl",

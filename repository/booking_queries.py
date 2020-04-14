@@ -274,11 +274,12 @@ def get_only_offer_ids_from_bookings(user: User) -> List[int]:
 
 
 def find_not_used_and_not_cancelled_bookings_associated_to_outdated_stock() -> List[Booking]:
+    booking_on_event_that_should_have_been_refunded = Stock.beginningDatetime + EVENT_AUTOMATIC_REFUND_DELAY
     return Booking.query \
         .join(Stock) \
         .filter(Booking.isUsed == False) \
         .filter(Booking.isCancelled == False) \
-        .filter(Stock.beginningDatetime + EVENT_AUTOMATIC_REFUND_DELAY < datetime.utcnow()) \
+        .filter(booking_on_event_that_should_have_been_refunded < datetime.utcnow()) \
         .all()
 
 

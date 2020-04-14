@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from unittest.mock import patch
 
 import pytest
 from freezegun import freeze_time
@@ -6,7 +7,7 @@ from pytest import approx
 
 from models import ApiErrors
 from models.pc_object import DeletedRecordException
-from models.stock import Stock, EVENT_AUTOMATIC_REFUND_DELAY
+from models.stock import Stock
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import (create_booking,
@@ -16,6 +17,8 @@ from tests.model_creators.generic_creators import (create_booking,
 from tests.model_creators.specific_creators import (
     create_offer_with_event_product, create_offer_with_thing_product,
     create_stock_from_offer, create_stock_with_event_offer, create_stock_with_thing_offer)
+
+EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST = timedelta(hours=72)
 
 
 @clean_database
@@ -477,7 +480,7 @@ class BookingsQuantityTest:
 
 
 class IsEventExpiredTest:
-    def test_isEventExpired_is_false_when_stock_is_not_an_event(self):
+    def test_is_not_expired_when_stock_is_not_an_event(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -489,12 +492,13 @@ class IsEventExpiredTest:
         # Then
         assert is_event_expired is False
 
-    def test_isEventExpired_is_false_when_stock_is_an_event_in_the_future(self):
+    def test_is_not_expired_when_stock_is_an_event_in_the_future(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
+        three_days_from_now = datetime.utcnow() + timedelta(hours=72)
         stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
-                                              beginning_datetime=datetime.utcnow() + timedelta(hours=72))
+                                              beginning_datetime=three_days_from_now)
 
         # When
         is_event_expired = stock.isEventExpired
@@ -502,12 +506,13 @@ class IsEventExpiredTest:
         # Then
         assert is_event_expired is False
 
-    def test_isEventExpired_is_true_when_stock_is_an_event_in_the_past(self):
+    def test_is_expired_when_stock_is_an_event_in_the_past(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
+        one_day_in_the_past = datetime.utcnow() - timedelta(hours=24)
         stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
-                                              beginning_datetime=datetime.utcnow() - timedelta(hours=24))
+                                              beginning_datetime=one_day_in_the_past)
 
         # When
         is_event_expired = stock.isEventExpired
@@ -517,7 +522,8 @@ class IsEventExpiredTest:
 
 
 class IsEventDeletableTest:
-    def test_isEventDeletable_is_true_when_stock_is_not_an_event(self):
+    @patch('models.stock.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    def test_is_deletable_when_stock_is_not_an_event(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -529,12 +535,14 @@ class IsEventDeletableTest:
         # Then
         assert is_event_deletable is True
 
-    def test_isEventDeletable_is_true_when_stock_is_an_event_in_the_future(self):
+    @patch('models.stock.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    def test_is_deletable_when_stock_is_an_event_in_the_future(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
+        three_days_from_now = datetime.utcnow() + timedelta(hours=72)
         stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
-                                              beginning_datetime=datetime.utcnow() + timedelta(hours=72))
+                                              beginning_datetime=three_days_from_now)
 
         # When
         is_event_deletable = stock.isEventDeletable
@@ -542,14 +550,15 @@ class IsEventDeletableTest:
         # Then
         assert is_event_deletable is True
 
-    def test_isEventDeletable_is_true_when_stock_is_expired_since_less_than_event_automatic_refund_delay(self):
+    @patch('models.stock.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    def test_is_deletable_when_stock_is_expired_since_less_than_event_automatic_refund_delay(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
+        expired_date_but_not_automaticaly_refunded = datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST + timedelta(
+            1)
         stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
-                                              beginning_datetime=datetime.utcnow()
-                                                                 - EVENT_AUTOMATIC_REFUND_DELAY
-                                                                 + timedelta(1))
+                                              beginning_datetime=expired_date_but_not_automaticaly_refunded)
 
         # When
         is_event_deletable = stock.isEventDeletable
@@ -557,12 +566,14 @@ class IsEventDeletableTest:
         # Then
         assert is_event_deletable is True
 
-    def test_isEventDeletable_is_false_when_stock_is_expired_since_more_than_event_automatic_refund_delay(self):
+    @patch('models.stock.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    def test_is_not_deletable_when_stock_is_expired_since_more_than_event_automatic_refund_delay(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
+        expired_date_and_automaticaly_refunded = datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST
         stock = create_stock_with_event_offer(offerer=offerer, venue=venue,
-                                              beginning_datetime=datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY)
+                                              beginning_datetime=expired_date_and_automaticaly_refunded)
 
         # When
         is_event_deletable = stock.isEventDeletable

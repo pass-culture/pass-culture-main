@@ -113,6 +113,14 @@ class Booking(PcObject, Model, VersionedMixin):
         return PcObject.restize_integrity_error(ie)
 
     @property
+    def isEventDeletable(self):
+        return self.stock.isEventDeletable
+
+    @property
+    def isEventExpired(self):
+        return self.stock.isEventExpired
+
+    @property
     def thumbUrl(self):
         if self.recommendation:
             return self.recommendation.thumbUrl
@@ -136,7 +144,7 @@ class Booking(PcObject, Model, VersionedMixin):
         from domain.bookings import generate_qr_code
         offer = self.stock.offer
         if offer.isEvent:
-            return generate_qr_code(self) if self.stock.isEventExpired is False and self.isCancelled is False else None
+            return generate_qr_code(self) if self.isEventExpired is False and self.isCancelled is False else None
         return generate_qr_code(self) if self.isUsed is False and self.isCancelled is False else None
 
 

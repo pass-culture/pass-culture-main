@@ -100,18 +100,13 @@ class Stock(PcObject,
 
     @property
     def isEventExpired(self):
-        if self.beginningDatetime:
-            event_start_time_is_over = self.beginningDatetime <= datetime.utcnow()
-            return event_start_time_is_over
-        else:
-            return False
+        return False if self.beginningDatetime is None else self.beginningDatetime <= datetime.utcnow()
 
     @property
     def isEventDeletable(self):
         if self.beginningDatetime:
             limit_date_for_stock_deletion = self.beginningDatetime + EVENT_AUTOMATIC_REFUND_DELAY
-            is_stock_deletion_delay_passed = limit_date_for_stock_deletion >= datetime.utcnow()
-            return is_stock_deletion_delay_passed
+            return limit_date_for_stock_deletion >= datetime.utcnow()
         else:
             return True
 

@@ -414,7 +414,7 @@ class FindFinalOffererBookingsTest:
         assert thing_booking1 in bookings
 
     @clean_database
-    def test_returns_only_finished_for_more_than_the_automatic_refund_delay_bookings(self, app):
+    def test_does_not_return_finished_for_more_than_the_automatic_refund_delay_bookings(self, app):
         # Given
         user = create_user()
         create_deposit(user)
@@ -441,8 +441,7 @@ class FindFinalOffererBookingsTest:
         bookings = booking_queries.find_eligible_bookings_for_offerer(offerer.id)
 
         # Then
-        assert len(bookings) == 1
-        assert event_booking1 in bookings
+        assert len(bookings) == 0
 
 
 class FindFinalVenueBookingsTest:

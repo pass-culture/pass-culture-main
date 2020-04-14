@@ -344,7 +344,7 @@ class CheckStockIsUpdatableTest:
 
         except ApiErrors:
             # Then
-            assert pytest.fail("Should not fail with valid params")
+            assert pytest.fail("Stock should be updatable and not expired")
 
     @clean_database
     def test_does_not_raise_an_error_when_offer_is_not_from_provider(self, app):
@@ -360,7 +360,7 @@ class CheckStockIsUpdatableTest:
 
         except ApiErrors:
             # Then
-            assert pytest.fail("Should not fail with valid params")
+            assert pytest.fail("Stock should be updatable")
 
     @clean_database
     def test_does_not_raise_an_error_when_offer_is_from_allocine_provider(self, app):
@@ -379,7 +379,7 @@ class CheckStockIsUpdatableTest:
 
         except ApiErrors:
             # Then
-            assert pytest.fail("Should not fail with valid params")
+            assert pytest.fail("Stock should be updatable when offer is from allocine provider")
 
 
 class CheckOnlyEditableFieldsWillBeUpdatedTest:

@@ -37,6 +37,7 @@ class Get:
             assert len(all_bookings) == 2
             assert 'qrCode' not in first_booking
             assert 'completedUrl' in first_booking
+            assert 'isEventExpired' in first_booking
             assert 'isUserCancellable' in first_booking
             assert 'mediation' in first_booking
             assert 'thumbUrl' in first_booking
@@ -83,6 +84,7 @@ class Get:
             assert response.status_code == 200
             assert 'qrCode' in first_booking
             assert 'completedUrl' in first_booking
+            assert 'isEventExpired' in first_booking
             assert 'isUserCancellable' in first_booking
             assert 'mediation' in first_booking
             assert 'thumbUrl' in first_booking
