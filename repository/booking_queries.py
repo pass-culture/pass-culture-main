@@ -245,7 +245,7 @@ def _query_keep_only_used_or_finished_bookings_on_non_activation_offers() -> Que
     return _query_keep_on_non_activation_offers() \
         .join(Venue) \
         .filter(Booking.isCancelled == False) \
-        .filter((Booking.isUsed == True))
+        .filter(Booking.isUsed == True)
 
 
 def find_not_used_and_not_cancelled() -> List[Booking]:
