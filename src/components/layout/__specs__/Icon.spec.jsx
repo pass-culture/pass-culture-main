@@ -23,26 +23,34 @@ describe('src | components | layout | Icon ', () => {
   describe('render', () => {
     it('should render an image with correct props when svg given', () => {
       // when
-      const wrapper = shallow(<Icon {...props} />)
+      const wrapper = shallow(<Icon svg="picto-svg" />)
 
       // then
       const image = wrapper.find('img')
       expect(image).toHaveLength(1)
-      expect(image.props().alt).toStrictEqual('picto-svg')
+      expect(image.props().alt).toBeUndefined()
       expect(image.props().src).toMatch(/(icons\/picto-svg.svg)/)
     })
 
     it('should render an image with correct props when png given', () => {
       // when
-      props.png = 'icon-png'
-      props.svg = null
-      const wrapper = shallow(<Icon {...props} />)
+      const wrapper = shallow(<Icon png="icon-png" />)
 
       // then
       const image = wrapper.find('img')
       expect(image).toHaveLength(1)
-      expect(image.props().alt).toStrictEqual('icon-png')
+      expect(image.props().alt).toBeUndefined()
       expect(image.props().src).toMatch(/(icons\/icon-png.png)/)
+    })
+
+    it('should render an image with alt when given', () => {
+      // when
+      const wrapper = shallow(<Icon alt="Some alternate title" />)
+
+      // then
+      const image = wrapper.find('img')
+      expect(image).toHaveLength(1)
+      expect(image.props().alt).toStrictEqual('Some alternate title')
     })
   })
 })

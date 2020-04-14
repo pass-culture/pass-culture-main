@@ -3,11 +3,10 @@ import React from 'react'
 
 import { ROOT_PATH } from '../../utils/config'
 
-const Icon = ({ png, svg, ...imgProps }) => {
-  const altMessage = svg ? svg : png
+const Icon = ({ png, svg, alt, ...imgProps }) => {
   const iconUrl = svg ? `${ROOT_PATH}/icons/${svg}.svg` : `${ROOT_PATH}/icons/${png}.png`
   return (<img
-    alt={altMessage}
+    alt={alt}
     src={iconUrl}
     {...imgProps}
           />)

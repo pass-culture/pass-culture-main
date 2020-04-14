@@ -21,7 +21,7 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
-      "alt": "picto-svg",
+      "alt": undefined,
       "src": "http://localhost/icons/picto-svg.svg",
     },
     "ref": null,
@@ -34,7 +34,7 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "alt": "picto-svg",
+        "alt": undefined,
         "src": "http://localhost/icons/picto-svg.svg",
       },
       "ref": null,
