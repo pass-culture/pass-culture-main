@@ -3,9 +3,9 @@ from flask_login import current_user
 
 from connectors import redis
 from domain.allocine import get_editable_fields_for_allocine_stocks
-from domain.stocks import delete_stock_and_cancel_bookings, check_have_beginning_date_been_modified
+from domain.stocks import delete_stock_and_cancel_bookings, have_beginning_date_been_modified
 from domain.user_emails import send_batch_cancellation_emails_to_users, \
-    send_offerer_bookings_recap_email_after_offerer_cancellation, send_batch_stock_report_emails_to_users
+    send_offerer_bookings_recap_email_after_offerer_cancellation, send_batch_stock_postponement_emails_to_users
 from models import Product
 from models.feature import FeatureToggle
 from models.mediation import Mediation
@@ -123,16 +123,13 @@ def edit_stock(stock_id):
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
-    beginningdate_have_been_modified = check_have_beginning_date_been_modified(stock_data, stock)
-    if beginningdate_have_been_modified:
+    if have_beginning_date_been_modified(stock_data, stock):
         bookings = find_ongoing_bookings_by_stock(stock)
         if bookings:
-            print(bookings)
             try:
-                print('trying...')
-                send_batch_stock_report_emails_to_users(bookings, send_raw_email)
-            except MailServiceException as e:
-                app.logger.error('Mail service failure', e)
+                send_batch_stock_postponement_emails_to_users(bookings, send_raw_email)
+            except MailServiceException as mail_service_exception:
+                app.logger.error('Email service failure', mail_service_exception)
 
     return jsonify(as_dict(stock)), 200
 

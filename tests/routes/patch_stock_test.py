@@ -129,62 +129,65 @@ class Patch:
             assert updated_stock.quantity == 5
             assert updated_stock.price == 20
 
-        @clean_database
-        @patch('routes.stocks.check_have_beginning_date_been_modified', return_value=True)
-        @patch('routes.stocks.send_batch_stock_report_emails_to_users')
+        @patch('routes.stocks.have_beginning_date_been_modified')
+        @patch('routes.stocks.send_batch_stock_postponement_emails_to_users')
         @patch('routes.stocks.send_raw_email')
-        def test_and_send_email_to_users_when_stock_changes_date(self,
-                                                                 email_function,
-                                                                 send_batch_stock_report_emails_to_users,
-                                                                 _check_have_beginning_date_been_modified,
-                                                                 app):
+        @clean_database
+        def when_stock_changes_date_and_should_send_email_to_users(self,
+                                                                   email_function,
+                                                                   mocked_send_batch_stock_postponement_emails_to_users,
+                                                                   mocked_check_have_beginning_date_been_modified,
+                                                                   app):
             # Given
             user = create_user()
-            user_admin = create_user(can_book_free_offers=False, email='email@test.com', is_admin=True)
+            admin = create_user(can_book_free_offers=False, email='admin@example.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0, quantity=10,
                                                   booking_limit_datetime=datetime(2020, 4, 11),
                                                   beginning_datetime=datetime(2020, 4, 13))
-            booking = create_booking(user=user, stock=stock, venue=venue, recommendation=None)
+            booking = create_booking(user=user, stock=stock, recommendation=None)
             booking_cancelled = create_booking(user=user, stock=stock, venue=venue, recommendation=None,
                                                is_cancelled=True)
-            repository.save(booking, booking_cancelled, user_admin)
+            repository.save(booking, booking_cancelled, admin)
+            mocked_check_have_beginning_date_been_modified.return_value = True
 
             # When
-            request_update = TestClient(app.test_client()).with_auth('email@test.com') \
+            request_update = TestClient(app.test_client()).with_auth(admin.email) \
                 .patch('/stocks/' + humanize(stock.id), json={'beginningDatetime': '2020-04-12T14:30:00Z'})
 
             # Then
             assert request_update.status_code == 200
-            _check_have_beginning_date_been_modified.assert_called_once()
-            send_batch_stock_report_emails_to_users.assert_called_once_with([booking], email_function)
+            mocked_check_have_beginning_date_been_modified.assert_called_once()
+            mocked_send_batch_stock_postponement_emails_to_users.assert_called_once_with([booking], email_function)
 
+        @patch('routes.stocks.have_beginning_date_been_modified')
+        @patch('routes.stocks.send_batch_stock_postponement_emails_to_users')
         @clean_database
-        @patch('routes.stocks.check_have_beginning_date_been_modified', return_value=True)
-        @patch('domain.user_emails.send_batch_stock_report_emails_to_users')
-        def test_and_dont_send_email_when_date_has_not_been_changed(self,
-                                                                    send_batch_stock_report_emails_to_users,
-                                                                    _check_have_beginning_date_been_modified, app):
+        def when_stock_date_has_not_been_changed_and_should_not_email_to_beneficiaries(self,
+                                                                                       mocked_send_batch_stock_postponement_emails_to_users,
+                                                                                       mocked_have_beginning_date_been_modified,
+                                                                                       app):
             # Given
             user = create_user()
-            user_admin = create_user(can_book_free_offers=False, email='email@test.com', is_admin=True)
+            admin = create_user(can_book_free_offers=False, email='admin@example.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0, quantity=10,
                                                   booking_limit_datetime=datetime(2020, 4, 11),
                                                   beginning_datetime=datetime(2020, 4, 13))
-            booking = create_booking(user=user, stock=stock, venue=venue, recommendation=None)
-            repository.save(booking, user_admin)
+            booking = create_booking(user=user, stock=stock, recommendation=None)
+            repository.save(booking, admin)
+            mocked_have_beginning_date_been_modified.return_value = False
 
             # When
-            request_update = TestClient(app.test_client()).with_auth('email@test.com') \
+            request_update = TestClient(app.test_client()).with_auth(admin.email) \
                 .patch('/stocks/' + humanize(stock.id), json={'price': 20})
 
             # Then
             assert request_update.status_code == 200
-            _check_have_beginning_date_been_modified.assert_called_once()
-            send_batch_stock_report_emails_to_users.assert_not_called()
+            mocked_have_beginning_date_been_modified.assert_called_once()
+            mocked_send_batch_stock_postponement_emails_to_users.assert_not_called()
 
     class Returns400:
         @clean_database

@@ -8,7 +8,7 @@ from tests.model_creators.specific_creators import create_offer_with_event_produ
 
 
 class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
-    @patch('emails.user_notification_after_stock_update.feature_send_mail_to_users_enabled', return_value=True)
+    @patch('emails.user_notification_after_stock_update.feature_send_mail_to_users_enabled')
     def test_should_send_email_to_user_when_feature_send_mail_to_users_is_enabled(self,
                                                                                   feature_send_mail_to_users_enabled):
         # Given
@@ -19,6 +19,7 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence)
         booking = create_booking(user=user, stock=stock)
+        feature_send_mail_to_users_enabled.return_value = True
 
         # When
         booking_info_for_mailjet = retrieve_data_to_warn_user_after_stock_update_affecting_booking(booking)
@@ -27,9 +28,9 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
         assert booking_info_for_mailjet['To'] == user.email
 
     @patch('emails.user_notification_after_stock_update.DEV_EMAIL_ADDRESS', 'dev@example.com')
-    @patch('emails.user_notification_after_stock_update.feature_send_mail_to_users_enabled', return_value=False)
-    def test_should_send_email_to_dev_when_feature_send_mail_to_users_is_disabled(self,
-                                                                                  feature_send_mail_to_users_enabled):
+    @patch('emails.user_notification_after_stock_update.feature_send_mail_to_users_enabled')
+    def test_should_send_email_to_specific_email_address_when_feature_send_mail_to_users_is_disabled(self,
+                                                                                                     feature_send_mail_to_users_enabled):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -38,6 +39,7 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
         event_occurrence = create_event_occurrence(offer)
         stock = create_stock_from_event_occurrence(event_occurrence)
         booking = create_booking(user=user, stock=stock)
+        feature_send_mail_to_users_enabled.return_value = False
 
         # When
         booking_info_for_mailjet = retrieve_data_to_warn_user_after_stock_update_affecting_booking(booking)
@@ -47,7 +49,7 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
 
     @patch('emails.user_notification_after_stock_update.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('emails.user_notification_after_stock_update.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    def test_should_send_email_when_booking_is_reported(self, app):
+    def test_should_send_email_when_booking_date_have_been_changed(self, app):
         # Given
         beginning_datetime = datetime(2019, 7, 20, 12, 0, 0)
 

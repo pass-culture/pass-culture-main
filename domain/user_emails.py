@@ -142,12 +142,12 @@ def send_activation_email(user: User, send_email: Callable[..., bool]) -> bool:
     return send_email(activation_email_data)
 
 
-def send_batch_stock_report_emails_to_users(bookings: List[Booking], send_email: Callable[..., bool]) -> None:
+def send_batch_stock_postponement_emails_to_users(bookings: List[Booking], send_email: Callable[..., bool]) -> None:
     for booking in bookings:
-        send_booking_report_emails_to_users(booking, send_email)
+        send_booking_postponement_emails_to_users(booking, send_email)
 
 
-def send_booking_report_emails_to_users(booking, send_email):
+def send_booking_postponement_emails_to_users(booking: Booking, send_email: Callable[..., bool]) -> None:
     data = retrieve_data_to_warn_user_after_stock_update_affecting_booking(booking)
     send_email(data=data)
 

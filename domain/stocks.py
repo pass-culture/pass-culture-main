@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Dict
 
 from models import Booking, Stock, ApiErrors
 
@@ -34,8 +34,7 @@ def delete_stock_and_cancel_bookings(stock: Stock) -> List[Booking]:
     return unused_bookings
 
 
-def check_have_beginning_date_been_modified(request_data: dict, stock: Stock):
-    print(request_data)
+def have_beginning_date_been_modified(request_data: Dict, stock: Stock) -> bool:
     return True if 'beginningDatetime' in request_data \
                    and request_data['beginningDatetime'] != stock.beginningDatetime else False
 
