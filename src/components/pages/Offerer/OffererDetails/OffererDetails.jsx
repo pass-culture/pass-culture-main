@@ -5,6 +5,8 @@ import { Offerer } from './Offerer'
 import Main from '../../../layout/Main'
 import Venues from './Venues/Venues'
 import Titles from '../../../layout/Titles/Titles'
+import RibsUploadFeatureFlip from './FeatureFlip/RibUpload'
+import BankInformation from './BankInformation/BankInformation'
 
 class OffererDetails extends PureComponent {
   componentDidMount() {
@@ -69,40 +71,9 @@ class OffererDetails extends PureComponent {
           </div>
         </div>
 
-        <div className="section">
-          <h2 className="main-list-title">
-            {'Informations bancaires'}
-            <span className="is-pulled-right is-size-7 has-text-grey">
-              {!offerer.adminUserOfferer &&
-                "Vous avez besoin d'être administrateur de la structure pour modifier ces informations."}
-            </span>
-          </h2>
-          {!offerer.areBankInformationProvided && (
-            <p className="bank-instructions-label">
-              {
-                'Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.'
-              }
-            </p>
-          )}
-        </div>
-        <div>
-          <div>
-            <label>
-              {'BIC : '}
-            </label>
-            <span>
-              {offerer.bic}
-            </span>
-          </div>
-          <div>
-            <label>
-              {'IBAN : '}
-            </label>
-            <span>
-              {offerer.iban}
-            </span>
-          </div>
-        </div>
+        <RibsUploadFeatureFlip legacy={<BankInformation.Legacy offerer={offerer} />}>
+          <BankInformation offerer={offerer} />
+        </RibsUploadFeatureFlip>
 
         <Venues
           offererId={offerer.id}
