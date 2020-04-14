@@ -14,9 +14,11 @@ import Spinner from '../../../../layout/Spinner/Spinner'
 import { Criteria } from '../../Criteria/Criteria'
 import { SORT_CRITERIA } from '../../Criteria/criteriaEnums'
 import FiltersContainer from '../../Filters/FiltersContainer'
+import { EmptySearchResult } from '../EmptySearchResult'
 import Result from '../Result'
 import SearchAlgoliaDetailsContainer from '../ResultDetail/ResultDetailContainer'
 import SearchResults from '../SearchResults'
+import { SearchResultsList } from '../SearchResultsList'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
@@ -133,40 +135,40 @@ describe('components | SearchResults', () => {
     it('should display the number of selected filters in the filter button', () => {
       //given
       props.criteria.isSearchAroundMe = true
-      props.criteria.categories = ["CINEMA"]
+      props.criteria.categories = ['CINEMA']
       // when
       const wrapper = shallow(<SearchResults {...props} />)
       const numberOfActiveFilters = wrapper.find('[data-test="sr-filter-button-counter"]')
       // then
-      expect(numberOfActiveFilters.text()).toStrictEqual("2")
+      expect(numberOfActiveFilters.text()).toStrictEqual('2')
     })
 
     it('should display the number of selected filters in the filter button when categories are provided by the url', () => {
       //given
       props.query.parse.mockReturnValue({
         'autour-de-moi': 'oui',
-        'categories': 'CINEMA;VISITE'
+        categories: 'CINEMA;VISITE',
       })
       // when
       const wrapper = shallow(<SearchResults {...props} />)
       const numberOfActiveFilters = wrapper.find('[data-test="sr-filter-button-counter"]')
       // then
-      expect(numberOfActiveFilters.text()).toStrictEqual("3")
+      expect(numberOfActiveFilters.text()).toStrictEqual('3')
     })
 
     it('should display the number of selected filters in the filter button when categories are provided by the url and props', () => {
       //given
       props.criteria.isSearchAroundMe = false
-      props.criteria.categories = ["CINEMA"]
+      props.criteria.categories = ['CINEMA']
       props.query.parse.mockReturnValue({
         'autour-de-moi': 'oui',
-        'categories': 'CINEMA;VISITE'
+        categories: 'CINEMA;VISITE',
       })
       // when
       const wrapper = shallow(<SearchResults {...props} />)
       const numberOfActiveFilters = wrapper.find('[data-test="sr-filter-button-counter"]')
       // then
-      expect(numberOfActiveFilters.text()).toStrictEqual("3")
+      expect(numberOfActiveFilters.text()).toStrictEqual('3')
     })
 
     it('should display a footer', () => {
@@ -186,6 +188,14 @@ describe('components | SearchResults', () => {
 
       // Then
       expect(wrapper.find(Spinner)).toHaveLength(1)
+    })
+
+    it('should not display emptySearchResult component when loading', () => {
+      // When
+      const wrapper = shallow(<SearchResults {...props} />)
+
+      // Then
+      expect(wrapper.find(EmptySearchResult)).toHaveLength(0)
     })
 
     it('should not display spinner while loading is over', async () => {
@@ -221,7 +231,7 @@ describe('components | SearchResults', () => {
       expect(fetchAlgolia).toHaveBeenCalledWith({
         geolocation: {
           latitude: 40.1,
-          longitude: 41.1
+          longitude: 41.1,
         },
         keywords: 'une librairie',
         offerCategories: ['MUSEE'],
@@ -269,14 +279,149 @@ describe('components | SearchResults', () => {
       })
     })
 
+    describe('when no results', () => {
+      beforeEach(() => {
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [],
+              page: 0,
+              nbHits: 0,
+              nbPages: 0,
+              hitsPerPage: 2,
+              processingTimeMS: 1,
+              query: 'librairie',
+              params: 'query=librairie&hitsPerPage=2',
+            })
+          })
+        )
+      })
+
+      afterEach(() => {
+        fetchAlgolia.mockReset()
+        props.query.parse.mockReset()
+      })
+
+      it('should display EmptySearchResult component when 0 result', async () => {
+        // given
+        const wrapper = shallow(<SearchResults {...props} />)
+        stubRef(wrapper)
+        const form = wrapper.find('form')
+
+        // when
+        await form.simulate('submit', {
+          target: {
+            keywords: {
+              value: 'librairie',
+            },
+          },
+          preventDefault: jest.fn(),
+        })
+
+        // then
+        const emptySearchResult = wrapper.find(EmptySearchResult)
+        const filterButton = wrapper.find({ children: 'Filtrer' })
+        expect(emptySearchResult).toHaveLength(1)
+        expect(filterButton).toHaveLength(0)
+        expect(emptySearchResult.prop('searchedKeywords')).toBe('librairie')
+      })
+
+      it('should fetch offers in all categories, without keyword, around me and sorted randomly when clicking on "autour de chez toi"', async () => {
+        // Given
+        const history = createBrowserHistory()
+        props.history = history
+        props.history.push(
+          '/recherche-offres/resultats?mots-cles=recherche%20sans%20résultat&autour-de-moi=oui&tri=_by_price&categories=INSTRUMENT'
+        )
+        props.query.parse.mockReturnValue({
+          'autour-de-moi': 'oui',
+          categories: 'INSTRUMENT',
+          'mots-cles': 'recherche sans résultat',
+          tri: '_by_price',
+        })
+        const wrapper = await mount(
+          <Router history={history}>
+            <SearchResults {...props} />
+          </Router>
+        )
+        wrapper.update()
+        const linkButton = wrapper.find({ children: 'autour de chez toi' })
+
+        // When
+        await linkButton.simulate('click')
+
+        // Then
+        expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
+          aroundRadius: undefined,
+          geolocation: {
+            latitude: 40.1,
+            longitude: 41.1,
+          },
+          keywords: '',
+          offerCategories: [],
+          offerIsDuo: false,
+          offerIsFree: false,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false,
+          },
+          page: 0,
+          priceRange: [0, 500],
+          sortBy: '',
+        })
+        const expectedUri = props.history.location.pathname + props.history.location.search
+        expect(expectedUri).toBe(
+          '/recherche-offres/resultats?mots-cles=&autour-de-moi=oui&tri=&categories='
+        )
+      })
+
+      it('should not fetch offers and alert user when clicking on "autour de chez toi" if geolocation is disabled', async () => {
+        // Given
+        const history = createBrowserHistory()
+        props.history = history
+        props.history.push(
+          '/recherche-offres/resultats?mots-cles=recherche%20sans%20résultat&autour-de-moi=non&tri=_by_price&categories=INSTRUMENT'
+        )
+        props.geolocation = { latitude: null, longitude: null }
+        props.query.parse.mockReturnValue({
+          'autour-de-moi': 'non',
+          categories: 'INSTRUMENT',
+          'mots-cles': 'recherche sans résultat',
+          tri: '_by_price',
+        })
+        const mockedAlert = jest.spyOn(window, 'alert').mockImplementationOnce(() => {})
+        const wrapper = await mount(
+          <Router history={history}>
+            <SearchResults {...props} />
+          </Router>
+        )
+        wrapper.update()
+        const linkButton = wrapper.find({ children: 'autour de chez toi' })
+
+        // When
+        await linkButton.simulate('click')
+
+        // Then
+        expect(fetchAlgolia).toHaveBeenCalledTimes(1)
+        expect(mockedAlert).toHaveBeenCalledWith(
+          'Veuillez activer la géolocalisation pour voir les offres autour de vous.'
+        )
+        const expectedUri = props.history.location.pathname + props.history.location.search
+        expect(expectedUri).toBe(
+          '/recherche-offres/resultats?mots-cles=recherche%20sans%20résultat&autour-de-moi=non&tri=_by_price&categories=INSTRUMENT'
+        )
+      })
+    })
+
     describe('when keywords in url', () => {
       it('should fill search input, display keywords, number of results and fetch data with page 0', async () => {
         // given
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
             resolve({
-              hits: [],
-              nbHits: 0,
+              hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
+              nbHits: 1,
               page: 0,
             })
           })
@@ -290,16 +435,16 @@ describe('components | SearchResults', () => {
         const wrapper = await shallow(<SearchResults {...props} />)
 
         // then
-        const results = wrapper.find(Result)
+        const searchResultsListComponent = wrapper.find(SearchResultsList)
+        const results = searchResultsListComponent.prop('results')
         const searchInput = wrapper.find('input')
-        const resultTitle = wrapper.findWhere(node => node.text() === '0 résultat').first()
-        expect(results).toHaveLength(0)
+        expect(results).toHaveLength(1)
         expect(searchInput.prop('value')).toBe('une librairie')
-        expect(resultTitle).toHaveLength(1)
+        expect(searchResultsListComponent.prop('resultsCount')).toBe(1)
         expect(fetchAlgolia).toHaveBeenCalledWith({
           geolocation: {
             latitude: 40.1,
-            longitude: 41.1
+            longitude: 41.1,
           },
           keywords: 'une librairie',
           offerCategories: [],
@@ -336,18 +481,18 @@ describe('components | SearchResults', () => {
         const wrapper = await shallow(<SearchResults {...props} />)
 
         // then
-        const results = wrapper.find(Result)
+        const searchResultsListComponent = wrapper.find(SearchResultsList)
+        const results = searchResultsListComponent.prop('results')
         const searchInput = wrapper.find('input')
-        const resultTitle = wrapper.findWhere(node => node.text() === '2 résultats').first()
         expect(results).toHaveLength(2)
-        expect(results.at(0).prop('geolocation')).toStrictEqual(props.geolocation)
-        expect(results.at(0).prop('result')).toStrictEqual({ objectID: 'AA' })
-        expect(results.at(0).prop('search')).toBe(props.history.location.search)
-        expect(results.at(1).prop('geolocation')).toStrictEqual(props.geolocation)
-        expect(results.at(1).prop('result')).toStrictEqual({ objectID: 'BB' })
-        expect(results.at(1).prop('search')).toBe(props.history.location.search)
+        expect(searchResultsListComponent.prop('resultsCount')).toBe(2)
+        expect(searchResultsListComponent.prop('geolocation')).toStrictEqual(props.geolocation)
+        expect(searchResultsListComponent.prop('results')).toStrictEqual([
+          { objectID: 'AA' },
+          { objectID: 'BB' },
+        ])
+        expect(searchResultsListComponent.prop('search')).toBe(props.history.location.search)
         expect(searchInput.prop('value')).toBe('une librairie')
-        expect(resultTitle).toHaveLength(1)
       })
     })
 
@@ -654,31 +799,49 @@ describe('components | SearchResults', () => {
         })
       })
 
-      it('should display the sort filter received from props', () => {
+      it('should display the sort filter received from props', async () => {
         // Given
+        fetchAlgolia.mockReturnValueOnce(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
+              nbHits: 1,
+              page: 0,
+            })
+          })
+        )
         props.criteria.sortBy = '_by_price'
 
         // When
-        const wrapper = shallow(<SearchResults {...props} />)
+        const wrapper = await shallow(<SearchResults {...props} />)
 
         // Then
-        const sortButton = wrapper.find({ children: 'Prix' })
-        expect(sortButton).toHaveLength(1)
+        const sortCriterionLabel = wrapper.find(SearchResultsList).prop('sortCriterionLabel')
+        expect(sortCriterionLabel).toBe('Prix')
       })
 
-      it('should display the sort filter received from url', () => {
+      it('should display the sort filter received from url', async () => {
         // Given
+        fetchAlgolia.mockReturnValueOnce(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
+              nbHits: 1,
+              page: 0,
+            })
+          })
+        )
         props.criteria.sortBy = ''
         parse.mockReturnValue({
           tri: '_by_price',
         })
 
         // When
-        const wrapper = shallow(<SearchResults {...props} />)
+        const wrapper = await shallow(<SearchResults {...props} />)
 
         // Then
-        const sortButton = wrapper.find({ children: 'Prix' })
-        expect(sortButton).toHaveLength(1)
+        const sortCriterionLabel = wrapper.find(SearchResultsList).prop('sortCriterionLabel')
+        expect(sortCriterionLabel).toBe('Prix')
       })
     })
   })
@@ -787,112 +950,6 @@ describe('components | SearchResults', () => {
       })
     })
 
-    it('should display search keywords and number of results when 0 result', async () => {
-      // given
-      const wrapper = shallow(<SearchResults {...props} />)
-      stubRef(wrapper)
-      const form = wrapper.find('form')
-      fetchAlgolia.mockReturnValue(
-        new Promise(resolve => {
-          resolve({
-            hits: [],
-            page: 0,
-            nbHits: 0,
-            nbPages: 0,
-            hitsPerPage: 2,
-            processingTimeMS: 1,
-            query: 'librairie',
-            params: 'query=librairie&hitsPerPage=2',
-          })
-        })
-      )
-
-      // when
-      await form.simulate('submit', {
-        target: {
-          keywords: {
-            value: 'librairie',
-          },
-        },
-        preventDefault: jest.fn(),
-      })
-
-      // then
-      const resultTitle = wrapper.findWhere(node => node.text() === '0 résultat').first()
-      expect(resultTitle).toHaveLength(1)
-    })
-
-    it('should display search keywords and number of results when 2 results', async () => {
-      // given
-      const wrapper = shallow(<SearchResults {...props} />)
-      stubRef(wrapper)
-      const form = wrapper.find('form')
-      fetchAlgolia.mockReturnValue(
-        new Promise(resolve => {
-          resolve({
-            hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
-            page: 0,
-            nbHits: 2,
-            nbPages: 0,
-            hitsPerPage: 2,
-            processingTimeMS: 1,
-            query: 'librairie',
-            params: 'query=librairie&hitsPerPage=2',
-          })
-        })
-      )
-
-      // when
-      await form.simulate('submit', {
-        target: {
-          keywords: {
-            value: 'librairie',
-          },
-        },
-        preventDefault: jest.fn(),
-      })
-
-      // then
-      const resultTitle = wrapper.findWhere(node => node.text() === '2 résultats').first()
-      expect(resultTitle).toHaveLength(1)
-    })
-
-    it('should only display number of results when no search keywords', async () => {
-      // given
-      const wrapper = shallow(<SearchResults {...props} />)
-      stubRef(wrapper)
-      wrapper.setState({ searchedKeywords: 'different previous search' })
-      const form = wrapper.find('form')
-      fetchAlgolia.mockReturnValueOnce(
-        new Promise(resolve => {
-          resolve({
-            hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
-            page: 0,
-            nbHits: 2,
-            nbPages: 0,
-            hitsPerPage: 2,
-            processingTimeMS: 1,
-            query: '',
-            params: 'hitsPerPage=2',
-          })
-        })
-      )
-
-      // when
-      await form.simulate('submit', {
-        target: {
-          keywords: {
-            value: '',
-          },
-        },
-        preventDefault: jest.fn(),
-      })
-
-      // then
-      const resultTitle = wrapper.findWhere(node => node.text() === '2 résultats').first()
-      expect(resultTitle).toHaveLength(1)
-    })
-
     it('should not display results when no results', () => {
       // given
       const wrapper = shallow(<SearchResults {...props} />)
@@ -928,20 +985,35 @@ describe('components | SearchResults', () => {
       // given
       props.criteria.isSearchAroundMe = true
       const offer = { objectID: 'AE', offer: { name: 'Livre de folie' } }
-      fetchAlgolia.mockReturnValueOnce(
-        new Promise(resolve => {
-          resolve({
-            hits: [offer],
-            page: 0,
-            nbHits: 1,
-            nbPages: 0,
-            hitsPerPage: 2,
-            processingTimeMS: 1,
-            query: 'librairie',
-            params: 'query=\'librairie\'&hitsPerPage=2',
+      fetchAlgolia
+        .mockReturnValueOnce(
+          new Promise(resolve => {
+            resolve({
+              hits: [],
+              page: 0,
+              nbHits: 0,
+              nbPages: 0,
+              hitsPerPage: 2,
+              processingTimeMS: 1,
+              query: 'librairie',
+              params: "query='librairie'&hitsPerPage=2",
+            })
           })
-        })
-      )
+        )
+        .mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [offer],
+              page: 0,
+              nbHits: 1,
+              nbPages: 1,
+              hitsPerPage: 2,
+              processingTimeMS: 1,
+              query: 'librairie',
+              params: "query='librairie'&hitsPerPage=2",
+            })
+          })
+        )
       const wrapper = shallow(<SearchResults {...props} />)
       stubRef(wrapper)
       const form = wrapper.find('form')
@@ -957,10 +1029,18 @@ describe('components | SearchResults', () => {
       })
 
       // then
-      const results = wrapper.find(Result)
+      const results = wrapper.find(SearchResultsList)
       expect(results).toHaveLength(1)
+      expect(results.at(0).prop('currentPage')).toStrictEqual(0)
       expect(results.at(0).prop('geolocation')).toStrictEqual({ latitude: 40.1, longitude: 41.1 })
-      expect(results.at(0).prop('result')).toStrictEqual(offer)
+      expect(results.at(0).prop('isLoading')).toStrictEqual(false)
+      expect(results.at(0).prop('loadMore')).toStrictEqual(expect.any(Function))
+      expect(results.at(0).prop('onSortClick')).toStrictEqual(expect.any(Function))
+      expect(results.at(0).prop('results')).toStrictEqual([offer])
+      expect(results.at(0).prop('resultsCount')).toStrictEqual(1)
+      expect(results.at(0).prop('search')).toStrictEqual('?mots-cles=librairie')
+      expect(results.at(0).prop('sortCriterionLabel')).toStrictEqual('Au hasard')
+      expect(results.at(0).prop('totalPagesNumber')).toStrictEqual(1)
     })
 
     it('should clear previous results and page number when searching with new keywords', async () => {
@@ -978,7 +1058,7 @@ describe('components | SearchResults', () => {
             hitsPerPage: 2,
             processingTimeMS: 1,
             query: 'librairie',
-            params: 'query=\'librairie\'&hitsPerPage=2',
+            params: "query='librairie'&hitsPerPage=2",
           })
         })
       )
@@ -997,7 +1077,7 @@ describe('components | SearchResults', () => {
       })
 
       // then
-      const resultsFirstFetch = wrapper.find(Result)
+      const resultsFirstFetch = wrapper.find(SearchResultsList).prop('results')
       expect(resultsFirstFetch).toHaveLength(2)
 
       // when
@@ -1025,8 +1105,8 @@ describe('components | SearchResults', () => {
       })
 
       // then
-      const resultSecondFetch = wrapper.find(Result)
-      expect(resultSecondFetch).toHaveLength(1)
+      const resultSecondFetch = wrapper.find(SearchResultsList)
+      expect(resultSecondFetch.prop('results')).toHaveLength(1)
       expect(wrapper.state()).toStrictEqual({
         currentPage: 0,
         filters: {
@@ -1152,7 +1232,7 @@ describe('components | SearchResults', () => {
       // then
       await toast.info
       expect(toast.info).toHaveBeenCalledWith(
-        'La recherche n\'a pas pu aboutir, veuillez ré-essayer plus tard.'
+        "La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard."
       )
     })
 
@@ -1592,36 +1672,55 @@ describe('components | SearchResults', () => {
       expect(expectedUrl).toBe('/recherche-offres/resultats/filtres?mots-cles=librairie')
     })
 
-    it('should redirect to sort page when clicking on sort button', () => {
+    it('should redirect to sort page when clicking on sort button', async () => {
       // given
+      fetchAlgolia.mockReturnValue(
+        new Promise(resolve => {
+          resolve({
+            hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
+            nbHits: 1,
+            page: 0,
+          })
+        })
+      )
       const history = createBrowserHistory()
       history.push('/recherche-offres/resultats?mots-cles=librairie')
       props.history = history
       const store = configureStore([])({})
-      const wrapper = mount(
+      const wrapper = await mount(
         <Provider store={store}>
           <Router history={history}>
             <SearchResults {...props} />
           </Router>
         </Provider>
       )
+      wrapper.update()
       const sortButton = wrapper.find({ children: 'Au hasard' })
 
       // when
-      sortButton.simulate('click')
+      await sortButton.simulate('click')
 
       // then
       const expectedUrl = history.location.pathname + history.location.search
       expect(expectedUrl).toBe('/recherche-offres/resultats/tri?mots-cles=librairie')
     })
 
-    it('should change sort button name after sort criterion selection', () => {
+    it('should change sort button name after sort criterion selection', async () => {
       // given
+      fetchAlgolia.mockReturnValue(
+        new Promise(resolve => {
+          resolve({
+            hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
+            nbHits: 1,
+            page: 0,
+          })
+        })
+      )
       const history = createBrowserHistory()
       history.push('/recherche-offres/resultats/tri?mots-cles=librairie&tri=_by_price')
       props.history = history
       const store = configureStore([])({})
-      const wrapper = mount(
+      const wrapper = await mount(
         <Provider store={store}>
           <Router history={history}>
             <SearchResults {...props} />
@@ -1631,7 +1730,8 @@ describe('components | SearchResults', () => {
 
       // when
       const byProximityButton = wrapper.find({ children: 'Proximité' })
-      byProximityButton.simulate('click')
+      await byProximityButton.simulate('click')
+      wrapper.update()
 
       // then
       const expectedUri = history.location.pathname + history.location.search
