@@ -21,7 +21,7 @@
 }
 
 .sf-content-wrapper {
-  margin: rem(24px) rem(24px) rem($footer-height + rem(48px));
+  padding: rem(24px) rem(24px) 0 rem(24px);
   overflow-y: auto;
 
   .sf-title {
@@ -114,6 +114,11 @@
     height: rem(48px);
     width: 100%;
   }
+
+  .sf-button:disabled {
+    background-color: #FF99BE;
+    opacity: 1;
+  }
 }
 
 .sf-filter-separator {
@@ -135,6 +140,6 @@
   display: block;
 }
 
-.sf-price-slider-wrapper {
-  padding-bottom: rem(5px);
+.sf-space-wrapper {
+  padding-top: rem($footer-height + rem(48px))
 }

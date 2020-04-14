@@ -545,6 +545,7 @@ export class Filters extends PureComponent {
                   />
                 </li>
               )}
+              <li className='sf-space-wrapper' />
             </ul>
             <div className="sf-button-wrapper">
               <button
