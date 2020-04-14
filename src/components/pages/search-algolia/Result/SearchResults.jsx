@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import InfiniteScroll from 'react-infinite-scroller'
 import { Route, Switch } from 'react-router'
 import { toast } from 'react-toastify'
+import { isGeolocationEnabled } from '../../../../utils/geolocation'
 
 import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
@@ -12,8 +12,9 @@ import Spinner from '../../../layout/Spinner/Spinner'
 import { Criteria } from '../Criteria/Criteria'
 import { SORT_CRITERIA } from '../Criteria/criteriaEnums'
 import FiltersContainer from '../Filters/FiltersContainer'
-import Result from './Result'
+import { EmptySearchResult } from './EmptySearchResult'
 import SearchAlgoliaDetailsContainer from './ResultDetail/ResultDetailContainer'
+import { SearchResultsList } from './SearchResultsList'
 
 const SEARCH_RESULTS_URI = '/recherche-offres/resultats'
 
@@ -93,8 +94,6 @@ class SearchResults extends PureComponent {
     return sortByFromUrl ? sortByFromUrl : sortByFromProps
   }
 
-  getScrollParent = () => document.querySelector('.sr-wrapper')
-
   showFailModal = () => {
     toast.info("La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard.")
   }
@@ -112,9 +111,9 @@ class SearchResults extends PureComponent {
     const categories = offerCategories.join(';')
 
     trimmedKeywordsToSearch &&
-      history.replace({
-        search: `?mots-cles=${trimmedKeywordsToSearch}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${categories}`,
-      })
+    history.replace({
+      search: `?mots-cles=${trimmedKeywordsToSearch}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${categories}`,
+    })
 
     if (searchedKeywords !== trimmedKeywordsToSearch) {
       this.setState(
@@ -197,6 +196,7 @@ class SearchResults extends PureComponent {
           resultsCount: nbHits,
           results: [...results, ...hits],
           searchedKeywords: keywords,
+          sortCriterionLabel: this.getSortCriterionLabelFromIndex(sortBy),
           totalPagesNumber: nbPages,
         })
       })
@@ -245,12 +245,6 @@ class SearchResults extends PureComponent {
     })
   }
 
-  getNumberOfResultsToDisplay = () => {
-    const { resultsCount } = this.state
-    const pluralizedResultatWord = resultsCount > 1 ? 'résultats' : 'résultat'
-    return `${resultsCount} ${pluralizedResultatWord}`
-  }
-
   blurInput = () => () => this.inputRef.current.blur()
 
   getSortCriterionLabelFromIndex(index) {
@@ -284,6 +278,29 @@ class SearchResults extends PureComponent {
     history.push(`${SEARCH_RESULTS_URI}${queryParams}`)
   }
 
+  handleNewSearchAroundMe = () => {
+    const { geolocation, history } = this.props
+    const { filters } = this.state
+    this.setState(
+      {
+        filters: {
+          ...filters,
+          offerCategories: [],
+          isSearchAroundMe: true,
+          sortBy: '',
+        },
+      },
+      () => {
+        if (isGeolocationEnabled(geolocation)) {
+          history.push('/recherche-offres/resultats?mots-cles=&autour-de-moi=oui&tri=&categories=')
+          this.fetchOffers()
+        } else {
+          window.alert('Veuillez activer la géolocalisation pour voir les offres autour de vous.')
+        }
+      }
+    )
+  }
+
   render() {
     const { geolocation, history, match, query } = this.props
     const {
@@ -294,11 +311,13 @@ class SearchResults extends PureComponent {
       numberOfActiveFilters,
       results,
       resultsCount,
+      searchedKeywords,
       sortCriterionLabel,
       totalPagesNumber,
     } = this.state
     const { location } = history
     const { search } = location
+    const isSearchEmpty = !isLoading && results.length === 0
 
     return (
       <main className="search-results-page">
@@ -355,64 +374,52 @@ class SearchResults extends PureComponent {
               <div className="sr-spinner">
                 {isLoading && <Spinner label="Recherche en cours" />}
               </div>
-              <div className="sr-items-header">
-                <span className="sr-items-number">
-                  {this.getNumberOfResultsToDisplay()}
-                </span>
-                <button
-                  className="sr-items-header-button"
-                  onClick={this.handleGoTo('tri')}
-                  type="button"
-                >
-                  <Icon svg="picto-sort" />
-                  <span>
-                    {sortCriterionLabel}
-                  </span>
-                </button>
-              </div>
+              {isSearchEmpty && (
+                <EmptySearchResult
+                  onNewSearchAroundMe={this.handleNewSearchAroundMe}
+                  searchedKeywords={searchedKeywords}
+                />
+              )}
               {results.length > 0 && (
-                <InfiniteScroll
-                  getScrollParent={this.getScrollParent}
-                  hasMore={!isLoading && currentPage + 1 < totalPagesNumber}
+                <SearchResultsList
+                  currentPage={currentPage}
+                  geolocation={geolocation}
+                  isLoading={isLoading}
                   loadMore={this.fetchNextOffers}
-                  pageStart={currentPage}
-                  threshold={100}
-                  useWindow={false}
-                >
-                  {results.map(result => (
-                    <Result
-                      geolocation={geolocation}
-                      key={result.objectID}
-                      result={result}
-                      search={search}
-                    />
-                  ))}
-                </InfiniteScroll>
+                  onSortClick={this.handleGoTo('tri')}
+                  results={results}
+                  resultsCount={resultsCount}
+                  search={search}
+                  sortCriterionLabel={sortCriterionLabel}
+                  totalPagesNumber={totalPagesNumber}
+                />
               )}
             </div>
-            <div className="sr-filter-wrapper">
-              <button
-                className="sr-filter-button"
-                onClick={this.handleGoTo('filtres')}
-                type="button"
-              >
-                <Icon
-                  alt="Filtrer les résultats"
-                  svg="filtrer"
-                />
-                <span className="sr-filter-button-text">
-                  {'Filtrer'}
-                </span>
-                {numberOfActiveFilters > 0 && (
-                  <span
-                    className="sr-filter-button-counter"
-                    data-test="sr-filter-button-counter"
-                  >
-                    {numberOfActiveFilters}
+            {!isSearchEmpty && (
+              <div className="sr-filter-wrapper">
+                <button
+                  className="sr-filter-button"
+                  onClick={this.handleGoTo('filtres')}
+                  type="button"
+                >
+                  <Icon
+                    alt="Filtrer les résultats"
+                    svg="filtrer"
+                  />
+                  <span className="sr-filter-button-text">
+                    {'Filtrer'}
                   </span>
-                )}
-              </button>
-            </div>
+                  {numberOfActiveFilters > 0 && (
+                    <span
+                      className="sr-filter-button-counter"
+                      data-test="sr-filter-button-counter"
+                    >
+                      {numberOfActiveFilters}
+                    </span>
+                  )}
+                </button>
+              </div>
+            )}
           </Route>
           <Route
             path={`${SEARCH_RESULTS_URI}/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
