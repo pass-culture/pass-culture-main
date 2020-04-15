@@ -136,12 +136,25 @@ describe('components | SearchResults', () => {
       props.criteria.categories = ["CINEMA"]
       // when
       const wrapper = shallow(<SearchResults {...props} />)
-      const numberOfActiveFilters = wrapper.find('[data-test="sr-filter-button-number"]')
+      const numberOfActiveFilters = wrapper.find('[data-test="sr-filter-button-counter"]')
       // then
       expect(numberOfActiveFilters.text()).toStrictEqual("2")
     })
 
     it('should display the number of selected filters in the filter button when categories are provided by the url', () => {
+      //given
+      props.query.parse.mockReturnValue({
+        'autour-de-moi': 'oui',
+        'categories': 'CINEMA;VISITE'
+      })
+      // when
+      const wrapper = shallow(<SearchResults {...props} />)
+      const numberOfActiveFilters = wrapper.find('[data-test="sr-filter-button-counter"]')
+      // then
+      expect(numberOfActiveFilters.text()).toStrictEqual("3")
+    })
+
+    it('should display the number of selected filters in the filter button when categories are provided by the url and props', () => {
       //given
       props.criteria.isSearchAroundMe = false
       props.criteria.categories = ["CINEMA"]
@@ -151,20 +164,7 @@ describe('components | SearchResults', () => {
       })
       // when
       const wrapper = shallow(<SearchResults {...props} />)
-      const numberOfActiveFilters = wrapper.find('[data-test="sr-filter-button-number"]')
-      // then
-      expect(numberOfActiveFilters.text()).toStrictEqual("3")
-    })
-
-    it('should display the number of selected filters in the filter button when categories are provided by the url and props', () => {
-      //given
-      props.query.parse.mockReturnValue({
-        'autour-de-moi': 'oui',
-        'categories': 'CINEMA;VISITE'
-      })
-      // when
-      const wrapper = shallow(<SearchResults {...props} />)
-      const numberOfActiveFilters = wrapper.find('[data-test="sr-filter-button-number"]')
+      const numberOfActiveFilters = wrapper.find('[data-test="sr-filter-button-counter"]')
       // then
       expect(numberOfActiveFilters.text()).toStrictEqual("3")
     })
@@ -212,9 +212,7 @@ describe('components | SearchResults', () => {
         'mots-cles': 'une librairie',
         tri: '_by_price',
       })
-      props.criteria = {
-        categories:['MUSEE']
-      }
+      props.criteria = {}
 
       // when
       await shallow(<SearchResults {...props} />)
@@ -448,9 +446,7 @@ describe('components | SearchResults', () => {
           categories: 'CINEMA',
           'mots-cles': 'une librairie',
         })
-        props.criteria = {
-          categories: ['CINEMA']
-        }
+        props.criteria = {}
 
         // when
         await shallow(<SearchResults {...props} />)

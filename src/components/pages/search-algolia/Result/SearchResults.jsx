@@ -81,7 +81,8 @@ class SearchResults extends PureComponent {
 
   getNumberOfActiveFilters = (isSearchAroundMe, categories) => {
     const numberOfActiveCategories = categories.length
-    return +isSearchAroundMe + numberOfActiveCategories
+    const geolocationFilterCounter = isSearchAroundMe === true ? 1 : 0
+    return geolocationFilterCounter + numberOfActiveCategories
   }
 
   getSortByFromUrlOrProps = sortByFromProps => {
@@ -404,8 +405,8 @@ class SearchResults extends PureComponent {
                 </span>
                 {numberOfActiveFilters > 0 && (
                   <span
-                    className="sr-filter-button-number"
-                    data-test="sr-filter-button-number"
+                    className="sr-filter-button-counter"
+                    data-test="sr-filter-button-counter"
                   >
                     {numberOfActiveFilters}
                   </span>

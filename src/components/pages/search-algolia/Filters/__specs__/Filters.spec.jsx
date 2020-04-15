@@ -314,7 +314,7 @@ describe('components | Filters', () => {
         const history = createBrowserHistory()
         history.push('/recherche-offres/resultats/filtres')
         props.query.parse.mockReturnValue({
-          'mots-cles': 'librairies',
+          'mots-cles': '',
         })
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
@@ -334,8 +334,8 @@ describe('components | Filters', () => {
           </Provider>
         )
         const resultsButton = wrapper.find('.sf-button')
-        const showCategory = wrapper.find('[data-test="Spectacles"]')
-        const digitalOffers = wrapper.find('[data-test="Offres numériques"]')
+        const showCategory = wrapper.find('input[name="SPECTACLE"]')
+        const digitalOffers = wrapper.find('input[name="isDigital"]')
 
         const showCategoryEvent = { target: { name: "SPECTACLE", checked: true } }
         const digitalOffersEvent = { target: { name: "isDigital", checked: true } }
@@ -344,7 +344,7 @@ describe('components | Filters', () => {
         digitalOffers.simulate('change', digitalOffersEvent)
 
         // when
-        resultsButton.simulate('click')
+        resultsButton.props().onClick()
 
         // then
         expect(props.updateNumberOfActiveFilters).toHaveBeenCalledWith(4)

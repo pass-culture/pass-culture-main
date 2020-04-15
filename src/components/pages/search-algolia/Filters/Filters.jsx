@@ -53,16 +53,16 @@ export class Filters extends PureComponent {
   }
 
   fetchOffers = ({
-    aroundRadius,
-    keywords,
-    geolocation,
-    offerCategories,
-    offerIsDuo,
-    offerIsFree,
-    offerTypes,
-    priceRange,
-    sortBy,
-  }) => {
+                   aroundRadius,
+                   keywords,
+                   geolocation,
+                   offerCategories,
+                   offerIsDuo,
+                   offerIsFree,
+                   offerTypes,
+                   priceRange,
+                   sortBy,
+                 }) => {
     const { showFailModal } = this.props
     fetchAlgolia({
       aroundRadius,
@@ -188,6 +188,9 @@ export class Filters extends PureComponent {
     return counter
   }
 
+  getNumberFromBoolean = boolean => boolean === true ? 1 : 0
+
+
   handleGeolocationCriterionSelection = criterionKey => () => {
     const {
       isUserAllowedToSelectCriterion,
@@ -228,13 +231,21 @@ export class Filters extends PureComponent {
     } = history
     const { filters, offers } = this.state
     const { nbHits } = offers
-    const { isSearchAroundMe, offerCategories, offerTypes } = filters
+    const { isSearchAroundMe, offerCategories, offerTypes, offerIsDuo, offerIsFree, priceRange } = filters
     const updatedFilters = { ...filters }
     updatedFilters.offerCategories = this.getSelectedCategories()
+    const geolocationFilterCounter = this.getNumberFromBoolean(isSearchAroundMe)
+    const offerTypesFilterCounter = this.getNumberOfSelectedFilters(offerTypes)
+    const offerCategoriesFilterCounter = this.getNumberOfSelectedFilters(offerCategories)
+    const offerIsDuoFilterCounter = this.getNumberFromBoolean(offerIsDuo)
+    const offerIsFreeFilterCounter = this.getNumberFromBoolean(offerIsFree)
+    const [lowestPrice, highestPrice] = priceRange
+    const [defaultLowestPrice, defaultHighestPrice] = [0, 500]
+    const priceRangeFilterCounter = (lowestPrice !== defaultLowestPrice || highestPrice !== defaultHighestPrice) ? 1 : 0
+    const numberOfActiveFilters = offerTypesFilterCounter + offerCategoriesFilterCounter + geolocationFilterCounter + offerIsDuoFilterCounter + offerIsFreeFilterCounter + priceRangeFilterCounter
 
     updateFilters(updatedFilters)
     updateFilteredOffers(offers)
-    const numberOfActiveFilters = this.getNumberOfSelectedFilters(offerTypes) + this.getNumberOfSelectedFilters(offerCategories) + +isSearchAroundMe
     updateNumberOfActiveFilters(numberOfActiveFilters)
     history.push(`/recherche-offres/resultats${search}`)
   }
@@ -344,7 +355,7 @@ export class Filters extends PureComponent {
     const { search = '' } = location
     const numberOfOfferTypesSelected = this.getNumberOfSelectedFilters(offerTypes)
     const numberOfOfferCategoriesSelected = this.getNumberOfSelectedFilters(offerCategories)
-    const numberOfLocationSelecteed = +isSearchAroundMe
+    const geolocationFilterCounter = this.getNumberFromBoolean(isSearchAroundMe)
 
     return (
       <main className="search-filters-page">
@@ -374,9 +385,9 @@ export class Filters extends PureComponent {
                 <h4 className="sf-title">
                   {'Localisation'}
                 </h4>
-                {numberOfLocationSelecteed > 0 && (
+                {geolocationFilterCounter > 0 && (
                   <span className="sf-selected-filter-counter">
-                      {`(${numberOfLocationSelecteed})`}
+                      {`(${geolocationFilterCounter})`}
                     </span>
                 )}
                 <button
