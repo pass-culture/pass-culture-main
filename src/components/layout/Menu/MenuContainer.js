@@ -1,8 +1,8 @@
 import { connect } from 'react-redux'
-import { selectCurrentUser } from '../../../selectors/data/usersSelectors'
+import { selectCurrentUser } from '../../../redux/selectors/data/usersSelectors'
 
 import Menu from './Menu'
-import { toggleOverlay } from '../../../reducers/overlay'
+import { toggleOverlay } from '../../../redux/actions/overlay'
 
 export const mapStateToProps = state => ({
   currentUser: selectCurrentUser(state),

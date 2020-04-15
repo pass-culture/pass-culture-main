@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { selectUserGeolocation } from '../../../selectors/geolocationSelectors'
+import { selectUserGeolocation } from '../../../redux/selectors/geolocationSelectors'
 import { isGeolocationEnabled, isUserAllowedToSelectCriterion } from '../../../utils/geolocation'
 
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'

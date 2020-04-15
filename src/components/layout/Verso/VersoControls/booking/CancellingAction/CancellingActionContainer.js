@@ -7,13 +7,13 @@ import withTracking from '../../../../../hocs/withTracking'
 import CancellingAction from './CancellingAction'
 import PopinButton from './PopinButton'
 import { bookingNormalizer } from '../../../../../../utils/normalizers'
-import { closeSharePopin, openSharePopin } from '../../../../../../reducers/share'
+import { closeSharePopin, openSharePopin } from '../../../../../../redux/actions/share'
 import {
   selectBookingByRouterMatch,
   selectPastBookingByOfferId,
-} from '../../../../../../selectors/data/bookingsSelectors'
-import { selectOfferByRouterMatch } from '../../../../../../selectors/data/offersSelectors'
-import { selectStockById } from '../../../../../../selectors/data/stocksSelectors'
+} from '../../../../../../redux/selectors/data/bookingsSelectors'
+import { selectOfferByRouterMatch } from '../../../../../../redux/selectors/data/offersSelectors'
+import { selectStockById } from '../../../../../../redux/selectors/data/stocksSelectors'
 
 export const getCancellingUrl = (bookingId, params, pathname, search) => {
   let bookingUrl = pathname

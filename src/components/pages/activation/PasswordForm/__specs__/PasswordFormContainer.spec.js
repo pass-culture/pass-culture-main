@@ -1,18 +1,18 @@
 import { requestData } from 'redux-thunk-data'
 
 import { mapDispatchToProps, mapStateToProps } from '../PasswordFormContainer'
-import { validateToken, setTokenStatus } from '../../../../../reducers/token'
+import { validateToken, setTokenStatus } from '../../../../../redux/actions/token'
 
 jest.mock('redux-thunk-data', () => ({
   requestData: jest.fn(),
 }))
 
-jest.mock('../../../../../reducers/token', () => ({
+jest.mock('../../../../../redux/actions/token', () => ({
   setTokenStatus: jest.fn(param => ({ payload: param, type: 'ACTION' })),
   validateToken: jest.fn(),
 }))
 
-describe('src | components | pages | activation | Password | PasswordFormContainer', () => {
+describe('components | PasswordFormContainer', () => {
   describe('mapDispatchToProps', () => {
     let dispatch
 

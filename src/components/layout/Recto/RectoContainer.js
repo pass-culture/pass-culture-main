@@ -4,10 +4,10 @@ import { compose } from 'redux'
 
 import { DEFAULT_THUMB_URL } from '../../../utils/thumb'
 import Recto from './Recto'
-import { selectMediationByOfferId } from '../../../selectors/data/mediationsSelectors'
-import { selectThumbUrlByRouterMatch } from '../../../selectors/data/thumbUrlSelector'
-import { selectBookingById } from '../../../selectors/data/bookingsSelectors'
-import { selectStockById } from '../../../selectors/data/stocksSelectors'
+import { selectMediationByOfferId } from '../../../redux/selectors/data/mediationsSelectors'
+import { selectThumbUrlByRouterMatch } from '../../../redux/selectors/data/thumbUrlSelector'
+import { selectBookingById } from '../../../redux/selectors/data/bookingsSelectors'
+import { selectStockById } from '../../../redux/selectors/data/stocksSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match, recommendation } = ownProps

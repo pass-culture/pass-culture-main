@@ -1,14 +1,14 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import { selectCurrentUser } from '../../../../selectors/data/usersSelectors'
+import { selectCurrentUser } from '../../../../redux/selectors/data/usersSelectors'
 
 import withTracking from '../../../hocs/withTracking'
 import ShareButton from './ShareButton'
 import getShareURL from '../../../../utils/getShareURL'
-import { selectOfferByRouterMatch } from '../../../../selectors/data/offersSelectors'
-import { openSharePopin, closeSharePopin } from '../../../../reducers/share'
-import { selectMediationByRouterMatch } from '../../../../selectors/data/mediationsSelectors'
+import { selectOfferByRouterMatch } from '../../../../redux/selectors/data/offersSelectors'
+import { openSharePopin, closeSharePopin } from '../../../../redux/actions/share'
+import { selectMediationByRouterMatch } from '../../../../redux/selectors/data/mediationsSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps

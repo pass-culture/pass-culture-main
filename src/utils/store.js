@@ -3,7 +3,7 @@ import { persistStore } from 'redux-persist'
 import thunk from 'redux-thunk'
 
 import initGeolocation from './initGeolocation'
-import rootReducer from '../reducers'
+import rootReducer from '../redux/reducers'
 import { API_URL } from '../utils/config'
 
 const buildStoreEnhancer = (middlewares = []) => {

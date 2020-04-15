@@ -1,9 +1,9 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import { selectOfferByRouterMatch } from '../../../selectors/data/offersSelectors'
+import { selectOfferByRouterMatch } from '../../../redux/selectors/data/offersSelectors'
 import Verso from './Verso'
-import { selectMediationByRouterMatch } from '../../../selectors/data/mediationsSelectors'
+import { selectMediationByRouterMatch } from '../../../redux/selectors/data/mediationsSelectors'
 
 export const checkIsTuto = mediation => {
   const { tutoIndex } = mediation || {}

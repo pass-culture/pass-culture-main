@@ -1,19 +1,18 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { assignData, deleteData, requestData } from 'redux-thunk-data'
-import { saveLastRecommendationsRequestTimestamp } from '../../../reducers/data'
 import {
   updatePage,
   updateSeed,
   updateSeedLastRequestTimestamp,
-} from '../../../reducers/pagination'
-import { selectReadRecommendations } from '../../../selectors/data/readRecommendationsSelectors'
-import { selectRecommendations } from '../../../selectors/data/recommendationsSelectors'
+} from '../../../redux/actions/pagination'
+import { selectReadRecommendations } from '../../../redux/selectors/data/readRecommendationsSelectors'
+import { selectRecommendations } from '../../../redux/selectors/data/recommendationsSelectors'
 import {
   selectPage,
   selectSeed,
   selectSeedLastRequestTimestamp,
-} from '../../../selectors/pagination/paginationSelector'
+} from '../../../redux/selectors/pagination/paginationSelector'
 import getOfferIdAndMediationIdApiPathQueryString, {
   DEFAULT_VIEW_IDENTIFIERS,
 } from '../../../utils/getOfferIdAndMediationIdApiPathQueryString'
@@ -26,6 +25,7 @@ import {
   checkIfShouldReloadRecommendationsBecauseOfLongTime,
   isDiscoveryStartupUrl,
 } from './utils/utils'
+import { saveLastRecommendationsRequestTimestamp } from '../../../redux/actions/lastRecommendationsRequestTimestamp'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps

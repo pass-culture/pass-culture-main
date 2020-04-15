@@ -7,7 +7,7 @@ import {
   selectFinishedEventBookings,
   selectUpComingBookings,
   selectUsedThingBookings,
-} from '../../../../selectors/data/bookingsSelectors'
+} from '../../../../redux/selectors/data/bookingsSelectors'
 import { compose } from 'redux'
 import { withRouter } from 'react-router-dom'
 

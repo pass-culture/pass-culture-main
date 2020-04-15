@@ -1,4 +1,4 @@
-import { selectUserGeolocation } from '../../../../selectors/geolocationSelectors'
+import { selectUserGeolocation } from '../../../../redux/selectors/geolocationSelectors'
 import { isGeolocationEnabled, isUserAllowedToSelectCriterion } from '../../../../utils/geolocation'
 import { connect } from 'react-redux'
 import { Filters } from './Filters'

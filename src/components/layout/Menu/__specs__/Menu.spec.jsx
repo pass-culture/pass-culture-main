@@ -12,7 +12,7 @@ import Menu from '../Menu'
 import MenuItem from '../MenuItem/MenuItem'
 import SignoutButtonContainer from '../SignoutButton/SignoutButtonContainer'
 
-jest.mock('../../../../reducers/overlay', () => ({
+jest.mock('../../../../redux/actions/overlay', () => ({
   toggleOverlay: jest.fn(),
 }))
 

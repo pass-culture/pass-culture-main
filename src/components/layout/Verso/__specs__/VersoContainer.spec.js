@@ -1,5 +1,5 @@
 import { mapStateToProps } from '../VersoContainer'
-import reduxState from '../../../../mocks/reduxState'
+import state from '../../../../mocks/state'
 
 describe('src | components | layout | Verso | VersoContainer', () => {
   let props
@@ -8,7 +8,7 @@ describe('src | components | layout | Verso | VersoContainer', () => {
     props = {
       match: {
         params: {
-          bookingId: 'CPGQ',
+          bookingId: 'A9',
           offerId: 'AM',
         },
       },
@@ -18,7 +18,7 @@ describe('src | components | layout | Verso | VersoContainer', () => {
   describe('mapStateToProps', () => {
     it('should return an object of props', () => {
       // when
-      const result = mapStateToProps(reduxState, props)
+      const result = mapStateToProps(state, props)
 
       // then
       expect(result).toStrictEqual({

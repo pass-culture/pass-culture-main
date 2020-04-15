@@ -2,8 +2,8 @@ import { connect } from 'react-redux'
 import { requestData, reinitializeData } from 'redux-thunk-data'
 
 import SignoutButton from './SignoutButton'
-import { toggleMainMenu } from '../../../../reducers/menu'
-import { updatePage, updateSeed, updateSeedLastRequestTimestamp } from '../../../../reducers/pagination'
+import { updatePage, updateSeed, updateSeedLastRequestTimestamp } from '../../../../redux/actions/pagination'
+import { toggleMainMenu } from '../../../../redux/actions/menu'
 
 export const mapDispatchToProps = dispatch => ({
   onSignOutClick: ({ history, readRecommendations }) => () => {

@@ -30,17 +30,6 @@ test('je peux naviguer vers mes offres', async t => {
   await t.expect(location.pathname).contains('decouverte')
 })
 
-test('je peux naviguer vers la recherche', async t => {
-  const menuRecherche = Selector('.navlink').withText('Recherche')
-  await t
-    .expect(menuRecherche.exists)
-    .ok()
-    .click(menuRecherche)
-    .wait(100)
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/recherche')
-})
-
 test('je peux naviguer vers mes réservations', async t => {
   const menuReservations = Selector('.navlink').withText('Mes réservations')
   await t
@@ -63,7 +52,7 @@ test('je peux naviguer vers les favoris', async t => {
   await t.expect(location.pathname).eql('/favoris')
 })
 
-test("je peux naviguer vers l'aide", async t => {
+test('je peux naviguer vers l\'aide', async t => {
   const expected = `https://aide.passculture.app/fr/category/18-ans-1dnil5r/`
   const menuContact = Selector('.navlink').withText('Aide')
   await t.expect(menuContact.exists).ok()

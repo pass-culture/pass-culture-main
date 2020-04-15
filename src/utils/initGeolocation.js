@@ -1,5 +1,5 @@
 import logger from './logger'
-import { setGeolocationPosition, setGeolocationWatchId } from '../reducers/geolocation'
+import { setGeolocationPosition, setGeolocationWatchId } from '../redux/actions/geolocation'
 
 const initGeolocation = store => {
   if (!navigator.geolocation || !navigator.geolocation.watchPosition) {

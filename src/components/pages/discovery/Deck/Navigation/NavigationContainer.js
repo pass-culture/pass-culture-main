@@ -3,9 +3,9 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import getPriceRangeFromStocks from '../../../../../utils/getPriceRangeFromStocks'
-import { selectOfferById } from '../../../../../selectors/data/offersSelectors'
-import { selectDistanceByOfferId } from '../../../../../selectors/geolocationSelectors'
-import { selectStocksByOfferId } from '../../../../../selectors/data/stocksSelectors'
+import { selectOfferById } from '../../../../../redux/selectors/data/offersSelectors'
+import { selectDistanceByOfferId } from '../../../../../redux/selectors/geolocationSelectors'
+import { selectStocksByOfferId } from '../../../../../redux/selectors/data/stocksSelectors'
 import withTracking from '../../../../hocs/withTracking'
 import Navigation from './Navigation'
 

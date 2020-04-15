@@ -4,7 +4,7 @@ import { requestData } from 'redux-thunk-data'
 
 import PasswordForm from './PasswordForm'
 import withFrenchQueryRouter from '../../../hocs/withFrenchQueryRouter'
-import { setTokenStatus, validateToken } from '../../../../reducers/token'
+import { setTokenStatus, validateToken } from '../../../../redux/actions/token'
 
 import doesTokenHaveBeenChecked from './helpers/doesTokenHaveBeenChecked'
 import isValidToken from './helpers/isValidToken'

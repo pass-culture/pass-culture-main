@@ -27,7 +27,7 @@ const state = {
           isSoftDeleted: false,
           lastProviderId: null,
           modelName: 'Stock',
-          offerId: null,
+          offerId: 'AM',
           price: 10,
           resolvedOffer: {
             bookingEmail: null,

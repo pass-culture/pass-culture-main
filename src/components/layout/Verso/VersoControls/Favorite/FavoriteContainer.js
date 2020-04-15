@@ -5,10 +5,10 @@ import { compose } from 'redux'
 
 import Favorite from './Favorite'
 import { favoriteNormalizer } from '../../../../../utils/normalizers'
-import { selectFavoriteByOfferId } from '../../../../../selectors/data/favoritesSelectors'
-import { selectMediationByOfferId } from '../../../../../selectors/data/mediationsSelectors'
-import { selectBookingById } from '../../../../../selectors/data/bookingsSelectors'
-import { selectStockById } from '../../../../../selectors/data/stocksSelectors'
+import { selectFavoriteByOfferId } from '../../../../../redux/selectors/data/favoritesSelectors'
+import { selectMediationByOfferId } from '../../../../../redux/selectors/data/mediationsSelectors'
+import { selectBookingById } from '../../../../../redux/selectors/data/bookingsSelectors'
+import { selectStockById } from '../../../../../redux/selectors/data/stocksSelectors'
 
 const API_PATH_TO_FAVORITES_ENDPOINT = '/favorites'
 

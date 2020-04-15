@@ -8,7 +8,7 @@ import BookingAction from '../BookingAction'
 import BookingActionContainer from '../BookingActionContainer'
 import getMockStore from '../../../../../../../utils/mockStore'
 import Price from '../../../../../Price/Price'
-import { selectOfferByRouterMatch } from '../../../../../../../selectors/data/offersSelectors'
+import { selectOfferByRouterMatch } from '../../../../../../../redux/selectors/data/offersSelectors'
 
 jest.mock('redux-thunk-data', () => {
   const { requestData } = jest.requireActual('fetch-normalize-data')
@@ -18,7 +18,7 @@ jest.mock('redux-thunk-data', () => {
   }
 })
 
-jest.mock('../../../../../../../selectors/data/offersSelectors')
+jest.mock('../../../../../../../redux/selectors/data/offersSelectors')
 
 describe('components | BookingAction', () => {
   let props

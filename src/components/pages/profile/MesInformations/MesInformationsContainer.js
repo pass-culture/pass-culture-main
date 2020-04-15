@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import { requestData } from 'redux-thunk-data'
-import { selectCurrentUser, resolveCurrentUser } from '../../../../selectors/data/usersSelectors'
+import { selectCurrentUser, resolveCurrentUser } from '../../../../redux/selectors/data/usersSelectors'
 import getDepartementByCode from '../../../../utils/getDepartementByCode'
 
 import MesInformations from './MesInformations'

@@ -3,10 +3,10 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import getPriceRangeFromStocks from '../../../../../../utils/getPriceRangeFromStocks'
-import { selectOfferByRouterMatch } from '../../../../../../selectors/data/offersSelectors'
-import { selectStocksByOfferId } from '../../../../../../selectors/data/stocksSelectors'
+import { selectOfferByRouterMatch } from '../../../../../../redux/selectors/data/offersSelectors'
+import { selectStocksByOfferId } from '../../../../../../redux/selectors/data/stocksSelectors'
 import BookingAction from './BookingAction'
-import { selectPastBookingByOfferId } from '../../../../../../selectors/data/bookingsSelectors'
+import { selectPastBookingByOfferId } from '../../../../../../redux/selectors/data/bookingsSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { location, match } = ownProps

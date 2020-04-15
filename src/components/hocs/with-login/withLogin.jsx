@@ -5,7 +5,7 @@ import React, { PureComponent } from 'react'
 import LoadingPage from '../../layout/LoadingPage/LoadingPage'
 
 import { connect } from 'react-redux'
-import { selectCurrentUser, resolveCurrentUser } from '../../../selectors/data/usersSelectors'
+import { selectCurrentUser, resolveCurrentUser } from '../../../redux/selectors/data/usersSelectors'
 
 export default (config = {}) => WrappedComponent => {
   const { handleFail, handleSuccess } = config

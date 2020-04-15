@@ -3,12 +3,12 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import Finishable from './Finishable'
 import getIsBooked from '../../../utils/getIsBooked'
-import { selectStockById } from '../../../selectors/data/stocksSelectors'
+import { selectStockById } from '../../../redux/selectors/data/stocksSelectors'
 import {
   selectBookingByRouterMatch,
   selectPastBookingByOfferId,
-} from '../../../selectors/data/bookingsSelectors'
-import { selectOfferById } from '../../../selectors/data/offersSelectors'
+} from '../../../redux/selectors/data/bookingsSelectors'
+import { selectOfferById } from '../../../redux/selectors/data/offersSelectors'
 
 function computeShouldDisplayFinishedBanner(offer, userBookingsForThisOffer, offerIsBookedByUser) {
   const isOfferTuto = Object.keys(offer).length === 0

@@ -1,4 +1,4 @@
-import { resolveCurrentUser } from '../../../../../selectors/data/usersSelectors'
+import { resolveCurrentUser } from '../../../../../redux/selectors/data/usersSelectors'
 import getDepartementByCode from '../../../../../utils/getDepartementByCode'
 import {
   getDepartment,

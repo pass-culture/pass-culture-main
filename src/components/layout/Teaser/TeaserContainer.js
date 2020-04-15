@@ -9,9 +9,9 @@ import { formatRecommendationDates } from '../../../utils/date/date'
 import { getHumanizeRelativeDistance } from '../../../utils/geolocation'
 import getHumanizeRelativeDate from '../../../utils/date/getHumanizeRelativeDate'
 import getIsBooked from '../../../utils/getIsBooked'
-import { selectOfferById } from '../../../selectors/data/offersSelectors'
-import { selectStockById } from '../../../selectors/data/stocksSelectors'
-import { selectFirstMatchingBookingByOfferId } from '../../../selectors/data/bookingsSelectors'
+import { selectOfferById } from '../../../redux/selectors/data/offersSelectors'
+import { selectStockById } from '../../../redux/selectors/data/stocksSelectors'
+import { selectFirstMatchingBookingByOfferId } from '../../../redux/selectors/data/bookingsSelectors'
 
 export const humanizeBeginningDateTime = (hasBookings, state, booking) => {
   let humanizeRelativeDate = ''

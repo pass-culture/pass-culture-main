@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Transition } from 'react-transition-group'
 
-import { closeSharePopin } from '../../../reducers/share'
+import { closeSharePopin } from '../../../redux/actions/share'
 import Icon from '../Icon/Icon'
 
 const transitionDelay = 500

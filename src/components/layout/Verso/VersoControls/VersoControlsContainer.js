@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import VersoControls from './VersoControls'
-import { selectBookingByRouterMatch } from '../../../../selectors/data/bookingsSelectors'
+import { selectBookingByRouterMatch } from '../../../../redux/selectors/data/bookingsSelectors'
 import getIsBooked from '../../../../utils/getIsBooked'
 
 const mapStateToProps = (state, ownProps) => {

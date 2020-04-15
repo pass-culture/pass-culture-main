@@ -3,8 +3,8 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import BookingCancellation from './BookingCancellation'
-import { selectBookingByRouterMatch } from '../../../selectors/data/bookingsSelectors'
-import { selectOfferByRouterMatch } from '../../../selectors/data/offersSelectors'
+import { selectBookingByRouterMatch } from '../../../redux/selectors/data/bookingsSelectors'
+import { selectOfferByRouterMatch } from '../../../redux/selectors/data/offersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps

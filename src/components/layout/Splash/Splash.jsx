@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Transition } from 'react-transition-group'
 import { bindActionCreators } from 'redux'
-import { closeSplash } from '../../../reducers/splash'
+import { closeSplash } from '../../../redux/actions/splash'
 
 import Icon from '../Icon/Icon'
 

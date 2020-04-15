@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { selectCurrentUser } from '../../../../selectors/data/usersSelectors'
+import { selectCurrentUser } from '../../../../redux/selectors/data/usersSelectors'
 
 import ProfileForm from './ProfileForm'
 
