@@ -49,9 +49,6 @@ class OffererCreation extends PureComponent {
         name="offerer"
       >
         <Titles title="Structure" />
-        <p className="subtitle">
-          {'Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.'}
-        </p>
 
         <Form
           decorators={this.createDecorators()}

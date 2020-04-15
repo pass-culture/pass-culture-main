@@ -34,11 +34,6 @@ ShallowWrapper {
           subtitle={null}
           title="Structure"
         />,
-        <p
-          className="subtitle"
-        >
-          Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
-        </p>,
         <ReactFinalForm
           decorators={
             Array [
@@ -65,18 +60,6 @@ ShallowWrapper {
         "ref": null,
         "rendered": null,
         "type": [Function],
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
-          "className": "subtitle",
-        },
-        "ref": null,
-        "rendered": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
-        "type": "p",
       },
       Object {
         "instance": null,
@@ -112,11 +95,6 @@ ShallowWrapper {
             subtitle={null}
             title="Structure"
           />,
-          <p
-            className="subtitle"
-          >
-            Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
-          </p>,
           <ReactFinalForm
             decorators={
               Array [
@@ -143,18 +121,6 @@ ShallowWrapper {
           "ref": null,
           "rendered": null,
           "type": [Function],
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
-            "className": "subtitle",
-          },
-          "ref": null,
-          "rendered": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
-          "type": "p",
         },
         Object {
           "instance": null,

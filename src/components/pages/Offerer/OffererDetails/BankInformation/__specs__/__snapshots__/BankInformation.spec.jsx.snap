@@ -5,15 +5,15 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BankInformation
     offerer={
-      OffererClass {
+      Offerer {
         "address": "fake address",
         "adminUserOfferer": undefined,
-        "areBankInformationProvided": [Function],
         "bic": "ABC",
+        "city": "",
         "iban": "DEF",
         "id": "AA",
-        "isIdOrNameDefined": [Function],
         "name": "fake offerer name",
+        "postalCode": "",
         "siren": "",
       }
     }
@@ -41,7 +41,8 @@ ShallowWrapper {
         <React.Fragment>
           <a
             className="bi-external-link bi-external-link--mod-topright"
-            href="google.com"
+            href="https://www.demarches-simplifiees.fr/commencer/undefined"
+            rel="noopener noreferrer"
             target="_blank"
           >
             <img
@@ -58,28 +59,28 @@ ShallowWrapper {
             Les coordonnées bancaires ci dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :
           </p>
           <div
-            className="bi-field"
+            className="op-detail"
           >
-            <span>
+            <label>
               IBAN : 
-            </span>
+            </label>
             <span>
               DEF
             </span>
           </div>
           <div
-            className="bi-field"
+            className="op-detail"
           >
-            <span>
+            <label>
               BIC : 
-            </span>
+            </label>
             <span>
               ABC
             </span>
           </div>
         </React.Fragment>,
       ],
-      "className": "bank-information",
+      "className": "section bank-information",
     },
     "ref": null,
     "rendered": Array [
@@ -103,7 +104,8 @@ ShallowWrapper {
           "children": Array [
             <a
               className="bi-external-link bi-external-link--mod-topright"
-              href="google.com"
+              href="https://www.demarches-simplifiees.fr/commencer/undefined"
+              rel="noopener noreferrer"
               target="_blank"
             >
               <img
@@ -120,21 +122,21 @@ ShallowWrapper {
               Les coordonnées bancaires ci dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :
             </p>,
             <div
-              className="bi-field"
+              className="op-detail"
             >
-              <span>
+              <label>
                 IBAN : 
-              </span>
+              </label>
               <span>
                 DEF
               </span>
             </div>,
             <div
-              className="bi-field"
+              className="op-detail"
             >
-              <span>
+              <label>
                 BIC : 
-              </span>
+              </label>
               <span>
                 ABC
               </span>
@@ -158,7 +160,8 @@ ShallowWrapper {
                 </b>,
               ],
               "className": "bi-external-link bi-external-link--mod-topright",
-              "href": "google.com",
+              "href": "https://www.demarches-simplifiees.fr/commencer/undefined",
+              "rel": "noopener noreferrer",
               "target": "_blank",
             },
             "ref": null,
@@ -207,14 +210,14 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                <span>
+                <label>
                   IBAN : 
-                </span>,
+                </label>,
                 <span>
                   DEF
                 </span>,
               ],
-              "className": "bi-field",
+              "className": "op-detail",
             },
             "ref": null,
             "rendered": Array [
@@ -227,7 +230,7 @@ ShallowWrapper {
                 },
                 "ref": null,
                 "rendered": "IBAN : ",
-                "type": "span",
+                "type": "label",
               },
               Object {
                 "instance": null,
@@ -249,14 +252,14 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                <span>
+                <label>
                   BIC : 
-                </span>,
+                </label>,
                 <span>
                   ABC
                 </span>,
               ],
-              "className": "bi-field",
+              "className": "op-detail",
             },
             "ref": null,
             "rendered": Array [
@@ -269,7 +272,7 @@ ShallowWrapper {
                 },
                 "ref": null,
                 "rendered": "BIC : ",
-                "type": "span",
+                "type": "label",
               },
               Object {
                 "instance": null,
@@ -306,7 +309,8 @@ ShallowWrapper {
           <React.Fragment>
             <a
               className="bi-external-link bi-external-link--mod-topright"
-              href="google.com"
+              href="https://www.demarches-simplifiees.fr/commencer/undefined"
+              rel="noopener noreferrer"
               target="_blank"
             >
               <img
@@ -323,28 +327,28 @@ ShallowWrapper {
               Les coordonnées bancaires ci dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :
             </p>
             <div
-              className="bi-field"
+              className="op-detail"
             >
-              <span>
+              <label>
                 IBAN : 
-              </span>
+              </label>
               <span>
                 DEF
               </span>
             </div>
             <div
-              className="bi-field"
+              className="op-detail"
             >
-              <span>
+              <label>
                 BIC : 
-              </span>
+              </label>
               <span>
                 ABC
               </span>
             </div>
           </React.Fragment>,
         ],
-        "className": "bank-information",
+        "className": "section bank-information",
       },
       "ref": null,
       "rendered": Array [
@@ -368,7 +372,8 @@ ShallowWrapper {
             "children": Array [
               <a
                 className="bi-external-link bi-external-link--mod-topright"
-                href="google.com"
+                href="https://www.demarches-simplifiees.fr/commencer/undefined"
+                rel="noopener noreferrer"
                 target="_blank"
               >
                 <img
@@ -385,21 +390,21 @@ ShallowWrapper {
                 Les coordonnées bancaires ci dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :
               </p>,
               <div
-                className="bi-field"
+                className="op-detail"
               >
-                <span>
+                <label>
                   IBAN : 
-                </span>
+                </label>
                 <span>
                   DEF
                 </span>
               </div>,
               <div
-                className="bi-field"
+                className="op-detail"
               >
-                <span>
+                <label>
                   BIC : 
-                </span>
+                </label>
                 <span>
                   ABC
                 </span>
@@ -423,7 +428,8 @@ ShallowWrapper {
                   </b>,
                 ],
                 "className": "bi-external-link bi-external-link--mod-topright",
-                "href": "google.com",
+                "href": "https://www.demarches-simplifiees.fr/commencer/undefined",
+                "rel": "noopener noreferrer",
                 "target": "_blank",
               },
               "ref": null,
@@ -472,14 +478,14 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <span>
+                  <label>
                     IBAN : 
-                  </span>,
+                  </label>,
                   <span>
                     DEF
                   </span>,
                 ],
-                "className": "bi-field",
+                "className": "op-detail",
               },
               "ref": null,
               "rendered": Array [
@@ -492,7 +498,7 @@ ShallowWrapper {
                   },
                   "ref": null,
                   "rendered": "IBAN : ",
-                  "type": "span",
+                  "type": "label",
                 },
                 Object {
                   "instance": null,
@@ -514,14 +520,14 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <span>
+                  <label>
                     BIC : 
-                  </span>,
+                  </label>,
                   <span>
                     ABC
                   </span>,
                 ],
-                "className": "bi-field",
+                "className": "op-detail",
               },
               "ref": null,
               "rendered": Array [
@@ -534,7 +540,7 @@ ShallowWrapper {
                   },
                   "ref": null,
                   "rendered": "BIC : ",
-                  "type": "span",
+                  "type": "label",
                 },
                 Object {
                   "instance": null,

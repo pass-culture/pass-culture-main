@@ -2,7 +2,7 @@ import { Offerer } from '../Offerer'
 import PropTypes from 'prop-types'
 import { ROOT_PATH, DMS_RIB_OFFERER_PROCEDURE_PATH } from '../../../../../utils/config'
 import { BankInformationLegacy } from './BankInformationLegacy'
-import React, { Fragment } from "react"
+import React, { Fragment } from 'react'
 
 const DMS_LINK = `https://www.demarches-simplifiees.fr/commencer/${DMS_RIB_OFFERER_PROCEDURE_PATH}`
 
@@ -33,18 +33,18 @@ const BankInformation = ({ offerer }) => (
             'Les coordonnées bancaires ci dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :'
           }
         </p>
-        <div className="bi-field">
-          <span>
+        <div className="op-detail">
+          <label>
             {'IBAN : '}
-          </span>
+          </label>
           <span>
             {offerer.iban}
           </span>
         </div>
-        <div className="bi-field">
-          <span>
+        <div className="op-detail">
+          <label>
             {'BIC : '}
-          </span>
+          </label>
           <span>
             {offerer.bic}
           </span>
@@ -56,7 +56,7 @@ const BankInformation = ({ offerer }) => (
           {'Aucune coordonnée bancaire renseignée'}
         </p>
         <div className="bi-banner">
-          <p>
+          <p className="bi-instructions">
             {'Renseigner vos coordonnées bancaires pour être remboursé de vos offres éligibles'}
           </p>
 

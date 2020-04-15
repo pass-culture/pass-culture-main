@@ -55,7 +55,9 @@ ShallowWrapper {
           Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
         </p>,
         <div>
-          <div>
+          <div
+            className="op-detail"
+          >
             <label>
               SIREN : 
             </label>
@@ -63,7 +65,9 @@ ShallowWrapper {
               
             </span>
           </div>
-          <div>
+          <div
+            className="op-detail"
+          >
             <label>
               Désignation : 
             </label>
@@ -71,7 +75,9 @@ ShallowWrapper {
               fake offerer name
             </span>
           </div>
-          <div>
+          <div
+            className="op-detail"
+          >
             <label>
               Siège social : 
             </label>
@@ -79,7 +85,9 @@ ShallowWrapper {
               fake address
             </span>
           </div>
-          <div>
+          <div
+            className="op-detail"
+          >
             <label>
               Code postal : 
             </label>
@@ -87,7 +95,9 @@ ShallowWrapper {
               
             </span>
           </div>
-          <div>
+          <div
+            className="op-detail"
+          >
             <label>
               Ville : 
             </label>
@@ -96,38 +106,41 @@ ShallowWrapper {
             </span>
           </div>
         </div>,
-        <div
-          className="section"
+        <Connect(Component)
+          legacy={
+            <Unknown
+              offerer={
+                Offerer {
+                  "address": "fake address",
+                  "adminUserOfferer": undefined,
+                  "bic": "ABC",
+                  "city": "",
+                  "iban": "DEF",
+                  "id": "AA",
+                  "name": "fake offerer name",
+                  "postalCode": "",
+                  "siren": "",
+                }
+              }
+            />
+          }
         >
-          <h2
-            className="main-list-title"
-          >
-            Informations bancaires
-            <span
-              className="is-pulled-right is-size-7 has-text-grey"
-            >
-              Vous avez besoin d'être administrateur de la structure pour modifier ces informations.
-            </span>
-          </h2>
-        </div>,
-        <div>
-          <div>
-            <label>
-              BIC : 
-            </label>
-            <span>
-              ABC
-            </span>
-          </div>
-          <div>
-            <label>
-              IBAN : 
-            </label>
-            <span>
-              DEF
-            </span>
-          </div>
-        </div>,
+          <BankInformation
+            offerer={
+              Offerer {
+                "address": "fake address",
+                "adminUserOfferer": undefined,
+                "bic": "ABC",
+                "city": "",
+                "iban": "DEF",
+                "id": "AA",
+                "name": "fake offerer name",
+                "postalCode": "",
+                "siren": "",
+              }
+            }
+          />
+        </Connect(Component)>,
         <Venues
           offererId="AA"
           venues={
@@ -172,7 +185,9 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <div>
+            <div
+              className="op-detail"
+            >
               <label>
                 SIREN : 
               </label>
@@ -180,7 +195,9 @@ ShallowWrapper {
                 
               </span>
             </div>,
-            <div>
+            <div
+              className="op-detail"
+            >
               <label>
                 Désignation : 
               </label>
@@ -188,7 +205,9 @@ ShallowWrapper {
                 fake offerer name
               </span>
             </div>,
-            <div>
+            <div
+              className="op-detail"
+            >
               <label>
                 Siège social : 
               </label>
@@ -196,7 +215,9 @@ ShallowWrapper {
                 fake address
               </span>
             </div>,
-            <div>
+            <div
+              className="op-detail"
+            >
               <label>
                 Code postal : 
               </label>
@@ -204,7 +225,9 @@ ShallowWrapper {
                 
               </span>
             </div>,
-            <div>
+            <div
+              className="op-detail"
+            >
               <label>
                 Ville : 
               </label>
@@ -229,6 +252,7 @@ ShallowWrapper {
                   
                 </span>,
               ],
+              "className": "op-detail",
             },
             "ref": null,
             "rendered": Array [
@@ -270,6 +294,7 @@ ShallowWrapper {
                   fake offerer name
                 </span>,
               ],
+              "className": "op-detail",
             },
             "ref": null,
             "rendered": Array [
@@ -311,6 +336,7 @@ ShallowWrapper {
                   fake address
                 </span>,
               ],
+              "className": "op-detail",
             },
             "ref": null,
             "rendered": Array [
@@ -352,6 +378,7 @@ ShallowWrapper {
                   
                 </span>,
               ],
+              "className": "op-detail",
             },
             "ref": null,
             "rendered": Array [
@@ -393,6 +420,7 @@ ShallowWrapper {
                   
                 </span>,
               ],
+              "className": "op-detail",
             },
             "ref": null,
             "rendered": Array [
@@ -427,172 +455,62 @@ ShallowWrapper {
       Object {
         "instance": null,
         "key": undefined,
-        "nodeType": "host",
+        "nodeType": "class",
         "props": Object {
-          "children": Array [
-            <h2
-              className="main-list-title"
-            >
-              Informations bancaires
-              <span
-                className="is-pulled-right is-size-7 has-text-grey"
-              >
-                Vous avez besoin d'être administrateur de la structure pour modifier ces informations.
-              </span>
-            </h2>,
-            false,
-          ],
-          "className": "section",
+          "children": <BankInformation
+            offerer={
+              Offerer {
+                "address": "fake address",
+                "adminUserOfferer": undefined,
+                "bic": "ABC",
+                "city": "",
+                "iban": "DEF",
+                "id": "AA",
+                "name": "fake offerer name",
+                "postalCode": "",
+                "siren": "",
+              }
+            }
+          />,
+          "legacy": <Unknown
+            offerer={
+              Offerer {
+                "address": "fake address",
+                "adminUserOfferer": undefined,
+                "bic": "ABC",
+                "city": "",
+                "iban": "DEF",
+                "id": "AA",
+                "name": "fake offerer name",
+                "postalCode": "",
+                "siren": "",
+              }
+            }
+          />,
         },
         "ref": null,
-        "rendered": Array [
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": Array [
-                "Informations bancaires",
-                <span
-                  className="is-pulled-right is-size-7 has-text-grey"
-                >
-                  Vous avez besoin d'être administrateur de la structure pour modifier ces informations.
-                </span>,
-              ],
-              "className": "main-list-title",
+        "rendered": Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "offerer": Offerer {
+              "address": "fake address",
+              "adminUserOfferer": undefined,
+              "bic": "ABC",
+              "city": "",
+              "iban": "DEF",
+              "id": "AA",
+              "name": "fake offerer name",
+              "postalCode": "",
+              "siren": "",
             },
-            "ref": null,
-            "rendered": Array [
-              "Informations bancaires",
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "Vous avez besoin d'être administrateur de la structure pour modifier ces informations.",
-                  "className": "is-pulled-right is-size-7 has-text-grey",
-                },
-                "ref": null,
-                "rendered": "Vous avez besoin d'être administrateur de la structure pour modifier ces informations.",
-                "type": "span",
-              },
-            ],
-            "type": "h2",
           },
-          false,
-        ],
-        "type": "div",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": Array [
-            <div>
-              <label>
-                BIC : 
-              </label>
-              <span>
-                ABC
-              </span>
-            </div>,
-            <div>
-              <label>
-                IBAN : 
-              </label>
-              <span>
-                DEF
-              </span>
-            </div>,
-          ],
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
         },
-        "ref": null,
-        "rendered": Array [
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": Array [
-                <label>
-                  BIC : 
-                </label>,
-                <span>
-                  ABC
-                </span>,
-              ],
-            },
-            "ref": null,
-            "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "BIC : ",
-                },
-                "ref": null,
-                "rendered": "BIC : ",
-                "type": "label",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "ABC",
-                },
-                "ref": null,
-                "rendered": "ABC",
-                "type": "span",
-              },
-            ],
-            "type": "div",
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": Array [
-                <label>
-                  IBAN : 
-                </label>,
-                <span>
-                  DEF
-                </span>,
-              ],
-            },
-            "ref": null,
-            "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "IBAN : ",
-                },
-                "ref": null,
-                "rendered": "IBAN : ",
-                "type": "label",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "DEF",
-                },
-                "ref": null,
-                "rendered": "DEF",
-                "type": "span",
-              },
-            ],
-            "type": "div",
-          },
-        ],
-        "type": "div",
+        "type": [Function],
       },
       Object {
         "instance": null,
@@ -633,7 +551,9 @@ ShallowWrapper {
             Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
           </p>,
           <div>
-            <div>
+            <div
+              className="op-detail"
+            >
               <label>
                 SIREN : 
               </label>
@@ -641,7 +561,9 @@ ShallowWrapper {
                 
               </span>
             </div>
-            <div>
+            <div
+              className="op-detail"
+            >
               <label>
                 Désignation : 
               </label>
@@ -649,7 +571,9 @@ ShallowWrapper {
                 fake offerer name
               </span>
             </div>
-            <div>
+            <div
+              className="op-detail"
+            >
               <label>
                 Siège social : 
               </label>
@@ -657,7 +581,9 @@ ShallowWrapper {
                 fake address
               </span>
             </div>
-            <div>
+            <div
+              className="op-detail"
+            >
               <label>
                 Code postal : 
               </label>
@@ -665,7 +591,9 @@ ShallowWrapper {
                 
               </span>
             </div>
-            <div>
+            <div
+              className="op-detail"
+            >
               <label>
                 Ville : 
               </label>
@@ -674,38 +602,41 @@ ShallowWrapper {
               </span>
             </div>
           </div>,
-          <div
-            className="section"
+          <Connect(Component)
+            legacy={
+              <Unknown
+                offerer={
+                  Offerer {
+                    "address": "fake address",
+                    "adminUserOfferer": undefined,
+                    "bic": "ABC",
+                    "city": "",
+                    "iban": "DEF",
+                    "id": "AA",
+                    "name": "fake offerer name",
+                    "postalCode": "",
+                    "siren": "",
+                  }
+                }
+              />
+            }
           >
-            <h2
-              className="main-list-title"
-            >
-              Informations bancaires
-              <span
-                className="is-pulled-right is-size-7 has-text-grey"
-              >
-                Vous avez besoin d'être administrateur de la structure pour modifier ces informations.
-              </span>
-            </h2>
-          </div>,
-          <div>
-            <div>
-              <label>
-                BIC : 
-              </label>
-              <span>
-                ABC
-              </span>
-            </div>
-            <div>
-              <label>
-                IBAN : 
-              </label>
-              <span>
-                DEF
-              </span>
-            </div>
-          </div>,
+            <BankInformation
+              offerer={
+                Offerer {
+                  "address": "fake address",
+                  "adminUserOfferer": undefined,
+                  "bic": "ABC",
+                  "city": "",
+                  "iban": "DEF",
+                  "id": "AA",
+                  "name": "fake offerer name",
+                  "postalCode": "",
+                  "siren": "",
+                }
+              }
+            />
+          </Connect(Component)>,
           <Venues
             offererId="AA"
             venues={
@@ -750,7 +681,9 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              <div>
+              <div
+                className="op-detail"
+              >
                 <label>
                   SIREN : 
                 </label>
@@ -758,7 +691,9 @@ ShallowWrapper {
                   
                 </span>
               </div>,
-              <div>
+              <div
+                className="op-detail"
+              >
                 <label>
                   Désignation : 
                 </label>
@@ -766,7 +701,9 @@ ShallowWrapper {
                   fake offerer name
                 </span>
               </div>,
-              <div>
+              <div
+                className="op-detail"
+              >
                 <label>
                   Siège social : 
                 </label>
@@ -774,7 +711,9 @@ ShallowWrapper {
                   fake address
                 </span>
               </div>,
-              <div>
+              <div
+                className="op-detail"
+              >
                 <label>
                   Code postal : 
                 </label>
@@ -782,7 +721,9 @@ ShallowWrapper {
                   
                 </span>
               </div>,
-              <div>
+              <div
+                className="op-detail"
+              >
                 <label>
                   Ville : 
                 </label>
@@ -807,6 +748,7 @@ ShallowWrapper {
                     
                   </span>,
                 ],
+                "className": "op-detail",
               },
               "ref": null,
               "rendered": Array [
@@ -848,6 +790,7 @@ ShallowWrapper {
                     fake offerer name
                   </span>,
                 ],
+                "className": "op-detail",
               },
               "ref": null,
               "rendered": Array [
@@ -889,6 +832,7 @@ ShallowWrapper {
                     fake address
                   </span>,
                 ],
+                "className": "op-detail",
               },
               "ref": null,
               "rendered": Array [
@@ -930,6 +874,7 @@ ShallowWrapper {
                     
                   </span>,
                 ],
+                "className": "op-detail",
               },
               "ref": null,
               "rendered": Array [
@@ -971,6 +916,7 @@ ShallowWrapper {
                     
                   </span>,
                 ],
+                "className": "op-detail",
               },
               "ref": null,
               "rendered": Array [
@@ -1005,172 +951,62 @@ ShallowWrapper {
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "host",
+          "nodeType": "class",
           "props": Object {
-            "children": Array [
-              <h2
-                className="main-list-title"
-              >
-                Informations bancaires
-                <span
-                  className="is-pulled-right is-size-7 has-text-grey"
-                >
-                  Vous avez besoin d'être administrateur de la structure pour modifier ces informations.
-                </span>
-              </h2>,
-              false,
-            ],
-            "className": "section",
+            "children": <BankInformation
+              offerer={
+                Offerer {
+                  "address": "fake address",
+                  "adminUserOfferer": undefined,
+                  "bic": "ABC",
+                  "city": "",
+                  "iban": "DEF",
+                  "id": "AA",
+                  "name": "fake offerer name",
+                  "postalCode": "",
+                  "siren": "",
+                }
+              }
+            />,
+            "legacy": <Unknown
+              offerer={
+                Offerer {
+                  "address": "fake address",
+                  "adminUserOfferer": undefined,
+                  "bic": "ABC",
+                  "city": "",
+                  "iban": "DEF",
+                  "id": "AA",
+                  "name": "fake offerer name",
+                  "postalCode": "",
+                  "siren": "",
+                }
+              }
+            />,
           },
           "ref": null,
-          "rendered": Array [
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": Array [
-                  "Informations bancaires",
-                  <span
-                    className="is-pulled-right is-size-7 has-text-grey"
-                  >
-                    Vous avez besoin d'être administrateur de la structure pour modifier ces informations.
-                  </span>,
-                ],
-                "className": "main-list-title",
+          "rendered": Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "offerer": Offerer {
+                "address": "fake address",
+                "adminUserOfferer": undefined,
+                "bic": "ABC",
+                "city": "",
+                "iban": "DEF",
+                "id": "AA",
+                "name": "fake offerer name",
+                "postalCode": "",
+                "siren": "",
               },
-              "ref": null,
-              "rendered": Array [
-                "Informations bancaires",
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "Vous avez besoin d'être administrateur de la structure pour modifier ces informations.",
-                    "className": "is-pulled-right is-size-7 has-text-grey",
-                  },
-                  "ref": null,
-                  "rendered": "Vous avez besoin d'être administrateur de la structure pour modifier ces informations.",
-                  "type": "span",
-                },
-              ],
-              "type": "h2",
             },
-            false,
-          ],
-          "type": "div",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": Array [
-              <div>
-                <label>
-                  BIC : 
-                </label>
-                <span>
-                  ABC
-                </span>
-              </div>,
-              <div>
-                <label>
-                  IBAN : 
-                </label>
-                <span>
-                  DEF
-                </span>
-              </div>,
-            ],
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
           },
-          "ref": null,
-          "rendered": Array [
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": Array [
-                  <label>
-                    BIC : 
-                  </label>,
-                  <span>
-                    ABC
-                  </span>,
-                ],
-              },
-              "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "BIC : ",
-                  },
-                  "ref": null,
-                  "rendered": "BIC : ",
-                  "type": "label",
-                },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "ABC",
-                  },
-                  "ref": null,
-                  "rendered": "ABC",
-                  "type": "span",
-                },
-              ],
-              "type": "div",
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": Array [
-                  <label>
-                    IBAN : 
-                  </label>,
-                  <span>
-                    DEF
-                  </span>,
-                ],
-              },
-              "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "IBAN : ",
-                  },
-                  "ref": null,
-                  "rendered": "IBAN : ",
-                  "type": "label",
-                },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "DEF",
-                  },
-                  "ref": null,
-                  "rendered": "DEF",
-                  "type": "span",
-                },
-              ],
-              "type": "div",
-            },
-          ],
-          "type": "div",
+          "type": [Function],
         },
         Object {
           "instance": null,

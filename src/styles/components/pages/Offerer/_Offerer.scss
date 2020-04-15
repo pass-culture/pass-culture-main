@@ -2,4 +2,12 @@
   .field-group {
     min-height: 10rem;
   }
+
+  .op-detail {
+    margin: 8px 0;
+    > label {
+      color: $grey;
+      margin-right: 5px;
+    }
+  }
 }

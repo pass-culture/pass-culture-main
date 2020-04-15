@@ -9,16 +9,16 @@ export const BankInformationLegacy = ({ offerer }) => (
         {'Informations bancaires'}
         <span className="is-pulled-right is-size-7 has-text-grey">
           {!offerer.adminUserOfferer &&
-          "Vous avez besoin d'être administrateur de la structure pour modifier ces informations."}
+            "Vous avez besoin d'être administrateur de la structure pour modifier ces informations."}
         </span>
       </h2>
       {!offerer.areBankInformationProvided && (
-      <p className="bank-instructions-label">
-        {
-          'Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.'
-        }
-      </p>
-    )}
+        <p className="bank-instructions-label">
+          {
+            'Le pass Culture vous contactera prochainement afin d’enregistrer vos coordonnées bancaires. Une fois votre BIC / IBAN renseigné, ces informations apparaitront ci-dessous.'
+          }
+        </p>
+      )}
     </div>
     <div>
       <div>

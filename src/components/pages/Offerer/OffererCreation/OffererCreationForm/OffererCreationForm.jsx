@@ -36,7 +36,7 @@ function OffererCreationForm({ handleSubmit, invalid, pristine }) {
               disabled={invalid || pristine}
               type="submit"
             >
-              {'Valider'}
+              {'Créer'}
             </button>
           </div>
         </div>

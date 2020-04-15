@@ -29,7 +29,7 @@ class OffererDetails extends PureComponent {
           {'Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.'}
         </p>
         <div>
-          <div>
+          <div className="op-detail">
             <label>
               {'SIREN : '}
             </label>
@@ -37,7 +37,7 @@ class OffererDetails extends PureComponent {
               {offerer.siren}
             </span>
           </div>
-          <div>
+          <div className="op-detail">
             <label>
               {'Désignation : '}
             </label>
@@ -45,7 +45,7 @@ class OffererDetails extends PureComponent {
               {offerer.name}
             </span>
           </div>
-          <div>
+          <div className="op-detail">
             <label>
               {'Siège social : '}
             </label>
@@ -53,7 +53,7 @@ class OffererDetails extends PureComponent {
               {offerer.address}
             </span>
           </div>
-          <div>
+          <div className="op-detail">
             <label>
               {'Code postal : '}
             </label>
@@ -61,7 +61,7 @@ class OffererDetails extends PureComponent {
               {offerer.postalCode}
             </span>
           </div>
-          <div>
+          <div className="op-detail">
             <label>
               {'Ville : '}
             </label>
