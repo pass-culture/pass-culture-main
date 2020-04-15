@@ -143,18 +143,17 @@ class Patch:
             admin = create_user(can_book_free_offers=False, email='admin@example.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0, quantity=10,
-                                                  booking_limit_datetime=datetime(2020, 4, 11),
-                                                  beginning_datetime=datetime(2020, 4, 13))
-            booking = create_booking(user=user, stock=stock, recommendation=None)
-            booking_cancelled = create_booking(user=user, stock=stock, venue=venue, recommendation=None,
-                                               is_cancelled=True)
+            stock = create_stock_with_event_offer(offerer, venue, price=0)
+            booking = create_booking(user=user, stock=stock)
+            booking_cancelled = create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
             repository.save(booking, booking_cancelled, admin)
             mocked_check_have_beginning_date_been_modified.return_value = True
+            serialized_date = serialize(stock.beginningDatetime + timedelta(days=1))
 
-            # When
+
+        # When
             request_update = TestClient(app.test_client()).with_auth(admin.email) \
-                .patch('/stocks/' + humanize(stock.id), json={'beginningDatetime': '2020-04-12T14:30:00Z'})
+                .patch('/stocks/' + humanize(stock.id), json={'beginningDatetime': serialized_date})
 
             # Then
             assert request_update.status_code == 200
@@ -173,10 +172,8 @@ class Patch:
             admin = create_user(can_book_free_offers=False, email='admin@example.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0, quantity=10,
-                                                  booking_limit_datetime=datetime(2020, 4, 11),
-                                                  beginning_datetime=datetime(2020, 4, 13))
-            booking = create_booking(user=user, stock=stock, recommendation=None)
+            stock = create_stock_with_event_offer(offerer, venue, price=0)
+            booking = create_booking(user=user, stock=stock)
             repository.save(booking, admin)
             mocked_have_beginning_date_been_modified.return_value = False
 
