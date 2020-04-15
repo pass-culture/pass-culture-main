@@ -241,7 +241,7 @@ jobs:
       - run: git submodule update --init
       - run: ./install_lib_ci.sh
       - run:
-          name: Install libraries
+          name: Build and Deploy Pro
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
@@ -249,11 +249,7 @@ jobs:
             nvm install
             yarn install
             set -a; source ~/pass-culture/config/run_envs/"${CIRCLE_BRANCH}" && yarn build
-      - run:
-          name: Deploy Pro
-          command: |
             source ~/pass-culture/config/run_envs/"${CIRCLE_BRANCH}"
-            cd pro
             npm install -g netlify-cli@2.46.0
             netlify deploy -s "${NETLIFY_SITE_ID_PRO}" -a "${NETLIFY_TOKEN}" -d build/ --prod
       - run:
