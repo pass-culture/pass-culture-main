@@ -74,31 +74,30 @@ jobs:
   deploy-webapp:
     machine:
       image: ubuntu-1604:201903-01
-    working_directory: ~/pass-culture-main/webapp
+    working_directory: ~/
     steps:
       - run:
           name: Checkout main
           command: |
-            cd ~/pass-culture-main
             git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-main.git pass-culture-main || git clone https://github.com/betagouv/pass-culture-main.git pass-culture-main
       - checkout:
           path: ~/pass-culture-main/webapp
-      - run: ./scripts/install_lib_ci_webapp.sh
       - run:
-          name: Install netlify CLI
-          command: npm install -g netlify-cli@2.46.0
-      - run:
-          name: Build WEBAPP
+          name: Install Lib CI
           command: |
+            cd ~/pass-culture-main/webapp
+            ./scripts/install_lib_ci_webapp.sh
+      - run:
+          name: Build and Deploy
+          command: |
+            cd ~/pass-culture-main/webapp
             export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
             nvm install
             yarn install
             set -a; source config/run_envs/"${CIRCLE_BRANCH}" && ./scripts/build_app.sh "${CIRCLE_BRANCH}"
-      - run:
-          name: Deploy Webapp
-          command: |
             source ~/pass-culture-main/config/run_envs/testing
+            npm install -g netlify-cli@2.46.0
             netlify deploy -s "${NETLIFY_SITE_ID_WEBAPP}" -a "${NETLIFY_TOKEN}" -d build/ --prod
 
 workflows:
