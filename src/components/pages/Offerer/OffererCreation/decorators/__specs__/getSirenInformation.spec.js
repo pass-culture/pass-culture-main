@@ -21,6 +21,22 @@ describe('getSirenInformations', () => {
       )
       expect(errorMessage).toStrictEqual({ error: 'SIREN invalide' })
     })
+
+    it('should return ’Service indisponible’ when API siren does not respond', async () => {
+      // given
+      const siren = '245474278'
+      fetch.mockResponseOnce(JSON.stringify({ message: 'service unavailable' }), { status: 503 })
+
+      // when
+      const errorMessage = await getSirenInformation(siren)
+
+      // then
+      expect(fetch.mock.calls).toHaveLength(1)
+      expect(fetch.mock.calls[0][0]).toStrictEqual(
+        `https://entreprise.data.gouv.fr/api/sirene/v1/siren/${siren}`
+      )
+      expect(errorMessage).toStrictEqual({ error: 'Service indisponible' })
+    })
   })
 
   describe('when the SIREN exists', () => {

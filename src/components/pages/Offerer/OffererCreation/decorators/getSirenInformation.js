@@ -6,6 +6,7 @@ export const getSirenInformation = async siren => {
   const response = await fetch(sirenUrl)
 
   if (response.status === 404) return { error: 'SIREN invalide' }
+  else if (response.status !== 200) return { error: 'Service indisponible' }
 
   const body = await response.json()
 
