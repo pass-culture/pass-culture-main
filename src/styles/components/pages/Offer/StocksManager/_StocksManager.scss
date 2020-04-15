@@ -28,13 +28,13 @@
   }
 
   .notification {
-    max-height: rem(40px);
+    max-height: rem(80px);
 
     &.fade-out {
       margin: 0;
       max-height: 0;
       padding: 0;
-      transition: all 0.5s ease-in;
+      transition: all 1s ease-in;
     }
   }
 

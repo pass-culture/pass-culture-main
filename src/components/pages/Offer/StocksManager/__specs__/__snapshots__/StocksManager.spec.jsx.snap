@@ -105,6 +105,8 @@ ShallowWrapper {
           className="notification is-success fade-out"
         >
           Les modifications ont été enregistrées.
+          <br />
+          Si la date de l'évènement a été modifiée, les utilisateurs ayant déjà réservé cette offre seront prévenus par email.
         </div>,
         <div
           className="stocks-table-wrapper"
@@ -263,11 +265,27 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": "Les modifications ont été enregistrées.",
+          "children": Array [
+            "Les modifications ont été enregistrées.",
+            <br />,
+            "Si la date de l'évènement a été modifiée, les utilisateurs ayant déjà réservé cette offre seront prévenus par email.",
+          ],
           "className": "notification is-success fade-out",
         },
         "ref": null,
-        "rendered": "Les modifications ont été enregistrées.",
+        "rendered": Array [
+          "Les modifications ont été enregistrées.",
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {},
+            "ref": null,
+            "rendered": null,
+            "type": "br",
+          },
+          "Si la date de l'évènement a été modifiée, les utilisateurs ayant déjà réservé cette offre seront prévenus par email.",
+        ],
         "type": "div",
       },
       Object {
@@ -818,6 +836,8 @@ ShallowWrapper {
             className="notification is-success fade-out"
           >
             Les modifications ont été enregistrées.
+            <br />
+            Si la date de l'évènement a été modifiée, les utilisateurs ayant déjà réservé cette offre seront prévenus par email.
           </div>,
           <div
             className="stocks-table-wrapper"
@@ -976,11 +996,27 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "Les modifications ont été enregistrées.",
+            "children": Array [
+              "Les modifications ont été enregistrées.",
+              <br />,
+              "Si la date de l'évènement a été modifiée, les utilisateurs ayant déjà réservé cette offre seront prévenus par email.",
+            ],
             "className": "notification is-success fade-out",
           },
           "ref": null,
-          "rendered": "Les modifications ont été enregistrées.",
+          "rendered": Array [
+            "Les modifications ont été enregistrées.",
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {},
+              "ref": null,
+              "rendered": null,
+              "type": "br",
+            },
+            "Si la date de l'évènement a été modifiée, les utilisateurs ayant déjà réservé cette offre seront prévenus par email.",
+          ],
           "type": "div",
         },
         Object {
@@ -1646,6 +1682,8 @@ ShallowWrapper {
           className="notification is-success fade-out"
         >
           Les modifications ont été enregistrées.
+          <br />
+          Si la date de l'évènement a été modifiée, les utilisateurs ayant déjà réservé cette offre seront prévenus par email.
         </div>,
         <div
           className="stocks-table-wrapper"
@@ -1814,11 +1852,27 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": "Les modifications ont été enregistrées.",
+          "children": Array [
+            "Les modifications ont été enregistrées.",
+            <br />,
+            "Si la date de l'évènement a été modifiée, les utilisateurs ayant déjà réservé cette offre seront prévenus par email.",
+          ],
           "className": "notification is-success fade-out",
         },
         "ref": null,
-        "rendered": "Les modifications ont été enregistrées.",
+        "rendered": Array [
+          "Les modifications ont été enregistrées.",
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {},
+            "ref": null,
+            "rendered": null,
+            "type": "br",
+          },
+          "Si la date de l'évènement a été modifiée, les utilisateurs ayant déjà réservé cette offre seront prévenus par email.",
+        ],
         "type": "div",
       },
       Object {
@@ -2466,6 +2520,8 @@ ShallowWrapper {
             className="notification is-success fade-out"
           >
             Les modifications ont été enregistrées.
+            <br />
+            Si la date de l'évènement a été modifiée, les utilisateurs ayant déjà réservé cette offre seront prévenus par email.
           </div>,
           <div
             className="stocks-table-wrapper"
@@ -2634,11 +2690,27 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "Les modifications ont été enregistrées.",
+            "children": Array [
+              "Les modifications ont été enregistrées.",
+              <br />,
+              "Si la date de l'évènement a été modifiée, les utilisateurs ayant déjà réservé cette offre seront prévenus par email.",
+            ],
             "className": "notification is-success fade-out",
           },
           "ref": null,
-          "rendered": "Les modifications ont été enregistrées.",
+          "rendered": Array [
+            "Les modifications ont été enregistrées.",
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {},
+              "ref": null,
+              "rendered": null,
+              "type": "br",
+            },
+            "Si la date de l'évènement a été modifiée, les utilisateurs ayant déjà réservé cette offre seront prévenus par email.",
+          ],
           "type": "div",
         },
         Object {

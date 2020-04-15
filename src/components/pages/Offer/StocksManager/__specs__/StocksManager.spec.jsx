@@ -211,11 +211,13 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
       })
 
       // when
-      const successMessage = wrapper.find('[children="Les modifications ont été enregistrées."]')
+      const successMessage = wrapper.find('div.notification.is-success')
 
       // then
       expect(successMessage).toHaveLength(1)
-      expect(successMessage.hasClass('is-success')).toBe(true)
+      expect(successMessage.text()).toBe(
+        "Les modifications ont été enregistrées.Si la date de l'évènement a été modifiée, les utilisateurs ayant déjà réservé cette offre seront prévenus par email."
+      )
       expect(successMessage.hasClass('fade-out')).toBe(false)
     })
   })

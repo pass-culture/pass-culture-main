@@ -98,7 +98,7 @@ class StocksManager extends PureComponent {
     this.setState({ editSuccess: true }, () => {
       setTimeout(() => {
         this.setState({ editSuccess: false })
-      }, 2000)
+      }, 4000)
     })
   }
 
@@ -202,6 +202,10 @@ class StocksManager extends PureComponent {
 
         <div className={classnames('notification is-success', { 'fade-out': !editSuccess })}>
           {'Les modifications ont été enregistrées.'}
+          <br />
+          {
+            "Si la date de l'évènement a été modifiée, les utilisateurs ayant déjà réservé cette offre seront prévenus par email."
+          }
         </div>
 
         <div className="stocks-table-wrapper">
