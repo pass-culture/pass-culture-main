@@ -3,7 +3,6 @@ import DiscoveryContainerV3 from '../../../../pages/discovery-v3/DiscoveryContai
 import MyFavoritesContainer from '../../../../pages/my-favorites/MyFavoritesContainer'
 import MyBookingsContainer from '../../../../pages/my-bookings/MyBookingsContainer'
 import ProfileContainer from '../../../../pages/profile/ProfileContainer'
-import SearchContainer from '../../../../pages/search/SearchContainer'
 import routes from '../../../../router/routes'
 import { getMenuItemsFromRoutes } from '../getMenuItems'
 import SearchAlgoliaContainer from '../../../../pages/search-algolia/SearchAlgoliaContainer'
@@ -46,13 +45,6 @@ describe('getMenuItemsFromRoutes', () => {
         featureName: 'RECOMMENDATIONS_WITH_GEOLOCATION',
         path: '/decouverte-v3',
         title: 'Offres géolocalisées',
-      },
-      {
-        component: SearchContainer,
-        icon: 'ico-search',
-        featureName: 'SEARCH_LEGACY',
-        path: '/recherche',
-        title: 'Recherche',
       },
       {
         component: SearchAlgoliaContainer,

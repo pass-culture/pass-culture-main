@@ -12,7 +12,6 @@ import ForgotPassword from '../pages/forgot-password/ForgotPassword'
 import OfferContainer from '../pages/offer/OfferContainer'
 import ProfileContainer from '../pages/profile/ProfileContainer'
 import TypeFormContainer from '../pages/typeform/TypeformContainer'
-import SearchContainer from '../pages/search/SearchContainer'
 import SignInContainer from '../pages/signin/SignInContainer'
 import SignupContainer from '../pages/signup/SignupContainer'
 import { WEBAPP_CONTACT_EXTERNAL_PAGE } from '../../utils/config'
@@ -102,24 +101,14 @@ const routes = [
     featureName: 'RECOMMENDATIONS_WITH_GEOLOCATION',
     icon: 'ico-offres',
     path:
-      '/decouverte-v3/:offerId(tuto|[A-Z0-9]+)?/:mediationId(vide|fin|[A-Z0-9]+)?/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?',
-    title: 'Offres géolocalisées',
-  },
-  {
-    component: SearchContainer,
-    featureName: 'SEARCH_LEGACY',
-    icon: 'ico-search',
-    path:
-      '/recherche' +
-      '/:results(resultats)?' +
-      '/:category?/:details(details|transition)?' +
-      '/:offerId([A-Z0-9]+)?' +
-      '/:mediationId(vide|[A-Z0-9]+)?' +
-      '/:booking(reservation)?' +
-      '/:bookingId([A-Z0-9]+)?' +
+      '/decouverte-v3' +
+      '/:offerId(tuto|[A-Z0-9]+)?' +
+      '/:mediationId(vide|fin|[A-Z0-9]+)?' +
+      '/:details(details|transition)?' +
+      '/:booking(reservation)?/:bookingId([A-Z0-9]+)?' +
       '/:cancellation(annulation)?' +
       '/:confirmation(confirmation)?',
-    title: 'Recherche',
+    title: 'Offres géolocalisées',
   },
   {
     component: SearchAlgoliaContainer,

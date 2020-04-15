@@ -97,13 +97,13 @@ describe('components | Menu', () => {
       const anchor = wrapper.find(MenuItem).find('a')
       const link = wrapper.find(MenuItem).find(Link)
       const signoutButtonContainer = wrapper.find(SignoutButtonContainer)
-      // then
 
+      // then
       expect(transition).toHaveLength(1)
       expect(closeLink).toHaveLength(1)
       expect(header).toHaveLength(1)
-      expect(anchor).toHaveLength(8)
-      expect(link).toHaveLength(6)
+      expect(anchor).toHaveLength(7)
+      expect(link).toHaveLength(5)
       expect(signoutButtonContainer).toHaveLength(1)
       expect(props.toggleOverlay).toHaveBeenCalledWith()
     })
