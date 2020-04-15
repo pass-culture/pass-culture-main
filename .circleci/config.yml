@@ -44,9 +44,10 @@ jobs:
             coveralls
       - store_artifacts:
           path: htmlcov
+
   build-container:
     machine:
-      image: circleci/classic:latest
+      image: ubuntu-1604:201903-01
     working_directory: ~/pass-culture-main/api
     steps:
       - checkout:
@@ -107,7 +108,7 @@ jobs:
 
   functional-tests-webapp:
     machine:
-      image: circleci/classic:latest
+      image: ubuntu-1604:201903-01
     working_directory: ~/
     steps:
       - run:
@@ -178,7 +179,7 @@ jobs:
 
   functional-tests-pro:
     machine:
-      image: circleci/classic:latest
+      image: ubuntu-1604:201903-01
     working_directory: ~/
     steps:
       - run:
