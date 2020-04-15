@@ -1,7 +1,7 @@
 import os
 import re
 from datetime import datetime
-from typing import Callable, Dict, List
+from typing import Callable, Dict, List, Set
 
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.demarches_simplifiees import \
@@ -122,6 +122,8 @@ def _process_creation(error_messages: List[str], information: Dict, new_benefici
                        f"{information['application_id']}, because of error: {str(api_errors)}")
         error_messages.append(str(api_errors))
     else:
+        logger.info(f"[BATCH][REMOTE IMPORT BENEFICIARIES] Successfully created user for application "
+                       f"{information['application_id']}")
         save_beneficiary_import_with_status(
             ImportStatus.CREATED,
             information['application_id'],
@@ -131,15 +133,13 @@ def _process_creation(error_messages: List[str], information: Dict, new_benefici
         try:
             send_activation_email(new_beneficiary, send_raw_email)
         except MailServiceException as mail_service_exception:
-            logger.error('Email send_activation_email failure', mail_service_exception)
+            logger.error(f"Email send_activation_email failure for application {information['application_id']}", mail_service_exception)
 
 
 def _process_duplication(duplicate_users: List[User], error_messages: List[str], information: Dict) -> None:
     number_of_beneficiaries = len(duplicate_users)
     duplicate_ids = ", ".join([str(u.id) for u in duplicate_users])
-    message = '%s utilisateur(s) en doublons (%s) pour le dossier %s' % (
-        number_of_beneficiaries, duplicate_ids, information['application_id']
-    )
+    message = f"{number_of_beneficiaries} utilisateur(s) en doublon {duplicate_ids} pour le dossier {information['application_id']}"
     logger.warning(f'[BATCH][REMOTE IMPORT BENEFICIARIES] Duplicate beneficiaries found : {message}')
     error_messages.append(message)
     save_beneficiary_import_with_status(ImportStatus.DUPLICATE, information['application_id'], None,
@@ -149,6 +149,7 @@ def _process_duplication(duplicate_users: List[User], error_messages: List[str],
 def _process_rejection(information: Dict) -> None:
     save_beneficiary_import_with_status(ImportStatus.REJECTED, information['application_id'], None,
                                         detail='Compte existant avec cet email')
+    logger.warning(f"[BATCH][REMOTE IMPORT BENEFICIARIES] Rejected application {information['application_id']} because of already existing email")
 
 
 def _process_error(error_messages: List[str], application_id: int) -> None:
@@ -158,7 +159,7 @@ def _process_error(error_messages: List[str], application_id: int) -> None:
     save_beneficiary_import_with_status(ImportStatus.ERROR, application_id, None, detail=error)
 
 
-def _find_application_ids_to_process(applications: Dict, process_applications_updated_after: datetime) -> Dict:
+def _find_application_ids_to_process(applications: Dict, process_applications_updated_after: datetime) -> Set:
     processable_applications = filter(lambda a: a['state'] == 'closed', applications['dossiers'])
     recent_applications = filter(
         lambda a: _parse_application_date(a) > process_applications_updated_after,
