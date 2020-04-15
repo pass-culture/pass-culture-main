@@ -3,7 +3,7 @@ version: 2.0
 jobs:
   build:
     machine:
-      image: circleci/classic:latest
+      image: ubuntu-1604:201903-01
     working_directory: ~/
     steps:
       - run:
@@ -74,7 +74,7 @@ jobs:
 
   deploy-pro:
     machine:
-      image: circleci/classic:latest
+      image: ubuntu-1604:201903-01
     working_directory: ~/pass-culture-main/pro
     steps:
       - checkout:
@@ -82,7 +82,7 @@ jobs:
       - run: ./scripts/install_lib_ci_pro.sh
       - run:
           name: Install netlify CLI
-          command: npm install -g netlify-cli@1.2.3
+          command: npm install -g netlify-cli@2.46.0
       - run:
           name: Install libraries
           command: |
@@ -94,7 +94,8 @@ jobs:
       - run:
           name: Deploy Pro
           command: |
-            netlify deploy -e "${CIRCLE_BRANCH}" -t ${NETLIFY_TOKEN}
+            source ~/pass-culture-main/config/run_envs/testing
+            netlify deploy -s "${NETLIFY_SITE_ID_PRO}" -a "${NETLIFY_TOKEN}" -d build/ --prod
 
 workflows:
   version: 2
