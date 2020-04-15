@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   tests-script-pc:
     machine:
-      image: circleci/classic:latest
+      image: ubuntu-1604:201903-01
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -21,7 +21,7 @@ jobs:
 
   tests-api:
     machine:
-      image: circleci/classic:latest
+      image: ubuntu-1604:201903-01
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -47,7 +47,7 @@ jobs:
 
   tests-webapp:
     machine:
-      image: circleci/classic:latest
+      image: ubuntu-1604:201903-01
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -107,7 +107,7 @@ jobs:
 
   tests-pro:
     machine:
-      image: circleci/classic:latest
+      image: ubuntu-1604:201903-01
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -179,7 +179,7 @@ jobs:
 
   deploy-api:
     machine:
-      image: circleci/classic:latest
+      image: ubuntu-1604:201903-01
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -214,7 +214,7 @@ jobs:
 
   deploy-api-datalake:
     machine:
-      image: circleci/classic:latest
+      image: ubuntu-1604:201903-01
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -233,7 +233,7 @@ jobs:
 
   deploy-pro:
     machine:
-      image: circleci/classic:latest
+      image: ubuntu-1604:201903-01
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -242,7 +242,7 @@ jobs:
       - run: ./install_lib_ci.sh
       - run:
           name: Install netlify CLI
-          command: npm install -g netlify-cli@1.2.3
+          command: npm install -g netlify-cli@2.46.0
       - run:
           name: Install libraries
           command: |
@@ -255,8 +255,9 @@ jobs:
       - run:
           name: Deploy Pro
           command: |
+            source ~/pass-culture-main/config/run_envs/"${CIRCLE_BRANCH}"
             cd pro
-            netlify deploy -e "${CIRCLE_BRANCH}" -t ${NETLIFY_TOKEN}
+            netlify deploy -s "${NETLIFY_SITE_ID_PRO}" -a "${NETLIFY_TOKEN}" -d build/ --prod
       - run:
           name: Check deployed version
           command: |
@@ -273,7 +274,7 @@ jobs:
 
   deploy-webapp:
     machine:
-      image: circleci/classic:latest
+      image: ubuntu-1604:201903-01
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -282,7 +283,7 @@ jobs:
       - run: ./install_lib_ci.sh
       - run:
           name: Install netlify CLI
-          command: npm install -g netlify-cli@1.2.3
+          command: npm install -g netlify-cli@2.46.0
       - run:
           name: Build WEBAPP
           command: |
@@ -295,8 +296,9 @@ jobs:
       - run:
           name: Deploy WEBAPP
           command: |
+            source config/run_envs/"${CIRCLE_BRANCH}"
             cd webapp
-            netlify deploy -e "${CIRCLE_BRANCH}" -t ${NETLIFY_TOKEN}
+            netlify deploy -s "${NETLIFY_SITE_ID_WEBAPP}" -a "${NETLIFY_TOKEN}" -d build/ --prod
       - run:
           name: Check deployed version
           command: |
@@ -313,7 +315,7 @@ jobs:
 
   deploy-sandbox-in-testing:
     machine:
-      image: circleci/classic:latest
+      image: ubuntu-1604:201903-01
     working_directory: ~/pass-culture
     steps:
       - checkout
@@ -333,7 +335,7 @@ jobs:
 
   release-synthesis:
     machine:
-      image: circleci/classic:latest
+      image: ubuntu-1604:201903-01
     working_directory: ~/pass-culture
     steps:
       - checkout
