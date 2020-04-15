@@ -75,12 +75,11 @@ jobs:
   deploy-pro:
     machine:
       image: ubuntu-1604:201903-01
-    working_directory: ~/pass-culture-main/pro
+    working_directory: ~/
     steps:
       - run:
           name: Checkout main
           command: |
-            cd ~
             git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-main.git pass-culture-main || git clone https://github.com/betagouv/pass-culture-main.git pass-culture-main
       - checkout:
           path: ~/pass-culture-main/pro
@@ -91,6 +90,7 @@ jobs:
       - run:
           name: Install libraries
           command: |
+            cd ~/pass-culture-main/pro
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             nvm install
@@ -99,6 +99,7 @@ jobs:
       - run:
           name: Deploy Pro
           command: |
+            cd ~/pass-culture-main/pro
             source ~/pass-culture-main/config/run_envs/testing
             netlify deploy -s "${NETLIFY_SITE_ID_PRO}" -a "${NETLIFY_TOKEN}" -d build/ --prod
 
