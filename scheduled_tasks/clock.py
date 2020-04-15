@@ -51,6 +51,18 @@ def synchronize_libraires_stocks(app):
 def pc_retrieve_offerers_bank_information(app):
     synchronize_data_for_provider("BankInformationProvider")
 
+@log_cron
+@cron_context
+@cron_require_feature(FeatureToggle.SYNCHRONIZE_BANK_INFORMATION)
+def pc_retrieve_offerers_bank_information_from_new_dms(app):
+    synchronize_data_for_provider("OffererBankInformationProvider")
+
+@log_cron
+@cron_context
+@cron_require_feature(FeatureToggle.SYNCHRONIZE_BANK_INFORMATION)
+def pc_retrieve_bank_information(app):
+    # pc_retrieve_offerers_bank_information(app)
+    pc_retrieve_offerers_bank_information_from_new_dms(app)
 
 @log_cron
 @cron_context
@@ -92,7 +104,7 @@ if __name__ == '__main__':
     orm.configure_mappers()
     scheduler = BlockingScheduler()
 
-    scheduler.add_job(pc_retrieve_offerers_bank_information, 'cron',
+    scheduler.add_job(pc_retrieve_bank_information, 'cron',
                       [app],
                       day='*')
 
