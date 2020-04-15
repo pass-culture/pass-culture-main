@@ -58,46 +58,6 @@ describe('src | components | pages | discovery | tests | helpers', () => {
         const expected = true
         expect(result).toStrictEqual(expected)
       })
-
-      it('when match equals /decouverte/tuto/fin', () => {
-        // given
-        const offerId = 'tuto'
-        const mediationId = 'fin'
-        const match = {
-          params: {
-            offerId,
-            mediationId,
-          },
-          url: `/decouverte/${offerId}/${mediationId}`,
-        }
-
-        // when
-        const result = isDiscoveryStartupUrl(match)
-
-        // then
-        const expected = true
-        expect(result).toStrictEqual(expected)
-      })
-
-      it('when match equals /decouverte/tuto/fin with a trailing slash', () => {
-        // given
-        const offerId = 'tuto'
-        const mediationId = 'fin'
-        const match = {
-          params: {
-            offerId,
-            mediationId,
-          },
-          url: `/decouverte/${offerId}/${mediationId}/`,
-        }
-
-        // then
-        const result = isDiscoveryStartupUrl(match)
-
-        // when
-        const expected = true
-        expect(result).toStrictEqual(expected)
-      })
     })
   })
 })

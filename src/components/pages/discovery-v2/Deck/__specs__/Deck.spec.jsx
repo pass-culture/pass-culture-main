@@ -37,14 +37,6 @@ describe('src | components | pages | discovery | Deck | Deck', () => {
     }
   })
 
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<Deck {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   describe('render', () => {
     it('should render a Deck component with a default state', () => {
       // when

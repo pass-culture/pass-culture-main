@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import { assignData, deleteData, requestData } from 'redux-thunk-data'
+import { assignData, requestData } from 'redux-thunk-data'
 import { selectReadRecommendations } from '../../../redux/selectors/data/readRecommendationsSelectors'
 import { selectRecommendations } from '../../../redux/selectors/data/recommendationsSelectors'
 import { selectSeedLastRequestTimestamp } from '../../../redux/selectors/pagination/paginationSelector'
@@ -9,7 +9,6 @@ import { recommendationNormalizer } from '../../../utils/normalizers'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 import Discovery from './Discovery'
 import selectCurrentRecommendation from './selectors/selectCurrentRecommendation'
-import selectTutorials from './selectors/selectTutorials'
 import {
   checkIfShouldReloadRecommendationsBecauseOfLongTime,
   isDiscoveryStartupUrl,
@@ -22,7 +21,6 @@ export const mapStateToProps = (state, ownProps) => {
   const { params } = match
   const { mediationId, offerId } = params
   const currentRecommendation = selectCurrentRecommendation(state, offerId, mediationId)
-  const tutorials = selectTutorials(state)
   const recommendations = selectRecommendations(state)
   const readRecommendations = selectReadRecommendations(state)
   const hasNoRecommendations = recommendations && recommendations.length === 0
@@ -36,14 +34,10 @@ export const mapStateToProps = (state, ownProps) => {
     recommendations,
     seedLastRequestTimestamp,
     shouldReloadRecommendations,
-    tutorials,
   }
 }
 
 export const mapDispatchToProps = (dispatch, prevProps) => ({
-  deleteTutorials: recommendations => {
-    dispatch(deleteData({ recommendations }))
-  },
   loadRecommendations: (
     handleSuccess,
     handleFail,
@@ -84,8 +78,8 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
     if (!shouldRedirectToFirstRecommendationUrl) {
       return
     }
-    const firstOfferId = loadedRecommendations[0].offerId || 'tuto'
-    const firstMediationId = loadedRecommendations[0].mediationId || 'vide'
+    const firstOfferId = loadedRecommendations[0].offerId
+    const firstMediationId = loadedRecommendations[0].mediationId
     history.replace(`/decouverte/${firstOfferId}/${firstMediationId}`)
   },
   resetReadRecommendations: () => {
@@ -96,9 +90,6 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
   },
   updateLastRequestTimestamp: () => {
     dispatch(updateSeedLastRequestTimestamp(Date.now()))
-  },
-  resetRecommendations: () => {
-    dispatch(assignData({ recommendations: [] }))
   },
 })
 

@@ -13,7 +13,7 @@ export const isDiscoveryStartupUrl = match => {
     return true
   }
 
-  const matchDiscoveryStartupPathRegex = /\/decouverte((\/)|(\/tuto\/fin\/?))?$/
+  const matchDiscoveryStartupPathRegex = /\/decouverte?$/
   const matches = url.match(matchDiscoveryStartupPathRegex)
   if (!matches) {
     return false

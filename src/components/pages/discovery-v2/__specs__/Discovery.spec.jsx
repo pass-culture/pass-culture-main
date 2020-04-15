@@ -12,7 +12,6 @@ describe('src | components | pages | discovery | Discovery', () => {
   beforeEach(() => {
     props = {
       currentRecommendation: {},
-      deleteTutorials: jest.fn(),
       loadRecommendations: jest.fn(),
       location: {
         pathname: '',
@@ -25,22 +24,12 @@ describe('src | components | pages | discovery | Discovery', () => {
       recommendations: [],
       redirectToFirstRecommendationIfNeeded: jest.fn(),
       resetReadRecommendations: jest.fn(),
-      resetRecommendations: jest.fn(),
       resetRecommendationsAndBookings: jest.fn(),
       saveLastRecommendationsRequestTimestamp: jest.fn(),
       seedLastRequestTimestamp: 1574236357670,
       shouldReloadRecommendations: false,
-      tutorials: [],
       updateLastRequestTimestamp: jest.fn(),
     }
-  })
-
-  it('should match the snapshot', () => {
-    // given
-    const wrapper = shallow(<Discovery {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('constructor', () => {
@@ -160,42 +149,6 @@ describe('src | components | pages | discovery | Discovery', () => {
       expect(wrapper.find(Route)).toHaveLength(0)
       expect(wrapper.find(AbsoluteFooterContainer)).toHaveLength(0)
       expect(wrapper.find(LoaderContainer)).toHaveLength(1)
-    })
-  })
-
-  describe('when unmount', () => {
-    it('should delete tutorials for current user', () => {
-      // given
-      props.tutorials = [
-        {
-          id: 'hello',
-          productOrTutoIdentifier: 'tuto_0',
-        },
-      ]
-      const wrapper = shallow(<Discovery {...props} />)
-
-      // when
-      wrapper.unmount()
-
-      // then
-      expect(props.deleteTutorials).toHaveBeenCalledWith([
-        {
-          id: 'hello',
-          productOrTutoIdentifier: 'tuto_0',
-        },
-      ])
-    })
-
-    it('should not delete tutorials for current user', () => {
-      // given
-      props.tutorials = []
-      const wrapper = shallow(<Discovery {...props} />)
-
-      // when
-      wrapper.unmount()
-
-      // then
-      expect(props.deleteTutorials).not.toHaveBeenCalledWith()
     })
   })
 

@@ -59,16 +59,6 @@ class Discovery extends PureComponent {
     }
   }
 
-  componentWillUnmount() {
-    const { deleteTutorials, tutorials, resetRecommendations } = this.props
-
-    if (tutorials.length > 0) {
-      deleteTutorials(tutorials)
-    }
-
-    resetRecommendations()
-  }
-
   handleFail = (state, action) => {
     this.setState({
       hasError: true,
@@ -141,13 +131,13 @@ class Discovery extends PureComponent {
           <main className="discovery-page no-padding page with-footer">
             <Route
               key="route-discovery-deck"
-              path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
+              path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
               render={this.renderDeck}
               sensitive
             />
             <Route
               key="route-discovery-booking"
-              path="/decouverte/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+              path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
               render={cancelView ? this.renderBookingCancellation : this.renderBooking}
               sensitive
             />
@@ -177,7 +167,6 @@ Discovery.defaultProps = {
 
 Discovery.propTypes = {
   currentRecommendation: PropTypes.shape(),
-  deleteTutorials: PropTypes.func.isRequired,
   loadRecommendations: PropTypes.func.isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
@@ -191,11 +180,9 @@ Discovery.propTypes = {
   recommendations: PropTypes.arrayOf(PropTypes.shape()),
   redirectToFirstRecommendationIfNeeded: PropTypes.func.isRequired,
   resetReadRecommendations: PropTypes.func.isRequired,
-  resetRecommendations: PropTypes.func.isRequired,
   saveLastRecommendationsRequestTimestamp: PropTypes.func.isRequired,
   seedLastRequestTimestamp: PropTypes.number.isRequired,
   shouldReloadRecommendations: PropTypes.bool.isRequired,
-  tutorials: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   updateLastRequestTimestamp: PropTypes.func.isRequired,
 }
 

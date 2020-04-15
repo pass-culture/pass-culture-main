@@ -87,8 +87,8 @@ const routes = [
     icon: 'ico-offres',
     path:
       '/decouverte' +
-      '/:offerId(tuto|[A-Z0-9]+)?' +
-      '/:mediationId(vide|fin|[A-Z0-9]+)?' +
+      '/:offerId([A-Z0-9]+)?' +
+      '/:mediationId([A-Z0-9]+)?' +
       '/:details(details|transition)?' +
       '/:booking(reservation)?' +
       '/:bookingId([A-Z0-9]+)?' +

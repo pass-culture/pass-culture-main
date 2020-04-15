@@ -2,16 +2,13 @@ import selectCurrentRecommendation from '../selectCurrentRecommendation'
 
 describe('src | components | pages | discovery | selectors | selectCurrentRecommendation', () => {
   let offerId
-  let mediationId
 
-  describe('when there is offerId and no mediationId', () => {
+  describe('when there is offerId', () => {
     it('should select the current recommendation corresponding to match params', () => {
       // given
-      mediationId = 'FF'
       offerId = 'ARBA'
       const recommendation = {
         productOrTutoIdentifier: 'foo',
-        mediationId,
         offerId,
       }
       const state = {
@@ -21,7 +18,7 @@ describe('src | components | pages | discovery | selectors | selectCurrentRecomm
       }
 
       // when
-      const result = selectCurrentRecommendation(state, offerId, mediationId)
+      const result = selectCurrentRecommendation(state, offerId)
 
       // then
       const expected = {

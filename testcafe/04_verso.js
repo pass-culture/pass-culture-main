@@ -135,7 +135,7 @@ test("parcours complet de réservation d'une offre event à date unique", async 
     'get_existing_webapp_user_can_book_multidates'
   )
   const { mediationId, offer } = await fetchSandbox('webapp_08_booking', 'get_non_free_event_offer')
-  discoveryCardUrl = `${discoverURL}/${offer.id}/${mediationId || 'vide'}`
+  discoveryCardUrl = `${discoverURL}/${offer.id}/${mediationId}`
   discoverDetailsUrl = `${discoveryCardUrl}/details`
 
   await t

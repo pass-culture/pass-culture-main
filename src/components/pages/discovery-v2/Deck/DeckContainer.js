@@ -7,8 +7,7 @@ import Deck from './Deck'
 import selectCurrentRecommendation from '../selectors/selectCurrentRecommendation'
 import selectNextRecommendation from '../selectors/selectNextRecommendation'
 import selectPreviousRecommendation from '../selectors/selectPreviousRecommendation'
-import selectRecommendationsWithLastFakeReco from '../selectors/selectRecommendationsWithLastFakeRecommendation'
-import { selectMediationById } from '../../../../redux/selectors/data/mediationsSelectors'
+import selectUniqAndIndexifiedRecommendations from '../selectors/selectUniqAndIndexifiedRecommendations'
 import { getNextLimit } from './utils/limits'
 
 export const mapStateToProps = (state, ownProps) => {
@@ -17,17 +16,12 @@ export const mapStateToProps = (state, ownProps) => {
   const { mediationId, offerId } = params
 
   const currentRecommendation = selectCurrentRecommendation(state, offerId, mediationId)
-  const { mediationId: currentMediationId } = currentRecommendation || {}
-  const currentMediation = selectMediationById(state, currentMediationId)
-  const recommendations = selectRecommendationsWithLastFakeReco(state)
+  const recommendations = selectUniqAndIndexifiedRecommendations(state)
   const nextRecommendation = selectNextRecommendation(state, offerId, mediationId)
   const previousRecommendation = selectPreviousRecommendation(state, offerId, mediationId)
 
-  const { thumbCount, tutoIndex } = currentMediation || {}
   const nbRecommendations = recommendations ? recommendations.length : 0
-  const isTutoWithOnlyOneThumb = typeof tutoIndex === 'number' && thumbCount <= 1
-  const hasNoVerso =
-    !currentRecommendation || isTutoWithOnlyOneThumb || currentMediationId === 'fin'
+  const hasNoVerso = !currentRecommendation
   const nextLimit = getNextLimit(nbRecommendations)
 
   return {
