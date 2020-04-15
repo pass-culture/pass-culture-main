@@ -1,16 +1,16 @@
-import timezone, { setTimezoneOnBeginningDatetime } from '../timezone'
+import { getTimezone, setTimezoneOnBeginningDatetime } from '../timezone'
 
-describe('src | utils | strings | timezone', () => {
-  it('should return America/Cayenne when departementCode is 97', () => {
-    expect(timezone('97')).toStrictEqual('America/Cayenne')
+describe('timezone', () => {
+  it('should return America/Cayenne when departement code is 973', () => {
+    expect(getTimezone('973')).toBe('America/Cayenne')
   })
 
-  it('should return America/Cayenne when departementCode is 973', () => {
-    expect(timezone('973')).toStrictEqual('America/Cayenne')
+  it('should return Indian/Reunion when departement code is 974', () => {
+    expect(getTimezone('974')).toBe('Indian/Reunion')
   })
 
   it('should return Europe/Paris by default', () => {
-    expect(timezone('')).toStrictEqual('Europe/Paris')
+    expect(getTimezone('')).toBe('Europe/Paris')
   })
 })
 

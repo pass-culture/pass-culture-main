@@ -67,7 +67,7 @@ describe('src | utils | date', () => {
     it('should return date string plus the time zone', () => {
       // given
       const dateString = '2019-10-10T20:00:00Z'
-      const departementCode = '97'
+      const departementCode = '973'
 
       // when
       const timestamp = dateStringPlusTimeZone(dateString, departementCode)

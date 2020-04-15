@@ -1,11 +1,11 @@
 import moment from 'moment-timezone'
 
-export function getTimezone(departementCode) {
+export const getTimezone = departementCode => {
   switch (departementCode) {
-    case '97':
-      return 'America/Cayenne'
     case '973':
       return 'America/Cayenne'
+    case '974':
+      return 'Indian/Reunion'
     default:
       return 'Europe/Paris'
   }
@@ -20,5 +20,3 @@ export const setTimezoneOnBeginningDatetime = timezone => stocks =>
     }
     return Object.assign({}, stock, extend)
   })
-
-export default getTimezone
