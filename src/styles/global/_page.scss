@@ -10,13 +10,13 @@
     padding-top: 0;
 
     .main-list-title {
-      @extend .is-uppercase;
-
-      border-bottom: thin solid;
+      border-bottom: thin solid $grey-darker;
       display: block;
-      font-weight: $weight-bold;
+      font-weight: $weight-medium;
       margin: 0.75rem 0;
       overflow-y: hidden;
+      padding-bottom: 0.5rem;
+      font-size: rem(18px);
 
       span {
         margin-top: 3.5px;
