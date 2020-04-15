@@ -83,24 +83,22 @@ jobs:
             git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-main.git pass-culture-main || git clone https://github.com/betagouv/pass-culture-main.git pass-culture-main
       - checkout:
           path: ~/pass-culture-main/pro
-      - run: ./scripts/install_lib_ci_pro.sh
       - run:
-          name: Install netlify CLI
-          command: npm install -g netlify-cli@2.46.0
+          name: Install Lib CI
+          command: |
+            cd ~/pass-culture-main/pro
+            ./scripts/install_lib_ci_pro.sh
       - run:
-          name: Install libraries
+          name: Build and Deploy
           command: |
             cd ~/pass-culture-main/pro
             export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
             nvm install
             yarn install
             set -a; source config/run_envs/"${CIRCLE_BRANCH}" && yarn build
-      - run:
-          name: Deploy Pro
-          command: |
-            cd ~/pass-culture-main/pro
             source ~/pass-culture-main/config/run_envs/testing
+            npm install -g netlify-cli@2.46.0
             netlify deploy -s "${NETLIFY_SITE_ID_PRO}" -a "${NETLIFY_TOKEN}" -d build/ --prod
 
 workflows:
