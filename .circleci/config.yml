@@ -81,7 +81,7 @@ jobs:
       - run: ./scripts/install_lib_ci_webapp.sh
       - run:
           name: Install netlify CLI
-          command: npm install -g netlify-cli@1.2.3
+          command: npm install -g netlify-cli@2.46.0
       - run:
           name: Build WEBAPP
           command: |
@@ -93,7 +93,8 @@ jobs:
       - run:
           name: Deploy Webapp
           command: |
-            netlify deploy -e "${CIRCLE_BRANCH}" -t ${NETLIFY_TOKEN}
+            source ~/pass-culture-main/config/run_envs/testing
+            netlify deploy -s "${NETLIFY_SITE_ID_WEBAPP}" -a "${NETLIFY_TOKEN}" -d build/ --prod
 
 workflows:
   version: 2
