@@ -77,6 +77,11 @@ jobs:
       image: ubuntu-1604:201903-01
     working_directory: ~/pass-culture-main/pro
     steps:
+      - run:
+          name: Checkout main
+          command: |
+            cd ~
+            git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-main.git pass-culture-main || git clone https://github.com/betagouv/pass-culture-main.git pass-culture-main
       - checkout:
           path: ~/pass-culture-main/pro
       - run: ./scripts/install_lib_ci_pro.sh
