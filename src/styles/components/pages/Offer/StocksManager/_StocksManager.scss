@@ -28,7 +28,7 @@
   }
 
   .notification {
-    max-height: 40px;
+    max-height: rem(40px);
 
     &.fade-out {
       margin: 0;
@@ -85,12 +85,12 @@
       tbody {
         &:not(.inactive) {
           &:hover {
-            background-color: #FAFAFA;
+            background-color: $grey-lighter;
           }
         }
 
         td {
-          font-size: 0.75rem;
+          font-size: rem(12px);
           font-weight: 500;
 
           &.booking-limit-datetime {

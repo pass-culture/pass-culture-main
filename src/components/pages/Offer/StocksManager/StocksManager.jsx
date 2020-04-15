@@ -95,10 +95,11 @@ class StocksManager extends PureComponent {
   }
 
   onHandleEditSuccess = () => {
-    this.setState({ editSuccess: true })
-    setTimeout(() => {
-      this.setState({ editSuccess: false })
-    }, 2000)
+    this.setState({ editSuccess: true }, () => {
+      setTimeout(() => {
+        this.setState({ editSuccess: false })
+      }, 2000)
+    })
   }
 
   closeInfo = () => {

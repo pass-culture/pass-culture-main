@@ -87,7 +87,10 @@ class EditAndDeleteControl extends PureComponent {
             type="button"
           >
             <span className="icon">
-              <Icon svg="ico-pen-r" />
+              <Icon
+                alt="Modifier"
+                svg="ico-pen-r"
+              />
             </span>
           </button>
         </td>
@@ -101,12 +104,15 @@ class EditAndDeleteControl extends PureComponent {
               title={
                 isEventDeletable
                   ? ''
-                  : 'Les évènements terminés depuis plus de 48h ne peuvent être supprimés'
+                  : 'Les évènements terminés depuis plus de 48 heures ne peuvent être supprimés'
               }
               type="button"
             >
               <span className="icon">
-                <Icon svg="ico-close-r" />
+                <Icon
+                  alt="Supprimer"
+                  svg="ico-close-r"
+                />
               </span>
             </button>
           )}

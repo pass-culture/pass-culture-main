@@ -196,10 +196,10 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
       })
 
       // when
-      const errorMessage = wrapper.find('.is-danger').text()
+      const errorMessage = wrapper.find('[children="global : Mon message d’erreur custom"]')
 
       // then
-      expect(errorMessage).toBe('global : Mon message d’erreur custom')
+      expect(errorMessage).toHaveLength(1)
     })
 
     it('should return a success message', () => {
@@ -211,10 +211,12 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
       })
 
       // when
-      const successMessage = wrapper.find('.is-success').text()
+      const successMessage = wrapper.find('[children="Les modifications ont été enregistrées."]')
 
       // then
-      expect(successMessage).toBe('Les modifications ont été enregistrées.')
+      expect(successMessage).toHaveLength(1)
+      expect(successMessage.hasClass('is-success')).toBe(true)
+      expect(successMessage.hasClass('fade-out')).toBe(false)
     })
   })
 })

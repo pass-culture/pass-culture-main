@@ -1,10 +1,12 @@
 import { mount, render, shallow } from 'enzyme'
 import React from 'react'
-
 import { requestData } from 'redux-saga-data'
+import { Provider } from 'react-redux'
+import { Router } from 'react-router'
+import { createBrowserHistory } from 'history'
+import configureMockStore from 'redux-mock-store'
+
 import EditAndDeleteControl from '../EditAndDeleteControl'
-import { BrowserRouter } from 'react-router-dom'
-import { shape } from 'prop-types'
 
 jest.mock('redux-saga-data', () => ({
   requestData: jest.fn(),
@@ -12,18 +14,10 @@ jest.mock('redux-saga-data', () => ({
 
 describe('src | components | pages | Offer | StockManager | StockItem | sub-components | EditAndDeleteControl', () => {
   let props
-  const router = {
-    history: new BrowserRouter().history,
-    route: {
-      location: {},
-      match: {},
-    },
-  }
+  let history
+  let store
 
-  const createContext = () => ({
-    context: { router },
-    childContextTypes: { router: shape({}) },
-  })
+  const mockStore = configureMockStore()
 
   beforeEach(() => {
     props = {
@@ -34,19 +28,25 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
       },
       stock: {
         id: 'EA',
+        isEventDeletable: true,
+        isEventExpired: false,
       },
       query: {},
       isEvent: true,
     }
+
+    history = createBrowserHistory()
+    store = mockStore()
   })
 
   it('should match the snapshot', () => {
     // when
     const wrapper = mount(
-      <tr>
-        <EditAndDeleteControl {...props} />
-      </tr>,
-      createContext()
+      <Router history={history}>
+        <Provider store={store}>
+          <EditAndDeleteControl {...props} />
+        </Provider>
+      </Router>
     )
 
     // then
@@ -80,11 +80,18 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
         props.isEvent = false
 
         // when
-        const wrapper = render(<EditAndDeleteControl {...props} />, createContext())
+        const wrapper = render(
+          <Router history={history}>
+            <Provider store={store}>
+              <EditAndDeleteControl {...props} />
+            </Provider>
+          </Router>
+        )
 
         // then
-        expect(wrapper.find('button.edit-stock').prop('disabled')).toBe(false)
-        expect(wrapper.find('button.edit-stock').prop('title')).toBe('')
+        const editButton = wrapper.find('[alt="Modifier"]').parents('button')
+        expect(editButton.prop('disabled')).toBe(false)
+        expect(editButton.prop('title')).toBe('')
       })
 
       it('should show delete button enabled with no title', () => {
@@ -93,11 +100,18 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
         props.stock.isEventDeletable = true
 
         // when
-        const wrapper = render(<EditAndDeleteControl {...props} />, createContext())
+        const wrapper = render(
+          <Router history={history}>
+            <Provider store={store}>
+              <EditAndDeleteControl {...props} />
+            </Provider>
+          </Router>
+        )
 
         // then
-        expect(wrapper.find('button.delete-stock').prop('disabled')).toBe(false)
-        expect(wrapper.find('button.delete-stock').prop('title')).toBe('')
+        const deleteButton = wrapper.find('[alt="Supprimer"]').parents('button')
+        expect(deleteButton.prop('disabled')).toBe(false)
+        expect(deleteButton.prop('title')).toBe('')
       })
     })
 
@@ -108,11 +122,18 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
         props.stock.isEventExpired = false
 
         // when
-        const wrapper = render(<EditAndDeleteControl {...props} />, createContext())
+        const wrapper = render(
+          <Router history={history}>
+            <Provider store={store}>
+              <EditAndDeleteControl {...props} />
+            </Provider>
+          </Router>
+        )
 
         // then
-        expect(wrapper.find('button.edit-stock').prop('disabled')).toBe(false)
-        expect(wrapper.find('button.edit-stock').prop('title')).toBe('')
+        const editButton = wrapper.find('[alt="Modifier"]').parents('button')
+        expect(editButton.prop('disabled')).toBe(false)
+        expect(editButton.prop('title')).toBe('')
       })
 
       it('should show edit button disabled with title for a past event', () => {
@@ -121,13 +142,18 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
         props.stock.isEventExpired = true
 
         // when
-        const wrapper = render(<EditAndDeleteControl {...props} />, createContext())
+        const wrapper = render(
+          <Router history={history}>
+            <Provider store={store}>
+              <EditAndDeleteControl {...props} />
+            </Provider>
+          </Router>
+        )
 
         // then
-        expect(wrapper.find('button.edit-stock').prop('disabled')).toBe(true)
-        expect(wrapper.find('button.edit-stock').prop('title')).toBe(
-          'Les évènements passés ne sont pas modifiables'
-        )
+        const editButton = wrapper.find('[alt="Modifier"]').parents('button')
+        expect(editButton.prop('disabled')).toBe(true)
+        expect(editButton.prop('title')).toBe('Les évènements passés ne sont pas modifiables')
       })
 
       it('should show delete button enabled with no title for a future event', () => {
@@ -136,11 +162,18 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
         props.stock.isEventDeletable = true
 
         // when
-        const wrapper = render(<EditAndDeleteControl {...props} />, createContext())
+        const wrapper = render(
+          <Router history={history}>
+            <Provider store={store}>
+              <EditAndDeleteControl {...props} />
+            </Provider>
+          </Router>
+        )
 
         // then
-        expect(wrapper.find('button.delete-stock').prop('disabled')).toBe(false)
-        expect(wrapper.find('button.delete-stock').prop('title')).toBe('')
+        const deleteButton = wrapper.find('[alt="Supprimer"]').parents('button')
+        expect(deleteButton.prop('disabled')).toBe(false)
+        expect(deleteButton.prop('title')).toBe('')
       })
 
       it('should show delete button disabled with title for a past event', () => {
@@ -149,12 +182,19 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
         props.stock.isEventDeletable = false
 
         // when
-        const wrapper = render(<EditAndDeleteControl {...props} />, createContext())
+        const wrapper = render(
+          <Router history={history}>
+            <Provider store={store}>
+              <EditAndDeleteControl {...props} />
+            </Provider>
+          </Router>
+        )
 
         // then
-        expect(wrapper.find('button.delete-stock').prop('disabled')).toBe(true)
-        expect(wrapper.find('button.delete-stock').prop('title')).toBe(
-          'Les évènements terminés depuis plus de 48h ne peuvent être supprimés'
+        const deleteButton = wrapper.find('[alt="Supprimer"]').parents('button')
+        expect(deleteButton.prop('disabled')).toBe(true)
+        expect(deleteButton.prop('title')).toBe(
+          'Les évènements terminés depuis plus de 48 heures ne peuvent être supprimés'
         )
       })
     })
