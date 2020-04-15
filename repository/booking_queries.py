@@ -186,6 +186,12 @@ def find_ongoing_bookings_by_stock(stock: Stock) -> List[Booking]:
         .all()
 
 
+def find_not_cancelled_bookings_by_stock(stock: Stock) -> List[Booking]:
+    return Booking.query \
+        .filter_by(stockId=stock.id, isCancelled=False) \
+        .all()
+
+
 def find_eligible_bookings_for_offerer(offerer_id: int) -> List[Booking]:
     return _query_keep_only_used_or_finished_bookings_on_non_activation_offers() \
         .join(Offerer) \

@@ -13,7 +13,7 @@ from models.stock import Stock
 from models.user_offerer import RightsType
 from models.venue import Venue
 from repository import offerer_queries, repository, feature_queries
-from repository.booking_queries import find_ongoing_bookings_by_stock
+from repository.booking_queries import find_not_cancelled_bookings_by_stock
 from repository.offer_queries import get_offer_by_id
 from repository.stock_queries import find_stocks_with_possible_filters
 from routes.serialization import as_dict
@@ -123,7 +123,7 @@ def edit_stock(stock_id):
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
     if have_beginning_date_been_modified(stock_data, stock):
-        bookings = find_ongoing_bookings_by_stock(stock)
+        bookings = find_not_cancelled_bookings_by_stock(stock)
         if bookings:
             try:
                 send_batch_stock_postponement_emails_to_users(bookings, send_raw_email)

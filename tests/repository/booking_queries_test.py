@@ -320,6 +320,26 @@ def test_find_all_ongoing_bookings(app):
     assert all_ongoing_bookings == [ongoing_booking]
 
 
+@clean_database
+def test_find_not_cancelled_bookings_by_stock(app):
+    # Given
+    offerer = create_offerer()
+    repository.save(offerer)
+    venue = create_venue(offerer)
+    stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
+    user = create_user()
+    cancelled_booking = create_booking(user=user, stock=stock, is_cancelled=True)
+    validated_booking = create_booking(user=user, stock=stock, is_used=True)
+    not_cancelled_booking = create_booking(user=user, stock=stock, is_cancelled=False, is_used=False)
+    repository.save(not_cancelled_booking, validated_booking, cancelled_booking)
+
+    # When
+    all_not_cancelled_bookings = booking_queries.find_not_cancelled_bookings_by_stock(stock)
+
+    # Then
+    assert all_not_cancelled_bookings == [validated_booking, not_cancelled_booking]
+
+
 class FindFinalOffererBookingsTest:
     @clean_database
     def test_returns_bookings_for_given_offerer(self, app):
