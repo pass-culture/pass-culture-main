@@ -50,12 +50,16 @@ class StockItem extends PureComponent {
   }
 
   handleRequestSuccess = () => {
-    const { handleEditSuccess, query, stockPatch } = this.props
+    const { handleEditSuccess, query, stock, stockPatch } = this.props
     const { id: stockId } = stockPatch
+
+    const isEdition = !!stock
 
     this.setState({ isRequestPending: false })
     query.changeToReadOnly(null, { id: stockId, key: 'stock' })
-    handleEditSuccess()
+    if (isEdition) {
+      handleEditSuccess()
+    }
   }
 
   handleOnFormSubmit = formValues => {

@@ -592,8 +592,18 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
       })
     })
 
-    it('should call handleEditSuccess function', () => {
+    it('should call handleEditSuccess function in case of edition', () => {
       // given
+      const stock = {
+        id: 'G9',
+        beginningDatetime: '2020-01-20T20:00:00Z',
+        bookingLimitDatetime: '2020-01-27T20:00:00Z',
+        bookingsQuantity: 1,
+        offerId: 'EM',
+        price: 48,
+        quantity: 10,
+      }
+      props.stock = stock
       const wrapper = shallow(<StockItem {...props} />)
 
       // when
@@ -601,6 +611,17 @@ describe('src | components | pages | Offer | StocksManager | StockItem', () => {
 
       // then
       expect(props.handleEditSuccess).toHaveBeenCalledWith()
+    })
+
+    it('should not call handleEditSuccess function in case of creation', () => {
+      // given
+      const wrapper = shallow(<StockItem {...props} />)
+
+      // when
+      wrapper.instance().handleRequestSuccess()
+
+      // then
+      expect(props.handleEditSuccess).not.toHaveBeenCalledWith()
     })
   })
 
