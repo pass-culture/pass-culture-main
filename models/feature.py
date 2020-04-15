@@ -14,7 +14,6 @@ class FeatureToggle(enum.Enum):
                                                 ' et lieux en plus de celles des offres'
     QR_CODE = 'Permettre la validation d''une contremarque via QR code'
     SEARCH_ALGOLIA = 'Permettre la recherche via Algolia'
-    SEARCH_LEGACY = "Permettre la recherche classique"
     SYNCHRONIZE_ALGOLIA = 'Permettre la mise à jour des données pour la recherche via Algolia'
     SYNCHRONIZE_ALLOCINE = 'Permettre la synchronisation journalière avec Allociné'
     SYNCHRONIZE_BANK_INFORMATION = 'Permettre la synchronisation journalière avec DMS' \
