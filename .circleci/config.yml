@@ -76,6 +76,11 @@ jobs:
       image: ubuntu-1604:201903-01
     working_directory: ~/pass-culture-main/webapp
     steps:
+      - run:
+          name: Checkout main
+          command: |
+            cd ~/pass-culture-main
+            git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-main.git pass-culture-main || git clone https://github.com/betagouv/pass-culture-main.git pass-culture-main
       - checkout:
           path: ~/pass-culture-main/webapp
       - run: ./scripts/install_lib_ci_webapp.sh
