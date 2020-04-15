@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '040875ff5d5b'
-down_revision = '2b6541bb0076'
+down_revision = '25c2e6a4534d'
 branch_labels = None
 depends_on = None
 
@@ -72,7 +72,7 @@ def downgrade():
                        'SYNCHRONIZE_BANK_INFORMATION', 'SYNCHRONIZE_LIBRAIRES', 'SYNCHRONIZE_TITELIVE',
                        'SYNCHRONIZE_TITELIVE_PRODUCTS', 'SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION',
                        'SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS', 'UPDATE_DISCOVERY_VIEW', 'UPDATE_BOOKING_USED',
-                       'RECOMMENDATIONS_WITH_DISCOVERY_VIEW','RECOMMENDATIONS_WITH_DIGITAL_FIRST', 'RECOMMENDATIONS_WITH_GEOLOCATION',
+                       'RECOMMENDATIONS_WITH_DISCOVERY_VIEW', 'RECOMMENDATIONS_WITH_DIGITAL_FIRST', 'RECOMMENDATIONS_WITH_GEOLOCATION',
                        'NEW_RIBS_UPLOAD')
 
     previous_enum = sa.Enum(*previous_values, name='featuretoggle')
