@@ -20,14 +20,11 @@ from models import EventType, \
     Venue, \
     Product, Favorite, Booking, DiscoveryView, DiscoveryViewV3, User
 from models.db import Model, db
-from models.feature import FeatureToggle
-from repository import feature_queries
 from repository.booking_queries import get_only_offer_ids_from_bookings
 from repository.favorite_queries import get_only_offer_ids_from_favorites
 from repository.iris_venues_queries import find_venues_located_near_iris
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from repository.venue_queries import get_only_venue_ids_for_department_codes
-from utils.distance import get_sql_geo_distance_in_kilometers
 from utils.logger import logger
 
 ALL_DEPARTMENTS_CODE = '00'
@@ -298,49 +295,6 @@ def _offer_has_stocks_compatible_with_days_intervals(days_intervals):
         event_beginningdate_in_interval_filter | \
         stock_has_no_beginning_date_time
     ).exists()
-
-
-def get_offers_for_recommendations_search(
-        page=1,
-        page_size=10,
-        keywords_string=None,
-        type_values=None,
-        latitude=None,
-        longitude=None,
-        max_distance=None,
-        days_intervals=None):
-    query = _filter_recommendable_offers_for_search(build_offer_search_base_query())
-
-    if max_distance is not None and latitude is not None and longitude is not None:
-        distance_instrument = get_sql_geo_distance_in_kilometers(
-            Venue.latitude,
-            Venue.longitude,
-            latitude,
-            longitude
-        )
-        query = query.filter(distance_instrument < max_distance) \
-            .reset_joinpoint()
-
-    if days_intervals is not None:
-        query = query.filter(_offer_has_stocks_compatible_with_days_intervals(days_intervals)) \
-            .reset_joinpoint()
-
-    if keywords_string is not None:
-        if feature_queries.is_active(FeatureToggle.FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE):
-            query = filter_offers_with_keywords_string(query, keywords_string)
-        else:
-            query = filter_offers_with_keywords_string_on_offer_only(query, keywords_string)
-
-    if type_values is not None:
-        query = query.filter(Offer.type.in_(type_values))
-
-    if page is not None:
-        query = query \
-            .offset((page - 1) * page_size) \
-            .limit(page_size)
-    offers = query.all()
-
-    return offers
 
 
 def find_offers_with_filter_parameters(

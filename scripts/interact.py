@@ -27,7 +27,6 @@ from sandboxes import *
 from sqlalchemy import *
 from utils.config import *
 from utils.credentials import *
-from utils.distance import *
 from utils.human_ids import *
 from utils.import_module import *
 from utils.includes import *

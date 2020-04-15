@@ -9,8 +9,6 @@ from models import Recommendation
 from models.feature import FeatureToggle
 from recommendations_engine import create_recommendations_for_discovery, \
     create_recommendations_for_discovery_v2, \
-    create_recommendations_for_search, \
-    get_recommendation_search_params, \
     give_requested_recommendation_to_user
 from recommendations_engine.recommendations import create_recommendations_for_discovery_v3
 from repository import repository
@@ -23,17 +21,6 @@ from utils.human_ids import dehumanize
 from utils.rest import expect_json_data
 
 DEFAULT_PAGE = 1
-
-
-@app.route('/recommendations', methods=['GET'])
-@login_required
-def list_recommendations():
-    search_params = get_recommendation_search_params(request.args)
-    recommendations = create_recommendations_for_search(
-        current_user,
-        **search_params
-    )
-    return jsonify(serialize_recommendations(recommendations, current_user)), 200
 
 
 @app.route('/recommendations/offers/<offer_id>', methods=['GET'])
@@ -73,46 +60,6 @@ def put_read_recommendations():
     return jsonify(serialize_recommendations(read_recommendations, current_user)), 200
 
 
-@app.route('/recommendations/v2', methods=['PUT'])
-@feature_required(FeatureToggle.RECOMMENDATIONS_WITH_DISCOVERY_VIEW)
-@login_required
-@expect_json_data
-def put_recommendations_v2():
-    json_keys = request.json.keys()
-
-    if 'readRecommendations' in json_keys:
-        update_read_recommendations(request.json['readRecommendations'])
-
-    if 'seenRecommendationIds' in json_keys:
-        humanized_seen_recommendation_ids = request.json['seenRecommendationIds']
-        seen_recommendation_ids = list(
-            map(dehumanize, humanized_seen_recommendation_ids))
-    else:
-        seen_recommendation_ids = []
-
-    offer_id = dehumanize(request.args.get('offerId'))
-    mediation_id = dehumanize(request.args.get('mediationId'))
-
-    requested_recommendation = give_requested_recommendation_to_user(
-        current_user,
-        offer_id,
-        mediation_id
-    )
-
-    created_recommendations = create_recommendations_for_discovery_v2(limit=BLOB_SIZE,
-                                                                      user=current_user,
-                                                                      seen_recommendation_ids=seen_recommendation_ids)
-
-    recommendations = move_tutorial_recommendations_first(created_recommendations,
-                                                          seen_recommendation_ids,
-                                                          current_user)
-    if requested_recommendation:
-        recommendations = move_requested_recommendation_first(created_recommendations,
-                                                              requested_recommendation)
-
-    return jsonify(serialize_recommendations(recommendations, current_user)), 200
-
-
 @app.route('/recommendations', methods=['PUT'])
 @login_required
 @expect_json_data
@@ -149,6 +96,46 @@ def put_recommendations():
     created_recommendations = create_recommendations_for_discovery(limit=BLOB_SIZE,
                                                                    user=current_user,
                                                                    pagination_params=pagination_params)
+
+    recommendations = move_tutorial_recommendations_first(created_recommendations,
+                                                          seen_recommendation_ids,
+                                                          current_user)
+    if requested_recommendation:
+        recommendations = move_requested_recommendation_first(created_recommendations,
+                                                              requested_recommendation)
+
+    return jsonify(serialize_recommendations(recommendations, current_user)), 200
+
+
+@app.route('/recommendations/v2', methods=['PUT'])
+@feature_required(FeatureToggle.RECOMMENDATIONS_WITH_DISCOVERY_VIEW)
+@login_required
+@expect_json_data
+def put_recommendations_v2():
+    json_keys = request.json.keys()
+
+    if 'readRecommendations' in json_keys:
+        update_read_recommendations(request.json['readRecommendations'])
+
+    if 'seenRecommendationIds' in json_keys:
+        humanized_seen_recommendation_ids = request.json['seenRecommendationIds']
+        seen_recommendation_ids = list(
+            map(dehumanize, humanized_seen_recommendation_ids))
+    else:
+        seen_recommendation_ids = []
+
+    offer_id = dehumanize(request.args.get('offerId'))
+    mediation_id = dehumanize(request.args.get('mediationId'))
+
+    requested_recommendation = give_requested_recommendation_to_user(
+        current_user,
+        offer_id,
+        mediation_id
+    )
+
+    created_recommendations = create_recommendations_for_discovery_v2(limit=BLOB_SIZE,
+                                                                      user=current_user,
+                                                                      seen_recommendation_ids=seen_recommendation_ids)
 
     recommendations = move_tutorial_recommendations_first(created_recommendations,
                                                           seen_recommendation_ids,

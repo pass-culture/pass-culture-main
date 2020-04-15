@@ -1,17 +1,13 @@
-from datetime import datetime
 from typing import List
 from unittest.mock import patch
 
-from dateutil.tz import tzutc
-
 from models import Offerer, Stock
 from models.discovery_view import DiscoveryView
-from recommendations_engine import create_recommendations_for_discovery_v2, \
-    get_recommendation_search_params, give_requested_recommendation_to_user
+from recommendations_engine import create_recommendations_for_discovery_v2
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_mediation, \
-    create_offerer, create_recommendation,\
+    create_offerer, create_recommendation, \
     create_stock, create_user, create_venue
 from tests.model_creators.specific_creators import \
     create_offer_with_thing_product, create_stock_from_offer

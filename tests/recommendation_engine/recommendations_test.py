@@ -1,12 +1,8 @@
-from datetime import datetime
 from typing import List
 from unittest.mock import patch
 
-from dateutil.tz import tzutc
-
 from models import Offerer, Stock
 from recommendations_engine import create_recommendations_for_discovery, \
-    get_recommendation_search_params, \
     give_requested_recommendation_to_user
 from repository import repository
 from tests.conftest import clean_database
@@ -58,51 +54,6 @@ class GiveRequestedRecommendationToUserTest:
         assert result_reco.offerId == offer_ok.id
         assert result_reco.mediationId == mediation.id
         assert result_reco.userId == user2.id
-
-
-class GetRecommendationSearchParamsTest:
-    def test_when_days_0_1_returns_days_intervals_between_date_and_date_in_one_day(self, app):
-        # Given
-        request_args = {
-            'days': '0-1',
-            'date': '2019-01-31T12:00:00+00:00'
-        }
-
-        # When
-        search_params = get_recommendation_search_params(request_args)
-
-        # Then
-        assert search_params == {'days_intervals': [
-            [datetime(2019, 1, 31, 12, 0, tzinfo=tzutc()), datetime(2019, 2, 1, 12, 0, tzinfo=tzutc())]]}
-
-    def test_when_days_1_5_returns_days_intervals_between_date_in_one_day_and_date_in_five_days(self, app):
-        # Given
-        request_args = {
-            'days': '1-5',
-            'date': '2019-01-31T12:00:00+00:00'
-        }
-
-        # When
-        search_params = get_recommendation_search_params(request_args)
-
-        # Then
-        assert search_params == {'days_intervals': [
-            [datetime(2019, 2, 1, 12, 0, tzinfo=tzutc()), datetime(2019, 2, 5, 12, 0, tzinfo=tzutc())]]}
-
-    def test_when_days_more_than_5_returns_days_intervals_between_date_with_days_and_date_in_100000_days(
-            self, app):
-        # Given
-        request_args = {
-            'days': '5-100000',
-            'date': '2019-01-31T12:00:00+00:00'
-        }
-
-        # When
-        search_params = get_recommendation_search_params(request_args)
-
-        # Then
-        assert search_params == {'days_intervals': [
-            [datetime(2019, 2, 5, 12, 0, tzinfo=tzutc()), datetime(2292, 11, 15, 12, 0, tzinfo=tzutc())]]}
 
 
 class CreateRecommendationsForDiscoveryTest:

@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from models import DiscoveryView, DiscoveryViewV3
+from models import DiscoveryViewV3
 from recommendations_engine.recommendations import create_recommendations_for_discovery_v3
 from repository import repository
 from tests.conftest import clean_database
