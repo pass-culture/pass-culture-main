@@ -23,7 +23,7 @@ export const selectTimezoneByVenueIdAndOffererId = createCachedSelector(
 
     if (!offerer) return
 
-    return getTimezone(offerer.postalCode.slice(0, 2))
+    return getTimezone(offerer.postalCode.slice(0, 3))
   }
 )((state, venueId = '', offererId = '') => `${venueId}${offererId}`)
 

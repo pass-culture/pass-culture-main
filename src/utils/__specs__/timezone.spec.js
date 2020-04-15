@@ -27,16 +27,16 @@ describe('formatLocalTimeDateString', () => {
     expect(formattedDate).toBe('Thursday 28 February 2019, 18:59')
   })
 
-  it('should return a formatted date with Cayenne departement code and default format', () => {
+  it('should return a formatted date with Reunion departement code and default format', () => {
     // given
     const date = '2019-02-28T21:59:00Z'
-    const departementCode = '97'
+    const departementCode = '974'
 
     // when
     const formattedDate = formatLocalTimeDateString(date, departementCode)
 
     // then
-    expect(formattedDate).toBe('Thursday 28/02/2019 à 18:59')
+    expect(formattedDate).toBe('Friday 01/03/2019 à 01:59')
   })
 })
 
@@ -63,14 +63,14 @@ describe('getTimezone', () => {
     expect(timezone).toBe('America/Cayenne')
   })
 
-  it('should return Cayenne timezone for 97', () => {
+  it('should return Reunion timezone for 974', () => {
     // given
-    const departementCode = '97'
+    const departementCode = '974'
 
     // when
     const timezone = getTimezone(departementCode)
 
     // then
-    expect(timezone).toBe('America/Cayenne')
+    expect(timezone).toBe('Indian/Reunion')
   })
 })

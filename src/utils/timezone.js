@@ -11,12 +11,16 @@ export const formatLocalTimeDateString = (
     .format(dateFormat)
 }
 
+// Cayenne              UTC          Paris                St Denis
+//    | ---------------- | ----------- | --------------------|
+//   9:00 ------------ 12:00 ------- 14:00 --------------- 16:00
+
 export const getTimezone = departementCode => {
   switch (departementCode) {
-    case '97':
-      return 'America/Cayenne'
     case '973':
       return 'America/Cayenne'
+    case '974':
+      return 'Indian/Reunion'
     default:
       return 'Europe/Paris'
   }
