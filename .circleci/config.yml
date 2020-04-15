@@ -241,13 +241,10 @@ jobs:
       - run: git submodule update --init
       - run: ./install_lib_ci.sh
       - run:
-          name: Install netlify CLI
-          command: npm install -g netlify-cli@2.46.0
-      - run:
           name: Install libraries
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
             cd pro
             nvm install
             yarn install
@@ -257,6 +254,7 @@ jobs:
           command: |
             source ~/pass-culture-main/config/run_envs/"${CIRCLE_BRANCH}"
             cd pro
+            npm install -g netlify-cli@2.46.0
             netlify deploy -s "${NETLIFY_SITE_ID_PRO}" -a "${NETLIFY_TOKEN}" -d build/ --prod
       - run:
           name: Check deployed version
@@ -282,13 +280,10 @@ jobs:
       - run: git submodule update --init
       - run: ./install_lib_ci.sh
       - run:
-          name: Install netlify CLI
-          command: npm install -g netlify-cli@2.46.0
-      - run:
           name: Build WEBAPP
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
             cd webapp
             nvm install
             yarn install
@@ -298,6 +293,7 @@ jobs:
           command: |
             source config/run_envs/"${CIRCLE_BRANCH}"
             cd webapp
+            npm install -g netlify-cli@2.46.0
             netlify deploy -s "${NETLIFY_SITE_ID_WEBAPP}" -a "${NETLIFY_TOKEN}" -d build/ --prod
       - run:
           name: Check deployed version
