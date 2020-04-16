@@ -61,7 +61,7 @@ def pc_retrieve_offerers_bank_information_from_new_dms(app):
 @cron_context
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_BANK_INFORMATION)
 def pc_retrieve_bank_information(app):
-    # pc_retrieve_offerers_bank_information(app)
+    pc_retrieve_offerers_bank_information(app)
     pc_retrieve_offerers_bank_information_from_new_dms(app)
 
 @log_cron
