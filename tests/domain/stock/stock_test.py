@@ -70,7 +70,7 @@ class HasBookingLimitDatetimePassedTest:
 
 
 class BookingsQuantityTest:
-    def test_should_return_0_when_no_bookings(self, app):
+    def test_should_return_0_when_no_bookings(self):
         # Given
         stock = Stock(
             beginning_datetime=None,
@@ -89,7 +89,7 @@ class BookingsQuantityTest:
         # Then
         assert bookings_quantity == 0
 
-    def test_should_return_the_quantity_of_bookings(self, app):
+    def test_should_return_the_quantity_of_bookings(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -114,7 +114,7 @@ class BookingsQuantityTest:
         # Then
         assert bookings_quantity == 1
 
-    def test_should_not_include_cancelled_booking(self, app):
+    def test_should_not_include_cancelled_booking(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -142,7 +142,7 @@ class BookingsQuantityTest:
 
 
 class StockRemainingQuantityTest:
-    def test_should_be_equal_to_total_stock_when_there_is_no_booking(self, app):
+    def test_should_be_equal_to_total_stock_when_there_is_no_booking(self):
         # Given
         stock = Stock(
             beginning_datetime=None,
@@ -161,7 +161,7 @@ class StockRemainingQuantityTest:
         # Then
         assert remaining_quantity == 2
 
-    def test_should_be_0_when_all_stocks_are_booked(self, app):
+    def test_should_be_0_when_all_stocks_are_booked(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -187,7 +187,7 @@ class StockRemainingQuantityTest:
         # Then
         assert remaining_quantity == 0
 
-    def test_should_be_unlimited_when_stock_is_unlimited(self, app):
+    def test_should_be_unlimited_when_stock_is_unlimited(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)

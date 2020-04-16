@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from domain.booking import StockIsNotBookable
 from repository import repository
@@ -135,7 +135,7 @@ class Post:
 
     class Returns400:
         @clean_database
-        @patch('routes.bookings.book_an_offer', side_effect=StockIsNotBookable)
+        @patch('routes.bookings.book_an_offer')
         def when_use_case_raise_stock_is_not_bookable_exception(self, mock_book_an_offer, app):
             # Given
             user = create_user()
@@ -150,6 +150,9 @@ class Post:
                 'recommendationId': None,
                 'quantity': 1
             }
+
+            mock_book_an_offer.execute = MagicMock()
+            mock_book_an_offer.execute.side_effect = StockIsNotBookable
 
             # When
             response = TestClient(app.test_client()) \

@@ -12,13 +12,14 @@ from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_deposit, create_offerer, create_venue, \
     create_booking, create_stock, create_recommendation
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
-from use_cases.book_an_offer import book_an_offer, BookingInformation
+from use_cases.book_an_offer import BookAnOffer, BookingInformation
 
 
 class BookAnOfferTest:
     def setup_method(self):
         self.stock_repository = StockSQLRepository()
         self.stock_repository.find_stock_by_id = MagicMock()
+        self.book_an_offer = BookAnOffer(self.stock_repository)
 
     @clean_database
     def test_user_can_book_an_offer(self, app):
@@ -46,7 +47,7 @@ class BookAnOfferTest:
         self.stock_repository.find_stock_by_id.return_value = expected_stock
 
         # When
-        booking = book_an_offer(booking_information=booking_information, stock_repository=self.stock_repository)
+        booking = self.book_an_offer.execute(booking_information=booking_information)
 
         # Then
         assert booking == Booking.query.filter(Booking.isCancelled == False).one()
@@ -74,7 +75,7 @@ class BookAnOfferTest:
 
         # When
         with pytest.raises(StockDoesntExist) as error:
-            book_an_offer(booking_information, stock_repository=self.stock_repository)
+            self.book_an_offer.execute(booking_information=booking_information)
 
         # Then
         assert error.value.errors == {'stockId': ["stockId ne correspond à aucun stock"]}
@@ -108,7 +109,7 @@ class BookAnOfferTest:
 
         # When
         with pytest.raises(OfferIsAlreadyBooked) as error:
-            book_an_offer(booking_information, stock_repository=self.stock_repository)
+            self.book_an_offer.execute(booking_information=booking_information)
 
         # Then
         assert error.value.errors == {'offerId': ["Cette offre a déja été reservée par l'utilisateur"]}
@@ -140,7 +141,7 @@ class BookAnOfferTest:
 
         # When
         with pytest.raises(CannotBookFreeOffers) as error:
-            book_an_offer(booking_information, stock_repository=self.stock_repository)
+            self.book_an_offer.execute(booking_information=booking_information)
 
         # Then
         assert error.value.errors == {'cannotBookFreeOffers': ["Votre compte ne vous permet"
@@ -171,7 +172,7 @@ class BookAnOfferTest:
 
         # When
         with pytest.raises(StockIsNotBookable) as error:
-            book_an_offer(booking_information, stock_repository=self.stock_repository)
+            self.book_an_offer.execute(booking_information=booking_information)
 
         # Then
         assert error.value.errors == {'stock': ["Ce stock n'est pas réservable"]}
@@ -201,7 +202,7 @@ class BookAnOfferTest:
 
         # When
         with pytest.raises(UserHasInsufficientFunds) as error:
-            book_an_offer(booking_information, stock_repository=self.stock_repository)
+            self.book_an_offer.execute(booking_information=booking_information)
 
         # Then
         assert error.value.errors == \
@@ -240,7 +241,7 @@ class BookAnOfferTest:
 
         # When
         with pytest.raises(PhysicalExpenseLimitHasBeenReached) as error:
-            book_an_offer(booking_information, stock_repository=self.stock_repository)
+            self.book_an_offer.execute(booking_information=booking_information)
 
         # Then
         assert error.value.errors == \
@@ -276,7 +277,7 @@ class BookAnOfferTest:
 
         # When
         with pytest.raises(QuantityIsInvalid) as error:
-            book_an_offer(booking_information, stock_repository=self.stock_repository)
+            self.book_an_offer.execute(booking_information=booking_information)
 
         # Then
         assert error.value.errors == {
