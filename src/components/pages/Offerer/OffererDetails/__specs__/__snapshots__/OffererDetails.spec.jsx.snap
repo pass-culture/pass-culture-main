@@ -50,11 +50,18 @@ ShallowWrapper {
           title="Structure"
         />,
         <p
-          className="subtitle"
+          className="subtitle op-subtitle"
         >
           Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
         </p>,
-        <div>
+        <div
+          className="section op-content-section"
+        >
+          <h2
+            className="main-list-title"
+          >
+            Informations structure
+          </h2>
           <div
             className="op-detail"
           >
@@ -82,27 +89,7 @@ ShallowWrapper {
               Siège social : 
             </span>
             <span>
-              fake address
-            </span>
-          </div>
-          <div
-            className="op-detail"
-          >
-            <span>
-              Code postal : 
-            </span>
-            <span>
-              
-            </span>
-          </div>
-          <div
-            className="op-detail"
-          >
-            <span>
-              Ville : 
-            </span>
-            <span>
-              
+              fake address -  
             </span>
           </div>
         </div>,
@@ -173,7 +160,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
-          "className": "subtitle",
+          "className": "subtitle op-subtitle",
         },
         "ref": null,
         "rendered": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
@@ -185,6 +172,11 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
+            <h2
+              className="main-list-title"
+            >
+              Informations structure
+            </h2>,
             <div
               className="op-detail"
             >
@@ -212,33 +204,26 @@ ShallowWrapper {
                 Siège social : 
               </span>
               <span>
-                fake address
-              </span>
-            </div>,
-            <div
-              className="op-detail"
-            >
-              <span>
-                Code postal : 
-              </span>
-              <span>
-                
-              </span>
-            </div>,
-            <div
-              className="op-detail"
-            >
-              <span>
-                Ville : 
-              </span>
-              <span>
-                
+                fake address -  
               </span>
             </div>,
           ],
+          "className": "section op-content-section",
         },
         "ref": null,
         "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Informations structure",
+              "className": "main-list-title",
+            },
+            "ref": null,
+            "rendered": "Informations structure",
+            "type": "h2",
+          },
           Object {
             "instance": null,
             "key": undefined,
@@ -333,7 +318,7 @@ ShallowWrapper {
                   Siège social : 
                 </span>,
                 <span>
-                  fake address
+                  fake address -  
                 </span>,
               ],
               "className": "op-detail",
@@ -356,94 +341,10 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": "fake address",
+                  "children": "fake address -  ",
                 },
                 "ref": null,
-                "rendered": "fake address",
-                "type": "span",
-              },
-            ],
-            "type": "div",
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": Array [
-                <span>
-                  Code postal : 
-                </span>,
-                <span>
-                  
-                </span>,
-              ],
-              "className": "op-detail",
-            },
-            "ref": null,
-            "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "Code postal : ",
-                },
-                "ref": null,
-                "rendered": "Code postal : ",
-                "type": "span",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "",
-                },
-                "ref": null,
-                "rendered": "",
-                "type": "span",
-              },
-            ],
-            "type": "div",
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": Array [
-                <span>
-                  Ville : 
-                </span>,
-                <span>
-                  
-                </span>,
-              ],
-              "className": "op-detail",
-            },
-            "ref": null,
-            "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "Ville : ",
-                },
-                "ref": null,
-                "rendered": "Ville : ",
-                "type": "span",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "",
-                },
-                "ref": null,
-                "rendered": "",
+                "rendered": "fake address -  ",
                 "type": "span",
               },
             ],
@@ -546,11 +447,18 @@ ShallowWrapper {
             title="Structure"
           />,
           <p
-            className="subtitle"
+            className="subtitle op-subtitle"
           >
             Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.
           </p>,
-          <div>
+          <div
+            className="section op-content-section"
+          >
+            <h2
+              className="main-list-title"
+            >
+              Informations structure
+            </h2>
             <div
               className="op-detail"
             >
@@ -578,27 +486,7 @@ ShallowWrapper {
                 Siège social : 
               </span>
               <span>
-                fake address
-              </span>
-            </div>
-            <div
-              className="op-detail"
-            >
-              <span>
-                Code postal : 
-              </span>
-              <span>
-                
-              </span>
-            </div>
-            <div
-              className="op-detail"
-            >
-              <span>
-                Ville : 
-              </span>
-              <span>
-                
+                fake address -  
               </span>
             </div>
           </div>,
@@ -669,7 +557,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
-            "className": "subtitle",
+            "className": "subtitle op-subtitle",
           },
           "ref": null,
           "rendered": "Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.",
@@ -681,6 +569,11 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
+              <h2
+                className="main-list-title"
+              >
+                Informations structure
+              </h2>,
               <div
                 className="op-detail"
               >
@@ -708,33 +601,26 @@ ShallowWrapper {
                   Siège social : 
                 </span>
                 <span>
-                  fake address
-                </span>
-              </div>,
-              <div
-                className="op-detail"
-              >
-                <span>
-                  Code postal : 
-                </span>
-                <span>
-                  
-                </span>
-              </div>,
-              <div
-                className="op-detail"
-              >
-                <span>
-                  Ville : 
-                </span>
-                <span>
-                  
+                  fake address -  
                 </span>
               </div>,
             ],
+            "className": "section op-content-section",
           },
           "ref": null,
           "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Informations structure",
+                "className": "main-list-title",
+              },
+              "ref": null,
+              "rendered": "Informations structure",
+              "type": "h2",
+            },
             Object {
               "instance": null,
               "key": undefined,
@@ -829,7 +715,7 @@ ShallowWrapper {
                     Siège social : 
                   </span>,
                   <span>
-                    fake address
+                    fake address -  
                   </span>,
                 ],
                 "className": "op-detail",
@@ -852,94 +738,10 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": "fake address",
+                    "children": "fake address -  ",
                   },
                   "ref": null,
-                  "rendered": "fake address",
-                  "type": "span",
-                },
-              ],
-              "type": "div",
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": Array [
-                  <span>
-                    Code postal : 
-                  </span>,
-                  <span>
-                    
-                  </span>,
-                ],
-                "className": "op-detail",
-              },
-              "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "Code postal : ",
-                  },
-                  "ref": null,
-                  "rendered": "Code postal : ",
-                  "type": "span",
-                },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "",
-                  },
-                  "ref": null,
-                  "rendered": "",
-                  "type": "span",
-                },
-              ],
-              "type": "div",
-            },
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": Array [
-                  <span>
-                    Ville : 
-                  </span>,
-                  <span>
-                    
-                  </span>,
-                ],
-                "className": "op-detail",
-              },
-              "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "Ville : ",
-                  },
-                  "ref": null,
-                  "rendered": "Ville : ",
-                  "type": "span",
-                },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "",
-                  },
-                  "ref": null,
-                  "rendered": "",
+                  "rendered": "fake address -  ",
                   "type": "span",
                 },
               ],

@@ -43,7 +43,7 @@ ShallowWrapper {
           </NavLink>
         </div>,
       ],
-      "className": "section",
+      "className": "section op-content-section",
     },
     "ref": null,
     "rendered": Array [
@@ -135,7 +135,7 @@ ShallowWrapper {
             </NavLink>
           </div>,
         ],
-        "className": "section",
+        "className": "section op-content-section",
       },
       "ref": null,
       "rendered": Array [

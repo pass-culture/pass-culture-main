@@ -9,6 +9,11 @@ import RibsUploadFeatureFlip from './FeatureFlip/RibsUploadFeatureFlip'
 import BankInformation from './BankInformation/BankInformation'
 import BankInformationLegacy from './BankInformation/BankInformationLegacy'
 
+function formatSiren(siren) {
+  if (!siren) return ''
+  return siren.split('').reduce((acc, l, index) => acc + l + (index % 3 === 2 ? ' ' : ''))
+}
+
 class OffererDetails extends PureComponent {
   componentDidMount() {
     const { offererId, loadOffererById } = this.props
@@ -26,16 +31,19 @@ class OffererDetails extends PureComponent {
           subtitle={offerer.name}
           title="Structure"
         />
-        <p className="subtitle">
+        <p className="subtitle op-subtitle">
           {'Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.'}
         </p>
-        <div>
+        <div className="section op-content-section">
+          <h2 className="main-list-title">
+            {'Informations structure'}
+          </h2>
           <div className="op-detail">
             <span>
               {'SIREN : '}
             </span>
             <span>
-              {offerer.siren}
+              {formatSiren(offerer.siren)}
             </span>
           </div>
           <div className="op-detail">
@@ -51,23 +59,7 @@ class OffererDetails extends PureComponent {
               {'Siège social : '}
             </span>
             <span>
-              {offerer.address}
-            </span>
-          </div>
-          <div className="op-detail">
-            <span>
-              {'Code postal : '}
-            </span>
-            <span>
-              {offerer.postalCode}
-            </span>
-          </div>
-          <div className="op-detail">
-            <span>
-              {'Ville : '}
-            </span>
-            <span>
-              {offerer.city}
+              {`${offerer.address} - ${offerer.postalCode} ${offerer.city}`}
             </span>
           </div>
         </div>

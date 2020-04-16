@@ -5,7 +5,7 @@ import React, { Fragment } from 'react'
 import Icon from '../../../../layout/Icon'
 
 const BankInformation = ({ offerer }) => (
-  <div className="section bank-information">
+  <div className="section op-content-section bank-information">
     <h2 className="main-list-title">
       {'Coordonnées bancaires de la structure'}
     </h2>

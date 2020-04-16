@@ -4,7 +4,7 @@ import React from 'react'
 import VenueItem from './VenueItem/VenueItem'
 
 const Venues = ({ venues, offererId }) => (
-  <div className="section">
+  <div className="section op-content-section">
     <h2 className="main-list-title">
       {'Lieux'}
     </h2>
