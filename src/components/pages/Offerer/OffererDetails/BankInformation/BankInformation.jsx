@@ -1,10 +1,11 @@
 import { Offerer } from '../Offerer'
 import PropTypes from 'prop-types'
-import { ROOT_PATH, DMS_RIB_OFFERER_PROCEDURE_PATH } from '../../../../../utils/config'
+import {
+  ROOT_PATH,
+  DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL,
+} from '../../../../../utils/config'
 import { BankInformationLegacy } from './BankInformationLegacy'
 import React, { Fragment } from 'react'
-
-const DMS_LINK = `https://www.demarches-simplifiees.fr/commencer/${DMS_RIB_OFFERER_PROCEDURE_PATH}`
 
 const BankInformation = ({ offerer }) => (
   <div className="section bank-information">
@@ -16,7 +17,7 @@ const BankInformation = ({ offerer }) => (
       <Fragment>
         <a
           className="bi-external-link bi-external-link--mod-topright"
-          href={DMS_LINK}
+          href={DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL}
           rel="noopener noreferrer"
           target="_blank"
         >
@@ -63,7 +64,7 @@ const BankInformation = ({ offerer }) => (
           <p>
             <a
               className="bi-external-link"
-              href={DMS_LINK}
+              href={DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL}
               rel="noopener noreferrer"
               target="_blank"
             >

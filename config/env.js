@@ -81,7 +81,8 @@ function getClientEnvironment(publicUrl) {
         SENTRY_SERVER_URL_FOR_PRO: process.env.SENTRY_SERVER_URL_FOR_PRO,
         URL_FOR_MAINTENANCE: process.env.PRO_URL_FOR_MAINTENANCE,
         MAINTENANCE_PAGE_AVAILABLE: process.env.MAINTENANCE_PAGE_AVAILABLE === 'true' || false,
-        DMS_RIB_OFFERER_PROCEDURE_PATH: process.env.DMS_RIB_OFFERER_PROCEDURE_PATH,
+        DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL:
+          process.env.DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL,
       }
     )
   // Stringify all values so we can feed into Webpack DefinePlugin
