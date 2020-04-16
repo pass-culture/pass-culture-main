@@ -36,7 +36,7 @@ class Mediation(PcObject,
                       ForeignKey("user.id"),
                       nullable=True)
 
-    author = relationship('User',
+    author = relationship('UserSQLEntity',
                           foreign_keys=[authorId],
                           backref='mediations')
 

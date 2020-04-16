@@ -4,7 +4,7 @@ from typing import List
 import PIL
 from PIL.Image import Image
 
-from models import Mediation, User
+from models import Mediation, UserSQLEntity
 
 MAX_THUMB_WIDTH = 750
 CONVERSION_QUALITY = 90
@@ -20,7 +20,7 @@ def standardize_image(image: bytes, crop_params: List) -> bytes:
     return standard_image
 
 
-def create_new_mediation(offer_id: int, offerer_id: int, user: User, credit: str) -> Mediation:
+def create_new_mediation(offer_id: int, offerer_id: int, user: UserSQLEntity, credit: str) -> Mediation:
     new_mediation = Mediation()
     new_mediation.author = user
     new_mediation.offerId = offer_id

@@ -6,7 +6,7 @@ from domain.password import random_password, generate_reset_token
 from models.deposit import Deposit
 from models.offer_type import EventType, ThingType
 from models.api_errors import ApiErrors
-from models.user import User
+from models.user import UserSQLEntity
 from models.beneficiary_import_status import ImportStatus
 from models.booking import ActivationUser
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
@@ -14,7 +14,7 @@ from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 IMPORT_STATUS_MODIFICATION_RULE = 'Seuls les dossiers au statut DUPLICATE peuvent être modifiés (aux statuts REJECTED ou RETRY uniquement)'
 
 
-def create_initial_deposit(user_to_activate: User) -> Deposit:
+def create_initial_deposit(user_to_activate: UserSQLEntity) -> Deposit:
     existing_deposits = Deposit.query.filter_by(userId=user_to_activate.id).all()
     if existing_deposits:
         error = AlreadyActivatedException()
@@ -42,8 +42,8 @@ def is_activation_booking(booking):
     return booking.stock.offer.type in [str(EventType.ACTIVATION), str(ThingType.ACTIVATION)]
 
 
-def create_beneficiary_from_application(application_detail: dict) -> User:
-    beneficiary = User()
+def create_beneficiary_from_application(application_detail: dict) -> UserSQLEntity:
+    beneficiary = UserSQLEntity()
     beneficiary.lastName = application_detail['last_name']
     beneficiary.firstName = application_detail['first_name']
     beneficiary.publicName = '%s %s' % (application_detail['first_name'], application_detail['last_name'])

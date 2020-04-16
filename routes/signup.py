@@ -4,7 +4,7 @@ from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from domain.departments import ILE_DE_FRANCE_DEPT_CODES
 from domain.postal_code.postal_code import PostalCode
 from domain.user_emails import send_user_validation_email
-from models import ApiErrors, Deposit, Offerer, User
+from models import ApiErrors, Deposit, Offerer, UserSQLEntity
 from models.feature import FeatureToggle
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
@@ -30,7 +30,7 @@ def signup_webapp():
     objects_to_save = []
     check_valid_signup_webapp(request)
 
-    new_user = User(from_dict=request.json)
+    new_user = UserSQLEntity(from_dict=request.json)
 
     if IS_INTEGRATION:
         new_user.departementCode = '00'
@@ -61,7 +61,7 @@ def signup_pro():
     app_origin_url = request.headers.get('origin')
 
     check_valid_signup_pro(request)
-    new_user = User(from_dict=request.json)
+    new_user = UserSQLEntity(from_dict=request.json)
 
     existing_offerer = Offerer.query.filter_by(siren=request.json['siren']).first()
 

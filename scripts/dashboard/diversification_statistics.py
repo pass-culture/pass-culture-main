@@ -4,7 +4,7 @@ import pandas
 from sqlalchemy import text
 from sqlalchemy.sql import selectable
 
-from models import Offerer, UserOfferer, Venue, Offer, StockSQLEntity, Booking, EventType, ThingType, User, DiscoveryView
+from models import Offerer, UserOfferer, Venue, Offer, StockSQLEntity, Booking, EventType, ThingType, UserSQLEntity, DiscoveryView
 from models.db import db
 from repository import booking_queries
 from repository.booking_queries import count_cancelled as query_count_all_cancelled_bookings
@@ -172,9 +172,9 @@ def get_all_bookings_count(departement_code: str = None) -> int:
 
 def get_all_used_or_finished_bookings(departement_code: str) -> int:
     query = booking_queries._query_keep_only_used_or_finished_bookings_on_non_activation_offers() \
-        .join(User)
+        .join(UserSQLEntity)
     if departement_code:
-        query = query.filter(User.departementCode == departement_code)
+        query = query.filter(UserSQLEntity.departementCode == departement_code)
 
     return query \
         .count()

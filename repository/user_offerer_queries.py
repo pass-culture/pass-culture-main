@@ -1,11 +1,11 @@
-from models import UserOfferer, User
+from models import UserOfferer, UserSQLEntity
 
 
 def find_user_offerer_email(user_offerer_id):
     return UserOfferer.query \
         .filter_by(id=user_offerer_id) \
-        .join(User) \
-        .with_entities(User.email) \
+        .join(UserSQLEntity) \
+        .with_entities(UserSQLEntity.email) \
         .first()[0]
 
 

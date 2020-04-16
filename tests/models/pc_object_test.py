@@ -6,7 +6,7 @@ import pytest
 from sqlalchemy import BigInteger, Column, DateTime, Integer, Float
 from sqlalchemy.dialects.postgresql import UUID
 
-from models import PcObject, Offer, User
+from models import PcObject, Offer, UserSQLEntity
 from models import ThingType
 from models.api_errors import DecimalCastError, DateTimeCastError, UuidCastError
 from models.db import Model
@@ -91,7 +91,7 @@ class PopulateFromDictTest:
         }
 
         # When
-        user = User(from_dict=user_data)
+        user = UserSQLEntity(from_dict=user_data)
 
         # Then
         assert user.email == 'test@example.com'

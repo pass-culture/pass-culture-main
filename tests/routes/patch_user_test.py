@@ -1,4 +1,4 @@
-from models import User
+from models import UserSQLEntity
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user
@@ -21,7 +21,7 @@ class Patch:
                 .patch('/users/current', json=data)
 
             # then
-            user = User.query.get(user_id)
+            user = UserSQLEntity.query.get(user_id)
             assert response.status_code == 200
             assert response.json['id'] == humanize(user.id)
             assert response.json['publicName'] == user.publicName
@@ -55,7 +55,7 @@ class Patch:
                 .patch('/users/current', json=data)
 
             # then
-            user = User.query.get(user_id)
+            user = UserSQLEntity.query.get(user_id)
             assert response.status_code == 400
             for key in data:
                 assert response.json[key] == ['Vous ne pouvez pas changer cette information']

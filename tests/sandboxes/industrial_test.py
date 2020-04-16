@@ -35,7 +35,7 @@ def test_save_industrial_sandbox(mock_request, app):
         Product=155,
         Recommendation=84,
         StockSQLEntity=102,
-        User=53,
+        UserSQLEntity=53,
         UserOfferer=125,
         Venue=22,
     )

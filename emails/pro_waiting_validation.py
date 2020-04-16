@@ -1,11 +1,11 @@
 from typing import Dict
 
-from models import User, Offerer
+from models import UserSQLEntity, Offerer
 from repository.feature_queries import feature_send_mail_to_users_enabled
 from utils.mailing import SUPPORT_EMAIL_ADDRESS, DEV_EMAIL_ADDRESS
 
 
-def retrieve_data_for_pro_user_waiting_offerer_validation_email(user: User, offerer: Offerer) -> Dict:
+def retrieve_data_for_pro_user_waiting_offerer_validation_email(user: UserSQLEntity, offerer: Offerer) -> Dict:
     return {
         'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'MJ-TemplateID': 778329,

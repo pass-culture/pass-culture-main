@@ -17,7 +17,7 @@ from models.payment import Payment
 from models.recommendation import Recommendation
 from models.stock import EVENT_AUTOMATIC_REFUND_DELAY
 from models.stock import StockSQLEntity
-from models.user import User
+from models.user import UserSQLEntity
 from models.venue import Venue
 from repository import offer_queries
 
@@ -40,8 +40,8 @@ def count() -> int:
 
 def count_by_departement(departement_code: str) -> int:
     return _query_keep_on_non_activation_offers() \
-        .join(User, User.id == Booking.userId) \
-        .filter(User.departementCode == departement_code) \
+        .join(UserSQLEntity, UserSQLEntity.id == Booking.userId) \
+        .filter(UserSQLEntity.departementCode == departement_code) \
         .count()
 
 
@@ -52,8 +52,8 @@ def count_non_cancelled() -> int:
 
 def count_non_cancelled_by_departement(departement_code: str) -> int:
     return _query_non_cancelled_non_activation_bookings() \
-        .join(User, Booking.userId == User.id) \
-        .filter(User.departementCode == departement_code) \
+        .join(UserSQLEntity, Booking.userId == UserSQLEntity.id) \
+        .filter(UserSQLEntity.departementCode == departement_code) \
         .count()
 
 
@@ -64,8 +64,8 @@ def count_cancelled() -> int:
 
 def count_cancelled_by_departement(departement_code: str) -> int:
     return _query_cancelled_bookings_on_non_activation_offers() \
-        .join(User) \
-        .filter(User.departementCode == departement_code) \
+        .join(UserSQLEntity) \
+        .filter(UserSQLEntity.departementCode == departement_code) \
         .count()
 
 
@@ -127,12 +127,12 @@ def _select_only_needed_fields_for_bookings_info(query: Query) -> Query:
                                Booking.isUsed.label('isUsed'),
                                Venue.name.label('venue_name'),
                                Offer.name.label('offer_name'),
-                               User.lastName.label('user_lastname'),
-                               User.firstName.label('user_firstname'),
-                               User.email.label('user_email'))
+                               UserSQLEntity.lastName.label('user_lastname'),
+                               UserSQLEntity.firstName.label('user_firstname'),
+                               UserSQLEntity.email.label('user_email'))
 
 
-def find_from_recommendation(recommendation: Recommendation, user: User) -> List[Booking]:
+def find_from_recommendation(recommendation: Recommendation, user: UserSQLEntity) -> List[Booking]:
     return _query_keep_on_non_activation_offers() \
         .filter(Offer.id == recommendation.offerId) \
         .distinct(Booking.stockId) \
@@ -141,7 +141,7 @@ def find_from_recommendation(recommendation: Recommendation, user: User) -> List
         .all()
 
 
-def is_offer_already_booked_by_user(current_user: User, offer: Offer) -> bool:
+def is_offer_already_booked_by_user(current_user: UserSQLEntity, offer: Offer) -> bool:
     return Booking.query \
            .filter_by(userId=current_user.id) \
            .filter_by(isCancelled=False) \
@@ -155,8 +155,8 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
     query = Booking.query.filter_by(token=token)
 
     if email:
-        query = query.join(User) \
-            .filter(func.lower(User.email) == email.strip().lower())
+        query = query.join(UserSQLEntity) \
+            .filter(func.lower(UserSQLEntity.email) == email.strip().lower())
 
     if offer_id:
         query_offer = Booking.query \
@@ -266,16 +266,16 @@ def find_date_used(booking: Booking) -> datetime:
     return booking.dateUsed
 
 
-def find_user_activation_booking(user: User) -> Booking:
+def find_user_activation_booking(user: UserSQLEntity) -> Booking:
     is_activation_offer = (Offer.type == str(ThingType.ACTIVATION)) | (
             Offer.type == str(EventType.ACTIVATION))
 
     return Booking.query \
-        .join(User) \
+        .join(UserSQLEntity) \
         .join(StockSQLEntity, Booking.stockId == StockSQLEntity.id) \
         .join(Offer) \
         .filter(is_activation_offer) \
-        .filter(User.id == user.id) \
+        .filter(UserSQLEntity.id == user.id) \
         .first()
 
 
@@ -288,7 +288,7 @@ def _filter_bookings_by_offerer_id(offerer_id: int) -> Query:
         .join(StockSQLEntity) \
         .join(Offer) \
         .join(Venue) \
-        .join(User) \
+        .join(UserSQLEntity) \
         .filter(Venue.managingOffererId == offerer_id) \
         .reset_joinpoint()
 
@@ -320,7 +320,7 @@ def find_for_my_bookings_page(user_id: int) -> List[Booking]:
         .all()
 
 
-def get_only_offer_ids_from_bookings(user: User) -> List[int]:
+def get_only_offer_ids_from_bookings(user: UserSQLEntity) -> List[int]:
     offers_booked = Offer.query \
         .join(StockSQLEntity) \
         .join(Booking) \

@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from models import User, Offerer, UserOfferer
+from models import UserSQLEntity, Offerer, UserOfferer
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
@@ -22,7 +22,7 @@ class Patch:
 
             # Then
             assert response.status_code == 204
-            assert User.query.get(user_id).isValidated
+            assert UserSQLEntity.query.get(user_id).isValidated
 
         @clean_database
         @patch('routes.validate.send_ongoing_offerer_attachment_information_email_to_pro',

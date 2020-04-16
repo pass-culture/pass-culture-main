@@ -20,7 +20,7 @@ class UserOfferer(PcObject, Model, NeedsValidationMixin):
                     ForeignKey('user.id'),
                     primary_key=True)
 
-    user = relationship('User',
+    user = relationship('UserSQLEntity',
                         foreign_keys=[userId],
                         backref=backref("UserOfferers"))
 

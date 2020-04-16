@@ -1,13 +1,13 @@
 import pytest
 
-from models import ApiErrors, User
+from models import ApiErrors, UserSQLEntity
 from validation.routes.users_authentifications import check_user_is_logged_in_or_email_is_provided
 
 
 class CheckUserIsLoggedInOrEmailIsProvidedTest:
     def test_raises_an_error_when_no_email_nor_user_logged(self):
         # Given
-        user = User()
+        user = UserSQLEntity()
         user.is_authenticated = False
         email = None
 
@@ -21,7 +21,7 @@ class CheckUserIsLoggedInOrEmailIsProvidedTest:
 
     def test_does_not_raise_error_when_email_is_provided(self):
         # Given
-        user = User()
+        user = UserSQLEntity()
         user.is_authenticated = False
         email = 'fake@example.com'
 
@@ -35,7 +35,7 @@ class CheckUserIsLoggedInOrEmailIsProvidedTest:
 
     def test_does_not_raise_error_when_user_is_authenticated(self):
         # Given
-        user = User()
+        user = UserSQLEntity()
         user.is_authenticated = True
         email = 'fake@example.com'
 

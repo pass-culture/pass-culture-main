@@ -4,7 +4,7 @@ from typing import List
 from sqlalchemy import and_, func
 from sqlalchemy.sql import selectable
 
-from models import Venue, Offer, StockSQLEntity, Offerer, UserOfferer, User
+from models import Venue, Offer, StockSQLEntity, Offerer, UserOfferer, UserSQLEntity
 from models.activity import load_activity
 from models.db import db
 from repository.offerer_queries import _filter_by_sirens
@@ -109,12 +109,12 @@ def find_filtered_venues(sirens=None,
     return result
 
 
-def find_by_managing_user(user: User) -> List[Venue]:
+def find_by_managing_user(user: UserSQLEntity) -> List[Venue]:
     return Venue.query \
         .join(Offerer) \
         .join(UserOfferer) \
-        .join(User) \
-        .filter(User.id == user.id).all()
+        .join(UserSQLEntity) \
+        .filter(UserSQLEntity.id == user.id).all()
 
 
 def _filter_by_is_virtual(query, is_virtual):
@@ -157,8 +157,8 @@ def _filter_by_has_validated_user_offerer(query, has_validated_user_offerer):
 
 
 def _filter_by_has_validated_user(query, has_validated_user):
-    is_valid = User.validationToken == None
-    query = query.join(User)
+    is_valid = UserSQLEntity.validationToken == None
+    query = query.join(UserSQLEntity)
     if has_validated_user:
         query = query.filter(Offerer.users.any(is_valid))
     else:

@@ -1,4 +1,4 @@
-from models import Mediation, Offer, StockSQLEntity, User, Product
+from models import Mediation, Offer, StockSQLEntity, UserSQLEntity, Product
 from models.recommendation import Recommendation
 from repository.user_queries import keep_only_webapp_users
 from sandboxes.scripts.utils.bookings import find_offer_compatible_with_bookings, \
@@ -10,7 +10,7 @@ from sandboxes.scripts.utils.helpers import get_mediation_helper, \
 
 
 def get_existing_webapp_user_with_at_least_one_recommendation():
-   query = Recommendation.query.join(User)
+   query = Recommendation.query.join(UserSQLEntity)
    query = keep_only_webapp_users(query)
    query = query.reset_joinpoint().join(Offer)
 
@@ -22,8 +22,8 @@ def get_existing_webapp_user_with_at_least_one_recommendation():
 
 
 def get_existing_webapp_hnmm_user(return_as_dict=False):
-    query = keep_only_webapp_users(User.query)
-    query = query.filter(User.email.contains('93.has-no-more-money'))
+    query = keep_only_webapp_users(UserSQLEntity.query)
+    query = query.filter(UserSQLEntity.email.contains('93.has-no-more-money'))
     user = query.first()
     if return_as_dict == False:
         return user
@@ -33,8 +33,8 @@ def get_existing_webapp_hnmm_user(return_as_dict=False):
 
 
 def get_existing_webapp_hbs_user():
-    query = keep_only_webapp_users(User.query)
-    query = query.filter(User.email.contains('has-booked-some'))
+    query = keep_only_webapp_users(UserSQLEntity.query)
+    query = query.filter(UserSQLEntity.email.contains('has-booked-some'))
     user = query.first()
     return {
         "user": get_user_helper(user)

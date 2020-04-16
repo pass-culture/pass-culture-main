@@ -1,9 +1,9 @@
-from models.user import User
+from models.user import UserSQLEntity
 from models.user_offerer import UserOfferer
 from sandboxes.scripts.utils.helpers import get_user_helper, get_offerer_helper
 
 def get_existing_pro_user_with_offerer():
-    query = User.query.join(UserOfferer)
+    query = UserSQLEntity.query.join(UserOfferer)
     user = query.first()
 
     offerer = [
@@ -17,8 +17,8 @@ def get_existing_pro_user_with_offerer():
 
 
 def get_existing_pro_not_validated_user_with_real_offerer():
-    users = User.query \
-        .filter(User.validationToken is not None) \
+    users = UserSQLEntity.query \
+        .filter(UserSQLEntity.validationToken is not None) \
         .join(UserOfferer) \
         .all()
 

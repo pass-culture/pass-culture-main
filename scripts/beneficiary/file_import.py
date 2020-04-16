@@ -9,7 +9,7 @@ import bcrypt
 from domain.admin_emails import send_users_activation_report
 from domain.password import generate_reset_token, random_password
 from domain.user_activation import generate_activation_users_csv
-from models import User, Booking, StockSQLEntity
+from models import UserSQLEntity, Booking, StockSQLEntity
 from models.booking import ActivationUser
 from repository import booking_queries, repository
 from repository.stock_queries import find_online_activation_stock
@@ -43,7 +43,7 @@ def create_users_with_activation_bookings(
     for row in csv_rows:
         user = find_user(row[EMAIL_COLUMN_INDEX])
         if not user:
-            user = User()
+            user = UserSQLEntity()
 
         filled_user = fill_user_from(row, user)
 
@@ -61,7 +61,7 @@ def create_users_with_activation_bookings(
     return bookings
 
 
-def create_booking_for(user: User, stock: StockSQLEntity, token: str) -> Booking:
+def create_booking_for(user: UserSQLEntity, stock: StockSQLEntity, token: str) -> Booking:
     booking = Booking()
     booking.stock = stock
     booking.user = user
@@ -74,7 +74,7 @@ def create_booking_for(user: User, stock: StockSQLEntity, token: str) -> Booking
     return booking
 
 
-def fill_user_from(csv_row: List[str], user: User) -> User:
+def fill_user_from(csv_row: List[str], user: UserSQLEntity) -> UserSQLEntity:
     user.lastName = csv_row[LAST_NAME_COLUMN_INDEX]
     user.firstName = csv_row[FIRST_NAME_COLUMN_INDEX].split(' ')[0]
     user.publicName = '%s %s' % (user.firstName, user.lastName)
@@ -174,7 +174,7 @@ def run(csv_file_path: str) -> None:
     logger.info('Enregistrement des comptes utilisateur terminé\n')
 
     logger.info('[STEP 3] Décompte des objets')
-    logger.info('Users en BDD -> %s' % User.query.count())
+    logger.info('Users en BDD -> %s' % UserSQLEntity.query.count())
     logger.info('Users créés ou mis à jour -> %s' % total)
     logger.info('Bookings en BDD -> %s\n' % Booking.query.count())
     logger.info('Bookings créés ou existants -> %s' % len(existing_tokens))

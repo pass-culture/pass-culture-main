@@ -3,11 +3,11 @@ from typing import Callable, Dict
 from domain.expenses import is_eligible_to_physical_offers_capping, is_eligible_to_digital_offers_capping
 from domain.stock.stock import Stock
 from models import Offer, Booking
-from models.user import User
+from models.user import UserSQLEntity
 from repository import booking_queries, stock_queries
 
 
-def check_offer_already_booked(offer: Offer, user: User):
+def check_offer_already_booked(offer: Offer, user: UserSQLEntity):
     is_offer_already_booked_by_user = booking_queries.is_offer_already_booked_by_user(user, offer)
     if is_offer_already_booked_by_user:
         offer_is_already_booked = OfferIsAlreadyBooked()
@@ -53,7 +53,7 @@ def check_expenses_limits(expenses: Dict, booking: Booking,
             raise DigitalExpenseLimitHasBeenReached(expenses['digital']['max'])
 
 
-def check_can_book_free_offer(user: User, stock: Stock):
+def check_can_book_free_offer(user: UserSQLEntity, stock: Stock):
     if not user.canBookFreeOffers and stock.price == 0:
         raise CannotBookFreeOffers()
 

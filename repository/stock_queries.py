@@ -1,6 +1,6 @@
 from typing import List
 
-from models import StockSQLEntity, Offerer, User, Offer, ThingType, Venue, Product
+from models import StockSQLEntity, Offerer, UserSQLEntity, Offer, ThingType, Venue, Product
 from utils.human_ids import dehumanize
 
 
@@ -30,7 +30,7 @@ def find_online_activation_stock():
 
 def _check_offerer_user(query, user):
     return query.filter(
-        Offerer.users.any(User.id == user.id)
+        Offerer.users.any(UserSQLEntity.id == user.id)
     ).first_or_404()
 
 

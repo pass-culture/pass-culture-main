@@ -8,37 +8,37 @@ from sqlalchemy.sql.functions import Function
 
 from models import BeneficiaryImport, BeneficiaryImportStatus, Booking, \
     EventType, ImportStatus, Offer, Offerer, RightsType, StockSQLEntity, \
-    ThingType, User, UserOfferer
+    ThingType, UserSQLEntity, UserOfferer
 from models.db import db
 from models.user import WalletBalance
 
 
 def count_all_activated_users() -> int:
-    return User.query \
+    return UserSQLEntity.query \
         .filter_by(canBookFreeOffers=True) \
         .count()
 
 
 def count_all_activated_users_by_departement(department_code: str) -> int:
-    return User.query \
+    return UserSQLEntity.query \
         .filter_by(canBookFreeOffers=True) \
         .filter_by(departementCode=department_code) \
         .count()
 
 
 def count_users_by_email(email: str) -> int:
-    return User.query \
+    return UserSQLEntity.query \
         .filter_by(email=email) \
         .count()
 
 
 def _query_user_having_booked() -> Query:
-    return User.query.join(Booking) \
+    return UserSQLEntity.query.join(Booking) \
         .join(StockSQLEntity) \
         .join(Offer) \
         .filter(Offer.type != str(ThingType.ACTIVATION)) \
         .filter(Offer.type != str(EventType.ACTIVATION)) \
-        .distinct(User.id)
+        .distinct(UserSQLEntity.id)
 
 
 def count_users_having_booked() -> int:
@@ -47,33 +47,33 @@ def count_users_having_booked() -> int:
 
 def count_users_having_booked_by_departement_code(departement_code: str) -> int:
     return _query_user_having_booked() \
-        .filter(User.departementCode == departement_code) \
+        .filter(UserSQLEntity.departementCode == departement_code) \
         .count()
 
 
-def find_user_by_email(email: str) -> User:
-    return User.query \
-        .filter(func.lower(User.email) == email.strip().lower()) \
+def find_user_by_email(email: str) -> UserSQLEntity:
+    return UserSQLEntity.query \
+        .filter(func.lower(UserSQLEntity.email) == email.strip().lower()) \
         .first()
 
 
-def find_by_civility(first_name: str, last_name: str, birth_date: datetime) -> List[User]:
-    civility_predicate = (_matching(User.firstName, first_name)) & (_matching(User.lastName, last_name)) & (
-        User.dateOfBirth == birth_date)
+def find_by_civility(first_name: str, last_name: str, birth_date: datetime) -> List[UserSQLEntity]:
+    civility_predicate = (_matching(UserSQLEntity.firstName, first_name)) & (_matching(UserSQLEntity.lastName, last_name)) & (
+        UserSQLEntity.dateOfBirth == birth_date)
 
-    return User.query \
+    return UserSQLEntity.query \
         .filter(civility_predicate) \
         .all()
 
 
-def find_by_validation_token(token: str) -> User:
-    return User.query \
+def find_by_validation_token(token: str) -> UserSQLEntity:
+    return UserSQLEntity.query \
         .filter_by(validationToken=token) \
         .first()
 
 
-def find_user_by_reset_password_token(token: str) -> User:
-    return User.query \
+def find_user_by_reset_password_token(token: str) -> UserSQLEntity:
+    return UserSQLEntity.query \
         .filter_by(resetPasswordToken=token) \
         .first()
 
@@ -81,7 +81,7 @@ def find_user_by_reset_password_token(token: str) -> User:
 def find_all_emails_of_user_offerers_admins(offerer_id: int) -> List[str]:
     filter_validated_user_offerers_with_admin_rights = (UserOfferer.rights == RightsType.admin) & (
         UserOfferer.validationToken == None)
-    admins = User.query \
+    admins = UserSQLEntity.query \
         .join(UserOfferer) \
         .filter(filter_validated_user_offerers_with_admin_rights) \
         .join(Offerer) \
@@ -93,12 +93,12 @@ def find_all_emails_of_user_offerers_admins(offerer_id: int) -> List[str]:
 
 def get_all_users_wallet_balances() -> List[WalletBalance]:
     wallet_balances = db.session.query(
-        User.id,
-        func.get_wallet_balance(User.id, False),
-        func.get_wallet_balance(User.id, True)
+        UserSQLEntity.id,
+        func.get_wallet_balance(UserSQLEntity.id, False),
+        func.get_wallet_balance(UserSQLEntity.id, True)
     ) \
-        .filter(User.deposits != None) \
-        .order_by(User.id) \
+        .filter(UserSQLEntity.deposits != None) \
+        .order_by(UserSQLEntity.id) \
         .all()
 
     instantiate_result_set = lambda u: WalletBalance(u[0], u[1], u[2])
@@ -137,8 +137,8 @@ def filter_users_with_at_least_one_not_validated_offerer_validated_user_offerer(
 
 def keep_only_webapp_users(query: Query) -> Query:
     return query.filter(
-        (~User.UserOfferers.any()) & \
-        (User.isAdmin == False)
+        (~UserSQLEntity.UserOfferers.any()) & \
+        (UserSQLEntity.isAdmin == False)
     )
 
 
@@ -168,5 +168,5 @@ def _sanitized_string(value: str) -> Function:
     return sanitized
 
 
-def find_user_by_id(user_id: int) -> User:
-    return User.query.get(user_id)
+def find_user_by_id(user_id: int) -> UserSQLEntity:
+    return UserSQLEntity.query.get(user_id)

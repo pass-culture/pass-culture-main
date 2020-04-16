@@ -23,11 +23,13 @@ from models.user_offerer import UserOfferer, RightsType
 from models.versioned_mixin import VersionedMixin
 
 
-class User(PcObject,
-           Model,
-           NeedsValidationMixin,
-           VersionedMixin
-           ):
+class UserSQLEntity(PcObject,
+                    Model,
+                    NeedsValidationMixin,
+                    VersionedMixin
+                    ):
+    __tablename__ = 'user'
+
     email = Column(String(120), nullable=False, unique=True)
 
     canBookFreeOffers = Column(Boolean,
@@ -120,7 +122,7 @@ class User(PcObject,
         return False
 
     def populate_from_dict(self, data):
-        super(User, self).populate_from_dict(data)
+        super(UserSQLEntity, self).populate_from_dict(data)
         if data.__contains__('password') and data['password']:
             self.setPassword(data['password'])
 

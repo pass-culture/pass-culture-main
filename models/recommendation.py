@@ -27,7 +27,7 @@ class Recommendation(PcObject, Model):
                     nullable=False,
                     index=True)
 
-    user = relationship('User',
+    user = relationship('UserSQLEntity',
                         foreign_keys=[userId],
                         backref='recommendations')
 

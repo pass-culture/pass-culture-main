@@ -60,7 +60,7 @@ class Booking(PcObject, Model, VersionedMixin):
                     index=True,
                     nullable=False)
 
-    user = relationship('User',
+    user = relationship('UserSQLEntity',
                         foreign_keys=[userId],
                         backref='userBookings')
 

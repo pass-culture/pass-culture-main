@@ -8,7 +8,7 @@ from models.beneficiary_import_status import BeneficiaryImportStatus, \
     ImportStatus
 from models.db import Model, db
 from models.pc_object import PcObject
-from models.user import User
+from models.user import UserSQLEntity
 
 
 class BeneficiaryImport(PcObject, Model):
@@ -23,11 +23,11 @@ class BeneficiaryImport(PcObject, Model):
 
     demarcheSimplifieeProcedureId = Column(Integer, nullable=True)
 
-    beneficiary = relationship('User',
+    beneficiary = relationship('UserSQLEntity',
                                foreign_keys=[beneficiaryId],
                                backref='beneficiaryImports')
 
-    def setStatus(self, status: ImportStatus, detail: str = None, author: User = None):
+    def setStatus(self, status: ImportStatus, detail: str = None, author: UserSQLEntity = None):
         new_status = BeneficiaryImportStatus()
         new_status.status = status
         new_status.detail = detail

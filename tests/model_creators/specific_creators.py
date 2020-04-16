@@ -3,7 +3,7 @@ import string
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 
-from models import Booking, EventType, Offer, Offerer, Product, StockSQLEntity, ThingType, User, Venue, Provider
+from models import Booking, EventType, Offer, Offerer, Product, StockSQLEntity, ThingType, UserSQLEntity, Venue, Provider
 from utils.token import random_token
 
 
@@ -12,7 +12,7 @@ def create_booking_for_event(amount: int = 50,
                              is_cancelled: bool = False,
                              quantity: int = 1,
                              type: EventType = EventType.CINEMA,
-                             user: User = None) -> Booking:
+                             user: UserSQLEntity = None) -> Booking:
     product = Product(from_dict={'type': str(type)})
     offer = Offer()
     stock = StockSQLEntity()
@@ -35,7 +35,7 @@ def create_booking_for_thing(amount: int = 50,
                              quantity: int = 1,
                              product_type: ThingType = ThingType.JEUX,
                              url: str = None,
-                             user: User = None) -> Booking:
+                             user: UserSQLEntity = None) -> Booking:
     product = Product(from_dict={'url': url, 'type': str(product_type)})
     offer = Offer(from_dict={'url': url, 'type': str(product_type)})
     stock = StockSQLEntity()

@@ -1,7 +1,7 @@
 import random
 from typing import List, Optional
 
-from models import DiscoveryView, Mediation, Offer, Recommendation, User
+from models import DiscoveryView, Mediation, Offer, Recommendation, UserSQLEntity
 from models.db import db
 from recommendations_engine import get_offers_for_recommendations_discovery
 from repository import mediation_queries, repository
@@ -29,7 +29,7 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
     return recommendation
 
 
-def create_recommendations_for_discovery(user: User,
+def create_recommendations_for_discovery(user: UserSQLEntity,
                                          seen_recommendation_ids: List[int] = [],
                                          limit: int = 3) -> List[Recommendation]:
     recommendations = []
@@ -46,7 +46,7 @@ def create_recommendations_for_discovery(user: User,
     return recommendations
 
 
-def create_recommendations_for_discovery_v3(user: User, user_iris_id: Optional[int] = None,
+def create_recommendations_for_discovery_v3(user: UserSQLEntity, user_iris_id: Optional[int] = None,
                                             user_is_geolocated: bool = False, seen_recommendation_ids: List[int] = [],
                                             limit: int = 3) -> List[Recommendation]:
     recommendations = []
@@ -72,7 +72,7 @@ def _create_recommendation_from_ids(user, offer_id, mediation_id=None):
     return _create_recommendation(user, offer, mediation=mediation)
 
 
-def _create_recommendation(user: User, offer: Offer, mediation: Mediation = None) -> Recommendation:
+def _create_recommendation(user: UserSQLEntity, offer: Offer, mediation: Mediation = None) -> Recommendation:
     recommendation = Recommendation()
     recommendation.user = user
 
@@ -90,7 +90,7 @@ def _create_recommendation(user: User, offer: Offer, mediation: Mediation = None
 
 # TODO: when using discovery view use this function instead of _create_recommendation
 # in create_recommendations_for_discovery
-def _create_recommendation_from_offers(user: User, reco_view: DiscoveryView,
+def _create_recommendation_from_offers(user: UserSQLEntity, reco_view: DiscoveryView,
                                        mediation: Mediation = None) -> Recommendation:
     recommendation = Recommendation()
     recommendation.user = user

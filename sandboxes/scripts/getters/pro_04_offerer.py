@@ -1,11 +1,11 @@
 from models.offerer import Offerer
-from models.user import User
+from models.user import UserSQLEntity
 from models.user_offerer import UserOfferer
 from sandboxes.scripts.utils.helpers import get_offerer_helper, get_user_helper
 
 
 def get_existing_pro_validated_user_with_first_offerer():
-    query = User.query.filter(User.validationToken == None)
+    query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
     query = query.join(UserOfferer)
     user = query.first()
 
@@ -19,10 +19,10 @@ def get_existing_pro_validated_user_with_first_offerer():
     }
 
 def get_existing_pro_validated_user_with_offerer_with_no_iban():
-    query = User.query.join(UserOfferer) \
+    query = UserSQLEntity.query.join(UserOfferer) \
                       .join(Offerer) \
-                      .filter(User.UserOfferers.any(Offerer.bankInformation == None))
-    query = query.filter(User.validationToken == None)
+                      .filter(UserSQLEntity.UserOfferers.any(Offerer.bankInformation == None))
+    query = query.filter(UserSQLEntity.validationToken == None)
     user = query.first()
 
     offerer = [

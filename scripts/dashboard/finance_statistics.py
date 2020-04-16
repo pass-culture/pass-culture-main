@@ -3,7 +3,7 @@ from typing import List, Tuple
 import pandas
 from sqlalchemy import func, text
 
-from models import Deposit, Booking, Payment, User, StockSQLEntity, Offer, Venue
+from models import Deposit, Booking, Payment, UserSQLEntity, StockSQLEntity, Offer, Venue
 from models.db import db
 from models.payment_status import TransactionStatus
 
@@ -12,7 +12,7 @@ def get_total_deposits(departement_code: str = None) -> float:
     query = db.session.query(func.coalesce(func.sum(Deposit.amount), 0))
 
     if departement_code:
-        query = query.join(User).filter(User.departementCode == departement_code)
+        query = query.join(UserSQLEntity).filter(UserSQLEntity.departementCode == departement_code)
 
     return float(query.scalar())
 
@@ -21,7 +21,7 @@ def get_total_amount_spent(departement_code: str = None) -> float:
     query = db.session.query(func.coalesce(func.sum(Booking.amount * Booking.quantity), 0))
 
     if departement_code:
-        query = query.join(User).filter(User.departementCode == departement_code)
+        query = query.join(UserSQLEntity).filter(UserSQLEntity.departementCode == departement_code)
 
     return float(query \
                  .filter(Booking.isCancelled == False) \
@@ -37,8 +37,8 @@ def get_total_amount_to_pay(departement_code: str = None) -> float:
             .join(StockSQLEntity) \
             .join(Offer) \
             .join(Venue) \
-            .join(User, User.id == Booking.userId) \
-            .filter(User.departementCode == departement_code)
+            .join(UserSQLEntity, UserSQLEntity.id == Booking.userId) \
+            .filter(UserSQLEntity.departementCode == departement_code)
 
     return float(query \
                  .scalar())

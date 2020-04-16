@@ -8,7 +8,7 @@ from flask import current_app as app, render_template
 
 from connectors import api_entreprises
 from domain.postal_code.postal_code import PostalCode
-from models import Booking, Offer, Offerer, StockSQLEntity, User, UserOfferer, Venue
+from models import Booking, Offer, Offerer, StockSQLEntity, UserSQLEntity, UserOfferer, Venue
 from models.email import EmailStatus
 from repository import booking_queries
 from repository import email_queries
@@ -157,7 +157,7 @@ def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> Dict
     }
 
 
-def make_user_validation_email(user: User, app_origin_url: str, is_webapp: bool) -> Dict:
+def make_user_validation_email(user: UserSQLEntity, app_origin_url: str, is_webapp: bool) -> Dict:
     if is_webapp:
         data = make_webapp_user_validation_email(user, app_origin_url)
     else:
@@ -165,12 +165,12 @@ def make_user_validation_email(user: User, app_origin_url: str, is_webapp: bool)
     return data
 
 
-def get_contact(user: User) -> Union[str, None]:
+def get_contact(user: UserSQLEntity) -> Union[str, None]:
     mailjet_json_response = app.mailjet_client.contact.get(user.email).json()
     return mailjet_json_response['Data'][0] if 'Data' in mailjet_json_response else None
 
 
-def subscribe_newsletter(user: User):
+def subscribe_newsletter(user: UserSQLEntity):
     if not feature_send_mail_to_users_enabled():
         logger.logger.info("Subscription in DEV or STAGING mode is disabled")
         return
@@ -342,7 +342,7 @@ def parse_email_addresses(addresses: str) -> List[str]:
     return [a for a in addresses if a]
 
 
-def make_offer_creation_notification_email(offer: Offer, author: User, pro_origin_url: str) -> Dict:
+def make_offer_creation_notification_email(offer: Offer, author: UserSQLEntity, pro_origin_url: str) -> Dict:
     humanized_offer_id = humanize(offer.id)
     link_to_offer = f'{pro_origin_url}/offres/{humanized_offer_id}'
     html = render_template('mails/offer_creation_notification_email.html', offer=offer, author=author,
@@ -368,7 +368,7 @@ def get_event_datetime(stock: StockSQLEntity) -> datetime:
     return date_in_tz
 
 
-def make_webapp_user_validation_email(user: User, app_origin_url: str) -> Dict:
+def make_webapp_user_validation_email(user: UserSQLEntity, app_origin_url: str) -> Dict:
     template = 'mails/webapp_user_validation_email.html'
     email_html = render_template(
         template, user=user, api_url=API_URL, app_origin_url=app_origin_url)
@@ -381,7 +381,7 @@ def make_webapp_user_validation_email(user: User, app_origin_url: str) -> Dict:
     }
 
 
-def make_pro_user_validation_email(user: User, app_origin_url: str) -> Dict:
+def make_pro_user_validation_email(user: UserSQLEntity, app_origin_url: str) -> Dict:
     return {
         'FromEmail': SUPPORT_EMAIL_ADDRESS if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
         'FromName': 'pass Culture pro',

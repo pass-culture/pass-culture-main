@@ -1,5 +1,5 @@
 from models import StockSQLEntity, EventType, ThingType, Mediation, Offer, Venue, Offerer
-from models.user import User
+from models.user import UserSQLEntity
 from repository.offer_queries import _filter_bookable_stocks_for_discovery
 from repository.user_queries import keep_only_webapp_users
 from sandboxes.scripts.utils.helpers import get_user_helper, get_offer_helper
@@ -82,8 +82,8 @@ def get_non_free_event_offer():
 
 
 def get_existing_webapp_user_has_no_more_money():
-    query = keep_only_webapp_users(User.query)
-    query = query.filter(User.email.contains('has-no-more-money'))
+    query = keep_only_webapp_users(UserSQLEntity.query)
+    query = query.filter(UserSQLEntity.email.contains('has-no-more-money'))
     user = query.first()
     return {
         "user": get_user_helper(user)
@@ -91,8 +91,8 @@ def get_existing_webapp_user_has_no_more_money():
 
 
 def get_existing_webapp_user_can_book_thing_offer():
-    query = keep_only_webapp_users(User.query)
-    query = query.filter(User.email.contains('93.has-confirmed-activation'))
+    query = keep_only_webapp_users(UserSQLEntity.query)
+    query = query.filter(UserSQLEntity.email.contains('93.has-confirmed-activation'))
     user = query.first()
     return {
         "user": get_user_helper(user)
@@ -100,8 +100,8 @@ def get_existing_webapp_user_can_book_thing_offer():
 
 
 def get_existing_webapp_user_can_book_digital_offer():
-    query = keep_only_webapp_users(User.query)
-    query = query.filter(User.email.contains('93.has-confirmed-activation'))
+    query = keep_only_webapp_users(UserSQLEntity.query)
+    query = query.filter(UserSQLEntity.email.contains('93.has-confirmed-activation'))
     user = query.first()
     return {
         "user": get_user_helper(user)
@@ -109,8 +109,8 @@ def get_existing_webapp_user_can_book_digital_offer():
 
 
 def get_existing_webapp_user_can_book_event_offer():
-    query = keep_only_webapp_users(User.query)
-    query = query.filter(User.email.contains('93.has-booked-some'))
+    query = keep_only_webapp_users(UserSQLEntity.query)
+    query = query.filter(UserSQLEntity.email.contains('93.has-booked-some'))
     user = query.first()
     return {
         "user": get_user_helper(user)
@@ -118,8 +118,8 @@ def get_existing_webapp_user_can_book_event_offer():
 
 
 def get_existing_webapp_user_can_book_multidates():
-    query = keep_only_webapp_users(User.query)
-    query = query.filter(User.email.contains('97.has-confirmed-activation'))
+    query = keep_only_webapp_users(UserSQLEntity.query)
+    query = query.filter(UserSQLEntity.email.contains('97.has-confirmed-activation'))
     user = query.first()
     return {
         "user": get_user_helper(user)
@@ -127,8 +127,8 @@ def get_existing_webapp_user_can_book_multidates():
 
 
 def get_existing_webapp_user_reach_digital_limit():
-    query = keep_only_webapp_users(User.query)
-    query = query.filter(User.email.contains('93.has-booked-some'))
+    query = keep_only_webapp_users(UserSQLEntity.query)
+    query = query.filter(UserSQLEntity.email.contains('93.has-booked-some'))
     user = query.first()
     return {
         "user": get_user_helper(user)
@@ -136,8 +136,8 @@ def get_existing_webapp_user_reach_digital_limit():
 
 
 def get_existing_webapp_user_reach_physical_limit():
-    query = keep_only_webapp_users(User.query)
-    query = query.filter(User.email.contains('93.has-booked-some'))
+    query = keep_only_webapp_users(UserSQLEntity.query)
+    query = query.filter(UserSQLEntity.email.contains('93.has-booked-some'))
     user = query.first()
     return {
         "user": get_user_helper(user)

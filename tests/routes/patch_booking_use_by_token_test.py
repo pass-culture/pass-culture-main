@@ -1,7 +1,7 @@
 from unittest.mock import patch, Mock
 
 from domain.user_emails import send_activation_email
-from models import EventType, Deposit, Booking, User
+from models import EventType, Deposit, Booking, UserSQLEntity
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
@@ -138,7 +138,7 @@ class Patch:
                 response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
 
                 # Then
-                user = User.query.get(user_id)
+                user = UserSQLEntity.query.get(user_id)
                 assert response.status_code == 204
                 assert user.canBookFreeOffers is True
                 assert user.deposits[0].amount == 500
@@ -167,7 +167,7 @@ class Patch:
                 response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
 
                 # Then
-                user = User.query.get(user_id)
+                user = UserSQLEntity.query.get(user_id)
                 assert response.status_code == 204
                 assert user.canBookFreeOffers is True
                 assert user.deposits[0].amount == 500

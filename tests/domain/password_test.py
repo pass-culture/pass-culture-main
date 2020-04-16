@@ -1,12 +1,12 @@
 import pytest
 
 from domain.password import check_new_password_validity, check_password_strength
-from models import User, ApiErrors
+from models import UserSQLEntity, ApiErrors
 
 
 def test_change_password_raises_and_error_if_old_password_does_not_match_existing_password():
     # given
-    user = User()
+    user = UserSQLEntity()
     user.setPassword('0ld__p455w0rd')
     old_password = 'ra4nd0m_p455w0rd'
     new_password = 'n3w__p455w0rd'
@@ -21,7 +21,7 @@ def test_change_password_raises_and_error_if_old_password_does_not_match_existin
 
 def test_change_password_raises_and_error_if_old_password_is_the_same_as_the_new_password():
     # given
-    user = User()
+    user = UserSQLEntity()
     user.setPassword('0ld__p455w0rd')
     old_password = '0ld__p455w0rd'
     new_password = '0ld__p455w0rd'

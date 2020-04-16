@@ -2,7 +2,7 @@ from typing import List
 
 from sqlalchemy.orm.query import Query
 
-from models import Favorite, User
+from models import Favorite, UserSQLEntity
 
 
 def find_favorite_for_offer_and_user(offer_id: int, user_id: int) -> Query:
@@ -23,7 +23,7 @@ def get_favorites_for_offers(offer_ids: List[int]) -> List[Favorite]:
         .all()
 
 
-def get_only_offer_ids_from_favorites(user: User) -> List[int]:
+def get_only_offer_ids_from_favorites(user: UserSQLEntity) -> List[int]:
     favorites = Favorite.query \
         .filter_by(userId=user.id) \
         .with_entities(Favorite.offerId) \

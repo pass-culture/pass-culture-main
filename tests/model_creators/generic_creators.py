@@ -12,7 +12,7 @@ from models import AllocinePivot, AllocineVenueProviderPriceRule, ApiKey, \
     BankInformation, BeneficiaryImport, BeneficiaryImportStatus, Booking, \
     Criterion, Deposit, Email, Favorite, ImportStatus, IrisFrance, IrisVenues, \
     Mediation, Offer, Offerer, Payment, PaymentMessage, PaymentStatus, \
-    Provider, Recommendation, RightsType, StockSQLEntity, ThingType, User, UserOfferer, \
+    Provider, Recommendation, RightsType, StockSQLEntity, ThingType, UserSQLEntity, UserOfferer, \
     Venue, VenueProvider, SeenOffer
 from models.allocine_venue_provider import AllocineVenueProvider
 from models.email import EmailStatus
@@ -26,7 +26,7 @@ from tests.model_creators.specific_creators import \
 from utils.token import random_token
 
 API_URL = 'http://localhost:5000'
-DEFAULT_USER = User()
+DEFAULT_USER = UserSQLEntity()
 PLAIN_DEFAULT_TESTING_PASSWORD = 'user@AZERTY123'
 DEFAULT_USER.setPassword(PLAIN_DEFAULT_TESTING_PASSWORD)
 HASHED_DEFAULT_TESTING_PASSWORD = DEFAULT_USER.password
@@ -76,7 +76,7 @@ def create_beneficiary_import(date: datetime = datetime.utcnow(),
                               detail: str = None,
                               idx: int = None,
                               status: ImportStatus = ImportStatus.CREATED,
-                              user: User = None) -> BeneficiaryImport:
+                              user: UserSQLEntity = None) -> BeneficiaryImport:
     import_status = BeneficiaryImportStatus()
     import_status.date = date
     import_status.detail = detail
@@ -103,7 +103,7 @@ def create_criterion(description: str = None,
     return criterion
 
 
-def create_booking(user: User,
+def create_booking(user: UserSQLEntity,
                    amount: int = None,
                    date_created: datetime = datetime.utcnow(),
                    date_used: datetime = None,
@@ -148,7 +148,7 @@ def create_booking(user: User,
     return booking
 
 
-def create_deposit(user: User,
+def create_deposit(user: UserSQLEntity,
                    amount: int = 500,
                    date_created: datetime = datetime.utcnow(),
                    idx: int = None,
@@ -179,7 +179,7 @@ def create_email(content: str,
 def create_favorite(idx: int = None,
                     mediation: Mediation = None,
                     offer: Offer = None,
-                    user: User = None) -> Favorite:
+                    user: UserSQLEntity = None) -> Favorite:
     favorite = Favorite()
     favorite.id = idx
     favorite.mediation = mediation
@@ -190,7 +190,7 @@ def create_favorite(idx: int = None,
 
 
 def create_mediation(offer: Offer = None,
-                     author: User = None,
+                     author: UserSQLEntity = None,
                      credit: str = None,
                      date_created: datetime = datetime.utcnow(),
                      date_modified_at_last_provider: datetime = None,
@@ -367,7 +367,7 @@ def create_provider(api_key: str = None,
 
 
 def create_recommendation(offer: Offer = None,
-                          user: User = None,
+                          user: UserSQLEntity = None,
                           date_created: datetime = datetime.utcnow(),
                           date_read: datetime = None,
                           date_updated: datetime = datetime.utcnow(),
@@ -447,8 +447,8 @@ def create_user(activity: str = None,
                 public_name: str = 'John Doe',
                 reset_password_token: str = None,
                 reset_password_token_validity_limit: datetime = None,
-                validation_token: str = None) -> User:
-    user = User()
+                validation_token: str = None) -> UserSQLEntity:
+    user = UserSQLEntity()
     user.activity = activity
     user.canBookFreeOffers = can_book_free_offers
     user.civility = civility
@@ -480,7 +480,7 @@ def create_user(activity: str = None,
     return user
 
 
-def create_user_offerer(user: User,
+def create_user_offerer(user: UserSQLEntity,
                         offerer: Offerer,
                         idx: int = None,
                         is_admin: bool = False,

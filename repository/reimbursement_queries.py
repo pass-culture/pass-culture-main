@@ -4,7 +4,7 @@ from typing import List
 from sqlalchemy import subquery
 from sqlalchemy.orm import aliased
 
-from models import User, Offerer, PaymentStatus
+from models import UserSQLEntity, Offerer, PaymentStatus
 from models.booking import Booking
 from models.offer import Offer
 from models.payment import Payment
@@ -19,7 +19,7 @@ def find_all_offerer_payments(offerer_id: int) -> List[namedtuple]:
         .join(payment_status_query) \
         .reset_joinpoint() \
         .join(Booking) \
-        .join(User) \
+        .join(UserSQLEntity) \
         .reset_joinpoint() \
         .join(StockSQLEntity) \
         .join(Offer) \
@@ -29,8 +29,8 @@ def find_all_offerer_payments(offerer_id: int) -> List[namedtuple]:
         .distinct(payment_status_query.c.paymentId) \
         .order_by(payment_status_query.c.paymentId.desc(),
                   payment_status_query.c.date.desc()) \
-        .with_entities(User.lastName.label('user_lastName'),
-                       User.firstName.label('user_firstName'),
+        .with_entities(UserSQLEntity.lastName.label('user_lastName'),
+                       UserSQLEntity.firstName.label('user_firstName'),
                        Booking.token.label('booking_token'),
                        Booking.dateUsed.label('booking_dateUsed'),
                        Offer.name.label('offer_name'),

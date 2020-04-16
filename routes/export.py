@@ -7,7 +7,6 @@ from io import BytesIO, StringIO
 
 from flask import current_app as app, jsonify, request, send_file
 from flask_login import current_user, login_required
-from postgresql_audit.flask import versioning_manager
 
 import models
 from models.api_errors import ApiErrors
@@ -20,8 +19,6 @@ from utils.includes import OFFERER_FOR_PENDING_VALIDATION_INCLUDES
 from utils.rest import expect_json_data
 from validation.routes.exports import check_user_is_admin, check_get_venues_params, \
     check_get_offerers_params
-
-Activity = versioning_manager.activity_cls
 
 EXPORT_TOKEN = os.environ.get('EXPORT_TOKEN')
 

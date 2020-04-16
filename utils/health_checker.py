@@ -1,11 +1,11 @@
-from models.user import User
+from models.user import UserSQLEntity
 from utils.logger import logger
 
 
 def check_database_connection() -> bool:
     database_working = False
     try:
-        User.query.limit(1).all()
+        UserSQLEntity.query.limit(1).all()
         database_working = True
     except Exception as e:
         logger.critical(str(e))

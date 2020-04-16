@@ -14,8 +14,8 @@ class Stock(object):
                  booking_limit_datetime: Optional[datetime] = None,
                  is_soft_deleted: bool = False,
                  bookings: List[Booking] = []):
-        self.identifier: int = identifier
-        self.quantity: int = quantity
+        self.identifier = identifier
+        self.quantity = quantity
         self.beginning_datetime: datetime = beginning_datetime
         self.offer = offer
         self.price = price

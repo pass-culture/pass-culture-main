@@ -4,7 +4,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 
 from models.feature import FeatureToggle, Feature
-from models.user import User
+from models.user import UserSQLEntity
 from repository import repository
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
@@ -30,13 +30,14 @@ class Post:
         def when_data_is_accurate(self, get_authorized_emails_and_dept_codes, app):
             # Given
             data = BASE_DATA.copy()
+            # TODO: model name
             expected_response_json = {'canBookFreeOffers': False,
                                       'departementCode': '93',
                                       'email': 'toto@btmx.fr',
                                       'firstName': 'Toto',
                                       'isAdmin': False,
                                       'lastName': 'Martin',
-                                      'modelName': 'User',
+                                      'modelName': 'UserSQLEntity',
                                       'phoneNumber': '0612345678',
                                       'postalCode': '93100',
                                       'publicName': 'Toto',
@@ -75,7 +76,7 @@ class Post:
             # Then
             assert response.status_code == 201
             assert 'validationToken' not in response.json
-            created_user = User.query.filter_by(email='toto@btmx.fr').first()
+            created_user = UserSQLEntity.query.filter_by(email='toto@btmx.fr').first()
             assert created_user.validationToken is None
             assert not created_user.canBookFreeOffers
 
@@ -105,7 +106,7 @@ class Post:
 
             # Then
             assert response.status_code == 201
-            created_user = User.query.filter_by(email='pctest.isAdmin.canBook@btmx.fr').one()
+            created_user = UserSQLEntity.query.filter_by(email='pctest.isAdmin.canBook@btmx.fr').one()
             assert not created_user.isAdmin
 
         @patch('routes.signup.get_authorized_emails_and_dept_codes')
@@ -125,7 +126,7 @@ class Post:
             # Then
             assert response.status_code == 201
             assert 'validationToken' not in response.json
-            created_user = User.query.filter_by(email='toto@btmx.fr').first()
+            created_user = UserSQLEntity.query.filter_by(email='toto@btmx.fr').first()
             assert created_user.needsToFillCulturalSurvey == True
 
         @patch('routes.signup.get_authorized_emails_and_dept_codes')

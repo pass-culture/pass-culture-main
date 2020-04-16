@@ -1,8 +1,6 @@
 from datetime import datetime
 
-from postgresql_audit.flask import versioning_manager
-
-from models.db import db
+from models.db import db, versioning_manager
 
 
 def create_user_activity(user, table_name, verb, issued_at=datetime.utcnow):

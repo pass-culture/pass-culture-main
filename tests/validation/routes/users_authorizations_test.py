@@ -1,7 +1,7 @@
 import pytest
 from flask_login import AnonymousUserMixin
 
-from models import ApiErrors, ApiKey, User
+from models import ApiErrors, ApiKey, UserSQLEntity
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
@@ -42,7 +42,7 @@ class CheckUserCanValidateBookingTest:
     def test_check_user_can_validate_bookings_raise_api_error_when_user_is_authenticated_and_does_not_have_editor_rights_on_booking(
             self, app):
         # Given
-        user = User()
+        user = UserSQLEntity()
         user.is_authenticated = True
 
         # When
@@ -76,7 +76,7 @@ class CheckUserCanValidateBookingTestv2:
     def test_check_user_can_validate_v2_bookings_raise_api_error_when_user_is_authenticated_but_does_not_have_editor_rights_on_booking(
             self, app):
         # Given
-        user = User()
+        user = UserSQLEntity()
         user.is_authenticated = True
 
         # When

@@ -4,7 +4,7 @@ from flask_login import current_user, login_required
 from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro, \
     send_pro_user_waiting_for_validation_by_admin_email
-from models import Offerer, RightsType, Venue, User, UserOfferer
+from models import Offerer, RightsType, Venue, UserSQLEntity, UserOfferer
 from models.venue import create_digital_venue
 from repository import repository
 from repository.offerer_queries import filter_offerers_with_keywords_string, \
@@ -100,7 +100,7 @@ def create_offerer():
         offerer.generate_validation_token()
         user_offerer = offerer.give_rights(current_user, RightsType.editor)
         repository.save(offerer, digital_venue, user_offerer)
-        user = User.query.filter_by(id=user_offerer.userId).first()
+        user = UserSQLEntity.query.filter_by(id=user_offerer.userId).first()
 
         _send_to_pro_offer_validation_in_progress_email(user, offerer)
 
@@ -122,7 +122,7 @@ def patch_offerer(offererId):
     return jsonify(get_dict_offerer(offerer)), 200
 
 
-def _send_to_pro_offer_validation_in_progress_email(user: User, offerer: Offerer) -> bool:
+def _send_to_pro_offer_validation_in_progress_email(user: UserSQLEntity, offerer: Offerer) -> bool:
     try:
         send_pro_user_waiting_for_validation_by_admin_email(user, send_raw_email, offerer)
     except MailServiceException as mail_service_exception:

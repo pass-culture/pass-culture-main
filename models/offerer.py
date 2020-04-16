@@ -36,7 +36,7 @@ class Offerer(PcObject,
 
     name = Column(String(140), nullable=False)
 
-    users = relationship('User',
+    users = relationship('UserSQLEntity',
                          secondary='user_offerer')
 
     siren = Column(String(9), nullable=True,

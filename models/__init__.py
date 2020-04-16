@@ -35,7 +35,7 @@ from models.provider import Provider
 from models.recommendation import Recommendation
 from models.seen_offers import SeenOffer
 from models.stock import StockSQLEntity
-from models.user import User
+from models.user import UserSQLEntity
 from models.user_offerer import RightsType, UserOfferer
 from models.user_session import UserSession
 from models.venue import Venue
@@ -92,7 +92,7 @@ __all__ = (
     'RightsType',
     'ThingType',
     'UserOfferer',
-    'User',
+    'UserSQLEntity',
     'UserSession',
     'Venue',
     'VenueType',
@@ -101,7 +101,7 @@ __all__ = (
 
 # Order matters
 models = (
-    User,
+    UserSQLEntity,
     UserSession,
     Provider,
     Offerer,

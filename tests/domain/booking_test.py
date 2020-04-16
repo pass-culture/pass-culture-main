@@ -9,7 +9,7 @@ from domain.booking import check_expenses_limits, PhysicalExpenseLimitHasBeenRea
     StockIsNotBookable, OfferIsAlreadyBooked, check_can_book_free_offer, CannotBookFreeOffers, UserHasInsufficientFunds, \
     DigitalExpenseLimitHasBeenReached
 from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS, SUBVENTION_TOTAL
-from models import ApiErrors, Booking, StockSQLEntity, Offer, ThingType, User, EventType
+from models import ApiErrors, Booking, StockSQLEntity, Offer, ThingType, UserSQLEntity, EventType
 from models.api_errors import ResourceGoneError, ForbiddenError
 from repository import repository
 from tests.conftest import clean_database
@@ -437,7 +437,7 @@ class CheckActivationBookingCanBeKeptTest:
         product = create_product_with_event_type(event_type=EventType.ACTIVATION)
         offer = create_offer_with_event_product(product=product)
         stock = create_stock(offer=offer)
-        booking = create_booking(user=User(), stock=stock)
+        booking = create_booking(user=UserSQLEntity(), stock=stock)
 
         # when
         with pytest.raises(ApiErrors) as api_errors:
@@ -451,7 +451,7 @@ class CheckActivationBookingCanBeKeptTest:
         product = create_product_with_event_type(event_type=ThingType.ACTIVATION)
         offer = create_offer_with_event_product(product=product)
         stock = create_stock(offer=offer)
-        booking = create_booking(user=User(), stock=stock)
+        booking = create_booking(user=UserSQLEntity(), stock=stock)
 
         # when
         with pytest.raises(ApiErrors) as api_errors:
@@ -465,7 +465,7 @@ class CheckActivationBookingCanBeKeptTest:
         product = create_product_with_event_type(event_type=EventType.JEUX)
         offer = create_offer_with_event_product(product=product)
         stock = create_stock(offer=offer)
-        booking = create_booking(user=User(), stock=stock)
+        booking = create_booking(user=UserSQLEntity(), stock=stock)
 
         # when
         try:

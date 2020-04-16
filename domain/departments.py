@@ -1,6 +1,6 @@
 from typing import List
 
-from models import User
+from models import UserSQLEntity
 
 DEPARTEMENT_CODE_VISIBILITY = {
     '08': ['02', '08', '51', '55', '59'],
@@ -23,7 +23,7 @@ ILE_DE_FRANCE_DEPT_CODES = ['75', '78', '91', '94', '93', '95']
 OVERSEAS_DEPT_CODES = ['971', '972', '973', '974', '976']
 
 
-def get_departement_codes_from_user(user: User) -> List[str]:
+def get_departement_codes_from_user(user: UserSQLEntity) -> List[str]:
     if user.departementCode[:2] in DEPARTEMENT_CODE_VISIBILITY:
         return DEPARTEMENT_CODE_VISIBILITY[user.departementCode[:2]]
     else:

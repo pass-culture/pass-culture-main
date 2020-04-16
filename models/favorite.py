@@ -11,7 +11,7 @@ class Favorite(PcObject, Model):
                     index=True,
                     nullable=False)
 
-    user = relationship('User',
+    user = relationship('UserSQLEntity',
                         foreign_keys=[userId],
                         backref='favorites')
 

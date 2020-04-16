@@ -22,7 +22,7 @@ def install_scripts():
     from models.recommendation import Recommendation
 
     from models.user_offerer import UserOfferer
-    from models.user import User
+    from models.user import UserSQLEntity
     from models.venue import Venue
 
     import scripts.clean_database

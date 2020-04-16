@@ -1,4 +1,4 @@
-from postgresql_audit.flask import versioning_manager
+from models.db import versioning_manager
 
 
 def load_activity():

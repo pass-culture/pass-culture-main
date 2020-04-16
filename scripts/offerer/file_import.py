@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List, Callable
 
 from domain.password import random_password, generate_reset_token
-from models import Offerer, User, UserOfferer
+from models import Offerer, UserSQLEntity, UserOfferer
 from models.user_offerer import RightsType
 from models.venue import create_digital_venue
 from repository import repository
@@ -51,7 +51,7 @@ def create_activated_user_offerer(
 ) -> UserOfferer:
     user = find_user(csv_row[USER_EMAIL_COLUMN_INDEX])
     if not user:
-        user = User()
+        user = UserSQLEntity()
     filled_user = fill_user_from(csv_row, user)
     repository.save(filled_user)
 
@@ -77,7 +77,7 @@ def create_activated_user_offerer(
 
 def fill_user_offerer_from(
         user_offerer: UserOfferer,
-        created_user: User,
+        created_user: UserSQLEntity,
         created_offerer: Offerer
 ) -> UserOfferer:
     if created_user.id is None: raise UserNotCreatedException()
@@ -88,7 +88,7 @@ def fill_user_offerer_from(
     user_offerer.rights = RightsType.editor
     return user_offerer
 
-def fill_user_from(csv_row: List[str], user: User) -> User:
+def fill_user_from(csv_row: List[str], user: UserSQLEntity) -> UserSQLEntity:
     user.lastName = csv_row[USER_LAST_NAME_COLUMN_INDEX]
     user.firstName = csv_row[USER_FIRST_NAME_COLUMN_INDEX].split(' ')[0]
     user.publicName = '%s %s' % (user.firstName, user.lastName)

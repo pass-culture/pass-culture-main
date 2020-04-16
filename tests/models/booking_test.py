@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from models import Booking, Offer, StockSQLEntity, User, Product, ApiErrors
+from models import Booking, Offer, StockSQLEntity, UserSQLEntity, Product, ApiErrors
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
@@ -27,7 +27,7 @@ def test_booking_completed_url_gets_normalized():
 
     stock = StockSQLEntity()
 
-    user = User()
+    user = UserSQLEntity()
     user.email = 'bob@bob.com'
 
     booking = Booking()

@@ -4,7 +4,7 @@ from domain.bookings import BOOKING_CANCELLATION_DELAY
 from domain.user_activation import is_activation_booking
 from models import ApiErrors, Booking, RightsType
 from models.api_errors import ResourceGoneError, ForbiddenError
-from models.user import User
+from models.user import UserSQLEntity
 from repository import payment_queries, venue_queries
 from utils.rest import ensure_current_user_has_rights
 
@@ -82,7 +82,7 @@ def check_email_and_offer_id_for_anonymous_user(email: str, offer_id: int) -> No
         raise api_errors
 
 
-def check_rights_to_get_bookings_csv(user: User, venue_id: int = None, offer_id: int = None) -> None:
+def check_rights_to_get_bookings_csv(user: UserSQLEntity, venue_id: int = None, offer_id: int = None) -> None:
     if user.isAdmin:
         api_errors = ApiErrors()
         api_errors.add_error(

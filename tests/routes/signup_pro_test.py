@@ -1,5 +1,5 @@
 from models.offerer import Offerer
-from models.user import User
+from models.user import UserSQLEntity
 from models.user_offerer import UserOfferer, RightsType
 from repository import repository
 from tests.conftest import clean_database, TestClient
@@ -27,6 +27,7 @@ class Post:
         def when_user_data_is_valid(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
+            # TODO: model name
             expected_response_json = {
                 'canBookFreeOffers': False,
                 'departementCode': '92',
@@ -34,7 +35,7 @@ class Post:
                 'firstName': 'Toto',
                 'isAdmin': False,
                 'lastName': 'Pro',
-                'modelName': 'User',
+                'modelName': 'UserSQLEntity',
                 'phoneNumber': '0102030405',
                 'postalCode': '92000',
                 'publicName': 'Toto Pro',
@@ -86,7 +87,7 @@ class Post:
 
             # Then
             assert response.status_code == 201
-            created_user = User.query.filter_by(email='toto_pro@btmx.fr').one()
+            created_user = UserSQLEntity.query.filter_by(email='toto_pro@btmx.fr').one()
             assert not created_user.isAdmin
 
         @clean_database
@@ -103,7 +104,7 @@ class Post:
             # Then
             assert response.status_code == 201
             assert 'Set-Cookie' not in response.headers
-            user = User.query \
+            user = UserSQLEntity.query \
                 .filter_by(email='toto_pro@btmx.fr') \
                 .first()
             assert user is not None
@@ -149,7 +150,7 @@ class Post:
             # Then
             assert response.status_code == 201
             assert 'Set-Cookie' not in response.headers
-            user = User.query \
+            user = UserSQLEntity.query \
                 .filter_by(email='toto_pro@btmx.fr') \
                 .first()
             assert user is not None
@@ -188,7 +189,7 @@ class Post:
             # Then
             assert response.status_code == 201
             assert 'Set-Cookie' not in response.headers
-            user = User.query \
+            user = UserSQLEntity.query \
                 .filter_by(email='toto_pro@btmx.fr') \
                 .first()
             assert user is not None
@@ -227,7 +228,7 @@ class Post:
 
             # Then
             assert response.status_code == 201
-            user = User.query \
+            user = UserSQLEntity.query \
                 .filter_by(email='toto_pro@btmx.fr') \
                 .first()
             assert user.needsToFillCulturalSurvey == False

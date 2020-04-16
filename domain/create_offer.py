@@ -1,4 +1,4 @@
-from models import Offer, Product, User
+from models import Offer, Product, UserSQLEntity
 from repository import product_queries
 from validation.routes.events import check_user_can_create_activation_event
 from validation.routes.url import is_url_safe
@@ -10,7 +10,7 @@ def initialize_offer_from_product_id(product_id: str) -> Offer:
     return offer
 
 
-def fill_offer_with_new_data(product_dict: str, user: User) -> Offer:
+def fill_offer_with_new_data(product_dict: str, user: UserSQLEntity) -> Offer:
     product = Product()
     url = product_dict.get('url')
     if url:

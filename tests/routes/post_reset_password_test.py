@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from unittest.mock import patch
 
 from domain.password import RESET_PASSWORD_TOKEN_LENGTH
-from models import User
+from models import UserSQLEntity
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user
@@ -62,7 +62,7 @@ class PostResetPassword:
                                                           headers={'origin': 'http://localhost:3000'})
 
             # then
-            user = User.query.get(user_id)
+            user = UserSQLEntity.query.get(user_id)
             assert response.status_code == 204
             assert len(user.resetPasswordToken) == RESET_PASSWORD_TOKEN_LENGTH
             now = datetime.utcnow()

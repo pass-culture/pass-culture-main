@@ -1,11 +1,11 @@
 from typing import Dict
 from urllib.parse import quote
 
-from models import User
+from models import UserSQLEntity
 from utils.mailing import SUPPORT_EMAIL_ADDRESS, format_environment_for_email
 
 
-def get_activation_email_data(user: User) -> Dict:
+def get_activation_email_data(user: UserSQLEntity) -> Dict:
     first_name = user.firstName.capitalize()
     email = user.email
     token = user.resetPasswordToken

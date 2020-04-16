@@ -96,7 +96,7 @@ def order_by_with_criteria_and_is_digital(end_of_quarantine_date: datetime) -> L
     ]
 
 
-def get_offers_for_recommendation(user: User,
+def get_offers_for_recommendation(user: UserSQLEntity,
                                   departement_codes: List[str] = None,
                                   limit: int = None,
                                   seen_recommendation_ids: List[int] = []) -> List[DiscoveryView]:
@@ -208,7 +208,8 @@ def get_active_offers_ids_query(user, departement_codes=[ALL_DEPARTMENTS_CODE], 
 
 
 def _exclude_booked_and_favorite(active_offers_query, user):
-    booked_offer_ids = Booking.query.filter_by(userId=user.id).join(StockSQLEntity).with_entities('stock."offerId"').subquery()
+    booked_offer_ids = Booking.query.filter_by(userId=user.id).join(StockSQLEntity).with_entities(
+        'stock."offerId"').subquery()
     favorite_offer_ids = Favorite.query.filter_by(userId=user.id).with_entities('"offerId"').subquery()
     not_booked_predicate = ~Offer.id.in_(booked_offer_ids)
     not_favorite_predicate = ~Offer.id.in_(favorite_offer_ids)
@@ -238,7 +239,8 @@ def _build_occurs_soon_or_is_thing_predicate():
     return StockSQLEntity.query.filter((StockSQLEntity.offerId == Offer.id)
                                        & ((StockSQLEntity.beginningDatetime == None)
                                           | ((StockSQLEntity.beginningDatetime > datetime.utcnow())
-                                             & (StockSQLEntity.beginningDatetime < (datetime.utcnow() + timedelta(days=10)))))) \
+                                             & (StockSQLEntity.beginningDatetime < (
+                                datetime.utcnow() + timedelta(days=10)))))) \
         .exists()
 
 
@@ -346,7 +348,8 @@ def find_searchable_offer(offer_id):
 
 def _offer_has_bookable_stocks():
     now = datetime.utcnow()
-    stock_can_still_be_booked = (StockSQLEntity.bookingLimitDatetime > now) | (StockSQLEntity.bookingLimitDatetime == None)
+    stock_can_still_be_booked = (StockSQLEntity.bookingLimitDatetime > now) | (
+                StockSQLEntity.bookingLimitDatetime == None)
     event_has_not_began_yet = (StockSQLEntity.beginningDatetime != None) & (StockSQLEntity.beginningDatetime > now)
     offer_is_on_a_thing = StockSQLEntity.beginningDatetime == None
     bookings_quantity = _build_bookings_quantity_subquery()
@@ -357,7 +360,8 @@ def _offer_has_bookable_stocks():
         .filter(stock_can_still_be_booked) \
         .filter(event_has_not_began_yet | offer_is_on_a_thing) \
         .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
-        .filter((StockSQLEntity.quantity == None) | ((StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+        .filter((StockSQLEntity.quantity == None) | (
+                (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
         .exists()
 
 

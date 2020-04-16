@@ -1,4 +1,4 @@
-from models import User
+from models import UserSQLEntity
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user
@@ -20,7 +20,7 @@ class PostChangePassword:
                                             json=data)
 
             # then
-            user = User.query.get(user_id)
+            user = UserSQLEntity.query.get(user_id)
             assert user.checkPassword('N3W_p4ssw0rd') is True
             assert response.status_code == 204
 

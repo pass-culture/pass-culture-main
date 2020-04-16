@@ -2,7 +2,7 @@ from typing import List
 
 from sqlalchemy import asc
 
-from models import BeneficiaryImport, ImportStatus, User
+from models import BeneficiaryImport, ImportStatus, UserSQLEntity
 from models.db import db
 from repository import repository
 
@@ -21,7 +21,7 @@ def is_already_imported(application_id: int) -> bool:
 def save_beneficiary_import_with_status(status: ImportStatus,
                                         demarche_simplifiee_application_id: int,
                                         demarche_simplifiee_procedure_id: int,
-                                        user: User = None,
+                                        user: UserSQLEntity = None,
                                         detail: str = None):
     existing_beneficiary_import = BeneficiaryImport.query \
         .filter_by(demarcheSimplifieeApplicationId=demarche_simplifiee_application_id) \

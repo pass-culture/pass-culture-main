@@ -146,6 +146,7 @@ def test_pending_validation_return_only_requested_data(app):
                          validation_token='venue_validation_token', booking_email='john.doe@test.com')
     repository.save(user, user_pro, offerer)
 
+    # TODO: model name
     expected_result = {
         'isActive': True,
         'dateModifiedAtLastProvider': serialize(offerer.dateModifiedAtLastProvider),
@@ -181,7 +182,7 @@ def test_pending_validation_return_only_requested_data(app):
                    'postalCode': '93100',
                    'publicName': 'John Doe',
                    'validationToken': None,
-                   'modelName': 'User',
+                   'modelName': 'UserSQLEntity',
                    'culturalSurveyId': None,
                    'culturalSurveyFilledDate': None,
                    'needsToFillCulturalSurvey': False,

@@ -18,7 +18,7 @@ from emails.pro_reset_password import retrieve_data_for_reset_password_pro_email
 from emails.pro_waiting_validation import retrieve_data_for_pro_user_waiting_offerer_validation_email
 from emails.user_notification_after_stock_update import retrieve_data_to_warn_user_after_stock_update_affecting_booking
 from emails.user_reset_password import retrieve_data_for_reset_password_user_email
-from models import Booking, Offerer, User, Venue, UserOfferer
+from models import Booking, Offerer, UserSQLEntity, Venue, UserOfferer
 from repository.user_queries import find_all_emails_of_user_offerers_admins
 from utils.mailing import ADMINISTRATION_EMAIL_ADDRESS, \
     compute_email_html_part_and_recipients, \
@@ -70,12 +70,12 @@ def send_warning_to_beneficiary_after_pro_booking_cancellation(booking: Booking,
     send_email(data=email)
 
 
-def send_reset_password_email_to_user(user: User, send_email: Callable[..., bool]) -> bool:
+def send_reset_password_email_to_user(user: UserSQLEntity, send_email: Callable[..., bool]) -> bool:
     email = retrieve_data_for_reset_password_user_email(user)
     return send_email(data=email)
 
 
-def send_reset_password_email_to_pro(user: User, send_email: Callable[..., bool]) -> bool:
+def send_reset_password_email_to_pro(user: UserSQLEntity, send_email: Callable[..., bool]) -> bool:
     email = retrieve_data_for_reset_password_pro_email(user)
     return send_email(data=email)
 
@@ -126,18 +126,18 @@ def send_venue_validation_confirmation_email(venue: Venue, send_email: Callable[
     return send_email(data=email)
 
 
-def send_user_validation_email(user: User, send_email: Callable[..., bool], app_origin_url: str, is_webapp) -> bool:
+def send_user_validation_email(user: UserSQLEntity, send_email: Callable[..., bool], app_origin_url: str, is_webapp) -> bool:
     email = make_user_validation_email(user, app_origin_url, is_webapp)
     return send_email(data=email)
 
 
-def send_pro_user_waiting_for_validation_by_admin_email(user: User, send_email: Callable[..., bool],
+def send_pro_user_waiting_for_validation_by_admin_email(user: UserSQLEntity, send_email: Callable[..., bool],
                                                         offerer: Offerer) -> bool:
     email = retrieve_data_for_pro_user_waiting_offerer_validation_email(user, offerer)
     return send_email(data=email)
 
 
-def send_activation_email(user: User, send_email: Callable[..., bool]) -> bool:
+def send_activation_email(user: UserSQLEntity, send_email: Callable[..., bool]) -> bool:
     activation_email_data = get_activation_email_data(user)
     return send_email(activation_email_data)
 

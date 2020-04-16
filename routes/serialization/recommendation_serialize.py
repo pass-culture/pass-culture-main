@@ -1,13 +1,13 @@
 from typing import List
 
-from models import Recommendation, Booking, User
+from models import Recommendation, Booking, UserSQLEntity
 from repository import booking_queries
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize
 from utils.includes import RECOMMENDATION_INCLUDES, WEBAPP_GET_BOOKING_INCLUDES
 
 
-def serialize_recommendations(recommendations: List[Recommendation], user: User) -> dict:
+def serialize_recommendations(recommendations: List[Recommendation], user: UserSQLEntity) -> dict:
     serialized_recommendations = [serialize_recommendation(recommendation, user, query_booking=False)
                                   for recommendation in recommendations]
     bookings = booking_queries.find_for_my_bookings_page(user.id)
@@ -23,7 +23,7 @@ def serialize_recommendations(recommendations: List[Recommendation], user: User)
     return serialized_recommendations
 
 
-def serialize_recommendation(recommendation: Recommendation, user: User, query_booking: bool = True) -> dict:
+def serialize_recommendation(recommendation: Recommendation, user: UserSQLEntity, query_booking: bool = True) -> dict:
     serialized_recommendation = as_dict(recommendation, includes=RECOMMENDATION_INCLUDES)
     if query_booking and recommendation.offer:
         bookings = booking_queries.find_from_recommendation(recommendation, user)

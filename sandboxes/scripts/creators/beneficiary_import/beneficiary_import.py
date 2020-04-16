@@ -1,12 +1,12 @@
 from typing import List
 
-from models import ImportStatus, User, BeneficiaryImport
+from models import ImportStatus, UserSQLEntity, BeneficiaryImport
 from repository import repository
 from tests.model_creators.generic_creators import create_user, create_beneficiary_import
 from utils.logger import logger
 
 
-def create_beneficiary_user() -> User:
+def create_beneficiary_user() -> UserSQLEntity:
     import_status = ImportStatus.CREATED
     beneficiary_user = create_user(email=f'{str(import_status)}@email.com')
 
@@ -26,7 +26,7 @@ def create_admin_user():
     logger.info('created 1 admin user')
 
 
-def create_beneficiary_imports(beneficiary_user: User) -> List[BeneficiaryImport]:
+def create_beneficiary_imports(beneficiary_user: UserSQLEntity) -> List[BeneficiaryImport]:
     beneficiary_imports = []
     index_of_beneficiary_imports = 1
     for status in ImportStatus:

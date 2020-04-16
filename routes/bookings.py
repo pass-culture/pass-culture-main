@@ -12,7 +12,7 @@ from domain.bookings import generate_bookings_details_csv
 from domain.user_activation import create_initial_deposit, is_activation_booking
 from domain.user_emails import send_activation_email, \
     send_booking_cancellation_emails_to_user_and_offerer
-from models import ApiErrors, Booking, EventType, Offerer, RightsType, ApiKey, User
+from models import ApiErrors, Booking, EventType, Offerer, RightsType, ApiKey, UserSQLEntity
 from models.feature import FeatureToggle
 from models.offer_type import ProductType
 from repository import booking_queries, feature_queries, repository
@@ -342,7 +342,7 @@ def patch_booking_keep_by_token(token: str):
     return '', 204
 
 
-def _activate_user(user_to_activate: User) -> None:
+def _activate_user(user_to_activate: UserSQLEntity) -> None:
     check_user_can_validate_activation_offer(current_user)
     user_to_activate.canBookFreeOffers = True
     deposit = create_initial_deposit(user_to_activate)

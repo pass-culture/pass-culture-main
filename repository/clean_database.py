@@ -11,7 +11,7 @@ from models import ApiKey, \
     Offerer, \
     Recommendation, \
     StockSQLEntity, \
-    User, \
+    UserSQLEntity, \
     UserOfferer, \
     UserSession, \
     Venue, \
@@ -65,7 +65,7 @@ def clean_all_database(*args, **kwargs):
     Deposit.query.delete()
     BeneficiaryImportStatus.query.delete()
     BeneficiaryImport.query.delete()
-    User.query.delete()
+    UserSQLEntity.query.delete()
     Activity.query.delete()
     UserSession.query.delete()
     Email.query.delete()

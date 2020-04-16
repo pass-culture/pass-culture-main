@@ -5,7 +5,7 @@ from sqlalchemy import or_
 
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model
-from models import Offerer, Venue, Offer, UserOfferer, User, StockSQLEntity, Recommendation, ThingType, EventType
+from models import Offerer, Venue, Offer, UserOfferer, UserSQLEntity, StockSQLEntity, Recommendation, ThingType, EventType
 from models import RightsType
 from models.db import db
 
@@ -51,43 +51,43 @@ def get_by_offer_id(offer_id):
 def find_new_offerer_user_email(offerer_id):
     return UserOfferer.query \
         .filter_by(offererId=offerer_id) \
-        .join(User) \
-        .with_entities(User.email) \
+        .join(UserSQLEntity) \
+        .with_entities(UserSQLEntity.email) \
         .first()[0]
 
 
 def find_all_offerers_with_managing_user_information():
-    query = db.session.query(Offerer.id, Offerer.name, Offerer.siren, Offerer.postalCode, Offerer.city, User.firstName,
-                             User.lastName, User.email, User.phoneNumber, User.postalCode) \
+    query = db.session.query(Offerer.id, Offerer.name, Offerer.siren, Offerer.postalCode, Offerer.city, UserSQLEntity.firstName,
+                             UserSQLEntity.lastName, UserSQLEntity.email, UserSQLEntity.phoneNumber, UserSQLEntity.postalCode) \
         .join(UserOfferer, Offerer.id == UserOfferer.offererId) \
-        .join(User, User.id == UserOfferer.userId)
+        .join(UserSQLEntity, UserSQLEntity.id == UserOfferer.userId)
 
-    result = query.order_by(Offerer.name, User.email).all()
+    result = query.order_by(Offerer.name, UserSQLEntity.email).all()
     return result
 
 
 def find_all_offerers_with_managing_user_information_and_venue():
     query = db.session.query(Offerer.id, Offerer.name, Offerer.siren, Offerer.postalCode, Offerer.city, Venue.name,
-                             Venue.bookingEmail, Venue.postalCode, User.firstName, User.lastName, User.email,
-                             User.phoneNumber, User.postalCode) \
+                             Venue.bookingEmail, Venue.postalCode, UserSQLEntity.firstName, UserSQLEntity.lastName, UserSQLEntity.email,
+                             UserSQLEntity.phoneNumber, UserSQLEntity.postalCode) \
         .join(UserOfferer, Offerer.id == UserOfferer.offererId) \
-        .join(User, User.id == UserOfferer.userId) \
+        .join(UserSQLEntity, UserSQLEntity.id == UserOfferer.userId) \
         .join(Venue)
 
-    result = query.order_by(Offerer.name, Venue.name, User.email).all()
+    result = query.order_by(Offerer.name, Venue.name, UserSQLEntity.email).all()
     return result
 
 
 def find_all_offerers_with_managing_user_information_and_not_virtual_venue():
     query = db.session.query(Offerer.id, Offerer.name, Offerer.siren, Offerer.postalCode, Offerer.city, Venue.name,
-                             Venue.bookingEmail, Venue.postalCode, User.firstName, User.lastName, User.email,
-                             User.phoneNumber, User.postalCode) \
+                             Venue.bookingEmail, Venue.postalCode, UserSQLEntity.firstName, UserSQLEntity.lastName, UserSQLEntity.email,
+                             UserSQLEntity.phoneNumber, UserSQLEntity.postalCode) \
         .join(UserOfferer, Offerer.id == UserOfferer.offererId) \
-        .join(User, User.id == UserOfferer.userId) \
+        .join(UserSQLEntity, UserSQLEntity.id == UserOfferer.userId) \
         .join(Venue)
 
     result = query.filter(Venue.isVirtual == False).order_by(
-        Offerer.name, Venue.name, User.email).all()
+        Offerer.name, Venue.name, UserSQLEntity.email).all()
     return result
 
 
@@ -104,12 +104,12 @@ def find_all_pending_validation():
     user_offerer_pending_validation = UserOfferer.validationToken != None
     offerer_pending_validation = Offerer.validationToken != None
     venue_pending_validation = Venue.validationToken != None
-    user_pending_validation = User.validationToken != None
+    user_pending_validation = UserSQLEntity.validationToken != None
 
     result = Offerer.query \
         .join(UserOfferer) \
         .join(Venue) \
-        .join(User) \
+        .join(UserSQLEntity) \
         .filter(or_(user_offerer_pending_validation, offerer_pending_validation, venue_pending_validation,
                     user_pending_validation)) \
         .order_by(Offerer.id).all()
@@ -185,7 +185,7 @@ def find_filtered_offerers(sirens=None,
             query, has_validated_user_offerer)
 
     if has_validated_user is not None:
-        query = query.join(User)
+        query = query.join(UserSQLEntity)
         query = _filter_by_has_validated_user(query, has_validated_user)
 
     result = query.all()
@@ -337,7 +337,7 @@ def _filter_by_has_validated_user_offerer(query, has_validated_user_offerer):
 
 
 def _filter_by_has_validated_user(query, has_validated_user):
-    is_valid = User.validationToken == None
+    is_valid = UserSQLEntity.validationToken == None
     if has_validated_user:
         query = query.filter(Offerer.users.any(is_valid))
     else:
@@ -368,8 +368,8 @@ def keep_offerers_with_no_physical_venue(query):
 
 def keep_offerers_with_no_validated_users(query):
     query = query.join(UserOfferer) \
-        .join(User) \
-        .filter(~Offerer.UserOfferers.any(User.validationToken == None))
+        .join(UserSQLEntity) \
+        .filter(~Offerer.UserOfferers.any(UserSQLEntity.validationToken == None))
     return query
 
 

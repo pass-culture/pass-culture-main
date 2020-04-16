@@ -4,7 +4,7 @@ from decimal import Decimal
 import pytest
 
 from domain.user_activation import generate_activation_users_csv, is_import_status_change_allowed, is_activation_booking
-from models import ImportStatus, EventType, User
+from models import ImportStatus, EventType, UserSQLEntity
 from models import ThingType
 from models.booking import ActivationUser
 from scripts.beneficiary.old_remote_import import create_beneficiary_from_application
@@ -146,7 +146,7 @@ class IsActivationBookingTest:
         product = create_product_with_event_type(event_type=EventType.ACTIVATION)
         offer = create_offer_with_event_product(product=product)
         stock = create_stock(offer=offer)
-        booking = create_booking(user=User(), stock=stock)
+        booking = create_booking(user=UserSQLEntity(), stock=stock)
 
         # Then
         assert is_activation_booking(booking)
@@ -156,7 +156,7 @@ class IsActivationBookingTest:
         product = create_product_with_event_type(event_type=ThingType.ACTIVATION)
         offer = create_offer_with_event_product(product=product)
         stock = create_stock(offer=offer)
-        booking = create_booking(user=User(), stock=stock)
+        booking = create_booking(user=UserSQLEntity(), stock=stock)
 
         # Then
         assert is_activation_booking(booking)
@@ -167,7 +167,7 @@ class IsActivationBookingTest:
         offer = create_offer_with_event_product(product=product)
         offer.type = 'EventType.SPECTACLE_VIVANT'
         stock = create_stock(offer=offer)
-        booking = create_booking(user=User(), stock=stock)
+        booking = create_booking(user=UserSQLEntity(), stock=stock)
 
         # Then
         assert is_activation_booking(booking) is False

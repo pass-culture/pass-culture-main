@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch, ANY
 
-from models import User, Booking
+from models import UserSQLEntity, Booking
 from scripts.beneficiary.file_import import fill_user_from, \
     create_booking_for, \
     create_users_with_activation_bookings, \
@@ -28,7 +28,7 @@ class FillUserFromTest:
     @patch('bcrypt.hashpw')
     def test_returns_an_user_with_data_from_csv_row(self, hashpw):
         # when
-        user = fill_user_from(self.csv_row, User())
+        user = fill_user_from(self.csv_row, UserSQLEntity())
 
         # then
         assert user.lastName == 'Mortimer'
@@ -48,7 +48,7 @@ class FillUserFromTest:
         data[4] = phone_number_with_weird_trailing_chars
 
         # when
-        user = fill_user_from(data, User())
+        user = fill_user_from(data, UserSQLEntity())
 
         # then
         assert user.phoneNumber == '+33659810226'
@@ -59,7 +59,7 @@ class FillUserFromTest:
         data[2] = 'John Robert James Jack'
 
         # when
-        user = fill_user_from(data, User())
+        user = fill_user_from(data, UserSQLEntity())
 
         # then
         assert user.firstName == 'John'
@@ -67,7 +67,7 @@ class FillUserFromTest:
 
     def test_sets_default_properties_on_the_user(self):
         # when
-        user = fill_user_from(self.csv_row, User())
+        user = fill_user_from(self.csv_row, UserSQLEntity())
 
         # then
         assert user.canBookFreeOffers == False
@@ -75,7 +75,7 @@ class FillUserFromTest:
 
     def test_has_a_reset_password_token_and_validity_limit(self):
         # when
-        user = fill_user_from(self.csv_row, User())
+        user = fill_user_from(self.csv_row, UserSQLEntity())
 
         # then
         thirty_days_in_the_future = datetime.utcnow() + timedelta(days=30)
@@ -110,7 +110,7 @@ class FillUserFromTest:
         del data[8]
 
         # when
-        user = fill_user_from(data, User())
+        user = fill_user_from(data, UserSQLEntity())
 
         # then
         assert user.password == 'random_string'

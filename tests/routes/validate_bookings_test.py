@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
-from models import EventType, ThingType, Deposit, Booking, User
+from models import EventType, ThingType, Deposit, Booking, UserSQLEntity
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
@@ -111,7 +111,7 @@ class Patch:
             response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
 
             # Then
-            user = User.query.get(user_id)
+            user = UserSQLEntity.query.get(user_id)
             assert response.status_code == 204
             assert user.canBookFreeOffers
             deposits_for_user = Deposit.query.filter_by(userId=user.id).all()
@@ -140,7 +140,7 @@ class Patch:
             response = TestClient(app.test_client()).with_auth('pro@email.fr').patch(url)
 
             # Then
-            user = User.query.get(user_id)
+            user = UserSQLEntity.query.get(user_id)
             assert response.status_code == 204
             assert user.canBookFreeOffers
             deposits_for_user = Deposit.query.filter_by(userId=user.id).all()

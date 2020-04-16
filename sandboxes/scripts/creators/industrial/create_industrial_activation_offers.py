@@ -1,4 +1,4 @@
-from models import ThingType, User
+from models import ThingType, UserSQLEntity
 from repository import repository
 from tests.model_creators.generic_creators import create_booking, create_offerer, create_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_stock_with_thing_offer
@@ -8,7 +8,7 @@ from utils.logger import logger
 def create_industrial_activation_offers():
     logger.info('create_industrial_activation_offers')
 
-    activated_user = User.query.filter_by(canBookFreeOffers=True).first()
+    activated_user = UserSQLEntity.query.filter_by(canBookFreeOffers=True).first()
     offerer = create_offerer()
     venue = create_venue(offerer, is_virtual=True, siret=None)
     offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
