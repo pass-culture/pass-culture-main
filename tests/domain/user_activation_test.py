@@ -7,7 +7,7 @@ from domain.user_activation import generate_activation_users_csv, is_import_stat
 from models import ImportStatus, EventType, User
 from models import ThingType
 from models.booking import ActivationUser
-from scripts.beneficiary.remote_import import create_beneficiary_from_application
+from scripts.beneficiary.old_remote_import import create_beneficiary_from_application
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue
 from tests.model_creators.specific_creators import create_product_with_event_type, create_offer_with_thing_product, \

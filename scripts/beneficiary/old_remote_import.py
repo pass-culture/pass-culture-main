@@ -1,6 +1,7 @@
 import os
 import re
 from datetime import datetime
+from pprint import pprint
 from typing import Callable, Dict, List, Set
 
 from connectors.api_demarches_simplifiees import get_application_details
