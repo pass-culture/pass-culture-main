@@ -41,17 +41,15 @@ ShallowWrapper {
         <React.Fragment>
           <a
             className="bi-external-link bi-external-link--mod-topright"
-            href="https://www.demarches-simplifiees.fr/commencer/undefined"
             rel="noopener noreferrer"
             target="_blank"
           >
-            <img
-              alt="external-site"
+            <Icon
+              png={null}
               src="http://localhost/icons/ico-external-site.svg"
+              svg={null}
             />
-            <b>
-              Modifier
-            </b>
+            Modifier
           </a>
           <p
             className="bi-subtitle"
@@ -61,9 +59,9 @@ ShallowWrapper {
           <div
             className="op-detail"
           >
-            <label>
+            <span>
               IBAN : 
-            </label>
+            </span>
             <span>
               DEF
             </span>
@@ -71,9 +69,9 @@ ShallowWrapper {
           <div
             className="op-detail"
           >
-            <label>
+            <span>
               BIC : 
-            </label>
+            </span>
             <span>
               ABC
             </span>
@@ -104,17 +102,15 @@ ShallowWrapper {
           "children": Array [
             <a
               className="bi-external-link bi-external-link--mod-topright"
-              href="https://www.demarches-simplifiees.fr/commencer/undefined"
               rel="noopener noreferrer"
               target="_blank"
             >
-              <img
-                alt="external-site"
+              <Icon
+                png={null}
                 src="http://localhost/icons/ico-external-site.svg"
+                svg={null}
               />
-              <b>
-                Modifier
-              </b>
+              Modifier
             </a>,
             <p
               className="bi-subtitle"
@@ -124,9 +120,9 @@ ShallowWrapper {
             <div
               className="op-detail"
             >
-              <label>
+              <span>
                 IBAN : 
-              </label>
+              </span>
               <span>
                 DEF
               </span>
@@ -134,9 +130,9 @@ ShallowWrapper {
             <div
               className="op-detail"
             >
-              <label>
+              <span>
                 BIC : 
-              </label>
+              </span>
               <span>
                 ABC
               </span>
@@ -151,16 +147,15 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                <img
-                  alt="external-site"
+                <Icon
+                  png={null}
                   src="http://localhost/icons/ico-external-site.svg"
+                  svg={null}
                 />,
-                <b>
-                  Modifier
-                </b>,
+                "Modifier",
               ],
               "className": "bi-external-link bi-external-link--mod-topright",
-              "href": "https://www.demarches-simplifiees.fr/commencer/undefined",
+              "href": undefined,
               "rel": "noopener noreferrer",
               "target": "_blank",
             },
@@ -169,26 +164,17 @@ ShallowWrapper {
               Object {
                 "instance": null,
                 "key": undefined,
-                "nodeType": "host",
+                "nodeType": "function",
                 "props": Object {
-                  "alt": "external-site",
+                  "png": null,
                   "src": "http://localhost/icons/ico-external-site.svg",
+                  "svg": null,
                 },
                 "ref": null,
                 "rendered": null,
-                "type": "img",
+                "type": [Function],
               },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "Modifier",
-                },
-                "ref": null,
-                "rendered": "Modifier",
-                "type": "b",
-              },
+              "Modifier",
             ],
             "type": "a",
           },
@@ -210,9 +196,9 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                <label>
+                <span>
                   IBAN : 
-                </label>,
+                </span>,
                 <span>
                   DEF
                 </span>,
@@ -230,7 +216,7 @@ ShallowWrapper {
                 },
                 "ref": null,
                 "rendered": "IBAN : ",
-                "type": "label",
+                "type": "span",
               },
               Object {
                 "instance": null,
@@ -252,9 +238,9 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                <label>
+                <span>
                   BIC : 
-                </label>,
+                </span>,
                 <span>
                   ABC
                 </span>,
@@ -272,7 +258,7 @@ ShallowWrapper {
                 },
                 "ref": null,
                 "rendered": "BIC : ",
-                "type": "label",
+                "type": "span",
               },
               Object {
                 "instance": null,
@@ -309,17 +295,15 @@ ShallowWrapper {
           <React.Fragment>
             <a
               className="bi-external-link bi-external-link--mod-topright"
-              href="https://www.demarches-simplifiees.fr/commencer/undefined"
               rel="noopener noreferrer"
               target="_blank"
             >
-              <img
-                alt="external-site"
+              <Icon
+                png={null}
                 src="http://localhost/icons/ico-external-site.svg"
+                svg={null}
               />
-              <b>
-                Modifier
-              </b>
+              Modifier
             </a>
             <p
               className="bi-subtitle"
@@ -329,9 +313,9 @@ ShallowWrapper {
             <div
               className="op-detail"
             >
-              <label>
+              <span>
                 IBAN : 
-              </label>
+              </span>
               <span>
                 DEF
               </span>
@@ -339,9 +323,9 @@ ShallowWrapper {
             <div
               className="op-detail"
             >
-              <label>
+              <span>
                 BIC : 
-              </label>
+              </span>
               <span>
                 ABC
               </span>
@@ -372,17 +356,15 @@ ShallowWrapper {
             "children": Array [
               <a
                 className="bi-external-link bi-external-link--mod-topright"
-                href="https://www.demarches-simplifiees.fr/commencer/undefined"
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                <img
-                  alt="external-site"
+                <Icon
+                  png={null}
                   src="http://localhost/icons/ico-external-site.svg"
+                  svg={null}
                 />
-                <b>
-                  Modifier
-                </b>
+                Modifier
               </a>,
               <p
                 className="bi-subtitle"
@@ -392,9 +374,9 @@ ShallowWrapper {
               <div
                 className="op-detail"
               >
-                <label>
+                <span>
                   IBAN : 
-                </label>
+                </span>
                 <span>
                   DEF
                 </span>
@@ -402,9 +384,9 @@ ShallowWrapper {
               <div
                 className="op-detail"
               >
-                <label>
+                <span>
                   BIC : 
-                </label>
+                </span>
                 <span>
                   ABC
                 </span>
@@ -419,16 +401,15 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <img
-                    alt="external-site"
+                  <Icon
+                    png={null}
                     src="http://localhost/icons/ico-external-site.svg"
+                    svg={null}
                   />,
-                  <b>
-                    Modifier
-                  </b>,
+                  "Modifier",
                 ],
                 "className": "bi-external-link bi-external-link--mod-topright",
-                "href": "https://www.demarches-simplifiees.fr/commencer/undefined",
+                "href": undefined,
                 "rel": "noopener noreferrer",
                 "target": "_blank",
               },
@@ -437,26 +418,17 @@ ShallowWrapper {
                 Object {
                   "instance": null,
                   "key": undefined,
-                  "nodeType": "host",
+                  "nodeType": "function",
                   "props": Object {
-                    "alt": "external-site",
+                    "png": null,
                     "src": "http://localhost/icons/ico-external-site.svg",
+                    "svg": null,
                   },
                   "ref": null,
                   "rendered": null,
-                  "type": "img",
+                  "type": [Function],
                 },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "Modifier",
-                  },
-                  "ref": null,
-                  "rendered": "Modifier",
-                  "type": "b",
-                },
+                "Modifier",
               ],
               "type": "a",
             },
@@ -478,9 +450,9 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <label>
+                  <span>
                     IBAN : 
-                  </label>,
+                  </span>,
                   <span>
                     DEF
                   </span>,
@@ -498,7 +470,7 @@ ShallowWrapper {
                   },
                   "ref": null,
                   "rendered": "IBAN : ",
-                  "type": "label",
+                  "type": "span",
                 },
                 Object {
                   "instance": null,
@@ -520,9 +492,9 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <label>
+                  <span>
                     BIC : 
-                  </label>,
+                  </span>,
                   <span>
                     ABC
                   </span>,
@@ -540,7 +512,7 @@ ShallowWrapper {
                   },
                   "ref": null,
                   "rendered": "BIC : ",
-                  "type": "label",
+                  "type": "span",
                 },
                 Object {
                   "instance": null,

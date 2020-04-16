@@ -1,6 +1,6 @@
 import React from 'react'
 import { mount } from 'enzyme'
-import RibUploadFeatureFlip from '../RibUpload'
+import RibsUploadFeatureFlip from '../RibsUploadFeatureFlip'
 import configureStore from 'redux-mock-store'
 import { Provider } from 'react-redux'
 
@@ -18,29 +18,6 @@ describe('src | components | pages | Offerer', () => {
   })
 
   describe('render', () => {
-    it('should render legacy component by default', () => {
-      // given
-      const store = mockStore({
-        data: {
-          features: [],
-        },
-      })
-
-      // when
-      const wrapper = mount(
-        <Provider store={store}>
-          <RibUploadFeatureFlip {...props} />
-        </Provider>
-      )
-
-      // then
-      const leg = wrapper.find(Legacy)
-      expect(leg).toHaveLength(1)
-
-      const child = wrapper.find(Children)
-      expect(child).toHaveLength(0)
-    })
-
     it('should render legacy component when feature flip is deactivated', () => {
       // given
       const store = mockStore({
@@ -52,7 +29,7 @@ describe('src | components | pages | Offerer', () => {
       // when
       const wrapper = mount(
         <Provider store={store}>
-          <RibUploadFeatureFlip {...props} />
+          <RibsUploadFeatureFlip {...props} />
         </Provider>
       )
 
@@ -75,7 +52,7 @@ describe('src | components | pages | Offerer', () => {
       // when
       const wrapper = mount(
         <Provider store={store}>
-          <RibUploadFeatureFlip {...props} />
+          <RibsUploadFeatureFlip {...props} />
         </Provider>
       )
 

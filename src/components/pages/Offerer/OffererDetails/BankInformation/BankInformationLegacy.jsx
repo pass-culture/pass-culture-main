@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import { Offerer } from '../Offerer'
 import PropTypes from 'prop-types'
 
-export const BankInformationLegacy = ({ offerer }) => (
-  <React.Fragment>
+const BankInformationLegacy = ({ offerer }) => (
+  <Fragment>
     <div className="section">
       <h2 className="main-list-title">
         {'Informations bancaires'}
@@ -38,9 +38,11 @@ export const BankInformationLegacy = ({ offerer }) => (
         </span>
       </div>
     </div>
-  </React.Fragment>
+  </Fragment>
 )
 
 BankInformationLegacy.propTypes = {
   offerer: PropTypes.instanceOf(Offerer).isRequired,
 }
+
+export default BankInformationLegacy

@@ -4,8 +4,8 @@ import {
   ROOT_PATH,
   DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL,
 } from '../../../../../utils/config'
-import { BankInformationLegacy } from './BankInformationLegacy'
 import React, { Fragment } from 'react'
+import Icon from '../../../../layout/Icon'
 
 const BankInformation = ({ offerer }) => (
   <div className="section bank-information">
@@ -21,13 +21,8 @@ const BankInformation = ({ offerer }) => (
           rel="noopener noreferrer"
           target="_blank"
         >
-          <img
-            alt="external-site"
-            src={`${ROOT_PATH}/icons/ico-external-site.svg`}
-          />
-          <b>
-            {'Modifier'}
-          </b>
+          <Icon src={`${ROOT_PATH}/icons/ico-external-site.svg`} />
+          {'Modifier'}
         </a>
         <p className="bi-subtitle">
           {
@@ -35,17 +30,17 @@ const BankInformation = ({ offerer }) => (
           }
         </p>
         <div className="op-detail">
-          <label>
+          <span>
             {'IBAN : '}
-          </label>
+          </span>
           <span>
             {offerer.iban}
           </span>
         </div>
         <div className="op-detail">
-          <label>
+          <span>
             {'BIC : '}
-          </label>
+          </span>
           <span>
             {offerer.bic}
           </span>
@@ -72,9 +67,7 @@ const BankInformation = ({ offerer }) => (
                 alt="external-site"
                 src={`${ROOT_PATH}/icons/ico-external-site.svg`}
               />
-              <b>
-                {'Renseigner les coordonnées bancaires de la structure'}
-              </b>
+              {'Renseigner les coordonnées bancaires de la structure'}
             </a>
           </p>
         </div>
@@ -87,5 +80,4 @@ BankInformation.propTypes = {
   offerer: PropTypes.instanceOf(Offerer).isRequired,
 }
 
-BankInformation.Legacy = BankInformationLegacy
 export default BankInformation

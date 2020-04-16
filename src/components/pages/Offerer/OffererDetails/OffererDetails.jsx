@@ -5,8 +5,9 @@ import { Offerer } from './Offerer'
 import Main from '../../../layout/Main'
 import Venues from './Venues/Venues'
 import Titles from '../../../layout/Titles/Titles'
-import RibsUploadFeatureFlip from './FeatureFlip/RibUpload'
+import RibsUploadFeatureFlip from './FeatureFlip/RibsUploadFeatureFlip'
 import BankInformation from './BankInformation/BankInformation'
+import BankInformationLegacy from './BankInformation/BankInformationLegacy'
 
 class OffererDetails extends PureComponent {
   componentDidMount() {
@@ -30,48 +31,48 @@ class OffererDetails extends PureComponent {
         </p>
         <div>
           <div className="op-detail">
-            <label>
+            <span>
               {'SIREN : '}
-            </label>
+            </span>
             <span>
               {offerer.siren}
             </span>
           </div>
           <div className="op-detail">
-            <label>
+            <span>
               {'Désignation : '}
-            </label>
+            </span>
             <span>
               {offerer.name}
             </span>
           </div>
           <div className="op-detail">
-            <label>
+            <span>
               {'Siège social : '}
-            </label>
+            </span>
             <span>
               {offerer.address}
             </span>
           </div>
           <div className="op-detail">
-            <label>
+            <span>
               {'Code postal : '}
-            </label>
+            </span>
             <span>
               {offerer.postalCode}
             </span>
           </div>
           <div className="op-detail">
-            <label>
+            <span>
               {'Ville : '}
-            </label>
+            </span>
             <span>
               {offerer.city}
             </span>
           </div>
         </div>
 
-        <RibsUploadFeatureFlip legacy={<BankInformation.Legacy offerer={offerer} />}>
+        <RibsUploadFeatureFlip legacy={<BankInformationLegacy offerer={offerer} />}>
           <BankInformation offerer={offerer} />
         </RibsUploadFeatureFlip>
 

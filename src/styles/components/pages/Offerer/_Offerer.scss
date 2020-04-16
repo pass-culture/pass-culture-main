@@ -5,7 +5,7 @@
 
   .op-detail {
     margin: 8px 0;
-    > label {
+    > :first-child {
       color: $grey;
       margin-right: 5px;
     }

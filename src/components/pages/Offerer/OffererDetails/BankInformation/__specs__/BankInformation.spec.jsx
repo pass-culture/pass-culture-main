@@ -42,11 +42,10 @@ describe('src | components | pages | Offerer | BankInformation ', () => {
                             />)
 
     // then
-    const bankInstructions = wrapper.find('.bi-instructions')
+    const bankInstructions = wrapper.find({
+      children: 'Renseigner vos coordonnées bancaires pour être remboursé de vos offres éligibles',
+    })
     expect(bankInstructions).toHaveLength(1)
-    expect(bankInstructions.text()).toBe(
-      'Renseigner vos coordonnées bancaires pour être remboursé de vos offres éligibles'
-    )
   })
 
   it('should not render instruction block when BIC and IBAN are provided', () => {
@@ -54,7 +53,9 @@ describe('src | components | pages | Offerer | BankInformation ', () => {
     const wrapper = shallow(<BankInformation {...props} />)
 
     // then
-    const bankInstructions = wrapper.find('.bi-instructions')
+    const bankInstructions = wrapper.find({
+      children: 'Renseigner vos coordonnées bancaires pour être remboursé de vos offres éligibles',
+    })
     expect(bankInstructions).toHaveLength(0)
   })
 })

@@ -58,9 +58,9 @@ ShallowWrapper {
           <div
             className="op-detail"
           >
-            <label>
+            <span>
               SIREN : 
-            </label>
+            </span>
             <span>
               
             </span>
@@ -68,9 +68,9 @@ ShallowWrapper {
           <div
             className="op-detail"
           >
-            <label>
+            <span>
               Désignation : 
-            </label>
+            </span>
             <span>
               fake offerer name
             </span>
@@ -78,9 +78,9 @@ ShallowWrapper {
           <div
             className="op-detail"
           >
-            <label>
+            <span>
               Siège social : 
-            </label>
+            </span>
             <span>
               fake address
             </span>
@@ -88,9 +88,9 @@ ShallowWrapper {
           <div
             className="op-detail"
           >
-            <label>
+            <span>
               Code postal : 
-            </label>
+            </span>
             <span>
               
             </span>
@@ -98,9 +98,9 @@ ShallowWrapper {
           <div
             className="op-detail"
           >
-            <label>
+            <span>
               Ville : 
-            </label>
+            </span>
             <span>
               
             </span>
@@ -108,7 +108,7 @@ ShallowWrapper {
         </div>,
         <Connect(Component)
           legacy={
-            <Unknown
+            <BankInformationLegacy
               offerer={
                 Offerer {
                   "address": "fake address",
@@ -188,9 +188,9 @@ ShallowWrapper {
             <div
               className="op-detail"
             >
-              <label>
+              <span>
                 SIREN : 
-              </label>
+              </span>
               <span>
                 
               </span>
@@ -198,9 +198,9 @@ ShallowWrapper {
             <div
               className="op-detail"
             >
-              <label>
+              <span>
                 Désignation : 
-              </label>
+              </span>
               <span>
                 fake offerer name
               </span>
@@ -208,9 +208,9 @@ ShallowWrapper {
             <div
               className="op-detail"
             >
-              <label>
+              <span>
                 Siège social : 
-              </label>
+              </span>
               <span>
                 fake address
               </span>
@@ -218,9 +218,9 @@ ShallowWrapper {
             <div
               className="op-detail"
             >
-              <label>
+              <span>
                 Code postal : 
-              </label>
+              </span>
               <span>
                 
               </span>
@@ -228,9 +228,9 @@ ShallowWrapper {
             <div
               className="op-detail"
             >
-              <label>
+              <span>
                 Ville : 
-              </label>
+              </span>
               <span>
                 
               </span>
@@ -245,9 +245,9 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                <label>
+                <span>
                   SIREN : 
-                </label>,
+                </span>,
                 <span>
                   
                 </span>,
@@ -265,7 +265,7 @@ ShallowWrapper {
                 },
                 "ref": null,
                 "rendered": "SIREN : ",
-                "type": "label",
+                "type": "span",
               },
               Object {
                 "instance": null,
@@ -287,9 +287,9 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                <label>
+                <span>
                   Désignation : 
-                </label>,
+                </span>,
                 <span>
                   fake offerer name
                 </span>,
@@ -307,7 +307,7 @@ ShallowWrapper {
                 },
                 "ref": null,
                 "rendered": "Désignation : ",
-                "type": "label",
+                "type": "span",
               },
               Object {
                 "instance": null,
@@ -329,9 +329,9 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                <label>
+                <span>
                   Siège social : 
-                </label>,
+                </span>,
                 <span>
                   fake address
                 </span>,
@@ -349,7 +349,7 @@ ShallowWrapper {
                 },
                 "ref": null,
                 "rendered": "Siège social : ",
-                "type": "label",
+                "type": "span",
               },
               Object {
                 "instance": null,
@@ -371,9 +371,9 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                <label>
+                <span>
                   Code postal : 
-                </label>,
+                </span>,
                 <span>
                   
                 </span>,
@@ -391,7 +391,7 @@ ShallowWrapper {
                 },
                 "ref": null,
                 "rendered": "Code postal : ",
-                "type": "label",
+                "type": "span",
               },
               Object {
                 "instance": null,
@@ -413,9 +413,9 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": Array [
-                <label>
+                <span>
                   Ville : 
-                </label>,
+                </span>,
                 <span>
                   
                 </span>,
@@ -433,7 +433,7 @@ ShallowWrapper {
                 },
                 "ref": null,
                 "rendered": "Ville : ",
-                "type": "label",
+                "type": "span",
               },
               Object {
                 "instance": null,
@@ -472,7 +472,7 @@ ShallowWrapper {
               }
             }
           />,
-          "legacy": <Unknown
+          "legacy": <BankInformationLegacy
             offerer={
               Offerer {
                 "address": "fake address",
@@ -554,9 +554,9 @@ ShallowWrapper {
             <div
               className="op-detail"
             >
-              <label>
+              <span>
                 SIREN : 
-              </label>
+              </span>
               <span>
                 
               </span>
@@ -564,9 +564,9 @@ ShallowWrapper {
             <div
               className="op-detail"
             >
-              <label>
+              <span>
                 Désignation : 
-              </label>
+              </span>
               <span>
                 fake offerer name
               </span>
@@ -574,9 +574,9 @@ ShallowWrapper {
             <div
               className="op-detail"
             >
-              <label>
+              <span>
                 Siège social : 
-              </label>
+              </span>
               <span>
                 fake address
               </span>
@@ -584,9 +584,9 @@ ShallowWrapper {
             <div
               className="op-detail"
             >
-              <label>
+              <span>
                 Code postal : 
-              </label>
+              </span>
               <span>
                 
               </span>
@@ -594,9 +594,9 @@ ShallowWrapper {
             <div
               className="op-detail"
             >
-              <label>
+              <span>
                 Ville : 
-              </label>
+              </span>
               <span>
                 
               </span>
@@ -604,7 +604,7 @@ ShallowWrapper {
           </div>,
           <Connect(Component)
             legacy={
-              <Unknown
+              <BankInformationLegacy
                 offerer={
                   Offerer {
                     "address": "fake address",
@@ -684,9 +684,9 @@ ShallowWrapper {
               <div
                 className="op-detail"
               >
-                <label>
+                <span>
                   SIREN : 
-                </label>
+                </span>
                 <span>
                   
                 </span>
@@ -694,9 +694,9 @@ ShallowWrapper {
               <div
                 className="op-detail"
               >
-                <label>
+                <span>
                   Désignation : 
-                </label>
+                </span>
                 <span>
                   fake offerer name
                 </span>
@@ -704,9 +704,9 @@ ShallowWrapper {
               <div
                 className="op-detail"
               >
-                <label>
+                <span>
                   Siège social : 
-                </label>
+                </span>
                 <span>
                   fake address
                 </span>
@@ -714,9 +714,9 @@ ShallowWrapper {
               <div
                 className="op-detail"
               >
-                <label>
+                <span>
                   Code postal : 
-                </label>
+                </span>
                 <span>
                   
                 </span>
@@ -724,9 +724,9 @@ ShallowWrapper {
               <div
                 className="op-detail"
               >
-                <label>
+                <span>
                   Ville : 
-                </label>
+                </span>
                 <span>
                   
                 </span>
@@ -741,9 +741,9 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <label>
+                  <span>
                     SIREN : 
-                  </label>,
+                  </span>,
                   <span>
                     
                   </span>,
@@ -761,7 +761,7 @@ ShallowWrapper {
                   },
                   "ref": null,
                   "rendered": "SIREN : ",
-                  "type": "label",
+                  "type": "span",
                 },
                 Object {
                   "instance": null,
@@ -783,9 +783,9 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <label>
+                  <span>
                     Désignation : 
-                  </label>,
+                  </span>,
                   <span>
                     fake offerer name
                   </span>,
@@ -803,7 +803,7 @@ ShallowWrapper {
                   },
                   "ref": null,
                   "rendered": "Désignation : ",
-                  "type": "label",
+                  "type": "span",
                 },
                 Object {
                   "instance": null,
@@ -825,9 +825,9 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <label>
+                  <span>
                     Siège social : 
-                  </label>,
+                  </span>,
                   <span>
                     fake address
                   </span>,
@@ -845,7 +845,7 @@ ShallowWrapper {
                   },
                   "ref": null,
                   "rendered": "Siège social : ",
-                  "type": "label",
+                  "type": "span",
                 },
                 Object {
                   "instance": null,
@@ -867,9 +867,9 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <label>
+                  <span>
                     Code postal : 
-                  </label>,
+                  </span>,
                   <span>
                     
                   </span>,
@@ -887,7 +887,7 @@ ShallowWrapper {
                   },
                   "ref": null,
                   "rendered": "Code postal : ",
-                  "type": "label",
+                  "type": "span",
                 },
                 Object {
                   "instance": null,
@@ -909,9 +909,9 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": Array [
-                  <label>
+                  <span>
                     Ville : 
-                  </label>,
+                  </span>,
                   <span>
                     
                   </span>,
@@ -929,7 +929,7 @@ ShallowWrapper {
                   },
                   "ref": null,
                   "rendered": "Ville : ",
-                  "type": "label",
+                  "type": "span",
                 },
                 Object {
                   "instance": null,
@@ -968,7 +968,7 @@ ShallowWrapper {
                 }
               }
             />,
-            "legacy": <Unknown
+            "legacy": <BankInformationLegacy
               offerer={
                 Offerer {
                   "address": "fake address",
