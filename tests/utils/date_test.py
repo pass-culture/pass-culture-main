@@ -1,6 +1,9 @@
 import datetime
 
-from utils.date import english_to_french_month, get_date_formatted_for_email, get_time_formatted_for_email
+import pytest
+
+from utils.date import english_to_french_month, get_date_formatted_for_email, get_time_formatted_for_email, \
+    get_department_timezone
 
 
 def test_english_to_french_month(app):
@@ -63,3 +66,40 @@ class GetTimeFormattedForEmail:
 
         # Then
         assert time_formatted_for_email == '12h00'
+
+
+class GetDepartmentTimezone:
+    def test_should_alert_when_department_code_is_not_a_string(self):
+        # When
+        with pytest.raises(AssertionError):
+            get_department_timezone(None)
+
+    def test_should_return_paris_as_default_timezone(self):
+        # Given
+        departement_code = '1'
+
+        # When
+        timezone = get_department_timezone(departement_code)
+
+        # Then
+        assert timezone == 'Europe/Paris'
+
+    def test_should_return_cayenne_when_departement_code_is_973(self):
+        # Given
+        departement_code = '973'
+
+        # When
+        timezone = get_department_timezone(departement_code)
+
+        # Then
+        assert timezone == 'America/Cayenne'
+
+    def test_should_return_reunion_when_departement_code_is_974(self):
+        # Given
+        departement_code = '974'
+
+        # When
+        timezone = get_department_timezone(departement_code)
+
+        # Then
+        assert timezone == 'Indian/Reunion'

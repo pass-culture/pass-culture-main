@@ -67,24 +67,25 @@ def format_duration(dr):
     return floor(parse_timedelta(dr).total_seconds() / 60)
 
 
-def get_dept_timezone(departementCode):
-    assert isinstance(departementCode, str)
-    if departementCode in ['973', '97']:
-        tz_name = 'America/Cayenne'
+def get_department_timezone(departement_code: str) -> str:
+    assert isinstance(departement_code, str)
+    if departement_code == '973':
+        return 'America/Cayenne'
+    elif departement_code == '974':
+        return 'Indian/Reunion'
     else:
-        tz_name = 'Europe/Paris'
-    return tz_name
+        return 'Europe/Paris'
 
 
 def utc_datetime_to_dept_timezone(datetimeObj, departementCode):
     from_zone = tz.gettz('UTC')
-    to_zone = tz.gettz(get_dept_timezone(departementCode))
+    to_zone = tz.gettz(get_department_timezone(departementCode))
     utc_datetime = datetimeObj.replace(tzinfo=from_zone)
     return utc_datetime.astimezone(to_zone)
 
 
 def dept_timezone_datetime_to_utc(datetimeObj, departementCode):
-    from_zone = tz.gettz(get_dept_timezone(departementCode))
+    from_zone = tz.gettz(get_department_timezone(departementCode))
     to_zone = tz.gettz('UTC')
     dept_datetime = datetimeObj.replace(tzinfo=from_zone)
     return dept_datetime.astimezone(to_zone)

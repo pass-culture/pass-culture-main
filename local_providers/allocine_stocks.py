@@ -14,7 +14,7 @@ from local_providers.providable_info import ProvidableInfo
 from models import Offer, Product, EventType, Stock, Venue, AllocineVenueProvider
 from models.db import Model, db
 from models.local_provider_event import LocalProviderEventType
-from utils.date import get_dept_timezone
+from utils.date import get_department_timezone
 
 DIGITAL_PROJECTION = 'DIGITAL'
 DUBBED_VERSION = 'DUBBED'
@@ -159,7 +159,7 @@ class AllocineStocks(LocalProvider):
         allocine_stock.offerId = self.last_vo_offer_id if diffusion_version == ORIGINAL_VERSION else \
             self.last_vf_offer_id
 
-        local_tz = get_dept_timezone(self.venue.departementCode)
+        local_tz = get_department_timezone(self.venue.departementCode)
         date_in_utc = _format_date_from_local_timezone_to_utc(parsed_showtimes['startsAt'], local_tz)
         allocine_stock.beginningDatetime = date_in_utc
 
