@@ -1,9 +1,6 @@
 import { Offerer } from '../Offerer'
 import PropTypes from 'prop-types'
-import {
-  ROOT_PATH,
-  DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL,
-} from '../../../../../utils/config'
+import { DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL } from '../../../../../utils/config'
 import React, { Fragment } from 'react'
 import Icon from '../../../../layout/Icon'
 
@@ -21,7 +18,10 @@ const BankInformation = ({ offerer }) => (
           rel="noopener noreferrer"
           target="_blank"
         >
-          <Icon src={`${ROOT_PATH}/icons/ico-external-site.svg`} />
+          <Icon
+            alt=""
+            svg="ico-external-site"
+          />
           {'Modifier'}
         </a>
         <p className="bi-subtitle">
@@ -52,7 +52,7 @@ const BankInformation = ({ offerer }) => (
           {'Aucune coordonnée bancaire renseignée'}
         </p>
         <div className="bi-banner">
-          <p className="bi-instructions">
+          <p>
             {'Renseigner vos coordonnées bancaires pour être remboursé de vos offres éligibles'}
           </p>
 
@@ -63,9 +63,9 @@ const BankInformation = ({ offerer }) => (
               rel="noopener noreferrer"
               target="_blank"
             >
-              <img
-                alt="external-site"
-                src={`${ROOT_PATH}/icons/ico-external-site.svg`}
+              <Icon
+                alt=""
+                svg="ico-external-site"
               />
               {'Renseigner les coordonnées bancaires de la structure'}
             </a>

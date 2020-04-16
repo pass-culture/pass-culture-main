@@ -18,10 +18,10 @@
     background: $yellow-bis;
     border-radius: 6px;
     margin-bottom: rem(16px);
-    padding: rem(12px) rem(15px);
+    padding: rem(7px) rem(15px);
 
-    > :not(:first-child) {
-      margin-top: rem(5px);
+    > p {
+      margin: rem(5px) 0;
     }
   }
 
