@@ -331,7 +331,7 @@ describe('components | SearchResults', () => {
         const history = createBrowserHistory()
         props.history = history
         props.history.push(
-          '/recherche-offres/resultats?mots-cles=recherche%20sans%20résultat&autour-de-moi=oui&tri=_by_price&categories=INSTRUMENT'
+          '/recherche/resultats?mots-cles=recherche%20sans%20résultat&autour-de-moi=oui&tri=_by_price&categories=INSTRUMENT'
         )
         props.query.parse.mockReturnValue({
           'autour-de-moi': 'oui',
@@ -372,7 +372,7 @@ describe('components | SearchResults', () => {
         })
         const expectedUri = props.history.location.pathname + props.history.location.search
         expect(expectedUri).toBe(
-          '/recherche-offres/resultats?mots-cles=&autour-de-moi=oui&tri=&categories='
+          '/recherche/resultats?mots-cles=&autour-de-moi=oui&tri=&categories='
         )
       })
 
@@ -381,7 +381,7 @@ describe('components | SearchResults', () => {
         const history = createBrowserHistory()
         props.history = history
         props.history.push(
-          '/recherche-offres/resultats?mots-cles=recherche%20sans%20résultat&autour-de-moi=non&tri=_by_price&categories=INSTRUMENT'
+          '/recherche/resultats?mots-cles=recherche%20sans%20résultat&autour-de-moi=non&tri=_by_price&categories=INSTRUMENT'
         )
         props.geolocation = { latitude: null, longitude: null }
         props.query.parse.mockReturnValue({
@@ -409,7 +409,7 @@ describe('components | SearchResults', () => {
         )
         const expectedUri = props.history.location.pathname + props.history.location.search
         expect(expectedUri).toBe(
-          '/recherche-offres/resultats?mots-cles=recherche%20sans%20résultat&autour-de-moi=non&tri=_by_price&categories=INSTRUMENT'
+          '/recherche/resultats?mots-cles=recherche%20sans%20résultat&autour-de-moi=non&tri=_by_price&categories=INSTRUMENT'
         )
       })
     })

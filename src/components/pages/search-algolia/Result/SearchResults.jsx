@@ -292,7 +292,7 @@ class SearchResults extends PureComponent {
       },
       () => {
         if (isGeolocationEnabled(geolocation)) {
-          history.push('/recherche-offres/resultats?mots-cles=&autour-de-moi=oui&tri=&categories=')
+          history.push('/recherche/resultats?mots-cles=&autour-de-moi=oui&tri=&categories=')
           this.fetchOffers()
         } else {
           window.alert('Veuillez activer la géolocalisation pour voir les offres autour de vous.')
