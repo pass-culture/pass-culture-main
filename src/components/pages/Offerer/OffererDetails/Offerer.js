@@ -11,7 +11,22 @@ export class Offerer {
     this.siren = offerer.siren || ''
   }
 
-  get areBankInformationProvided () {
+  get areBankInformationProvided() {
     return !!(this.bic && this.iban)
   }
+
+  get formattedSiren() {
+    return formatSiren(this.siren)
+  }
+}
+
+const formatSiren = siren => {
+  if (!siren) return ''
+
+  const blocks = []
+  for (let i = 0; i < siren.length; i += 3) {
+    blocks.push(siren.substr(i, 3))
+  }
+
+  return blocks.join(' ')
 }

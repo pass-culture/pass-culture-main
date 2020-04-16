@@ -4,18 +4,18 @@
   }
 
   .op-detail {
-    margin: 8px 0;
+    margin: rem(8px) 0;
     > :first-child {
       color: $grey;
-      margin-right: 5px;
+      margin-right: rem(5px);
     }
   }
 
   .op-subtitle {
-    margin-bottom: 25px;
+    margin-bottom: rem(25px);
   }
 
   .op-content-section {
-    margin-bottom: 48px;
+    margin-bottom: rem(48px);
   }
 }

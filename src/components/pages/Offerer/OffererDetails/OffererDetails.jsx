@@ -9,11 +9,6 @@ import RibsUploadFeatureFlip from './FeatureFlip/RibsUploadFeatureFlip'
 import BankInformation from './BankInformation/BankInformation'
 import BankInformationLegacy from './BankInformation/BankInformationLegacy'
 
-function formatSiren(siren) {
-  if (!siren) return ''
-  return siren.split('').reduce((acc, l, index) => acc + l + (index % 3 === 2 ? ' ' : ''))
-}
-
 class OffererDetails extends PureComponent {
   componentDidMount() {
     const { offererId, loadOffererById } = this.props
@@ -43,7 +38,7 @@ class OffererDetails extends PureComponent {
               {'SIREN : '}
             </span>
             <span>
-              {formatSiren(offerer.siren)}
+              {offerer.formattedSiren}
             </span>
           </div>
           <div className="op-detail">
