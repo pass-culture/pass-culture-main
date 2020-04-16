@@ -23,7 +23,7 @@ class OffererBankInformationProvider(LocalProvider):
         self.PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_RIB_OFFERER_PROCEDURE_ID', None)
         self.TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_TOKEN', None)
 
-        most_recent_known_application_date = get_last_update_from_bank_information()
+        most_recent_known_application_date = get_last_update_from_bank_information(last_provider_id=self.provider.id)
 
         self.application_ids = iter(
             get_all_application_ids_for_beneficiary_import(self.PROCEDURE_ID, self.TOKEN,

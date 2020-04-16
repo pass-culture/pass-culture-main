@@ -6,6 +6,7 @@ from local_providers import BankInformationProvider
 from models import BankInformation, LocalProviderEvent
 from models.local_provider_event import LocalProviderEventType
 from repository import repository
+from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_bank_information
 from tests.model_creators.provider_creators import provider_test
@@ -983,7 +984,10 @@ class BankInformationProviderProviderTest:
         venue = create_venue(offerer, siret='79387501900056')
 
         bank_information = create_bank_information(id_at_providers='79387501900056',
-                                                   date_modified_at_last_provider=datetime(2019, 1, 1), venue=venue)
+                                                   date_modified_at_last_provider=datetime(2019, 1, 1),
+                                                   venue=venue,
+                                                   last_provider_id=get_provider_by_local_class('BankInformationProvider').id
+                                                   )
         repository.save(bank_information)
 
         bank_information_provider = BankInformationProvider()
@@ -996,6 +1000,7 @@ class BankInformationProviderProviderTest:
         # then
         get_all_application_ids_for_beneficiary_import.assert_called_with(ANY, ANY,
                                                                                         datetime(2019, 1, 1))
+
 
     @patch(
         'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_beneficiary_import')

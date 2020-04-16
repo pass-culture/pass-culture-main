@@ -2,12 +2,15 @@ from datetime import datetime
 from unittest.mock import patch, ANY
 
 from local_providers import OffererBankInformationProvider
+from local_providers import BankInformationProvider
 from models import BankInformation, LocalProviderEvent
 from models.local_provider_event import LocalProviderEventType
 from repository import repository
+from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_bank_information
 from tests.model_creators.provider_creators import provider_test
+from utils.date import DATE_ISO_FORMAT
 
 
 class TestableOffererBankInformationProvider(OffererBankInformationProvider):
@@ -610,7 +613,9 @@ class OffererBankInformationProviderProviderTest:
         offerer = create_offerer(siren='793875019')
 
         bank_information = create_bank_information(id_at_providers='79387501900056',
-                                                   date_modified_at_last_provider=datetime(2019, 1, 1), offerer=offerer)
+                                                   date_modified_at_last_provider=datetime(2019, 1, 1),
+                                                   last_provider_id=get_provider_by_local_class('OffererBankInformationProvider').id,
+                                                   offerer=offerer)
         repository.save(bank_information)
 
         bank_information_provider = OffererBankInformationProvider()
@@ -740,3 +745,83 @@ class RetrieveBankInformationTest:
         assert bank_information_dict['applicationId'] == 1
         assert bank_information_dict['offererId'] == offerer_id
         assert 'venueId' not in bank_information_dict
+
+
+    @patch(
+        'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_beneficiary_import')
+    @patch('local_providers.demarches_simplifiees_offerer_bank_information.get_application_details')
+    @clean_database
+    def test_provider_updates_one_bank_information_when_bank_information_from_another_provider_exists(self,
+                                                                             get_application_details,
+                                                                             get_all_application_ids_for_beneficiary_import,
+                                                                             app):
+        # Given
+        date_updated = datetime(2020, 4, 15)
+        get_all_application_ids_for_beneficiary_import.return_value = [1]
+        get_application_details.return_value = {
+            "dossier": {
+                "id": 1,
+                "updated_at": date_updated.strftime(DATE_ISO_FORMAT),
+                "state": "closed",
+                "entreprise": {
+                    "siren": "793875030"
+                },
+                "champs": [
+                    {
+                        "value": 'DE89370400440532013000',
+                        "type_de_champ": {
+                            "id": 352722,
+                            "libelle": "IBAN",
+                            "type_champ": "text",
+                            "order_place": 10,
+                            "description": ""
+                        }
+                    },
+                    {
+                        "value": "BDFEFR2LCCB",
+                        "type_de_champ": {
+                            "id": 352727,
+                            "libelle": "BIC",
+                            "type_champ": "text",
+                            "order_place": 11,
+                            "description": ""
+                        }
+                    }
+                ]
+            }
+        }
+
+        offerer = create_offerer(siren='793875030')
+        bank_information = create_bank_information(id_at_providers='793875030',
+                                            iban='FR7630006000011234567890189',
+                                            date_modified_at_last_provider=datetime(2018, 1, 1),
+                                            offerer=offerer)
+        repository.save(bank_information)
+
+        offerer_id = offerer.id
+        provider_id = get_provider_by_local_class('OffererBankInformationProvider').id
+
+        # When Then
+        provider_test(app,
+                      OffererBankInformationProvider,
+                      None,
+                      checkedObjects=1,
+                      createdObjects=0,
+                      updatedObjects=1,
+                      erroredObjects=0,
+                      checkedThumbs=0,
+                      createdThumbs=0,
+                      updatedThumbs=0,
+                      erroredThumbs=0,
+                      BankInformation=0)
+
+        bank_information = BankInformation.query.one()
+        assert bank_information.iban == 'DE89370400440532013000'
+        assert bank_information.bic == 'BDFEFR2LCCB'
+        assert bank_information.applicationId == 1
+        assert bank_information.offererId == offerer_id
+        assert bank_information.idAtProviders == '793875030'
+        assert bank_information.lastProviderId == provider_id
+        assert bank_information.dateModifiedAtLastProvider == date_updated
+
+
