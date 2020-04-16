@@ -31,10 +31,9 @@ def check_quantity_is_valid(quantity: int, offer_is_duo: bool) -> None:
 
 
 def check_stock_is_bookable(stock: Stock):
-    pass
-    # if not stock.isBookable:
-    #     stock_is_not_bookable = StockIsNotBookable('stock', "Ce stock n'est pas réservable")
-    #     raise stock_is_not_bookable
+    if not stock.is_bookable():
+        stock_is_not_bookable = StockIsNotBookable()
+        raise stock_is_not_bookable
 
 
 def check_expenses_limits(expenses: Dict, booking: Booking,

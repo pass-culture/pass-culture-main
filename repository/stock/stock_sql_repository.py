@@ -19,5 +19,7 @@ class StockSQLRepository(StockRepository):
             offer=stock_model.offer,
             price=stock_model.price,
             quantity=stock_model.quantity,
+            is_soft_deleted=stock_model.isSoftDeleted,
+            bookings=stock_model.bookings
         )
         return stock
