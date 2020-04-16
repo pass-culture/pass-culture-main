@@ -58,10 +58,11 @@ describe('src | components |pages | typeform | TypeformContainer', () => {
       it('should dispatch an action with the right parameters', () => {
         // given
         const { flagUserHasFilledTypeform } = functions
+        const mockHandleSuccess = jest.fn()
         jest.spyOn(global.Date, 'now').mockImplementation(() => 1575201600)
 
         // when
-        flagUserHasFilledTypeform(1)
+        flagUserHasFilledTypeform(1, mockHandleSuccess)
 
         // then
         expect(dispatch).toHaveBeenCalledWith({
@@ -74,6 +75,7 @@ describe('src | components |pages | typeform | TypeformContainer', () => {
             },
             isMergingDatum: true,
             method: 'PATCH',
+            handleSuccess: mockHandleSuccess,
           },
           type: 'REQUEST_DATA_PATCH_/USERS/CURRENT',
         })

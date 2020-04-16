@@ -4,6 +4,7 @@ import { requestData } from 'redux-thunk-data'
 import { selectCurrentUser } from '../../../redux/selectors/data/usersSelectors'
 
 import Typeform from './Typeform'
+import { withRouter } from 'react-router-dom'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 import moment from 'moment'
 
@@ -14,7 +15,7 @@ export const mapStateToProps = state => {
 }
 
 export const mapDispatchToProps = dispatch => ({
-  flagUserHasFilledTypeform: id => {
+  flagUserHasFilledTypeform: (id, handleRequestSuccess) => {
     const todayInUtc = moment()
       .utc()
       .format()
@@ -29,6 +30,7 @@ export const mapDispatchToProps = dispatch => ({
         },
         isMergingDatum: true,
         method: 'PATCH',
+        handleSuccess: handleRequestSuccess,
       })
     )
   },
@@ -36,6 +38,7 @@ export const mapDispatchToProps = dispatch => ({
 
 export default compose(
   withRequiredLogin,
+  withRouter,
   connect(
     mapStateToProps,
     mapDispatchToProps

@@ -1,6 +1,5 @@
 import React from 'react'
 import { shallow, mount } from 'enzyme'
-import { Redirect } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
 
 import Typeform from '../Typeform'
@@ -10,21 +9,26 @@ history.push('/typeform')
 
 describe('src | components | pages | typeform | Typeform', () => {
   describe('when user has filled the cultural survey', () => {
-    it('should redirect to /bienvenue when user has filled the cultural survey', () => {
+    it('should redirect to /bienvenue when request to API is successful', () => {
       // given
       const props = {
-        flagUserHasFilledTypeform: jest.fn(),
+        history: {
+          push: jest.fn(),
+        },
+        flagUserHasFilledTypeform: (id, handleSuccess) => {
+          handleSuccess()
+        },
         needsToFillCulturalSurvey: false,
       }
 
-      // when
       const wrapper = shallow(<Typeform {...props} />)
+      const historyPush = jest.spyOn(props.history, 'push')
 
-      const redirect = wrapper.find(Redirect)
+      // when
+      wrapper.instance().onSubmitTypeForm()
 
       // then
-      expect(redirect).toHaveLength(1)
-      expect(redirect.prop('to')).toBe('/bienvenue')
+      expect(historyPush).toHaveBeenCalledWith('/bienvenue')
     })
   })
 
