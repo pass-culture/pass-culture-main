@@ -1,11 +1,18 @@
-import algoliasearch from 'algoliasearch'
-
 import { ALGOLIA_APPLICATION_ID, ALGOLIA_INDEX_NAME, ALGOLIA_SEARCH_API_KEY, } from '../../utils/config'
+import {
+  getFirstTimestampForGivenDate,
+  getFirstTimestampOfTheWeekEndForGivenDate,
+  getLastTimestampForGivenDate,
+  getLastTimestampOfTheWeekForGivenDate,
+  getTimestampFromDate,
+} from '../../utils/date/date'
 import { FACETS } from './facets'
 import { DEFAULT_RADIUS_IN_KILOMETERS, FILTERS, RADIUS_IN_METERS_FOR_NO_OFFERS } from './filters'
+import algoliasearch from 'algoliasearch'
 
 export const fetchAlgolia = ({
                                aroundRadius = DEFAULT_RADIUS_IN_KILOMETERS,
+                               date = null,
                                geolocation = null,
                                keywords = '',
                                isSearchAroundMe = false,
@@ -24,7 +31,7 @@ export const fetchAlgolia = ({
   const searchParameters = {
     page: page,
     ...buildFacetFilters(offerCategories, offerTypes, offerIsDuo),
-    ...buildNumericFilters(offerIsFree, priceRange),
+    ...buildNumericFilters(offerIsFree, priceRange, date),
     ...buildGeolocationParameter(aroundRadius, geolocation, isSearchAroundMe),
   }
   const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_SEARCH_API_KEY)
@@ -59,12 +66,20 @@ const buildFacetFilters = (offerCategories, offerTypes, offerIsDuo) => {
   return atLeastOneFacetFilter ? { facetFilters } : {}
 }
 
-const buildNumericFilters = (offerIsFree, priceRange) => {
+const buildNumericFilters = (offerIsFree, priceRange, date) => {
   const priceRangePredicate = buildOfferPriceRangePredicate(offerIsFree, priceRange)
+  const datePredicate = buildDatePredicate(date)
+  const numericFilters = []
+
   if (priceRangePredicate) {
-    return { numericFilters: [priceRangePredicate] }
+    numericFilters.push(priceRangePredicate)
   }
-  return {}
+
+  if (datePredicate) {
+    numericFilters.push(datePredicate)
+  }
+
+  return numericFilters.length > 0 ? { numericFilters } : {}
 }
 
 const buildOfferCategoriesPredicate = offerCategories => {
@@ -81,6 +96,31 @@ const buildOfferPriceRangePredicate = (offerIsFree, offerPriceRange) => {
   if (offerIsFree) return `${FACETS.OFFER_PRICE} = 0`
   if (offerPriceRange.length === 2) {
     return `${FACETS.OFFER_PRICE}: ${offerPriceRange.join(' TO ')}`
+  }
+}
+
+function buildDatePredicate(date) {
+  if (date) {
+    let beginningDate, endingDate
+    switch (date.option) {
+      case DATE_FILTER.TODAY.value:
+        beginningDate = getTimestampFromDate(date.selectedDate)
+        endingDate = getLastTimestampForGivenDate(date.selectedDate)
+        break
+      case DATE_FILTER.CURRENT_WEEK.value:
+        beginningDate = getTimestampFromDate(date.selectedDate)
+        endingDate = getLastTimestampOfTheWeekForGivenDate(date.selectedDate)
+        break
+      case DATE_FILTER.CURRENT_WEEK_END.value:
+        beginningDate = getFirstTimestampOfTheWeekEndForGivenDate(date.selectedDate)
+        endingDate = getLastTimestampOfTheWeekForGivenDate(date.selectedDate)
+        break
+      case DATE_FILTER.USER_PICK.value:
+        beginningDate = getFirstTimestampForGivenDate(date.selectedDate)
+        endingDate = getLastTimestampForGivenDate(date.selectedDate)
+        break
+    }
+    return `${FACETS.OFFER_DATE}: ${beginningDate} TO ${endingDate}`
   }
 }
 

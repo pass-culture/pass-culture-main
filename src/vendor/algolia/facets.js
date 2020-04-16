@@ -5,4 +5,5 @@ export const FACETS = {
   OFFER_IS_EVENT: 'offer.isEvent',
   OFFER_PRICE: 'offer.prices',
   OFFER_IS_THING: 'offer.isThing',
+  OFFER_DATE: 'offer.dates',
 }

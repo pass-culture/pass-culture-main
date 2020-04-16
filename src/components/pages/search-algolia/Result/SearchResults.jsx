@@ -4,18 +4,20 @@ import { Route, Switch } from 'react-router'
 import { toast } from 'react-toastify'
 import { isGeolocationEnabled } from '../../../../utils/geolocation'
 
-import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import Icon from '../../../layout/Icon/Icon'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 import Spinner from '../../../layout/Spinner/Spinner'
 import { SORT_CRITERIA } from '../Criteria/criteriaEnums'
+
 import { Filters } from '../Filters/Filters'
+import { DATE_FILTER, PRICE_FILTER } from '../Filters/filtersEnums'
 import { EmptySearchResult } from './EmptySearchResult'
 import SearchAlgoliaDetailsContainer from './ResultDetail/ResultDetailContainer'
 import { SearchResultsList } from './SearchResultsList'
 import { DEFAULT_RADIUS_IN_KILOMETERS } from '../../../../vendor/algolia/filters'
 import CriteriaSort from '../CriteriaSort/CriteriaSort'
+import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 
 const SEARCH_RESULTS_URI = '/recherche/resultats'
 
@@ -42,7 +44,12 @@ class SearchResults extends PureComponent {
           isEvent: false,
           isThing: false,
         },
-        priceRange: [0, 500],
+        isOfferFilteredByDate: false,
+        date: {
+          selectedDate: null,
+          option: DATE_FILTER.TODAY.value,
+        },
+        priceRange: PRICE_FILTER.DEFAULT_RANGE,
         sortBy: sortByFromUrlOrProps,
       },
       keywordsToSearch: '',
@@ -174,6 +181,8 @@ class SearchResults extends PureComponent {
     const { filters } = this.state
     const {
       aroundRadius,
+      date,
+      isOfferFilteredByDate,
       isSearchAroundMe,
       offerCategories,
       offerIsDuo,
@@ -198,6 +207,10 @@ class SearchResults extends PureComponent {
       page,
       priceRange,
       sortBy,
+    }
+
+    if (isOfferFilteredByDate) {
+      options.date = date
     }
 
     fetchAlgolia(options)

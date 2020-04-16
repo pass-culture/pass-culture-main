@@ -1173,6 +1173,11 @@ describe('components | SearchResults', () => {
         currentPage: 0,
         filters: {
           aroundRadius: 100,
+          date: {
+            option: 'today',
+            selectedDate: null,
+          },
+          isOfferFilteredByDate: false,
           isSearchAroundMe: false,
           offerCategories: [],
           offerIsDuo: false,
@@ -1394,6 +1399,57 @@ describe('components | SearchResults', () => {
 
       // then
       expect(input.blur).toHaveBeenCalledTimes(1)
+    })
+
+    it('should fetch algolia with date filter when enabled', async () => {
+      // Given
+      const wrapper = shallow(<SearchResults {...props} />)
+      stubRef(wrapper)
+      const selectedDate = new Date(2020, 3, 21)
+      wrapper.setState({
+        filters: {
+          ...wrapper.state('filters'),
+          date: {
+            option: 'today',
+            selectedDate,
+          },
+          isOfferFilteredByDate: true,
+        },
+      })
+
+      // When
+      const form = wrapper.find('form')
+      form.simulate('submit', {
+        preventDefault: jest.fn(),
+        target: { keywords: { value: 'nouvelle recherche' } },
+      })
+
+      // Then
+      expect(fetchAlgolia).toHaveBeenCalledTimes(2)
+      expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
+        aroundRadius: 100,
+        date: {
+          option: 'today',
+          selectedDate,
+        },
+        geolocation: {
+          latitude: 40.1,
+          longitude: 41.1,
+        },
+        isSearchAroundMe: false,
+        keywords: 'nouvelle recherche',
+        offerCategories: [],
+        offerIsDuo: false,
+        offerIsFree: false,
+        offerTypes: {
+          isDigital: false,
+          isEvent: false,
+          isThing: false,
+        },
+        page: 0,
+        priceRange: [0, 500],
+        sortBy: '',
+      })
     })
 
     describe('reset cross', () => {
@@ -1655,6 +1711,11 @@ describe('components | SearchResults', () => {
       expect(filtersContainer.prop('history')).toStrictEqual(props.history)
       expect(filtersContainer.prop('initialFilters')).toStrictEqual({
         aroundRadius: 100,
+        date: {
+          option: 'today',
+          selectedDate: null,
+        },
+        isOfferFilteredByDate: false,
         isSearchAroundMe: false,
         offerCategories: ['VISITE', 'CINEMA'],
         offerIsDuo: false,

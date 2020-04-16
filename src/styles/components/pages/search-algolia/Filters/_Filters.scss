@@ -49,7 +49,7 @@
     }
   }
 
-  .sf-offer-price-wrapper {
+  .sf-toggle-wrapper {
     align-items: center;
     border-top: rem(1px) solid $grey-even-more-light;
     display: flex;
@@ -61,6 +61,17 @@
       display: inline;
       font-size: rem(18px);
       font-weight: 500;
+    }
+
+    .sf-toggle-information {
+      color: $grey;
+      font-size: 14px;
+      margin-top: rem(8px);
+    }
+
+    ul label {
+      font-size: 16px;
+      font-weight: bold;
     }
   }
 
@@ -122,6 +133,105 @@
   }
 }
 
+.sf-date-wrapper {
+  input[type="radio"] {
+    display: none;
+  }
+
+  li {
+    height: rem(26px);
+    margin-bottom: rem(24px);
+    display: flex;
+    align-items: center;
+
+    &:last-child {
+      margin-bottom: rem(12px);
+    }
+
+    img {
+      height: rem(24px);
+      margin-left: rem(5px);
+    }
+
+    label {
+      font-size: rem(16px);
+      font-weight: bold;
+    }
+  }
+}
+
+.sf-filter-datepicker {
+  border: none;
+  width: 100%;
+
+  .react-datepicker__week {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .react-datepicker {
+    border-width: 2px;
+    border-radius: 20px;
+    border-color: $grey-light;
+    font-family: $family-sans-serif;
+  }
+
+  .react-datepicker__header {
+    padding: 0;
+    border-bottom: 0;
+    background-color: $white;
+
+    .react-datepicker__current-month {
+      font-weight: normal;
+      margin-bottom: rem(14px);
+      text-transform: capitalize;
+    }
+
+    .react-datepicker__day-names {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding: rem(7px);
+      border-top: rem(1px) solid $grey-even-more-light;
+      border-bottom: rem(1px) solid $grey-even-more-light;
+    }
+
+    .react-datepicker__day-name {
+      font-size: rem(16px);
+      text-transform: uppercase;
+      width: rem(36px);
+    }
+  }
+
+  .react-datepicker__month-container {
+    width: 100%;
+
+    .react-datepicker__day {
+      box-sizing: content-box;
+      font-size: rem(16px);
+      border-radius: 50%;
+      margin-bottom: rem(10px);
+      margin-top: rem(10px);
+      padding: rem(5px);
+
+      &:hover &:not(&--selected) {
+        background-color: $grey-light;
+      }
+
+      &--selected {
+        background-color: $primary;
+      }
+
+      &--disabled {
+        &:hover {
+          background-color: $white;
+        }
+      }
+    }
+  }
+}
+
 .sf-filter-separator {
   border-top: rem(1px) solid $grey-even-more-light;
   display: block;
@@ -142,13 +252,16 @@
 }
 
 .sf-price-slider-wrapper {
-  padding-bottom: rem(5px);
-  padding-top: rem(20px);
+  padding: rem(20px) 0;
   border-top: rem(1px) solid $grey-even-more-light;
 }
 
 .sf-space-wrapper {
-  padding-top: rem($footer-height + rem(48px))
+  padding-top: rem($footer-height + rem(48px));
+}
+
+.sf-filter-checked {
+  color: $primary;
 }
 
 .sf-warning-message {

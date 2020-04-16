@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types'
-import React, { PureComponent, Fragment } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 import { Field } from 'react-final-form'
 
 import formatDecimals from '../../../../../utils/numbers/formatDecimals'
+import CheckBoxField from '../../../../forms/inputs/CheckBoxField'
+import DatePickerField from '../../../../forms/inputs/DatePickerField/DatePickerField'
+import SelectField from '../../../../forms/inputs/SelectField'
+import DuoOfferContainer from '../../../../layout/DuoOffer/DuoOfferContainer'
 import getCalendarProvider from '../../utils/getCalendarProvider'
 import parseHoursByStockId from '../../utils/parseHoursByStockId'
-import CheckBoxField from '../../../../forms/inputs/CheckBoxField'
-import SelectField from '../../../../forms/inputs/SelectField'
-import DatePickerField from '../../../../forms/inputs/DatePickerField/DatePickerField'
-import DuoOfferContainer from '../../../../layout/DuoOffer/DuoOfferContainer'
 
 class BookingFormContent extends PureComponent {
   componentDidMount() {
@@ -42,20 +42,22 @@ class BookingFormContent extends PureComponent {
     const dateFormat = 'DD MMMM YYYY'
 
     return (
-      <DatePickerField
-        {...input}
-        clearable={false}
-        dateFormat={dateFormat}
-        extraClassName="text-center mb36"
-        hideToday
-        id="booking-form-date-picker-field"
-        includeDates={calendarDates}
-        label={calendarLabel}
-        name="date"
-        onChange={this.handleChangeAndRemoveCalendar(input)}
-        readOnly={calendarDates.length === 1}
-        selected={value === '' ? null : value}
-      />
+      <div className="booking-form-content-datepicker">
+        <DatePickerField
+          {...input}
+          clearable={false}
+          dateFormat={dateFormat}
+          extraClassName="text-center mb36"
+          hideToday
+          id="booking-form-date-picker-field"
+          includeDates={calendarDates}
+          label={calendarLabel}
+          name="date"
+          onChange={this.handleChangeAndRemoveCalendar(input)}
+          readOnly={calendarDates.length === 1}
+          selected={value === '' ? null : value}
+        />
+      </div>
     )
   }
 
