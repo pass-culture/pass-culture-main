@@ -14,7 +14,7 @@ const DraggableTutorial = ({ children, handleGoNext, handleGoPrevious, step }) =
 
   function handleStopDragging(event, data) {
     const tutorialHorizontalPosition = data.x
-    const draggingDistanceToChangeTutorial = 150
+    const draggingDistanceToChangeTutorial = 75
 
     if (tutorialHorizontalPosition < -draggingDistanceToChangeTutorial) handleGoNext()
 
