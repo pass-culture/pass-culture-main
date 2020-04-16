@@ -2,7 +2,6 @@ import selectCurrentRecommendation from '../selectors/selectCurrentRecommendatio
 import selectNextRecommendation from '../selectors/selectNextRecommendation'
 import selectPreviousRecommendation from '../selectors/selectPreviousRecommendation'
 
-export const DEFAULT_VIEW_IDENTIFIERS = ['fin', 'tuto', 'vide']
 export const MINIMUM_DELAY_BEFORE_UPDATING_SEED_3_HOURS = 3 * 60 * 60 * 1000
 export const MINIMUM_DELAY_BEFORE_RELOAD_RECOMMENDATION_3_HOURS = 3 * 60 * 60 * 1000
 
@@ -14,7 +13,7 @@ export const isDiscoveryStartupUrl = match => {
     return true
   }
 
-  const matchDiscoveryStartupPathRegex = /\/decouverte((\/)|(\/tuto\/fin\/?))?$/
+  const matchDiscoveryStartupPathRegex = /\/decouverte?$/
   const matches = url.match(matchDiscoveryStartupPathRegex)
   if (!matches) {
     return false

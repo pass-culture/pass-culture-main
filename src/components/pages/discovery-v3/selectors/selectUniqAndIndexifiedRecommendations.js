@@ -1,22 +1,6 @@
 import uniqBy from 'lodash.uniqby'
 import { createSelector } from 'reselect'
 
-import { ROOT_PATH } from '../../../../utils/config'
-
-export const fakeLastRecommendation = index => ({
-  productOrTutoIdentifier: 'tuto_-1',
-  index,
-  mediation: {
-    frontText:
-      'Vous avez parcouru toutes les offres. Revenez bientôt pour découvrir les nouveautés.',
-    id: 'fin',
-    thumbCount: 1,
-    tutoIndex: -1,
-  },
-  mediationId: 'fin',
-  thumbUrl: `${ROOT_PATH}/splash-finReco@2x.png`,
-})
-
 const selectUniqAndIndexifiedRecommendations = createSelector(
   state => state.data.recommendations,
   recommendations => {
@@ -32,7 +16,6 @@ const selectUniqAndIndexifiedRecommendations = createSelector(
       Object.assign({ index }, recommendation)
     )
 
-    filteredRecommendations.push(fakeLastRecommendation(filteredRecommendations.length))
     return filteredRecommendations
   }
 )

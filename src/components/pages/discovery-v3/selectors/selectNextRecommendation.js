@@ -1,10 +1,10 @@
 import selectCurrentRecommendation from './selectCurrentRecommendation'
-import selectRecommendationsWithLastFakeReco from './selectRecommendationsWithLastFakeRecommendation'
+import selectUniqAndIndexifiedRecommendations from './selectUniqAndIndexifiedRecommendations'
 import createCachedSelector from 're-reselect'
 import mapArgsToCacheKey from './mapArgsToCacheKey'
 
 const selectNextRecommendation = createCachedSelector(
-  selectRecommendationsWithLastFakeReco,
+  selectUniqAndIndexifiedRecommendations,
   selectCurrentRecommendation,
   (recommendations, currentRecommendation) => {
     if (!currentRecommendation) {

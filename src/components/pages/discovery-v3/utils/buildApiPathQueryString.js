@@ -1,5 +1,3 @@
-import { DEFAULT_VIEW_IDENTIFIERS } from './utils'
-
 export const getOfferIdAndMediationIdAndCoordinatesApiPathQueryString = (
   match,
   currentRecommendation,
@@ -11,17 +9,9 @@ export const getOfferIdAndMediationIdAndCoordinatesApiPathQueryString = (
   const { params: { mediationId: pMediationId, offerId: pOfferId } = {} } = match || {}
   const { longitude: longitude, latitude: latitude } = coordinates || {}
 
-  const offerId =
-    typeof pOfferId === 'string' &&
-    pOfferId.trim() !== '' &&
-    !DEFAULT_VIEW_IDENTIFIERS.includes(pOfferId) &&
-    pOfferId
+  const offerId = typeof pOfferId === 'string' && pOfferId.trim() !== '' && pOfferId
 
-  const mediationId =
-    typeof pMediationId === 'string' &&
-    pMediationId.trim() !== '' &&
-    !DEFAULT_VIEW_IDENTIFIERS.includes(pMediationId) &&
-    pMediationId
+  const mediationId = typeof pMediationId === 'string' && pMediationId.trim() !== '' && pMediationId
 
   const isSameRecoAsMatchParams =
     currentRecommendation &&

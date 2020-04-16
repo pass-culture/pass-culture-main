@@ -1,6 +1,6 @@
-import selectRecommendationsWithLastFakeReco from '../selectRecommendationsWithLastFakeRecommendation'
+import selectUniqAndIndexifiedRecommendations from '../selectUniqAndIndexifiedRecommendations'
 
-describe('src | components | pages | discovery | selectors | selectRecommendationsWithLastFakeReco', () => {
+describe('src | components | pages | discovery | selectors | selectUniqAndIndexifiedRecommendations', () => {
   it('should return an array of object having an `uniqId` property', () => {
     // given
     const state = {
@@ -18,7 +18,7 @@ describe('src | components | pages | discovery | selectors | selectRecommendatio
     }
 
     // when
-    const results = selectRecommendationsWithLastFakeReco(state)
+    const results = selectUniqAndIndexifiedRecommendations(state)
 
     // then
     expect(results).not.toHaveLength(0)
@@ -27,7 +27,7 @@ describe('src | components | pages | discovery | selectors | selectRecommendatio
     })
   })
 
-  it('should return an empty array if there are no recommendations except lastFakeRecommendation', () => {
+  it('should return an empty array if there are no recommendations', () => {
     // given
     const state = {
       data: {
@@ -41,24 +41,10 @@ describe('src | components | pages | discovery | selectors | selectRecommendatio
     }
 
     // when
-    const result = selectRecommendationsWithLastFakeReco(state)
+    const result = selectUniqAndIndexifiedRecommendations(state)
 
     // then
-    expect(result).toStrictEqual([
-      {
-        productOrTutoIdentifier: 'tuto_-1',
-        index: 0,
-        mediation: {
-          frontText:
-            'Vous avez parcouru toutes les offres. Revenez bientôt pour découvrir les nouveautés.',
-          id: 'fin',
-          thumbCount: 1,
-          tutoIndex: -1,
-        },
-        mediationId: 'fin',
-        thumbUrl: `http://localhost/splash-finReco@2x.png`,
-      },
-    ])
+    expect(result).toStrictEqual([])
   })
 
   it('should return recommendations', () => {
@@ -91,10 +77,10 @@ describe('src | components | pages | discovery | selectors | selectRecommendatio
     }
 
     // when
-    const result = selectRecommendationsWithLastFakeReco(state)
+    const result = selectUniqAndIndexifiedRecommendations(state)
 
     // then
     expect(result[0]).toStrictEqual(recommendation)
-    expect(result).toHaveLength(2)
+    expect(result).toHaveLength(1)
   })
 })

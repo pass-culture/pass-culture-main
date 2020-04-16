@@ -58,6 +58,7 @@ class Discovery extends PureComponent {
     if (Date.now() > seedLastRequestTimestamp + MINIMUM_DELAY_BEFORE_UPDATING_SEED_3_HOURS) {
       updateLastRequestTimestamp()
     }
+
     if (prevRecommendations !== recommendations) {
       const { params } = match
       const { offerId } = params
@@ -69,12 +70,7 @@ class Discovery extends PureComponent {
   }
 
   componentWillUnmount() {
-    const { deleteTutorials, tutorials, resetRecommendations } = this.props
-
-    if (tutorials.length > 0) {
-      deleteTutorials(tutorials)
-    }
-
+    const { resetRecommendations } = this.props
     resetRecommendations()
   }
 
@@ -152,13 +148,13 @@ class Discovery extends PureComponent {
           <main className="discovery-page no-padding page with-footer">
             <Route
               key="route-discovery-deck"
-              path="/decouverte-v3/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
+              path="/decouverte-v3/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
               render={this.renderDeck}
               sensitive
             />
             <Route
               key="route-discovery-booking"
-              path="/decouverte-v3/:offerId(tuto|[A-Z0-9]+)/:mediationId(vide|fin|[A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+              path="/decouverte-v3/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
               render={cancelView ? this.renderBookingCancellation : this.renderBooking}
               sensitive
             />
@@ -189,7 +185,6 @@ Discovery.defaultProps = {
 Discovery.propTypes = {
   coordinates: PropTypes.shape().isRequired,
   currentRecommendation: PropTypes.shape(),
-  deleteTutorials: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   loadRecommendations: PropTypes.func.isRequired,
   location: PropTypes.shape({
@@ -209,7 +204,6 @@ Discovery.propTypes = {
   saveLastRecommendationsRequestTimestamp: PropTypes.func.isRequired,
   seedLastRequestTimestamp: PropTypes.number.isRequired,
   shouldReloadRecommendations: PropTypes.bool.isRequired,
-  tutorials: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   updateLastRequestTimestamp: PropTypes.func.isRequired,
 }
 

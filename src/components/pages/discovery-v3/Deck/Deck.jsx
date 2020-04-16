@@ -76,7 +76,7 @@ class Deck extends PureComponent {
     }
 
     const { offerId, mediationId } = nextRecommendation
-    const nextUrl = `/decouverte-v3/${offerId || 'tuto'}/${mediationId || 'vide'}`
+    const nextUrl = `/decouverte-v3/${offerId}/${mediationId}`
     history.push(nextUrl)
     this.handleRefreshNext()
   }
@@ -88,7 +88,7 @@ class Deck extends PureComponent {
     }
 
     const { offerId, mediationId } = previousRecommendation
-    const previousUrl = `/decouverte-v3/${offerId || 'tuto'}/${mediationId || 'vide'}`
+    const previousUrl = `/decouverte-v3/${offerId}/${mediationId}`
     history.push(previousUrl)
   }
 
@@ -160,7 +160,6 @@ class Deck extends PureComponent {
         key={refreshKey}
         onStop={this.handleOnStop}
         position={position}
-        speed={{ x: 5 }}
       >
         <div className="is-overlay">
           <div className="inner is-relative">

@@ -71,24 +71,11 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
           longitude: 48.256756,
           watchId: 1,
         },
-        currentRecommendation: {
-          index: 0,
-          mediation: {
-            frontText:
-              'Vous avez parcouru toutes les offres. Revenez bientôt pour découvrir les nouveautés.',
-            id: 'fin',
-            thumbCount: 1,
-            tutoIndex: -1,
-          },
-          mediationId: 'fin',
-          productOrTutoIdentifier: 'tuto_-1',
-          thumbUrl: 'http://localhost/splash-finReco@2x.png',
-        },
+        currentRecommendation: undefined,
         readRecommendations: undefined,
         recommendations: [],
         seedLastRequestTimestamp: 11111111112,
         shouldReloadRecommendations: true,
-        tutorials: [],
       })
     })
   })
@@ -100,120 +87,6 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         const handleRequestSuccess = jest.fn()
         const handleRequestFail = jest.fn()
         const currentRecommendation = {}
-        const recommendations = []
-        const readRecommendations = null
-        const shouldReloadRecommendations = false
-        const functions = mapDispatchToProps(dispatch, props)
-        const { loadRecommendations } = functions
-
-        // when
-        loadRecommendations(
-          handleRequestSuccess,
-          handleRequestFail,
-          currentRecommendation,
-          recommendations,
-          readRecommendations,
-          shouldReloadRecommendations
-        )
-
-        // then
-        expect(dispatch.mock.calls[0][0]).toStrictEqual({
-          config: {
-            apiPath: `/recommendations/v3?`,
-            body: {
-              readRecommendations: null,
-              seenRecommendationIds: [],
-            },
-            handleFail: handleRequestFail,
-            handleSuccess: handleRequestSuccess,
-            method: 'PUT',
-            normalizer: recommendationNormalizer,
-          },
-          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS/V3?',
-        })
-      })
-
-      it('should load the recommendations with page equals 1 when current recommendation is a tuto', () => {
-        // given
-        const handleRequestSuccess = jest.fn()
-        const handleRequestFail = jest.fn()
-        const currentRecommendation = { mediationId: 'tuto' }
-        const recommendations = []
-        const readRecommendations = null
-        const shouldReloadRecommendations = false
-        const functions = mapDispatchToProps(dispatch, props)
-        const { loadRecommendations } = functions
-
-        // when
-        loadRecommendations(
-          handleRequestSuccess,
-          handleRequestFail,
-          currentRecommendation,
-          recommendations,
-          readRecommendations,
-          shouldReloadRecommendations
-        )
-
-        // then
-        expect(dispatch.mock.calls[0][0]).toStrictEqual({
-          config: {
-            apiPath: `/recommendations/v3?`,
-            body: {
-              readRecommendations: null,
-              seenRecommendationIds: [],
-            },
-            handleFail: handleRequestFail,
-            handleSuccess: handleRequestSuccess,
-            method: 'PUT',
-            normalizer: recommendationNormalizer,
-          },
-          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS/V3?',
-        })
-      })
-
-      it('should load the recommendations with page equals 1 when current recommendation is the final card', () => {
-        // given
-        const handleRequestSuccess = jest.fn()
-        const handleRequestFail = jest.fn()
-        const currentRecommendation = { mediationId: 'fin' }
-        const recommendations = []
-        const readRecommendations = null
-        const shouldReloadRecommendations = false
-        const functions = mapDispatchToProps(dispatch, props)
-        const { loadRecommendations } = functions
-
-        // when
-        loadRecommendations(
-          handleRequestSuccess,
-          handleRequestFail,
-          currentRecommendation,
-          recommendations,
-          readRecommendations,
-          shouldReloadRecommendations
-        )
-
-        // then
-        expect(dispatch.mock.calls[0][0]).toStrictEqual({
-          config: {
-            apiPath: `/recommendations/v3?`,
-            body: {
-              readRecommendations: null,
-              seenRecommendationIds: [],
-            },
-            handleFail: handleRequestFail,
-            handleSuccess: handleRequestSuccess,
-            method: 'PUT',
-            normalizer: recommendationNormalizer,
-          },
-          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS/V3?',
-        })
-      })
-
-      it('should load the recommendations with page equals 1 when current recommendation has an empty mediation', () => {
-        // given
-        const handleRequestSuccess = jest.fn()
-        const handleRequestFail = jest.fn()
-        const currentRecommendation = { mediationId: 'vide' }
         const recommendations = []
         const readRecommendations = null
         const shouldReloadRecommendations = false
@@ -463,75 +336,6 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
           expect(redirect).toBeUndefined()
         })
       })
-
-      describe('when visiting for the first time', () => {
-        it('should redirect to tuto recommendation with a specified mediation', () => {
-          // given
-          const dispatch = jest.fn()
-          const loadedRecommendations = [{ id: 'QA3D', offerId: null, mediationId: 'A9' }]
-          const ownProps = {
-            history: {
-              replace: jest.fn(),
-            },
-            match: {
-              url: '/decouverte',
-              params: {},
-            },
-          }
-
-          // when
-          mapDispatchToProps(dispatch, ownProps).redirectToFirstRecommendationIfNeeded(
-            loadedRecommendations
-          )
-
-          // then
-          expect(ownProps.history.replace).toHaveBeenCalledWith('/decouverte-v3/tuto/A9')
-        })
-
-        it('should redirect to tuto recommendation without mediation', () => {
-          // given
-          const dispatch = jest.fn()
-          const loadedRecommendations = [{ id: 'QA3D', offerId: null, mediationId: null }]
-          const ownProps = {
-            history: {
-              replace: jest.fn(),
-            },
-            match: {
-              url: '/decouverte',
-              params: {},
-            },
-          }
-
-          // when
-          mapDispatchToProps(dispatch, ownProps).redirectToFirstRecommendationIfNeeded(
-            loadedRecommendations
-          )
-
-          // then
-          expect(ownProps.history.replace).toHaveBeenCalledWith('/decouverte-v3/tuto/vide')
-        })
-
-        it('should delete tutos from store when leaving discovery', () => {
-          // given
-          const tutos = {
-            id: 'ABCD',
-          }
-
-          // when
-          mapDispatchToProps(dispatch, null).deleteTutorials(tutos)
-
-          // then
-          expect(dispatch).toHaveBeenCalledWith({
-            config: {},
-            patch: {
-              recommendations: {
-                id: 'ABCD',
-              },
-            },
-            type: 'DELETE_DATA',
-          })
-        })
-      })
     })
 
     describe('when mapping resetReadRecommendations', () => {
@@ -572,8 +376,8 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
       })
     })
 
-    describe('when mapping resetRecommandations', () => {
-      it('should delete all recommandations in the store', () => {
+    describe('when mapping resetRecommendations', () => {
+      it('should delete all recommendations in the store', () => {
         // when
         mapDispatchToProps(dispatch, props).resetRecommendations()
 
