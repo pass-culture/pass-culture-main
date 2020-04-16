@@ -63,16 +63,9 @@
     gtag('config', 'AW-706346995');
 
     // Appelé au clic sur le lien "Créer un compte"
-    function gtag_report_conversion(url) {
-      var callback = function () {
-        if (typeof(url) != 'undefined') {
-          window.location = url;
-        }
-      };
-
+    function gtag_report_conversion() {
       gtag('event', 'conversion', {
         'send_to': 'AW-706346995/DqoNCLOZ4bgBEPP_59AC',
-        'event_callback': callback
       });
 
       return false;

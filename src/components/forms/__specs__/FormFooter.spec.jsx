@@ -103,6 +103,62 @@ describe('components | FormFooter', () => {
           title: 'my-title'
         })
       })
+
+      it('should trigger tracking event when click on link and current location matches', () => {
+        // given
+        const mock = window.gtag_report_conversion = jest.fn()
+        delete window.location
+        const url = 'https://app.passculture.beta.gouv.fr/beta'
+        window.location = { href: url }
+        const props = {
+          cancel: null,
+          className: null,
+          externalLink: {
+            className: 'my-class',
+            id: 'my-id',
+            label: 'my-label',
+            title: 'my-title',
+            url: 'my-url',
+          },
+          submit: null
+        }
+        const wrapper = shallow(<FormFooter {...props} />)
+        const externalLink = wrapper.find('a')
+
+        // when
+        externalLink.simulate('click')
+
+        // then
+        expect(mock).toHaveBeenCalledWith()
+      })
+
+      it('should not trigger tracking event when click on link and current location does not match', () => {
+        // given
+        const mock = window.gtag_report_conversion = jest.fn()
+        delete window.location
+        const url = 'fake-url'
+        window.location = { href: url }
+        const props = {
+          cancel: null,
+          className: null,
+          externalLink: {
+            className: 'my-class',
+            id: 'my-id',
+            label: 'my-label',
+            title: 'my-title',
+            url: 'my-url',
+          },
+          submit: null
+        }
+        const wrapper = shallow(<FormFooter {...props} />)
+        const externalLink = wrapper.find('a')
+
+        // when
+        externalLink.simulate('click')
+
+        // then
+        expect(mock).not.toHaveBeenCalledWith()
+      })
     })
 
     describe('buttons', () => {
