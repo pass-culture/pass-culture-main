@@ -49,7 +49,7 @@ describe('components | Result', () => {
     const offerDistance = wrapper.findWhere(node => node.text() === '900+ km').first()
     const offerMediation = wrapper.find('img')
     expect(wrapper.prop('to')).toBe(
-      '/recherche-offres/resultats/details/AE?mots-cles=librairie&page=1'
+      '/recherche/resultats/details/AE?mots-cles=librairie&page=1'
     )
     expect(offerName).toHaveLength(1)
     expect(offerLabel).toHaveLength(1)

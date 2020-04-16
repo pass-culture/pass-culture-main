@@ -221,7 +221,7 @@ export class Filters extends PureComponent {
     const {
       location: { search = '' },
     } = history
-    history.push(`/recherche-offres/resultats/filtres/localisation${search}`)
+    history.push(`/recherche/resultats/filtres/localisation${search}`)
   }
 
   handleFilterOffers = () => {
@@ -247,7 +247,7 @@ export class Filters extends PureComponent {
     updateFilters(updatedFilters)
     updateFilteredOffers(offers)
     updateNumberOfActiveFilters(numberOfActiveFilters)
-    history.push(`/recherche-offres/resultats${search}`)
+    history.push(`/recherche/resultats${search}`)
   }
 
   handleOnTypeChange = event => {
@@ -360,10 +360,10 @@ export class Filters extends PureComponent {
     return (
       <main className="search-filters-page">
         <Switch>
-          <Route path="/recherche-offres/resultats/filtres/localisation">
+          <Route path="/recherche/resultats/filtres/localisation">
             <Criteria
               activeCriterionLabel={this.getActiveCriterionLabel()}
-              backTo={`/recherche-offres/resultats/filtres${search}`}
+              backTo={`/recherche/resultats/filtres${search}`}
               criteria={GEOLOCATION_CRITERIA}
               history={history}
               match={match}
@@ -371,10 +371,10 @@ export class Filters extends PureComponent {
               title="Localisation"
             />
           </Route>
-          <Route path="/recherche-offres/resultats/filtres">
+          <Route path="/recherche/resultats/filtres">
             <div className="sf-header-wrapper">
               <HeaderContainer
-                backTo={`/recherche-offres/resultats${search}`}
+                backTo={`/recherche/resultats${search}`}
                 closeTo={null}
                 reset={this.resetFilters}
                 title="Filtrer"

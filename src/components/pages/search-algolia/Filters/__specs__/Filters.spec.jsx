@@ -73,9 +73,9 @@ describe('components | Filters', () => {
 
   describe('render', () => {
     describe('localisation filter page', () => {
-      it('should render localisation filter page when on route /recherche-offres/filtres/localisation', () => {
+      it('should render localisation filter page when on route /recherche/filtres/localisation', () => {
         // given
-        props.history.location.pathname = '/recherche-offres/resultats/filtres/localisation'
+        props.history.location.pathname = '/recherche/resultats/filtres/localisation'
         props.history.location.search = '?mots-cles=librairie'
 
         // when
@@ -85,7 +85,7 @@ describe('components | Filters', () => {
         const criteria = wrapper.find(Criteria)
         expect(criteria).toHaveLength(1)
         expect(criteria.prop('backTo')).toStrictEqual(
-          '/recherche-offres/resultats/filtres?mots-cles=librairie'
+          '/recherche/resultats/filtres?mots-cles=librairie'
         )
         expect(criteria.prop('criteria')).toStrictEqual(GEOLOCATION_CRITERIA)
         expect(criteria.prop('history')).toStrictEqual(props.history)
@@ -96,7 +96,7 @@ describe('components | Filters', () => {
 
       it('should render a Criteria component with a "Partout" criterion when not searching around me', () => {
         // given
-        props.history.location.pathname = '/recherche-offres/resultats/filtres/localisation'
+        props.history.location.pathname = '/recherche/resultats/filtres/localisation'
         props.initialFilters.isSearchAroundMe = false
 
         // when
@@ -113,7 +113,7 @@ describe('components | Filters', () => {
           props.history = createBrowserHistory()
           jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
           })
-          props.history.location.pathname = '/recherche-offres/resultats/filtres/localisation'
+          props.history.location.pathname = '/recherche/resultats/filtres/localisation'
           props.isUserAllowedToSelectCriterion.mockReturnValue(true)
           props.query.parse.mockReturnValue({
             'autour-de-moi': 'non',
@@ -174,7 +174,7 @@ describe('components | Filters', () => {
           props.history = createBrowserHistory()
           jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
           })
-          props.history.location.pathname = '/recherche-offres/resultats/filtres/localisation'
+          props.history.location.pathname = '/recherche/resultats/filtres/localisation'
           props.initialFilters = {
             aroundRadius: 50,
             isSearchAroundMe: false,
@@ -244,7 +244,7 @@ describe('components | Filters', () => {
     describe('filters page', () => {
       it('should render a Header component with the right props', () => {
         // given
-        props.history.location.pathname = '/recherche-offres/filtres'
+        props.history.location.pathname = '/recherche/filtres'
         props.history.location.search = '?mots-cles=librairie'
 
         // when
@@ -254,7 +254,7 @@ describe('components | Filters', () => {
         const header = wrapper.find(HeaderContainer)
         expect(header).toHaveLength(1)
         expect(header.prop('backTo')).toStrictEqual(
-          '/recherche-offres/resultats?mots-cles=librairie'
+          '/recherche/resultats?mots-cles=librairie'
         )
         expect(header.prop('closeTo')).toBeNull()
         expect(header.prop('reset')).toStrictEqual(expect.any(Function))
@@ -263,7 +263,7 @@ describe('components | Filters', () => {
 
       it('should display the number of results on the display results button', () => {
         // given
-        props.history.location.pathname = '/recherche-offres/filtres'
+        props.history.location.pathname = '/recherche/filtres'
         props.offers.nbHits = 10
 
         // when
@@ -278,7 +278,7 @@ describe('components | Filters', () => {
 
       it('should display "999+" on the display results button when number of results exceeds 999', () => {
         // given
-        props.history.location.pathname = '/recherche-offres/filtres'
+        props.history.location.pathname = '/recherche/filtres'
         props.offers.nbHits = 1000
 
         // when
@@ -293,6 +293,7 @@ describe('components | Filters', () => {
 
       it('should filter offers when clicking on display results button', () => {
         // given
+        props.history.location.pathname = '/recherche/filtres'
         props.offers.nbHits = 1000
         const wrapper = shallow(<Filters {...props} />)
         const resultsButton = wrapper.find('.sf-button')
@@ -312,7 +313,7 @@ describe('components | Filters', () => {
         // given
         props.initialFilters.offerCategories = ['VISITE', 'CINEMA']
         const history = createBrowserHistory()
-        history.push('/recherche-offres/resultats/filtres')
+        history.push('/recherche/resultats/filtres')
         props.query.parse.mockReturnValue({
           'mots-cles': '',
         })
@@ -352,7 +353,7 @@ describe('components | Filters', () => {
 
       it('should redirect to results page with query param when clicking on display results button', () => {
         // given
-        props.history.location.pathname = '/recherche-offres/filtres'
+        props.history.location.pathname = '/recherche/filtres'
         props.history.location.search = '?mots-cles=librairie'
         const wrapper = shallow(<Filters {...props} />)
         const resultsButton = wrapper.find('.sf-button')
@@ -362,13 +363,13 @@ describe('components | Filters', () => {
 
         // then
         expect(props.history.push).toHaveBeenCalledWith(
-          '/recherche-offres/resultats?mots-cles=librairie'
+          '/recherche/resultats?mots-cles=librairie'
         )
       })
 
       it('should redirect to results page with no query param when clicking on display results button', () => {
         // given
-        props.history.location.pathname = '/recherche-offres/filtres'
+        props.history.location.pathname = '/recherche/filtres'
         const wrapper = shallow(<Filters {...props} />)
         const resultsButton = wrapper.find('.sf-button')
 
@@ -376,12 +377,12 @@ describe('components | Filters', () => {
         resultsButton.simulate('click')
 
         // then
-        expect(props.history.push).toHaveBeenCalledWith('/recherche-offres/resultats')
+        expect(props.history.push).toHaveBeenCalledWith('/recherche/resultats')
       })
 
       it('should update filters when clicking on display results button', () => {
         // given
-        props.history.location.pathname = '/recherche-offres/filtres'
+        props.history.location.pathname = '/recherche/filtres'
         const wrapper = shallow(<Filters {...props} />)
         const resultsButton = wrapper.find('.sf-button')
 
@@ -407,7 +408,7 @@ describe('components | Filters', () => {
 
       it('should not allow click on display results button when no results', async () => {
         // given
-        props.history.location.pathname = '/recherche-offres/filtres'
+        props.history.location.pathname = '/recherche/filtres'
         props.query.parse.mockReturnValue({
           'mots-cles': 'librairies',
         })
@@ -449,7 +450,7 @@ describe('components | Filters', () => {
       describe('geolocation filter', () => {
         it('should display a "Localisation" title for geolocation filter', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
 
           // when
           const wrapper = shallow(<Filters {...props} />)
@@ -461,7 +462,7 @@ describe('components | Filters', () => {
 
         it('should display a "Partout" for geolocation filter when initial filter is "Partout"', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.isSearchAroundMe = false
 
           // when
@@ -474,7 +475,7 @@ describe('components | Filters', () => {
 
         it('should display a "Autour de moi" for geolocation filter when initial filter is "Autour de moi"', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.isSearchAroundMe = true
 
           // when
@@ -487,7 +488,7 @@ describe('components | Filters', () => {
 
         it('should redirect to localisation filter page with given query params when clicking on geolocation filter button', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           props.history.location.search = '?mots-cles=librairie'
           props.initialFilters.isSearchAroundMe = true
           const wrapper = shallow(<Filters {...props} />)
@@ -498,13 +499,13 @@ describe('components | Filters', () => {
 
           // then
           expect(props.history.push).toHaveBeenCalledWith(
-            '/recherche-offres/resultats/filtres/localisation?mots-cles=librairie'
+            '/recherche/resultats/filtres/localisation?mots-cles=librairie'
           )
         })
 
         it('should redirect to localisation filter page with no query params when clicking on geolocation filter button', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.isSearchAroundMe = true
           const wrapper = shallow(<Filters {...props} />)
           const button = wrapper.findWhere(node => node.text() === 'Autour de moi').first()
@@ -514,7 +515,7 @@ describe('components | Filters', () => {
 
           // then
           expect(props.history.push).toHaveBeenCalledWith(
-            '/recherche-offres/resultats/filtres/localisation'
+            '/recherche/resultats/filtres/localisation'
           )
         })
       })
@@ -523,7 +524,7 @@ describe('components | Filters', () => {
         describe('when geolocation filter is "Partout"', () => {
           it('should not display a "Rayon" title', () => {
             // given
-            props.history.location.pathname = '/recherche-offres/filtres'
+            props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.isSearchAroundMe = false
 
             // when
@@ -536,7 +537,7 @@ describe('components | Filters', () => {
 
           it('should not display the kilometers radius value', () => {
             // given
-            props.history.location.pathname = '/recherche-offres/filtres'
+            props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.aroundRadius = 0
             props.initialFilters.isSearchAroundMe = false
 
@@ -550,7 +551,7 @@ describe('components | Filters', () => {
 
           it('should not render a Slider component', () => {
             // given
-            props.history.location.pathname = '/recherche-offres/filtres'
+            props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.isSearchAroundMe = false
 
             // when
@@ -567,7 +568,7 @@ describe('components | Filters', () => {
         describe.skip('when geolocation filter is "Autour de moi"', () => {
           it('should display a "Rayon" title', () => {
             // given
-            props.history.location.pathname = '/recherche-offres/filtres'
+            props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.isSearchAroundMe = true
 
             // when
@@ -580,7 +581,7 @@ describe('components | Filters', () => {
 
           it('should display the kilometers radius value', () => {
             // given
-            props.history.location.pathname = '/recherche-offres/filtres'
+            props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.aroundRadius = 50
             props.initialFilters.isSearchAroundMe = true
 
@@ -594,7 +595,7 @@ describe('components | Filters', () => {
 
           it('should render a Slider component', () => {
             // given
-            props.history.location.pathname = '/recherche-offres/filtres'
+            props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.aroundRadius = 20
             props.initialFilters.isSearchAroundMe = true
 
@@ -616,7 +617,7 @@ describe('components | Filters', () => {
       describe('offer type', () => {
         it('should display a "Type d\'offres" title for offer types filter', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
 
           // when
           const wrapper = shallow(<Filters {...props} />)
@@ -628,7 +629,7 @@ describe('components | Filters', () => {
 
         it('should render three FilterCheckbox components unchecked by default', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerTypes = {
             isDigital: false,
             isEvent: false,
@@ -665,7 +666,7 @@ describe('components | Filters', () => {
 
         it('should render three FilterCheckbox components checked when offer types are checked', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerTypes = {
             isDigital: true,
             isEvent: true,
@@ -689,7 +690,7 @@ describe('components | Filters', () => {
 
         it('should display the number of offer types selected when checked', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerTypes = {
             isDigital: true,
             isEvent: true,
@@ -708,7 +709,7 @@ describe('components | Filters', () => {
 
         it('should not display the number of offer types selected when not checked', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerTypes = {
             isDigital: false,
             isEvent: false,
@@ -727,7 +728,7 @@ describe('components | Filters', () => {
 
         it('should fetch offers when clicking on digital offer type', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           const wrapper = shallow(<Filters {...props} />)
           const digitalFilter = wrapper
             .find('[data-test="sf-offer-types-filter-wrapper"]')
@@ -778,7 +779,7 @@ describe('components | Filters', () => {
       describe('offer duo', () => {
         it('should display a "Uniquement les offres duo" title for offer duo filter', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
 
           // when
           const wrapper = shallow(<Filters {...props} />)
@@ -792,7 +793,7 @@ describe('components | Filters', () => {
 
         it('should render a FilterToggle component for offer duo unchecked by default', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerIsDuo = false
 
           // when
@@ -811,7 +812,7 @@ describe('components | Filters', () => {
 
         it('should fetch offers when clicking on offer duo', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           const wrapper = shallow(<Filters {...props} />)
           const offerIsDuoFilter = wrapper
             .find('[data-test="sf-offer-duo-wrapper-test"]')
@@ -859,7 +860,7 @@ describe('components | Filters', () => {
       describe('offer price', () => {
         it('should display a "Uniquement les offres gratuites" title for offer free filter', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
 
           // when
           const wrapper = shallow(<Filters {...props} />)
@@ -873,7 +874,7 @@ describe('components | Filters', () => {
 
         it('should render a FilterToggle component for offer free unchecked by default', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerIsFree = false
 
           // when
@@ -892,7 +893,7 @@ describe('components | Filters', () => {
 
         it('should fetch offers when clicking on offer free', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           const wrapper = shallow(<Filters {...props} />)
           const offerIsFreeFilter = wrapper
             .find('[data-test="sf-offer-free-wrapper-test"]')
@@ -939,7 +940,7 @@ describe('components | Filters', () => {
         describe('when free offers filter is off', () => {
           it('should display a "Prix" title', () => {
             // given
-            props.history.location.pathname = '/recherche-offres/filtres'
+            props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.offerIsFree = false
 
             // when
@@ -952,7 +953,7 @@ describe('components | Filters', () => {
 
           it('should display the price range value', () => {
             // given
-            props.history.location.pathname = '/recherche-offres/filtres'
+            props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.offerIsFree = false
             props.initialFilters.priceRange = [0, 45]
 
@@ -966,7 +967,7 @@ describe('components | Filters', () => {
 
           it('should render a Range slider component', () => {
             // given
-            props.history.location.pathname = '/recherche-offres/filtres'
+            props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.offerIsFree = false
             props.initialFilters.priceRange = [0, 45]
 
@@ -988,7 +989,7 @@ describe('components | Filters', () => {
         describe('when free offers filter is on', () => {
           it('should not display a "Prix" title', () => {
             // given
-            props.history.location.pathname = '/recherche-offres/filtres'
+            props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.offerIsFree = true
 
             // when
@@ -1001,7 +1002,7 @@ describe('components | Filters', () => {
 
           it('should not display the price range value', () => {
             // given
-            props.history.location.pathname = '/recherche-offres/filtres'
+            props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.offerIsFree = true
             props.initialFilters.priceRange = [5, 35]
 
@@ -1015,7 +1016,7 @@ describe('components | Filters', () => {
 
           it('should not render a Range slider component', () => {
             // given
-            props.history.location.pathname = '/recherche-offres/filtres'
+            props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.offerIsFree = true
 
             // when
@@ -1031,7 +1032,7 @@ describe('components | Filters', () => {
       describe('offer categories', () => {
         it('should display an accessible "Catégories" title button', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
 
           // when
           const wrapper = shallow(<Filters {...props} />)
@@ -1046,7 +1047,7 @@ describe('components | Filters', () => {
 
         it('should not render FilterCheckbox component when categories filter toggled hidden', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerCategories = []
           const wrapper = shallow(<Filters {...props} />)
           const categoriesButton = wrapper.findWhere(node => node.text() === 'Catégories').first()
@@ -1078,7 +1079,7 @@ describe('components | Filters', () => {
 
         it('should render one unchecked FilterCheckbox component for each Category Criteria when no category is selected', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerCategories = []
 
           // when
@@ -1116,7 +1117,7 @@ describe('components | Filters', () => {
 
         it('should not render FilterCheckbox component for "Toutes les catégories" Criteria', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerCategories = []
 
           // when
@@ -1131,7 +1132,7 @@ describe('components | Filters', () => {
 
         it('should render a FilterCheckbox component checked when category is selected', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerCategories = ['CINEMA', 'LIVRE']
 
           // when
@@ -1168,7 +1169,7 @@ describe('components | Filters', () => {
 
         it('should display the number of selected categories', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerCategories = ['CINEMA', 'LIVRE', 'VISITE']
 
           // when
@@ -1183,7 +1184,7 @@ describe('components | Filters', () => {
 
         it('should not display the number of offer types selected when no filter is selected', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerCategories = []
 
           // when
@@ -1198,7 +1199,7 @@ describe('components | Filters', () => {
 
         it('should transform array of categories received from props into an object in state', () => {
           // given
-          props.history.location.pathname = '/recherche-offres/filtres'
+          props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerCategories = ['CINEMA', 'VISITE']
 
           // when
@@ -1219,7 +1220,7 @@ describe('components | Filters', () => {
             props.history = createBrowserHistory()
             jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
             })
-            props.history.location.pathname = '/recherche-offres/resultats/filtres'
+            props.history.location.pathname = '/recherche/resultats/filtres'
             props.initialFilters = {
               aroundRadius: 0,
               isSearchAroundMe: true,
@@ -1287,7 +1288,7 @@ describe('components | Filters', () => {
             props.history = createBrowserHistory()
             jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
             })
-            props.history.location.pathname = '/recherche-offres/resultats/filtres'
+            props.history.location.pathname = '/recherche/resultats/filtres'
             props.initialFilters = {
               isSearchAroundMe: true,
               offerCategories: ['VISITE', 'CINEMA'],

@@ -10,7 +10,7 @@ export const mapStateToProps = (state, ownProps) => {
   const geolocation = selectUserGeolocation(state)
   const redirectToSearchMainPage = () => {
     const { history } = ownProps
-    history.push('/recherche-offres')
+    history.push('/recherche')
   }
 
   return {

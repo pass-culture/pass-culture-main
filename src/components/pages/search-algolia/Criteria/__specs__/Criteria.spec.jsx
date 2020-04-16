@@ -9,7 +9,7 @@ describe('components | Criteria', () => {
   beforeEach(() => {
     props = {
       activeCriterionLabel: 'Toutes les catégories',
-      backTo: '/recherche-offres',
+      backTo: '/recherche',
       criteria: CATEGORY_CRITERIA,
       history: {
         push: () => {},
@@ -34,8 +34,8 @@ describe('components | Criteria', () => {
     // Then
     const header = wrapper.find(Header)
     expect(header).toHaveLength(1)
-    expect(header.prop('backTo')).toStrictEqual('/recherche-offres')
-    expect(header.prop('closeTo')).toStrictEqual(null)
+    expect(header.prop('backTo')).toStrictEqual('/recherche')
+    expect(header.prop('closeTo')).toBeNull()
     expect(header.prop('history')).toStrictEqual(props.history)
     expect(header.prop('location')).toStrictEqual(props.history.location)
     expect(header.prop('match')).toStrictEqual(props.match)

@@ -33,7 +33,7 @@ describe('components | SearchAlgolia', () => {
 
   describe('routing', () => {
     describe('home page', () => {
-      it('should render home page when path is exactly /recherche-offres', () => {
+      it('should render home page when path is exactly /recherche', () => {
         // given
         const wrapper = shallow(<SearchAlgolia {...props} />)
 
@@ -41,7 +41,7 @@ describe('components | SearchAlgolia', () => {
         const routes = wrapper.find(Route)
 
         // then
-        expect(routes.at(0).prop('path')).toBe('/recherche-offres(/menu)?')
+        expect(routes.at(0).prop('path')).toBe('/recherche(/menu)?')
         expect(routes.at(0).prop('exact')).toBe(true)
         const home = routes.at(0).find(Home)
         expect(home).toHaveLength(1)
@@ -65,9 +65,9 @@ describe('components | SearchAlgolia', () => {
     })
 
     describe('results page', () => {
-      it('should render search results page when path is /recherche-offres/resultats', () => {
+      it('should render search results page when path is /recherche/resultats', () => {
         // given
-        props.history.location.pathname = 'recherche-offres/resultats'
+        props.history.location.pathname = 'recherche/resultats'
         const wrapper = shallow(<SearchAlgolia {...props} />)
 
         // when
@@ -75,7 +75,7 @@ describe('components | SearchAlgolia', () => {
 
         // then
         const resultatsRoute = routes.at(1)
-        expect(resultatsRoute.prop('path')).toBe('/recherche-offres/resultats')
+        expect(resultatsRoute.prop('path')).toBe('/recherche/resultats')
         const searchResultsComponent = resultatsRoute.find(SearchResults)
         expect(searchResultsComponent.prop('criteria')).toStrictEqual({
           categories: [],
@@ -92,9 +92,9 @@ describe('components | SearchAlgolia', () => {
         expect(searchResultsComponent.prop('search')).toStrictEqual(props.history.location.search)
       })
 
-      it('should render search results page with given category when path is /recherche-offres/resultats', () => {
+      it('should render search results page with given category when path is /recherche/resultats', () => {
         // given
-        props.history.location.pathname = 'recherche-offres/resultats'
+        props.history.location.pathname = 'recherche/resultats'
         const wrapper = shallow(<SearchAlgolia {...props} />)
         wrapper.setState({ categoryCriterion: CATEGORY_CRITERIA.CINEMA })
 
@@ -103,7 +103,7 @@ describe('components | SearchAlgolia', () => {
 
         // then
         const resultatsRoute = routes.at(1)
-        expect(resultatsRoute.prop('path')).toBe('/recherche-offres/resultats')
+        expect(resultatsRoute.prop('path')).toBe('/recherche/resultats')
         const searchResultsComponent = resultatsRoute.find(SearchResults)
         expect(searchResultsComponent.prop('criteria')).toStrictEqual({
           categories: ['CINEMA'],
@@ -114,9 +114,9 @@ describe('components | SearchAlgolia', () => {
     })
 
     describe('geolocation criteria page', () => {
-      it('should render geolocation criteria page when path is /recherche-offres/criteres-localisation', () => {
+      it('should render geolocation criteria page when path is /recherche/criteres-localisation', () => {
         // given
-        props.history.location.pathname = 'recherche-offres/criteres-localisation'
+        props.history.location.pathname = 'recherche/criteres-localisation'
         const wrapper = shallow(<SearchAlgolia {...props} />)
 
         // when
@@ -125,7 +125,7 @@ describe('components | SearchAlgolia', () => {
         // then
         const critereLocalisationRoute = routes.at(2)
         expect(critereLocalisationRoute.prop('path')).toBe(
-          '/recherche-offres/criteres-localisation'
+          '/recherche/criteres-localisation'
         )
         const searchCriteriaLocation = critereLocalisationRoute.find(Criteria)
         expect(searchCriteriaLocation.prop('activeCriterionLabel')).toStrictEqual('Partout')
@@ -140,9 +140,9 @@ describe('components | SearchAlgolia', () => {
     })
 
     describe('category criteria page', () => {
-      it('should render category criteria page when path is /recherche-offres/criteres-categorie', () => {
+      it('should render category criteria page when path is /recherche/criteres-categorie', () => {
         // given
-        props.history.location.pathname = '/recherche-offres/criteres-categorie'
+        props.history.location.pathname = '/recherche/criteres-categorie'
         const wrapper = shallow(<SearchAlgolia {...props} />)
 
         // when
@@ -150,7 +150,7 @@ describe('components | SearchAlgolia', () => {
 
         // then
         const critereCategorieRoute = routes.at(3)
-        expect(critereCategorieRoute.prop('path')).toBe('/recherche-offres/criteres-categorie')
+        expect(critereCategorieRoute.prop('path')).toBe('/recherche/criteres-categorie')
         const searchCriteriaCategory = critereCategorieRoute.find(Criteria)
         expect(searchCriteriaCategory.prop('activeCriterionLabel')).toStrictEqual(
           'Toutes les catégories'
@@ -166,9 +166,9 @@ describe('components | SearchAlgolia', () => {
     })
 
     describe('sort criteria page', () => {
-      it('should render sorting criteria page when path is /recherche-offres/criteres-tri', () => {
+      it('should render sorting criteria page when path is /recherche/criteres-tri', () => {
         // given
-        props.history.location.pathname = '/recherche-offres/criteres-tri'
+        props.history.location.pathname = '/recherche/criteres-tri'
         const wrapper = shallow(<SearchAlgolia {...props} />)
 
         // when
@@ -176,7 +176,7 @@ describe('components | SearchAlgolia', () => {
 
         // then
         const sortingCriteriaRoute = routes.at(4)
-        expect(sortingCriteriaRoute.prop('path')).toBe('/recherche-offres/criteres-tri')
+        expect(sortingCriteriaRoute.prop('path')).toBe('/recherche/criteres-tri')
         const sortingCriteria = sortingCriteriaRoute.find(Criteria)
         expect(sortingCriteria.prop('activeCriterionLabel')).toStrictEqual('Au hasard')
         expect(sortingCriteria.prop('criteria')).toStrictEqual(expect.any(Object))
@@ -226,7 +226,7 @@ describe('components | SearchAlgolia', () => {
     it('should select "Autour de moi" if geolocation is enabled', () => {
       // given
       props.isGeolocationEnabled = true
-      props.history.location.pathname = '/recherche-offres'
+      props.history.location.pathname = '/recherche'
       const wrapper = mount(
         <Router history={props.history}>
           <SearchAlgolia {...props} />
@@ -243,7 +243,7 @@ describe('components | SearchAlgolia', () => {
     it('should select "Partout" if geolocation is disabled', () => {
       // given
       props.isGeolocationEnabled = false
-      props.history.location.pathname = '/recherche-offres'
+      props.history.location.pathname = '/recherche'
       const wrapper = mount(
         <Router history={props.history}>
           <SearchAlgolia {...props} />
@@ -259,7 +259,7 @@ describe('components | SearchAlgolia', () => {
 
     it('should select "Toutes les catégories" by default', () => {
       // given
-      props.history.location.pathname = '/recherche-offres/criteres-categorie'
+      props.history.location.pathname = '/recherche/criteres-categorie'
       const wrapper = mount(
         <Router history={props.history}>
           <SearchAlgolia {...props} />

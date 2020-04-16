@@ -8,7 +8,7 @@ export const mapStateToProps = (state, ownProps) => {
   const redirectToSearchFiltersPage = () => {
     const { history } = ownProps
     const { location: { search = '' } } = history
-    history.push(`/recherche-offres/resultats/filtres${search}`)
+    history.push(`/recherche/resultats/filtres${search}`)
   }
 
   return {

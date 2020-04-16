@@ -35,7 +35,7 @@ describe('components | FiltersContainer', () => {
         mapStateToProps(state, props).redirectToSearchFiltersPage()
 
         // then
-        expect(push).toHaveBeenCalledWith('/recherche-offres/resultats/filtres?mots-cles=librairie')
+        expect(push).toHaveBeenCalledWith('/recherche/resultats/filtres?mots-cles=librairie')
       })
     })
   })

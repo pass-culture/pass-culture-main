@@ -50,7 +50,7 @@ describe('getMenuItemsFromRoutes', () => {
         component: SearchAlgoliaContainer,
         featureName: 'SEARCH_ALGOLIA',
         icon: 'ico-search',
-        path: '/recherche-offres',
+        path: '/recherche',
         title: 'Recherche',
       },
       {

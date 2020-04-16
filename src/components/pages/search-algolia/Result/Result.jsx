@@ -36,7 +36,7 @@ const Result = ({ result, geolocation, search }) => {
   return (
     <Link
       key={objectID}
-      to={`/recherche-offres/resultats/details/${offerId}${search}`}
+      to={`/recherche/resultats/details/${offerId}${search}`}
     >
       <div className="result-wrapper">
         <img

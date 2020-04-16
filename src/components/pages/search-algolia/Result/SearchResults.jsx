@@ -16,7 +16,7 @@ import { EmptySearchResult } from './EmptySearchResult'
 import SearchAlgoliaDetailsContainer from './ResultDetail/ResultDetailContainer'
 import { SearchResultsList } from './SearchResultsList'
 
-const SEARCH_RESULTS_URI = '/recherche-offres/resultats'
+const SEARCH_RESULTS_URI = '/recherche/resultats'
 
 class SearchResults extends PureComponent {
   constructor(props) {

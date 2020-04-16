@@ -37,7 +37,7 @@ describe('components | Home', () => {
     }
   })
 
-  it('should display magnifying glass icon when current route is /recherche-offres', () => {
+  it('should display magnifying glass icon when current route is /recherche', () => {
     // When
     const wrapper = shallow(<Home {...props} />)
 
@@ -50,7 +50,7 @@ describe('components | Home', () => {
   it('should display a close button redirecting to discovery when arriving on search page', () => {
     // Given
     const history = createBrowserHistory()
-    history.push('/recherche-offres')
+    history.push('/recherche')
     props.match = {
       params: {},
     }
@@ -72,7 +72,7 @@ describe('components | Home', () => {
   it('should clear text input when clicking on reset cross', async () => {
     // given
     const history = createMemoryHistory()
-    history.push('/recherche-offres')
+    history.push('/recherche')
     const wrapper = await mount(
       <Router history={history}>
         <Home {...props} />
@@ -123,7 +123,7 @@ describe('components | Home', () => {
 
     // then
     expect(props.history.push).toHaveBeenCalledWith({
-      pathname: '/recherche-offres/resultats',
+      pathname: '/recherche/resultats',
       search: '?mots-cles=search keyword&autour-de-moi=non&tri=_by_price&categories=CINEMA',
     })
   })
@@ -148,7 +148,7 @@ describe('components | Home', () => {
 
     // then
     expect(props.history.push).toHaveBeenCalledWith({
-      pathname: '/recherche-offres/resultats',
+      pathname: '/recherche/resultats',
       search: '?mots-cles=search keyword&autour-de-moi=oui&tri=&categories=',
     })
   })
@@ -162,15 +162,15 @@ describe('components | Home', () => {
     expect(criterionItems).toHaveLength(3)
     expect(criterionItems.at(0).prop('icon')).toBe('ico-gem-stone')
     expect(criterionItems.at(0).prop('label')).toBe('Je cherche')
-    expect(criterionItems.at(0).prop('linkTo')).toBe('/recherche-offres/criteres-categorie')
+    expect(criterionItems.at(0).prop('linkTo')).toBe('/recherche/criteres-categorie')
     expect(criterionItems.at(0).prop('selectedFilter')).toBe('Toutes les catégories')
     expect(criterionItems.at(1).prop('icon')).toBe('ico-globe')
     expect(criterionItems.at(1).prop('label')).toBe('Où')
-    expect(criterionItems.at(1).prop('linkTo')).toBe('/recherche-offres/criteres-localisation')
+    expect(criterionItems.at(1).prop('linkTo')).toBe('/recherche/criteres-localisation')
     expect(criterionItems.at(1).prop('selectedFilter')).toBe('Partout')
     expect(criterionItems.at(2).prop('icon')).toBe('ico-random')
     expect(criterionItems.at(2).prop('label')).toBe('Trier par')
-    expect(criterionItems.at(2).prop('linkTo')).toBe('/recherche-offres/criteres-tri')
+    expect(criterionItems.at(2).prop('linkTo')).toBe('/recherche/criteres-tri')
     expect(criterionItems.at(2).prop('selectedFilter')).toBe('Au hasard')
   })
 })

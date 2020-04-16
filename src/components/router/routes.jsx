@@ -115,7 +115,7 @@ const routes = [
     featureName: 'SEARCH_ALGOLIA',
     icon: 'ico-search',
     path:
-      '/recherche-offres' +
+      '/recherche' +
       '/(resultats|criteres-localisation|criteres-categorie|criteres-tri)?' +
       '/(filtres|tri)?' +
       '/(localisation)?' +

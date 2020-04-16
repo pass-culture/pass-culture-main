@@ -24,7 +24,7 @@ export class Home extends PureComponent {
     const tri = sortCriterion.index
 
     history.push({
-      pathname: '/recherche-offres/resultats',
+      pathname: '/recherche/resultats',
       search: `?mots-cles=${keywordsToSearch}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${categories}`,
     })
   }
@@ -94,21 +94,21 @@ export class Home extends PureComponent {
           <CriterionItem
             icon={categoryCriterion.icon}
             label="Je cherche"
-            linkTo="/recherche-offres/criteres-categorie"
+            linkTo="/recherche/criteres-categorie"
             selectedFilter={categoryCriterion.label}
           />
           <span className="sh-criteria-separator" />
           <CriterionItem
             icon={geolocationCriterion.params.icon}
             label="Où"
-            linkTo="/recherche-offres/criteres-localisation"
+            linkTo="/recherche/criteres-localisation"
             selectedFilter={geolocationCriterion.params.label}
           />
           <span className="sh-criteria-separator" />
           <CriterionItem
             icon={sortCriterion.icon}
             label="Trier par"
-            linkTo="/recherche-offres/criteres-tri"
+            linkTo="/recherche/criteres-tri"
             selectedFilter={sortCriterion.label}
           />
         </ul>

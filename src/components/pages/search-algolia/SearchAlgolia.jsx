@@ -89,7 +89,7 @@ class SearchAlgolia extends PureComponent {
       <Switch>
         <Route
           exact
-          path="/recherche-offres(/menu)?"
+          path="/recherche(/menu)?"
         >
           <Home
             categoryCriterion={categoryCriterion}
@@ -98,7 +98,7 @@ class SearchAlgolia extends PureComponent {
             sortCriterion={sortCriterion}
           />
         </Route>
-        <Route path="/recherche-offres/resultats">
+        <Route path="/recherche/resultats">
           <SearchResults
             criteria={{
               categories: categoryCriterion.facetFilter ? [categoryCriterion.facetFilter] : [],
@@ -113,10 +113,10 @@ class SearchAlgolia extends PureComponent {
             search={history.location.search}
           />
         </Route>
-        <Route path="/recherche-offres/criteres-localisation">
+        <Route path="/recherche/criteres-localisation">
           <Criteria
             activeCriterionLabel={geolocationCriterion.params.label}
-            backTo="/recherche-offres"
+            backTo="/recherche"
             criteria={GEOLOCATION_CRITERIA}
             history={history}
             match={match}
@@ -124,10 +124,10 @@ class SearchAlgolia extends PureComponent {
             title="Localisation"
           />
         </Route>
-        <Route path="/recherche-offres/criteres-categorie">
+        <Route path="/recherche/criteres-categorie">
           <Criteria
             activeCriterionLabel={categoryCriterion.label}
-            backTo="/recherche-offres"
+            backTo="/recherche"
             criteria={CATEGORY_CRITERIA}
             history={history}
             match={match}
@@ -135,10 +135,10 @@ class SearchAlgolia extends PureComponent {
             title="Catégories"
           />
         </Route>
-        <Route path="/recherche-offres/criteres-tri">
+        <Route path="/recherche/criteres-tri">
           <Criteria
             activeCriterionLabel={sortCriterion.label}
-            backTo="/recherche-offres"
+            backTo="/recherche"
             criteria={SORT_CRITERIA}
             history={history}
             match={match}

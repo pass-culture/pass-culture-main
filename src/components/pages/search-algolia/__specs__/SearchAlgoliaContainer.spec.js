@@ -35,6 +35,6 @@ describe('mapStateToProps', () => {
     mapStateToProps({}, props).redirectToSearchMainPage()
 
     // then
-    expect(push).toHaveBeenCalledWith('/recherche-offres')
+    expect(push).toHaveBeenCalledWith('/recherche')
   })
 })

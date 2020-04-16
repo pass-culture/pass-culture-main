@@ -62,7 +62,7 @@ describe('src | components | booking | utils | handleRedirect', () => {
     it('should redirect to booking detail on previous search view', () => {
       // given
       const match = {
-        url: '/recherche-offres/details/AUVQ/reservation',
+        url: '/recherche/details/AUVQ/reservation',
         params: {
           bookingId: undefined,
         },
@@ -75,7 +75,7 @@ describe('src | components | booking | utils | handleRedirect', () => {
       const result = handleRedirect(match, location)
 
       // then
-      expect(result).toBe('/recherche-offres/details/AUVQ?mots-cles="librairie"&page=3')
+      expect(result).toBe('/recherche/details/AUVQ?mots-cles="librairie"&page=3')
     })
   })
 })

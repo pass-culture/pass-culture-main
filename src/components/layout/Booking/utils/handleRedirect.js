@@ -4,7 +4,7 @@ const handleRedirect = (match, location) => {
   const { bookingId } = params
   let nextUrl
 
-  if (url.includes('recherche-offres')) {
+  if (url.includes('recherche')) {
     nextUrl = url.replace('/reservation', '') + search
   } else if (url.includes('reservations')) {
     nextUrl = `/reservations/details/${bookingId}`
