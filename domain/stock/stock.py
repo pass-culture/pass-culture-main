@@ -7,7 +7,7 @@ from models import Offer, Booking
 class Stock(object):
     def __init__(self,
                  identifier: int,
-                 quantity: int,
+                 quantity: Optional[int],
                  offer: Offer,
                  price: int,
                  beginning_datetime: Optional[datetime] = None,
