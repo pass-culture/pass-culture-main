@@ -146,19 +146,20 @@ class Patch:
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             booking = create_booking(user=user, stock=stock)
             booking_cancelled = create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
-            repository.save(booking, booking_cancelled, admin)
+            booking_used = create_booking(user=user, stock=stock, venue=venue, is_used=True)
+            repository.save(booking, booking_used, booking_cancelled, admin)
             mocked_check_have_beginning_date_been_modified.return_value = True
             serialized_date = serialize(stock.beginningDatetime + timedelta(days=1))
 
-
-        # When
+            # When
             request_update = TestClient(app.test_client()).with_auth(admin.email) \
                 .patch('/stocks/' + humanize(stock.id), json={'beginningDatetime': serialized_date})
 
             # Then
             assert request_update.status_code == 200
             mocked_check_have_beginning_date_been_modified.assert_called_once()
-            mocked_send_batch_stock_postponement_emails_to_users.assert_called_once_with([booking], email_function)
+            mocked_send_batch_stock_postponement_emails_to_users.assert_called_once_with([booking, booking_used],
+                                                                                         email_function)
 
         @patch('routes.stocks.have_beginning_date_been_modified')
         @patch('routes.stocks.send_batch_stock_postponement_emails_to_users')
