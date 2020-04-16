@@ -25,7 +25,7 @@ describe('src | components | pages | Offerer | BankInformation ', () => {
     expect(wrapper).toMatchSnapshot()
   })
 
-  it('should render instruction block information are not provided', () => {
+  it('should render instruction block when bancking information are not provided', () => {
     // Given
     const offererWithoutBI = new Offerer({
       id: 'AA',
@@ -49,7 +49,7 @@ describe('src | components | pages | Offerer | BankInformation ', () => {
     )
   })
 
-  it('should not render instruction block information are provided', () => {
+  it('should not render instruction block when BIC and IBAN are provided', () => {
     // when
     const wrapper = shallow(<BankInformation {...props} />)
 

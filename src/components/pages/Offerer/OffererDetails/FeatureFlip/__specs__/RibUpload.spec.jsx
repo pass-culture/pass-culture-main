@@ -41,7 +41,7 @@ describe('src | components | pages | Offerer', () => {
       expect(child).toHaveLength(0)
     })
 
-    it('should render legacy component when feature flip is false in the store', () => {
+    it('should render legacy component when feature flip is deactivated', () => {
       // given
       const store = mockStore({
         data: {
