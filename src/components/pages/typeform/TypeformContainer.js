@@ -1,18 +1,11 @@
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { requestData } from 'redux-thunk-data'
-import { selectCurrentUser } from '../../../redux/selectors/data/usersSelectors'
 
 import Typeform from './Typeform'
 import { withRouter } from 'react-router-dom'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 import moment from 'moment'
-
-export const mapStateToProps = state => {
-  const currentUser = selectCurrentUser(state)
-  const { needsToFillCulturalSurvey } = currentUser || {}
-  return { needsToFillCulturalSurvey }
-}
 
 export const mapDispatchToProps = dispatch => ({
   flagUserHasFilledTypeform: (id, handleRequestSuccess) => {
@@ -40,7 +33,7 @@ export default compose(
   withRequiredLogin,
   withRouter,
   connect(
-    mapStateToProps,
+    null,
     mapDispatchToProps
   )
 )(Typeform)

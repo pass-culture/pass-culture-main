@@ -21,11 +21,7 @@ class Typeform extends PureComponent {
   }
 
   componentDidMount() {
-    const { needsToFillCulturalSurvey } = this.props
-
-    if (needsToFillCulturalSurvey) {
-      this.displayEmbededTypeform()
-    }
+    this.displayEmbededTypeform()
   }
 
   displayEmbededTypeform() {
@@ -57,14 +53,9 @@ class Typeform extends PureComponent {
   }
 }
 
-Typeform.defaultProps = {
-  needsToFillCulturalSurvey: true,
-}
-
 Typeform.propTypes = {
   flagUserHasFilledTypeform: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
-  needsToFillCulturalSurvey: PropTypes.bool,
 }
 
 export default Typeform

@@ -1,5 +1,5 @@
 import React from 'react'
-import { shallow, mount } from 'enzyme'
+import { mount } from 'enzyme'
 import { createBrowserHistory } from 'history'
 
 import Typeform from '../Typeform'
@@ -18,17 +18,15 @@ describe('src | components | pages | typeform | Typeform', () => {
         flagUserHasFilledTypeform: (id, handleSuccess) => {
           handleSuccess()
         },
-        needsToFillCulturalSurvey: false,
       }
 
-      const wrapper = shallow(<Typeform {...props} />)
-      const historyPush = jest.spyOn(props.history, 'push')
+      const wrapper = mount(<Typeform {...props} />)
 
       // when
       wrapper.instance().onSubmitTypeForm()
 
       // then
-      expect(historyPush).toHaveBeenCalledWith('/bienvenue')
+      expect(props.history.push).toHaveBeenCalledWith('/bienvenue')
     })
   })
 
@@ -36,8 +34,10 @@ describe('src | components | pages | typeform | Typeform', () => {
     it('should display typeform when user has not filled the cultural survey', () => {
       // given
       const props = {
+        history: {
+          push: jest.fn(),
+        },
         flagUserHasFilledTypeform: jest.fn(),
-        needsToFillCulturalSurvey: true,
       }
 
       // when

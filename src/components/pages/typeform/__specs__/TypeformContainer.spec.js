@@ -1,4 +1,4 @@
-import { mapDispatchToProps, mapStateToProps } from '../TypeformContainer'
+import { mapDispatchToProps } from '../TypeformContainer'
 
 jest.mock('redux-thunk-data', () => {
   const { requestData } = jest.requireActual('fetch-normalize-data')
@@ -8,43 +8,6 @@ jest.mock('redux-thunk-data', () => {
 })
 
 describe('src | components |pages | typeform | TypeformContainer', () => {
-  describe('mapStateToProps', () => {
-    it('should return empty object when current user is not defined', () => {
-      // given
-      const state = { data: { users: [] } }
-
-      // when
-      const result = mapStateToProps(state)
-
-      // then
-      expect(result).toStrictEqual({
-        needsToFillCulturalSurvey: undefined,
-      })
-    })
-
-    it('should return an url with search parameters: currentUser.id', () => {
-      // given
-      const state = {
-        data: {
-          users: [
-            {
-              needsToFillCulturalSurvey: true,
-            },
-          ],
-        },
-      }
-
-      // when
-      const result = mapStateToProps(state)
-
-      // then
-      const expected = {
-        needsToFillCulturalSurvey: true,
-      }
-      expect(result).toStrictEqual(expected)
-    })
-  })
-
   describe('mapDispatchToProps', () => {
     let dispatch
     let functions
