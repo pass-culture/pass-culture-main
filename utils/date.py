@@ -1,14 +1,12 @@
 from datetime import datetime, time
-from math import floor
 
-from babel.dates import format_datetime as babel_format_datetime, format_date
+from babel.dates import format_date
+from babel.dates import format_datetime as babel_format_datetime
 from dateutil import tz
 
-from utils.string_processing import parse_timedelta
-
-today = datetime.combine(datetime.utcnow(), time(hour=20))
+TODAY = datetime.combine(datetime.utcnow(), time(hour=20))
 DATE_ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-
+DEFAULT_STORED_TIMEZONE = 'UTC'
 ENGLISH_TO_FRENCH_MONTH = {
     "January": "Janvier",
     "February": "Février",
@@ -25,7 +23,7 @@ ENGLISH_TO_FRENCH_MONTH = {
 }
 
 
-def english_to_french_month(year, month_number, day=1):
+def english_to_french_month(year: int, month_number: int, day: int = 1) -> str:
     english_month = datetime(year, month_number, day).strftime("%B")
     return ENGLISH_TO_FRENCH_MONTH[english_month]
 
@@ -38,17 +36,11 @@ class DateTimes:
         return self.datetimes == other.datetimes
 
 
-def read_json_date(date):
-    if '.' not in date:
-        date = date + '.0'
-    return datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f")
-
-
-def strftime(date):
+def strftime(date) -> str:
     return date.strftime(DATE_ISO_FORMAT)
 
 
-def match_format(value: str, format: str):
+def match_format(value: str, format: str) -> str:
     try:
         datetime.strptime(value, format)
     except ValueError:
@@ -57,47 +49,37 @@ def match_format(value: str, format: str):
         return True
 
 
-def format_datetime(dt):
-    return babel_format_datetime(dt,
+def format_datetime(date_time: datetime) -> str:
+    return babel_format_datetime(date_time,
                                  format='long',
                                  locale='fr')[:-9]
 
 
-def format_duration(dr):
-    return floor(parse_timedelta(dr).total_seconds() / 60)
-
-
 def get_department_timezone(departement_code: str) -> str:
     assert isinstance(departement_code, str)
+
     if departement_code == '973':
         return 'America/Cayenne'
-    elif departement_code == '974':
+    if departement_code == '974':
         return 'Indian/Reunion'
-    else:
-        return 'Europe/Paris'
+
+    return 'Europe/Paris'
 
 
-def utc_datetime_to_dept_timezone(datetimeObj, departementCode):
-    from_zone = tz.gettz('UTC')
-    to_zone = tz.gettz(get_department_timezone(departementCode))
-    utc_datetime = datetimeObj.replace(tzinfo=from_zone)
+def utc_datetime_to_department_timezone(date_time: datetime, departement_code: str) -> str:
+    from_zone = tz.gettz(DEFAULT_STORED_TIMEZONE)
+    to_zone = tz.gettz(get_department_timezone(departement_code))
+    utc_datetime = date_time.replace(tzinfo=from_zone)
     return utc_datetime.astimezone(to_zone)
 
 
-def dept_timezone_datetime_to_utc(datetimeObj, departementCode):
-    from_zone = tz.gettz(get_department_timezone(departementCode))
-    to_zone = tz.gettz('UTC')
-    dept_datetime = datetimeObj.replace(tzinfo=from_zone)
-    return dept_datetime.astimezone(to_zone)
-
-
-def format_into_ISO_8601(value):
+def format_into_ISO_8601(value: str) -> str:
     return value.isoformat() + "Z"
 
 
-def get_date_formatted_for_email(date_time):
+def get_date_formatted_for_email(date_time: datetime) -> str:
     return format_date(date_time, format='d MMMM', locale='fr')
 
 
-def get_time_formatted_for_email(date_time):
+def get_time_formatted_for_email(date_time: datetime) -> str:
     return date_time.strftime('%Hh%M')

@@ -15,7 +15,7 @@ from repository import email_queries
 from repository.feature_queries import feature_send_mail_to_users_enabled
 from utils import logger
 from utils.config import API_URL, PRO_URL, ENV, IS_PROD
-from utils.date import format_datetime, utc_datetime_to_dept_timezone
+from utils.date import format_datetime, utc_datetime_to_department_timezone
 from utils.human_ids import humanize
 
 MAILJET_API_KEY = os.environ.get('MAILJET_API_KEY')
@@ -453,8 +453,8 @@ def _generate_reservation_email_html_subject(booking: Booking) -> (str, str):
 def get_event_datetime(stock: Stock) -> datetime:
     if stock.offer.venue.departementCode is not None:
         date_in_utc = stock.beginningDatetime
-        date_in_tz = utc_datetime_to_dept_timezone(date_in_utc,
-                                                   stock.offer.venue.departementCode)
+        date_in_tz = utc_datetime_to_department_timezone(date_in_utc,
+                                                         stock.offer.venue.departementCode)
     else:
         date_in_tz = stock.beginningDatetime
 

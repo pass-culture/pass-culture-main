@@ -38,7 +38,7 @@ Dans `Vars`, on peut y mettre :
 - `get_date_formatted_for_email()` ;
 - `get_time_formatted_for_email()` ;
 - `humanize()` ;
-- `utc_datetime_to_dept_timezone()`.
+- `utc_datetime_to_department_timezone()`.
 
 ## Constantes utiles
 

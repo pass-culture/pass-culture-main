@@ -2,13 +2,13 @@ from datetime import timedelta
 
 from sandboxes.scripts.utils.select import remove_every
 from tests.model_creators.specific_creators import create_event_occurrence
-from utils.date import strftime, today
+from utils.date import strftime, TODAY
 from utils.logger import logger
 
 EVENT_OCCURRENCE_BEGINNING_DATETIMES = [
-    today,
-    today + timedelta(days=2),
-    today + timedelta(days=15)
+    TODAY,
+    TODAY + timedelta(days=2),
+    TODAY + timedelta(days=15)
 ]
 
 EVENT_OFFERS_WITH_OCCURRENCES_REMOVE_MODULO = 3

@@ -3,7 +3,7 @@ from typing import Dict
 from models import Booking
 from models.offer_type import ProductType
 from repository.feature_queries import feature_send_mail_to_users_enabled
-from utils.date import get_date_formatted_for_email, get_time_formatted_for_email, utc_datetime_to_dept_timezone
+from utils.date import get_date_formatted_for_email, get_time_formatted_for_email, utc_datetime_to_department_timezone
 from utils.human_ids import humanize
 from utils.mailing import DEV_EMAIL_ADDRESS, SUPPORT_EMAIL_ADDRESS, format_environment_for_email
 
@@ -19,7 +19,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     is_event = ProductType.is_event(name=offer.type)
 
     department_code = venue.departementCode if not is_digital_offer else beneficiary.departementCode
-    booking_date_in_tz = utc_datetime_to_dept_timezone(booking.dateCreated, department_code)
+    booking_date_in_tz = utc_datetime_to_department_timezone(booking.dateCreated, department_code)
 
     beneficiary_email = beneficiary.email if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS
     beneficiary_first_name = beneficiary.firstName
@@ -45,7 +45,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     mediation_id = humanize(offer.activeMediation.id) if offer.activeMediation else 'vide'
     environment = format_environment_for_email()
     if is_event:
-        event_beginning_date_in_tz = utc_datetime_to_dept_timezone(stock.beginningDatetime, department_code)
+        event_beginning_date_in_tz = utc_datetime_to_department_timezone(stock.beginningDatetime, department_code)
         formatted_event_beginning_time = get_time_formatted_for_email(event_beginning_date_in_tz)
         formatted_event_beginning_date = get_date_formatted_for_email(event_beginning_date_in_tz)
 

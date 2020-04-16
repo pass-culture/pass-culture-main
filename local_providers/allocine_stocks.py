@@ -1,20 +1,21 @@
 import os
 import re
 from datetime import datetime, timedelta
-from typing import List, Optional, Dict, Union
+from typing import Dict, List, Optional, Union
 
 from dateutil import tz
 from dateutil.parser import parse
 from sqlalchemy import Sequence
 
-from domain.allocine import get_movies_showtimes, get_movie_poster
+from domain.allocine import get_movie_poster, get_movies_showtimes
 from local_providers.local_provider import LocalProvider
 from local_providers.price_rule import AllocineStocksPriceRule
 from local_providers.providable_info import ProvidableInfo
-from models import Offer, Product, EventType, Stock, Venue, AllocineVenueProvider
+from models import AllocineVenueProvider, EventType, Offer, Product, Stock, \
+    Venue
 from models.db import Model, db
 from models.local_provider_event import LocalProviderEventType
-from utils.date import get_department_timezone
+from utils.date import DEFAULT_STORED_TIMEZONE, get_department_timezone
 
 DIGITAL_PROJECTION = 'DIGITAL'
 DUBBED_VERSION = 'DUBBED'
@@ -243,7 +244,7 @@ def _find_showtime_by_showtime_uuid(showtimes: List[Dict], showtime_uuid: str) -
 
 def _format_date_from_local_timezone_to_utc(date: datetime, local_tz: str) -> datetime:
     from_zone = tz.gettz(local_tz)
-    to_zone = tz.gettz('UTC')
+    to_zone = tz.gettz(DEFAULT_STORED_TIMEZONE)
     date_in_tz = date.replace(tzinfo=from_zone)
     return date_in_tz.astimezone(to_zone)
 
