@@ -1,9 +1,10 @@
 from datetime import datetime
+from typing import Optional
 
 from models import BankInformation
 
 
-def get_last_update_from_bank_information(last_provider_id=None):
+def get_last_update_from_bank_information(last_provider_id: Optional[int] = None) -> datetime:
     last_bank_information_retrieved = BankInformation.query.filter_by(lastProviderId=last_provider_id).order_by(
         BankInformation.dateModifiedAtLastProvider.desc()).first()
     if last_bank_information_retrieved:
