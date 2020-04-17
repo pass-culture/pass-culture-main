@@ -4,7 +4,6 @@ from flask import current_app as app, jsonify, request
 from flask_login import login_required, current_user
 
 from connectors import redis
-from domain.admin_emails import send_venue_validation_email
 from domain.iris import link_valid_venue_to_irises
 from domain.offers import update_is_active_status
 from domain.venues import is_algolia_indexing
@@ -17,7 +16,6 @@ from repository.venue_queries import find_by_managing_user
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES, VENUE_INCLUDES
-from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, \
     expect_json_data, \
     load_or_404
@@ -46,19 +44,9 @@ def create_venue():
     validate_coordinates(request.json.get('latitude', None), request.json.get('longitude', None))
     venue = Venue(from_dict=request.json)
     venue.departementCode = 'XX'  # avoid triggerring check on this
-    siret = request.json.get('siret')
-    if not siret:
-        venue.generate_validation_token()
-
     repository.save(venue)
 
     link_valid_venue_to_irises(venue)
-
-    if not venue.isValidated:
-        try:
-            send_venue_validation_email(venue, send_raw_email)
-        except MailServiceException as e:
-            app.logger.error('Mail service failure', e)
 
     return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 201
 

@@ -1,8 +1,8 @@
 from typing import Dict, List, Callable
 
-from models import Offer, User, Offerer, UserOfferer, Venue
+from models import Offer, User, Offerer, UserOfferer
 from utils.mailing import make_validation_email_object, make_payment_message_email, \
-    make_venue_to_validate_email, compute_email_html_part_and_recipients, make_payment_details_email, \
+    compute_email_html_part_and_recipients, make_payment_details_email, \
     make_payments_report_email, make_wallet_balances_email, make_offer_creation_notification_email, \
     make_activation_users_email, \
     ADMINISTRATION_EMAIL_ADDRESS
@@ -47,13 +47,6 @@ def send_users_activation_report(csv_attachment: str, recipients: List[str],
 def send_payments_report_emails(not_processable_payments_csv: str, error_payments_csv: str, grouped_payments: Dict,
                                 recipients: List[str], send_email: Callable[[dict], bool]) -> bool:
     email = make_payments_report_email(not_processable_payments_csv, error_payments_csv, grouped_payments)
-    email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
-    return send_email(data=email)
-
-
-def send_venue_validation_email(venue: Venue, send_email: Callable[[dict], bool]) -> bool:
-    email = make_venue_to_validate_email(venue)
-    recipients = [ADMINISTRATION_EMAIL_ADDRESS]
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)
     return send_email(data=email)
 

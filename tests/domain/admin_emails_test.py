@@ -1,7 +1,7 @@
 from unittest.mock import Mock, patch, MagicMock
 
-from domain.admin_emails import maybe_send_offerer_validation_email, send_venue_validation_email, \
-    send_payment_details_email, send_wallet_balances_email, send_payments_report_emails, \
+from domain.admin_emails import maybe_send_offerer_validation_email, send_payment_details_email, \
+    send_wallet_balances_email, send_payments_report_emails, \
     send_offer_creation_notification_to_administration, send_payment_message_email
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
 from tests.model_creators.specific_creators import create_offer_with_thing_product
@@ -101,52 +101,6 @@ def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validate
 
     # Then
     assert not mocked_send_email.called
-
-
-@patch('domain.admin_emails.ADMINISTRATION_EMAIL_ADDRESS', 'administration@example.com')
-def test_send_venue_validation_email_when_mailjet_status_code_200_sends_email_to_pass_culture(app):
-    # Given
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-
-    mocked_send_email = Mock()
-    return_value = Mock()
-    return_value.status_code = 200
-    mocked_send_email.return_value = return_value
-
-    # When
-    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True):
-        send_venue_validation_email(venue, mocked_send_email)
-
-    # Then
-    mocked_send_email.assert_called_once()
-    args = mocked_send_email.call_args
-    email = args[1]['data']
-    assert email['To'] == 'administration@example.com'
-    assert 'This is a test' not in email['Html-part']
-
-
-@patch('utils.mailing.DEV_EMAIL_ADDRESS', 'dev@example.com')
-def test_send_venue_validation_email_has_pass_culture_dev_as_recipient_when_send_email_disabled(app):
-    # Given
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-
-    mocked_send_email = Mock()
-    return_value = Mock()
-    return_value.status_code = 200
-    mocked_send_email.return_value = return_value
-
-    # When
-    with patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=False):
-        send_venue_validation_email(venue, mocked_send_email)
-
-    # Then
-    mocked_send_email.assert_called_once()
-    args = mocked_send_email.call_args
-    email = args[1]['data']
-    assert email['To'] == 'dev@example.com'
-    assert 'This is a test' in email['Html-part']
 
 
 def test_send_payment_details_email_when_mailjet_status_code_200_sends_email_to_pass_culture(app):
