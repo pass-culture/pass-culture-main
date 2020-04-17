@@ -20,7 +20,7 @@ def is_already_imported(application_id: int) -> bool:
 
 def save_beneficiary_import_with_status(status: ImportStatus,
                                         demarche_simplifiee_application_id: int,
-                                        demarche_simplifiee_procedure_id: Optional[int],
+                                        demarche_simplifiee_procedure_id: int,
                                         user: User = None,
                                         detail: str = None):
     existing_beneficiary_import = BeneficiaryImport.query \

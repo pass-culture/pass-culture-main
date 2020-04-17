@@ -119,7 +119,8 @@ class SaveBeneficiaryImportWithStatusTest:
     @clean_database
     def test_a_status_is_set_on_a_new_import(self, app):
         # when
-        save_beneficiary_import_with_status(ImportStatus.DUPLICATE, 123, None, user=None)
+        save_beneficiary_import_with_status(ImportStatus.DUPLICATE, 123, demarche_simplifiee_procedure_id=14562,
+                                            user=None)
 
         # then
         beneficiary_import = BeneficiaryImport.query.filter_by(demarcheSimplifieeApplicationId=123).first()
@@ -139,11 +140,13 @@ class SaveBeneficiaryImportWithStatusTest:
         # given
         two_days_ago = datetime.utcnow() - timedelta(days=2)
         with freeze_time(two_days_ago):
-            save_beneficiary_import_with_status(ImportStatus.DUPLICATE, 123, None, user=None)
+            save_beneficiary_import_with_status(ImportStatus.DUPLICATE, 123, demarche_simplifiee_procedure_id=14562,
+                                                user=None)
         beneficiary = create_user()
 
         # when
-        save_beneficiary_import_with_status(ImportStatus.CREATED, 123, None, user=beneficiary)
+        save_beneficiary_import_with_status(ImportStatus.CREATED, 123, demarche_simplifiee_procedure_id=14562,
+                                            user=beneficiary)
 
         # then
         beneficiary_imports = BeneficiaryImport.query.filter_by(demarcheSimplifieeApplicationId=123).all()
@@ -157,10 +160,12 @@ class SaveBeneficiaryImportWithStatusTest:
         two_days_ago = datetime.utcnow() - timedelta(days=2)
         beneficiary = create_user()
         with freeze_time(two_days_ago):
-            save_beneficiary_import_with_status(ImportStatus.CREATED, 123, None, user=beneficiary)
+            save_beneficiary_import_with_status(ImportStatus.CREATED, 123, demarche_simplifiee_procedure_id=14562,
+                                                user=beneficiary)
 
         # When
-        save_beneficiary_import_with_status(ImportStatus.REJECTED, 123, None, user=None)
+        save_beneficiary_import_with_status(ImportStatus.REJECTED, 123, demarche_simplifiee_procedure_id=14562,
+                                            user=None)
 
         # Then
         beneficiary_imports = BeneficiaryImport.query.filter_by(demarcheSimplifieeApplicationId=123).first()
