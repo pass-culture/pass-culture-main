@@ -207,17 +207,6 @@ def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> Dict
     }
 
 
-def make_venue_to_validate_email(venue: Venue) -> Dict:
-    html = render_template(
-        'mails/venue_validation_email.html', venue=venue, api_url=API_URL)
-    return {
-        'FromEmail': SUPPORT_EMAIL_ADDRESS,
-        'FromName': 'pass Culture',
-        'Subject': '{} - rattachement de lieu pro à valider : {}'.format(venue.departementCode, venue.name),
-        'Html-part': html
-    }
-
-
 def make_user_validation_email(user: User, app_origin_url: str, is_webapp: bool) -> Dict:
     if is_webapp:
         data = make_webapp_user_validation_email(user, app_origin_url)

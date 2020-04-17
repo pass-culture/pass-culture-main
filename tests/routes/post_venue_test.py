@@ -44,37 +44,6 @@ class Post:
             assert venue.isValidated
 
         @clean_database
-        def when_user_has_rights_on_managing_offerer_does_not_have_siret_and_has_comment(self, app):
-            # Given
-            offerer = create_offerer()
-            user = create_user()
-            user_offerer = create_user_offerer(user, offerer, is_admin=True)
-            repository.save(user_offerer)
-            venue_data = {
-                'name': 'Ma venue',
-                'comment': 'Je ne mets pas de SIRET pour une bonne raison',
-                'address': '75 Rue Charles Fourier, 75013 Paris',
-                'postalCode': '75200',
-                'bookingEmail': 'toto@btmx.fr',
-                'city': 'Paris',
-                'managingOffererId': humanize(offerer.id),
-                'latitude': 48.82387,
-                'longitude': 2.35284
-            }
-            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-
-            # when
-            response = auth_request.post('/venues', json=venue_data)
-
-            # Then
-            assert response.status_code == 201
-            venue = Venue.query.first()
-            assert not venue.isValidated
-            json = response.json
-            assert json['isValidated'] == False
-            assert 'validationToken' not in json
-
-        @clean_database
         @patch('routes.venues.link_valid_venue_to_irises')
         def when_offerer_is_validated_and_venue_with_siret_add_to_iris_venue(self, mock_link_venue_to_iris_if_valid,
                                                                              app):
