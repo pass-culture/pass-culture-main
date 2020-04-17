@@ -15,13 +15,14 @@ from repository.provider_queries import get_provider_by_local_class
 from repository.user_queries import find_most_recent_beneficiary_creation_date_by_procedure_id
 from scheduled_tasks.decorators import cron_context, cron_require_feature, \
     log_cron
-from scripts.beneficiary import old_remote_import
+from scripts.beneficiary import old_remote_import, remote_import
 from scripts.dashboard.write_dashboard import write_dashboard
 from scripts.update_booking_used import \
     update_booking_used_after_stock_occurrence
 from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
 
-DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID', None)
+DEMARCHES_SIMPLIFIEES_OLD_ENROLLMENT_PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID', None)
+DEMARCHES_SIMPLIFIEES_NEW_ENROLLMENT_PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2', None)
 
 @log_cron
 @cron_context
@@ -57,10 +58,18 @@ def pc_retrieve_bank_information(app):
 @log_cron
 @cron_context
 @cron_require_feature(FeatureToggle.BENEFICIARIES_IMPORT)
-def pc_remote_import_beneficiaries(app):
-    procedure_id = int(DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID)
+def pc_old_remote_import_beneficiaries(app):
+    procedure_id = int(DEMARCHES_SIMPLIFIEES_OLD_ENROLLMENT_PROCEDURE_ID)
     import_from_date = find_most_recent_beneficiary_creation_date_by_procedure_id(procedure_id)
     old_remote_import.run(import_from_date)
+
+
+@log_cron
+@cron_context
+def pc_remote_import_beneficiaries(app):
+    procedure_id = int(DEMARCHES_SIMPLIFIEES_NEW_ENROLLMENT_PROCEDURE_ID)
+    import_from_date = find_most_recent_beneficiary_creation_date_by_procedure_id(procedure_id)
+    remote_import.run(import_from_date)
 
 
 @log_cron
@@ -106,6 +115,10 @@ if __name__ == '__main__':
     scheduler.add_job(synchronize_libraires_stocks, 'cron',
                       [app],
                       day='*', hour='22')
+
+    scheduler.add_job(pc_old_remote_import_beneficiaries, 'cron',
+                      [app],
+                      day='*')
 
     scheduler.add_job(pc_remote_import_beneficiaries, 'cron',
                       [app],
