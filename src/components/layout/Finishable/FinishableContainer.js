@@ -11,11 +11,7 @@ import {
 import { selectOfferById } from '../../../redux/selectors/data/offersSelectors'
 
 function computeShouldDisplayFinishedBanner(offer, userBookingsForThisOffer, offerIsBookedByUser) {
-  const isOfferTuto = Object.keys(offer).length === 0
-
-  if (isOfferTuto) {
-    return false
-  } else if (userBookingsForThisOffer) {
+  if (userBookingsForThisOffer) {
     return true
   } else {
     return !offer.isBookable && !offerIsBookedByUser

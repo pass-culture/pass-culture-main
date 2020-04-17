@@ -6,31 +6,6 @@ jest.mock('../../../../utils/getIsBooked')
 
 describe('components | FinishableContainer', () => {
   describe('mapStateToProps', () => {
-    describe('when offer is a tuto', () => {
-      it('should not display finished banner', () => {
-        // given
-        const state = {
-          data: {
-            bookings: [{}],
-            offers: [{}],
-            stocks: [{}],
-          },
-        }
-
-        const ownProps = {
-          match: {
-            params: {},
-          },
-        }
-
-        // when
-        const props = mapStateToProps(state, ownProps)
-
-        // then
-        expect(props.shouldDisplayFinishedBanner).toBe(false)
-      })
-    })
-
     describe('when coming from /reservations', () => {
       it('should not display finished banner when offer is not bookable but has been booked by current user', () => {
         // given

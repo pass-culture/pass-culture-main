@@ -3,7 +3,6 @@ import React, { createRef, PureComponent } from 'react'
 
 import AbsoluteFooterContainer from '../AbsoluteFooter/AbsoluteFooterContainer'
 import VersoContentOfferContainer from './VersoContent/VersoContentOffer/VersoContentOfferContainer'
-import VersoContentTutoContainer from './VersoContent/VersoContentTuto/VersoContentTutoContainer'
 import VersoControlsContainer from './VersoControls/VersoControlsContainer'
 import VersoHeaderContainer from './VersoHeader/VersoHeaderContainer'
 
@@ -24,9 +23,7 @@ class Verso extends PureComponent {
   render() {
     const {
       areDetailsVisible,
-      extraClassNameVersoContent,
       extraClassName,
-      isTuto,
       offerName,
       offerType,
       offerVenueNameOrPublicName,
@@ -43,15 +40,15 @@ class Verso extends PureComponent {
             title={offerName}
             type={offerType}
           />
-          {!isTuto && <VersoControlsContainer />}
-          <div className={`mosaic-background ${extraClassNameVersoContent}`}>
-            {isTuto ? <VersoContentTutoContainer /> : <VersoContentOfferContainer />}
+          <VersoControlsContainer />
+          <div className="mosaic-background verso-content">
+            <VersoContentOfferContainer />
           </div>
         </div>
         <AbsoluteFooterContainer
           areDetailsVisible={areDetailsVisible}
           borderTop
-          colored={!isTuto}
+          colored
           id="verso-footer"
         />
       </div>
@@ -61,8 +58,6 @@ class Verso extends PureComponent {
 
 Verso.defaultProps = {
   extraClassName: '',
-  extraClassNameVersoContent: 'verso-content',
-  isTuto: null,
   offerName: null,
   offerType: null,
   offerVenueNameOrPublicName: null,
@@ -71,8 +66,6 @@ Verso.defaultProps = {
 Verso.propTypes = {
   areDetailsVisible: PropTypes.bool.isRequired,
   extraClassName: PropTypes.string,
-  extraClassNameVersoContent: PropTypes.string,
-  isTuto: PropTypes.bool,
   offerName: PropTypes.string,
   offerType: PropTypes.string,
   offerVenueNameOrPublicName: PropTypes.string,

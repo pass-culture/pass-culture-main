@@ -3,7 +3,6 @@ import { shallow } from 'enzyme'
 
 import Verso from '../Verso'
 import VersoContentOfferContainer from '../VersoContent/VersoContentOffer/VersoContentOfferContainer'
-import VersoContentTutoContainer from '../VersoContent/VersoContentTuto/VersoContentTutoContainer'
 import VersoControlsContainer from '../VersoControls/VersoControlsContainer'
 import VersoHeaderContainer from '../VersoHeader/VersoHeaderContainer'
 import AbsoluteFooterContainer from '../../AbsoluteFooter/AbsoluteFooterContainer'
@@ -17,19 +16,10 @@ describe('src | components | layout | Verso', () => {
       backgroundColor: '#ACE539',
       extraClassNameVersoContent: 'verso-content',
       extraClassName: 'extra-classname',
-      isTuto: false,
       offerName: 'Offer title',
       offerType: 'EventType.SPECTACLE_VIVANT',
       offerVenueNameOrPublicName: 'Offer subtitle',
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<Verso {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   it('should render a div with the proper css classes when details are visible', () => {
@@ -56,36 +46,15 @@ describe('src | components | layout | Verso', () => {
     expect(firstDiv.prop('className')).toBe('verso is-overlay extra-classname ')
   })
 
-  it('should show offer view when is tuto is false', () => {
-    // given
-    props.isTuto = false
-
-    // when
+  it('should show offer view', () => {
+    // given - when
     const wrapper = shallow(<Verso {...props} />)
 
     // then
     const infos = wrapper.find(VersoContentOfferContainer)
-    const tuto = wrapper.find(VersoContentTutoContainer)
     const controls = wrapper.find(VersoControlsContainer)
-    expect(tuto).toHaveLength(0)
     expect(infos).toHaveLength(1)
     expect(controls).toHaveLength(1)
-  })
-
-  it('should show tuto view when is tuto is true', () => {
-    // given
-    props.isTuto = true
-
-    // when
-    const wrapper = shallow(<Verso {...props} />)
-
-    // then
-    const infos = wrapper.find(VersoContentOfferContainer)
-    const tuto = wrapper.find(VersoContentTutoContainer)
-    const controls = wrapper.find(VersoControlsContainer)
-    expect(tuto).toHaveLength(1)
-    expect(infos).toHaveLength(0)
-    expect(controls).toHaveLength(0)
   })
 
   it('should render a VersoHeaderContainer with the right props', () => {

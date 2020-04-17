@@ -22,8 +22,6 @@ describe('src | components | layout | Verso | VersoContainer', () => {
 
       // then
       expect(result).toStrictEqual({
-        extraClassNameVersoContent: 'verso-content',
-        isTuto: false,
         offerName: 'super offre',
         offerType: 'EventType.SPECTACLE_VIVANT',
         offerVenueNameOrPublicName: 'THEATRE DE L ODEON',

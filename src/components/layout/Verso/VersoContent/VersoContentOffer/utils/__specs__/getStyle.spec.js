@@ -1,20 +1,6 @@
 import getStyle from '../getStyle'
 
 describe('src | components | layout | Verso | VersoContent | VersoContentOffer | utils | getStyle', () => {
-  describe('when it is a tuto', () => {
-    it('should return empty string', () => {
-      // given
-      const state = {}
-      const extraData = undefined
-
-      // when
-      const style = getStyle(state, extraData)
-
-      // then
-      expect(style).toBe('')
-    })
-  })
-
   describe('when it is an offer with no extra data', () => {
     it('should return empty string', () => {
       // given
