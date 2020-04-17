@@ -67,13 +67,17 @@ def get_non_free_event_offer():
     query = get_non_free_offers_query_by_type()
     query = query \
         .filter(Offer.type.in_([str(event_type) for event_type in EventType])) \
+        .filter(Offer.mediations.any(Mediation.isActive == True)) \
         .join(Venue, Venue.id == Offer.venueId) \
         .join(Offerer, Offerer.id == Venue.managingOffererId) \
         .filter(Offerer.validationToken == None)
     offer = query.first()
 
     if offer:
-        return {"offer": get_offer_helper(offer)}
+        return {
+            "mediationId": [humanize(m.id) for m in offer.mediations if m.isActive][0],
+            "offer": get_offer_helper(offer)
+        }
     return {}
 
 

@@ -94,6 +94,7 @@ class GetNonFreeEventOfferTest:
 
         # Then
         assert offer_json_response == {
+            "mediationId": humanize(mediation.id),
             "offer": {
                 'ageMax': None,
                 'ageMin': None,
