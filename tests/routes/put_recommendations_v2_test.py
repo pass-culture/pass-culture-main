@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 
 from models.discovery_view import DiscoveryView
 from models.feature import FeatureToggle, Feature
-from models.mediation import Mediation
 from models.recommendation import Recommendation
 from repository import repository
 from tests.conftest import TestClient, clean_database

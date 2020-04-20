@@ -89,10 +89,3 @@ class Recommendation(PcObject, Model):
             return self.mediation.thumbUrl
 
         return self.offer.product.thumbUrl
-
-    @property
-    def productOrTutoIdentifier(self):
-        if self.offer and self.offer.productId:
-            return 'product_{}'.format(humanize(self.offer.productId))
-        if self.mediation and self.mediation.tutoIndex != None:
-            return 'tuto_{}'.format(self.mediation.tutoIndex)

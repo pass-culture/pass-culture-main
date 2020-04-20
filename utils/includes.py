@@ -112,7 +112,6 @@ FAVORITE_INCLUDES = [
 ]
 
 RECOMMENDATION_INCLUDES = [
-    "productOrTutoIdentifier",
     {
         "key": "mediation",
         "includes": ["thumbUrl"]
@@ -224,7 +223,6 @@ WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
     {
         "key": "recommendation",
         "includes": [
-            "productOrTutoIdentifier",
             {
                 "key": "offer",
                 "includes": [
@@ -280,7 +278,6 @@ WEBAPP_PATCH_POST_BOOKING_WITH_QR_CODE_INCLUDES = [
     {
         "key": "recommendation",
         "includes": [
-            "productOrTutoIdentifier",
             {
                 "key": "offer",
                 "includes": [
