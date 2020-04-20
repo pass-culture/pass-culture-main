@@ -165,14 +165,10 @@ def put_recommendations_v3():
     else:
         seen_recommendation_ids = []
 
-    created_recommendations = create_recommendations_for_discovery_v3(user=current_user,
+    recommendations = create_recommendations_for_discovery_v3(user=current_user,
                                                                       user_iris_id=user_iris_id,
                                                                       user_is_geolocated=user_is_geolocated,
                                                                       seen_recommendation_ids=seen_recommendation_ids,
                                                                       limit=BLOB_SIZE)
-
-    recommendations = move_tutorial_recommendations_first(created_recommendations,
-                                                          seen_recommendation_ids,
-                                                          current_user)
 
     return jsonify(serialize_recommendations(recommendations, current_user)), 200

@@ -3,18 +3,17 @@ from unittest.mock import patch
 
 from shapely.geometry import Polygon
 
-from models import Feature, DiscoveryViewV3, Mediation, ThingType
+from models import Feature, DiscoveryViewV3, ThingType
 from models.feature import FeatureToggle
 from repository import repository
 from tests.conftest import TestClient, clean_database
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_mediation, \
-    create_recommendation, create_iris, create_iris_venue
+    create_iris, create_iris_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_stock_with_thing_offer, \
     create_stock_from_offer, create_offer_with_event_product, create_event_occurrence, \
     create_stock_from_event_occurrence
 from tests.test_utils import POLYGON_TEST
 from utils.human_ids import humanize
-from utils.tutorials import upsert_tuto_mediations
 
 RECOMMENDATION_URL_V3 = '/recommendations/v3'
 
@@ -46,13 +45,12 @@ class Put:
     class Returns200:
         @patch('routes.recommendations.create_recommendations_for_discovery_v3')
         @patch('routes.recommendations.current_user')
-        @patch('routes.recommendations.move_tutorial_recommendations_first')
         @patch('routes.recommendations.serialize_recommendations')
         @patch('routes.recommendations.update_read_recommendations')
         @clean_database
         def when_feature_is_active_and_user_is_geolocated(self, mock_update_read_recommendations,
                                                           mock_serialize_recommendations,
-                                                          mock_move_tutorial_recommendations_first, mock_current_user,
+                                                          mock_current_user,
                                                           mock_create_recommendations_for_discovery_v3, app):
             # Given
             user = create_user()
@@ -97,11 +95,10 @@ class Put:
 
         @patch('routes.recommendations.create_recommendations_for_discovery_v3')
         @patch('routes.recommendations.current_user')
-        @patch('routes.recommendations.move_tutorial_recommendations_first')
         @patch('routes.recommendations.serialize_recommendations')
         @clean_database
         def when_feature_is_active_and_user_is_not_located(self, mock_serialize_recommendations,
-                                                           mock_move_tutorial_recommendations_first, mock_current_user,
+                                                           mock_current_user,
                                                            mock_create_recommendations_for_discovery_v3, app):
             # given
             user = create_user()
@@ -131,11 +128,9 @@ class Put:
 
         @patch('routes.recommendations.create_recommendations_for_discovery_v3')
         @patch('routes.recommendations.current_user')
-        @patch('routes.recommendations.move_tutorial_recommendations_first')
         @patch('routes.recommendations.serialize_recommendations')
         @clean_database
         def when_feature_is_active_and_user_is_located_outside_known_iris(self, mock_serialize_recommendations,
-                                                                          mock_move_tutorial_recommendations_first,
                                                                           mock_current_user,
                                                                           mock_create_recommendations_for_discovery_v3,
                                                                           app):
@@ -177,113 +172,10 @@ class Put:
                                                                                  limit=30)
 
         @clean_database
-        def when_tutos_are_not_already_read(self, app):
-            # given
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue)
-            user = create_user()
-            event_occurrence1 = create_event_occurrence(offer)
-            event_occurrence2 = create_event_occurrence(offer)
-            stock1 = create_stock_from_event_occurrence(event_occurrence1)
-            stock2 = create_stock_from_event_occurrence(event_occurrence2)
-            thing_offer1 = create_offer_with_thing_product(venue)
-            thing_offer2 = create_offer_with_thing_product(venue)
-            stock3 = create_stock_from_offer(thing_offer1)
-            stock4 = create_stock_from_offer(thing_offer2)
-            create_mediation(thing_offer1)
-            create_mediation(thing_offer2)
-
-            user_latitude = 49.894171
-            user_longitude = 2.295695
-            venue_polygon = Polygon([(2.095693, 50.994169), (2.095693, 47.894173),
-                                     (2.795697, 47.894173), (2.795697, 50.994169)])
-
-            iris = create_iris(venue_polygon)
-            repository.save(user, stock1, stock2, stock3, stock4, user)
-            iris_venue = create_iris_venue(iris, venue)
-            repository.save(iris_venue)
-
-            DiscoveryViewV3.refresh(concurrently=False)
-
-            upsert_tuto_mediations()
-
-            # when
-            auth_request = TestClient(app.test_client()).with_auth(user.email)
-            response = auth_request.put(f'{RECOMMENDATION_URL_V3}?longitude={user_longitude}&latitude={user_latitude}',
-                                        json={})
-
-            # then
-            assert response.status_code == 200
-            recommendations = response.json
-            assert recommendations[0]['mediation']['tutoIndex'] == 0
-            assert recommendations[1]['mediation']['tutoIndex'] == 1
-
-        @clean_database
-        def when_tutos_are_already_read(self, app):
-            # given
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue)
-            user = create_user()
-            event_occurrence1 = create_event_occurrence(offer)
-            event_occurrence2 = create_event_occurrence(offer)
-            stock1 = create_stock_from_event_occurrence(event_occurrence1)
-            stock2 = create_stock_from_event_occurrence(event_occurrence2)
-            thing_offer1 = create_offer_with_thing_product(venue)
-            thing_offer2 = create_offer_with_thing_product(venue)
-            stock3 = create_stock_from_offer(thing_offer1)
-            stock4 = create_stock_from_offer(thing_offer2)
-
-            user_latitude = 49.894171
-            user_longitude = 2.295695
-            venue_polygon = Polygon([(2.095693, 50.994169), (2.095693, 47.894173),
-                                     (2.795697, 47.894173), (2.795697, 50.994169)])
-
-            iris = create_iris(venue_polygon)
-            repository.save(user, stock1, stock2, stock3, stock4, user)
-            iris_venue = create_iris_venue(iris, venue)
-            repository.save(iris_venue)
-
-            upsert_tuto_mediations()
-            tuto_mediation0 = Mediation.query.filter_by(tutoIndex=0).one()
-            tuto_mediation1 = Mediation.query.filter_by(tutoIndex=1).one()
-            tuto_recommendation0 = create_recommendation(user=user, mediation=tuto_mediation0)
-            tuto_recommendation1 = create_recommendation(user=user, mediation=tuto_mediation1)
-            repository.save(tuto_recommendation0, tuto_recommendation1)
-
-            humanized_tuto_recommendation0_id = humanize(tuto_recommendation0.id)
-            humanized_tuto_recommendation1_id = humanize(tuto_recommendation1.id)
-            reads = [
-                {
-                    "id": humanized_tuto_recommendation0_id,
-                    "dateRead": "2018-12-17T15:59:11.689Z"
-                },
-                {
-                    "id": humanized_tuto_recommendation1_id,
-                    "dateRead": "2018-12-17T15:59:15.689Z"
-                }
-            ]
-            data = {'readRecommendations': reads}
-            auth_request = TestClient(app.test_client()).with_auth(user.email)
-
-            # when
-            response = auth_request.put(f'{RECOMMENDATION_URL_V3}?longitude={user_longitude}&latitude={user_latitude}',
-                                        json=data)
-
-            # then
-            assert response.status_code == 200
-            recommendations = response.json
-            recommendation_ids = [r['id'] for r in recommendations]
-            assert humanized_tuto_recommendation0_id not in recommendation_ids
-            assert humanized_tuto_recommendation1_id not in recommendation_ids
-
-        @clean_database
         def test_returns_same_quantity_of_recommendations_in_different_orders(self, app):
             # given
             now = datetime.utcnow()
             four_days_from_now = now + timedelta(days=4)
-            eight_days_from_now = now + timedelta(days=8)
             user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
