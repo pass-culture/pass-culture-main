@@ -49,21 +49,6 @@ class SerializeRecommendationTest:
         # Then
         assert 'bookings' not in serialized_recommendation
 
-    @patch('routes.serialization.recommendation_serialize.booking_queries.find_from_recommendation')
-    def test_should_not_return_booking_if_recommendation_does_not_have_offer(self, find_from_recommendation):
-        # Given
-        user = create_user(email='user@test.com')
-        mediation = create_mediation(tuto_index=1)
-        recommendation = create_recommendation(user=user, mediation=mediation)
-        recommendation.mediationId = 1
-        find_from_recommendation.return_value = []
-
-        # When
-        serialized_recommendation = serialize_recommendation(recommendation, user, query_booking=True)
-
-        # Then
-        assert 'bookings' not in serialized_recommendation
-
 
 class SerializeRecommendationsTest:
     @patch('routes.serialization.recommendation_serialize.booking_queries.find_from_recommendation')

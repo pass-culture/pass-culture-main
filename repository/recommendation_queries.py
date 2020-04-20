@@ -18,17 +18,6 @@ from utils.logger import logger
 
 EIGHT_DAYS_AGO = datetime.utcnow() - timedelta(days=8)
 
-
-def find_unseen_tutorials_for_user(seen_recommendation_ids, user):
-    return Recommendation.query.join(Mediation) \
-        .filter(
-        (Mediation.tutoIndex != None)
-        & (Recommendation.user == user)
-        & ~Recommendation.id.in_(seen_recommendation_ids)) \
-        .order_by(Mediation.tutoIndex) \
-        .all()
-
-
 def count_read_recommendations_for_user(user, limit=None):
     query = Recommendation.query.filter((Recommendation.user == user)
                                         & (Recommendation.dateRead != None))

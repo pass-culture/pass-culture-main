@@ -53,17 +53,12 @@ class Mediation(PcObject,
                          foreign_keys=[offerId],
                          backref='mediations')
 
-    tutoIndex = Column(Integer,
-                       nullable=True,
-                       index=True)
-
 
 Mediation.__table_args__ = (
     CheckConstraint('"thumbCount" <= 2',
                     name='check_mediation_has_max_2_thumbs'),
     CheckConstraint('"thumbCount" > 0 OR frontText IS NOT NULL',
                     name='check_mediation_has_thumb_or_text'),
-    CheckConstraint('("offerId" IS NOT NULL AND "tutoIndex" IS NULL)'
-                    + ' OR ("offerId" IS NULL AND "tutoIndex" IS NOT NULL)',
-                    name='check_mediation_has_offer_xor_tutoIndex'),
+    CheckConstraint('("offerId" IS NOT NULL)',
+                    name='check_mediation_has_offer'),
 )

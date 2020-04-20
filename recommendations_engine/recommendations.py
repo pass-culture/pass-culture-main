@@ -6,7 +6,6 @@ from models.db import db
 from recommendations_engine import get_offers_for_recommendations_discovery, \
     get_offers_for_recommendations_discovery_v2
 from repository import mediation_queries, repository
-from repository.mediation_queries import get_all_tuto_mediations
 from repository.offer_queries import find_searchable_offer, \
     get_offers_for_recommendation_v3
 from repository.recommendation_queries import count_read_recommendations_for_user, \
@@ -77,19 +76,6 @@ def create_recommendations_for_discovery_v3(user: User, user_iris_id: Optional[i
         recommendations.append(_create_recommendation_from_offers(user, offer))
     repository.save(*recommendations)
     return recommendations
-
-
-def _create_tuto_mediation_if_non_existent_for_user(user: User, tuto_mediation: Mediation):
-    already_existing_tuto_recommendation = Recommendation.query \
-        .filter_by(mediation=tuto_mediation, user=user) \
-        .first()
-    if already_existing_tuto_recommendation:
-        return
-
-    recommendation = Recommendation()
-    recommendation.user = user
-    recommendation.mediation = tuto_mediation
-    repository.save(recommendation)
 
 
 def _create_recommendation_from_ids(user, offer_id, mediation_id=None):

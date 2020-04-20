@@ -196,7 +196,6 @@ def create_mediation(offer: Offer = None,
                      is_active: bool = True,
                      last_provider_id: int = None,
                      thumb_count: int = 0,
-                     tuto_index: int = None,
                      ) -> Mediation:
     mediation = Mediation()
     mediation.author = author
@@ -211,7 +210,6 @@ def create_mediation(offer: Offer = None,
     mediation.lastProviderId = last_provider_id
     mediation.offer = offer
     mediation.thumbCount = thumb_count
-    mediation.tutoIndex = tuto_index
 
     return mediation
 

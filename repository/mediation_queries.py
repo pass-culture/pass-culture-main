@@ -7,12 +7,6 @@ def find_by_id(mediation_id: str) -> Mediation:
     return Mediation.query.filter_by(id=mediation_id).first()
 
 
-def get_all_tuto_mediations() -> List[Mediation]:
-    return Mediation.query.filter(Mediation.tutoIndex != None) \
-        .order_by(Mediation.tutoIndex) \
-        .all()
-
-
 def get_mediations_for_offers(offer_ids: List[int]) -> List[Mediation]:
     return Mediation.query \
         .filter(Mediation.offerId.in_(offer_ids)) \

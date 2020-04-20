@@ -1,4 +1,3 @@
-from models.mediation import Mediation
 from recommendations_engine.offers import get_departement_codes_from_user
 from repository import repository
 from repository.offer_queries import get_active_offers
@@ -16,10 +15,6 @@ def create_industrial_recommendations(offers_by_name, users_by_name):
     recommendations_by_name = {}
     recommendations_with_asset = {}
 
-    first_mediation = Mediation.query.filter_by(tutoIndex=0).one()
-    second_mediation = Mediation.query.filter_by(tutoIndex=1).one()
-    tuto_mediations = [first_mediation, second_mediation]
-
     for (user_name, user) in users_by_name.items():
 
         user_has_no_recommendation = \
@@ -29,15 +24,6 @@ def create_industrial_recommendations(offers_by_name, users_by_name):
 
         if user_has_no_recommendation:
             continue
-
-        for (tuto_index, tuto_mediation) in enumerate(tuto_mediations):
-            recommendation_name = 'Tuto {} / {}'.format(
-                tuto_index,
-                user_name
-            )
-            recommendations_by_name[recommendation_name] = \
-                create_recommendation(
-                    user=user, mediation=tuto_mediation, date_read="2018-12-17T15:59:11.689Z")
 
         user_has_recommendation_on_something_else_than_activation_offers = any([
             user_tag in user_name

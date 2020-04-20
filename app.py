@@ -25,7 +25,6 @@ from utils.mailing import get_contact, \
     MAILJET_API_KEY, \
     MAILJET_API_SECRET, \
     subscribe_newsletter
-from utils.tutorials import upsert_tuto_mediations
 
 if IS_DEV is False:
     sentry_sdk.init(
@@ -81,7 +80,6 @@ with app.app_context():
         install_database_extensions()
         install_models()
         install_materialized_views()
-        upsert_tuto_mediations()
         install_local_providers()
         install_features()
 
