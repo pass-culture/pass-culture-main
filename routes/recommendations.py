@@ -133,15 +133,12 @@ def put_recommendations_v2():
         mediation_id
     )
 
-    created_recommendations = create_recommendations_for_discovery_v2(limit=BLOB_SIZE,
+    recommendations = create_recommendations_for_discovery_v2(limit=BLOB_SIZE,
                                                                       user=current_user,
                                                                       seen_recommendation_ids=seen_recommendation_ids)
 
-    recommendations = move_tutorial_recommendations_first(created_recommendations,
-                                                          seen_recommendation_ids,
-                                                          current_user)
     if requested_recommendation:
-        recommendations = move_requested_recommendation_first(created_recommendations,
+        recommendations = move_requested_recommendation_first(recommendations,
                                                               requested_recommendation)
 
     return jsonify(serialize_recommendations(recommendations, current_user)), 200
