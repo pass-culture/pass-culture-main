@@ -1,4 +1,5 @@
 import copy
+from typing import Dict
 
 APPLICATION_DETAIL_STANDARD_RESPONSE = {
     "dossier": {
@@ -83,11 +84,11 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
                 "value": "Étudiant",
                 "type_de_champ":
                     {
-                        "id":718094,
-                        "libelle":"Veuillez indiquer votre statut",
-                        "type_champ":"drop_down_list",
-                        "order_place":7,
-                        "description":""
+                        "id": 718094,
+                        "libelle": "Veuillez indiquer votre statut",
+                        "type_champ": "drop_down_list",
+                        "order_place": 7,
+                        "description": ""
                     }
             },
             {
@@ -262,8 +263,12 @@ APPLICATION_DETAIL_STANDARD_RESPONSE = {
 }
 
 
-def make_old_application_detail(id: int, state: str, postal_code='67200', department_code='67 - Bas-Rhin',
-                            civility='Mme', activity='Étudiant') -> dict:
+def make_old_application_detail(id: int,
+                                state: str,
+                                postal_code: str = '67200',
+                                department_code: str = '67 - Bas-Rhin',
+                                civility: str = 'Mme',
+                                activity: str = 'Étudiant') -> Dict:
     application = copy.deepcopy(APPLICATION_DETAIL_STANDARD_RESPONSE)
     application['dossier']['id'] = id
     application['dossier']['state'] = state

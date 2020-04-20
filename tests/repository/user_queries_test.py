@@ -1,22 +1,27 @@
-from datetime import datetime, timedelta, MINYEAR
+from datetime import MINYEAR, datetime, timedelta
 
-from models import ImportStatus, ThingType, EventType
+from models import EventType, ImportStatus, ThingType
 from repository import repository
-from repository.user_queries import get_all_users_wallet_balances, find_by_civility, \
-    find_most_recent_beneficiary_creation_date_by_procedure_id, count_all_activated_users, count_users_having_booked, \
-    count_all_activated_users_by_departement, count_users_having_booked_by_departement_code
+from repository.user_queries import \
+    count_all_activated_users, count_all_activated_users_by_departement, \
+    count_users_having_booked, count_users_having_booked_by_departement_code, \
+    find_by_civility, \
+    find_most_recent_beneficiary_creation_date_by_procedure_id, \
+    get_all_users_wallet_balances
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, create_user, create_beneficiary_import, create_stock, \
-    create_offerer, create_venue, create_deposit
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
+from tests.model_creators.generic_creators import create_beneficiary_import, \
+    create_booking, create_deposit, create_offerer, create_stock, create_user, \
+    create_venue
+from tests.model_creators.specific_creators import \
+    create_offer_with_event_product, create_offer_with_thing_product
 
 
 class GetAllUsersWalletBalancesTest:
     @clean_database
     def test_users_are_sorted_by_user_id(self, app):
         # given
-        user1 = create_user(email='user1@test.com')
-        user2 = create_user(email='user2@test.com')
+        user1 = create_user(email='user1@example.com')
+        user2 = create_user(email='user2@example.com')
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -38,8 +43,8 @@ class GetAllUsersWalletBalancesTest:
     @clean_database
     def test_users_with_no_deposits_are_ignored(self, app):
         # given
-        user1 = create_user(email='user1@test.com')
-        user2 = create_user(email='user2@test.com')
+        user1 = create_user(email='user1@example.com')
+        user2 = create_user(email='user2@example.com')
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -57,8 +62,8 @@ class GetAllUsersWalletBalancesTest:
     @clean_database
     def test_returns_current_balances(self, app):
         # given
-        user1 = create_user(email='user1@test.com')
-        user2 = create_user(email='user2@test.com')
+        user1 = create_user(email='user1@example.com')
+        user2 = create_user(email='user2@example.com')
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -80,8 +85,8 @@ class GetAllUsersWalletBalancesTest:
     @clean_database
     def test_returns_real_balances(self, app):
         # given
-        user1 = create_user(email='user1@test.com')
-        user2 = create_user(email='user2@test.com')
+        user1 = create_user(email='user1@example.com')
+        user2 = create_user(email='user2@example.com')
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -105,9 +110,9 @@ class FindByCivilityTest:
     @clean_database
     def test_returns_users_with_matching_criteria_ignoring_case(self, app):
         # given
-        user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john@test.com', first_name="john",
+        user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john@example.com', first_name="john",
                             last_name='DOe')
-        user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@test.com', first_name="jaNE",
+        user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@example.com', first_name="jaNE",
                             last_name='DOe')
         repository.save(user1, user2)
 
@@ -116,14 +121,14 @@ class FindByCivilityTest:
 
         # then
         assert len(users) == 1
-        assert users[0].email == 'john@test.com'
+        assert users[0].email == 'john@example.com'
 
     @clean_database
     def test_returns_users_with_matching_criteria_ignoring_dash(self, app):
         # given
-        user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@test.com', first_name="jaNE",
+        user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@example.com', first_name="jaNE",
                             last_name='DOe')
-        user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john.b@test.com', first_name="john-bob",
+        user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john.b@example.com', first_name="john-bob",
                             last_name='doe')
         repository.save(user1, user2)
 
@@ -132,14 +137,14 @@ class FindByCivilityTest:
 
         # then
         assert len(users) == 1
-        assert users[0].email == 'john.b@test.com'
+        assert users[0].email == 'john.b@example.com'
 
     @clean_database
     def test_returns_users_with_matching_criteria_ignoring_spaces(self, app):
         # given
-        user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@test.com', first_name="jaNE",
+        user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@example.com', first_name="jaNE",
                             last_name='DOe')
-        user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john.b@test.com', first_name="john bob",
+        user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john.b@example.com', first_name="john bob",
                             last_name='doe')
         repository.save(user1, user2)
 
@@ -148,14 +153,14 @@ class FindByCivilityTest:
 
         # then
         assert len(users) == 1
-        assert users[0].email == 'john.b@test.com'
+        assert users[0].email == 'john.b@example.com'
 
     @clean_database
     def test_returns_users_with_matching_criteria_ignoring_accents(self, app):
         # given
-        user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@test.com', first_name="jaNE",
+        user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@example.com', first_name="jaNE",
                             last_name='DOe')
-        user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john.b@test.com', first_name="john bob",
+        user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john.b@example.com', first_name="john bob",
                             last_name='doe')
         repository.save(user1, user2)
 
@@ -164,7 +169,7 @@ class FindByCivilityTest:
 
         # then
         assert len(users) == 1
-        assert users[0].email == 'john.b@test.com'
+        assert users[0].email == 'john.b@example.com'
 
     @clean_database
     def test_returns_nothing_if_one_criteria_does_not_match(self, app):
@@ -181,9 +186,9 @@ class FindByCivilityTest:
     @clean_database
     def test_returns_users_with_matching_criteria_first_and_last_names_and_birthdate_and_invalid_email(self, app):
         # given
-        user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john@test.com', first_name="john",
+        user1 = create_user(date_of_birth=datetime(2000, 5, 1), email='john@example.com', first_name="john",
                             last_name='DOe')
-        user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@test.com', first_name="jaNE",
+        user2 = create_user(date_of_birth=datetime(2000, 3, 20), email='jane@example.com', first_name="jaNE",
                             last_name='DOe')
         repository.save(user1, user2)
 
@@ -192,7 +197,7 @@ class FindByCivilityTest:
 
         # then
         assert len(users) == 1
-        assert users[0].email == 'john@test.com'
+        assert users[0].email == 'john@example.com'
 
 
 class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
@@ -227,8 +232,7 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
         assert most_recent_creation_date == three_days_ago
 
     @clean_database
-    def test_returns_min_year_if_no_beneficiary_import_exist_for_given_procedure_id(
-          self, app):
+    def test_returns_min_year_if_no_beneficiary_import_exist_for_given_procedure_id(self, app):
         # given
         old_demarche_simplifiee_procedure_id = 1
         new_demarche_simplifiee_procedure_id = 2
@@ -237,8 +241,8 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
 
         user = create_user(date_created=yesterday, email='user@example.com')
         beneficiary_import = create_beneficiary_import(user=user, status=ImportStatus.CREATED, date=yesterday,
-                                            demarche_simplifiee_application_id=3,
-                                            demarche_simplifiee_procedure_id=old_demarche_simplifiee_procedure_id)
+                                                       demarche_simplifiee_application_id=3,
+                                                       demarche_simplifiee_procedure_id=old_demarche_simplifiee_procedure_id)
 
         repository.save(beneficiary_import)
 
@@ -247,7 +251,6 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
 
         # then
         assert most_recent_creation_date == datetime(MINYEAR, 1, 1)
-
 
     @clean_database
     def test_returns_min_year_if_no_beneficiary_import_exist(self, app):
@@ -268,7 +271,7 @@ class CountAllActivatedUsersTest:
     def test_returns_1_when_only_one_active_user(self, app):
         # Given
         user_activated = create_user(can_book_free_offers=True)
-        user_not_activated = create_user(can_book_free_offers=False, email='email2@test.com')
+        user_not_activated = create_user(can_book_free_offers=False, email='email2@example.com')
         repository.save(user_activated, user_not_activated)
 
         # When
@@ -281,7 +284,7 @@ class CountAllActivatedUsersTest:
     def test_returns_0_when_no_active_user(self, app):
         # Given
         user_activated = create_user(can_book_free_offers=False)
-        user_not_activated = create_user(can_book_free_offers=False, email='email2@test.com')
+        user_not_activated = create_user(can_book_free_offers=False, email='email2@example.com')
         repository.save(user_activated, user_not_activated)
 
         # When
@@ -296,7 +299,7 @@ class CountActivatedUsersByDepartementTest:
     def test_returns_1_when_only_one_active_user_in_departement(self, app):
         # Given
         user_activated = create_user(can_book_free_offers=True, departement_code='74')
-        user_not_activated = create_user(can_book_free_offers=False, email='email2@test.com')
+        user_not_activated = create_user(can_book_free_offers=False, email='email2@example.com')
         repository.save(user_activated, user_not_activated)
 
         # When
@@ -306,10 +309,10 @@ class CountActivatedUsersByDepartementTest:
         assert number_of_active_users == 1
 
     @clean_database
-    def test_returns_0_when_no_active_user_in_departement(self, app):
+    def test_returns_0_when_no_active_user_in_departement_74(self, app):
         # Given
         user_activated = create_user(can_book_free_offers=False, departement_code='74')
-        user_not_activated = create_user(can_book_free_offers=False, email='email2@test.com')
+        user_not_activated = create_user(can_book_free_offers=False, email='email2@example.com')
         repository.save(user_activated, user_not_activated)
 
         # When
@@ -319,10 +322,10 @@ class CountActivatedUsersByDepartementTest:
         assert number_of_active_users == 0
 
     @clean_database
-    def test_returns_0_when_no_active_user_in_departement(self, app):
+    def test_returns_0_when_no_active_user_in_departement_76(self, app):
         # Given
         user_activated = create_user(can_book_free_offers=True, departement_code='76')
-        user_not_activated = create_user(can_book_free_offers=False, email='email2@test.com')
+        user_not_activated = create_user(can_book_free_offers=False, email='email2@example.com')
         repository.save(user_activated, user_not_activated)
 
         # When

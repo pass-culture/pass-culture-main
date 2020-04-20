@@ -33,4 +33,5 @@ from utils.includes import *
 from utils.logger import *
 from utils.token import *
 from scripts.beneficiary import old_remote_import
+from scripts.beneficiary import remote_import
 from scripts.booking import *

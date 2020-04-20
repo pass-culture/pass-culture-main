@@ -1,7 +1,6 @@
 import os
 import re
 from datetime import datetime
-from pprint import pprint
 from typing import Callable, Dict, List, Set
 
 from connectors.api_demarches_simplifiees import get_application_details
@@ -124,7 +123,7 @@ def _process_creation(error_messages: List[str], information: Dict, new_benefici
         error_messages.append(str(api_errors))
     else:
         logger.info(f"[BATCH][REMOTE IMPORT BENEFICIARIES] Successfully created user for application "
-                       f"{information['application_id']}")
+                    f"{information['application_id']}")
         save_beneficiary_import_with_status(
             ImportStatus.CREATED,
             information['application_id'],

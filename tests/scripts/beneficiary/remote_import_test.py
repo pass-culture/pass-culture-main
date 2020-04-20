@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from unittest.mock import Mock, patch, ANY
+from unittest.mock import ANY, Mock, patch
 
 from mailjet_rest import Client
 
@@ -10,7 +10,8 @@ from scripts.beneficiary.remote_import import parse_beneficiary_information
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user
 from tests.scripts.beneficiary.fixture import \
-    APPLICATION_DETAIL_STANDARD_RESPONSE, make_new_beneficiary_application_details
+    APPLICATION_DETAIL_STANDARD_RESPONSE, \
+    make_new_beneficiary_application_details
 
 NOW = datetime.utcnow()
 DATETIME_PATTERN = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -275,7 +276,7 @@ class ProcessBeneficiaryApplicationTest:
 
         # when
         remote_import.process_beneficiary_application(information, error_messages=[], new_beneficiaries=[],
-                                                          retry_ids=[], procedure_id=123456)
+                                                      retry_ids=[], procedure_id=123456)
 
         # then
         first = User.query.first()
@@ -304,7 +305,7 @@ class ProcessBeneficiaryApplicationTest:
 
         # when
         remote_import.process_beneficiary_application(information, error_messages=[], new_beneficiaries=[],
-                                                          retry_ids=[], procedure_id=123456)
+                                                      retry_ids=[], procedure_id=123456)
 
         # then
         beneficiary_import = BeneficiaryImport.query.first()
@@ -336,7 +337,7 @@ class ProcessBeneficiaryApplicationTest:
 
         # when
         remote_import.process_beneficiary_application(information, error_messages=[], new_beneficiaries=[],
-                                                          retry_ids=[], procedure_id=123456)
+                                                      retry_ids=[], procedure_id=123456)
 
         # then
         send_activation_email.assert_called()
@@ -368,7 +369,7 @@ class ProcessBeneficiaryApplicationTest:
 
         # when
         remote_import.process_beneficiary_application(information, error_messages, new_beneficiaries, retry_ids=[],
-                                                          procedure_id=123456)
+                                                      procedure_id=123456)
 
         # then
         send_activation_email.assert_not_called()
@@ -399,7 +400,7 @@ class ProcessBeneficiaryApplicationTest:
 
         # when
         remote_import.process_beneficiary_application(information, error_messages=[], new_beneficiaries=[],
-                                                          retry_ids=[], procedure_id=123456, find_duplicate_users=mock)
+                                                      retry_ids=[], procedure_id=123456, find_duplicate_users=mock)
 
         # then
         send_activation_email.assert_not_called()
@@ -430,8 +431,8 @@ class ProcessBeneficiaryApplicationTest:
 
         # when
         remote_import.process_beneficiary_application(information, error_messages=[], new_beneficiaries=[],
-                                                          retry_ids=retry_ids, procedure_id=123456,
-                                                          find_duplicate_users=mock)
+                                                      retry_ids=retry_ids, procedure_id=123456,
+                                                      find_duplicate_users=mock)
 
         # then
         send_activation_email.assert_called()
@@ -457,8 +458,8 @@ class ProcessBeneficiaryApplicationTest:
 
         # when
         remote_import.process_beneficiary_application(information, error_messages=[], new_beneficiaries=[],
-                                                          retry_ids=[], procedure_id=123456,
-                                                          find_duplicate_users=mocked_query)
+                                                      retry_ids=[], procedure_id=123456,
+                                                      find_duplicate_users=mocked_query)
 
         # then
         beneficiary_import = BeneficiaryImport.query.first()
