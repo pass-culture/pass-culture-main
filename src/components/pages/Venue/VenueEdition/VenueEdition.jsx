@@ -18,6 +18,7 @@ import { FRANCE_POSITION } from './../fields/LocationFields/utils/positions'
 import VenueProvidersManagerContainer from './VenueProvidersManager/VenueProvidersManagerContainer'
 import RibsUploadFeatureFlip from '../../../layout/FeatureFlip/RibsUploadFeatureFlip'
 import BankInformation from './BankInformation/BankInformation'
+import VenueType from '../ValueObjects/VenueType'
 
 const noop = () => {}
 
@@ -235,6 +236,7 @@ VenueEdition.propTypes = {
   query: PropTypes.shape().isRequired,
   trackModifyVenue: PropTypes.func.isRequired,
   venue: PropTypes.shape().isRequired,
+  venueTypes: PropTypes.arrayOf(PropTypes.instanceOf(VenueType)).isRequired,
 }
 
 export default VenueEdition

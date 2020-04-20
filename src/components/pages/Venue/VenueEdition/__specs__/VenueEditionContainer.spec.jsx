@@ -1,5 +1,7 @@
 import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueEditionContainer'
 import { venueNormalizer } from '../../../../../utils/normalizers'
+import { getCurrentUserUUID } from 'with-react-redux-login'
+import VenueType from '../../ValueObjects/VenueType'
 
 window.scroll = () => {}
 
@@ -17,6 +19,19 @@ jest.mock('redux-saga-data', () => {
 
 describe('src | components | pages | VenueContainer | mapStateToProps', () => {
   describe('mapStateToProps', () => {
+    let ownProps
+    beforeEach(() => {
+      ownProps = {
+        currentUser: { id: 1 },
+        match: {
+          params: {
+            offererId: 1,
+            venueId: 'WQ',
+          },
+        },
+      }
+    })
+
     it('should return an object with props', () => {
       // given
       const state = {
@@ -32,18 +47,9 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
           users: [],
         },
       }
-      const props = {
-        currentUser: { id: 1 },
-        match: {
-          params: {
-            offererId: 1,
-            venueId: 'WQ',
-          },
-        },
-      }
 
       // when
-      const result = mapStateToProps(state, props)
+      const result = mapStateToProps(state, ownProps)
 
       // then
       expect(result).toStrictEqual({
@@ -52,6 +58,31 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
           id: 'WQ',
           managingOffererId: 'M4',
         },
+        venueTypes: [],
+      })
+    })
+
+    it('should map venue types for the component', () => {
+      // given
+      const state = {
+        data: {
+          offerers: [],
+          userOfferers: [],
+          venues: [],
+          "venue-types": [{ id: 'AE', label: 'Patrimoine et tourisme' }],
+          users: [            {
+            email: 'john.doe@example.net',
+            currentUserUUID: getCurrentUserUUID(),
+          }],
+        },
+      }
+
+      // when
+      const props = mapStateToProps(state, ownProps)
+
+      // then
+      expect(props).toMatchObject({
+        venueTypes: [new VenueType({ id: 'AE', label: 'Patrimoine et tourisme' })]
       })
     })
   })
@@ -96,9 +127,15 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
         },
         type: 'REQUEST_DATA_GET_/OFFERERS/APEQ',
       })
+
       expect(dispatch.mock.calls[1][0]).toStrictEqual({
         config: { apiPath: '/userOfferers/APEQ', method: 'GET' },
         type: 'REQUEST_DATA_GET_/USEROFFERERS/APEQ',
+      })
+
+      expect(dispatch.mock.calls[2][0]).toStrictEqual({
+        config: { apiPath: '/venue-types', method: 'GET' },
+        type: 'REQUEST_DATA_GET_/VENUE-TYPES',
       })
     })
   })

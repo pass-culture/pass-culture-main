@@ -11,6 +11,7 @@ import withTracking from '../../../hocs/withTracking'
 import NotificationMessage from '../Notification'
 import { VENUE_CREATION_PATCH_KEYS } from '../utils/utils'
 import VenueCreation from './VenueCreation'
+import { selectVenueTypes } from '../../../../selectors/data/venueTypesSelectors'
 
 export const mapStateToProps = (
   state,
@@ -21,6 +22,7 @@ export const mapStateToProps = (
     },
   }
 ) => ({
+  venueTypes: selectVenueTypes(state),
   formInitialValues: {
     managingOffererId: offererId,
     bookingEmail: currentUser.email,
@@ -55,6 +57,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
         })
       )
       dispatch(requestData({ apiPath: `/userOfferers/${offererId}` }))
+      dispatch(requestData({ apiPath: `/venue-types` }))
     },
 
     handleSubmitRequest: ({ formValues, handleFail, handleSuccess }) => {

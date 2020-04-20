@@ -10,6 +10,7 @@ import { withRequiredLogin } from '../../../hocs'
 import withTracking from '../../../hocs/withTracking'
 import { VENUE_MODIFICATION_PATCH_KEYS } from '../utils/utils'
 import VenueEdition from './VenueEdition'
+import { selectVenueTypes } from '../../../../selectors/data/venueTypesSelectors'
 
 export const mapStateToProps = (
   state,
@@ -19,6 +20,7 @@ export const mapStateToProps = (
     },
   }
 ) => ({
+  venueTypes: selectVenueTypes(state),
   venue: selectVenueById(state, venueId),
   offerer: selectOffererById(state, offererId),
 })
@@ -48,6 +50,7 @@ export const mapDispatchToProps = (
         })
       )
       dispatch(requestData({ apiPath: `/userOfferers/${offererId}` }))
+      dispatch(requestData({ apiPath: `/venue-types` }))
     },
 
     handleSubmitRequest: ({ formValues, handleFail, handleSuccess }) => {

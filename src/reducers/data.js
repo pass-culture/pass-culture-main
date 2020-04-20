@@ -14,6 +14,7 @@ const data = createDataReducer({
   users: [],
   userOfferers: [],
   venues: [],
+  "venue-types": [],
   venueProviders: [],
 })
 

@@ -14,6 +14,7 @@ import bindGetSuggestionsToLatitude from '../fields/LocationFields/decorators/bi
 import bindGetSuggestionsToLongitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLongitude'
 import LocationFields from '../fields/LocationFields/LocationFields'
 import { FRANCE_POSITION } from '../fields/LocationFields/utils/positions'
+import VenueType from '../ValueObjects/VenueType'
 
 const noop = () => {}
 
@@ -212,6 +213,7 @@ VenueCreation.propTypes = {
   history: PropTypes.shape().isRequired,
   offerer: PropTypes.shape().isRequired,
   trackCreateVenue: PropTypes.func.isRequired,
+  venueTypes: PropTypes.arrayOf(PropTypes.instanceOf(VenueType)).isRequired,
 }
 
 export default VenueCreation
