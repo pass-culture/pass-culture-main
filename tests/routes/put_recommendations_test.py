@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from models.mediation import Mediation
 from models.recommendation import Recommendation
 from repository import repository
 from tests.conftest import clean_database, TestClient
@@ -11,7 +10,6 @@ from tests.model_creators.specific_creators import create_stock_from_event_occur
     create_stock_with_thing_offer, create_offer_with_thing_product, create_offer_with_event_product, \
     create_event_occurrence
 from utils.human_ids import humanize
-from utils.tutorials import upsert_tuto_mediations
 
 RECOMMENDATION_URL = '/recommendations'
 
@@ -756,89 +754,6 @@ class Put:
             mediation_ids = list(map(lambda x: x['mediationId'], json))
             assert humanize(active_mediation_id) in mediation_ids
             assert humanize(inactive_mediation_id) not in mediation_ids
-
-        @clean_database
-        def when_tutos_are_not_already_read(self, app):
-            # given
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue)
-            user = create_user()
-            event_occurrence1 = create_event_occurrence(offer)
-            event_occurrence2 = create_event_occurrence(offer)
-            stock1 = create_stock_from_event_occurrence(event_occurrence1)
-            stock2 = create_stock_from_event_occurrence(event_occurrence2)
-            thing_offer1 = create_offer_with_thing_product(venue)
-            thing_offer2 = create_offer_with_thing_product(venue)
-            stock3 = create_stock_from_offer(thing_offer1)
-            stock4 = create_stock_from_offer(thing_offer2)
-            create_mediation(thing_offer1)
-            create_mediation(thing_offer2)
-            repository.save(stock1, stock2, stock3, stock4, user)
-
-            upsert_tuto_mediations()
-
-            # when
-            auth_request = TestClient(app.test_client()).with_auth(user.email)
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?page=1" +
-                                        "&seed=0.5", json={})
-
-            # then
-            assert response.status_code == 200
-            recommendations = response.json
-            assert recommendations[0]['mediation']['tutoIndex'] == 0
-            assert recommendations[1]['mediation']['tutoIndex'] == 1
-
-        @clean_database
-        def when_tutos_are_already_read(self, app):
-            # given
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue)
-            user = create_user()
-            event_occurrence1 = create_event_occurrence(offer)
-            event_occurrence2 = create_event_occurrence(offer)
-            stock1 = create_stock_from_event_occurrence(event_occurrence1)
-            stock2 = create_stock_from_event_occurrence(event_occurrence2)
-            thing_offer1 = create_offer_with_thing_product(venue)
-            thing_offer2 = create_offer_with_thing_product(venue)
-            stock3 = create_stock_from_offer(thing_offer1)
-            stock4 = create_stock_from_offer(thing_offer2)
-            repository.save(stock1, stock2, stock3, stock4, user)
-            upsert_tuto_mediations()
-            tuto_mediation0 = Mediation.query.filter_by(tutoIndex=0).one()
-            tuto_mediation1 = Mediation.query.filter_by(tutoIndex=1).one()
-            tuto_recommendation0 = create_recommendation(user=user, mediation=tuto_mediation0)
-            tuto_recommendation1 = create_recommendation(user=user, mediation=tuto_mediation1)
-            repository.save(tuto_recommendation0, tuto_recommendation1)
-
-            humanized_tuto_recommendation0_id = humanize(tuto_recommendation0.id)
-            humanized_tuto_recommendation1_id = humanize(tuto_recommendation1.id)
-            reads = [
-                {
-                    "id": humanized_tuto_recommendation0_id,
-                    "dateRead": "2018-12-17T15:59:11.689Z"
-                },
-                {
-                    "id": humanized_tuto_recommendation1_id,
-                    "dateRead": "2018-12-17T15:59:15.689Z"
-                }
-            ]
-            data = {'readRecommendations': reads}
-            auth_request = TestClient(app.test_client()).with_auth(user.email)
-
-            # when
-            response = auth_request.put(RECOMMENDATION_URL +
-                                        "?page=1" +
-                                        "&seed=0.5", json=data)
-
-            # then
-            assert response.status_code == 200
-            recommendations = response.json
-            recommendation_ids = [r['id'] for r in recommendations]
-            assert humanized_tuto_recommendation0_id not in recommendation_ids
-            assert humanized_tuto_recommendation1_id not in recommendation_ids
 
         @clean_database
         def when_stock_has_past_booking_limit_date(self, app):

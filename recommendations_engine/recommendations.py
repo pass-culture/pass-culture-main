@@ -34,17 +34,7 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
 
 def create_recommendations_for_discovery(user: User, pagination_params: Dict, limit: int = 3) -> List[Recommendation]:
     recommendations = []
-    tuto_mediations_by_index = {}
 
-    max_tuto_index = 0
-    for tuto_mediation in get_all_tuto_mediations():
-        tuto_mediations_by_index[tuto_mediation.tutoIndex] = tuto_mediation
-        max_tuto_index = tuto_mediation.tutoIndex
-
-    read_recommendations_count = count_read_recommendations_for_user(user,
-                                                                     limit=max_tuto_index)
-
-    inserted_tuto_mediations = 0
     offers = get_offers_for_recommendations_discovery(
         limit=limit,
         pagination_params=pagination_params,
@@ -52,16 +42,6 @@ def create_recommendations_for_discovery(user: User, pagination_params: Dict, li
     )
 
     for (index, offer) in enumerate(offers):
-        while read_recommendations_count + index + inserted_tuto_mediations \
-                in tuto_mediations_by_index:
-            tuto_mediation_index = read_recommendations_count \
-                                   + index \
-                                   + inserted_tuto_mediations
-            _create_tuto_mediation_if_non_existent_for_user(
-                user,
-                tuto_mediations_by_index[tuto_mediation_index]
-            )
-            inserted_tuto_mediations += 1
         recommendations.append(_create_recommendation(user, offer))
     repository.save(*recommendations)
     return recommendations

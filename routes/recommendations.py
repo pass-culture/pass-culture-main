@@ -3,8 +3,7 @@ import random
 from flask import current_app as app, jsonify, request
 from flask_login import current_user, login_required
 
-from domain.build_recommendations import move_requested_recommendation_first, \
-    move_tutorial_recommendations_first
+from domain.build_recommendations import move_requested_recommendation_first
 from models import Recommendation
 from models.feature import FeatureToggle
 from recommendations_engine import create_recommendations_for_discovery, \
@@ -93,15 +92,12 @@ def put_recommendations():
         'seed': random.random() if request_seed is None else float(request_seed)
     }
 
-    created_recommendations = create_recommendations_for_discovery(limit=BLOB_SIZE,
+    recommendations = create_recommendations_for_discovery(limit=BLOB_SIZE,
                                                                    user=current_user,
                                                                    pagination_params=pagination_params)
 
-    recommendations = move_tutorial_recommendations_first(created_recommendations,
-                                                          seen_recommendation_ids,
-                                                          current_user)
     if requested_recommendation:
-        recommendations = move_requested_recommendation_first(created_recommendations,
+        recommendations = move_requested_recommendation_first(recommendations,
                                                               requested_recommendation)
 
     return jsonify(serialize_recommendations(recommendations, current_user)), 200
