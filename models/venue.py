@@ -1,9 +1,5 @@
-from sqlalchemy import BigInteger, \
-    Column, \
-    ForeignKey, \
-    Numeric, \
-    String, \
-    TEXT, Boolean, CheckConstraint
+from sqlalchemy import TEXT, BigInteger, Boolean, CheckConstraint, Column, \
+    ForeignKey, Integer, Numeric, String
 from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
@@ -101,6 +97,10 @@ class Venue(PcObject,
         ),
         nullable=True
     )
+
+    venueTypeId = Column(Integer,
+                         ForeignKey('venue_type.id'),
+                         nullable=True)
 
     # openingHours = Column(ARRAY(TIME))
     # Ex: [['09:00', '18:00'], ['09:00', '19:00'], null,  ['09:00', '18:00']]
