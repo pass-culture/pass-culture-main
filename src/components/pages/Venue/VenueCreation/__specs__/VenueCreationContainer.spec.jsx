@@ -42,13 +42,7 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
         match: {
           params: {
             offererId: 1,
-            venueId: 1,
           },
-        },
-        query: {
-          context: () => ({
-            isCreatedEntity: true,
-          }),
         },
       }
 
@@ -80,11 +74,6 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
       params: {
         offererId: 'APEQ',
       },
-    },
-    query: {
-      context: () => ({
-        isCreatedEntity: true,
-      }),
     },
   }
 
@@ -122,20 +111,6 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
   describe('handleSubmitRequest', () => {
     it('should call patch method with proper params', function() {
       // given
-      const ownProps = {
-        match: {
-          params: {
-            venueId: 'TR',
-          },
-        },
-        query: {
-          context: () => ({
-            method: 'PATCH',
-            isCreatedEntity: false,
-          }),
-        },
-      }
-
       const formValues = {
         comment: 'Commentaire',
         address: '3 Place Saint-Michel',
@@ -154,17 +129,17 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
       // then
       expect(dispatch).toHaveBeenCalledWith({
         config: {
-          apiPath: '/venues/TR',
+          apiPath: '/venues/',
           body: {
             comment: 'Commentaire',
             address: '3 Place Saint-Michel',
           },
           handleFail: handleFail,
           handleSuccess: handleSuccess,
-          method: 'PATCH',
+          method: 'POST',
           normalizer: venueNormalizer,
         },
-        type: 'REQUEST_DATA_PATCH_/VENUES/TR',
+        type: 'REQUEST_DATA_POST_/VENUES/',
       })
     })
   })
@@ -217,7 +192,6 @@ describe('src | components | pages | VenueContainer | mergeProps', () => {
       match: ownProps.match,
       handleInitialRequest: expect.any(Function),
       trackCreateVenue: expect.any(Function),
-      trackModifyVenue: expect.any(Function),
     })
   })
 
@@ -236,24 +210,6 @@ describe('src | components | pages | VenueContainer | mergeProps', () => {
     // then
     expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
       action: 'createVenue',
-      name: 'RTgfd67',
-    })
-  })
-
-  it('should map a tracking event for updating a venue', () => {
-    // given
-    const stateProps = {}
-    const ownProps = {
-      tracking: {
-        trackEvent: jest.fn(),
-      },
-    }
-    // when
-    mergeProps(stateProps, {}, ownProps).trackModifyVenue('RTgfd67')
-
-    // then
-    expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
-      action: 'modifyVenue',
       name: 'RTgfd67',
     })
   })

@@ -1,5 +1,5 @@
 import { mount, shallow } from 'enzyme'
-import { createBrowserHistory, createMemoryHistory } from 'history'
+import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Form } from 'react-final-form'
 import { Provider } from 'react-redux'
@@ -227,43 +227,6 @@ describe('src | components | pages | Venue', () => {
         // then
         expect(wrapper.state('isRequestPending')).toBe(false)
       })
-
-      describe('create new offer link', () => {
-        it('should redirect to offer creation page', () => {
-          // given
-          jest
-            .spyOn(reactReduxLogin, 'selectCurrentUser')
-            .mockReturnValue({ currentUser: 'fakeUser' })
-
-          props.venue = {
-            publicName: 'fake public name',
-          }
-
-          const { store } = configureStore()
-          const history = createMemoryHistory()
-          history.push('/structures/APEQ/lieux/CM')
-
-          let wrapper = mount(
-            <Provider store={store}>
-              <Router history={history}>
-                <VenueCreation
-                  {...props}
-                  history={history}
-                />
-              </Router>
-            </Provider>
-          )
-          const createOfferLink = wrapper.find({ children: 'Créer une offre' })
-
-          // when
-          createOfferLink.simulate('click', { button: 0 })
-
-          // then
-          expect(`${history.location.pathname}${history.location.search}`).toBe(
-            '/offres/creation?lieu=CM&structure=APEQ'
-          )
-        })
-      })
     })
   })
 
@@ -326,65 +289,6 @@ describe('src | components | pages | Venue', () => {
             }
           )
         })
-
-        describe('when editing a venue', () => {
-          beforeEach(() => {
-            props.query.context = () => ({
-              isCreatedEntity: false,
-              isModifiedEntity: true,
-              readOnly: false,
-            })
-          })
-
-          const action = {
-            config: {
-              apiPath: '/venues/CM',
-              method: 'PATCH',
-            },
-            payload: {
-              datum: {
-                id: 'CM',
-              },
-            },
-          }
-
-          it('should change query to read only null', () => {
-            // given
-            const wrapper = shallow(<VenueCreation {...props} />)
-            const state = wrapper.state()
-
-            // when
-            wrapper.instance().handleFormSuccess(jest.fn())(state, action)
-
-            // then
-            expect(props.query.changeToReadOnly).toHaveBeenCalledWith(null)
-          })
-
-          it('should call handleSubmitRequestSuccess with the right parameters when venue is modified', () => {
-            // given
-            const wrapper = shallow(<VenueCreation {...props} />)
-            const state = wrapper.state()
-
-            // when
-            wrapper.instance().handleFormSuccess(jest.fn())(state, action)
-
-            // then
-            expect(props.handleSubmitRequestSuccess).toHaveBeenCalledWith(
-              { isRequestPending: false },
-              {
-                config: {
-                  apiPath: '/venues/CM',
-                  method: 'PATCH',
-                },
-                payload: {
-                  datum: {
-                    id: 'CM',
-                  },
-                },
-              }
-            )
-          })
-        })
       })
     })
   })
@@ -408,33 +312,6 @@ describe('src | components | pages | Venue', () => {
 
       // then
       expect(props.trackCreateVenue).toHaveBeenCalledWith('Ty5645dgfd')
-    })
-
-    it('should track venue update', () => {
-      // given
-      const state = {}
-
-      jest.spyOn(props.query, 'context').mockReturnValue({
-        isCreatedEntity: false,
-        isModifiedEntity: false,
-        readOnly: false,
-      })
-
-      const action = {
-        payload: {
-          datum: {
-            id: 'Ty5645dgfd',
-          },
-        },
-      }
-      const wrapper = shallow(<VenueCreation {...props} />)
-      const formResolver = jest.fn()
-
-      // when
-      wrapper.instance().handleFormSuccess(formResolver)(state, action)
-
-      // then
-      expect(props.trackModifyVenue).toHaveBeenCalledWith('CM')
     })
   })
 })

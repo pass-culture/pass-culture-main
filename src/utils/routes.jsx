@@ -82,7 +82,12 @@ const routes = [
   },
   {
     component: VenueCreationContainer,
-    path: '/structures/:offererId/lieux/:venueId/creation',
+    path: '/structures/:offererId/lieux/creation',
+    title: 'Lieu',
+  },
+  {
+    component: VenueEditionContainer,
+    path: '/structures/:offererId/lieux/:venueId/modification',
     title: 'Lieu',
   },
   {
@@ -90,7 +95,6 @@ const routes = [
     path: '/structures/:offererId/lieux/:venueId',
     title: 'Lieu',
   },
-
   {
     component: Offers,
     path: '/structures/:offererId/lieux/:venueId/offres',

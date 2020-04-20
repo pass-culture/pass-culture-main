@@ -2,11 +2,8 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import { getCanSubmit, parseSubmitErrors, removeWhitespaces } from 'react-final-form-utils'
-import { NavLink } from 'react-router-dom'
-import Icon from '../../../layout/Icon'
 import Main from '../../../layout/Main'
 import Titles from '../../../layout/Titles/Titles'
-import CreateControl from '../controls/CreateControl/CreateControl'
 import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
 
@@ -17,7 +14,6 @@ import bindGetSuggestionsToLatitude from '../fields/LocationFields/decorators/bi
 import bindGetSuggestionsToLongitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLongitude'
 import LocationFields from '../fields/LocationFields/LocationFields'
 import { FRANCE_POSITION } from '../fields/LocationFields/utils/positions'
-import VenueProvidersManagerContainer from '../VenueProvidersManager/VenueProvidersManagerContainer'
 
 const noop = () => {}
 
@@ -39,10 +35,6 @@ class VenueCreation extends PureComponent {
     }
   }
 
-  checkIfVenueExists = initialVenueId => {
-    return !!initialVenueId
-  }
-
   handleFormFail = formResolver => (state, action) => {
     const { handleSubmitRequestFail } = this.props
     const { payload } = action
@@ -54,20 +46,15 @@ class VenueCreation extends PureComponent {
 
   handleFormSuccess = formResolver => (state, action) => {
     const {
-      formInitialValues,
       handleSubmitRequestSuccess,
       history,
       match: {
         params: { offererId },
       },
-      query,
       trackCreateVenue,
-      trackModifyVenue,
     } = this.props
 
-    const { id: venueId } = formInitialValues
     const nextState = { isRequestPending: false }
-    const { isCreatedEntity } = query.context()
 
     this.setState(nextState, () => {
       handleSubmitRequestSuccess(state, action)
@@ -76,13 +63,8 @@ class VenueCreation extends PureComponent {
 
     const createdVenueId = action.payload.datum.id
 
-    if (isCreatedEntity) {
-      history.push(`/structures/${offererId}`)
-      trackCreateVenue(createdVenueId)
-    } else {
-      trackModifyVenue(venueId)
-      query.changeToReadOnly(null)
-    }
+    history.push(`/structures/${offererId}`)
+    trackCreateVenue(createdVenueId)
   }
 
   handleOnFormSubmit = formValues => {
@@ -106,12 +88,9 @@ class VenueCreation extends PureComponent {
       match: {
         params: { offererId, venueId },
       },
-      query,
     } = this.props
     const { isRequestPending } = this.state
-    const { isCreatedEntity, isModifiedEntity, readOnly } = query.context({
-      id: venueId,
-    })
+    const readOnly = false
 
     const { bic, iban, siret: initialSiret } = formInitialValues || {}
 
@@ -125,30 +104,18 @@ class VenueCreation extends PureComponent {
     } = values
 
     const siretValidOnCreation = formSiret && removeWhitespaces(formSiret).length === 14
-    const fieldReadOnlyBecauseFrozenFormSiretOnCreation = isCreatedEntity && siretValidOnCreation
-
-    const siretValidOnModification = initialSiret !== null
-
-    const fieldReadOnlyBecauseFrozenFormSiretOnModification =
-      isModifiedEntity && siretValidOnModification
-
-    const fieldReadOnlyBecauseFrozenFormSiret =
-      fieldReadOnlyBecauseFrozenFormSiretOnCreation ||
-      fieldReadOnlyBecauseFrozenFormSiretOnModification
 
     const areBankInformationProvided = bic && iban
-
     return (
       <form
         name="venue"
         onSubmit={handleSubmit}
       >
         <IdentifierFields
-          fieldReadOnlyBecauseFrozenFormSiret={fieldReadOnlyBecauseFrozenFormSiret}
+          fieldReadOnlyBecauseFrozenFormSiret={siretValidOnCreation}
           formSiret={formSiret}
           initialSiret={initialSiret}
-          isCreatedEntity={isCreatedEntity}
-          isModifiedEntity={isModifiedEntity}
+          isCreatedEntity
           readOnly={readOnly}
         />
         <BankFieldsContainer
@@ -156,7 +123,7 @@ class VenueCreation extends PureComponent {
           readOnly={readOnly}
         />
         <LocationFields
-          fieldReadOnlyBecauseFrozenFormSiret={fieldReadOnlyBecauseFrozenFormSiret}
+          fieldReadOnlyBecauseFrozenFormSiret={siretValidOnCreation}
           form={form}
           formIsLocationFrozen={formIsLocationFrozen}
           formLatitude={formLatitude === '' ? FRANCE_POSITION.latitude : formLatitude}
@@ -171,18 +138,14 @@ class VenueCreation extends PureComponent {
           <ModifyOrCancelControl
             form={form}
             history={history}
-            isCreatedEntity={isCreatedEntity}
+            isCreatedEntity
             offererId={offererId}
             readOnly={readOnly}
             venueId={venueId}
           />
-          {readOnly && <CreateControl
-            offererId={offererId}
-            venueId={venueId}
-                       />}
           <ReturnOrSubmitControl
             canSubmit={canSubmit}
-            isCreatedEntity={isCreatedEntity}
+            isCreatedEntity
             isRequestPending={isRequestPending}
             offererId={offererId}
             readOnly={readOnly}
@@ -196,43 +159,21 @@ class VenueCreation extends PureComponent {
     const {
       formInitialValues,
       match: {
-        params: { offererId, venueId },
+        params: { offererId },
       },
-      query,
       offerer,
     } = this.props
 
     const { name: offererName } = offerer || {}
-    const { id: initialId, isVirtual: initialIsVirtual, name: initialName } =
-      formInitialValues || {}
-    const { isCreatedEntity } = query.context({
-      id: venueId,
-    })
+    const { isVirtual: initialIsVirtual, name: initialName } = formInitialValues || {}
 
-    const decorators = [bindGetSuggestionsToLatitude, bindGetSuggestionsToLongitude]
-
-    if (isCreatedEntity) {
-      decorators.push(bindGetSiretInformationToSiret)
-    }
+    const decorators = [
+      bindGetSuggestionsToLatitude,
+      bindGetSuggestionsToLongitude,
+      bindGetSiretInformationToSiret,
+    ]
 
     const showForm = !initialIsVirtual && typeof offerer !== 'undefined'
-
-    const isDiplayedOrModifiedVenue = this.checkIfVenueExists(initialId) && !isCreatedEntity
-
-    const actionLink = isDiplayedOrModifiedVenue && (
-      <NavLink
-        className="cta button is-primary"
-        id="action-create-offer"
-        to={`/offres/creation?lieu=${initialId}&structure=${offererId}`}
-      >
-        <span className="icon">
-          <Icon svg="ico-offres-w" />
-        </span>
-        <span>
-          {'Créer une offre'}
-        </span>
-      </NavLink>
-    )
 
     return (
       <Main
@@ -241,15 +182,12 @@ class VenueCreation extends PureComponent {
         name="venue"
       >
         <Titles
-          action={actionLink}
           subtitle={initialName}
           title="Lieu"
         />
-        {isCreatedEntity && <p className="advice">
+        <p className="advice">
           {'Ajoutez un lieu où accéder à vos offres.'}
-                            </p>}
-
-        {!isCreatedEntity && <VenueProvidersManagerContainer venue={formInitialValues} />}
+        </p>
 
         {showForm && (
           <Form
@@ -273,9 +211,7 @@ VenueCreation.propTypes = {
   handleSubmitRequestSuccess: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   offerer: PropTypes.shape().isRequired,
-  query: PropTypes.shape().isRequired,
   trackCreateVenue: PropTypes.func.isRequired,
-  trackModifyVenue: PropTypes.func.isRequired,
 }
 
 export default VenueCreation

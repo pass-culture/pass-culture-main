@@ -50,25 +50,7 @@ ShallowWrapper {
     query={
       Object {
         "changeToReadOnly": [MockFunction],
-        "context": [MockFunction] {
-          "calls": Array [
-            Array [
-              Object {
-                "id": "AQYQ",
-              },
-            ],
-          ],
-          "results": Array [
-            Object {
-              "type": "return",
-              "value": Object {
-                "isCreatedEntity": true,
-                "isModifiedEntity": false,
-                "readOnly": false,
-              },
-            },
-          ],
-        },
+        "context": [MockFunction],
       }
     }
     trackCreateVenue={[MockFunction]}
@@ -94,7 +76,7 @@ ShallowWrapper {
       },
       "children": Array [
         <Titles
-          action={false}
+          action={null}
           subtitle={null}
           title="Lieu"
         />,
@@ -103,7 +85,6 @@ ShallowWrapper {
         >
           Ajoutez un lieu où accéder à vos offres.
         </p>,
-        false,
         <ReactFinalForm
           decorators={
             Array [
@@ -132,7 +113,7 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "action": false,
+          "action": null,
           "subtitle": null,
           "title": "Lieu",
         },
@@ -152,7 +133,6 @@ ShallowWrapper {
         "rendered": "Ajoutez un lieu où accéder à vos offres.",
         "type": "p",
       },
-      false,
       Object {
         "instance": null,
         "key": undefined,
@@ -189,7 +169,7 @@ ShallowWrapper {
         },
         "children": Array [
           <Titles
-            action={false}
+            action={null}
             subtitle={null}
             title="Lieu"
           />,
@@ -198,7 +178,6 @@ ShallowWrapper {
           >
             Ajoutez un lieu où accéder à vos offres.
           </p>,
-          false,
           <ReactFinalForm
             decorators={
               Array [
@@ -227,7 +206,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "action": false,
+            "action": null,
             "subtitle": null,
             "title": "Lieu",
           },
@@ -247,7 +226,6 @@ ShallowWrapper {
           "rendered": "Ajoutez un lieu où accéder à vos offres.",
           "type": "p",
         },
-        false,
         Object {
           "instance": null,
           "key": undefined,

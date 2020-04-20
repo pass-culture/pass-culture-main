@@ -22,10 +22,9 @@ export const mapStateToProps = (state, ownProps) => {
     match: {
       params: { offererId, venueId },
     },
-    query,
   } = ownProps
   const { id: currentUserId } = currentUser
-  const { isCreatedEntity } = query.context()
+  const isCreatedEntity = true
   const formInitialValues = selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity(
     state,
     venueId,
@@ -51,10 +50,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     match: {
       params: { offererId, venueId },
     },
-    query,
   } = ownProps
-
-  const { isCreatedEntity, method } = query.context({ id: venueId })
 
   return {
     handleInitialRequest: () => {
@@ -79,7 +75,8 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     },
 
     handleSubmitRequest: ({ formValues, handleFail, handleSuccess }) => {
-      const apiPath = `/venues/${isCreatedEntity ? '' : venueId}`
+      const apiPath = '/venues/'
+      const isCreatedEntity = true
 
       const body = formatPatch(
         formValues,
@@ -94,7 +91,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
           body,
           handleFail,
           handleSuccess,
-          method,
+          method: 'POST',
           normalizer: venueNormalizer,
         })
       )
@@ -151,9 +148,6 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
     ...ownProps,
     trackCreateVenue: createdVenueId => {
       ownProps.tracking.trackEvent({ action: 'createVenue', name: createdVenueId })
-    },
-    trackModifyVenue: venueId => {
-      ownProps.tracking.trackEvent({ action: 'modifyVenue', name: venueId })
     },
   }
 }
