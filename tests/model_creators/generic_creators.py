@@ -13,7 +13,7 @@ from models import AllocinePivot, AllocineVenueProviderPriceRule, ApiKey, \
     Criterion, Deposit, Email, Favorite, ImportStatus, IrisFrance, IrisVenues, \
     Mediation, Offer, Offerer, Payment, PaymentMessage, PaymentStatus, \
     Provider, Recommendation, RightsType, Stock, ThingType, User, UserOfferer, \
-    Venue, VenueProvider
+    Venue, VenueProvider, SeenOffer
 from models.allocine_venue_provider import AllocineVenueProvider
 from models.email import EmailStatus
 from models.payment_status import TransactionStatus
@@ -384,6 +384,16 @@ def create_recommendation(offer: Offer = None,
     recommendation.user = user
 
     return recommendation
+
+
+def create_seen_offer(offer: Offer, user: User, date_seen: Optional[datetime] = None) -> SeenOffer:
+    if not date_seen:
+        date_seen = datetime.utcnow()
+    seen_offer = SeenOffer()
+    seen_offer.offer = offer
+    seen_offer.user = user
+    seen_offer.dateSeen = date_seen
+    return seen_offer
 
 
 def create_stock(quantity: int = None, booking_limit_datetime: datetime = None, beginning_datetime: datetime = None,

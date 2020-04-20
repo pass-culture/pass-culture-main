@@ -5,13 +5,13 @@ from models import PcObject
 from models.db import Model
 
 
-class SeenOffers(PcObject, Model):
+class SeenOffer(PcObject, Model):
     dateSeen = Column(DateTime, nullable=False)
     offerId = Column(BigInteger, ForeignKey('offer.id'), nullable=False, index=True)
     userId = Column(BigInteger, ForeignKey('user.id'), nullable=False, index=True)
     offer = relationship('Offer',
                          foreign_keys=[offerId],
-                         backref='SeenOffers')
+                         backref='SeenOffer')
     user = relationship('User',
                         foreign_keys=[userId],
-                        backref='SeenOffers')
+                        backref='SeenOffer')

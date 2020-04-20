@@ -1,7 +1,7 @@
-"""create_seen_offers_table
+"""create_seen_offer_table
 
 Revision ID: c62097ada14f
-Revises: 2b6541bb0076
+Revises: 040875ff5d5b
 Create Date: 2020-04-10 13:51:57.162488
 
 """
@@ -11,32 +11,32 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = 'c62097ada14f'
-down_revision = '2b6541bb0076'
+down_revision = '040875ff5d5b'
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
     op.create_table(
-        'seen_offers',
+        'seen_offer',
         sa.Column('id', sa.BigInteger, primary_key=True, autoincrement=True),
-        sa.Column('dateSeen', sa.BigInteger, nullable=False),
+        sa.Column('dateSeen', sa.DateTime, nullable=False),
         sa.Column('offerId', sa.BigInteger, nullable=False, index=True),
         sa.Column('userId', sa.BigInteger, nullable=False, index=True),
     )
     op.create_foreign_key(
-        'seen_offers_offerId_fkey',
-        'seen_offers', 'offer',
+        'seen_offer_offerId_fkey',
+        'seen_offer', 'offer',
         ['offerId'], ['id'],
     )
     op.create_foreign_key(
-        'seen_offers_userId_fkey',
-        'seen_offers', 'user',
+        'seen_offer_userId_fkey',
+        'seen_offer', 'user',
         ['userId'], ['id'],
     )
 
 
 def downgrade():
-    op.drop_constraint('seen_offers_offerId_fkey', 'seen_offers', type_='foreignkey')
-    op.drop_constraint('seen_offers_userId_fkey', 'seen_offers', type_='foreignkey')
-    op.drop_table('iris_venues')
+    op.drop_constraint('seen_offer_offerId_fkey', 'seen_offer', type_='foreignkey')
+    op.drop_constraint('seen_offer_userId_fkey', 'seen_offer', type_='foreignkey')
+    op.drop_table('seen_offer')

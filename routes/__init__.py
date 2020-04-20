@@ -19,6 +19,7 @@ def install_routes():
     import routes.providers
     import routes.recommendations
     import routes.reimbursements
+    import routes.seen_offers
     import routes.storage
     import routes.types
     import routes.user_offerers
