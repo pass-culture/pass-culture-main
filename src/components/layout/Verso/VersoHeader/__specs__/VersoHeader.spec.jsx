@@ -9,24 +9,10 @@ describe('src | components | layout | Verso | VersoHeader', () => {
 
   beforeEach(() => {
     props = {
-      history: { push: jest.fn() },
-      location: {
-        pathname: '',
-        search: '',
-      },
-      match: { params: {} },
       subtitle: 'Offer subtitle',
       title: 'Offer title',
       type: 'EventType.SPECTACLE_VIVANT',
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<VersoHeader {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   it('should display the offer title when provided', () => {
