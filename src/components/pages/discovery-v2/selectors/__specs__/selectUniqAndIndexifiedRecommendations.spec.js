@@ -1,32 +1,6 @@
-import selectRecommendationsWithLastFakeReco from '../selectUniqAndIndexifiedRecommendations'
+import selectUniqAndIndexifiedRecommendations from '../selectUniqAndIndexifiedRecommendations'
 
-describe('src | components | pages | discovery | selectors | selectRecommendationsWithLastFakeReco', () => {
-  it('should return an array of object having an `uniqId` property', () => {
-    // given
-    const state = {
-      data: {
-        recommendations: [
-          {
-            productIdentifier: 'product_0',
-            id: 'AE',
-          },
-          {
-            id: 'BF',
-          },
-        ],
-      },
-    }
-
-    // when
-    const results = selectRecommendationsWithLastFakeReco(state)
-
-    // then
-    expect(results).not.toHaveLength(0)
-    results.forEach(result => {
-      expect(result.productIdentifier).toBeDefined()
-    })
-  })
-
+describe('src | components | pages | discovery | selectors | selectUniqAndIndexifiedRecommendations', () => {
   it('should return an empty array if there are no recommendation', () => {
     // given
     const state = {
@@ -41,7 +15,7 @@ describe('src | components | pages | discovery | selectors | selectRecommendatio
     }
 
     // when
-    const result = selectRecommendationsWithLastFakeReco(state)
+    const result = selectUniqAndIndexifiedRecommendations(state)
 
     // then
     expect(result).toStrictEqual([])
@@ -54,7 +28,6 @@ describe('src | components | pages | discovery | selectors | selectRecommendatio
       dateCreated: '2018-10-10T14:19:27.410551Z',
       dateRead: null,
       dateUpdated: '2018-10-10T14:19:27.410609Z',
-      productIdentifier: 'product_0',
       distance: '5444 km',
       id: 'AEWPS',
       index: 0,
@@ -77,7 +50,7 @@ describe('src | components | pages | discovery | selectors | selectRecommendatio
     }
 
     // when
-    const result = selectRecommendationsWithLastFakeReco(state)
+    const result = selectUniqAndIndexifiedRecommendations(state)
 
     // then
     expect(result[0]).toStrictEqual(recommendation)

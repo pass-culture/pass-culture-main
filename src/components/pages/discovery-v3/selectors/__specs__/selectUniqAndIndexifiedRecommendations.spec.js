@@ -1,32 +1,6 @@
 import selectUniqAndIndexifiedRecommendations from '../selectUniqAndIndexifiedRecommendations'
 
 describe('src | components | pages | discovery | selectors | selectUniqAndIndexifiedRecommendations', () => {
-  it('should return an array of object having an `uniqId` property', () => {
-    // given
-    const state = {
-      data: {
-        recommendations: [
-          {
-            productIdentifier: 'product_0',
-            id: 'AE',
-          },
-          {
-            id: 'BF',
-          },
-        ],
-      },
-    }
-
-    // when
-    const results = selectUniqAndIndexifiedRecommendations(state)
-
-    // then
-    expect(results).not.toHaveLength(0)
-    results.forEach(result => {
-      expect(result.productIdentifier).toBeDefined()
-    })
-  })
-
   it('should return an empty array if there are no recommendations', () => {
     // given
     const state = {
@@ -54,7 +28,6 @@ describe('src | components | pages | discovery | selectors | selectUniqAndIndexi
       dateCreated: '2018-10-10T14:19:27.410551Z',
       dateRead: null,
       dateUpdated: '2018-10-10T14:19:27.410609Z',
-      productIdentifier: 'product_0',
       distance: '5444 km',
       id: 'AEWPS',
       index: 0,

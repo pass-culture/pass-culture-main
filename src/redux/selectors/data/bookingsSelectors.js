@@ -190,7 +190,6 @@ export const selectPastBookingByOfferId = createCachedSelector(
         }
       }
     }
-
     return null
   }
 )((state, offerId = '') => offerId)

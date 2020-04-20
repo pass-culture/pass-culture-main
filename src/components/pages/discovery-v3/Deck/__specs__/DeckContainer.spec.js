@@ -29,7 +29,6 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
       id: 'AE',
       mediationId,
       offerId,
-      productIdentifier: 'product_0',
       uniqId: 3,
     }
     initialState = {

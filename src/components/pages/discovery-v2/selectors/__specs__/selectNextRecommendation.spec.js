@@ -5,12 +5,10 @@ describe('src | components | pages | discovery | selectors | selectNextRecommend
     // given
     const offerId = 'AE'
     const currentRecommendation = {
-      productIdentifier: 'foo',
       id: 'BF',
       offerId,
     }
     const nextRecommendation = {
-      productIdentifier: 'bar',
       offerId: 'BF',
     }
     const state = {
