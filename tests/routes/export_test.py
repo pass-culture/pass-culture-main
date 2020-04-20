@@ -199,6 +199,7 @@ def test_pending_validation_return_only_requested_data(app):
               'postalCode': '93100',
               'siret': None,
               'validationToken': 'venue_validation_token',
+              'venueTypeId': None,
               'modelName': 'Venue'
               }]
     }

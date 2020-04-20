@@ -39,6 +39,7 @@ from models.user_offerer import RightsType, UserOfferer
 from models.user_session import UserSession
 from models.venue import Venue
 from models.venue_provider import VenueProvider
+from models.venue_type import VenueType
 from models.versioned_mixin import VersionedMixin
 from models.allocine_venue_provider import AllocineVenueProvider
 from models.allocine_venue_provider_price_rule import \
@@ -91,7 +92,8 @@ __all__ = (
     'UserOfferer',
     'User',
     'UserSession',
-    'Venue'
+    'Venue',
+    'VenueType'
 )
 
 # Order matters
@@ -101,6 +103,7 @@ models = (
     Provider,
     Offerer,
     UserOfferer,
+    VenueType,
     Venue,
     ApiKey,
     AllocinePivot,

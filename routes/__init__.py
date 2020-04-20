@@ -26,6 +26,7 @@ def install_routes():
     import routes.validate
     import routes.venue_providers
     import routes.venues
+    import routes.venue_types
     import routes.health_check
 
     if IS_DEV:

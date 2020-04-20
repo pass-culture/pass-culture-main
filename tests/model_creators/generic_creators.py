@@ -17,6 +17,7 @@ from models import AllocinePivot, AllocineVenueProviderPriceRule, ApiKey, \
 from models.allocine_venue_provider import AllocineVenueProvider
 from models.email import EmailStatus
 from models.payment_status import TransactionStatus
+from models.venue_type import VenueType
 from scripts.iris.import_iris import WGS_SPATIAL_REFERENCE_IDENTIFIER, \
     create_centroid_from_polygon
 from tests.model_creators.specific_creators import \
@@ -550,6 +551,17 @@ def create_venue_provider(venue: Venue,
     venue_provider.syncWorkerId = sync_worker_id
 
     return venue_provider
+
+
+def create_venue_type(label: str, idx: Optional[int] = None) -> VenueType:
+    venue_type = VenueType()
+
+    if idx:
+        venue_type.id = idx
+
+    venue_type.label = label
+
+    return venue_type
 
 
 def create_allocine_venue_provider(venue: Provider, allocine_provider: Venue, is_duo: bool = False,
