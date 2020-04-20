@@ -22,6 +22,53 @@ class TestableOffererBankInformationProvider(OffererBankInformationProvider):
         pass
 
 
+def demarche_simplifiee_application_detail_response(siren, bic, iban, id=1, updated_at="2019-01-21T18:55:03.387Z"):
+    return {
+        "dossier":
+        {
+            "id": id,
+            "updated_at": updated_at,
+            "state": "closed",
+            "entreprise":
+            {
+                "siren": siren,
+            },
+            "champs":
+            [
+                {
+                    "value": bic,
+                    "type_de_champ":
+                    {
+                        "id": 352727,
+                        "libelle": "BIC",
+                        "type_champ": "text",
+                        "order_place": 8,
+                        "description": ""
+                    }
+                },
+                {
+                    "value": iban,
+                    "type_de_champ":
+                    {
+                        "id": 352722,
+                        "libelle": "IBAN",
+                        "type_champ": "text",
+                        "order_place": 9,
+                        "description": ""
+                    }
+                },
+            ]
+        }
+    }
+
+
+def activate_provider():
+    provider_object = OffererBankInformationProvider()
+    provider_object.provider.isActive = True
+    repository.save(provider_object.provider)
+    provider_object.updateObjects()
+
+
 class OffererBankInformationProviderProviderTest:
     @patch(
         'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_beneficiary_import')
@@ -33,19 +80,11 @@ class OffererBankInformationProviderProviderTest:
         get_application_details.return_value = {}
         get_all_application_ids_for_beneficiary_import.return_value = []
 
-        # When Then
-        provider_test(app,
-                      OffererBankInformationProvider,
-                      None,
-                      checkedObjects=0,
-                      createdObjects=0,
-                      updatedObjects=0,
-                      erroredObjects=0,
-                      checkedThumbs=0,
-                      createdThumbs=0,
-                      updatedThumbs=0,
-                      erroredThumbs=0,
-                      BankInformation=0)
+        # When
+        OffererBankInformationProvider().updateObjects()
+
+        # Then
+        assert BankInformation.query.count() == 0
 
     @patch(
         'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_beneficiary_import')
@@ -57,38 +96,8 @@ class OffererBankInformationProviderProviderTest:
                                                                                                    app):
         # Given
         get_all_application_ids_for_beneficiary_import.return_value = [1]
-        get_application_details.return_value = {
-            "dossier": {
-                "id": 1,
-                "updated_at": "2020-04-15T09:01:12.771Z",
-                "state": "closed",
-                "entreprise": {
-                    "siren": "793875030"
-                },
-                "champs": [
-                    {
-                        "value": 'FR7630006000011234567890189',
-                        "type_de_champ": {
-                            "id": 352722,
-                            "libelle": "IBAN",
-                            "type_champ": "text",
-                            "order_place": 10,
-                            "description": ""
-                        }
-                    },
-                    {
-                        "value": "BDFEFR2LCCB",
-                        "type_de_champ": {
-                            "id": 352727,
-                            "libelle": "BIC",
-                            "type_champ": "text",
-                            "order_place": 11,
-                            "description": ""
-                        }
-                    }
-                ]
-            }
-        }
+        get_application_details.return_value = demarche_simplifiee_application_detail_response(
+            siren="793875030", bic="BdFefr2LCCB", iban="FR76 3000 6000  0112 3456 7890 189")
 
         offerer = create_offerer(siren='793875030')
 
@@ -96,20 +105,11 @@ class OffererBankInformationProviderProviderTest:
 
         offerer_id = offerer.id
 
-        # When Then
-        provider_test(app,
-                      OffererBankInformationProvider,
-                      None,
-                      checkedObjects=1,
-                      createdObjects=1,
-                      updatedObjects=0,
-                      erroredObjects=0,
-                      checkedThumbs=0,
-                      createdThumbs=0,
-                      updatedThumbs=0,
-                      erroredThumbs=0,
-                      BankInformation=1)
-        bank_information = BankInformation.query.first()
+        # When
+        activate_provider()
+
+        # Then
+        bank_information = BankInformation.query.one()
         assert bank_information.iban == 'FR7630006000011234567890189'
         assert bank_information.bic == 'BDFEFR2LCCB'
         assert bank_information.applicationId == 1
@@ -135,101 +135,21 @@ class OffererBankInformationProviderProviderTest:
         # Given
         get_all_application_ids_for_beneficiary_import.return_value = [1, 2]
         get_application_details.side_effect = [
-            {
-                "dossier":
-                    {
-                        "id": 1,
-                        "updated_at": "2019-01-21T18:55:03.387Z",
-                        "state": "closed",
-                        "entreprise":
-                            {
-                                "siren": "793875019",
-                                "siret_siege_social": "79387501900089"
-                            },
-                        "champs":
-                            [
-                                {
-                                    "value": "BDFEFR2LCCB",
-                                    "type_de_champ":
-                                        {
-                                            "id": 352727,
-                                            "libelle": "BIC",
-                                            "type_champ": "text",
-                                            "order_place": 8,
-                                            "description": ""
-                                        }
-                                },
-                                {
-                                    "value": "FR7630006000011234567890189",
-                                    "type_de_champ":
-                                        {
-                                            "id": 352722,
-                                            "libelle": "IBAN",
-                                            "type_champ": "text",
-                                            "order_place": 9,
-                                            "description": ""
-                                        }
-                                }
-                            ]
-                    }
-            },
-            {
-                "dossier":
-                    {
-                        "id": 2,
-                        "updated_at": "2019-01-21T18:55:04.387Z",
-                        "state": "closed",
-                        "entreprise":
-                            {
-                                "siren": "793875030",
-                            },
-                        "champs":
-                            [
-                                {
-                                    "value": "SOGEFRPP",
-                                    "type_de_champ":
-                                        {
-                                            "id": 352727,
-                                            "libelle": "BIC",
-                                            "type_champ": "text",
-                                            "order_place": 8,
-                                            "description": ""
-                                        }
-                                },
-                                {
-                                    "value": "FR7630007000111234567890144",
-                                    "type_de_champ":
-                                        {
-                                            "id": 352722,
-                                            "libelle": "IBAN",
-                                            "type_champ": "text",
-                                            "order_place": 9,
-                                            "description": ""
-                                        }
-                                },
-                            ]
-                    }
-            }
-
+            demarche_simplifiee_application_detail_response(
+                siren="793875019", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", id=1),
+            demarche_simplifiee_application_detail_response(
+                siren="793875030", bic="SOGEFRPP", iban="FR7630007000111234567890144", id=2),
         ]
         offerer1 = create_offerer(siren='793875019')
         offerer2 = create_offerer(siren='793875030')
 
         repository.save(offerer1, offerer2)
 
-        # When Then
-        provider_test(app,
-                      OffererBankInformationProvider,
-                      None,
-                      checkedObjects=2,
-                      createdObjects=2,
-                      updatedObjects=0,
-                      erroredObjects=0,
-                      checkedThumbs=0,
-                      createdThumbs=0,
-                      updatedThumbs=0,
-                      erroredThumbs=0,
-                      BankInformation=2)
+        # When
+        activate_provider()
+
+        # Then
+        assert BankInformation.query.count() == 2
         bank_information1 = BankInformation.query.filter_by(
             applicationId=1).first()
         bank_information2 = BankInformation.query.filter_by(
@@ -259,59 +179,15 @@ class OffererBankInformationProviderProviderTest:
         # Given
         get_all_application_ids_for_beneficiary_import.return_value = [1]
         get_application_details.side_effect = [
-            {
-                "dossier":
-                    {
-                        "id": 1,
-                        "updated_at": "2019-01-21T18:55:03.387Z",
-                        "state": "closed",
-                        "entreprise":
-                            {
-                                "siren": "793875019",
-                            },
-                        "champs":
-                            [
-                                {
-                                    "value": "BDFEFR2LCCB",
-                                    "type_de_champ":
-                                        {
-                                            "id": 352727,
-                                            "libelle": "BIC",
-                                            "type_champ": "text",
-                                            "order_place": 8,
-                                            "description": ""
-                                        }
-                                },
-                                {
-                                    "value": "FR7630006000011234567890189",
-                                    "type_de_champ":
-                                        {
-                                            "id": 352722,
-                                            "libelle": "IBAN",
-                                            "type_champ": "text",
-                                            "order_place": 9,
-                                            "description": ""
-                                        }
-                                }
-                            ]
-                    }
-            }
+            demarche_simplifiee_application_detail_response(
+                siren="793875019", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189"),
         ]
 
-        # When Then
-        provider_test(app,
-                      OffererBankInformationProvider,
-                      None,
-                      checkedObjects=1,
-                      createdObjects=0,
-                      updatedObjects=0,
-                      erroredObjects=0,
-                      checkedThumbs=0,
-                      createdThumbs=0,
-                      updatedThumbs=0,
-                      erroredThumbs=0,
-                      BankInformation=0)
+        # When
+        activate_provider()
 
+        # Then
+        assert BankInformation.query.count() == 0
         sync_error = LocalProviderEvent.query.filter_by(
             type=LocalProviderEventType.SyncError).first()
         assert sync_error.payload == 'unknown siren for application id 1'
@@ -329,43 +205,8 @@ class OffererBankInformationProviderProviderTest:
         # Given
         get_all_application_ids_for_beneficiary_import.return_value = [1]
         get_application_details.side_effect = [
-            {
-                "dossier":
-                    {
-                        "id": 2,
-                        "updated_at": "2019-01-21T18:55:03.387Z",
-                        "state": "closed",
-                        "entreprise":
-                            {
-                                "siren": "793875019",
-                            },
-                        "champs":
-                            [
-                                {
-                                    "value": "BDFEFR2LCCB",
-                                    "type_de_champ":
-                                        {
-                                            "id": 352727,
-                                            "libelle": "BIC",
-                                            "type_champ": "text",
-                                            "order_place": 8,
-                                            "description": ""
-                                        }
-                                },
-                                {
-                                    "value": "FR7630006000011234567890189",
-                                    "type_de_champ":
-                                        {
-                                            "id": 352722,
-                                            "libelle": "IBAN",
-                                            "type_champ": "text",
-                                            "order_place": 9,
-                                            "description": ""
-                                        }
-                                }
-                            ]
-                    }
-            }
+            demarche_simplifiee_application_detail_response(
+                siren="793875019", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189"),
         ]
 
         offerer = create_offerer(siren='793875019')
@@ -374,22 +215,12 @@ class OffererBankInformationProviderProviderTest:
             id_at_providers="793875019", offerer=offerer)
         repository.save(bank_information)
 
-        # When Then
-        provider_test(app,
-                      OffererBankInformationProvider,
-                      None,
-                      checkedObjects=1,
-                      createdObjects=0,
-                      updatedObjects=1,
-                      erroredObjects=0,
-                      checkedThumbs=0,
-                      createdThumbs=0,
-                      updatedThumbs=0,
-                      erroredThumbs=0)
+        # When
+        activate_provider()
 
-        updated_bank_information = BankInformation.query.filter_by(
-            idAtProviders="793875019").one()
-        assert updated_bank_information.applicationId == 2
+        # Then
+        updated_bank_information = BankInformation.query.one()
+        assert updated_bank_information.applicationId == 1
         assert updated_bank_information.iban == "FR7630006000011234567890189"
         assert updated_bank_information.bic == "BDFEFR2LCCB"
 
@@ -405,80 +236,10 @@ class OffererBankInformationProviderProviderTest:
         # given
         get_all_application_ids_for_beneficiary_import.return_value = [1, 2]
         get_application_details.side_effect = [
-            {
-                "dossier":
-                    {
-                        "id": 1,
-                        "updated_at": "2019-01-20T18:55:03.387Z",
-                        "state": "closed",
-                        "entreprise":
-                            {
-                                "siren": "793875019",
-                            },
-                        "champs":
-                            [
-                                {
-                                    "value": "wrongbic",
-                                    "type_de_champ":
-                                        {
-                                            "id": 352727,
-                                            "libelle": "BIC",
-                                            "type_champ": "text",
-                                            "order_place": 8,
-                                            "description": ""
-                                        }
-                                },
-                                {
-                                    "value": "wrongsiren",
-                                    "type_de_champ":
-                                        {
-                                            "id": 352722,
-                                            "libelle": "IBAN",
-                                            "type_champ": "text",
-                                            "order_place": 9,
-                                            "description": ""
-                                        }
-                                }
-                            ]
-                    }
-            },
-            {
-                "dossier":
-                    {
-                        "id": 2,
-                        "updated_at": "2019-01-21T18:55:04.387Z",
-                        "state": "closed",
-                        "entreprise":
-                            {
-                                "siren": "793875030",
-                            },
-                        "champs":
-                            [
-                                {
-                                    "value": "SOGEFRPP",
-                                    "type_de_champ":
-                                        {
-                                            "id": 352727,
-                                            "libelle": "BIC",
-                                            "type_champ": "text",
-                                            "order_place": 8,
-                                            "description": ""
-                                        }
-                                },
-                                {
-                                    "value": "FR7630007000111234567890144",
-                                    "type_de_champ":
-                                        {
-                                            "id": 352722,
-                                            "libelle": "IBAN",
-                                            "type_champ": "text",
-                                            "order_place": 9,
-                                            "description": ""
-                                        }
-                                },
-                            ]
-                    }
-            }
+            demarche_simplifiee_application_detail_response(
+                siren="793875019", bic="wrongbic", iban="wrongiban", id=1),
+            demarche_simplifiee_application_detail_response(
+                siren="793875030", bic="SOGEFRPP", iban="FR7630007000111234567890144", id=2),
         ]
 
         offerer_ko = create_offerer(siren='793875019')
@@ -486,17 +247,12 @@ class OffererBankInformationProviderProviderTest:
 
         repository.save(offerer_ko, offerer_ok)
 
-        bank_information_provider = OffererBankInformationProvider()
-        bank_information_provider.provider.isActive = True
-        repository.save(bank_information_provider.provider)
-
         # when
-        bank_information_provider.updateObjects()
+        activate_provider()
 
         # then
-        bank_information = BankInformation.query.all()
-        assert len(bank_information) == 1
-        assert bank_information[0].applicationId == 2
+        bank_information = BankInformation.query.one()
+        assert bank_information.applicationId == 2
         local_provider_event = LocalProviderEvent.query.filter_by(
             type=LocalProviderEventType.SyncError).one()
         assert local_provider_event.payload == 'ApiErrors'
@@ -512,50 +268,11 @@ class OffererBankInformationProviderProviderTest:
             app):
         # given
         get_all_application_ids_for_beneficiary_import.return_value = [1]
-        get_application_details.return_value = {
-            "dossier":
-                {
-                    "id": 2,
-                    "updated_at": "2019-01-21T18:55:03.387Z",
-                    "state": "closed",
-                    "entreprise":
-                        {
-                            "siren": "793875019",
-                        },
-                    "champs":
-                        [
-                            {
-                                "value": "BDFEFR2LCCB",
-                                "type_de_champ":
-                                    {
-                                        "id": 352727,
-                                        "libelle": "BIC",
-                                        "type_champ": "text",
-                                        "order_place": 8,
-                                        "description": ""
-                                    }
-                            },
-                            {
-                                "value": "FR7630006000011234567890189",
-                                "type_de_champ":
-                                    {
-                                        "id": 352722,
-                                        "libelle": "IBAN",
-                                        "type_champ": "text",
-                                        "order_place": 9,
-                                        "description": ""
-                                    }
-                            }
-                        ]
-                }
-        }
-
-        bank_information_provider = OffererBankInformationProvider()
-        bank_information_provider.provider.isActive = True
-        repository.save(bank_information_provider.provider)
+        get_application_details.return_value = demarche_simplifiee_application_detail_response(
+            siren="793875030", bic="BdFefr2LCCB", iban="FR76 3000 6000  0112 3456 7890 189")
 
         # when
-        bank_information_provider.updateObjects()
+        activate_provider()
 
         # then
         get_all_application_ids_for_beneficiary_import.assert_called_with(ANY, ANY,
@@ -572,58 +289,21 @@ class OffererBankInformationProviderProviderTest:
             app):
         # given
         get_all_application_ids_for_beneficiary_import.return_value = [1]
-        get_application_details.return_value = {
-            "dossier":
-                {
-                    "id": 2,
-                    "updated_at": "2019-01-21T18:55:03.387Z",
-                    "state": "closed",
-                    "entreprise":
-                        {
-                            "siren": "793875019",
-                        },
-                    "champs":
-                        [
-                            {
-                                "value": "BDFEFR2LCCB",
-                                "type_de_champ":
-                                    {
-                                        "id": 352727,
-                                        "libelle": "BIC",
-                                        "type_champ": "text",
-                                        "order_place": 8,
-                                        "description": ""
-                                    }
-                            },
-                            {
-                                "value": "FR7630006000011234567890189",
-                                "type_de_champ":
-                                    {
-                                        "id": 352722,
-                                        "libelle": "IBAN",
-                                        "type_champ": "text",
-                                        "order_place": 9,
-                                        "description": ""
-                                    }
-                            }
-                        ]
-                }
-        }
+        get_application_details.return_value = demarche_simplifiee_application_detail_response(
+            siren="793875030", bic="BdFefr2LCCB", iban="FR76 3000 6000  0112 3456 7890 189")
 
         offerer = create_offerer(siren='793875019')
 
         bank_information = create_bank_information(id_at_providers='79387501900056',
-                                                   date_modified_at_last_provider=datetime(2019, 1, 1),
-                                                   last_provider_id=get_provider_by_local_class('OffererBankInformationProvider').id,
+                                                   date_modified_at_last_provider=datetime(
+                                                       2019, 1, 1),
+                                                   last_provider_id=get_provider_by_local_class(
+                                                       'OffererBankInformationProvider').id,
                                                    offerer=offerer)
         repository.save(bank_information)
 
-        bank_information_provider = OffererBankInformationProvider()
-        bank_information_provider.provider.isActive = True
-        repository.save(bank_information_provider.provider)
-
         # when
-        bank_information_provider.updateObjects()
+        activate_provider()
 
         # then
         get_all_application_ids_for_beneficiary_import.assert_called_with(ANY, ANY,
@@ -639,97 +319,104 @@ class OffererBankInformationProviderProviderTest:
                                                                            app):
         # Given
         get_all_application_ids_for_beneficiary_import.return_value = [1]
-        get_application_details.return_value = {
-            "dossier":
-                {
-                    "id": 1,
-                    "updated_at": "2019-01-21T18:55:03.387Z",
-                    "state": "closed",
-                    "entreprise":
-                        {
-                            "siren": "793875030",
-                        },
-                    "champs":
-                        [
-                            {
-                                "value": "BdFefr2LCCB",
-                                "type_de_champ":
-                                    {
-                                        "id": 352727,
-                                        "libelle": "BIC",
-                                        "type_champ": "text",
-                                        "order_place": 8,
-                                        "description": ""
-                                    }
-                            },
-                            {
-                                "value": "FR76 3000 6000  0112 3456 7890 189",
-                                "type_de_champ":
-                                    {
-                                        "id": 352722,
-                                        "libelle": "IBAN",
-                                        "type_champ": "text",
-                                        "order_place": 9,
-                                        "description": ""
-                                    }
-                            },
-                        ]
-                }
-        }
+        get_application_details.return_value = demarche_simplifiee_application_detail_response(
+            siren="793875030", bic="BdFefr2LCCB", iban="FR76 3000 6000  0112 3456 7890 189")
         offerer = create_offerer(siren='793875030')
 
         repository.save(offerer)
 
-        # When Then
-        provider_test(app,
-                      OffererBankInformationProvider,
-                      None,
-                      checkedObjects=1,
-                      createdObjects=1,
-                      updatedObjects=0,
-                      erroredObjects=0,
-                      checkedThumbs=0,
-                      createdThumbs=0,
-                      updatedThumbs=0,
-                      erroredThumbs=0,
-                      BankInformation=1)
-        bank_information = BankInformation.query.first()
+        # When
+        activate_provider()
+
+        # Then
+        bank_information = BankInformation.query.one()
         assert bank_information.iban == 'FR7630006000011234567890189'
         assert bank_information.bic == 'BDFEFR2LCCB'
+
+    @patch(
+        'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_beneficiary_import')
+    @patch('local_providers.demarches_simplifiees_offerer_bank_information.get_application_details')
+    @clean_database
+    def test_provider_request_application_ids_using_correct_date(self,
+                                                                 get_application_details,
+                                                                 get_all_application_ids_for_beneficiary_import,
+                                                                 app):
+        # Given
+        get_all_application_ids_for_beneficiary_import.return_value = []
+        offerer = create_offerer(siren='793875030')
+        offerer2 = create_offerer(siren='793875019')
+        bank_information = create_bank_information(id_at_providers='793875030',
+                                                   date_modified_at_last_provider=datetime(
+                                                       2019, 1, 1),
+                                                   last_provider_id=get_provider_by_local_class(
+                                                       'OffererBankInformationProvider').id,
+                                                   offerer=offerer)
+        bank_information2 = create_bank_information(id_at_providers='793875019',
+                                                    date_modified_at_last_provider=datetime(
+                                                        2020, 1, 1),
+                                                    last_provider_id=get_provider_by_local_class(
+                                                        'OffererBankInformationProvider').id,
+                                                    offerer=offerer2)
+        repository.save(bank_information, bank_information2)
+
+        # When
+        activate_provider()
+
+        # Then
+        get_all_application_ids_for_beneficiary_import.assert_called_once_with(
+            ANY,
+            ANY,
+            datetime(
+                2020, 1, 1)
+        )
+
+    @patch(
+        'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_beneficiary_import')
+    @patch('local_providers.demarches_simplifiees_offerer_bank_information.get_application_details')
+    @clean_database
+    def test_provider_request_application_ids_using_given_date(self,
+                                                               get_application_details,
+                                                               get_all_application_ids_for_beneficiary_import,
+                                                               app):
+        # Given
+        get_all_application_ids_for_beneficiary_import.return_value = []
+        offerer = create_offerer(siren='793875030')
+        offerer2 = create_offerer(siren='793875019')
+        bank_information = create_bank_information(id_at_providers='793875030',
+                                                   date_modified_at_last_provider=datetime(
+                                                       2019, 1, 1),
+                                                   last_provider_id=get_provider_by_local_class(
+                                                       'OffererBankInformationProvider').id,
+                                                   offerer=offerer)
+        bank_information2 = create_bank_information(id_at_providers='793875019',
+                                                    date_modified_at_last_provider=datetime(
+                                                        2020, 1, 1),
+                                                    last_provider_id=get_provider_by_local_class(
+                                                        'OffererBankInformationProvider').id,
+                                                    offerer=offerer2)
+        repository.save(bank_information, bank_information2)
+
+        # When
+        provider_object = OffererBankInformationProvider(
+            minimum_requested_datetime=datetime(2019, 6, 1))
+        provider_object.provider.isActive = True
+        repository.save(provider_object.provider)
+        provider_object.updateObjects()
+
+        # Then
+        get_all_application_ids_for_beneficiary_import.assert_called_once_with(
+            ANY,
+            ANY,
+            datetime(2019, 6, 1)
+        )
 
 
 class RetrieveBankInformationTest:
     @clean_database
     def when_rib_affiliation_is_on_siren(self, app):
         # Given
-        application_details = {
-            "dossier":
-                {
-                    "id": 1,
-                    "updated_at": "2019-01-21T18:55:03.387Z",
-                    "entreprise":
-                        {
-                            "siren": "793875019",
-                        },
-                    "champs":
-                        [
-                            {
-                                "value": "BDFEFR2LCCB",
-                                "type_de_champ":
-                                    {
-                                        "libelle": "BIC",
-                                    }
-                            },
-                            {
-                                "value": "FR7630006000011234567890189",
-                                "type_de_champ":
-                                    {
-                                        "libelle": "IBAN",
-                                    }
-                            }
-                        ]
-                }
-        }
+        application_details = demarche_simplifiee_application_detail_response(
+            siren="793875019", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189")
         offerer = create_offerer(siren="793875019")
         repository.save(offerer)
         offerer_id = offerer.id
@@ -746,75 +433,36 @@ class RetrieveBankInformationTest:
         assert bank_information_dict['offererId'] == offerer_id
         assert 'venueId' not in bank_information_dict
 
-
     @patch(
         'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_beneficiary_import')
     @patch('local_providers.demarches_simplifiees_offerer_bank_information.get_application_details')
     @clean_database
     def test_provider_updates_one_bank_information_when_bank_information_from_another_provider_exists(self,
-                                                                             get_application_details,
-                                                                             get_all_application_ids_for_beneficiary_import,
-                                                                             app):
+                                                                                                      get_application_details,
+                                                                                                      get_all_application_ids_for_beneficiary_import,
+                                                                                                      app):
         # Given
         date_updated = datetime(2020, 4, 15)
         get_all_application_ids_for_beneficiary_import.return_value = [1]
-        get_application_details.return_value = {
-            "dossier": {
-                "id": 1,
-                "updated_at": date_updated.strftime(DATE_ISO_FORMAT),
-                "state": "closed",
-                "entreprise": {
-                    "siren": "793875030"
-                },
-                "champs": [
-                    {
-                        "value": 'DE89370400440532013000',
-                        "type_de_champ": {
-                            "id": 352722,
-                            "libelle": "IBAN",
-                            "type_champ": "text",
-                            "order_place": 10,
-                            "description": ""
-                        }
-                    },
-                    {
-                        "value": "BDFEFR2LCCB",
-                        "type_de_champ": {
-                            "id": 352727,
-                            "libelle": "BIC",
-                            "type_champ": "text",
-                            "order_place": 11,
-                            "description": ""
-                        }
-                    }
-                ]
-            }
-        }
+        get_application_details.return_value = demarche_simplifiee_application_detail_response(
+            siren="793875030", bic="BDFEFR2LCCB", iban="DE89370400440532013000", updated_at=date_updated.strftime(DATE_ISO_FORMAT))
 
         offerer = create_offerer(siren='793875030')
         bank_information = create_bank_information(id_at_providers='793875030',
-                                            iban='FR7630006000011234567890189',
-                                            date_modified_at_last_provider=datetime(2018, 1, 1),
-                                            offerer=offerer)
+                                                   iban='FR7630006000011234567890189',
+                                                   date_modified_at_last_provider=datetime(
+                                                       2018, 1, 1),
+                                                   offerer=offerer)
         repository.save(bank_information)
 
         offerer_id = offerer.id
-        provider_id = get_provider_by_local_class('OffererBankInformationProvider').id
+        provider_id = get_provider_by_local_class(
+            'OffererBankInformationProvider').id
 
-        # When Then
-        provider_test(app,
-                      OffererBankInformationProvider,
-                      None,
-                      checkedObjects=1,
-                      createdObjects=0,
-                      updatedObjects=1,
-                      erroredObjects=0,
-                      checkedThumbs=0,
-                      createdThumbs=0,
-                      updatedThumbs=0,
-                      erroredThumbs=0,
-                      BankInformation=0)
+        # When
+        activate_provider()
 
+        # Then
         bank_information = BankInformation.query.one()
         assert bank_information.iban == 'DE89370400440532013000'
         assert bank_information.bic == 'BDFEFR2LCCB'
@@ -823,5 +471,3 @@ class RetrieveBankInformationTest:
         assert bank_information.idAtProviders == '793875030'
         assert bank_information.lastProviderId == provider_id
         assert bank_information.dateModifiedAtLastProvider == date_updated
-
-
