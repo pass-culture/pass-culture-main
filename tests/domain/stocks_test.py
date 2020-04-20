@@ -134,7 +134,7 @@ class CheckDateHaveBeenModifiedTest:
     def test_should_return_true_when_beginning_date_time_have_been_changed(self):
         # Given
         request_data = {
-            'beginningDatetime': datetime(2020, 4, 14, 12, 0, 0)
+            'beginningDatetime': '2020-02-08T14:30:00.000Z'
         }
 
         # When
@@ -146,7 +146,7 @@ class CheckDateHaveBeenModifiedTest:
     def test_should_return_false_when_beginning_date_time_have_not_been_changed(self):
         # Given
         request_data = {
-            'beginningDatetime': datetime(2020, 4, 12, 12, 0, 0)
+            'beginningDatetime': '2020-04-12T12:00:00Z'
         }
 
         # When
