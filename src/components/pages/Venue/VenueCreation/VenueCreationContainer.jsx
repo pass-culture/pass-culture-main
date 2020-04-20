@@ -3,18 +3,18 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
-import Venue from './Venue'
-import NotificationMessage from './Notification'
+import VenueCreation from './VenueCreation'
+import NotificationMessage from '../Notification'
 
-import { withRequiredLogin } from '../../hocs'
-import withTracking from '../../hocs/withTracking'
-import { CREATION } from '../../hocs/withFrenchQueryRouter'
-import { VENUE_CREATION_PATCH_KEYS, VENUE_MODIFICATION_PATCH_KEYS } from './utils/utils'
-import { offererNormalizer, venueNormalizer } from '../../../utils/normalizers'
-import { formatPatch } from '../../../utils/formatPatch'
-import { selectUserOffererByOffererIdAndUserIdAndRightsType } from '../../../selectors/data/userOfferersSelectors'
-import { selectOffererById } from '../../../selectors/data/offerersSelectors'
-import selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity from './selectors/selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity'
+import { withRequiredLogin } from '../../../hocs'
+import withTracking from '../../../hocs/withTracking'
+import { CREATION } from '../../../hocs/withFrenchQueryRouter'
+import { VENUE_CREATION_PATCH_KEYS, VENUE_MODIFICATION_PATCH_KEYS } from '../utils/utils'
+import { offererNormalizer, venueNormalizer } from '../../../../utils/normalizers'
+import { formatPatch } from '../../../../utils/formatPatch'
+import { selectUserOffererByOffererIdAndUserIdAndRightsType } from '../../../../selectors/data/userOfferersSelectors'
+import { selectOffererById } from '../../../../selectors/data/offerersSelectors'
+import selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity from '../selectors/selectFormInitialValuesByVenueIdAndOffererIdAndIsCreatedEntity'
 
 export const mapStateToProps = (state, ownProps) => {
   const {
@@ -166,4 +166,4 @@ export default compose(
     mapDispatchToProps,
     mergeProps
   )
-)(Venue)
+)(VenueCreation)

@@ -3,25 +3,25 @@ import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import { getCanSubmit, parseSubmitErrors, removeWhitespaces } from 'react-final-form-utils'
 import { NavLink } from 'react-router-dom'
-import Icon from '../../layout/Icon'
-import Main from '../../layout/Main'
-import Titles from '../../layout/Titles/Titles'
-import CreateControl from './controls/CreateControl/CreateControl'
-import ModifyOrCancelControl from './controls/ModifyOrCancelControl/ModifyOrCancelControl'
-import ReturnOrSubmitControl from './controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
+import Icon from '../../../layout/Icon'
+import Main from '../../../layout/Main'
+import Titles from '../../../layout/Titles/Titles'
+import CreateControl from './../controls/CreateControl/CreateControl'
+import ModifyOrCancelControl from './../controls/ModifyOrCancelControl/ModifyOrCancelControl'
+import ReturnOrSubmitControl from './../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
 
-import BankFieldsContainer from './fields/BankFields/BankFieldsContainer'
-import bindGetSiretInformationToSiret from './fields/IdentifierFields/decorators/bindGetSiretInformationToSiret'
-import IdentifierFields from './fields/IdentifierFields/IdentifierFields'
-import bindGetSuggestionsToLatitude from './fields/LocationFields/decorators/bindGetSuggestionsToLatitude'
-import bindGetSuggestionsToLongitude from './fields/LocationFields/decorators/bindGetSuggestionsToLongitude'
-import LocationFields from './fields/LocationFields/LocationFields'
-import { FRANCE_POSITION } from './fields/LocationFields/utils/positions'
-import VenueProvidersManagerContainer from './VenueProvidersManager/VenueProvidersManagerContainer'
+import BankFieldsContainer from './../fields/BankFields/BankFieldsContainer'
+import bindGetSiretInformationToSiret from './../fields/IdentifierFields/decorators/bindGetSiretInformationToSiret'
+import IdentifierFields from './../fields/IdentifierFields/IdentifierFields'
+import bindGetSuggestionsToLatitude from './../fields/LocationFields/decorators/bindGetSuggestionsToLatitude'
+import bindGetSuggestionsToLongitude from './../fields/LocationFields/decorators/bindGetSuggestionsToLongitude'
+import LocationFields from './../fields/LocationFields/LocationFields'
+import { FRANCE_POSITION } from './../fields/LocationFields/utils/positions'
+import VenueProvidersManagerContainer from './../VenueProvidersManager/VenueProvidersManagerContainer'
 
 const noop = () => {}
 
-class Venue extends PureComponent {
+class VenueEdition extends PureComponent {
   constructor() {
     super()
     this.state = { isRequestPending: false }
@@ -265,7 +265,7 @@ class Venue extends PureComponent {
   }
 }
 
-Venue.propTypes = {
+VenueEdition.propTypes = {
   formInitialValues: PropTypes.shape().isRequired,
   handleInitialRequest: PropTypes.func.isRequired,
   handleSubmitRequest: PropTypes.func.isRequired,
@@ -278,4 +278,4 @@ Venue.propTypes = {
   trackModifyVenue: PropTypes.func.isRequired,
 }
 
-export default Venue
+export default VenueEdition

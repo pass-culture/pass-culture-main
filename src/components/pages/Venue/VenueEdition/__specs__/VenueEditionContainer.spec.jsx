@@ -1,8 +1,8 @@
-import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueContainer'
+import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueEditionContainer'
 import { getCurrentUserUUID } from 'with-react-redux-login'
-import { venueNormalizer } from '../../../../utils/normalizers'
+import { venueNormalizer } from '../../../../../utils/normalizers'
 
-jest.mock('../Notification', () => {
+jest.mock('../../Notification', () => {
   return jest.fn().mockImplementation(() => 'Some text')
 })
 

@@ -17,7 +17,8 @@ import SigninContainer from '../components/pages/Signin/SigninContainer'
 import SignupContainer from '../components/pages/Signup/SignupContainer'
 import SignupValidationContainer from '../components/pages/Signup/SignupValidation/SignupValidationContainer'
 import Terms from '../components/pages/Terms/Terms'
-import VenueContainer from '../components/pages/Venue/VenueContainer'
+import VenueCreationContainer from '../components/pages/Venue/VenueCreation/VenueCreationContainer'
+import VenueEditionContainer from '../components/pages/Venue/VenueEdition/VenueEditionContainer'
 import OffererCreationContainer from '../components/pages/Offerer/OffererCreation/OffererCreationContainer'
 import OffererDetailsContainer from '../components/pages/Offerer/OffererDetails/OffererDetailsContainer'
 
@@ -80,10 +81,16 @@ const routes = [
     title: 'Structure',
   },
   {
-    component: VenueContainer,
+    component: VenueCreationContainer,
+    path: '/structures/:offererId/lieux/:venueId/creation',
+    title: 'Lieu',
+  },
+  {
+    component: VenueEditionContainer,
     path: '/structures/:offererId/lieux/:venueId',
     title: 'Lieu',
   },
+
   {
     component: Offers,
     path: '/structures/:offererId/lieux/:venueId/offres',

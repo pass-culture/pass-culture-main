@@ -5,12 +5,12 @@ import { Form } from 'react-final-form'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
 import * as reactReduxLogin from 'with-react-redux-login'
-import configureStore from '../../../../utils/store'
-import AddressField from '../fields/LocationFields/AddressField'
-import LocationFields from '../fields/LocationFields/LocationFields'
+import configureStore from '../../../../../utils/store'
+import AddressField from '../../fields/LocationFields/AddressField'
+import LocationFields from '../../fields/LocationFields/LocationFields'
 
-import Venue from '../Venue'
-import VenueProvidersManagerContainer from '../VenueProvidersManager/VenueProvidersManagerContainer'
+import VenueCreation from '../VenueCreation'
+import VenueProvidersManagerContainer from '../../VenueProvidersManager/VenueProvidersManagerContainer'
 
 describe('src | components | pages | Venue', () => {
   let push
@@ -57,7 +57,7 @@ describe('src | components | pages | Venue', () => {
 
   it('should match the snapshot', () => {
     // when
-    const wrapper = shallow(<Venue {...props} />)
+    const wrapper = shallow(<VenueCreation {...props} />)
 
     // then
     expect(wrapper).toMatchSnapshot()
@@ -66,7 +66,7 @@ describe('src | components | pages | Venue', () => {
   describe('render', () => {
     it('should render component with default state', () => {
       // when
-      const wrapper = shallow(<Venue {...props} />)
+      const wrapper = shallow(<VenueCreation {...props} />)
 
       // then
       expect(wrapper.state('isRequestPending')).toBe(false)
@@ -79,7 +79,7 @@ describe('src | components | pages | Venue', () => {
       }
 
       // when
-      const wrapper = shallow(<Venue {...props} />)
+      const wrapper = shallow(<VenueCreation {...props} />)
 
       // then
       const form = wrapper.find(Form)
@@ -103,7 +103,7 @@ describe('src | components | pages | Venue', () => {
 
       it('should render component with correct state values', () => {
         // when
-        const wrapper = shallow(<Venue {...props} />)
+        const wrapper = shallow(<VenueCreation {...props} />)
 
         // then
         expect(wrapper.state('isRequestPending')).toBe(false)
@@ -111,7 +111,7 @@ describe('src | components | pages | Venue', () => {
 
       it('should display proper title', () => {
         // when
-        const wrapper = shallow(<Venue {...props} />)
+        const wrapper = shallow(<VenueCreation {...props} />)
 
         // then
         const title = wrapper.find({ children: 'Ajoutez un lieu où accéder à vos offres.' })
@@ -120,7 +120,7 @@ describe('src | components | pages | Venue', () => {
 
       it('should build the proper backTo link', () => {
         // when
-        const wrapper = shallow(<Venue {...props} />)
+        const wrapper = shallow(<VenueCreation {...props} />)
 
         // then
         expect(wrapper.prop('backTo')).toStrictEqual({
@@ -131,7 +131,7 @@ describe('src | components | pages | Venue', () => {
 
       it('should not display a VenueProvidersManager component', () => {
         // when
-        const wrapper = shallow(<Venue {...props} />)
+        const wrapper = shallow(<VenueCreation {...props} />)
 
         // then
         expect(wrapper.find(VenueProvidersManagerContainer)).toHaveLength(0)
@@ -158,7 +158,7 @@ describe('src | components | pages | Venue', () => {
 
       it('should render component with correct state values', () => {
         // when
-        const wrapper = shallow(<Venue {...props} />)
+        const wrapper = shallow(<VenueCreation {...props} />)
 
         // then
         expect(wrapper.state('isRequestPending')).toBe(false)
@@ -185,7 +185,7 @@ describe('src | components | pages | Venue', () => {
         let wrapper = mount(
           <Provider store={store}>
             <Router history={history}>
-              <Venue {...props} />
+              <VenueCreation {...props} />
             </Router>
           </Provider>
         )
@@ -222,7 +222,7 @@ describe('src | components | pages | Venue', () => {
 
       it('should render component with correct state values', () => {
         // when
-        const wrapper = shallow(<Venue {...props} />)
+        const wrapper = shallow(<VenueCreation {...props} />)
 
         // then
         expect(wrapper.state('isRequestPending')).toBe(false)
@@ -246,7 +246,7 @@ describe('src | components | pages | Venue', () => {
           let wrapper = mount(
             <Provider store={store}>
               <Router history={history}>
-                <Venue
+                <VenueCreation
                   {...props}
                   history={history}
                 />
@@ -292,7 +292,7 @@ describe('src | components | pages | Venue', () => {
 
         it('should redirect to offerer page', () => {
           // given
-          const wrapper = shallow(<Venue {...props} />)
+          const wrapper = shallow(<VenueCreation {...props} />)
           const state = wrapper.state()
 
           // when
@@ -304,7 +304,7 @@ describe('src | components | pages | Venue', () => {
 
         it('should call handleSubmitRequestSuccess with the right parameters when venue is created', () => {
           // given
-          const wrapper = shallow(<Venue {...props} />)
+          const wrapper = shallow(<VenueCreation {...props} />)
           const state = wrapper.state()
 
           // when
@@ -350,7 +350,7 @@ describe('src | components | pages | Venue', () => {
 
           it('should change query to read only null', () => {
             // given
-            const wrapper = shallow(<Venue {...props} />)
+            const wrapper = shallow(<VenueCreation {...props} />)
             const state = wrapper.state()
 
             // when
@@ -362,7 +362,7 @@ describe('src | components | pages | Venue', () => {
 
           it('should call handleSubmitRequestSuccess with the right parameters when venue is modified', () => {
             // given
-            const wrapper = shallow(<Venue {...props} />)
+            const wrapper = shallow(<VenueCreation {...props} />)
             const state = wrapper.state()
 
             // when
@@ -400,7 +400,7 @@ describe('src | components | pages | Venue', () => {
           },
         },
       }
-      const wrapper = shallow(<Venue {...props} />)
+      const wrapper = shallow(<VenueCreation {...props} />)
       const formResolver = jest.fn()
 
       // when
@@ -427,7 +427,7 @@ describe('src | components | pages | Venue', () => {
           },
         },
       }
-      const wrapper = shallow(<Venue {...props} />)
+      const wrapper = shallow(<VenueCreation {...props} />)
       const formResolver = jest.fn()
 
       // when

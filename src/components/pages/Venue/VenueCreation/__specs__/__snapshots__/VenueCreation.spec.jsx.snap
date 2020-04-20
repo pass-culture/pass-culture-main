@@ -1,0 +1,304 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src | components | pages | Venue should match the snapshot 1`] = `
+ShallowWrapper {
+  Symbol(enzyme.__root__): [Circular],
+  Symbol(enzyme.__unrendered__): <VenueCreation
+    formInitialValues={
+      Object {
+        "id": "CM",
+      }
+    }
+    handleInitialRequest={
+      [MockFunction] {
+        "calls": Array [
+          Array [],
+        ],
+        "results": Array [
+          Object {
+            "type": "return",
+            "value": undefined,
+          },
+        ],
+      }
+    }
+    handleSubmitRequest={[MockFunction]}
+    handleSubmitRequestFail={[MockFunction]}
+    handleSubmitRequestSuccess={[MockFunction]}
+    history={
+      Object {
+        "location": Object {
+          "pathname": "/fake",
+        },
+        "push": [MockFunction],
+      }
+    }
+    match={
+      Object {
+        "params": Object {
+          "offererId": "APEQ",
+          "venueId": "AQYQ",
+        },
+      }
+    }
+    offerer={
+      Object {
+        "id": "BQ",
+        "name": "Maison du chocolat",
+      }
+    }
+    query={
+      Object {
+        "changeToReadOnly": [MockFunction],
+        "context": [MockFunction] {
+          "calls": Array [
+            Array [
+              Object {
+                "id": "AQYQ",
+              },
+            ],
+          ],
+          "results": Array [
+            Object {
+              "type": "return",
+              "value": Object {
+                "isCreatedEntity": true,
+                "isModifiedEntity": false,
+                "readOnly": false,
+              },
+            },
+          ],
+        },
+      }
+    }
+    trackCreateVenue={[MockFunction]}
+    trackModifyVenue={[MockFunction]}
+  />,
+  Symbol(enzyme.__renderer__): Object {
+    "batchedUpdates": [Function],
+    "checkPropTypes": [Function],
+    "getNode": [Function],
+    "render": [Function],
+    "simulateError": [Function],
+    "simulateEvent": [Function],
+    "unmount": [Function],
+  },
+  Symbol(enzyme.__node__): Object {
+    "instance": null,
+    "key": undefined,
+    "nodeType": "function",
+    "props": Object {
+      "backTo": Object {
+        "label": "Maison du chocolat",
+        "path": "/structures/APEQ",
+      },
+      "children": Array [
+        <Titles
+          action={false}
+          subtitle={null}
+          title="Lieu"
+        />,
+        <p
+          className="advice"
+        >
+          Ajoutez un lieu où accéder à vos offres.
+        </p>,
+        false,
+        <ReactFinalForm
+          decorators={
+            Array [
+              [Function],
+              [Function],
+              [Function],
+            ]
+          }
+          initialValues={
+            Object {
+              "id": "CM",
+            }
+          }
+          name="venue"
+          onSubmit={[Function]}
+          render={[Function]}
+        />,
+      ],
+      "handleDataRequest": [Function],
+      "name": "venue",
+    },
+    "ref": null,
+    "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "action": false,
+          "subtitle": null,
+          "title": "Lieu",
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Ajoutez un lieu où accéder à vos offres.",
+          "className": "advice",
+        },
+        "ref": null,
+        "rendered": "Ajoutez un lieu où accéder à vos offres.",
+        "type": "p",
+      },
+      false,
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "function",
+        "props": Object {
+          "decorators": Array [
+            [Function],
+            [Function],
+            [Function],
+          ],
+          "initialValues": Object {
+            "id": "CM",
+          },
+          "name": "venue",
+          "onSubmit": [Function],
+          "render": [Function],
+        },
+        "ref": null,
+        "rendered": null,
+        "type": [Function],
+      },
+    ],
+    "type": [Function],
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "function",
+      "props": Object {
+        "backTo": Object {
+          "label": "Maison du chocolat",
+          "path": "/structures/APEQ",
+        },
+        "children": Array [
+          <Titles
+            action={false}
+            subtitle={null}
+            title="Lieu"
+          />,
+          <p
+            className="advice"
+          >
+            Ajoutez un lieu où accéder à vos offres.
+          </p>,
+          false,
+          <ReactFinalForm
+            decorators={
+              Array [
+                [Function],
+                [Function],
+                [Function],
+              ]
+            }
+            initialValues={
+              Object {
+                "id": "CM",
+              }
+            }
+            name="venue"
+            onSubmit={[Function]}
+            render={[Function]}
+          />,
+        ],
+        "handleDataRequest": [Function],
+        "name": "venue",
+      },
+      "ref": null,
+      "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "action": false,
+            "subtitle": null,
+            "title": "Lieu",
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Ajoutez un lieu où accéder à vos offres.",
+            "className": "advice",
+          },
+          "ref": null,
+          "rendered": "Ajoutez un lieu où accéder à vos offres.",
+          "type": "p",
+        },
+        false,
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "function",
+          "props": Object {
+            "decorators": Array [
+              [Function],
+              [Function],
+              [Function],
+            ],
+            "initialValues": Object {
+              "id": "CM",
+            },
+            "name": "venue",
+            "onSubmit": [Function],
+            "render": [Function],
+          },
+          "ref": null,
+          "rendered": null,
+          "type": [Function],
+        },
+      ],
+      "type": [Function],
+    },
+  ],
+  Symbol(enzyme.__options__): Object {
+    "adapter": ReactSixteenAdapter {
+      "options": Object {
+        "enableComponentDidUpdateOnSetState": true,
+        "legacyContextMode": "parent",
+        "lifecycles": Object {
+          "componentDidUpdate": Object {
+            "onSetState": true,
+          },
+          "getChildContext": Object {
+            "calledByRenderer": false,
+          },
+          "getDerivedStateFromError": true,
+          "getDerivedStateFromProps": Object {
+            "hasShouldComponentUpdateBug": false,
+          },
+          "getSnapshotBeforeUpdate": true,
+          "setState": Object {
+            "skipsComponentDidUpdateOnNullish": true,
+          },
+        },
+      },
+    },
+    Symbol(enzyme.__providerValues__): undefined,
+  },
+  Symbol(enzyme.__providerValues__): Map {},
+  Symbol(enzyme.__childContext__): null,
+}
+`;

@@ -3,7 +3,7 @@
 exports[`src | components | pages | Venue should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <Venue
+  Symbol(enzyme.__unrendered__): <VenueEdition
     formInitialValues={
       Object {
         "id": "CM",
