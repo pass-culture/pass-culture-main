@@ -4,7 +4,7 @@ import { createSelector } from 'reselect'
 import { ROOT_PATH } from '../../../../utils/config'
 
 export const fakeLastRecommendation = index => ({
-  productOrTutoIdentifier: 'tuto_-1',
+  productIdentifier: 'tuto_-1',
   index,
   mediation: {
     frontText:
@@ -21,11 +21,11 @@ const selectUniqAndIndexifiedRecommendations = createSelector(
   state => state.data.recommendations,
   recommendations => {
     let filteredRecommendations = recommendations.filter(
-      recommendation => recommendation.productOrTutoIdentifier
+      recommendation => recommendation.productIdentifier
     )
     filteredRecommendations = uniqBy(
       filteredRecommendations,
-      recommendation => recommendation.productOrTutoIdentifier
+      recommendation => recommendation.productIdentifier
     )
 
     filteredRecommendations = filteredRecommendations.map((recommendation, index) =>

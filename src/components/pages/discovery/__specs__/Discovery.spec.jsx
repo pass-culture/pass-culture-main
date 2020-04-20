@@ -102,7 +102,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       props.tutorials = [
         {
           id: 'hello',
-          productOrTutoIdentifier: 'tuto_0',
+          productIdentifier: 'tuto_0',
         },
       ]
       const wrapper = shallow(<Discovery {...props} />)
@@ -114,7 +114,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       expect(props.deleteTutorials).toHaveBeenCalledWith([
         {
           id: 'hello',
-          productOrTutoIdentifier: 'tuto_0',
+          productIdentifier: 'tuto_0',
         },
       ])
     })

@@ -10,7 +10,7 @@ describe('src | components | pages | discovery | selectors | selectCurrentRecomm
       mediationId = 'FF'
       offerId = 'ARBA'
       const recommendation = {
-        productOrTutoIdentifier: 'foo',
+        productIdentifier: 'foo',
         mediationId,
         offerId,
       }

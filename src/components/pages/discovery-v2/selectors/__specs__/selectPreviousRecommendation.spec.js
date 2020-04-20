@@ -5,11 +5,11 @@ describe('components | selectPreviousRecommendation', () => {
     // given
     const currentRecommendation = {
       id: 'BF',
-      productOrTutoIdentifier: 'foo',
+      productIdentifier: 'foo',
       offerId: 'AE',
     }
     const previousRecommendation = {
-      productOrTutoIdentifier: 'bar',
+      productIdentifier: 'bar',
       offerId: 'BF',
     }
     const state = {
@@ -25,7 +25,7 @@ describe('components | selectPreviousRecommendation', () => {
     expect(result).toStrictEqual({
       index: 0,
       offerId: 'BF',
-      productOrTutoIdentifier: 'bar',
+      productIdentifier: 'bar',
     })
   })
 
@@ -33,7 +33,7 @@ describe('components | selectPreviousRecommendation', () => {
     // given
     const currentRecommendation = {
       id: 'BF',
-      productOrTutoIdentifier: 'foo',
+      productIdentifier: 'foo',
       offerId: 'AE',
     }
     const state = {

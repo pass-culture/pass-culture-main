@@ -1,5 +1,5 @@
 const isTutorial = recommendation => {
-  const identifier = recommendation.productOrTutoIdentifier
+  const identifier = recommendation.productIdentifier
   return identifier === 'tuto_0' || identifier === 'tuto_1'
 }
 

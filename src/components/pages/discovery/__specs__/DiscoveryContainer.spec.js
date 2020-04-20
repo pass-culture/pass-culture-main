@@ -75,7 +75,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
             tutoIndex: -1,
           },
           mediationId: 'fin',
-          productOrTutoIdentifier: 'tuto_-1',
+          productIdentifier: 'tuto_-1',
           thumbUrl: 'http://localhost/splash-finReco@2x.png',
         },
         page: 1,

@@ -7,7 +7,7 @@ describe('src | components | pages | discovery | selectors | selectRecommendatio
       data: {
         recommendations: [
           {
-            productOrTutoIdentifier: 'product_0',
+            productIdentifier: 'product_0',
             id: 'AE',
           },
           {
@@ -23,7 +23,7 @@ describe('src | components | pages | discovery | selectors | selectRecommendatio
     // then
     expect(results).not.toHaveLength(0)
     results.forEach(result => {
-      expect(result.productOrTutoIdentifier).toBeDefined()
+      expect(result.productIdentifier).toBeDefined()
     })
   })
 
@@ -46,7 +46,7 @@ describe('src | components | pages | discovery | selectors | selectRecommendatio
     // then
     expect(result).toStrictEqual([
       {
-        productOrTutoIdentifier: 'tuto_-1',
+        productIdentifier: 'tuto_-1',
         index: 0,
         mediation: {
           frontText:
@@ -68,7 +68,7 @@ describe('src | components | pages | discovery | selectors | selectRecommendatio
       dateCreated: '2018-10-10T14:19:27.410551Z',
       dateRead: null,
       dateUpdated: '2018-10-10T14:19:27.410609Z',
-      productOrTutoIdentifier: 'product_0',
+      productIdentifier: 'product_0',
       distance: '5444 km',
       id: 'AEWPS',
       index: 0,

@@ -5,11 +5,11 @@ const selectUniqAndIndexifiedRecommendations = createSelector(
   state => state.data.recommendations,
   recommendations => {
     let filteredRecommendations = recommendations.filter(
-      recommendation => recommendation.productOrTutoIdentifier
+      recommendation => recommendation.productIdentifier
     )
     filteredRecommendations = uniqBy(
       filteredRecommendations,
-      recommendation => recommendation.productOrTutoIdentifier
+      recommendation => recommendation.productIdentifier
     )
 
     filteredRecommendations = filteredRecommendations.map((recommendation, index) =>

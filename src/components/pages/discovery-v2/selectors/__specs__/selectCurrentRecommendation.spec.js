@@ -8,7 +8,7 @@ describe('src | components | pages | discovery | selectors | selectCurrentRecomm
       // given
       offerId = 'ARBA'
       const recommendation = {
-        productOrTutoIdentifier: 'foo',
+        productIdentifier: 'foo',
         offerId,
       }
       const state = {

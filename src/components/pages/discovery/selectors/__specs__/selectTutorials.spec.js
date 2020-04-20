@@ -9,15 +9,15 @@ describe('src | components | pages | discovery | selectors | selectTutorials', (
           recommendations: [
             {
               id: 'ABCD',
-              productOrTutoIdentifier: 'tuto_0',
+              productIdentifier: 'tuto_0',
             },
             {
               id: 'BCAD',
-              productOrTutoIdentifier: 'tuto_1',
+              productIdentifier: 'tuto_1',
             },
             {
               id: 'NOPE',
-              productOrTutoIdentifier: 'product_AB',
+              productIdentifier: 'product_AB',
             },
           ],
         },
@@ -30,11 +30,11 @@ describe('src | components | pages | discovery | selectors | selectTutorials', (
       expect(result).toStrictEqual([
         {
           id: 'ABCD',
-          productOrTutoIdentifier: 'tuto_0',
+          productIdentifier: 'tuto_0',
         },
         {
           id: 'BCAD',
-          productOrTutoIdentifier: 'tuto_1',
+          productIdentifier: 'tuto_1',
         },
       ])
     })
