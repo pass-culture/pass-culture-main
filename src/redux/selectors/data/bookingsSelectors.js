@@ -181,10 +181,12 @@ export const selectPastBookingByOfferId = createCachedSelector(
       for (let j in bookings) {
         let booking = bookings[j]
 
+        const stockBeginningDateTimeIsBeforeNow = moment(stock.beginningDatetime).isBefore(moment())
+
         if (
           booking.stockId === stock.id &&
           !booking.isCancelled &&
-          moment(stock.beginningDatetime).isBefore(moment())
+          stockBeginningDateTimeIsBeforeNow
         ) {
           return booking
         }
