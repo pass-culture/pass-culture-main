@@ -568,7 +568,8 @@ class GetOfferForRecommendationsTest:
         assert online_offer1 in online_offers
         assert online_offer2 in online_offers
         offline_offers = offers[2:]
-        assert offline_offers == [offline_event_offer2, offline_event_offer1]
+        assert offline_event_offer1 in offline_offers
+        assert offline_event_offer2 in offline_offers
 
     @clean_database
     def test_should_return_online_offers_first(self, app):
