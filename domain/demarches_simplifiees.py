@@ -6,7 +6,7 @@ from utils.date import DATE_ISO_FORMAT
 from utils.logger import logger
 
 
-def get_all_application_ids_for_beneficiary_import(
+def get_all_application_ids_for_demarche_simplifiee(
         procedure_id: str, token: str, last_update: datetime,
         get_all_applications: Callable = get_all_applications_for_procedure
 ) -> List[int]:

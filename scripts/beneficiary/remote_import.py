@@ -5,7 +5,7 @@ from typing import Callable, Dict, List, Set
 
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.demarches_simplifiees import \
-    get_all_application_ids_for_beneficiary_import
+    get_all_application_ids_for_demarche_simplifiee
 from domain.user_activation import create_beneficiary_from_application
 from domain.user_emails import send_activation_email
 from models import ApiErrors, ImportStatus, User
@@ -23,7 +23,7 @@ VALIDATED_APPLICATION = 'closed'
 
 def run(
         process_applications_updated_after: datetime,
-        get_all_applications_ids: Callable[..., List[int]] = get_all_application_ids_for_beneficiary_import,
+        get_all_applications_ids: Callable[..., List[int]] = get_all_application_ids_for_demarche_simplifiee,
         get_applications_ids_to_retry: Callable[..., List[int]] = find_applications_ids_to_retry,
         get_details: Callable[..., Dict] = get_application_details,
         already_imported: Callable[..., bool] = is_already_imported,
