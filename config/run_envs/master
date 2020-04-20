@@ -5,3 +5,4 @@ TYPEFORM_URL_CULTURAL_PRACTICES_POLL="https://passculture.typeform.com/to/T8rurj
 ENVIRONMENT_NAME='testing'
 SENTRY_SERVER_URL_FOR_PRO='https://50f5694849704813b4154c5868b73365@logs.passculture.app/2'
 URL_FOR_MAINTENANCE=https://maintenance.passculture.app
+DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL=https://www.demarches-simplifiees.fr/commencer/test/549ae483-be80-4a03-8700-394514b0e90d
