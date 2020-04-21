@@ -9,6 +9,8 @@ import TextField from '../../../../layout/form/fields/TextField'
 import { formatSiret } from '../../siret/formatSiret'
 import ReactTooltip from 'react-tooltip'
 import { removeWhitespaces } from 'react-final-form-utils'
+import { Field } from 'react-final-form'
+import VenueType from '../../ValueObjects/VenueType'
 
 class IdentifierFields extends PureComponent {
   componentDidUpdate() {
@@ -80,6 +82,7 @@ class IdentifierFields extends PureComponent {
       initialSiret,
       isCreatedEntity,
       readOnly,
+      venueTypes,
     } = this.props
 
     return (
@@ -157,6 +160,42 @@ class IdentifierFields extends PureComponent {
             rows={1}
             validate={this.commentValidate}
           />
+          <div className="field field-select is-horizontal">
+            <div className="field-label is-normal">
+              <label
+                className="label"
+                htmlFor="venue-type"
+              >
+                <span className="subtitle">
+                  {'Type de lieu&nbsp;:'}
+                </span>
+              </label>
+            </div>
+
+            <div className="field-body">
+              <div className="control control-select">
+                <div className="select is-normal">
+                  <Field
+                    className=""
+                    component="select"
+                    name="venue-type"
+                  >
+                    <option>
+                      {'Choisissez un type de lieu dans la liste'}
+                    </option>
+                    {venueTypes.map(venueType => (
+                      <option
+                        key={`venue-type-${venueType.id}`}
+                        value={venueType.id}
+                      >
+                        {venueType.label}
+                      </option>
+                    ))}
+                  </Field>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -177,6 +216,7 @@ IdentifierFields.propTypes = {
   initialSiret: PropTypes.string,
   isCreatedEntity: PropTypes.bool,
   readOnly: PropTypes.bool,
+  venueTypes: PropTypes.arrayOf(PropTypes.instanceOf(VenueType)).isRequired,
 }
 
 export default IdentifierFields

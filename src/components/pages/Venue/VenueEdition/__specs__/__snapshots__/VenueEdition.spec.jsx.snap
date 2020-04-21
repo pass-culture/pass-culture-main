@@ -48,13 +48,13 @@ ShallowWrapper {
         "context": [MockFunction],
       }
     }
-    trackCreateVenue={[MockFunction]}
     trackModifyVenue={[MockFunction]}
     venue={
       Object {
         "id": "CM",
       }
     }
+    venueTypes={Array []}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

@@ -16,7 +16,8 @@ import LocationFields from '../fields/LocationFields/LocationFields'
 import { FRANCE_POSITION } from '../fields/LocationFields/utils/positions'
 import VenueType from '../ValueObjects/VenueType'
 
-const noop = () => {}
+const noop = () => {
+}
 
 class VenueCreation extends PureComponent {
   constructor() {
@@ -89,6 +90,7 @@ class VenueCreation extends PureComponent {
       match: {
         params: { offererId, venueId },
       },
+      venueTypes,
     } = this.props
     const { isRequestPending } = this.state
     const readOnly = false
@@ -118,6 +120,7 @@ class VenueCreation extends PureComponent {
           initialSiret={initialSiret}
           isCreatedEntity
           readOnly={readOnly}
+          venueTypes={venueTypes}
         />
         <BankFieldsContainer
           areBankInformationProvided={areBankInformationProvided}

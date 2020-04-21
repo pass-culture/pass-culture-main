@@ -10,6 +10,7 @@ ShallowWrapper {
     isCreatedEntity={true}
     isModifiedEntity={true}
     readOnly={true}
+    venueTypes={Array []}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -146,6 +147,45 @@ ShallowWrapper {
             validate={[Function]}
             validating={false}
           />
+          <div
+            className="field field-select is-horizontal"
+          >
+            <div
+              className="field-label is-normal"
+            >
+              <label
+                className="label"
+                htmlFor="venue-type"
+              >
+                <span
+                  className="subtitle"
+                >
+                  Type de lieu&nbsp;:
+                </span>
+              </label>
+            </div>
+            <div
+              className="field-body"
+            >
+              <div
+                className="control control-select"
+              >
+                <div
+                  className="select is-normal"
+                >
+                  <Field
+                    className=""
+                    component="select"
+                    name="venue-type"
+                  >
+                    <option>
+                      Choisissez un type de lieu dans la liste
+                    </option>
+                  </Field>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>,
       ],
       "className": "section",
@@ -288,6 +328,45 @@ ShallowWrapper {
               validate={[Function]}
               validating={false}
             />,
+            <div
+              className="field field-select is-horizontal"
+            >
+              <div
+                className="field-label is-normal"
+              >
+                <label
+                  className="label"
+                  htmlFor="venue-type"
+                >
+                  <span
+                    className="subtitle"
+                  >
+                    Type de lieu&nbsp;:
+                  </span>
+                </label>
+              </div>
+              <div
+                className="field-body"
+              >
+                <div
+                  className="control control-select"
+                >
+                  <div
+                    className="select is-normal"
+                  >
+                    <Field
+                      className=""
+                      component="select"
+                      name="venue-type"
+                    >
+                      <option>
+                        Choisissez un type de lieu dans la liste
+                      </option>
+                    </Field>
+                  </div>
+                </div>
+              </div>
+            </div>,
           ],
           "className": "field-group",
         },
@@ -563,6 +642,203 @@ ShallowWrapper {
             "rendered": null,
             "type": [Function],
           },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <div
+                  className="field-label is-normal"
+                >
+                  <label
+                    className="label"
+                    htmlFor="venue-type"
+                  >
+                    <span
+                      className="subtitle"
+                    >
+                      Type de lieu&nbsp;:
+                    </span>
+                  </label>
+                </div>,
+                <div
+                  className="field-body"
+                >
+                  <div
+                    className="control control-select"
+                  >
+                    <div
+                      className="select is-normal"
+                    >
+                      <Field
+                        className=""
+                        component="select"
+                        name="venue-type"
+                      >
+                        <option>
+                          Choisissez un type de lieu dans la liste
+                        </option>
+                      </Field>
+                    </div>
+                  </div>
+                </div>,
+              ],
+              "className": "field field-select is-horizontal",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <label
+                    className="label"
+                    htmlFor="venue-type"
+                  >
+                    <span
+                      className="subtitle"
+                    >
+                      Type de lieu&nbsp;:
+                    </span>
+                  </label>,
+                  "className": "field-label is-normal",
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <span
+                      className="subtitle"
+                    >
+                      Type de lieu&nbsp;:
+                    </span>,
+                    "className": "label",
+                    "htmlFor": "venue-type",
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": "Type de lieu&nbsp;:",
+                      "className": "subtitle",
+                    },
+                    "ref": null,
+                    "rendered": "Type de lieu&nbsp;:",
+                    "type": "span",
+                  },
+                  "type": "label",
+                },
+                "type": "div",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": <div
+                    className="control control-select"
+                  >
+                    <div
+                      className="select is-normal"
+                    >
+                      <Field
+                        className=""
+                        component="select"
+                        name="venue-type"
+                      >
+                        <option>
+                          Choisissez un type de lieu dans la liste
+                        </option>
+                      </Field>
+                    </div>
+                  </div>,
+                  "className": "field-body",
+                },
+                "ref": null,
+                "rendered": Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <div
+                      className="select is-normal"
+                    >
+                      <Field
+                        className=""
+                        component="select"
+                        name="venue-type"
+                      >
+                        <option>
+                          Choisissez un type de lieu dans la liste
+                        </option>
+                      </Field>
+                    </div>,
+                    "className": "control control-select",
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <Field
+                        className=""
+                        component="select"
+                        name="venue-type"
+                      >
+                        <option>
+                          Choisissez un type de lieu dans la liste
+                        </option>
+                      </Field>,
+                      "className": "select is-normal",
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "function",
+                      "props": Object {
+                        "children": Array [
+                          <option>
+                            Choisissez un type de lieu dans la liste
+                          </option>,
+                          Array [],
+                        ],
+                        "className": "",
+                        "component": "select",
+                        "name": "venue-type",
+                      },
+                      "ref": null,
+                      "rendered": Array [
+                        Object {
+                          "instance": null,
+                          "key": undefined,
+                          "nodeType": "host",
+                          "props": Object {
+                            "children": "Choisissez un type de lieu dans la liste",
+                          },
+                          "ref": null,
+                          "rendered": "Choisissez un type de lieu dans la liste",
+                          "type": "option",
+                        },
+                      ],
+                      "type": [Function],
+                    },
+                    "type": "div",
+                  },
+                  "type": "div",
+                },
+                "type": "div",
+              },
+            ],
+            "type": "div",
+          },
         ],
         "type": "div",
       },
@@ -696,6 +972,45 @@ ShallowWrapper {
               validate={[Function]}
               validating={false}
             />
+            <div
+              className="field field-select is-horizontal"
+            >
+              <div
+                className="field-label is-normal"
+              >
+                <label
+                  className="label"
+                  htmlFor="venue-type"
+                >
+                  <span
+                    className="subtitle"
+                  >
+                    Type de lieu&nbsp;:
+                  </span>
+                </label>
+              </div>
+              <div
+                className="field-body"
+              >
+                <div
+                  className="control control-select"
+                >
+                  <div
+                    className="select is-normal"
+                  >
+                    <Field
+                      className=""
+                      component="select"
+                      name="venue-type"
+                    >
+                      <option>
+                        Choisissez un type de lieu dans la liste
+                      </option>
+                    </Field>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>,
         ],
         "className": "section",
@@ -838,6 +1153,45 @@ ShallowWrapper {
                 validate={[Function]}
                 validating={false}
               />,
+              <div
+                className="field field-select is-horizontal"
+              >
+                <div
+                  className="field-label is-normal"
+                >
+                  <label
+                    className="label"
+                    htmlFor="venue-type"
+                  >
+                    <span
+                      className="subtitle"
+                    >
+                      Type de lieu&nbsp;:
+                    </span>
+                  </label>
+                </div>
+                <div
+                  className="field-body"
+                >
+                  <div
+                    className="control control-select"
+                  >
+                    <div
+                      className="select is-normal"
+                    >
+                      <Field
+                        className=""
+                        component="select"
+                        name="venue-type"
+                      >
+                        <option>
+                          Choisissez un type de lieu dans la liste
+                        </option>
+                      </Field>
+                    </div>
+                  </div>
+                </div>
+              </div>,
             ],
             "className": "field-group",
           },
@@ -1112,6 +1466,203 @@ ShallowWrapper {
               "ref": null,
               "rendered": null,
               "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <div
+                    className="field-label is-normal"
+                  >
+                    <label
+                      className="label"
+                      htmlFor="venue-type"
+                    >
+                      <span
+                        className="subtitle"
+                      >
+                        Type de lieu&nbsp;:
+                      </span>
+                    </label>
+                  </div>,
+                  <div
+                    className="field-body"
+                  >
+                    <div
+                      className="control control-select"
+                    >
+                      <div
+                        className="select is-normal"
+                      >
+                        <Field
+                          className=""
+                          component="select"
+                          name="venue-type"
+                        >
+                          <option>
+                            Choisissez un type de lieu dans la liste
+                          </option>
+                        </Field>
+                      </div>
+                    </div>
+                  </div>,
+                ],
+                "className": "field field-select is-horizontal",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <label
+                      className="label"
+                      htmlFor="venue-type"
+                    >
+                      <span
+                        className="subtitle"
+                      >
+                        Type de lieu&nbsp;:
+                      </span>
+                    </label>,
+                    "className": "field-label is-normal",
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <span
+                        className="subtitle"
+                      >
+                        Type de lieu&nbsp;:
+                      </span>,
+                      "className": "label",
+                      "htmlFor": "venue-type",
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": "Type de lieu&nbsp;:",
+                        "className": "subtitle",
+                      },
+                      "ref": null,
+                      "rendered": "Type de lieu&nbsp;:",
+                      "type": "span",
+                    },
+                    "type": "label",
+                  },
+                  "type": "div",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": <div
+                      className="control control-select"
+                    >
+                      <div
+                        className="select is-normal"
+                      >
+                        <Field
+                          className=""
+                          component="select"
+                          name="venue-type"
+                        >
+                          <option>
+                            Choisissez un type de lieu dans la liste
+                          </option>
+                        </Field>
+                      </div>
+                    </div>,
+                    "className": "field-body",
+                  },
+                  "ref": null,
+                  "rendered": Object {
+                    "instance": null,
+                    "key": undefined,
+                    "nodeType": "host",
+                    "props": Object {
+                      "children": <div
+                        className="select is-normal"
+                      >
+                        <Field
+                          className=""
+                          component="select"
+                          name="venue-type"
+                        >
+                          <option>
+                            Choisissez un type de lieu dans la liste
+                          </option>
+                        </Field>
+                      </div>,
+                      "className": "control control-select",
+                    },
+                    "ref": null,
+                    "rendered": Object {
+                      "instance": null,
+                      "key": undefined,
+                      "nodeType": "host",
+                      "props": Object {
+                        "children": <Field
+                          className=""
+                          component="select"
+                          name="venue-type"
+                        >
+                          <option>
+                            Choisissez un type de lieu dans la liste
+                          </option>
+                        </Field>,
+                        "className": "select is-normal",
+                      },
+                      "ref": null,
+                      "rendered": Object {
+                        "instance": null,
+                        "key": undefined,
+                        "nodeType": "function",
+                        "props": Object {
+                          "children": Array [
+                            <option>
+                              Choisissez un type de lieu dans la liste
+                            </option>,
+                            Array [],
+                          ],
+                          "className": "",
+                          "component": "select",
+                          "name": "venue-type",
+                        },
+                        "ref": null,
+                        "rendered": Array [
+                          Object {
+                            "instance": null,
+                            "key": undefined,
+                            "nodeType": "host",
+                            "props": Object {
+                              "children": "Choisissez un type de lieu dans la liste",
+                            },
+                            "ref": null,
+                            "rendered": "Choisissez un type de lieu dans la liste",
+                            "type": "option",
+                          },
+                        ],
+                        "type": [Function],
+                      },
+                      "type": "div",
+                    },
+                    "type": "div",
+                  },
+                  "type": "div",
+                },
+              ],
+              "type": "div",
             },
           ],
           "type": "div",

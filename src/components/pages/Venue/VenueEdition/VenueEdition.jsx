@@ -86,6 +86,7 @@ class VenueEdition extends PureComponent {
       },
       query,
       offerer,
+      venueTypes,
     } = this.props
     const { isRequestPending } = this.state
     const { readOnly } = query.context({
@@ -116,7 +117,10 @@ class VenueEdition extends PureComponent {
           fieldReadOnlyBecauseFrozenFormSiret={fieldReadOnlyBecauseFrozenFormSiret}
           formSiret={formSiret}
           initialSiret={initialSiret}
-          isModifiedEntity={!readOnly}
+          venueTypes={venueTypes}
+        />
+        <BankFieldsContainer
+          areBankInformationProvided={areBankInformationProvided}
           readOnly={readOnly}
         />
         <RibsUploadFeatureFlip

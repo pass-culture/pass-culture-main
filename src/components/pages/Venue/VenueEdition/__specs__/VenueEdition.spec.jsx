@@ -49,8 +49,8 @@ describe('src | components | pages | Venue', () => {
           readOnly: false,
         }),
       },
-      trackCreateVenue: jest.fn(),
       trackModifyVenue: jest.fn(),
+      venueTypes: [],
     }
   })
 

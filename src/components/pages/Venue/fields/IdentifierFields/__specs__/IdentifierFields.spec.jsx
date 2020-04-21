@@ -15,6 +15,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       isCreatedEntity: true,
       isModifiedEntity: true,
       readOnly: true,
+      venueTypes: [],
     }
   })
 
@@ -35,6 +36,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         isCreatedEntity: true,
         isModifiedEntity: true,
         readOnly: true,
+        venueTypes: [],
       }
 
       // when
@@ -78,6 +80,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           isModifiedEntity: true,
           initialSiret: null,
           readOnly: false,
+          venueTypes: [],
         }
 
         // when
@@ -95,6 +98,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           isCreatedEntity: true,
           isModifiedEntity: true,
           readOnly: true,
+          venueTypes: [],
         }
 
         // when
@@ -120,6 +124,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         const props = {
           isCreatedEntity: false,
           isModifiedEntity: true,
+          venueTypes: [],
         }
 
         // when
@@ -139,6 +144,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           isModifiedEntity: true,
           fieldReadOnlyBecauseFrozenFormSiret: false,
           readOnly: false,
+          venueTypes: [],
         }
 
         // when
@@ -156,6 +162,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           isCreatedEntity: true,
           isModifiedEntity: true,
           readOnly: true,
+          venueTypes: [],
         }
 
         // when
@@ -173,6 +180,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           isCreatedEntity: true,
           isModifiedEntity: true,
           fieldReadOnlyBecauseFrozenFormSiretdisplay: true,
+          venueTypes: [],
         }
 
         // when
@@ -193,6 +201,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           isModifiedEntity: true,
           fieldReadOnlyBecauseFrozenFormSiret: false,
           readOnly: false,
+          venueTypes: [],
         }
 
         // when
@@ -210,6 +219,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           isCreatedEntity: true,
           isModifiedEntity: true,
           readOnly: true,
+          venueTypes: [],
         }
 
         // when
@@ -230,6 +240,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           isModifiedEntity: true,
           fieldReadOnlyBecauseFrozenFormSiret: false,
           readOnly: false,
+          venueTypes: [],
         }
 
         // when
@@ -247,6 +258,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           isCreatedEntity: true,
           isModifiedEntity: true,
           readOnly: true,
+          venueTypes: [],
         }
 
         // when
@@ -266,6 +278,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           isCreatedEntity: true,
           isModifiedEntity: true,
           readOnly: false,
+          venueTypes: [],
         }
 
         // when
@@ -283,6 +296,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           isCreatedEntity: true,
           isModifiedEntity: true,
           readOnly: true,
+          venueTypes: [],
         }
 
         // when
