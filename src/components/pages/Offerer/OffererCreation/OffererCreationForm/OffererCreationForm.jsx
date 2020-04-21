@@ -8,11 +8,11 @@ function OffererCreationForm({ handleSubmit, invalid, pristine }) {
   return (
     <form onSubmit={handleSubmit}>
       <div className="section">
-        <div className="op-creation-from">
+        <div className="op-creation-form">
           <Siren />
           <FormSpy
             render={({ values }) => (
-              <div className="op-detail op-creation-from-detail">
+              <div className="op-detail op-creation-form-detail">
                 <span>{'Désignation : '}</span>
                 {values.name && <span>{values.name}</span>}
               </div>
@@ -20,7 +20,7 @@ function OffererCreationForm({ handleSubmit, invalid, pristine }) {
           />
           <FormSpy
             render={({ values }) => (
-              <div className="op-detail op-creation-from-detail">
+              <div className="op-detail op-creation-form-detail">
                 <span>{'Siège social : '}</span>
                 {values.postalCode && (
                   <span>{`${values.address} - ${values.postalCode} ${values.city}`}</span>

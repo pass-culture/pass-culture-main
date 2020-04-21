@@ -1,15 +1,17 @@
-import { Selector } from 'testcafe'
+import { Selector, ClientFunction } from 'testcafe'
 
 import { fetchSandbox } from './helpers/sandboxes'
 import { navigateToNewOffererAs } from './helpers/navigations'
 import { getSirenRequestMockAs } from './helpers/sirenes'
 import { createUserRole } from './helpers/roles'
 
-const addressInput = Selector('input[name=address]')
-const nameInput = Selector('input[name=name]')
 const sirenInput = Selector('input[name=siren]')
 const sirenErrorInput = Selector('.field-errors')
 const submitButton = Selector('button[type=submit]')
+const formSelector = Selector('.op-creation-form')
+const getFormContent = ClientFunction(() => formSelector().innerHTML, {
+  dependencies: { formSelector },
+})
 
 let user
 let userRole
@@ -43,11 +45,11 @@ test("Je peux créer une nouvelle structure avec un nouveau SIREN n'existant pas
   // when
   await t
     .typeText(sirenInput, siren)
-    .expect(nameInput.value)
-    .eql(name)
-    .expect(addressInput.value)
-    .eql(address)
-    .click(submitButton())
+    .expect(getFormContent())
+    .contains('NOUVEAU THEATRE DE MONTREUIL')
+    .expect(getFormContent())
+    .contains('10 PLACE JEAN JAURES - 75000 Paris')
+  await t.click(submitButton())
 
   // then
   const location = await t.eval(() => window.location)
@@ -59,7 +61,7 @@ test('Je ne peux pas créer une nouvelle structure avec un SIREN invalide', asyn
   await t.typeText(sirenInput, '000000000').click(submitButton)
 
   // then
-  await t.expect(sirenErrorInput.innerText).contains('Ce SIREN n\'est pas reconnu')
+  await t.expect(sirenErrorInput.innerText).contains("Ce SIREN n'est pas reconnu")
 })
 
 test("Je peux créer une nouvelle structure avec un SIREN dont l'adresse n'est pas renvoyée par l'API sirene, et je suis redirigé·e vers mes structures", async t => {
@@ -77,11 +79,7 @@ test("Je peux créer une nouvelle structure avec un SIREN dont l'adresse n'est p
   await t.addRequestHooks(getSirenRequestMockAs(offererWithoutAddress))
 
   // when
-  await t
-    .typeText(sirenInput, siren)
-    .expect(addressInput.value)
-    .eql('')
-    .click(submitButton)
+  await t.typeText(sirenInput, siren).click(submitButton)
 
   // then
   const location = await t.eval(() => window.location)
