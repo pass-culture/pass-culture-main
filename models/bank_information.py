@@ -11,7 +11,8 @@ class BankInformation(PcObject, Model, ProvidableMixin, VersionedMixin):
     offererId = Column(BigInteger,
                        ForeignKey("offerer.id"),
                        index=True,
-                       nullable=True)
+                       nullable=True,
+                       unique=True)
 
     offerer = relationship('Offerer',
                            foreign_keys=[offererId],
@@ -20,7 +21,8 @@ class BankInformation(PcObject, Model, ProvidableMixin, VersionedMixin):
     venueId = Column(BigInteger,
                      ForeignKey("venue.id"),
                      index=True,
-                     nullable=True)
+                     nullable=True,
+                     unique=True)
 
     venue = relationship('Venue',
                          foreign_keys=[venueId],
@@ -34,4 +36,6 @@ class BankInformation(PcObject, Model, ProvidableMixin, VersionedMixin):
 
     applicationId = Column(Integer,
                            nullable=False)
+
+
 
