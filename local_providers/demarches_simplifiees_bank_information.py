@@ -20,8 +20,8 @@ class BankInformationProvider(LocalProvider):
 
     def __init__(self):
         super().__init__()
-        self.PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_RIB_PROCEDURE_ID', None)
-        self.TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_TOKEN', None)
+        self.PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_RIB_PROCEDURE_ID')
+        self.TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_TOKEN')
         most_recent_known_application_date = get_last_update_from_bank_information(last_provider_id=self.provider.id)
 
         self.application_ids = iter(

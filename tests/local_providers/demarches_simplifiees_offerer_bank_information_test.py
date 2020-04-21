@@ -9,7 +9,7 @@ from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_bank_information
-from tests.model_creators.provider_creators import provider_test
+from tests.model_creators.provider_creators import provider_test, activate_provider
 from utils.date import DATE_ISO_FORMAT
 
 
@@ -62,13 +62,6 @@ def demarche_simplifiee_application_detail_response(siren, bic, iban, id=1, upda
     }
 
 
-def activate_provider():
-    provider_object = OffererBankInformationProvider()
-    provider_object.provider.isActive = True
-    repository.save(provider_object.provider)
-    provider_object.updateObjects()
-
-
 class OffererBankInformationProviderProviderTest:
     @patch(
         'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_demarche_simplifiee')
@@ -98,15 +91,15 @@ class OffererBankInformationProviderProviderTest:
         get_all_application_ids_for_demarche_simplifiee.return_value = [1]
         get_application_details.return_value = demarche_simplifiee_application_detail_response(
             siren="793875030", bic="BdFefr2LCCB", iban="FR76 3000 6000  0112 3456 7890 189")
-
         offerer = create_offerer(siren='793875030')
-
         repository.save(offerer)
 
         offerer_id = offerer.id
+        activate_provider('OffererBankInformationProvider')
+        offerer_bank_information_provider = OffererBankInformationProvider()
 
         # When
-        activate_provider()
+        offerer_bank_information_provider.updateObjects()
 
         # Then
         bank_information = BankInformation.query.one()
@@ -142,11 +135,13 @@ class OffererBankInformationProviderProviderTest:
         ]
         offerer1 = create_offerer(siren='793875019')
         offerer2 = create_offerer(siren='793875030')
-
         repository.save(offerer1, offerer2)
 
+        activate_provider('OffererBankInformationProvider')
+        offerer_bank_information_provider = OffererBankInformationProvider()
+
         # When
-        activate_provider()
+        offerer_bank_information_provider.updateObjects()
 
         # Then
         assert BankInformation.query.count() == 2
@@ -182,9 +177,11 @@ class OffererBankInformationProviderProviderTest:
             demarche_simplifiee_application_detail_response(
                 siren="793875019", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189"),
         ]
+        activate_provider('OffererBankInformationProvider')
+        offerer_bank_information_provider = OffererBankInformationProvider()
 
         # When
-        activate_provider()
+        offerer_bank_information_provider.updateObjects()
 
         # Then
         assert BankInformation.query.count() == 0
@@ -214,9 +211,11 @@ class OffererBankInformationProviderProviderTest:
         bank_information = create_bank_information(
             id_at_providers="793875019", offerer=offerer)
         repository.save(bank_information)
+        activate_provider('OffererBankInformationProvider')
+        offerer_bank_information_provider = OffererBankInformationProvider()
 
         # When
-        activate_provider()
+        offerer_bank_information_provider.updateObjects()
 
         # Then
         updated_bank_information = BankInformation.query.one()
@@ -241,14 +240,14 @@ class OffererBankInformationProviderProviderTest:
             demarche_simplifiee_application_detail_response(
                 siren="793875030", bic="SOGEFRPP", iban="FR7630007000111234567890144", id=2),
         ]
-
         offerer_ko = create_offerer(siren='793875019')
         offerer_ok = create_offerer(siren="793875030")
-
         repository.save(offerer_ko, offerer_ok)
+        activate_provider('OffererBankInformationProvider')
+        offerer_bank_information_provider = OffererBankInformationProvider()
 
-        # when
-        activate_provider()
+        # When
+        offerer_bank_information_provider.updateObjects()
 
         # then
         bank_information = BankInformation.query.one()
@@ -270,9 +269,11 @@ class OffererBankInformationProviderProviderTest:
         get_all_application_ids_for_demarche_simplifiee.return_value = [1]
         get_application_details.return_value = demarche_simplifiee_application_detail_response(
             siren="793875030", bic="BdFefr2LCCB", iban="FR76 3000 6000  0112 3456 7890 189")
+        activate_provider('OffererBankInformationProvider')
+        offerer_bank_information_provider = OffererBankInformationProvider()
 
-        # when
-        activate_provider()
+        # When
+        offerer_bank_information_provider.updateObjects()
 
         # then
         get_all_application_ids_for_demarche_simplifiee.assert_called_with(ANY, ANY,
@@ -301,9 +302,11 @@ class OffererBankInformationProviderProviderTest:
                                                        'OffererBankInformationProvider').id,
                                                    offerer=offerer)
         repository.save(bank_information)
+        activate_provider('OffererBankInformationProvider')
+        offerer_bank_information_provider = OffererBankInformationProvider()
 
-        # when
-        activate_provider()
+        # When
+        offerer_bank_information_provider.updateObjects()
 
         # then
         get_all_application_ids_for_demarche_simplifiee.assert_called_with(ANY, ANY,
@@ -324,15 +327,20 @@ class OffererBankInformationProviderProviderTest:
         offerer = create_offerer(siren='793875030')
 
         repository.save(offerer)
+        activate_provider('OffererBankInformationProvider')
+        offerer_bank_information_provider = OffererBankInformationProvider()
 
         # When
-        activate_provider()
+        offerer_bank_information_provider.updateObjects()
 
         # Then
         bank_information = BankInformation.query.one()
         assert bank_information.iban == 'FR7630006000011234567890189'
         assert bank_information.bic == 'BDFEFR2LCCB'
 
+
+    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_RIB_OFFERER_PROCEDURE_ID': 'procedure_id'})
+    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_TOKEN': 'token'})
     @patch(
         'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_offerer_bank_information.get_application_details')
@@ -358,14 +366,16 @@ class OffererBankInformationProviderProviderTest:
                                                         'OffererBankInformationProvider').id,
                                                     offerer=offerer2)
         repository.save(bank_information, bank_information2)
+        activate_provider('OffererBankInformationProvider')
+        offerer_bank_information_provider = OffererBankInformationProvider()
 
         # When
-        activate_provider()
+        offerer_bank_information_provider.updateObjects()
 
         # Then
         get_all_application_ids_for_demarche_simplifiee.assert_called_once_with(
-            ANY,
-            ANY,
+            'procedure_id',
+            'token',
             datetime(
                 2020, 1, 1)
         )
@@ -458,9 +468,11 @@ class RetrieveBankInformationTest:
         offerer_id = offerer.id
         provider_id = get_provider_by_local_class(
             'OffererBankInformationProvider').id
+        activate_provider('OffererBankInformationProvider')
+        offerer_bank_information_provider = OffererBankInformationProvider()
 
         # When
-        activate_provider()
+        offerer_bank_information_provider.updateObjects()
 
         # Then
         bank_information = BankInformation.query.one()
