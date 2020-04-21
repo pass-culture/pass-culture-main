@@ -11,11 +11,28 @@
     }
   }
 
+  .op-field {
+    margin: rem(8px) 0;
+    > :first-child {
+      color: $black;
+      margin-right: rem(5px);
+      font-size: rem(16px);
+    }
+  }
+
   .op-subtitle {
     margin-bottom: rem(25px);
   }
 
   .op-content-section {
     margin-bottom: rem(48px);
+  }
+
+  .op-creation-from {
+    margin: rem(60px) 0 rem(48px);
+  }
+
+  .op-creation-from-detail {
+    margin-bottom: rem(30px);
   }
 }

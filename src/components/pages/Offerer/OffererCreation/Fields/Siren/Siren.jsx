@@ -29,32 +29,20 @@ const Siren = () => (
   >
     {({ input, meta }) => {
       return (
-        <div className="field text-field is-label-aligned">
-          <label
-            className="field-label"
-            htmlFor="offerer__siren"
-          >
-            <span>
-              {'SIREN : '}
-            </span>
-            <span className="field-asterisk">
-              {'*'}
-            </span>
-          </label>
+        <label className="field text-field is-label-aligned op-field">
+          <span className="field-label" htmlFor="offerer__siren">
+            {'SIREN : '}
+            <span className="field-asterisk">{'*'}</span>
+          </span>
           <div className="field-control">
             <div className="field-value flex-columns items-center">
               <div className="field-inner flex-columns items-center">
-                <input
-                  className="input is-normal"
-                  id="offerer__siren"
-                  type="text"
-                  {...input}
-                />
+                <input className="input is-normal" id="offerer__siren" type="text" {...input} />
               </div>
             </div>
             <FieldErrors meta={meta} />
           </div>
-        </div>
+        </label>
       )
     }}
   </Field>

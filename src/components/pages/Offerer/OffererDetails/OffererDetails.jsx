@@ -18,44 +18,24 @@ class OffererDetails extends PureComponent {
   render() {
     const { offerer, venues } = this.props
     return (
-      <Main
-        backTo={{ label: 'Vos structures juridiques', path: '/structures' }}
-        name="offerer"
-      >
-        <Titles
-          subtitle={offerer.name}
-          title="Structure"
-        />
+      <Main backTo={{ label: 'Vos structures juridiques', path: '/structures' }} name="offerer">
+        <Titles subtitle={offerer.name} title="Structure" />
         <p className="subtitle op-subtitle">
           {'Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.'}
         </p>
         <div className="section op-content-section">
-          <h2 className="main-list-title">
-            {'Informations structure'}
-          </h2>
+          <h2 className="main-list-title">{'Informations structure'}</h2>
           <div className="op-detail">
-            <span>
-              {'SIREN : '}
-            </span>
-            <span>
-              {offerer.formattedSiren}
-            </span>
+            <span>{'SIREN : '}</span>
+            <span>{offerer.formattedSiren}</span>
           </div>
           <div className="op-detail">
-            <span>
-              {'Désignation : '}
-            </span>
-            <span>
-              {offerer.name}
-            </span>
+            <span>{'Désignation : '}</span>
+            <span>{offerer.name}</span>
           </div>
           <div className="op-detail">
-            <span>
-              {'Siège social : '}
-            </span>
-            <span>
-              {`${offerer.address} - ${offerer.postalCode} ${offerer.city}`}
-            </span>
+            <span>{'Siège social : '}</span>
+            <span>{`${offerer.address} - ${offerer.postalCode} ${offerer.city}`}</span>
           </div>
         </div>
 
@@ -63,10 +43,7 @@ class OffererDetails extends PureComponent {
           <BankInformation offerer={offerer} />
         </RibsUploadFeatureFlip>
 
-        <Venues
-          offererId={offerer.id}
-          venues={venues}
-        />
+        <Venues offererId={offerer.id} venues={venues} />
       </Main>
     )
   }
