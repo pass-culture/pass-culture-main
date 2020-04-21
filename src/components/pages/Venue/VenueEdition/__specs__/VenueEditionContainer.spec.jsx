@@ -69,11 +69,13 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
           offerers: [],
           userOfferers: [],
           venues: [],
-          "venue-types": [{ id: 'AE', label: 'Patrimoine et tourisme' }],
-          users: [            {
-            email: 'john.doe@example.net',
-            currentUserUUID: getCurrentUserUUID(),
-          }],
+          'venue-types': [{ id: 'AE', label: 'Patrimoine et tourisme' }],
+          users: [
+            {
+              email: 'john.do e@example.net',
+              currentUserUUID: getCurrentUserUUID(),
+            },
+          ],
         },
       }
 
@@ -81,8 +83,11 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
       const props = mapStateToProps(state, ownProps)
 
       // then
+      expect(props).toHaveProperty('venueTypes')
+      const venueType = props.venueTypes[0]
+      expect(venueType).toBeInstanceOf(VenueType)
       expect(props).toMatchObject({
-        venueTypes: [new VenueType({ id: 'AE', label: 'Patrimoine et tourisme' })]
+        venueTypes: [new VenueType({ id: 'AE', label: 'Patrimoine et tourisme' })],
       })
     })
   })

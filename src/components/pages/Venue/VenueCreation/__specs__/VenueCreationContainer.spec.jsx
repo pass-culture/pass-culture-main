@@ -80,8 +80,11 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
       const props = mapStateToProps(state, ownProps)
 
       // then
+      expect(props).toHaveProperty('venueTypes')
+      const venueType = props.venueTypes[0]
+      expect(venueType).toBeInstanceOf(VenueType)
       expect(props).toMatchObject({
-        venueTypes: [new VenueType({ id: 'AE', label: 'Patrimoine et tourisme' })]
+        venueTypes: [new VenueType({ id: 'AE', label: 'Patrimoine et tourisme' })],
       })
     })
   })

@@ -11,6 +11,7 @@ import withTracking from '../../../hocs/withTracking'
 import { VENUE_MODIFICATION_PATCH_KEYS } from '../utils/utils'
 import VenueEdition from './VenueEdition'
 import { selectVenueTypes } from '../../../../selectors/data/venueTypesSelectors'
+import VenueType from '../ValueObjects/VenueType'
 
 export const mapStateToProps = (
   state,
@@ -20,7 +21,7 @@ export const mapStateToProps = (
     },
   }
 ) => ({
-  venueTypes: selectVenueTypes(state),
+  venueTypes: selectVenueTypes(state).map(type => new VenueType(type)),
   venue: selectVenueById(state, venueId),
   offerer: selectOffererById(state, offererId),
 })

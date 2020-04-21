@@ -12,6 +12,7 @@ import NotificationMessage from '../Notification'
 import { VENUE_CREATION_PATCH_KEYS } from '../utils/utils'
 import VenueCreation from './VenueCreation'
 import { selectVenueTypes } from '../../../../selectors/data/venueTypesSelectors'
+import VenueType from '../ValueObjects/VenueType'
 
 export const mapStateToProps = (
   state,
@@ -22,7 +23,7 @@ export const mapStateToProps = (
     },
   }
 ) => ({
-  venueTypes: selectVenueTypes(state),
+  venueTypes: selectVenueTypes(state).map(type => new VenueType(type)),
   formInitialValues: {
     managingOffererId: offererId,
     bookingEmail: currentUser.email,
