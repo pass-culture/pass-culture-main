@@ -6,18 +6,17 @@ from freezegun import freeze_time
 
 from domain.user_emails import _build_recipients_list
 from models import ThingType
-from models.db import db
 from models.email import Email, EmailStatus
 from repository import repository
 from tests.conftest import clean_database, mocked_mail
 from tests.files.api_entreprise import MOCKED_SIREN_ENTREPRISES_API_RETURN
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
-    create_email, create_user_offerer
+    create_user_offerer
 from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
     create_offer_with_event_product
 from utils.human_ids import humanize
 from utils.mailing import parse_email_addresses, \
-    send_raw_email, resend_email, \
+    send_raw_email, \
     compute_email_html_part_and_recipients, \
     extract_users_information_from_bookings, build_pc_pro_offer_link, format_booking_date_for_email, \
     format_booking_hours_for_email, make_validation_email_object
@@ -87,64 +86,6 @@ def test_save_and_send_creates_an_entry_in_email_with_status_error_when_send_mai
     assert email.content == email_content
     assert email.status == EmailStatus.ERROR
     assert email.datetime == datetime(2019, 1, 1, 12, 0, 0)
-
-
-@mocked_mail
-@clean_database
-@freeze_time('2019-01-01 12:00:00')
-def test_send_content_and_update_updates_email_when_send_mail_successful(app):
-    # given
-    email_content = {
-        'FromEmail': 'test@email.fr',
-        'FromName': 'Test From',
-        'Subject': 'Test subject',
-        'Text-Part': 'Hello world',
-        'Html-part': '<html><body>Hello World</body></html>'
-    }
-    email = create_email(email_content, status='ERROR', time=datetime(2018, 12, 1, 12, 0, 0))
-    repository.save(email)
-    mocked_response = MagicMock()
-    mocked_response.status_code = 200
-    app.mailjet_client.send.create.return_value = mocked_response
-
-    # when
-    successfully_sent = resend_email(email)
-
-    # then
-    db.session.refresh(email)
-    assert successfully_sent
-    assert email.status == EmailStatus.SENT
-    assert email.datetime == datetime(2019, 1, 1, 12, 0, 0)
-    app.mailjet_client.send.create.assert_called_once_with(data=email_content)
-
-
-@mocked_mail
-@clean_database
-@freeze_time('2019-01-01 12:00:00')
-def test_send_content_and_update_does_not_update_email_when_send_mail_unsuccessful(app):
-    # given
-    email_content = {
-        'FromEmail': 'test@email.fr',
-        'FromName': 'Test From',
-        'Subject': 'Test subject',
-        'Text-Part': 'Hello world',
-        'Html-part': '<html><body>Hello World</body></html>'
-    }
-    email = create_email(email_content, status='ERROR', time=datetime(2018, 12, 1, 12, 0, 0))
-    repository.save(email)
-    mocked_response = MagicMock()
-    mocked_response.status_code = 500
-    app.mailjet_client.send.create.return_value = mocked_response
-
-    # when
-    successfully_sent = resend_email(email)
-
-    # then
-    assert not successfully_sent
-    db.session.refresh(email)
-    assert email.status == EmailStatus.ERROR
-    assert email.datetime == datetime(2018, 12, 1, 12, 0, 0)
-    app.mailjet_client.send.create.assert_called_once_with(data=email_content)
 
 
 class ParseEmailAddressesTest:

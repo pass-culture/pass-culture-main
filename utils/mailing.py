@@ -8,10 +8,9 @@ from flask import current_app as app, render_template
 
 from connectors import api_entreprises
 from domain.postal_code.postal_code import PostalCode
-from models import Booking, Offer, Email, Offerer, Stock, User, UserOfferer, Venue
+from models import Booking, Offer, Offerer, Stock, User, UserOfferer, Venue
 from models.email import EmailStatus
-from models.offer_type import ProductType
-from repository import booking_queries, repository
+from repository import booking_queries
 from repository import email_queries
 from repository.feature_queries import feature_send_mail_to_users_enabled
 from utils import logger
@@ -57,18 +56,6 @@ def send_raw_email(data: Dict) -> bool:
     return successfully_sent_email
 
 
-def resend_email(email: Email) -> bool:
-    response = app.mailjet_client.send.create(data=email.content)
-    if response.status_code == 200:
-        email.status = EmailStatus.SENT
-        email.datetime = datetime.utcnow()
-        repository.save(email)
-        return True
-    logger.logger.warning(
-        f'[EMAIL] Trying to resend email # {email.id}, {email.content} failed with status code {response.status_code}')
-    return False
-
-
 def build_pc_pro_offer_link(offer: Offer) -> str:
     return f'{PRO_URL}/offres/{humanize(offer.id)}?lieu={humanize(offer.venueId)}' \
            f'&structure={humanize(offer.venue.managingOffererId)}'
@@ -108,46 +95,6 @@ def format_booking_hours_for_email(booking: Booking) -> str:
         event_minute = date_in_tz.minute
         return f'{event_hour}h' if event_minute == 0 else f'{event_hour}h{event_minute}'
     return ''
-
-
-def make_offerer_booking_recap_email_after_user_action(booking: Booking, is_cancellation=False) -> Dict:
-    venue = booking.stock.offer.venue
-    user = booking.user
-    stock_bookings = booking_queries.find_ongoing_bookings_by_stock(
-        booking.stock)
-    product = booking.stock.offer.product
-    human_offer_id = humanize(booking.stock.offer.id)
-    booking_is_on_event = booking.stock.beginningDatetime is not None
-
-    if is_cancellation:
-        email_subject = f'[Réservations] Annulation de réservation pour {product.name}'
-    else:
-        email_subject = f'[Réservations {venue.departementCode}] Nouvelle réservation pour {product.name}'
-
-    if booking_is_on_event:
-        date_in_tz = get_event_datetime(booking.stock)
-        formatted_datetime = format_datetime(date_in_tz)
-        email_subject += f' - {formatted_datetime}'
-    else:
-        formatted_datetime = None
-    email_html = render_template('mails/offerer_recap_email_after_user_action.html',
-                                 is_cancellation=is_cancellation,
-                                 booking_is_on_event=booking_is_on_event,
-                                 number_of_bookings=len(stock_bookings),
-                                 event_or_thing=product,
-                                 stock_date_time=formatted_datetime,
-                                 venue=venue,
-                                 stock_bookings=stock_bookings,
-                                 user=user,
-                                 pro_url=PRO_URL,
-                                 human_offer_id=human_offer_id)
-
-    return {
-        'FromName': 'pass Culture',
-        'FromEmail': SUPPORT_EMAIL_ADDRESS,
-        'Subject': email_subject,
-        'Html-part': email_html,
-    }
 
 
 def make_validation_email_object(offerer: Offerer, user_offerer: UserOfferer,
@@ -410,38 +357,6 @@ def make_offer_creation_notification_email(offer: Offer, author: User, pro_origi
     }
 
 
-def _generate_reservation_email_html_subject(booking: Booking) -> (str, str):
-    stock = booking.stock
-    user = booking.user
-    venue = stock.offer.venue
-    stock_description = _get_stock_description(stock)
-    booking_is_on_event = stock.beginningDatetime is None
-
-    if booking_is_on_event:
-        email_subject = 'Confirmation de votre commande pour {}'.format(
-            stock_description)
-        email_html = render_template('mails/user_confirmation_email_thing.html',
-                                     user=user,
-                                     booking_token=booking.token,
-                                     thing_name=stock.offer.product.name,
-                                     thing_reference=stock.offer.product.idAtProviders,
-                                     venue=venue)
-    else:
-        date_in_tz = get_event_datetime(stock)
-        formatted_date_time = format_datetime(date_in_tz)
-        email_subject = 'Confirmation de votre réservation pour {}'.format(
-            stock_description)
-        email_html = render_template('mails/user_confirmation_email_event.html',
-                                     user=user,
-                                     booking_token=booking.token,
-                                     event_occurrence_name=stock.offer.product.name,
-                                     formatted_date_time=formatted_date_time,
-                                     venue=venue
-                                     )
-
-    return email_html, email_subject
-
-
 def get_event_datetime(stock: Stock) -> datetime:
     if stock.offer.venue.departementCode is not None:
         date_in_utc = stock.beginningDatetime
@@ -451,17 +366,6 @@ def get_event_datetime(stock: Stock) -> datetime:
         date_in_tz = stock.beginningDatetime
 
     return date_in_tz
-
-
-def _get_stock_description(stock: Stock) -> str:
-    if stock.beginningDatetime:
-        date_in_tz = get_event_datetime(stock)
-        description = '{} le {}'.format(stock.offer.product.name,
-                                        format_datetime(date_in_tz))
-    elif ProductType.is_thing(stock.offer.type):
-        description = str(stock.offer.product.name)
-
-    return description
 
 
 def make_webapp_user_validation_email(user: User, app_origin_url: str) -> Dict:
