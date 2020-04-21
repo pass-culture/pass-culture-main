@@ -7,6 +7,7 @@ from typing import Dict, List, Union
 from flask import current_app as app, render_template
 
 from connectors import api_entreprises
+from domain.postal_code.postal_code import PostalCode
 from models import Booking, Offer, Email, Offerer, Stock, User, UserOfferer, Venue
 from models.email import EmailStatus
 from models.offer_type import ProductType
@@ -155,6 +156,8 @@ def make_validation_email_object(offerer: Offerer, user_offerer: UserOfferer,
     vars_obj_user.pop('clearTextPassword', None)
     api_entreprise = get_by_siren(offerer).json()
 
+    offerer_departement_code = PostalCode(offerer.postalCode).get_departement_code()
+
     email_html = render_template('mails/internal_validation_email.html',
                                  user_offerer=user_offerer,
                                  user_vars=pformat(vars_obj_user),
@@ -169,7 +172,7 @@ def make_validation_email_object(offerer: Offerer, user_offerer: UserOfferer,
         'FromName': 'pass Culture',
         'FromEmail': SUPPORT_EMAIL_ADDRESS,
         'Subject': "%s - inscription / rattachement PRO à valider : %s" % (
-            user_offerer.user.departementCode, offerer.name),
+            offerer_departement_code, offerer.name),
         'Html-part': email_html
     }
 

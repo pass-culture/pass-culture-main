@@ -2,7 +2,6 @@ import re
 from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
 
-from bs4 import BeautifulSoup
 from freezegun import freeze_time
 
 from domain.user_emails import _build_recipients_list
@@ -13,7 +12,7 @@ from repository import repository
 from tests.conftest import clean_database, mocked_mail
 from tests.files.api_entreprise import MOCKED_SIREN_ENTREPRISES_API_RETURN
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
-    create_email
+    create_email, create_user_offerer
 from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
     create_offer_with_event_product
 from utils.human_ids import humanize
@@ -21,7 +20,7 @@ from utils.mailing import parse_email_addresses, \
     send_raw_email, resend_email, \
     compute_email_html_part_and_recipients, \
     extract_users_information_from_bookings, build_pc_pro_offer_link, format_booking_date_for_email, \
-    format_booking_hours_for_email
+    format_booking_hours_for_email, make_validation_email_object
 
 
 def get_mocked_response_status_200(entity):
@@ -199,7 +198,8 @@ class GetUsersInformationFromStockBookingsTest:
         user_3 = create_user(can_book_free_offers=True, departement_code='93', email='mail@example.com',
                              first_name='Toto', last_name='Titi', public_name='Test')
         offerer = create_offerer()
-        venue = create_venue(offerer=offerer, name='Test offerer', booking_email='reservations@test.fr', is_virtual=True, siret=None)
+        venue = create_venue(offerer=offerer, name='Test offerer', booking_email='reservations@test.fr',
+                             is_virtual=True, siret=None)
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
         stock = create_stock_from_offer(thing_offer, price=0, quantity=10, beginning_datetime=beginning_datetime)
@@ -351,6 +351,21 @@ class FormatBookingHoursForEmailTest:
 
         # Then
         assert formatted_date == ''
+
+
+class MakeValidationEmailObjectTest:
+    def test_should_return_subject_with_correct_departement_code(self):
+        # Given
+        user = create_user(departement_code='93')
+        offerer = create_offerer(postal_code='95490')
+        user_offerer = create_user_offerer(user=user, offerer=offerer)
+
+        # When
+        email_object = make_validation_email_object(user_offerer=user_offerer, offerer=offerer,
+                                                    get_by_siren=get_mocked_response_status_200)
+
+        # Then
+        assert email_object.get("Subject") == '95 - inscription / rattachement PRO à valider : Test Offerer'
 
 
 def _remove_whitespaces(text):
