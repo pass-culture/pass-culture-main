@@ -5,7 +5,7 @@ import { requestData } from 'redux-saga-data'
 
 import VenueProvidersManager from './VenueProvidersManager'
 import selectVenueProvidersByVenueId from './selectors/selectVenueProvidersByVenueId'
-import { selectProviders } from '../../../../selectors/data/providersSelectors'
+import { selectProviders } from '../../../../../selectors/data/providersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { venue } = ownProps
@@ -16,7 +16,7 @@ export const mapStateToProps = (state, ownProps) => {
   return {
     providers,
     venueProviders,
-    venueSiret
+    venueSiret,
   }
 }
 
@@ -44,8 +44,5 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
 
 export default compose(
   withRouter,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
+  connect(mapStateToProps, mapDispatchToProps)
 )(VenueProvidersManager)

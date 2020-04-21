@@ -1,10 +1,5 @@
 import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueEditionContainer'
-import { getCurrentUserUUID } from 'with-react-redux-login'
 import { venueNormalizer } from '../../../../../utils/normalizers'
-
-jest.mock('../../Notification', () => {
-  return jest.fn().mockImplementation(() => 'Some text')
-})
 
 window.scroll = () => {}
 
@@ -28,13 +23,13 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
         data: {
           offerers: [{ id: 1 }],
           userOfferers: [{ offererId: 1, rights: 'admin', userId: 1 }],
-          venues: [],
-          users: [
+          venues: [
             {
-              email: 'john.doe@email.com',
-              currentUserUUID: getCurrentUserUUID(),
+              id: 'WQ',
+              managingOffererId: 'M4',
             },
           ],
+          users: [],
         },
       }
       const props = {
@@ -42,13 +37,8 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
         match: {
           params: {
             offererId: 1,
-            venueId: 1,
+            venueId: 'WQ',
           },
-        },
-        query: {
-          context: () => ({
-            isCreatedEntity: true,
-          }),
         },
       }
 
@@ -57,16 +47,10 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
 
       // then
       expect(result).toStrictEqual({
-        adminUserOfferer: {
-          offererId: 1,
-          rights: 'admin',
-          userId: 1,
-        },
-
         offerer: { id: 1 },
-        formInitialValues: {
-          bookingEmail: 'john.doe@email.com',
-          managingOffererId: 1,
+        venue: {
+          id: 'WQ',
+          managingOffererId: 'M4',
         },
       })
     })
@@ -120,7 +104,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
   })
 
   describe('handleSubmitRequest', () => {
-    it('should call patch method with proper params', function() {
+    it('should call patch method with proper params', function () {
       // given
       const ownProps = {
         match: {
@@ -189,7 +173,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
 
       // then
       expect(dispatch.mock.calls[0][0]).toStrictEqual({
-        patch: { text: 'Some text', type: 'success' },
+        patch: { text: 'Lieu modifié avec succès !', type: 'success' },
         type: 'SHOW_NOTIFICATION',
       })
     })
@@ -216,27 +200,7 @@ describe('src | components | pages | VenueContainer | mergeProps', () => {
     expect(mergedProps).toStrictEqual({
       match: ownProps.match,
       handleInitialRequest: expect.any(Function),
-      trackCreateVenue: expect.any(Function),
       trackModifyVenue: expect.any(Function),
-    })
-  })
-
-  it('should map a tracking event for creating a venue', () => {
-    // given
-    const stateProps = {}
-    const ownProps = {
-      tracking: {
-        trackEvent: jest.fn(),
-      },
-    }
-
-    // when
-    mergeProps(stateProps, {}, ownProps).trackCreateVenue('RTgfd67')
-
-    // then
-    expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
-      action: 'createVenue',
-      name: 'RTgfd67',
     })
   })
 

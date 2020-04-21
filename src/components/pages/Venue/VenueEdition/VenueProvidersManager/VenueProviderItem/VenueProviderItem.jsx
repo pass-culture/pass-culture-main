@@ -1,7 +1,7 @@
 import { Icon, pluralize } from 'pass-culture-shared'
 import React from 'react'
 import PropTypes from 'prop-types'
-import { PROVIDER_ICONS } from '../../../../utils/providers'
+import { PROVIDER_ICONS } from '../../../../../utils/providers'
 
 const VenueProviderItem = ({ venueProvider }) => {
   const { lastSyncDate, nOffers, provider, venueIdAtOfferProvider } = venueProvider
@@ -10,23 +10,15 @@ const VenueProviderItem = ({ venueProvider }) => {
 
   return (
     <li className="venue-provider-row">
-      <Icon
-        height="64px"
-        svg={providerIcon}
-        width="64px"
-      />
+      <Icon height="64px" svg={providerIcon} width="64px" />
 
-      <div className="provider-name-container">
-        {providerName}
-      </div>
+      <div className="provider-name-container">{providerName}</div>
 
       {!lastSyncDate ? (
         <div className="venue-id-at-offer-provider-container-with-message">
           <div className="venue-id-at-offer-provider">
             {'Compte : '}
-            <strong>
-              {venueIdAtOfferProvider}
-            </strong>
+            <strong>{venueIdAtOfferProvider}</strong>
           </div>
           <div className="import-label-container">
             {'Importation en cours.' +
@@ -38,19 +30,11 @@ const VenueProviderItem = ({ venueProvider }) => {
         <div className="venue-id-at-offer-provider-container">
           <div className="venue-id-at-offer-provider">
             {'Compte : '}
-            <strong>
-              {venueIdAtOfferProvider}
-            </strong>
+            <strong>{venueIdAtOfferProvider}</strong>
           </div>
           <div className="offers-container-counter">
-            <Icon
-              height="22px"
-              svg="ico-offres-r"
-              width="22px"
-            />
-            <div className="number-of-offers-label">
-              {pluralize(nOffers, 'offres')}
-            </div>
+            <Icon height="22px" svg="ico-offres-r" width="22px" />
+            <div className="number-of-offers-label">{pluralize(nOffers, 'offres')}</div>
           </div>
         </div>
       )}

@@ -10,7 +10,6 @@ import AddressField from '../../fields/LocationFields/AddressField'
 import LocationFields from '../../fields/LocationFields/LocationFields'
 
 import VenueEdition from '../VenueEdition'
-import VenueProvidersManagerContainer from '../../VenueProvidersManager/VenueProvidersManagerContainer'
 
 describe('src | components | pages | Venue', () => {
   let push
@@ -19,7 +18,7 @@ describe('src | components | pages | Venue', () => {
   beforeEach(() => {
     push = jest.fn()
     props = {
-      formInitialValues: {
+      venue: {
         id: 'CM',
       },
       history: {
@@ -74,7 +73,7 @@ describe('src | components | pages | Venue', () => {
 
     it('should not render a Form when venue is virtual', () => {
       // given
-      props.formInitialValues = {
+      props.venue = {
         isVirtual: true,
       }
 
@@ -84,58 +83,6 @@ describe('src | components | pages | Venue', () => {
       // then
       const form = wrapper.find(Form)
       expect(form).toHaveLength(0)
-    })
-
-    describe('when creating', () => {
-      beforeEach(() => {
-        props.match = {
-          params: {
-            offererId: 'APEQ',
-            venueId: 'nouveau',
-          },
-        }
-        props.query.context = () => ({
-          isCreatedEntity: true,
-          isModifiedEntity: false,
-          readOnly: false,
-        })
-      })
-
-      it('should render component with correct state values', () => {
-        // when
-        const wrapper = shallow(<VenueEdition {...props} />)
-
-        // then
-        expect(wrapper.state('isRequestPending')).toBe(false)
-      })
-
-      it('should display proper title', () => {
-        // when
-        const wrapper = shallow(<VenueEdition {...props} />)
-
-        // then
-        const title = wrapper.find({ children: 'Ajoutez un lieu où accéder à vos offres.' })
-        expect(title).toHaveLength(1)
-      })
-
-      it('should build the proper backTo link', () => {
-        // when
-        const wrapper = shallow(<VenueEdition {...props} />)
-
-        // then
-        expect(wrapper.prop('backTo')).toStrictEqual({
-          label: 'Maison du chocolat',
-          path: '/structures/APEQ',
-        })
-      })
-
-      it('should not display a VenueProvidersManager component', () => {
-        // when
-        const wrapper = shallow(<VenueEdition {...props} />)
-
-        // then
-        expect(wrapper.find(VenueProvidersManagerContainer)).toHaveLength(0)
-      })
     })
 
     describe('when editing', () => {
@@ -150,8 +97,6 @@ describe('src | components | pages | Venue', () => {
           },
         }
         props.query.context = () => ({
-          isCreatedEntity: false,
-          isModifiedEntity: true,
           readOnly: false,
         })
       })
@@ -166,16 +111,14 @@ describe('src | components | pages | Venue', () => {
 
       it('should be able to edit address field when venue has no SIRET', () => {
         // given
-        props.formInitialValues = {
-          siret: null,
-        }
-
         jest
           .spyOn(reactReduxLogin, 'selectCurrentUser')
           .mockReturnValue({ currentUser: 'fakeUser' })
 
         props.venue = {
           publicName: 'fake public name',
+          id: 'TR',
+          siret: null,
         }
 
         const { store } = configureStore()
@@ -237,6 +180,7 @@ describe('src | components | pages | Venue', () => {
 
           props.venue = {
             publicName: 'fake public name',
+            id: 'CM',
           }
 
           const { store } = configureStore()
@@ -246,10 +190,7 @@ describe('src | components | pages | Venue', () => {
           let wrapper = mount(
             <Provider store={store}>
               <Router history={history}>
-                <VenueEdition
-                  {...props}
-                  history={history}
-                />
+                <VenueEdition {...props} history={history} />
               </Router>
             </Provider>
           )
@@ -269,11 +210,11 @@ describe('src | components | pages | Venue', () => {
 
   describe('form Success', () => {
     describe('handleFormSuccess', () => {
-      describe('when creating a venue', () => {
+      describe('when editing a venue', () => {
         beforeEach(() => {
           props.query.context = () => ({
-            isCreatedEntity: true,
-            isModifiedEntity: false,
+            isCreatedEntity: false,
+            isModifiedEntity: true,
             readOnly: false,
           })
         })
@@ -281,7 +222,7 @@ describe('src | components | pages | Venue', () => {
         const action = {
           config: {
             apiPath: '/venues/CM',
-            method: 'POST',
+            method: 'PATCH',
           },
           payload: {
             datum: {
@@ -290,7 +231,7 @@ describe('src | components | pages | Venue', () => {
           },
         }
 
-        it('should redirect to offerer page', () => {
+        it('should change query to read only null', () => {
           // given
           const wrapper = shallow(<VenueEdition {...props} />)
           const state = wrapper.state()
@@ -299,10 +240,10 @@ describe('src | components | pages | Venue', () => {
           wrapper.instance().handleFormSuccess(jest.fn())(state, action)
 
           // then
-          expect(push).toHaveBeenCalledWith('/structures/APEQ')
+          expect(props.query.changeToReadOnly).toHaveBeenCalledWith(null)
         })
 
-        it('should call handleSubmitRequestSuccess with the right parameters when venue is created', () => {
+        it('should call handleSubmitRequestSuccess with the right parameters when venue is modified', () => {
           // given
           const wrapper = shallow(<VenueEdition {...props} />)
           const state = wrapper.state()
@@ -311,32 +252,7 @@ describe('src | components | pages | Venue', () => {
           wrapper.instance().handleFormSuccess(jest.fn())(state, action)
 
           // then
-          expect(props.handleSubmitRequestSuccess).toHaveBeenCalledWith(
-            { isRequestPending: false },
-            {
-              config: {
-                apiPath: '/venues/CM',
-                method: 'POST',
-              },
-              payload: {
-                datum: {
-                  id: 'CM',
-                },
-              },
-            }
-          )
-        })
-
-        describe('when editing a venue', () => {
-          beforeEach(() => {
-            props.query.context = () => ({
-              isCreatedEntity: false,
-              isModifiedEntity: true,
-              readOnly: false,
-            })
-          })
-
-          const action = {
+          expect(props.handleSubmitRequestSuccess).toHaveBeenCalledWith({
             config: {
               apiPath: '/venues/CM',
               method: 'PATCH',
@@ -346,43 +262,6 @@ describe('src | components | pages | Venue', () => {
                 id: 'CM',
               },
             },
-          }
-
-          it('should change query to read only null', () => {
-            // given
-            const wrapper = shallow(<VenueEdition {...props} />)
-            const state = wrapper.state()
-
-            // when
-            wrapper.instance().handleFormSuccess(jest.fn())(state, action)
-
-            // then
-            expect(props.query.changeToReadOnly).toHaveBeenCalledWith(null)
-          })
-
-          it('should call handleSubmitRequestSuccess with the right parameters when venue is modified', () => {
-            // given
-            const wrapper = shallow(<VenueEdition {...props} />)
-            const state = wrapper.state()
-
-            // when
-            wrapper.instance().handleFormSuccess(jest.fn())(state, action)
-
-            // then
-            expect(props.handleSubmitRequestSuccess).toHaveBeenCalledWith(
-              { isRequestPending: false },
-              {
-                config: {
-                  apiPath: '/venues/CM',
-                  method: 'PATCH',
-                },
-                payload: {
-                  datum: {
-                    id: 'CM',
-                  },
-                },
-              }
-            )
           })
         })
       })
@@ -390,26 +269,6 @@ describe('src | components | pages | Venue', () => {
   })
 
   describe('event tracking', () => {
-    it('should track venue creation', () => {
-      // given
-      const state = {}
-      const action = {
-        payload: {
-          datum: {
-            id: 'Ty5645dgfd',
-          },
-        },
-      }
-      const wrapper = shallow(<VenueEdition {...props} />)
-      const formResolver = jest.fn()
-
-      // when
-      wrapper.instance().handleFormSuccess(formResolver)(state, action)
-
-      // then
-      expect(props.trackCreateVenue).toHaveBeenCalledWith('Ty5645dgfd')
-    })
-
     it('should track venue update', () => {
       // given
       const state = {}

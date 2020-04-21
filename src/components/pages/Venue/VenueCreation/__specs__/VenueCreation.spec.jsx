@@ -10,7 +10,6 @@ import AddressField from '../../fields/LocationFields/AddressField'
 import LocationFields from '../../fields/LocationFields/LocationFields'
 
 import VenueCreation from '../VenueCreation'
-import VenueProvidersManagerContainer from '../../VenueProvidersManager/VenueProvidersManagerContainer'
 
 describe('src | components | pages | Venue', () => {
   let push
@@ -127,14 +126,6 @@ describe('src | components | pages | Venue', () => {
           label: 'Maison du chocolat',
           path: '/structures/APEQ',
         })
-      })
-
-      it('should not display a VenueProvidersManager component', () => {
-        // when
-        const wrapper = shallow(<VenueCreation {...props} />)
-
-        // then
-        expect(wrapper.find(VenueProvidersManagerContainer)).toHaveLength(0)
       })
     })
 

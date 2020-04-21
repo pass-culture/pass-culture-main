@@ -42,12 +42,13 @@ class ModifyOrCancelControl extends PureComponent {
 
 ModifyOrCancelControl.defaultProps = {
   venueId: null,
+  isCreatedEntity: false,
 }
 
 ModifyOrCancelControl.propTypes = {
   form: PropTypes.shape().isRequired,
   history: PropTypes.shape().isRequired,
-  isCreatedEntity: PropTypes.bool.isRequired,
+  isCreatedEntity: PropTypes.bool,
   offererId: PropTypes.string.isRequired,
   readOnly: PropTypes.bool.isRequired,
   venueId: PropTypes.string,

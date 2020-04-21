@@ -1,5 +1,4 @@
 import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueCreationContainer'
-import { getCurrentUserUUID } from 'with-react-redux-login'
 import { venueNormalizer } from '../../../../../utils/normalizers'
 
 jest.mock('../../Notification', () => {
@@ -29,16 +28,11 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
           offerers: [{ id: 1 }],
           userOfferers: [{ offererId: 1, rights: 'admin', userId: 1 }],
           venues: [],
-          users: [
-            {
-              email: 'john.doe@email.com',
-              currentUserUUID: getCurrentUserUUID(),
-            },
-          ],
+          users: [],
         },
       }
       const props = {
-        currentUser: { id: 1 },
+        currentUser: { id: 1, email: 'john.doe@email.com' },
         match: {
           params: {
             offererId: 1,
@@ -51,12 +45,6 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
 
       // then
       expect(result).toStrictEqual({
-        adminUserOfferer: {
-          offererId: 1,
-          rights: 'admin',
-          userId: 1,
-        },
-
         offerer: { id: 1 },
         formInitialValues: {
           bookingEmail: 'john.doe@email.com',
@@ -109,7 +97,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
   })
 
   describe('handleSubmitRequest', () => {
-    it('should call patch method with proper params', function() {
+    it('should call patch method with proper params', function () {
       // given
       const formValues = {
         comment: 'Commentaire',

@@ -2,10 +2,10 @@ import React from 'react'
 import { mount, shallow } from 'enzyme'
 
 import { Form } from 'react-final-form'
-import NumberField from '../../../../../layout/form/fields/NumberField'
-import Icon from '../../../../../layout/Icon'
+import NumberField from '../../../../../../layout/form/fields/NumberField'
+import Icon from '../../../../../../layout/Icon'
 import AllocineProviderForm from '../../AllocineProviderForm/AllocineProviderForm'
-import CheckboxField from '../../../../../layout/form/fields/CheckboxField'
+import CheckboxField from '../../../../../../layout/form/fields/CheckboxField'
 
 describe('components | AllocineProviderForm', () => {
   let createVenueProvider
@@ -74,9 +74,7 @@ describe('components | AllocineProviderForm', () => {
       children: `Nombre de places/séance`,
     })
 
-    const quantityInput = wrapper
-      .findWhere(node => node.prop('placeholder') === 'Illimité')
-      .first()
+    const quantityInput = wrapper.findWhere(node => node.prop('placeholder') === 'Illimité').first()
 
     expect(quantityInputLabel).toHaveLength(1)
     expect(quantityInput).toHaveLength(1)
@@ -103,11 +101,14 @@ describe('components | AllocineProviderForm', () => {
 
     // then
     const priceToolTip = wrapper
-      .findWhere(node => node.prop('data-tip') === '<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue.</p>')
+      .findWhere(
+        node =>
+          node.prop('data-tip') ===
+          '<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue.</p>'
+      )
       .first()
 
     const toolTipIcon = priceToolTip.find(Icon)
-
 
     expect(priceToolTip).toHaveLength(1)
     expect(toolTipIcon).toHaveLength(1)
@@ -120,7 +121,11 @@ describe('components | AllocineProviderForm', () => {
 
     // then
     const isDuoToolTip = wrapper
-      .findWhere(node => node.prop('data-tip') === '<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>')
+      .findWhere(
+        node =>
+          node.prop('data-tip') ===
+          '<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>'
+      )
       .first()
 
     const isDuoToolTipIcon = isDuoToolTip.find(Icon)
@@ -149,34 +154,24 @@ describe('components | AllocineProviderForm', () => {
     const props = {
       id: 'checkbox-id',
       name: 'checkbox-name',
-      label: 'checkbox-label'
+      label: 'checkbox-label',
     }
 
     function formWithCheckboxField({ handleSubmit }) {
       return (
         <form>
           <CheckboxField {...props} />
-          <button
-            onClick={handleSubmit}
-            type="submit"
-          >
+          <button onClick={handleSubmit} type="submit">
             {'Submit'}
           </button>
         </form>
       )
     }
 
-    const wrapper = mount(
-      <Form
-        onSubmit={handleOnSubmit}
-        render={formWithCheckboxField}
-      />
-    )
+    const wrapper = mount(<Form onSubmit={handleOnSubmit} render={formWithCheckboxField} />)
 
     // when
-    wrapper
-      .find('input')
-      .simulate('change', { target: { value: true } })
+    wrapper.find('input').simulate('change', { target: { value: true } })
 
     wrapper.find('button[type="submit"]').simulate('click')
 
@@ -307,7 +302,7 @@ describe('components | AllocineProviderForm', () => {
       const formValues = {
         price: 12,
         quantity: 50,
-        isDuo: true
+        isDuo: true,
       }
       const wrapper = shallow(<AllocineProviderForm {...props} />)
 

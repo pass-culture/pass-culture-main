@@ -17,9 +17,7 @@ const LocationFields = ({
   const fieldIsFrozen = readOnly || formIsLocationFrozen || fieldReadOnlyBecauseFrozenFormSiret
   return (
     <div className="section">
-      <h2 className="main-list-title">
-        {'Adresse'}
-      </h2>
+      <h2 className="main-list-title">{'Adresse'}</h2>
       <div className="field-group">
         <HiddenField name="isLocationFrozen" />
         <AddressField

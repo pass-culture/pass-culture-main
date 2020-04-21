@@ -1,13 +1,12 @@
 import classNames from 'classnames'
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import NumberField from '../../../../layout/form/fields/NumberField'
-import Icon from '../../../../layout/Icon'
+import NumberField from '../../../../../layout/form/fields/NumberField'
+import Icon from '../../../../../layout/Icon'
 import { Form } from 'react-final-form'
 import { getCanSubmit } from 'react-final-form-utils'
-import Insert from "../../../../layout/Insert/Insert"
-import CheckboxField from "../../../../layout/form/fields/CheckboxField"
-
+import Insert from '../../../../../layout/Insert/Insert'
+import CheckboxField from '../../../../../layout/form/fields/CheckboxField'
 
 class AllocineProviderForm extends PureComponent {
   constructor() {
@@ -17,7 +16,7 @@ class AllocineProviderForm extends PureComponent {
     }
   }
 
-  handleSubmit = (formValues) => {
+  handleSubmit = formValues => {
     const { createVenueProvider, providerId, venueId } = this.props
     const { quantity, isDuo = true, price } = formValues
 
@@ -35,11 +34,7 @@ class AllocineProviderForm extends PureComponent {
   }
 
   handleSuccess = () => {
-    const {
-      history,
-      offererId,
-      venueId
-    } = this.props
+    const { history, offererId, venueId } = this.props
 
     history.push(`/structures/${offererId}/lieux/${venueId}`)
   }
@@ -58,7 +53,7 @@ class AllocineProviderForm extends PureComponent {
     return typeof value === 'number' ? undefined : 'Ce champ est obligatoire'
   }
 
-  renderForm = (formProps) => {
+  renderForm = formProps => {
     const { isLoadingMode } = this.state
     const canSubmit = getCanSubmit(formProps)
 
@@ -68,13 +63,9 @@ class AllocineProviderForm extends PureComponent {
           <div className="allocine-provider-form">
             <div className="apf-price-section">
               <div className="price-section-label">
-                <label
-                  htmlFor="price"
-                >
+                <label htmlFor="price">
                   {'Prix de vente/place '}
-                  <span className="field-asterisk">
-                    {'*'}
-                  </span>
+                  <span className="field-asterisk">{'*'}</span>
                 </label>
                 <span
                   className="apf-tooltip"
@@ -82,9 +73,7 @@ class AllocineProviderForm extends PureComponent {
                   data-tip="<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue.</p>"
                   data-type="info"
                 >
-                  <Icon
-                    svg="picto-info"
-                  />
+                  <Icon svg="picto-info" />
                 </span>
               </div>
               <NumberField
@@ -96,18 +85,10 @@ class AllocineProviderForm extends PureComponent {
               />
             </div>
             <div className="apf-quantity-section">
-              <label
-                className="label-quantity"
-                htmlFor="quantity"
-              >
+              <label className="label-quantity" htmlFor="quantity">
                 {'Nombre de places/séance'}
               </label>
-              <NumberField
-                isDecimal={false}
-                min="0"
-                name="quantity"
-                placeholder="Illimité"
-              />
+              <NumberField isDecimal={false} min="0" name="quantity" placeholder="Illimité" />
             </div>
             <div className="apf-is-duo-section">
               <CheckboxField
@@ -122,21 +103,16 @@ class AllocineProviderForm extends PureComponent {
                 data-tip="<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>"
                 data-type="info"
               >
-                <Icon
-                  svg="picto-info"
-                />
+                <Icon svg="picto-info" />
               </span>
             </div>
 
-            <Insert
-              className='blue-insert'
-              icon='picto-info-solid-black'
-            >
+            <Insert className="blue-insert" icon="picto-info-solid-black">
               {'Pour le moment, seules les séances "classiques" peuvent être importées.'}
               <p />
-              {'Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne génèreront pas d\'offres.'}
+              {"Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne génèreront pas d'offres."}
               <p />
-              {'Nous travaillons actuellement à l\'ajout de séances spécifiques.'}
+              {"Nous travaillons actuellement à l'ajout de séances spécifiques."}
             </Insert>
 
             <div className="apf-provider-import-button-section">
@@ -156,15 +132,9 @@ class AllocineProviderForm extends PureComponent {
   }
 
   render() {
-    return (
-      <Form
-        onSubmit={this.handleSubmit}
-        render={this.renderForm}
-      />
-    )
+    return <Form onSubmit={this.handleSubmit} render={this.renderForm} />
   }
 }
-
 
 AllocineProviderForm.propTypes = {
   history: PropTypes.shape().isRequired,

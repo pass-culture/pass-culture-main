@@ -10,7 +10,6 @@ import { formatSiret } from '../../siret/formatSiret'
 import ReactTooltip from 'react-tooltip'
 import { removeWhitespaces } from 'react-final-form-utils'
 
-
 class IdentifierFields extends PureComponent {
   componentDidUpdate() {
     ReactTooltip.rebuild()
@@ -62,9 +61,7 @@ class IdentifierFields extends PureComponent {
   }
 
   commentValidate = comment => {
-    const {
-      formSiret,
-    } = this.props
+    const { formSiret } = this.props
 
     const siretWithoutWhiteSpaces = removeWhitespaces(formSiret)
 
@@ -92,9 +89,7 @@ class IdentifierFields extends PureComponent {
           {!readOnly && (
             <span className="is-pulled-right fs13 has-text-grey">
               {'Les champs marqués d’un'}
-              <span className="required-legend">
-                {' * '}
-              </span>
+              <span className="required-legend">{' * '}</span>
               {' sont obligatoires'}
             </span>
           )}
@@ -102,17 +97,12 @@ class IdentifierFields extends PureComponent {
         <div className="field-group">
           {isCreatedEntity && <HiddenField name="managingOffererId" />}
           <div className="field text-field is-label-aligned">
-            <label
-              className="field-label"
-              htmlFor="siret"
-            >
+            <label className="field-label" htmlFor="siret">
               {isCreatedEntity ? (
                 <Fragment>
                   {'SIRET'}
                   <span className="siret-label-details">
-                    <span className="siret-label-bold">
-                      {' du lieu qui accueille vos offres'}
-                    </span>
+                    <span className="siret-label-bold">{' du lieu qui accueille vos offres'}</span>
                     {' (si applicable) : '}
                   </span>
                 </Fragment>
@@ -135,11 +125,7 @@ class IdentifierFields extends PureComponent {
             readOnly={readOnly || fieldReadOnlyBecauseFrozenFormSiret}
             required
           />
-          <TextField
-            label="Nom d’usage du lieu : "
-            name="publicName"
-            readOnly={readOnly}
-          />
+          <TextField label="Nom d’usage du lieu : " name="publicName" readOnly={readOnly} />
           <TextField
             innerClassName="col-75"
             label="E-mail : "
@@ -166,6 +152,7 @@ IdentifierFields.defaultProps = {
   fieldReadOnlyBecauseFrozenFormSiret: false,
   formSiret: null,
   initialSiret: null,
+  isCreatedEntity: false,
   readOnly: true,
 }
 
@@ -173,7 +160,7 @@ IdentifierFields.propTypes = {
   fieldReadOnlyBecauseFrozenFormSiret: PropTypes.bool,
   formSiret: PropTypes.string,
   initialSiret: PropTypes.string,
-  isCreatedEntity: PropTypes.bool.isRequired,
+  isCreatedEntity: PropTypes.bool,
   readOnly: PropTypes.bool,
 }
 
