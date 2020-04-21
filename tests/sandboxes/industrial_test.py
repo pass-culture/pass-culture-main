@@ -27,13 +27,13 @@ def test_save_industrial_sandbox(mock_request, app):
     # then
     assert_created_counts(
         ApiKey=13,
-        Booking=42,
+        Booking=43,
         Deposit=8,
-        Mediation=86,
+        Mediation=84,
         Offer=106,
         Offerer=14,
         Product=155,
-        Recommendation=100,
+        Recommendation=84,
         Stock=102,
         User=53,
         UserOfferer=125,
