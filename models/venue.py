@@ -10,6 +10,7 @@ from sqlalchemy.orm import relationship
 
 from domain.departments import OVERSEAS_DEPT_CODES
 from domain.keywords import create_ts_vector_and_table_args
+from domain.postal_code.postal_code import PostalCode
 from models.db import Model
 from models.has_address_mixin import HasAddressMixin
 from models.has_thumb_mixin import HasThumbMixin
@@ -107,11 +108,7 @@ class Venue(PcObject,
     # open thursday 9 to 18, closed the rest of the week
 
     def store_departement_code(self):
-        venue_dept_code = self.postalCode[:2]
-        venue_overseas_dept_code = self.postalCode[:3]
-
-        self.departementCode = venue_overseas_dept_code if venue_overseas_dept_code in OVERSEAS_DEPT_CODES \
-            else venue_dept_code
+        self.departementCode = PostalCode(self.postalCode).get_departement_code()
 
     @property
     def bic(self):

@@ -1,3 +1,4 @@
+from domain.postal_code.postal_code import PostalCode
 from repository import repository
 from tests.model_creators.generic_creators import create_user_offerer
 from utils.logger import logger
@@ -21,7 +22,7 @@ def create_industrial_user_offerers(users_by_name, offerers_by_name):
 
         for (offerer_name, offerer) in offerers_by_name.items():
 
-            if offerer.postalCode[:2] != user.departementCode or\
+            if PostalCode(offerer.postalCode).get_departement_code() != user.departementCode or\
                'real-validation' in user_name:
                 continue
 

@@ -2,6 +2,7 @@ from flask import current_app as app, jsonify, request, redirect
 
 from connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from domain.departments import ILE_DE_FRANCE_DEPT_CODES
+from domain.postal_code.postal_code import PostalCode
 from domain.user_emails import send_user_validation_email
 from models import ApiErrors, Deposit, Offerer, User
 from models.feature import FeatureToggle
@@ -120,7 +121,7 @@ def _set_offerer_departement_code(new_user, offerer):
     if IS_INTEGRATION:
         new_user.departementCode = '00'
     elif offerer.postalCode is not None:
-        offerer_dept_code = offerer.postalCode[:2]
+        offerer_dept_code = PostalCode(offerer.postalCode).get_departement_code()
         new_user.departementCode = '93' if offerer_dept_code in ILE_DE_FRANCE_DEPT_CODES \
             else offerer_dept_code
     else:
