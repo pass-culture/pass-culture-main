@@ -17,6 +17,7 @@ import LocationFields from './../fields/LocationFields/LocationFields'
 import { FRANCE_POSITION } from './../fields/LocationFields/utils/positions'
 import VenueProvidersManagerContainer from './VenueProvidersManager/VenueProvidersManagerContainer'
 import RibsUploadFeatureFlip from '../../../layout/FeatureFlip/RibsUploadFeatureFlip'
+import BankInformation from './BankInformation/BankInformation'
 
 const noop = () => {}
 
@@ -121,7 +122,7 @@ class VenueEdition extends PureComponent {
             />
           }
         >
-          {'NEW CONTENT'}
+          <BankInformation venue={venue} />
         </RibsUploadFeatureFlip>
         <LocationFields
           fieldReadOnlyBecauseFrozenFormSiret={fieldReadOnlyBecauseFrozenFormSiret}
