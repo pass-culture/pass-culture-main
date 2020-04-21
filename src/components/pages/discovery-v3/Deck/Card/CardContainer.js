@@ -8,6 +8,7 @@ import { mergeData, requestData } from 'redux-thunk-data'
 import Card from './Card'
 import { getRecommendationSelectorByCardPosition } from '../../utils/utils'
 import { recommendationNormalizer } from '../../../../../utils/normalizers'
+import { selectCurrentUser } from '../../../../../redux/selectors/data/usersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match, position } = ownProps
@@ -15,8 +16,14 @@ export const mapStateToProps = (state, ownProps) => {
   const { mediationId, offerId } = params
   const recommendationSelector = getRecommendationSelectorByCardPosition(position)
   const recommendation = recommendationSelector(state, offerId, mediationId)
+  const user = selectCurrentUser(state)
+  const seenOffer = {
+    userId: user.id,
+    offerId: offerId,
+  }
   return {
     recommendation,
+    seenOffer,
   }
 }
 
@@ -31,7 +38,15 @@ export const mapDispatchToProps = dispatch => ({
       })
     )
   },
-
+  handleSeenOffer: seenOffer => {
+    dispatch(
+      requestData({
+        apiPath: '/seen_offers',
+        body: seenOffer,
+        method: 'PUT',
+      })
+    )
+  },
   handleReadRecommendation: recommendation => {
     const readRecommendation = {
       dateRead: moment.utc().toISOString(),

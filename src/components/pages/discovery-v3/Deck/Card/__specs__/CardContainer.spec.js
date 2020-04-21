@@ -5,6 +5,23 @@ import { configureStore } from '../../../../../../utils/store'
 
 navigator.geolocation = {}
 
+jest.mock('redux-thunk-data', () => ({
+  ...jest.requireActual('redux-thunk-data'),
+  requestData: () => {
+    return {
+      type: 'REQUEST_DATA',
+      config: {
+        apiPath: '/seen_offers',
+        body: {
+          offerId: 'AE',
+          userId: 'FY',
+        },
+        method: 'PUT',
+      },
+    }
+  },
+}))
+
 describe('src | components | pages | discovery | Deck | Card | CardContainer', () => {
   describe('mapStateToProps', () => {
     describe('when there are no recommendations in the store', () => {
@@ -12,18 +29,30 @@ describe('src | components | pages | discovery | Deck | Card | CardContainer', (
         // given
         const { store } = configureStore()
         const state = store.getState()
+
+        state.data.users = [
+          {
+            id: 'FY',
+          },
+        ]
         const ownProps = {
-          match: { params: {} },
+          match: {
+            params: {
+              offerId: 'AE',
+            },
+          },
         }
 
-        // when
-        const result = mapStateToProps(state, ownProps)
+      // when
+      const result = mapStateToProps(state, ownProps)
 
-        // then
-        const expected = {
-          recommendation: undefined,
-        }
-        expect(result).toStrictEqual(expected)
+      // then
+      expect(result).toStrictEqual({
+        recommendation: undefined,
+        seenOffer: {
+          offerId: 'AE',
+          userId: 'FY',
+        },
       })
     })
   })
@@ -49,5 +78,27 @@ describe('src | components | pages | discovery | Deck | Card | CardContainer', (
         ).toStrictEqual(true)
       })
     })
+
+    it('handleSeenOffer', () => {
+      // given
+      const dispatch = jest.fn()
+      const seenOffer = {
+        offerId: 'AE',
+        userId: 'FY',
+      }
+
+      // when
+      mapDispatchToProps(dispatch).handleSeenOffer(seenOffer)
+
+      // then
+      expect(dispatch).toHaveBeenCalledWith({
+        type: 'REQUEST_DATA',
+        config: {
+          apiPath: '/seen_offers',
+          body: seenOffer,
+          method: 'PUT',
+        },
+      })
+    })
   })
-})
+})})
