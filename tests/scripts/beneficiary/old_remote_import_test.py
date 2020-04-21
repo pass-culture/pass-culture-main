@@ -113,7 +113,7 @@ class OldRemoteImportRunTest:
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.currentStatus == ImportStatus.ERROR
         assert beneficiary_import.demarcheSimplifieeApplicationId == 123
-        assert beneficiary_import.detail == 'Le dossier 123 contient des erreurs et a été ignoré'
+        assert beneficiary_import.detail == 'Le dossier 123 contient des erreurs et a été ignoré - Procedure 2567158'
 
     @patch('scripts.beneficiary.old_remote_import.process_beneficiary_application')
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID': '2567158'})

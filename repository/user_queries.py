@@ -142,7 +142,7 @@ def keep_only_webapp_users(query: Query) -> Query:
     )
 
 
-def find_most_recent_beneficiary_creation_date_by_procedure_id(demarche_simplifiee_procedure_id: int) -> datetime:
+def find_most_recent_beneficiary_creation_date_for_procedure_id(demarche_simplifiee_procedure_id: int) -> datetime:
     most_recent_creation = BeneficiaryImportStatus.query \
         .join(BeneficiaryImport) \
         .filter(BeneficiaryImport.demarcheSimplifieeProcedureId == demarche_simplifiee_procedure_id) \

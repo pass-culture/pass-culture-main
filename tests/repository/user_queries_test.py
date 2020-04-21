@@ -6,7 +6,7 @@ from repository.user_queries import \
     count_all_activated_users, count_all_activated_users_by_departement, \
     count_users_having_booked, count_users_having_booked_by_departement_code, \
     find_by_civility, \
-    find_most_recent_beneficiary_creation_date_by_procedure_id, \
+    find_most_recent_beneficiary_creation_date_for_procedure_id, \
     get_all_users_wallet_balances
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_beneficiary_import, \
@@ -226,7 +226,7 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
         repository.save(user1, *beneficiary_import)
 
         # when
-        most_recent_creation_date = find_most_recent_beneficiary_creation_date_by_procedure_id(demarche_simplifiee_procedure_id)
+        most_recent_creation_date = find_most_recent_beneficiary_creation_date_for_procedure_id(demarche_simplifiee_procedure_id)
 
         # then
         assert most_recent_creation_date == three_days_ago
@@ -247,7 +247,7 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
         repository.save(beneficiary_import)
 
         # when
-        most_recent_creation_date = find_most_recent_beneficiary_creation_date_by_procedure_id(new_demarche_simplifiee_procedure_id)
+        most_recent_creation_date = find_most_recent_beneficiary_creation_date_for_procedure_id(new_demarche_simplifiee_procedure_id)
 
         # then
         assert most_recent_creation_date == datetime(MINYEAR, 1, 1)
@@ -260,7 +260,7 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
         repository.save(user)
 
         # when
-        most_recent_creation_date = find_most_recent_beneficiary_creation_date_by_procedure_id(1)
+        most_recent_creation_date = find_most_recent_beneficiary_creation_date_for_procedure_id(1)
 
         # then
         assert most_recent_creation_date == datetime(MINYEAR, 1, 1)
