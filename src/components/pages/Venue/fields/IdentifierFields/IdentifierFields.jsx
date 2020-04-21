@@ -85,7 +85,7 @@ class IdentifierFields extends PureComponent {
     return (
       <div className="section">
         <h2 className="main-list-title is-relative">
-          {'INFORMATIONS DU LIEU'}
+          {'Informations lieu'}
           {!readOnly && (
             <span className="is-pulled-right fs13 has-text-grey">
               {'Les champs marqués d’un'}

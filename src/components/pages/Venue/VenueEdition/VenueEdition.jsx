@@ -9,13 +9,14 @@ import Titles from '../../../layout/Titles/Titles'
 import CreateControl from './../controls/CreateControl/CreateControl'
 import ModifyOrCancelControl from './../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from './../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
-import BankFieldsContainer from './../fields/BankFields/BankFieldsContainer'
+import BankFieldsContainer from './BankInformation/BankInformationLegacy/BankFieldsContainer'
 import IdentifierFields from './../fields/IdentifierFields/IdentifierFields'
 import bindGetSuggestionsToLatitude from './../fields/LocationFields/decorators/bindGetSuggestionsToLatitude'
 import bindGetSuggestionsToLongitude from './../fields/LocationFields/decorators/bindGetSuggestionsToLongitude'
 import LocationFields from './../fields/LocationFields/LocationFields'
 import { FRANCE_POSITION } from './../fields/LocationFields/utils/positions'
 import VenueProvidersManagerContainer from './VenueProvidersManager/VenueProvidersManagerContainer'
+import RibsUploadFeatureFlip from '../../../layout/FeatureFlip/RibsUploadFeatureFlip'
 
 const noop = () => {}
 
@@ -112,10 +113,16 @@ class VenueEdition extends PureComponent {
           isModifiedEntity={!readOnly}
           readOnly={readOnly}
         />
-        <BankFieldsContainer
-          areBankInformationProvided={areBankInformationProvided}
-          readOnly={readOnly}
-        />
+        <RibsUploadFeatureFlip
+          legacy={
+            <BankFieldsContainer
+              areBankInformationProvided={areBankInformationProvided}
+              readOnly={readOnly}
+            />
+          }
+        >
+          {'NEW CONTENT'}
+        </RibsUploadFeatureFlip>
         <LocationFields
           fieldReadOnlyBecauseFrozenFormSiret={fieldReadOnlyBecauseFrozenFormSiret}
           form={form}

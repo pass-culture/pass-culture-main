@@ -6,9 +6,7 @@ import Icon from '../../../../layout/Icon'
 
 const BankInformation = ({ offerer }) => (
   <div className="section op-content-section bank-information">
-    <h2 className="main-list-title">
-      {'Coordonnées bancaires de la structure'}
-    </h2>
+    <h2 className="main-list-title">{'Coordonnées bancaires de la structure'}</h2>
 
     {offerer.areBankInformationProvided ? (
       <Fragment>
@@ -18,10 +16,7 @@ const BankInformation = ({ offerer }) => (
           rel="noopener noreferrer"
           target="_blank"
         >
-          <Icon
-            alt=""
-            svg="ico-external-site"
-          />
+          <Icon alt="" svg="ico-external-site" />
           {'Modifier'}
         </a>
         <p className="bi-subtitle">
@@ -30,27 +25,17 @@ const BankInformation = ({ offerer }) => (
           }
         </p>
         <div className="op-detail">
-          <span>
-            {'IBAN : '}
-          </span>
-          <span>
-            {offerer.iban}
-          </span>
+          <span>{'IBAN : '}</span>
+          <span>{offerer.iban}</span>
         </div>
         <div className="op-detail">
-          <span>
-            {'BIC : '}
-          </span>
-          <span>
-            {offerer.bic}
-          </span>
+          <span>{'BIC : '}</span>
+          <span>{offerer.bic}</span>
         </div>
       </Fragment>
     ) : (
       <Fragment>
-        <p className="bi-subtitle">
-          {'Aucune coordonnée bancaire renseignée'}
-        </p>
+        <p className="bi-subtitle">{'Aucune coordonnée bancaire renseignée'}</p>
         <div className="bi-banner">
           <p>
             {'Renseigner vos coordonnées bancaires pour être remboursé de vos offres éligibles'}
@@ -63,10 +48,7 @@ const BankInformation = ({ offerer }) => (
               rel="noopener noreferrer"
               target="_blank"
             >
-              <Icon
-                alt=""
-                svg="ico-external-site"
-              />
+              <Icon alt="" svg="ico-external-site" />
               {'Renseigner les coordonnées bancaires de la structure'}
             </a>
           </p>

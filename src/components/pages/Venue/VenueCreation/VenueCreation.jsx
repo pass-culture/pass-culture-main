@@ -7,7 +7,7 @@ import Titles from '../../../layout/Titles/Titles'
 import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
 
-import BankFieldsContainer from '../fields/BankFields/BankFieldsContainer'
+import BankFieldsContainer from '../VenueEdition/BankInformation/BankInformationLegacy/BankFieldsContainer'
 import bindGetSiretInformationToSiret from '../fields/IdentifierFields/decorators/bindGetSiretInformationToSiret'
 import IdentifierFields from '../fields/IdentifierFields/IdentifierFields'
 import bindGetSuggestionsToLatitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLatitude'
@@ -107,10 +107,7 @@ class VenueCreation extends PureComponent {
 
     const areBankInformationProvided = bic && iban
     return (
-      <form
-        name="venue"
-        onSubmit={handleSubmit}
-      >
+      <form name="venue" onSubmit={handleSubmit}>
         <IdentifierFields
           fieldReadOnlyBecauseFrozenFormSiret={siretValidOnCreation}
           formSiret={formSiret}
@@ -181,13 +178,8 @@ class VenueCreation extends PureComponent {
         handleDataRequest={noop}
         name="venue"
       >
-        <Titles
-          subtitle={initialName}
-          title="Lieu"
-        />
-        <p className="advice">
-          {'Ajoutez un lieu où accéder à vos offres.'}
-        </p>
+        <Titles subtitle={initialName} title="Lieu" />
+        <p className="advice">{'Ajoutez un lieu où accéder à vos offres.'}</p>
 
         {showForm && (
           <Form

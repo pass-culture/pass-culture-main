@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import PropTypes from 'prop-types'
 
-import selectIsFeatureActive from '../../../../router/selectors/selectIsFeatureActive'
+import selectIsFeatureActive from '../../router/selectors/selectIsFeatureActive'
 
 const mapStateToProps = state => ({
   isFeatureFlipped: selectIsFeatureActive(state, 'NEW_RIBS_UPLOAD'),

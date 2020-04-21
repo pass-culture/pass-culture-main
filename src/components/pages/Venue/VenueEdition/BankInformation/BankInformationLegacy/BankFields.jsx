@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import TextField from '../../../../layout/form/fields/TextField'
+import TextField from '../../../../../layout/form/fields/TextField'
 
 const BankFields = ({ adminUserOfferer, areBankInformationProvided, readOnly }) => {
   const areBankInfosReadOnly = readOnly || !adminUserOfferer
@@ -12,7 +12,7 @@ const BankFields = ({ adminUserOfferer, areBankInformationProvided, readOnly }) 
         {'Informations bancaires'}
         <span className="is-pulled-right fs13 has-text-grey">
           {!adminUserOfferer &&
-          "Vous avez besoin d'être administrateur de la structure pour éditer ces informations."}
+            "Vous avez besoin d'être administrateur de la structure pour éditer ces informations."}
         </span>
       </h2>
       {!areBankInformationProvided && (
@@ -23,18 +23,11 @@ const BankFields = ({ adminUserOfferer, areBankInformationProvided, readOnly }) 
         </p>
       )}
       <div className="field-group">
-        <TextField
-          label="BIC : "
-          name="bic"
-          readOnly={areBankInfosReadOnly}
-        />
-        <TextField
-          label="IBAN : "
-          name="iban"
-          readOnly={areBankInfosReadOnly}
-        />
+        <TextField label="BIC : " name="bic" readOnly={areBankInfosReadOnly} />
+        <TextField label="IBAN : " name="iban" readOnly={areBankInfosReadOnly} />
       </div>
-    </div>)
+    </div>
+  )
 }
 
 BankFields.defaultProps = {

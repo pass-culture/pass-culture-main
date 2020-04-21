@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import BankFields from '../BankFields'
-import TextField from '../../../../../layout/form/fields/TextField'
+import TextField from '../../../../../../layout/form/fields/TextField'
 
 describe('src | components | pages | Venue | fields | BankFields', () => {
   let props
