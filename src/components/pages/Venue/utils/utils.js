@@ -12,6 +12,7 @@ export const VENUE_CREATION_PATCH_KEYS = [
   'publicName',
   'postalCode',
   'siret',
+  'venue-type',
 ]
 
 export const VENUE_MODIFICATION_PATCH_KEYS = [
@@ -25,4 +26,5 @@ export const VENUE_MODIFICATION_PATCH_KEYS = [
   'name',
   'postalCode',
   'siret',
+  'venue-type',
 ]

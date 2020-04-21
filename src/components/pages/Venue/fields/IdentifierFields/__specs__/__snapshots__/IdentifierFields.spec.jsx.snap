@@ -160,7 +160,7 @@ ShallowWrapper {
                 <span
                   className="subtitle"
                 >
-                  Type de lieu&nbsp;:
+                  Type de lieu :
                 </span>
               </label>
             </div>
@@ -341,7 +341,7 @@ ShallowWrapper {
                   <span
                     className="subtitle"
                   >
-                    Type de lieu&nbsp;:
+                    Type de lieu :
                   </span>
                 </label>
               </div>
@@ -658,7 +658,7 @@ ShallowWrapper {
                     <span
                       className="subtitle"
                     >
-                      Type de lieu&nbsp;:
+                      Type de lieu :
                     </span>
                   </label>
                 </div>,
@@ -700,7 +700,7 @@ ShallowWrapper {
                     <span
                       className="subtitle"
                     >
-                      Type de lieu&nbsp;:
+                      Type de lieu :
                     </span>
                   </label>,
                   "className": "field-label is-normal",
@@ -714,7 +714,7 @@ ShallowWrapper {
                     "children": <span
                       className="subtitle"
                     >
-                      Type de lieu&nbsp;:
+                      Type de lieu :
                     </span>,
                     "className": "label",
                     "htmlFor": "venue-type",
@@ -725,11 +725,11 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": "Type de lieu&nbsp;:",
+                      "children": "Type de lieu :",
                       "className": "subtitle",
                     },
                     "ref": null,
-                    "rendered": "Type de lieu&nbsp;:",
+                    "rendered": "Type de lieu :",
                     "type": "span",
                   },
                   "type": "label",
@@ -985,7 +985,7 @@ ShallowWrapper {
                   <span
                     className="subtitle"
                   >
-                    Type de lieu&nbsp;:
+                    Type de lieu :
                   </span>
                 </label>
               </div>
@@ -1166,7 +1166,7 @@ ShallowWrapper {
                     <span
                       className="subtitle"
                     >
-                      Type de lieu&nbsp;:
+                      Type de lieu :
                     </span>
                   </label>
                 </div>
@@ -1483,7 +1483,7 @@ ShallowWrapper {
                       <span
                         className="subtitle"
                       >
-                        Type de lieu&nbsp;:
+                        Type de lieu :
                       </span>
                     </label>
                   </div>,
@@ -1525,7 +1525,7 @@ ShallowWrapper {
                       <span
                         className="subtitle"
                       >
-                        Type de lieu&nbsp;:
+                        Type de lieu :
                       </span>
                     </label>,
                     "className": "field-label is-normal",
@@ -1539,7 +1539,7 @@ ShallowWrapper {
                       "children": <span
                         className="subtitle"
                       >
-                        Type de lieu&nbsp;:
+                        Type de lieu :
                       </span>,
                       "className": "label",
                       "htmlFor": "venue-type",
@@ -1550,11 +1550,11 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
-                        "children": "Type de lieu&nbsp;:",
+                        "children": "Type de lieu :",
                         "className": "subtitle",
                       },
                       "ref": null,
-                      "rendered": "Type de lieu&nbsp;:",
+                      "rendered": "Type de lieu :",
                       "type": "span",
                     },
                     "type": "label",

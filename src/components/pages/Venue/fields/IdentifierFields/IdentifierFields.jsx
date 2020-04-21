@@ -167,7 +167,7 @@ class IdentifierFields extends PureComponent {
                 htmlFor="venue-type"
               >
                 <span className="subtitle">
-                  {'Type de lieu&nbsp;:'}
+                  {'Type de lieu :'}
                 </span>
               </label>
             </div>

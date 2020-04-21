@@ -193,6 +193,191 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
         type: 'REQUEST_DATA_PATCH_/VENUES/TR',
       })
     })
+
+    describe('when creating a new venue', () => {
+      let ownProps
+      beforeEach(() => {
+        ownProps = {
+          match: {
+            params: {
+              venueId: 'TR',
+            },
+          },
+          query: {
+            context: () => ({
+              method: 'PATCH',
+              isCreatedEntity: true,
+            }),
+          },
+        }
+      })
+
+      it('should transform the form values into request payload', function() {
+        // given
+        const formValues = {
+          address: '3 Place Saint-Michel',
+          bic: '12345',
+          bookingEmail: 'contact@example.net',
+          city: 'Paris',
+          comment: 'Commentaire',
+          iban: 'BHJ2XRT2C',
+          latitude: '0.0',
+          longitude: '0.0',
+          managingOffererId: 'B45S',
+          name: 'Théatre Saint-Michel',
+          publicName: '',
+          postalCode: '75008',
+          siret: '25687265176',
+          'venue-type': 'BA',
+        }
+
+        const handleFail = jest.fn()
+        const handleSuccess = jest.fn()
+
+        // when
+        mapDispatchToProps(dispatch, ownProps).handleSubmitRequest({
+          formValues,
+          handleFail,
+          handleSuccess,
+        })
+
+        // then
+        const requestParameters = dispatch.mock.calls[0][0]
+        expect(requestParameters.config.body).toStrictEqual({
+          address: '3 Place Saint-Michel',
+          bic: '12345',
+          bookingEmail: 'contact@example.net',
+          city: 'Paris',
+          comment: 'Commentaire',
+          iban: 'BHJ2XRT2C',
+          latitude: '0.0',
+          longitude: '0.0',
+          managingOffererId: 'B45S',
+          name: 'Théatre Saint-Michel',
+          postalCode: '75008',
+          siret: '25687265176',
+          'venue-type': 'BA',
+        })
+      })
+
+      it('should allow to define a venue type', function() {
+        // given
+        const formValues = {
+          'venue-type': 'BA',
+        }
+
+        const handleFail = jest.fn()
+        const handleSuccess = jest.fn()
+
+        // when
+        mapDispatchToProps(dispatch, ownProps).handleSubmitRequest({
+          formValues,
+          handleFail,
+          handleSuccess,
+        })
+
+        // then
+        const requestParameters = dispatch.mock.calls[0][0]
+        expect(requestParameters.config.body).toStrictEqual({
+          'venue-type': 'BA',
+        })
+      })
+    })
+
+    describe('when updating a venue', () => {
+      let ownProps
+      beforeEach(() => {
+        ownProps = {
+          match: {
+            params: {
+              venueId: 'TR',
+            },
+          },
+          query: {
+            context: () => ({
+              method: 'PATCH',
+              isCreatedEntity: false,
+            }),
+          },
+        }
+      })
+
+      it('should filter some information that should not be sent', function() {
+        // given
+        ownProps.query.context = () => ({
+          method: 'PATCH',
+          isCreatedEntity: false,
+        })
+        const formValues = {
+          address: '3 Place Saint-Michel',
+          bic: '12345',
+          bookingEmail: 'contact@example.net',
+          city: 'Paris',
+          comment: 'Commentaire',
+          iban: 'BHJ2XRT2C',
+          latitude: '0.0',
+          longitude: '0.0',
+          managingOffererId: 'B45S',
+          name: 'Théatre Saint-Michel',
+          publicName: '',
+          postalCode: '75008',
+          siret: '25687265176',
+          'venue-type': 'BA',
+        }
+
+        const handleFail = jest.fn()
+        const handleSuccess = jest.fn()
+
+        // when
+        mapDispatchToProps(dispatch, ownProps).handleSubmitRequest({
+          formValues,
+          handleFail,
+          handleSuccess,
+        })
+
+        // then
+        const requestParameters = dispatch.mock.calls[0][0]
+        expect(requestParameters.config.body).toStrictEqual({
+          address: '3 Place Saint-Michel',
+          bookingEmail: 'contact@example.net',
+          city: 'Paris',
+          comment: 'Commentaire',
+          latitude: '0.0',
+          longitude: '0.0',
+          name: 'Théatre Saint-Michel',
+          postalCode: '75008',
+          siret: '25687265176',
+          'venue-type': 'BA',
+        })
+      })
+
+      it('should allow to change the venue type', function() {
+        // given
+        ownProps.query.context = () => ({
+          method: 'PATCH',
+          isCreatedEntity: false,
+        })
+        const formValues = {
+          'venue-type': 'BA',
+        }
+
+        const handleFail = jest.fn()
+        const handleSuccess = jest.fn()
+
+        // when
+        mapDispatchToProps(dispatch, ownProps).handleSubmitRequest({
+          formValues,
+          handleFail,
+          handleSuccess,
+        })
+
+        // then
+        const requestParameters = dispatch.mock.calls[0][0]
+        expect(requestParameters.config.body).toStrictEqual({
+          'venue-type': 'BA',
+        })
+      })
+    })
   })
 
   describe('handleSubmitRequestSuccess', () => {
