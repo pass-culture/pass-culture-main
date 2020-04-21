@@ -21,7 +21,7 @@ describe('src | components | pages | discovery | Deck | utils | limits', () => {
       const result = getNextLimit(nbRecommendations)
 
       // then
-      expect(result).toStrictEqual(0)
+      expect(result).toStrictEqual(1)
     })
 
     it('when number of recommendations is equal to 2', () => {
@@ -32,7 +32,7 @@ describe('src | components | pages | discovery | Deck | utils | limits', () => {
       const result = getNextLimit(nbRecommendations)
 
       // then
-      expect(result).toStrictEqual(1)
+      expect(result).toStrictEqual(2)
     })
 
     it('when number of recommendations is equal to max number of cards before load', () => {
@@ -41,7 +41,7 @@ describe('src | components | pages | discovery | Deck | utils | limits', () => {
       const result = getNextLimit(NB_CARDS_REMAINING_THAT_TRIGGERS_LOAD)
 
       // then
-      expect(result).toStrictEqual(4)
+      expect(result).toStrictEqual(5)
     })
 
     it('when number of recommendations is superior to max number of cards before load by 1', () => {
@@ -52,7 +52,7 @@ describe('src | components | pages | discovery | Deck | utils | limits', () => {
       const result = getNextLimit(nbRecommendations)
 
       // then
-      expect(result).toStrictEqual(5)
+      expect(result).toStrictEqual(1)
     })
 
     it('when number of recommendations is superior to max number of cards before load by 10', () => {
@@ -63,7 +63,7 @@ describe('src | components | pages | discovery | Deck | utils | limits', () => {
       const result = getNextLimit(nbRecommendations)
 
       // then
-      expect(result).toStrictEqual(9)
+      expect(result).toStrictEqual(10)
     })
   })
 })

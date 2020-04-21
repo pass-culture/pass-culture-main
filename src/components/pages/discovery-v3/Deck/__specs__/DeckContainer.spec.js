@@ -74,26 +74,6 @@ describe('src | components | pages | discovery | deck | DeckContainer', () => {
         expect(result.isFlipDisabled).toBe(true)
       })
     })
-
-    describe('nextLimit', () => {
-      it('should return 0 when number of recommendations minus 1 is less than the number of remaining cards to trigger loading', () => {
-        // given
-        const props = {
-          match: {
-            params: {
-              mediationId,
-              offerId,
-            },
-          },
-        }
-
-        // when
-        const result = mapStateToProps(initialState, props)
-
-        // then
-        expect(result.nextLimit).toBe(0)
-      })
-    })
   })
 
   describe('mapSizeToProps', () => {
