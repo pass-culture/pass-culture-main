@@ -380,6 +380,8 @@ class OffererBankInformationProviderProviderTest:
                 2020, 1, 1)
         )
 
+    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_RIB_OFFERER_PROCEDURE_ID': 'procedure_id'})
+    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_TOKEN': 'token'})
     @patch(
         'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_offerer_bank_information.get_application_details')
@@ -415,8 +417,8 @@ class OffererBankInformationProviderProviderTest:
 
         # Then
         get_all_application_ids_for_demarche_simplifiee.assert_called_once_with(
-            ANY,
-            ANY,
+            'procedure_id',
+            'token',
             datetime(2019, 6, 1)
         )
 
