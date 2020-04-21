@@ -21,6 +21,7 @@ from repository.user_offerer_queries import \
     filter_query_where_user_is_user_offerer_and_is_validated
 from routes.serialization import as_dict, serialize, serialize_booking
 from use_cases.book_an_offer import book_an_offer, BookingInformation
+from use_cases.get_all_bookings_by_pro_user import get_all_bookings_by_pro_user
 from utils.human_ids import dehumanize, humanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, \
     WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES, \
@@ -99,6 +100,13 @@ def get_bookings_csv():
            200, \
            {'Content-type': 'text/csv; charset=utf-8;',
             'Content-Disposition': 'attachment; filename=reservations_pass_culture.csv'}
+
+
+@app.route('/bookings/pro', methods=['GET'])
+@login_required
+def get_all_bookings():
+    get_all_bookings_by_pro_user(current_user.id)
+    return '', 200
 
 
 @app.route('/bookings', methods=['GET'])

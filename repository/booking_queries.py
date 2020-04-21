@@ -180,6 +180,10 @@ def find_by_id(booking_id: int) -> Booking:
         .first_or_404()
 
 
+def find_by_pro_user_id(user_id: int) -> List[Booking]:
+    return []
+
+
 def find_ongoing_bookings_by_stock(stock: Stock) -> List[Booking]:
     return Booking.query \
         .filter_by(stockId=stock.id, isCancelled=False, isUsed=False) \
