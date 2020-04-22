@@ -18,6 +18,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       isModifiedEntity: true,
       readOnly: true,
       venueTypes: [],
+      venueTypeId: null,
     }
   })
 
@@ -348,23 +349,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
     })
 
     describe('type of venue field', () => {
-      it('should have a list of options with venue types', () => {
-        // Given
-        props.venueTypes = [new VenueType({ id: 'A1', label: "Centre d'art et d'essais" })]
-
-        // When
-        const wrapper = shallow(<IdentifierFields {...props} />)
-
-        // Then
-        const selectField = wrapper.find(Field).findWhere(n => n.prop('id') === 'venue-type')
-        expect(selectField.prop('component')).toBe('select')
-
-        const venueTypeOptions = wrapper.find('option')
-        expect(venueTypeOptions.at(0).text()).toBe('Choisissez un type de lieu dans la liste')
-        expect(venueTypeOptions.at(1).text()).toBe("Centre d'art et d'essais")
-      })
-
-      describe('when the read only mode is disabled', () => {
+      describe('when the form is in edition mode', () => {
         it('should be editable', () => {
           // Given
           props.readOnly = false
@@ -377,12 +362,10 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           const selectField = wrapper.find(Field).findWhere(n => n.prop('id') === 'venue-type')
           expect(selectField.prop('disabled')).toBe(false)
         })
-      })
 
-      describe('when the read only mode is activated', () => {
-        it('should be disabled', () => {
+        it('should have a list of options with venue types', () => {
           // Given
-          props.readOnly = true
+          props.readOnly = false
           props.venueTypes = [new VenueType({ id: 'A1', label: "Centre d'art et d'essais" })]
 
           // When
@@ -390,7 +373,45 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
 
           // Then
           const selectField = wrapper.find(Field).findWhere(n => n.prop('id') === 'venue-type')
-          expect(selectField.prop('disabled')).toBe(true)
+          expect(selectField.prop('component')).toBe('select')
+
+          const venueTypeOptions = wrapper.find('option')
+          expect(venueTypeOptions.at(0).text()).toBe('Choisissez un type de lieu dans la liste')
+          expect(venueTypeOptions.at(1).text()).toBe("Centre d'art et d'essais")
+        })
+      })
+
+      describe('when the form is in detail mode', () => {
+        describe('when no venue type has been chosen', () => {
+          it('should not exist', () => {
+            // Given
+            props.readOnly = true
+            props.venueTypeId = null
+            props.venueTypes = [new VenueType({ id: 'A1', label: "Centre d'art et d'essais" })]
+
+            // When
+            const wrapper = shallow(<IdentifierFields {...props} />)
+
+            // Then
+            const selectField = wrapper.find(Field).findWhere(n => n.prop('id') === 'venue-type')
+            expect(selectField).toHaveLength(0)
+          })
+        })
+
+        describe('when venue type is defined', () => {
+          it('should be disabled', () => {
+            // Given
+            props.readOnly = true
+            props.venueTypeId = 'A1'
+            props.venueTypes = [new VenueType({ id: 'A1', label: "Centre d'art et d'essais" })]
+
+            // When
+            const wrapper = shallow(<IdentifierFields {...props} />)
+
+            // Then
+            const selectField = wrapper.find(Field).findWhere(n => n.prop('id') === 'venue-type')
+            expect(selectField.prop('disabled')).toBe(true)
+          })
         })
       })
     })

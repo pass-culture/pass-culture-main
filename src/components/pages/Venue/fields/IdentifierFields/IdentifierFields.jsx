@@ -84,6 +84,7 @@ class IdentifierFields extends PureComponent {
       isCreatedEntity,
       readOnly,
       venueTypes,
+      venueTypeId,
     } = this.props
 
     return (
@@ -177,30 +178,32 @@ class IdentifierFields extends PureComponent {
 
             <div className="field-body">
               <div className="control control-select">
-                <div
-                  className={classnames('select is-normal', {
-                    readonly: readOnly,
-                  })}
-                >
-                  <Field
-                    component="select"
-                    disabled={readOnly}
-                    id="venue-type"
-                    name="venueTypeId"
+                {!(readOnly && venueTypeId == null) && (
+                  <div
+                    className={classnames('select is-normal', {
+                      readonly: readOnly,
+                    })}
                   >
-                    <option value="">
-                      {'Choisissez un type de lieu dans la liste'}
-                    </option>
-                    {venueTypes.map(venueType => (
-                      <option
-                        key={`venue-type-${venueType.id}`}
-                        value={venueType.id}
-                      >
-                        {venueType.label}
+                    <Field
+                      component="select"
+                      disabled={readOnly}
+                      id="venue-type"
+                      name="venueTypeId"
+                    >
+                      <option value="">
+                        {'Choisissez un type de lieu dans la liste'}
                       </option>
-                    ))}
-                  </Field>
-                </div>
+                      {venueTypes.map(venueType => (
+                        <option
+                          key={`venue-type-${venueType.id}`}
+                          value={venueType.id}
+                        >
+                          {venueType.label}
+                        </option>
+                      ))}
+                    </Field>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -216,6 +219,7 @@ IdentifierFields.defaultProps = {
   initialSiret: null,
   isCreatedEntity: false,
   readOnly: true,
+  venueTypeId: null,
 }
 
 IdentifierFields.propTypes = {
@@ -224,6 +228,7 @@ IdentifierFields.propTypes = {
   initialSiret: PropTypes.string,
   isCreatedEntity: PropTypes.bool,
   readOnly: PropTypes.bool,
+  venueTypeId: PropTypes.string,
   venueTypes: PropTypes.arrayOf(PropTypes.instanceOf(VenueType)).isRequired,
 }
 

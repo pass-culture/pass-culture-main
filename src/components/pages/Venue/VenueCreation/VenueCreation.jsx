@@ -95,7 +95,7 @@ class VenueCreation extends PureComponent {
     const { isRequestPending } = this.state
     const readOnly = false
 
-    const { bic, iban, siret: initialSiret } = formInitialValues || {}
+    const { bic, iban, siret: initialSiret, venueTypeId } = formInitialValues || {}
 
     const canSubmit = getCanSubmit(formProps)
     const { form, handleSubmit, values } = formProps
@@ -120,6 +120,7 @@ class VenueCreation extends PureComponent {
           initialSiret={initialSiret}
           isCreatedEntity
           readOnly={readOnly}
+          venueTypeId={venueTypeId}
           venueTypes={venueTypes}
         />
         <BankFieldsContainer

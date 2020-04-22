@@ -117,6 +117,7 @@ class VenueEdition extends PureComponent {
           fieldReadOnlyBecauseFrozenFormSiret={fieldReadOnlyBecauseFrozenFormSiret}
           formSiret={formSiret}
           initialSiret={initialSiret}
+          venueTypeId={formInitialValues.venueTypeId}
           venueTypes={venueTypes}
         />
         <BankFieldsContainer
