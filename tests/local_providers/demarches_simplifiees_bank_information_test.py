@@ -513,8 +513,10 @@ class BankInformationProviderProviderTest:
                       updatedThumbs=0,
                       erroredThumbs=0,
                       BankInformation=2)
-        bank_information1 = BankInformation.query.filter_by(applicationId=1).first()
-        bank_information2 = BankInformation.query.filter_by(applicationId=2).first()
+        bank_information1 = BankInformation.query.filter_by(
+            applicationId=1).first()
+        bank_information2 = BankInformation.query.filter_by(
+            applicationId=2).first()
         assert bank_information1.iban == 'FR7630006000011234567890189'
         assert bank_information1.bic == 'BDFEFR2LCCB'
         assert bank_information1.applicationId == 1
@@ -608,7 +610,8 @@ class BankInformationProviderProviderTest:
                       erroredThumbs=0,
                       BankInformation=0)
 
-        sync_error = LocalProviderEvent.query.filter_by(type=LocalProviderEventType.SyncError).first()
+        sync_error = LocalProviderEvent.query.filter_by(
+            type=LocalProviderEventType.SyncError).first()
         assert sync_error.payload == 'unknown siret or siren for application id 1'
         assert len(LocalProviderEvent.query.all()) == 3
 
@@ -681,7 +684,8 @@ class BankInformationProviderProviderTest:
         offerer = create_offerer(siren='793875019')
         venue = create_venue(offerer, siret='79387501900056')
 
-        bank_information = create_bank_information(id_at_providers="79387501900056", venue=venue)
+        bank_information = create_bank_information(
+            id_at_providers="79387501900056", venue=venue)
         repository.save(bank_information)
 
         # When Then
@@ -697,7 +701,8 @@ class BankInformationProviderProviderTest:
                       updatedThumbs=0,
                       erroredThumbs=0)
 
-        updated_bank_information = BankInformation.query.filter_by(idAtProviders="79387501900056").one()
+        updated_bank_information = BankInformation.query.filter_by(
+            idAtProviders="79387501900056").one()
         assert updated_bank_information.applicationId == 2
         assert updated_bank_information.iban == "FR7630006000011234567890189"
         assert updated_bank_information.bic == "BDFEFR2LCCB"
@@ -838,8 +843,9 @@ class BankInformationProviderProviderTest:
         bank_information = BankInformation.query.all()
         assert len(bank_information) == 1
         assert bank_information[0].applicationId == 2
-        local_provider_event = LocalProviderEvent.query.filter_by(type=LocalProviderEventType.SyncError).one()
-        assert local_provider_event.payload == 'ApiErrors'
+        local_provider_event = LocalProviderEvent.query.filter_by(
+            type=LocalProviderEventType.SyncError).one()
+        assert local_provider_event.payload == 'ApiErrors: L’IBAN renseigné ("WRONGSIREN") est inv'
 
     @patch(
         'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_demarche_simplifiee')
@@ -914,7 +920,7 @@ class BankInformationProviderProviderTest:
 
         # then
         get_all_application_ids_for_demarche_simplifiee.assert_called_with(ANY, ANY,
-                                                                                        datetime(1900, 1, 1))
+                                                                           datetime(1900, 1, 1))
 
     @patch(
         'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_demarche_simplifiee')
@@ -984,9 +990,11 @@ class BankInformationProviderProviderTest:
         venue = create_venue(offerer, siret='79387501900056')
 
         bank_information = create_bank_information(id_at_providers='79387501900056',
-                                                   date_modified_at_last_provider=datetime(2019, 1, 1),
+                                                   date_modified_at_last_provider=datetime(
+                                                       2019, 1, 1),
                                                    venue=venue,
-                                                   last_provider_id=get_provider_by_local_class('BankInformationProvider').id
+                                                   last_provider_id=get_provider_by_local_class(
+                                                       'BankInformationProvider').id
                                                    )
         repository.save(bank_information)
 
@@ -999,8 +1007,7 @@ class BankInformationProviderProviderTest:
 
         # then
         get_all_application_ids_for_demarche_simplifiee.assert_called_with(ANY, ANY,
-                                                                                        datetime(2019, 1, 1))
-
+                                                                           datetime(2019, 1, 1))
 
     @patch(
         'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_demarche_simplifiee')
@@ -1138,7 +1145,8 @@ class RetrieveBankInformationTest:
         bank_information_provider = TestableBankInformationProvider()
 
         # When
-        bank_information_dict = bank_information_provider.retrieve_bank_information(application_details)
+        bank_information_dict = bank_information_provider.retrieve_bank_information(
+            application_details)
 
         # Then
         assert bank_information_dict['iban'] == "FR7630006000011234567890189"
@@ -1194,7 +1202,8 @@ class RetrieveBankInformationTest:
         bank_information_provider = TestableBankInformationProvider()
 
         # When
-        bank_information_dict = bank_information_provider.retrieve_bank_information(application_details)
+        bank_information_dict = bank_information_provider.retrieve_bank_information(
+            application_details)
 
         # Then
         assert bank_information_dict['iban'] == "FR7630006000011234567890189"

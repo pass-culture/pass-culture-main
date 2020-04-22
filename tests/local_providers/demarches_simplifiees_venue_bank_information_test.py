@@ -255,7 +255,7 @@ class VenueBankInformationProviderTest:
         assert bank_information[0].applicationId == 2
         local_provider_event = LocalProviderEvent.query.filter_by(
             type=LocalProviderEventType.SyncError).one()
-        assert local_provider_event.payload == 'ApiErrors'
+        assert local_provider_event.payload == 'ApiErrors: L’IBAN renseigné ("WRONG_IBAN") est inv'
 
     @patch(
         'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
