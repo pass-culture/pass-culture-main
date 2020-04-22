@@ -10,7 +10,9 @@ const BankInformation = ({ venue, offerer }) => {
 
   return (
     <div className="section vp-content-section bank-information">
-      <h2 className="main-list-title">{'Coordonnées bancaires du lieu'}</h2>
+      <h2 className="main-list-title">
+        {'Coordonnées bancaires du lieu'}
+      </h2>
 
       {bic && iban ? (
         <Fragment>
@@ -20,7 +22,10 @@ const BankInformation = ({ venue, offerer }) => {
             rel="noopener noreferrer"
             target="_blank"
           >
-            <Icon alt="" svg="ico-external-site" />
+            <Icon
+              alt=""
+              svg="ico-external-site"
+            />
             {'Modifier'}
           </a>
           <p className="bi-subtitle">
@@ -29,21 +34,31 @@ const BankInformation = ({ venue, offerer }) => {
             }
           </p>
           <div className="vp-detail">
-            <span>{'IBAN : '}</span>
-            <span>{iban}</span>
+            <span>
+              {'IBAN : '}
+            </span>
+            <span>
+              {iban}
+            </span>
           </div>
           <div className="vp-detail">
-            <span>{'BIC : '}</span>
-            <span>{bic}</span>
+            <span>
+              {'BIC : '}
+            </span>
+            <span>
+              {bic}
+            </span>
           </div>
         </Fragment>
       ) : (
         <Fragment>
-          <p className="bi-subtitle">{'Aucune coordonnée bancaire renseignée'}</p>
+          <p className="bi-subtitle">
+            {'Aucune coordonnée bancaire renseignée'}
+          </p>
           <div className="bi-banner">
             <p>
               {
-                'Renseigner vos coordonnées bancaires pour ce lieu pour être remboursé de vos offres éligibles'
+                'Renseignez vos coordonnées bancaires pour ce lieu pour être remboursé de vos offres éligibles'
               }
             </p>
 
@@ -54,8 +69,11 @@ const BankInformation = ({ venue, offerer }) => {
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                <Icon alt="" svg="ico-external-site" />
-                {'Renseigner les coordonnées bancaires du lieu'}
+                <Icon
+                  alt=""
+                  svg="ico-external-site"
+                />
+                {'Renseignez les coordonnées bancaires du lieu'}
               </a>
             </p>
           </div>

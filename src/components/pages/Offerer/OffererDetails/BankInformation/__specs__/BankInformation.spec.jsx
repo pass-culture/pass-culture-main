@@ -24,7 +24,7 @@ describe('src | Offerer | BankInformation ', () => {
 
     // then
     const bankInstructions = wrapper.find({
-      children: 'Renseigner vos coordonnées bancaires pour être remboursé de vos offres éligibles',
+      children: 'Renseignez vos coordonnées bancaires pour être remboursé de vos offres éligibles',
     })
     const linkToDemarcheSimplifieeProcedure = wrapper.find('a')
     expect(linkToDemarcheSimplifieeProcedure.prop('href')).toBe(
@@ -49,7 +49,7 @@ describe('src | Offerer | BankInformation ', () => {
     // then
     const bankInstructions = wrapper.find({
       children:
-        'Les coordonnées bancaires ci dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :',
+        'Les coordonnées bancaires ci-dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :',
     })
     expect(bankInstructions).toHaveLength(1)
     const expectedBic = wrapper.find({ children: 'offererBic' })

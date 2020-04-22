@@ -37,7 +37,7 @@ describe('src | Venue | BankInformation ', () => {
     // then
     const bankInstructions = wrapper.find({
       children:
-        'Renseigner vos coordonnées bancaires pour ce lieu pour être remboursé de vos offres éligibles',
+        'Renseignez vos coordonnées bancaires pour ce lieu pour être remboursé de vos offres éligibles',
     })
     const linkToDemarcheSimplifieeProcedure = wrapper.find('a')
     expect(linkToDemarcheSimplifieeProcedure.prop('href')).toBe(
