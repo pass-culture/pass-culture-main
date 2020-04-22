@@ -9,7 +9,7 @@ const BankInformation = ({ venue, offerer }) => {
   const bic = venueBankInformation ? venue.bic : offerer.bic
 
   return (
-    <div className="section op-content-section bank-information">
+    <div className="section vp-content-section bank-information">
       <h2 className="main-list-title">{'Coordonnées bancaires du lieu'}</h2>
 
       {bic && iban ? (
@@ -28,11 +28,11 @@ const BankInformation = ({ venue, offerer }) => {
               'Les remboursements des offres éligibles présentées dans ce lieu sont effectués sur le compte ci-dessous :'
             }
           </p>
-          <div className="op-detail">
+          <div className="vp-detail">
             <span>{'IBAN : '}</span>
             <span>{iban}</span>
           </div>
-          <div className="op-detail">
+          <div className="vp-detail">
             <span>{'BIC : '}</span>
             <span>{bic}</span>
           </div>

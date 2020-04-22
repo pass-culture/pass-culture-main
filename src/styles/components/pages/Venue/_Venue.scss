@@ -2,4 +2,30 @@
   .field-number {
     text-align: left;
   }
+
+  .field-group {
+    min-height: 10rem;
+  }
+
+  .vp-detail {
+    margin: rem(8px) 0;
+    > :first-child {
+      color: $grey;
+      margin-right: rem(5px);
+    }
+  }
+
+  .vp-field > label {
+    color: $black;
+    margin-right: rem(5px);
+    font-size: rem(16px);
+  }
+
+  .vp-subtitle {
+    margin-bottom: rem(25px);
+  }
+
+  .vp-content-section {
+    margin-bottom: rem(48px);
+  }
 }

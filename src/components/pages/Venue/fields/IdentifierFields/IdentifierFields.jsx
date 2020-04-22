@@ -116,7 +116,8 @@ class IdentifierFields extends PureComponent {
               readOnly={readOnly || initialSiret !== null}
               renderValue={this.handleRenderValue(fieldReadOnlyBecauseFrozenFormSiret, readOnly)}
               type="siret"
-              {...(initialSiret ? {} : { validate: siretValidate })}
+              className="vp-field"
+              validate={initialSiret ? undefined : siretValidate}
             />
           </div>
           <TextField
@@ -124,6 +125,7 @@ class IdentifierFields extends PureComponent {
             name="name"
             readOnly={readOnly || fieldReadOnlyBecauseFrozenFormSiret}
             required
+            className="vp-field"
           />
           <TextField label="Nom d’usage du lieu : " name="publicName" readOnly={readOnly} />
           <TextField
@@ -134,6 +136,7 @@ class IdentifierFields extends PureComponent {
             renderValue={this.handleRender(readOnly)}
             required
             type="email"
+            className="vp-field"
           />
           <TextareaField
             label="Commentaire (si pas de SIRET) : "
@@ -141,6 +144,7 @@ class IdentifierFields extends PureComponent {
             readOnly={readOnly}
             rows={1}
             validate={this.commentValidate}
+            className="vp-field"
           />
         </div>
       </div>

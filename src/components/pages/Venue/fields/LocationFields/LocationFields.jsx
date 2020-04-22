@@ -28,6 +28,7 @@ const LocationFields = ({
           name="address"
           readOnly={readOnly || fieldReadOnlyBecauseFrozenFormSiret}
           withMap
+          className="vp-field"
         />
         <TextField
           autoComplete="postal-code"
@@ -36,6 +37,7 @@ const LocationFields = ({
           name="postalCode"
           readOnly={fieldIsFrozen}
           required
+          className="vp-field"
         />
         <TextField
           autoComplete="address-level2"
@@ -44,6 +46,7 @@ const LocationFields = ({
           name="city"
           readOnly={fieldIsFrozen}
           required
+          className="vp-field"
         />
         <NumberField
           innerClassName="col-33"
@@ -51,6 +54,7 @@ const LocationFields = ({
           name="latitude"
           readOnly={fieldIsFrozen}
           required
+          className="vp-field"
         />
         <NumberField
           innerClassName="col-33"
@@ -58,6 +62,7 @@ const LocationFields = ({
           name="longitude"
           readOnly={fieldIsFrozen}
           required
+          className="vp-field"
         />
       </div>
     </div>
