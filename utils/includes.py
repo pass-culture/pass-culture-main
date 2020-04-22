@@ -214,7 +214,8 @@ WEBAPP_GET_BOOKING_INCLUDES = [
     "thumbUrl"
 ]
 
-WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = copy.deepcopy(WEBAPP_GET_BOOKING_INCLUDES)
+WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = copy.deepcopy(
+    WEBAPP_GET_BOOKING_INCLUDES)
 WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES.append("qrCode")
 
 WEBAPP_PATCH_POST_BOOKING_INCLUDES = [
@@ -336,7 +337,11 @@ VENUE_INCLUDES = [
     "-validationToken",
     {
         "key": "managingOfferer",
-        "includes": ['-validationToken']
+        "includes": [
+            '-validationToken',
+            "bic",
+            "iban"
+        ]
     }
 ]
 
