@@ -3,17 +3,19 @@ import { RequestMock } from 'testcafe'
 export const getSirenRequestMockAs = offerer => {
   const { address, city, latitude, longitude, name, postalCode, siren } = offerer
   return RequestMock()
-    .onRequestTo(`https://entreprise.data.gouv.fr/api/sirene/v1/siren/${siren}`)
+    .onRequestTo(`https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`)
     .respond(
       {
-        siege_social: {
+        unite_legale: {
+          denomination: name,
           siren,
-          l1_normalisee: name,
-          l4_normalisee: address,
-          libelle_commune: city,
-          latitude: latitude,
-          longitude: longitude,
-          code_postal: postalCode,
+          etablissement_siege: {
+            geo_l4: address,
+            libelle_commune: city,
+            latitude: latitude,
+            longitude: longitude,
+            code_postal: postalCode,
+          },
         },
       },
       200,

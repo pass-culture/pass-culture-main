@@ -17,7 +17,7 @@ describe('getSirenInformations', () => {
       // then
       expect(fetch.mock.calls).toHaveLength(1)
       expect(fetch.mock.calls[0][0]).toStrictEqual(
-        `https://entreprise.data.gouv.fr/api/sirene/v1/siren/${siren}`
+        `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
       )
       expect(errorMessage).toStrictEqual({ error: 'SIREN invalide' })
     })
@@ -33,7 +33,7 @@ describe('getSirenInformations', () => {
       // then
       expect(fetch.mock.calls).toHaveLength(1)
       expect(fetch.mock.calls[0][0]).toStrictEqual(
-        `https://entreprise.data.gouv.fr/api/sirene/v1/siren/${siren}`
+        `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
       )
       expect(errorMessage).toStrictEqual({ error: 'Service indisponible' })
     })
@@ -45,14 +45,16 @@ describe('getSirenInformations', () => {
       const siren = '418166096'
       fetch.mockResponseOnce(
         JSON.stringify({
-          siege_social: {
-            l4_normalisee: '3 rue de la gare',
-            libelle_commune: 'paris',
-            latitude: 1.1,
-            longitude: 1.1,
-            l1_normalisee: 'nom du lieu',
-            code_postal: '75000',
+          unite_legale: {
+            denomination: 'nom du lieu',
             siren: '418166096',
+            etablissement_siege: {
+              geo_l4: '3 rue de la gare',
+              libelle_commune: 'paris',
+              latitude: 1.1,
+              longitude: 1.1,
+              code_postal: '75000',
+            },
           },
         })
       )
@@ -63,7 +65,7 @@ describe('getSirenInformations', () => {
       // then
       expect(fetch.mock.calls).toHaveLength(1)
       expect(fetch.mock.calls[0][0]).toStrictEqual(
-        `https://entreprise.data.gouv.fr/api/sirene/v1/siren/${siren}`
+        `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
       )
       expect(locationValues).toStrictEqual({
         address: '3 rue de la gare',
@@ -76,20 +78,23 @@ describe('getSirenInformations', () => {
       })
     })
 
-    describe('when offerer name is not in l1_normalisee', () => {
+    describe('when offerer name is not in normalized', () => {
       it('should use the declared name', async () => {
         // given
         const siren = '418166096'
         fetch.mockResponseOnce(
           JSON.stringify({
-            siege_social: {
-              l4_normalisee: '3 rue de la gare',
-              libelle_commune: 'paris',
-              latitude: 1.1,
-              longitude: 1.1,
-              l1_declaree: 'Nom déclaré du lieu',
-              code_postal: '75000',
+            unite_legale: {
               siren: '418166096',
+              etablissement_siege: {
+                geo_l4: '3 rue de la gare',
+                libelle_commune: 'paris',
+                latitude: 1.1,
+                longitude: 1.1,
+                enseigne_1: 'Nom déclaré du lieu',
+                code_postal: '75000',
+                siren: '418166096',
+              },
             },
           })
         )
@@ -100,7 +105,7 @@ describe('getSirenInformations', () => {
         // then
         expect(fetch.mock.calls).toHaveLength(1)
         expect(fetch.mock.calls[0][0]).toStrictEqual(
-          `https://entreprise.data.gouv.fr/api/sirene/v1/siren/${siren}`
+          `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
         )
         expect(locationValues).toMatchObject({
           name: 'Nom déclaré du lieu',
@@ -114,13 +119,16 @@ describe('getSirenInformations', () => {
         const siren = '418166096'
         fetch.mockResponseOnce(
           JSON.stringify({
-            siege_social: {
-              l4_normalisee: '3 rue de la gare',
-              libelle_commune: 'paris',
-              latitude: 1.1,
-              longitude: 1.1,
-              code_postal: '75000',
+            unite_legale: {
               siren: '418166096',
+              etablissement_siege: {
+                geo_l4: '3 rue de la gare',
+                libelle_commune: 'paris',
+                latitude: 1.1,
+                longitude: 1.1,
+                code_postal: '75000',
+                siren: '418166096',
+              },
             },
           })
         )
@@ -131,7 +139,7 @@ describe('getSirenInformations', () => {
         // then
         expect(fetch.mock.calls).toHaveLength(1)
         expect(fetch.mock.calls[0][0]).toStrictEqual(
-          `https://entreprise.data.gouv.fr/api/sirene/v1/siren/${siren}`
+          `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
         )
         expect(locationValues).toMatchObject({
           name: '',

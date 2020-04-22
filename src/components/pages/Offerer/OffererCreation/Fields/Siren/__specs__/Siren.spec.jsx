@@ -27,7 +27,7 @@ describe('src | components | pages | Offerer | OffererCreation | Fields | Siren'
       // then
       expect(fetch).toHaveBeenCalledTimes(1)
       expect(fetch).toHaveBeenCalledWith(
-        `https://entreprise.data.gouv.fr/api/sirene/v1/siren/245474278`
+        `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/245474278`
       )
     })
 
@@ -36,14 +36,16 @@ describe('src | components | pages | Offerer | OffererCreation | Fields | Siren'
       const siren = '245474278'
       fetch.mockResponseOnce(
         JSON.stringify({
-          siege_social: {
-            l4_normalisee: '3 rue de la gare',
-            libelle_commune: 'paris',
-            latitude: 1.1,
-            longitude: 1.1,
-            l1_normalisee: 'nom du lieu',
-            code_postal: '75000',
+          unite_legale: {
+            denomination: 'nom du lieu',
             siren: '418166096',
+            etablissement_siege: {
+              geo_l4: '3 rue de la gare',
+              libelle_commune: 'paris',
+              latitude: 1.1,
+              longitude: 1.1,
+              code_postal: '75000',
+            },
           },
         })
       )
