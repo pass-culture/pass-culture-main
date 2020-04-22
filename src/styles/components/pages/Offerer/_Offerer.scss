@@ -11,18 +11,15 @@
     }
   }
 
-  .op-field {
+  .op-field-siren {
     margin: rem(8px) 0;
+    display: flex;
+
     > :first-child {
       color: $black;
       margin-right: rem(5px);
       font-size: rem(16px);
     }
-  }
-
-  .op-field-siren {
-    @extend .op-field;
-    display: flex;
   }
 
   .op-field-label-siren {
