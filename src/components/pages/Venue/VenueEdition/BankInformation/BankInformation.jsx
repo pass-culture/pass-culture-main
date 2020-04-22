@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL } from '../../../../../utils/config'
+import { DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL } from '../../../../../utils/config'
 import React, { Fragment } from 'react'
 import Icon from '../../../../layout/Icon'
 
@@ -16,7 +16,7 @@ const BankInformation = ({ venue, offerer }) => {
         <Fragment>
           <a
             className="bi-external-link bi-external-link--mod-topright"
-            href={DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL}
+            href={DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL}
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -50,7 +50,7 @@ const BankInformation = ({ venue, offerer }) => {
             <p>
               <a
                 className="bi-external-link"
-                href={DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL}
+                href={DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL}
                 rel="noopener noreferrer"
                 target="_blank"
               >

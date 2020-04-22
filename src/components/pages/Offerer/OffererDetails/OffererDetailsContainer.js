@@ -48,8 +48,5 @@ export const mapDispatchToProps = dispatch => {
 export default compose(
   withTracking('Offerer'),
   withRequiredLogin,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
+  connect(mapStateToProps, mapDispatchToProps)
 )(OffererDetails)
