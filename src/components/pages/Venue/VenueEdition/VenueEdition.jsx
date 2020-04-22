@@ -84,6 +84,7 @@ class VenueEdition extends PureComponent {
         params: { offererId, venueId },
       },
       query,
+      offerer,
     } = this.props
     const { isRequestPending } = this.state
     const { readOnly } = query.context({
@@ -122,7 +123,7 @@ class VenueEdition extends PureComponent {
             />
           }
         >
-          <BankInformation venue={venue} />
+          <BankInformation venue={venue} offerer={offerer} />
         </RibsUploadFeatureFlip>
         <LocationFields
           fieldReadOnlyBecauseFrozenFormSiret={fieldReadOnlyBecauseFrozenFormSiret}

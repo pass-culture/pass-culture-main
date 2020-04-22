@@ -3,9 +3,10 @@ import { DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL } from '../../..
 import React, { Fragment } from 'react'
 import Icon from '../../../../layout/Icon'
 
-const BankInformation = ({ venue }) => {
-  const iban = venue.iban
-  const bic = venue.bic
+const BankInformation = ({ venue, offerer }) => {
+  const venueBankInformation = venue.iban && venue.bic
+  const iban = venueBankInformation ? venue.iban : offerer.iban
+  const bic = venueBankInformation ? venue.bic : offerer.bic
 
   return (
     <div className="section op-content-section bank-information">
@@ -66,6 +67,7 @@ const BankInformation = ({ venue }) => {
 
 BankInformation.propTypes = {
   offerer: PropTypes.shape().isRequired,
+  venue: PropTypes.shape().isRequired,
 }
 
 export default BankInformation
