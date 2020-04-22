@@ -9,6 +9,7 @@ def check_allowed_changes_for_user(data):
         'culturalSurveyFilledDate',
         'departementCode',
         'email',
+        'hasSeenTutorials',
         'needsToFillCulturalSurvey',
         'phoneNumber',
         'postalCode',

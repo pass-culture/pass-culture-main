@@ -85,6 +85,8 @@ class User(PcObject,
 
     activity = Column(String(128), nullable=True)
 
+    hasSeenTutorials = Column(Boolean, nullable=True)
+
     def checkPassword(self, passwordToCheck):
         return bcrypt.hashpw(passwordToCheck.encode('utf-8'), self.password) == self.password
 

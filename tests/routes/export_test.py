@@ -184,7 +184,8 @@ def test_pending_validation_return_only_requested_data(app):
                    'modelName': 'User',
                    'culturalSurveyId': None,
                    'culturalSurveyFilledDate': None,
-                   'needsToFillCulturalSurvey': False
+                   'needsToFillCulturalSurvey': False,
+                   'hasSeenTutorials': None
                    }}],
         'managedVenues':
             [{'address': '123 rue de Paris',

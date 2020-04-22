@@ -159,6 +159,7 @@ USER_INCLUDES = [
     '-resetPasswordToken',
     '-resetPasswordTokenValidityLimit',
     '-validationToken',
+    'hasSeenTutorials',
     'expenses',
     'hasPhysicalVenues',
     'hasOffers',
