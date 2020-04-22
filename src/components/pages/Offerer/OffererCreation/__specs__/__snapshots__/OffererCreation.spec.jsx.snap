@@ -35,13 +35,13 @@ ShallowWrapper {
           title="Structure"
         />,
         <ReactFinalForm
+          component={[Function]}
           decorators={
             Array [
               [Function],
             ]
           }
           onSubmit={[Function]}
-          render={[Function]}
         />,
       ],
       "name": "offerer",
@@ -66,11 +66,11 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
+          "component": [Function],
           "decorators": Array [
             [Function],
           ],
           "onSubmit": [Function],
-          "render": [Function],
         },
         "ref": null,
         "rendered": null,
@@ -96,13 +96,13 @@ ShallowWrapper {
             title="Structure"
           />,
           <ReactFinalForm
+            component={[Function]}
             decorators={
               Array [
                 [Function],
               ]
             }
             onSubmit={[Function]}
-            render={[Function]}
           />,
         ],
         "name": "offerer",
@@ -127,11 +127,11 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
+            "component": [Function],
             "decorators": Array [
               [Function],
             ],
             "onSubmit": [Function],
-            "render": [Function],
           },
           "ref": null,
           "rendered": null,

@@ -73,8 +73,8 @@ describe('src | components | pages | Offerer | OffererCreation | OffererCreation
 
       // then
       const form = wrapper.find(Form)
-      const renderProp = form.prop('render')
-      expect(renderProp).toBe(OffererCreationForm)
+      const componentProp = form.prop('component')
+      expect(componentProp).toBe(OffererCreationForm)
     })
   })
 

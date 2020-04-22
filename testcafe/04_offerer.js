@@ -8,7 +8,7 @@ import { createUserRole } from './helpers/roles'
 const sirenInput = Selector('input[name=siren]')
 const sirenErrorInput = Selector('.field-errors')
 const submitButton = Selector('button[type=submit]')
-const formSelector = Selector('.op-creation-form')
+const formSelector = Selector('form')
 const getFormContent = ClientFunction(() => formSelector().innerHTML, {
   dependencies: { formSelector },
 })
