@@ -1,11 +1,6 @@
-import {
-  getLocationInformationsFromSiret,
-  getSiretInformations,
-  validateSiretSize
-} from '../selectSiretInformations'
+import { getSiretInformations, validateSiretSize } from '../selectSiretInformations'
 
 describe('src | components | pages | Venue | siret | selectSiretInformations', () => {
-
   beforeEach(() => {
     fetch.resetMocks()
   })
@@ -51,58 +46,7 @@ describe('src | components | pages | Venue | siret | selectSiretInformations', (
     })
   })
 
-  describe('getLocationInformationsFromSiret', () => {
-    describe('if siret provided is not valid', () => {
-      it('should return ’SIRET invalide’', async () => {
-        // given
-        const siret = '12345678901234'
-        fetch.mockResponseOnce(JSON.stringify({message:'no results found'}), { status: 404 })
-
-        // when
-        const errorMessage = await getLocationInformationsFromSiret(siret)
-
-        // then
-        expect(fetch.mock.calls.length).toBe(1)
-        expect(fetch.mock.calls[0][0]).toStrictEqual(`https://entreprise.data.gouv.fr/api/sirene/v1/siret/${siret}`)
-        expect(errorMessage).toStrictEqual({"error": "SIRET invalide"})
-      })
-    })
-
-    describe('if siret provided is valid', () => {
-      it('should return location values', async () => {
-        // given
-        const siret = '41816609600069'
-        fetch.mockResponseOnce(JSON.stringify({
-          etablissement : {
-            l4_normalisee: '3 rue de la gare',
-            libelle_commune: 'paris',
-            latitude: 1.1,
-            longitude: 1.1,
-            l1_normalisee: 'nom du lieu',
-            code_postal: '75000',
-            siret: '41816609600069'
-          }
-        }))
-
-        // when
-        const locationValues = await getLocationInformationsFromSiret(siret)
-
-        // then
-        expect(fetch.mock.calls.length).toBe(1)
-        expect(fetch.mock.calls[0][0]).toStrictEqual(`https://entreprise.data.gouv.fr/api/sirene/v1/siret/${siret}`)
-        expect(locationValues).toStrictEqual({
-          address: '3 rue de la gare',
-          city: 'paris',
-          latitude: 1.1,
-          longitude: 1.1,
-          name: 'nom du lieu',
-          postalCode: '75000',
-          siret: '41816609600069',
-          sire: '41816609600069',
-        })
-      })
-    })
-  })
+  describe('getLocationInformationsFromSiret', () => {})
 
   describe('getSiretInformations', () => {
     describe('if not siret is provided', () => {
@@ -114,18 +58,77 @@ describe('src | components | pages | Venue | siret | selectSiretInformations', (
         const locationValues = await getSiretInformations(siret)
 
         // then
-        expect(fetch.mock.calls.length).toBe(0)
+        expect(fetch.mock.calls).toHaveLength(0)
         expect(locationValues).toStrictEqual({
-          values : {
+          values: {
             address: '',
             city: '',
             latitude: null,
             longitude: null,
-            name: "",
+            name: '',
             postalCode: '',
             sire: '',
             siret: '',
-          }
+          },
+        })
+      })
+    })
+
+    describe('if siret provided is not valid', () => {
+      it('should return ’SIRET invalide’', async () => {
+        // given
+        const siret = '12345678901234'
+        fetch.mockResponseOnce(JSON.stringify({ message: 'no results found' }), { status: 404 })
+
+        // when
+        const errorMessage = await getSiretInformations(siret)
+
+        // then
+        expect(fetch.mock.calls).toHaveLength(1)
+        expect(fetch.mock.calls[0][0]).toStrictEqual(
+          `https://entreprise.data.gouv.fr/api/sirene/v1/siret/${siret}`
+        )
+        expect(errorMessage).toStrictEqual({ values: { error: 'SIRET invalide' } })
+      })
+    })
+
+    describe('if siret provided is valid', () => {
+      it('should return location values', async () => {
+        // given
+        const siret = '41816609600069'
+        fetch.mockResponseOnce(
+          JSON.stringify({
+            etablissement: {
+              l4_normalisee: '3 rue de la gare',
+              libelle_commune: 'paris',
+              latitude: 1.1,
+              longitude: 1.1,
+              l1_normalisee: 'nom du lieu',
+              code_postal: '75000',
+              siret: '41816609600069',
+            },
+          })
+        )
+
+        // when
+        const locationValues = await getSiretInformations(siret)
+
+        // then
+        expect(fetch.mock.calls).toHaveLength(1)
+        expect(fetch.mock.calls[0][0]).toStrictEqual(
+          `https://entreprise.data.gouv.fr/api/sirene/v1/siret/${siret}`
+        )
+        expect(locationValues).toStrictEqual({
+          values: {
+            address: '3 rue de la gare',
+            city: 'paris',
+            latitude: 1.1,
+            longitude: 1.1,
+            name: 'nom du lieu',
+            postalCode: '75000',
+            siret: '41816609600069',
+            sire: '41816609600069',
+          },
         })
       })
     })

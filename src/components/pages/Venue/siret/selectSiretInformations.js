@@ -5,14 +5,13 @@ import createCachedSelector from 're-reselect'
 export const validateSiretSize = siret => {
   if (siret.length < 14) {
     return 'SIRET trop court'
-  }
-  else if (siret.length > 14) {
+  } else if (siret.length > 14) {
     return 'SIRET trop long'
   }
   return ''
 }
 
-export const getLocationInformationsFromSiret = async siret => {
+const getLocationInformationsFromSiret = async siret => {
   const siretUrl = `https://entreprise.data.gouv.fr/api/sirene/v1/siret/${siret}`
 
   const response = await fetch(siretUrl)
@@ -31,28 +30,28 @@ export const getLocationInformationsFromSiret = async siret => {
     longitude: parseFloat(get(body, `etablissement.longitude`)) || null,
     name: get(body, `etablissement.l1_normalisee`) || get(body, `etablissement.l1_declaree`) || '',
     postalCode: get(body, `etablissement.code_postal`),
-    ["siret"]: get(body, `etablissement.siret`),
+    ['siret']: get(body, `etablissement.siret`),
     sire: get(body, `etablissement.siret`),
   }
 }
 
-const mapArgsToCacheKey = (siret) => siret || ''
+const mapArgsToCacheKey = siret => siret || ''
 
 export const getSiretInformations = createCachedSelector(
   siret => siret,
-  async (siret) => {
+  async siret => {
     if (siret === '' || !siret) {
       return {
         values: {
           address: '',
-          city:'',
+          city: '',
           latitude: null,
           longitude: null,
           name: '',
           postalCode: '',
           sire: '',
           siret: '',
-        }
+        },
       }
     }
 
@@ -60,7 +59,7 @@ export const getSiretInformations = createCachedSelector(
 
     const error = validateSiretSize(siretWithoutWhiteSpaces)
     if (error) {
-      return {error}
+      return { error }
     }
 
     try {
