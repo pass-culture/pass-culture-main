@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 from typing import List, Optional
+from typing import Dict
 
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.bank_account import format_raw_iban_or_bic
@@ -20,16 +21,18 @@ class VenueBankInformationProvider(LocalProvider):
 
     def __init__(self, minimum_requested_datetime: datetime = datetime.utcnow()):
         super().__init__()
-        self.PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID', None)
+        self.PROCEDURE_ID = os.environ.get(
+            'DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID', None)
         self.TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_TOKEN', None)
 
-        most_recent_known_application_date = get_last_update_from_bank_information(last_provider_id=self.provider.id)
+        most_recent_known_application_date = get_last_update_from_bank_information(
+            last_provider_id=self.provider.id)
         requested_datetime = min(
             minimum_requested_datetime, most_recent_known_application_date)
 
         self.application_ids = iter(
             get_all_application_ids_for_demarche_simplifiee(self.PROCEDURE_ID, self.TOKEN,
-                                                           requested_datetime))
+                                                            requested_datetime))
 
     def __next__(self) -> List[ProvidableInfo]:
         self.bank_information_dict = self.retrieve_next_bank_information()
@@ -37,7 +40,8 @@ class VenueBankInformationProvider(LocalProvider):
         if not self.bank_information_dict:
             return []
 
-        bank_information_last_update = datetime.strptime(self.bank_information_dict['lastUpdate'], DATE_ISO_FORMAT)
+        bank_information_last_update = datetime.strptime(
+            self.bank_information_dict['lastUpdate'], DATE_ISO_FORMAT)
         bank_information_identifier = self.bank_information_dict['idAtProviders']
         bank_information_providable_info = self.create_providable_info(BankInformation,
                                                                        bank_information_identifier,
@@ -45,16 +49,21 @@ class VenueBankInformationProvider(LocalProvider):
         return [bank_information_providable_info]
 
     def fill_object_attributes(self, bank_information: BankInformation):
-        bank_information.iban = format_raw_iban_or_bic(self.bank_information_dict['iban'])
-        bank_information.bic = format_raw_iban_or_bic(self.bank_information_dict['bic'])
+        bank_information.iban = format_raw_iban_or_bic(
+            self.bank_information_dict['iban'])
+        bank_information.bic = format_raw_iban_or_bic(
+            self.bank_information_dict['bic'])
         bank_information.applicationId = self.bank_information_dict['applicationId']
-        bank_information.venueId = self.bank_information_dict.get('venueId', None)
+        bank_information.venueId = self.bank_information_dict.get(
+            'venueId', None)
 
-    def retrieve_bank_information(self, application_details: dict) -> Optional[dict]:
+    def retrieve_bank_information(self, application_details: Dict) -> Optional[Dict]:
         bank_information_dict = dict()
         bank_information_dict['lastUpdate'] = application_details['dossier']['updated_at']
-        bank_information_dict['iban'] = _find_value_in_fields(application_details['dossier']["champs"], "IBAN")
-        bank_information_dict['bic'] = _find_value_in_fields(application_details['dossier']["champs"], "BIC")
+        bank_information_dict['iban'] = _find_value_in_fields(
+            application_details['dossier']["champs"], "IBAN")
+        bank_information_dict['bic'] = _find_value_in_fields(
+            application_details['dossier']["champs"], "BIC")
         bank_information_dict['applicationId'] = application_details['dossier']["id"]
 
         siret = application_details['dossier']['etablissement']['siret']
@@ -73,7 +82,8 @@ class VenueBankInformationProvider(LocalProvider):
 
     def retrieve_next_bank_information(self) -> dict:
         application_id = next(self.application_ids)
-        application_details = get_application_details(application_id, self.PROCEDURE_ID, self.TOKEN)
+        application_details = get_application_details(
+            application_id, self.PROCEDURE_ID, self.TOKEN)
         return self.retrieve_bank_information(application_details)
 
 

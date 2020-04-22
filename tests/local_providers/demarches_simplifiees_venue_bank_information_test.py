@@ -22,10 +22,10 @@ class TestableVenueBankInformationProvider(VenueBankInformationProvider):
         pass
 
 
-def demarche_simplifiee_application_detail_response(siret, bic, iban, id=1, updated_at="2019-01-21T18:55:03.387Z"):
+def demarche_simplifiee_application_detail_response(siret, bic, iban, idx=1, updated_at="2019-01-21T18:55:03.387Z"):
     return {
         "dossier": {
-            "id": id,
+            "id": idx,
             "updated_at": updated_at,
             "state": "closed",
             "entreprise": {
@@ -74,70 +74,24 @@ def demarche_simplifiee_application_detail_response(siret, bic, iban, id=1, upda
     }
 
 
-class VenueBankInformationProviderProviderTest:
+class VenueBankInformationProviderTest:
     @patch(
         'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
+    @clean_database
     def test_provider_creates_nothing_if_no_data_retrieved_from_api(self, get_application_details,
                                                                     get_all_application_ids_for_demarche_simplifiee,
                                                                     app):
         # Given
         get_application_details.return_value = {}
         get_all_application_ids_for_demarche_simplifiee.return_value = []
-
-        # When Then
-        provider_test(app,
-                      VenueBankInformationProvider,
-                      None,
-                      checkedObjects=0,
-                      createdObjects=0,
-                      updatedObjects=0,
-                      erroredObjects=0,
-                      checkedThumbs=0,
-                      createdThumbs=0,
-                      updatedThumbs=0,
-                      erroredThumbs=0,
-                      BankInformation=0)
-
-    @patch(
-        'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
-    @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
-    @clean_database
-    def test_provider_creates_one_bank_information_with_id_at_providers_siret(self,
-                                                                              get_application_details,
-                                                                              get_all_application_ids_for_demarche_simplifiee,
-                                                                              app):
-        # Given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [1]
-        get_application_details.return_value = demarche_simplifiee_application_detail_response(siret="42486171400014",
-                                                                                               bic="BDFEFR2LCCB",
-                                                                                               iban="FR7630006000011234567890189",
-                                                                                               id=1,
-                                                                                               updated_at="2019-01-21T18:55:03.387Z")
-        offerer = create_offerer(siren='424861714')
-        venue = create_venue(offerer, siret='42486171400014')
-        repository.save(venue)
-        venue_id = venue.id
-        activate_provider('VenueBankInformationProvider')
         venue_bank_information_provider = VenueBankInformationProvider()
 
         # When
         venue_bank_information_provider.updateObjects()
 
         # Then
-        bank_information = BankInformation.query.one()
-        assert bank_information.iban == 'FR7630006000011234567890189'
-        assert bank_information.bic == 'BDFEFR2LCCB'
-        assert bank_information.applicationId == 1
-        assert bank_information.offererId == None
-        assert bank_information.venueId == venue_id
-        assert bank_information.idAtProviders == '42486171400014'
-        local_provider_events = LocalProviderEvent.query \
-            .order_by(LocalProviderEvent.id) \
-            .all()
-        assert len(local_provider_events) == 2
-        assert local_provider_events[0].type == LocalProviderEventType.SyncStart
-        assert local_provider_events[1].type == LocalProviderEventType.SyncEnd
+        assert BankInformation.query.count() == 0
 
     @patch(
         'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
@@ -154,12 +108,12 @@ class VenueBankInformationProviderProviderTest:
             demarche_simplifiee_application_detail_response(siret="42486171400014",
                                                             bic="BDFEFR2LCCB",
                                                             iban="FR7630006000011234567890189",
-                                                            id=1,
+                                                            idx=1,
                                                             updated_at="2020-04-17T12:56:57.529Z"),
             demarche_simplifiee_application_detail_response(siret="12345678912345",
                                                             bic="BDFEFR2LCCB",
                                                             iban="FR7630006000011234567890189",
-                                                            id=2,
+                                                            idx=2,
                                                             updated_at="2020-04-17T12:56:57.529Z")
         ]
         offerer1 = create_offerer(siren='424861714')
@@ -209,7 +163,7 @@ class VenueBankInformationProviderProviderTest:
             siret="42486171400014",
             bic="BDFEFR2LCCB",
             iban="FR7630006000011234567890189",
-            id=1,
+            idx=1,
             updated_at="2020-04-17T12:56:57.529Z")
         activate_provider('VenueBankInformationProvider')
         venue_bank_information_provider = VenueBankInformationProvider()
@@ -222,7 +176,10 @@ class VenueBankInformationProviderProviderTest:
         sync_error = LocalProviderEvent.query.filter_by(
             type=LocalProviderEventType.SyncError).first()
         assert sync_error.payload == 'unknown siret for application id 1'
-        assert len(LocalProviderEvent.query.all()) == 3
+        events = LocalProviderEvent.query.all()
+        assert events[0].type == LocalProviderEventType.SyncStart
+        assert events[1].type == LocalProviderEventType.SyncError
+        assert events[2].type == LocalProviderEventType.SyncEnd
 
     @patch(
         'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
@@ -239,12 +196,12 @@ class VenueBankInformationProviderProviderTest:
             siret="42486171400014",
             bic="BDFEFR2LCCB",
             iban="FR7630006000011234567890189",
-            id=2,
+            idx=2,
             updated_at="2020-04-17T12:56:57.529Z")
         offerer = create_offerer(siren='424861714')
         venue = create_venue(offerer, siret='42486171400014')
         bank_information = create_bank_information(
-            id_at_providers="42486171400014", venue=venue)
+            id_at_providers="42486171400014", venue=venue, bic="SOGEFRPP", iban="FR7630007000111234567890144")
         repository.save(bank_information)
         activate_provider('VenueBankInformationProvider')
         venue_bank_information_provider = VenueBankInformationProvider()
@@ -273,12 +230,12 @@ class VenueBankInformationProviderProviderTest:
             demarche_simplifiee_application_detail_response(siret="42486171400014",
                                                             bic="wrong_bic",
                                                             iban="wrong_iban",
-                                                            id=1,
+                                                            idx=1,
                                                             updated_at="2020-04-17T12:56:57.529Z"),
             demarche_simplifiee_application_detail_response(siret="12345678912345",
                                                             bic="BDFEFR2LCCB",
                                                             iban="FR7630006000011234567890189",
-                                                            id=2,
+                                                            idx=2,
                                                             updated_at="2020-04-17T12:56:57.529Z")
         ]
         offerer_ko = create_offerer(siren='424861714')
@@ -315,11 +272,10 @@ class VenueBankInformationProviderProviderTest:
             siret="12345678912345",
             bic="BDFEFR2LCCB",
             iban="FR7630006000011234567890189",
-            id=1,
+            idx=1,
             updated_at="2020-04-17T12:56:57.529Z")
+        activate_provider('VenueBankInformationProvider')
         bank_information_provider = VenueBankInformationProvider()
-        bank_information_provider.provider.isActive = True
-        repository.save(bank_information_provider.provider)
 
         # when
         bank_information_provider.updateObjects()
@@ -332,7 +288,7 @@ class VenueBankInformationProviderProviderTest:
         'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
     @clean_database
-    def test_calls_get_all_application_ids_with_last_update_from_table_bank_information(
+    def test_get_all_application_ids_with_last_update_from_table_bank_information(
             self,
             get_application_details,
             get_all_application_ids_for_demarche_simplifiee,
@@ -343,7 +299,7 @@ class VenueBankInformationProviderProviderTest:
             siret="12345678912345",
             bic="BDFEFR2LCCB",
             iban="FR7630006000011234567890189",
-            id=2,
+            idx=2,
             updated_at="2020-04-17T12:56:57.529Z")
         offerer = create_offerer(siren='123456789')
         venue = create_venue(offerer, siret='12345678912345')
@@ -377,9 +333,9 @@ class VenueBankInformationProviderProviderTest:
         get_all_application_ids_for_demarche_simplifiee.return_value = [1]
         get_application_details.return_value = demarche_simplifiee_application_detail_response(
             siret="12345678912345",
-            bic="BDFEFR2LCCB",
-            iban="FR7630006000011234567890189",
-            id=2,
+            bic="bdfefR2LCCB",
+            iban="FR76 3000 6000 0112 3456 7890 189",
+            idx=2,
             updated_at="2020-04-17T12:56:57.529Z")
 
         offerer = create_offerer(siren='123456789')
@@ -397,51 +353,8 @@ class VenueBankInformationProviderProviderTest:
         assert bank_information.iban == 'FR7630006000011234567890189'
         assert bank_information.bic == 'BDFEFR2LCCB'
 
-    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID': 'procedure_id'})
-    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_TOKEN': 'token'})
-    @patch(
-        'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
-    @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
-    @clean_database
-    def test_provider_request_application_ids_using_correct_date(self,
-                                                                 get_application_details,
-                                                                 get_all_application_ids_for_demarche_simplifiee,
-                                                                 app):
-        # Given
-        get_all_application_ids_for_demarche_simplifiee.return_value = []
-        offerer = create_offerer(siren='793875030')
-        offerer2 = create_offerer(siren='793875019')
-        venue = create_venue(offerer, siret="79387503012345")
-        venue2 = create_venue(offerer2, siret="79387501912345")
-        bank_information = create_bank_information(id_at_providers='793875030',
-                                                   date_modified_at_last_provider=datetime(
-                                                       2019, 1, 1),
-                                                   last_provider_id=get_provider_by_local_class(
-                                                       'VenueBankInformationProvider').id,
-                                                   venue=venue)
-        bank_information2 = create_bank_information(id_at_providers='793875019',
-                                                    date_modified_at_last_provider=datetime(
-                                                        2020, 1, 1),
-                                                    last_provider_id=get_provider_by_local_class(
-                                                        'VenueBankInformationProvider').id,
-                                                    venue=venue2)
-        repository.save(bank_information, bank_information2)
-        activate_provider('VenueBankInformationProvider')
-        venue_bank_information_provider = VenueBankInformationProvider()
-
-        # When
-        venue_bank_information_provider.updateObjects()
-
-        # Then
-        get_all_application_ids_for_demarche_simplifiee.assert_called_once_with(
-            'procedure_id',
-            'token',
-            datetime(
-                2020, 1, 1)
-        )
-
-    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID': 'procedure_id'})
-    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_TOKEN': 'token'})
+    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID': '27456'})
+    @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_TOKEN': 'cvNjy0RhfULAE3TMMTCkAQmD5p7bVw3s'})
     @patch(
         'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
@@ -479,8 +392,8 @@ class VenueBankInformationProviderProviderTest:
 
         # Then
         get_all_application_ids_for_demarche_simplifiee.assert_called_once_with(
-            'procedure_id',
-            'token',
+            '27456',
+            'cvNjy0RhfULAE3TMMTCkAQmD5p7bVw3s',
             datetime(2019, 6, 1)
         )
 
@@ -493,7 +406,7 @@ class RetrieveBankInformationTest:
             siret="12345678912345",
             bic="BDFEFR2LCCB",
             iban="FR7630006000011234567890189",
-            id=1,
+            idx=1,
             updated_at="2020-04-17T12:56:57.529Z")
         offerer = create_offerer(siren='123456789')
         venue = create_venue(offerer, siret='12345678912345')
