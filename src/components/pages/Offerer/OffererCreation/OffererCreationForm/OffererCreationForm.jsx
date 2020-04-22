@@ -1,53 +1,70 @@
-import React from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Siren from '../Fields/Siren/Siren'
 import { NavLink } from 'react-router-dom'
 import { FormSpy } from 'react-final-form'
 
-function OffererCreationForm({ handleSubmit, invalid, pristine }) {
-  return (
-    <form onSubmit={handleSubmit}>
-      <div className="section">
-        <div className="op-creation-form">
-          <Siren />
-          <FormSpy
-            render={({ values }) => (
-              <div className="op-detail op-creation-form-detail">
-                <span>{'Désignation : '}</span>
-                {values.name && <span>{values.name}</span>}
-              </div>
-            )}
-          />
-          <FormSpy
-            render={({ values }) => (
-              <div className="op-detail op-creation-form-detail">
-                <span>{'Siège social : '}</span>
-                {values.postalCode && (
-                  <span>{`${values.address} - ${values.postalCode} ${values.city}`}</span>
-                )}
-              </div>
-            )}
-          />
-        </div>
-        <div className="offerer-form-validation" style={{ justifyContent: 'space-between' }}>
-          <div className="control">
-            <NavLink className="button is-secondary is-medium" to="/structures">
-              {'Retour'}
-            </NavLink>
-          </div>
-          <div className="control">
-            <button
-              className="button is-primary is-medium"
-              disabled={invalid || pristine}
-              type="submit"
-            >
-              {'Créer'}
-            </button>
-          </div>
-        </div>
-      </div>
-    </form>
+class OffererCreationForm extends Component {
+  shouldComponentUpdate() {
+    return true
+  }
+
+  renderAddress = ({ values }) => (
+    <div className="op-detail-creation-form">
+      <span>
+        {'Siège social : '}
+      </span>
+      {values.postalCode && (
+        <span>
+          {`${values.address} - ${values.postalCode} ${values.city}`}
+        </span>
+      )}
+    </div>
   )
+  renderName = ({ values }) => (
+    <div className="op-detail-creation-form">
+      <span>
+        {'Désignation : '}
+      </span>
+      {values.name && <span>
+        {values.name}
+                      </span>}
+    </div>
+  )
+
+  render() {
+    const { handleSubmit, invalid, pristine } = this.props
+    return (
+      <form onSubmit={handleSubmit}>
+        <div className="section">
+          <div className="op-creation-form">
+            <Siren />
+            <FormSpy render={this.renderName} />
+            <FormSpy render={this.renderAddress} />
+          </div>
+          <div className="offerer-form-validation">
+            <div className="control">
+              <NavLink
+                className="button is-secondary is-medium"
+                to="/structures"
+              >
+                {'Retour'}
+              </NavLink>
+            </div>
+            <div className="control">
+              <button
+                className="button is-primary is-medium"
+                disabled={invalid || pristine}
+                type="submit"
+              >
+                {'Créer'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    )
+  }
 }
 
 OffererCreationForm.propTypes = {

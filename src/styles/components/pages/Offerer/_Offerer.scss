@@ -20,6 +20,27 @@
     }
   }
 
+  .op-field-siren {
+    @extend .op-field;
+    display: flex;
+  }
+
+  .op-field-label-siren {
+    @extend .field-label;
+    flex: 0;
+    padding-bottom: 0;
+    margin: rem(6px) 0 0;
+  }
+
+  .op-field-control-siren {
+    flex: 1;
+    margin-bottom: rem(20px);
+  }
+
+  .op-field-error-siren {
+    position: absolute;
+  }
+
   .op-subtitle {
     margin-bottom: rem(25px);
   }
@@ -32,7 +53,8 @@
     margin: rem(60px) 0 rem(48px);
   }
 
-  .op-creation-form-detail {
+  .op-detail-creation-form {
+    @extend .op-detail;
     margin-bottom: rem(30px);
   }
 }
