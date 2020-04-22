@@ -12,12 +12,7 @@ from models.db import db
 from models.feature import FeatureToggle
 from repository.feature_queries import feature_write_dashboard_enabled
 from repository.provider_queries import get_provider_by_local_class
-<<<<<<< Updated upstream
-from repository.user_queries import \
-    find_most_recent_beneficiary_creation_date_by_procedure_id
-=======
 from repository.user_queries import find_most_recent_beneficiary_creation_date_for_procedure_id
->>>>>>> Stashed changes
 from scheduled_tasks.decorators import cron_context, cron_require_feature, \
     log_cron
 from scripts.beneficiary import old_remote_import, remote_import
