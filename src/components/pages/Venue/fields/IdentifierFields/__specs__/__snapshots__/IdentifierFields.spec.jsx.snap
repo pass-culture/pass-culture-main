@@ -148,7 +148,7 @@ ShallowWrapper {
             validating={false}
           />
           <div
-            className="field field-select is-horizontal"
+            className="field field-select is-horizontal readonly"
           >
             <div
               className="field-label is-normal"
@@ -157,11 +157,7 @@ ShallowWrapper {
                 className="label"
                 htmlFor="venue-type"
               >
-                <span
-                  className="subtitle"
-                >
-                  Type de lieu :
-                </span>
+                Type de lieu :
               </label>
             </div>
             <div
@@ -171,12 +167,13 @@ ShallowWrapper {
                 className="control control-select"
               >
                 <div
-                  className="select is-normal"
+                  className="select is-normal readonly"
                 >
                   <Field
-                    className=""
                     component="select"
-                    name="venue-type"
+                    disabled={true}
+                    id="venue-type"
+                    name="venueTypeId"
                   >
                     <option>
                       Choisissez un type de lieu dans la liste
@@ -329,7 +326,7 @@ ShallowWrapper {
               validating={false}
             />,
             <div
-              className="field field-select is-horizontal"
+              className="field field-select is-horizontal readonly"
             >
               <div
                 className="field-label is-normal"
@@ -338,11 +335,7 @@ ShallowWrapper {
                   className="label"
                   htmlFor="venue-type"
                 >
-                  <span
-                    className="subtitle"
-                  >
-                    Type de lieu :
-                  </span>
+                  Type de lieu :
                 </label>
               </div>
               <div
@@ -352,12 +345,13 @@ ShallowWrapper {
                   className="control control-select"
                 >
                   <div
-                    className="select is-normal"
+                    className="select is-normal readonly"
                   >
                     <Field
-                      className=""
                       component="select"
-                      name="venue-type"
+                      disabled={true}
+                      id="venue-type"
+                      name="venueTypeId"
                     >
                       <option>
                         Choisissez un type de lieu dans la liste
@@ -655,11 +649,7 @@ ShallowWrapper {
                     className="label"
                     htmlFor="venue-type"
                   >
-                    <span
-                      className="subtitle"
-                    >
-                      Type de lieu :
-                    </span>
+                    Type de lieu :
                   </label>
                 </div>,
                 <div
@@ -669,12 +659,13 @@ ShallowWrapper {
                     className="control control-select"
                   >
                     <div
-                      className="select is-normal"
+                      className="select is-normal readonly"
                     >
                       <Field
-                        className=""
                         component="select"
-                        name="venue-type"
+                        disabled={true}
+                        id="venue-type"
+                        name="venueTypeId"
                       >
                         <option>
                           Choisissez un type de lieu dans la liste
@@ -684,7 +675,7 @@ ShallowWrapper {
                   </div>
                 </div>,
               ],
-              "className": "field field-select is-horizontal",
+              "className": "field field-select is-horizontal readonly",
             },
             "ref": null,
             "rendered": Array [
@@ -697,11 +688,7 @@ ShallowWrapper {
                     className="label"
                     htmlFor="venue-type"
                   >
-                    <span
-                      className="subtitle"
-                    >
-                      Type de lieu :
-                    </span>
+                    Type de lieu :
                   </label>,
                   "className": "field-label is-normal",
                 },
@@ -711,27 +698,12 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": <span
-                      className="subtitle"
-                    >
-                      Type de lieu :
-                    </span>,
+                    "children": "Type de lieu :",
                     "className": "label",
                     "htmlFor": "venue-type",
                   },
                   "ref": null,
-                  "rendered": Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "host",
-                    "props": Object {
-                      "children": "Type de lieu :",
-                      "className": "subtitle",
-                    },
-                    "ref": null,
-                    "rendered": "Type de lieu :",
-                    "type": "span",
-                  },
+                  "rendered": "Type de lieu :",
                   "type": "label",
                 },
                 "type": "div",
@@ -745,12 +717,13 @@ ShallowWrapper {
                     className="control control-select"
                   >
                     <div
-                      className="select is-normal"
+                      className="select is-normal readonly"
                     >
                       <Field
-                        className=""
                         component="select"
-                        name="venue-type"
+                        disabled={true}
+                        id="venue-type"
+                        name="venueTypeId"
                       >
                         <option>
                           Choisissez un type de lieu dans la liste
@@ -767,12 +740,13 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": <div
-                      className="select is-normal"
+                      className="select is-normal readonly"
                     >
                       <Field
-                        className=""
                         component="select"
-                        name="venue-type"
+                        disabled={true}
+                        id="venue-type"
+                        name="venueTypeId"
                       >
                         <option>
                           Choisissez un type de lieu dans la liste
@@ -788,15 +762,16 @@ ShallowWrapper {
                     "nodeType": "host",
                     "props": Object {
                       "children": <Field
-                        className=""
                         component="select"
-                        name="venue-type"
+                        disabled={true}
+                        id="venue-type"
+                        name="venueTypeId"
                       >
                         <option>
                           Choisissez un type de lieu dans la liste
                         </option>
                       </Field>,
-                      "className": "select is-normal",
+                      "className": "select is-normal readonly",
                     },
                     "ref": null,
                     "rendered": Object {
@@ -810,9 +785,10 @@ ShallowWrapper {
                           </option>,
                           Array [],
                         ],
-                        "className": "",
                         "component": "select",
-                        "name": "venue-type",
+                        "disabled": true,
+                        "id": "venue-type",
+                        "name": "venueTypeId",
                       },
                       "ref": null,
                       "rendered": Array [
@@ -973,7 +949,7 @@ ShallowWrapper {
               validating={false}
             />
             <div
-              className="field field-select is-horizontal"
+              className="field field-select is-horizontal readonly"
             >
               <div
                 className="field-label is-normal"
@@ -982,11 +958,7 @@ ShallowWrapper {
                   className="label"
                   htmlFor="venue-type"
                 >
-                  <span
-                    className="subtitle"
-                  >
-                    Type de lieu :
-                  </span>
+                  Type de lieu :
                 </label>
               </div>
               <div
@@ -996,12 +968,13 @@ ShallowWrapper {
                   className="control control-select"
                 >
                   <div
-                    className="select is-normal"
+                    className="select is-normal readonly"
                   >
                     <Field
-                      className=""
                       component="select"
-                      name="venue-type"
+                      disabled={true}
+                      id="venue-type"
+                      name="venueTypeId"
                     >
                       <option>
                         Choisissez un type de lieu dans la liste
@@ -1154,7 +1127,7 @@ ShallowWrapper {
                 validating={false}
               />,
               <div
-                className="field field-select is-horizontal"
+                className="field field-select is-horizontal readonly"
               >
                 <div
                   className="field-label is-normal"
@@ -1163,11 +1136,7 @@ ShallowWrapper {
                     className="label"
                     htmlFor="venue-type"
                   >
-                    <span
-                      className="subtitle"
-                    >
-                      Type de lieu :
-                    </span>
+                    Type de lieu :
                   </label>
                 </div>
                 <div
@@ -1177,12 +1146,13 @@ ShallowWrapper {
                     className="control control-select"
                   >
                     <div
-                      className="select is-normal"
+                      className="select is-normal readonly"
                     >
                       <Field
-                        className=""
                         component="select"
-                        name="venue-type"
+                        disabled={true}
+                        id="venue-type"
+                        name="venueTypeId"
                       >
                         <option>
                           Choisissez un type de lieu dans la liste
@@ -1480,11 +1450,7 @@ ShallowWrapper {
                       className="label"
                       htmlFor="venue-type"
                     >
-                      <span
-                        className="subtitle"
-                      >
-                        Type de lieu :
-                      </span>
+                      Type de lieu :
                     </label>
                   </div>,
                   <div
@@ -1494,12 +1460,13 @@ ShallowWrapper {
                       className="control control-select"
                     >
                       <div
-                        className="select is-normal"
+                        className="select is-normal readonly"
                       >
                         <Field
-                          className=""
                           component="select"
-                          name="venue-type"
+                          disabled={true}
+                          id="venue-type"
+                          name="venueTypeId"
                         >
                           <option>
                             Choisissez un type de lieu dans la liste
@@ -1509,7 +1476,7 @@ ShallowWrapper {
                     </div>
                   </div>,
                 ],
-                "className": "field field-select is-horizontal",
+                "className": "field field-select is-horizontal readonly",
               },
               "ref": null,
               "rendered": Array [
@@ -1522,11 +1489,7 @@ ShallowWrapper {
                       className="label"
                       htmlFor="venue-type"
                     >
-                      <span
-                        className="subtitle"
-                      >
-                        Type de lieu :
-                      </span>
+                      Type de lieu :
                     </label>,
                     "className": "field-label is-normal",
                   },
@@ -1536,27 +1499,12 @@ ShallowWrapper {
                     "key": undefined,
                     "nodeType": "host",
                     "props": Object {
-                      "children": <span
-                        className="subtitle"
-                      >
-                        Type de lieu :
-                      </span>,
+                      "children": "Type de lieu :",
                       "className": "label",
                       "htmlFor": "venue-type",
                     },
                     "ref": null,
-                    "rendered": Object {
-                      "instance": null,
-                      "key": undefined,
-                      "nodeType": "host",
-                      "props": Object {
-                        "children": "Type de lieu :",
-                        "className": "subtitle",
-                      },
-                      "ref": null,
-                      "rendered": "Type de lieu :",
-                      "type": "span",
-                    },
+                    "rendered": "Type de lieu :",
                     "type": "label",
                   },
                   "type": "div",
@@ -1570,12 +1518,13 @@ ShallowWrapper {
                       className="control control-select"
                     >
                       <div
-                        className="select is-normal"
+                        className="select is-normal readonly"
                       >
                         <Field
-                          className=""
                           component="select"
-                          name="venue-type"
+                          disabled={true}
+                          id="venue-type"
+                          name="venueTypeId"
                         >
                           <option>
                             Choisissez un type de lieu dans la liste
@@ -1592,12 +1541,13 @@ ShallowWrapper {
                     "nodeType": "host",
                     "props": Object {
                       "children": <div
-                        className="select is-normal"
+                        className="select is-normal readonly"
                       >
                         <Field
-                          className=""
                           component="select"
-                          name="venue-type"
+                          disabled={true}
+                          id="venue-type"
+                          name="venueTypeId"
                         >
                           <option>
                             Choisissez un type de lieu dans la liste
@@ -1613,15 +1563,16 @@ ShallowWrapper {
                       "nodeType": "host",
                       "props": Object {
                         "children": <Field
-                          className=""
                           component="select"
-                          name="venue-type"
+                          disabled={true}
+                          id="venue-type"
+                          name="venueTypeId"
                         >
                           <option>
                             Choisissez un type de lieu dans la liste
                           </option>
                         </Field>,
-                        "className": "select is-normal",
+                        "className": "select is-normal readonly",
                       },
                       "ref": null,
                       "rendered": Object {
@@ -1635,9 +1586,10 @@ ShallowWrapper {
                             </option>,
                             Array [],
                           ],
-                          "className": "",
                           "component": "select",
-                          "name": "venue-type",
+                          "disabled": true,
+                          "id": "venue-type",
+                          "name": "venueTypeId",
                         },
                         "ref": null,
                         "rendered": Array [

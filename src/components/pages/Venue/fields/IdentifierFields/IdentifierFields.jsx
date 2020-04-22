@@ -11,6 +11,7 @@ import ReactTooltip from 'react-tooltip'
 import { removeWhitespaces } from 'react-final-form-utils'
 import { Field } from 'react-final-form'
 import VenueType from '../../ValueObjects/VenueType'
+import classnames from 'classnames'
 
 class IdentifierFields extends PureComponent {
   componentDidUpdate() {
@@ -160,25 +161,32 @@ class IdentifierFields extends PureComponent {
             rows={1}
             validate={this.commentValidate}
           />
-          <div className="field field-select is-horizontal">
+          <div
+            className={classnames('field field-select is-horizontal', {
+              readonly: readOnly,
+            })}
+          >
             <div className="field-label is-normal">
               <label
                 className="label"
                 htmlFor="venue-type"
               >
-                <span className="subtitle">
-                  {'Type de lieu :'}
-                </span>
+                {'Type de lieu :'}
               </label>
             </div>
 
             <div className="field-body">
               <div className="control control-select">
-                <div className="select is-normal">
+                <div
+                  className={classnames('select is-normal', {
+                    readonly: readOnly,
+                  })}
+                >
                   <Field
-                    className=""
                     component="select"
-                    name="venue-type"
+                    disabled={readOnly}
+                    id="venue-type"
+                    name="venueTypeId"
                   >
                     <option>
                       {'Choisissez un type de lieu dans la liste'}
