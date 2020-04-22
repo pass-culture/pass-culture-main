@@ -5,18 +5,19 @@ from typing import List, Set, Union
 from sqlalchemy import func
 from sqlalchemy.orm import Query
 
-from models.offer_type import EventType, ThingType
+from models import UserOfferer
+from models.api_errors import ResourceNotFoundError
 from models.booking import Booking
+from models.db import db
 from models.offer import Offer
+from models.offer_type import EventType, ThingType
 from models.offerer import Offerer
 from models.payment import Payment
 from models.recommendation import Recommendation
+from models.stock import EVENT_AUTOMATIC_REFUND_DELAY
 from models.stock import Stock
 from models.user import User
 from models.venue import Venue
-from models.api_errors import ResourceNotFoundError
-from models.db import db
-from models.stock import EVENT_AUTOMATIC_REFUND_DELAY
 from repository import offer_queries
 
 
@@ -139,12 +140,12 @@ def find_from_recommendation(recommendation: Recommendation, user: User) -> List
 
 def is_offer_already_booked_by_user(current_user: User, offer: Offer) -> bool:
     return Booking.query \
-            .filter_by(userId=current_user.id) \
-            .filter_by(isCancelled=False) \
-            .join(Stock) \
-            .join(Offer) \
-            .filter(Offer.id == offer.id) \
-            .count() > 0
+               .filter_by(userId=current_user.id) \
+               .filter_by(isCancelled=False) \
+               .join(Stock) \
+               .join(Offer) \
+               .filter(Offer.id == offer.id) \
+               .count() > 0
 
 
 def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
@@ -181,7 +182,15 @@ def find_by_id(booking_id: int) -> Booking:
 
 
 def find_by_pro_user_id(user_id: int) -> List[Booking]:
-    return []
+    return Booking.query \
+        .join(Stock) \
+        .join(Offer) \
+        .join(Venue) \
+        .join(Offerer) \
+        .join(UserOfferer) \
+        .filter(UserOfferer.userId == user_id) \
+        .filter(UserOfferer.validationToken == None) \
+        .all()
 
 
 def find_ongoing_bookings_by_stock(stock: Stock) -> List[Booking]:
@@ -221,7 +230,7 @@ def find_date_used(booking: Booking) -> datetime:
 
 def find_user_activation_booking(user: User) -> Booking:
     is_activation_offer = (Offer.type == str(ThingType.ACTIVATION)) | (
-        Offer.type == str(EventType.ACTIVATION))
+            Offer.type == str(EventType.ACTIVATION))
 
     return Booking.query \
         .join(User) \
@@ -301,11 +310,10 @@ def find_used_by_token(token: str) -> Booking:
 
 
 def count_not_cancelled_bookings_quantity_by_stock_id(stock_id: int) -> int:
-    bookings =  Booking.query \
+    bookings = Booking.query \
         .join(Stock) \
         .filter(Booking.isCancelled == False) \
         .filter(Booking.stockId == stock_id) \
         .all()
 
     return sum([booking.quantity for booking in bookings])
-

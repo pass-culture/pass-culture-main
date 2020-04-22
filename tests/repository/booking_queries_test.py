@@ -8,12 +8,13 @@ from models import Booking, EventType, ThingType
 from models.api_errors import ApiErrors, ResourceNotFoundError
 from models.stock import EVENT_AUTOMATIC_REFUND_DELAY
 from repository import booking_queries, repository
+from repository.booking_queries import find_by_pro_user_id
 from tests.conftest import clean_database
 from tests.model_creators.activity_creators import create_booking_activity, \
     save_all_activities
 from tests.model_creators.generic_creators import create_booking, \
     create_deposit, create_offerer, create_payment, create_recommendation, \
-    create_stock, create_user, create_venue
+    create_stock, create_user, create_venue, create_user_offerer
 from tests.model_creators.specific_creators import \
     create_offer_with_event_product, create_offer_with_thing_product, \
     create_stock_from_offer, create_stock_with_event_offer, \
@@ -440,7 +441,8 @@ class FindFinalOffererBookingsTest:
         create_deposit(user)
         offerer = create_offerer()
         venue = create_venue(offerer)
-        in_the_past_less_than_automatic_refund_delay = datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY + timedelta(days=1)
+        in_the_past_less_than_automatic_refund_delay = datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY + timedelta(
+            days=1)
         in_the_past_more_than_automatic_refund_delay = datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY
 
         event_stock_finished_more_than_automatic_refund_delay_ago = \
@@ -453,8 +455,10 @@ class FindFinalOffererBookingsTest:
                                           venue=venue,
                                           beginning_datetime=in_the_past_less_than_automatic_refund_delay,
                                           booking_limit_datetime=in_the_past_less_than_automatic_refund_delay)
-        event_booking1 = create_booking(user=user, is_used=False, stock=event_stock_finished_more_than_automatic_refund_delay_ago, venue=venue)
-        event_booking2 = create_booking(user=user, is_used=False, stock=event_stock_finished_less_than_automatic_refund_delay_ago, venue=venue)
+        event_booking1 = create_booking(user=user, is_used=False,
+                                        stock=event_stock_finished_more_than_automatic_refund_delay_ago, venue=venue)
+        event_booking2 = create_booking(user=user, is_used=False,
+                                        stock=event_stock_finished_less_than_automatic_refund_delay_ago, venue=venue)
         repository.save(event_booking1, event_booking2)
 
         # When
@@ -1607,7 +1611,7 @@ class IsOfferAlreadyBookedByUserTest:
         assert not is_offer_already_booked
 
     @clean_database
-    def test_should_return_false_when_there_is_a_booking_on_offer_but_from_different_user(self,app):
+    def test_should_return_false_when_there_is_a_booking_on_offer_but_from_different_user(self, app):
         # Given
         user = create_user()
         user2 = create_user()
@@ -1629,7 +1633,7 @@ class IsOfferAlreadyBookedByUserTest:
         user = create_user()
         create_deposit(user)
         offerer = create_offerer()
-        venue = create_venue(offerer,)
+        venue = create_venue(offerer, )
         offer = create_offer_with_event_product(venue)
         stock = create_stock_from_offer(offer)
         booking = create_booking(user=user, stock=stock, is_cancelled=True)
@@ -1640,7 +1644,6 @@ class IsOfferAlreadyBookedByUserTest:
 
         # Then
         assert not is_offer_already_booked
-
 
 
 class CountNotCancelledBookingsQuantityByStocksTest:
@@ -1691,3 +1694,75 @@ class CountNotCancelledBookingsQuantityByStocksTest:
         assert result == 0
 
 
+class FindByProUserIdTest:
+    @clean_database
+    def test_should_return_all_bookings_matching_all_offerers_linked_to_user(self, app):
+        # Given
+        beneficiary = create_user(email='beneficiary@example.com')
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        booking = create_booking(user=beneficiary, stock=stock)
+        offerer2 = create_offerer(siren='8765432')
+        user_offerer2 = create_user_offerer(user, offerer2)
+        venue2 = create_venue(offerer2, siret='8765432098765')
+        offer2 = create_offer_with_thing_product(venue2)
+        stock2 = create_stock(offer=offer2, price=0)
+        booking2 = create_booking(user=beneficiary, stock=stock2)
+        repository.save(user_offerer, user_offerer2, booking, booking2)
+
+        # When
+        bookings = find_by_pro_user_id(user.id)
+
+        # Then
+        assert set(bookings) == set([booking, booking2])
+
+    @clean_database
+    def test_should_return_only_expected_booking_attributes(self, app):
+        # Given
+        beneficiary = create_user(email='beneficiary@example.com',
+                                  first_name='Ron', last_name='Weasley')
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, thing_name='Harry Potter')
+        stock = create_stock(offer=offer, price=0)
+        yesterday = datetime.utcnow()
+        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF')
+        repository.save(user_offerer, booking)
+
+        # When
+        bookings = find_by_pro_user_id(user.id)
+
+        # Then
+        assert len(bookings) == 1
+        expected_booking = bookings[0]
+        assert expected_booking.offerName == 'Harry Potter'
+        assert expected_booking.beneficiaryFirstname == 'Ron'
+        assert expected_booking.beneficiaryLastname == 'Weasley'
+        assert expected_booking.beneficiaryEmail == 'beneficiary@example.com'
+        assert expected_booking.bookingDate == yesterday
+        assert expected_booking.bookingToken == 'ABCDEF'
+
+    @clean_database
+    def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app):
+        # Given
+        beneficiary = create_user(email='beneficiary@example.com')
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer, validation_token='token')
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        booking = create_booking(user=beneficiary, stock=stock)
+        repository.save(user_offerer, booking)
+
+        # When
+        bookings = find_by_pro_user_id(user.id)
+
+        # Then
+        assert bookings == []
