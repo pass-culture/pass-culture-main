@@ -115,6 +115,7 @@ class CreateBeneficiaryFromApplicationTest:
         assert beneficiary.resetPasswordTokenValidityLimit.date() == THIRTY_DAYS_FROM_NOW
         assert beneficiary.activity == 'Lycéen'
         assert beneficiary.civility == 'Mme'
+        assert beneficiary.hasSeenTutorials == False
 
     def test_a_deposit_is_made_for_the_new_beneficiary(self):
         # given

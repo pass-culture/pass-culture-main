@@ -57,6 +57,7 @@ def create_beneficiary_from_application(application_detail: dict) -> User:
     beneficiary.canBookFreeOffers = True
     beneficiary.isAdmin = False
     beneficiary.password = random_password()
+    beneficiary.hasSeenTutorials = False
     generate_reset_token(beneficiary, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
 
     deposit = Deposit()
