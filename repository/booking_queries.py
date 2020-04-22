@@ -201,11 +201,11 @@ def find_by_pro_user_id(user_id: int) -> List[BookingRecap]:
             Booking.dateCreated.label("bookingDate"),
         ) \
         .all()
-    bookings_recap = _to_bookings_recap(bookings)
+    bookings_recap = _bookings_sql_entities_to_bookings_recap(bookings)
     return bookings_recap
 
 
-def _to_bookings_recap(bookings: List[Booking]) -> List[BookingRecap]:
+def _bookings_sql_entities_to_bookings_recap(bookings: List[Booking]) -> List[BookingRecap]:
     bookings_recap = []
     for booking in bookings:
         bookings_recap.append(

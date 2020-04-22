@@ -2,20 +2,13 @@ from models import User
 
 
 def check_user_is_not_admin(user: User):
-    if user.isAdmin is True:
+    if user.isAdmin:
         raise UnauthorizedForAdminUser()
 
 
 class ClientError(Exception):
     def __init__(self, field: str, error: str):
-        self.errors = {}
-        self.errors[field] = [error]
-
-    def add_error(self, field, error):
-        if field in self.errors:
-            self.errors[field].append(error)
-        else:
-            self.errors[field] = [error]
+        self.errors = {field: [error]}
 
 
 class UnauthorizedForAdminUser(ClientError):

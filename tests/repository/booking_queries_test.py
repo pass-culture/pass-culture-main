@@ -1633,7 +1633,7 @@ class IsOfferAlreadyBookedByUserTest:
         user = create_user()
         create_deposit(user)
         offerer = create_offerer()
-        venue = create_venue(offerer, )
+        venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock_from_offer(offer)
         booking = create_booking(user=user, stock=stock, is_cancelled=True)

@@ -1,13 +1,14 @@
 from datetime import datetime
 from itertools import chain
-from typing import Union, Dict
+from typing import Union, Dict, List
 
 import dateutil
-from flask import current_app as app
+from flask import current_app as app, json
 from flask import jsonify, request
 from flask_login import current_user, login_required
 
 from connectors import redis
+from domain.booking_recap.booking_recap import BookingRecap
 from domain.bookings import generate_bookings_details_csv
 from domain.user_activation import create_initial_deposit, is_activation_booking
 from domain.user_emails import send_activation_email, \
@@ -22,6 +23,7 @@ from repository.user_offerer_queries import \
 from routes.serialization import as_dict, serialize, serialize_booking
 from use_cases.book_an_offer import book_an_offer, BookingInformation
 from use_cases.get_all_bookings_by_pro_user import get_all_bookings_by_pro_user
+from utils.date import format_into_ISO_8601
 from utils.human_ids import dehumanize, humanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, \
     WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES, \
@@ -105,8 +107,22 @@ def get_bookings_csv():
 @app.route('/bookings/pro', methods=['GET'])
 @login_required
 def get_all_bookings():
-    get_all_bookings_by_pro_user(current_user.id)
-    return '', 200
+    bookings_recap = get_all_bookings_by_pro_user(current_user.id)
+    return _serialize_bookings_recap(bookings_recap), 200
+
+
+def _serialize_bookings_recap(bookings_recap: List[BookingRecap]) -> json:
+    serialized_bookings_recap = []
+    for booking in bookings_recap:
+        serialized_bookings_recap.append({
+            "offer_name": booking.offer_name,
+            "beneficiary_lastname": booking.beneficiary_lastname,
+            "beneficiary_firstname": booking.beneficiary_firstname,
+            "beneficiary_email": booking.beneficiary_email,
+            "booking_token": booking.booking_token,
+            "booking_date": format_into_ISO_8601(booking.booking_date)
+        })
+    return jsonify(serialized_bookings_recap)
 
 
 @app.route('/bookings', methods=['GET'])

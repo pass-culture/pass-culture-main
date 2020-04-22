@@ -71,8 +71,7 @@ def check_can_book_free_offer(user: User, stock: Stock):
 
 class ClientError(Exception):
     def __init__(self, field: str, error: str):
-        self.errors = {}
-        self.errors[field] = [error]
+        self.errors = {field: [error]}
 
     def add_error(self, field, error):
         if field in self.errors:
