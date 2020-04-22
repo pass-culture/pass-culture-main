@@ -1,5 +1,5 @@
 import { mapStateToProps } from '../BankFieldsContainer'
-import state from '../../../../../utils/mocks/state'
+import state from '../../../../../../utils/mocks/state'
 
 describe('src | components | pages | Venue | fields | BankFieldsContainer', () => {
   describe('mapStateToProps', () => {

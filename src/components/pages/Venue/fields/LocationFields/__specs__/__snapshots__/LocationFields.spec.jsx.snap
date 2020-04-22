@@ -39,7 +39,7 @@ ShallowWrapper {
             validator={[Function]}
           />
           <AddressField
-            className=""
+            className="vp-field"
             disabled={false}
             form={Object {}}
             format={null}
@@ -57,7 +57,7 @@ ShallowWrapper {
           />
           <TextField
             autoComplete="postal-code"
-            className=""
+            className="vp-field"
             disabled={false}
             format={null}
             id={null}
@@ -76,7 +76,7 @@ ShallowWrapper {
           />
           <TextField
             autoComplete="address-level2"
-            className=""
+            className="vp-field"
             disabled={false}
             format={null}
             id={null}
@@ -94,6 +94,7 @@ ShallowWrapper {
             validate={null}
           />
           <NumberField
+            className="vp-field"
             innerClassName="col-33"
             label="Latitude : "
             name="latitude"
@@ -101,6 +102,7 @@ ShallowWrapper {
             required={true}
           />
           <NumberField
+            className="vp-field"
             innerClassName="col-33"
             label="Longitude : "
             name="longitude"
@@ -136,7 +138,7 @@ ShallowWrapper {
               validator={[Function]}
             />,
             <AddressField
-              className=""
+              className="vp-field"
               disabled={false}
               form={Object {}}
               format={null}
@@ -154,7 +156,7 @@ ShallowWrapper {
             />,
             <TextField
               autoComplete="postal-code"
-              className=""
+              className="vp-field"
               disabled={false}
               format={null}
               id={null}
@@ -173,7 +175,7 @@ ShallowWrapper {
             />,
             <TextField
               autoComplete="address-level2"
-              className=""
+              className="vp-field"
               disabled={false}
               format={null}
               id={null}
@@ -191,6 +193,7 @@ ShallowWrapper {
               validate={null}
             />,
             <NumberField
+              className="vp-field"
               innerClassName="col-33"
               label="Latitude : "
               name="latitude"
@@ -198,6 +201,7 @@ ShallowWrapper {
               required={true}
             />,
             <NumberField
+              className="vp-field"
               innerClassName="col-33"
               label="Longitude : "
               name="longitude"
@@ -226,7 +230,7 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "function",
             "props": Object {
-              "className": "",
+              "className": "vp-field",
               "disabled": false,
               "form": Object {},
               "format": null,
@@ -252,7 +256,7 @@ ShallowWrapper {
             "nodeType": "class",
             "props": Object {
               "autoComplete": "postal-code",
-              "className": "",
+              "className": "vp-field",
               "disabled": false,
               "format": null,
               "id": null,
@@ -279,7 +283,7 @@ ShallowWrapper {
             "nodeType": "class",
             "props": Object {
               "autoComplete": "address-level2",
-              "className": "",
+              "className": "vp-field",
               "disabled": false,
               "format": null,
               "id": null,
@@ -305,6 +309,7 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "function",
             "props": Object {
+              "className": "vp-field",
               "innerClassName": "col-33",
               "label": "Latitude : ",
               "name": "latitude",
@@ -320,6 +325,7 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "function",
             "props": Object {
+              "className": "vp-field",
               "innerClassName": "col-33",
               "label": "Longitude : ",
               "name": "longitude",
@@ -356,7 +362,7 @@ ShallowWrapper {
               validator={[Function]}
             />
             <AddressField
-              className=""
+              className="vp-field"
               disabled={false}
               form={Object {}}
               format={null}
@@ -374,7 +380,7 @@ ShallowWrapper {
             />
             <TextField
               autoComplete="postal-code"
-              className=""
+              className="vp-field"
               disabled={false}
               format={null}
               id={null}
@@ -393,7 +399,7 @@ ShallowWrapper {
             />
             <TextField
               autoComplete="address-level2"
-              className=""
+              className="vp-field"
               disabled={false}
               format={null}
               id={null}
@@ -411,6 +417,7 @@ ShallowWrapper {
               validate={null}
             />
             <NumberField
+              className="vp-field"
               innerClassName="col-33"
               label="Latitude : "
               name="latitude"
@@ -418,6 +425,7 @@ ShallowWrapper {
               required={true}
             />
             <NumberField
+              className="vp-field"
               innerClassName="col-33"
               label="Longitude : "
               name="longitude"
@@ -453,7 +461,7 @@ ShallowWrapper {
                 validator={[Function]}
               />,
               <AddressField
-                className=""
+                className="vp-field"
                 disabled={false}
                 form={Object {}}
                 format={null}
@@ -471,7 +479,7 @@ ShallowWrapper {
               />,
               <TextField
                 autoComplete="postal-code"
-                className=""
+                className="vp-field"
                 disabled={false}
                 format={null}
                 id={null}
@@ -490,7 +498,7 @@ ShallowWrapper {
               />,
               <TextField
                 autoComplete="address-level2"
-                className=""
+                className="vp-field"
                 disabled={false}
                 format={null}
                 id={null}
@@ -508,6 +516,7 @@ ShallowWrapper {
                 validate={null}
               />,
               <NumberField
+                className="vp-field"
                 innerClassName="col-33"
                 label="Latitude : "
                 name="latitude"
@@ -515,6 +524,7 @@ ShallowWrapper {
                 required={true}
               />,
               <NumberField
+                className="vp-field"
                 innerClassName="col-33"
                 label="Longitude : "
                 name="longitude"
@@ -543,7 +553,7 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "function",
               "props": Object {
-                "className": "",
+                "className": "vp-field",
                 "disabled": false,
                 "form": Object {},
                 "format": null,
@@ -569,7 +579,7 @@ ShallowWrapper {
               "nodeType": "class",
               "props": Object {
                 "autoComplete": "postal-code",
-                "className": "",
+                "className": "vp-field",
                 "disabled": false,
                 "format": null,
                 "id": null,
@@ -596,7 +606,7 @@ ShallowWrapper {
               "nodeType": "class",
               "props": Object {
                 "autoComplete": "address-level2",
-                "className": "",
+                "className": "vp-field",
                 "disabled": false,
                 "format": null,
                 "id": null,
@@ -622,6 +632,7 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "function",
               "props": Object {
+                "className": "vp-field",
                 "innerClassName": "col-33",
                 "label": "Latitude : ",
                 "name": "latitude",
@@ -637,6 +648,7 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "function",
               "props": Object {
+                "className": "vp-field",
                 "innerClassName": "col-33",
                 "label": "Longitude : ",
                 "name": "longitude",

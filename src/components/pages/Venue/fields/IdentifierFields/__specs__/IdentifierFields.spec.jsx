@@ -43,7 +43,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       // then
       const mainListTitle = wrapper.find('.main-list-title')
       expect(mainListTitle).toHaveLength(1)
-      expect(mainListTitle.text()).toBe('INFORMATIONS DU LIEU')
+      expect(mainListTitle.text()).toBe('Informations lieu')
 
       const textFields = wrapper.find(TextField)
       expect(textFields).toHaveLength(4)
@@ -111,10 +111,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         const wrapper = shallow(<IdentifierFields {...props} />)
 
         // then
-        const label = wrapper
-          .find('label')
-          .at(0)
-          .text()
+        const label = wrapper.find('label').at(0).text()
         expect(label).toBe('SIRET du lieu qui accueille vos offres (si applicable) : ')
       })
 
@@ -129,10 +126,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         const wrapper = shallow(<IdentifierFields {...props} />)
 
         // then
-        const label = wrapper
-          .find('label')
-          .at(0)
-          .text()
+        const label = wrapper.find('label').at(0).text()
         expect(label).toBe('SIRET : ')
       })
     })

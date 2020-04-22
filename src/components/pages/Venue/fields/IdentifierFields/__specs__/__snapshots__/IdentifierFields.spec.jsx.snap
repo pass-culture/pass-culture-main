@@ -29,7 +29,7 @@ ShallowWrapper {
         <h2
           className="main-list-title is-relative"
         >
-          INFORMATIONS DU LIEU
+          Informations lieu
         </h2>,
         <div
           className="field-group"
@@ -60,7 +60,7 @@ ShallowWrapper {
               </React.Fragment>
             </label>
             <TextField
-              className=""
+              className="vp-field"
               disabled={false}
               format={[Function]}
               id={null}
@@ -79,7 +79,7 @@ ShallowWrapper {
             />
           </div>
           <TextField
-            className=""
+            className="vp-field"
             disabled={false}
             format={null}
             id={null}
@@ -115,7 +115,7 @@ ShallowWrapper {
             validate={null}
           />
           <TextField
-            className=""
+            className="vp-field"
             disabled={false}
             format={null}
             id={null}
@@ -134,7 +134,7 @@ ShallowWrapper {
           />
           <TextareaField
             autoComplete={false}
-            className=""
+            className="vp-field"
             disabled={false}
             label="Commentaire (si pas de SIRET) : "
             maxLength={1000}
@@ -158,14 +158,14 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            "INFORMATIONS DU LIEU",
+            "Informations lieu",
             false,
           ],
           "className": "main-list-title is-relative",
         },
         "ref": null,
         "rendered": Array [
-          "INFORMATIONS DU LIEU",
+          "Informations lieu",
           false,
         ],
         "type": "h2",
@@ -202,7 +202,7 @@ ShallowWrapper {
                 </React.Fragment>
               </label>
               <TextField
-                className=""
+                className="vp-field"
                 disabled={false}
                 format={[Function]}
                 id={null}
@@ -221,7 +221,7 @@ ShallowWrapper {
               />
             </div>,
             <TextField
-              className=""
+              className="vp-field"
               disabled={false}
               format={null}
               id={null}
@@ -257,7 +257,7 @@ ShallowWrapper {
               validate={null}
             />,
             <TextField
-              className=""
+              className="vp-field"
               disabled={false}
               format={null}
               id={null}
@@ -276,7 +276,7 @@ ShallowWrapper {
             />,
             <TextareaField
               autoComplete={false}
-              className=""
+              className="vp-field"
               disabled={false}
               label="Commentaire (si pas de SIRET) : "
               maxLength={1000}
@@ -330,7 +330,7 @@ ShallowWrapper {
                   </React.Fragment>
                 </label>,
                 <TextField
-                  className=""
+                  className="vp-field"
                   disabled={false}
                   format={[Function]}
                   id={null}
@@ -439,7 +439,7 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "class",
                 "props": Object {
-                  "className": "",
+                  "className": "vp-field",
                   "disabled": false,
                   "format": [Function],
                   "id": null,
@@ -468,7 +468,7 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "class",
             "props": Object {
-              "className": "",
+              "className": "vp-field",
               "disabled": false,
               "format": null,
               "id": null,
@@ -520,7 +520,7 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "class",
             "props": Object {
-              "className": "",
+              "className": "vp-field",
               "disabled": false,
               "format": null,
               "id": null,
@@ -547,7 +547,7 @@ ShallowWrapper {
             "nodeType": "class",
             "props": Object {
               "autoComplete": false,
-              "className": "",
+              "className": "vp-field",
               "disabled": false,
               "label": "Commentaire (si pas de SIRET) : ",
               "maxLength": 1000,
@@ -579,7 +579,7 @@ ShallowWrapper {
           <h2
             className="main-list-title is-relative"
           >
-            INFORMATIONS DU LIEU
+            Informations lieu
           </h2>,
           <div
             className="field-group"
@@ -610,7 +610,7 @@ ShallowWrapper {
                 </React.Fragment>
               </label>
               <TextField
-                className=""
+                className="vp-field"
                 disabled={false}
                 format={[Function]}
                 id={null}
@@ -629,7 +629,7 @@ ShallowWrapper {
               />
             </div>
             <TextField
-              className=""
+              className="vp-field"
               disabled={false}
               format={null}
               id={null}
@@ -665,7 +665,7 @@ ShallowWrapper {
               validate={null}
             />
             <TextField
-              className=""
+              className="vp-field"
               disabled={false}
               format={null}
               id={null}
@@ -684,7 +684,7 @@ ShallowWrapper {
             />
             <TextareaField
               autoComplete={false}
-              className=""
+              className="vp-field"
               disabled={false}
               label="Commentaire (si pas de SIRET) : "
               maxLength={1000}
@@ -708,14 +708,14 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              "INFORMATIONS DU LIEU",
+              "Informations lieu",
               false,
             ],
             "className": "main-list-title is-relative",
           },
           "ref": null,
           "rendered": Array [
-            "INFORMATIONS DU LIEU",
+            "Informations lieu",
             false,
           ],
           "type": "h2",
@@ -752,7 +752,7 @@ ShallowWrapper {
                   </React.Fragment>
                 </label>
                 <TextField
-                  className=""
+                  className="vp-field"
                   disabled={false}
                   format={[Function]}
                   id={null}
@@ -771,7 +771,7 @@ ShallowWrapper {
                 />
               </div>,
               <TextField
-                className=""
+                className="vp-field"
                 disabled={false}
                 format={null}
                 id={null}
@@ -807,7 +807,7 @@ ShallowWrapper {
                 validate={null}
               />,
               <TextField
-                className=""
+                className="vp-field"
                 disabled={false}
                 format={null}
                 id={null}
@@ -826,7 +826,7 @@ ShallowWrapper {
               />,
               <TextareaField
                 autoComplete={false}
-                className=""
+                className="vp-field"
                 disabled={false}
                 label="Commentaire (si pas de SIRET) : "
                 maxLength={1000}
@@ -880,7 +880,7 @@ ShallowWrapper {
                     </React.Fragment>
                   </label>,
                   <TextField
-                    className=""
+                    className="vp-field"
                     disabled={false}
                     format={[Function]}
                     id={null}
@@ -989,7 +989,7 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "class",
                   "props": Object {
-                    "className": "",
+                    "className": "vp-field",
                     "disabled": false,
                     "format": [Function],
                     "id": null,
@@ -1018,7 +1018,7 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "class",
               "props": Object {
-                "className": "",
+                "className": "vp-field",
                 "disabled": false,
                 "format": null,
                 "id": null,
@@ -1070,7 +1070,7 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "class",
               "props": Object {
-                "className": "",
+                "className": "vp-field",
                 "disabled": false,
                 "format": null,
                 "id": null,
@@ -1097,7 +1097,7 @@ ShallowWrapper {
               "nodeType": "class",
               "props": Object {
                 "autoComplete": false,
-                "className": "",
+                "className": "vp-field",
                 "disabled": false,
                 "label": "Commentaire (si pas de SIRET) : ",
                 "maxLength": 1000,

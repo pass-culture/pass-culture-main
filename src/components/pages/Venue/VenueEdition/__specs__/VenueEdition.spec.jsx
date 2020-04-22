@@ -190,7 +190,10 @@ describe('src | components | pages | Venue', () => {
           let wrapper = mount(
             <Provider store={store}>
               <Router history={history}>
-                <VenueEdition {...props} history={history} />
+                <VenueEdition
+                  {...props}
+                  history={history}
+                />
               </Router>
             </Provider>
           )
