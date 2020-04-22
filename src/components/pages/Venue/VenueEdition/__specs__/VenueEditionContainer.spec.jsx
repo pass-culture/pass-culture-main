@@ -183,6 +183,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
           body: {
             comment: 'Commentaire',
             address: '3 Place Saint-Michel',
+            venueTypeId: null,
           },
           handleFail: handleFail,
           handleSuccess: handleSuccess,
@@ -227,7 +228,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
           publicName: '',
           postalCode: '75008',
           siret: '25687265176',
-          'venue-type': 'BA',
+          venueTypeId: 'BA',
         }
 
         const handleFail = jest.fn()
@@ -252,7 +253,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
           name: 'Théatre Saint-Michel',
           postalCode: '75008',
           siret: '25687265176',
-          'venue-type': 'BA',
+          venueTypeId: 'BA',
         })
       })
     })
@@ -295,7 +296,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
           publicName: '',
           postalCode: '75008',
           siret: '25687265176',
-          'venue-type': 'BA',
+          venueTypeId: 'BA',
         }
 
         const handleFail = jest.fn()
@@ -320,7 +321,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
           name: 'Théatre Saint-Michel',
           postalCode: '75008',
           siret: '25687265176',
-          'venue-type': 'BA',
+          venueTypeId: 'BA',
         })
       })
     })

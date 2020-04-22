@@ -4,15 +4,14 @@ import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 import { selectOffererById } from '../../../../selectors/data/offerersSelectors'
 import { offererNormalizer, venueNormalizer } from '../../../../utils/normalizers'
-import { pick } from '../../../../utils/pick'
 import { withRequiredLogin } from '../../../hocs'
 import { CREATION } from '../../../hocs/withFrenchQueryRouter'
 import withTracking from '../../../hocs/withTracking'
 import NotificationMessage from '../Notification'
-import { VENUE_CREATION_PATCH_KEYS } from '../utils/utils'
 import VenueCreation from './VenueCreation'
 import { selectVenueTypes } from '../../../../selectors/data/venueTypesSelectors'
 import VenueType from '../ValueObjects/VenueType'
+import { formatVenuePayload } from '../utils/formatVenuePayload'
 
 export const mapStateToProps = (
   state,
@@ -63,7 +62,8 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
 
     handleSubmitRequest: ({ formValues, handleFail, handleSuccess }) => {
       const apiPath = '/venues/'
-      const body = pick(formValues, VENUE_CREATION_PATCH_KEYS)
+
+      const body = formatVenuePayload(formValues, true)
 
       dispatch(
         requestData({

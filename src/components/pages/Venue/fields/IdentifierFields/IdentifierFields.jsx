@@ -188,7 +188,7 @@ class IdentifierFields extends PureComponent {
                     id="venue-type"
                     name="venueTypeId"
                   >
-                    <option>
+                    <option value="">
                       {'Choisissez un type de lieu dans la liste'}
                     </option>
                     {venueTypes.map(venueType => (

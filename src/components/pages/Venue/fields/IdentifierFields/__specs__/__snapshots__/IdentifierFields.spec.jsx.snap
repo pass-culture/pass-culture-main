@@ -175,7 +175,9 @@ ShallowWrapper {
                     id="venue-type"
                     name="venueTypeId"
                   >
-                    <option>
+                    <option
+                      value=""
+                    >
                       Choisissez un type de lieu dans la liste
                     </option>
                   </Field>
@@ -353,7 +355,9 @@ ShallowWrapper {
                       id="venue-type"
                       name="venueTypeId"
                     >
-                      <option>
+                      <option
+                        value=""
+                      >
                         Choisissez un type de lieu dans la liste
                       </option>
                     </Field>
@@ -667,7 +671,9 @@ ShallowWrapper {
                         id="venue-type"
                         name="venueTypeId"
                       >
-                        <option>
+                        <option
+                          value=""
+                        >
                           Choisissez un type de lieu dans la liste
                         </option>
                       </Field>
@@ -725,7 +731,9 @@ ShallowWrapper {
                         id="venue-type"
                         name="venueTypeId"
                       >
-                        <option>
+                        <option
+                          value=""
+                        >
                           Choisissez un type de lieu dans la liste
                         </option>
                       </Field>
@@ -748,7 +756,9 @@ ShallowWrapper {
                         id="venue-type"
                         name="venueTypeId"
                       >
-                        <option>
+                        <option
+                          value=""
+                        >
                           Choisissez un type de lieu dans la liste
                         </option>
                       </Field>
@@ -767,7 +777,9 @@ ShallowWrapper {
                         id="venue-type"
                         name="venueTypeId"
                       >
-                        <option>
+                        <option
+                          value=""
+                        >
                           Choisissez un type de lieu dans la liste
                         </option>
                       </Field>,
@@ -780,7 +792,9 @@ ShallowWrapper {
                       "nodeType": "function",
                       "props": Object {
                         "children": Array [
-                          <option>
+                          <option
+                            value=""
+                          >
                             Choisissez un type de lieu dans la liste
                           </option>,
                           Array [],
@@ -798,6 +812,7 @@ ShallowWrapper {
                           "nodeType": "host",
                           "props": Object {
                             "children": "Choisissez un type de lieu dans la liste",
+                            "value": "",
                           },
                           "ref": null,
                           "rendered": "Choisissez un type de lieu dans la liste",
@@ -976,7 +991,9 @@ ShallowWrapper {
                       id="venue-type"
                       name="venueTypeId"
                     >
-                      <option>
+                      <option
+                        value=""
+                      >
                         Choisissez un type de lieu dans la liste
                       </option>
                     </Field>
@@ -1154,7 +1171,9 @@ ShallowWrapper {
                         id="venue-type"
                         name="venueTypeId"
                       >
-                        <option>
+                        <option
+                          value=""
+                        >
                           Choisissez un type de lieu dans la liste
                         </option>
                       </Field>
@@ -1468,7 +1487,9 @@ ShallowWrapper {
                           id="venue-type"
                           name="venueTypeId"
                         >
-                          <option>
+                          <option
+                            value=""
+                          >
                             Choisissez un type de lieu dans la liste
                           </option>
                         </Field>
@@ -1526,7 +1547,9 @@ ShallowWrapper {
                           id="venue-type"
                           name="venueTypeId"
                         >
-                          <option>
+                          <option
+                            value=""
+                          >
                             Choisissez un type de lieu dans la liste
                           </option>
                         </Field>
@@ -1549,7 +1572,9 @@ ShallowWrapper {
                           id="venue-type"
                           name="venueTypeId"
                         >
-                          <option>
+                          <option
+                            value=""
+                          >
                             Choisissez un type de lieu dans la liste
                           </option>
                         </Field>
@@ -1568,7 +1593,9 @@ ShallowWrapper {
                           id="venue-type"
                           name="venueTypeId"
                         >
-                          <option>
+                          <option
+                            value=""
+                          >
                             Choisissez un type de lieu dans la liste
                           </option>
                         </Field>,
@@ -1581,7 +1608,9 @@ ShallowWrapper {
                         "nodeType": "function",
                         "props": Object {
                           "children": Array [
-                            <option>
+                            <option
+                              value=""
+                            >
                               Choisissez un type de lieu dans la liste
                             </option>,
                             Array [],
@@ -1599,6 +1628,7 @@ ShallowWrapper {
                             "nodeType": "host",
                             "props": Object {
                               "children": "Choisissez un type de lieu dans la liste",
+                              "value": "",
                             },
                             "ref": null,
                             "rendered": "Choisissez un type de lieu dans la liste",

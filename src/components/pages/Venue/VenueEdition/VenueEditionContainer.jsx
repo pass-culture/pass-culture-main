@@ -5,13 +5,12 @@ import { requestData } from 'redux-saga-data'
 import { selectOffererById } from '../../../../selectors/data/offerersSelectors'
 import { selectVenueById } from '../../../../selectors/data/venuesSelectors'
 import { offererNormalizer, venueNormalizer } from '../../../../utils/normalizers'
-import { pick } from '../../../../utils/pick'
 import { withRequiredLogin } from '../../../hocs'
 import withTracking from '../../../hocs/withTracking'
-import { VENUE_MODIFICATION_PATCH_KEYS } from '../utils/utils'
 import VenueEdition from './VenueEdition'
 import { selectVenueTypes } from '../../../../selectors/data/venueTypesSelectors'
 import VenueType from '../ValueObjects/VenueType'
+import { formatVenuePayload } from "../utils/formatVenuePayload";
 
 export const mapStateToProps = (
   state,
@@ -55,10 +54,12 @@ export const mapDispatchToProps = (
     },
 
     handleSubmitRequest: ({ formValues, handleFail, handleSuccess }) => {
+      const body = formatVenuePayload(formValues, false)
+
       dispatch(
         requestData({
           apiPath: `/venues/${venueId}`,
-          body: pick(formValues, VENUE_MODIFICATION_PATCH_KEYS),
+          body: body,
           handleFail,
           handleSuccess,
           method: 'PATCH',

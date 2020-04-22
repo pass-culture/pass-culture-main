@@ -7,7 +7,7 @@ describe('src | selectors | data | venuesSelectors', () => {
         // Given
         const store = {
           data: {
-            "venue-types": [{ id: 1 }, { id: 2 }],
+            'venue-types': [{ id: 1 }, { id: 2 }],
           },
         }
 
@@ -16,12 +16,11 @@ describe('src | selectors | data | venuesSelectors', () => {
       })
     })
 
-    describe('when venue-types attribute does not not', () => {
+    describe('when venue-types attribute does not exist', () => {
       it('should return an empty array', () => {
         // Given
         const store = {
-          data: {
-          },
+          data: {},
         }
 
         // Then
