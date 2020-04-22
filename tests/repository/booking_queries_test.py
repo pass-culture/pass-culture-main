@@ -1696,31 +1696,6 @@ class CountNotCancelledBookingsQuantityByStocksTest:
 
 class FindByProUserIdTest:
     @clean_database
-    def test_should_return_all_bookings_matching_all_offerers_linked_to_user(self, app):
-        # Given
-        beneficiary = create_user(email='beneficiary@example.com')
-        user = create_user()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock(offer=offer, price=0)
-        booking = create_booking(user=beneficiary, stock=stock)
-        offerer2 = create_offerer(siren='8765432')
-        user_offerer2 = create_user_offerer(user, offerer2)
-        venue2 = create_venue(offerer2, siret='8765432098765')
-        offer2 = create_offer_with_thing_product(venue2)
-        stock2 = create_stock(offer=offer2, price=0)
-        booking2 = create_booking(user=beneficiary, stock=stock2)
-        repository.save(user_offerer, user_offerer2, booking, booking2)
-
-        # When
-        bookings = find_by_pro_user_id(user.id)
-
-        # Then
-        assert set(bookings) == set([booking, booking2])
-
-    @clean_database
     def test_should_return_only_expected_booking_attributes(self, app):
         # Given
         beneficiary = create_user(email='beneficiary@example.com',
@@ -1736,17 +1711,43 @@ class FindByProUserIdTest:
         repository.save(user_offerer, booking)
 
         # When
-        bookings = find_by_pro_user_id(user.id)
+        bookings_recap = find_by_pro_user_id(user.id)
 
         # Then
-        assert len(bookings) == 1
-        expected_booking = bookings[0]
-        assert expected_booking.offerName == 'Harry Potter'
-        assert expected_booking.beneficiaryFirstname == 'Ron'
-        assert expected_booking.beneficiaryLastname == 'Weasley'
-        assert expected_booking.beneficiaryEmail == 'beneficiary@example.com'
-        assert expected_booking.bookingDate == yesterday
-        assert expected_booking.bookingToken == 'ABCDEF'
+        assert len(bookings_recap) == 1
+        expected_booking_recap = bookings_recap[0]
+        assert expected_booking_recap.offer_name == 'Harry Potter'
+        assert expected_booking_recap.beneficiary_firstname == 'Ron'
+        assert expected_booking_recap.beneficiary_lastname == 'Weasley'
+        assert expected_booking_recap.beneficiary_email == 'beneficiary@example.com'
+        assert expected_booking_recap.booking_date == yesterday
+        assert expected_booking_recap.booking_token == 'ABCDEF'
+
+    @clean_database
+    def test_should_return_all_bookings_matching_all_offerers_linked_to_user(self, app):
+        # Given
+        beneficiary = create_user(email='beneficiary@example.com', first_name="Hermione", last_name="Granger")
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        today = datetime.utcnow()
+        booking = create_booking(user=beneficiary, stock=stock, token="ABCD", date_created=today)
+        offerer2 = create_offerer(siren='8765432')
+        user_offerer2 = create_user_offerer(user, offerer2)
+        venue2 = create_venue(offerer2, siret='8765432098765')
+        offer2 = create_offer_with_thing_product(venue2)
+        stock2 = create_stock(offer=offer2, price=0)
+        booking2 = create_booking(user=beneficiary, stock=stock2, token="FGHI", date_created=today)
+        repository.save(user_offerer, user_offerer2, booking, booking2)
+
+        # When
+        bookings_recap = find_by_pro_user_id(user.id)
+
+        # Then
+        assert len(bookings_recap) == 2
 
     @clean_database
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app):

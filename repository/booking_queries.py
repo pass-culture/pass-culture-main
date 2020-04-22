@@ -5,6 +5,7 @@ from typing import List, Set, Union
 from sqlalchemy import func
 from sqlalchemy.orm import Query
 
+from domain.booking_recap.booking_recap import BookingRecap
 from models import UserOfferer
 from models.api_errors import ResourceNotFoundError
 from models.booking import Booking
@@ -181,8 +182,9 @@ def find_by_id(booking_id: int) -> Booking:
         .first_or_404()
 
 
-def find_by_pro_user_id(user_id: int) -> List[Booking]:
-    return Booking.query \
+def find_by_pro_user_id(user_id: int) -> List[BookingRecap]:
+    bookings = Booking.query \
+        .join(User) \
         .join(Stock) \
         .join(Offer) \
         .join(Venue) \
@@ -190,7 +192,33 @@ def find_by_pro_user_id(user_id: int) -> List[Booking]:
         .join(UserOfferer) \
         .filter(UserOfferer.userId == user_id) \
         .filter(UserOfferer.validationToken == None) \
+        .with_entities(
+            Booking.token.label("bookingToken"),
+            Offer.name.label("offerName"),
+            User.firstName.label("beneficiaryFirstname"),
+            User.lastName.label("beneficiaryLastname"),
+            User.email.label("beneficiaryEmail"),
+            Booking.dateCreated.label("bookingDate"),
+        ) \
         .all()
+    bookings_recap = _to_bookings_recap(bookings)
+    return bookings_recap
+
+
+def _to_bookings_recap(bookings: List[Booking]) -> List[BookingRecap]:
+    bookings_recap = []
+    for booking in bookings:
+        bookings_recap.append(
+            BookingRecap(
+                offer_name=booking.offerName,
+                beneficiary_email=booking.beneficiaryEmail,
+                beneficiary_firstname=booking.beneficiaryFirstname,
+                beneficiary_lastname=booking.beneficiaryLastname,
+                booking_token=booking.bookingToken,
+                booking_date=booking.bookingDate
+            )
+        )
+    return bookings_recap
 
 
 def find_ongoing_bookings_by_stock(stock: Stock) -> List[Booking]:

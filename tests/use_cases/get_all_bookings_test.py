@@ -1,11 +1,24 @@
+from datetime import datetime
 from unittest.mock import patch
 
 import pytest
 
+from domain.booking_recap.booking_recap import BookingRecap
 from domain.users import UnauthorizedForAdminUser
-from models import Booking
 from tests.model_creators.generic_creators import create_user
 from use_cases.get_all_bookings_by_pro_user import get_all_bookings_by_pro_user
+
+
+class BookingRecapMock(BookingRecap):
+    def __init__(self):
+        super().__init__(
+            offer_name="Nom de mon offre",
+            beneficiary_lastname="Polastri",
+            beneficiary_firstname="Eve",
+            beneficiary_email="email@example.com",
+            booking_token="ABCDE",
+            booking_date=datetime.utcnow()
+        )
 
 
 class GetAllBookingsTest:
@@ -15,8 +28,9 @@ class GetAllBookingsTest:
     def test_should_retrieve_all_user_bookings(self, find_by_pro_user_id, find_user_by_id, check_user_is_not_admin):
         # Given
         user = create_user(is_admin=False, can_book_free_offers=True)
-        booking = Booking()
-        booking2 = Booking()
+
+        booking = BookingRecapMock()
+        booking2 = BookingRecapMock()
 
         find_user_by_id.return_value = user
         find_by_pro_user_id.return_value = [booking, booking2]
