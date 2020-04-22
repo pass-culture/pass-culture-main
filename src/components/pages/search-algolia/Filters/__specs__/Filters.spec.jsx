@@ -1,10 +1,10 @@
 import { mount, shallow } from 'enzyme'
-import configureStore from 'redux-mock-store'
 import { createBrowserHistory } from 'history'
+import Slider, { Range } from 'rc-slider'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router'
-import { Range } from 'rc-slider'
+import configureStore from 'redux-mock-store'
 
 import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
@@ -12,12 +12,12 @@ import { Criteria } from '../../Criteria/Criteria'
 import { GEOLOCATION_CRITERIA } from '../../Criteria/criteriaEnums'
 import FilterCheckbox from '../FilterCheckbox/FilterCheckbox'
 import { Filters } from '../Filters'
-import Slider from 'rc-slider'
 import FilterToggle from '../FilterToggle/FilterToggle'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
 }))
+
 describe('components | Filters', () => {
   let props
 
@@ -111,8 +111,7 @@ describe('components | Filters', () => {
         it('should trigger search and redirect to filters page when clicking on "Partout" criterion', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-          })
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
           props.history.location.pathname = '/recherche/resultats/filtres/localisation'
           props.isUserAllowedToSelectCriterion.mockReturnValue(true)
           props.query.parse.mockReturnValue({
@@ -147,7 +146,7 @@ describe('components | Filters', () => {
           expect(fetchAlgolia).toHaveBeenCalledWith({
             geolocation: {
               latitude: 40,
-              longitude: 41
+              longitude: 41,
             },
             keywords: 'librairie',
             offerCategories: ['VISITE', 'CINEMA'],
@@ -172,8 +171,7 @@ describe('components | Filters', () => {
         it('should trigger search and redirect to filters page when clicking on "Autour de moi" criterion', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-          })
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
           props.history.location.pathname = '/recherche/resultats/filtres/localisation'
           props.initialFilters = {
             aroundRadius: 50,
@@ -253,9 +251,7 @@ describe('components | Filters', () => {
         // then
         const header = wrapper.find(HeaderContainer)
         expect(header).toHaveLength(1)
-        expect(header.prop('backTo')).toStrictEqual(
-          '/recherche/resultats?mots-cles=librairie'
-        )
+        expect(header.prop('backTo')).toStrictEqual('/recherche/resultats?mots-cles=librairie')
         expect(header.prop('closeTo')).toBeNull()
         expect(header.prop('reset')).toStrictEqual(expect.any(Function))
         expect(header.prop('title')).toStrictEqual('Filtrer')
@@ -338,8 +334,8 @@ describe('components | Filters', () => {
         const showCategory = wrapper.find('input[name="SPECTACLE"]')
         const digitalOffers = wrapper.find('input[name="isDigital"]')
 
-        const showCategoryEvent = { target: { name: "SPECTACLE", checked: true } }
-        const digitalOffersEvent = { target: { name: "isDigital", checked: true } }
+        const showCategoryEvent = { target: { name: 'SPECTACLE', checked: true } }
+        const digitalOffersEvent = { target: { name: 'isDigital', checked: true } }
 
         showCategory.simulate('change', showCategoryEvent)
         digitalOffers.simulate('change', digitalOffersEvent)
@@ -362,9 +358,7 @@ describe('components | Filters', () => {
         resultsButton.simulate('click')
 
         // then
-        expect(props.history.push).toHaveBeenCalledWith(
-          '/recherche/resultats?mots-cles=librairie'
-        )
+        expect(props.history.push).toHaveBeenCalledWith('/recherche/resultats?mots-cles=librairie')
       })
 
       it('should redirect to results page with no query param when clicking on display results button', () => {
@@ -415,7 +409,7 @@ describe('components | Filters', () => {
         props.offers = {
           hits: [{}, {}],
           nbHits: 2,
-          page: 0
+          page: 0,
         }
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
@@ -428,7 +422,8 @@ describe('components | Filters', () => {
         )
         const wrapper = shallow(<Filters {...props} />)
         const offerIsDuoFilter = wrapper
-          .find('[data-test="sf-offer-duo-wrapper-test"]')
+          .find({ children: 'Uniquement les offres duo' })
+          .closest('li')
           .find(FilterToggle)
         await offerIsDuoFilter.simulate('change', {
           target: {
@@ -759,7 +754,7 @@ describe('components | Filters', () => {
           expect(fetchAlgolia).toHaveBeenCalledWith({
             geolocation: {
               latitude: 40,
-              longitude: 41
+              longitude: 41,
             },
             keywords: 'librairies',
             offerCategories: ['VISITE', 'CINEMA'],
@@ -801,13 +796,19 @@ describe('components | Filters', () => {
 
           // then
           const filterOfferIsDuo = wrapper
-            .find('[data-test="sf-offer-duo-wrapper-test"]')
+            .find({ children: 'Uniquement les offres duo' })
+            .closest('li')
             .find(FilterToggle)
           expect(filterOfferIsDuo).toHaveLength(1)
           expect(filterOfferIsDuo.prop('checked')).toBe(false)
           expect(filterOfferIsDuo.prop('id')).toBe('offerIsDuo')
           expect(filterOfferIsDuo.prop('name')).toBe('offerIsDuo')
           expect(filterOfferIsDuo.prop('onChange')).toStrictEqual(expect.any(Function))
+          const offerIsDuoCounter = wrapper
+            .find({ children: 'Uniquement les offres duo' })
+            .closest('li')
+            .find({ children: '(1)' })
+          expect(offerIsDuoCounter).toHaveLength(0)
         })
 
         it('should fetch offers when clicking on offer duo', () => {
@@ -815,7 +816,8 @@ describe('components | Filters', () => {
           props.history.location.pathname = '/recherche/filtres'
           const wrapper = shallow(<Filters {...props} />)
           const offerIsDuoFilter = wrapper
-            .find('[data-test="sf-offer-duo-wrapper-test"]')
+            .find({ children: 'Uniquement les offres duo' })
+            .closest('li')
             .find(FilterToggle)
           props.query.parse.mockReturnValue({})
           fetchAlgolia.mockReturnValue(
@@ -840,7 +842,7 @@ describe('components | Filters', () => {
           expect(fetchAlgolia).toHaveBeenCalledWith({
             geolocation: {
               latitude: 40,
-              longitude: 41
+              longitude: 41,
             },
             keywords: '',
             offerCategories: ['VISITE', 'CINEMA'],
@@ -854,6 +856,41 @@ describe('components | Filters', () => {
             priceRange: [0, 500],
             sortBy: '_by_price',
           })
+        })
+
+        it('should display counter when offer duo is checked', () => {
+          // given
+          props.history.location.pathname = '/recherche/filtres'
+          props.query.parse.mockReturnValue({})
+          fetchAlgolia.mockReturnValue(
+            new Promise(resolve => {
+              resolve({
+                hits: [],
+                nbHits: 0,
+                page: 0,
+              })
+            })
+          )
+          const wrapper = shallow(<Filters {...props} />)
+          const offerIsDuoFilter = wrapper
+            .find({ children: 'Uniquement les offres duo' })
+            .closest('li')
+            .find(FilterToggle)
+
+          // when
+          offerIsDuoFilter.simulate('change', {
+            target: {
+              name: 'offerIsDuo',
+              checked: true,
+            },
+          })
+
+          // then
+          const offerIsDuoCounter = wrapper
+            .find({ children: 'Uniquement les offres duo' })
+            .closest('li')
+            .find({ children: '(1)' })
+          expect(offerIsDuoCounter).toHaveLength(1)
         })
       })
 
@@ -882,13 +919,19 @@ describe('components | Filters', () => {
 
           // then
           const filterOfferIsFree = wrapper
-            .find('[data-test="sf-offer-free-wrapper-test"]')
+            .find({ children: 'Uniquement les offres gratuites' })
+            .closest('li')
             .find(FilterToggle)
           expect(filterOfferIsFree).toHaveLength(1)
           expect(filterOfferIsFree.prop('checked')).toBe(false)
           expect(filterOfferIsFree.prop('id')).toBe('offerIsFree')
           expect(filterOfferIsFree.prop('name')).toBe('offerIsFree')
           expect(filterOfferIsFree.prop('onChange')).toStrictEqual(expect.any(Function))
+          const offerIsFreeCounter = wrapper
+            .find({ children: 'Uniquement les offres gratuites' })
+            .closest('li')
+            .find({ children: '(1)' })
+          expect(offerIsFreeCounter).toHaveLength(0)
         })
 
         it('should fetch offers when clicking on offer free', () => {
@@ -896,7 +939,8 @@ describe('components | Filters', () => {
           props.history.location.pathname = '/recherche/filtres'
           const wrapper = shallow(<Filters {...props} />)
           const offerIsFreeFilter = wrapper
-            .find('[data-test="sf-offer-free-wrapper-test"]')
+            .find({ children: 'Uniquement les offres gratuites' })
+            .closest('li')
             .find(FilterToggle)
           props.query.parse.mockReturnValue({})
           fetchAlgolia.mockReturnValue(
@@ -921,7 +965,7 @@ describe('components | Filters', () => {
           expect(fetchAlgolia).toHaveBeenCalledWith({
             geolocation: {
               latitude: 40,
-              longitude: 41
+              longitude: 41,
             },
             keywords: '',
             offerCategories: ['VISITE', 'CINEMA'],
@@ -949,6 +993,11 @@ describe('components | Filters', () => {
             // then
             const title = wrapper.findWhere(node => node.text() === 'Prix').first()
             expect(title).toHaveLength(1)
+            const priceRangeCounter = wrapper
+              .find({ children: 'Prix' })
+              .closest('li')
+              .find({ children: '(1)' })
+            expect(priceRangeCounter).toHaveLength(0)
           })
 
           it('should display the price range value', () => {
@@ -984,9 +1033,74 @@ describe('components | Filters', () => {
             expect(rangeSlider.prop('onAfterChange')).toStrictEqual(expect.any(Function))
             expect(rangeSlider.prop('value')).toStrictEqual([0, 45])
           })
+
+          it('should render a counter next to "Price" if not default value', () => {
+            // given
+            props.history.location.pathname = '/recherche/filtres'
+            props.query.parse.mockReturnValue({})
+            fetchAlgolia.mockReturnValue(
+              new Promise(resolve => {
+                resolve({
+                  hits: [],
+                  nbHits: 0,
+                  page: 0,
+                })
+              })
+            )
+            const wrapper = shallow(<Filters {...props} />)
+            const priceRangeSlider = wrapper
+              .find({ children: 'Prix' })
+              .closest('li')
+              .find(Range)
+
+            // when
+            priceRangeSlider.simulate('change', [5, 15])
+
+            // then
+            const priceRangeCounter = wrapper
+              .find({ children: 'Prix' })
+              .closest('li')
+              .find({ children: '(1)' })
+            expect(priceRangeCounter).toHaveLength(1)
+          })
         })
 
         describe('when free offers filter is on', () => {
+          it('should display counter', () => {
+            // given
+            props.history.location.pathname = '/recherche/filtres'
+            props.query.parse.mockReturnValue({})
+            fetchAlgolia.mockReturnValue(
+              new Promise(resolve => {
+                resolve({
+                  hits: [],
+                  nbHits: 0,
+                  page: 0,
+                })
+              })
+            )
+            const wrapper = shallow(<Filters {...props} />)
+            const offerIsFreeFilter = wrapper
+              .find({ children: 'Uniquement les offres gratuites' })
+              .closest('li')
+              .find(FilterToggle)
+
+            // when
+            offerIsFreeFilter.simulate('change', {
+              target: {
+                name: 'offerIsFree',
+                checked: true,
+              },
+            })
+
+            // then
+            const offerIsFreeCounter = wrapper
+              .find({ children: 'Uniquement les offres gratuites' })
+              .closest('li')
+              .find({ children: '(1)' })
+            expect(offerIsFreeCounter).toHaveLength(1)
+          })
+
           it('should not display a "Prix" title', () => {
             // given
             props.history.location.pathname = '/recherche/filtres'
@@ -1218,8 +1332,7 @@ describe('components | Filters', () => {
           it('should reset filters and trigger search to Algolia with given category', () => {
             // given
             props.history = createBrowserHistory()
-            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-            })
+            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
             props.history.location.pathname = '/recherche/resultats/filtres'
             props.initialFilters = {
               aroundRadius: 0,
@@ -1265,7 +1378,7 @@ describe('components | Filters', () => {
               //radiusRevert: aroundRadius: 0,
               geolocation: {
                 latitude: 40,
-                longitude: 41
+                longitude: 41,
               },
               keywords: 'librairie',
               offerCategories: [],
@@ -1286,8 +1399,7 @@ describe('components | Filters', () => {
           it('should reset filters and trigger search to Algolia with given categories', () => {
             // given
             props.history = createBrowserHistory()
-            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-            })
+            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
             props.history.location.pathname = '/recherche/resultats/filtres'
             props.initialFilters = {
               isSearchAroundMe: true,
@@ -1332,7 +1444,7 @@ describe('components | Filters', () => {
               //radiusRevert: aroundRadius: 0,
               geolocation: {
                 latitude: 40,
-                longitude: 41
+                longitude: 41,
               },
               keywords: 'librairie',
               offerCategories: [],

@@ -53,16 +53,16 @@ export class Filters extends PureComponent {
   }
 
   fetchOffers = ({
-                   aroundRadius,
-                   keywords,
-                   geolocation,
-                   offerCategories,
-                   offerIsDuo,
-                   offerIsFree,
-                   offerTypes,
-                   priceRange,
-                   sortBy,
-                 }) => {
+    aroundRadius,
+    keywords,
+    geolocation,
+    offerCategories,
+    offerIsDuo,
+    offerIsFree,
+    offerTypes,
+    priceRange,
+    sortBy,
+  }) => {
     const { showFailModal } = this.props
     fetchAlgolia({
       aroundRadius,
@@ -91,14 +91,7 @@ export class Filters extends PureComponent {
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles'] || ''
 
-    const {
-      aroundRadius,
-      offerIsDuo,
-      offerIsFree,
-      offerTypes,
-      priceRange,
-      sortBy,
-    } = filters
+    const { aroundRadius, offerIsDuo, offerIsFree, offerTypes, priceRange, sortBy } = filters
     const offerCategories = this.getSelectedCategories()
 
     this.fetchOffers({
@@ -155,7 +148,9 @@ export class Filters extends PureComponent {
   }
 
   buildNumberOfResults = () => {
-    const { offers: { nbHits } } = this.state
+    const {
+      offers: { nbHits },
+    } = this.state
 
     if (nbHits === 0) {
       return 'Aucun résultat'
@@ -188,8 +183,13 @@ export class Filters extends PureComponent {
     return counter
   }
 
-  getNumberFromBoolean = boolean => boolean === true ? 1 : 0
+  getPriceRangeCounter(priceRange) {
+    const [lowestPrice, highestPrice] = priceRange
+    const [defaultLowestPrice, defaultHighestPrice] = [0, 500]
+    return lowestPrice !== defaultLowestPrice || highestPrice !== defaultHighestPrice ? 1 : 0
+  }
 
+  getNumberFromBoolean = boolean => (boolean === true ? 1 : 0)
 
   handleGeolocationCriterionSelection = criterionKey => () => {
     const {
@@ -231,7 +231,14 @@ export class Filters extends PureComponent {
     } = history
     const { filters, offers } = this.state
     const { nbHits } = offers
-    const { isSearchAroundMe, offerCategories, offerTypes, offerIsDuo, offerIsFree, priceRange } = filters
+    const {
+      isSearchAroundMe,
+      offerCategories,
+      offerTypes,
+      offerIsDuo,
+      offerIsFree,
+      priceRange,
+    } = filters
     const updatedFilters = { ...filters }
     updatedFilters.offerCategories = this.getSelectedCategories()
     const geolocationFilterCounter = this.getNumberFromBoolean(isSearchAroundMe)
@@ -239,10 +246,14 @@ export class Filters extends PureComponent {
     const offerCategoriesFilterCounter = this.getNumberOfSelectedFilters(offerCategories)
     const offerIsDuoFilterCounter = this.getNumberFromBoolean(offerIsDuo)
     const offerIsFreeFilterCounter = this.getNumberFromBoolean(offerIsFree)
-    const [lowestPrice, highestPrice] = priceRange
-    const [defaultLowestPrice, defaultHighestPrice] = [0, 500]
-    const priceRangeFilterCounter = (lowestPrice !== defaultLowestPrice || highestPrice !== defaultHighestPrice) ? 1 : 0
-    const numberOfActiveFilters = offerTypesFilterCounter + offerCategoriesFilterCounter + geolocationFilterCounter + offerIsDuoFilterCounter + offerIsFreeFilterCounter + priceRangeFilterCounter
+    const priceRangeFilterCounter = this.getPriceRangeCounter(priceRange)
+    const numberOfActiveFilters =
+      offerTypesFilterCounter +
+      offerCategoriesFilterCounter +
+      geolocationFilterCounter +
+      offerIsDuoFilterCounter +
+      offerIsFreeFilterCounter +
+      priceRangeFilterCounter
 
     updateFilters(updatedFilters)
     updateFilteredOffers(offers)
@@ -356,6 +367,9 @@ export class Filters extends PureComponent {
     const numberOfOfferTypesSelected = this.getNumberOfSelectedFilters(offerTypes)
     const numberOfOfferCategoriesSelected = this.getNumberOfSelectedFilters(offerCategories)
     const geolocationFilterCounter = this.getNumberFromBoolean(isSearchAroundMe)
+    const offerIsDuoCounter = this.getNumberFromBoolean(offerIsDuo)
+    const offerIsFreeCounter = this.getNumberFromBoolean(offerIsFree)
+    const priceRangeCounter = this.getPriceRangeCounter(priceRange)
 
     return (
       <main className="search-filters-page">
@@ -387,8 +401,8 @@ export class Filters extends PureComponent {
                 </h4>
                 {geolocationFilterCounter > 0 && (
                   <span className="sf-selected-filter-counter">
-                      {`(${geolocationFilterCounter})`}
-                    </span>
+                    {`(${geolocationFilterCounter})`}
+                  </span>
                 )}
                 <button
                   className="sf-geolocation-button"
@@ -517,13 +531,17 @@ export class Filters extends PureComponent {
                 </ul>
               </li>
               <li>
-                <div
-                  className="sf-offer-price-wrapper"
-                  data-test="sf-offer-duo-wrapper-test"
-                >
-                  <h4>
-                    {'Uniquement les offres duo'}
-                  </h4>
+                <div className="sf-offer-price-wrapper">
+                  <div>
+                    <h4>
+                      {'Uniquement les offres duo'}
+                    </h4>
+                    {offerIsDuoCounter > 0 && (
+                      <span className="sf-selected-filter-counter">
+                        {`(${offerIsDuoCounter})`}
+                      </span>
+                    )}
+                  </div>
                   <FilterToggle
                     checked={offerIsDuo}
                     id="offerIsDuo"
@@ -533,13 +551,17 @@ export class Filters extends PureComponent {
                 </div>
               </li>
               <li>
-                <div
-                  className="sf-offer-price-wrapper"
-                  data-test="sf-offer-free-wrapper-test"
-                >
-                  <h4>
-                    {'Uniquement les offres gratuites'}
-                  </h4>
+                <div className="sf-offer-price-wrapper">
+                  <div>
+                    <h4>
+                      {'Uniquement les offres gratuites'}
+                    </h4>
+                    {offerIsFreeCounter > 0 && (
+                      <span className="sf-selected-filter-counter">
+                        {`(${offerIsFreeCounter})`}
+                      </span>
+                    )}
+                  </div>
                   <FilterToggle
                     checked={offerIsFree}
                     id="offerIsFree"
@@ -553,6 +575,11 @@ export class Filters extends PureComponent {
                   <h4 className="sf-title">
                     {'Prix'}
                   </h4>
+                  {priceRangeCounter > 0 && (
+                    <span className="sf-selected-filter-counter">
+                      {`(${priceRangeCounter})`}
+                    </span>
+                  )}
                   <span className="sf-slider-indicator">
                     {`${priceRange[0]} € - ${priceRange[1]} €`}
                   </span>
@@ -566,7 +593,7 @@ export class Filters extends PureComponent {
                   />
                 </li>
               )}
-              <li className='sf-space-wrapper' />
+              <li className="sf-space-wrapper" />
             </ul>
             <div className="sf-button-wrapper">
               <button
