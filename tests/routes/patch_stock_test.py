@@ -1,4 +1,4 @@
-from datetime import timedelta, datetime
+from datetime import timedelta
 from unittest.mock import patch
 
 from models import Stock, Provider
@@ -132,8 +132,10 @@ class Patch:
         @patch('routes.stocks.have_beginning_date_been_modified')
         @patch('routes.stocks.send_batch_stock_postponement_emails_to_users')
         @patch('routes.stocks.send_raw_email')
+        @patch('routes.stocks.find_not_cancelled_bookings_by_stock')
         @clean_database
         def when_stock_changes_date_and_should_send_email_to_users(self,
+                                                                   find_not_cancelled_bookings_by_stock,
                                                                    email_function,
                                                                    mocked_send_batch_stock_postponement_emails_to_users,
                                                                    mocked_check_have_beginning_date_been_modified,
@@ -149,6 +151,7 @@ class Patch:
             booking_used = create_booking(user=user, stock=stock, venue=venue, is_used=True)
             repository.save(booking, booking_used, booking_cancelled, admin)
             mocked_check_have_beginning_date_been_modified.return_value = True
+            find_not_cancelled_bookings_by_stock.return_value = [booking, booking_used]
             serialized_date = serialize(stock.beginningDatetime + timedelta(days=1))
 
             # When
