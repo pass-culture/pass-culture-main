@@ -1,12 +1,12 @@
 from flask import current_app as app
 
 from domain.booking.booking_validator import check_offer_already_booked, check_quantity_is_valid
-from domain.stock.stock_validator import check_stock_is_bookable, check_expenses_limits, check_can_book_free_offer
 from domain.expenses import get_expenses
-from domain.services.email.email_service import EmailService
+from domain.services.notification.notification_service import NotificationService
 from domain.stock.stock_repository import StockRepository
+from domain.stock.stock_validator import check_stock_is_bookable, check_expenses_limits, check_can_book_free_offer
 from domain.user.user_repository import UserRepository
-from domain.user_emails import send_booking_recap_emails, send_booking_confirmation_email_to_beneficiary
+from domain.user_emails import send_booking_confirmation_email_to_beneficiary
 from models import Booking
 from repository import booking_queries, repository
 from utils.mailing import send_raw_email, MailServiceException
@@ -22,11 +22,12 @@ class BookingInformation(object):
 
 
 class BookAnOffer:
-    def __init__(self, stock_repository: StockRepository, user_repository: UserRepository,
-                 email_service: EmailService):
+    def __init__(self, stock_repository: StockRepository,
+                 user_repository: UserRepository,
+                 notification_service: NotificationService):
         self.stock_repository = stock_repository
         self.user_repository = user_repository
-        self.email_service = email_service
+        self.notification_service = notification_service
 
     def execute(self, booking_information: BookingInformation) -> Booking:
         stock = self.stock_repository.find_stock_by_id(booking_information.stock_id)
@@ -40,17 +41,12 @@ class BookAnOffer:
         booking = self._create_booking_with_booking_information(booking_information, stock)
         bookings = booking_queries.find_active_bookings_by_user_id(booking_information.user_id)
         expenses = get_expenses(bookings)
-
         check_expenses_limits(expenses, booking)
 
         repository.save(booking)
 
-        self.email_service.send_booking_recap_emails(booking)
-
-        try:
-            send_booking_confirmation_email_to_beneficiary(booking, send_raw_email)
-        except MailServiceException as error:
-            app.logger.error('Mail service failure', error)
+        self.notification_service.send_booking_recap_emails(booking)
+        self.notification_service.send_booking_confirmation_email_to_beneficiary(booking)
 
         return booking
 
