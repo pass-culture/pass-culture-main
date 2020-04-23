@@ -3,15 +3,7 @@ THUMBS_URL='https://storage.gra3.cloud.ovh.net/v1/AUTH_810600e32fdc4cb49a8d15332
 NETLIFY_SITE_ID_WEBAPP="5efa658a-4a29-488d-a009-1c787e064807"
 NETLIFY_SITE_ID_PRO="270695c1-0f4c-4a36-b468-5573422be461"
 NODE_ENV="production"
-MATOMO_GEOLOCATION_GOAL_ID=10
 MATOMO_SERVER_URL="https://pc-matomo-production.scalingo.io/"
-TYPEFORM_URL_CULTURAL_PRACTICES_POLL="https://passculture.typeform.com/to/Oqu7Ag"
 ENVIRONMENT_NAME="production"
 SENTRY_SERVER_URL_FOR_PRO=https://50f5694849704813b4154c5868b73365@logs.passculture.app/2
-SENTRY_SERVER_URL_FOR_WEBAPP=https://fa24f6fffb1e42aeafc316b4c808227c@logs.passculture.app/3
 PRO_URL_FOR_MAINTENANCE=https://maintenance.passculture.app?source=https://pro.passculture.beta.gouv.fr/
-WEBAPP_URL_FOR_MAINTENANCE=https://maintenance.passculture.app?source=https://app.passculture.beta.gouv.fr/
-WEBAPP_ALGOLIA_APPLICATION_ID=E2IKXJ325N
-WEBAPP_ALGOLIA_SEARCH_API_KEY=d93220cc9573a6191f35630afaed7f38
-WEBAPP_ALGOLIA_INDEX_NAME=PRODUCTION
-DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL=https://www.demarches-simplifiees.fr/commencer/test/18d87d16-4954-4c30-addb-27a90d9cef95
