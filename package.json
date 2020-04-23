@@ -93,7 +93,8 @@
     "webpack-manifest-plugin": "2.0.4",
     "whatwg-fetch": "3.0.0",
     "with-query-router": "3.2.1",
-    "with-react-redux-login": "1.7.0"
+    "with-react-redux-login": "1.7.0",
+    "react-table": "7.0.4"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.2",

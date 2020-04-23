@@ -1,0 +1,37 @@
+table {
+
+  width: 100%;
+  min-width: 700px; // todo: to determined
+
+  tr > th {
+    color: #151515;
+    font-size: rem(14px);
+    padding: 14px;
+  }
+
+  tbody > tr:nth-child(odd) {
+    background-color: #ecf0f1;
+  }
+
+  td {
+    font-size: rem(16px);
+    padding: 16px;
+  }
+
+  td > span.offer-link {
+    font-weight: bold;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 175px;
+    display: block;
+    overflow: hidden;
+  }
+
+  td > span.offer-link:hover {
+    cursor: pointer;
+  }
+
+  td span.cell-subtitle {
+    color: #757575;
+  }
+}

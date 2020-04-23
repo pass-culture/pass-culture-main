@@ -1,12 +1,27 @@
-import { connect } from 'react-redux'
-import { compose } from 'redux'
+import {connect} from 'react-redux'
+import {compose} from 'redux'
 
 import Bookings from '../Bookings-v2/Bookings'
-import { mapStateToProps } from '../Bookings-v2/BookingsContainer'
-import { withRequiredLogin } from '../../hocs'
+import {withRequiredLogin} from '../../hocs'
+import {requestData} from "redux-saga-data"
 
+export const mapStateToProps = state => {
+  const {data} = state
+  const {bookingsRecap} = data
+  return {bookingsRecap}
+}
+
+export const mapDispatchToProps = dispatch => ({
+  requestGetAllBookingsRecap: (handleSuccess, handleFail) => dispatch(
+    requestData({
+      apiPath: '/bookings/pro',
+      handleSuccess: handleSuccess,
+      handleFail: handleFail,
+    }),
+  ),
+})
 
 export default compose(
   withRequiredLogin,
-  connect(null)
+  connect(mapStateToProps, mapDispatchToProps),
 )(Bookings)
