@@ -29,8 +29,7 @@ class Get:
             # then
             assert response.status_code == 200
             assert response.json['id'] == humanize(mediation.id)
-            assert response.json['frontText'] == mediation.frontText
-            assert response.json['backText'] == mediation.backText
+            assert response.json['isActive'] == mediation.isActive
 
     class Returns404:
         @clean_database

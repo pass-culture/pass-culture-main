@@ -124,7 +124,7 @@ class AsDictTest:
         EVENT_INCLUDES = [
             {
                 "key": "mediations",
-                "includes": ["-backText"]
+                "includes": ["-isActive"]
             }
         ]
 
@@ -132,7 +132,7 @@ class AsDictTest:
         dict_result = as_dict(offer, includes=EVENT_INCLUDES)
 
         # then
-        assert 'backText' not in dict_result['mediations'][0]
+        assert 'isActive' not in dict_result['mediations'][0]
 
     @clean_database
     def test_returns_humanized_ids_for_primary_keys(self, app):

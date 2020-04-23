@@ -24,7 +24,7 @@ class Patch:
             repository.save(user, venue, offerer, user_offerer)
             mediation_id = mediation.id
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-            data = {'frontText': 'new front text', 'backText': 'new back text', 'isActive': False}
+            data = {'isActive': False}
 
             # when
             response = auth_request.patch('/mediations/%s' % humanize(mediation.id), json=data)
@@ -33,13 +33,9 @@ class Patch:
             mediation = Mediation.query.get(mediation_id)
             assert response.status_code == 200
             assert response.json['id'] == humanize(mediation.id)
-            assert response.json['frontText'] == mediation.frontText
-            assert response.json['backText'] == mediation.backText
             assert response.json['isActive'] == mediation.isActive
             assert response.json['thumbUrl'] == mediation.thumbUrl
             assert mediation.isActive == data['isActive']
-            assert mediation.frontText == data['frontText']
-            assert mediation.backText == data['backText']
 
         @clean_database
         @patch('routes.mediations.feature_queries.is_active', return_value=True)
@@ -55,7 +51,7 @@ class Patch:
             repository.save(mediation)
             repository.save(user, venue, offerer, user_offerer)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-            data = {'frontText': 'new front text', 'backText': 'new back text', 'isActive': False}
+            data = {'isActive': False}
 
             # when
             response = auth_request.patch('/mediations/%s' % humanize(mediation.id), json=data)

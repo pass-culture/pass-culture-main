@@ -186,11 +186,9 @@ def create_favorite(idx: int = None,
 
 def create_mediation(offer: Offer = None,
                      author: User = None,
-                     back_text: str = None,
                      credit: str = None,
                      date_created: datetime = datetime.utcnow(),
                      date_modified_at_last_provider: datetime = None,
-                     front_text: str = None,
                      id_at_providers: str = None,
                      idx: int = None,
                      is_active: bool = True,
@@ -199,11 +197,9 @@ def create_mediation(offer: Offer = None,
                      ) -> Mediation:
     mediation = Mediation()
     mediation.author = author
-    mediation.backText = back_text
     mediation.credit = credit
     mediation.dateCreated = date_created
     mediation.dateModifiedAtLastProvider = date_modified_at_last_provider
-    mediation.frontText = front_text
     mediation.idAtProviders = id_at_providers
     mediation.id = idx
     mediation.isActive = is_active

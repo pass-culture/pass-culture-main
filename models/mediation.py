@@ -26,10 +26,6 @@ class Mediation(PcObject,
                 primary_key=True,
                 autoincrement=True)
 
-    frontText = Column(Text, nullable=True)
-
-    backText = Column(Text, nullable=True)
-
     credit = Column(String(255), nullable=True)
 
     dateCreated = Column(DateTime,
@@ -47,18 +43,8 @@ class Mediation(PcObject,
     offerId = Column(BigInteger,
                      ForeignKey('offer.id'),
                      index=True,
-                     nullable=True)
+                     nullable=False)
 
     offer = relationship('Offer',
                          foreign_keys=[offerId],
                          backref='mediations')
-
-
-Mediation.__table_args__ = (
-    CheckConstraint('"thumbCount" <= 2',
-                    name='check_mediation_has_max_2_thumbs'),
-    CheckConstraint('"thumbCount" > 0 OR frontText IS NOT NULL',
-                    name='check_mediation_has_thumb_or_text'),
-    CheckConstraint('("offerId" IS NOT NULL)',
-                    name='check_mediation_has_offer'),
-)

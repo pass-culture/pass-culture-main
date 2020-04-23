@@ -721,16 +721,13 @@ class ActiveMediationTest:
         # given
         offer = Offer()
         offer.mediations = [
-            create_mediation(offer, front_text='1st',
-                             date_created=four_days_ago, is_active=True),
-            create_mediation(offer, front_text='2nd',
-                             date_created=now, is_active=False),
-            create_mediation(offer, front_text='3rd',
-                             date_created=two_days_ago, is_active=True)
+            create_mediation(offer, date_created=four_days_ago, is_active=True),
+            create_mediation(offer, date_created=now, is_active=False),
+            create_mediation(offer, date_created=two_days_ago, is_active=True)
         ]
 
         # then
-        assert offer.activeMediation.frontText == '3rd'
+        assert offer.activeMediation.dateCreated == two_days_ago
 
 
 class DateRangeTest:
