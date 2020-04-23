@@ -86,24 +86,24 @@ describe('src | components | pages | Venue | siret | selectSiretInformations', (
         // then
         expect(fetch.mock.calls).toHaveLength(1)
         expect(fetch.mock.calls[0][0]).toStrictEqual(
-          `https://entreprise.data.gouv.fr/api/sirene/v1/siret/${siret}`
+          `https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/${siret}`
         )
         expect(errorMessage).toStrictEqual({ values: { error: 'SIRET invalide' } })
       })
     })
 
     describe('if siret provided is valid', () => {
-      it('should return location values', async () => {
+      it('should return location values with enseigne as name if provided', async () => {
         // given
         const siret = '41816609600069'
         fetch.mockResponseOnce(
           JSON.stringify({
             etablissement: {
-              l4_normalisee: '3 rue de la gare',
+              geo_l4: '3 rue de la gare',
               libelle_commune: 'paris',
               latitude: 1.1,
               longitude: 1.1,
-              l1_normalisee: 'nom du lieu',
+              enseigne_1: 'nom du lieu',
               code_postal: '75000',
               siret: '41816609600069',
             },
@@ -116,7 +116,7 @@ describe('src | components | pages | Venue | siret | selectSiretInformations', (
         // then
         expect(fetch.mock.calls).toHaveLength(1)
         expect(fetch.mock.calls[0][0]).toStrictEqual(
-          `https://entreprise.data.gouv.fr/api/sirene/v1/siret/${siret}`
+          `https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/${siret}`
         )
         expect(locationValues).toStrictEqual({
           values: {
@@ -128,6 +128,129 @@ describe('src | components | pages | Venue | siret | selectSiretInformations', (
             postalCode: '75000',
             siret: '41816609600069',
             sire: '41816609600069',
+          },
+        })
+      })
+
+      it('should return location values with unité légale denomination as name if no enseigne is provided', async () => {
+        // given
+        const siret = '41816609600070'
+        fetch.mockResponseOnce(
+          JSON.stringify({
+            etablissement: {
+              geo_l4: '3 rue de la gare',
+              libelle_commune: 'paris',
+              latitude: 1.1,
+              longitude: 1.1,
+              enseigne_1: null,
+              code_postal: '75000',
+              siret: '41816609600070',
+              unite_legale: {
+                denomination: 'headquarters name',
+              },
+            },
+          })
+        )
+
+        // when
+        const locationValues = await getSiretInformations(siret)
+
+        // then
+        expect(fetch.mock.calls).toHaveLength(1)
+        expect(fetch.mock.calls[0][0]).toStrictEqual(
+          `https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/${siret}`
+        )
+        expect(locationValues).toStrictEqual({
+          values: {
+            address: '3 rue de la gare',
+            city: 'paris',
+            latitude: 1.1,
+            longitude: 1.1,
+            name: 'headquarters name',
+            postalCode: '75000',
+            siret: '41816609600070',
+            sire: '41816609600070',
+          },
+        })
+      })
+
+      it('should return location values with empty string as name if no enseigne and denomination are provided', async () => {
+        // given
+        const siret = '41816609600071'
+        fetch.mockResponseOnce(
+          JSON.stringify({
+            etablissement: {
+              geo_l4: '3 rue de la gare',
+              libelle_commune: 'paris',
+              latitude: 1.1,
+              longitude: 1.1,
+              enseigne_1: null,
+              code_postal: '75000',
+              siret: '41816609600071',
+              unite_legale: {
+                denomination: null,
+              },
+            },
+          })
+        )
+
+        // when
+        const locationValues = await getSiretInformations(siret)
+
+        // then
+        expect(fetch.mock.calls).toHaveLength(1)
+        expect(fetch.mock.calls[0][0]).toStrictEqual(
+          `https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/${siret}`
+        )
+        expect(locationValues).toStrictEqual({
+          values: {
+            address: '3 rue de la gare',
+            city: 'paris',
+            latitude: 1.1,
+            longitude: 1.1,
+            name: '',
+            postalCode: '75000',
+            siret: '41816609600071',
+            sire: '41816609600071',
+          },
+        })
+      })
+
+      it('should cache request', async () => {
+        // given
+        const siret = '41816609600072'
+        fetch.mockResponseOnce(
+          JSON.stringify({
+            etablissement: {
+              geo_l4: '3 rue de la gare',
+              libelle_commune: 'paris',
+              latitude: 1.1,
+              longitude: 1.1,
+              enseigne_1: 'nom du lieu',
+              code_postal: '75000',
+              siret: '41816609600072',
+            },
+          })
+        )
+        await getSiretInformations(siret)
+        await getSiretInformations('41816609600073')
+        fetch.resetMocks()
+
+        // when
+        const locationValues = await getSiretInformations(siret)
+
+        // then
+        expect(fetch.mock.calls).toHaveLength(0)
+        expect(locationValues).toStrictEqual({
+          values: {
+            address: '3 rue de la gare',
+            city: 'paris',
+            latitude: 1.1,
+            longitude: 1.1,
+            name: 'nom du lieu',
+            postalCode: '75000',
+            siret: '41816609600072',
+            sire: '41816609600072',
           },
         })
       })

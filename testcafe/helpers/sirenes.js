@@ -26,13 +26,13 @@ export const getSirenRequestMockAs = offerer => {
 export const getSiretRequestMockAs = venue => {
   const { address, city, latitude, longitude, name, postalCode, siret } = venue
   return RequestMock()
-    .onRequestTo(`https://entreprise.data.gouv.fr/api/sirene/v1/siret/${siret}`)
+    .onRequestTo(`https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/${siret}`)
     .respond(
       {
         etablissement: {
           code_postal: postalCode,
-          l1_normalisee: name,
-          l4_normalisee: address,
+          enseigne_1: name,
+          geo_l4: address,
           libelle_commune: city,
           latitude: latitude,
           longitude: longitude,

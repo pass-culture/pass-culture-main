@@ -1,4 +1,3 @@
-import get from 'lodash.get'
 import { removeWhitespaces } from 'react-final-form-utils'
 import createCachedSelector from 're-reselect'
 
@@ -12,7 +11,7 @@ export const validateSiretSize = siret => {
 }
 
 const getLocationInformationsFromSiret = async siret => {
-  const siretUrl = `https://entreprise.data.gouv.fr/api/sirene/v1/siret/${siret}`
+  const siretUrl = `https://entreprise.data.gouv.fr/api/sirene/v3/etablissements/${siret}`
 
   const response = await fetch(siretUrl)
 
@@ -21,17 +20,17 @@ const getLocationInformationsFromSiret = async siret => {
     return { error }
   }
 
-  const body = await response.json()
+  const établissement = await response.json().then(body => body.etablissement)
 
   return {
-    address: get(body, `etablissement.l4_normalisee`),
-    city: get(body, `etablissement.libelle_commune`),
-    latitude: parseFloat(get(body, `etablissement.latitude`)) || null,
-    longitude: parseFloat(get(body, `etablissement.longitude`)) || null,
-    name: get(body, `etablissement.l1_normalisee`) || get(body, `etablissement.l1_declaree`) || '',
-    postalCode: get(body, `etablissement.code_postal`),
-    ['siret']: get(body, `etablissement.siret`),
-    sire: get(body, `etablissement.siret`),
+    address: établissement.geo_l4,
+    city: établissement.libelle_commune,
+    latitude: parseFloat(établissement.latitude) || null,
+    longitude: parseFloat(établissement.longitude) || null,
+    name: établissement.enseigne_1 || établissement.unite_legale.denomination || '',
+    postalCode: établissement.code_postal,
+    ['siret']: établissement.siret,
+    sire: établissement.siret,
   }
 }
 
