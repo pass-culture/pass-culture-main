@@ -1,13 +1,14 @@
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import and_
+from sqlalchemy import and_, func
 from sqlalchemy.sql import selectable
 
 from models import Venue, Offer, Stock, Offerer, UserOfferer, User
 from models.activity import load_activity
 from models.db import db
 from repository.offerer_queries import _filter_by_sirens
+from sqlalchemy import func
 
 
 def find_by_id(venue_id: int) -> Venue:
@@ -27,6 +28,21 @@ def find_by_siret(siret):
 
 def find_by_managing_offerer_id(offerer_id: int) -> Venue:
     return Venue.query.filter_by(managingOffererId=offerer_id).first()
+
+
+def find_by_managing_offerer_id_and_name_for_venue_without_siret(offerer_id: int, venue_name: str) -> Venue:
+    return Venue.query \
+        .filter_by(managingOffererId=offerer_id) \
+        .filter(Venue.siret == None) \
+        .filter(func.lower(Venue.name) == func.lower(venue_name)) \
+        .one_or_none()
+
+
+def find_by_managing_offerer_id_and_siret(offerer_id: int, siret: str) -> Venue:
+    return Venue.query \
+        .filter_by(managingOffererId=offerer_id) \
+        .filter_by(siret=siret) \
+        .one_or_none()
 
 
 def find_filtered_venues(sirens=None,

@@ -39,7 +39,7 @@ def demarche_simplifiee_application_detail_response(siret, bic, iban, idx=1, upd
                     "value": siret,
                     "type_de_champ": {
                         "id": 782800,
-                        "libelle": "Si vous souhaitez renseigner les coordonn\\u00e9es bancaires d\'un lieu avec SIRET, merci de saisir son SIRET : ",
+                        "libelle": "Si vous souhaitez renseigner les coordonn\u00e9es bancaires d'un lieu avec SIRET, merci de saisir son SIRET :",
                     },
                     "etablissement": {
                         "siret": siret,
@@ -53,6 +53,54 @@ def demarche_simplifiee_application_detail_response(siret, bic, iban, idx=1, upd
                     "type_de_champ": {
                         "id": 909032,
                         "libelle": "Si vous souhaitez renseigner les coordonn\\u00e9es bancaires d\'un lieu sans SIRET, merci de saisir le \"Nom du lieu\", \\u00e0 l\'identique de celui dans le pass Culture Pro :",
+                    }
+                },
+                {
+                    "value": iban,
+                    "type_de_champ": {
+                        "id": 352722,
+                        "libelle": "IBAN",
+                    }
+                },
+                {
+                    "value": bic,
+                    "type_de_champ": {
+                        "id": 352727,
+                        "libelle": "BIC",
+                    }
+                }
+            ]
+        }
+    }
+
+
+def demarche_simplifiee_application_detail_response_without_venue_siret(siret, bic, iban, idx=1, updated_at="2019-01-21T18:55:03.387Z", venue_name='VENUE WITHOUT SIRET'):
+    return {
+        "dossier": {
+            "id": idx,
+            "updated_at": updated_at,
+            "state": "closed",
+            "entreprise": {
+                "siren": siret[0: 9],
+            },
+            "etablissement": {
+                "siret": siret,
+            },
+            "champs": [
+                {
+                    "value": "",
+                    "type_de_champ": {
+                        "id": 782800,
+                        "libelle": "Si vous souhaitez renseigner les coordonn\u00e9es bancaires d'un lieu avec SIRET, merci de saisir son SIRET :",
+                    },
+                    "etablissement": None,
+                    "entreprise": None
+                },
+                {
+                    "value": venue_name,
+                    "type_de_champ": {
+                        "id": 909032,
+                        "libelle": "Si vous souhaitez renseigner les coordonn\u00e9es bancaires d'un lieu sans SIRET, merci de saisir le \"Nom du lieu\", \u00e0 l'identique de celui dans le pass Culture Pro :",
                     }
                 },
                 {
@@ -93,127 +141,294 @@ class VenueBankInformationProviderTest:
         # Then
         assert BankInformation.query.count() == 0
 
-    @patch(
-        'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
-    @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
-    @clean_database
-    def test_provider_checks_two_objects_and_creates_two_when_both_rib_affiliations_are_known(
-            self,
-            get_application_details,
-            get_all_application_ids_for_demarche_simplifiee,
-            app):
-        # Given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [1, 2]
-        get_application_details.side_effect = [
-            demarche_simplifiee_application_detail_response(siret="42486171400014",
-                                                            bic="BDFEFR2LCCB",
-                                                            iban="FR7630006000011234567890189",
-                                                            idx=1,
-                                                            updated_at="2020-04-17T12:56:57.529Z"),
-            demarche_simplifiee_application_detail_response(siret="12345678912345",
-                                                            bic="BDFEFR2LCCB",
-                                                            iban="FR7630006000011234567890189",
-                                                            idx=2,
-                                                            updated_at="2020-04-17T12:56:57.529Z")
-        ]
-        offerer1 = create_offerer(siren='424861714')
-        venue1 = create_venue(offerer1, siret='42486171400014')
-        offerer2 = create_offerer(siren='123456789')
-        venue2 = create_venue(offerer2, siret='12345678912345')
-        repository.save(venue1, venue2)
-        venue_id1 = venue1.id
-        venue_id2 = venue2.id
-        activate_provider('VenueBankInformationProvider')
-        venue_bank_information_provider = VenueBankInformationProvider()
+    class VenueWithSiretTest:
+        @patch(
+            'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
+        @clean_database
+        def test_provider_checks_two_objects_and_creates_two_when_both_rib_affiliations_are_known(
+                self,
+                get_application_details,
+                get_all_application_ids_for_demarche_simplifiee,
+                app):
+            # Given
+            get_all_application_ids_for_demarche_simplifiee.return_value = [
+                1, 2]
+            get_application_details.side_effect = [
+                demarche_simplifiee_application_detail_response(siret="42486171400014",
+                                                                bic="BDFEFR2LCCB",
+                                                                iban="FR7630006000011234567890189",
+                                                                idx=1,
+                                                                updated_at="2020-04-17T12:56:57.529Z"),
+                demarche_simplifiee_application_detail_response(siret="12345678912345",
+                                                                bic="BDFEFR2LCCB",
+                                                                iban="FR7630006000011234567890189",
+                                                                idx=2,
+                                                                updated_at="2020-04-17T12:56:57.529Z")
+            ]
+            offerer1 = create_offerer(siren='424861714')
+            venue1 = create_venue(offerer1, siret='42486171400014')
+            offerer2 = create_offerer(siren='123456789')
+            venue2 = create_venue(offerer2, siret='12345678912345')
+            repository.save(venue1, venue2)
+            venue_id1 = venue1.id
+            venue_id2 = venue2.id
+            activate_provider('VenueBankInformationProvider')
+            venue_bank_information_provider = VenueBankInformationProvider()
 
-        # When
-        venue_bank_information_provider.updateObjects()
+            # When
+            venue_bank_information_provider.updateObjects()
 
-        # Then
-        bank_information1 = BankInformation.query.filter_by(
-            applicationId=1).first()
-        bank_information2 = BankInformation.query.filter_by(
-            applicationId=2).first()
-        assert BankInformation.query.count() == 2
-        assert bank_information1.iban == 'FR7630006000011234567890189'
-        assert bank_information1.bic == 'BDFEFR2LCCB'
-        assert bank_information1.applicationId == 1
-        assert bank_information1.offererId == None
-        assert bank_information1.venueId == venue_id1
-        assert bank_information1.idAtProviders == '42486171400014'
-        assert bank_information2.iban == 'FR7630006000011234567890189'
-        assert bank_information2.bic == 'BDFEFR2LCCB'
-        assert bank_information2.applicationId == 2
-        assert bank_information2.offererId == None
-        assert bank_information2.venueId == venue_id2
-        assert bank_information2.idAtProviders == '12345678912345'
+            # Then
+            bank_information1 = BankInformation.query.filter_by(
+                applicationId=1).first()
+            bank_information2 = BankInformation.query.filter_by(
+                applicationId=2).first()
+            assert BankInformation.query.count() == 2
+            assert bank_information1.iban == 'FR7630006000011234567890189'
+            assert bank_information1.bic == 'BDFEFR2LCCB'
+            assert bank_information1.applicationId == 1
+            assert bank_information1.offererId == None
+            assert bank_information1.venueId == venue_id1
+            assert bank_information1.idAtProviders == '42486171400014'
+            assert bank_information2.iban == 'FR7630006000011234567890189'
+            assert bank_information2.bic == 'BDFEFR2LCCB'
+            assert bank_information2.applicationId == 2
+            assert bank_information2.offererId == None
+            assert bank_information2.venueId == venue_id2
+            assert bank_information2.idAtProviders == '12345678912345'
 
-    @patch(
-        'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
-    @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
-    @clean_database
-    def test_provider_does_not_create_bank_information_if_siret_unknown(
-            self,
-            get_application_details,
-            get_all_application_ids_for_demarche_simplifiee,
-            app):
-        # Given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [1]
-        get_application_details.return_value = demarche_simplifiee_application_detail_response(
-            siret="42486171400014",
-            bic="BDFEFR2LCCB",
-            iban="FR7630006000011234567890189",
-            idx=1,
-            updated_at="2020-04-17T12:56:57.529Z")
-        activate_provider('VenueBankInformationProvider')
-        venue_bank_information_provider = VenueBankInformationProvider()
+        @patch(
+            'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
+        @clean_database
+        def test_provider_does_not_create_bank_information_if_siret_unknown(
+                self,
+                get_application_details,
+                get_all_application_ids_for_demarche_simplifiee,
+                app):
+            # Given
+            get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+            get_application_details.return_value = demarche_simplifiee_application_detail_response(
+                siret="42486171400014",
+                bic="BDFEFR2LCCB",
+                iban="FR7630006000011234567890189",
+                idx=1,
+                updated_at="2020-04-17T12:56:57.529Z")
+            activate_provider('VenueBankInformationProvider')
+            venue_bank_information_provider = VenueBankInformationProvider()
 
-        # When
-        venue_bank_information_provider.updateObjects()
+            # When
+            venue_bank_information_provider.updateObjects()
 
-        # Then
-        assert BankInformation.query.count() == 0
-        sync_error = LocalProviderEvent.query.filter_by(
-            type=LocalProviderEventType.SyncError).first()
-        assert sync_error.payload == 'unknown siret for application id 1'
-        events = LocalProviderEvent.query.all()
-        assert events[0].type == LocalProviderEventType.SyncStart
-        assert events[1].type == LocalProviderEventType.SyncError
-        assert events[2].type == LocalProviderEventType.SyncEnd
+            # Then
+            assert BankInformation.query.count() == 0
+            sync_error = LocalProviderEvent.query.filter_by(
+                type=LocalProviderEventType.SyncError).first()
+            assert sync_error.payload == 'unknown siret or name for application id 1'
+            events = LocalProviderEvent.query.all()
+            assert events[0].type == LocalProviderEventType.SyncStart
+            assert events[1].type == LocalProviderEventType.SyncError
+            assert events[2].type == LocalProviderEventType.SyncEnd
 
-    @patch(
-        'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
-    @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
-    @clean_database
-    def test_provider_updates_existing_bank_information(
-            self,
-            get_application_details,
-            get_all_application_ids_for_demarche_simplifiee,
-            app):
-        # Given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [1]
-        get_application_details.return_value = demarche_simplifiee_application_detail_response(
-            siret="42486171400014",
-            bic="BDFEFR2LCCB",
-            iban="FR7630006000011234567890189",
-            idx=2,
-            updated_at="2020-04-17T12:56:57.529Z")
-        offerer = create_offerer(siren='424861714')
-        venue = create_venue(offerer, siret='42486171400014')
-        bank_information = create_bank_information(
-            id_at_providers="42486171400014", venue=venue, bic="SOGEFRPP", iban="FR7630007000111234567890144")
-        repository.save(bank_information)
-        activate_provider('VenueBankInformationProvider')
-        venue_bank_information_provider = VenueBankInformationProvider()
+        @patch(
+            'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
+        @clean_database
+        def test_provider_updates_existing_bank_information(
+                self,
+                get_application_details,
+                get_all_application_ids_for_demarche_simplifiee,
+                app):
+            # Given
+            get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+            get_application_details.return_value = demarche_simplifiee_application_detail_response(
+                siret="42486171400014",
+                bic="BDFEFR2LCCB",
+                iban="FR7630006000011234567890189",
+                idx=2,
+                updated_at="2020-04-17T12:56:57.529Z")
+            offerer = create_offerer(siren='424861714')
+            venue = create_venue(offerer, siret='42486171400014')
+            bank_information = create_bank_information(
+                id_at_providers="42486171400014", venue=venue, bic="SOGEFRPP", iban="FR7630007000111234567890144")
+            repository.save(bank_information)
+            activate_provider('VenueBankInformationProvider')
+            venue_bank_information_provider = VenueBankInformationProvider()
 
-        # When
-        venue_bank_information_provider.updateObjects()
+            # When
+            venue_bank_information_provider.updateObjects()
 
-        # Then
-        updated_bank_information = BankInformation.query.one()
-        assert updated_bank_information.applicationId == 2
-        assert updated_bank_information.iban == "FR7630006000011234567890189"
-        assert updated_bank_information.bic == "BDFEFR2LCCB"
+            # Then
+            updated_bank_information = BankInformation.query.one()
+            assert updated_bank_information.applicationId == 2
+            assert updated_bank_information.iban == "FR7630006000011234567890189"
+            assert updated_bank_information.bic == "BDFEFR2LCCB"
+
+    class VenueWithoutSiretTest:
+        @patch(
+            'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
+        @clean_database
+        def test_provider_checks_two_objects_and_creates_two_when_both_rib_affiliations_are_known(
+                self,
+                get_application_details,
+                get_all_application_ids_for_demarche_simplifiee,
+                app):
+            # Given
+            get_all_application_ids_for_demarche_simplifiee.return_value = [
+                1, 2]
+            get_application_details.side_effect = [
+                demarche_simplifiee_application_detail_response_without_venue_siret(siret="42486171400014",
+                                                                bic="BDFEFR2LCCB",
+                                                                iban="FR7630006000011234567890189",
+                                                                idx=1,
+                                                                updated_at="2020-04-17T12:56:57.529Z"),
+                demarche_simplifiee_application_detail_response_without_venue_siret(siret="12345678912345",
+                                                                bic="BDFEFR2LCCB",
+                                                                iban="FR7630006000011234567890189",
+                                                                idx=2,
+                                                                updated_at="2020-04-17T12:56:57.529Z")
+            ]
+            offerer1 = create_offerer(siren='424861714')
+            venue1 = create_venue(offerer1, siret=None, comment='without siret venue', name='VENUE WITHOUT SIRET')
+            offerer2 = create_offerer(siren='123456789')
+            venue2 = create_venue(offerer2, siret=None, comment='without siret venue', name='VENUE WITHOUT SIRET')
+            repository.save(venue1, venue2)
+            venue_id1 = venue1.id
+            venue_id2 = venue2.id
+            activate_provider('VenueBankInformationProvider')
+            venue_bank_information_provider = VenueBankInformationProvider()
+
+            # When
+            venue_bank_information_provider.updateObjects()
+
+            # Then
+            bank_information1 = BankInformation.query.filter_by(
+                applicationId=1).first()
+            bank_information2 = BankInformation.query.filter_by(
+                applicationId=2).first()
+            assert BankInformation.query.count() == 2
+            assert bank_information1.iban == 'FR7630006000011234567890189'
+            assert bank_information1.bic == 'BDFEFR2LCCB'
+            assert bank_information1.applicationId == 1
+            assert bank_information1.offererId == None
+            assert bank_information1.venueId == venue_id1
+            assert bank_information1.idAtProviders == '424861714VENUE WITHOUT SIRET'
+            assert bank_information2.iban == 'FR7630006000011234567890189'
+            assert bank_information2.bic == 'BDFEFR2LCCB'
+            assert bank_information2.applicationId == 2
+            assert bank_information2.offererId == None
+            assert bank_information2.venueId == venue_id2
+            assert bank_information2.idAtProviders == '123456789VENUE WITHOUT SIRET'
+
+        @patch(
+            'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
+        @clean_database
+        def test_provider_does_not_create_bank_information_if_name_unknown(
+                self,
+                get_application_details,
+                get_all_application_ids_for_demarche_simplifiee,
+                app):
+            # Given
+            get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+            get_application_details.return_value = demarche_simplifiee_application_detail_response_without_venue_siret(
+                siret="42486171400014",
+                bic="BDFEFR2LCCB",
+                iban="FR7630006000011234567890189",
+                idx=1,
+                updated_at="2020-04-17T12:56:57.529Z",
+                venue_name='NOT MATCHING NAME')
+            activate_provider('VenueBankInformationProvider')
+            venue_bank_information_provider = VenueBankInformationProvider()
+
+            # When
+            venue_bank_information_provider.updateObjects()
+
+            # Then
+            assert BankInformation.query.count() == 0
+            sync_error = LocalProviderEvent.query.filter_by(
+                type=LocalProviderEventType.SyncError).first()
+            assert sync_error.payload == 'unknown siret or name for application id 1'
+            events = LocalProviderEvent.query.all()
+            assert events[0].type == LocalProviderEventType.SyncStart
+            assert events[1].type == LocalProviderEventType.SyncError
+            assert events[2].type == LocalProviderEventType.SyncEnd
+
+        @patch(
+            'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
+        @clean_database
+        def test_provider_does_not_create_bank_information_if_there_is_several_venue_with_same_name(
+                self,
+                get_application_details,
+                get_all_application_ids_for_demarche_simplifiee,
+                app):
+            # Given
+            get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+            get_application_details.return_value = demarche_simplifiee_application_detail_response_without_venue_siret(
+                siret="42486171400014",
+                bic="BDFEFR2LCCB",
+                iban="FR7630006000011234567890189",
+                idx=1,
+                updated_at="2020-04-17T12:56:57.529Z",
+                venue_name='VENUE WITH SAME NAME')
+            offerer = create_offerer(siren='424861714')
+            venue1 = create_venue(offerer, siret=None, comment='without siret venue', name='VENUE WITH SAME NAME')
+            venue2 = create_venue(offerer, siret=None, comment='without siret venue', name='VENUE WITH SAME NAME')
+            repository.save(venue1, venue2)
+            activate_provider('VenueBankInformationProvider')
+            venue_bank_information_provider = VenueBankInformationProvider()
+
+            # When
+            venue_bank_information_provider.updateObjects()
+
+            # Then
+            assert BankInformation.query.count() == 0
+            sync_error = LocalProviderEvent.query.filter_by(
+                type=LocalProviderEventType.SyncError).first()
+            assert sync_error.payload == 'multiple matching venue for application id 1'
+            events = LocalProviderEvent.query.all()
+            assert events[0].type == LocalProviderEventType.SyncStart
+            assert events[1].type == LocalProviderEventType.SyncError
+            assert events[2].type == LocalProviderEventType.SyncError
+            assert events[3].type == LocalProviderEventType.SyncEnd
+
+        @patch(
+            'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
+        @clean_database
+        def test_provider_updates_existing_bank_information(
+                self,
+                get_application_details,
+                get_all_application_ids_for_demarche_simplifiee,
+                app):
+            # Given
+            get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+            get_application_details.return_value = demarche_simplifiee_application_detail_response_without_venue_siret(
+                siret="42486171400014",
+                bic="BDFEFR2LCCB",
+                iban="FR7630006000011234567890189",
+                idx=2,
+                updated_at="2020-04-17T12:56:57.529Z")
+            offerer = create_offerer(siren='424861714')
+            venue = create_venue(offerer, siret=None, name='VENUE WITHOUT SIRET', comment='venue whithout siret')
+            bank_information = create_bank_information(
+                id_at_providers="424861714VENUE WITHOUT SIRET", venue=venue, bic="SOGEFRPP", iban="FR7630007000111234567890144")
+            repository.save(bank_information)
+            activate_provider('VenueBankInformationProvider')
+            venue_bank_information_provider = VenueBankInformationProvider()
+
+            # When
+            venue_bank_information_provider.updateObjects()
+
+            # Then
+            updated_bank_information = BankInformation.query.one()
+            assert updated_bank_information.applicationId == 2
+            assert updated_bank_information.iban == "FR7630006000011234567890189"
+            assert updated_bank_information.bic == "BDFEFR2LCCB"
+
 
     @patch(
         'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')

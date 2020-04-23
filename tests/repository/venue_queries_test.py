@@ -1,8 +1,11 @@
 """ repository venue queries """
 from datetime import datetime, timedelta
+import pytest
+from sqlalchemy.orm.exc import MultipleResultsFound
 
 from repository import repository
-from repository.venue_queries import find_filtered_venues, find_by_managing_user
+from repository.venue_queries import find_filtered_venues, find_by_managing_user, \
+    find_by_managing_offerer_id_and_name_for_venue_without_siret, find_by_managing_offerer_id_and_siret
 from tests.conftest import clean_database
 from tests.model_creators.activity_creators import create_venue_activity, save_all_activities
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
@@ -656,3 +659,81 @@ class FindVenuesByManagingUserTest:
         # then
         assert len(venues) == 1
         assert venues[0] == managed_venue
+
+class FindByManagingOffererIdAndNameForVenueWithoutSiretTest:
+    @clean_database
+    def test_return_none_when_not_matching_venues(self):
+        # Given
+        offerer = create_offerer()
+        not_matching_venue = create_venue(offerer, name='Not matching name', siret=None, comment='comment')
+        repository.save(not_matching_venue)
+
+        # When
+        venue = find_by_managing_offerer_id_and_name_for_venue_without_siret(offerer.id, 'searched name')
+
+        # Then
+        assert venue is None
+
+    @clean_database
+    def test_raise_multi_result_found_error_when_several_matching_venues(self):
+        # Given
+        offerer = create_offerer()
+        matching_venue1 = create_venue(offerer, name='Matching name', siret=None, comment='searched name')
+        matching_venue2 = create_venue(offerer, name='Matching name', siret=None, comment='searched name')
+        repository.save(matching_venue1, matching_venue2)
+
+        # When
+        with pytest.raises(MultipleResultsFound) as error:
+            venue = find_by_managing_offerer_id_and_name_for_venue_without_siret(offerer.id, 'Matching name')
+
+        # Then
+        assert '' in str(error)
+
+    @clean_database
+    def test_return_only_matching_venue_without_siret_by_name_for_offerer_id_when_matching_venue(self):
+        # Given
+        offerer = create_offerer()
+        wrong_offerer = create_offerer(siren='123456798')
+        matching_venue = create_venue(offerer, name='Matching name', siret=None, comment='comment')
+        not_matching_venue1 = create_venue(offerer, name='Not matching name', siret=None, comment='comment')
+        not_matching_venue2 = create_venue(offerer, name='Matching name')
+        not_matching_venue3 = create_venue(wrong_offerer, name='Matching name', siret=None, comment='comment')
+        repository.save(matching_venue, not_matching_venue1, not_matching_venue2, not_matching_venue3)
+
+        # When
+        venue = find_by_managing_offerer_id_and_name_for_venue_without_siret(offerer.id, 'Matching name')
+
+        # Then
+        assert venue.id == matching_venue.id
+        assert venue.siret is None
+        assert venue.managingOffererId == offerer.id
+
+
+class FindByManagingOffererIdAndSiretTest:
+    @clean_database
+    def test_return_none_when_not_matching_venues(self):
+        # Given
+        offerer = create_offerer()
+        not_matching_venue = create_venue(offerer, siret='12345678988888')
+        repository.save(not_matching_venue)
+
+        # When
+        venue = find_by_managing_offerer_id_and_siret(offerer.id, '12345678912345')
+
+        # Then
+        assert venue is None
+
+    @clean_database
+    def test_return_matching_venue_without_siret_by_name_for_offerer_id_when_matching_venue(self):
+        # Given
+        offerer = create_offerer()
+        matching_venue = create_venue(offerer, siret='12345678912345')
+        repository.save(matching_venue)
+
+        # When
+        venue = find_by_managing_offerer_id_and_siret(offerer.id, '12345678912345')
+
+        # Then
+        assert venue.id == matching_venue.id
+        assert venue.siret == '12345678912345'
+        assert venue.managingOffererId == offerer.id
