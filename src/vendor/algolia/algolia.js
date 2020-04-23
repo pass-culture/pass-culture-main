@@ -8,27 +8,30 @@ import {
 import { FACETS } from './facets'
 import { FILTERS } from './filters'
 
+const DEFAULT_RADIUS_IN_KILOMETERS = 100
+
 export const fetchAlgolia = ({
-  aroundRadius = null,
-  geolocation = null,
-  keywords = '',
-  offerCategories = [],
-  offerIsDuo = false,
-  offerIsFree = false,
-  offerTypes = {
-    isDigital: false,
-    isEvent: false,
-    isThing: false,
-  },
-  page = 0,
-  priceRange = [],
-  sortBy = '',
-} = {}) => {
+                               aroundRadius = DEFAULT_RADIUS_IN_KILOMETERS,
+                               geolocation = null,
+                               keywords = '',
+                               isSearchAroundMe = false,
+                               offerCategories = [],
+                               offerIsDuo = false,
+                               offerIsFree = false,
+                               offerTypes = {
+                                 isDigital: false,
+                                 isEvent: false,
+                                 isThing: false,
+                               },
+                               page = 0,
+                               priceRange = [],
+                               sortBy = '',
+                             } = {}) => {
   const searchParameters = {
     page: page,
     ...buildFacetFilters(offerCategories, offerTypes, offerIsDuo),
     ...buildNumericFilters(offerIsFree, priceRange),
-    ...buildGeolocationParameter(aroundRadius, geolocation),
+    ...buildGeolocationParameter(aroundRadius, geolocation, isSearchAroundMe),
   }
   const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_SEARCH_API_KEY)
   const index = client.initIndex(ALGOLIA_INDEX_NAME + sortBy)
@@ -112,14 +115,16 @@ const buildOfferTypesPredicate = offerTypes => {
   }
 }
 
-const buildGeolocationParameter = (aroundRadius, geolocation) => {
+const buildGeolocationParameter = (aroundRadius, geolocation, isSearchAroundMe) => {
   if (geolocation) {
     const { longitude, latitude } = geolocation
     if (latitude && longitude) {
       const aroundRadiusInMeters = aroundRadius * 1000
       return {
         aroundLatLng: `${latitude}, ${longitude}`,
-        aroundRadius: aroundRadius ? aroundRadiusInMeters : FILTERS.UNLIMITED_RADIUS,
+        aroundRadius: isSearchAroundMe ?
+          aroundRadiusInMeters > 0 ? aroundRadiusInMeters : FILTERS.UNLIMITED_RADIUS
+          : FILTERS.UNLIMITED_RADIUS
       }
     }
   }

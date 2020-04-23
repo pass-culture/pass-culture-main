@@ -87,6 +87,7 @@ describe('components | SearchResults', () => {
         resolve({
           hits: [],
           nbHits: 0,
+          nbPages: 0,
           page: 0,
         })
       })
@@ -213,11 +214,13 @@ describe('components | SearchResults', () => {
           resolve({
             hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
             nbHits: 2,
+            nbPages: 0,
             page: 0,
           })
         })
       )
       parse.mockReturnValue({
+        'autour-de-moi': 'oui',
         categories: 'MUSEE',
         'mots-cles': 'une librairie',
         tri: '_by_price',
@@ -229,10 +232,12 @@ describe('components | SearchResults', () => {
 
       // then
       expect(fetchAlgolia).toHaveBeenCalledWith({
+        aroundRadius: 100,
         geolocation: {
           latitude: 40.1,
           longitude: 41.1,
         },
+        isSearchAroundMe: true,
         keywords: 'une librairie',
         offerCategories: ['MUSEE'],
         offerIsDuo: false,
@@ -261,8 +266,9 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
-          //radiusRevert: aroundRadius: 0,
+          aroundRadius: 100,
           geolocation: props.geolocation,
+          isSearchAroundMe: true,
           keywords: '',
           offerCategories: ['Cinéma'],
           offerIsDuo: false,
@@ -352,11 +358,12 @@ describe('components | SearchResults', () => {
 
         // Then
         expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
-          aroundRadius: undefined,
+          aroundRadius: 100,
           geolocation: {
             latitude: 40.1,
             longitude: 41.1,
           },
+          isSearchAroundMe: true,
           keywords: '',
           offerCategories: [],
           offerIsDuo: false,
@@ -422,6 +429,7 @@ describe('components | SearchResults', () => {
             resolve({
               hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
               nbHits: 1,
+              nbPages: 1,
               page: 0,
             })
           })
@@ -442,10 +450,12 @@ describe('components | SearchResults', () => {
         expect(searchInput.prop('value')).toBe('une librairie')
         expect(searchResultsListComponent.prop('resultsCount')).toBe(1)
         expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
           geolocation: {
             latitude: 40.1,
             longitude: 41.1,
           },
+          isSearchAroundMe: false,
           keywords: 'une librairie',
           offerCategories: [],
           offerIsDuo: false,
@@ -468,6 +478,7 @@ describe('components | SearchResults', () => {
             resolve({
               hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
               nbHits: 2,
+              nbPages: 0,
               page: 0,
             })
           })
@@ -504,6 +515,7 @@ describe('components | SearchResults', () => {
             resolve({
               hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
               nbHits: 2,
+              nbPages: 2,
               page: 0,
             })
           })
@@ -519,8 +531,9 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
-          //radiusRevert: aroundRadius: 0,
+          aroundRadius: 100,
           geolocation: { latitude: 40.1, longitude: 41.1 },
+          isSearchAroundMe: true,
           keywords: 'une librairie',
           offerCategories: [],
           offerIsDuo: false,
@@ -545,6 +558,7 @@ describe('components | SearchResults', () => {
             resolve({
               hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
               nbHits: 2,
+              nbPages: 2,
               page: 0,
             })
           })
@@ -560,7 +574,9 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
           geolocation: { latitude: 40.1, longitude: 41.1 },
+          isSearchAroundMe: false,
           keywords: 'une librairie',
           offerCategories: ['CINEMA'],
           offerIsDuo: false,
@@ -583,11 +599,13 @@ describe('components | SearchResults', () => {
             resolve({
               hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
               nbHits: 2,
+              nbPages: 0,
               page: 0,
             })
           })
         )
         parse.mockReturnValue({
+          'autour-de-moi': 'oui',
           categories: 'CINEMA',
           'mots-cles': 'une librairie',
         })
@@ -598,7 +616,9 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
           geolocation: { latitude: 40.1, longitude: 41.1 },
+          isSearchAroundMe: true,
           keywords: 'une librairie',
           offerCategories: ['CINEMA'],
           offerIsDuo: false,
@@ -616,6 +636,7 @@ describe('components | SearchResults', () => {
             resolve({
               hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
               nbHits: 2,
+              nbPages: 2,
               page: 0,
             })
           })
@@ -634,7 +655,9 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
           geolocation: { latitude: 40.1, longitude: 41.1 },
+          isSearchAroundMe: false,
           keywords: 'une librairie',
           offerCategories: ['CINEMA'],
           offerIsDuo: false,
@@ -652,6 +675,7 @@ describe('components | SearchResults', () => {
             resolve({
               hits: [],
               nbHits: 0,
+              nbPages: 0,
               page: 0,
             })
           })
@@ -666,7 +690,9 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
           geolocation: { latitude: 40.1, longitude: 41.1 },
+          isSearchAroundMe: false,
           keywords: 'une librairie',
           offerCategories: [],
           offerIsDuo: false,
@@ -691,6 +717,7 @@ describe('components | SearchResults', () => {
             resolve({
               hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
               nbHits: 2,
+              nbPages: 0,
               page: 0,
             })
           })
@@ -705,7 +732,9 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
           geolocation: { latitude: 40.1, longitude: 41.1 },
+          isSearchAroundMe: false,
           keywords: 'une librairie',
           offerCategories: [],
           offerIsDuo: false,
@@ -729,6 +758,7 @@ describe('components | SearchResults', () => {
             resolve({
               hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
               nbHits: 2,
+              nbPages: 0,
               page: 0,
             })
           })
@@ -743,7 +773,9 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
           geolocation: { latitude: 40.1, longitude: 41.1 },
+          isSearchAroundMe: false,
           keywords: 'une librairie',
           offerCategories: [],
           offerIsDuo: false,
@@ -766,6 +798,7 @@ describe('components | SearchResults', () => {
             resolve({
               hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
               nbHits: 2,
+              nbPages: 0,
               page: 0,
             })
           })
@@ -784,7 +817,9 @@ describe('components | SearchResults', () => {
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
           geolocation: { latitude: 40.1, longitude: 41.1 },
+          isSearchAroundMe: false,
           keywords: 'une librairie',
           offerCategories: [],
           offerIsDuo: false,
@@ -806,6 +841,7 @@ describe('components | SearchResults', () => {
             resolve({
               hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
               nbHits: 1,
+              nbPages: 0,
               page: 0,
             })
           })
@@ -827,6 +863,7 @@ describe('components | SearchResults', () => {
             resolve({
               hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
               nbHits: 1,
+              nbPages: 0,
               page: 0,
             })
           })
@@ -864,7 +901,9 @@ describe('components | SearchResults', () => {
 
       // then
       expect(fetchAlgolia).toHaveBeenCalledWith({
+        aroundRadius: 100,
         geolocation: { latitude: 40.1, longitude: 41.1 },
+        isSearchAroundMe: false,
         keywords: 'un livre très cherché',
         offerCategories: [],
         offerIsDuo: false,
@@ -899,7 +938,9 @@ describe('components | SearchResults', () => {
 
       // then
       expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
+        aroundRadius: 100,
         geolocation: { latitude: 40.1, longitude: 41.1 },
+        isSearchAroundMe: false,
         keywords: '',
         offerCategories: [],
         offerIsDuo: false,
@@ -934,7 +975,9 @@ describe('components | SearchResults', () => {
 
       // then
       expect(fetchAlgolia).toHaveBeenCalledWith({
+        aroundRadius: 100,
         geolocation: { latitude: 40.1, longitude: 41.1 },
+        isSearchAroundMe: false,
         keywords: '',
         offerCategories: [],
         offerIsDuo: false,
@@ -1081,7 +1124,7 @@ describe('components | SearchResults', () => {
       expect(resultsFirstFetch).toHaveLength(2)
 
       // when
-      await fetchAlgolia.mockReturnValueOnce(
+      fetchAlgolia.mockReturnValueOnce(
         new Promise(resolve => {
           resolve({
             hits: [offer3],
@@ -1110,7 +1153,7 @@ describe('components | SearchResults', () => {
       expect(wrapper.state()).toStrictEqual({
         currentPage: 0,
         filters: {
-          //radiusRevert: aroundRadius: 0,
+          aroundRadius: 100,
           isSearchAroundMe: false,
           offerCategories: [],
           offerIsDuo: false,
@@ -1177,7 +1220,9 @@ describe('components | SearchResults', () => {
       // then
       expect(fetchAlgolia).toHaveBeenCalledTimes(2)
       expect(fetchAlgolia).toHaveBeenNthCalledWith(1, {
+        aroundRadius: 100,
         geolocation: { latitude: 40.1, longitude: 41.1 },
+        isSearchAroundMe: false,
         keywords: '',
         offerCategories: [],
         offerIsDuo: false,
@@ -1192,7 +1237,9 @@ describe('components | SearchResults', () => {
         sortBy: '',
       })
       expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
+        aroundRadius: 100,
         geolocation: { latitude: 40.1, longitude: 41.1 },
+        isSearchAroundMe: false,
         keywords: 'librairie',
         offerCategories: [],
         offerIsDuo: false,
@@ -1508,7 +1555,7 @@ describe('components | SearchResults', () => {
         // given
         history.push('/recherche/resultats?mots-cles=librairie&page=1')
         const offer1 = { objectID: 'AE', offer: { name: 'Livre de folie de la librairie' } }
-        const offer2 = { objectID: 'AF', offer: { name: 'Livre bien de la librairie' } }
+        const offer2 = { objectID: 'AY', offer: { name: 'Livre bien de la librairie' } }
         fetchAlgolia.mockReturnValueOnce(
           new Promise(resolve => {
             resolve({
@@ -1588,7 +1635,7 @@ describe('components | SearchResults', () => {
       expect(filtersContainer).toHaveLength(1)
       expect(filtersContainer.prop('history')).toStrictEqual(props.history)
       expect(filtersContainer.prop('initialFilters')).toStrictEqual({
-        //radiusRevert: aroundRadius: 0,
+        aroundRadius: 100,
         isSearchAroundMe: false,
         offerCategories: ['VISITE', 'CINEMA'],
         offerIsDuo: false,
@@ -1679,6 +1726,7 @@ describe('components | SearchResults', () => {
           resolve({
             hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
             nbHits: 1,
+            nbPages: 0,
             page: 0,
           })
         })
@@ -1712,6 +1760,7 @@ describe('components | SearchResults', () => {
           resolve({
             hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
             nbHits: 1,
+            nbPages: 0,
             page: 0,
           })
         })
@@ -1761,7 +1810,9 @@ describe('components | SearchResults', () => {
       // Then
       expect(fetchAlgolia).toHaveBeenCalledTimes(2)
       expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
+        aroundRadius: 100,
         geolocation: { latitude: 40.1, longitude: 41.1 },
+        isSearchAroundMe: false,
         keywords: '',
         offerCategories: [],
         offerIsDuo: false,
@@ -1792,6 +1843,7 @@ describe('components | SearchResults', () => {
                 },
               ],
               nbHits: 1,
+              nbPages: 0,
               page: 0,
             })
           })
@@ -1807,6 +1859,7 @@ describe('components | SearchResults', () => {
                 },
               ],
               nbHits: 1,
+              nbPages: 0,
               page: 0,
             })
           })

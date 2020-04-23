@@ -2,11 +2,13 @@ import { mount, shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Route, Router } from 'react-router'
-import { Criteria } from '../Criteria/Criteria'
 import { CATEGORY_CRITERIA } from '../Criteria/criteriaEnums'
 import { Home } from '../Home/Home'
 import SearchResults from '../Result/SearchResults'
 import SearchAlgolia from '../SearchAlgolia'
+import { CriteriaLocation } from '../CriteriaLocation/CriteriaLocation'
+import { CriteriaCategory } from '../CriteriaCategory/CriteriaCategory'
+import { CriteriaSort } from '../CriteriaSort/CriteriaSort'
 
 describe('components | SearchAlgolia', () => {
   let props
@@ -127,7 +129,7 @@ describe('components | SearchAlgolia', () => {
         expect(critereLocalisationRoute.prop('path')).toBe(
           '/recherche/criteres-localisation'
         )
-        const searchCriteriaLocation = critereLocalisationRoute.find(Criteria)
+        const searchCriteriaLocation = critereLocalisationRoute.find(CriteriaLocation)
         expect(searchCriteriaLocation.prop('activeCriterionLabel')).toStrictEqual('Partout')
         expect(searchCriteriaLocation.prop('criteria')).toStrictEqual(expect.any(Object))
         expect(searchCriteriaLocation.prop('history')).toStrictEqual(props.history)
@@ -151,7 +153,7 @@ describe('components | SearchAlgolia', () => {
         // then
         const critereCategorieRoute = routes.at(3)
         expect(critereCategorieRoute.prop('path')).toBe('/recherche/criteres-categorie')
-        const searchCriteriaCategory = critereCategorieRoute.find(Criteria)
+        const searchCriteriaCategory = critereCategorieRoute.find(CriteriaCategory)
         expect(searchCriteriaCategory.prop('activeCriterionLabel')).toStrictEqual(
           'Toutes les catégories'
         )
@@ -177,7 +179,7 @@ describe('components | SearchAlgolia', () => {
         // then
         const sortingCriteriaRoute = routes.at(4)
         expect(sortingCriteriaRoute.prop('path')).toBe('/recherche/criteres-tri')
-        const sortingCriteria = sortingCriteriaRoute.find(Criteria)
+        const sortingCriteria = sortingCriteriaRoute.find(CriteriaSort)
         expect(sortingCriteria.prop('activeCriterionLabel')).toStrictEqual('Au hasard')
         expect(sortingCriteria.prop('criteria')).toStrictEqual(expect.any(Object))
         expect(sortingCriteria.prop('history')).toStrictEqual(props.history)
@@ -223,24 +225,7 @@ describe('components | SearchAlgolia', () => {
       )
     })
 
-    it('should select "Autour de moi" if geolocation is enabled', () => {
-      // given
-      props.isGeolocationEnabled = true
-      props.history.location.pathname = '/recherche'
-      const wrapper = mount(
-        <Router history={props.history}>
-          <SearchAlgolia {...props} />
-        </Router>
-      )
-
-      // when
-      const aroundMe = wrapper.findWhere(node => node.text() === 'Autour de moi').first()
-
-      // then
-      expect(aroundMe).toHaveLength(1)
-    })
-
-    it('should select "Partout" if geolocation is disabled', () => {
+    it('should select "Partout" by default', () => {
       // given
       props.isGeolocationEnabled = false
       props.history.location.pathname = '/recherche'

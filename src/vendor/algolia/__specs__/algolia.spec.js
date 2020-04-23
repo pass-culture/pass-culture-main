@@ -119,7 +119,30 @@ describe('fetchAlgolia', () => {
       })
     })
 
-    it('should fetch with geolocation coordinates, and radius when latitude, longitude and radius are provided', () => {
+    it('should fetch with geolocation coordinates, when latitude, longitude are provided and search is not around me', () => {
+      // given
+      const keywords = 'searched keywords'
+      const geolocation = {
+        latitude: 42,
+        longitude: 43,
+      }
+
+      // when
+      fetchAlgolia({
+        geolocation: geolocation,
+        keywords: keywords,
+        isSearchAroundMe: false
+      })
+
+      // then
+      expect(search).toHaveBeenCalledWith(keywords, {
+        aroundLatLng: '42, 43',
+        aroundRadius: 'all',
+        page: 0,
+      })
+    })
+
+    it('should fetch with geolocation coordinates, when latitude, longitude and radius are provided and search is around me', () => {
       // given
       const keywords = 'searched keywords'
       const geolocation = {
@@ -132,12 +155,37 @@ describe('fetchAlgolia', () => {
         aroundRadius: 15,
         geolocation: geolocation,
         keywords: keywords,
+        isSearchAroundMe: true
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         aroundLatLng: '42, 43',
         aroundRadius: 15000,
+        page: 0,
+      })
+    })
+
+    it('should fetch with geolocation coordinates, when latitude, longitude, search is around me, and radius equals zero', () => {
+      // given
+      const keywords = 'searched keywords'
+      const geolocation = {
+        latitude: 42,
+        longitude: 43,
+      }
+
+      // when
+      fetchAlgolia({
+        aroundRadius: 0,
+        geolocation: geolocation,
+        keywords: keywords,
+        isSearchAroundMe: true
+      })
+
+      // then
+      expect(search).toHaveBeenCalledWith(keywords, {
+        aroundLatLng: '42, 43',
+        aroundRadius: 'all',
         page: 0,
       })
     })

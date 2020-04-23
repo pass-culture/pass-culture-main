@@ -31,7 +31,7 @@ class SearchResults extends PureComponent {
     this.state = {
       currentPage: 0,
       filters: {
-        //radiusRevert: aroundRadius: 0,
+        aroundRadius: 100,
         isSearchAroundMe: isSearchAroundMeFromUrlOrProps,
         offerCategories: categoriesFromUrlOrProps,
         offerIsDuo: false,
@@ -170,7 +170,9 @@ class SearchResults extends PureComponent {
       isLoading: true,
     })
     const options = {
+      aroundRadius,
       keywords,
+      isSearchAroundMe,
       geolocation,
       offerCategories,
       offerIsDuo,
@@ -179,10 +181,6 @@ class SearchResults extends PureComponent {
       page,
       priceRange,
       sortBy,
-    }
-
-    if (isSearchAroundMe) {
-      options.aroundRadius = aroundRadius
     }
 
     fetchAlgolia(options)

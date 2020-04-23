@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
-import { Criteria } from './Criteria/Criteria'
 import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA, SORT_CRITERIA } from './Criteria/criteriaEnums'
 import { Home } from './Home/Home'
 import SearchResults from './Result/SearchResults'
+import CriteriaLocation from './CriteriaLocation/CriteriaLocation'
+import CriteriaCategory from './CriteriaCategory/CriteriaCategory'
+import CriteriaSort from './CriteriaSort/CriteriaSort'
 
 const DEFAULT_META_VIEWPORT_CONTENT =
   'width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no'
@@ -16,9 +18,7 @@ class SearchAlgolia extends PureComponent {
       categoryCriterion: CATEGORY_CRITERIA.ALL,
       geolocationCriterion: {
         isSearchAroundMe: props.isGeolocationEnabled,
-        params: props.isGeolocationEnabled
-          ? GEOLOCATION_CRITERIA.AROUND_ME
-          : GEOLOCATION_CRITERIA.EVERYWHERE,
+        params: GEOLOCATION_CRITERIA.EVERYWHERE,
       },
       sortCriterion: SORT_CRITERIA.RANDOM,
     }
@@ -114,7 +114,7 @@ class SearchAlgolia extends PureComponent {
           />
         </Route>
         <Route path="/recherche/criteres-localisation">
-          <Criteria
+          <CriteriaLocation
             activeCriterionLabel={geolocationCriterion.params.label}
             backTo="/recherche"
             criteria={GEOLOCATION_CRITERIA}
@@ -125,7 +125,7 @@ class SearchAlgolia extends PureComponent {
           />
         </Route>
         <Route path="/recherche/criteres-categorie">
-          <Criteria
+          <CriteriaCategory
             activeCriterionLabel={categoryCriterion.label}
             backTo="/recherche"
             criteria={CATEGORY_CRITERIA}
@@ -136,7 +136,7 @@ class SearchAlgolia extends PureComponent {
           />
         </Route>
         <Route path="/recherche/criteres-tri">
-          <Criteria
+          <CriteriaSort
             activeCriterionLabel={sortCriterion.label}
             backTo="/recherche"
             criteria={SORT_CRITERIA}

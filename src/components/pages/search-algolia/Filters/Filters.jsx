@@ -1,17 +1,14 @@
-//radiusRevert:
-/* eslint-disable no-unused-vars */
-
 import PropTypes from 'prop-types'
-import { Range } from 'rc-slider'
+import Slider, { Range } from 'rc-slider'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
 import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
-import { Criteria } from '../Criteria/Criteria'
 import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA } from '../Criteria/criteriaEnums'
 import { checkIfAroundMe } from '../utils/checkIfAroundMe'
 import FilterCheckbox from './FilterCheckbox/FilterCheckbox'
 import FilterToggle from './FilterToggle/FilterToggle'
+import CriteriaLocation from '../CriteriaLocation/CriteriaLocation'
 
 export class Filters extends PureComponent {
   constructor(props) {
@@ -53,20 +50,22 @@ export class Filters extends PureComponent {
   }
 
   fetchOffers = ({
-    aroundRadius,
-    keywords,
-    geolocation,
-    offerCategories,
-    offerIsDuo,
-    offerIsFree,
-    offerTypes,
-    priceRange,
-    sortBy,
-  }) => {
+                   aroundRadius,
+                   geolocation,
+                   isSearchAroundMe,
+                   keywords,
+                   offerCategories,
+                   offerIsDuo,
+                   offerIsFree,
+                   offerTypes,
+                   priceRange,
+                   sortBy,
+                 }) => {
     const { showFailModal } = this.props
     fetchAlgolia({
       aroundRadius,
       geolocation,
+      isSearchAroundMe,
       keywords,
       offerCategories,
       offerIsDuo,
@@ -91,13 +90,14 @@ export class Filters extends PureComponent {
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles'] || ''
 
-    const { aroundRadius, offerIsDuo, offerIsFree, offerTypes, priceRange, sortBy } = filters
+    const { aroundRadius, isSearchAroundMe, offerIsDuo, offerIsFree, offerTypes, priceRange, sortBy } = filters
     const offerCategories = this.getSelectedCategories()
 
     this.fetchOffers({
-      //revert aroundRadius,
-      keywords,
+      aroundRadius,
       geolocation,
+      isSearchAroundMe,
+      keywords,
       offerCategories,
       offerIsDuo,
       offerIsFree,
@@ -121,8 +121,8 @@ export class Filters extends PureComponent {
       {
         filters: {
           ...initialFilters,
+          aroundRadius: 100,
           isSearchAroundMe: false,
-          //radiusRevert: aroundRadius: 0,
           offerCategories: [],
           offerIsDuo: false,
           offerIsFree: false,
@@ -230,7 +230,6 @@ export class Filters extends PureComponent {
       location: { search = '' },
     } = history
     const { filters, offers } = this.state
-    const { nbHits } = offers
     const {
       isSearchAroundMe,
       offerCategories,
@@ -375,7 +374,7 @@ export class Filters extends PureComponent {
       <main className="search-filters-page">
         <Switch>
           <Route path="/recherche/resultats/filtres/localisation">
-            <Criteria
+            <CriteriaLocation
               activeCriterionLabel={this.getActiveCriterionLabel()}
               backTo={`/recherche/resultats/filtres${search}`}
               criteria={GEOLOCATION_CRITERIA}
@@ -413,26 +412,26 @@ export class Filters extends PureComponent {
                 </button>
                 <span className="sf-filter-separator" />
               </li>
-              {/*//radiusRevert:{isSearchAroundMe && (*/}
-              {/*  <li>*/}
-              {/*    <h4 className="sf-title">*/}
-              {/*      {'Rayon'}*/}
-              {/*    </h4>*/}
-              {/*    <h4 className="sf-slider-indicator">*/}
-              {/*      {`${aroundRadius} km`}*/}
-              {/*    </h4>*/}
-              {/*    <div className="sf-slider-wrapper">*/}
-              {/*      <Slider*/}
-              {/*        max={100}*/}
-              {/*        min={0}*/}
-              {/*        onAfterChange={this.handleRadiusAfterSlide}*/}
-              {/*        onChange={this.handleRadiusSlide}*/}
-              {/*        value={aroundRadius}*/}
-              {/*      />*/}
-              {/*    </div>*/}
-              {/*    <span className="sf-filter-separator" />*/}
-              {/*  </li>*/}
-              {/*)}*/}
+              {isSearchAroundMe && (
+                <li>
+                  <h4 className="sf-title">
+                    {'Rayon'}
+                  </h4>
+                  <h4 className="sf-slider-indicator">
+                    {`${aroundRadius} km`}
+                  </h4>
+                  <div className="sf-slider-wrapper">
+                    <Slider
+                      max={100}
+                      min={0}
+                      onAfterChange={this.handleRadiusAfterSlide}
+                      onChange={this.handleRadiusSlide}
+                      value={aroundRadius}
+                    />
+                  </div>
+                  <span className="sf-filter-separator" />
+                </li>
+              )}
               <li>
                 <button
                   aria-label="Afficher les catégories"
@@ -486,7 +485,7 @@ export class Filters extends PureComponent {
               <li>
                 <div className="sf-title-wrapper">
                   <h4 className="sf-title">
-                    {"Type d'offres"}
+                    {'Type d\'offres'}
                   </h4>
                   {numberOfOfferTypesSelected > 0 && (
                     <span className="sf-selected-filter-counter">
@@ -614,7 +613,7 @@ export class Filters extends PureComponent {
 
 Filters.defaultProps = {
   initialFilters: {
-    // revert-to-include -> aroundRadius: 100,
+    aroundRadius: 100,
     isSearchAroundMe: false,
     offerCategories: [],
     offerIsDuo: false,

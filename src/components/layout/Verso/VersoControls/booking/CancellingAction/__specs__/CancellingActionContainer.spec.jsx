@@ -101,40 +101,6 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
       })
     })
 
-    it('should return an object with booking, cancelling link, offer and price when offer is duo and booking quantity is 2', () => {
-      // given
-      const state = {
-        data: {
-          offers: [{ id: 'BF', isDuo: true }],
-          stocks: [{ id: 'CF', offerId: 'BF', price: 20 }],
-          bookings: [{ id: 'DF', stockId: 'CF', quantity: 2 }],
-        },
-      }
-      const ownProps = {
-        location: {
-          pathname: '/reservations/details/GM',
-          search: '',
-        },
-        match: {
-          params: {
-            bookingId: 'DF',
-          },
-        },
-      }
-
-      // when
-      const props = mapStateToProps(state, ownProps)
-
-      // then
-      expect(props).toStrictEqual({
-        booking: { id: 'DF', quantity: 2, stockId: 'CF' },
-        cancellingUrl: '/reservations/details/GM/reservation/annulation',
-        offer: { id: 'BF', isDuo: true },
-        offerCanBeCancelled: true,
-        price: 40,
-      })
-    })
-
     describe('when offer event is past', () => {
       it('should not be cancellable anymore', () => {
         // given

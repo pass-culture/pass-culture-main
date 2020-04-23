@@ -223,6 +223,7 @@ class VersoContentOffer extends PureComponent {
 
 VersoContentOffer.defaultProps = {
   booking: null,
+  distance: null,
   isBookable: true,
   isCancelled: true,
   maxShownDates: 7,
@@ -233,7 +234,7 @@ VersoContentOffer.defaultProps = {
 VersoContentOffer.propTypes = {
   bookables: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   booking: PropTypes.shape(),
-  distance: PropTypes.string.isRequired,
+  distance: PropTypes.string,
   handleRequestMusicAndShowTypes: PropTypes.func.isRequired,
   isBookable: PropTypes.bool,
   isCancelled: PropTypes.bool,

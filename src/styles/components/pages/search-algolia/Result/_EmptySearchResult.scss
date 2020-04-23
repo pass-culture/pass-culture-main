@@ -16,6 +16,12 @@
   p {
     margin-bottom: rem(24px);
     max-width: rem(260px);
+
+    span {
+      display: block;
+      font-weight: normal;
+      margin-bottom: 0;
+    }
   }
 
   span {

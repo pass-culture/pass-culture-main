@@ -9,12 +9,12 @@ export const EmptySearchResult = ({ searchedKeywords, onNewSearchAroundMe }) => 
       {'Oups !'}
     </span>
     <p>
-      <div>
+      <span>
         {'Pas de résultat trouvé pour'}
-      </div>
-      <div>
+      </span>
+      <span>
         {`"${searchedKeywords}"`}
-      </div>
+      </span>
     </p>
     <p>
       {'Modifie ta recherche ou découvre toutes les offres '}

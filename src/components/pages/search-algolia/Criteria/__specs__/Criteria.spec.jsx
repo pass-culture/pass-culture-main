@@ -1,6 +1,5 @@
 import { shallow } from 'enzyme'
 import React from 'react'
-import Header from '../../../../layout/Header/Header'
 import { Criteria } from '../Criteria'
 import { CATEGORY_CRITERIA } from '../criteriaEnums'
 
@@ -25,21 +24,6 @@ describe('components | Criteria', () => {
       onCriterionSelection: jest.fn(),
       title: 'Catégories',
     }
-  })
-
-  it('should render a Header component with the right props', () => {
-    // When
-    const wrapper = shallow(<Criteria {...props} />)
-
-    // Then
-    const header = wrapper.find(Header)
-    expect(header).toHaveLength(1)
-    expect(header.prop('backTo')).toStrictEqual('/recherche')
-    expect(header.prop('closeTo')).toBeNull()
-    expect(header.prop('history')).toStrictEqual(props.history)
-    expect(header.prop('location')).toStrictEqual(props.history.location)
-    expect(header.prop('match')).toStrictEqual(props.match)
-    expect(header.prop('title')).toStrictEqual(props.title)
   })
 
   it('should set category filter for search when "Cinéma" is selected', () => {

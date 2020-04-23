@@ -13,6 +13,7 @@ import { GEOLOCATION_CRITERIA } from '../../Criteria/criteriaEnums'
 import FilterCheckbox from '../FilterCheckbox/FilterCheckbox'
 import { Filters } from '../Filters'
 import FilterToggle from '../FilterToggle/FilterToggle'
+import { CriteriaLocation } from '../../CriteriaLocation/CriteriaLocation'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
@@ -37,7 +38,7 @@ describe('components | Filters', () => {
         replace: jest.fn(),
       },
       initialFilters: {
-        aroundRadius: 0,
+        aroundRadius: 100,
         isSearchAroundMe: false,
         offerCategories: ['VISITE', 'CINEMA'],
         offerIsDuo: false,
@@ -82,7 +83,7 @@ describe('components | Filters', () => {
         const wrapper = shallow(<Filters {...props} />)
 
         // then
-        const criteria = wrapper.find(Criteria)
+        const criteria = wrapper.find(CriteriaLocation)
         expect(criteria).toHaveLength(1)
         expect(criteria.prop('backTo')).toStrictEqual(
           '/recherche/resultats/filtres?mots-cles=librairie'
@@ -94,7 +95,7 @@ describe('components | Filters', () => {
         expect(criteria.prop('title')).toStrictEqual('Localisation')
       })
 
-      it('should render a Criteria component with a "Partout" criterion when not searching around me', () => {
+      it('should render a CriteriaLocation component with a "Partout" criterion when not searching around me', () => {
         // given
         props.history.location.pathname = '/recherche/resultats/filtres/localisation'
         props.initialFilters.isSearchAroundMe = false
@@ -103,7 +104,7 @@ describe('components | Filters', () => {
         const wrapper = shallow(<Filters {...props} />)
 
         // then
-        const criteria = wrapper.find(Criteria)
+        const criteria = wrapper.find(CriteriaLocation)
         expect(criteria.prop('activeCriterionLabel')).toStrictEqual('Partout')
       })
 
@@ -111,7 +112,8 @@ describe('components | Filters', () => {
         it('should trigger search and redirect to filters page when clicking on "Partout" criterion', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
+          })
           props.history.location.pathname = '/recherche/resultats/filtres/localisation'
           props.isUserAllowedToSelectCriterion.mockReturnValue(true)
           props.query.parse.mockReturnValue({
@@ -144,10 +146,12 @@ describe('components | Filters', () => {
 
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith({
+            aroundRadius: 100,
             geolocation: {
               latitude: 40,
               longitude: 41,
             },
+            isSearchAroundMe: false,
             keywords: 'librairie',
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: false,
@@ -171,7 +175,8 @@ describe('components | Filters', () => {
         it('should trigger search and redirect to filters page when clicking on "Autour de moi" criterion', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
+          })
           props.history.location.pathname = '/recherche/resultats/filtres/localisation'
           props.initialFilters = {
             aroundRadius: 50,
@@ -218,7 +223,9 @@ describe('components | Filters', () => {
 
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith({
+            aroundRadius: 50,
             geolocation: { latitude: 40, longitude: 41 },
+            isSearchAroundMe: true,
             keywords: 'librairie',
             offerCategories: ['VISITE'],
             offerIsDuo: false,
@@ -385,7 +392,7 @@ describe('components | Filters', () => {
 
         // then
         expect(props.updateFilters).toHaveBeenCalledWith({
-          aroundRadius: 0,
+          aroundRadius: 100,
           isSearchAroundMe: false,
           offerCategories: ['VISITE', 'CINEMA'],
           offerIsDuo: false,
@@ -558,9 +565,7 @@ describe('components | Filters', () => {
           })
         })
 
-        //radiusRevert: added .skip to describe below and disabled eslint
-        // eslint-disable-next-line jest/no-disabled-tests
-        describe.skip('when geolocation filter is "Autour de moi"', () => {
+        describe('when geolocation filter is "Autour de moi"', () => {
           it('should display a "Rayon" title', () => {
             // given
             props.history.location.pathname = '/recherche/filtres'
@@ -618,7 +623,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const title = wrapper.findWhere(node => node.text() === "Type d'offres").first()
+          const title = wrapper.findWhere(node => node.text() === 'Type d\'offres').first()
           expect(title).toHaveLength(1)
         })
 
@@ -752,10 +757,12 @@ describe('components | Filters', () => {
 
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith({
+            aroundRadius: 100,
             geolocation: {
               latitude: 40,
               longitude: 41,
             },
+            isSearchAroundMe: false,
             keywords: 'librairies',
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: false,
@@ -840,10 +847,12 @@ describe('components | Filters', () => {
 
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith({
+            aroundRadius: 100,
             geolocation: {
               latitude: 40,
               longitude: 41,
             },
+            isSearchAroundMe: false,
             keywords: '',
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: true,
@@ -963,10 +972,12 @@ describe('components | Filters', () => {
 
           // then
           expect(fetchAlgolia).toHaveBeenCalledWith({
+            aroundRadius: 100,
             geolocation: {
               latitude: 40,
               longitude: 41,
             },
+            isSearchAroundMe: false,
             keywords: '',
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: false,
@@ -1332,7 +1343,8 @@ describe('components | Filters', () => {
           it('should reset filters and trigger search to Algolia with given category', () => {
             // given
             props.history = createBrowserHistory()
-            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
+            })
             props.history.location.pathname = '/recherche/resultats/filtres'
             props.initialFilters = {
               aroundRadius: 0,
@@ -1375,11 +1387,12 @@ describe('components | Filters', () => {
 
             // then
             expect(fetchAlgolia).toHaveBeenCalledWith({
-              //radiusRevert: aroundRadius: 0,
+              aroundRadius: 100,
               geolocation: {
                 latitude: 40,
                 longitude: 41,
               },
+              isSearchAroundMe: false,
               keywords: 'librairie',
               offerCategories: [],
               offerIsDuo: false,
@@ -1399,7 +1412,8 @@ describe('components | Filters', () => {
           it('should reset filters and trigger search to Algolia with given categories', () => {
             // given
             props.history = createBrowserHistory()
-            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
+            })
             props.history.location.pathname = '/recherche/resultats/filtres'
             props.initialFilters = {
               isSearchAroundMe: true,
@@ -1441,11 +1455,12 @@ describe('components | Filters', () => {
 
             // then
             expect(fetchAlgolia).toHaveBeenCalledWith({
-              //radiusRevert: aroundRadius: 0,
+              aroundRadius: 100,
               geolocation: {
                 latitude: 40,
                 longitude: 41,
               },
+              isSearchAroundMe: false,
               keywords: 'librairie',
               offerCategories: [],
               offerIsDuo: false,
