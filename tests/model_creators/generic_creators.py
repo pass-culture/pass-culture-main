@@ -500,7 +500,8 @@ def create_venue(offerer: Offerer,
                  public_name: Optional[str] = None,
                  siret: Optional[str] = '12345678912345',
                  thumb_count: int = 0,
-                 validation_token: Optional[str] = None) -> Venue:
+                 validation_token: Optional[str] = None,
+                 venue_type_id: int = None) -> Venue:
     venue = Venue()
     venue.bookingEmail = booking_email
     venue.comment = comment
@@ -515,6 +516,7 @@ def create_venue(offerer: Offerer,
     venue.thumbCount = thumb_count
     venue.validationToken = validation_token
     venue.siret = siret
+    venue.venueTypeId = venue_type_id
 
     if not is_virtual:
         venue.address = address

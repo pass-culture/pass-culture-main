@@ -38,7 +38,7 @@ def upgrade():
                        {'label': "Bibliothèque ou médiathèque"},
                        {'label': "Musée"},
                        {'label': "Musique - Disquaire"},
-                       {'label': "Musique - Magasin d'instruments"},
+                       {'label': "Musique - Magasin d’instruments"},
                        {'label': "Musique - Salle de concerts"},
                        {'label': "Offre numérique"},
                        {'label': "Patrimoine et tourisme"},

@@ -24,6 +24,7 @@ from sandboxes.scripts.creators.industrial.create_industrial_recommendations imp
 from sandboxes.scripts.creators.industrial.create_industrial_thing_offers import *
 from sandboxes.scripts.creators.industrial.create_industrial_thing_products import *
 from sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import *
+from sandboxes.scripts.creators.industrial.create_industrial_venue_types import *
 from sandboxes.scripts.creators.industrial.create_industrial_venues import *
 from sandboxes.scripts.creators.industrial.create_industrial_webapp_users import *
 
@@ -42,7 +43,9 @@ def save_industrial_sandbox():
 
     create_industrial_deposits(users_by_name)
 
-    venues_by_name = create_industrial_venues(offerers_by_name)
+    venue_types = create_industrial_venue_types()
+
+    venues_by_name = create_industrial_venues(offerers_by_name, venue_types)
 
     event_products_by_name = create_industrial_event_products()
 

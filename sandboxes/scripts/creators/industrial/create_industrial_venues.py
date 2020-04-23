@@ -1,15 +1,19 @@
+import random
 import re
+from typing import Dict, List
 
+from models.venue_type import VenueType
 from repository import repository
 from sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
-from tests.model_creators.generic_creators import create_venue, create_bank_information
+from tests.model_creators.generic_creators import create_bank_information, \
+    create_venue
 from utils.logger import logger
 
 OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO = 3
 OFFERERS_WITH_PHYSICAL_VENUE_WITH_SIRET_REMOVE_MODULO = OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO * 2
 
 
-def create_industrial_venues(offerers_by_name: dict) -> dict:
+def create_industrial_venues(offerers_by_name: Dict, venue_types: List[VenueType]) -> Dict:
     logger.info('create_industrial_venues')
 
     venue_by_name = {}
@@ -20,9 +24,10 @@ def create_industrial_venues(offerers_by_name: dict) -> dict:
     bic_prefix, bic_suffix = 'QSDFGH8Z', 556
 
     for (offerer_index, (offerer_name, offerer)) in enumerate(offerers_by_name.items()):
+        random.shuffle(venue_types)
         geoloc_match = re.match(r'(.*)lat\:(.*) lon\:(.*)', offerer_name)
 
-        venue_name = MOCK_NAMES[mock_index%len(MOCK_NAMES)]
+        venue_name = MOCK_NAMES[mock_index % len(MOCK_NAMES)]
 
         # create all possible cases:
         # offerer with or without iban / venue with or without iban
@@ -45,9 +50,8 @@ def create_industrial_venues(offerers_by_name: dict) -> dict:
                 bic = None
                 iban_count = 0
 
-        if offerer_index%OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO:
-
-            if offerer_index%OFFERERS_WITH_PHYSICAL_VENUE_WITH_SIRET_REMOVE_MODULO:
+        if offerer_index % OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO:
+            if offerer_index % OFFERERS_WITH_PHYSICAL_VENUE_WITH_SIRET_REMOVE_MODULO:
                 comment = None
                 siret = '{}11111'.format(offerer.siren)
             else:
@@ -64,17 +68,18 @@ def create_industrial_venues(offerers_by_name: dict) -> dict:
                 longitude=float(geoloc_match.group(3)),
                 name=venue_name,
                 postal_code=offerer.postalCode,
-                siret=siret
+                siret=siret,
+                venue_type_id=venue_types[0].id
             )
 
             if iban and venue_by_name[venue_name].siret:
-                bank_information = create_bank_information(bic=bic, iban=iban,
-                                                           id_at_providers=venue_by_name[venue_name].siret,
-                                                           venue=venue_by_name[venue_name])
+                create_bank_information(bic=bic, iban=iban,
+                                        id_at_providers=venue_by_name[venue_name].siret,
+                                        venue=venue_by_name[venue_name])
         bic_suffix += 1
         mock_index += 1
 
-        virtual_venue_name= "{} (Offre numérique)".format(venue_name)
+        virtual_venue_name = "{} (Offre numérique)".format(venue_name)
         venue_by_name[virtual_venue_name] = create_venue(
             offerer,
             is_virtual=True,
