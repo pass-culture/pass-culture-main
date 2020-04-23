@@ -2,9 +2,9 @@ from datetime import datetime
 
 from domain.bookings import BOOKING_CANCELLATION_DELAY
 from domain.user_activation import is_activation_booking
-from models import ApiErrors, Booking, RightsType
+from models import ApiErrors, BookingSQLEntity, RightsType
 from models.api_errors import ResourceGoneError, ForbiddenError
-from models.user import UserSQLEntity
+from models.user_sql_entity import UserSQLEntity
 from repository import payment_queries, venue_queries
 from utils.rest import ensure_current_user_has_rights
 
@@ -16,7 +16,7 @@ def check_has_stock_id(stock_id: int) -> None:
         raise api_errors
 
 
-def check_booking_token_is_usable(booking: Booking) -> None:
+def check_booking_token_is_usable(booking: BookingSQLEntity) -> None:
     resource_gone_error = ResourceGoneError()
     if booking.isUsed:
         resource_gone_error.add_error('booking', 'Cette réservation a déjà été validée')
@@ -33,7 +33,7 @@ def check_booking_token_is_usable(booking: Booking) -> None:
         raise errors
 
 
-def check_booking_token_is_keepable(booking: Booking) -> None:
+def check_booking_token_is_keepable(booking: BookingSQLEntity) -> None:
     resource_gone_error = ResourceGoneError()
     booking_payment = payment_queries.find_by_booking_id(booking.id)
 
@@ -50,7 +50,7 @@ def check_booking_token_is_keepable(booking: Booking) -> None:
         raise resource_gone_error
 
 
-def check_booking_is_cancellable_by_user(booking: Booking, is_user_cancellation: bool) -> None:
+def check_booking_is_cancellable_by_user(booking: BookingSQLEntity, is_user_cancellation: bool) -> None:
     api_errors = ApiErrors()
 
     if booking.isUsed:
@@ -64,7 +64,7 @@ def check_booking_is_cancellable_by_user(booking: Booking, is_user_cancellation:
             raise api_errors
 
 
-def check_is_not_activation_booking(booking: Booking) -> None:
+def check_is_not_activation_booking(booking: BookingSQLEntity) -> None:
     if is_activation_booking(booking):
         error = ForbiddenError()
         error.add_error('booking', "Impossible d'annuler une offre d'activation")
@@ -108,7 +108,7 @@ def check_rights_to_get_bookings_csv(user: UserSQLEntity, venue_id: int = None, 
         ensure_current_user_has_rights(user=user, rights=RightsType.editor, offerer_id=venue.managingOffererId)
 
 
-def check_booking_is_not_already_cancelled(booking: Booking) -> None:
+def check_booking_is_not_already_cancelled(booking: BookingSQLEntity) -> None:
     if booking.isCancelled:
         api_errors = ResourceGoneError()
         api_errors.add_error(
@@ -118,7 +118,7 @@ def check_booking_is_not_already_cancelled(booking: Booking) -> None:
         raise api_errors
 
 
-def check_booking_is_not_used(booking: Booking) -> None:
+def check_booking_is_not_used(booking: BookingSQLEntity) -> None:
     if booking.isUsed:
         api_errors = ForbiddenError()
         api_errors.add_error(

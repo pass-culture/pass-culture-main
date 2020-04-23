@@ -1,4 +1,4 @@
-from models.user import UserSQLEntity
+from models.user_sql_entity import UserSQLEntity
 from models.user_offerer import UserOfferer
 from sandboxes.scripts.utils.helpers import get_user_helper, get_offerer_helper
 

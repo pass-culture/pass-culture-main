@@ -1,10 +1,10 @@
 from datetime import datetime
 from typing import List, Dict
 
-from models import Booking, StockSQLEntity, ApiErrors
+from models import BookingSQLEntity, StockSQLEntity, ApiErrors
 
 
-def delete_stock_and_cancel_bookings(stock: StockSQLEntity) -> List[Booking]:
+def delete_stock_and_cancel_bookings(stock: StockSQLEntity) -> List[BookingSQLEntity]:
     unused_bookings = []
 
     if _is_thing(stock):

@@ -1,7 +1,7 @@
 from unittest.mock import patch, Mock
 
 from domain.user_emails import send_activation_email
-from models import EventType, Deposit, Booking, UserSQLEntity
+from models import EventType, Deposit, BookingSQLEntity, UserSQLEntity
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
@@ -43,7 +43,7 @@ class Patch:
 
                 # Then
                 assert response.status_code == 204
-                assert Booking.query.get(booking_id).isUsed is True
+                assert BookingSQLEntity.query.get(booking_id).isUsed is True
 
             @clean_database
             def expect_booking_to_be_used_with_non_standard_origin_header(self, app):
@@ -74,7 +74,7 @@ class Patch:
 
                 # Then
                 assert response.status_code == 204
-                assert Booking.query.get(booking_id).isUsed is True
+                assert BookingSQLEntity.query.get(booking_id).isUsed is True
 
         class WithBasicAuthTest:
             @clean_database
@@ -96,7 +96,7 @@ class Patch:
 
                 # Then
                 assert response.status_code == 204
-                assert Booking.query.get(booking_id).isUsed is True
+                assert BookingSQLEntity.query.get(booking_id).isUsed is True
 
             @clean_database
             def when_user_is_logged_in_expect_booking_with_token_in_lower_case_to_be_used(self, app):
@@ -118,7 +118,7 @@ class Patch:
 
                 # Then
                 assert response.status_code == 204
-                assert Booking.query.get(booking_id).isUsed is True
+                assert BookingSQLEntity.query.get(booking_id).isUsed is True
 
             @clean_database
             def when_admin_user_is_logged_in_expect_activation_booking_to_be_used_and_linked_user_to_be_able_to_book(self, app):
@@ -269,7 +269,7 @@ class Patch:
                 # Then
                 assert response.status_code == 403
                 assert response.json['user'] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
-                assert Booking.query.get(booking_id).isUsed is False
+                assert BookingSQLEntity.query.get(booking_id).isUsed is False
 
             @clean_database
             def when_user_is_not_admin_and_tries_to_patch_activation_offer(self, app):
@@ -417,7 +417,7 @@ class Patch:
                 # Then
                 assert response.status_code == 410
                 assert response.json['booking'] == ['Cette réservation a été annulée']
-                assert Booking.query.get(booking_id).isUsed is False
+                assert BookingSQLEntity.query.get(booking_id).isUsed is False
 
             @clean_database
             def when_user_is_logged_in_and_booking_has_been_validated_already(self, app):
@@ -440,7 +440,7 @@ class Patch:
                 # Then
                 assert response.status_code == 410
                 assert response.json['booking'] == ['Cette réservation a déjà été validée']
-                assert Booking.query.get(booking_id).isUsed is True
+                assert BookingSQLEntity.query.get(booking_id).isUsed is True
 
         class WithApiKeyAuthTest:
             @clean_database
@@ -464,7 +464,7 @@ class Patch:
                 # Then
                 assert response.status_code == 410
                 assert response.json['booking'] == ['Cette réservation a été annulée']
-                assert Booking.query.get(booking_id).isUsed is False
+                assert BookingSQLEntity.query.get(booking_id).isUsed is False
 
             @clean_database
             def when_api_key_is_provided_and_booking_has_been_validated_already(self, app):
@@ -487,4 +487,4 @@ class Patch:
                 # Then
                 assert response.status_code == 410
                 assert response.json['booking'] == ['Cette réservation a déjà été validée']
-                assert Booking.query.get(booking_id).isUsed is True
+                assert BookingSQLEntity.query.get(booking_id).isUsed is True

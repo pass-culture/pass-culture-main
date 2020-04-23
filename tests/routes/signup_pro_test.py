@@ -1,5 +1,5 @@
 from models.offerer import Offerer
-from models.user import UserSQLEntity
+from models.user_sql_entity import UserSQLEntity
 from models.user_offerer import UserOfferer, RightsType
 from repository import repository
 from tests.conftest import clean_database, TestClient

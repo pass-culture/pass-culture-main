@@ -1,6 +1,6 @@
 from urllib.parse import urlencode
 
-from models import EventType, ThingType, Deposit, Booking, UserSQLEntity
+from models import EventType, ThingType, Deposit, BookingSQLEntity, UserSQLEntity
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
@@ -32,7 +32,7 @@ class Patch:
 
                 # Then
                 assert response.status_code == 204
-                assert Booking.query.get(booking_id).isUsed is True
+                assert BookingSQLEntity.query.get(booking_id).isUsed is True
 
         class WhenUserIsLoggedIn:
             @clean_database
@@ -54,7 +54,7 @@ class Patch:
 
                 # Then
                 assert response.status_code == 204
-                assert Booking.query.get(booking_id).isUsed is True
+                assert BookingSQLEntity.query.get(booking_id).isUsed is True
 
             @clean_database
             def expect_booking_with_token_in_lower_case_to_be_used(self, app):
@@ -76,7 +76,7 @@ class Patch:
 
                 # Then
                 assert response.status_code == 204
-                assert Booking.query.get(booking_id).isUsed is True
+                assert BookingSQLEntity.query.get(booking_id).isUsed is True
 
             @clean_database
             def expect_booking_to_be_used_with_non_standard_origin_header(self, app):
@@ -99,7 +99,7 @@ class Patch:
 
                 # Then
                 assert response.status_code == 204
-                assert Booking.query.get(booking_id).isUsed is True
+                assert BookingSQLEntity.query.get(booking_id).isUsed is True
 
             @clean_database
             def expect_booking_to_be_used_with_special_char_in_url(self, app):
@@ -233,7 +233,7 @@ class Patch:
                 # Then
                 assert response.status_code == 403
                 assert response.json['global'] == ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
-                assert Booking.query.get(booking_id).isUsed is False
+                assert BookingSQLEntity.query.get(booking_id).isUsed is False
 
             @clean_database
             def when_user_is_not_admin_and_tries_to_patch_activation_offer(self, app):
@@ -296,7 +296,7 @@ class Patch:
 
                 # Then
                 assert response.status_code == 404
-                assert Booking.query.get(booking_id).isUsed is False
+                assert BookingSQLEntity.query.get(booking_id).isUsed is False
 
             @clean_database
             def when_email_has_special_characters_but_is_not_url_encoded(self, app):
@@ -338,7 +338,7 @@ class Patch:
 
                 # Then
                 assert response.status_code == 404
-                assert Booking.query.get(booking_id).isUsed is False
+                assert BookingSQLEntity.query.get(booking_id).isUsed is False
 
     class Returns405:
         class WhenUserIsAdmin:
@@ -391,7 +391,7 @@ class Patch:
                 # Then
                 assert response.status_code == 410
                 assert response.json['booking'] == ['Cette réservation a été annulée']
-                assert Booking.query.get(booking_id).isUsed is False
+                assert BookingSQLEntity.query.get(booking_id).isUsed is False
 
             @clean_database
             def when_booking_has_been_validated_already(self, app):
@@ -414,4 +414,4 @@ class Patch:
                 # Then
                 assert response.status_code == 410
                 assert response.json['booking'] == ['Cette réservation a déjà été validée']
-                assert Booking.query.get(booking_id).isUsed is True
+                assert BookingSQLEntity.query.get(booking_id).isUsed is True

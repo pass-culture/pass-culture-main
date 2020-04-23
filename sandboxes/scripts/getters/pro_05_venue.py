@@ -1,4 +1,4 @@
-from models.user import UserSQLEntity
+from models.user_sql_entity import UserSQLEntity
 from repository.offerer_queries import keep_offerers_with_at_least_one_physical_venue, \
                                        keep_offerers_with_no_physical_venue
 from repository.user_queries import filter_users_with_at_least_one_validated_offerer_validated_user_offerer

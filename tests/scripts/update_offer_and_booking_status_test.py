@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from unittest.mock import patch
 
-from models import Offer, Booking
+from models import Offer, BookingSQLEntity
 from repository import repository
 from scripts.update_offer_and_booking_status import _read_booking_tokens_from_file, \
     update_offer_and_booking_status
@@ -60,7 +60,7 @@ class UpdateOfferAndBookingStatusTest:
         update_offer_and_booking_status('fake/path')
 
         # Then
-        bookings = Booking.query.all()
+        bookings = BookingSQLEntity.query.all()
         assert not bookings[0].isCancelled
         assert bookings[1].isCancelled
 

@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from models import Booking, Provider
+from models import BookingSQLEntity, Provider
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database, TestClient
@@ -53,7 +53,7 @@ class Delete:
 
             # then
             assert response.status_code == 200
-            bookings = Booking.query.filter_by(isCancelled=True).all()
+            bookings = BookingSQLEntity.query.filter_by(isCancelled=True).all()
             assert booking1 in bookings
             assert booking2 in bookings
 

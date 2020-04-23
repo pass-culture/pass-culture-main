@@ -1,5 +1,5 @@
 from models import StockSQLEntity, EventType, ThingType, Mediation, Offer, Venue, Offerer
-from models.user import UserSQLEntity
+from models.user_sql_entity import UserSQLEntity
 from repository.offer_queries import _filter_bookable_stocks_for_discovery
 from repository.user_queries import keep_only_webapp_users
 from sandboxes.scripts.utils.helpers import get_user_helper, get_offer_helper

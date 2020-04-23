@@ -1,7 +1,7 @@
-from models.booking import Booking
+from models.booking_sql_entity import BookingSQLEntity
 from models.offer import Offer
 from models.recommendation import Recommendation
-from models.user import UserSQLEntity
+from models.user_sql_entity import UserSQLEntity
 from repository.user_queries import keep_only_webapp_users
 from sandboxes.scripts.utils.helpers import get_user_helper, get_recommendation_helper
 

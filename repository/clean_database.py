@@ -1,7 +1,7 @@
 from local_providers.install import install_local_providers
 from models import ApiKey, \
     BeneficiaryImport, \
-    Booking, \
+    BookingSQLEntity, \
     Deposit, \
     Mediation, \
     Payment, \
@@ -45,7 +45,7 @@ def clean_all_database(*args, **kwargs):
     PaymentStatus.query.delete()
     Payment.query.delete()
     PaymentMessage.query.delete()
-    Booking.query.delete()
+    BookingSQLEntity.query.delete()
     StockSQLEntity.query.delete()
     Favorite.query.delete()
     Recommendation.query.delete()

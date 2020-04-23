@@ -9,7 +9,7 @@ from domain.user_emails import send_batch_cancellation_emails_to_users, \
 from models import Product
 from models.feature import FeatureToggle
 from models.mediation import Mediation
-from models.stock import StockSQLEntity
+from models.stock_sql_entity import StockSQLEntity
 from models.user_offerer import RightsType
 from models.venue import Venue
 from repository import offerer_queries, repository, feature_queries

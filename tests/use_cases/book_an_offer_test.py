@@ -8,7 +8,7 @@ from domain.stock.stock import Stock
 from domain.stock.stock_exceptions import StockDoesntExist
 from domain.user.user import User
 from infrastructure.services.notification.mailjet_service import MailjetService
-from models import Booking
+from models import BookingSQLEntity
 from repository import repository
 from repository.stock.stock_sql_repository import StockSQLRepository
 from repository.user.user_sql_repository import UserSQLRepository
@@ -28,9 +28,10 @@ class BookAnOfferTest:
         self.notification_service = MailjetService()
         self.notification_service.send_booking_recap_emails = MagicMock()
         self.notification_service.send_booking_confirmation_email_to_beneficiary = MagicMock()
-        self.book_an_offer = BookAnOffer(self.stock_repository,
-                                         self.user_repository,
-                                         self.notification_service)
+        self.book_an_offer = BookAnOffer(booking_repository=self.booking_repository,
+                                         user_repository=self.user_repository,
+                                         stock_repository=self.stock_repository,
+                                         notification_service=self.notification_service)
 
     @clean_database
     def test_user_can_book_an_offer(self, app):
@@ -66,7 +67,7 @@ class BookAnOfferTest:
         booking = self.book_an_offer.execute(booking_information=booking_information)
 
         # Then
-        assert booking == Booking.query.filter(Booking.isCancelled == False).one()
+        assert booking == BookingSQLEntity.query.filter(BookingSQLEntity.isCancelled == False).one()
 
     @clean_database
     def test_send_a_booking_recap_email(self, app):

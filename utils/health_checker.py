@@ -1,4 +1,4 @@
-from models.user import UserSQLEntity
+from models.user_sql_entity import UserSQLEntity
 from utils.logger import logger
 
 

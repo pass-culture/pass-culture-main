@@ -1,6 +1,6 @@
 from typing import List, Dict
 
-from models import Booking
+from models import BookingSQLEntity
 from models.offer_type import ProductType
 from repository import booking_queries
 from utils.mailing import build_pc_pro_offer_link, format_environment_for_email, SUPPORT_EMAIL_ADDRESS, \
@@ -8,7 +8,7 @@ from utils.mailing import build_pc_pro_offer_link, format_environment_for_email,
     format_booking_hours_for_email
 
 
-def retrieve_data_for_offerer_booking_recap_email(booking: Booking, recipients: List[str]) -> Dict:
+def retrieve_data_for_offerer_booking_recap_email(booking: BookingSQLEntity, recipients: List[str]) -> Dict:
     offer = booking.stock.offer
     venue_name = offer.venue.name
     offer_name = offer.product.name

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional, List
 
 from models.offer import Offer
-from models.booking import Booking
+from models.booking_sql_entity import BookingSQLEntity
 
 
 class Stock(object):
@@ -14,7 +14,7 @@ class Stock(object):
                  beginning_datetime: Optional[datetime] = None,
                  booking_limit_datetime: Optional[datetime] = None,
                  is_soft_deleted: bool = False,
-                 bookings: List[Booking] = []):
+                 bookings: List[BookingSQLEntity] = []):
         self.identifier = identifier
         self.quantity = quantity
         self.beginning_datetime: datetime = beginning_datetime

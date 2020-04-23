@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
-from models import EventType, ThingType, Deposit, Booking, UserSQLEntity
+from models import EventType, ThingType, Deposit, BookingSQLEntity, UserSQLEntity
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
@@ -40,8 +40,8 @@ class Patch:
 
             # Then
             assert response.status_code == 204
-            assert Booking.query.get(booking_id).isUsed
-            assert Booking.query.get(booking_id).dateUsed is not None
+            assert BookingSQLEntity.query.get(booking_id).isUsed
+            assert BookingSQLEntity.query.get(booking_id).dateUsed is not None
 
         @clean_database
         def when_header_is_not_standard_but_request_is_valid(self, app):
@@ -65,7 +65,7 @@ class Patch:
 
             # Then
             assert response.status_code == 204
-            assert Booking.query.get(booking_id).isUsed
+            assert BookingSQLEntity.query.get(booking_id).isUsed
 
         @clean_database
         def when_booking_user_email_has_special_character_url_encoded(self, app):
@@ -170,7 +170,7 @@ class Patch:
             assert response.status_code == 403
             assert response.json['global'] == [
                 "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
-            assert not Booking.query.get(booking_id).isUsed
+            assert not BookingSQLEntity.query.get(booking_id).isUsed
 
         @clean_database
         def when_booking_beginning_datetime_in_more_than_72_hours(self, app):
@@ -240,7 +240,7 @@ class Patch:
 
             # Then
             assert response.status_code == 404
-            assert Booking.query.get(booking_id).isUsed == False
+            assert BookingSQLEntity.query.get(booking_id).isUsed == False
 
         @clean_database
         def when_booking_user_email_with_special_character_not_url_encoded(self, app):
@@ -284,7 +284,7 @@ class Patch:
 
             # Then
             assert response.status_code == 404
-            assert not Booking.query.get(booking_id).isUsed
+            assert not BookingSQLEntity.query.get(booking_id).isUsed
 
     class Returns405:
         @clean_database
@@ -339,7 +339,7 @@ class Patch:
             # Then
             assert response.status_code == 410
             assert response.json['booking'] == ['Cette réservation a été annulée']
-            assert not Booking.query.get(booking_id).isUsed
+            assert not BookingSQLEntity.query.get(booking_id).isUsed
 
         @clean_database
         def when_booking_already_validated(self, app):
@@ -364,4 +364,4 @@ class Patch:
             # Then
             assert response.status_code == 410
             assert response.json['booking'] == ['Cette réservation a déjà été validée']
-            assert Booking.query.get(booking_id).isUsed
+            assert BookingSQLEntity.query.get(booking_id).isUsed

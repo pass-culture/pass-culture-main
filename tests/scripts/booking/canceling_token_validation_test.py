@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from models import Booking
+from models import BookingSQLEntity
 from repository import repository
 from scripts.booking.canceling_token_validation import canceling_token_validation
 from tests.conftest import clean_database
@@ -21,7 +21,7 @@ def test_should_update_booking_when_valid_token_is_given_and_no_payment_associat
     canceling_token_validation(token=token)
 
     # Then
-    booking = Booking.query.first()
+    booking = BookingSQLEntity.query.first()
     assert booking.token == '123456'
     assert booking.isUsed is False
     assert booking.dateUsed is None
@@ -42,7 +42,7 @@ def test_should_do_nothing_when_valid_token_is_given_but_the_booking_is_linked_t
     canceling_token_validation(token=token)
 
     # Then
-    booking = Booking.query.first()
+    booking = BookingSQLEntity.query.first()
     assert booking.token == '123456'
     assert booking.isUsed is True
     assert booking.dateUsed == datetime(2020, 1, 1)

@@ -4,7 +4,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 
 from models.feature import FeatureToggle, Feature
-from models.user import UserSQLEntity
+from models.user_sql_entity import UserSQLEntity
 from repository import repository
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient

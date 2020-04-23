@@ -5,7 +5,7 @@ import pytest
 from freezegun import freeze_time
 
 from domain.booking_recap.booking_recap import BookingRecapStatus
-from models import Booking, EventType, ThingType
+from models import BookingSQLEntity, EventType, ThingType
 from models.api_errors import ApiErrors, ResourceNotFoundError
 from models.payment_status import TransactionStatus
 from models.stock import EVENT_AUTOMATIC_REFUND_DELAY
@@ -631,29 +631,6 @@ class GetExistingTokensTest:
         assert tokens == set()
 
 
-class FindAllActiveByUserIdTest:
-    @clean_database
-    def test_returns_a_list_of_not_cancelled_bookings(self, app):
-        # given
-        user = create_user()
-        offerer = create_offerer()
-        venue_online = create_venue(offerer, siret=None, is_virtual=True)
-        book_offer = create_offer_with_thing_product(
-            venue_online, thing_type=ThingType.LIVRE_EDITION)
-        book_stock = create_stock_from_offer(book_offer, price=0, quantity=200)
-        booking1 = create_booking(user=user, is_cancelled=True, stock=book_stock, venue=venue_online)
-        booking2 = create_booking(user=user, is_used=True, stock=book_stock, venue=venue_online)
-        booking3 = create_booking(user=user, stock=book_stock, venue=venue_online)
-        repository.save(booking1, booking2, booking3)
-
-        # when
-        bookings = booking_queries.find_active_bookings_by_user_id(user.id)
-
-        # then
-        assert len(bookings) == 2
-        assert booking1 not in bookings
-
-
 class FindByTest:
     class ByTokenTest:
         @clean_database
@@ -830,8 +807,8 @@ class SaveBookingTest:
         repository.save(booking)
 
         # Then
-        assert Booking.query.filter_by(isCancelled=False).count() == 1
-        assert Booking.query.filter_by(isCancelled=True).count() == 1
+        assert BookingSQLEntity.query.filter_by(isCancelled=False).count() == 1
+        assert BookingSQLEntity.query.filter_by(isCancelled=True).count() == 1
 
     @clean_database
     def test_raises_too_many_bookings_error_when_not_enough_stocks(self, app):
@@ -1635,7 +1612,7 @@ class IsOfferAlreadyBookedByUserTest:
         user = create_user()
         create_deposit(user)
         offerer = create_offerer()
-        venue = create_venue(offerer)
+        venue = create_venue(offerer )
         offer = create_offer_with_event_product(venue)
         stock = create_stock_from_offer(offer)
         booking = create_booking(user=user, stock=stock, is_cancelled=True)

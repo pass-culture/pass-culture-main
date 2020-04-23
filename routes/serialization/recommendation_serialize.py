@@ -1,6 +1,6 @@
 from typing import List
 
-from models import Recommendation, Booking, UserSQLEntity
+from models import Recommendation, BookingSQLEntity, UserSQLEntity
 from repository import booking_queries
 from routes.serialization import as_dict
 from utils.human_ids import dehumanize
@@ -31,15 +31,15 @@ def serialize_recommendation(recommendation: Recommendation, user: UserSQLEntity
     return serialized_recommendation
 
 
-def _serialize_bookings(bookings: List[Booking]) -> List[dict]:
+def _serialize_bookings(bookings: List[BookingSQLEntity]) -> List[dict]:
     return list(map(_serialize_booking, bookings))
 
 
-def _serialize_booking(booking: Booking) -> dict:
+def _serialize_booking(booking: BookingSQLEntity) -> dict:
     return as_dict(booking, includes=WEBAPP_GET_BOOKING_INCLUDES)
 
 
-def _get_bookings_by_offer(bookings: List[Booking]) -> list:
+def _get_bookings_by_offer(bookings: List[BookingSQLEntity]) -> list:
     bookings_by_offer = {}
 
     for booking in bookings:

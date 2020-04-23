@@ -13,7 +13,7 @@ from domain.stock.stock_validator import check_stock_is_bookable, check_expenses
 from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS, SUBVENTION_TOTAL
 from domain.stock.stock import Stock
 from domain.user.user import User
-from models import ApiErrors, Booking, StockSQLEntity, Offer, ThingType, UserSQLEntity, EventType
+from models import ApiErrors, BookingSQLEntity, StockSQLEntity, Offer, ThingType, UserSQLEntity, EventType
 from models.api_errors import ResourceGoneError, ForbiddenError
 from repository import repository
 from tests.conftest import clean_database
@@ -42,7 +42,7 @@ class CheckExpenseLimitsTest:
             'physical': {'max': SUBVENTION_PHYSICAL_THINGS, 'actual': 190},
             'digital': {'max': SUBVENTION_DIGITAL_THINGS, 'actual': 10}
         }
-        booking = Booking(from_dict={'stockId': humanize(123), 'amount': 11, 'quantity': 1})
+        booking = BookingSQLEntity(from_dict={'stockId': humanize(123), 'amount': 11, 'quantity': 1})
         stock = create_booking_for_thing(product_type=ThingType.LIVRE_EDITION).stock
         mocked_query = Mock(return_value=stock)
 
@@ -61,7 +61,7 @@ class CheckExpenseLimitsTest:
             'physical': {'max': SUBVENTION_PHYSICAL_THINGS, 'actual': 10},
             'digital': {'max': SUBVENTION_DIGITAL_THINGS, 'actual': 190}
         }
-        booking = Booking(from_dict={'stockId': humanize(123), 'amount': 11, 'quantity': 1})
+        booking = BookingSQLEntity(from_dict={'stockId': humanize(123), 'amount': 11, 'quantity': 1})
         stock = create_booking_for_thing(url='http://on.line', product_type=ThingType.JEUX_VIDEO).stock
         mocked_query = Mock(return_value=stock)
 
@@ -78,7 +78,7 @@ class CheckExpenseLimitsTest:
         expenses = {
             'all': {'max': SUBVENTION_TOTAL, 'actual': 400}
         }
-        booking = Booking(from_dict={'stockId': humanize(123), 'amount': 1, 'quantity': 120})
+        booking = BookingSQLEntity(from_dict={'stockId': humanize(123), 'amount': 1, 'quantity': 120})
         mocked_query = Mock()
 
         # when
@@ -93,7 +93,7 @@ class CheckExpenseLimitsTest:
 class CheckBookingIsCancellableTest:
     def test_raises_api_error_when_offerer_cancellation_and_used_booking(self):
         # Given
-        booking = Booking()
+        booking = BookingSQLEntity()
         booking.isUsed = True
 
         # When
@@ -105,7 +105,7 @@ class CheckBookingIsCancellableTest:
 
     def test_raises_api_error_when_user_cancellation_and_event_in_less_than_72h(self):
         # Given
-        booking = Booking()
+        booking = BookingSQLEntity()
         booking.isUsed = False
         booking.stock = StockSQLEntity()
         booking.stock.beginningDatetime = datetime.utcnow() + timedelta(hours=71)
@@ -120,7 +120,7 @@ class CheckBookingIsCancellableTest:
 
     def test_does_not_raise_api_error_when_user_cancellation_and_event_in_more_than_72h(self):
         # Given
-        booking = Booking()
+        booking = BookingSQLEntity()
         booking.isUsed = False
         booking.stock = StockSQLEntity()
         booking.stock.beginningDatetime = datetime.utcnow() + timedelta(hours=73)
@@ -133,7 +133,7 @@ class CheckBookingIsCancellableTest:
 
     def test_does_not_raise_api_error_when_offerer_cancellation_and_event_in_less_than_72h(self):
         # Given
-        booking = Booking()
+        booking = BookingSQLEntity()
         booking.isUsed = False
         booking.stock = StockSQLEntity()
         booking.stock.beginningDatetime = datetime.utcnow() + timedelta(hours=71)
@@ -146,7 +146,7 @@ class CheckBookingIsCancellableTest:
 
     def test_does_not_raise_api_error_when_offerer_cancellation_not_used_and_thing(self):
         # Given
-        booking = Booking()
+        booking = BookingSQLEntity()
         booking.isUsed = False
         booking.stock = StockSQLEntity()
         booking.stock.offer = Offer()
@@ -162,7 +162,7 @@ class CheckBookingIsCancellableTest:
 class CheckBookingIsUsableTest:
     def test_raises_resource_gone_error_if_is_used(self):
         # Given
-        booking = Booking()
+        booking = BookingSQLEntity()
         booking.isUsed = True
         booking.stock = StockSQLEntity()
 
@@ -174,7 +174,7 @@ class CheckBookingIsUsableTest:
 
     def test_raises_resource_gone_error_if_is_cancelled(self):
         # Given
-        booking = Booking()
+        booking = BookingSQLEntity()
         booking.isUsed = False
         booking.isCancelled = True
         booking.stock = StockSQLEntity()
@@ -188,7 +188,7 @@ class CheckBookingIsUsableTest:
     def test_raises_resource_gone_error_if_stock_beginning_datetime_in_more_than_72_hours(self):
         # Given
         in_four_days = datetime.utcnow() + timedelta(days=4)
-        booking = Booking()
+        booking = BookingSQLEntity()
         booking.isUsed = False
         booking.isCancelled = False
         booking.stock = StockSQLEntity()
@@ -202,7 +202,7 @@ class CheckBookingIsUsableTest:
 
     def test_does_not_raise_error_if_not_cancelled_nor_used_and_no_beginning_datetime(self):
         # Given
-        booking = Booking()
+        booking = BookingSQLEntity()
         booking.isUsed = False
         booking.isCancelled = False
         booking.stock = StockSQLEntity()
@@ -218,7 +218,7 @@ class CheckBookingIsUsableTest:
     def test_does_not_raise_error_if_not_cancelled_nor_used_and_beginning_datetime_in_less_than_72_hours(self):
         # Given
         in_two_days = datetime.utcnow() + timedelta(days=2)
-        booking = Booking()
+        booking = BookingSQLEntity()
         booking.isUsed = False
         booking.isCancelled = False
         booking.stock = StockSQLEntity()
@@ -481,7 +481,7 @@ class CheckActivationBookingCanBeKeptTest:
 class CheckBookingIsKeepableTest:
     def test_raises_resource_gone_error_if_not_used(self, app):
         # Given
-        booking = Booking()
+        booking = BookingSQLEntity()
         booking.isUsed = False
         booking.stock = StockSQLEntity()
 
@@ -493,7 +493,7 @@ class CheckBookingIsKeepableTest:
 
     def test_raises_resource_gone_error_if_validated_and_cancelled(self, app):
         # Given
-        booking = Booking()
+        booking = BookingSQLEntity()
         booking.isUsed = True
         booking.isCancelled = True
         booking.stock = StockSQLEntity()
@@ -527,7 +527,7 @@ class CheckBookingIsKeepableTest:
     def test_does_not_raise_error_if_stock_beginning_datetime_in_more_than_72_hours_after_validating(self, app):
         # Given
         in_four_days = datetime.utcnow() + timedelta(days=4)
-        booking = Booking()
+        booking = BookingSQLEntity()
         booking.isUsed = True
         booking.isCancelled = False
         booking.stock = StockSQLEntity()
@@ -542,7 +542,7 @@ class CheckBookingIsKeepableTest:
 
     def test_does_not_raise_error_if_not_cancelled_but_used_and_no_beginning_datetime(self, app):
         # Given
-        booking = Booking()
+        booking = BookingSQLEntity()
         booking.isUsed = True
         booking.isCancelled = False
         booking.stock = StockSQLEntity()
@@ -558,7 +558,7 @@ class CheckBookingIsKeepableTest:
     def test_does_not_raise_error_if_neither_cancelled_but_used_and_beginning_datetime_in_less_than_72_hours(self, app):
         # Given
         in_two_days = datetime.utcnow() + timedelta(days=2)
-        booking = Booking()
+        booking = BookingSQLEntity()
         booking.isUsed = True
         booking.isCancelled = False
         booking.stock = StockSQLEntity()

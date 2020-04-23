@@ -1,13 +1,13 @@
 from sqlalchemy import text
 
-from models import Booking
+from models import BookingSQLEntity
 from repository import repository
 
 
 def update_booking_cancellation_date_from_activity():
-    bookings_to_update = Booking.query.filter(
-        (Booking.cancellationDate == None),
-        (Booking.isCancelled == True)
+    bookings_to_update = BookingSQLEntity.query.filter(
+        (BookingSQLEntity.cancellationDate == None),
+        (BookingSQLEntity.isCancelled == True)
     ).all()
 
     for booking in bookings_to_update:

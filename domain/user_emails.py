@@ -18,7 +18,7 @@ from emails.pro_reset_password import retrieve_data_for_reset_password_pro_email
 from emails.pro_waiting_validation import retrieve_data_for_pro_user_waiting_offerer_validation_email
 from emails.user_notification_after_stock_update import retrieve_data_to_warn_user_after_stock_update_affecting_booking
 from emails.user_reset_password import retrieve_data_for_reset_password_user_email
-from models import Booking, Offerer, UserSQLEntity, Venue, UserOfferer
+from models import BookingSQLEntity, Offerer, UserSQLEntity, Venue, UserOfferer
 from repository.user_queries import find_all_emails_of_user_offerers_admins
 from utils.mailing import ADMINISTRATION_EMAIL_ADDRESS, \
     compute_email_html_part_and_recipients, \
@@ -27,7 +27,7 @@ from utils.mailing import ADMINISTRATION_EMAIL_ADDRESS, \
     make_venue_validated_email
 
 
-def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool]) -> bool:
+def send_booking_recap_emails(booking: BookingSQLEntity, send_email: Callable[..., bool]) -> bool:
     recipients = [ADMINISTRATION_EMAIL_ADDRESS]
     booking_email = booking.stock.offer.bookingEmail
     if booking_email:
@@ -37,23 +37,23 @@ def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool])
     return send_email(data=email)
 
 
-def send_booking_confirmation_email_to_beneficiary(booking: Booking, send_email: Callable[..., bool]):
+def send_booking_confirmation_email_to_beneficiary(booking: BookingSQLEntity, send_email: Callable[..., bool]):
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
     send_email(data=email_data)
 
 
-def send_beneficiary_booking_cancellation_email(booking: Booking, send_email: Callable[..., bool]):
+def send_beneficiary_booking_cancellation_email(booking: BookingSQLEntity, send_email: Callable[..., bool]):
     beneficiary_booking_cancellation_email_data = make_beneficiary_booking_cancellation_email_data(booking)
     send_email(data=beneficiary_booking_cancellation_email_data)
 
 
-def send_user_driven_cancellation_email_to_offerer(booking: Booking, send_email: Callable[..., bool]) -> bool:
+def send_user_driven_cancellation_email_to_offerer(booking: BookingSQLEntity, send_email: Callable[..., bool]) -> bool:
     recipients = _build_recipients_list(booking)
     mailjet_data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking, recipients)
     return send_email(data=mailjet_data)
 
 
-def send_offerer_driven_cancellation_email_to_offerer(booking: Booking, send_email: Callable[..., bool]) -> bool:
+def send_offerer_driven_cancellation_email_to_offerer(booking: BookingSQLEntity, send_email: Callable[..., bool]) -> bool:
     offerer_email = booking.stock.offer.bookingEmail
     recipients = []
     if offerer_email:
@@ -64,7 +64,7 @@ def send_offerer_driven_cancellation_email_to_offerer(booking: Booking, send_ema
     return send_email(data=email)
 
 
-def send_warning_to_beneficiary_after_pro_booking_cancellation(booking: Booking,
+def send_warning_to_beneficiary_after_pro_booking_cancellation(booking: BookingSQLEntity,
                                                                send_email: Callable[..., bool]) -> None:
     email = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
     send_email(data=email)
@@ -96,12 +96,12 @@ def send_attachment_validation_email_to_pro_offerer(user_offerer: UserOfferer, s
     return send_email(data=email)
 
 
-def send_batch_cancellation_emails_to_users(bookings: List[Booking], send_email: Callable[..., bool]) -> None:
+def send_batch_cancellation_emails_to_users(bookings: List[BookingSQLEntity], send_email: Callable[..., bool]) -> None:
     for booking in bookings:
         send_warning_to_beneficiary_after_pro_booking_cancellation(booking, send_email)
 
 
-def send_offerer_bookings_recap_email_after_offerer_cancellation(bookings: List[Booking],
+def send_offerer_bookings_recap_email_after_offerer_cancellation(bookings: List[BookingSQLEntity],
                                                                  send_email: Callable[..., bool]) -> None:
     booking = bookings[0]
     recipients = _build_recipients_list(booking)
@@ -109,7 +109,7 @@ def send_offerer_bookings_recap_email_after_offerer_cancellation(bookings: List[
     send_email(data=email)
 
 
-def send_booking_cancellation_emails_to_user_and_offerer(booking: Booking, is_offerer_cancellation: bool,
+def send_booking_cancellation_emails_to_user_and_offerer(booking: BookingSQLEntity, is_offerer_cancellation: bool,
                                                          is_user_cancellation: bool, send_email: Callable[..., bool]):
     if is_user_cancellation:
         send_beneficiary_booking_cancellation_email(booking, send_email)
@@ -142,17 +142,17 @@ def send_activation_email(user: UserSQLEntity, send_email: Callable[..., bool]) 
     return send_email(activation_email_data)
 
 
-def send_batch_stock_postponement_emails_to_users(bookings: List[Booking], send_email: Callable[..., bool]) -> None:
+def send_batch_stock_postponement_emails_to_users(bookings: List[BookingSQLEntity], send_email: Callable[..., bool]) -> None:
     for booking in bookings:
         send_booking_postponement_emails_to_users(booking, send_email)
 
 
-def send_booking_postponement_emails_to_users(booking: Booking, send_email: Callable[..., bool]) -> None:
+def send_booking_postponement_emails_to_users(booking: BookingSQLEntity, send_email: Callable[..., bool]) -> None:
     data = retrieve_data_to_warn_user_after_stock_update_affecting_booking(booking)
     send_email(data=data)
 
 
-def _build_recipients_list(booking: Booking) -> str:
+def _build_recipients_list(booking: BookingSQLEntity) -> str:
     recipients = []
     offerer_booking_email = booking.stock.offer.bookingEmail
     if offerer_booking_email:

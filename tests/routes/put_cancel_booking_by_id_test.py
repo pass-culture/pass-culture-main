@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
-from models import Booking, Offerer
+from models import BookingSQLEntity, Offerer
 from repository import repository
 from tests.conftest import TestClient, clean_database
 from tests.model_creators.generic_creators import create_booking, \
@@ -59,7 +59,7 @@ class Put:
 
             # Then
             assert response.status_code == 200
-            assert Booking.query.get(booking.id).isCancelled
+            assert BookingSQLEntity.query.get(booking.id).isCancelled
             print('send email ?)')
 
         @clean_database
@@ -78,7 +78,7 @@ class Put:
 
             # Then
             assert response.status_code == 200
-            assert Booking.query.get(booking.id).isCancelled
+            assert BookingSQLEntity.query.get(booking.id).isCancelled
 
         @patch('routes.bookings.feature_queries.is_active', return_value=True)
         @patch('routes.bookings.redis.add_offer_id')
@@ -209,7 +209,7 @@ class Put:
 
             # Then
             assert response.status_code == 204
-            assert Booking.query.get(booking.id).isCancelled
+            assert BookingSQLEntity.query.get(booking.id).isCancelled
 
     class Returns400:
         @clean_database
@@ -228,7 +228,7 @@ class Put:
             # Then
             assert response.status_code == 400
             assert response.json['booking'] == ["Impossible d'annuler une réservation consommée"]
-            assert not Booking.query.get(booking.id).isCancelled
+            assert not BookingSQLEntity.query.get(booking.id).isCancelled
 
         @clean_database
         def when_event_beginning_date_time_is_in_less_than_72_hours(self, app):
@@ -270,7 +270,7 @@ class Put:
 
             # Then
             assert response.status_code == 403
-            assert not Booking.query.get(booking.id).isCancelled
+            assert not BookingSQLEntity.query.get(booking.id).isCancelled
 
     class Returns404:
         @clean_database

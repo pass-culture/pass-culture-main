@@ -6,7 +6,7 @@ from sqlalchemy.sql.expression import literal, select
 
 from models import Offer, \
     Recommendation, \
-    Booking, \
+    BookingSQLEntity, \
     Favorite
 from models.api_errors import ResourceNotFoundError
 from models.db import db
@@ -79,14 +79,14 @@ def delete_useless_recommendations(limit: int = 500000):
     favorite_query = (select([Favorite.offerId])).alias('favorite_query')
     is_unread = Recommendation.dateRead == None
     is_older_than_one_week = Recommendation.dateCreated < EIGHT_DAYS_AGO
-    has_no_booking = Booking.recommendationId == None
+    has_no_booking = BookingSQLEntity.recommendationId == None
     not_favorite_predicate = Recommendation.offerId.notin_(favorite_query)
 
     connection = db.engine.connect()
 
     query = select([Recommendation.id]). \
         select_from(Recommendation.__table__ \
-                    .join(Booking, Recommendation.id == Booking.recommendationId, True)) \
+                    .join(BookingSQLEntity, Recommendation.id == BookingSQLEntity.recommendationId, True)) \
         .where(
         and_(is_unread,
              is_older_than_one_week,

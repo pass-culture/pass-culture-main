@@ -12,7 +12,8 @@ from domain.bookings import generate_bookings_details_csv
 from domain.user_activation import create_initial_deposit, is_activation_booking
 from domain.user_emails import send_activation_email, \
     send_booking_cancellation_emails_to_user_and_offerer
-from models import ApiErrors, Booking, EventType, Offerer, RightsType, ApiKey, UserSQLEntity
+from infrastructure.container import book_an_offer
+from models import ApiErrors, BookingSQLEntity, EventType, Offerer, RightsType, ApiKey, UserSQLEntity
 from models.feature import FeatureToggle
 from models.offer_type import ProductType
 from repository import booking_queries, feature_queries, repository
@@ -22,7 +23,6 @@ from repository.user_offerer_queries import \
 from routes.serialization import as_dict, serialize, serialize_booking
 from routes.serialization.bookings_recap_serialize import serialize_bookings_recap
 from use_cases.book_an_offer import BookingInformation
-from infrastructure.container import book_an_offer
 from use_cases.get_all_bookings_by_pro_user import get_all_bookings_by_pro_user
 from utils.human_ids import dehumanize, humanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, \
@@ -127,7 +127,7 @@ def get_bookings():
 @app.route('/bookings/<booking_id>', methods=['GET'])
 @login_required
 def get_booking(booking_id: int):
-    booking = Booking.query.filter_by(id=dehumanize(booking_id)).first_or_404()
+    booking = BookingSQLEntity.query.filter_by(id=dehumanize(booking_id)).first_or_404()
 
     return jsonify(as_dict(booking, includes=WEBAPP_GET_BOOKING_INCLUDES)), 200
 
@@ -371,7 +371,7 @@ def _get_api_key_from_header(received_request: Dict) -> ApiKey:
     return find_api_key_by_value(app_authorization_api_key)
 
 
-def _create_response_to_get_booking_by_token(booking: Booking) -> Dict:
+def _create_response_to_get_booking_by_token(booking: BookingSQLEntity) -> Dict:
     offer_name = booking.stock.offer.product.name
     date = None
     offer = booking.stock.offer

@@ -6,7 +6,7 @@ from domain.expenses import is_eligible_to_physical_offers_capping, is_eligible_
 from domain.stock.stock import Stock
 from domain.stock.stock_exceptions import StockDoesntExist
 from domain.user.user import User
-from models import Booking
+from models import BookingSQLEntity
 from repository import stock_queries
 
 
@@ -22,7 +22,7 @@ def check_stock_is_bookable(stock: Stock):
         raise stock_is_not_bookable
 
 
-def check_expenses_limits(expenses: Dict, booking: Booking,
+def check_expenses_limits(expenses: Dict, booking: BookingSQLEntity,
                           find_stock: Callable[..., Stock] = stock_queries.find_stock_by_id) -> None:
     stock = find_stock(booking.stockId)
     offer = stock.offer

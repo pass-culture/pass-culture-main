@@ -8,7 +8,7 @@ from flask import current_app as app, render_template
 
 from connectors import api_entreprises
 from domain.postal_code.postal_code import PostalCode
-from models import Booking, Offer, Offerer, StockSQLEntity, UserSQLEntity, UserOfferer, Venue
+from models import BookingSQLEntity, Offer, Offerer, StockSQLEntity, UserSQLEntity, UserOfferer, Venue
 from models.email import EmailStatus
 from repository import booking_queries
 from repository import email_queries
@@ -61,7 +61,7 @@ def build_pc_pro_offer_link(offer: Offer) -> str:
            f'&structure={humanize(offer.venue.managingOffererId)}'
 
 
-def extract_users_information_from_bookings(bookings: List[Booking]) -> List[dict]:
+def extract_users_information_from_bookings(bookings: List[BookingSQLEntity]) -> List[dict]:
     users_keys = ('firstName', 'lastName', 'email', 'contremarque')
     users_properties = [[booking.user.firstName, booking.user.lastName, booking.user.email, booking.token] for booking
                         in bookings]
@@ -80,7 +80,7 @@ def format_environment_for_email() -> str:
     return '' if IS_PROD else f'-{ENV}'
 
 
-def format_booking_date_for_email(booking: Booking) -> str:
+def format_booking_date_for_email(booking: BookingSQLEntity) -> str:
     if booking.stock.offer.isEvent:
         date_in_tz = get_event_datetime(booking.stock)
         offer_date = date_in_tz.strftime("%d-%b-%Y")
@@ -88,7 +88,7 @@ def format_booking_date_for_email(booking: Booking) -> str:
     return ''
 
 
-def format_booking_hours_for_email(booking: Booking) -> str:
+def format_booking_hours_for_email(booking: BookingSQLEntity) -> str:
     if booking.stock.offer.isEvent:
         date_in_tz = get_event_datetime(booking.stock)
         event_hour = date_in_tz.hour
@@ -124,7 +124,7 @@ def make_validation_email_object(offerer: Offerer, user_offerer: UserOfferer,
     }
 
 
-def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> Dict:
+def make_offerer_driven_cancellation_email_for_offerer(booking: BookingSQLEntity) -> Dict:
     stock_name = booking.stock.offer.product.name
     venue = booking.stock.offer.venue
     user_name = booking.user.publicName

@@ -6,9 +6,9 @@ from domain.password import random_password, generate_reset_token
 from models.deposit import Deposit
 from models.offer_type import EventType, ThingType
 from models.api_errors import ApiErrors
-from models.user import UserSQLEntity
+from models.user_sql_entity import UserSQLEntity
 from models.beneficiary_import_status import ImportStatus
-from models.booking import ActivationUser
+from models.booking_sql_entity import ActivationUser
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 
 IMPORT_STATUS_MODIFICATION_RULE = 'Seuls les dossiers au statut DUPLICATE peuvent être modifiés (aux statuts REJECTED ou RETRY uniquement)'

@@ -10,8 +10,8 @@ import qrcode
 import qrcode.image.svg
 from PIL import Image
 
-from models.booking import Booking
-from models.stock import StockSQLEntity
+from models.booking_sql_entity import BookingSQLEntity
+from models.stock_sql_entity import StockSQLEntity
 from utils.string_processing import format_decimal
 
 BOOKING_CANCELLATION_DELAY = timedelta(hours=72)
@@ -80,7 +80,7 @@ def filter_bookings_to_compute_remaining_stock(stock: StockSQLEntity) -> Iterato
                   stock.bookings)
 
 
-def generate_qr_code(booking: Booking) -> str:
+def generate_qr_code(booking: BookingSQLEntity) -> str:
     qr = qrcode.QRCode(
         version=QR_CODE_VERSION,
         error_correction=qrcode.constants.ERROR_CORRECT_Q,

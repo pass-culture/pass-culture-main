@@ -1,9 +1,9 @@
-from models.booking import Booking
+from models.booking_sql_entity import BookingSQLEntity
 from models.offer import Offer
 from models.offerer import Offerer
 from models.payment import Payment
-from models.stock import StockSQLEntity
-from models.user import UserSQLEntity
+from models.stock_sql_entity import StockSQLEntity
+from models.user_sql_entity import UserSQLEntity
 from models.user_offerer import UserOfferer
 from models.venue import Venue
 from sandboxes.scripts.utils.helpers import get_booking_helper, \

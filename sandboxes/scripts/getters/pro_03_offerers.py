@@ -1,4 +1,4 @@
-from models.user import UserSQLEntity
+from models.user_sql_entity import UserSQLEntity
 from repository.user_queries import filter_users_with_at_least_one_validated_offerer_validated_user_offerer, \
                                     filter_users_with_at_least_one_validated_offerer_not_validated_user_offerer, \
                                     filter_users_with_at_least_one_not_validated_offerer_validated_user_offerer

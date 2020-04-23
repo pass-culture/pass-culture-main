@@ -16,7 +16,7 @@ from domain.reimbursement import BookingReimbursement
 from models import PaymentMessage
 from models.payment import Payment
 from models.payment_status import TransactionStatus
-from models.user import WalletBalance
+from models.user_sql_entity import WalletBalance
 from repository import booking_queries
 from utils.human_ids import humanize
 

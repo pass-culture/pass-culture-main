@@ -17,7 +17,7 @@ from models.offer_criterion import OfferCriterion
 from models.offer_type import ThingType, EventType, ProductType, Category
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
-from models.stock import StockSQLEntity
+from models.stock_sql_entity import StockSQLEntity
 from models.versioned_mixin import VersionedMixin
 from utils.date import DateTimes
 from utils.string_processing import pluralize

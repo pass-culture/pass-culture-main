@@ -1,7 +1,7 @@
 import os
 from typing import Dict
 
-from models import Booking
+from models import BookingSQLEntity
 from utils.date import utc_datetime_to_department_timezone, get_date_formatted_for_email, get_time_formatted_for_email
 from utils.human_ids import humanize
 from utils.mailing import format_environment_for_email
@@ -9,7 +9,7 @@ from utils.mailing import format_environment_for_email
 SUPPORT_EMAIL_ADDRESS = os.environ.get('SUPPORT_EMAIL_ADDRESS')
 
 
-def make_beneficiary_booking_cancellation_email_data(booking: Booking) -> Dict:
+def make_beneficiary_booking_cancellation_email_data(booking: BookingSQLEntity) -> Dict:
     stock = booking.stock
     beneficiary = booking.user
     offer = stock.offer

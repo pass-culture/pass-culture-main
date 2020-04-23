@@ -5,10 +5,10 @@ from sqlalchemy import subquery
 from sqlalchemy.orm import aliased
 
 from models import UserSQLEntity, Offerer, PaymentStatus
-from models.booking import Booking
+from models.booking_sql_entity import BookingSQLEntity
 from models.offer import Offer
 from models.payment import Payment
-from models.stock import StockSQLEntity
+from models.stock_sql_entity import StockSQLEntity
 from models.venue import Venue
 
 

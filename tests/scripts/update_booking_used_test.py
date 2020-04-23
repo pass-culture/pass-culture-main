@@ -2,7 +2,7 @@ from datetime import datetime
 
 from freezegun import freeze_time
 
-from models import Booking
+from models import BookingSQLEntity
 from repository import repository
 from scripts.update_booking_used import update_booking_used_after_stock_occurrence
 from tests.conftest import clean_database
@@ -30,7 +30,7 @@ class UpdateBookingUsedTest:
         update_booking_used_after_stock_occurrence()
 
         # Then
-        updated_booking = Booking.query.first()
+        updated_booking = BookingSQLEntity.query.first()
         assert not updated_booking.isUsed
         assert not updated_booking.dateUsed
 
@@ -52,7 +52,7 @@ class UpdateBookingUsedTest:
         update_booking_used_after_stock_occurrence()
 
         # Then
-        updated_booking = Booking.query.first()
+        updated_booking = BookingSQLEntity.query.first()
         assert updated_booking.isUsed
         assert updated_booking.dateUsed == datetime(2019, 10, 13)
 
@@ -74,7 +74,7 @@ class UpdateBookingUsedTest:
         update_booking_used_after_stock_occurrence()
 
         # Then
-        updated_booking = Booking.query.first()
+        updated_booking = BookingSQLEntity.query.first()
         assert not updated_booking.isUsed
         assert updated_booking.dateUsed is None
 
@@ -96,6 +96,6 @@ class UpdateBookingUsedTest:
         update_booking_used_after_stock_occurrence()
 
         # Then
-        updated_booking = Booking.query.first()
+        updated_booking = BookingSQLEntity.query.first()
         assert updated_booking.isUsed
         assert updated_booking.dateUsed == booking_date

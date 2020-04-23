@@ -1,7 +1,7 @@
-from models.booking import Booking
+from models.booking_sql_entity import BookingSQLEntity
 from models.offer import Offer
-from models.stock import StockSQLEntity
-from models.user import UserSQLEntity
+from models.stock_sql_entity import StockSQLEntity
+from models.user_sql_entity import UserSQLEntity
 from models.venue import Venue
 from repository.user_queries import filter_users_with_at_least_one_validated_offerer_validated_user_offerer
 from sandboxes.scripts.utils.helpers import get_booking_helper, \

@@ -5,7 +5,7 @@ from flask import current_app as app, jsonify, session
 from flask_login import login_user
 
 from models.api_errors import ApiErrors
-from models.user import UserSQLEntity
+from models.user_sql_entity import UserSQLEntity
 from repository.user_session_queries import existing_user_session, register_user_session, delete_user_session
 from utils.credentials import get_user_with_credentials
 

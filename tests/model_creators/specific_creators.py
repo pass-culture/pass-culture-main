@@ -3,7 +3,7 @@ import string
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 
-from models import Booking, EventType, Offer, Offerer, Product, StockSQLEntity, ThingType, UserSQLEntity, Venue, Provider
+from models import BookingSQLEntity, EventType, Offer, Offerer, Product, StockSQLEntity, ThingType, UserSQLEntity, Venue, Provider
 from utils.token import random_token
 
 
@@ -12,11 +12,11 @@ def create_booking_for_event(amount: int = 50,
                              is_cancelled: bool = False,
                              quantity: int = 1,
                              type: EventType = EventType.CINEMA,
-                             user: UserSQLEntity = None) -> Booking:
+                             user: UserSQLEntity = None) -> BookingSQLEntity:
     product = Product(from_dict={'type': str(type)})
     offer = Offer()
     stock = StockSQLEntity()
-    booking = Booking(from_dict={'amount': amount})
+    booking = BookingSQLEntity(from_dict={'amount': amount})
     offer.product = product
     stock.offer = offer
     booking.stock = stock
@@ -35,11 +35,11 @@ def create_booking_for_thing(amount: int = 50,
                              quantity: int = 1,
                              product_type: ThingType = ThingType.JEUX,
                              url: str = None,
-                             user: UserSQLEntity = None) -> Booking:
+                             user: UserSQLEntity = None) -> BookingSQLEntity:
     product = Product(from_dict={'url': url, 'type': str(product_type)})
     offer = Offer(from_dict={'url': url, 'type': str(product_type)})
     stock = StockSQLEntity()
-    booking = Booking(from_dict={'amount': amount})
+    booking = BookingSQLEntity(from_dict={'amount': amount})
     offer.product = product
     stock.offer = offer
     booking.stock = stock

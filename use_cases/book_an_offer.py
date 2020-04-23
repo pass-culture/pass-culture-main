@@ -1,15 +1,12 @@
-from flask import current_app as app
-
+from domain.booking.booking_repository import BookingRepository
 from domain.booking.booking_validator import check_offer_already_booked, check_quantity_is_valid
 from domain.expenses import get_expenses
 from domain.services.notification.notification_service import NotificationService
 from domain.stock.stock_repository import StockRepository
 from domain.stock.stock_validator import check_stock_is_bookable, check_expenses_limits, check_can_book_free_offer
 from domain.user.user_repository import UserRepository
-from domain.user_emails import send_booking_confirmation_email_to_beneficiary
-from models import Booking
+from models import BookingSQLEntity
 from repository import booking_queries, repository
-from utils.mailing import send_raw_email, MailServiceException
 from utils.token import random_token
 
 
@@ -22,14 +19,16 @@ class BookingInformation(object):
 
 
 class BookAnOffer:
-    def __init__(self, stock_repository: StockRepository,
+    def __init__(self,
+                 booking_repository: BookingRepository,
+                 stock_repository: StockRepository,
                  user_repository: UserRepository,
                  notification_service: NotificationService):
         self.stock_repository = stock_repository
         self.user_repository = user_repository
         self.notification_service = notification_service
 
-    def execute(self, booking_information: BookingInformation) -> Booking:
+    def execute(self, booking_information: BookingInformation) -> BookingSQLEntity:
         stock = self.stock_repository.find_stock_by_id(booking_information.stock_id)
         user = self.user_repository.find_user_by_id(booking_information.user_id)
 
@@ -50,8 +49,8 @@ class BookAnOffer:
 
         return booking
 
-    def _create_booking_with_booking_information(self, booking_information, stock) -> Booking:
-        booking = Booking()
+    def _create_booking_with_booking_information(self, booking_information, stock) -> BookingSQLEntity:
+        booking = BookingSQLEntity()
         booking.stockId = booking_information.stock_id
         booking.userId = booking_information.user_id
         booking.quantity = booking_information.quantity

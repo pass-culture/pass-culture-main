@@ -5,7 +5,7 @@ from models.bank_information import BankInformation
 from models.beneficiary_import import BeneficiaryImport
 from models.beneficiary_import_status import BeneficiaryImportStatus, \
     ImportStatus
-from models.booking import Booking
+from models.booking_sql_entity import BookingSQLEntity
 from models.criterion import Criterion
 from models.deactivable_mixin import DeactivableMixin
 from models.deposit import Deposit
@@ -34,8 +34,8 @@ from models.providable_mixin import ProvidableMixin
 from models.provider import Provider
 from models.recommendation import Recommendation
 from models.seen_offers import SeenOffer
-from models.stock import StockSQLEntity
-from models.user import UserSQLEntity
+from models.stock_sql_entity import StockSQLEntity
+from models.user_sql_entity import UserSQLEntity
 from models.user_offerer import RightsType, UserOfferer
 from models.user_session import UserSession
 from models.venue import Venue
@@ -72,7 +72,7 @@ __all__ = (
     'BookFormat',
     'NeedsValidationMixin',
     'ProvidableMixin',
-    'Booking',
+    'BookingSQLEntity',
     'Mediation',
     'StockSQLEntity',
     'Offerer',
@@ -123,7 +123,7 @@ models = (
     Favorite,
     Feature,
     StockSQLEntity,
-    Booking,
+    BookingSQLEntity,
     VenueProvider,
     AllocineVenueProvider,
     AllocineVenueProviderPriceRule,

@@ -8,7 +8,7 @@ from models.beneficiary_import_status import BeneficiaryImportStatus, \
     ImportStatus
 from models.db import Model, db
 from models.pc_object import PcObject
-from models.user import UserSQLEntity
+from models.user_sql_entity import UserSQLEntity
 
 
 class BeneficiaryImport(PcObject, Model):

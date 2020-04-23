@@ -1,6 +1,6 @@
 from models.mediation import Mediation
 from models.offer import Offer
-from models.user import UserSQLEntity
+from models.user_sql_entity import UserSQLEntity
 from models.venue import Venue
 from repository.user_queries import filter_users_with_at_least_one_validated_offerer_validated_user_offerer
 from sandboxes.scripts.utils.helpers import get_offer_helper, get_user_helper

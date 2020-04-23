@@ -11,7 +11,7 @@ from domain.payments import create_payment_for_booking, filter_out_already_paid_
     filter_out_bookings_without_cost, keep_only_pending_payments, keep_only_not_processable_payments, apply_banishment, \
     UnmatchedPayments
 from domain.reimbursement import BookingReimbursement, ReimbursementRules
-from models import Offer, Venue, Booking, Offerer
+from models import Offer, Venue, BookingSQLEntity, Offerer
 from models.payment import Payment
 from models.payment_status import TransactionStatus
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
@@ -164,10 +164,10 @@ def test_create_payment_for_booking_with_pending_status(app):
 class FilterOutAlreadyPaidForBookingsTest:
     def test_it_returns_reimbursements_on_bookings_with_no_existing_payments(self):
         # Given
-        booking_paid = Booking()
+        booking_paid = BookingSQLEntity()
         booking_paid.payments = [Payment()]
         booking_reimbursement1 = BookingReimbursement(booking_paid, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
-        booking_not_paid = Booking()
+        booking_not_paid = BookingSQLEntity()
         booking_reimbursement2 = BookingReimbursement(booking_not_paid, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
         booking_reimbursements = [booking_reimbursement1, booking_reimbursement2]
 
@@ -180,11 +180,11 @@ class FilterOutAlreadyPaidForBookingsTest:
 
     def test_it_returns_an_empty_list_if_everything_has_been_reimbursed(self):
         # Given
-        booking_paid1 = Booking()
+        booking_paid1 = BookingSQLEntity()
         booking_paid1.payments = [Payment()]
         booking_reimbursement1 = BookingReimbursement(booking_paid1, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
 
-        booking_paid2 = Booking()
+        booking_paid2 = BookingSQLEntity()
         booking_paid2.payments = [Payment()]
         booking_reimbursement2 = BookingReimbursement(booking_paid2, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
 
@@ -205,8 +205,8 @@ class FilterOutAlreadyPaidForBookingsTest:
 class FilterOutBookingsWithoutCost:
     def test_it_returns_reimbursements_on_bookings_with_reimbursed_value_greater_than_zero(self):
         # given
-        reimbursement1 = BookingReimbursement(Booking(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
-        reimbursement2 = BookingReimbursement(Booking(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(0))
+        reimbursement1 = BookingReimbursement(BookingSQLEntity(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+        reimbursement2 = BookingReimbursement(BookingSQLEntity(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(0))
 
         # when
         bookings_reimbursements_with_cost = filter_out_bookings_without_cost([reimbursement1, reimbursement2])
@@ -217,8 +217,8 @@ class FilterOutBookingsWithoutCost:
 
     def test_it_returns_an_empty_list_if_everything_has_a_cost(self):
         # given
-        reimbursement1 = BookingReimbursement(Booking(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(0))
-        reimbursement2 = BookingReimbursement(Booking(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(0))
+        reimbursement1 = BookingReimbursement(BookingSQLEntity(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(0))
+        reimbursement2 = BookingReimbursement(BookingSQLEntity(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(0))
 
         # when
         bookings_reimbursements_with_cost = filter_out_bookings_without_cost([reimbursement1, reimbursement2])
@@ -506,10 +506,10 @@ class ApplyBanishmentTest:
     def test_payments_matching_given_ids_must_be_banned(self):
         # given
         payments = [
-            create_payment(Booking(), Offerer(), 10, idx=111),
-            create_payment(Booking(), Offerer(), 10, idx=222),
-            create_payment(Booking(), Offerer(), 10, idx=333),
-            create_payment(Booking(), Offerer(), 10, idx=444)
+            create_payment(BookingSQLEntity(), Offerer(), 10, idx=111),
+            create_payment(BookingSQLEntity(), Offerer(), 10, idx=222),
+            create_payment(BookingSQLEntity(), Offerer(), 10, idx=333),
+            create_payment(BookingSQLEntity(), Offerer(), 10, idx=444)
         ]
         ids_to_ban = [222, 333]
 
@@ -525,10 +525,10 @@ class ApplyBanishmentTest:
     def test_payments_not_matching_given_ids_must_be_retried(self):
         # given
         payments = [
-            create_payment(Booking(), Offerer(), 10, idx=111),
-            create_payment(Booking(), Offerer(), 10, idx=222),
-            create_payment(Booking(), Offerer(), 10, idx=333),
-            create_payment(Booking(), Offerer(), 10, idx=444)
+            create_payment(BookingSQLEntity(), Offerer(), 10, idx=111),
+            create_payment(BookingSQLEntity(), Offerer(), 10, idx=222),
+            create_payment(BookingSQLEntity(), Offerer(), 10, idx=333),
+            create_payment(BookingSQLEntity(), Offerer(), 10, idx=444)
         ]
         ids_to_ban = [222, 333]
 
@@ -544,8 +544,8 @@ class ApplyBanishmentTest:
     def test_no_payments_to_retry_if_all_are_banned(self):
         # given
         payments = [
-            create_payment(Booking(), Offerer(), 10, idx=111),
-            create_payment(Booking(), Offerer(), 10, idx=222)
+            create_payment(BookingSQLEntity(), Offerer(), 10, idx=111),
+            create_payment(BookingSQLEntity(), Offerer(), 10, idx=222)
         ]
         ids_to_ban = [111, 222]
 
@@ -559,8 +559,8 @@ class ApplyBanishmentTest:
     def test_no_payments_are_returned_if_no_ids_are_provided(self):
         # given
         payments = [
-            create_payment(Booking(), Offerer(), 10, idx=111),
-            create_payment(Booking(), Offerer(), 10, idx=222)
+            create_payment(BookingSQLEntity(), Offerer(), 10, idx=111),
+            create_payment(BookingSQLEntity(), Offerer(), 10, idx=222)
         ]
         ids_to_ban = []
 
@@ -574,8 +574,8 @@ class ApplyBanishmentTest:
     def test_value_error_is_raised_if_payments_ids_do_not_match_payments(self):
         # given
         payments = [
-            create_payment(Booking(), Offerer(), 10, idx=111),
-            create_payment(Booking(), Offerer(), 10, idx=222)
+            create_payment(BookingSQLEntity(), Offerer(), 10, idx=111),
+            create_payment(BookingSQLEntity(), Offerer(), 10, idx=222)
         ]
         ids_to_ban = [222, 333]
 

@@ -1,4 +1,4 @@
-from models import ApiKey, Booking
+from models import ApiKey, BookingSQLEntity
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, create_venue, \
@@ -45,7 +45,7 @@ class Patch:
 
             # Then
             assert response.status_code == 204
-            updated_booking = Booking.query.first()
+            updated_booking = BookingSQLEntity.query.first()
             assert updated_booking.isCancelled
 
         @clean_database
@@ -78,7 +78,7 @@ class Patch:
 
             # Then
             assert response.status_code == 204
-            updated_booking = Booking.query.first()
+            updated_booking = BookingSQLEntity.query.first()
             assert updated_booking.isCancelled
 
     class Returns401:
@@ -226,7 +226,7 @@ class Patch:
                 # Then
                 assert response.status_code == 403
                 assert response.json['global'] == ["Impossible d\'annuler une réservation consommée"]
-                updated_booking = Booking.query.first()
+                updated_booking = BookingSQLEntity.query.first()
                 assert updated_booking.isUsed
                 assert updated_booking.isCancelled is False
 

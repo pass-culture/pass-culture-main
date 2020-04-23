@@ -9,10 +9,10 @@ def install_scripts():
     from models.has_thumb_mixin import HasThumbMixin
     from models.needs_validation_mixin import NeedsValidationMixin
     from models.providable_mixin import ProvidableMixin
-    from models.booking import Booking
+    from models.booking_sql_entity import BookingSQLEntity
 
     from models.mediation import Mediation
-    from models.stock import StockSQLEntity
+    from models.stock_sql_entity import StockSQLEntity
     from models.offerer import Offerer
     from models.venue_provider import VenueProvider
     from models.local_provider_event import LocalProviderEvent
@@ -22,7 +22,7 @@ def install_scripts():
     from models.recommendation import Recommendation
 
     from models.user_offerer import UserOfferer
-    from models.user import UserSQLEntity
+    from models.user_sql_entity import UserSQLEntity
     from models.venue import Venue
 
     import scripts.clean_database

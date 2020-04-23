@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 from shapely.geometry import Polygon
 
-from models import Booking
+from models import BookingSQLEntity
 from models.feature import Feature, FeatureToggle
 from repository import repository
 
@@ -32,11 +32,11 @@ def deactivate_feature(feature_toggle: FeatureToggle):
 
 def create_mocked_bookings(num_bookings: int,
                            venue_email: str,
-                           name: str = 'Offer name') -> List[Booking]:
+                           name: str = 'Offer name') -> List[BookingSQLEntity]:
     bookings = []
 
     for counter in range(num_bookings):
-        booking = Mock(spec=Booking)
+        booking = Mock(spec=BookingSQLEntity)
         booking.user.email = 'user_email%s' % counter
         booking.user.firstName = 'First %s' % counter
         booking.user.lastName = 'Last %s' % counter

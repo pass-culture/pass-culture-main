@@ -9,7 +9,7 @@ from shapely.geometry import Polygon
 from domain.payments import PaymentDetails
 from local_providers.price_rule import PriceRule
 from models import AllocinePivot, AllocineVenueProviderPriceRule, ApiKey, \
-    BankInformation, BeneficiaryImport, BeneficiaryImportStatus, Booking, \
+    BankInformation, BeneficiaryImport, BeneficiaryImportStatus, BookingSQLEntity, \
     Criterion, Deposit, Email, Favorite, ImportStatus, IrisFrance, IrisVenues, \
     Mediation, Offer, Offerer, Payment, PaymentMessage, PaymentStatus, \
     Provider, Recommendation, RightsType, StockSQLEntity, ThingType, UserSQLEntity, UserOfferer, \
@@ -114,8 +114,8 @@ def create_booking(user: UserSQLEntity,
                    recommendation: Recommendation = None,
                    stock: StockSQLEntity = None,
                    token: str = None,
-                   venue: Venue = None) -> Booking:
-    booking = Booking()
+                   venue: Venue = None) -> BookingSQLEntity:
+    booking = BookingSQLEntity()
     offerer = create_offerer(siren='987654321', address='Test address', city='Test city', postal_code='93000',
                              name='Test name')
     if venue is None:
@@ -246,7 +246,7 @@ def create_offerer(address: str = None,
     return offerer
 
 
-def create_payment(booking: Booking,
+def create_payment(booking: BookingSQLEntity,
                    offerer: Offerer,
                    amount: int = 10,
                    author: str = 'test author',

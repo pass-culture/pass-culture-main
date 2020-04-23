@@ -1,11 +1,11 @@
 from typing import Dict
 
-from models import Booking, EventType, ThingType
+from models import BookingSQLEntity, EventType, ThingType
 from routes.serialization import serialize
 from utils.human_ids import humanize
 
 
-def serialize_booking(booking: Booking) -> Dict:
+def serialize_booking(booking: BookingSQLEntity) -> Dict:
     booking_id = humanize(booking.id)
     user_email = booking.user.email
     is_used = booking.isUsed

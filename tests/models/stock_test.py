@@ -7,7 +7,7 @@ from pytest import approx
 
 from models import ApiErrors
 from models.pc_object import DeletedRecordException
-from models.stock import StockSQLEntity
+from models.stock_sql_entity import StockSQLEntity
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import (create_booking,

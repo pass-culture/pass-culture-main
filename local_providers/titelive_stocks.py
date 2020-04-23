@@ -8,7 +8,7 @@ from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
 from models import Offer, VenueProvider
 from models.db import db
-from models.stock import StockSQLEntity
+from models.stock_sql_entity import StockSQLEntity
 from repository import product_queries
 from repository.booking_queries import count_not_cancelled_bookings_quantity_by_stock_id
 

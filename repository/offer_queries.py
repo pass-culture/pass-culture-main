@@ -18,7 +18,7 @@ from models import EventType, \
     StockSQLEntity, \
     ThingType, \
     Venue, \
-    Product, Favorite, Booking, DiscoveryView, DiscoveryViewV3, User, SeenOffer
+    Product, Favorite, BookingSQLEntity, DiscoveryView, DiscoveryViewV3, User, SeenOffer
 from models.db import Model
 from models.feature import FeatureToggle
 from repository import feature_queries
@@ -208,7 +208,7 @@ def get_active_offers_ids_query(user, departement_codes=[ALL_DEPARTMENTS_CODE], 
 
 
 def _exclude_booked_and_favorite(active_offers_query, user):
-    booked_offer_ids = Booking.query.filter_by(userId=user.id).join(StockSQLEntity).with_entities(
+    booked_offer_ids = BookingSQLEntity.query.filter_by(userId=user.id).join(StockSQLEntity).with_entities(
         'stock."offerId"').subquery()
     favorite_offer_ids = Favorite.query.filter_by(userId=user.id).with_entities('"offerId"').subquery()
     not_booked_predicate = ~Offer.id.in_(booked_offer_ids)
@@ -240,7 +240,7 @@ def _build_occurs_soon_or_is_thing_predicate():
                                        & ((StockSQLEntity.beginningDatetime == None)
                                           | ((StockSQLEntity.beginningDatetime > datetime.utcnow())
                                              & (StockSQLEntity.beginningDatetime < (
-                                datetime.utcnow() + timedelta(days=10)))))) \
+                            datetime.utcnow() + timedelta(days=10)))))) \
         .exists()
 
 
@@ -349,7 +349,7 @@ def find_searchable_offer(offer_id):
 def _offer_has_bookable_stocks():
     now = datetime.utcnow()
     stock_can_still_be_booked = (StockSQLEntity.bookingLimitDatetime > now) | (
-                StockSQLEntity.bookingLimitDatetime == None)
+            StockSQLEntity.bookingLimitDatetime == None)
     event_has_not_began_yet = (StockSQLEntity.beginningDatetime != None) & (StockSQLEntity.beginningDatetime > now)
     offer_is_on_a_thing = StockSQLEntity.beginningDatetime == None
     bookings_quantity = _build_bookings_quantity_subquery()
@@ -361,17 +361,17 @@ def _offer_has_bookable_stocks():
         .filter(event_has_not_began_yet | offer_is_on_a_thing) \
         .outerjoin(bookings_quantity, StockSQLEntity.id == bookings_quantity.c.stockId) \
         .filter((StockSQLEntity.quantity == None) | (
-                (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
+            (StockSQLEntity.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0)) \
         .exists()
 
 
 def _build_bookings_quantity_subquery():
     stock_alias = aliased(StockSQLEntity)
-    bookings_quantity = Booking.query \
+    bookings_quantity = BookingSQLEntity.query \
         .join(stock_alias) \
-        .filter(Booking.isCancelled == False) \
-        .group_by(Booking.stockId) \
-        .with_entities(func.sum(Booking.quantity).label('quantity'), Booking.stockId.label('stockId')) \
+        .filter(BookingSQLEntity.isCancelled == False) \
+        .group_by(BookingSQLEntity.stockId) \
+        .with_entities(func.sum(BookingSQLEntity.quantity).label('quantity'), BookingSQLEntity.stockId.label('stockId')) \
         .subquery()
     return bookings_quantity
 

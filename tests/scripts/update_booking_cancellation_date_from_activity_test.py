@@ -1,4 +1,4 @@
-from models import Booking
+from models import BookingSQLEntity
 from models.db import db
 from repository import repository
 from scripts.update_booking_cancellation_date_from_activity import update_booking_cancellation_date_from_activity
@@ -31,9 +31,9 @@ class UpdateBookingCancellationDateFromActivityTest:
         update_booking_cancellation_date_from_activity()
 
         # Then
-        count_of_cancelled_booking_without_cancellation_date = Booking.query.filter(
-            (Booking.cancellationDate == None),
-            (Booking.isCancelled == True)
+        count_of_cancelled_booking_without_cancellation_date = BookingSQLEntity.query.filter(
+            (BookingSQLEntity.cancellationDate == None),
+            (BookingSQLEntity.isCancelled == True)
         ).count()
 
         assert count_of_cancelled_booking_without_cancellation_date == 0
