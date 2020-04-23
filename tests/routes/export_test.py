@@ -146,7 +146,6 @@ def test_pending_validation_return_only_requested_data(app):
                          validation_token='venue_validation_token', booking_email='john.doe@test.com')
     repository.save(user, user_pro, offerer)
 
-    # TODO: model name
     expected_result = {
         'isActive': True,
         'dateModifiedAtLastProvider': serialize(offerer.dateModifiedAtLastProvider),
@@ -160,14 +159,12 @@ def test_pending_validation_return_only_requested_data(app):
         'name': 'Test Offerer',
         'siren': '123456789',
         'lastProviderId': None,
-        'modelName': 'Offerer',
         'UserOfferers':
             [{'id': humanize(user_offerer.id),
               'validationToken': None,
               'userId': humanize(user_pro.id),
               'offererId': humanize(offerer.id),
               'rights': 'admin',
-              'modelName': 'UserOfferer',
               'user':
                   {'canBookFreeOffers': False,
                    'activity': None,
@@ -182,7 +179,6 @@ def test_pending_validation_return_only_requested_data(app):
                    'postalCode': '93100',
                    'publicName': 'John Doe',
                    'validationToken': None,
-                   'modelName': 'UserSQLEntity',
                    'culturalSurveyId': None,
                    'culturalSurveyFilledDate': None,
                    'needsToFillCulturalSurvey': False,
@@ -202,7 +198,6 @@ def test_pending_validation_return_only_requested_data(app):
               'siret': None,
               'validationToken': 'venue_validation_token',
               'venueTypeId': None,
-              'modelName': 'Venue'
               }]
     }
 

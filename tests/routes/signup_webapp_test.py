@@ -30,14 +30,12 @@ class Post:
         def when_data_is_accurate(self, get_authorized_emails_and_dept_codes, app):
             # Given
             data = BASE_DATA.copy()
-            # TODO: model name
             expected_response_json = {'canBookFreeOffers': False,
                                       'departementCode': '93',
                                       'email': 'toto@btmx.fr',
                                       'firstName': 'Toto',
                                       'isAdmin': False,
                                       'lastName': 'Martin',
-                                      'modelName': 'UserSQLEntity',
                                       'phoneNumber': '0612345678',
                                       'postalCode': '93100',
                                       'publicName': 'Toto',

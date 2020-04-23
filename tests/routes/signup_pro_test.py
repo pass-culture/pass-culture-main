@@ -27,7 +27,6 @@ class Post:
         def when_user_data_is_valid(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
-            # TODO: model name
             expected_response_json = {
                 'canBookFreeOffers': False,
                 'departementCode': '92',
@@ -35,7 +34,6 @@ class Post:
                 'firstName': 'Toto',
                 'isAdmin': False,
                 'lastName': 'Pro',
-                'modelName': 'UserSQLEntity',
                 'phoneNumber': '0102030405',
                 'postalCode': '92000',
                 'publicName': 'Toto Pro',
