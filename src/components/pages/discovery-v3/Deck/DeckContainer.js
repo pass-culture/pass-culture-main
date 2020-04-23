@@ -21,12 +21,10 @@ export const mapStateToProps = (state, ownProps) => {
   const previousRecommendation = selectPreviousRecommendation(state, offerId, mediationId)
 
   const nbRecommendations = recommendations ? recommendations.length : 0
-  const hasNoVerso = !currentRecommendation
   const nextLimit = getNextLimit(nbRecommendations)
 
   return {
     currentRecommendation,
-    isFlipDisabled: hasNoVerso,
     nextLimit,
     nextRecommendation,
     previousRecommendation,

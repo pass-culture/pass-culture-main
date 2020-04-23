@@ -6,12 +6,11 @@ export const getOfferIdAndMediationIdAndCoordinatesApiPathQueryString = (
   const isValid = match && typeof match === 'object' && !Array.isArray(match)
   if (!isValid) return ''
 
-  const { params: { mediationId: pMediationId, offerId: pOfferId } = {} } = match || {}
+  let { params: { mediationId, offerId } = {} } = match || {}
   const { longitude: longitude, latitude: latitude } = coordinates || {}
 
-  const offerId = typeof pOfferId === 'string' && pOfferId.trim() !== '' && pOfferId
-
-  const mediationId = typeof pMediationId === 'string' && pMediationId.trim() !== '' && pMediationId
+  offerId = typeof offerId === 'string' && offerId.trim() !== '' && offerId
+  mediationId = typeof mediationId === 'string' && mediationId.trim() !== '' && mediationId
 
   const isSameRecoAsMatchParams =
     currentRecommendation &&

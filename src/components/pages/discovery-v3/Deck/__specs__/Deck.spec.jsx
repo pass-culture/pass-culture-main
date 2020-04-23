@@ -19,7 +19,6 @@ describe('src | components | pages | discovery | Deck | Deck', () => {
         push: jest.fn(),
         replace: jest.fn(),
       },
-      isFlipDisabled: false,
       location: {
         pathname: '',
         search: '',
