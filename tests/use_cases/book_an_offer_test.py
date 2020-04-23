@@ -2,8 +2,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from domain.booking import StockDoesntExist, OfferIsAlreadyBooked, CannotBookFreeOffers, StockIsNotBookable, \
+from domain.booking import OfferIsAlreadyBooked, CannotBookFreeOffers, StockIsNotBookable, \
     UserHasInsufficientFunds, PhysicalExpenseLimitHasBeenReached, QuantityIsInvalid
+from domain.stock.stock_exceptions import StockDoesntExist
 from domain.stock.stock import Stock
 from models import Booking
 from repository import repository

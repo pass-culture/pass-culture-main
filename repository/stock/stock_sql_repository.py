@@ -1,4 +1,4 @@
-from domain.booking import StockDoesntExist
+from domain.stock.stock_exceptions import StockDoesntExist
 from domain.stock.stock import Stock
 from domain.stock.stock_repository import StockRepository
 from models import StockSQLEntity

@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from domain.booking import StockDoesntExist
+from domain.stock.stock_exceptions import StockDoesntExist
 from domain.stock.stock import Stock
 from repository import repository
 from repository.stock.stock_sql_repository import StockSQLRepository

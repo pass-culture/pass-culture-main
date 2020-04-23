@@ -2,6 +2,7 @@ from typing import Callable, Dict
 
 from domain.expenses import is_eligible_to_physical_offers_capping, is_eligible_to_digital_offers_capping
 from domain.stock.stock import Stock
+from domain.stock.stock_exceptions import StockDoesntExist
 from models import Offer, Booking
 from models.user import UserSQLEntity
 from repository import booking_queries, stock_queries
@@ -72,11 +73,6 @@ class ClientError(Exception):
 class OfferIsAlreadyBooked(ClientError):
     def __init__(self):
         super().__init__('offerId', "Cette offre a déja été reservée par l'utilisateur")
-
-
-class StockDoesntExist(ClientError):
-    def __init__(self):
-        super().__init__('stockId', 'stockId ne correspond à aucun stock')
 
 
 class QuantityIsInvalid(ClientError):
