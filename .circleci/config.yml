@@ -95,8 +95,10 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
             nvm install
             yarn install
-            set -a; source config/run_envs/"${CIRCLE_BRANCH}" && ./scripts/build_app.sh "${CIRCLE_BRANCH}"
+
             source ~/pass-culture-main/config/run_envs/testing
+
+            yarn build
             npm install -g netlify-cli@2.46.0
             netlify deploy -s "${NETLIFY_SITE_ID_WEBAPP}" -a "${NETLIFY_TOKEN}" -d build/ --prod
 
