@@ -82,10 +82,8 @@ class LocalProvider(Iterator):
         if not new_thumb:
             return
 
-        _save_same_thumb_from_thumb_count_to_index(
-            pc_object, new_thumb_index, new_thumb)
-        logger.debug("Creating thumb #" + str(new_thumb_index) +
-                     " for " + str(pc_object))
+        _save_same_thumb_from_thumb_count_to_index(pc_object, new_thumb_index, new_thumb)
+        logger.debug("Creating thumb #" + str(new_thumb_index) + " for " + str(pc_object))
         self.createdThumbs += new_thumb_index
 
     def _create_object(self, providable_info: ProvidableInfo) -> Model:
@@ -98,8 +96,7 @@ class LocalProvider(Iterator):
 
         errors = entity_validator.validate(pc_object)
         if errors and len(errors.errors) > 0:
-            self.log_provider_event(
-                LocalProviderEventType.SyncError, self._format_api_errors(errors))
+            self.log_provider_event(LocalProviderEventType.SyncError, 'ApiErrors')
             self.erroredObjects += 1
             raise errors
 
@@ -114,8 +111,7 @@ class LocalProvider(Iterator):
 
         errors = entity_validator.validate(pc_object)
         if errors and len(errors.errors) > 0:
-            self.log_provider_event(
-                LocalProviderEventType.SyncError, self._format_api_errors(errors))
+            self.log_provider_event(LocalProviderEventType.SyncError, 'ApiErrors')
             self.erroredObjects += 1
             raise errors
 
@@ -129,26 +125,16 @@ class LocalProvider(Iterator):
         db.session.add(local_provider_event)
         db.session.commit()
 
-    def _format_api_errors(self, api_errors):
-        errors = []
-        for values in api_errors.errors.values():
-            errors.extend(values)
-
-        err = 'ApiErrors: ' + ", ".join(errors)
-        return err[:50]
-
     def _print_objects_summary(self):
         logger.info("  Checked " + str(self.checkedObjects) + " objects")
         logger.info("  Created " + str(self.createdObjects) + " objects")
         logger.info("  Updated " + str(self.updatedObjects) + " objects")
-        logger.info("  " + str(self.erroredObjects) +
-                    " errors in creations/updates")
+        logger.info("  " + str(self.erroredObjects) + " errors in creations/updates")
 
         logger.info("  Checked " + str(self.checkedThumbs) + " thumbs")
         logger.info("  Created " + str(self.createdThumbs) + " thumbs")
         logger.info("  Updated " + str(self.updatedThumbs) + " thumbs")
-        logger.info("  " + str(self.erroredThumbs) +
-                    " errors in thumb creations/updates")
+        logger.info("  " + str(self.erroredThumbs) + " errors in thumb creations/updates")
 
     def updateObjects(self, limit=None):
         if self.venue_provider and \
@@ -177,10 +163,8 @@ class LocalProvider(Iterator):
                 continue
 
             for providable_info in providable_infos:
-                chunk_key = providable_info.id_at_providers + \
-                    '|' + str(providable_info.type.__name__)
-                pc_object = get_existing_pc_obj(
-                    providable_info, chunk_to_insert, chunk_to_update)
+                chunk_key = providable_info.id_at_providers + '|' + str(providable_info.type.__name__)
+                pc_object = get_existing_pc_obj(providable_info, chunk_to_insert, chunk_to_update)
 
                 if pc_object is None:
                     if not self.can_create:
@@ -192,10 +176,9 @@ class LocalProvider(Iterator):
                     except ApiErrors:
                         continue
                 else:
-                    last_update_for_current_provider = get_last_update_for_provider(
-                        self.provider.id, pc_object)
+                    last_update_for_current_provider = get_last_update_for_provider(self.provider.id, pc_object)
                     object_need_update = last_update_for_current_provider is None \
-                        or last_update_for_current_provider < providable_info.date_modified_at_provider
+                                         or last_update_for_current_provider < providable_info.date_modified_at_provider
 
                     if object_need_update:
                         try:
@@ -212,19 +195,16 @@ class LocalProvider(Iterator):
                     try:
                         self._handle_thumb(pc_object)
                     except Exception as e:
-                        self.log_provider_event(
-                            LocalProviderEventType.SyncError, e.__class__.__name__)
+                        self.log_provider_event(LocalProviderEventType.SyncError, e.__class__.__name__)
                         self.erroredThumbs += 1
-                        logger.info('ERROR during handle thumb: ' +
-                                    e.__class__.__name__ + ' ' + str(e))
+                        logger.info('ERROR during handle thumb: ' + e.__class__.__name__ + ' ' + str(e))
                         traceback.print_tb(e.__traceback__)
                         pprint(vars(e))
                     pc_object_has_new_thumbs = pc_object.thumbCount != initial_thumb_count
                     if pc_object_has_new_thumbs:
                         errors = entity_validator.validate(pc_object)
                         if errors and len(errors.errors) > 0:
-                            self.log_provider_event(
-                                LocalProviderEventType.SyncError, self._format_api_errors(errors))
+                            self.log_provider_event(LocalProviderEventType.SyncError, 'ApiErrors')
                             continue
 
                         chunk_to_update[chunk_key] = pc_object

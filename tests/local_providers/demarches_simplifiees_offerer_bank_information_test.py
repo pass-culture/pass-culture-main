@@ -220,7 +220,7 @@ class OffererBankInformationProviderProviderTest:
         assert bank_information.applicationId == 2
         local_provider_event = LocalProviderEvent.query.filter_by(
             type=LocalProviderEventType.SyncError).one()
-        assert local_provider_event.payload == 'ApiErrors: L’IBAN renseigné ("WRONGIBAN") est inva'
+        assert local_provider_event.payload == 'ApiErrors'
 
     @patch(
         'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_demarche_simplifiee')
