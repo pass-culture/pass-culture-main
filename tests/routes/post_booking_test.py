@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock
 
-from domain.booking import StockIsNotBookable
+from domain.booking.booking_exceptions import StockIsNotBookable
 from repository import repository
 from tests.conftest import TestClient, clean_database
 from tests.model_creators.generic_creators import create_deposit, \

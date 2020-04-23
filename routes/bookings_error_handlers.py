@@ -1,6 +1,6 @@
 from flask import current_app as app, jsonify
 
-from domain.booking import OfferIsAlreadyBooked, QuantityIsInvalid, StockIsNotBookable, \
+from domain.booking.booking_exceptions import OfferIsAlreadyBooked, QuantityIsInvalid, StockIsNotBookable, \
     CannotBookFreeOffers, PhysicalExpenseLimitHasBeenReached, UserHasInsufficientFunds, \
     DigitalExpenseLimitHasBeenReached
 from domain.users import UnauthorizedForAdminUser

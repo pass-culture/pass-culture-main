@@ -4,10 +4,12 @@ from unittest.mock import Mock
 
 import pytest
 
-from domain.booking import check_expenses_limits, PhysicalExpenseLimitHasBeenReached, \
-    check_offer_already_booked, check_quantity_is_valid, QuantityIsInvalid, check_stock_is_bookable, \
-    StockIsNotBookable, OfferIsAlreadyBooked, check_can_book_free_offer, CannotBookFreeOffers, UserHasInsufficientFunds, \
+from domain.booking.booking_exceptions import PhysicalExpenseLimitHasBeenReached, \
+    QuantityIsInvalid, \
+    StockIsNotBookable, OfferIsAlreadyBooked, CannotBookFreeOffers, UserHasInsufficientFunds, \
     DigitalExpenseLimitHasBeenReached
+from domain.booking.booking_validator import check_offer_already_booked, check_quantity_is_valid
+from domain.stock.stock_validator import check_stock_is_bookable, check_expenses_limits, check_can_book_free_offer
 from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS, SUBVENTION_TOTAL
 from domain.stock.stock import Stock
 from domain.user.user import User
@@ -655,7 +657,6 @@ class CheckCanBookFreeOfferTest:
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
         repository.save(stock)
-
 
         # When
         check_can_book_free_offer(user, stock)

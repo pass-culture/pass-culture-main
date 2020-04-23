@@ -2,11 +2,12 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from domain.booking import OfferIsAlreadyBooked, CannotBookFreeOffers, StockIsNotBookable, \
+from domain.booking.booking_exceptions import OfferIsAlreadyBooked, CannotBookFreeOffers, StockIsNotBookable, \
     UserHasInsufficientFunds, PhysicalExpenseLimitHasBeenReached, QuantityIsInvalid
-from domain.stock.stock_exceptions import StockDoesntExist
 from domain.stock.stock import Stock
+from domain.stock.stock_exceptions import StockDoesntExist
 from domain.user.user import User
+from infrastructure.services.email.mail_jet_email_service import MailJetEmailService
 from models import Booking
 from repository import repository
 from repository.stock.stock_sql_repository import StockSQLRepository
@@ -24,7 +25,11 @@ class BookAnOfferTest:
         self.user_repository = UserSQLRepository()
         self.stock_repository.find_stock_by_id = MagicMock()
         self.user_repository.find_user_by_id = MagicMock()
-        self.book_an_offer = BookAnOffer(self.stock_repository)
+        self.email_service = MailJetEmailService()
+        self.email_service.send_booking_recap_emails = MagicMock()
+        self.book_an_offer = BookAnOffer(self.stock_repository,
+                                         self.user_repository,
+                                         self.email_service)
 
     @clean_database
     def test_user_can_book_an_offer(self, app):
@@ -47,6 +52,7 @@ class BookAnOfferTest:
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )
+        self.user_repository.find_user_by_id.return_value = expected_user
         expected_stock = Stock(
             identifier=stock.id,
             quantity=1,
@@ -54,7 +60,6 @@ class BookAnOfferTest:
             price=50
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
-        self.user_repository.find_user_by_id.return_value = expected_user
 
         # When
         booking = self.book_an_offer.execute(booking_information=booking_information)
@@ -109,6 +114,11 @@ class BookAnOfferTest:
             offer=offer
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
+        expected_user = User(
+            identifier=user.id,
+            can_book_free_offers=user.canBookFreeOffers
+        )
+        self.user_repository.find_user_by_id.return_value = expected_user
 
         booking_information = BookingInformation(
             stock2.id,
@@ -141,6 +151,11 @@ class BookAnOfferTest:
             offer=offer
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
+        expected_user = User(
+            identifier=user.id,
+            can_book_free_offers=user.canBookFreeOffers
+        )
+        self.user_repository.find_user_by_id.return_value = expected_user
 
         booking_information = BookingInformation(
             stock.id,
@@ -173,6 +188,11 @@ class BookAnOfferTest:
             offer=thing_offer
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
+        expected_user = User(
+            identifier=user.id,
+            can_book_free_offers=user.canBookFreeOffers
+        )
+        self.user_repository.find_user_by_id.return_value = expected_user
 
         booking_information = BookingInformation(
             stock.id,
@@ -203,6 +223,11 @@ class BookAnOfferTest:
             offer=offer
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
+        expected_user = User(
+            identifier=user.id,
+            can_book_free_offers=user.canBookFreeOffers
+        )
+        self.user_repository.find_user_by_id.return_value = expected_user
 
         booking_information = BookingInformation(
             stock.id,
@@ -242,6 +267,11 @@ class BookAnOfferTest:
             offer=offer2
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
+        expected_user = User(
+            identifier=user.id,
+            can_book_free_offers=user.canBookFreeOffers
+        )
+        self.user_repository.find_user_by_id.return_value = expected_user
 
         booking_information = BookingInformation(
             stock.id,
@@ -278,6 +308,11 @@ class BookAnOfferTest:
             offer=offer
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
+        expected_user = User(
+            identifier=user.id,
+            can_book_free_offers=user.canBookFreeOffers
+        )
+        self.user_repository.find_user_by_id.return_value = expected_user
 
         booking_information = BookingInformation(
             stock.id,

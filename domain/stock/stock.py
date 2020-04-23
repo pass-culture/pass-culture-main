@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Optional, List
 
-from models import Offer, Booking
+from models.offer import Offer
+from models.booking import Booking
 
 
 class Stock(object):
