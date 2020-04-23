@@ -4,6 +4,7 @@ import Header from '../../../../layout/Header/Header'
 import { GEOLOCATION_CRITERIA } from '../../Criteria/criteriaEnums'
 import CriteriaLocation from '../CriteriaLocation'
 import { Criteria } from '../../Criteria/Criteria'
+import Icon from '../../../../layout/Icon/Icon'
 
 describe('components | CriteriaLocation', () => {
   let props
@@ -58,5 +59,24 @@ describe('components | CriteriaLocation', () => {
     expect(criteria.prop('match')).toStrictEqual(props.match)
     expect(criteria.prop('onCriterionSelection')).toStrictEqual(props.onCriterionSelection)
     expect(criteria.prop('title')).toStrictEqual(props.title)
+  })
+
+  it('should render an Icon component for the warning message', () => {
+    // when
+    const wrapper = shallow(<CriteriaLocation {...props} />)
+
+    // then
+    const icon = wrapper.find(Icon)
+    expect(icon).toHaveLength(1)
+    expect(icon.prop('svg')).toBe('ico-alert')
+  })
+
+  it('should render a warning message', () => {
+    // when
+    const wrapper = shallow(<CriteriaLocation {...props} />)
+
+    // then
+    const message = wrapper.find({ children : 'Seules les offres Sorties et Physiques seront affichées pour une recherche avec une localisation'})
+    expect(message).toHaveLength(1)
   })
 })

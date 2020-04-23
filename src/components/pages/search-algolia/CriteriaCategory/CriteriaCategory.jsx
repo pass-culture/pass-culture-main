@@ -7,7 +7,7 @@ export const CriteriaCategory = props => {
   const { activeCriterionLabel, backTo, criteria, history, match, onCriterionSelection, title } = props
 
   return (
-    <div className="criteria-page">
+    <div className="criteria-category-page">
       <Header
         backTo={backTo}
         closeTo={null}

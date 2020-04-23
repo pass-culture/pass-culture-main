@@ -2,12 +2,13 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import Header from '../../../layout/Header/Header'
 import { Criteria } from '../Criteria/Criteria'
+import Icon from '../../../layout/Icon/Icon'
 
 export const CriteriaLocation = props => {
   const { activeCriterionLabel, backTo, criteria, history, match, onCriterionSelection, title } = props
 
   return (
-    <div className="criteria-page">
+    <div className="criteria-location-page">
       <Header
         backTo={backTo}
         closeTo={null}
@@ -17,6 +18,17 @@ export const CriteriaLocation = props => {
         match={match}
         title={title}
       />
+      <div>
+        <div className='cl-wrapper'>
+          <Icon
+            className="cl-icon"
+            svg='ico-alert'
+          />
+          <span className="cl-warning-message">
+            {`Seules les offres Sorties et Physiques seront affichées pour une recherche avec une localisation`}
+          </span>
+        </div>
+      </div>
       <Criteria
         activeCriterionLabel={activeCriterionLabel}
         backTo={backTo}
