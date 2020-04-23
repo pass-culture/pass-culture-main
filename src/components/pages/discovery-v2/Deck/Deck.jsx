@@ -109,9 +109,9 @@ class Deck extends PureComponent {
   }
 
   handleShowCardDetails = () => {
-    const { isFlipDisabled, history, location, match } = this.props
+    const { history, location, match } = this.props
     const { pathname, search } = location
-    if (isDetailsView(match) || isFlipDisabled) {
+    if (isDetailsView(match)) {
       return
     }
     history.push(`${pathname}/details${search}`)
@@ -176,14 +176,13 @@ class Deck extends PureComponent {
     const {
       currentRecommendation,
       height,
-      isFlipDisabled,
       match,
       nextRecommendation,
       previousRecommendation,
       recommendations,
     } = this.props
     const detailView = isDetailsView(match)
-    const showNavigation = !detailView || isFlipDisabled
+    const showNavigation = !detailView
     const nbRecommendations = recommendations.length
 
     return (
@@ -201,7 +200,7 @@ class Deck extends PureComponent {
 
         {showNavigation && currentRecommendation && (
           <NavigationContainer
-            flipHandler={(!isFlipDisabled && this.handleShowCardDetails) || null}
+            flipHandler={this.handleShowCardDetails || null}
             handleGoNext={(nextRecommendation && this.handleGoNext) || null}
             handleGoPrevious={(previousRecommendation && this.handleGoPrevious) || null}
             height={height}
@@ -232,7 +231,6 @@ Deck.propTypes = {
     replace: PropTypes.func.isRequired,
   }).isRequired,
   horizontalSlideRatio: PropTypes.number,
-  isFlipDisabled: PropTypes.bool.isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
     search: PropTypes.string.isRequired,
