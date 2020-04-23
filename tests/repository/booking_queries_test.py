@@ -1591,7 +1591,7 @@ class IsOfferAlreadyBookedByUserTest:
         repository.save(booking)
 
         # When
-        is_offer_already_booked = booking_queries.is_offer_already_booked_by_user(user, offer)
+        is_offer_already_booked = booking_queries.is_offer_already_booked_by_user(user.id, offer)
 
         # Then
         assert is_offer_already_booked
@@ -1607,7 +1607,7 @@ class IsOfferAlreadyBookedByUserTest:
         repository.save(offer)
 
         # When
-        is_offer_already_booked = booking_queries.is_offer_already_booked_by_user(user, offer)
+        is_offer_already_booked = booking_queries.is_offer_already_booked_by_user(user.id, offer)
 
         # Then
         assert not is_offer_already_booked
@@ -1624,7 +1624,7 @@ class IsOfferAlreadyBookedByUserTest:
         repository.save(offer)
 
         # When
-        is_offer_already_booked = booking_queries.is_offer_already_booked_by_user(user2, offer)
+        is_offer_already_booked = booking_queries.is_offer_already_booked_by_user(user2.id, offer)
 
         # Then
         assert not is_offer_already_booked
@@ -1642,7 +1642,7 @@ class IsOfferAlreadyBookedByUserTest:
         repository.save(booking)
 
         # When
-        is_offer_already_booked = booking_queries.is_offer_already_booked_by_user(user, offer)
+        is_offer_already_booked = booking_queries.is_offer_already_booked_by_user(user.id, offer)
 
         # Then
         assert not is_offer_already_booked

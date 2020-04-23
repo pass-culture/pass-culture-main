@@ -7,19 +7,19 @@ from models.db import db
 
 class StockSQLRepository(StockRepository):
     def find_stock_by_id(self, stock_id: int) -> Stock:
-        stock_model = db.session.query(StockSQLEntity).get(stock_id)
+        stock_sql_entity = db.session.query(StockSQLEntity).get(stock_id)
 
-        if stock_model is None:
+        if stock_sql_entity is None:
             raise StockDoesntExist()
 
         stock = Stock(
-            beginning_datetime=stock_model.beginningDatetime,
-            booking_limit_datetime=stock_model.bookingLimitDatetime,
-            identifier=stock_model.id,
-            offer=stock_model.offer,
-            price=stock_model.price,
-            quantity=stock_model.quantity,
-            is_soft_deleted=stock_model.isSoftDeleted,
-            bookings=stock_model.bookings
+            beginning_datetime=stock_sql_entity.beginningDatetime,
+            booking_limit_datetime=stock_sql_entity.bookingLimitDatetime,
+            identifier=stock_sql_entity.id,
+            offer=stock_sql_entity.offer,
+            price=stock_sql_entity.price,
+            quantity=stock_sql_entity.quantity,
+            is_soft_deleted=stock_sql_entity.isSoftDeleted,
+            bookings=stock_sql_entity.bookings
         )
         return stock

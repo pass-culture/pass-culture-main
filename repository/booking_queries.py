@@ -141,9 +141,9 @@ def find_from_recommendation(recommendation: Recommendation, user: UserSQLEntity
         .all()
 
 
-def is_offer_already_booked_by_user(current_user: UserSQLEntity, offer: Offer) -> bool:
+def is_offer_already_booked_by_user(user_id: int, offer: Offer) -> bool:
     return Booking.query \
-           .filter_by(userId=current_user.id) \
+           .filter_by(userId=user_id) \
            .filter_by(isCancelled=False) \
            .join(StockSQLEntity) \
            .join(Offer) \

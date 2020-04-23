@@ -1,15 +1,17 @@
 from typing import Callable, Dict
 
+from domain.client_exceptions import ClientError
 from domain.expenses import is_eligible_to_physical_offers_capping, is_eligible_to_digital_offers_capping
 from domain.stock.stock import Stock
 from domain.stock.stock_exceptions import StockDoesntExist
+from domain.user.user import User
 from models import Offer, Booking
 from models.user import UserSQLEntity
 from repository import booking_queries, stock_queries
 
 
-def check_offer_already_booked(offer: Offer, user: UserSQLEntity):
-    is_offer_already_booked_by_user = booking_queries.is_offer_already_booked_by_user(user, offer)
+def check_offer_already_booked(offer: Offer, user_id: int):
+    is_offer_already_booked_by_user = booking_queries.is_offer_already_booked_by_user(user_id, offer)
     if is_offer_already_booked_by_user:
         offer_is_already_booked = OfferIsAlreadyBooked()
         raise offer_is_already_booked
@@ -54,20 +56,9 @@ def check_expenses_limits(expenses: Dict, booking: Booking,
             raise DigitalExpenseLimitHasBeenReached(expenses['digital']['max'])
 
 
-def check_can_book_free_offer(user: UserSQLEntity, stock: Stock):
-    if not user.canBookFreeOffers and stock.price == 0:
+def check_can_book_free_offer(user: User, stock: Stock):
+    if not user.can_book_free_offers and stock.price == 0:
         raise CannotBookFreeOffers()
-
-
-class ClientError(Exception):
-    def __init__(self, field: str, error: str):
-        self.errors = {field: [error]}
-
-    def add_error(self, field, error):
-        if field in self.errors:
-            self.errors[field].append(error)
-        else:
-            self.errors[field] = [error]
 
 
 class OfferIsAlreadyBooked(ClientError):

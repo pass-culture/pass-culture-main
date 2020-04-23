@@ -1,4 +1,4 @@
-from domain.booking import ClientError
+from domain.client_exceptions import ClientError
 
 
 class StockDoesntExist(ClientError):

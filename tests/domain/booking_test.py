@@ -9,6 +9,8 @@ from domain.booking import check_expenses_limits, PhysicalExpenseLimitHasBeenRea
     StockIsNotBookable, OfferIsAlreadyBooked, check_can_book_free_offer, CannotBookFreeOffers, UserHasInsufficientFunds, \
     DigitalExpenseLimitHasBeenReached
 from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS, SUBVENTION_TOTAL
+from domain.stock.stock import Stock
+from domain.user.user import User
 from models import ApiErrors, Booking, StockSQLEntity, Offer, ThingType, UserSQLEntity, EventType
 from models.api_errors import ResourceGoneError, ForbiddenError
 from repository import repository
@@ -569,15 +571,17 @@ class CheckBookingIsKeepableTest:
 
 
 class CheckStockIsBookableTest:
-    @pytest.mark.skip
     def test_should_raise_error_when_stock_is_not_bookable(self):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, is_active=False)
-
-        # When
-        stock = create_stock(offer=offer)
+        stock = Stock(
+            identifier=1,
+            quantity=1,
+            offer=offer,
+            price=1
+        )
 
         # When
         with pytest.raises(StockIsNotBookable) as error:
@@ -599,7 +603,7 @@ class CheckOfferAlreadyBookedTest:
         repository.save(user, stock)
 
         # When
-        check_offer_already_booked(offer, user)
+        check_offer_already_booked(offer, user.id)
 
         # Then
         assert True
@@ -617,7 +621,7 @@ class CheckOfferAlreadyBookedTest:
         repository.save(user, stock, booking)
 
         # When
-        check_offer_already_booked(offer, user)
+        check_offer_already_booked(offer, user.id)
 
         # Then
         assert True
@@ -636,7 +640,7 @@ class CheckOfferAlreadyBookedTest:
 
         # When
         with pytest.raises(OfferIsAlreadyBooked) as error:
-            check_offer_already_booked(offer, user)
+            check_offer_already_booked(offer, user.id)
 
         assert error.value.errors == {'offerId': ["Cette offre a déja été reservée par l'utilisateur"]}
 
@@ -645,12 +649,13 @@ class CheckCanBookFreeOfferTest:
     @clean_database
     def test_should_not_raise_exception_when_user_can_book_a_free_offer(self, app):
         # Given
-        user = create_user(can_book_free_offers=True)
+        user = User(identifier=1, can_book_free_offers=True)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
-        repository.save(user, stock)
+        repository.save(stock)
+
 
         # When
         check_can_book_free_offer(user, stock)
@@ -661,12 +666,12 @@ class CheckCanBookFreeOfferTest:
     @clean_database
     def test_should_raise_exception_when_user_cannot_book_a_free_offer(self, app):
         # Given
-        user = create_user(can_book_free_offers=False)
+        user = User(identifier=1, can_book_free_offers=False)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=0)
-        repository.save(user, stock)
+        repository.save(stock)
 
         # When
         with pytest.raises(CannotBookFreeOffers) as error:

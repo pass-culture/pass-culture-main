@@ -1,6 +1,7 @@
 import pytest
 
 from domain.user.user import User
+from domain.user.user_exceptions import UserDoesntExist
 from repository import repository
 from repository.user.user_sql_repository import UserSQLRepository
 from tests.conftest import clean_database
@@ -29,7 +30,7 @@ class UserSQLRepositoryTest:
         assert user.identifier == expected_user.identifier
         assert user.can_book_free_offers == expected_user.can_book_free_offers
 
-    def test_should_raise_UserDoesntExist_when_user_is_not_found(self):
+    def test_should_raise_user_doesnt_exist_when_user_is_not_found(self):
         # Given
         unknown_id = 999
 

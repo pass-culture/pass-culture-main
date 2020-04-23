@@ -5,6 +5,7 @@ from domain.booking import check_quantity_is_valid, check_stock_is_bookable, \
     check_expenses_limits, check_can_book_free_offer
 from domain.expenses import get_expenses
 from domain.stock.stock_repository import StockRepository
+from domain.user.user_repository import UserRepository
 from domain.user_emails import send_booking_recap_emails, send_booking_confirmation_email_to_beneficiary
 from models import Booking
 from repository import booking_queries, repository, user_queries
@@ -21,14 +22,15 @@ class BookingInformation(object):
 
 
 class BookAnOffer:
-    def __init__(self, stock_repository: StockRepository):
+    def __init__(self, stock_repository: StockRepository, user_repository: UserRepository):
         self.stock_repository = stock_repository
+        self.user_repository = user_repository
 
     def execute(self, booking_information: BookingInformation) -> Booking:
         stock = self.stock_repository.find_stock_by_id(booking_information.stock_id)
-        user = user_queries.find_user_by_id(booking_information.user_id)
-        check_offer_already_booked(stock.offer, user)
+        user = self.user_repository.find_user_by_id(booking_information.user_id)
 
+        check_offer_already_booked(stock.offer, user.identifier)
         check_quantity_is_valid(booking_information.quantity, stock.offer.isDuo)
         check_can_book_free_offer(user, stock)
         check_stock_is_bookable(stock)

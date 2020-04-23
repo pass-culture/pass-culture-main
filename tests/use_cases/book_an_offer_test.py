@@ -6,9 +6,11 @@ from domain.booking import OfferIsAlreadyBooked, CannotBookFreeOffers, StockIsNo
     UserHasInsufficientFunds, PhysicalExpenseLimitHasBeenReached, QuantityIsInvalid
 from domain.stock.stock_exceptions import StockDoesntExist
 from domain.stock.stock import Stock
+from domain.user.user import User
 from models import Booking
 from repository import repository
 from repository.stock.stock_sql_repository import StockSQLRepository
+from repository.user.user_sql_repository import UserSQLRepository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_deposit, create_offerer, create_venue, \
     create_booking, create_stock, create_recommendation
@@ -19,7 +21,9 @@ from use_cases.book_an_offer import BookAnOffer, BookingInformation
 class BookAnOfferTest:
     def setup_method(self):
         self.stock_repository = StockSQLRepository()
+        self.user_repository = UserSQLRepository()
         self.stock_repository.find_stock_by_id = MagicMock()
+        self.user_repository.find_user_by_id = MagicMock()
         self.book_an_offer = BookAnOffer(self.stock_repository)
 
     @clean_database
@@ -39,6 +43,10 @@ class BookAnOfferTest:
             user.id,
             stock.quantity
         )
+        expected_user = User(
+            identifier=user.id,
+            can_book_free_offers=user.canBookFreeOffers
+        )
         expected_stock = Stock(
             identifier=stock.id,
             quantity=1,
@@ -46,6 +54,7 @@ class BookAnOfferTest:
             price=50
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
+        self.user_repository.find_user_by_id.return_value = expected_user
 
         # When
         booking = self.book_an_offer.execute(booking_information=booking_information)
