@@ -32,6 +32,7 @@ class FeatureToggle(enum.Enum):
     RECOMMENDATIONS_WITH_DIGITAL_FIRST = 'Permettre aux bénéficiaires d''avoir des recommendations' \
                                          ' concernant des offres numériques en priorité'
     SAVE_SEEN_OFFERS = 'Enregistrer en base les offres déjà vues par les utilisateurs'
+    BOOKINGS_V2 = 'Permettre d''afficher la nouvelle visualisation des réservations d''un offreur'
 
 
 class Feature(PcObject, Model, DeactivableMixin):
