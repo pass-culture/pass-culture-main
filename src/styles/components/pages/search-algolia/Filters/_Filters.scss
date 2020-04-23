@@ -36,6 +36,7 @@
     color: black;
     font-size: rem(16px);
     font-weight: 700;
+    margin-bottom: rem(10px);
   }
 
   .sf-filter-wrapper {
@@ -148,4 +149,10 @@
 
 .sf-space-wrapper {
   padding-top: rem($footer-height + rem(48px))
+}
+
+.sf-warning-message {
+  color: $grey;
+  font-size: rem(14px);
+  font-weight: 500;
 }

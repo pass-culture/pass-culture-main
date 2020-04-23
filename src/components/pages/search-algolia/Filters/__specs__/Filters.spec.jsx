@@ -274,8 +274,7 @@ describe('components | Filters', () => {
 
         // then
         const numberOfResults = wrapper
-          .findWhere(node => node.text() === 'Afficher les 10 résultats')
-          .first()
+          .find({ children: 'Afficher les 10 résultats' })
         expect(numberOfResults).toHaveLength(1)
       })
 
@@ -289,8 +288,7 @@ describe('components | Filters', () => {
 
         // then
         const numberOfResults = wrapper
-          .findWhere(node => node.text() === 'Afficher les 999+ résultats')
-          .first()
+          .find({ children: 'Afficher les 999+ résultats' })
         expect(numberOfResults).toHaveLength(1)
       })
 
@@ -449,6 +447,34 @@ describe('components | Filters', () => {
         expect(resultsButton.text()).toStrictEqual('Aucun résultat')
       })
 
+      it('should display a warning message when searching around me', () => {
+        // given
+        props.history.location.pathname = '/recherche/filtres'
+        props.initialFilters.isSearchAroundMe = true
+
+        // when
+        const wrapper = shallow(<Filters {...props} />)
+
+        // then
+        const message = wrapper
+          .find({ children: 'Seules les offres Sorties et Physiques seront affichées' })
+        expect(message).toHaveLength(1)
+      })
+
+      it('should not display a warning message when not searching around me', () => {
+        // given
+        props.history.location.pathname = '/recherche/filtres'
+        props.initialFilters.isSearchAroundMe = false
+
+        // when
+        const wrapper = shallow(<Filters {...props} />)
+
+        // then
+        const message = wrapper
+          .find({ children: 'Seules les offres Sorties et Physiques seront affichées' })
+        expect(message).toHaveLength(0)
+      })
+
       describe('geolocation filter', () => {
         it('should display a "Localisation" title for geolocation filter', () => {
           // given
@@ -458,7 +484,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const title = wrapper.findWhere(node => node.text() === 'Localisation').first()
+          const title = wrapper.find({ children: 'Localisation' })
           expect(title).toHaveLength(1)
         })
 
@@ -471,7 +497,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const button = wrapper.findWhere(node => node.text() === 'Partout').first()
+          const button = wrapper.find({ children: 'Partout' })
           expect(button).toHaveLength(1)
         })
 
@@ -484,7 +510,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const button = wrapper.findWhere(node => node.text() === 'Autour de moi').first()
+          const button = wrapper.find({ children: 'Autour de moi' }).first()
           expect(button).toHaveLength(1)
         })
 
@@ -494,7 +520,7 @@ describe('components | Filters', () => {
           props.history.location.search = '?mots-cles=librairie'
           props.initialFilters.isSearchAroundMe = true
           const wrapper = shallow(<Filters {...props} />)
-          const button = wrapper.findWhere(node => node.text() === 'Autour de moi').first()
+          const button = wrapper.find({ children: 'Autour de moi' })
 
           // when
           button.simulate('click')
@@ -510,7 +536,7 @@ describe('components | Filters', () => {
           props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.isSearchAroundMe = true
           const wrapper = shallow(<Filters {...props} />)
-          const button = wrapper.findWhere(node => node.text() === 'Autour de moi').first()
+          const button = wrapper.find({ children: 'Autour de moi' })
 
           // when
           button.simulate('click')
@@ -533,7 +559,7 @@ describe('components | Filters', () => {
             const wrapper = shallow(<Filters {...props} />)
 
             // then
-            const title = wrapper.findWhere(node => node.text() === 'Rayon').first()
+            const title = wrapper.find({ children: 'Rayon' })
             expect(title).toHaveLength(0)
           })
 
@@ -547,7 +573,7 @@ describe('components | Filters', () => {
             const wrapper = shallow(<Filters {...props} />)
 
             // then
-            const kilometersRadius = wrapper.findWhere(node => node.text() === '0 km').first()
+            const kilometersRadius = wrapper.find({ children: '0 km' })
             expect(kilometersRadius).toHaveLength(0)
           })
 
@@ -575,7 +601,7 @@ describe('components | Filters', () => {
             const wrapper = shallow(<Filters {...props} />)
 
             // then
-            const title = wrapper.findWhere(node => node.text() === 'Rayon').first()
+            const title = wrapper.find({ children: 'Rayon' })
             expect(title).toHaveLength(1)
           })
 
@@ -589,7 +615,7 @@ describe('components | Filters', () => {
             const wrapper = shallow(<Filters {...props} />)
 
             // then
-            const kilometersRadius = wrapper.findWhere(node => node.text() === '50 km').first()
+            const kilometersRadius = wrapper.find({ children: '50 km' })
             expect(kilometersRadius).toHaveLength(1)
           })
 
@@ -623,7 +649,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const title = wrapper.findWhere(node => node.text() === 'Type d\'offres').first()
+          const title = wrapper.find({ children: 'Type d\'offres' })
           expect(title).toHaveLength(1)
         })
 
@@ -701,9 +727,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const numberOfOfferTypesSelected = wrapper
-            .findWhere(node => node.text() === '(3)')
-            .first()
+          const numberOfOfferTypesSelected = wrapper.find({ children: '(3)' })
           expect(numberOfOfferTypesSelected).toHaveLength(1)
         })
 
@@ -720,9 +744,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const numberOfOfferTypesSelected = wrapper
-            .findWhere(node => node.text() === '(3)')
-            .first()
+          const numberOfOfferTypesSelected = wrapper.find({ children: '(3)' })
           expect(numberOfOfferTypesSelected).toHaveLength(0)
         })
 
@@ -787,9 +809,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const title = wrapper
-            .findWhere(node => node.text() === 'Uniquement les offres duo')
-            .first()
+          const title = wrapper.find({ children: 'Uniquement les offres duo' })
           expect(title).toHaveLength(1)
         })
 
@@ -912,9 +932,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const title = wrapper
-            .findWhere(node => node.text() === 'Uniquement les offres gratuites')
-            .first()
+          const title = wrapper.find({ children: 'Uniquement les offres gratuites' })
           expect(title).toHaveLength(1)
         })
 
@@ -1002,7 +1020,7 @@ describe('components | Filters', () => {
             const wrapper = shallow(<Filters {...props} />)
 
             // then
-            const title = wrapper.findWhere(node => node.text() === 'Prix').first()
+            const title = wrapper.find({ children: 'Prix' })
             expect(title).toHaveLength(1)
             const priceRangeCounter = wrapper
               .find({ children: 'Prix' })
@@ -1021,7 +1039,7 @@ describe('components | Filters', () => {
             const wrapper = shallow(<Filters {...props} />)
 
             // then
-            const kilometersRadius = wrapper.findWhere(node => node.text() === '0 € - 45 €').first()
+            const kilometersRadius = wrapper.find({ children: '0 € - 45 €' })
             expect(kilometersRadius).toHaveLength(1)
           })
 
@@ -1121,7 +1139,7 @@ describe('components | Filters', () => {
             const wrapper = shallow(<Filters {...props} />)
 
             // then
-            const title = wrapper.findWhere(node => node.text() === 'Prix').first()
+            const title = wrapper.find({ children: 'Prix' })
             expect(title).toHaveLength(0)
           })
 
@@ -1135,7 +1153,7 @@ describe('components | Filters', () => {
             const wrapper = shallow(<Filters {...props} />)
 
             // then
-            const kilometersRadius = wrapper.findWhere(node => node.text() === '5 € - 35 €').first()
+            const kilometersRadius = wrapper.find({ children: '5 € - 35 €' })
             expect(kilometersRadius).toHaveLength(0)
           })
 
@@ -1301,9 +1319,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const numberOfOfferTypesSelected = wrapper
-            .findWhere(node => node.text() === '(3)')
-            .first()
+          const numberOfOfferTypesSelected = wrapper.find({ children: '(3)' })
           expect(numberOfOfferTypesSelected).toHaveLength(1)
         })
 
@@ -1316,9 +1332,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const numberOfOfferTypesSelected = wrapper
-            .findWhere(node => node.text() === '(0)')
-            .first()
+          const numberOfOfferTypesSelected = wrapper.find({ children: '(0)' })
           expect(numberOfOfferTypesSelected).toHaveLength(0)
         })
 

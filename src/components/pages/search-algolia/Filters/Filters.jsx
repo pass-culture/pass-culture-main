@@ -410,6 +410,11 @@ export class Filters extends PureComponent {
                 >
                   {this.buildGeolocationFilter()}
                 </button>
+                {isSearchAroundMe && (
+                  <span className='sf-warning-message'>
+                    {'Seules les offres Sorties et Physiques seront affichées'}
+                  </span>
+                )}
                 <span className="sf-filter-separator" />
               </li>
               {isSearchAroundMe && (
