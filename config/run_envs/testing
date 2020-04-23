@@ -3,10 +3,4 @@ THUMBS_URL='https://storage.gra3.cloud.ovh.net/v1/AUTH_688df1e25bd84a48a3804e7fa
 NETLIFY_SITE_ID_WEBAPP="cb3b0dbc-e891-47a6-8834-b9759f39af1d"
 NETLIFY_SITE_ID_PRO="b1eeb798-1791-4202-bd97-94d2d0571913"
 NODE_ENV="production"
-TYPEFORM_URL_CULTURAL_PRACTICES_POLL="https://passculture.typeform.com/to/T8rurj"
 PRO_URL_FOR_MAINTENANCE=https://maintenance.passculture.app?source=https://pro.passculture-testing.beta.gouv.fr/
-WEBAPP_URL_FOR_MAINTENANCE=https://maintenance.passculture.app?source=https://app.passculture-testing.beta.gouv.fr/
-WEBAPP_ALGOLIA_APPLICATION_ID=testingHXXTDUE7H0
-WEBAPP_ALGOLIA_SEARCH_API_KEY=ef6ccdf2d194918b5a3ee22ff5c2d287
-WEBAPP_ALGOLIA_INDEX_NAME=TESTING
-DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL=https://www.demarches-simplifiees.fr/commencer/test/549ae483-be80-4a03-8700-394514b0e90d
