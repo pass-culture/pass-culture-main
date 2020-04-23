@@ -107,7 +107,10 @@ class VenueEdition extends PureComponent {
     const areBankInformationProvided = bic && iban
 
     return (
-      <form name="venue" onSubmit={handleSubmit}>
+      <form
+        name="venue"
+        onSubmit={handleSubmit}
+      >
         <IdentifierFields
           fieldReadOnlyBecauseFrozenFormSiret={fieldReadOnlyBecauseFrozenFormSiret}
           formSiret={formSiret}
@@ -123,7 +126,10 @@ class VenueEdition extends PureComponent {
             />
           }
         >
-          <BankInformation venue={venue} offerer={offerer} />
+          <BankInformation
+            offerer={offerer}
+            venue={venue}
+          />
         </RibsUploadFeatureFlip>
         <LocationFields
           fieldReadOnlyBecauseFrozenFormSiret={fieldReadOnlyBecauseFrozenFormSiret}
@@ -145,7 +151,10 @@ class VenueEdition extends PureComponent {
             readOnly={readOnly}
             venueId={venueId}
           />
-          {readOnly && <CreateControl offererId={offererId} venueId={venueId} />}
+          {readOnly && <CreateControl
+            offererId={offererId}
+            venueId={venueId}
+                       />}
           <ReturnOrSubmitControl
             canSubmit={canSubmit}
             isRequestPending={isRequestPending}
@@ -182,7 +191,9 @@ class VenueEdition extends PureComponent {
         <span className="icon">
           <Icon svg="ico-offres-w" />
         </span>
-        <span>{'Créer une offre'}</span>
+        <span>
+          {'Créer une offre'}
+        </span>
       </NavLink>
     )
 
@@ -192,7 +203,11 @@ class VenueEdition extends PureComponent {
         handleDataRequest={noop}
         name="venue"
       >
-        <Titles action={actionLink} subtitle={initialName} title="Lieu" />
+        <Titles
+          action={actionLink}
+          subtitle={initialName}
+          title="Lieu"
+        />
 
         {venue && <VenueProvidersManagerContainer venue={venue} />}
 

@@ -10,15 +10,23 @@ const VenueProviderItem = ({ venueProvider }) => {
 
   return (
     <li className="venue-provider-row">
-      <Icon height="64px" svg={providerIcon} width="64px" />
+      <Icon
+        height="64px"
+        svg={providerIcon}
+        width="64px"
+      />
 
-      <div className="provider-name-container">{providerName}</div>
+      <div className="provider-name-container">
+        {providerName}
+      </div>
 
       {!lastSyncDate ? (
         <div className="venue-id-at-offer-provider-container-with-message">
           <div className="venue-id-at-offer-provider">
             {'Compte : '}
-            <strong>{venueIdAtOfferProvider}</strong>
+            <strong>
+              {venueIdAtOfferProvider}
+            </strong>
           </div>
           <div className="import-label-container">
             {'Importation en cours.' +
@@ -30,11 +38,19 @@ const VenueProviderItem = ({ venueProvider }) => {
         <div className="venue-id-at-offer-provider-container">
           <div className="venue-id-at-offer-provider">
             {'Compte : '}
-            <strong>{venueIdAtOfferProvider}</strong>
+            <strong>
+              {venueIdAtOfferProvider}
+            </strong>
           </div>
           <div className="offers-container-counter">
-            <Icon height="22px" svg="ico-offres-r" width="22px" />
-            <div className="number-of-offers-label">{pluralize(nOffers, 'offres')}</div>
+            <Icon
+              height="22px"
+              svg="ico-offres-r"
+              width="22px"
+            />
+            <div className="number-of-offers-label">
+              {pluralize(nOffers, 'offres')}
+            </div>
           </div>
         </div>
       )}

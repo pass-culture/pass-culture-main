@@ -89,7 +89,9 @@ class IdentifierFields extends PureComponent {
           {!readOnly && (
             <span className="is-pulled-right fs13 has-text-grey">
               {'Les champs marqués d’un'}
-              <span className="required-legend">{' * '}</span>
+              <span className="required-legend">
+                {' * '}
+              </span>
               {' sont obligatoires'}
             </span>
           )}
@@ -97,12 +99,17 @@ class IdentifierFields extends PureComponent {
         <div className="field-group">
           {isCreatedEntity && <HiddenField name="managingOffererId" />}
           <div className="field text-field is-label-aligned">
-            <label className="field-label" htmlFor="siret">
+            <label
+              className="field-label"
+              htmlFor="siret"
+            >
               {isCreatedEntity ? (
                 <Fragment>
                   {'SIRET'}
                   <span className="siret-label-details">
-                    <span className="siret-label-bold">{' du lieu qui accueille vos offres'}</span>
+                    <span className="siret-label-bold">
+                      {' du lieu qui accueille vos offres'}
+                    </span>
                     {' (si applicable) : '}
                   </span>
                 </Fragment>
@@ -111,24 +118,29 @@ class IdentifierFields extends PureComponent {
               )}
             </label>
             <TextField
+              className="vp-field"
               format={formatSiret}
               name="siret"
               readOnly={readOnly || initialSiret !== null}
               renderValue={this.handleRenderValue(fieldReadOnlyBecauseFrozenFormSiret, readOnly)}
               type="siret"
-              className="vp-field"
               validate={initialSiret ? undefined : siretValidate}
             />
           </div>
           <TextField
+            className="vp-field"
             label="Nom du lieu : "
             name="name"
             readOnly={readOnly || fieldReadOnlyBecauseFrozenFormSiret}
             required
-            className="vp-field"
           />
-          <TextField label="Nom d’usage du lieu : " name="publicName" readOnly={readOnly} />
           <TextField
+            label="Nom d’usage du lieu : "
+            name="publicName"
+            readOnly={readOnly}
+          />
+          <TextField
+            className="vp-field"
             innerClassName="col-75"
             label="E-mail : "
             name="bookingEmail"
@@ -136,15 +148,14 @@ class IdentifierFields extends PureComponent {
             renderValue={this.handleRender(readOnly)}
             required
             type="email"
-            className="vp-field"
           />
           <TextareaField
+            className="vp-field"
             label="Commentaire (si pas de SIRET) : "
             name="comment"
             readOnly={readOnly}
             rows={1}
             validate={this.commentValidate}
-            className="vp-field"
           />
         </div>
       </div>

@@ -161,14 +161,20 @@ describe('components | AllocineProviderForm', () => {
       return (
         <form>
           <CheckboxField {...props} />
-          <button onClick={handleSubmit} type="submit">
+          <button
+            onClick={handleSubmit}
+            type="submit"
+          >
             {'Submit'}
           </button>
         </form>
       )
     }
 
-    const wrapper = mount(<Form onSubmit={handleOnSubmit} render={formWithCheckboxField} />)
+    const wrapper = mount(<Form
+      onSubmit={handleOnSubmit}
+      render={formWithCheckboxField}
+                          />)
 
     // when
     wrapper.find('input').simulate('change', { target: { value: true } })

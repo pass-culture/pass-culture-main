@@ -17,7 +17,10 @@ const ReturnOrSubmitControl = ({
     >
       <div className="control">
         {readOnly ? (
-          <NavLink className="button is-primary is-medium" to={`/structures/${offererId}`}>
+          <NavLink
+            className="button is-primary is-medium"
+            to={`/structures/${offererId}`}
+          >
             {'Terminer'}
           </NavLink>
         ) : (

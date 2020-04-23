@@ -111,7 +111,7 @@ class VenueProvidersManager extends PureComponent {
                     <select
                       className="field-select"
                       id="provider-options"
-                      onChange={this.handleChange}
+                      onBlur={this.handleChange}
                     >
                       <option
                         key={DEFAULT_PROVIDER_OPTION.id}

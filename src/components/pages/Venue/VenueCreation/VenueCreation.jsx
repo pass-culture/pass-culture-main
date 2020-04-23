@@ -107,7 +107,10 @@ class VenueCreation extends PureComponent {
 
     const areBankInformationProvided = bic && iban
     return (
-      <form name="venue" onSubmit={handleSubmit}>
+      <form
+        name="venue"
+        onSubmit={handleSubmit}
+      >
         <IdentifierFields
           fieldReadOnlyBecauseFrozenFormSiret={siretValidOnCreation}
           formSiret={formSiret}
@@ -178,8 +181,13 @@ class VenueCreation extends PureComponent {
         handleDataRequest={noop}
         name="venue"
       >
-        <Titles subtitle={initialName} title="Lieu" />
-        <p className="advice">{'Ajoutez un lieu où accéder à vos offres.'}</p>
+        <Titles
+          subtitle={initialName}
+          title="Lieu"
+        />
+        <p className="advice">
+          {'Ajoutez un lieu où accéder à vos offres.'}
+        </p>
 
         {showForm && (
           <Form

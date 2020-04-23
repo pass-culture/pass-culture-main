@@ -17,10 +17,13 @@ const LocationFields = ({
   const fieldIsFrozen = readOnly || formIsLocationFrozen || fieldReadOnlyBecauseFrozenFormSiret
   return (
     <div className="section">
-      <h2 className="main-list-title">{'Adresse'}</h2>
+      <h2 className="main-list-title">
+        {'Adresse'}
+      </h2>
       <div className="field-group">
         <HiddenField name="isLocationFrozen" />
         <AddressField
+          className="vp-field"
           form={form}
           label="Numéro et voie : "
           latitude={formLatitude}
@@ -28,41 +31,40 @@ const LocationFields = ({
           name="address"
           readOnly={readOnly || fieldReadOnlyBecauseFrozenFormSiret}
           withMap
-          className="vp-field"
         />
         <TextField
           autoComplete="postal-code"
+          className="vp-field"
           innerClassName="col-33"
           label="Code postal : "
           name="postalCode"
           readOnly={fieldIsFrozen}
           required
-          className="vp-field"
         />
         <TextField
           autoComplete="address-level2"
+          className="vp-field"
           innerClassName="col-66"
           label="Ville : "
           name="city"
           readOnly={fieldIsFrozen}
           required
-          className="vp-field"
         />
         <NumberField
+          className="vp-field"
           innerClassName="col-33"
           label="Latitude : "
           name="latitude"
           readOnly={fieldIsFrozen}
           required
-          className="vp-field"
         />
         <NumberField
+          className="vp-field"
           innerClassName="col-33"
           label="Longitude : "
           name="longitude"
           readOnly={fieldIsFrozen}
           required
-          className="vp-field"
         />
       </div>
     </div>

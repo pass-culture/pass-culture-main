@@ -65,7 +65,9 @@ class AllocineProviderForm extends PureComponent {
               <div className="price-section-label">
                 <label htmlFor="price">
                   {'Prix de vente/place '}
-                  <span className="field-asterisk">{'*'}</span>
+                  <span className="field-asterisk">
+                    {'*'}
+                  </span>
                 </label>
                 <span
                   className="apf-tooltip"
@@ -85,17 +87,25 @@ class AllocineProviderForm extends PureComponent {
               />
             </div>
             <div className="apf-quantity-section">
-              <label className="label-quantity" htmlFor="quantity">
+              <label
+                className="label-quantity"
+                htmlFor="quantity"
+              >
                 {'Nombre de places/séance'}
               </label>
-              <NumberField isDecimal={false} min="0" name="quantity" placeholder="Illimité" />
+              <NumberField
+                isDecimal={false}
+                min="0"
+                name="quantity"
+                placeholder="Illimité"
+              />
             </div>
             <div className="apf-is-duo-section">
               <CheckboxField
+                checked
                 id="apf-is-duo"
                 label="Accepter les réservations DUO"
                 name="isDuo"
-                checked
               />
               <span
                 className="apf-tooltip"
@@ -107,7 +117,10 @@ class AllocineProviderForm extends PureComponent {
               </span>
             </div>
 
-            <Insert className="blue-insert" icon="picto-info-solid-black">
+            <Insert
+              className="blue-insert"
+              icon="picto-info-solid-black"
+            >
               {'Pour le moment, seules les séances "classiques" peuvent être importées.'}
               <p />
               {"Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne génèreront pas d'offres."}
@@ -132,7 +145,10 @@ class AllocineProviderForm extends PureComponent {
   }
 
   render() {
-    return <Form onSubmit={this.handleSubmit} render={this.renderForm} />
+    return (<Form
+      onSubmit={this.handleSubmit}
+      render={this.renderForm}
+            />)
   }
 }
 

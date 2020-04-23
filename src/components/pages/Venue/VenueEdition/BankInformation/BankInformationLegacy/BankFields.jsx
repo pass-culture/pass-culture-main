@@ -23,8 +23,16 @@ const BankFields = ({ adminUserOfferer, areBankInformationProvided, readOnly }) 
         </p>
       )}
       <div className="field-group">
-        <TextField label="BIC : " name="bic" readOnly={areBankInfosReadOnly} />
-        <TextField label="IBAN : " name="iban" readOnly={areBankInfosReadOnly} />
+        <TextField
+          label="BIC : "
+          name="bic"
+          readOnly={areBankInfosReadOnly}
+        />
+        <TextField
+          label="IBAN : "
+          name="iban"
+          readOnly={areBankInfosReadOnly}
+        />
       </div>
     </div>
   )
