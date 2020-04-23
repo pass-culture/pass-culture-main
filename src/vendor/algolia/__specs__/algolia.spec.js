@@ -1,16 +1,16 @@
 import algoliasearch from 'algoliasearch'
 import {
-  WEBAPP_ALGOLIA_APPLICATION_ID,
-  WEBAPP_ALGOLIA_INDEX_NAME,
-  WEBAPP_ALGOLIA_SEARCH_API_KEY,
+  ALGOLIA_APPLICATION_ID,
+  ALGOLIA_INDEX_NAME,
+  ALGOLIA_SEARCH_API_KEY,
 } from '../../../utils/config'
 import { fetchAlgolia } from '../algolia'
 
 jest.mock('algoliasearch')
 jest.mock('../../../utils/config', () => ({
-  WEBAPP_ALGOLIA_APPLICATION_ID: 'appId',
-  WEBAPP_ALGOLIA_INDEX_NAME: 'indexName',
-  WEBAPP_ALGOLIA_SEARCH_API_KEY: 'apiKey',
+  ALGOLIA_APPLICATION_ID: 'appId',
+  ALGOLIA_INDEX_NAME: 'indexName',
+  ALGOLIA_SEARCH_API_KEY: 'apiKey',
 }))
 
 describe('fetchAlgolia', () => {
@@ -55,11 +55,8 @@ describe('fetchAlgolia', () => {
       })
 
       // then
-      expect(algoliasearch).toHaveBeenCalledWith(
-        WEBAPP_ALGOLIA_APPLICATION_ID,
-        WEBAPP_ALGOLIA_SEARCH_API_KEY
-      )
-      expect(initIndex).toHaveBeenCalledWith(WEBAPP_ALGOLIA_INDEX_NAME)
+      expect(algoliasearch).toHaveBeenCalledWith(ALGOLIA_APPLICATION_ID, ALGOLIA_SEARCH_API_KEY)
+      expect(initIndex).toHaveBeenCalledWith(ALGOLIA_INDEX_NAME)
       expect(search).toHaveBeenCalledWith(keywords, {
         page: 0,
       })

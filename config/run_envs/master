@@ -1,6 +1,6 @@
 API_URL='https://backend.passculture-testing.beta.gouv.fr'
 ENVIRONMENT_NAME='testing'
 NODE_ENV="production"
-SENTRY_SERVER_URL_FOR_WEBAPP='https://fa24f6fffb1e42aeafc316b4c808227c@logs.passculture.app/3'
+SENTRY_SERVER_URL='https://fa24f6fffb1e42aeafc316b4c808227c@logs.passculture.app/3'
 THUMBS_URL='https://storage.gra3.cloud.ovh.net/v1/AUTH_688df1e25bd84a48a3804e7fa8938085/storage-pc-dev/thumbs'
 TYPEFORM_URL_CULTURAL_PRACTICES_POLL="https://passculture.typeform.com/to/T8rurj"

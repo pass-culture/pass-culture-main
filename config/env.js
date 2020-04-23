@@ -42,22 +42,20 @@ function getClientEnvironment(publicUrl) {
         return env
       },
       {
-        API_URL: process.env.API_URL || 'http://localhost',
+        ALGOLIA_APPLICATION_ID: process.env.ALGOLIA_APPLICATION_ID,
+        ALGOLIA_INDEX_NAME: process.env.ALGOLIA_INDEX_NAME,
+        ALGOLIA_SEARCH_API_KEY: process.env.ALGOLIA_SEARCH_API_KEY,
+        API_URL: process.env.API_URL,
         ENVIRONMENT_NAME: process.env.ENVIRONMENT_NAME,
-        HAS_WORKERS: process.env.HAS_WORKERS || false,
+        HAS_WORKERS: process.env.HAS_WORKERS === 'true',
         MATOMO_SERVER_URL: process.env.MATOMO_SERVER_URL,
         MATOMO_GEOLOCATION_GOAL_ID: process.env.MATOMO_GEOLOCATION_GOAL_ID,
-        MAINTENANCE_PAGE_AVAILABLE: process.env.MAINTENANCE_PAGE_AVAILABLE === 'true' || false,
-        NODE_ENV: process.env.NODE_ENV || 'development',
+        MAINTENANCE_PAGE_AVAILABLE: process.env.MAINTENANCE_PAGE_AVAILABLE === 'true',
+        NODE_ENV: process.env.NODE_ENV,
         PUBLIC_URL: publicUrl,
-        SENTRY_SERVER_URL_FOR_WEBAPP: process.env.SENTRY_SERVER_URL_FOR_WEBAPP,
-        TYPEFORM_URL_CULTURAL_PRACTICES_POLL:
-          process.env.TYPEFORM_URL_CULTURAL_PRACTICES_POLL ||
-          'https://passculture.typeform.com/to/T8rurj',
-        URL_FOR_MAINTENANCE: process.env.WEBAPP_URL_FOR_MAINTENANCE,
-        WEBAPP_ALGOLIA_APPLICATION_ID: process.env.WEBAPP_ALGOLIA_APPLICATION_ID,
-        WEBAPP_ALGOLIA_SEARCH_API_KEY: process.env.WEBAPP_ALGOLIA_SEARCH_API_KEY,
-        WEBAPP_ALGOLIA_INDEX_NAME: process.env.WEBAPP_ALGOLIA_INDEX_NAME,
+        SENTRY_SERVER_URL: process.env.SENTRY_SERVER_URL,
+        TYPEFORM_URL_CULTURAL_PRACTICES_POLL: process.env.TYPEFORM_URL_CULTURAL_PRACTICES_POLL,
+        URL_FOR_MAINTENANCE: process.env.URL_FOR_MAINTENANCE,
       }
     )
   // Stringify all values so we can feed into Webpack DefinePlugin

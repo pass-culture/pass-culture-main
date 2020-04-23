@@ -1,9 +1,9 @@
 import algoliasearch from 'algoliasearch'
 
 import {
-  WEBAPP_ALGOLIA_APPLICATION_ID,
-  WEBAPP_ALGOLIA_INDEX_NAME,
-  WEBAPP_ALGOLIA_SEARCH_API_KEY,
+  ALGOLIA_APPLICATION_ID,
+  ALGOLIA_INDEX_NAME,
+  ALGOLIA_SEARCH_API_KEY,
 } from '../../utils/config'
 import { FACETS } from './facets'
 import { FILTERS } from './filters'
@@ -30,8 +30,8 @@ export const fetchAlgolia = ({
     ...buildNumericFilters(offerIsFree, priceRange),
     ...buildGeolocationParameter(aroundRadius, geolocation),
   }
-  const client = algoliasearch(WEBAPP_ALGOLIA_APPLICATION_ID, WEBAPP_ALGOLIA_SEARCH_API_KEY)
-  const index = client.initIndex(WEBAPP_ALGOLIA_INDEX_NAME + sortBy)
+  const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_SEARCH_API_KEY)
+  const index = client.initIndex(ALGOLIA_INDEX_NAME + sortBy)
 
   return index.search(keywords, searchParameters)
 }
