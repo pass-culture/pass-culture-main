@@ -5,6 +5,18 @@ import { Field, Form, SubmitButton } from 'pass-culture-shared'
 import { CGU_URL } from '../../../../utils/config'
 
 class SignupForm extends PureComponent {
+  componentDidMount() {
+    const script = document.createElement('script')
+
+    script.src = '//js.hs-scripts.com/5119289.js'
+    script.async = true
+    script.type = 'text/javascript'
+    script.id = 'hs-script-loader'
+    script.defer = true
+
+    document.body.appendChild(script)
+  }
+
   onHandleSuccessRedirect = () => '/inscription/confirmation'
 
   onHandleFormatPatch = patch => Object.assign({ publicName: patch.firstName }, patch)
