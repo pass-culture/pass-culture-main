@@ -51,9 +51,9 @@ class OffererCreation extends PureComponent {
         <Titles title="Structure" />
 
         <Form
+          component={OffererCreationForm}
           decorators={this.createDecorators()}
           onSubmit={this.handleSubmit}
-          component={OffererCreationForm}
         />
       </Main>
     )
