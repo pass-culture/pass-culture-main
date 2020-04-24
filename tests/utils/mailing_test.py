@@ -28,6 +28,20 @@ def get_mocked_response_status_200(entity):
     return response
 
 
+def get_by_siren_mock(offerer):
+    return {
+        "unite_legale": {
+            "siren": "395251440",
+            "etablissement_siege": {
+                "siren": "395251440",
+                "siret": "39525144000016",
+                "etablissement_siege": "true",
+            },
+        },
+        "other_etablissements_sirets": ["39525144000032", "39525144000065"]
+    }
+
+
 @mocked_mail
 @clean_database
 @freeze_time('2019-01-01 12:00:00')
@@ -303,7 +317,7 @@ class MakeValidationEmailObjectTest:
 
         # When
         email_object = make_validation_email_object(user_offerer=user_offerer, offerer=offerer,
-                                                    get_by_siren=get_mocked_response_status_200)
+                                                    get_by_siren=get_by_siren_mock)
 
         # Then
         assert email_object.get("Subject") == '95 - inscription / rattachement PRO à valider : Test Offerer'

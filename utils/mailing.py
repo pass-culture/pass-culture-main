@@ -101,7 +101,7 @@ def make_validation_email_object(offerer: Offerer, user_offerer: UserOfferer,
                                  get_by_siren=api_entreprises.get_by_offerer) -> Dict:
     vars_obj_user = vars(user_offerer.user)
     vars_obj_user.pop('clearTextPassword', None)
-    api_entreprise = get_by_siren(offerer).json()
+    api_entreprise = get_by_siren(offerer)
 
     offerer_departement_code = PostalCode(offerer.postalCode).get_departement_code()
 

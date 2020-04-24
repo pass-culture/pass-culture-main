@@ -15,16 +15,13 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
         app):
     # Given
     response_return_value = MagicMock(status_code=200, text='')
-    response_return_value.json = MagicMock(return_value={})
+    response_return_value.json = MagicMock(
+        return_value={"unite_legale": {"etablissement_siege": {}, "etablissements": []}})
     mock_api_entreprise.return_value = response_return_value
 
-    offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
-                             name='Accenture', validation_token='12345')
-
-    user = create_user(can_book_free_offers=False, departement_code='75', email='user@accenture.com',
-                       public_name='Test', validation_token='98765')
-
-    user_offerer = create_user_offerer(user, offerer, validation_token=None)
+    offerer = create_offerer(validation_token='12345')
+    user = create_user(validation_token='98765')
+    user_offerer = create_user_offerer(user, offerer)
 
     mocked_send_email = Mock()
     return_value = Mock()
@@ -50,16 +47,15 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_dev_whe
         app):
     # Given
     response_return_value = MagicMock(status_code=200, text='')
-    response_return_value.json = MagicMock(return_value={})
+    response_return_value.json = MagicMock(
+        return_value={"unite_legale": {"etablissement_siege": {}, "etablissements": []}})
     mock_api_entreprise.return_value = response_return_value
 
-    offerer = create_offerer(siren='732075312', address='122 AVENUE DE FRANCE', city='Paris', postal_code='75013',
-                             name='Accenture', validation_token='12345')
+    offerer = create_offerer(validation_token='12345')
 
-    user = create_user(can_book_free_offers=False, departement_code='75', email='user@accenture.com',
-                       public_name='Test', validation_token='98765')
+    user = create_user(validation_token='98765')
 
-    user_offerer = create_user_offerer(user, offerer, validation_token=None)
+    user_offerer = create_user_offerer(user, offerer)
 
     mocked_send_email = Mock()
     return_value = Mock()

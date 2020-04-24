@@ -1,3 +1,4 @@
+import copy
 from unittest.mock import patch, MagicMock
 
 from models import Offerer, RightsType, UserOfferer
@@ -5,6 +6,10 @@ from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 
+api_entreprise_json_mock = {"unite_legale": {
+    "etablissement_siege": {},
+    "etablissements": []
+}}
 
 class Post:
     class Returns201:
@@ -14,7 +19,7 @@ class Post:
             # given
             mock_api_entreprise.return_value = MagicMock(status_code=200,
                                                          text='',
-                                                         json=MagicMock(return_value={}))
+                                                         json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock)))
 
             user = create_user()
             repository.save(user)
@@ -45,7 +50,7 @@ class Post:
             # given
             mock_api_entreprise.return_value = MagicMock(status_code=200,
                                                          text='',
-                                                         json=MagicMock(return_value={}))
+                                                         json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock)))
 
             user = create_user()
             repository.save(user)
@@ -72,7 +77,7 @@ class Post:
             # Given
             mock_api_entreprise.return_value = MagicMock(status_code=200,
                                                          text='',
-                                                         json=MagicMock(return_value={}))
+                                                         json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock)))
 
             user = create_user(can_book_free_offers=False, is_admin=True)
             repository.save(user)
@@ -98,7 +103,7 @@ class Post:
             # Given
             mock_api_entreprise.return_value = MagicMock(status_code=200,
                                                          text='',
-                                                         json=MagicMock(return_value={}))
+                                                         json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock)))
 
             user = create_user(can_book_free_offers=False, is_admin=False)
             repository.save(user)
@@ -131,7 +136,7 @@ class Post:
             make_validation_email_object.return_value={'Html-part': None}
             mock_api_entreprise.return_value = MagicMock(status_code=200,
                                                          text='',
-                                                         json=MagicMock(return_value={}))
+                                                         json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock)))
 
             user = create_user(can_book_free_offers=False, is_admin=False)
             user_2 = create_user(email="other_offerer@mail.com", is_admin=False)
@@ -171,7 +176,7 @@ class Post:
             make_validation_email_object.return_value={'Html-part': None}
             mock_api_entreprise.return_value = MagicMock(status_code=200,
                                                          text='',
-                                                         json=MagicMock(return_value={}))
+                                                         json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock)))
 
             user = create_user(can_book_free_offers=False, is_admin=False)
             repository.save(user)
@@ -205,7 +210,7 @@ class Post:
             make_validation_email_object.return_value = {'Html-part': None}
             mock_api_entreprise.return_value = MagicMock(status_code=200,
                                                          text='',
-                                                         json=MagicMock(return_value={}))
+                                                         json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock)))
 
             user = create_user(can_book_free_offers=False, is_admin=False)
             offerer = create_offerer(siren='123456789')
@@ -240,7 +245,7 @@ class Post:
             make_validation_email_object.return_value = {'Html-part': None}
             mock_api_entreprise.return_value = MagicMock(status_code=200,
                                                          text='',
-                                                         json=MagicMock(return_value={}))
+                                                         json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock)))
 
             user = create_user(can_book_free_offers=False, is_admin=False)
             offerer = create_offerer(siren='123456789', validation_token='not_validated')
@@ -278,7 +283,7 @@ class Post:
             # Given
             mock_api_entreprise.return_value = MagicMock(status_code=200,
                                                          text='',
-                                                         json=MagicMock(return_value={}))
+                                                         json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock)))
 
             user = create_user(can_book_free_offers=False, is_admin=False)
             offerer = create_offerer(siren='123456789', validation_token='not_validated')
@@ -318,7 +323,7 @@ class Post:
             # Given
             mock_api_entreprise.return_value = MagicMock(status_code=200,
                                                          text='',
-                                                         json=MagicMock(return_value={}))
+                                                         json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock)))
 
             user = create_user(can_book_free_offers=False, is_admin=False)
             offerer = create_offerer(siren='123456789', validation_token='not_validated')
@@ -355,7 +360,7 @@ class Post:
         # Given
         mock_api_entreprise.return_value = MagicMock(status_code=200,
                                                      text='',
-                                                     json=MagicMock(return_value={}))
+                                                     json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock)))
 
         user = create_user(can_book_free_offers=False, is_admin=False)
 
