@@ -11,7 +11,7 @@ import LocationFields from '../../fields/LocationFields/LocationFields'
 
 import VenueEdition from '../VenueEdition'
 
-describe('src | components | pages | Venue', () => {
+describe('src | components | pages | VenueEdition', () => {
   let push
   let props
 

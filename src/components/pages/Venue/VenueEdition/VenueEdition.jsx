@@ -102,6 +102,7 @@ class VenueEdition extends PureComponent {
       latitude: formLatitude,
       longitude: formLongitude,
       siret: formSiret,
+      venueTypeId,
     } = values
 
     const siretValidOnModification = initialSiret !== null
@@ -117,13 +118,11 @@ class VenueEdition extends PureComponent {
           fieldReadOnlyBecauseFrozenFormSiret={fieldReadOnlyBecauseFrozenFormSiret}
           formSiret={formSiret}
           initialSiret={initialSiret}
-          venueTypeId={formInitialValues.venueTypeId}
+          readOnly={readOnly}
+          venueTypeId={venueTypeId}
           venueTypes={venueTypes}
         />
-        <BankFieldsContainer
-          areBankInformationProvided={areBankInformationProvided}
-          readOnly={readOnly}
-        />
+
         <RibsUploadFeatureFlip
           legacy={
             <BankFieldsContainer
