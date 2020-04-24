@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.bank_account import format_raw_iban_or_bic
-from domain.demarches_simplifiees import get_all_application_ids_for_demarche_simplifiee
+from domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
 from models import BankInformation
@@ -30,8 +30,8 @@ class OffererBankInformationProvider(LocalProvider):
             minimum_requested_datetime, most_recent_known_application_date)
 
         self.application_ids = iter(
-            get_all_application_ids_for_demarche_simplifiee(self.PROCEDURE_ID, self.TOKEN,
-                                                           requested_datetime))
+            get_closed_application_ids_for_demarche_simplifiee(self.PROCEDURE_ID, self.TOKEN,
+                                                               requested_datetime))
 
     def __next__(self) -> List[ProvidableInfo]:
         self.bank_information_dict = self.retrieve_next_bank_information()

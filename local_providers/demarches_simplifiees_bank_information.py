@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.bank_account import format_raw_iban_or_bic
-from domain.demarches_simplifiees import get_all_application_ids_for_demarche_simplifiee
+from domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
 from models import BankInformation
@@ -20,13 +20,15 @@ class BankInformationProvider(LocalProvider):
 
     def __init__(self):
         super().__init__()
-        self.PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_RIB_PROCEDURE_ID')
+        self.PROCEDURE_ID = os.environ.get(
+            'DEMARCHES_SIMPLIFIEES_RIB_PROCEDURE_ID')
         self.TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_TOKEN')
-        most_recent_known_application_date = get_last_update_from_bank_information(last_provider_id=self.provider.id)
+        most_recent_known_application_date = get_last_update_from_bank_information(
+            last_provider_id=self.provider.id)
 
         self.application_ids = iter(
-            get_all_application_ids_for_demarche_simplifiee(self.PROCEDURE_ID, self.TOKEN,
-                                                           most_recent_known_application_date))
+            get_closed_application_ids_for_demarche_simplifiee(self.PROCEDURE_ID, self.TOKEN,
+                                                               most_recent_known_application_date))
 
     def __next__(self) -> List[ProvidableInfo]:
         self.bank_information_dict = self.retrieve_next_bank_information()
@@ -34,7 +36,8 @@ class BankInformationProvider(LocalProvider):
         if not self.bank_information_dict:
             return []
 
-        bank_information_last_update = datetime.strptime(self.bank_information_dict['lastUpdate'], DATE_ISO_FORMAT)
+        bank_information_last_update = datetime.strptime(
+            self.bank_information_dict['lastUpdate'], DATE_ISO_FORMAT)
         bank_information_identifier = self.bank_information_dict['idAtProviders']
         bank_information_providable_info = self.create_providable_info(BankInformation,
                                                                        bank_information_identifier,
@@ -42,17 +45,23 @@ class BankInformationProvider(LocalProvider):
         return [bank_information_providable_info]
 
     def fill_object_attributes(self, bank_information: BankInformation):
-        bank_information.iban = format_raw_iban_or_bic(self.bank_information_dict['iban'])
-        bank_information.bic = format_raw_iban_or_bic(self.bank_information_dict['bic'])
+        bank_information.iban = format_raw_iban_or_bic(
+            self.bank_information_dict['iban'])
+        bank_information.bic = format_raw_iban_or_bic(
+            self.bank_information_dict['bic'])
         bank_information.applicationId = self.bank_information_dict['applicationId']
-        bank_information.offererId = self.bank_information_dict.get('offererId', None)
-        bank_information.venueId = self.bank_information_dict.get('venueId', None)
+        bank_information.offererId = self.bank_information_dict.get(
+            'offererId', None)
+        bank_information.venueId = self.bank_information_dict.get(
+            'venueId', None)
 
     def retrieve_bank_information(self, application_details: dict) -> Optional[dict]:
         bank_information_dict = dict()
         bank_information_dict['lastUpdate'] = application_details['dossier']['updated_at']
-        bank_information_dict['iban'] = _find_value_in_fields(application_details['dossier']["champs"], "IBAN")
-        bank_information_dict['bic'] = _find_value_in_fields(application_details['dossier']["champs"], "BIC")
+        bank_information_dict['iban'] = _find_value_in_fields(
+            application_details['dossier']["champs"], "IBAN")
+        bank_information_dict['bic'] = _find_value_in_fields(
+            application_details['dossier']["champs"], "BIC")
         bank_information_dict['applicationId'] = application_details['dossier']["id"]
         bank_information_dict['ribAffiliation'] = _find_value_in_fields(application_details['dossier']["champs"],
                                                                         "Je souhaite renseigner")
@@ -84,7 +93,8 @@ class BankInformationProvider(LocalProvider):
 
     def retrieve_next_bank_information(self) -> dict:
         application_id = next(self.application_ids)
-        application_details = get_application_details(application_id, self.PROCEDURE_ID, self.TOKEN)
+        application_details = get_application_details(
+            application_id, self.PROCEDURE_ID, self.TOKEN)
         return self.retrieve_bank_information(application_details)
 
 

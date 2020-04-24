@@ -33,14 +33,15 @@ def _create_detail_response(application_id=145, offerer_id=267, venue_id=578, bi
                 {
                     "value": "https://pro.passculture.beta.gouv.fr/"
                              "structures/" + humanize(offerer_id) + "/"
-                                                                    "lieux/" + humanize(venue_id),
+                                                                    "lieux/" +
+                    humanize(venue_id),
                     "type_de_champ": {
                         "id": 407889,
                         "libelle": "URL",
                         "type_champ": "text",
                         "order_place": 1,
                         "description": ""
-                    }
+                             }
                 },
                 {
                     "value": bic,
@@ -75,18 +76,18 @@ class VenueWithoutSIRETBankInformationProviderTest:
         self.APPLICATION_ID = 145
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information_without_siret.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_bank_information_without_siret.get_closed_application_ids_for_demarche_simplifiee')
     @patch(
         'local_providers.demarches_simplifiees_bank_information_without_siret.find_latest_sync_end_event')
     def test_collect_updated_applications_ids_to_handle_using_environment_vars(self,
                                                                                find_latest_sync_end_event,
-                                                                               get_all_application_ids_for_demarche_simplifiee,
+                                                                               get_closed_application_ids_for_demarche_simplifiee,
                                                                                app):
         # Given
         last_provider_sync = LocalProviderEvent()
         last_provider_sync.date = datetime(2020, 1, 2)
         find_latest_sync_end_event.return_value = last_provider_sync
-        get_all_application_ids_for_demarche_simplifiee.return_value = []
+        get_closed_application_ids_for_demarche_simplifiee.return_value = []
         PROCEDURE_ID_VENUE_WITHOUT_SIRET = '5636727'
         TOKEN = '4872'
 
@@ -98,21 +99,21 @@ class VenueWithoutSIRETBankInformationProviderTest:
             VenueWithoutSIRETBankInformationProvider()
 
         # Then
-        get_all_application_ids_for_demarche_simplifiee.assert_called_with(
+        get_closed_application_ids_for_demarche_simplifiee.assert_called_with(
             PROCEDURE_ID_VENUE_WITHOUT_SIRET, TOKEN, datetime(2020, 1, 2)
         )
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information_without_siret.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_bank_information_without_siret.get_closed_application_ids_for_demarche_simplifiee')
     @patch(
         'local_providers.demarches_simplifiees_bank_information_without_siret.find_latest_sync_end_event')
     def test_when_applications_never_treated_then_collect_applications_ids_from_1970(self,
                                                                                      find_latest_sync_end_event,
-                                                                                     get_all_application_ids_for_demarche_simplifiee,
+                                                                                     get_closed_application_ids_for_demarche_simplifiee,
                                                                                      app):
         # Given
         find_latest_sync_end_event.return_value = None
-        get_all_application_ids_for_demarche_simplifiee.return_value = []
+        get_closed_application_ids_for_demarche_simplifiee.return_value = []
         PROCEDURE_ID_VENUE_WITHOUT_SIRET = '5636727'
         TOKEN = '4872'
 
@@ -124,19 +125,19 @@ class VenueWithoutSIRETBankInformationProviderTest:
             VenueWithoutSIRETBankInformationProvider()
 
         # Then
-        get_all_application_ids_for_demarche_simplifiee.assert_called_with(
+        get_closed_application_ids_for_demarche_simplifiee.assert_called_with(
             PROCEDURE_ID_VENUE_WITHOUT_SIRET, TOKEN, datetime(1970, 1, 1)
         )
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information_without_siret.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_bank_information_without_siret.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_bank_information_without_siret.get_application_details')
     @patch('local_providers.demarches_simplifiees_bank_information_without_siret.find_latest_sync_end_event')
     @clean_database
     def test_collect_application_details_for_each_application(self,
                                                               find_latest_sync_end_event,
                                                               get_application_details,
-                                                              get_all_application_ids_for_demarche_simplifiee,
+                                                              get_closed_application_ids_for_demarche_simplifiee,
                                                               app):
         # Given
         APPLICATION_ID_2 = 2
@@ -144,7 +145,7 @@ class VenueWithoutSIRETBankInformationProviderTest:
         last_provider_sync = LocalProviderEvent()
         last_provider_sync.date = datetime(2020, 1, 2)
         find_latest_sync_end_event.return_value = last_provider_sync
-        get_all_application_ids_for_demarche_simplifiee.return_value = [
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [
             self.APPLICATION_ID,
             APPLICATION_ID_2
         ]
@@ -188,21 +189,22 @@ class VenueWithoutSIRETBankInformationProviderTest:
         'DEMARCHES_SIMPLIFIEES_TOKEN': '4872'
     }, clear=True)
     @patch(
-        'local_providers.demarches_simplifiees_bank_information_without_siret.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_bank_information_without_siret.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_bank_information_without_siret.get_application_details')
     @patch('local_providers.demarches_simplifiees_bank_information_without_siret.find_latest_sync_end_event')
     @clean_database
     def test_do_not_create_bank_information_when_offerer_does_not_exist(self,
                                                                         find_latest_sync_end_event,
                                                                         get_application_details,
-                                                                        get_all_application_ids_for_demarche_simplifiee,
+                                                                        get_closed_application_ids_for_demarche_simplifiee,
                                                                         environment,
                                                                         app):
         # Given
         last_provider_sync = LocalProviderEvent()
         last_provider_sync.date = datetime(2020, 1, 2)
         find_latest_sync_end_event.return_value = last_provider_sync
-        get_all_application_ids_for_demarche_simplifiee.return_value = [self.APPLICATION_ID]
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [
+            self.APPLICATION_ID]
         get_application_details.return_value = _create_detail_response(self.APPLICATION_ID, self.OFFERER_ID,
                                                                        self.VENUE_ID)
         activate_provider('VenueWithoutSIRETBankInformationProvider')
@@ -222,14 +224,14 @@ class VenueWithoutSIRETBankInformationProviderTest:
         'DEMARCHES_SIMPLIFIEES_TOKEN': '4872'
     }, clear=True)
     @patch(
-        'local_providers.demarches_simplifiees_bank_information_without_siret.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_bank_information_without_siret.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_bank_information_without_siret.get_application_details')
     @patch('local_providers.demarches_simplifiees_bank_information_without_siret.find_latest_sync_end_event')
     @clean_database
     def test_do_not_create_bank_information_when_venue_does_not_exist(self,
                                                                       find_latest_sync_end_event,
                                                                       get_application_details,
-                                                                      get_all_application_ids_for_demarche_simplifiee,
+                                                                      get_closed_application_ids_for_demarche_simplifiee,
                                                                       environment,
                                                                       app):
         # Given
@@ -239,7 +241,8 @@ class VenueWithoutSIRETBankInformationProviderTest:
         offerer = create_offerer(siren='793875030', idx=49153)
         repository.save(offerer)
 
-        get_all_application_ids_for_demarche_simplifiee.return_value = [self.APPLICATION_ID]
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [
+            self.APPLICATION_ID]
         get_application_details.return_value = _create_detail_response(self.APPLICATION_ID, self.OFFERER_ID,
                                                                        self.VENUE_ID)
 
@@ -260,14 +263,14 @@ class VenueWithoutSIRETBankInformationProviderTest:
         'DEMARCHES_SIMPLIFIEES_TOKEN': '4872'
     })
     @patch(
-        'local_providers.demarches_simplifiees_bank_information_without_siret.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_bank_information_without_siret.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_bank_information_without_siret.get_application_details')
     @patch('local_providers.demarches_simplifiees_bank_information_without_siret.find_latest_sync_end_event')
     @clean_database
     def test_create_bank_information_when_the_bank_information_does_not_exist(self,
                                                                               find_latest_sync_end_event,
                                                                               get_application_details,
-                                                                              get_all_application_ids_for_demarche_simplifiee,
+                                                                              get_closed_application_ids_for_demarche_simplifiee,
                                                                               environment,
                                                                               app):
         # Given
@@ -279,7 +282,8 @@ class VenueWithoutSIRETBankInformationProviderTest:
         last_provider_sync = LocalProviderEvent()
         last_provider_sync.date = datetime(2020, 1, 2)
         find_latest_sync_end_event.return_value = last_provider_sync
-        get_all_application_ids_for_demarche_simplifiee.return_value = [self.APPLICATION_ID]
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [
+            self.APPLICATION_ID]
         get_application_details.return_value = _create_detail_response(
             self.APPLICATION_ID, self.OFFERER_ID, self.VENUE_ID, iban=IBAN, bic=BIC
         )
@@ -309,14 +313,14 @@ class VenueWithoutSIRETBankInformationProviderTest:
         'DEMARCHES_SIMPLIFIEES_TOKEN': '4872'
     })
     @patch(
-        'local_providers.demarches_simplifiees_bank_information_without_siret.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_bank_information_without_siret.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_bank_information_without_siret.get_application_details')
     @patch('local_providers.demarches_simplifiees_bank_information_without_siret.find_latest_sync_end_event')
     @clean_database
     def test_updates_bank_information_when_existing_bank_information_with_same_id_at_provider(self,
                                                                                               find_latest_sync_end_event,
                                                                                               get_application_details,
-                                                                                              get_all_application_ids_for_demarche_simplifiee,
+                                                                                              get_closed_application_ids_for_demarche_simplifiee,
                                                                                               environment,
                                                                                               app):
         # Given
@@ -334,7 +338,8 @@ class VenueWithoutSIRETBankInformationProviderTest:
         last_provider_sync = LocalProviderEvent()
         last_provider_sync.date = datetime(2020, 1, 2)
         find_latest_sync_end_event.return_value = last_provider_sync
-        get_all_application_ids_for_demarche_simplifiee.return_value = [self.APPLICATION_ID]
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [
+            self.APPLICATION_ID]
         NEW_IBAN = 'FR7630006000011234567890189'
         NEW_BIC = 'AGRIFRPP'
         get_application_details.return_value = _create_detail_response(
@@ -429,7 +434,8 @@ class DemarchesSimplifieesMapperTest:
             }
 
             # When
-            extracted_dict = DemarchesSimplifieesMapper.from_venue_without_SIRET_application(simplified_response)
+            extracted_dict = DemarchesSimplifieesMapper.from_venue_without_SIRET_application(
+                simplified_response)
 
             # Then
             assert extracted_dict['BIC'] == 'TRPUFRP1'
@@ -437,4 +443,5 @@ class DemarchesSimplifieesMapperTest:
             assert extracted_dict['applicationId'] == 451574
             assert extracted_dict['structureId'] == dehumanize('YAAT')
             assert extracted_dict['venueId'] == dehumanize('DBMQ')
-            assert extracted_dict['updated_at'] == datetime(2019, 4, 25, 15, 23, 36, 490000)
+            assert extracted_dict['updated_at'] == datetime(
+                2019, 4, 25, 15, 23, 36, 490000)

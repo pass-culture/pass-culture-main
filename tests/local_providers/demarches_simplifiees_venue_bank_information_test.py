@@ -124,15 +124,15 @@ def create_demarche_simplifiee_application_detail_response_without_venue_siret(s
 
 class VenueBankInformationProviderTest:
     @patch(
-        'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_venue_bank_information.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
     @clean_database
     def test_provider_creates_nothing_if_no_data_retrieved_from_api(self, get_application_details,
-                                                                    get_all_application_ids_for_demarche_simplifiee,
+                                                                    get_closed_application_ids_for_demarche_simplifiee,
                                                                     app):
         # Given
         get_application_details.return_value = {}
-        get_all_application_ids_for_demarche_simplifiee.return_value = []
+        get_closed_application_ids_for_demarche_simplifiee.return_value = []
         venue_bank_information_provider = VenueBankInformationProvider()
 
         # When
@@ -142,16 +142,17 @@ class VenueBankInformationProviderTest:
         assert BankInformation.query.count() == 0
 
     @patch(
-        'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_venue_bank_information.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
     @clean_database
     def test_provider_does_not_save_bank_information_if_wrong_bic_or_iban_but_continues_flow(
             self,
             get_application_details,
-            get_all_application_ids_for_demarche_simplifiee,
+            get_closed_application_ids_for_demarche_simplifiee,
             app):
         # given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [1, 2]
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [
+            1, 2]
         get_application_details.side_effect = [
             demarche_simplifiee_application_detail_response(siret="42486171400014",
                                                             bic="wrong_bic",
@@ -184,16 +185,16 @@ class VenueBankInformationProviderTest:
         assert local_provider_event.payload == 'ApiErrors'
 
     @patch(
-        'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_venue_bank_information.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
     @clean_database
-    def test_calls_get_all_application_ids_with_1900_01_01_when_table_bank_information_is_empty(
+    def test_calls_get_application_ids_with_1900_01_01_when_table_bank_information_is_empty(
             self,
             get_application_details,
-            get_all_application_ids_for_demarche_simplifiee,
+            get_closed_application_ids_for_demarche_simplifiee,
             app):
         # given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [1]
         get_application_details.return_value = demarche_simplifiee_application_detail_response(
             siret="12345678912345",
             bic="BDFEFR2LCCB",
@@ -207,20 +208,20 @@ class VenueBankInformationProviderTest:
         bank_information_provider.updateObjects()
 
         # then
-        get_all_application_ids_for_demarche_simplifiee.assert_called_with(ANY, ANY,
-                                                                           datetime(1900, 1, 1))
+        get_closed_application_ids_for_demarche_simplifiee.assert_called_with(ANY, ANY,
+                                                                              datetime(1900, 1, 1))
 
     @patch(
-        'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_venue_bank_information.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
     @clean_database
-    def test_get_all_application_ids_with_last_update_from_table_bank_information(
+    def test_get_application_ids_with_last_update_from_table_bank_information(
             self,
             get_application_details,
-            get_all_application_ids_for_demarche_simplifiee,
+            get_closed_application_ids_for_demarche_simplifiee,
             app):
         # given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [1]
         get_application_details.return_value = demarche_simplifiee_application_detail_response(
             siret="12345678912345",
             bic="BDFEFR2LCCB",
@@ -244,19 +245,19 @@ class VenueBankInformationProviderTest:
         venue_bank_information_provider.updateObjects()
 
         # then
-        get_all_application_ids_for_demarche_simplifiee.assert_called_with(ANY, ANY,
-                                                                           datetime(2019, 1, 1))
+        get_closed_application_ids_for_demarche_simplifiee.assert_called_with(ANY, ANY,
+                                                                              datetime(2019, 1, 1))
 
     @patch(
-        'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_venue_bank_information.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
     @clean_database
     def test_provider_creates_one_bank_information_and_format_IBAN_and_BIC(self,
                                                                            get_application_details,
-                                                                           get_all_application_ids_for_demarche_simplifiee,
+                                                                           get_closed_application_ids_for_demarche_simplifiee,
                                                                            app):
         # Given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [1]
         get_application_details.return_value = demarche_simplifiee_application_detail_response(
             siret="12345678912345",
             bic="bdfefR2LCCB",
@@ -282,15 +283,15 @@ class VenueBankInformationProviderTest:
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID': '27456'})
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_TOKEN': 'cvNjy0RhfULAE3TMMTCkAQmD5p7bVw3s'})
     @patch(
-        'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_venue_bank_information.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
     @clean_database
     def test_provider_request_application_ids_using_given_date(self,
                                                                get_application_details,
-                                                               get_all_application_ids_for_demarche_simplifiee,
+                                                               get_closed_application_ids_for_demarche_simplifiee,
                                                                app):
         # Given
-        get_all_application_ids_for_demarche_simplifiee.return_value = []
+        get_closed_application_ids_for_demarche_simplifiee.return_value = []
         offerer = create_offerer(siren='793875030')
         offerer2 = create_offerer(siren='793875019')
         venue = create_venue(offerer, siret="79387503012345")
@@ -317,7 +318,7 @@ class VenueBankInformationProviderTest:
         provider_object.updateObjects()
 
         # Then
-        get_all_application_ids_for_demarche_simplifiee.assert_called_once_with(
+        get_closed_application_ids_for_demarche_simplifiee.assert_called_once_with(
             '27456',
             'cvNjy0RhfULAE3TMMTCkAQmD5p7bVw3s',
             datetime(2019, 6, 1)
@@ -325,16 +326,16 @@ class VenueBankInformationProviderTest:
 
     class VenueWithSiretTest:
         @patch(
-            'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+            'local_providers.demarches_simplifiees_venue_bank_information.get_closed_application_ids_for_demarche_simplifiee')
         @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
         @clean_database
         def test_provider_creates_two_objects_when_payload_has_two_valid_applications(
                 self,
                 get_application_details,
-                get_all_application_ids_for_demarche_simplifiee,
+                get_closed_application_ids_for_demarche_simplifiee,
                 app):
             # Given
-            get_all_application_ids_for_demarche_simplifiee.return_value = [
+            get_closed_application_ids_for_demarche_simplifiee.return_value = [
                 1, 2]
             get_application_details.side_effect = [
                 demarche_simplifiee_application_detail_response(siret="42486171400014",
@@ -381,16 +382,17 @@ class VenueBankInformationProviderTest:
             assert bank_information2.idAtProviders == '12345678912345'
 
         @patch(
-            'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+            'local_providers.demarches_simplifiees_venue_bank_information.get_closed_application_ids_for_demarche_simplifiee')
         @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
         @clean_database
         def test_provider_does_not_create_bank_information_if_siret_unknown(
                 self,
                 get_application_details,
-                get_all_application_ids_for_demarche_simplifiee,
+                get_closed_application_ids_for_demarche_simplifiee,
                 app):
             # Given
-            get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+            get_closed_application_ids_for_demarche_simplifiee.return_value = [
+                1]
             get_application_details.return_value = demarche_simplifiee_application_detail_response(
                 siret="42486171400014",
                 bic="BDFEFR2LCCB",
@@ -414,19 +416,20 @@ class VenueBankInformationProviderTest:
             assert events[2].type == LocalProviderEventType.SyncEnd
 
         @patch(
-            'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+            'local_providers.demarches_simplifiees_venue_bank_information.get_closed_application_ids_for_demarche_simplifiee')
         @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
         @clean_database
         def test_provider_does_not_create_bank_information_with_siret_of_another_offerer(
                 self,
                 get_application_details,
-                get_all_application_ids_for_demarche_simplifiee,
+                get_closed_application_ids_for_demarche_simplifiee,
                 app):
             # Given
             offerer1 = create_offerer(siren='424861714')
             offerer2 = create_offerer(siren='123456789')
             venue2 = create_venue(offerer2, siret='12345678912345')
-            get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+            get_closed_application_ids_for_demarche_simplifiee.return_value = [
+                1]
             get_application_details.return_value = demarche_simplifiee_application_detail_response(
                 siret="12345678912345",
                 siren='424861714',
@@ -451,16 +454,17 @@ class VenueBankInformationProviderTest:
             assert events[2].type == LocalProviderEventType.SyncEnd
 
         @patch(
-            'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+            'local_providers.demarches_simplifiees_venue_bank_information.get_closed_application_ids_for_demarche_simplifiee')
         @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
         @clean_database
         def test_provider_updates_existing_bank_information(
                 self,
                 get_application_details,
-                get_all_application_ids_for_demarche_simplifiee,
+                get_closed_application_ids_for_demarche_simplifiee,
                 app):
             # Given
-            get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+            get_closed_application_ids_for_demarche_simplifiee.return_value = [
+                1]
             get_application_details.return_value = demarche_simplifiee_application_detail_response(
                 siret="42486171400014",
                 bic="BDFEFR2LCCB",
@@ -486,16 +490,16 @@ class VenueBankInformationProviderTest:
 
     class VenueWithoutSiretTest:
         @patch(
-            'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+            'local_providers.demarches_simplifiees_venue_bank_information.get_closed_application_ids_for_demarche_simplifiee')
         @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
         @clean_database
         def test_provider_creates_two_objects_when_payload_has_two_valid_applications(
                 self,
                 get_application_details,
-                get_all_application_ids_for_demarche_simplifiee,
+                get_closed_application_ids_for_demarche_simplifiee,
                 app):
             # Given
-            get_all_application_ids_for_demarche_simplifiee.return_value = [
+            get_closed_application_ids_for_demarche_simplifiee.return_value = [
                 1, 2]
             get_application_details.side_effect = [
                 create_demarche_simplifiee_application_detail_response_without_venue_siret(siret="42486171400014",
@@ -544,16 +548,17 @@ class VenueBankInformationProviderTest:
             assert bank_information2.idAtProviders == '123456789VENUE WITHOUT SIRET'
 
         @patch(
-            'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+            'local_providers.demarches_simplifiees_venue_bank_information.get_closed_application_ids_for_demarche_simplifiee')
         @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
         @clean_database
         def test_provider_does_not_create_bank_information_if_name_unknown(
                 self,
                 get_application_details,
-                get_all_application_ids_for_demarche_simplifiee,
+                get_closed_application_ids_for_demarche_simplifiee,
                 app):
             # Given
-            get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+            get_closed_application_ids_for_demarche_simplifiee.return_value = [
+                1]
             get_application_details.return_value = create_demarche_simplifiee_application_detail_response_without_venue_siret(
                 siret="42486171400014",
                 bic="BDFEFR2LCCB",
@@ -578,19 +583,20 @@ class VenueBankInformationProviderTest:
             assert events[2].type == LocalProviderEventType.SyncEnd
 
         @patch(
-            'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+            'local_providers.demarches_simplifiees_venue_bank_information.get_closed_application_ids_for_demarche_simplifiee')
         @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
         @clean_database
         def test_provider_does_not_create_bank_information_if_name_of_another_offerer_s_venue(
                 self,
                 get_application_details,
-                get_all_application_ids_for_demarche_simplifiee,
+                get_closed_application_ids_for_demarche_simplifiee,
                 app):
             # Given
             offerer1 = create_offerer(siren='424861714')
             offerer2 = create_offerer(siren='123456789')
             venue2 = create_venue(offerer2, name='VENUE WITHOUT SIRET')
-            get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+            get_closed_application_ids_for_demarche_simplifiee.return_value = [
+                1]
             get_application_details.return_value = create_demarche_simplifiee_application_detail_response_without_venue_siret(
                 siret="42486171400014",
                 bic="BDFEFR2LCCB",
@@ -615,16 +621,17 @@ class VenueBankInformationProviderTest:
             assert events[2].type == LocalProviderEventType.SyncEnd
 
         @patch(
-            'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+            'local_providers.demarches_simplifiees_venue_bank_information.get_closed_application_ids_for_demarche_simplifiee')
         @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
         @clean_database
         def test_provider_does_not_create_bank_information_if_there_are_several_venues_with_same_name(
                 self,
                 get_application_details,
-                get_all_application_ids_for_demarche_simplifiee,
+                get_closed_application_ids_for_demarche_simplifiee,
                 app):
             # Given
-            get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+            get_closed_application_ids_for_demarche_simplifiee.return_value = [
+                1]
             get_application_details.return_value = create_demarche_simplifiee_application_detail_response_without_venue_siret(
                 siret="42486171400014",
                 bic="BDFEFR2LCCB",
@@ -655,16 +662,17 @@ class VenueBankInformationProviderTest:
             assert events[2].type == LocalProviderEventType.SyncEnd
 
         @patch(
-            'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+            'local_providers.demarches_simplifiees_venue_bank_information.get_closed_application_ids_for_demarche_simplifiee')
         @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
         @clean_database
         def test_provider_updates_existing_bank_information(
                 self,
                 get_application_details,
-                get_all_application_ids_for_demarche_simplifiee,
+                get_closed_application_ids_for_demarche_simplifiee,
                 app):
             # Given
-            get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+            get_closed_application_ids_for_demarche_simplifiee.return_value = [
+                1]
             get_application_details.return_value = create_demarche_simplifiee_application_detail_response_without_venue_siret(
                 siret="42486171400014",
                 bic="BDFEFR2LCCB",
@@ -690,15 +698,15 @@ class VenueBankInformationProviderTest:
             assert updated_bank_information.bic == "BDFEFR2LCCB"
 
 @patch(
-    'local_providers.demarches_simplifiees_venue_bank_information.get_all_application_ids_for_demarche_simplifiee')
+    'local_providers.demarches_simplifiees_venue_bank_information.get_closed_application_ids_for_demarche_simplifiee')
 @patch('local_providers.demarches_simplifiees_venue_bank_information.get_application_details')
 @clean_database
 def test_provider_can_handle_payload_with_both_venues_with_siret_and_venues_without(
         get_application_details,
-        get_all_application_ids_for_demarche_simplifiee,
+        get_closed_application_ids_for_demarche_simplifiee,
         app):
     # Given
-    get_all_application_ids_for_demarche_simplifiee.return_value = [
+    get_closed_application_ids_for_demarche_simplifiee.return_value = [
         1, 2]
     get_application_details.side_effect = [
         demarche_simplifiee_application_detail_response(siret="42486171400014",

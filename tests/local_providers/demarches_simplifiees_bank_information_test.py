@@ -23,14 +23,14 @@ class TestableBankInformationProvider(BankInformationProvider):
 
 class BankInformationProviderProviderTest:
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_bank_information.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     def test_provider_creates_nothing_if_no_data_retrieved_from_api(self, get_application_details,
-                                                                    get_all_application_ids_for_demarche_simplifiee,
+                                                                    get_closed_application_ids_for_demarche_simplifiee,
                                                                     app):
         # Given
         get_application_details.return_value = {}
-        get_all_application_ids_for_demarche_simplifiee.return_value = []
+        get_closed_application_ids_for_demarche_simplifiee.return_value = []
 
         # When Then
         provider_test(app,
@@ -47,15 +47,15 @@ class BankInformationProviderProviderTest:
                       BankInformation=0)
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_bank_information.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_provider_creates_one_bank_information_with_id_at_prividers_siren_if_request_for_siren(self,
                                                                                                    get_application_details,
-                                                                                                   get_all_application_ids_for_demarche_simplifiee,
+                                                                                                   get_closed_application_ids_for_demarche_simplifiee,
                                                                                                    app):
         # Given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [1]
         get_application_details.return_value = {
             "dossier":
                 {
@@ -144,15 +144,15 @@ class BankInformationProviderProviderTest:
         assert local_provider_events[1].type == LocalProviderEventType.SyncEnd
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_bank_information.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_provider_creates_one_bank_information_with_id_at_prividers_siret_if_request_for_siret(self,
                                                                                                    get_application_details,
-                                                                                                   get_all_application_ids_for_demarche_simplifiee,
+                                                                                                   get_closed_application_ids_for_demarche_simplifiee,
                                                                                                    app):
         # Given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [1]
         get_application_details.return_value = {
             "dossier":
                 {
@@ -235,16 +235,17 @@ class BankInformationProviderProviderTest:
         assert bank_information.idAtProviders == '79387503000016'
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_bank_information.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_provider_raises_unknown_rib_affiliation_exception_when_rib_affiliation_unknown_but_saves_older_bank_information(
             self,
             get_application_details,
-            get_all_application_ids_for_demarche_simplifiee,
+            get_closed_application_ids_for_demarche_simplifiee,
             app):
         # Given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [2, 1]
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [
+            2, 1]
         get_application_details.side_effect = [
             {
                 "dossier":
@@ -373,16 +374,17 @@ class BankInformationProviderProviderTest:
         assert sync_error.payload == 'unknown RIB affiliation for application id 1'
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_bank_information.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_provider_checks_two_objects_and_creates_two_when_both_rib_affiliations_are_known(
             self,
             get_application_details,
-            get_all_application_ids_for_demarche_simplifiee,
+            get_closed_application_ids_for_demarche_simplifiee,
             app):
         # Given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [1, 2]
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [
+            1, 2]
         get_application_details.side_effect = [
             {
                 "dossier":
@@ -513,8 +515,10 @@ class BankInformationProviderProviderTest:
                       updatedThumbs=0,
                       erroredThumbs=0,
                       BankInformation=2)
-        bank_information1 = BankInformation.query.filter_by(applicationId=1).first()
-        bank_information2 = BankInformation.query.filter_by(applicationId=2).first()
+        bank_information1 = BankInformation.query.filter_by(
+            applicationId=1).first()
+        bank_information2 = BankInformation.query.filter_by(
+            applicationId=2).first()
         assert bank_information1.iban == 'FR7630006000011234567890189'
         assert bank_information1.bic == 'BDFEFR2LCCB'
         assert bank_information1.applicationId == 1
@@ -529,16 +533,16 @@ class BankInformationProviderProviderTest:
         assert bank_information2.idAtProviders == '79387503000016'
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_bank_information.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_provider_does_not_create_bank_information_if_siren_unknown(
             self,
             get_application_details,
-            get_all_application_ids_for_demarche_simplifiee,
+            get_closed_application_ids_for_demarche_simplifiee,
             app):
         # Given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [1]
         get_application_details.side_effect = [
             {
                 "dossier":
@@ -608,21 +612,22 @@ class BankInformationProviderProviderTest:
                       erroredThumbs=0,
                       BankInformation=0)
 
-        sync_error = LocalProviderEvent.query.filter_by(type=LocalProviderEventType.SyncError).first()
+        sync_error = LocalProviderEvent.query.filter_by(
+            type=LocalProviderEventType.SyncError).first()
         assert sync_error.payload == 'unknown siret or siren for application id 1'
         assert len(LocalProviderEvent.query.all()) == 3
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_bank_information.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_provider_updates_existing_bank_information(
             self,
             get_application_details,
-            get_all_application_ids_for_demarche_simplifiee,
+            get_closed_application_ids_for_demarche_simplifiee,
             app):
         # Given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [1]
         get_application_details.side_effect = [
             {
                 "dossier":
@@ -681,7 +686,8 @@ class BankInformationProviderProviderTest:
         offerer = create_offerer(siren='793875019')
         venue = create_venue(offerer, siret='79387501900056')
 
-        bank_information = create_bank_information(id_at_providers="79387501900056", venue=venue)
+        bank_information = create_bank_information(
+            id_at_providers="79387501900056", venue=venue)
         repository.save(bank_information)
 
         # When Then
@@ -697,22 +703,24 @@ class BankInformationProviderProviderTest:
                       updatedThumbs=0,
                       erroredThumbs=0)
 
-        updated_bank_information = BankInformation.query.filter_by(idAtProviders="79387501900056").one()
+        updated_bank_information = BankInformation.query.filter_by(
+            idAtProviders="79387501900056").one()
         assert updated_bank_information.applicationId == 2
         assert updated_bank_information.iban == "FR7630006000011234567890189"
         assert updated_bank_information.bic == "BDFEFR2LCCB"
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_bank_information.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_provider_does_not_save_bank_information_if_wrong_bic_or_iban_but_continues_flow(
             self,
             get_application_details,
-            get_all_application_ids_for_demarche_simplifiee,
+            get_closed_application_ids_for_demarche_simplifiee,
             app):
         # given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [1, 2]
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [
+            1, 2]
         get_application_details.side_effect = [
             {
                 "dossier":
@@ -838,20 +846,21 @@ class BankInformationProviderProviderTest:
         bank_information = BankInformation.query.all()
         assert len(bank_information) == 1
         assert bank_information[0].applicationId == 2
-        local_provider_event = LocalProviderEvent.query.filter_by(type=LocalProviderEventType.SyncError).one()
+        local_provider_event = LocalProviderEvent.query.filter_by(
+            type=LocalProviderEventType.SyncError).one()
         assert local_provider_event.payload == 'ApiErrors'
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_bank_information.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_calls_get_all_application_ids_with_1900_01_01_when_table_bank_information_is_empty(
             self,
             get_application_details,
-            get_all_application_ids_for_demarche_simplifiee,
+            get_closed_application_ids_for_demarche_simplifiee,
             app):
         # given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [1]
         get_application_details.return_value = {
             "dossier":
                 {
@@ -913,20 +922,20 @@ class BankInformationProviderProviderTest:
         bank_information_provider.updateObjects()
 
         # then
-        get_all_application_ids_for_demarche_simplifiee.assert_called_with(ANY, ANY,
-                                                                                        datetime(1900, 1, 1))
+        get_closed_application_ids_for_demarche_simplifiee.assert_called_with(ANY, ANY,
+                                                                              datetime(1900, 1, 1))
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_bank_information.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_calls_get_all_application_ids_with_last_update_from_table_bank_information(
             self,
             get_application_details,
-            get_all_application_ids_for_demarche_simplifiee,
+            get_closed_application_ids_for_demarche_simplifiee,
             app):
         # given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [1]
         get_application_details.return_value = {
             "dossier":
                 {
@@ -984,9 +993,11 @@ class BankInformationProviderProviderTest:
         venue = create_venue(offerer, siret='79387501900056')
 
         bank_information = create_bank_information(id_at_providers='79387501900056',
-                                                   date_modified_at_last_provider=datetime(2019, 1, 1),
+                                                   date_modified_at_last_provider=datetime(
+                                                       2019, 1, 1),
                                                    venue=venue,
-                                                   last_provider_id=get_provider_by_local_class('BankInformationProvider').id
+                                                   last_provider_id=get_provider_by_local_class(
+                                                       'BankInformationProvider').id
                                                    )
         repository.save(bank_information)
 
@@ -998,20 +1009,19 @@ class BankInformationProviderProviderTest:
         bank_information_provider.updateObjects()
 
         # then
-        get_all_application_ids_for_demarche_simplifiee.assert_called_with(ANY, ANY,
-                                                                                        datetime(2019, 1, 1))
-
+        get_closed_application_ids_for_demarche_simplifiee.assert_called_with(ANY, ANY,
+                                                                              datetime(2019, 1, 1))
 
     @patch(
-        'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_demarche_simplifiee')
+        'local_providers.demarches_simplifiees_bank_information.get_closed_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
     def test_provider_creates_one_bank_information_and_format_IBAN_and_BIC(self,
                                                                            get_application_details,
-                                                                           get_all_application_ids_for_demarche_simplifiee,
+                                                                           get_closed_application_ids_for_demarche_simplifiee,
                                                                            app):
         # Given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [1]
         get_application_details.return_value = {
             "dossier":
                 {
@@ -1138,7 +1148,8 @@ class RetrieveBankInformationTest:
         bank_information_provider = TestableBankInformationProvider()
 
         # When
-        bank_information_dict = bank_information_provider.retrieve_bank_information(application_details)
+        bank_information_dict = bank_information_provider.retrieve_bank_information(
+            application_details)
 
         # Then
         assert bank_information_dict['iban'] == "FR7630006000011234567890189"
@@ -1194,7 +1205,8 @@ class RetrieveBankInformationTest:
         bank_information_provider = TestableBankInformationProvider()
 
         # When
-        bank_information_dict = bank_information_provider.retrieve_bank_information(application_details)
+        bank_information_dict = bank_information_provider.retrieve_bank_information(
+            application_details)
 
         # Then
         assert bank_information_dict['iban'] == "FR7630006000011234567890189"
