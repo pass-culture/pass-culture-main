@@ -675,19 +675,17 @@ class FindByManagingOffererIdAndNameForVenueWithoutSiretTest:
         assert venue is None
 
     @clean_database
-    def test_raise_multi_result_found_error_when_several_matching_venues(self):
+    def test_raise_multiple_results_found_error_when_several_matching_venues(self):
         # Given
         offerer = create_offerer()
         matching_venue1 = create_venue(offerer, name='Matching name', siret=None, comment='searched name')
         matching_venue2 = create_venue(offerer, name='Matching name', siret=None, comment='searched name')
         repository.save(matching_venue1, matching_venue2)
 
-        # When
+        # When / Then
         with pytest.raises(MultipleResultsFound) as error:
-            venue = find_by_managing_offerer_id_and_name_for_venue_without_siret(offerer.id, 'Matching name')
+            find_by_managing_offerer_id_and_name_for_venue_without_siret(offerer.id, 'Matching name')
 
-        # Then
-        assert '' in str(error)
 
     @clean_database
     def test_return_only_matching_venue_without_siret_by_name_for_offerer_id_when_matching_venue(self):
@@ -724,7 +722,7 @@ class FindByManagingOffererIdAndSiretTest:
         assert venue is None
 
     @clean_database
-    def test_return_matching_venue_without_siret_by_name_for_offerer_id_when_matching_venue(self):
+    def test_return_matching_venue(self):
         # Given
         offerer = create_offerer()
         matching_venue = create_venue(offerer, siret='12345678912345')
