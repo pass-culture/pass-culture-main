@@ -1,9 +1,9 @@
-import selectUniqAndIndexifiedRecommendations from './selectUniqAndIndexifiedRecommendations'
+import selectIndexifiedRecommendations from './selectIndexifiedRecommendations'
 import createCachedSelector from 're-reselect'
 import mapArgsToCacheKey from './mapArgsToCacheKey'
 
 const selectCurrentRecommendation = createCachedSelector(
-  selectUniqAndIndexifiedRecommendations,
+  selectIndexifiedRecommendations,
   (state, offerId) => offerId,
   (recommendations, offerId) =>
     recommendations.find(recommendation => {

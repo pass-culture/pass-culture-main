@@ -7,7 +7,7 @@ import Deck from './Deck'
 import selectCurrentRecommendation from '../selectors/selectCurrentRecommendation'
 import selectNextRecommendation from '../selectors/selectNextRecommendation'
 import selectPreviousRecommendation from '../selectors/selectPreviousRecommendation'
-import selectUniqAndIndexifiedRecommendations from '../selectors/selectUniqAndIndexifiedRecommendations'
+import selectIndexifiedRecommendations from '../selectors/selectIndexifiedRecommendations'
 import { getNextLimit } from './utils/limits'
 
 export const mapStateToProps = (state, ownProps) => {
@@ -16,7 +16,7 @@ export const mapStateToProps = (state, ownProps) => {
   const { mediationId, offerId } = params
 
   const currentRecommendation = selectCurrentRecommendation(state, offerId, mediationId)
-  const recommendations = selectUniqAndIndexifiedRecommendations(state)
+  const recommendations = selectIndexifiedRecommendations(state)
   const nextRecommendation = selectNextRecommendation(state, offerId, mediationId)
   const previousRecommendation = selectPreviousRecommendation(state, offerId, mediationId)
 

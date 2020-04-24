@@ -1,6 +1,6 @@
-import selectUniqAndIndexifiedRecommendations from '../selectUniqAndIndexifiedRecommendations'
+import selectIndexifiedRecommendations from '../selectIndexifiedRecommendations'
 
-describe('src | components | pages | discovery | selectors | selectUniqAndIndexifiedRecommendations', () => {
+describe('src | components | pages | discovery | selectors | selectIndexifiedRecommendations', () => {
   it('should return an empty array if there are no recommendation', () => {
     // given
     const state = {
@@ -15,7 +15,7 @@ describe('src | components | pages | discovery | selectors | selectUniqAndIndexi
     }
 
     // when
-    const result = selectUniqAndIndexifiedRecommendations(state)
+    const result = selectIndexifiedRecommendations(state)
 
     // then
     expect(result).toStrictEqual([])
@@ -50,7 +50,7 @@ describe('src | components | pages | discovery | selectors | selectUniqAndIndexi
     }
 
     // when
-    const result = selectUniqAndIndexifiedRecommendations(state)
+    const result = selectIndexifiedRecommendations(state)
 
     // then
     expect(result[0]).toStrictEqual(recommendation)
