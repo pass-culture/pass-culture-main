@@ -30,18 +30,27 @@ describe('src | components | pages | discovery | Deck | Card | CardContainer', (
         const { store } = configureStore()
         const state = store.getState()
 
-        state.data.users = [
+      state.data = {
+        users: [
           {
             id: 'FY',
           },
-        ]
-        const ownProps = {
-          match: {
-            params: {
-              offerId: 'AE',
-            },
+        ],
+        features: [
+          {
+            id: '2M',
+            isActive: true,
+            nameKey: 'SAVE_SEEN_OFFERS',
           },
-        }
+        ],
+      }
+      const ownProps = {
+        match: {
+          params: {
+            offerId: 'AE',
+          },
+        },
+      }
 
       // when
       const result = mapStateToProps(state, ownProps)
@@ -53,6 +62,7 @@ describe('src | components | pages | discovery | Deck | Card | CardContainer', (
           offerId: 'AE',
           userId: 'FY',
         },
+        isSeenOfferFeatureActive: true,
       })
     })
   })

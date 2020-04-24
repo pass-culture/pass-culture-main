@@ -10,13 +10,14 @@ class Card extends PureComponent {
     const {
       handleReadRecommendation,
       handleSeenOffer,
+      isSeenOfferFeatureActive,
       position,
       recommendation,
       seenOffer,
     } = this.props
 
-    const isFirstHasJustBeenSeen = recommendation && position === 'current'
-    if (isFirstHasJustBeenSeen) {
+    const isCurrentCardWithRecommendation = recommendation && position === 'current'
+    if (isCurrentCardWithRecommendation && isSeenOfferFeatureActive) {
       handleSeenOffer(seenOffer)
     }
 
@@ -31,6 +32,7 @@ class Card extends PureComponent {
       handleClickRecommendation,
       handleReadRecommendation,
       handleSeenOffer,
+      isSeenOfferFeatureActive,
       match,
       recommendation,
       position,
@@ -45,8 +47,10 @@ class Card extends PureComponent {
         (prevProps.recommendation && prevProps.recommendation.id)
 
     if (hasJustBeenRead) {
-      handleSeenOffer(seenOffer)
       handleReadRecommendation(recommendation)
+      if (isSeenOfferFeatureActive) {
+        handleSeenOffer(seenOffer)
+      }
     }
 
     if (!isCurrent) return
@@ -89,6 +93,7 @@ Card.propTypes = {
   handleClickRecommendation: PropTypes.func.isRequired,
   handleReadRecommendation: PropTypes.func.isRequired,
   handleSeenOffer: PropTypes.func.isRequired,
+  isSeenOfferFeatureActive: PropTypes.bool.isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
       details: PropTypes.string,

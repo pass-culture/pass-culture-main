@@ -9,11 +9,13 @@ import Card from './Card'
 import { getRecommendationSelectorByCardPosition } from '../../utils/utils'
 import { recommendationNormalizer } from '../../../../../utils/normalizers'
 import { selectCurrentUser } from '../../../../../redux/selectors/data/usersSelectors'
+import selectIsFeatureDisabled from '../../../../router/selectors/selectIsFeatureDisabled'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match, position } = ownProps
   const { params } = match
   const { mediationId, offerId } = params
+  const isSeenOfferFeatureActive = !selectIsFeatureDisabled(state, 'SAVE_SEEN_OFFERS')
   const recommendationSelector = getRecommendationSelectorByCardPosition(position)
   const recommendation = recommendationSelector(state, offerId, mediationId)
   const user = selectCurrentUser(state)
@@ -23,6 +25,7 @@ export const mapStateToProps = (state, ownProps) => {
   }
 
   return {
+    isSeenOfferFeatureActive,
     recommendation,
     seenOffer,
   }

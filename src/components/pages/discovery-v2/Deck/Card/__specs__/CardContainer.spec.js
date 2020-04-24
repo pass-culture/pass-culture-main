@@ -29,11 +29,21 @@ describe('src | components | pages | discovery | Deck | Card | CardContainer', (
       const { store } = configureStore()
       const state = store.getState()
 
-      state.data.users = [
-        {
-          id: 'FY',
-        },
-      ]
+      state.data = {
+        users: [
+          {
+            id: 'FY',
+          },
+        ],
+        features: [
+          {
+            id: '2M',
+            isActive: true,
+            nameKey: 'SAVE_SEEN_OFFERS',
+          },
+        ],
+      }
+
       const ownProps = {
         match: {
           params: {
@@ -52,6 +62,7 @@ describe('src | components | pages | discovery | Deck | Card | CardContainer', (
           offerId: 'AE',
           userId: 'FY',
         },
+        isSeenOfferFeatureActive: true,
       })
     })
   })
