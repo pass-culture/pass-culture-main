@@ -181,7 +181,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
 
       // when
       wrapper.find('#add-venue-provider-btn').simulate('click')
-      wrapper.find('#provider-options').simulate('change', chooseAllocineEvent)
+      wrapper.find('#provider-options').simulate('blur', chooseAllocineEvent)
 
       // then
       const allocineProviderForm = wrapper.find(AllocineProviderFormContainer)
@@ -203,7 +203,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
 
       // when
       wrapper.find('#add-venue-provider-btn').simulate('click')
-      wrapper.find('#provider-options').simulate('change', chooseTiteliveEvent)
+      wrapper.find('#provider-options').simulate('blur', chooseTiteliveEvent)
 
       // then
       const titeliveProviderForm = wrapper.find(TiteliveProviderFormContainer)
@@ -225,7 +225,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
 
       // when
       wrapper.find('#add-venue-provider-btn').simulate('click')
-      wrapper.find('#provider-options').simulate('change', chooseLibrairesEvent)
+      wrapper.find('#provider-options').simulate('blur', chooseLibrairesEvent)
 
       // then
       const librairesProviderForm = wrapper.find(LibrairesProviderForm)
