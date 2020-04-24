@@ -57,7 +57,7 @@ describe('component | SearchResultsList', () => {
       ],
       resultsCount: 2,
       search: '',
-      sortCriterionLabel: 'Au hasard',
+      sortCriterionLabel: 'Pertinence',
       totalPagesNumber: 1,
     }
   })

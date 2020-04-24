@@ -30,8 +30,8 @@ describe('components | Home', () => {
       },
       sortCriterion: {
         index: '',
-        icon: 'ico-random',
-        label: 'Au hasard',
+        icon: 'ico-relevance',
+        label: 'Pertinence',
         requiresGeolocation: false,
       },
     }
@@ -168,9 +168,9 @@ describe('components | Home', () => {
     expect(criterionItems.at(1).prop('label')).toBe('Où')
     expect(criterionItems.at(1).prop('linkTo')).toBe('/recherche/criteres-localisation')
     expect(criterionItems.at(1).prop('selectedFilter')).toBe('Partout')
-    expect(criterionItems.at(2).prop('icon')).toBe('ico-random')
+    expect(criterionItems.at(2).prop('icon')).toBe('ico-relevance')
     expect(criterionItems.at(2).prop('label')).toBe('Trier par')
     expect(criterionItems.at(2).prop('linkTo')).toBe('/recherche/criteres-tri')
-    expect(criterionItems.at(2).prop('selectedFilter')).toBe('Au hasard')
+    expect(criterionItems.at(2).prop('selectedFilter')).toBe('Pertinence')
   })
 })

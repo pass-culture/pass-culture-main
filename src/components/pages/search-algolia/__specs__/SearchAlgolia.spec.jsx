@@ -58,9 +58,9 @@ describe('components | SearchAlgolia', () => {
         })
         expect(home.prop('history')).toStrictEqual(props.history)
         expect(home.prop('sortCriterion')).toStrictEqual({
-          icon: 'ico-random',
+          icon: 'ico-relevance',
           index: '',
-          label: 'Au hasard',
+          label: 'Pertinence',
           requiresGeolocation: false,
         })
       })
@@ -126,9 +126,7 @@ describe('components | SearchAlgolia', () => {
 
         // then
         const critereLocalisationRoute = routes.at(2)
-        expect(critereLocalisationRoute.prop('path')).toBe(
-          '/recherche/criteres-localisation'
-        )
+        expect(critereLocalisationRoute.prop('path')).toBe('/recherche/criteres-localisation')
         const searchCriteriaLocation = critereLocalisationRoute.find(CriteriaLocation)
         expect(searchCriteriaLocation.prop('activeCriterionLabel')).toStrictEqual('Partout')
         expect(searchCriteriaLocation.prop('criteria')).toStrictEqual(expect.any(Object))
@@ -180,7 +178,7 @@ describe('components | SearchAlgolia', () => {
         const sortingCriteriaRoute = routes.at(4)
         expect(sortingCriteriaRoute.prop('path')).toBe('/recherche/criteres-tri')
         const sortingCriteria = sortingCriteriaRoute.find(CriteriaSort)
-        expect(sortingCriteria.prop('activeCriterionLabel')).toStrictEqual('Au hasard')
+        expect(sortingCriteria.prop('activeCriterionLabel')).toStrictEqual('Pertinence')
         expect(sortingCriteria.prop('criteria')).toStrictEqual(expect.any(Object))
         expect(sortingCriteria.prop('history')).toStrictEqual(props.history)
         expect(sortingCriteria.prop('match')).toStrictEqual(props.match)

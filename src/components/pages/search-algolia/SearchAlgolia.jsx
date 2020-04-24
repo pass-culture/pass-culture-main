@@ -20,7 +20,7 @@ class SearchAlgolia extends PureComponent {
         isSearchAroundMe: props.isGeolocationEnabled,
         params: GEOLOCATION_CRITERIA.EVERYWHERE,
       },
-      sortCriterion: SORT_CRITERIA.RANDOM,
+      sortCriterion: SORT_CRITERIA.RELEVANCE,
     }
   }
 

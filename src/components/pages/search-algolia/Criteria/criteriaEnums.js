@@ -2,13 +2,13 @@ export const GEOLOCATION_CRITERIA = {
   EVERYWHERE: {
     label: 'Partout',
     icon: 'ico-everywhere',
-    requiresGeolocation: false
+    requiresGeolocation: false,
   },
   AROUND_ME: {
     label: 'Autour de moi',
     icon: 'ico-around-me',
-    requiresGeolocation: true
-  }
+    requiresGeolocation: true,
+  },
 }
 
 export const CATEGORY_CRITERIA = {
@@ -67,13 +67,13 @@ export const CATEGORY_CRITERIA = {
     label: 'Instruments de musique',
     icon: 'ico-instrument',
     facetFilter: 'INSTRUMENT',
-  }
+  },
 }
 
 export const SORT_CRITERIA = {
-  RANDOM: {
-    label: 'Au hasard',
-    icon: 'ico-random',
+  RELEVANCE: {
+    label: 'Pertinence',
+    icon: 'ico-relevance',
     index: '',
     requiresGeolocation: false,
   },

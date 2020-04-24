@@ -332,7 +332,7 @@ describe('components | SearchResults', () => {
         expect(emptySearchResult.prop('searchedKeywords')).toBe('librairie')
       })
 
-      it('should fetch offers in all categories, without keyword, around me and sorted randomly when clicking on "autour de chez toi"', async () => {
+      it('should fetch offers in all categories, without keyword, around me and sorted by relevance when clicking on "autour de chez toi"', async () => {
         // Given
         const history = createBrowserHistory()
         props.history = history
@@ -1082,7 +1082,7 @@ describe('components | SearchResults', () => {
       expect(results.at(0).prop('results')).toStrictEqual([offer])
       expect(results.at(0).prop('resultsCount')).toStrictEqual(1)
       expect(results.at(0).prop('search')).toStrictEqual('?mots-cles=librairie')
-      expect(results.at(0).prop('sortCriterionLabel')).toStrictEqual('Au hasard')
+      expect(results.at(0).prop('sortCriterionLabel')).toStrictEqual('Pertinence')
       expect(results.at(0).prop('totalPagesNumber')).toStrictEqual(1)
     })
 
@@ -1172,7 +1172,7 @@ describe('components | SearchResults', () => {
         results: [{ objectID: 'AG', offer: { name: 'Livre nul' } }],
         resultsCount: 1,
         searchedKeywords: 'vas-y',
-        sortCriterionLabel: 'Au hasard',
+        sortCriterionLabel: 'Pertinence',
         totalPagesNumber: 0,
       })
     })
@@ -1678,9 +1678,7 @@ describe('components | SearchResults', () => {
       const sortPage = wrapper.find(CriteriaSort)
       expect(sortPage).toHaveLength(1)
       expect(sortPage.prop('activeCriterionLabel')).toStrictEqual('Prix')
-      expect(sortPage.prop('backTo')).toStrictEqual(
-        '/recherche/resultats?mots-cles=librairie'
-      )
+      expect(sortPage.prop('backTo')).toStrictEqual('/recherche/resultats?mots-cles=librairie')
       expect(sortPage.prop('criteria')).toStrictEqual(SORT_CRITERIA)
       expect(sortPage.prop('history')).toStrictEqual(props.history)
       expect(sortPage.prop('match')).toStrictEqual(props.match)
@@ -1743,7 +1741,7 @@ describe('components | SearchResults', () => {
         </Provider>
       )
       wrapper.update()
-      const sortButton = wrapper.find({ children: 'Au hasard' })
+      const sortButton = wrapper.find({ children: 'Pertinence' })
 
       // when
       await sortButton.simulate('click')
