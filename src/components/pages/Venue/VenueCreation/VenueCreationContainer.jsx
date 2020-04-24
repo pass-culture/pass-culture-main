@@ -102,7 +102,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
         offererId,
         dispatch,
       }
-      let notificationMessage = 'Lieu modifié avec succès !'
+      let notificationMessage = 'Lieu créé avec succès !'
       if (method == 'POST') {
         notificationMessage = NotificationMessage(informationsDisplayed)
       }
@@ -131,5 +131,9 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 export default compose(
   withTracking('Venue'),
   withRequiredLogin,
-  connect(mapStateToProps, mapDispatchToProps, mergeProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps,
+    mergeProps
+  )
 )(VenueCreation)
