@@ -77,9 +77,7 @@ describe('components | RectoContainer', () => {
       const state = {
         data: {
           bookings: [{ id: 'AB', stockId: 'AC', thumbUrl: '/url-to-image/from-booking' }],
-          mediations: [
-            { id: 'AE', offerId: 'AD', thumbUrl: '/url-to-image' },
-          ],
+          mediations: [{ id: 'AE', offerId: 'AD', thumbUrl: '/url-to-image' }],
           offers: [{ id: 'AD', product: {} }],
           stocks: [{ id: 'AC', offerId: 'AD' }],
         },
@@ -189,9 +187,7 @@ describe('components | RectoContainer', () => {
       const state = {
         data: {
           bookings: [],
-          mediations: [
-            { id: 'AE', offerId: 'AD', thumbUrl: '/url-to-image' },
-          ],
+          mediations: [{ id: 'AE', offerId: 'AD', thumbUrl: '/url-to-image' }],
           offers: [{ id: 'AD', product: {} }],
           stocks: [{ id: 'AC', offerId: 'AD' }],
         },
