@@ -1,14 +1,13 @@
 export const DEFAULT_TYPEFORM_LOCATION = '/typeform'
+const TUTORIALS_LOCATION = '/bienvenue'
 
-export const getRedirectToSignin = ({ pathname, search }) => {
-  const fromUrl = encodeURIComponent(`${pathname}${search}`)
-  return `/connexion?de=${fromUrl}`
-}
-
-export const getRedirectToCurrentLocationOrTypeform = ({ currentUser }) => {
-  const { needsToFillCulturalSurvey } = currentUser || {}
+export const getRedirectionPath = ({ currentUser }) => {
+  const { needsToFillCulturalSurvey, hasSeenTutorials } = currentUser || {}
+  const needsToSeeTutorials = !hasSeenTutorials
   if (needsToFillCulturalSurvey) {
     return DEFAULT_TYPEFORM_LOCATION
+  } else if (needsToSeeTutorials) {
+    return TUTORIALS_LOCATION
   }
   return undefined
 }

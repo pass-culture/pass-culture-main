@@ -1,42 +1,66 @@
-import {
-  getRedirectToCurrentLocationOrTypeform,
-  getRedirectToCurrentLocationOrDiscovery,
-} from '../helpers'
+import { getRedirectionPath, getRedirectToCurrentLocationOrDiscovery } from '../helpers'
 
 describe('src | hocs | with-login | helpers', () => {
-  describe('getRedirectToCurrentLocationOrTypeform', () => {
-    it('should return undefined when user has filled the Typeform', () => {
-      // given
-      const props = {
-        currentUser: {
-          needsToFillCulturalSurvey: false,
-        },
-        pathname: '/my-page',
-        search: '?any=any',
-      }
+  describe('getRedirectionPath', () => {
+    describe('when user has not filled the Typeform', () => {
+      it('should return typeform location', () => {
+        // given
+        const props = {
+          currentUser: {
+            needsToFillCulturalSurvey: true,
+          },
+          pathname: '/my-page',
+          search: '?any=any',
+        }
 
-      // then
-      const result = getRedirectToCurrentLocationOrTypeform(props)
+        // then
+        const result = getRedirectionPath(props)
 
-      // when
-      expect(result).toBeUndefined()
+        // when
+        expect(result).toStrictEqual('/typeform')
+      })
     })
 
-    it('should return typeform location when user has not filled the Typeform', () => {
-      // given
-      const props = {
-        currentUser: {
-          needsToFillCulturalSurvey: true,
-        },
-        pathname: '/my-page',
-        search: '?any=any',
-      }
+    describe('when user has filled the Typeform', () => {
+      describe('when user has not seen tutorials', () => {
+        it('should return to tutorials', () => {
+          // given
+          const props = {
+            currentUser: {
+              needsToFillCulturalSurvey: false,
+              hasSeenTutorials: false,
+            },
+            pathname: '/my-page',
+            search: '?any=any',
+          }
 
-      // then
-      const result = getRedirectToCurrentLocationOrTypeform(props)
+          // then
+          const result = getRedirectionPath(props)
 
-      // when
-      expect(result).toStrictEqual('/typeform')
+          // when
+          expect(result).toStrictEqual('/bienvenue')
+        })
+      })
+
+      describe('when user has seen tutorials', () => {
+        it('should return undefined', () => {
+          // given
+          const props = {
+            currentUser: {
+              needsToFillCulturalSurvey: false,
+              hasSeenTutorials: true,
+            },
+            pathname: '/my-page',
+            search: '?any=any',
+          }
+
+          // then
+          const result = getRedirectionPath(props)
+
+          // when
+          expect(result).toBeUndefined()
+        })
+      })
     })
   })
 

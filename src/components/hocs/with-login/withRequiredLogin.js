@@ -3,20 +3,26 @@ import { requestData } from 'redux-thunk-data'
 import withLogin from './withLogin'
 
 import withFrenchQueryRouter from '../withFrenchQueryRouter'
-import { getRedirectToSignin, getRedirectToCurrentLocationOrTypeform } from './helpers'
+import { getRedirectionPath } from './helpers'
 
 export const handleFail = (state, action, ownProps) => {
   const { history, location } = ownProps
-  history.push(getRedirectToSignin(location))
+  const { pathname, search } = location
+
+  const fromUrl = encodeURIComponent(`${pathname}${search}`)
+
+  history.push(`/connexion?de=${fromUrl}`)
 }
 
 export const handleSuccess = (state, action, ownProps) => {
   const {
     payload: { datum },
   } = action
+  const currentUser = datum
   const { history, location } = ownProps
-  const redirect = getRedirectToCurrentLocationOrTypeform({
-    currentUser: datum,
+
+  const redirect = getRedirectionPath({
+    currentUser,
     ...location,
   })
 

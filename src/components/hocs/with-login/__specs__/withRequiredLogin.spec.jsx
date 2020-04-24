@@ -1,117 +1,127 @@
 import { handleFail, handleSuccess } from '../withRequiredLogin'
-import { getRedirectToSignin, getRedirectToCurrentLocationOrTypeform } from '../helpers'
-
-jest.mock('../helpers')
 
 describe('src | components | pages | hocs | with-login | withRequiredLogin - unit tests', () => {
-  beforeEach(() => {
-    fetch.resetMocks()
-  })
+  const state = {}
 
   describe('handleFail()', () => {
-    it('should call push history when it fails', () => {
-      // given
-      const state = {}
-      const action = {}
-      const ownProps = {
-        history: {
-          push: jest.fn(),
-        },
-        location: {},
-      }
-      getRedirectToSignin.mockReturnValue('/fake-url')
+    describe('when authentication fails', () => {
+      it('should redirect to signin with initial requested route as parameter', () => {
+        // given
+        const state = {}
+        const action = {}
+        const ownProps = {
+          history: {
+            push: jest.fn(),
+          },
+          location: {
+            pathname: 'pathname',
+            search: 'search',
+          },
+        }
 
-      // when
-      handleFail(state, action, ownProps)
+        // when
+        handleFail(state, action, ownProps)
 
-      // then
-      expect(ownProps.history.push).toHaveBeenCalledWith('/fake-url')
+        // then
+        expect(ownProps.history.push).toHaveBeenCalledWith(`/connexion?de=pathnamesearch`)
+      })
     })
   })
 
   describe('handleSuccess()', () => {
-    it('should call getRedirectToCurrentLocationOrTypeform with right parameters', () => {
-      // given
-      const state = {}
-      const action = {
-        payload: {
-          datum: {
-            email: 'michel.marx@youpi.fr',
-            needsToFillCulturalSurvey: false,
-          },
-        },
-      }
+    describe('when authentication succeed', () => {
+      describe('when user has completed cultural survey and seen tutorials', () => {
+        it('should not redirect', () => {
+          // given
+          const action = {
+            payload: {
+              datum: {
+                email: 'michel.marx@example.com',
+                needsToFillCulturalSurvey: false,
+                hasSeenTutorials: true,
+              },
+            },
+          }
 
-      const ownProps = {
-        history: {
-          push: jest.fn(),
-        },
-        location: {
-          hash: '',
-          key: expect.any(String),
-          pathname: '/test',
-          search: '',
-          state: undefined,
-        },
-      }
+          const ownProps = {
+            history: {
+              push: jest.fn(),
+            },
+            location: {
+              pathname: '/test',
+              search: '',
+            },
+          }
 
-      // when
-      handleSuccess(state, action, ownProps)
+          // when
+          handleSuccess(state, action, ownProps)
 
-      // then
-      expect(getRedirectToCurrentLocationOrTypeform).toHaveBeenCalledWith({
-        currentUser: {
-          email: 'michel.marx@youpi.fr',
-          needsToFillCulturalSurvey: false,
-        },
-        hash: '',
-        key: expect.any(String),
-        pathname: '/test',
-        search: '',
-        state: undefined,
+          // then
+          expect(ownProps.history.push).not.toHaveBeenCalled()
+        })
       })
-    })
 
-    it('should call push history when user is redirected', () => {
-      // given
-      const state = {}
-      const action = {
-        payload: {},
-      }
-      const ownProps = {
-        history: {
-          push: jest.fn(),
-        },
-        location: {},
-      }
-      getRedirectToCurrentLocationOrTypeform.mockReturnValue('/fake-url')
+      describe('when user has completed cultural survey and has not seen tutorials', () => {
+        it('should redirect to tutorials', () => {
+          // given
+          const action = {
+            payload: {
+              datum: {
+                email: 'michel.marx@example.com',
+                needsToFillCulturalSurvey: false,
+                hasSeenTutorials: false,
+              },
+            },
+          }
 
-      // when
-      handleSuccess(state, action, ownProps)
+          const ownProps = {
+            history: {
+              push: jest.fn(),
+            },
+            location: {
+              pathname: '/test',
+              search: '',
+            },
+          }
 
-      // then
-      expect(ownProps.history.push).toHaveBeenCalledWith('/fake-url')
-    })
+          // when
+          handleSuccess(state, action, ownProps)
 
-    it('should not call push history when successful', () => {
-      // given
-      const state = {}
-      const action = {
-        payload: {},
-      }
-      const ownProps = {
-        history: {
-          push: jest.fn(),
-        },
-        location: {},
-      }
-      getRedirectToCurrentLocationOrTypeform.mockReturnValue(undefined)
+          // then
+          expect(ownProps.history.push).toHaveBeenCalledWith('/bienvenue')
+        })
+      })
 
-      // when
-      handleSuccess(state, action, ownProps)
+      describe('when user has not completed cultural survey', () => {
+        it('should redirect to cultural survey', () => {
+          // given
+          const action = {
+            payload: {
+              datum: {
+                email: 'michel.marx@example.com',
+                needsToFillCulturalSurvey: true,
+                hasSeenTutorials: false,
+              },
+            },
+          }
 
-      // then
-      expect(ownProps.history.push).not.toHaveBeenCalled()
+          const ownProps = {
+            history: {
+              push: jest.fn(),
+            },
+            location: {
+              key: expect.any(String),
+              pathname: '/test',
+            },
+          }
+
+          // when
+          handleSuccess(state, action, ownProps)
+
+          // then
+          expect(ownProps.history.push).toHaveBeenCalledWith('/typeform')
+        })
+      })
     })
   })
 })

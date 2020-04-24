@@ -7,7 +7,7 @@ import MyBookingsContainer from '../pages/my-bookings/MyBookingsContainer'
 import DiscoveryRouterContainer from '../hocs/discovery-router/DiscoveryRouterContainer'
 import DiscoveryContainerV3 from '../pages/discovery-v3/DiscoveryContainer'
 import MyFavoritesContainer from '../pages/my-favorites/MyFavoritesContainer'
-import Tutorials from '../pages/tutorials/Tutorials'
+import TutorialsContainer from '../pages/tutorials/TutorialsContainer'
 import ForgotPassword from '../pages/forgot-password/ForgotPassword'
 import OfferContainer from '../pages/offer/OfferContainer'
 import ProfileContainer from '../pages/profile/ProfileContainer'
@@ -48,7 +48,7 @@ const routes = [
     title: 'Inscription',
   },
   {
-    component: Tutorials,
+    component: TutorialsContainer,
     path: '/bienvenue',
     title: 'Bienvenue',
   },
