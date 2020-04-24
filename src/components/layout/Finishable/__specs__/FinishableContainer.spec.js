@@ -82,30 +82,6 @@ describe('components | FinishableContainer', () => {
         // then
         expect(props.shouldDisplayFinishedBanner).toBe(true)
       })
-
-      it('should return true when offer is bookable and has been booked by current user', () => {
-        // given
-        const state = {
-          data: {
-            bookings: [{ id: 'A1', stockId: 'B1' }],
-            offers: [{ id: 'C1', isBookable: true }],
-            stocks: [{ id: 'B1', offerId: 'C1' }],
-          },
-        }
-        const ownProps = {
-          match: {
-            params: {
-              bookingId: 'A1',
-            },
-          },
-        }
-
-        // when
-        const props = mapStateToProps(state, ownProps)
-
-        // then
-        expect(props.shouldDisplayFinishedBanner).toBe(false)
-      })
     })
 
     describe('when coming from other routes', () => {

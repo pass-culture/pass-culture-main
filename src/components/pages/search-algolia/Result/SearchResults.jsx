@@ -15,6 +15,7 @@ import FiltersContainer from '../Filters/FiltersContainer'
 import { EmptySearchResult } from './EmptySearchResult'
 import SearchAlgoliaDetailsContainer from './ResultDetail/ResultDetailContainer'
 import { SearchResultsList } from './SearchResultsList'
+import { DEFAULT_RADIUS_IN_KILOMETERS } from '../../../../vendor/algolia/filters'
 
 const SEARCH_RESULTS_URI = '/recherche/resultats'
 
@@ -31,7 +32,7 @@ class SearchResults extends PureComponent {
     this.state = {
       currentPage: 0,
       filters: {
-        aroundRadius: 100,
+        aroundRadius: DEFAULT_RADIUS_IN_KILOMETERS,
         isSearchAroundMe: isSearchAroundMeFromUrlOrProps,
         offerCategories: categoriesFromUrlOrProps,
         offerIsDuo: false,

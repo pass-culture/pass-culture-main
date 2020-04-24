@@ -119,7 +119,7 @@ describe('fetchAlgolia', () => {
       })
     })
 
-    it('should fetch with geolocation coordinates, when latitude, longitude are provided and search is not around me', () => {
+    it('should fetch offers with geolocation coordinates, when latitude, longitude are provided and search is not around me', () => {
       // given
       const keywords = 'searched keywords'
       const geolocation = {
@@ -142,7 +142,7 @@ describe('fetchAlgolia', () => {
       })
     })
 
-    it('should fetch with geolocation coordinates, when latitude, longitude and radius are provided and search is around me', () => {
+    it('should fetch offers with geolocation coordinates, when latitude, longitude and radius are provided and search is around me', () => {
       // given
       const keywords = 'searched keywords'
       const geolocation = {
@@ -166,7 +166,7 @@ describe('fetchAlgolia', () => {
       })
     })
 
-    it('should fetch with geolocation coordinates, when latitude, longitude, search is around me, and radius equals zero', () => {
+    it('should fetch offers with geolocation coordinates, when latitude, longitude, search is around me, and radius equals zero', () => {
       // given
       const keywords = 'searched keywords'
       const geolocation = {
@@ -185,7 +185,7 @@ describe('fetchAlgolia', () => {
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
         aroundLatLng: '42, 43',
-        aroundRadius: 'all',
+        aroundRadius: 1,
         page: 0,
       })
     })

@@ -1,3 +1,6 @@
+export const DEFAULT_RADIUS_IN_KILOMETERS = 100
+export const RADIUS_IN_METERS_FOR_NO_OFFERS = 1
+
 export const FILTERS = {
   UNLIMITED_RADIUS: 'all'
 }

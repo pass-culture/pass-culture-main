@@ -9,6 +9,7 @@ import { checkIfAroundMe } from '../utils/checkIfAroundMe'
 import FilterCheckbox from './FilterCheckbox/FilterCheckbox'
 import FilterToggle from './FilterToggle/FilterToggle'
 import CriteriaLocation from '../CriteriaLocation/CriteriaLocation'
+import { DEFAULT_RADIUS_IN_KILOMETERS } from '../../../../vendor/algolia/filters'
 
 export class Filters extends PureComponent {
   constructor(props) {
@@ -121,7 +122,7 @@ export class Filters extends PureComponent {
       {
         filters: {
           ...initialFilters,
-          aroundRadius: 100,
+          aroundRadius: DEFAULT_RADIUS_IN_KILOMETERS,
           isSearchAroundMe: false,
           offerCategories: [],
           offerIsDuo: false,
@@ -490,7 +491,7 @@ export class Filters extends PureComponent {
               <li>
                 <div className="sf-title-wrapper">
                   <h4 className="sf-title">
-                    {'Type d\'offres'}
+                    {"Type d'offres"}
                   </h4>
                   {numberOfOfferTypesSelected > 0 && (
                     <span className="sf-selected-filter-counter">
@@ -618,7 +619,7 @@ export class Filters extends PureComponent {
 
 Filters.defaultProps = {
   initialFilters: {
-    aroundRadius: 100,
+    aroundRadius: DEFAULT_RADIUS_IN_KILOMETERS,
     isSearchAroundMe: false,
     offerCategories: [],
     offerIsDuo: false,

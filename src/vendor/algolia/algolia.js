@@ -1,14 +1,8 @@
 import algoliasearch from 'algoliasearch'
 
-import {
-  ALGOLIA_APPLICATION_ID,
-  ALGOLIA_INDEX_NAME,
-  ALGOLIA_SEARCH_API_KEY,
-} from '../../utils/config'
+import { ALGOLIA_APPLICATION_ID, ALGOLIA_INDEX_NAME, ALGOLIA_SEARCH_API_KEY, } from '../../utils/config'
 import { FACETS } from './facets'
-import { FILTERS } from './filters'
-
-const DEFAULT_RADIUS_IN_KILOMETERS = 100
+import { DEFAULT_RADIUS_IN_KILOMETERS, FILTERS, RADIUS_IN_METERS_FOR_NO_OFFERS } from './filters'
 
 export const fetchAlgolia = ({
                                aroundRadius = DEFAULT_RADIUS_IN_KILOMETERS,
@@ -119,13 +113,19 @@ const buildGeolocationParameter = (aroundRadius, geolocation, isSearchAroundMe) 
   if (geolocation) {
     const { longitude, latitude } = geolocation
     if (latitude && longitude) {
-      const aroundRadiusInMeters = aroundRadius * 1000
+      const aroundRadiusInMeters = computeRadiusInMeters(aroundRadius, isSearchAroundMe)
+
       return {
         aroundLatLng: `${latitude}, ${longitude}`,
-        aroundRadius: isSearchAroundMe ?
-          aroundRadiusInMeters > 0 ? aroundRadiusInMeters : FILTERS.UNLIMITED_RADIUS
-          : FILTERS.UNLIMITED_RADIUS
+        aroundRadius: isSearchAroundMe ? aroundRadiusInMeters : FILTERS.UNLIMITED_RADIUS
       }
     }
   }
+}
+
+const computeRadiusInMeters = (aroundRadius, isSearchAroundMe) => {
+  if (isSearchAroundMe && aroundRadius === 0) {
+    return RADIUS_IN_METERS_FOR_NO_OFFERS
+  }
+  return aroundRadius * 1000
 }
