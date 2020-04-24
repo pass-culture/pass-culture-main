@@ -11,6 +11,7 @@ from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_bank_information
 from tests.model_creators.provider_creators import provider_test, activate_provider
 from utils.date import DATE_ISO_FORMAT
+from connectors.api_demarches_simplifiees import DmsApplicationStates
 
 
 class TestableOffererBankInformationProvider(OffererBankInformationProvider):
@@ -22,13 +23,16 @@ class TestableOffererBankInformationProvider(OffererBankInformationProvider):
         pass
 
 
-def demarche_simplifiee_application_detail_response(siren, bic, iban, idx=1, updated_at="2019-01-21T18:55:03.387Z"):
+def demarche_simplifiee_application_detail_response(siren, bic, iban,
+                                                    idx=1,
+                                                    updated_at="2019-01-21T18:55:03.387Z",
+                                                    state=DmsApplicationStates.closed.name):
     return {
         "dossier":
         {
             "id": idx,
             "updated_at": updated_at,
-            "state": "closed",
+            "state": state,
             "entreprise":
             {
                 "siren": siren,

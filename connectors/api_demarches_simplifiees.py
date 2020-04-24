@@ -1,8 +1,17 @@
 import requests
+from enum import Enum, auto
 
 
 class ApiDemarchesSimplifieesException(Exception):
     pass
+
+
+class DmsApplicationStates(Enum):
+    closed = auto()
+    initiated = auto()
+    refused = auto()
+    received = auto()
+    without_continuation = auto()
 
 
 def get_all_applications_for_procedure(procedure_id: int,

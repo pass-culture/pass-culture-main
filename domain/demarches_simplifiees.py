@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Callable, List
 
-from connectors.api_demarches_simplifiees import get_all_applications_for_procedure
+from connectors.api_demarches_simplifiees import get_all_applications_for_procedure, DmsApplicationStates
 from utils.date import DATE_ISO_FORMAT
 from utils.logger import logger
 
@@ -15,18 +15,22 @@ def get_all_application_ids_for_demarche_simplifiee(
     applications = []
 
     while current_page <= number_of_pages:
-        api_response = get_all_applications(procedure_id, token, page=current_page, results_per_page=100)
+        api_response = get_all_applications(
+            procedure_id, token, page=current_page, results_per_page=100)
         number_of_pages = api_response['pagination']['nombre_de_page']
-        logger.info(f'[IMPORT DEMARCHES SIMPLIFIEES] page {current_page} of {number_of_pages}')
+        logger.info(
+            f'[IMPORT DEMARCHES SIMPLIFIEES] page {current_page} of {number_of_pages}')
 
         applications_to_process = [application for application in api_response['dossiers'] if
-                            _needs_processing(application, last_update)]
-        logger.info(f'[IMPORT DEMARCHES SIMPLIFIEES] {len(applications_to_process)} applications to process')
+                                   _needs_processing(application, last_update)]
+        logger.info(
+            f'[IMPORT DEMARCHES SIMPLIFIEES] {len(applications_to_process)} applications to process')
         applications += applications_to_process
 
         current_page += 1
 
-    logger.info(f'[IMPORT DEMARCHES SIMPLIFIEES] Total : {len(applications)} applications')
+    logger.info(
+        f'[IMPORT DEMARCHES SIMPLIFIEES] Total : {len(applications)} applications')
 
     return [application['id'] for application in _sort_applications_by_date(applications)]
 
@@ -36,7 +40,7 @@ def _needs_processing(application: dict, last_update: datetime) -> bool:
 
 
 def _is_closed(application: dict) -> bool:
-    return application['state'] == 'closed'
+    return DmsApplicationStates[application['state']] is DmsApplicationStates.closed
 
 
 def _was_last_updated_after(application: dict, last_update: datetime) -> bool:
