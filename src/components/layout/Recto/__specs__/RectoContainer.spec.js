@@ -18,7 +18,7 @@ describe('components | RectoContainer', () => {
       const state = {
         data: {
           bookings: [{ id: 'AB', stockId: 'AC', thumbUrl: '/url-to-image/from-booking' }],
-          mediations: [{ frontText: 'super offre', id: 'AE', offerId: 'AD' }],
+          mediations: [{ id: 'AE', offerId: 'AD' }],
           offers: [{ id: 'AD', product: {} }],
           stocks: [{ id: 'AC', offerId: 'AD' }],
         },
@@ -29,7 +29,6 @@ describe('components | RectoContainer', () => {
 
       // then
       expect(result).toStrictEqual({
-        frontText: 'super offre',
         thumbUrl: '/url-to-image/from-booking',
         withMediation: true,
       })
@@ -50,7 +49,7 @@ describe('components | RectoContainer', () => {
       const state = {
         data: {
           bookings: [{ id: 'AB', stockId: 'AC' }],
-          mediations: [{ frontText: 'super offre', id: 'AE', offerId: 'AD' }],
+          mediations: [{ id: 'AE', offerId: 'AD' }],
           offers: [{ id: 'AD' }],
           stocks: [{ id: 'AC', offerId: 'AD' }],
         },
@@ -61,7 +60,6 @@ describe('components | RectoContainer', () => {
 
       // then
       expect(result).toStrictEqual({
-        frontText: 'super offre',
         thumbUrl: '/url-to-image',
         withMediation: true,
       })
@@ -80,7 +78,7 @@ describe('components | RectoContainer', () => {
         data: {
           bookings: [{ id: 'AB', stockId: 'AC', thumbUrl: '/url-to-image/from-booking' }],
           mediations: [
-            { frontText: 'super offre', id: 'AE', offerId: 'AD', thumbUrl: '/url-to-image' },
+            { id: 'AE', offerId: 'AD', thumbUrl: '/url-to-image' },
           ],
           offers: [{ id: 'AD', product: {} }],
           stocks: [{ id: 'AC', offerId: 'AD' }],
@@ -92,7 +90,6 @@ describe('components | RectoContainer', () => {
 
       // then
       expect(result).toStrictEqual({
-        frontText: 'super offre',
         thumbUrl: '/url-to-image/from-booking',
         withMediation: true,
       })
@@ -119,7 +116,6 @@ describe('components | RectoContainer', () => {
 
       // then
       expect(result).toStrictEqual({
-        frontText: '',
         thumbUrl: '/url-to-image/from-booking',
         withMediation: false,
       })
@@ -146,7 +142,6 @@ describe('components | RectoContainer', () => {
 
       // then
       expect(result).toStrictEqual({
-        frontText: '',
         thumbUrl: '/default/thumb/url',
         withMediation: false,
       })
@@ -167,7 +162,7 @@ describe('components | RectoContainer', () => {
       const state = {
         data: {
           bookings: [],
-          mediations: [{ frontText: 'super offre', id: 'AE', offerId: 'AD' }],
+          mediations: [{ id: 'AE', offerId: 'AD' }],
           offers: [{ id: 'AD', product: {} }],
           stocks: [{ id: 'AC', offerId: 'AD' }],
         },
@@ -178,7 +173,6 @@ describe('components | RectoContainer', () => {
 
       // then
       expect(result).toStrictEqual({
-        frontText: 'super offre',
         thumbUrl: '/url-to-image',
         withMediation: true,
       })
@@ -196,7 +190,7 @@ describe('components | RectoContainer', () => {
         data: {
           bookings: [],
           mediations: [
-            { frontText: 'super offre', id: 'AE', offerId: 'AD', thumbUrl: '/url-to-image' },
+            { id: 'AE', offerId: 'AD', thumbUrl: '/url-to-image' },
           ],
           offers: [{ id: 'AD', product: {} }],
           stocks: [{ id: 'AC', offerId: 'AD' }],
@@ -208,7 +202,6 @@ describe('components | RectoContainer', () => {
 
       // then
       expect(result).toStrictEqual({
-        frontText: 'super offre',
         thumbUrl: '/url-to-image',
         withMediation: true,
       })
@@ -238,7 +231,6 @@ describe('components | RectoContainer', () => {
 
       // then
       expect(result).toStrictEqual({
-        frontText: '',
         thumbUrl: '/url-to-image-from-offer',
         withMediation: false,
       })

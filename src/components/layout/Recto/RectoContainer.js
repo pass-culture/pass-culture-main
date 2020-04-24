@@ -22,7 +22,6 @@ export const mapStateToProps = (state, ownProps) => {
 }
 
 export const findThumbByBookingId = (state, bookingId) => {
-  let frontText = ''
   let thumbUrl = ''
   let withMediation = false
 
@@ -33,20 +32,17 @@ export const findThumbByBookingId = (state, bookingId) => {
   const mediation = selectMediationByOfferId(state, offerId)
 
   if (mediation) {
-    frontText = mediation.frontText
     withMediation = true
   }
   thumbUrl = booking.thumbUrl ? booking.thumbUrl : DEFAULT_THUMB_URL
 
   return {
-    frontText,
     thumbUrl,
     withMediation,
   }
 }
 
 export const findThumbByOfferId = (state, offerId, match, recommendation) => {
-  let frontText = ''
   let thumbUrl = ''
   let withMediation = false
 
@@ -54,13 +50,11 @@ export const findThumbByOfferId = (state, offerId, match, recommendation) => {
   if (!mediation) {
     thumbUrl = selectThumbUrlByRouterMatch(state, match)
   } else {
-    frontText = mediation.frontText
     thumbUrl = recommendation ? recommendation.thumbUrl : mediation.thumbUrl
     withMediation = true
   }
 
   return {
-    frontText,
     thumbUrl,
     withMediation,
   }

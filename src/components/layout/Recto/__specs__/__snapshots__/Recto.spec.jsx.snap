@@ -5,7 +5,6 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Recto
     areDetailsVisible={true}
-    frontText={null}
     thumbUrl={null}
     withMediation={null}
   />,
@@ -23,17 +22,11 @@ ShallowWrapper {
     "key": undefined,
     "nodeType": "host",
     "props": Object {
-      "children": Array [
-        null,
-        null,
-      ],
+      "children": null,
       "className": "recto",
     },
     "ref": null,
-    "rendered": Array [
-      null,
-      null,
-    ],
+    "rendered": null,
     "type": "div",
   },
   Symbol(enzyme.__nodes__): Array [
@@ -42,17 +35,11 @@ ShallowWrapper {
       "key": undefined,
       "nodeType": "host",
       "props": Object {
-        "children": Array [
-          null,
-          null,
-        ],
+        "children": null,
         "className": "recto",
       },
       "ref": null,
-      "rendered": Array [
-        null,
-        null,
-      ],
+      "rendered": null,
       "type": "div",
     },
   ],
