@@ -17,14 +17,14 @@ depends_on = None
 
 
 def upgrade():
-    op.drop_index('ix_bank_information_offererId', table_name='bank_information')
-    op.drop_index('ix_bank_information_venueId', table_name='bank_information')
-    op.create_index(op.f('ix_bank_information_offererId'), 'bank_information', ['offererId'], unique=True)
-    op.create_index(op.f('ix_bank_information_venueId'), 'bank_information', ['venueId'], unique=True)
+    op.drop_index('idx_bank_information_offererId', table_name='bank_information')
+    op.drop_index('idx_bank_information_venueId', table_name='bank_information')
+    op.create_index(op.f('idx_bank_information_offererId'), 'bank_information', ['offererId'], unique=True)
+    op.create_index(op.f('idx_bank_information_venueId'), 'bank_information', ['venueId'], unique=True)
 
 
 def downgrade():
-    op.drop_index('ix_bank_information_offererId', table_name='bank_information')
-    op.drop_index('ix_bank_information_venueId', table_name='bank_information')
-    op.create_index(op.f('ix_bank_information_offererId'), 'bank_information', ['offererId'], unique=False)
-    op.create_index(op.f('ix_bank_information_venueId'), 'bank_information', ['venueId'], unique=False)
+    op.drop_index('idx_bank_information_offererId', table_name='bank_information')
+    op.drop_index('idx_bank_information_venueId', table_name='bank_information')
+    op.create_index(op.f('idx_bank_information_offererId'), 'bank_information', ['offererId'], unique=False)
+    op.create_index(op.f('idx_bank_information_venueId'), 'bank_information', ['venueId'], unique=False)
