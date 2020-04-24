@@ -10,7 +10,7 @@ from sqlalchemy import ForeignKey
 from alembic import op
 
 revision = 'edb77d0140b7'
-down_revision = '040875ff5d5b'
+down_revision = '25b599739d30'
 branch_labels = None
 depends_on = None
 
