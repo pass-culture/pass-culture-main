@@ -161,8 +161,9 @@ class Patch:
             # Then
             assert request_update.status_code == 200
             mocked_check_have_beginning_date_been_modified.assert_called_once()
-            mocked_send_batch_stock_postponement_emails_to_users.assert_called_once_with([booking, booking_used],
-                                                                                         email_function)
+            assert mocked_send_batch_stock_postponement_emails_to_users.call_count == 1
+            assert set(mocked_send_batch_stock_postponement_emails_to_users.call_args[0][0]) == {booking, booking_used}
+            assert mocked_send_batch_stock_postponement_emails_to_users.call_args[0][1] == email_function
 
         @patch('routes.stocks.have_beginning_date_been_modified')
         @patch('routes.stocks.send_batch_stock_postponement_emails_to_users')

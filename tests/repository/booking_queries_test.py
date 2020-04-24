@@ -339,7 +339,7 @@ def test_find_not_cancelled_bookings_by_stock(app):
     all_not_cancelled_bookings = booking_queries.find_not_cancelled_bookings_by_stock(stock)
 
     # Then
-    assert all_not_cancelled_bookings == [validated_booking, not_cancelled_booking]
+    assert set(all_not_cancelled_bookings) == {validated_booking, not_cancelled_booking}
 
 
 class FindFinalOffererBookingsTest:
