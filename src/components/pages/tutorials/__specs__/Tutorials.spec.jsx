@@ -8,10 +8,12 @@ import ThirdTutorial from '../ThirdTutorial/ThirdTutorial'
 describe('components | Tutorials', () => {
   let history
   let props
+  let saveUserHasSeenTutorials
 
   beforeEach(function() {
     history = { push: jest.fn() }
-    props = { history }
+    saveUserHasSeenTutorials = jest.fn()
+    props = { history, saveUserHasSeenTutorials }
   })
 
   describe('when display for the first time', () => {
@@ -207,21 +209,30 @@ describe('components | Tutorials', () => {
       // when
       const wrapper = shallow(<Tutorials {...props} />)
 
-      wrapper
-        .find({ alt: 'Suivant' })
-        .parent('button')
-        .simulate('click')
-      wrapper
-        .find({ alt: 'Suivant' })
-        .parent('button')
-        .simulate('click')
-      wrapper
-        .find({ alt: 'Suivant' })
-        .parent('button')
-        .simulate('click')
+      for (let i = 1; i <= 3; i++) {
+        wrapper
+          .find({ alt: 'Suivant' })
+          .parent('button')
+          .simulate('click')
+      }
 
       // then
       expect(history.push).toHaveBeenCalledWith('/decouverte')
+    })
+
+    it('should save informations that user has finished to see the three tutorials', () => {
+      // when
+      const wrapper = shallow(<Tutorials {...props} />)
+
+      for (let i = 1; i <= 3; i++) {
+        wrapper
+          .find({ alt: 'Suivant' })
+          .parent('button')
+          .simulate('click')
+      }
+
+      // then
+      expect(saveUserHasSeenTutorials).toHaveBeenCalledWith()
     })
   })
 })
