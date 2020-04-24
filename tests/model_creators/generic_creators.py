@@ -29,7 +29,8 @@ DEFAULT_USER = User()
 PLAIN_DEFAULT_TESTING_PASSWORD = 'user@AZERTY123'
 DEFAULT_USER.setPassword(PLAIN_DEFAULT_TESTING_PASSWORD)
 HASHED_DEFAULT_TESTING_PASSWORD = DEFAULT_USER.password
-DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID = int(os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID', 88))
+DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID = int(
+    os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID', 88))
 
 
 def create_api_key(idx: int = None,
@@ -51,7 +52,8 @@ def create_bank_information(application_id: int = 1,
                             id_at_providers: str = None,
                             last_provider_id: int = None,
                             offerer: Offerer = None,
-                            venue: Venue = None) -> BankInformation:
+                            venue: Venue = None,
+                            status: str = "ACCEPTED") -> BankInformation:
     bank_information = BankInformation()
     bank_information.applicationId = application_id
     bank_information.bic = bic
@@ -62,6 +64,7 @@ def create_bank_information(application_id: int = 1,
     bank_information.lastProviderId = last_provider_id
     bank_information.offerer = offerer
     bank_information.venue = venue
+    bank_information.status = status
 
     return bank_information
 
@@ -120,7 +123,8 @@ def create_booking(user: User,
     if stock is None:
         price = amount if amount is not None else 10
         product_with_thing_type = create_offer_with_thing_product(venue)
-        stock = create_stock_with_thing_offer(offerer, venue, product_with_thing_type, price=price)
+        stock = create_stock_with_thing_offer(
+            offerer, venue, product_with_thing_type, price=price)
 
     if recommendation:
         booking.recommendation = recommendation
@@ -272,7 +276,8 @@ def create_payment(booking: Booking,
     payment.iban = iban
     payment.id = idx
     if payment_message_name:
-        payment.paymentMessage = create_payment_message(name=payment_message_name)
+        payment.paymentMessage = create_payment_message(
+            name=payment_message_name)
     elif payment_message:
         payment.paymentMessage = payment_message
     payment.recipientName = offerer.name
@@ -331,7 +336,8 @@ def create_payment_message(checksum: str = None,
                            idx: int = None,
                            name: str = 'ABCD123') -> PaymentMessage:
     payment_message = PaymentMessage()
-    payment_message.checksum = checksum if checksum else sha256(name.encode('utf-8')).digest()
+    payment_message.checksum = checksum if checksum else sha256(
+        name.encode('utf-8')).digest()
     payment_message.id = idx
     payment_message.name = name
 
@@ -615,7 +621,8 @@ def create_payment_status(payment: Payment, detail: str = None, status: Transact
 
 def create_iris(polygon: Polygon, iris_code: str = '123456789') -> IrisFrance:
     iris = IrisFrance()
-    iris.centroid = from_shape(create_centroid_from_polygon(polygon), srid=WGS_SPATIAL_REFERENCE_IDENTIFIER)
+    iris.centroid = from_shape(create_centroid_from_polygon(
+        polygon), srid=WGS_SPATIAL_REFERENCE_IDENTIFIER)
     iris.irisCode = iris_code
     iris.shape = from_shape(polygon, srid=WGS_SPATIAL_REFERENCE_IDENTIFIER)
     return iris

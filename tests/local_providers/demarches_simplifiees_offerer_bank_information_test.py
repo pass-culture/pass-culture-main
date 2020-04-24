@@ -87,7 +87,7 @@ class OffererBankInformationProviderProviderTest:
         'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_offerer_bank_information.get_application_details')
     @clean_database
-    def test_provider_checks_two_objects_and_creates_two_when_both_rib_affiliations_are_known(
+    def test_provider_checks_two_objects_and_creates_two_when_two_applications_are_received(
             self,
             get_application_details,
             get_all_application_ids_for_demarche_simplifiee,
@@ -98,7 +98,7 @@ class OffererBankInformationProviderProviderTest:
             demarche_simplifiee_application_detail_response(
                 siren="793875019", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", idx=1),
             demarche_simplifiee_application_detail_response(
-                siren="793875030", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=2),
+                siren="793875030", bic="BDFEFR2ALLD", iban="FR7630006000011234567891234", idx=2, state=DmsApplicationStates.received.name),
         ]
         offerer1 = create_offerer(siren='793875019')
         offerer2 = create_offerer(siren='793875030')
@@ -122,8 +122,9 @@ class OffererBankInformationProviderProviderTest:
         assert bank_information1.offererId == offerer1.id
         assert bank_information1.venueId == None
         assert bank_information1.idAtProviders == '793875019'
-        assert bank_information2.iban == 'FR7630007000111234567890144'
-        assert bank_information2.bic == 'SOGEFRPP'
+
+        assert bank_information2.iban == None
+        assert bank_information2.bic == None
         assert bank_information2.applicationId == 2
         assert bank_information2.offererId == offerer2.id
         assert bank_information2.venueId == None
@@ -164,7 +165,88 @@ class OffererBankInformationProviderProviderTest:
         'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_offerer_bank_information.get_application_details')
     @clean_database
-    def test_provider_updates_existing_bank_information(
+    def test_provider_creates_one_bank_information_and_format_IBAN_and_BIC(self,
+                                                                           get_application_details,
+                                                                           get_all_application_ids_for_demarche_simplifiee,
+                                                                           app):
+        # Given
+        get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+        get_application_details.return_value = demarche_simplifiee_application_detail_response(
+            siren="793875030", bic="BdFefr2LCCB", iban="FR76 3000 6000  0112 3456 7890 189")
+        offerer = create_offerer(siren='793875030')
+
+        repository.save(offerer)
+        activate_provider('OffererBankInformationProvider')
+        offerer_bank_information_provider = OffererBankInformationProvider()
+
+        # When
+        offerer_bank_information_provider.updateObjects()
+
+        # Then
+        bank_information = BankInformation.query.one()
+        assert bank_information.iban == 'FR7630006000011234567890189'
+        assert bank_information.bic == 'BDFEFR2LCCB'
+
+    @patch(
+        'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_demarche_simplifiee')
+    @patch('local_providers.demarches_simplifiees_offerer_bank_information.get_application_details')
+    @clean_database
+    def test_provider_creates_bank_informations_with_correct_status(
+            self,
+            get_application_details,
+            get_all_application_ids_for_demarche_simplifiee,
+            app):
+        # Given
+        get_all_application_ids_for_demarche_simplifiee.return_value = [
+            1, 2, 3, 4, 5]
+        get_application_details.side_effect = [
+            demarche_simplifiee_application_detail_response(
+                siren="793875015", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", idx=1, state=DmsApplicationStates.closed.name),
+            demarche_simplifiee_application_detail_response(
+                siren="793875016", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", idx=2, state=DmsApplicationStates.initiated.name),
+            demarche_simplifiee_application_detail_response(
+                siren="793875017", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", idx=3, state=DmsApplicationStates.refused.name),
+            demarche_simplifiee_application_detail_response(
+                siren="793875018", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", idx=4, state=DmsApplicationStates.received.name),
+            demarche_simplifiee_application_detail_response(
+                siren="793875019", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", idx=5, state=DmsApplicationStates.without_continuation.name),
+        ]
+        repository.save(
+            create_offerer(siren='793875015'),
+            create_offerer(siren='793875016'),
+            create_offerer(siren='793875017'),
+            create_offerer(siren='793875018'),
+            create_offerer(siren='793875019')
+        )
+        activate_provider('OffererBankInformationProvider')
+        offerer_bank_information_provider = OffererBankInformationProvider()
+
+        # When
+        offerer_bank_information_provider.updateObjects()
+
+        # Then
+        assert BankInformation.query.count() == 5
+        bank_information1 = BankInformation.query.filter_by(
+            applicationId=1).one()
+        bank_information2 = BankInformation.query.filter_by(
+            applicationId=2).one()
+        bank_information3 = BankInformation.query.filter_by(
+            applicationId=3).one()
+        bank_information4 = BankInformation.query.filter_by(
+            applicationId=4).one()
+        bank_information5 = BankInformation.query.filter_by(
+            applicationId=5).one()
+        assert bank_information1.status == "ACCEPTED"
+        assert bank_information2.status == "DRAFT"
+        assert bank_information3.status == "REJECTED"
+        assert bank_information4.status == "DRAFT"
+        assert bank_information5.status == "REJECTED"
+
+    @patch(
+        'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_demarche_simplifiee')
+    @patch('local_providers.demarches_simplifiees_offerer_bank_information.get_application_details')
+    @clean_database
+    def test_provider_updates_existing_bank_information_with_new_bank_information(
             self,
             get_application_details,
             get_all_application_ids_for_demarche_simplifiee,
@@ -192,6 +274,173 @@ class OffererBankInformationProviderProviderTest:
         assert updated_bank_information.applicationId == 1
         assert updated_bank_information.iban == "FR7630006000011234567890189"
         assert updated_bank_information.bic == "BDFEFR2LCCB"
+
+    @patch(
+        'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_demarche_simplifiee')
+    @patch('local_providers.demarches_simplifiees_offerer_bank_information.get_application_details')
+    @clean_database
+    def test_bank_information_fields_are_cleared_when_application_status_change(
+            self,
+            get_application_details,
+            get_all_application_ids_for_demarche_simplifiee,
+            app):
+        # Given
+        get_all_application_ids_for_demarche_simplifiee.return_value = [1]
+        get_application_details.side_effect = [
+            demarche_simplifiee_application_detail_response(
+                siren="793875019", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", state=DmsApplicationStates.initiated.name),
+        ]
+
+        offerer = create_offerer(siren='793875019')
+        bank_information = create_bank_information(
+            id_at_providers="793875019", offerer=offerer)
+        repository.save(bank_information)
+        activate_provider('OffererBankInformationProvider')
+        offerer_bank_information_provider = OffererBankInformationProvider()
+
+        # When
+        offerer_bank_information_provider.updateObjects()
+
+        # Then
+        updated_bank_information = BankInformation.query.one()
+        assert updated_bank_information.applicationId == 1
+        assert updated_bank_information.iban == None
+        assert updated_bank_information.bic == None
+
+    @patch(
+        'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_demarche_simplifiee')
+    @patch('local_providers.demarches_simplifiees_offerer_bank_information.get_application_details')
+    @clean_database
+    def test_provider_update_bank_information_based_on_application_id(
+            self,
+            get_application_details,
+            get_all_application_ids_for_demarche_simplifiee,
+            app):
+        # Given
+        get_all_application_ids_for_demarche_simplifiee.return_value = [3, 2]
+        get_application_details.side_effect = [
+            demarche_simplifiee_application_detail_response(
+                siren="793875018", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", idx=3, state=DmsApplicationStates.refused.name),
+            demarche_simplifiee_application_detail_response(
+                siren="793875019", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", idx=2, state=DmsApplicationStates.refused.name),
+        ]
+
+        offerer1 = create_offerer(siren='793875018')
+        offerer2 = create_offerer(siren='793875019')
+        bank_information_witness = create_bank_information(
+            id_at_providers="793875018", offerer=offerer1, application_id=1)
+        bank_information = create_bank_information(
+            id_at_providers="793875019", offerer=offerer2, application_id=2)
+        repository.save(bank_information, bank_information_witness)
+        activate_provider('OffererBankInformationProvider')
+        offerer_bank_information_provider = OffererBankInformationProvider()
+
+        # When
+        offerer_bank_information_provider.updateObjects()
+
+        # Then
+        bank_information_witness = BankInformation.query.filter_by(
+            idAtProviders="793875018").one()
+        bank_information = BankInformation.query.filter_by(
+            idAtProviders="793875019").one()
+        assert bank_information_witness.status == "ACCEPTED"
+        assert bank_information.status == "REJECTED"
+
+    @patch(
+        'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_demarche_simplifiee')
+    @patch('local_providers.demarches_simplifiees_offerer_bank_information.get_application_details')
+    @clean_database
+    def test_provider_update_bank_information_based_on_status(
+            self,
+            get_application_details,
+            get_all_application_ids_for_demarche_simplifiee,
+            app):
+        # Given
+        get_all_application_ids_for_demarche_simplifiee.return_value = [
+            1, 2, 3, 4]
+        get_application_details.side_effect = [
+            demarche_simplifiee_application_detail_response(
+                siren="793875016", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", idx=1, state=DmsApplicationStates.closed.name),
+            demarche_simplifiee_application_detail_response(
+                siren="793875017", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", idx=2, state=DmsApplicationStates.closed.name),
+            demarche_simplifiee_application_detail_response(
+                siren="793875018", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", idx=3, state=DmsApplicationStates.received.name),
+            demarche_simplifiee_application_detail_response(
+                siren="793875019", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", idx=4, state=DmsApplicationStates.refused.name),
+        ]
+
+        offerer1 = create_offerer(siren='793875016')
+        offerer2 = create_offerer(siren='793875017')
+        offerer3 = create_offerer(siren='793875018')
+        offerer4 = create_offerer(siren='793875019')
+        bank_information1 = create_bank_information(
+            id_at_providers="793875016", offerer=offerer1, application_id=5, status="REJECTED")
+        bank_information2 = create_bank_information(
+            id_at_providers="793875017", offerer=offerer2, application_id=6, status="DRAFT")
+        bank_information3 = create_bank_information(
+            id_at_providers="793875018", offerer=offerer3, application_id=7, status="ACCEPTED")
+        bank_information4 = create_bank_information(
+            id_at_providers="793875019", offerer=offerer4, application_id=8, status="DRAFT")
+        repository.save(bank_information1, bank_information2,
+                        bank_information3, bank_information4)
+        activate_provider('OffererBankInformationProvider')
+        offerer_bank_information_provider = OffererBankInformationProvider()
+
+        # When
+        offerer_bank_information_provider.updateObjects()
+
+        # Then
+        bank_information1 = BankInformation.query.filter_by(
+            idAtProviders="793875016").one()
+        bank_information2 = BankInformation.query.filter_by(
+            idAtProviders="793875017").one()
+        bank_information3 = BankInformation.query.filter_by(
+            idAtProviders="793875018").one()
+        bank_information4 = BankInformation.query.filter_by(
+            idAtProviders="793875019").one()
+        assert bank_information1.status == "ACCEPTED"
+        assert bank_information2.status == "ACCEPTED"
+        assert bank_information3.status == "ACCEPTED"
+        assert bank_information4.status == "DRAFT"
+
+    @patch(
+        'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_demarche_simplifiee')
+    @patch('local_providers.demarches_simplifiees_offerer_bank_information.get_application_details')
+    @clean_database
+    def test_provider_update_bank_information_based_on_last_date(
+            self,
+            get_application_details,
+            get_all_application_ids_for_demarche_simplifiee,
+            app):
+        # Given
+        get_all_application_ids_for_demarche_simplifiee.return_value = [1, 2]
+        get_application_details.side_effect = [
+            demarche_simplifiee_application_detail_response(
+                siren="793875016", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", idx=1, state=DmsApplicationStates.closed.name, updated_at=datetime(2020, 1, 1).strftime(DATE_ISO_FORMAT)),
+            demarche_simplifiee_application_detail_response(
+                siren="793875017", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", idx=2, state=DmsApplicationStates.closed.name, updated_at=datetime(2020, 1, 3).strftime(DATE_ISO_FORMAT)),
+        ]
+
+        activate_provider('OffererBankInformationProvider')
+        offerer_bank_information_provider = OffererBankInformationProvider()
+        offerer1 = create_offerer(siren='793875016')
+        offerer2 = create_offerer(siren='793875017')
+        bank_information1 = create_bank_information(
+            id_at_providers="793875016", offerer=offerer1, application_id=1, status="DRAFT", date_modified_at_last_provider=datetime(2020, 1, 2), last_provider_id=offerer_bank_information_provider.provider.id)
+        bank_information2 = create_bank_information(
+            id_at_providers="793875017", offerer=offerer2, application_id=2, status="DRAFT", date_modified_at_last_provider=datetime(2020, 1, 2), last_provider_id=offerer_bank_information_provider.provider.id)
+        repository.save(bank_information1, bank_information2)
+
+        # When
+        offerer_bank_information_provider.updateObjects()
+
+        # Then
+        bank_information1 = BankInformation.query.filter_by(
+            idAtProviders="793875016").one()
+        bank_information2 = BankInformation.query.filter_by(
+            idAtProviders="793875017").one()
+        assert bank_information1.status == "ACCEPTED"
+        assert bank_information2.status == "DRAFT"
 
     @patch(
         'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_demarche_simplifiee')
@@ -281,32 +530,6 @@ class OffererBankInformationProviderProviderTest:
         # then
         get_all_application_ids_for_demarche_simplifiee.assert_called_with(ANY, ANY,
                                                                            datetime(2019, 1, 1))
-
-    @patch(
-        'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_demarche_simplifiee')
-    @patch('local_providers.demarches_simplifiees_offerer_bank_information.get_application_details')
-    @clean_database
-    def test_provider_creates_one_bank_information_and_format_IBAN_and_BIC(self,
-                                                                           get_application_details,
-                                                                           get_all_application_ids_for_demarche_simplifiee,
-                                                                           app):
-        # Given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [1]
-        get_application_details.return_value = demarche_simplifiee_application_detail_response(
-            siren="793875030", bic="BdFefr2LCCB", iban="FR76 3000 6000  0112 3456 7890 189")
-        offerer = create_offerer(siren='793875030')
-
-        repository.save(offerer)
-        activate_provider('OffererBankInformationProvider')
-        offerer_bank_information_provider = OffererBankInformationProvider()
-
-        # When
-        offerer_bank_information_provider.updateObjects()
-
-        # Then
-        bank_information = BankInformation.query.one()
-        assert bank_information.iban == 'FR7630006000011234567890189'
-        assert bank_information.bic == 'BDFEFR2LCCB'
 
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_RIB_OFFERER_PROCEDURE_ID': 'procedure_id'})
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_TOKEN': 'token'})
