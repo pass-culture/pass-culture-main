@@ -3,10 +3,12 @@ from unittest.mock import patch
 import pytest
 
 from models import SeenOffer
+from models.feature import FeatureToggle
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_user
 from tests.model_creators.specific_creators import create_offer_with_event_product
+from tests.test_utils import deactivate_feature
 from utils.human_ids import humanize
 from validation.routes.seen_offers import PayloadMissing
 
@@ -74,3 +76,16 @@ class Put:
 
             # Then
             assert response.status_code == 401
+
+    class Returns403:
+        @clean_database
+        def when_feature_is_disabled(self, app):
+            # Given
+            deactivate_feature(FeatureToggle.SAVE_SEEN_OFFERS)
+
+            # When
+            response = TestClient(app.test_client()).put('/seen_offers')
+
+            # Then
+            assert response.status_code == 403
+

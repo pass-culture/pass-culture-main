@@ -31,6 +31,7 @@ class FeatureToggle(enum.Enum):
     RECOMMENDATIONS_WITH_GEOLOCATION = 'Permettre aux utilisateurs d''avoir accès aux offres à 100km de leur position'
     RECOMMENDATIONS_WITH_DIGITAL_FIRST = 'Permettre aux bénéficiaires d''avoir des recommendations' \
                                          ' concernant des offres numériques en priorité'
+    SAVE_SEEN_OFFERS = 'Enregistrer en base les offres déjà vues par les utilisateurs'
 
 
 class Feature(PcObject, Model, DeactivableMixin):
