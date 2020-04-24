@@ -11,7 +11,6 @@ import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import RelativeFooterContainer from '../../../../layout/RelativeFooter/RelativeFooterContainer'
 import Spinner from '../../../../layout/Spinner/Spinner'
-import { Criteria } from '../../Criteria/Criteria'
 import { SORT_CRITERIA } from '../../Criteria/criteriaEnums'
 import FiltersContainer from '../../Filters/FiltersContainer'
 import { EmptySearchResult } from '../EmptySearchResult'
@@ -19,6 +18,7 @@ import Result from '../Result'
 import SearchAlgoliaDetailsContainer from '../ResultDetail/ResultDetailContainer'
 import SearchResults from '../SearchResults'
 import { SearchResultsList } from '../SearchResultsList'
+import CriteriaSort from '../../CriteriaSort/CriteriaSort'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
@@ -1675,7 +1675,7 @@ describe('components | SearchResults', () => {
       )
 
       // Then
-      const sortPage = wrapper.find(Criteria)
+      const sortPage = wrapper.find(CriteriaSort)
       expect(sortPage).toHaveLength(1)
       expect(sortPage.prop('activeCriterionLabel')).toStrictEqual('Prix')
       expect(sortPage.prop('backTo')).toStrictEqual(

@@ -9,13 +9,13 @@ import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import Icon from '../../../layout/Icon/Icon'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 import Spinner from '../../../layout/Spinner/Spinner'
-import { Criteria } from '../Criteria/Criteria'
 import { SORT_CRITERIA } from '../Criteria/criteriaEnums'
 import FiltersContainer from '../Filters/FiltersContainer'
 import { EmptySearchResult } from './EmptySearchResult'
 import SearchAlgoliaDetailsContainer from './ResultDetail/ResultDetailContainer'
 import { SearchResultsList } from './SearchResultsList'
 import { DEFAULT_RADIUS_IN_KILOMETERS } from '../../../../vendor/algolia/filters'
+import CriteriaSort from '../CriteriaSort/CriteriaSort'
 
 const SEARCH_RESULTS_URI = '/recherche/resultats'
 
@@ -449,7 +449,7 @@ class SearchResults extends PureComponent {
             />
           </Route>
           <Route path={`${SEARCH_RESULTS_URI}/tri`}>
-            <Criteria
+            <CriteriaSort
               activeCriterionLabel={sortCriterionLabel}
               backTo={`${SEARCH_RESULTS_URI}${search}`}
               criteria={SORT_CRITERIA}
