@@ -3,6 +3,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100%;
+  overflow-y: auto;
 }
 
 .sf-header-wrapper {
@@ -22,7 +23,6 @@
 
 .sf-content-wrapper {
   padding: rem(24px) rem(24px) 0 rem(24px);
-  overflow-y: auto;
 
   .sf-title {
     display: inline-block;
