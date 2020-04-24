@@ -10,7 +10,7 @@ import Icon from '../../../layout/Icon/Icon'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 import Spinner from '../../../layout/Spinner/Spinner'
 import { SORT_CRITERIA } from '../Criteria/criteriaEnums'
-import FiltersContainer from '../Filters/FiltersContainer'
+import { Filters } from '../Filters/Filters'
 import { EmptySearchResult } from './EmptySearchResult'
 import SearchAlgoliaDetailsContainer from './ResultDetail/ResultDetailContainer'
 import { SearchResultsList } from './SearchResultsList'
@@ -47,7 +47,10 @@ class SearchResults extends PureComponent {
       },
       keywordsToSearch: '',
       isLoading: false,
-      numberOfActiveFilters: this.getNumberOfActiveFilters(isSearchAroundMeFromUrlOrProps, categoriesFromUrlOrProps),
+      numberOfActiveFilters: this.getNumberOfActiveFilters(
+        isSearchAroundMeFromUrlOrProps,
+        categoriesFromUrlOrProps
+      ),
       resultsCount: 0,
       results: [],
       searchedKeywords: '',
@@ -112,9 +115,9 @@ class SearchResults extends PureComponent {
     const categories = offerCategories.join(';')
 
     trimmedKeywordsToSearch &&
-    history.replace({
-      search: `?mots-cles=${trimmedKeywordsToSearch}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${categories}`,
-    })
+      history.replace({
+        search: `?mots-cles=${trimmedKeywordsToSearch}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${categories}`,
+      })
 
     if (searchedKeywords !== trimmedKeywordsToSearch) {
       this.setState(
@@ -259,7 +262,7 @@ class SearchResults extends PureComponent {
     history.push(`${pathname}/${path}${search}`)
   }
 
-  handleSortCriterionSelection = criterionKey => () => {
+  handleSortCriterionSelection = criterionKey => {
     const { searchedKeywords } = this.state
     const { history } = this.props
     const { search } = history.location
@@ -432,7 +435,8 @@ class SearchResults extends PureComponent {
             <SearchAlgoliaDetailsContainer />
           </Route>
           <Route path={`${SEARCH_RESULTS_URI}/filtres`}>
-            <FiltersContainer
+            <Filters
+              geolocation={geolocation}
               history={history}
               initialFilters={filters}
               match={match}
@@ -453,6 +457,7 @@ class SearchResults extends PureComponent {
               activeCriterionLabel={sortCriterionLabel}
               backTo={`${SEARCH_RESULTS_URI}${search}`}
               criteria={SORT_CRITERIA}
+              geolocation={geolocation}
               history={history}
               match={match}
               onCriterionSelection={this.handleSortCriterionSelection}

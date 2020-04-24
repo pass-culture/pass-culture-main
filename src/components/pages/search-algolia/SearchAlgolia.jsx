@@ -17,7 +17,7 @@ class SearchAlgolia extends PureComponent {
     this.state = {
       categoryCriterion: CATEGORY_CRITERIA.ALL,
       geolocationCriterion: {
-        isSearchAroundMe: props.isGeolocationEnabled,
+        isSearchAroundMe: false,
         params: GEOLOCATION_CRITERIA.EVERYWHERE,
       },
       sortCriterion: SORT_CRITERIA.RELEVANCE,
@@ -49,9 +49,6 @@ class SearchAlgolia extends PureComponent {
   }
 
   handleGeolocationCriterionSelection = criterionKey => () => {
-    const { isUserAllowedToSelectCriterion, isGeolocationEnabled } = this.props
-    if (!isUserAllowedToSelectCriterion(criterionKey, isGeolocationEnabled)) return
-
     const label = GEOLOCATION_CRITERIA[criterionKey].label
     this.setState(() => {
       return {
@@ -73,7 +70,7 @@ class SearchAlgolia extends PureComponent {
     redirectToSearchMainPage()
   }
 
-  handleSortCriterionSelection = criterionKey => () => {
+  handleSortCriterionSelection = criterionKey => {
     this.setState({
       sortCriterion: SORT_CRITERIA[criterionKey],
     })
@@ -118,6 +115,7 @@ class SearchAlgolia extends PureComponent {
             activeCriterionLabel={geolocationCriterion.params.label}
             backTo="/recherche"
             criteria={GEOLOCATION_CRITERIA}
+            geolocation={geolocation}
             history={history}
             match={match}
             onCriterionSelection={this.handleGeolocationCriterionSelection}
@@ -140,6 +138,7 @@ class SearchAlgolia extends PureComponent {
             activeCriterionLabel={sortCriterion.label}
             backTo="/recherche"
             criteria={SORT_CRITERIA}
+            geolocation={geolocation}
             history={history}
             match={match}
             onCriterionSelection={this.handleSortCriterionSelection}
@@ -161,8 +160,6 @@ SearchAlgolia.propTypes = {
     longitude: PropTypes.number,
   }),
   history: PropTypes.shape().isRequired,
-  isGeolocationEnabled: PropTypes.bool.isRequired,
-  isUserAllowedToSelectCriterion: PropTypes.func.isRequired,
   match: PropTypes.shape().isRequired,
   query: PropTypes.shape({
     clear: PropTypes.func,

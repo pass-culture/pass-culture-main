@@ -3,12 +3,12 @@ import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Route, Router } from 'react-router'
 import { CATEGORY_CRITERIA } from '../Criteria/criteriaEnums'
+import { CriteriaCategory } from '../CriteriaCategory/CriteriaCategory'
+import { CriteriaLocation } from '../CriteriaLocation/CriteriaLocation'
+import { CriteriaSort } from '../CriteriaSort/CriteriaSort'
 import { Home } from '../Home/Home'
 import SearchResults from '../Result/SearchResults'
 import SearchAlgolia from '../SearchAlgolia'
-import { CriteriaLocation } from '../CriteriaLocation/CriteriaLocation'
-import { CriteriaCategory } from '../CriteriaCategory/CriteriaCategory'
-import { CriteriaSort } from '../CriteriaSort/CriteriaSort'
 
 describe('components | SearchAlgolia', () => {
   let props
@@ -19,8 +19,6 @@ describe('components | SearchAlgolia', () => {
         longitude: 45,
       },
       history: createBrowserHistory(),
-      isGeolocationEnabled: false,
-      isUserAllowedToSelectCriterion: jest.fn(),
       match: {
         params: {},
       },
@@ -81,7 +79,7 @@ describe('components | SearchAlgolia', () => {
         const searchResultsComponent = resultatsRoute.find(SearchResults)
         expect(searchResultsComponent.prop('criteria')).toStrictEqual({
           categories: [],
-          isSearchAroundMe: props.isGeolocationEnabled,
+          isSearchAroundMe: false,
           sortBy: '',
         })
         expect(searchResultsComponent.prop('geolocation')).toStrictEqual(props.geolocation)
@@ -130,6 +128,7 @@ describe('components | SearchAlgolia', () => {
         const searchCriteriaLocation = critereLocalisationRoute.find(CriteriaLocation)
         expect(searchCriteriaLocation.prop('activeCriterionLabel')).toStrictEqual('Partout')
         expect(searchCriteriaLocation.prop('criteria')).toStrictEqual(expect.any(Object))
+        expect(searchCriteriaLocation.prop('geolocation')).toStrictEqual(props.geolocation)
         expect(searchCriteriaLocation.prop('history')).toStrictEqual(props.history)
         expect(searchCriteriaLocation.prop('match')).toStrictEqual(props.match)
         expect(searchCriteriaLocation.prop('onCriterionSelection')).toStrictEqual(
@@ -180,6 +179,7 @@ describe('components | SearchAlgolia', () => {
         const sortingCriteria = sortingCriteriaRoute.find(CriteriaSort)
         expect(sortingCriteria.prop('activeCriterionLabel')).toStrictEqual('Pertinence')
         expect(sortingCriteria.prop('criteria')).toStrictEqual(expect.any(Object))
+        expect(sortingCriteria.prop('geolocation')).toStrictEqual(props.geolocation)
         expect(sortingCriteria.prop('history')).toStrictEqual(props.history)
         expect(sortingCriteria.prop('match')).toStrictEqual(props.match)
         expect(sortingCriteria.prop('onCriterionSelection')).toStrictEqual(expect.any(Function))

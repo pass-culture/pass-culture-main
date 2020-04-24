@@ -21,8 +21,6 @@ describe('mapStateToProps', () => {
     expect(result).toStrictEqual({
       geolocation: { latitude: 48.8533261, longitude: 2.3451865 },
       redirectToSearchMainPage: expect.any(Function),
-      isGeolocationEnabled: true,
-      isUserAllowedToSelectCriterion: expect.any(Function),
     })
   })
 

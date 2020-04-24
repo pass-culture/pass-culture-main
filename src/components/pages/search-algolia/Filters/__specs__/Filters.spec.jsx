@@ -52,7 +52,6 @@ describe('components | Filters', () => {
         sortBy: '_by_price',
       },
       isGeolocationEnabled: false,
-      isUserAllowedToSelectCriterion: jest.fn(),
       match: {
         params: {},
       },
@@ -64,7 +63,6 @@ describe('components | Filters', () => {
       query: {
         parse: jest.fn(),
       },
-      redirectToSearchFiltersPage: jest.fn(),
       showFailModal: jest.fn(),
       updateFilters: jest.fn(),
       updateFilteredOffers: jest.fn(),
@@ -112,10 +110,9 @@ describe('components | Filters', () => {
         it('should trigger search and redirect to filters page when clicking on "Partout" criterion', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-          })
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+          jest.spyOn(props.history, 'push').mockImplementationOnce(() => {})
           props.history.location.pathname = '/recherche/resultats/filtres/localisation'
-          props.isUserAllowedToSelectCriterion.mockReturnValue(true)
           props.query.parse.mockReturnValue({
             'autour-de-moi': 'non',
             categories: 'VISITE;CINEMA',
@@ -164,10 +161,12 @@ describe('components | Filters', () => {
             priceRange: [0, 500],
             sortBy: '_by_price',
           })
-          expect(props.redirectToSearchFiltersPage).toHaveBeenCalledWith()
           expect(props.history.replace).toHaveBeenCalledWith({
             search: '?mots-cles=librairie&autour-de-moi=non&tri=_by_price&categories=VISITE;CINEMA',
           })
+          expect(props.history.push).toHaveBeenCalledWith(
+            '/recherche/resultats/filtres?mots-cles=librairie&autour-de-moi=non&tri=_by_price&categories=VISITE;CINEMA'
+          )
         })
       })
 
@@ -175,8 +174,8 @@ describe('components | Filters', () => {
         it('should trigger search and redirect to filters page when clicking on "Autour de moi" criterion', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-          })
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+          jest.spyOn(props.history, 'push').mockImplementationOnce(() => {})
           props.history.location.pathname = '/recherche/resultats/filtres/localisation'
           props.initialFilters = {
             aroundRadius: 50,
@@ -192,7 +191,6 @@ describe('components | Filters', () => {
             priceRange: [0, 500],
             sortBy: '_by_price',
           }
-          props.isUserAllowedToSelectCriterion.mockReturnValue(true)
           props.query.parse.mockReturnValue({
             'autour-de-moi': 'oui',
             categories: 'VISITE',
@@ -238,10 +236,12 @@ describe('components | Filters', () => {
             priceRange: [0, 500],
             sortBy: '_by_price',
           })
-          expect(props.redirectToSearchFiltersPage).toHaveBeenCalledWith()
           expect(props.history.replace).toHaveBeenCalledWith({
             search: '?mots-cles=librairie&autour-de-moi=oui&tri=_by_price&categories=VISITE',
           })
+          expect(props.history.push).toHaveBeenCalledWith(
+            '/recherche/resultats/filtres?mots-cles=librairie&autour-de-moi=oui&tri=_by_price&categories=VISITE'
+          )
         })
       })
     })
@@ -273,8 +273,7 @@ describe('components | Filters', () => {
         const wrapper = shallow(<Filters {...props} />)
 
         // then
-        const numberOfResults = wrapper
-          .find({ children: 'Afficher les 10 résultats' })
+        const numberOfResults = wrapper.find({ children: 'Afficher les 10 résultats' })
         expect(numberOfResults).toHaveLength(1)
       })
 
@@ -287,8 +286,7 @@ describe('components | Filters', () => {
         const wrapper = shallow(<Filters {...props} />)
 
         // then
-        const numberOfResults = wrapper
-          .find({ children: 'Afficher les 999+ résultats' })
+        const numberOfResults = wrapper.find({ children: 'Afficher les 999+ résultats' })
         expect(numberOfResults).toHaveLength(1)
       })
 
@@ -456,8 +454,9 @@ describe('components | Filters', () => {
         const wrapper = shallow(<Filters {...props} />)
 
         // then
-        const message = wrapper
-          .find({ children: 'Seules les offres Sorties et Physiques seront affichées' })
+        const message = wrapper.find({
+          children: 'Seules les offres Sorties et Physiques seront affichées',
+        })
         expect(message).toHaveLength(1)
       })
 
@@ -470,8 +469,9 @@ describe('components | Filters', () => {
         const wrapper = shallow(<Filters {...props} />)
 
         // then
-        const message = wrapper
-          .find({ children: 'Seules les offres Sorties et Physiques seront affichées' })
+        const message = wrapper.find({
+          children: 'Seules les offres Sorties et Physiques seront affichées',
+        })
         expect(message).toHaveLength(0)
       })
 
@@ -649,7 +649,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const title = wrapper.find({ children: 'Type d\'offres' })
+          const title = wrapper.find({ children: "Type d'offres" })
           expect(title).toHaveLength(1)
         })
 
@@ -1357,8 +1357,7 @@ describe('components | Filters', () => {
           it('should reset filters and trigger search to Algolia with given category', () => {
             // given
             props.history = createBrowserHistory()
-            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-            })
+            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
             props.history.location.pathname = '/recherche/resultats/filtres'
             props.initialFilters = {
               aroundRadius: 0,
@@ -1426,8 +1425,7 @@ describe('components | Filters', () => {
           it('should reset filters and trigger search to Algolia with given categories', () => {
             // given
             props.history = createBrowserHistory()
-            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-            })
+            jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
             props.history.location.pathname = '/recherche/resultats/filtres'
             props.initialFilters = {
               isSearchAroundMe: true,

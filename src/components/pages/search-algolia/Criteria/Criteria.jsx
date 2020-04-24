@@ -18,7 +18,7 @@ export const Criteria = props => {
               onClick={onCriterionSelection(criterionKey)}
               type="button"
             >
-              <div className='criteria-item-icon-wrapper'>
+              <div className="criteria-item-icon-wrapper">
                 <Icon
                   className={`${isActive ? 'criteria-item-icon-active' : 'criteria-item-icon'}`}
                   svg={icon}
@@ -27,12 +27,10 @@ export const Criteria = props => {
               <span className={`criteria-item-label ${isActive && 'criteria-active-label'}`}>
                 {label}
               </span>
-              {isActive &&
-              <Icon
+              {isActive && <Icon
                 className="criteria-item-icon-check"
                 svg="ico-check-pink"
-
-              />}
+                           />}
             </button>
           </li>
         )
@@ -50,5 +48,5 @@ Criteria.propTypes = {
       )
     }
   }).isRequired,
-  onCriterionSelection: PropTypes.func.isRequired
+  onCriterionSelection: PropTypes.func.isRequired,
 }

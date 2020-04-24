@@ -2,9 +2,25 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import Header from '../../../layout/Header/Header'
 import { Criteria } from '../Criteria/Criteria'
+import { checkUserIsGeolocated } from '../utils/checkUserIsGeolocated'
 
 export const CriteriaSort = props => {
-  const { activeCriterionLabel, backTo, criteria, history, match, onCriterionSelection, title } = props
+  const {
+    activeCriterionLabel,
+    backTo,
+    criteria,
+    geolocation,
+    history,
+    match,
+    onCriterionSelection,
+    title,
+  } = props
+
+  const checkUserCanSelectCriterion = () => {
+    return criterionKey => () => {
+      checkUserIsGeolocated(criterionKey, geolocation, onCriterionSelection)
+    }
+  }
 
   return (
     <div className="criteria-page">
@@ -23,11 +39,15 @@ export const CriteriaSort = props => {
         criteria={criteria}
         history={history}
         match={match}
-        onCriterionSelection={onCriterionSelection}
+        onCriterionSelection={checkUserCanSelectCriterion()}
         title={title}
       />
     </div>
   )
+}
+
+CriteriaSort.defaultProps = {
+  geolocation: {},
 }
 
 CriteriaSort.propTypes = {
@@ -40,6 +60,10 @@ CriteriaSort.propTypes = {
       )
     }
   }).isRequired,
+  geolocation: PropTypes.shape({
+    latitude: PropTypes.number,
+    longitude: PropTypes.number,
+  }),
   history: PropTypes.shape({
     location: PropTypes.shape(),
     replace: PropTypes.func.isRequired,

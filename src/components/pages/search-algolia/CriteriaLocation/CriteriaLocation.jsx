@@ -1,11 +1,27 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import Header from '../../../layout/Header/Header'
-import { Criteria } from '../Criteria/Criteria'
 import Icon from '../../../layout/Icon/Icon'
+import { Criteria } from '../Criteria/Criteria'
+import { checkUserIsGeolocated } from '../utils/checkUserIsGeolocated'
 
 export const CriteriaLocation = props => {
-  const { activeCriterionLabel, backTo, criteria, history, match, onCriterionSelection, title } = props
+  const {
+    activeCriterionLabel,
+    backTo,
+    criteria,
+    geolocation,
+    history,
+    match,
+    onCriterionSelection,
+    title,
+  } = props
+
+  const checkUserCanSelectCriterion = () => {
+    return criterionKey => () => {
+      checkUserIsGeolocated(criterionKey, geolocation, onCriterionSelection)
+    }
+  }
 
   return (
     <div className="criteria-location-page">
@@ -19,10 +35,10 @@ export const CriteriaLocation = props => {
         title={title}
       />
       <div>
-        <div className='cl-wrapper'>
+        <div className="cl-wrapper">
           <Icon
             className="cl-icon"
-            svg='ico-alert'
+            svg="ico-alert"
           />
           <span className="cl-warning-message">
             {`Seules les offres Sorties et Physiques seront affichées pour une recherche avec une localisation`}
@@ -35,11 +51,14 @@ export const CriteriaLocation = props => {
         criteria={criteria}
         history={history}
         match={match}
-        onCriterionSelection={onCriterionSelection}
+        onCriterionSelection={checkUserCanSelectCriterion()}
         title={title}
       />
     </div>
   )
+}
+CriteriaLocation.defaultProps = {
+  geolocation: {},
 }
 
 CriteriaLocation.propTypes = {
@@ -52,6 +71,10 @@ CriteriaLocation.propTypes = {
       )
     }
   }).isRequired,
+  geolocation: PropTypes.shape({
+    latitude: PropTypes.number,
+    longitude: PropTypes.number,
+  }),
   history: PropTypes.shape({
     location: PropTypes.shape(),
     replace: PropTypes.func.isRequired,

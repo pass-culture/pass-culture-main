@@ -12,7 +12,7 @@ import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import RelativeFooterContainer from '../../../../layout/RelativeFooter/RelativeFooterContainer'
 import Spinner from '../../../../layout/Spinner/Spinner'
 import { SORT_CRITERIA } from '../../Criteria/criteriaEnums'
-import FiltersContainer from '../../Filters/FiltersContainer'
+import { Filters } from '../../Filters/Filters'
 import { EmptySearchResult } from '../EmptySearchResult'
 import Result from '../Result'
 import SearchAlgoliaDetailsContainer from '../ResultDetail/ResultDetailContainer'
@@ -380,43 +380,6 @@ describe('components | SearchResults', () => {
         const expectedUri = props.history.location.pathname + props.history.location.search
         expect(expectedUri).toBe(
           '/recherche/resultats?mots-cles=&autour-de-moi=oui&tri=&categories='
-        )
-      })
-
-      it('should not fetch offers and alert user when clicking on "autour de chez toi" if geolocation is disabled', async () => {
-        // Given
-        const history = createBrowserHistory()
-        props.history = history
-        props.history.push(
-          '/recherche/resultats?mots-cles=recherche%20sans%20résultat&autour-de-moi=non&tri=_by_price&categories=INSTRUMENT'
-        )
-        props.geolocation = { latitude: null, longitude: null }
-        props.query.parse.mockReturnValue({
-          'autour-de-moi': 'non',
-          categories: 'INSTRUMENT',
-          'mots-cles': 'recherche sans résultat',
-          tri: '_by_price',
-        })
-        const mockedAlert = jest.spyOn(window, 'alert').mockImplementationOnce(() => {})
-        const wrapper = await mount(
-          <Router history={history}>
-            <SearchResults {...props} />
-          </Router>
-        )
-        wrapper.update()
-        const linkButton = wrapper.find({ children: 'autour de chez toi' })
-
-        // When
-        await linkButton.simulate('click')
-
-        // Then
-        expect(fetchAlgolia).toHaveBeenCalledTimes(1)
-        expect(mockedAlert).toHaveBeenCalledWith(
-          'Veuillez activer la géolocalisation pour voir les offres autour de vous.'
-        )
-        const expectedUri = props.history.location.pathname + props.history.location.search
-        expect(expectedUri).toBe(
-          '/recherche/resultats?mots-cles=recherche%20sans%20résultat&autour-de-moi=non&tri=_by_price&categories=INSTRUMENT'
         )
       })
     })
@@ -1631,7 +1594,7 @@ describe('components | SearchResults', () => {
       )
 
       // then
-      const filtersContainer = wrapper.find(FiltersContainer)
+      const filtersContainer = wrapper.find(Filters)
       expect(filtersContainer).toHaveLength(1)
       expect(filtersContainer.prop('history')).toStrictEqual(props.history)
       expect(filtersContainer.prop('initialFilters')).toStrictEqual({
@@ -1680,6 +1643,7 @@ describe('components | SearchResults', () => {
       expect(sortPage.prop('activeCriterionLabel')).toStrictEqual('Prix')
       expect(sortPage.prop('backTo')).toStrictEqual('/recherche/resultats?mots-cles=librairie')
       expect(sortPage.prop('criteria')).toStrictEqual(SORT_CRITERIA)
+      expect(sortPage.prop('geolocation')).toStrictEqual(props.geolocation)
       expect(sortPage.prop('history')).toStrictEqual(props.history)
       expect(sortPage.prop('match')).toStrictEqual(props.match)
       expect(sortPage.prop('onCriterionSelection')).toStrictEqual(expect.any(Function))

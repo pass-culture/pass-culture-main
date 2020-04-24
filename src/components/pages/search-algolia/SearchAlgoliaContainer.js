@@ -1,7 +1,6 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { selectUserGeolocation } from '../../../redux/selectors/geolocationSelectors'
-import { isGeolocationEnabled, isUserAllowedToSelectCriterion } from '../../../utils/geolocation'
 
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 import SearchAlgolia from './SearchAlgolia'
@@ -15,8 +14,6 @@ export const mapStateToProps = (state, ownProps) => {
 
   return {
     geolocation,
-    isGeolocationEnabled: isGeolocationEnabled(geolocation),
-    isUserAllowedToSelectCriterion,
     redirectToSearchMainPage,
   }
 }

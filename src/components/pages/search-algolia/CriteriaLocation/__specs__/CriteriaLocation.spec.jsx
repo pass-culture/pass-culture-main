@@ -18,10 +18,8 @@ describe('components | CriteriaLocation', () => {
           pathname: '',
           search: '',
         },
-        push: () => {
-        },
-        replace: () => {
-        },
+        push: () => {},
+        replace: () => {},
       },
       match: {
         params: {},
@@ -57,7 +55,7 @@ describe('components | CriteriaLocation', () => {
     expect(criteria.prop('criteria')).toStrictEqual(props.criteria)
     expect(criteria.prop('history')).toStrictEqual(props.history)
     expect(criteria.prop('match')).toStrictEqual(props.match)
-    expect(criteria.prop('onCriterionSelection')).toStrictEqual(props.onCriterionSelection)
+    expect(criteria.prop('onCriterionSelection')).toStrictEqual(expect.any(Function))
     expect(criteria.prop('title')).toStrictEqual(props.title)
   })
 
@@ -76,7 +74,10 @@ describe('components | CriteriaLocation', () => {
     const wrapper = shallow(<CriteriaLocation {...props} />)
 
     // then
-    const message = wrapper.find({ children : 'Seules les offres Sorties et Physiques seront affichées pour une recherche avec une localisation'})
+    const message = wrapper.find({
+      children:
+        'Seules les offres Sorties et Physiques seront affichées pour une recherche avec une localisation',
+    })
     expect(message).toHaveLength(1)
   })
 })

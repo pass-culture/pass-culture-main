@@ -17,10 +17,8 @@ describe('components | CriteriaSort', () => {
           pathname: '',
           search: '',
         },
-        push: () => {
-        },
-        replace: () => {
-        },
+        push: () => {},
+        replace: () => {},
       },
       match: {
         params: {},
@@ -56,7 +54,7 @@ describe('components | CriteriaSort', () => {
     expect(criteria.prop('criteria')).toStrictEqual(props.criteria)
     expect(criteria.prop('history')).toStrictEqual(props.history)
     expect(criteria.prop('match')).toStrictEqual(props.match)
-    expect(criteria.prop('onCriterionSelection')).toStrictEqual(props.onCriterionSelection)
+    expect(criteria.prop('onCriterionSelection')).toStrictEqual(expect.any(Function))
     expect(criteria.prop('title')).toStrictEqual(props.title)
   })
 })

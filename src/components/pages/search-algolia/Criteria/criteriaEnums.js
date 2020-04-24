@@ -96,3 +96,8 @@ export const SORT_CRITERIA = {
     requiresGeolocation: false,
   },
 }
+
+export const GEOLOCATED_CRITERIA = {
+  ...GEOLOCATION_CRITERIA,
+  ...SORT_CRITERIA,
+}

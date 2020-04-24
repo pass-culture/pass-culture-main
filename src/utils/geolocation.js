@@ -1,4 +1,4 @@
-import { GEOLOCATION_CRITERIA } from '../components/pages/search-algolia/Criteria/criteriaEnums'
+import { GEOLOCATED_CRITERIA } from '../components/pages/search-algolia/Criteria/criteriaEnums'
 import getMobileOperatingSystem from '../utils/getMobileOperatingSystem'
 
 export const getHumanizeRelativeDistance = (
@@ -79,7 +79,7 @@ export const isGeolocationEnabled = geolocation => {
 }
 
 export const isUserAllowedToSelectCriterion = (criterionKey, isGeolocationEnabled) => {
-  if (GEOLOCATION_CRITERIA[criterionKey].requiresGeolocation && !isGeolocationEnabled) {
+  if (GEOLOCATED_CRITERIA[criterionKey].requiresGeolocation && !isGeolocationEnabled) {
     window.alert('Veuillez activer la géolocalisation pour voir les offres autour de vous.')
     return false
   }
