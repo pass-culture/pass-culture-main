@@ -630,6 +630,7 @@ describe('fetchAlgolia', () => {
         page: 0,
       })
     })
+
     it('should fetch with date filter when date and currentWeek option are provided', () => {
       // Given
       const keywords = ''
@@ -654,6 +655,7 @@ describe('fetchAlgolia', () => {
         page: 0,
       })
     })
+
     it('should fetch with date filter when date and currentWeekEnd option are provided', () => {
       // Given
       const keywords = ''
@@ -678,6 +680,7 @@ describe('fetchAlgolia', () => {
         page: 0,
       })
     })
+
     it('should fetch with date filter when date and picked option are provided', () => {
       // Given
       const keywords = ''

@@ -1177,7 +1177,7 @@ describe('components | SearchResults', () => {
             option: 'today',
             selectedDate: null,
           },
-          isOfferFilteredByDate: false,
+          offerIsFilteredByDate: false,
           isSearchAroundMe: false,
           offerCategories: [],
           offerIsDuo: false,
@@ -1413,7 +1413,7 @@ describe('components | SearchResults', () => {
             option: 'today',
             selectedDate,
           },
-          isOfferFilteredByDate: true,
+          offerIsFilteredByDate: true,
         },
       })
 
@@ -1715,7 +1715,7 @@ describe('components | SearchResults', () => {
           option: 'today',
           selectedDate: null,
         },
-        isOfferFilteredByDate: false,
+        offerIsFilteredByDate: false,
         isSearchAroundMe: false,
         offerCategories: ['VISITE', 'CINEMA'],
         offerIsDuo: false,

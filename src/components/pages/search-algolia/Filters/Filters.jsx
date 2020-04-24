@@ -2,11 +2,11 @@ import PropTypes from 'prop-types'
 import Slider, { Range } from 'rc-slider'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
-import Icon from '../../../layout/Icon/Icon'
 import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA } from '../Criteria/criteriaEnums'
 import CriteriaLocation from '../CriteriaLocation/CriteriaLocation'
 import { checkIfAroundMe } from '../utils/checkIfAroundMe'
 import FilterCheckbox from './FilterCheckbox/FilterCheckbox'
+import { FilterDateListOptions } from './FilterDateListOptions/FilterDateListOptions'
 import { DATE_FILTER, PRICE_FILTER } from './filtersEnums'
 import FilterToggle from './FilterToggle/FilterToggle'
 import { DEFAULT_RADIUS_IN_KILOMETERS } from '../../../../vendor/algolia/filters'
@@ -20,7 +20,7 @@ export class Filters extends PureComponent {
     const {
       aroundRadius,
       date,
-      isOfferFilteredByDate,
+      offerIsFilteredByDate,
       isSearchAroundMe,
       offerIsDuo,
       offerIsFree,
@@ -34,7 +34,7 @@ export class Filters extends PureComponent {
       filters: {
         aroundRadius,
         date,
-        isOfferFilteredByDate,
+        offerIsFilteredByDate,
         isSearchAroundMe,
         offerCategories,
         offerIsFree,
@@ -103,7 +103,7 @@ export class Filters extends PureComponent {
       aroundRadius,
       date,
       isSearchAroundMe,
-      isOfferFilteredByDate,
+      offerIsFilteredByDate,
       offerIsDuo,
       offerIsFree,
       offerTypes,
@@ -111,7 +111,7 @@ export class Filters extends PureComponent {
       sortBy,
     } = filters
     const offerCategories = this.getSelectedCategories()
-    const dateFilter = isOfferFilteredByDate ? date : null
+    const dateFilter = offerIsFilteredByDate ? date : null
 
     this.fetchOffers({
       aroundRadius,
@@ -157,7 +157,7 @@ export class Filters extends PureComponent {
             selectedDate: null,
           },
           isSearchAroundMe: false,
-          isOfferFilteredByDate: false,
+          offerIsFilteredByDate: false,
           offerCategories: [],
           offerIsDuo: false,
           offerIsFree: false,
@@ -261,7 +261,7 @@ export class Filters extends PureComponent {
     } = history
     const { filters, offers } = this.state
     const {
-      isOfferFilteredByDate,
+      offerIsFilteredByDate,
       isSearchAroundMe,
       offerCategories,
       offerTypes,
@@ -277,7 +277,7 @@ export class Filters extends PureComponent {
     const offerIsDuoFilterCounter = this.getNumberFromBoolean(offerIsDuo)
     const offerIsFreeFilterCounter = this.getNumberFromBoolean(offerIsFree)
     const priceRangeFilterCounter = this.getPriceRangeCounter(priceRange)
-    const dateFilterCounter = this.getNumberFromBoolean(isOfferFilteredByDate)
+    const dateFilterCounter = this.getNumberFromBoolean(offerIsFilteredByDate)
     const numberOfActiveFilters =
       offerTypesFilterCounter +
       offerCategoriesFilterCounter +
@@ -362,7 +362,7 @@ export class Filters extends PureComponent {
       {
         filters: {
           ...filters,
-          isOfferFilteredByDate: checked,
+          offerIsFilteredByDate: checked,
           date: {
             ...filters.date,
             selectedDate: new Date(),
@@ -422,6 +422,7 @@ export class Filters extends PureComponent {
 
   handlePickedDate = momentDate => {
     const { filters } = this.state
+    console.log(momentDate)
     const selectedDate = momentDate.toDate()
 
     this.setState(
@@ -446,7 +447,7 @@ export class Filters extends PureComponent {
     const {
       aroundRadius,
       date,
-      isOfferFilteredByDate,
+      offerIsFilteredByDate,
       isSearchAroundMe,
       offerCategories,
       offerIsDuo,
@@ -463,7 +464,7 @@ export class Filters extends PureComponent {
     const offerIsDuoCounter = this.getNumberFromBoolean(offerIsDuo)
     const offerIsFreeCounter = this.getNumberFromBoolean(offerIsFree)
     const priceRangeCounter = this.getPriceRangeCounter(priceRange)
-    const dateFilterCounter = this.getNumberFromBoolean(isOfferFilteredByDate)
+    const dateFilterCounter = this.getNumberFromBoolean(offerIsFilteredByDate)
 
     return (
       <main className="search-filters-page">
@@ -539,7 +540,7 @@ export class Filters extends PureComponent {
                   aria-pressed={areCategoriesVisible}
                   className={`sf-category-title-wrapper ${
                     areCategoriesVisible ? 'sf-title-drop-down' : 'sf-title-drop-down-flipped'
-                  }`}
+                    }`}
                   onClick={this.handleToggleCategories()}
                   type="button"
                 >
@@ -569,7 +570,7 @@ export class Filters extends PureComponent {
                                 offerCategories[categoryCriterion.facetFilter]
                                   ? 'fc-label-checked'
                                   : 'fc-label'
-                              }`}
+                                }`}
                               id={categoryCriterion.facetFilter}
                               label={categoryCriterion.label}
                               name={categoryCriterion.facetFilter}
@@ -709,104 +710,19 @@ export class Filters extends PureComponent {
                     </p>
                   </div>
                   <FilterToggle
-                    checked={isOfferFilteredByDate}
-                    id="isOfferFilteredByDate"
-                    name="isOfferFilteredByDate"
+                    checked={offerIsFilteredByDate}
+                    id="offerIsFilteredByDate"
+                    name="offerIsFilteredByDate"
                     onChange={this.handleDateToggle}
                   />
                 </div>
               </li>
-              {isOfferFilteredByDate && (
-                <li className="sf-date-wrapper">
-                  <h4 className="sf-title">
-                    {"Date de l'offre"}
-                  </h4>
-                  <ul>
-                    <li>
-                      <input
-                        id="today"
-                        name="dateOption"
-                        onChange={this.handleDateSelection}
-                        type="radio"
-                        value={DATE_FILTER.TODAY.value}
-                      />
-                      <label
-                        className={date.option === DATE_FILTER.TODAY.value && 'sf-filter-checked'}
-                        htmlFor="today"
-                      >
-                        {DATE_FILTER.TODAY.label}
-                      </label>
-                      {date.option === DATE_FILTER.TODAY.value && <Icon svg="ico-check-pink" />}
-                    </li>
-                    <li>
-                      <input
-                        id="current-week"
-                        name="dateOption"
-                        onChange={this.handleDateSelection}
-                        type="radio"
-                        value={DATE_FILTER.CURRENT_WEEK.value}
-                      />
-                      <label
-                        className={
-                          date.option === DATE_FILTER.CURRENT_WEEK.value && 'sf-filter-checked'
-                        }
-                        htmlFor="current-week"
-                      >
-                        {DATE_FILTER.CURRENT_WEEK.label}
-                      </label>
-                      {date.option === DATE_FILTER.CURRENT_WEEK.value && (
-                        <Icon svg="ico-check-pink" />
-                      )}
-                    </li>
-                    <li>
-                      <input
-                        id="current-week-end"
-                        name="dateOption"
-                        onChange={this.handleDateSelection}
-                        type="radio"
-                        value={DATE_FILTER.CURRENT_WEEK_END.value}
-                      />
-                      <label
-                        className={
-                          date.option === DATE_FILTER.CURRENT_WEEK_END.value && 'sf-filter-checked'
-                        }
-                        htmlFor="current-week-end"
-                      >
-                        {DATE_FILTER.CURRENT_WEEK_END.label}
-                      </label>
-                      {date.option === DATE_FILTER.CURRENT_WEEK_END.value && (
-                        <Icon svg="ico-check-pink" />
-                      )}
-                    </li>
-                    <li>
-                      <input
-                        id="picked"
-                        name="dateOption"
-                        onChange={this.handleDateSelection}
-                        type="radio"
-                        value={DATE_FILTER.USER_PICK.value}
-                      />
-                      <label
-                        className={
-                          date.option === DATE_FILTER.USER_PICK.value && 'sf-filter-checked'
-                        }
-                        htmlFor="picked"
-                      >
-                        {DATE_FILTER.USER_PICK.label}
-                      </label>
-                      {date.option === DATE_FILTER.USER_PICK.value && <Icon svg="ico-check-pink" />}
-                    </li>
-                  </ul>
-                  {date.option === DATE_FILTER.USER_PICK.value && (
-                    <DatePicker
-                      calendarClassName="sf-filter-datepicker"
-                      inline
-                      minDate={moment(new Date())}
-                      onChange={this.handlePickedDate}
-                      selected={moment(date.selectedDate)}
-                    />
-                  )}
-                </li>
+              {offerIsFilteredByDate && (
+                <FilterDateListOptions
+                  date={date}
+                  onDateSelection={this.handleDateSelection}
+                  onPickedDate={this.handlePickedDate}
+                />
               )}
               <li className="sf-space-wrapper" />
             </ul>
@@ -831,7 +747,7 @@ Filters.defaultProps = {
   initialFilters: {
     aroundRadius: DEFAULT_RADIUS_IN_KILOMETERS,
     date: null,
-    isOfferFilteredByDate: false,
+    offerIsFilteredByDate: false,
     isSearchAroundMe: false,
     offerCategories: [],
     offerIsDuo: false,
@@ -851,8 +767,11 @@ Filters.propTypes = {
   history: PropTypes.shape().isRequired,
   initialFilters: PropTypes.shape({
     aroundRadius: PropTypes.number,
-    date: PropTypes.instanceOf(Date),
-    isOfferFilteredByDate: PropTypes.bool,
+    date: PropTypes.shape({
+      option:PropTypes.string,
+      selectedDate:PropTypes.instanceOf(Date)
+    }),
+    offerIsFilteredByDate: PropTypes.bool,
     isSearchAroundMe: PropTypes.bool,
     offerCategories: PropTypes.arrayOf(PropTypes.string),
     offerIsDuo: PropTypes.bool,

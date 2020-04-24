@@ -1,6 +1,5 @@
 import { mount, shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
-import moment from 'moment'
 import Slider, { Range } from 'rc-slider'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -9,9 +8,7 @@ import configureStore from 'redux-mock-store'
 
 import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
-import { Criteria } from '../../Criteria/Criteria'
 import { GEOLOCATION_CRITERIA } from '../../Criteria/criteriaEnums'
-import FilterCheckbox from '../FilterCheckbox/FilterCheckbox'
 import { Filters } from '../Filters'
 import FilterToggle from '../FilterToggle/FilterToggle'
 import { CriteriaLocation } from '../../CriteriaLocation/CriteriaLocation'
@@ -19,8 +16,10 @@ import { CriteriaLocation } from '../../CriteriaLocation/CriteriaLocation'
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
 }))
-
 describe('components | Filters', () => {
+  const actualDate = global.Date
+  const now = new Date(2020, 3, 14)
+  const store = configureStore([])()
   let props
 
   beforeEach(() => {
@@ -44,7 +43,7 @@ describe('components | Filters', () => {
           option: 'today',
           selectedDate: null,
         },
-        isOfferFilteredByDate: false,
+        offerIsFilteredByDate: false,
         isSearchAroundMe: false,
         offerCategories: ['VISITE', 'CINEMA'],
         offerIsDuo: false,
@@ -74,6 +73,27 @@ describe('components | Filters', () => {
       updateFilteredOffers: jest.fn(),
       updateNumberOfActiveFilters: jest.fn(),
     }
+    props.query.parse.mockReturnValue({
+      'mots-cles': '',
+    })
+    fetchAlgolia.mockReturnValue(
+      new Promise(resolve => {
+        resolve({
+          hits: [],
+          nbHits: 0,
+          page: 0,
+        })
+      })
+    )
+    jest.spyOn(global, 'Date').mockImplementation(() => now)
+    global.Date.now = jest.fn(() => now.getTime())
+  })
+
+  afterEach(() => {
+    global.Date = actualDate
+    global.Date.now = actualDate.now
+    fetchAlgolia.mockReset()
+    jest.resetAllMocks()
   })
 
   describe('render', () => {
@@ -320,7 +340,7 @@ describe('components | Filters', () => {
       it('should pass the number of selected filters when clicking on the results button', () => {
         // given
         props.initialFilters.offerCategories = ['VISITE', 'CINEMA']
-        props.initialFilters.isOfferFilteredByDate = true
+        props.initialFilters.offerIsFilteredByDate = true
         const history = createBrowserHistory()
         history.push('/recherche/resultats/filtres')
         props.query.parse.mockReturnValue({
@@ -335,7 +355,6 @@ describe('components | Filters', () => {
             })
           })
         )
-        const store = configureStore([])()
         const wrapper = mount(
           <Provider store={store}>
             <Router history={history}>
@@ -390,13 +409,14 @@ describe('components | Filters', () => {
       it('should update filters when clicking on display results button', () => {
         // given
         const selectedDate = new Date(2020, 3, 21)
-        props.initialFilters.isOfferFilteredByDate = true
+        props.initialFilters.offerIsFilteredByDate = true
         props.initialFilters.date = {
           option: 'currentWeek',
           selectedDate,
         }
         const wrapper = shallow(<Filters {...props} />)
         const resultsButton = wrapper.find('.sf-button')
+
         // when
         resultsButton.simulate('click')
 
@@ -404,7 +424,7 @@ describe('components | Filters', () => {
         expect(props.updateFilters).toHaveBeenCalledWith({
           aroundRadius: 100,
           isSearchAroundMe: false,
-          isOfferFilteredByDate: true,
+          offerIsFilteredByDate: true,
           date: {
             option: 'currentWeek',
             selectedDate,
@@ -1378,14 +1398,15 @@ describe('components | Filters', () => {
         it('should reset filters and trigger search to Algolia with given categories when price range is selected', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
+          })
           props.history.location.pathname = '/recherche/resultats/filtres'
           props.initialFilters = {
             date: {
               option: 'currentWeek',
               selectedDate: new Date(),
             },
-            isOfferFilteredByDate: true,
+            offerIsFilteredByDate: true,
             isSearchAroundMe: true,
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: true,
@@ -1449,14 +1470,15 @@ describe('components | Filters', () => {
         it('should reset filters and trigger search to Algolia with given categories when offer is free is selected', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
+          })
           props.history.location.pathname = '/recherche/resultats/filtres'
           props.initialFilters = {
             date: {
               option: 'currentWeek',
               selectedDate: new Date(),
             },
-            isOfferFilteredByDate: true,
+            offerIsFilteredByDate: true,
             isSearchAroundMe: true,
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: true,
@@ -1528,35 +1550,31 @@ describe('components | Filters', () => {
           const dateFilterToggle = parentLi.find(FilterToggle)
           expect(dateFilterToggle).toHaveLength(1)
           expect(dateFilterToggle.prop('checked')).toBe(false)
-          expect(dateFilterToggle.prop('id')).toBe('isOfferFilteredByDate')
-          expect(dateFilterToggle.prop('name')).toBe('isOfferFilteredByDate')
+          expect(dateFilterToggle.prop('id')).toBe('offerIsFilteredByDate')
+          expect(dateFilterToggle.prop('name')).toBe('offerIsFilteredByDate')
           expect(dateFilterToggle.prop('onChange')).toStrictEqual(expect.any(Function))
           const dateFilterCounter = parentLi.find({ children: '(1)' })
           expect(dateFilterCounter).toHaveLength(0)
         })
 
         it('should render a list of date filters when date toggle is on', () => {
-          // Given
-          const wrapper = shallow(<Filters {...props} />)
-          const toggle = wrapper.find('FilterToggle[name="isOfferFilteredByDate"]')
-          props.query.parse.mockReturnValue({
-            'mots-cles': '',
-          })
-          fetchAlgolia.mockReturnValue(
-            new Promise(resolve => {
-              resolve({
-                hits: [],
-                nbHits: 0,
-                page: 0,
-              })
-            })
+          // given
+          const history = createBrowserHistory()
+          history.push('/recherche/resultats/filtres')
+          const wrapper = mount(
+            <Provider store={store}>
+              <Router history={history}>
+                <Filters {...props} />
+              </Router>
+            </Provider>
           )
+          const toggle = wrapper.find('input[name="offerIsFilteredByDate"]')
 
-          // When
-          toggle.simulate('change', { target: { name: 'isOfferFilteredByDate', checked: true } })
+          // when
+          toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
 
-          // Then
-          const today = wrapper.find({ children: "Aujourd'hui" })
+          // then
+          const today = wrapper.find({ children: 'Aujourd\'hui' })
           const thisWeek = wrapper.find({ children: 'Cette semaine' })
           const thisWeekend = wrapper.find({ children: 'Ce week-end' })
           const exactDate = wrapper.find({ children: 'Date précise' })
@@ -1568,85 +1586,72 @@ describe('components | Filters', () => {
         })
 
         it('should render check icon when date filter is selected', () => {
-          // Given
-          const wrapper = shallow(<Filters {...props} />)
-          const toggle = wrapper.find('FilterToggle[name="isOfferFilteredByDate"]')
-          props.query.parse.mockReturnValue({
-            'mots-cles': '',
-          })
-          fetchAlgolia.mockReturnValue(
-            new Promise(resolve => {
-              resolve({
-                hits: [],
-                nbHits: 0,
-                page: 0,
-              })
-            })
+          // given
+          const history = createBrowserHistory()
+          history.push('/recherche/resultats/filtres')
+          const wrapper = mount(
+            <Provider store={store}>
+              <Router history={history}>
+                <Filters {...props} />
+              </Router>
+            </Provider>
           )
-          toggle.simulate('change', { target: { name: 'isOfferFilteredByDate', checked: true } })
+          const toggle = wrapper.find('input[name="offerIsFilteredByDate"]')
+          toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
           const defaultCheckedIcon = wrapper.find('label[htmlFor="today"]+Icon')
-          // When
+
+          // when
           const currentWeekend = wrapper.find('input[value="currentWeekEnd"]')
           currentWeekend.simulate('change', { target: { value: 'currentWeekEnd' } })
           const checkedIconAfterSelection = wrapper.find('label[htmlFor="current-week-end"]+Icon')
 
-          // Then
+          // then
           expect(defaultCheckedIcon).toHaveLength(1)
           expect(checkedIconAfterSelection).toHaveLength(1)
         })
 
         it('should not render datepicker when filter date option is not "picked"', () => {
-          // Given
-          props.query.parse.mockReturnValue({
-            'mots-cles': '',
-          })
-          fetchAlgolia.mockReturnValue(
-            new Promise(resolve => {
-              resolve({
-                hits: [],
-                nbHits: 0,
-                page: 0,
-              })
-            })
+          // given
+          const history = createBrowserHistory()
+          history.push('/recherche/resultats/filtres')
+          const wrapper = mount(
+            <Provider store={store}>
+              <Router history={history}>
+                <Filters {...props} />
+              </Router>
+            </Provider>
           )
 
-          const wrapper = shallow(<Filters {...props} />)
+          const toggle = wrapper.find('input[name="offerIsFilteredByDate"]')
+          toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
 
-          const toggle = wrapper.find('FilterToggle[name="isOfferFilteredByDate"]')
-          toggle.simulate('change', { target: { name: 'isOfferFilteredByDate', checked: true } })
-
-          // When
+          // when
           const currentWeekRadio = wrapper
             .find({ children: 'Cette semaine' })
             .closest('li')
             .find('input[type="radio"]')
           currentWeekRadio.simulate('change', { target: { value: 'currentWeek' } })
 
-          // Then
+          // then
           const datepicker = wrapper.find('DatePicker')
           expect(datepicker).toHaveLength(0)
         })
 
         it('should display a counter when Date filter is toggled on', () => {
           // given
-          props.query.parse.mockReturnValue({
-            'mots-cles': '',
-          })
-          fetchAlgolia.mockReturnValue(
-            new Promise(resolve => {
-              resolve({
-                hits: [],
-                nbHits: 0,
-                page: 0,
-              })
-            })
+          const history = createBrowserHistory()
+          history.push('/recherche/resultats/filtres')
+          const wrapper = mount(
+            <Provider store={store}>
+              <Router history={history}>
+                <Filters {...props} />
+              </Router>
+            </Provider>
           )
 
-          const wrapper = shallow(<Filters {...props} />)
-
           // when
-          const toggle = wrapper.find('FilterToggle[name="isOfferFilteredByDate"]')
-          toggle.simulate('change', { target: { name: 'isOfferFilteredByDate', checked: true } })
+          const toggle = wrapper.find('input[name="offerIsFilteredByDate"]')
+          toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
 
           // then
           const numberOfDateSelected = wrapper.find({ children: '(1)' })
@@ -1654,29 +1659,22 @@ describe('components | Filters', () => {
         })
 
         it('should fetch Algolia with date parameter set to today option', () => {
-          // Given
-          props.query.parse.mockReturnValue({
-            'mots-cles': '',
-          })
-          fetchAlgolia.mockReturnValue(
-            new Promise(resolve => {
-              resolve({
-                hits: [],
-                nbHits: 0,
-                page: 0,
-              })
-            })
+          // given
+          const history = createBrowserHistory()
+          history.push('/recherche/resultats/filtres')
+          const wrapper = mount(
+            <Provider store={store}>
+              <Router history={history}>
+                <Filters {...props} />
+              </Router>
+            </Provider>
           )
-          const now = new Date(2020, 3, 14)
-          jest.spyOn(global, 'Date').mockImplementation(() => now)
+          const toggle = wrapper.find('input[name="offerIsFilteredByDate"]')
 
-          const wrapper = shallow(<Filters {...props} />)
-          const toggle = wrapper.find('FilterToggle[name="isOfferFilteredByDate"]')
+          // when
+          toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
 
-          // When
-          toggle.simulate('change', { target: { name: 'isOfferFilteredByDate', checked: true } })
-
-          // Then
+          // then
           expect(fetchAlgolia).toHaveBeenCalledWith({
             aroundRadius: 100,
             date: {
@@ -1703,35 +1701,29 @@ describe('components | Filters', () => {
         })
 
         it('should fetch Algolia with date parameter set to currentWeek option', () => {
-          // Given
-          props.query.parse.mockReturnValue({
-            'mots-cles': '',
-          })
-          fetchAlgolia.mockReturnValue(
-            new Promise(resolve => {
-              resolve({
-                hits: [],
-                nbHits: 0,
-                page: 0,
-              })
-            })
+          // given
+          const history = createBrowserHistory()
+          history.push('/recherche/resultats/filtres')
+          const wrapper = mount(
+            <Provider store={store}>
+              <Router history={history}>
+                <Filters {...props} />
+              </Router>
+            </Provider>
           )
-          const now = new Date(2020, 3, 14)
-          jest.spyOn(global, 'Date').mockImplementation(() => now)
+          const toggle = wrapper.find('input[name="offerIsFilteredByDate"]')
+          toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
 
-          const wrapper = shallow(<Filters {...props} />)
-          const toggle = wrapper.find('FilterToggle[name="isOfferFilteredByDate"]')
-          toggle.simulate('change', { target: { name: 'isOfferFilteredByDate', checked: true } })
-
-          // When
+          // when
           const currentWeekRadio = wrapper
             .find({ children: 'Cette semaine' })
             .closest('li')
             .find('input[type="radio"]')
           currentWeekRadio.simulate('change', { target: { value: 'currentWeek' } })
 
-          // Then
-          expect(fetchAlgolia).toHaveBeenCalledWith({
+          // then
+          expect(fetchAlgolia).toHaveBeenCalledTimes(2)
+          expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
             aroundRadius: 100,
             date: {
               option: 'currentWeek',
@@ -1741,6 +1733,7 @@ describe('components | Filters', () => {
               latitude: 40,
               longitude: 41,
             },
+            isSearchAroundMe: false,
             keywords: '',
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: false,
@@ -1756,25 +1749,19 @@ describe('components | Filters', () => {
         })
 
         it('should fetch Algolia with date parameter set to picked option', () => {
-          // Given
-          props.query.parse.mockReturnValue({
-            'mots-cles': '',
-          })
-          fetchAlgolia.mockReturnValue(
-            new Promise(resolve => {
-              resolve({
-                hits: [],
-                nbHits: 0,
-                page: 0,
-              })
-            })
+          // given
+          global.Date = actualDate
+          const history = createBrowserHistory()
+          history.push('/recherche/resultats/filtres')
+          const wrapper = mount(
+            <Provider store={store}>
+              <Router history={history}>
+                <Filters {...props} />
+              </Router>
+            </Provider>
           )
-          const selectedDate = new Date(2020, 3, 14)
-
-          const wrapper = shallow(<Filters {...props} />)
-
-          const toggle = wrapper.find('FilterToggle[name="isOfferFilteredByDate"]')
-          toggle.simulate('change', { target: { name: 'isOfferFilteredByDate', checked: true } })
+          const toggle = wrapper.find('input[name="offerIsFilteredByDate"]')
+          toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
 
           const pickedRadio = wrapper
             .find({ children: 'Date précise' })
@@ -1782,17 +1769,21 @@ describe('components | Filters', () => {
             .find('input[type="radio"]')
           pickedRadio.simulate('change', { target: { value: 'picked' } })
 
-          // When
-          const datepicker = wrapper.find('DatePicker')
-          datepicker.simulate('change', moment(selectedDate))
+          // when
+          const datepicker = wrapper
+            .find('DatePicker')
+            .find({ role: 'option' })
+            .last()
+          datepicker.simulate('click')
 
           // Then
-          expect(fetchAlgolia).toHaveBeenCalledWith({
+          expect(fetchAlgolia).toHaveBeenNthCalledWith(3, {
             aroundRadius: 100,
             date: {
               option: 'picked',
-              selectedDate,
+              selectedDate: expect.any(Date),
             },
+            isSearchAroundMe: false,
             geolocation: {
               latitude: 40,
               longitude: 41,

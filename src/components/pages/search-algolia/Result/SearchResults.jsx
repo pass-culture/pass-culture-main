@@ -44,7 +44,7 @@ class SearchResults extends PureComponent {
           isEvent: false,
           isThing: false,
         },
-        isOfferFilteredByDate: false,
+        offerIsFilteredByDate: false,
         date: {
           selectedDate: null,
           option: DATE_FILTER.TODAY.value,
@@ -182,7 +182,7 @@ class SearchResults extends PureComponent {
     const {
       aroundRadius,
       date,
-      isOfferFilteredByDate,
+      offerIsFilteredByDate,
       isSearchAroundMe,
       offerCategories,
       offerIsDuo,
@@ -209,7 +209,7 @@ class SearchResults extends PureComponent {
       sortBy,
     }
 
-    if (isOfferFilteredByDate) {
+    if (offerIsFilteredByDate) {
       options.date = date
     }
 
