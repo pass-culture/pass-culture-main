@@ -97,6 +97,8 @@ jobs:
             yarn install
 
             set -a; source ~/pass-culture-main/config/run_envs/testing;
+            # TODO : Remove once env variables are cleaned in every app
+            export NODE_ENV=testing
 
             yarn build
             npm install -g netlify-cli@2.46.0
