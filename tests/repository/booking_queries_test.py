@@ -4,6 +4,7 @@ from decimal import Decimal
 import pytest
 from freezegun import freeze_time
 
+from domain.booking_recap.booking_recap import BookingRecap
 from models import Booking, EventType, ThingType
 from models.api_errors import ApiErrors, ResourceNotFoundError
 from models.stock import EVENT_AUTOMATIC_REFUND_DELAY
@@ -1724,9 +1725,9 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_token == 'ABCDEF'
 
     @clean_database
-    def test_should_return_all_bookings_matching_all_offerers_linked_to_user(self, app):
+    def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com', first_name="Hermione", last_name="Granger")
+        beneficiary = create_user(email='beneficiary@example.com')
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)

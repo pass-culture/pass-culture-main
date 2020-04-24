@@ -15,17 +15,18 @@ class BookingRecapMock(BookingRecap):
             offer_name="Nom de mon offre",
             beneficiary_lastname="Polastri",
             beneficiary_firstname="Eve",
-            beneficiary_email="email@example.com",
+            beneficiary_email="eve.polastri@example.com",
             booking_token="ABCDE",
             booking_date=datetime.utcnow()
         )
 
 
 class GetAllBookingsTest:
-    @patch('use_cases.get_all_bookings_by_pro_user.check_user_is_not_admin')
+    @patch('use_cases.get_all_bookings_by_pro_user.check_is_authorized_to_access_bookings_recap')
     @patch('use_cases.get_all_bookings_by_pro_user.user_queries.find_user_by_id')
     @patch('use_cases.get_all_bookings_by_pro_user.booking_queries.find_by_pro_user_id')
-    def test_should_retrieve_all_user_bookings(self, find_by_pro_user_id, find_user_by_id, check_user_is_not_admin):
+    def test_should_retrieve_all_user_bookings(self, find_by_pro_user_id, find_user_by_id,
+                                               check_is_authorized_to_access_bookings_recap):
         # Given
         user = create_user(is_admin=False, can_book_free_offers=True)
 
@@ -40,20 +41,23 @@ class GetAllBookingsTest:
 
         # Then
         find_user_by_id.assert_called_once_with(user.id)
-        check_user_is_not_admin.assert_called_once_with(user)
+        check_is_authorized_to_access_bookings_recap.assert_called_once_with(user)
         find_by_pro_user_id.assert_called_once_with(user.id)
         assert bookings == [booking, booking2]
 
     @patch('use_cases.get_all_bookings_by_pro_user.user_queries.find_user_by_id')
-    def test_should_raise_exception_when_user_is_admin(self, find_user_by_id):
+    @patch('use_cases.get_all_bookings_by_pro_user.check_is_authorized_to_access_bookings_recap')
+    @patch('use_cases.get_all_bookings_by_pro_user.booking_queries.find_by_pro_user_id')
+    def test_should_not_retrieve_bookings_when_user_is_not_authorized(self, find_by_pro_user_id,
+                                                                      check_is_authorized_to_access_bookings_recap,
+                                                                      find_user_by_id):
         # Given
-        user = create_user(is_admin=True, can_book_free_offers=False)
-        find_user_by_id.return_value = user
+        user = create_user()
+        check_is_authorized_to_access_bookings_recap.side_effect = UnauthorizedForAdminUser()
 
         # When
-        with pytest.raises(UnauthorizedForAdminUser) as exception:
+        with pytest.raises(UnauthorizedForAdminUser):
             get_all_bookings_by_pro_user(user.id)
 
         # Then
-        assert exception.value.errors['global'] == [
-            "Le statut d'administrateur ne permet pas d'accéder au suivi des réservations"]
+        find_by_pro_user_id.assert_not_called()

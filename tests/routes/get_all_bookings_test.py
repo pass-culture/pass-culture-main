@@ -50,11 +50,11 @@ class Get:
 
             # Then
             expected_bookings_recap = [{'beneficiary_email': 'beneficiary@example.com',
-                                          'beneficiary_firstname': 'Hermione',
-                                          'beneficiary_lastname': 'Granger',
-                                          'booking_date': '2020-04-03T12:00:00Z',
-                                          'booking_token': 'ABCD',
-                                          'offer_name': 'Test Book'}]
+                                        'beneficiary_firstname': 'Hermione',
+                                        'beneficiary_lastname': 'Granger',
+                                        'booking_date': '2020-04-03T12:00:00Z',
+                                        'booking_token': 'ABCD',
+                                        'offer_name': 'Test Book'}]
             assert response.status_code == 200
             assert response.json == expected_bookings_recap
 
@@ -73,6 +73,5 @@ class Get:
             # Then
             assert response.status_code == 401
             assert response.json == {
-                'global': ["Le statut d'administrateur ne permet"
-                           " pas d'accéder au suivi des réservations"]
+                'global': ["Le statut d'administrateur ne permet pas d'accéder au suivi des réservations"]
             }

@@ -1,7 +1,7 @@
 from models import User
 
 
-def check_user_is_not_admin(user: User):
+def check_is_authorized_to_access_bookings_recap(user: User):
     if user.isAdmin:
         raise UnauthorizedForAdminUser()
 

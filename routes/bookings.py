@@ -1,14 +1,13 @@
 from datetime import datetime
 from itertools import chain
-from typing import Union, Dict, List
+from typing import Union, Dict
 
 import dateutil
-from flask import current_app as app, json
+from flask import current_app as app
 from flask import jsonify, request
 from flask_login import current_user, login_required
 
 from connectors import redis
-from domain.booking_recap.booking_recap import BookingRecap
 from domain.bookings import generate_bookings_details_csv
 from domain.user_activation import create_initial_deposit, is_activation_booking
 from domain.user_emails import send_activation_email, \
@@ -21,9 +20,9 @@ from repository.api_key_queries import find_api_key_by_value
 from repository.user_offerer_queries import \
     filter_query_where_user_is_user_offerer_and_is_validated
 from routes.serialization import as_dict, serialize, serialize_booking
+from routes.serialization.bookings_recap_serialize import serialize_bookings_recap
 from use_cases.book_an_offer import book_an_offer, BookingInformation
 from use_cases.get_all_bookings_by_pro_user import get_all_bookings_by_pro_user
-from utils.date import format_into_ISO_8601
 from utils.human_ids import dehumanize, humanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, \
     WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES, \
@@ -108,21 +107,7 @@ def get_bookings_csv():
 @login_required
 def get_all_bookings():
     bookings_recap = get_all_bookings_by_pro_user(current_user.id)
-    return _serialize_bookings_recap(bookings_recap), 200
-
-
-def _serialize_bookings_recap(bookings_recap: List[BookingRecap]) -> json:
-    serialized_bookings_recap = []
-    for booking in bookings_recap:
-        serialized_bookings_recap.append({
-            "offer_name": booking.offer_name,
-            "beneficiary_lastname": booking.beneficiary_lastname,
-            "beneficiary_firstname": booking.beneficiary_firstname,
-            "beneficiary_email": booking.beneficiary_email,
-            "booking_token": booking.booking_token,
-            "booking_date": format_into_ISO_8601(booking.booking_date)
-        })
-    return jsonify(serialized_bookings_recap)
+    return serialize_bookings_recap(bookings_recap), 200
 
 
 @app.route('/bookings', methods=['GET'])

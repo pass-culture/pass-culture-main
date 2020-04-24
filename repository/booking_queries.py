@@ -141,12 +141,12 @@ def find_from_recommendation(recommendation: Recommendation, user: User) -> List
 
 def is_offer_already_booked_by_user(current_user: User, offer: Offer) -> bool:
     return Booking.query \
-               .filter_by(userId=current_user.id) \
-               .filter_by(isCancelled=False) \
-               .join(Stock) \
-               .join(Offer) \
-               .filter(Offer.id == offer.id) \
-               .count() > 0
+        .filter_by(userId=current_user.id) \
+        .filter_by(isCancelled=False) \
+        .join(Stock) \
+        .join(Offer) \
+        .filter(Offer.id == offer.id) \
+        .count() > 0
 
 
 def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
@@ -201,24 +201,23 @@ def find_by_pro_user_id(user_id: int) -> List[BookingRecap]:
             Booking.dateCreated.label("bookingDate"),
         ) \
         .all()
-    bookings_recap = _bookings_sql_entities_to_bookings_recap(bookings)
-    return bookings_recap
+
+    return _bookings_sql_entities_to_bookings_recap(bookings)
 
 
 def _bookings_sql_entities_to_bookings_recap(bookings: List[Booking]) -> List[BookingRecap]:
-    bookings_recap = []
-    for booking in bookings:
-        bookings_recap.append(
-            BookingRecap(
-                offer_name=booking.offerName,
-                beneficiary_email=booking.beneficiaryEmail,
-                beneficiary_firstname=booking.beneficiaryFirstname,
-                beneficiary_lastname=booking.beneficiaryLastname,
-                booking_token=booking.bookingToken,
-                booking_date=booking.bookingDate
-            )
-        )
-    return bookings_recap
+    return [_serialize_booking_recap(booking) for booking in bookings]
+
+
+def _serialize_booking_recap(booking: Booking) -> BookingRecap:
+    return BookingRecap(
+        offer_name=booking.offerName,
+        beneficiary_email=booking.beneficiaryEmail,
+        beneficiary_firstname=booking.beneficiaryFirstname,
+        beneficiary_lastname=booking.beneficiaryLastname,
+        booking_token=booking.bookingToken,
+        booking_date=booking.bookingDate
+    )
 
 
 def find_ongoing_bookings_by_stock(stock: Stock) -> List[Booking]:
