@@ -10,6 +10,7 @@ import getHumanizeRelativeDate from '../../../../../../utils/date/getHumanizeRel
 import withTracking from '../../../../../hocs/withTracking'
 import selectIsFeatureDisabled from '../../../../../router/selectors/selectIsFeatureDisabled'
 import BookingItem from './BookingItem'
+import { getTimezone } from '../../../../../../utils/timezone'
 
 export const ribbonLabelAndType = (
   isUsed,
@@ -68,12 +69,14 @@ export const mapStateToProps = (state, ownProps) => {
   const { isCancelled, isUsed, recommendationId, stockId } = booking
   const stock = selectStockById(state, stockId)
   const { beginningDatetime } = stock
-  const humanizeRelativeBeginningDate =
-    beginningDatetime && getHumanizeRelativeDate(beginningDatetime)
   const recommendation = selectRecommendationById(state, recommendationId) || {}
   const mediation = selectMediationById(state, recommendation.mediationId)
   const offer = selectOfferById(state, stock.offerId)
-  const { isDigital, isEvent } = offer
+  const { isDigital, isEvent, venue } = offer
+  const { departementCode } = venue
+  const timeZone = getTimezone(departementCode)
+  const humanizeRelativeBeginningDate =
+    beginningDatetime && getHumanizeRelativeDate(beginningDatetime, timeZone)
   const { isEventExpired } = booking
   const isPhysical = !isDigital && !isEvent
   const ribbon = ribbonLabelAndType(
