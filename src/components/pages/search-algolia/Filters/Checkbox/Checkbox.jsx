@@ -2,7 +2,7 @@ import React from 'react'
 import Icon from '../../../../layout/Icon/Icon'
 import PropTypes from 'prop-types'
 
-const FilterCheckbox = ({ checked, className, id, label, name, onChange }) => {
+const Checkbox = ({ checked, className, id, label, name, onChange }) => {
   return (
     <div className='fc-wrapper'>
       <input
@@ -27,7 +27,7 @@ const FilterCheckbox = ({ checked, className, id, label, name, onChange }) => {
   )
 }
 
-FilterCheckbox.propTypes = {
+Checkbox.propTypes = {
   checked: PropTypes.bool.isRequired,
   className: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
@@ -36,4 +36,4 @@ FilterCheckbox.propTypes = {
   onChange: PropTypes.func.isRequired,
 }
 
-export default FilterCheckbox
+export default Checkbox

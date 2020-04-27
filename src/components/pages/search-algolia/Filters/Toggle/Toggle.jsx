@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const FilterToggle = ({ checked, id, name, onChange }) => {
+const Toggle = ({ checked, id, name, onChange }) => {
   return (
     <div className="ft-wrapper">
       <input
@@ -22,11 +22,11 @@ const FilterToggle = ({ checked, id, name, onChange }) => {
   )
 }
 
-FilterToggle.propTypes = {
+Toggle.propTypes = {
   checked: PropTypes.bool.isRequired,
   id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
 }
 
-export default FilterToggle
+export default Toggle

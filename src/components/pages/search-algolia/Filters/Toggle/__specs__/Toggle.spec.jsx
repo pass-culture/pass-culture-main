@@ -1,8 +1,8 @@
 import { shallow } from 'enzyme'
 import React from 'react'
-import FilterToggle from '../FilterToggle'
+import Toggle from '../Toggle'
 
-describe('components | FilterToggle', () => {
+describe('components | Toggle', () => {
   let props
 
   beforeEach(() => {
@@ -17,7 +17,7 @@ describe('components | FilterToggle', () => {
   describe('render', () => {
     it('should render an input with the right props', () => {
       // when
-      const wrapper = shallow(<FilterToggle {...props} />)
+      const wrapper = shallow(<Toggle {...props} />)
 
       // then
       const input = wrapper.find('input')
@@ -34,7 +34,7 @@ describe('components | FilterToggle', () => {
       props.checked = true
 
       // when
-      const wrapper = shallow(<FilterToggle {...props} />)
+      const wrapper = shallow(<Toggle {...props} />)
 
       // then
       const label = wrapper.find('label')
@@ -48,7 +48,7 @@ describe('components | FilterToggle', () => {
       props.checked = false
 
       // when
-      const wrapper = shallow(<FilterToggle {...props} />)
+      const wrapper = shallow(<Toggle {...props} />)
 
       // then
       const label = wrapper.find('label')

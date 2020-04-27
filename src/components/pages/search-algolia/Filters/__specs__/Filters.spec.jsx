@@ -10,9 +10,9 @@ import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import { GEOLOCATION_CRITERIA } from '../../Criteria/criteriaEnums'
 import { Filters } from '../Filters'
-import FilterToggle from '../FilterToggle/FilterToggle'
+import Toggle from '../Toggle/Toggle'
 import { CriteriaLocation } from '../../CriteriaLocation/CriteriaLocation'
-import FilterCheckbox from '../FilterCheckbox/FilterCheckbox'
+import Checkbox from '../Checkbox/Checkbox'
 import { Criteria } from '../../Criteria/Criteria'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
@@ -468,7 +468,7 @@ describe('components | Filters', () => {
         const offerIsDuoFilter = wrapper
           .find({ children: 'Uniquement les offres duo' })
           .closest('li')
-          .find(FilterToggle)
+          .find(Toggle)
         await offerIsDuoFilter.simulate('change', {
           target: {
             name: 'offerIsDuo',
@@ -694,7 +694,7 @@ describe('components | Filters', () => {
           expect(title).toHaveLength(1)
         })
 
-        it('should render three FilterCheckbox components unchecked by default', () => {
+        it('should render three Checkbox components unchecked by default', () => {
           // given
           props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerTypes = {
@@ -709,7 +709,7 @@ describe('components | Filters', () => {
           // then
           const filterCheckboxes = wrapper
             .find('[data-test="sf-offer-types-filter-wrapper"]')
-            .find(FilterCheckbox)
+            .find(Checkbox)
           expect(filterCheckboxes).toHaveLength(3)
           expect(filterCheckboxes.at(0).prop('checked')).toBe(false)
           expect(filterCheckboxes.at(0).prop('className')).toBe('fc-label')
@@ -731,7 +731,7 @@ describe('components | Filters', () => {
           expect(filterCheckboxes.at(2).prop('onChange')).toStrictEqual(expect.any(Function))
         })
 
-        it('should render three FilterCheckbox components checked when offer types are checked', () => {
+        it('should render three Checkbox components checked when offer types are checked', () => {
           // given
           props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerTypes = {
@@ -746,7 +746,7 @@ describe('components | Filters', () => {
           // then
           const filterCheckboxes = wrapper
             .find('[data-test="sf-offer-types-filter-wrapper"]')
-            .find(FilterCheckbox)
+            .find(Checkbox)
           expect(filterCheckboxes.at(0).prop('checked')).toBe(true)
           expect(filterCheckboxes.at(0).prop('className')).toBe('fc-label-checked')
           expect(filterCheckboxes.at(1).prop('checked')).toBe(true)
@@ -795,7 +795,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
           const digitalFilter = wrapper
             .find('[data-test="sf-offer-types-filter-wrapper"]')
-            .find(FilterCheckbox)
+            .find(Checkbox)
             .at(0)
           props.query.parse.mockReturnValue({
             'mots-cles': 'librairies',
@@ -855,7 +855,7 @@ describe('components | Filters', () => {
           expect(title).toHaveLength(1)
         })
 
-        it('should render a FilterToggle component for offer duo unchecked by default', () => {
+        it('should render a Toggle component for offer duo unchecked by default', () => {
           // given
           props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerIsDuo = false
@@ -867,7 +867,7 @@ describe('components | Filters', () => {
           const filterOfferIsDuo = wrapper
             .find({ children: 'Uniquement les offres duo' })
             .closest('li')
-            .find(FilterToggle)
+            .find(Toggle)
           expect(filterOfferIsDuo).toHaveLength(1)
           expect(filterOfferIsDuo.prop('checked')).toBe(false)
           expect(filterOfferIsDuo.prop('id')).toBe('offerIsDuo')
@@ -887,7 +887,7 @@ describe('components | Filters', () => {
           const offerIsDuoFilter = wrapper
             .find({ children: 'Uniquement les offres duo' })
             .closest('li')
-            .find(FilterToggle)
+            .find(Toggle)
           props.query.parse.mockReturnValue({})
           fetchAlgolia.mockReturnValue(
             new Promise(resolve => {
@@ -947,7 +947,7 @@ describe('components | Filters', () => {
           const offerIsDuoFilter = wrapper
             .find({ children: 'Uniquement les offres duo' })
             .closest('li')
-            .find(FilterToggle)
+            .find(Toggle)
 
           // when
           offerIsDuoFilter.simulate('change', {
@@ -979,7 +979,7 @@ describe('components | Filters', () => {
           expect(title).toHaveLength(1)
         })
 
-        it('should render a FilterToggle component for offer free unchecked by default', () => {
+        it('should render a Toggle component for offer free unchecked by default', () => {
           // given
           props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerIsFree = false
@@ -991,7 +991,7 @@ describe('components | Filters', () => {
           const filterOfferIsFree = wrapper
             .find({ children: 'Uniquement les offres gratuites' })
             .closest('li')
-            .find(FilterToggle)
+            .find(Toggle)
           expect(filterOfferIsFree).toHaveLength(1)
           expect(filterOfferIsFree.prop('checked')).toBe(false)
           expect(filterOfferIsFree.prop('id')).toBe('offerIsFree')
@@ -1011,7 +1011,7 @@ describe('components | Filters', () => {
           const offerIsFreeFilter = wrapper
             .find({ children: 'Uniquement les offres gratuites' })
             .closest('li')
-            .find(FilterToggle)
+            .find(Toggle)
           props.query.parse.mockReturnValue({})
           fetchAlgolia.mockReturnValue(
             new Promise(resolve => {
@@ -1156,7 +1156,7 @@ describe('components | Filters', () => {
             const offerIsFreeFilter = wrapper
               .find({ children: 'Uniquement les offres gratuites' })
               .closest('li')
-              .find(FilterToggle)
+              .find(Toggle)
 
             // when
             offerIsFreeFilter.simulate('change', {
@@ -1232,14 +1232,14 @@ describe('components | Filters', () => {
           expect(categoriesTitleButton.prop('aria-pressed')).toBe(true)
         })
 
-        it('should not render FilterCheckbox component when categories filter toggled hidden', () => {
+        it('should not render Checkbox component when categories filter toggled hidden', () => {
           // given
           props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerCategories = []
           const wrapper = shallow(<Filters {...props} />)
           const categoriesButton = wrapper.findWhere(node => node.text() === 'Catégories').first()
           const categoriesWrapper = wrapper.find('[data-test="sf-categories-filter-wrapper"]')
-          const filterCheckboxBeforeClick = categoriesWrapper.find(FilterCheckbox)
+          const filterCheckboxBeforeClick = categoriesWrapper.find(Checkbox)
           const categoriesButtonClassNameBeforeClick = categoriesButton.prop('className')
 
           // when
@@ -1249,7 +1249,7 @@ describe('components | Filters', () => {
           const categoriesWrapperAfterClick = wrapper.find(
             '[data-test="sf-categories-filter-wrapper"]'
           )
-          const filterCheckboxAfterClick = categoriesWrapperAfterClick.find(FilterCheckbox)
+          const filterCheckboxAfterClick = categoriesWrapperAfterClick.find(Checkbox)
           expect(filterCheckboxBeforeClick).toHaveLength(11)
           expect(filterCheckboxAfterClick).toHaveLength(0)
 
@@ -1264,7 +1264,7 @@ describe('components | Filters', () => {
           )
         })
 
-        it('should render one unchecked FilterCheckbox component for each Category Criteria when no category is selected', () => {
+        it('should render one unchecked Checkbox component for each Category Criteria when no category is selected', () => {
           // given
           props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerCategories = []
@@ -1273,36 +1273,36 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const cinemaFilterCheckbox = wrapper.find('FilterCheckbox[label="Cinéma"]')
+          const cinemaFilterCheckbox = wrapper.find('Checkbox[label="Cinéma"]')
           expect(cinemaFilterCheckbox.prop('checked')).toBe(false)
           expect(cinemaFilterCheckbox.prop('className')).toBe('fc-label')
           expect(cinemaFilterCheckbox.prop('id')).toBe('CINEMA')
           expect(cinemaFilterCheckbox.prop('label')).toBe('Cinéma')
           expect(cinemaFilterCheckbox.prop('name')).toBe('CINEMA')
           expect(cinemaFilterCheckbox.prop('onChange')).toStrictEqual(expect.any(Function))
-          expect(wrapper.find('FilterCheckbox[label="Visites, expositions"]').prop('checked')).toBe(
+          expect(wrapper.find('Checkbox[label="Visites, expositions"]').prop('checked')).toBe(
             false
           )
-          expect(wrapper.find('FilterCheckbox[label="Musique"]').prop('checked')).toBe(false)
-          expect(wrapper.find('FilterCheckbox[label="Spectacles"]').prop('checked')).toBe(false)
-          expect(wrapper.find('FilterCheckbox[label="Cours, ateliers"]').prop('checked')).toBe(
+          expect(wrapper.find('Checkbox[label="Musique"]').prop('checked')).toBe(false)
+          expect(wrapper.find('Checkbox[label="Spectacles"]').prop('checked')).toBe(false)
+          expect(wrapper.find('Checkbox[label="Cours, ateliers"]').prop('checked')).toBe(
             false
           )
-          expect(wrapper.find('FilterCheckbox[label="Livres"]').prop('checked')).toBe(false)
+          expect(wrapper.find('Checkbox[label="Livres"]').prop('checked')).toBe(false)
           expect(
-            wrapper.find('FilterCheckbox[label="Films, séries, podcasts"]').prop('checked')
+            wrapper.find('Checkbox[label="Films, séries, podcasts"]').prop('checked')
           ).toBe(false)
-          expect(wrapper.find('FilterCheckbox[label="Presse"]').prop('checked')).toBe(false)
-          expect(wrapper.find('FilterCheckbox[label="Jeux vidéos"]').prop('checked')).toBe(false)
+          expect(wrapper.find('Checkbox[label="Presse"]').prop('checked')).toBe(false)
+          expect(wrapper.find('Checkbox[label="Jeux vidéos"]').prop('checked')).toBe(false)
           expect(
-            wrapper.find('FilterCheckbox[label="Conférences, rencontres"]').prop('checked')
+            wrapper.find('Checkbox[label="Conférences, rencontres"]').prop('checked')
           ).toBe(false)
           expect(
-            wrapper.find('FilterCheckbox[label="Instruments de musique"]').prop('checked')
+            wrapper.find('Checkbox[label="Instruments de musique"]').prop('checked')
           ).toBe(false)
         })
 
-        it('should not render FilterCheckbox component for "Toutes les catégories" Criteria', () => {
+        it('should not render Checkbox component for "Toutes les catégories" Criteria', () => {
           // given
           props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerCategories = []
@@ -1312,12 +1312,12 @@ describe('components | Filters', () => {
 
           // then
           const allCategoriesFilterCheckbox = wrapper.find(
-            'FilterCheckbox[label="Toutes les catégories"]'
+            'Checkbox[label="Toutes les catégories"]'
           )
           expect(allCategoriesFilterCheckbox).toHaveLength(0)
         })
 
-        it('should render a FilterCheckbox component checked when category is selected', () => {
+        it('should render a Checkbox component checked when category is selected', () => {
           // given
           props.history.location.pathname = '/recherche/filtres'
           props.initialFilters.offerCategories = ['CINEMA', 'LIVRE']
@@ -1326,31 +1326,31 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const cinemaCheckbox = wrapper.find('FilterCheckbox[label="Cinéma"]')
+          const cinemaCheckbox = wrapper.find('Checkbox[label="Cinéma"]')
           expect(cinemaCheckbox.prop('checked')).toBe(true)
           expect(cinemaCheckbox.prop('className')).toBe('fc-label-checked')
-          expect(wrapper.find('FilterCheckbox[label="Visites, expositions"]').prop('checked')).toBe(
+          expect(wrapper.find('Checkbox[label="Visites, expositions"]').prop('checked')).toBe(
             false
           )
-          expect(wrapper.find('FilterCheckbox[label="Musique"]').prop('checked')).toBe(false)
-          expect(wrapper.find('FilterCheckbox[label="Spectacles"]').prop('checked')).toBe(false)
-          expect(wrapper.find('FilterCheckbox[label="Cours, ateliers"]').prop('checked')).toBe(
+          expect(wrapper.find('Checkbox[label="Musique"]').prop('checked')).toBe(false)
+          expect(wrapper.find('Checkbox[label="Spectacles"]').prop('checked')).toBe(false)
+          expect(wrapper.find('Checkbox[label="Cours, ateliers"]').prop('checked')).toBe(
             false
           )
-          expect(wrapper.find('FilterCheckbox[label="Livres"]').prop('checked')).toBe(true)
-          expect(wrapper.find('FilterCheckbox[label="Livres"]').prop('className')).toBe(
+          expect(wrapper.find('Checkbox[label="Livres"]').prop('checked')).toBe(true)
+          expect(wrapper.find('Checkbox[label="Livres"]').prop('className')).toBe(
             'fc-label-checked'
           )
           expect(
-            wrapper.find('FilterCheckbox[label="Films, séries, podcasts"]').prop('checked')
+            wrapper.find('Checkbox[label="Films, séries, podcasts"]').prop('checked')
           ).toBe(false)
-          expect(wrapper.find('FilterCheckbox[label="Presse"]').prop('checked')).toBe(false)
-          expect(wrapper.find('FilterCheckbox[label="Jeux vidéos"]').prop('checked')).toBe(false)
+          expect(wrapper.find('Checkbox[label="Presse"]').prop('checked')).toBe(false)
+          expect(wrapper.find('Checkbox[label="Jeux vidéos"]').prop('checked')).toBe(false)
           expect(
-            wrapper.find('FilterCheckbox[label="Conférences, rencontres"]').prop('checked')
+            wrapper.find('Checkbox[label="Conférences, rencontres"]').prop('checked')
           ).toBe(false)
           expect(
-            wrapper.find('FilterCheckbox[label="Instruments de musique"]').prop('checked')
+            wrapper.find('Checkbox[label="Instruments de musique"]').prop('checked')
           ).toBe(false)
         })
 
@@ -1543,13 +1543,13 @@ describe('components | Filters', () => {
       })
 
       describe('date filters', () => {
-        it('should render a FilterToggle component for date filter unchecked by default', () => {
+        it('should render a Toggle component for date filter unchecked by default', () => {
           // when
           const wrapper = shallow(<Filters {...props} />)
 
           // then
           const parentLi = wrapper.find({ children: 'Date' }).closest('li')
-          const dateFilterToggle = parentLi.find(FilterToggle)
+          const dateFilterToggle = parentLi.find(Toggle)
           expect(dateFilterToggle).toHaveLength(1)
           expect(dateFilterToggle.prop('checked')).toBe(false)
           expect(dateFilterToggle.prop('id')).toBe('offerIsFilteredByDate')

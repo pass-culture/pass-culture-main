@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from "prop-types"
-import Icon from "../../../../layout/Icon/Icon"
+import Icon from "../../../../../layout/Icon/Icon"
 
-export function FilterDateListOption({ option, onDateSelection, selectedDateOption }) {
+export function Radio({ option, onDateSelection, selectedDateOption }) {
     return (
       <li>
         <input
@@ -23,7 +23,7 @@ export function FilterDateListOption({ option, onDateSelection, selectedDateOpti
     )
 }
 
-FilterDateListOption.propTypes = {
+Radio.propTypes = {
     onDateSelection: PropTypes.func.isRequired,
     option: PropTypes.shape({
         id: PropTypes.string.isRequired,

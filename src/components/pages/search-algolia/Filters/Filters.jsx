@@ -5,10 +5,10 @@ import { Route, Switch } from 'react-router'
 import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA } from '../Criteria/criteriaEnums'
 import CriteriaLocation from '../CriteriaLocation/CriteriaLocation'
 import { checkIfAroundMe } from '../utils/checkIfAroundMe'
-import FilterCheckbox from './FilterCheckbox/FilterCheckbox'
-import { FilterDateListOptions } from './FilterDateListOptions/FilterDateListOptions'
+import Checkbox from './Checkbox/Checkbox'
+import { RadioList } from './RadioList/RadioList'
 import { DATE_FILTER, PRICE_FILTER } from './filtersEnums'
-import FilterToggle from './FilterToggle/FilterToggle'
+import Toggle from './Toggle/Toggle'
 import { DEFAULT_RADIUS_IN_KILOMETERS } from '../../../../vendor/algolia/filters'
 import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
@@ -561,7 +561,7 @@ export class Filters extends PureComponent {
                       if (categoryCriterion.label !== CATEGORY_CRITERIA.ALL.label) {
                         return (
                           <li key={categoryCriterion.facetFilter}>
-                            <FilterCheckbox
+                            <Checkbox
                               checked={
                                 offerCategories[categoryCriterion.facetFilter] ? true : false
                               }
@@ -599,7 +599,7 @@ export class Filters extends PureComponent {
                   data-test="sf-offer-types-filter-wrapper"
                 >
                   <li>
-                    <FilterCheckbox
+                    <Checkbox
                       checked={offerTypes.isDigital}
                       className={`${offerTypes.isDigital ? 'fc-label-checked' : 'fc-label'}`}
                       id="isDigital"
@@ -609,7 +609,7 @@ export class Filters extends PureComponent {
                     />
                   </li>
                   <li>
-                    <FilterCheckbox
+                    <Checkbox
                       checked={offerTypes.isThing}
                       className={`${offerTypes.isThing ? 'fc-label-checked' : 'fc-label'}`}
                       id="isThing"
@@ -619,7 +619,7 @@ export class Filters extends PureComponent {
                     />
                   </li>
                   <li>
-                    <FilterCheckbox
+                    <Checkbox
                       checked={offerTypes.isEvent}
                       className={`${offerTypes.isEvent ? 'fc-label-checked' : 'fc-label'}`}
                       id="isEvent"
@@ -642,7 +642,7 @@ export class Filters extends PureComponent {
                       </span>
                     )}
                   </div>
-                  <FilterToggle
+                  <Toggle
                     checked={offerIsDuo}
                     id="offerIsDuo"
                     name="offerIsDuo"
@@ -662,7 +662,7 @@ export class Filters extends PureComponent {
                       </span>
                     )}
                   </div>
-                  <FilterToggle
+                  <Toggle
                     checked={offerIsFree}
                     id="offerIsFree"
                     name="offerIsFree"
@@ -708,7 +708,7 @@ export class Filters extends PureComponent {
                       {'Seules les offres Sorties seront affichées'}
                     </p>
                   </div>
-                  <FilterToggle
+                  <Toggle
                     checked={offerIsFilteredByDate}
                     id="offerIsFilteredByDate"
                     name="offerIsFilteredByDate"
@@ -717,7 +717,7 @@ export class Filters extends PureComponent {
                 </div>
               </li>
               {offerIsFilteredByDate && (
-                <FilterDateListOptions
+                <RadioList
                   date={date}
                   onDateSelection={this.handleDateSelection}
                   onPickedDate={this.handlePickedDate}

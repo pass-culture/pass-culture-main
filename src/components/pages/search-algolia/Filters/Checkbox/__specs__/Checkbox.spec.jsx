@@ -1,9 +1,9 @@
 import { shallow } from 'enzyme'
-import FilterCheckbox from '../FilterCheckbox'
+import Checkbox from '../Checkbox'
 import React from 'react'
 import Icon from '../../../../../layout/Icon/Icon'
 
-describe('components | FilterCheckbox', () => {
+describe('components | Checkbox', () => {
   let props
 
   beforeEach(() => {
@@ -20,7 +20,7 @@ describe('components | FilterCheckbox', () => {
   describe('render', () => {
     it('should render an input with the right props', () => {
       // when
-      const wrapper = shallow(<FilterCheckbox {...props} />)
+      const wrapper = shallow(<Checkbox {...props} />)
 
       // then
       const input = wrapper.find('input')
@@ -34,7 +34,7 @@ describe('components | FilterCheckbox', () => {
 
     it('should render a label with the right props', () => {
       // when
-      const wrapper = shallow(<FilterCheckbox {...props} />)
+      const wrapper = shallow(<Checkbox {...props} />)
 
       // then
       const label = wrapper.find('label')
@@ -50,7 +50,7 @@ describe('components | FilterCheckbox', () => {
         props.checked = true
 
         // when
-        const wrapper = shallow(<FilterCheckbox {...props} />)
+        const wrapper = shallow(<Checkbox {...props} />)
 
         // then
         const icon = wrapper.find(Icon)
@@ -64,7 +64,7 @@ describe('components | FilterCheckbox', () => {
         props.checked = false
 
         // when
-        const wrapper = shallow(<FilterCheckbox {...props} />)
+        const wrapper = shallow(<Checkbox {...props} />)
 
         // then
         const icon = wrapper.find(Icon)

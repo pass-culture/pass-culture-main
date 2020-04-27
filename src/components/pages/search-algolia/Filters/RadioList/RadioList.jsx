@@ -3,10 +3,10 @@ import moment from 'moment'
 import PropTypes from 'prop-types'
 import DatePicker from 'react-datepicker'
 import { DATE_FILTER } from '../filtersEnums'
-import { FilterDateListOption } from './FilterDateListOption'
+import { Radio } from './Radio/Radio'
 
 
-export function FilterDateListOptions({ date, onDateSelection, onPickedDate }) {
+export function RadioList({ date, onDateSelection, onPickedDate }) {
   return (
     <li className="sf-date-wrapper">
       <h4 className="sf-title">
@@ -15,7 +15,7 @@ export function FilterDateListOptions({ date, onDateSelection, onPickedDate }) {
       <ul>
         {Object.keys(DATE_FILTER).map(dateFilterOption => {
           return (
-            <FilterDateListOption
+            <Radio
               key={dateFilterOption.value}
               onDateSelection={onDateSelection}
               option={DATE_FILTER[dateFilterOption]}
@@ -36,7 +36,7 @@ export function FilterDateListOptions({ date, onDateSelection, onPickedDate }) {
     </li>)
 }
 
-FilterDateListOptions.propTypes = {
+RadioList.propTypes = {
   date: PropTypes.shape({ option: PropTypes.string, selectedDate: PropTypes.instanceOf(Date) }).isRequired,
   onDateSelection: PropTypes.func.isRequired,
   onPickedDate: PropTypes.func.isRequired,
