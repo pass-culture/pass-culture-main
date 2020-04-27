@@ -10,7 +10,8 @@ def get_existing_webapp_user_with_no_date_read():
     query = keep_only_webapp_users(User.query)
     query = query.filter_by(
         needsToFillCulturalSurvey=False,
-        resetPasswordToken=None
+        resetPasswordToken=None,
+        hasSeenTutorials=True
     )
     query = query.filter(
         ~User.recommendations.any(

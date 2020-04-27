@@ -37,9 +37,15 @@ def create_industrial_webapp_users():
 
             cultural_survey_id = None
             needs_to_fill_cultural_survey = False
+            has_seen_tutorials = True
+
+            if tag == "has-filled-cultural-survey":
+                has_seen_tutorials = False
+
             if tag == "has-signed-up":
                 cultural_survey_id = uuid.uuid4()
                 needs_to_fill_cultural_survey = True
+                has_seen_tutorials = False
 
             email = "pctest.jeune{}.{}@btmx.fr".format(departement_code, tag)
 
@@ -48,6 +54,7 @@ def create_industrial_webapp_users():
                 departement_code=str(departement_code),
                 email=email,
                 first_name="PC Test Jeune",
+                has_seen_tutorials=has_seen_tutorials,
                 last_name="{} {}".format(departement_code, short_tag),
                 needs_to_fill_cultural_survey=needs_to_fill_cultural_survey,
                 postal_code="{}100".format(departement_code),
