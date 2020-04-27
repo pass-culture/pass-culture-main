@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest.mock import Mock, patch
 
-from domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
+from domain.demarches_simplifiees import get_all_application_ids_for_demarche_simplifiee, get_closed_application_ids_for_demarche_simplifiee, DmsApplicationStates
 
 
 class GetAllApplicationIdsForBeneficiaryImportTest:
@@ -50,8 +50,8 @@ class GetAllApplicationIdsForBeneficiaryImportTest:
         ]
 
         # When
-        application_ids = get_closed_application_ids_for_demarche_simplifiee(
-            self.PROCEDURE_ID, self.TOKEN, datetime(2018, 1, 1)
+        application_ids = get_all_application_ids_for_demarche_simplifiee(
+            self.PROCEDURE_ID, self.TOKEN
         )
 
         # Then
@@ -59,16 +59,25 @@ class GetAllApplicationIdsForBeneficiaryImportTest:
 
     @patch(
         'domain.demarches_simplifiees.get_all_applications_for_procedure')
-    def test_returns_applications_with_state_closed_only(self, get_all_applications_for_procedure):
+    def test_returns_applications_with_all_states_by_default(self, get_all_applications_for_procedure):
         # Given
         get_all_applications_for_procedure.return_value = {
             "dossiers": [
-                {"id": 2,
+                {"id": 1,
                  "updated_at": "2019-02-04T16:51:18.293Z",
                  "state": "closed"},
+                {"id": 2,
+                 "updated_at": "2019-02-04T16:51:18.293Z",
+                 "state": "initiated"},
                 {"id": 3,
                  "updated_at": "2019-02-03T16:51:18.293Z",
-                 "state": "initiated"}
+                 "state": "refused"},
+                {"id": 4,
+                 "updated_at": "2019-02-03T16:51:18.293Z",
+                 "state": "received"},
+                {"id": 5,
+                 "updated_at": "2019-02-03T16:51:18.293Z",
+                 "state": "without_continuation"}
             ],
             'pagination': {
                 'page': 1,
@@ -78,12 +87,78 @@ class GetAllApplicationIdsForBeneficiaryImportTest:
         }
 
         # When
-        application_ids = get_closed_application_ids_for_demarche_simplifiee(
-            self.PROCEDURE_ID, self.TOKEN, datetime(2019, 1, 1)
+        application_ids = get_all_application_ids_for_demarche_simplifiee(
+            self.PROCEDURE_ID, self.TOKEN
         )
 
         # Then
-        assert application_ids == [2]
+        assert sorted(application_ids) == [1, 2, 3, 4, 5]
+
+    @patch(
+        'domain.demarches_simplifiees.get_all_applications_for_procedure')
+    def test_returns_applications_with_chosen_states(self, get_all_applications_for_procedure):
+        # Given
+        get_all_applications_for_procedure.return_value = {
+            "dossiers": [
+                {"id": 1,
+                 "updated_at": "2019-02-04T16:51:18.293Z",
+                 "state": "closed"},
+                {"id": 2,
+                 "updated_at": "2019-02-04T16:51:18.293Z",
+                 "state": "initiated"},
+                {"id": 3,
+                 "updated_at": "2019-02-03T16:51:18.293Z",
+                 "state": "refused"},
+                {"id": 4,
+                 "updated_at": "2019-02-03T16:51:18.293Z",
+                 "state": "received"},
+                {"id": 5,
+                 "updated_at": "2019-02-03T16:51:18.293Z",
+                 "state": "without_continuation"}
+            ],
+            'pagination': {
+                'page': 1,
+                'resultats_par_page': 100,
+                'nombre_de_page': 1
+            }
+        }
+
+        # When
+        application_ids = get_all_application_ids_for_demarche_simplifiee(
+            self.PROCEDURE_ID, self.TOKEN, accepted_states=[
+                DmsApplicationStates.received, DmsApplicationStates.without_continuation]
+        )
+
+        # Then
+        assert sorted(application_ids) == [4, 5]
+
+    @patch(
+        'domain.demarches_simplifiees.get_all_applications_for_procedure')
+    def test_returns_all_applications_if_no_date_specified(self, get_all_applications_for_procedure):
+        # Given
+        get_all_applications_for_procedure.return_value = {
+            "dossiers": [
+                {"id": 2,
+                 "updated_at": "2019-02-04T16:51:18.293Z",
+                 "state": "closed"},
+                {"id": 3,
+                 "updated_at": "2018-12-17T16:51:18.293Z",
+                 "state": "closed"}
+            ],
+            'pagination': {
+                'page': 1,
+                'resultats_par_page': 100,
+                'nombre_de_page': 1
+            }
+        }
+
+        # When
+        application_ids = get_all_application_ids_for_demarche_simplifiee(
+            self.PROCEDURE_ID, self.TOKEN
+        )
+
+        # Then
+        assert sorted(application_ids) == [2, 3]
 
     @patch(
         'domain.demarches_simplifiees.get_all_applications_for_procedure')
@@ -106,7 +181,7 @@ class GetAllApplicationIdsForBeneficiaryImportTest:
         }
 
         # When
-        application_ids = get_closed_application_ids_for_demarche_simplifiee(
+        application_ids = get_all_application_ids_for_demarche_simplifiee(
             self.PROCEDURE_ID, self.TOKEN, datetime(2019, 1, 1)
         )
 
@@ -140,9 +215,43 @@ class GetAllApplicationIdsForBeneficiaryImportTest:
         }
 
         # When
-        application_ids = get_closed_application_ids_for_demarche_simplifiee(
-            self.PROCEDURE_ID, self.TOKEN, datetime(2018, 1, 1)
+        application_ids = get_all_application_ids_for_demarche_simplifiee(
+            self.PROCEDURE_ID, self.TOKEN
         )
 
         # Then
         assert application_ids == [3, 2, 1, 4]
+
+
+class GetClosedApplicationIdsForBeneficiaryImportTest:
+    def setup_method(self):
+        self.PROCEDURE_ID = '123456789'
+        self.TOKEN = 'AZERTY123/@.,!é'
+
+    @patch(
+        'domain.demarches_simplifiees.get_all_applications_for_procedure')
+    def test_returns_applications_with_state_closed_only(self, get_all_applications_for_procedure):
+        # Given
+        get_all_applications_for_procedure.return_value = {
+            "dossiers": [
+                {"id": 2,
+                 "updated_at": "2019-02-04T16:51:18.293Z",
+                 "state": "closed"},
+                {"id": 3,
+                 "updated_at": "2019-02-03T16:51:18.293Z",
+                 "state": "initiated"}
+            ],
+            'pagination': {
+                'page': 1,
+                'resultats_par_page': 100,
+                'nombre_de_page': 1
+            }
+        }
+
+        # When
+        application_ids = get_closed_application_ids_for_demarche_simplifiee(
+            self.PROCEDURE_ID, self.TOKEN, datetime(2019, 1, 1)
+        )
+
+        # Then
+        assert application_ids == [2]

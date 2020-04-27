@@ -6,8 +6,8 @@ from utils.date import DATE_ISO_FORMAT
 from utils.logger import logger
 
 
-def get_closed_application_ids_for_demarche_simplifiee(
-        procedure_id: str, token: str, last_update: datetime
+def get_all_application_ids_for_demarche_simplifiee(
+        procedure_id: str, token: str, last_update: datetime = None, accepted_states=DmsApplicationStates
 ) -> List[int]:
     current_page = 1
     number_of_pages = 1
@@ -21,7 +21,7 @@ def get_closed_application_ids_for_demarche_simplifiee(
             f'[IMPORT DEMARCHES SIMPLIFIEES] page {current_page} of {number_of_pages}')
 
         applications_to_process = [application for application in api_response['dossiers'] if
-                                   _needs_processing(application, last_update)]
+                                   _has_requested_state(application, accepted_states) and _was_last_updated_after(application, last_update)]
         logger.info(
             f'[IMPORT DEMARCHES SIMPLIFIEES] {len(applications_to_process)} applications to process')
         applications += applications_to_process
@@ -34,15 +34,19 @@ def get_closed_application_ids_for_demarche_simplifiee(
     return [application['id'] for application in _sort_applications_by_date(applications)]
 
 
-def _needs_processing(application: dict, last_update: datetime) -> bool:
-    return _is_closed(application) and _was_last_updated_after(application, last_update)
+def get_closed_application_ids_for_demarche_simplifiee(
+        procedure_id: str, token: str, last_update: datetime
+) -> List[int]:
+    return get_all_application_ids_for_demarche_simplifiee(procedure_id, token, last_update, accepted_states=[DmsApplicationStates.closed])
 
 
-def _is_closed(application: dict) -> bool:
-    return DmsApplicationStates[application['state']] is DmsApplicationStates.closed
+def _has_requested_state(application: dict, states: datetime) -> bool:
+    return DmsApplicationStates[application['state']] in states
 
 
-def _was_last_updated_after(application: dict, last_update: datetime) -> bool:
+def _was_last_updated_after(application: dict, last_update: datetime = None) -> bool:
+    if(not last_update):
+        return True
     return datetime.strptime(application['updated_at'], DATE_ISO_FORMAT) >= last_update
 
 
