@@ -65,7 +65,7 @@ describe('src | components | pages | discovery | Deck | Card', () => {
       // then
       expect(props.handleSeenOffer).not.toHaveBeenCalled()
     })
-    it('should not call handleSeenOffer once when seen offer feature is not active', () => {
+    it('should not call handleSeenOffer when seen offer feature is not active', () => {
       // given
       const props = {
         handleClickRecommendation: jest.fn(),
