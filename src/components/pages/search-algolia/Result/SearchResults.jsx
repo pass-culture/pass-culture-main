@@ -77,11 +77,24 @@ class SearchResults extends PureComponent {
   }
 
   getIsSearchAroundMeFromUrlOrProps = isSearchAroundMeFromProps => {
-    const { query } = this.props
+    const { query, geolocation, history } = this.props
     const queryParams = query.parse()
     const isSearchAroundMeFromUrl = queryParams['autour-de-moi'] || ''
 
-    return isSearchAroundMeFromUrl ? isSearchAroundMeFromUrl === 'oui' : isSearchAroundMeFromProps
+    if (isSearchAroundMeFromUrl === 'oui') {
+      if (isGeolocationEnabled(geolocation)) {
+        return true
+      }
+      const keywordsFromUrl = queryParams['mots-cles'] || ''
+      const sortByFromUrl = queryParams['tri'] || ''
+      const categoriesFromUrl = queryParams['categories'] || ''
+      history.replace({
+        search: `?mots-cles=${keywordsFromUrl}&autour-de-moi=non&tri=${sortByFromUrl}&categories=${categoriesFromUrl}`,
+      })
+      return false
+    } else {
+      return isSearchAroundMeFromProps
+    }
   }
 
   getNumberOfActiveFilters = (isSearchAroundMe, categories) => {

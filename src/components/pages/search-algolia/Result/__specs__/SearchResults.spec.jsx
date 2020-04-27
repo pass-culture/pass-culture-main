@@ -19,6 +19,7 @@ import SearchAlgoliaDetailsContainer from '../ResultDetail/ResultDetailContainer
 import SearchResults from '../SearchResults'
 import { SearchResultsList } from '../SearchResultsList'
 import CriteriaSort from '../../CriteriaSort/CriteriaSort'
+import { isGeolocationEnabled } from '../../../../../utils/geolocation'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
@@ -28,6 +29,13 @@ jest.mock('react-toastify', () => ({
     info: jest.fn(),
   },
 }))
+jest.mock('../../../../../utils/geolocation', () => {
+  const geolocationModule = jest.requireActual('../../../../../utils/geolocation')
+  return {
+    ...geolocationModule,
+    isGeolocationEnabled: jest.fn(),
+  }
+})
 
 const stubRef = wrapper => {
   const instance = wrapper.instance()
@@ -82,6 +90,7 @@ describe('components | SearchResults', () => {
       },
       redirectToSearchMainPage: jest.fn(),
     }
+    isGeolocationEnabled.mockReturnValue(true)
     fetchAlgolia.mockReturnValue(
       new Promise(resolve => {
         resolve({
@@ -498,6 +507,53 @@ describe('components | SearchResults', () => {
           geolocation: { latitude: 40.1, longitude: 41.1 },
           isSearchAroundMe: true,
           keywords: 'une librairie',
+          offerCategories: [],
+          offerIsDuo: false,
+          offerIsFree: false,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false,
+          },
+          page: 0,
+          priceRange: [0, 500],
+          sortBy: '',
+        })
+      })
+
+      it('should replace "autour-de-moi" query param from oui to non when geolocation is disabled', async () => {
+        // given
+        props.geolocation = {
+          latitude: null,
+          longitude: null,
+        }
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [],
+              nbHits: 0,
+              nbPages: 0,
+              page: 0,
+            })
+          })
+        )
+        parse.mockReturnValue({
+          'autour-de-moi': 'oui',
+        })
+        isGeolocationEnabled.mockReturnValue(false)
+
+        // when
+        shallow(<SearchResults {...props} />)
+
+        // then
+        expect(props.history.replace).toHaveBeenCalledWith({
+          search: '?mots-cles=&autour-de-moi=non&tri=&categories=',
+        })
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
+          geolocation: { latitude: null, longitude: null },
+          isSearchAroundMe: false,
+          keywords: '',
           offerCategories: [],
           offerIsDuo: false,
           offerIsFree: false,
