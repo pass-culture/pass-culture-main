@@ -35,7 +35,7 @@ def find_venue_without_siret_by_managing_offerer_id_and_name(offerer_id: int, ve
         .filter_by(managingOffererId=offerer_id) \
         .filter(Venue.siret == None) \
         .filter(func.lower(Venue.name) == func.lower(venue_name)) \
-        .one_or_none()
+        .all()
 
 
 def find_by_managing_offerer_id_and_siret(offerer_id: int, siret: str) -> Venue:

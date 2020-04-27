@@ -16,6 +16,10 @@ from utils.date import DATE_ISO_FORMAT
 from sqlalchemy.orm.exc import MultipleResultsFound
 
 
+class VenueMatchingError(Exception):
+    pass
+
+
 class VenueBankInformationProvider(LocalProvider):
     name = "Demarches simplifiees / Venue Bank Information"
     can_create = True
@@ -69,25 +73,27 @@ class VenueBankInformationProvider(LocalProvider):
             application_details['dossier']["champs"], "BIC")
         bank_information_dict['applicationId'] = application_details['dossier']["id"]
         siren = application_details['dossier']['entreprise']['siren']
-        offerer = offerer_queries.find_by_siren(siren)
-        if offerer:
-            try:
-                venue = self.get_venue(application_details, offerer.id)
-                if venue:
-                    bank_information_dict['venueId'] = venue.id
-                    bank_information_dict['idAtProviders'] = _compute_id_at_provider(
-                        venue, offerer)
-            except MultipleResultsFound:
-                self.log_provider_event(LocalProviderEventType.SyncError,
-                                        f"multiple matching venues for application id"
-                                        f" {bank_information_dict['applicationId']}")
-                return {}
-        if 'idAtProviders' not in bank_information_dict:
+
+        try:
+            offerer = self.get_offerer(siren)
+            venue = self.get_venue(application_details, offerer.id)
+
+            bank_information_dict['venueId'] = venue.id
+            bank_information_dict['idAtProviders'] = _compute_id_at_provider(
+                venue, offerer)
+
+        except VenueMatchingError as err:
             self.log_provider_event(LocalProviderEventType.SyncError,
-                                    f"unknown siret or name for application id"
-                                    f" {bank_information_dict['applicationId']}")
+                                    f"{err} for application id {bank_information_dict['applicationId']}")
             return {}
+
         return bank_information_dict
+
+    def get_offerer(self, siren):
+        offerer = offerer_queries.find_by_siren(siren)
+        if not offerer:
+            raise VenueMatchingError("Offerer not found")
+        return offerer
 
     def get_venue(self, application_details, offerer_id):
         siret = _find_value_in_fields(
@@ -95,11 +101,20 @@ class VenueBankInformationProvider(LocalProvider):
         if siret:
             venue = venue_queries.find_by_managing_offerer_id_and_siret(
                 offerer_id, siret)
+            if not venue:
+                raise VenueMatchingError("Siret not found")
+
         else:
             name = _find_value_in_fields(
                 application_details['dossier']["champs"], self.FIELD_FOR_VENUE_WITHOUT_SIRET)
-            venue = venue_queries.find_venue_without_siret_by_managing_offerer_id_and_name(
+            venues = venue_queries.find_venue_without_siret_by_managing_offerer_id_and_name(
                 offerer_id, name)
+            if len(venues) == 0:
+                raise VenueMatchingError("Venue name for found")
+            if len(venues) > 1:
+                raise VenueMatchingError("Multiple venues found")
+            venue = venues[0]
+
         return venue
 
     def retrieve_next_bank_information(self) -> dict:

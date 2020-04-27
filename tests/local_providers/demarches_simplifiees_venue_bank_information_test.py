@@ -407,7 +407,7 @@ class VenueBankInformationProviderTest:
             assert BankInformation.query.count() == 0
             sync_error = LocalProviderEvent.query.filter_by(
                 type=LocalProviderEventType.SyncError).first()
-            assert sync_error.payload == 'unknown siret or name for application id 1'
+            assert sync_error.payload == 'Offerer not found for application id 1'
             events = LocalProviderEvent.query.all()
             assert events[0].type == LocalProviderEventType.SyncStart
             assert events[1].type == LocalProviderEventType.SyncError
@@ -444,7 +444,7 @@ class VenueBankInformationProviderTest:
             assert BankInformation.query.count() == 0
             sync_error = LocalProviderEvent.query.filter_by(
                 type=LocalProviderEventType.SyncError).first()
-            assert sync_error.payload == 'unknown siret or name for application id 1'
+            assert sync_error.payload == 'Offerer not found for application id 1'
             events = LocalProviderEvent.query.all()
             assert events[0].type == LocalProviderEventType.SyncStart
             assert events[1].type == LocalProviderEventType.SyncError
@@ -571,7 +571,7 @@ class VenueBankInformationProviderTest:
             assert BankInformation.query.count() == 0
             sync_error = LocalProviderEvent.query.filter_by(
                 type=LocalProviderEventType.SyncError).first()
-            assert sync_error.payload == 'unknown siret or name for application id 1'
+            assert sync_error.payload == 'Offerer not found for application id 1'
             events = LocalProviderEvent.query.all()
             assert events[0].type == LocalProviderEventType.SyncStart
             assert events[1].type == LocalProviderEventType.SyncError
@@ -608,7 +608,7 @@ class VenueBankInformationProviderTest:
             assert BankInformation.query.count() == 0
             sync_error = LocalProviderEvent.query.filter_by(
                 type=LocalProviderEventType.SyncError).first()
-            assert sync_error.payload == 'unknown siret or name for application id 1'
+            assert sync_error.payload == 'Offerer not found for application id 1'
             events = LocalProviderEvent.query.all()
             assert events[0].type == LocalProviderEventType.SyncStart
             assert events[1].type == LocalProviderEventType.SyncError
@@ -648,7 +648,7 @@ class VenueBankInformationProviderTest:
             assert BankInformation.query.count() == 0
             sync_error = LocalProviderEvent.query.filter_by(
                 type=LocalProviderEventType.SyncError).first()
-            assert sync_error.payload == 'multiple matching venues for application id 1'
+            assert sync_error.payload == 'Multiple venues found for application id 1'
             events = LocalProviderEvent.query.all()
             assert events[0].type == LocalProviderEventType.SyncStart
             assert events[1].type == LocalProviderEventType.SyncError
