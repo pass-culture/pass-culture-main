@@ -422,7 +422,6 @@ export class Filters extends PureComponent {
 
   handlePickedDate = momentDate => {
     const { filters } = this.state
-    console.log(momentDate)
     const selectedDate = momentDate.toDate()
 
     this.setState(

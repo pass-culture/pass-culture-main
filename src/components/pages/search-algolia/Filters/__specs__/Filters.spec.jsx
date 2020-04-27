@@ -12,6 +12,8 @@ import { GEOLOCATION_CRITERIA } from '../../Criteria/criteriaEnums'
 import { Filters } from '../Filters'
 import FilterToggle from '../FilterToggle/FilterToggle'
 import { CriteriaLocation } from '../../CriteriaLocation/CriteriaLocation'
+import FilterCheckbox from '../FilterCheckbox/FilterCheckbox'
+import { Criteria } from '../../Criteria/Criteria'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),

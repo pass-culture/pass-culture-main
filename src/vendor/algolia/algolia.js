@@ -9,6 +9,7 @@ import {
 import { FACETS } from './facets'
 import { DEFAULT_RADIUS_IN_KILOMETERS, FILTERS, RADIUS_IN_METERS_FOR_NO_OFFERS } from './filters'
 import algoliasearch from 'algoliasearch'
+import { DATE_FILTER } from '../../components/pages/search-algolia/Filters/filtersEnums'
 
 export const fetchAlgolia = ({
                                aroundRadius = DEFAULT_RADIUS_IN_KILOMETERS,
