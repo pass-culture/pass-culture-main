@@ -48,7 +48,7 @@ class SearchAlgolia extends PureComponent {
     window.onresize = null
   }
 
-  handleGeolocationCriterionSelection = criterionKey => () => {
+  handleGeolocationCriterionSelection = criterionKey => {
     const label = GEOLOCATION_CRITERIA[criterionKey].label
     this.setState(() => {
       return {

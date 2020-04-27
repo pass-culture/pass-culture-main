@@ -123,18 +123,35 @@ describe('components | SearchAlgolia', () => {
         const routes = wrapper.find(Route)
 
         // then
-        const critereLocalisationRoute = routes.at(2)
-        expect(critereLocalisationRoute.prop('path')).toBe('/recherche/criteres-localisation')
-        const searchCriteriaLocation = critereLocalisationRoute.find(CriteriaLocation)
+        const criteriaLocationRoute = routes.at(2)
+        expect(criteriaLocationRoute.prop('path')).toBe('/recherche/criteres-localisation')
+        const searchCriteriaLocation = criteriaLocationRoute.find(CriteriaLocation)
         expect(searchCriteriaLocation.prop('activeCriterionLabel')).toStrictEqual('Partout')
         expect(searchCriteriaLocation.prop('criteria')).toStrictEqual(expect.any(Object))
         expect(searchCriteriaLocation.prop('geolocation')).toStrictEqual(props.geolocation)
         expect(searchCriteriaLocation.prop('history')).toStrictEqual(props.history)
         expect(searchCriteriaLocation.prop('match')).toStrictEqual(props.match)
-        expect(searchCriteriaLocation.prop('onCriterionSelection')).toStrictEqual(
-          expect.any(Function)
-        )
+        expect(searchCriteriaLocation.prop('onCriterionSelection')).toStrictEqual(expect.any(Function))
         expect(searchCriteriaLocation.prop('title')).toStrictEqual('Localisation')
+      })
+
+      it('should redirect to main page when clicking on Criteria', () => {
+        // given
+        props.history.push('/recherche/criteres-localisation')
+        const wrapper = mount(
+          <Router history={props.history}>
+            <SearchAlgolia {...props} />
+          </Router>
+        )
+        const everywhereButton = wrapper
+          .find('button')
+          .first()
+
+        // when
+        everywhereButton.simulate('click')
+
+        // then
+        expect(props.redirectToSearchMainPage).toHaveBeenCalledWith()
       })
     })
 
