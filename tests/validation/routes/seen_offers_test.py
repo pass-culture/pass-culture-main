@@ -27,3 +27,13 @@ class checkPayloadIsValidTest:
         # then
         assert error.value.errors['global'] == ['Données manquantes']
 
+
+    def test_should_not_raise_payload_error(self):
+        # given
+        payload = {"offerId": "AE", "userId": "AE"}
+
+        # when
+        check = check_payload_is_valid(payload)
+
+        # then
+        assert check is None
