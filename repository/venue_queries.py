@@ -30,7 +30,7 @@ def find_by_managing_offerer_id(offerer_id: int) -> Venue:
     return Venue.query.filter_by(managingOffererId=offerer_id).first()
 
 
-def find_by_managing_offerer_id_and_name_for_venue_without_siret(offerer_id: int, venue_name: str) -> Venue:
+def find_venue_without_siret_by_managing_offerer_id_and_name(offerer_id: int, venue_name: str) -> Venue:
     return Venue.query \
         .filter_by(managingOffererId=offerer_id) \
         .filter(Venue.siret == None) \
@@ -92,13 +92,15 @@ def find_filtered_venues(sirens=None,
         query = _filter_by_has_validated_offerer(query, has_validated_offerer)
 
     if has_offerer_with_siren is not None:
-        query = _filter_by_has_offerer_with_siren(query, has_offerer_with_siren)
+        query = _filter_by_has_offerer_with_siren(
+            query, has_offerer_with_siren)
 
     if has_validated_user_offerer is not None or has_validated_user is not None:
         query = query.join(UserOfferer)
 
     if has_validated_user_offerer is not None:
-        query = _filter_by_has_validated_user_offerer(query, has_validated_user_offerer)
+        query = _filter_by_has_validated_user_offerer(
+            query, has_validated_user_offerer)
 
     if has_validated_user is not None:
         query = _filter_by_has_validated_user(query, has_validated_user)
@@ -179,8 +181,10 @@ def _filter_by_date(query, from_date=None, to_date=None):
     Activity = load_activity()
     is_on_table_venue = Activity.table_name == 'venue'
     is_insert = Activity.verb == 'insert'
-    activity_data_id_matches_venue_id = Activity.data['id'].astext.cast(db.Integer) == Venue.id
-    query = query.join(Activity, activity_data_id_matches_venue_id).filter(and_(is_on_table_venue, is_insert))
+    activity_data_id_matches_venue_id = Activity.data['id'].astext.cast(
+        db.Integer) == Venue.id
+    query = query.join(Activity, activity_data_id_matches_venue_id).filter(
+        and_(is_on_table_venue, is_insert))
 
     if from_date:
         query = query.filter(Activity.issued_at >= from_date)
@@ -215,7 +219,7 @@ def _filter_by_offer_status(query, offer_status):
         query = query.join(Offer)
         is_not_soft_deleted_thing = Stock.isSoftDeleted == False
         can_still_be_booked_thing = (
-                (Stock.bookingLimitDatetime == None) | (Stock.bookingLimitDatetime >= datetime.utcnow()))
+            (Stock.bookingLimitDatetime == None) | (Stock.bookingLimitDatetime >= datetime.utcnow()))
         is_available_thing = ((Stock.quantity == None) | (Stock.quantity > 0))
 
         query_1 = query.join(Stock)

@@ -15,6 +15,7 @@ from repository.bank_information_queries import get_last_update_from_bank_inform
 from utils.date import DATE_ISO_FORMAT
 from sqlalchemy.orm.exc import MultipleResultsFound
 
+
 class VenueBankInformationProvider(LocalProvider):
     name = "Demarches simplifiees / Venue Bank Information"
     can_create = True
@@ -74,10 +75,11 @@ class VenueBankInformationProvider(LocalProvider):
                 venue = self.get_venue(application_details, offerer.id)
                 if venue:
                     bank_information_dict['venueId'] = venue.id
-                    bank_information_dict['idAtProviders'] = _compute_id_at_provider(venue, offerer)
+                    bank_information_dict['idAtProviders'] = _compute_id_at_provider(
+                        venue, offerer)
             except MultipleResultsFound:
                 self.log_provider_event(LocalProviderEventType.SyncError,
-                                        f"multiple matching venue for application id"
+                                        f"multiple matching venues for application id"
                                         f" {bank_information_dict['applicationId']}")
                 return {}
         if 'idAtProviders' not in bank_information_dict:
@@ -91,11 +93,13 @@ class VenueBankInformationProvider(LocalProvider):
         siret = _find_value_in_fields(
             application_details['dossier']["champs"], self.FIELD_FOR_VENUE_WITH_SIRET)
         if siret:
-            venue = venue_queries.find_by_managing_offerer_id_and_siret(offerer_id, siret)
+            venue = venue_queries.find_by_managing_offerer_id_and_siret(
+                offerer_id, siret)
         else:
             name = _find_value_in_fields(
-            application_details['dossier']["champs"], self.FIELD_FOR_VENUE_WITHOUT_SIRET)
-            venue = venue_queries.find_by_managing_offerer_id_and_name_for_venue_without_siret(offerer_id, name)
+                application_details['dossier']["champs"], self.FIELD_FOR_VENUE_WITHOUT_SIRET)
+            venue = venue_queries.find_venue_without_siret_by_managing_offerer_id_and_name(
+                offerer_id, name)
         return venue
 
     def retrieve_next_bank_information(self) -> dict:
@@ -109,6 +113,7 @@ def _find_value_in_fields(fields, value_name):
     for field in fields:
         if field["type_de_champ"]["libelle"] == value_name:
             return field["value"]
+
 
 def _compute_id_at_provider(venue, offerer) -> str:
     if (venue.siret):

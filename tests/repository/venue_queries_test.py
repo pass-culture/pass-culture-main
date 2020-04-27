@@ -5,7 +5,7 @@ from sqlalchemy.orm.exc import MultipleResultsFound
 
 from repository import repository
 from repository.venue_queries import find_filtered_venues, find_by_managing_user, \
-    find_by_managing_offerer_id_and_name_for_venue_without_siret, find_by_managing_offerer_id_and_siret
+    find_venue_without_siret_by_managing_offerer_id_and_name, find_by_managing_offerer_id_and_siret
 from tests.conftest import clean_database
 from tests.model_creators.activity_creators import create_venue_activity, save_all_activities
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
@@ -16,22 +16,34 @@ from tests.model_creators.specific_creators import create_stock_from_event_occur
 @clean_database
 def test_find_filtered_venues_with_sirens_params_return_filtered_venues(app):
     # given
-    offerer_123456789 = create_offerer(name="offerer_123456789", siren="123456789")
-    offerer_123456781 = create_offerer(name="offerer_123456781", siren="123456781")
-    offerer_123456782 = create_offerer(name="offerer_123456782", siren="123456782")
-    offerer_123456783 = create_offerer(name="offerer_123456783", siren="123456783")
-    offerer_123456784 = create_offerer(name="offerer_123456784", siren="123456784")
+    offerer_123456789 = create_offerer(
+        name="offerer_123456789", siren="123456789")
+    offerer_123456781 = create_offerer(
+        name="offerer_123456781", siren="123456781")
+    offerer_123456782 = create_offerer(
+        name="offerer_123456782", siren="123456782")
+    offerer_123456783 = create_offerer(
+        name="offerer_123456783", siren="123456783")
+    offerer_123456784 = create_offerer(
+        name="offerer_123456784", siren="123456784")
 
-    venue_123456789 = create_venue(offerer_123456789, name="venue_123456789", siret="12345678912345")
-    venue_123456781 = create_venue(offerer_123456781, name="venue_123456781", siret="12345678112345")
-    venue_123456782 = create_venue(offerer_123456782, name="venue_123456782", siret="12345678212345")
-    venue_123456783 = create_venue(offerer_123456783, name="venue_123456783", siret="12345678312345")
-    venue_123456784 = create_venue(offerer_123456784, name="venue_123456784", siret="12345678412345")
+    venue_123456789 = create_venue(
+        offerer_123456789, name="venue_123456789", siret="12345678912345")
+    venue_123456781 = create_venue(
+        offerer_123456781, name="venue_123456781", siret="12345678112345")
+    venue_123456782 = create_venue(
+        offerer_123456782, name="venue_123456782", siret="12345678212345")
+    venue_123456783 = create_venue(
+        offerer_123456783, name="venue_123456783", siret="12345678312345")
+    venue_123456784 = create_venue(
+        offerer_123456784, name="venue_123456784", siret="12345678412345")
 
-    repository.save(venue_123456789, venue_123456781, venue_123456782, venue_123456783, venue_123456784)
+    repository.save(venue_123456789, venue_123456781,
+                    venue_123456782, venue_123456783, venue_123456784)
 
     # when
-    query_with_sirens = find_filtered_venues(sirens=["123456781", "123456782", "123456783"])
+    query_with_sirens = find_filtered_venues(
+        sirens=["123456781", "123456782", "123456783"])
 
     # then
     assert venue_123456789 not in query_with_sirens
@@ -45,13 +57,16 @@ def test_find_filtered_venues_with_sirens_params_return_filtered_venues(app):
 def test_find_filtered_venues_with_has_validated_offerer_param_return_filtered_venues(app):
     # Given
     offerer_valid = create_offerer()
-    offerer_not_valid = create_offerer(siren='123456798', validation_token='abc')
+    offerer_not_valid = create_offerer(
+        siren='123456798', validation_token='abc')
     venue_with_offerer_valid = create_venue(offerer_valid)
-    venue_with_offerer_not_valid = create_venue(offerer_not_valid, siret='12345679812345')
+    venue_with_offerer_not_valid = create_venue(
+        offerer_not_valid, siret='12345679812345')
     repository.save(venue_with_offerer_valid, venue_with_offerer_not_valid)
 
     # When
-    query_with_not_valid_offerer_only = find_filtered_venues(has_validated_offerer=False)
+    query_with_not_valid_offerer_only = find_filtered_venues(
+        has_validated_offerer=False)
 
     # Then
     assert venue_with_offerer_valid not in query_with_not_valid_offerer_only
@@ -62,14 +77,17 @@ def test_find_filtered_venues_with_has_validated_offerer_param_return_filtered_v
 def test_find_filtered_venues_with_dpts_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
-    venue_93 = create_venue(offerer, departement_code='93', postal_code='93000')
+    venue_93 = create_venue(
+        offerer, departement_code='93', postal_code='93000')
     venue_67 = create_venue(offerer, departement_code='67', postal_code='67000',
                             siret='12345678912346')
     venue_34 = create_venue(offerer, departement_code='34', postal_code='34000',
                             siret='12345678912347')
-    venue_971 = create_venue(offerer, postal_code='97100', siret='12345678912348')
+    venue_971 = create_venue(
+        offerer, postal_code='97100', siret='12345678912348')
 
-    venue_virtual = create_venue(offerer, is_virtual=True, siret=None, postal_code=None)
+    venue_virtual = create_venue(
+        offerer, is_virtual=True, siret=None, postal_code=None)
     repository.save(venue_93, venue_67, venue_34, venue_971, venue_virtual)
 
     # When
@@ -88,8 +106,10 @@ def test_find_filtered_venues_with_zipcodes_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
     venue_93000 = create_venue(offerer, postal_code='93000')
-    venue_67000 = create_venue(offerer, postal_code='67000', siret='12345678912346')
-    venue_34000 = create_venue(offerer, postal_code='34000', siret='12345678912347')
+    venue_67000 = create_venue(
+        offerer, postal_code='67000', siret='12345678912346')
+    venue_34000 = create_venue(
+        offerer, postal_code='34000', siret='12345678912347')
     venue_virtual = create_venue(offerer, is_virtual=True, siret=None)
     repository.save(venue_virtual, venue_93000, venue_67000, venue_34000)
 
@@ -135,7 +155,8 @@ def test_find_filtered_venues_with_is_virtual_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
     venue_virtual = create_venue(offerer, is_virtual=True, siret=None)
-    venue_not_virtual = create_venue(offerer, is_virtual=False, postal_code='34000')
+    venue_not_virtual = create_venue(
+        offerer, is_virtual=False, postal_code='34000')
     repository.save(venue_virtual, venue_not_virtual)
 
     # When
@@ -152,7 +173,8 @@ def test_find_filtered_venues_with_has_siret_param_return_filtered_venues(app):
     offerer = create_offerer()
     venue_virtual = create_venue(offerer, is_virtual=True, siret=None)
     venue_with_siret = create_venue(offerer)
-    venue_without_siret = create_venue(offerer, siret=None, comment="comment", is_virtual=False)
+    venue_without_siret = create_venue(
+        offerer, siret=None, comment="comment", is_virtual=False)
     repository.save(venue_virtual, venue_with_siret, venue_without_siret)
 
     # When
@@ -168,7 +190,8 @@ def test_find_filtered_venues_with_has_siret_param_return_filtered_venues(app):
 def test_find_filtered_venues_with_is_validated_param_return_filtered_venues(app):
     # Given
     offerer = create_offerer()
-    venue_not_validated = create_venue(offerer, validation_token="there is a token here")
+    venue_not_validated = create_venue(
+        offerer, validation_token="there is a token here")
     venue_validated = create_venue(offerer, siret='12345678912346')
     repository.save(venue_not_validated, venue_validated)
 
@@ -187,8 +210,10 @@ def test_find_filtered_venues_with_has_offerer_with_siren_param_return_filtered_
     offerer_without_siren = create_offerer(siren=None)
 
     venue_with_offerer_with_siren = create_venue(offerer_with_siren)
-    venue_with_offerer_without_siren = create_venue(offerer_without_siren, siret='12345678912346')
-    repository.save(venue_with_offerer_with_siren, venue_with_offerer_without_siren)
+    venue_with_offerer_without_siren = create_venue(
+        offerer_without_siren, siret='12345678912346')
+    repository.save(venue_with_offerer_with_siren,
+                    venue_with_offerer_without_siren)
 
     # When
     query_validated = find_filtered_venues(has_offerer_with_siren=True)
@@ -208,17 +233,21 @@ def test_find_filtered_venues_with_True_has_validated_user_offerer_param_return_
     offerer3 = create_offerer(siren="123456782")
 
     validated_user_offerer = create_user_offerer(user, offerer1)
-    not_validated_user_offerer = create_user_offerer(user, offerer2, validation_token="a_token")
+    not_validated_user_offerer = create_user_offerer(
+        user, offerer2, validation_token="a_token")
     user_offerer_for_both1 = create_user_offerer(user, offerer3)
-    user_offerer_for_both2 = create_user_offerer(user2, offerer3, validation_token="other_token")
+    user_offerer_for_both2 = create_user_offerer(
+        user2, offerer3, validation_token="other_token")
 
-    venue_with_validated_user_offerer = create_venue(offerer1, siret='12345678912346')
-    venue_with_not_validated_user_offerer = create_venue(offerer2, siret='12345678912347')
+    venue_with_validated_user_offerer = create_venue(
+        offerer1, siret='12345678912346')
+    venue_with_not_validated_user_offerer = create_venue(
+        offerer2, siret='12345678912347')
     venue_with_both = create_venue(offerer3)
 
     repository.save(validated_user_offerer, not_validated_user_offerer,
-                  user_offerer_for_both1, user_offerer_for_both2, venue_with_not_validated_user_offerer,
-                  venue_with_validated_user_offerer, venue_with_both)
+                    user_offerer_for_both1, user_offerer_for_both2, venue_with_not_validated_user_offerer,
+                    venue_with_validated_user_offerer, venue_with_both)
 
     # When
     query_validated = find_filtered_venues(has_validated_user_offerer=True)
@@ -239,20 +268,25 @@ def test_find_filtered_venues_with_False_has_validated_user_offerer_param_return
     offerer3 = create_offerer(siren="123456782")
 
     validated_user_offerer = create_user_offerer(user, offerer1)
-    not_validated_user_offerer = create_user_offerer(user, offerer2, validation_token="a_token")
+    not_validated_user_offerer = create_user_offerer(
+        user, offerer2, validation_token="a_token")
     user_offerer_for_both1 = create_user_offerer(user, offerer3)
-    user_offerer_for_both2 = create_user_offerer(user2, offerer3, validation_token="other_token")
+    user_offerer_for_both2 = create_user_offerer(
+        user2, offerer3, validation_token="other_token")
 
-    venue_with_validated_user_offerer = create_venue(offerer1, siret='12345678912346')
-    venue_with_not_validated_user_offerer = create_venue(offerer2, siret='12345678912347')
+    venue_with_validated_user_offerer = create_venue(
+        offerer1, siret='12345678912346')
+    venue_with_not_validated_user_offerer = create_venue(
+        offerer2, siret='12345678912347')
     venue_with_both = create_venue(offerer3)
 
     repository.save(validated_user_offerer, not_validated_user_offerer,
-                  user_offerer_for_both1, user_offerer_for_both2, venue_with_not_validated_user_offerer,
-                  venue_with_validated_user_offerer, venue_with_both)
+                    user_offerer_for_both1, user_offerer_for_both2, venue_with_not_validated_user_offerer,
+                    venue_with_validated_user_offerer, venue_with_both)
 
     # When
-    query_not_validated = find_filtered_venues(has_validated_user_offerer=False)
+    query_not_validated = find_filtered_venues(
+        has_validated_user_offerer=False)
 
     # Then
     assert venue_with_not_validated_user_offerer in query_not_validated
@@ -264,8 +298,10 @@ def test_find_filtered_venues_with_False_has_validated_user_offerer_param_return
 def test_find_filtered_venues_with_True_has_validated_user_param_return_filtered_venues(app):
     # Given
     validated_user = create_user()
-    not_validated_user1 = create_user(email="mail1@mail.com", validation_token="hello token")
-    not_validated_user2 = create_user(email="mail2@mail.com", validation_token="other token")
+    not_validated_user1 = create_user(
+        email="mail1@mail.com", validation_token="hello token")
+    not_validated_user2 = create_user(
+        email="mail2@mail.com", validation_token="other token")
     offerer1 = create_offerer()
     offerer2 = create_offerer(siren="123456781")
     offerer3 = create_offerer(siren="123456782")
@@ -275,11 +311,12 @@ def test_find_filtered_venues_with_True_has_validated_user_param_return_filtered
     user_offerer4 = create_user_offerer(not_validated_user2, offerer3)
 
     venue_with_validated_user = create_venue(offerer1)
-    venue_with_not_validated_user = create_venue(offerer2, siret='12345678912346')
+    venue_with_not_validated_user = create_venue(
+        offerer2, siret='12345678912346')
     venue_with_both = create_venue(offerer3, siret='12345678912347')
 
     repository.save(user_offerer1, user_offerer2, user_offerer3, user_offerer4, venue_with_not_validated_user,
-                  venue_with_validated_user, venue_with_both)
+                    venue_with_validated_user, venue_with_both)
 
     # When
     query_validated = find_filtered_venues(has_validated_user=True)
@@ -294,8 +331,10 @@ def test_find_filtered_venues_with_True_has_validated_user_param_return_filtered
 def test_find_filtered_venues_with_False_has_validated_user_param_return_filtered_venues(app):
     # Given
     validated_user = create_user()
-    not_validated_user1 = create_user(email="mail1@mail.com", validation_token="hello token")
-    not_validated_user2 = create_user(email="mail2@mail.com", validation_token="other token")
+    not_validated_user1 = create_user(
+        email="mail1@mail.com", validation_token="hello token")
+    not_validated_user2 = create_user(
+        email="mail2@mail.com", validation_token="other token")
     offerer1 = create_offerer()
     offerer2 = create_offerer(siren="123456781")
     offerer3 = create_offerer(siren="123456782")
@@ -305,11 +344,12 @@ def test_find_filtered_venues_with_False_has_validated_user_param_return_filtere
     user_offerer4 = create_user_offerer(not_validated_user2, offerer3)
 
     venue_with_validated_user = create_venue(offerer1)
-    venue_with_not_validated_user = create_venue(offerer2, siret='12345678912346')
+    venue_with_not_validated_user = create_venue(
+        offerer2, siret='12345678912346')
     venue_with_both = create_venue(offerer3, siret='12345678912347')
 
     repository.save(user_offerer1, user_offerer2, user_offerer3, user_offerer4, venue_with_not_validated_user,
-                  venue_with_validated_user, venue_with_both)
+                    venue_with_validated_user, venue_with_both)
 
     # When
     query_not_validated = find_filtered_venues(has_validated_user=False)
@@ -330,17 +370,23 @@ def test_find_filtered_venues_with_offer_status_with_VALID_param_return_filtered
     venue_with_expired_event = create_venue(offerer, siret='12345678912347')
     venue_with_valid_thing = create_venue(offerer, siret='12345678912348')
     venue_with_expired_thing = create_venue(offerer, siret='12345678912349')
-    venue_with_soft_deleted_thing = create_venue(offerer, siret='12345678912342')
-    venue_with_soft_deleted_event = create_venue(offerer, siret='12345678912343')
-    venue_with_not_available_event = create_venue(offerer, siret='12345678912344')
+    venue_with_soft_deleted_thing = create_venue(
+        offerer, siret='12345678912342')
+    venue_with_soft_deleted_event = create_venue(
+        offerer, siret='12345678912343')
+    venue_with_not_available_event = create_venue(
+        offerer, siret='12345678912344')
 
     valid_event = create_offer_with_event_product(venue_with_valid_event)
     expired_event = create_offer_with_event_product(venue_with_expired_event)
     valid_thing = create_offer_with_thing_product(venue_with_valid_thing)
     expired_thing = create_offer_with_thing_product(venue_with_expired_thing)
-    soft_deleted_thing = create_offer_with_thing_product(venue_with_soft_deleted_thing)
-    soft_deleted_event = create_offer_with_event_product(venue_with_soft_deleted_event)
-    not_available_event = create_offer_with_event_product(venue_with_not_available_event)
+    soft_deleted_thing = create_offer_with_thing_product(
+        venue_with_soft_deleted_thing)
+    soft_deleted_event = create_offer_with_event_product(
+        venue_with_soft_deleted_event)
+    not_available_event = create_offer_with_event_product(
+        venue_with_not_available_event)
 
     valid_event_occurrence = create_event_occurrence(valid_event,
                                                      beginning_datetime=datetime.utcnow() + timedelta(days=4))
@@ -353,8 +399,10 @@ def test_find_filtered_venues_with_offer_status_with_VALID_param_return_filtered
     expired_event_occurence = create_event_occurrence(expired_event,
                                                       beginning_datetime=datetime(2018, 2, 1))
 
-    valid_stock = create_stock_with_thing_offer(offerer, venue_with_valid_thing, valid_thing)
-    expired_stock = create_stock_with_thing_offer(offerer, venue_with_expired_thing, expired_thing, quantity=0)
+    valid_stock = create_stock_with_thing_offer(
+        offerer, venue_with_valid_thing, valid_thing)
+    expired_stock = create_stock_with_thing_offer(
+        offerer, venue_with_expired_thing, expired_thing, quantity=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer, venue_with_soft_deleted_thing, soft_deleted_thing,
                                                              soft_deleted=True)
 
@@ -372,9 +420,9 @@ def test_find_filtered_venues_with_offer_status_with_VALID_param_return_filtered
                                                                        days=3))
 
     repository.save(venue_without_offer,
-                  valid_stock, expired_stock, soft_deleted_thing_stock,
-                  expired_booking_limit_date_event_stock,
-                  valid_booking_limit_date_event_stock, soft_deleted_event_stock)
+                    valid_stock, expired_stock, soft_deleted_thing_stock,
+                    expired_booking_limit_date_event_stock,
+                    valid_booking_limit_date_event_stock, soft_deleted_event_stock)
 
     # When
     query_has_valid_offer = find_filtered_venues(offer_status='VALID')
@@ -400,17 +448,23 @@ def test_find_filtered_venues_with_offer_status_with_EXPIRED_param_return_filter
     venue_with_expired_event = create_venue(offerer, siret='12345678912347')
     venue_with_valid_thing = create_venue(offerer, siret='12345678912348')
     venue_with_expired_thing = create_venue(offerer, siret='12345678912349')
-    venue_with_soft_deleted_thing = create_venue(offerer, siret='12345678912342')
-    venue_with_soft_deleted_event = create_venue(offerer, siret='12345678912343')
-    venue_with_not_available_event = create_venue(offerer, siret='12345678912344')
+    venue_with_soft_deleted_thing = create_venue(
+        offerer, siret='12345678912342')
+    venue_with_soft_deleted_event = create_venue(
+        offerer, siret='12345678912343')
+    venue_with_not_available_event = create_venue(
+        offerer, siret='12345678912344')
 
     valid_event = create_offer_with_event_product(venue_with_valid_event)
     expired_event = create_offer_with_event_product(venue_with_expired_event)
     valid_thing = create_offer_with_thing_product(venue_with_valid_thing)
     expired_thing = create_offer_with_thing_product(venue_with_expired_thing)
-    soft_deleted_thing = create_offer_with_thing_product(venue_with_soft_deleted_thing)
-    soft_deleted_event = create_offer_with_event_product(venue_with_soft_deleted_event)
-    not_available_event = create_offer_with_event_product(venue_with_not_available_event)
+    soft_deleted_thing = create_offer_with_thing_product(
+        venue_with_soft_deleted_thing)
+    soft_deleted_event = create_offer_with_event_product(
+        venue_with_soft_deleted_event)
+    not_available_event = create_offer_with_event_product(
+        venue_with_not_available_event)
 
     valid_event_occurrence = create_event_occurrence(valid_event,
                                                      beginning_datetime=datetime.utcnow() + timedelta(days=4))
@@ -423,8 +477,10 @@ def test_find_filtered_venues_with_offer_status_with_EXPIRED_param_return_filter
     expired_event_occurence = create_event_occurrence(expired_event,
                                                       beginning_datetime=datetime(2018, 2, 1))
 
-    valid_stock = create_stock_with_thing_offer(offerer, venue_with_valid_thing, valid_thing)
-    expired_stock = create_stock_with_thing_offer(offerer, venue_with_expired_thing, expired_thing, quantity=0)
+    valid_stock = create_stock_with_thing_offer(
+        offerer, venue_with_valid_thing, valid_thing)
+    expired_stock = create_stock_with_thing_offer(
+        offerer, venue_with_expired_thing, expired_thing, quantity=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer, venue_with_soft_deleted_thing, soft_deleted_thing,
                                                              soft_deleted=True)
 
@@ -442,9 +498,9 @@ def test_find_filtered_venues_with_offer_status_with_EXPIRED_param_return_filter
                                                                        days=3))
 
     repository.save(venue_without_offer,
-                  valid_stock, expired_stock, soft_deleted_thing_stock,
-                  expired_booking_limit_date_event_stock,
-                  valid_booking_limit_date_event_stock, soft_deleted_event_stock)
+                    valid_stock, expired_stock, soft_deleted_thing_stock,
+                    expired_booking_limit_date_event_stock,
+                    valid_booking_limit_date_event_stock, soft_deleted_event_stock)
 
     # When
     query_has_expired_offer = find_filtered_venues(offer_status='EXPIRED')
@@ -470,17 +526,23 @@ def test_find_filtered_venues_with_offer_status_with_WITHOUT_param_return_filter
     venue_with_expired_event = create_venue(offerer, siret='12345678912347')
     venue_with_valid_thing = create_venue(offerer, siret='12345678912348')
     venue_with_expired_thing = create_venue(offerer, siret='12345678912349')
-    venue_with_soft_deleted_thing = create_venue(offerer, siret='12345678912342')
-    venue_with_soft_deleted_event = create_venue(offerer, siret='12345678912343')
-    venue_with_not_available_event = create_venue(offerer, siret='12345678912344')
+    venue_with_soft_deleted_thing = create_venue(
+        offerer, siret='12345678912342')
+    venue_with_soft_deleted_event = create_venue(
+        offerer, siret='12345678912343')
+    venue_with_not_available_event = create_venue(
+        offerer, siret='12345678912344')
 
     valid_event = create_offer_with_event_product(venue_with_valid_event)
     expired_event = create_offer_with_event_product(venue_with_expired_event)
     valid_thing = create_offer_with_thing_product(venue_with_valid_thing)
     expired_thing = create_offer_with_thing_product(venue_with_expired_thing)
-    soft_deleted_thing = create_offer_with_thing_product(venue_with_soft_deleted_thing)
-    soft_deleted_event = create_offer_with_event_product(venue_with_soft_deleted_event)
-    not_available_event = create_offer_with_event_product(venue_with_not_available_event)
+    soft_deleted_thing = create_offer_with_thing_product(
+        venue_with_soft_deleted_thing)
+    soft_deleted_event = create_offer_with_event_product(
+        venue_with_soft_deleted_event)
+    not_available_event = create_offer_with_event_product(
+        venue_with_not_available_event)
 
     valid_event_occurrence = create_event_occurrence(valid_event,
                                                      beginning_datetime=datetime.utcnow() + timedelta(days=4))
@@ -493,8 +555,10 @@ def test_find_filtered_venues_with_offer_status_with_WITHOUT_param_return_filter
     expired_event_occurence = create_event_occurrence(expired_event,
                                                       beginning_datetime=datetime(2018, 2, 1))
 
-    valid_stock = create_stock_with_thing_offer(offerer, venue_with_valid_thing, valid_thing)
-    expired_stock = create_stock_with_thing_offer(offerer, venue_with_expired_thing, expired_thing, quantity=0)
+    valid_stock = create_stock_with_thing_offer(
+        offerer, venue_with_valid_thing, valid_thing)
+    expired_stock = create_stock_with_thing_offer(
+        offerer, venue_with_expired_thing, expired_thing, quantity=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer, venue_with_soft_deleted_thing, soft_deleted_thing,
                                                              soft_deleted=True)
 
@@ -512,9 +576,9 @@ def test_find_filtered_venues_with_offer_status_with_WITHOUT_param_return_filter
                                                                        days=3))
 
     repository.save(venue_without_offer,
-                  valid_stock, expired_stock, soft_deleted_thing_stock,
-                  expired_booking_limit_date_event_stock,
-                  valid_booking_limit_date_event_stock, soft_deleted_event_stock)
+                    valid_stock, expired_stock, soft_deleted_thing_stock,
+                    expired_booking_limit_date_event_stock,
+                    valid_booking_limit_date_event_stock, soft_deleted_event_stock)
 
     # When
     query_without_offer = find_filtered_venues(offer_status='WITHOUT')
@@ -540,17 +604,23 @@ def test_find_filtered_venues_with_offer_status_with_ALL_param_return_filtered_v
     venue_with_expired_event = create_venue(offerer, siret='12345678912347')
     venue_with_valid_thing = create_venue(offerer, siret='12345678912348')
     venue_with_expired_thing = create_venue(offerer, siret='12345678912349')
-    venue_with_soft_deleted_thing = create_venue(offerer, siret='12345678912342')
-    venue_with_soft_deleted_event = create_venue(offerer, siret='12345678912343')
-    venue_with_not_available_event = create_venue(offerer, siret='12345678912344')
+    venue_with_soft_deleted_thing = create_venue(
+        offerer, siret='12345678912342')
+    venue_with_soft_deleted_event = create_venue(
+        offerer, siret='12345678912343')
+    venue_with_not_available_event = create_venue(
+        offerer, siret='12345678912344')
 
     valid_event = create_offer_with_event_product(venue_with_valid_event)
     expired_event = create_offer_with_event_product(venue_with_expired_event)
     valid_thing = create_offer_with_thing_product(venue_with_valid_thing)
     expired_thing = create_offer_with_thing_product(venue_with_expired_thing)
-    soft_deleted_thing = create_offer_with_thing_product(venue_with_soft_deleted_thing)
-    soft_deleted_event = create_offer_with_event_product(venue_with_soft_deleted_event)
-    not_available_event = create_offer_with_event_product(venue_with_not_available_event)
+    soft_deleted_thing = create_offer_with_thing_product(
+        venue_with_soft_deleted_thing)
+    soft_deleted_event = create_offer_with_event_product(
+        venue_with_soft_deleted_event)
+    not_available_event = create_offer_with_event_product(
+        venue_with_not_available_event)
 
     valid_event_occurrence = create_event_occurrence(valid_event,
                                                      beginning_datetime=datetime.utcnow() + timedelta(days=4))
@@ -563,8 +633,10 @@ def test_find_filtered_venues_with_offer_status_with_ALL_param_return_filtered_v
     expired_event_occurence = create_event_occurrence(expired_event,
                                                       beginning_datetime=datetime(2018, 2, 1))
 
-    valid_stock = create_stock_with_thing_offer(offerer, venue_with_valid_thing, valid_thing)
-    expired_stock = create_stock_with_thing_offer(offerer, venue_with_expired_thing, expired_thing, quantity=0)
+    valid_stock = create_stock_with_thing_offer(
+        offerer, venue_with_valid_thing, valid_thing)
+    expired_stock = create_stock_with_thing_offer(
+        offerer, venue_with_expired_thing, expired_thing, quantity=0)
     soft_deleted_thing_stock = create_stock_with_thing_offer(offerer, venue_with_soft_deleted_thing, soft_deleted_thing,
                                                              soft_deleted=True)
 
@@ -582,9 +654,9 @@ def test_find_filtered_venues_with_offer_status_with_ALL_param_return_filtered_v
                                                                        days=3))
 
     repository.save(venue_without_offer,
-                  valid_stock, expired_stock, soft_deleted_thing_stock,
-                  expired_booking_limit_date_event_stock,
-                  valid_booking_limit_date_event_stock, soft_deleted_event_stock)
+                    valid_stock, expired_stock, soft_deleted_thing_stock,
+                    expired_booking_limit_date_event_stock,
+                    valid_booking_limit_date_event_stock, soft_deleted_event_stock)
 
     # When
     query_with_all_offer = find_filtered_venues(offer_status='ALL')
@@ -611,17 +683,21 @@ def test_find_filtered_venues_with_default_param_return_all_venues(app):
     venue_virtual = create_venue(offerer, is_virtual=True, siret=None)
 
     venue_without_siret = create_venue(offerer, siret=None, comment="comment")
-    venue_93000 = create_venue(offerer, postal_code='93000', siret='12345678912348')
-    venue_67000 = create_venue(offerer, postal_code='67000', siret='12345678912349')
-    venue_34000 = create_venue(offerer, postal_code='34000', siret='12345678912350')
-    venue_97000 = create_venue(offerer, postal_code='97000', siret='12345678912351')
+    venue_93000 = create_venue(
+        offerer, postal_code='93000', siret='12345678912348')
+    venue_67000 = create_venue(
+        offerer, postal_code='67000', siret='12345678912349')
+    venue_34000 = create_venue(
+        offerer, postal_code='34000', siret='12345678912350')
+    venue_97000 = create_venue(
+        offerer, postal_code='97000', siret='12345678912351')
 
     valid_offer = create_offer_with_event_product(venue_with_valid_offer)
     expired_offer = create_offer_with_event_product(venue_with_expired_offer)
 
     repository.save(venue_with_valid_offer, venue_without_offer,
-                  venue_virtual, venue_97000, venue_without_siret, venue_93000,
-                  venue_67000, venue_34000)
+                    venue_virtual, venue_97000, venue_without_siret, venue_93000,
+                    venue_67000, venue_34000)
 
     # When
     default_query = find_filtered_venues()
@@ -636,22 +712,29 @@ def test_find_filtered_venues_with_default_param_return_all_venues(app):
     assert venue_67000 in default_query
     assert venue_34000 in default_query
 
+
 class FindVenuesByManagingUserTest:
     @clean_database
     def test_returns_venues_that_a_user_manages(self):
         # given
         user = create_user(email='user@example.net')
 
-        managed_offerer = create_offerer(name='Shakespear company', siren='987654321')
+        managed_offerer = create_offerer(
+            name='Shakespear company', siren='987654321')
         managed_user_offerer = create_user_offerer(user, managed_offerer)
-        managed_venue = create_venue(managed_offerer, name='National Shakespear Theater', siret='98765432112345')
+        managed_venue = create_venue(
+            managed_offerer, name='National Shakespear Theater', siret='98765432112345')
 
-        non_managed_offerer = create_offerer(name='Bookshop', siren='123456789')
+        non_managed_offerer = create_offerer(
+            name='Bookshop', siren='123456789')
         other_user = create_user(email='bookshop.pro@example.net')
-        non_managed_user_offerer = create_user_offerer(other_user, non_managed_offerer)
-        non_managed_venue = create_venue(non_managed_offerer, name='Contes et légendes', siret='12345678912345')
+        non_managed_user_offerer = create_user_offerer(
+            other_user, non_managed_offerer)
+        non_managed_venue = create_venue(
+            non_managed_offerer, name='Contes et légendes', siret='12345678912345')
 
-        repository.save(managed_user_offerer, managed_venue, non_managed_user_offerer, non_managed_venue)
+        repository.save(managed_user_offerer, managed_venue,
+                        non_managed_user_offerer, non_managed_venue)
 
         # when
         venues = find_by_managing_user(user)
@@ -660,46 +743,56 @@ class FindVenuesByManagingUserTest:
         assert len(venues) == 1
         assert venues[0] == managed_venue
 
+
 class FindByManagingOffererIdAndNameForVenueWithoutSiretTest:
     @clean_database
-    def test_return_none_when_not_matching_venues(self):
+    def test_return_none_when_offerer_does_not_have_any_matching_venue_name(self):
         # Given
         offerer = create_offerer()
-        not_matching_venue = create_venue(offerer, name='Not matching name', siret=None, comment='comment')
+        not_matching_venue = create_venue(
+            offerer, name='Not matching name', siret=None, comment='comment')
         repository.save(not_matching_venue)
 
         # When
-        venue = find_by_managing_offerer_id_and_name_for_venue_without_siret(offerer.id, 'searched name')
+        venue = find_venue_without_siret_by_managing_offerer_id_and_name(
+            offerer.id, 'searched name')
 
         # Then
         assert venue is None
 
     @clean_database
-    def test_raise_multiple_results_found_error_when_several_matching_venues(self):
+    def test_raise_multiple_results_found_error_when_offerer_has_several_venue_name_matches(self):
         # Given
         offerer = create_offerer()
-        matching_venue1 = create_venue(offerer, name='Matching name', siret=None, comment='searched name')
-        matching_venue2 = create_venue(offerer, name='Matching name', siret=None, comment='searched name')
+        matching_venue1 = create_venue(
+            offerer, name='Matching name', siret=None, comment='searched name')
+        matching_venue2 = create_venue(
+            offerer, name='Matching name', siret=None, comment='searched name')
         repository.save(matching_venue1, matching_venue2)
 
         # When / Then
         with pytest.raises(MultipleResultsFound) as error:
-            find_by_managing_offerer_id_and_name_for_venue_without_siret(offerer.id, 'Matching name')
-
+            find_venue_without_siret_by_managing_offerer_id_and_name(
+                offerer.id, 'Matching name')
 
     @clean_database
-    def test_return_only_matching_venue_without_siret_by_name_for_offerer_id_when_matching_venue(self):
+    def test_does_not_return_matching_venue_for_offerer_if_it_has_a_siret(self):
         # Given
         offerer = create_offerer()
         wrong_offerer = create_offerer(siren='123456798')
-        matching_venue = create_venue(offerer, name='Matching name', siret=None, comment='comment')
-        not_matching_venue1 = create_venue(offerer, name='Not matching name', siret=None, comment='comment')
+        matching_venue = create_venue(
+            offerer, name='Matching name', siret=None, comment='comment')
+        not_matching_venue1 = create_venue(
+            offerer, name='Not matching name', siret=None, comment='comment')
         not_matching_venue2 = create_venue(offerer, name='Matching name')
-        not_matching_venue3 = create_venue(wrong_offerer, name='Matching name', siret=None, comment='comment')
-        repository.save(matching_venue, not_matching_venue1, not_matching_venue2, not_matching_venue3)
+        not_matching_venue3 = create_venue(
+            wrong_offerer, name='Matching name', siret=None, comment='comment')
+        repository.save(matching_venue, not_matching_venue1,
+                        not_matching_venue2, not_matching_venue3)
 
         # When
-        venue = find_by_managing_offerer_id_and_name_for_venue_without_siret(offerer.id, 'Matching name')
+        venue = find_venue_without_siret_by_managing_offerer_id_and_name(
+            offerer.id, 'Matching name')
 
         # Then
         assert venue.id == matching_venue.id
@@ -716,7 +809,8 @@ class FindByManagingOffererIdAndSiretTest:
         repository.save(not_matching_venue)
 
         # When
-        venue = find_by_managing_offerer_id_and_siret(offerer.id, '12345678912345')
+        venue = find_by_managing_offerer_id_and_siret(
+            offerer.id, '12345678912345')
 
         # Then
         assert venue is None
@@ -729,7 +823,8 @@ class FindByManagingOffererIdAndSiretTest:
         repository.save(matching_venue)
 
         # When
-        venue = find_by_managing_offerer_id_and_siret(offerer.id, '12345678912345')
+        venue = find_by_managing_offerer_id_and_siret(
+            offerer.id, '12345678912345')
 
         # Then
         assert venue.id == matching_venue.id
