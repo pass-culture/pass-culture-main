@@ -1,10 +1,9 @@
-import createCachedSelector from 're-reselect'
+import { createSelector } from 'reselect'
 
-import mapArgsToCacheKey from './mapArgsToCacheKey'
 import selectCurrentRecommendation from './selectCurrentRecommendation'
 import selectIndexifiedRecommendations from './selectIndexifiedRecommendations'
 
-const selectPreviousRecommendation = createCachedSelector(
+const selectPreviousRecommendation = createSelector(
   selectIndexifiedRecommendations,
   selectCurrentRecommendation,
   (recommendations, currentRecommendation) => {
@@ -23,6 +22,6 @@ const selectPreviousRecommendation = createCachedSelector(
 
     return previousRecommendation
   }
-)(mapArgsToCacheKey)
+)
 
 export default selectPreviousRecommendation

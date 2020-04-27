@@ -1,14 +1,13 @@
 import selectIndexifiedRecommendations from './selectIndexifiedRecommendations'
-import createCachedSelector from 're-reselect'
-import mapArgsToCacheKey from './mapArgsToCacheKey'
+import { createSelector } from 'reselect'
 
-const selectCurrentRecommendation = createCachedSelector(
+const selectCurrentRecommendation = createSelector(
   selectIndexifiedRecommendations,
   (state, offerId) => offerId,
   (recommendations, offerId) =>
     recommendations.find(recommendation => {
       return offerId === recommendation.offerId
     })
-)(mapArgsToCacheKey)
+)
 
 export default selectCurrentRecommendation
