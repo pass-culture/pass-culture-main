@@ -241,4 +241,5 @@ describe('src | components | pages | Signup | SignupForm', () => {
       expect(submitButton.dive().text()).toBe('Créer')
     })
   })
+
 })

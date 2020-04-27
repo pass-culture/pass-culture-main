@@ -1,10 +1,4 @@
 .sign-up-page {
-  a {
-    color: $primary;
-  }
-
-  position: relative;
-
   .logo-side {
     background-image: linear-gradient(to bottom right, $red, $purple-dark);
     position: fixed;
@@ -39,135 +33,20 @@
     }
   }
 
-  .page-content {
+  .column {
     padding: 0;
   }
 
   .columns {
     margin: 0;
     width: 100%;
-
-    .column {
-      display: flex;
-      flex-direction: column;
-      flex-shrink: inherit;
-      justify-content: center;
-      padding: 0;
-    }
   }
 
-  .has-no-padding {
-    padding: 0;
-  }
-
-  .title,
-  .subtitle {
-    font-style: italic;
-
-    span {
-      display: inline-block;
-    }
-  }
-
-  h1 {
-    font-weight: $weight-medium;
-  }
-
-  h2 {
+  .confirmation-text {
     margin-bottom: 12px;
-    font-weight: $weight-medium;
+    font-weight: 500;
     font-size: 20px;
     line-height: 24px;
-  }
-
-  form {
-    margin-top: 2rem;
-
-    p {
-      text-align: left !important;
-      color: #7A7A7A;
-      margin-left: 0.5rem;
-    }
-  }
-
-  label {
-    margin-bottom: 0.5rem;
-
-    h3 {
-      position: relative;
-      font-size: $size-3;
-
-      &.with-subtitle {
-        float: left;
-      }
-    }
-
-    p {
-      font-size: 0.9rem;
-      text-align: right;
-    }
-
-    a {
-      text-decoration: underline;
-      color: $black;
-    }
-  }
-
-  .cgu-field {
-    font-weight: $weight-bold;
-  }
-
-  .buttons-field {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 2rem;
-  }
-
-  h4 {
-    font-size: $size-normal;
-    float: left;
-  }
-
-  .errors {
-    color: $primary;
-    font-size: 0.9rem;
-    font-weight: 500;
-    line-height: 2em;
-    list-style-type: none;
-    text-align: left;
-    transition: transform 0.2s ease-in-out;
-
-    li {
-      margin-bottom: 1rem;
-    }
-
-    &.pop {
-      transform: scale(1.04);
-      transform-origin: 0 50%;
-    }
-
-    img {
-      vertical-align: middle;
-      padding-right: 5px;
-    }
-
-    &:empty {
-      display: none;
-    }
-  }
-
-  .field {
-    label {
-      display: block;
-    }
-
-    input {
-      font-weight: $weight-semibold;
-    }
-
-    .siren {
-      width: 50%;
-    }
   }
 
   .information-text {
@@ -193,5 +72,168 @@
         text-decoration: underline;
       }
     }
+  }
+
+  .sign-up-wrapper {
+    padding: rem(48px) rem(24px) rem(48px) rem(54px);
+  }
+
+  .sign-up-title {
+    font-size: rem(32px);
+    font-style: italic;
+    font-weight: 500;
+    margin-bottom: rem(24px);
+    line-height: rem(38px);
+  }
+
+  .sign-up-sub-title {
+    font-size: rem(20px);
+    font-style: italic;
+    font-weight: 500;
+    line-height: rem(24px);
+    margin-bottom: rem(24px);
+    word-break: break-word;
+  }
+
+  .sign-up-requirements {
+    color: $red;
+  }
+
+  .sign-up-tips {
+    color: $grey;
+    margin-bottom: rem(32px);
+  }
+
+  .field-asterisk {
+    color: $violet;
+  }
+
+  label {
+    display: block;
+    margin-bottom: rem(32px);
+    color: $grey-darker;
+    font-size: rem(20px);
+
+    p {
+      color: $grey;
+      font-size: rem(14px);
+      display: inline;
+    }
+  }
+
+  label.sign-up-checkbox {
+    color: $black;
+    font-size: rem($font-size);
+    margin-bottom: rem(16px);
+  }
+
+  label.sign-up-cgu {
+    color: $black;
+    font-size: rem($font-size);
+    font-weight: $weight-bold;
+    margin-bottom: rem(16px);
+
+    & a {
+      text-decoration: underline;
+    }
+  }
+
+  input:not([type='checkbox']) {
+    -webkit-appearance: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    -ms-flex-align: center;
+    -ms-flex-pack: start;
+    background-color: $white;
+    border: 2px solid $grey-light;
+    border-radius: $control-radius;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    font-weight: $weight-semibold;
+    font-size: 1rem;
+    height: 2.25em;
+    max-width: 100%;
+    margin-top: rem(8px);
+    outline: none;
+    padding: calc(0.375em - 2px) rem(16px);
+    width: 100%;
+  }
+
+  input::placeholder {
+    color: $grey-darker;
+  }
+
+  input:focus {
+    border-color: $input-focus-border-color;
+  }
+
+  input[type='checkbox'] {
+    -webkit-appearance: none;
+    background-image: url(/icons/checkbox.svg);
+    background-repeat: no-repeat;
+    background-size: $body-line-height;
+    border: none;
+    border-radius: 0;
+    font-size: 1rem;
+    margin-right: 0.5rem;
+    padding: 0;
+    position: relative;
+    outline: none;
+    height: $body-line-height;
+    width: $body-line-height;
+
+    &:checked {
+      &::after {
+        content: '';
+        background-repeat: no-repeat;
+        background-image: url(/icons/checkbox-check.svg);
+        background-position: center;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+
+  .field-password {
+    display: flex;
+    -ms-flex-pack: start;
+    justify-content: flex-start;
+    margin-top: rem(8px);
+  }
+
+  .field-password > input {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    border-right: none;
+    margin-top: 0;
+  }
+
+  .field-password > button {
+    border-bottom-right-radius: $control-radius;
+    border-top-right-radius: $control-radius;
+    border-width: 2px;
+    padding-left: 1em;
+    padding-right: 1em;
+  }
+
+  .field-password:focus-within > button {
+    border-color: $input-focus-border-color;
+  }
+
+  .field-password > img {
+    padding-left: rem(15px);
+    padding-right: rem(15px);
+  }
+
+  .errors {
+    color: $red;
+    font-size: rem(12px);
+  }
+
+  .buttons-field {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4rem;
   }
 }

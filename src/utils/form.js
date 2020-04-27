@@ -9,7 +9,7 @@ Object.assign(Form.inputsByType, {
   bic: BicInput,
   iban: IbanInput,
   siren: SirenInput,
-  siret: SirenInput,
+  // siret: SirenInput,
 })
 
 Object.assign(Form.defaultProps, {
