@@ -776,7 +776,7 @@ class FindByManagingOffererIdAndNameForVenueWithoutSiretTest:
                 offerer.id, 'Matching name')
 
     @clean_database
-    def test_does_not_return_matching_venue_for_offerer_if_it_has_a_siret(self):
+    def test_does_not_match_venues_with_a_wrong_attribute(self):
         # Given
         offerer = create_offerer()
         wrong_offerer = create_offerer(siren='123456798')

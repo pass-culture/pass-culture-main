@@ -376,7 +376,7 @@ class BankInformationProviderProviderTest:
         'local_providers.demarches_simplifiees_bank_information.get_all_application_ids_for_demarche_simplifiee')
     @patch('local_providers.demarches_simplifiees_bank_information.get_application_details')
     @clean_database
-    def test_provider_checks_two_objects_and_creates_two_when_both_rib_affiliations_are_present(
+    def test_provider_checks_two_objects_and_creates_two_when_both_rib_affiliations_are_known(
             self,
             get_application_details,
             get_all_application_ids_for_demarche_simplifiee,
