@@ -49,12 +49,20 @@ class Get:
                 .get('/bookings/pro')
 
             # Then
-            expected_bookings_recap = [{'beneficiary_email': 'beneficiary@example.com',
-                                        'beneficiary_firstname': 'Hermione',
-                                        'beneficiary_lastname': 'Granger',
-                                        'booking_date': '2020-04-03T12:00:00Z',
-                                        'booking_token': 'ABCD',
-                                        'offer_name': 'Test Book'}]
+            expected_bookings_recap = [
+                {
+                    'stock': {
+                        'offer_name': 'Test Book'
+                    },
+                    'beneficiary': {
+                        'email': 'beneficiary@example.com',
+                        'firstname': 'Hermione',
+                        'lastname': 'Granger',
+                    },
+                    'booking_date': '2020-04-03T12:00:00Z',
+                    'booking_token': 'ABCD'
+                }
+            ]
             assert response.status_code == 200
             assert response.json == expected_bookings_recap
 

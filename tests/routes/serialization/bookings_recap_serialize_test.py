@@ -37,18 +37,26 @@ class SerializeBookingRecapTest:
         response = json.loads(bookings.get_data().decode("utf-8"))
         expected_response = [
             {
-                "offer_name": "Fondation",
-                "beneficiary_lastname": "Seldon",
-                "beneficiary_firstname": "Hari",
-                "beneficiary_email": "hari.seldon@example.com",
+                "stock": {
+                    "offer_name": "Fondation",
+                },
+                "beneficiary": {
+                    "lastname": "Seldon",
+                    "firstname": "Hari",
+                    "email": "hari.seldon@example.com",
+                },
                 "booking_date": format_into_ISO_8601(date),
                 "booking_token": "FOND"
             },
             {
-                "offer_name": "Fondation",
-                "beneficiary_lastname": "Trevize",
-                "beneficiary_firstname": "Golan",
-                "beneficiary_email": "golan.trevize@example.com",
+                "stock": {
+                    "offer_name": "Fondation",
+                },
+                "beneficiary": {
+                    "lastname": "Trevize",
+                    "firstname": "Golan",
+                    "email": "golan.trevize@example.com",
+                },
                 "booking_date": format_into_ISO_8601(date),
                 "booking_token": "FOND"
             }
