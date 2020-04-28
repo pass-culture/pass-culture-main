@@ -133,33 +133,6 @@
   }
 }
 
-.sf-date-wrapper {
-  input[type="radio"] {
-    display: none;
-  }
-
-  li {
-    height: rem(26px);
-    margin-bottom: rem(24px);
-    display: flex;
-    align-items: center;
-
-    &:last-child {
-      margin-bottom: rem(12px);
-    }
-
-    img {
-      height: rem(24px);
-      margin-left: rem(5px);
-    }
-
-    label {
-      font-size: rem(16px);
-      font-weight: bold;
-    }
-  }
-}
-
 .sf-filter-separator {
   border-top: rem(1px) solid $grey-even-more-light;
   display: block;

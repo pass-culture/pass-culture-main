@@ -45,6 +45,8 @@ export class Filters extends PureComponent {
       },
       offers: props.offers,
     }
+
+    this.radioListRef = React.createRef()
   }
 
   buildCategoriesStateFromProps = () => {
@@ -371,6 +373,10 @@ export class Filters extends PureComponent {
       },
       () => {
         this.handleOffersFetchAndUrlUpdate()
+        const { filters: filtersAfterUpdate } = this.state
+        if (filtersAfterUpdate.offerIsFilteredByDate) {
+          this.radioListRef.current.scrollIntoView()
+        }
       }
     )
   }
@@ -415,6 +421,7 @@ export class Filters extends PureComponent {
         },
       },
       () => {
+        this.radioListRef.current.scrollIntoView()
         this.handleOffersFetchAndUrlUpdate()
       }
     )
@@ -539,7 +546,7 @@ export class Filters extends PureComponent {
                   aria-pressed={areCategoriesVisible}
                   className={`sf-category-title-wrapper ${
                     areCategoriesVisible ? 'sf-title-drop-down' : 'sf-title-drop-down-flipped'
-                    }`}
+                  }`}
                   onClick={this.handleToggleCategories()}
                   type="button"
                 >
@@ -569,7 +576,7 @@ export class Filters extends PureComponent {
                                 offerCategories[categoryCriterion.facetFilter]
                                   ? 'fc-label-checked'
                                   : 'fc-label'
-                                }`}
+                              }`}
                               id={categoryCriterion.facetFilter}
                               label={categoryCriterion.label}
                               name={categoryCriterion.facetFilter}
@@ -721,6 +728,7 @@ export class Filters extends PureComponent {
                   date={date}
                   onDateSelection={this.handleDateSelection}
                   onPickedDate={this.handlePickedDate}
+                  ref={this.radioListRef}
                 />
               )}
               <li className="sf-space-wrapper" />
@@ -767,8 +775,8 @@ Filters.propTypes = {
   initialFilters: PropTypes.shape({
     aroundRadius: PropTypes.number,
     date: PropTypes.shape({
-      option:PropTypes.string,
-      selectedDate:PropTypes.instanceOf(Date)
+      option: PropTypes.string,
+      selectedDate: PropTypes.instanceOf(Date),
     }),
     offerIsFilteredByDate: PropTypes.bool,
     isSearchAroundMe: PropTypes.bool,

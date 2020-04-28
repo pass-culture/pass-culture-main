@@ -1,5 +1,6 @@
 import { mount, shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
+import moment from 'moment'
 import Slider, { Range } from 'rc-slider'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -10,6 +11,7 @@ import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import { GEOLOCATION_CRITERIA } from '../../Criteria/criteriaEnums'
 import { Filters } from '../Filters'
+import { RadioList } from '../RadioList/RadioList'
 import Toggle from '../Toggle/Toggle'
 import { CriteriaLocation } from '../../CriteriaLocation/CriteriaLocation'
 import Checkbox from '../Checkbox/Checkbox'
@@ -18,6 +20,17 @@ import { Criteria } from '../../Criteria/Criteria'
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
 }))
+
+const scrollIntoRef = jest.fn()
+const stubRef = wrapper => {
+  const instance = wrapper.instance()
+  instance['radioListRef'] = {
+    current: {
+      scrollIntoView: scrollIntoRef,
+    },
+  }
+}
+
 describe('components | Filters', () => {
   const actualDate = global.Date
   const now = new Date(2020, 3, 14)
@@ -88,6 +101,7 @@ describe('components | Filters', () => {
       })
     )
     jest.spyOn(global, 'Date').mockImplementation(() => now)
+    // eslint-disable-next-line jest/prefer-spy-on
     global.Date.now = jest.fn(() => now.getTime())
   })
 
@@ -1280,26 +1294,22 @@ describe('components | Filters', () => {
           expect(cinemaFilterCheckbox.prop('label')).toBe('Cinéma')
           expect(cinemaFilterCheckbox.prop('name')).toBe('CINEMA')
           expect(cinemaFilterCheckbox.prop('onChange')).toStrictEqual(expect.any(Function))
-          expect(wrapper.find('Checkbox[label="Visites, expositions"]').prop('checked')).toBe(
-            false
-          )
+          expect(wrapper.find('Checkbox[label="Visites, expositions"]').prop('checked')).toBe(false)
           expect(wrapper.find('Checkbox[label="Musique"]').prop('checked')).toBe(false)
           expect(wrapper.find('Checkbox[label="Spectacles"]').prop('checked')).toBe(false)
-          expect(wrapper.find('Checkbox[label="Cours, ateliers"]').prop('checked')).toBe(
+          expect(wrapper.find('Checkbox[label="Cours, ateliers"]').prop('checked')).toBe(false)
+          expect(wrapper.find('Checkbox[label="Livres"]').prop('checked')).toBe(false)
+          expect(wrapper.find('Checkbox[label="Films, séries, podcasts"]').prop('checked')).toBe(
             false
           )
-          expect(wrapper.find('Checkbox[label="Livres"]').prop('checked')).toBe(false)
-          expect(
-            wrapper.find('Checkbox[label="Films, séries, podcasts"]').prop('checked')
-          ).toBe(false)
           expect(wrapper.find('Checkbox[label="Presse"]').prop('checked')).toBe(false)
           expect(wrapper.find('Checkbox[label="Jeux vidéos"]').prop('checked')).toBe(false)
-          expect(
-            wrapper.find('Checkbox[label="Conférences, rencontres"]').prop('checked')
-          ).toBe(false)
-          expect(
-            wrapper.find('Checkbox[label="Instruments de musique"]').prop('checked')
-          ).toBe(false)
+          expect(wrapper.find('Checkbox[label="Conférences, rencontres"]').prop('checked')).toBe(
+            false
+          )
+          expect(wrapper.find('Checkbox[label="Instruments de musique"]').prop('checked')).toBe(
+            false
+          )
         })
 
         it('should not render Checkbox component for "Toutes les catégories" Criteria', () => {
@@ -1329,29 +1339,25 @@ describe('components | Filters', () => {
           const cinemaCheckbox = wrapper.find('Checkbox[label="Cinéma"]')
           expect(cinemaCheckbox.prop('checked')).toBe(true)
           expect(cinemaCheckbox.prop('className')).toBe('fc-label-checked')
-          expect(wrapper.find('Checkbox[label="Visites, expositions"]').prop('checked')).toBe(
-            false
-          )
+          expect(wrapper.find('Checkbox[label="Visites, expositions"]').prop('checked')).toBe(false)
           expect(wrapper.find('Checkbox[label="Musique"]').prop('checked')).toBe(false)
           expect(wrapper.find('Checkbox[label="Spectacles"]').prop('checked')).toBe(false)
-          expect(wrapper.find('Checkbox[label="Cours, ateliers"]').prop('checked')).toBe(
-            false
-          )
+          expect(wrapper.find('Checkbox[label="Cours, ateliers"]').prop('checked')).toBe(false)
           expect(wrapper.find('Checkbox[label="Livres"]').prop('checked')).toBe(true)
           expect(wrapper.find('Checkbox[label="Livres"]').prop('className')).toBe(
             'fc-label-checked'
           )
-          expect(
-            wrapper.find('Checkbox[label="Films, séries, podcasts"]').prop('checked')
-          ).toBe(false)
+          expect(wrapper.find('Checkbox[label="Films, séries, podcasts"]').prop('checked')).toBe(
+            false
+          )
           expect(wrapper.find('Checkbox[label="Presse"]').prop('checked')).toBe(false)
           expect(wrapper.find('Checkbox[label="Jeux vidéos"]').prop('checked')).toBe(false)
-          expect(
-            wrapper.find('Checkbox[label="Conférences, rencontres"]').prop('checked')
-          ).toBe(false)
-          expect(
-            wrapper.find('Checkbox[label="Instruments de musique"]').prop('checked')
-          ).toBe(false)
+          expect(wrapper.find('Checkbox[label="Conférences, rencontres"]').prop('checked')).toBe(
+            false
+          )
+          expect(wrapper.find('Checkbox[label="Instruments de musique"]').prop('checked')).toBe(
+            false
+          )
         })
 
         it('should display the number of selected categories', () => {
@@ -1400,8 +1406,7 @@ describe('components | Filters', () => {
         it('should reset filters and trigger search to Algolia with given categories when price range is selected', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-          })
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
           props.history.location.pathname = '/recherche/resultats/filtres'
           props.initialFilters = {
             date: {
@@ -1472,8 +1477,7 @@ describe('components | Filters', () => {
         it('should reset filters and trigger search to Algolia with given categories when offer is free is selected', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-          })
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
           props.history.location.pathname = '/recherche/resultats/filtres'
           props.initialFilters = {
             date: {
@@ -1561,98 +1565,36 @@ describe('components | Filters', () => {
 
         it('should render a list of date filters when date toggle is on', () => {
           // given
-          const history = createBrowserHistory()
-          history.push('/recherche/resultats/filtres')
-          const wrapper = mount(
-            <Provider store={store}>
-              <Router history={history}>
-                <Filters {...props} />
-              </Router>
-            </Provider>
-          )
-          const toggle = wrapper.find('input[name="offerIsFilteredByDate"]')
+          const wrapper = shallow(<Filters {...props} />)
+          stubRef(wrapper)
 
-          // when
-          toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
-
-          // then
-          const today = wrapper.find({ children: 'Aujourd\'hui' })
-          const thisWeek = wrapper.find({ children: 'Cette semaine' })
-          const thisWeekend = wrapper.find({ children: 'Ce week-end' })
-          const exactDate = wrapper.find({ children: 'Date précise' })
-
-          expect(today).toHaveLength(1)
-          expect(thisWeek).toHaveLength(1)
-          expect(thisWeekend).toHaveLength(1)
-          expect(exactDate).toHaveLength(1)
-        })
-
-        it('should render check icon when date filter is selected', () => {
-          // given
-          const history = createBrowserHistory()
-          history.push('/recherche/resultats/filtres')
-          const wrapper = mount(
-            <Provider store={store}>
-              <Router history={history}>
-                <Filters {...props} />
-              </Router>
-            </Provider>
-          )
-          const toggle = wrapper.find('input[name="offerIsFilteredByDate"]')
-          toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
-          const defaultCheckedIcon = wrapper.find('label[htmlFor="today"]+Icon')
-
-          // when
-          const currentWeekend = wrapper.find('input[value="currentWeekEnd"]')
-          currentWeekend.simulate('change', { target: { value: 'currentWeekEnd' } })
-          const checkedIconAfterSelection = wrapper.find('label[htmlFor="current-week-end"]+Icon')
-
-          // then
-          expect(defaultCheckedIcon).toHaveLength(1)
-          expect(checkedIconAfterSelection).toHaveLength(1)
-        })
-
-        it('should not render datepicker when filter date option is not "picked"', () => {
-          // given
-          const history = createBrowserHistory()
-          history.push('/recherche/resultats/filtres')
-          const wrapper = mount(
-            <Provider store={store}>
-              <Router history={history}>
-                <Filters {...props} />
-              </Router>
-            </Provider>
-          )
-
-          const toggle = wrapper.find('input[name="offerIsFilteredByDate"]')
-          toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
-
-          // when
-          const currentWeekRadio = wrapper
-            .find({ children: 'Cette semaine' })
+          const toggle = wrapper
+            .find({ children: 'Date' })
             .closest('li')
-            .find('input[type="radio"]')
-          currentWeekRadio.simulate('change', { target: { value: 'currentWeek' } })
+            .find(Toggle)
+
+          // when
+          toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
 
           // then
-          const datepicker = wrapper.find('DatePicker')
-          expect(datepicker).toHaveLength(0)
+          const dateFilters = wrapper.find(RadioList)
+
+          expect(dateFilters).toHaveLength(1)
+          expect(dateFilters.prop('date')).toStrictEqual({ option: 'today', selectedDate: now })
+          expect(dateFilters.prop('onDateSelection')).toStrictEqual(expect.any(Function))
+          expect(dateFilters.prop('onPickedDate')).toStrictEqual(expect.any(Function))
         })
 
         it('should display a counter when Date filter is toggled on', () => {
           // given
-          const history = createBrowserHistory()
-          history.push('/recherche/resultats/filtres')
-          const wrapper = mount(
-            <Provider store={store}>
-              <Router history={history}>
-                <Filters {...props} />
-              </Router>
-            </Provider>
-          )
+          const wrapper = shallow(<Filters {...props} />)
+          stubRef(wrapper)
 
           // when
-          const toggle = wrapper.find('input[name="offerIsFilteredByDate"]')
+          const toggle = wrapper
+            .find({ children: 'Date' })
+            .closest('li')
+            .find(Toggle)
           toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
 
           // then
@@ -1660,23 +1602,20 @@ describe('components | Filters', () => {
           expect(numberOfDateSelected).toHaveLength(1)
         })
 
-        it('should fetch Algolia with date parameter set to today option', () => {
+        it('should fetch Algolia with date parameter on date filter toggle', () => {
           // given
-          const history = createBrowserHistory()
-          history.push('/recherche/resultats/filtres')
-          const wrapper = mount(
-            <Provider store={store}>
-              <Router history={history}>
-                <Filters {...props} />
-              </Router>
-            </Provider>
-          )
-          const toggle = wrapper.find('input[name="offerIsFilteredByDate"]')
+          const wrapper = shallow(<Filters {...props} />)
+          stubRef(wrapper)
 
           // when
+          const toggle = wrapper
+            .find({ children: 'Date' })
+            .closest('li')
+            .find(Toggle)
           toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
 
           // then
+          expect(scrollIntoRef).toHaveBeenCalledTimes(1)
           expect(fetchAlgolia).toHaveBeenCalledWith({
             aroundRadius: 100,
             date: {
@@ -1702,40 +1641,35 @@ describe('components | Filters', () => {
           })
         })
 
-        it('should fetch Algolia with date parameter set to currentWeek option', () => {
+        it('should fetch Algolia with given date option', () => {
           // given
-          const history = createBrowserHistory()
-          history.push('/recherche/resultats/filtres')
-          const wrapper = mount(
-            <Provider store={store}>
-              <Router history={history}>
-                <Filters {...props} />
-              </Router>
-            </Provider>
-          )
-          const toggle = wrapper.find('input[name="offerIsFilteredByDate"]')
+          global.Date = actualDate
+          const wrapper = shallow(<Filters {...props} />)
+          stubRef(wrapper)
+
+          const toggle = wrapper
+            .find({ children: 'Date' })
+            .closest('li')
+            .find(Toggle)
           toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
 
           // when
-          const currentWeekRadio = wrapper
-            .find({ children: 'Cette semaine' })
-            .closest('li')
-            .find('input[type="radio"]')
-          currentWeekRadio.simulate('change', { target: { value: 'currentWeek' } })
+          const pickedRadio = wrapper.find(RadioList)
+          pickedRadio.prop('onDateSelection')({ target: { value: 'picked' } })
 
-          // then
-          expect(fetchAlgolia).toHaveBeenCalledTimes(2)
+          // Then
+          expect(scrollIntoRef).toHaveBeenCalledTimes(2)
           expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
             aroundRadius: 100,
             date: {
-              option: 'currentWeek',
-              selectedDate: now,
+              option: 'picked',
+              selectedDate: expect.any(Date),
             },
+            isSearchAroundMe: false,
             geolocation: {
               latitude: 40,
               longitude: 41,
             },
-            isSearchAroundMe: false,
             keywords: '',
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: false,
@@ -1750,40 +1684,27 @@ describe('components | Filters', () => {
           })
         })
 
-        it('should fetch Algolia with date parameter set to picked option', () => {
+        it('should convert moment to native js date when specific date is picked and fetch Algolia with it', () => {
           // given
-          global.Date = actualDate
-          const history = createBrowserHistory()
-          history.push('/recherche/resultats/filtres')
-          const wrapper = mount(
-            <Provider store={store}>
-              <Router history={history}>
-                <Filters {...props} />
-              </Router>
-            </Provider>
-          )
-          const toggle = wrapper.find('input[name="offerIsFilteredByDate"]')
+          const wrapper = shallow(<Filters {...props} />)
+          stubRef(wrapper)
+
+          const toggle = wrapper
+            .find({ children: 'Date' })
+            .closest('li')
+            .find(Toggle)
           toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
 
-          const pickedRadio = wrapper
-            .find({ children: 'Date précise' })
-            .closest('li')
-            .find('input[type="radio"]')
-          pickedRadio.simulate('change', { target: { value: 'picked' } })
-
           // when
-          const datepicker = wrapper
-            .find('DatePicker')
-            .find({ role: 'option' })
-            .last()
-          datepicker.simulate('click')
+          const pickedRadio = wrapper.find(RadioList)
+          pickedRadio.prop('onPickedDate')(moment(now))
 
           // Then
-          expect(fetchAlgolia).toHaveBeenNthCalledWith(3, {
+          expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
             aroundRadius: 100,
             date: {
               option: 'picked',
-              selectedDate: expect.any(Date),
+              selectedDate: now,
             },
             isSearchAroundMe: false,
             geolocation: {

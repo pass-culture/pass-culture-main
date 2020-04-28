@@ -4,8 +4,11 @@ import { capitalize } from '../react-form-utils/functions'
 
 import { getTimezone } from '../timezone'
 
+export const FULL_MONTH_IN_LETTERS = { month: 'long' }
+export const LOCALE_FRANCE = 'fr-FR'
+export const YEAR_IN_NUMBER = { year: 'numeric' }
+
 const DAYS_IN_A_WEEK = 7
-const LOCALE = 'fr-FR'
 const MILLISECONDS_IN_A_DAY = 86400000
 const MILLISECONDS_IN_A_MINUTE = 60000
 const MILLISECONDS_IN_A_SECOND = 1000
@@ -17,7 +20,7 @@ const formatDate = (date, timeZone) => {
   const options = {
     timeZone,
   }
-  return `${date.toLocaleDateString('fr-FR', options)}`
+  return `${date.toLocaleDateString(LOCALE_FRANCE, options)}`
 }
 export const formatRecommendationDates = (departementCode, dateRange = []) => {
   if (dateRange.length === 0) return 'permanent'
@@ -32,13 +35,13 @@ export const formatRecommendationDates = (departementCode, dateRange = []) => {
 }
 export const computeEndValidityDate = date => {
   const options = {
-    year: 'numeric',
-    month: 'long',
+    ...YEAR_IN_NUMBER,
+    ...FULL_MONTH_IN_LETTERS,
     day: 'numeric',
   }
 
   date.setFullYear(date.getFullYear() + PASS_CULTURE_YEARS_VALIDITY)
-  return `${date.toLocaleDateString('fr-FR', options)}`
+  return `${date.toLocaleDateString(LOCALE_FRANCE, options)}`
 }
 export const dateStringPlusTimeZone = (dateString, departementCode) => {
   return moment(dateString)
@@ -58,15 +61,15 @@ export const formatSearchResultDate = (departmentCode, dates = []) => {
   let beginningDatetime = new Date(dates[0] * 1000)
 
   let endingDatetime = new Date(dates[1] * 1000)
-  const day = beginningDatetime.toLocaleString(LOCALE, { timezone, day: '2-digit' })
+  const day = beginningDatetime.toLocaleString(LOCALE_FRANCE, { timezone, day: '2-digit' })
 
-  const month = beginningDatetime.toLocaleString(LOCALE, { timezone, month: 'long' })
+  const month = beginningDatetime.toLocaleString(LOCALE_FRANCE, { timezone, month: 'long' })
   if (beginningDatetime.getDate() === endingDatetime.getDate() || dates.length === 1) {
     const hours = beginningDatetime.getHours()
     const minutes = beginningDatetime.getMinutes()
     const hoursWithLeadingZero = hours < 10 ? '0' + hours : hours
     const minutesWithLeadingZero = minutes < 10 ? '0' + minutes : minutes
-    const weekDay = beginningDatetime.toLocaleString(LOCALE, { timezone, weekday: 'long' })
+    const weekDay = beginningDatetime.toLocaleString(LOCALE_FRANCE, { timezone, weekday: 'long' })
 
     const capitalizedWeekDay = weekDay.charAt(0).toUpperCase() + weekDay.slice(1)
     return `${capitalizedWeekDay} ${day} ${month} ${hoursWithLeadingZero}:${minutesWithLeadingZero}`
