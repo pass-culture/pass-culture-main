@@ -1,4 +1,4 @@
-import {mapStateToProps, mapDispatchToProps} from '../BookingsContainer'
+import {mapDispatchToProps} from '../BookingsContainer'
 
 describe('src | components | pages | Bookings-v2 | BookingsContainer', function () {
   describe('mapDispatchToProps', function () {
@@ -29,50 +29,6 @@ describe('src | components | pages | Bookings-v2 | BookingsContainer', function 
         },
         type: 'REQUEST_DATA_GET_/BOOKINGS/PRO',
       })
-    })
-  })
-
-  describe('mapStateToProps', function () {
-    it('should return an object with props', function () {
-      // given
-      const bookingsRecap = [
-          {
-            'stock': {
-              'offer_name': 'Avez-vous déjà vu',
-            },
-            'beneficiary': {
-              'lastname': 'Klepi',
-              'firstname': 'Sonia',
-              'email': 'sonia.klepi@example.com',
-            },
-            'booking_date': '2020-04-03T12:00:00Z',
-            'booking_token': 'ZEHBGD',
-          },
-          {
-            'stock': {
-              'offer_name': 'Avez-vous déjà vu',
-            },
-            'beneficiary': {
-              'lastname': 'Klepi',
-              'firstname': 'Sonia',
-              'email': 'sonia.klepi@example.com',
-            },
-            'booking_date': '2020-04-03T12:00:00Z',
-            'booking_token': 'ZEHBGD',
-          },
-        ]
-
-      const state = {
-        data: {
-          bookingsRecap: bookingsRecap
-        },
-      }
-
-      // when
-      const result = mapStateToProps(state)
-
-      // then
-      expect(result).toStrictEqual({bookingsRecap})
     })
   })
 })

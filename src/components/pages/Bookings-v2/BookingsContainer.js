@@ -5,12 +5,6 @@ import Bookings from '../Bookings-v2/Bookings'
 import {withRequiredLogin} from '../../hocs'
 import {requestData} from "redux-saga-data"
 
-export const mapStateToProps = state => {
-  const {data} = state
-  const {bookingsRecap} = data
-  return {bookingsRecap}
-}
-
 export const mapDispatchToProps = dispatch => ({
   requestGetAllBookingsRecap: (handleSuccess, handleFail) => dispatch(
     requestData({
@@ -23,5 +17,5 @@ export const mapDispatchToProps = dispatch => ({
 
 export default compose(
   withRequiredLogin,
-  connect(mapStateToProps, mapDispatchToProps),
+  connect(null, mapDispatchToProps),
 )(Bookings)

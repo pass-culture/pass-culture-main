@@ -1,32 +1,10 @@
 import BookingsTable from "../BookingsTable"
 import React from "react"
-import { shallow } from 'enzyme'
+import {shallow} from 'enzyme'
 
 describe('components | pages | Bookings-v2 | BookingsTable', function () {
-  it('should render a Table component with columns and data', function () {
+  it('should call the Table component with columns and data props', function () {
     // Given
-    const expectedColumns = [
-      {
-        Header: 'Nom de l\'offre',
-        accessor: 'stock',
-        Cell: ({value}) => <span className={"offer-link"}>{value.offer_name}</span>,
-      },
-      {
-        Header: 'Bénéficiaire',
-        accessor: 'beneficiary',
-        Cell: ({value}) => <BeneficiaryCell values={value}/>,
-      },
-      {
-        Header: 'Réservation',
-        accessor: 'booking_date',
-        Cell: ({value}) => <BookingDateCell values={value}/>,
-      },
-      {
-        Header: 'Contremarque',
-        accessor: 'booking_token',
-      },
-    ]
-
     const data = [
       {
         'stock': {
@@ -59,11 +37,13 @@ describe('components | pages | Bookings-v2 | BookingsTable', function () {
     }
 
     // When
-    const wrapper = shallow(<BookingsTable {...props}/>)
+    const wrapper = shallow(<BookingsTable {...props} />)
     const table = wrapper.find('Table')
 
     // Then
-    console.log(table)
-    expect()
+    expect(table).toHaveLength(1)
+    const tableProps = table.props()
+    expect(tableProps['columns'].length).toBe(4)
+    expect(tableProps['data'].length).toBe(2)
   })
 })

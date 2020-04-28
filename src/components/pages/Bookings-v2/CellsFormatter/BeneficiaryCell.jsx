@@ -1,7 +1,7 @@
 import React from 'react'
 
-function BeneficiaryCell(information) {
-  const beneficiaryInfo = information.values
+function BeneficiaryCell(props) {
+  const beneficiaryInfo = props.values
   return (
     <div>
         <span>

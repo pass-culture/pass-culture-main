@@ -15,16 +15,13 @@ describe('src | components | pages | Bookings-v2', () => {
 
   describe('the main section', () => {
     it('should render a Titles component and a BookingsTable component', () => {
-      // given
-      props.requestGetAllBookingsRecap = jest.fn()
-
-      // when
+      // When
       const wrapper = shallow(<Bookings {...props} />)
 
-      // then
+      // Then
       const title = wrapper.find(Titles)
-      const bookingsTable = wrapper.find(BookingsTable)
       expect(title).toHaveLength(1)
+      const bookingsTable = wrapper.find(BookingsTable)
       expect(bookingsTable).toHaveLength(1)
     })
   })
@@ -32,26 +29,24 @@ describe('src | components | pages | Bookings-v2', () => {
   describe('handleSuccess', function () {
     it('should set bookingsRecap with api response data', function () {
       // Given
-      props.requestGetAllBookingsRecap.mockReturnValue(
-        new Promise(resolve => {
-          resolve({
-            payload: {
-              data: [
-                {
-                  'offer-name': 'My Offer',
-                },
-              ],
+      const state = {}
+      const action = {
+        payload: {
+          data: [
+            {
+              'offer-name': 'My Offer',
             },
-          })
-        }),
-      )
+          ],
+        },
+      }
+      props.requestGetAllBookingsRecap = jest.fn((handleSuccess, handleFail) => handleSuccess(state, action))
 
       // When
       const bookings = shallow(<Bookings {...props} />)
-      console.log(bookings.state())
 
       // Then
-      expect(bookings.state('bookingsRecap')).toBe([
+      const bookingsTable = bookings.find(BookingsTable)
+      expect(bookingsTable.prop('bookingsRecap')).toEqual([
         {
           'offer-name': 'My Offer',
         },

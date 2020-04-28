@@ -1,7 +1,8 @@
-import moment from "../BookingsTable/BookingsTable"
+import moment from 'moment/moment'
+import React from 'react'
 
-function BookingDateCell(information) {
-  const bookingDateInfo = information.values
+function BookingDateCell(values) {
+  const {bookingDateInfo} = values.values
   let bookingDate = moment(bookingDateInfo).utc()
   let bookingDateDay = bookingDate.format('DD/MM/YYYY')
   let bookingDateHour = bookingDate.format('HH:mm')
