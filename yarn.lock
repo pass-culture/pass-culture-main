@@ -4480,7 +4480,7 @@ fetch-normalize-data@1.8.4:
     reselect "^3.0.1"
     uuid "^3.3.2"
 
-fetch-normalize-data@1.8.6, fetch-normalize-data@^1.2.2:
+fetch-normalize-data@1.8.6:
   version "1.8.6"
   resolved "https://registry.yarnpkg.com/fetch-normalize-data/-/fetch-normalize-data-1.8.6.tgz#d83f490c79ee3b0eac1577047303a755773839bc"
   integrity sha512-bejxIuMyOwox0nNUMqoLJDYNDCfP7yq+xi8p8DxI6cbmh+IoimdubiH+u9SuGM6Er3eFyROV9fXs2fbhWAVQMw==
@@ -9569,7 +9569,7 @@ react-error-overlay@^5.1.0:
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-5.1.6.tgz#0cd73407c5d141f9638ae1e0c63e7b2bf7e9929d"
   integrity sha512-X1Y+0jR47ImDVr54Ab6V9eGk0Hnu7fVWGeHQSOXHf/C2pF9c6uy3gef8QUeuUiWlNb0i08InPSE5a/KJzNzw1Q==
 
-react-final-form-utils@^1.4.0:
+react-final-form-utils@1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/react-final-form-utils/-/react-final-form-utils-1.4.0.tgz#a89c674a0872015349ab7e16691144751323ca91"
   integrity sha512-IgfjBjkPh7rYBmFCFycU1SGRJPIL8cgvGq+aKQyutfSsK6KlixatsiIDRi7ZMkAwFiHT8Nx6Da2Gm3brnAQMLw==
