@@ -92,3 +92,28 @@ test('Lorsque je clique sur le lien de validation de création du compte reçu p
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/connexion')
 })
+
+test('Je peux cliquer sur le bouton Accepter de la bannière de Cookies HubSpot apparaissant sur la page', async t => {
+  // given
+  const cookiesBanner = Selector('#hs-eu-cookie-confirmation')
+  const confirmationButton = Selector('#hs-eu-confirmation-button')
+
+  // when
+  await t.click(confirmationButton)
+
+  // then
+  await t.expect(cookiesBanner.visible).notOk()
+})
+
+test('Je peux cliquer sur le bouton Refuser de la bannière de Cookies HubSpot apparaissant sur la page', async t => {
+  // given
+  const cookiesBanner = Selector('#hs-eu-cookie-confirmation')
+  const declineButton = Selector('#hs-eu-decline-button')
+
+  // when
+  await t
+    .click(declineButton)
+
+  // then
+  await t.expect(cookiesBanner.visible).notOk()
+})

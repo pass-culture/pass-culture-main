@@ -17,6 +17,11 @@ class SignupForm extends PureComponent {
     document.body.appendChild(script)
   }
 
+  componentWillUnmount() {
+    const script = document.getElementById('hs-script-loader')
+    document.body.removeChild(script)
+  }
+
   onHandleSuccessRedirect = () => '/inscription/confirmation'
 
   onHandleFormatPatch = patch => Object.assign({ publicName: patch.firstName }, patch)
