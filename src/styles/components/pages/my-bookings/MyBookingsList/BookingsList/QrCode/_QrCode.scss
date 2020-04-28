@@ -1,5 +1,5 @@
 .qr-code {
-  background-image: linear-gradient(to bottom right, $primary, $purple-blue);
+  background-image: $linear-gradient-to-right;
   height: 100%;
   overflow-y: scroll;
 

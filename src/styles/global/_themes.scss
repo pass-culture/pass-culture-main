@@ -63,8 +63,9 @@
 }
 
 .pc-theme-gradient {
-  @extend .pc-gradient;
   @extend .is-white-text;
+
+  background-image: $linear-gradient-to-right;
 
   [class*='border-'] {
     border-color: $white;

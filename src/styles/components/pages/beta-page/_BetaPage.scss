@@ -1,5 +1,5 @@
 .beta-page {
-  background-image: linear-gradient(to bottom right, $primary, $purple-blue);
+  background-image: $linear-gradient-to-right;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
