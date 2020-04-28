@@ -7,7 +7,8 @@ import Titles from '../../../layout/Titles/Titles'
 import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
 
-import BankFieldsContainer from '../VenueEdition/BankInformation/BankInformationLegacy/BankFieldsContainer'
+import BankFieldsContainer from '../fields/BankInformationFields/BankInformationLegacy/BankFieldsContainer'
+import RibsUploadFeatureFlip from '../../../layout/FeatureFlip/RibsUploadFeatureFlip'
 import bindGetSiretInformationToSiret from '../fields/IdentifierFields/decorators/bindGetSiretInformationToSiret'
 import IdentifierFields from '../fields/IdentifierFields/IdentifierFields'
 import bindGetSuggestionsToLatitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLatitude'
@@ -15,9 +16,9 @@ import bindGetSuggestionsToLongitude from '../fields/LocationFields/decorators/b
 import LocationFields from '../fields/LocationFields/LocationFields'
 import { FRANCE_POSITION } from '../fields/LocationFields/utils/positions'
 import VenueType from '../ValueObjects/VenueType'
+import BankInformation from '../fields/BankInformationFields/BankInformationFields'
 
-const noop = () => {
-}
+const noop = () => {}
 
 class VenueCreation extends PureComponent {
   constructor() {
@@ -91,6 +92,7 @@ class VenueCreation extends PureComponent {
         params: { offererId, venueId },
       },
       venueTypes,
+      offerer,
     } = this.props
     const { isRequestPending } = this.state
     const readOnly = false
@@ -123,10 +125,16 @@ class VenueCreation extends PureComponent {
           venueTypeId={venueTypeId}
           venueTypes={venueTypes}
         />
-        <BankFieldsContainer
-          areBankInformationProvided={areBankInformationProvided}
-          readOnly={readOnly}
-        />
+        <RibsUploadFeatureFlip
+          legacy={
+            <BankFieldsContainer
+              areBankInformationProvided={areBankInformationProvided}
+              readOnly={readOnly}
+            />
+          }
+        >
+          <BankInformation offerer={offerer} />
+        </RibsUploadFeatureFlip>
         <LocationFields
           fieldReadOnlyBecauseFrozenFormSiret={siretValidOnCreation}
           form={form}

@@ -1,6 +1,6 @@
 import React from 'react'
 import { shallow } from 'enzyme'
-import BankInformation from '../BankInformation'
+import BankInformation from '../BankInformationFields'
 
 jest.mock('../../../../../../utils/config', () => ({
   DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL:

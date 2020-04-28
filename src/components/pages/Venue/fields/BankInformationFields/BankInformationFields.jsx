@@ -83,9 +83,12 @@ const BankInformation = ({ venue, offerer }) => {
   )
 }
 
+BankInformation.defaultProps = {
+  venue: {}
+}
 BankInformation.propTypes = {
   offerer: PropTypes.shape().isRequired,
-  venue: PropTypes.shape().isRequired,
+  venue: PropTypes.shape(),
 }
 
 export default BankInformation
