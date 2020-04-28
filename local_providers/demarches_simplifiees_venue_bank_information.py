@@ -14,10 +14,7 @@ from repository import offerer_queries, venue_queries
 from repository.bank_information_queries import get_last_update_from_bank_information
 from utils.date import DATE_ISO_FORMAT
 from sqlalchemy.orm.exc import MultipleResultsFound
-
-
-class VenueMatchingError(Exception):
-    pass
+from domain.bank_information import check_offerer_presence, check_venue_presence, check_venue_queried_by_name, VenueMatchingError
 
 
 class VenueBankInformationProvider(LocalProvider):
@@ -75,8 +72,23 @@ class VenueBankInformationProvider(LocalProvider):
         siren = application_details['dossier']['entreprise']['siren']
 
         try:
-            offerer = self.get_offerer(siren)
-            venue = self.get_venue(application_details, offerer.id)
+            offerer = offerer_queries.find_by_siren(siren)
+            check_offerer_presence(offerer)
+
+            siret = _find_value_in_fields(
+                application_details['dossier']["champs"], self.FIELD_FOR_VENUE_WITH_SIRET)
+            if siret:
+                venue = venue_queries.find_by_managing_offerer_id_and_siret(
+                    offerer.id, siret)
+                check_venue_presence(venue)
+
+            else:
+                name = _find_value_in_fields(
+                    application_details['dossier']["champs"], self.FIELD_FOR_VENUE_WITHOUT_SIRET)
+                venues = venue_queries.find_venue_without_siret_by_managing_offerer_id_and_name(
+                    offerer.id, name)
+                check_venue_queried_by_name(venues)
+                venue = venues[0]
 
             bank_information_dict['venueId'] = venue.id
             bank_information_dict['idAtProviders'] = _compute_id_at_provider(
@@ -88,34 +100,6 @@ class VenueBankInformationProvider(LocalProvider):
             return {}
 
         return bank_information_dict
-
-    def get_offerer(self, siren):
-        offerer = offerer_queries.find_by_siren(siren)
-        if not offerer:
-            raise VenueMatchingError("Offerer not found")
-        return offerer
-
-    def get_venue(self, application_details, offerer_id):
-        siret = _find_value_in_fields(
-            application_details['dossier']["champs"], self.FIELD_FOR_VENUE_WITH_SIRET)
-        if siret:
-            venue = venue_queries.find_by_managing_offerer_id_and_siret(
-                offerer_id, siret)
-            if not venue:
-                raise VenueMatchingError("Siret not found")
-
-        else:
-            name = _find_value_in_fields(
-                application_details['dossier']["champs"], self.FIELD_FOR_VENUE_WITHOUT_SIRET)
-            venues = venue_queries.find_venue_without_siret_by_managing_offerer_id_and_name(
-                offerer_id, name)
-            if len(venues) == 0:
-                raise VenueMatchingError("Venue name for found")
-            if len(venues) > 1:
-                raise VenueMatchingError("Multiple venues found")
-            venue = venues[0]
-
-        return venue
 
     def retrieve_next_bank_information(self) -> dict:
         application_id = next(self.application_ids)
