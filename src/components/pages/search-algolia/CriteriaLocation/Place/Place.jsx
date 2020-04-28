@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import Header from '../../../../layout/Header/Header'
-import { fetchPlaces } from './__specs__/placesService'
+import { fetchPlaces } from '../../../../../vendor/api-geo/placesService'
 
 export class Place extends PureComponent {
   constructor(props) {
@@ -15,7 +15,10 @@ export class Place extends PureComponent {
   handleOnChange = event => {
     this.setState({ keywords: event.target.value }, () => {
       const { keywords } = this.state
-      fetchPlaces(keywords).then(suggestedPlaces => this.setState({ suggestedPlaces }))
+      fetchPlaces({ keywords })
+        .then(suggestedPlaces => {
+          this.setState({ suggestedPlaces })
+        })
     })
   }
 
@@ -30,7 +33,7 @@ export class Place extends PureComponent {
   }
 
   render() {
-    let { backTo, history, match, title } = this.props
+    const { backTo, history, match, title } = this.props
     const { keywords, suggestedPlaces } = this.state
     return (
       <div>

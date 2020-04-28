@@ -3,19 +3,19 @@ import { createBrowserHistory } from 'history'
 import React from 'react'
 import Header from '../../../../../layout/Header/Header'
 import { Place } from '../Place'
-import { fetchPlaces } from './placesService'
+import { fetchPlaces } from '../../../../../../vendor/api-geo/placesService'
 
-jest.mock('./placesService', () => ({
+jest.mock('../../../../../../vendor/api-geo/placesService', () => ({
   fetchPlaces: jest.fn(),
 }))
 describe('components | Place', () => {
   let props
   beforeEach(() => {
     props = {
+      backTo: '/recherche/criteres-localisation',
       history: createBrowserHistory(),
       match: { params: {} },
       title: 'Choisir un lieu',
-      backTo: '/recherche/criteres-localisation',
       updatePlaceInformations: jest.fn(),
     }
 
@@ -63,7 +63,7 @@ describe('components | Place', () => {
     input.simulate('change', { target: { value: 'Pari' } })
 
     // Then
-    expect(fetchPlaces).toHaveBeenCalledWith('Pari')
+    expect(fetchPlaces).toHaveBeenCalledWith({ keywords: 'Pari' })
   })
 
   it('should not render a list of suggested places while typing when no result', async () => {
@@ -97,7 +97,7 @@ describe('components | Place', () => {
               latitude: 3,
               longitude: 4,
             },
-            name: "34 avenue de l'Opéra",
+            name: '34 avenue de l\'Opéra',
             extraData: 'Paris',
           },
         ])
@@ -116,12 +116,13 @@ describe('components | Place', () => {
       .find('button')
     expect(suggestedPlaces).toHaveLength(2)
     expect(suggestedPlaces.at(0).text()).toBe('Paris 15ème arrondissement Paris')
-    expect(suggestedPlaces.at(1).text()).toBe("34 avenue de l'Opéra Paris")
+    expect(suggestedPlaces.at(1).text()).toBe('34 avenue de l\'Opéra Paris')
   })
 
   it('should update and redirect to parent when clicking on a suggested place', async () => {
     // Given
-    jest.spyOn(props.history, 'push').mockImplementation(() => {})
+    jest.spyOn(props.history, 'push').mockImplementation(() => {
+    })
     fetchPlaces.mockReturnValue(
       new Promise(resolve => {
         resolve([
@@ -138,7 +139,7 @@ describe('components | Place', () => {
               latitude: 3,
               longitude: 4,
             },
-            name: "34 avenue de l'Opéra",
+            name: '34 avenue de l\'Opéra',
             extraData: 'Paris',
           },
         ])
@@ -169,5 +170,23 @@ describe('components | Place', () => {
       extraData: 'Paris',
     })
     expect(props.history.push).toHaveBeenCalledWith('/recherche/criteres-localisation')
+  })
+
+  it('should render no suggested places when fetching is in error', async () => {
+    // Given
+    jest.spyOn(props.history, 'push').mockImplementation(() => {})
+    fetchPlaces.mockRejectedValueOnce()
+    const wrapper = shallow(<Place {...props} />)
+    const input = wrapper.find('input')
+
+    // When
+    await input.simulate('change', { target: { value: '' } })
+
+    // Then
+    const suggestedPlaces = wrapper
+      .find('ul')
+      .find('li')
+      .find('button')
+    expect(suggestedPlaces).toHaveLength(0)
   })
 })
