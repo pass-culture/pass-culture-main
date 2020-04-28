@@ -68,11 +68,16 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
           offerers: [],
           userOfferers: [],
           venues: [],
-          "venue-types": [{ id: 'AE', label: 'Patrimoine et tourisme' }],
-          users: [            {
-            email: 'john.doe@example.net',
-            currentUserUUID: getCurrentUserUUID(),
-          }],
+          'venue-types': [
+            { id: 'AE', label: 'Patrimoine et tourisme' },
+            { id: 'AF', label: 'Autre' },
+          ],
+          users: [
+            {
+              email: 'john.doe@example.net',
+              currentUserUUID: getCurrentUserUUID(),
+            },
+          ],
         },
       }
 
@@ -84,7 +89,10 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
       const venueType = props.venueTypes[0]
       expect(venueType).toBeInstanceOf(VenueType)
       expect(props).toMatchObject({
-        venueTypes: [new VenueType({ id: 'AE', label: 'Patrimoine et tourisme' })],
+        venueTypes: [
+          new VenueType({ id: 'AE', label: 'Patrimoine et tourisme' }),
+          new VenueType({ id: 'AF', label: 'Autre' }),
+        ],
       })
     })
   })
@@ -138,7 +146,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
   })
 
   describe('handleSubmitRequest', () => {
-    it('should call patch method with proper params', function () {
+    it('should call patch method with proper params', function() {
       // given
       const formValues = {
         comment: 'Commentaire',

@@ -10,7 +10,7 @@ import withTracking from '../../../hocs/withTracking'
 import VenueEdition from './VenueEdition'
 import { selectVenueTypes } from '../../../../selectors/data/venueTypesSelectors'
 import VenueType from '../ValueObjects/VenueType'
-import { formatVenuePayload } from "../utils/formatVenuePayload";
+import { formatVenuePayload } from '../utils/formatVenuePayload'
 
 export const mapStateToProps = (
   state,
