@@ -20,6 +20,12 @@ const ProfileMainView = ({ currentUser }) => (
         <div className="app-version">
           {`Version ${version}`}
         </div>
+        <img
+          alt=""
+          className="pm-ministry-of-culture"
+          src="/min-culture-rvb@2x.png"
+          width="161"
+        />
       </div>
     </main>
     <RelativeFooterContainer
