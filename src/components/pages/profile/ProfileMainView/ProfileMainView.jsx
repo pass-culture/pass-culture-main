@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import { version } from '../../../../../package.json'
-import HeaderContainer from '../../../layout/Header/HeaderContainer'
+import ProfileHeader from '../ProfileHeader/ProfileHeader'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 import MesInformationsContainer from '../MesInformations/MesInformationsContainer'
 import RemainingCredit from '../RemainingCredit/RemainingCredit'
@@ -12,9 +12,9 @@ const ProfileMainView = ({ currentUser }) => (
     className="pc-page-view pc-theme-default flex-rows with-header"
     id="profile-page-main-view"
   >
-    <HeaderContainer title="Mon compte" />
-    <main className="mosaic-background pc-main is-clipped is-relative">
+    <main className="pc-main is-clipped is-relative">
       <div className="pc-scroll-container">
+        <ProfileHeader currentUser={currentUser} />
         {currentUser && <RemainingCredit currentUser={currentUser} />}
         <MesInformationsContainer />
         <div className="app-version">

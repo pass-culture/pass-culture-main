@@ -16,7 +16,7 @@ const ProfileUpdateSuccess = ({ title }) => (
       closeTo={null}
       title={title}
     />
-    <main className="mosaic-background pc-main padded is-relative flex-1 flex-rows text-center">
+    <main className="pc-main padded is-relative flex-1 flex-rows text-center">
       <h2 className="is-block fs22">
         <Icon
           className="big-success"

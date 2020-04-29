@@ -6,6 +6,7 @@ import { getTimezone } from '../timezone'
 
 export const FULL_MONTH_IN_LETTERS = { month: 'long' }
 export const LOCALE_FRANCE = 'fr-FR'
+export const MONTH_IN_NUMBER = { month: 'numeric' }
 export const YEAR_IN_NUMBER = { year: 'numeric' }
 
 const DAYS_IN_A_WEEK = 7
@@ -36,7 +37,7 @@ export const formatRecommendationDates = (departementCode, dateRange = []) => {
 export const computeEndValidityDate = date => {
   const options = {
     ...YEAR_IN_NUMBER,
-    ...FULL_MONTH_IN_LETTERS,
+    ...MONTH_IN_NUMBER,
     day: 'numeric',
   }
 

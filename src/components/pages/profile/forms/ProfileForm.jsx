@@ -82,7 +82,7 @@ class ProfileForm extends PureComponent {
     return (
       <form
         autoComplete="off"
-        className="mosaic-background form flex-rows"
+        className="form flex-rows"
         noValidate
         onReset={this.handleOnFormReset}
         onSubmit={handleSubmit}

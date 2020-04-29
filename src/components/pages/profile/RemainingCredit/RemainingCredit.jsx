@@ -1,9 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
-import { computeEndValidityDate } from '../../../../utils/date/date'
-import formatDecimals from '../../../../utils/numbers/formatDecimals'
-import Icon from '../../../layout/Icon/Icon'
 import getRemainingCreditForGivenCreditLimit from '../utils/utils'
 import CreditGauge from './CreditGauge/CreditGauge'
 import { NON_BREAKING_SPACE } from '../../../../utils/specialCharacters'
@@ -23,43 +20,17 @@ class RemainingCredit extends PureComponent {
   render() {
     const { currentUser } = this.props
     const { isReadMoreVisible } = this.state
-    const {
-      expenses,
-      wallet_date_created: walletDateCreated,
-      wallet_balance: walletBalance,
-    } = currentUser
-    const formattedWalletBalance = formatDecimals(walletBalance)
+    const { expenses, wallet_balance: walletBalance } = currentUser
     const { digital, physical, all } = expenses
     const digitalCreditLimit = digital.max
     const physicalCreditLimit = physical.max
     const initialDeposit = all.max
     const digitalRemainingCredit = getRemainingCreditForGivenCreditLimit(walletBalance)(digital)
     const physicalRemainingCredit = getRemainingCreditForGivenCreditLimit(walletBalance)(physical)
-    let endValidityDate = null
-    if (walletDateCreated) {
-      endValidityDate = computeEndValidityDate(new Date(walletDateCreated))
-    }
 
     return (
       <section>
-        <header className="rc-title-container">
-          <h2 className="rc-title">
-            {'Crédit restant'}
-          </h2>
-        </header>
-
         <div className="rc-informations-container">
-          <div className="rc-header">
-            <Icon svg="picto-money" />
-            <div>
-              <div className="rc-header-title">
-                {'Mon crédit'}
-              </div>
-              <p>
-                {`${formattedWalletBalance}${NON_BREAKING_SPACE}€`}
-              </p>
-            </div>
-          </div>
           <div className="rc-gauges-container">
             <div className="rc-gauges-title">
               {`Tu peux encore dépenser jusqu’à${NON_BREAKING_SPACE}:`}
@@ -107,13 +78,6 @@ class RemainingCredit extends PureComponent {
             )}
           </div>
         </div>
-        {endValidityDate && (
-          <div>
-            <p className="rc-end-validity-date">
-              {`Votre crédit est valable jusqu’au ${endValidityDate}.`}
-            </p>
-          </div>
-        )}
       </section>
     )
   }

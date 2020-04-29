@@ -20,7 +20,7 @@ describe('src | utils | date', () => {
       const formattedDate = computeEndValidityDate(date)
 
       // then
-      expect(formattedDate).toBe('10 septembre 2021')
+      expect(formattedDate).toBe('10/09/2021')
     })
   })
 

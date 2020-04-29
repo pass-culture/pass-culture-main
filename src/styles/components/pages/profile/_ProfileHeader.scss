@@ -1,0 +1,22 @@
+.ph-wrapper {
+  background-image: $linear-gradient-to-right;
+  color: $white;
+  font-weight: 500;
+  padding: rem(31px) 0 rem(62px) 0;
+  text-align: center;
+
+  .ph-pseudo {
+    font-size: rem(18px);
+    margin-bottom: rem(16px);
+  }
+
+  .ph-wallet-balance {
+    font-size: rem(40px);
+    margin-bottom: rem(8px);
+  }
+
+  .ph-end-validity-date {
+    font-size: rem(14px);
+  }
+}
+

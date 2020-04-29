@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import ProfileMainView from '../ProfileMainView'
-import HeaderContainer from '../../../../layout/Header/HeaderContainer'
+import ProfileHeader from '../../ProfileHeader/ProfileHeader'
 import RelativeFooterContainer from '../../../../layout/RelativeFooter/RelativeFooterContainer'
 import MesInformationsContainer from '../../MesInformations/MesInformationsContainer'
 import RemainingCredit from '../../RemainingCredit/RemainingCredit'
@@ -23,13 +23,13 @@ describe('profileMainView', () => {
   it('should display header, remaining credit, my informations form and menu', () => {
     // When
     const wrapper = shallow(<ProfileMainView {...props} />)
-    const HeaderContainerWrapper = wrapper.find(HeaderContainer)
+    const ProfileHeaderWrapper = wrapper.find(ProfileHeader)
     const RemainingCreditWrapper = wrapper.find(RemainingCredit)
     const MesInformationsContainerWrapper = wrapper.find(MesInformationsContainer)
     const RelativeFooterContainerWrapper = wrapper.find(RelativeFooterContainer)
 
     // Then
-    expect(HeaderContainerWrapper).toHaveLength(1)
+    expect(ProfileHeaderWrapper).toHaveLength(1)
     expect(RemainingCreditWrapper).toHaveLength(1)
     expect(MesInformationsContainerWrapper).toHaveLength(1)
     expect(RelativeFooterContainerWrapper).toHaveLength(1)
