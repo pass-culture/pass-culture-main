@@ -1,12 +1,15 @@
 import { Selector } from 'testcafe'
 import { ROOT_PATH } from '../src/utils/config'
-import { fetchSandbox } from './helpers/sandboxes'
+import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
+
+let userRole
 
 fixture('Quand je navigue vers /bienvenue,').beforeEach(async t => {
-  t.ctx.sandbox = await fetchSandbox(
-    'webapp_02_signin',
+  userRole = await createUserRoleFromUserSandbox(
+    'webapp_11_tutos',
     'get_existing_webapp_validated_user_with_has_filled_cultural_survey'
   )
+  await t.useRole(userRole)
 
   await t.navigateTo(`${ROOT_PATH}bienvenue`)
 })
@@ -55,7 +58,6 @@ test('je vois le texte de la troisième carte tutoriel en cliquant sur la flèch
     .withText(
       'Tu peux utiliser jusqu’à 200 € en biens physiques(livres, vinyles…) et jusqu’à 200 € en biens numériques (streaming, jeux vidéo…).'
     )
-
   const thirdTutoSecondText = Selector('p')
     .nth(1)
     .withText('Aucune limite sur la réservation de sorties (concerts, spectacles…) !')
@@ -82,4 +84,24 @@ test('je peux naviguer entre les différents tutoriels à l’aide du drag and d
     .drag(secondTutorial, 200, 0)
     .expect(firstTutorial.exists)
     .ok()
+})
+
+test("quand j'ai fini de voir le 3ème tutoriel, je suis rediriger vers une autre page", async t => {
+  const nextArrow = Selector('img').withAttribute('alt', 'Suivant')
+  await t.click(nextArrow)
+  await t.click(nextArrow)
+  await t.click(nextArrow)
+
+  const location = await t.eval(() => window.location)
+  await t.expect(location.pathname).eql('/decouverte')
+})
+
+test("quand je n'ai pas fini de voir le 3ème tutoriel, je ne peux pas naviguer sur une autre page", async t => {
+  const nextArrow = Selector('img').withAttribute('alt', 'Suivant')
+  await t.click(nextArrow)
+
+  await t.navigateTo(`${ROOT_PATH}decouverte`)
+
+  const location = await t.eval(() => window.location)
+  await t.expect(location.pathname).eql('/bienvenue')
 })
