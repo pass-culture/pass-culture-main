@@ -1,10 +1,17 @@
-from sqlalchemy import Column, BigInteger, ForeignKey, String, Integer
+from sqlalchemy import Column, BigInteger, ForeignKey, String, Integer, Enum
 from sqlalchemy.orm import relationship, backref
+import enum
 
 from models.db import Model
 from models.pc_object import PcObject
 from models.providable_mixin import ProvidableMixin
 from models.versioned_mixin import VersionedMixin
+
+
+class BankInformationStatus(enum.Enum):
+    REJECTED = "REJECTED"
+    DRAFT = "DRAFT"
+    ACCEPTED = "ACCEPTED"
 
 
 class BankInformation(PcObject, Model, ProvidableMixin, VersionedMixin):
@@ -29,13 +36,12 @@ class BankInformation(PcObject, Model, ProvidableMixin, VersionedMixin):
                          backref=backref('bankInformation', uselist=False))
 
     iban = Column(String(27),
-                  nullable=False)
+                  nullable=True)
 
     bic = Column(String(11),
-                 nullable=False)
+                 nullable=True)
 
     applicationId = Column(Integer,
                            nullable=False)
 
-
-
+    status = Column(Enum(BankInformationStatus), nullable=False)
