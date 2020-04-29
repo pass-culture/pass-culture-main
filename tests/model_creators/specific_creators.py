@@ -1,7 +1,7 @@
 import random
 import string
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 from models import Booking, EventType, Offer, Offerer, Product, Stock, ThingType, User, Venue, Provider
 from utils.token import random_token
@@ -119,7 +119,8 @@ def create_offer_with_thing_product(venue: Venue,
                                     thumb_count: int = 0,
                                     url: Optional[str] = None,
                                     last_provider_id: int = None,
-                                    last_provider: Provider = None) -> Offer:
+                                    last_provider: Provider = None,
+                                    extra_data: Dict = None) -> Offer:
     offer = Offer()
     if product:
         offer.product = product
@@ -156,6 +157,9 @@ def create_offer_with_thing_product(venue: Venue,
     offer.lastProviderId = last_provider_id
     offer.lastProvider = last_provider
     offer.id = idx
+
+    if extra_data:
+        offer.extraData = extra_data
 
     if id_at_providers:
         offer.idAtProviders = id_at_providers
