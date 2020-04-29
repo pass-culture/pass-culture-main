@@ -4,7 +4,7 @@ import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import Icon from '../../../layout/Icon/Icon'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 import { CriterionItem } from './CriterionItem/CriterionItem'
-import { checkIfAroundMe } from '../utils/checkIfAroundMe'
+import { checkIfSearchAround } from '../utils/checkIfSearchAround'
 
 export class Home extends PureComponent {
   constructor(props) {
@@ -19,13 +19,25 @@ export class Home extends PureComponent {
     event.preventDefault()
     const { categoryCriterion, geolocationCriterion, history, sortCriterion } = this.props
     const { keywordsToSearch } = this.state
-    const autourDeMoi = checkIfAroundMe(geolocationCriterion.isSearchAroundMe)
+    const { place, userGeolocation } = geolocationCriterion
+    const { geolocation: placeGeolocation, name } = place || {}
+
+    const autourDeMoi = checkIfSearchAround(geolocationCriterion.searchAround)
     const categories = categoryCriterion.facetFilter
     const tri = sortCriterion.index
 
+    let search =
+      `?mots-cles=${keywordsToSearch}&autour-de=${autourDeMoi}&tri=${tri}&categories=${categories}` +
+      `&latitude=${userGeolocation.latitude}&longitude=${userGeolocation.longitude}`
+
+    if (geolocationCriterion.searchAround.place) {
+      search =
+        `?mots-cles=${keywordsToSearch}&autour-de=${autourDeMoi}&tri=${tri}&categories=${categories}` +
+        `&latitude=${placeGeolocation.latitude}&longitude=${placeGeolocation.longitude}&place=${name}`
+    }
     history.push({
       pathname: '/recherche/resultats',
-      search: `?mots-cles=${keywordsToSearch}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${categories}`,
+      search,
     })
   }
 
@@ -138,11 +150,26 @@ Home.propTypes = {
     label: PropTypes.string.isRequired,
   }).isRequired,
   geolocationCriterion: PropTypes.shape({
-    isSearchAroundMe: PropTypes.bool.isRequired,
     params: PropTypes.shape({
       icon: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
       requiresGeolocation: PropTypes.bool.isRequired,
+    }),
+    place: PropTypes.shape({
+      geolocation: PropTypes.shape({
+        latitude: PropTypes.number,
+        longitude: PropTypes.number,
+      }),
+      name: PropTypes.string
+    }),
+    searchAround: PropTypes.shape({
+      everywhere: PropTypes.bool,
+      place: PropTypes.bool,
+      user: PropTypes.bool,
+    }).isRequired,
+    userGeolocation: PropTypes.shape({
+      latitude: PropTypes.number,
+      longitude: PropTypes.number,
     }),
   }).isRequired,
   history: PropTypes.shape({ push: PropTypes.func }).isRequired,

@@ -17,8 +17,14 @@ class SearchAlgolia extends PureComponent {
     this.state = {
       categoryCriterion: CATEGORY_CRITERIA.ALL,
       geolocationCriterion: {
-        isSearchAroundMe: false,
         params: GEOLOCATION_CRITERIA.EVERYWHERE,
+        place: null,
+        searchAround: {
+          everywhere: true,
+          place: false,
+          user: false
+        },
+        userGeolocation: props.geolocation
       },
       sortCriterion: SORT_CRITERIA.RELEVANCE,
     }
@@ -49,31 +55,42 @@ class SearchAlgolia extends PureComponent {
   }
 
   handleGeolocationCriterionSelection = criterionKey => {
+    const { geolocationCriterion: { userGeolocation } } = this.state
     const label = GEOLOCATION_CRITERIA[criterionKey].label
-    this.setState(() => {
-      return {
-        geolocationCriterion: {
-          isSearchAroundMe: label === GEOLOCATION_CRITERIA.AROUND_ME.label,
-          params: GEOLOCATION_CRITERIA[criterionKey],
+
+    this.setState({
+      geolocationCriterion: {
+        params: GEOLOCATION_CRITERIA[criterionKey],
+        place: null,
+        searchAround: {
+          place: false,
+          everywhere: label === GEOLOCATION_CRITERIA.EVERYWHERE.label,
+          user: label === GEOLOCATION_CRITERIA.AROUND_ME.label
         },
-      }
+        userGeolocation
+      },
     })
     const { redirectToSearchMainPage } = this.props
     redirectToSearchMainPage()
   }
 
-  handleOnPlaceSelection = placeName => {
-    this.setState(() => {
-      return {
-        geolocationCriterion: {
-          isSearchAroundMe: true,
-          params: {
-            label: placeName,
-            icon: 'ico-there',
-            requiresGeolocation: false
-          },
+  handleOnPlaceSelection = place => {
+    const { geolocationCriterion: { userGeolocation } } = this.state
+    this.setState({
+      geolocationCriterion: {
+        params: {
+          label: place.name,
+          icon: 'ico-there',
+          requiresGeolocation: false
         },
-      }
+        place: place,
+        searchAround: {
+          everywhere: false,
+          place: true,
+          user: false
+        },
+        userGeolocation
+      },
     })
   }
 
@@ -94,8 +111,9 @@ class SearchAlgolia extends PureComponent {
   }
 
   render() {
-    const { match, query, redirectToSearchMainPage, history, geolocation } = this.props
+    const { history, match, query, redirectToSearchMainPage } = this.props
     const { categoryCriterion, geolocationCriterion, sortCriterion } = this.state
+    const { place, userGeolocation } = geolocationCriterion
 
     return (
       <Switch>
@@ -108,21 +126,23 @@ class SearchAlgolia extends PureComponent {
             geolocationCriterion={geolocationCriterion}
             history={history}
             sortCriterion={sortCriterion}
+            userGeolocation={userGeolocation}
           />
         </Route>
         <Route path="/recherche/resultats">
           <SearchResults
             criteria={{
               categories: categoryCriterion.facetFilter ? [categoryCriterion.facetFilter] : [],
-              isSearchAroundMe: geolocationCriterion.isSearchAroundMe,
+              searchAround: geolocationCriterion.searchAround,
               sortBy: sortCriterion.index,
             }}
-            geolocation={geolocation}
             history={history}
             match={match}
+            place={place}
             query={query}
             redirectToSearchMainPage={redirectToSearchMainPage}
             search={history.location.search}
+            userGeolocation={userGeolocation}
           />
         </Route>
         <Route path="/recherche/criteres-localisation">
@@ -130,11 +150,12 @@ class SearchAlgolia extends PureComponent {
             activeCriterionLabel={geolocationCriterion.params.label}
             backTo="/recherche"
             criteria={GEOLOCATION_CRITERIA}
-            geolocation={geolocation}
+            geolocation={userGeolocation}
             history={history}
             match={match}
             onCriterionSelection={this.handleGeolocationCriterionSelection}
             onPlaceSelection={this.handleOnPlaceSelection}
+            place={place}
             title="Localisation"
           />
         </Route>
@@ -154,7 +175,7 @@ class SearchAlgolia extends PureComponent {
             activeCriterionLabel={sortCriterion.label}
             backTo="/recherche"
             criteria={SORT_CRITERIA}
-            geolocation={geolocation}
+            geolocation={userGeolocation}
             history={history}
             match={match}
             onCriterionSelection={this.handleSortCriterionSelection}

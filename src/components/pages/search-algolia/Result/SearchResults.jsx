@@ -25,17 +25,18 @@ class SearchResults extends PureComponent {
   constructor(props) {
     super(props)
     const {
-      criteria: { categories, isSearchAroundMe, sortBy },
+      criteria: { categories, searchAround, sortBy },
+      place
     } = props
-    const isSearchAroundMeFromUrlOrProps = this.getIsSearchAroundMeFromUrlOrProps(isSearchAroundMe)
+    const searchAroundFromUrlOrProps = this.getSearchAroundFromUrlOrProps(searchAround)
     const categoriesFromUrlOrProps = this.getCategoriesFromUrlOrProps(categories)
     const sortByFromUrlOrProps = this.getSortByFromUrlOrProps(sortBy)
+    const placeFromUrlOrProps = this.getPlaceFromUrlOrProps(place)
 
     this.state = {
       currentPage: 0,
       filters: {
         aroundRadius: DEFAULT_RADIUS_IN_KILOMETERS,
-        isSearchAroundMe: isSearchAroundMeFromUrlOrProps,
         offerCategories: categoriesFromUrlOrProps,
         offerIsDuo: false,
         offerIsFree: false,
@@ -50,19 +51,19 @@ class SearchResults extends PureComponent {
           option: DATE_FILTER.TODAY.value,
         },
         priceRange: PRICE_FILTER.DEFAULT_RANGE,
+        searchAround: searchAroundFromUrlOrProps,
         sortBy: sortByFromUrlOrProps,
       },
       keywordsToSearch: '',
       isLoading: false,
-      numberOfActiveFilters: this.getNumberOfActiveFilters(
-        isSearchAroundMeFromUrlOrProps,
-        categoriesFromUrlOrProps
-      ),
+      numberOfActiveFilters: this.getNumberOfActiveFilters(categoriesFromUrlOrProps, searchAroundFromUrlOrProps),
+      place: placeFromUrlOrProps,
       resultsCount: 0,
       results: [],
       searchedKeywords: '',
       sortCriterionLabel: this.getSortCriterionLabelFromIndex(sortByFromUrlOrProps),
       totalPagesNumber: 0,
+      userGeolocation: props.userGeolocation
     }
     this.inputRef = React.createRef()
   }
@@ -83,30 +84,65 @@ class SearchResults extends PureComponent {
     return categoriesFromUrl ? categoriesFromUrl.split(';') : categoriesFromProps
   }
 
-  getIsSearchAroundMeFromUrlOrProps = isSearchAroundMeFromProps => {
-    const { query, geolocation, history } = this.props
+  getPlaceFromUrlOrProps = (placeFromUrlOrProps) => {
+    const { query } = this.props
     const queryParams = query.parse()
-    const isSearchAroundMeFromUrl = queryParams['autour-de-moi'] || ''
+    const latitudeFromUrl = queryParams['latitude']
+    const longitudeFromUrl = queryParams['longitude']
+    const placeNameFromUrl = queryParams['place']
 
-    if (isSearchAroundMeFromUrl === 'oui') {
-      if (isGeolocationEnabled(geolocation)) {
-        return true
+    if (latitudeFromUrl && longitudeFromUrl && placeNameFromUrl) {
+      return {
+        geolocation: { latitude: latitudeFromUrl, longitude: longitudeFromUrl },
+        name: placeNameFromUrl
+      }
+    } else {
+      return placeFromUrlOrProps
+    }
+  }
+
+  getSearchAroundFromUrlOrProps = searchAroundFromProps => {
+    const { history, query, userGeolocation } = this.props
+    const queryParams = query.parse()
+    const searchAroundFromUrl = queryParams['autour-de'] || ''
+    const latitudeFromUrl = queryParams['latitude']
+    const longitudeFromUrl = queryParams['longitude']
+    const placeFromUrl = queryParams['place']
+
+    if (searchAroundFromUrl === 'oui') {
+      if (placeFromUrl && latitudeFromUrl && longitudeFromUrl) {
+        return {
+          everywhere: false,
+          place: true,
+          user: false
+        }
+      }
+      if (isGeolocationEnabled(userGeolocation)) {
+        return {
+          everywhere: false,
+          place: false,
+          user: true
+        }
       }
       const keywordsFromUrl = queryParams['mots-cles'] || ''
       const sortByFromUrl = queryParams['tri'] || ''
       const categoriesFromUrl = queryParams['categories'] || ''
       history.replace({
-        search: `?mots-cles=${keywordsFromUrl}&autour-de-moi=non&tri=${sortByFromUrl}&categories=${categoriesFromUrl}`,
+        search: `?mots-cles=${keywordsFromUrl}&autour-de=non&tri=${sortByFromUrl}&categories=${categoriesFromUrl}`,
       })
-      return false
+      return {
+        everywhere: true,
+        place: false,
+        user: false
+      }
     } else {
-      return isSearchAroundMeFromProps
+      return searchAroundFromProps
     }
   }
 
-  getNumberOfActiveFilters = (isSearchAroundMe, categories) => {
+  getNumberOfActiveFilters = (categories, searchAround) => {
     const numberOfActiveCategories = categories.length
-    const geolocationFilterCounter = isSearchAroundMe === true ? 1 : 0
+    const geolocationFilterCounter = searchAround.user === true || searchAround.place === true ? 1 : 0
     return geolocationFilterCounter + numberOfActiveCategories
   }
 
@@ -119,7 +155,7 @@ class SearchResults extends PureComponent {
   }
 
   showFailModal = () => {
-    toast.info("La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard.")
+    toast.info('La recherche n\'a pas pu aboutir, veuillez ré-essayer plus tard.')
   }
 
   handleOnSubmit = event => {
@@ -131,13 +167,13 @@ class SearchResults extends PureComponent {
     const trimmedKeywordsToSearch = keywordsToSearch.trim()
 
     const queryParams = query.parse()
-    const autourDeMoi = queryParams['autour-de-moi']
+    const autourDeMoi = queryParams['autour-de']
     const categories = offerCategories.join(';')
 
     trimmedKeywordsToSearch &&
-      history.replace({
-        search: `?mots-cles=${trimmedKeywordsToSearch}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${categories}`,
-      })
+    history.replace({
+      search: `?mots-cles=${trimmedKeywordsToSearch}&autour-de=${autourDeMoi}&tri=${tri}&categories=${categories}`,
+    })
 
     if (searchedKeywords !== trimmedKeywordsToSearch) {
       this.setState(
@@ -170,6 +206,12 @@ class SearchResults extends PureComponent {
     })
   }
 
+  updatePlace = place => {
+    this.setState({
+      place
+    })
+  }
+
   updateNumberOfActiveFilters = numberOfFilters => {
     this.setState({
       numberOfActiveFilters: numberOfFilters,
@@ -177,18 +219,17 @@ class SearchResults extends PureComponent {
   }
 
   fetchOffers = ({ keywords = '', page = 0 } = {}) => {
-    const { geolocation } = this.props
-    const { filters } = this.state
+    const { filters, place, userGeolocation } = this.state
     const {
       aroundRadius,
       date,
       offerIsFilteredByDate,
-      isSearchAroundMe,
       offerCategories,
       offerIsDuo,
       offerIsFree,
       offerTypes,
       priceRange,
+      searchAround,
       sortBy,
     } = filters
 
@@ -198,14 +239,14 @@ class SearchResults extends PureComponent {
     const options = {
       aroundRadius,
       keywords,
-      isSearchAroundMe,
-      geolocation,
+      geolocation: searchAround.place ? place.geolocation : userGeolocation,
       offerCategories,
       offerIsDuo,
       offerIsFree,
       offerTypes,
       page,
       priceRange,
+      searchAround: searchAround.everywhere !== true,
       sortBy,
     }
 
@@ -275,7 +316,7 @@ class SearchResults extends PureComponent {
 
   blurInput = () => () => this.inputRef.current.blur()
 
-  getSortCriterionLabelFromIndex(index) {
+  getSortCriterionLabelFromIndex = (index) => {
     const criterionLabels = Object.keys(SORT_CRITERIA).map(criterionKey => {
       return SORT_CRITERIA[criterionKey].index === index ? SORT_CRITERIA[criterionKey].label : ''
     })
@@ -307,20 +348,25 @@ class SearchResults extends PureComponent {
   }
 
   handleNewSearchAroundMe = () => {
-    const { geolocation, history } = this.props
+    const { history, userGeolocation } = this.props
     const { filters } = this.state
     this.setState(
       {
         filters: {
           ...filters,
           offerCategories: [],
-          isSearchAroundMe: true,
+          searchAround: {
+            everywhere: false,
+            place: false,
+            user: true
+          },
           sortBy: '',
         },
+        place: null
       },
       () => {
-        if (isGeolocationEnabled(geolocation)) {
-          history.push('/recherche/resultats?mots-cles=&autour-de-moi=oui&tri=&categories=')
+        if (isGeolocationEnabled(userGeolocation)) {
+          history.push(`/recherche/resultats?mots-cles=&autour-de=oui&tri=&categories=&latitude=${userGeolocation.latitude}&longitude=${userGeolocation.longitude}`)
           this.fetchOffers()
         } else {
           window.alert('Veuillez activer la géolocalisation pour voir les offres autour de vous.')
@@ -330,19 +376,22 @@ class SearchResults extends PureComponent {
   }
 
   render() {
-    const { geolocation, history, match, query } = this.props
+    const { history, match, query, userGeolocation } = this.props
     const {
       currentPage,
       filters,
       keywordsToSearch,
       isLoading,
       numberOfActiveFilters,
+      place,
       results,
       resultsCount,
       searchedKeywords,
       sortCriterionLabel,
       totalPagesNumber,
     } = this.state
+    const { geolocation: placeGeolocation } = place || {}
+    const { searchAround } = filters
     const { location } = history
     const { search } = location
     const isSearchEmpty = !isLoading && results.length === 0
@@ -411,7 +460,7 @@ class SearchResults extends PureComponent {
               {results.length > 0 && (
                 <SearchResultsList
                   currentPage={currentPage}
-                  geolocation={geolocation}
+                  geolocation={searchAround.place ? placeGeolocation : userGeolocation}
                   isLoading={isLoading}
                   loadMore={this.fetchNextOffers}
                   onSortClick={this.handleGoTo('tri')}
@@ -462,7 +511,6 @@ class SearchResults extends PureComponent {
           </Route>
           <Route path={`${SEARCH_RESULTS_URI}/filtres`}>
             <Filters
-              geolocation={geolocation}
               history={history}
               initialFilters={filters}
               match={match}
@@ -471,11 +519,14 @@ class SearchResults extends PureComponent {
                 nbHits: resultsCount,
                 nbPages: totalPagesNumber,
               }}
+              place={place}
               query={query}
               showFailModal={this.showFailModal}
               updateFilteredOffers={this.updateFilteredOffers}
               updateFilters={this.updateFilters}
               updateNumberOfActiveFilters={this.updateNumberOfActiveFilters}
+              updatePlace={this.updatePlace}
+              userGeolocation={userGeolocation}
             />
           </Route>
           <Route path={`${SEARCH_RESULTS_URI}/tri`}>
@@ -483,7 +534,7 @@ class SearchResults extends PureComponent {
               activeCriterionLabel={sortCriterionLabel}
               backTo={`${SEARCH_RESULTS_URI}${search}`}
               criteria={SORT_CRITERIA}
-              geolocation={geolocation}
+              geolocation={searchAround.place ? placeGeolocation : userGeolocation}
               history={history}
               match={match}
               onCriterionSelection={this.handleSortCriterionSelection}
@@ -506,25 +557,40 @@ SearchResults.defaultProps = {
     isSearchAroundMe: false,
     sortBy: '',
   },
-  geolocation: { longitude: null, latitude: null },
+  place: {
+    geolocation: { longitude: null, latitude: null },
+    name: null,
+  },
+  userGeolocation: { longitude: null, latitude: null },
 }
 
 SearchResults.propTypes = {
   criteria: PropTypes.shape({
     categories: PropTypes.array,
-    isSearchAroundMe: PropTypes.bool,
+    searchAround: PropTypes.shape({
+      everywhere: PropTypes.bool,
+      place: PropTypes.bool,
+      user: PropTypes.bool,
+    }),
     sortBy: PropTypes.string,
-  }),
-  geolocation: PropTypes.shape({
-    latitude: PropTypes.number,
-    longitude: PropTypes.number,
   }),
   history: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
+  place: PropTypes.shape({
+    geolocation: PropTypes.shape({
+      latitude: PropTypes.number,
+      longitude: PropTypes.number,
+    }),
+    name: PropTypes.string
+  }),
   query: PropTypes.shape({
     parse: PropTypes.func,
   }).isRequired,
   redirectToSearchMainPage: PropTypes.func.isRequired,
+  userGeolocation: PropTypes.shape({
+    latitude: PropTypes.number,
+    longitude: PropTypes.number,
+  }),
 }
 
 export default SearchResults

@@ -145,7 +145,7 @@ describe('fetchAlgolia', () => {
       fetchAlgolia({
         geolocation: geolocation,
         keywords: keywords,
-        isSearchAroundMe: false
+        searchAround: false
       })
 
       // then
@@ -169,7 +169,7 @@ describe('fetchAlgolia', () => {
         aroundRadius: 15,
         geolocation: geolocation,
         keywords: keywords,
-        isSearchAroundMe: true
+        searchAround: true
       })
 
       // then
@@ -193,7 +193,7 @@ describe('fetchAlgolia', () => {
         aroundRadius: 0,
         geolocation: geolocation,
         keywords: keywords,
-        isSearchAroundMe: true
+        searchAround: true
       })
 
       // then

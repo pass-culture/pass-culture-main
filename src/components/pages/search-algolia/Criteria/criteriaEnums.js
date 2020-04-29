@@ -12,7 +12,11 @@ export const GEOLOCATION_CRITERIA = {
 }
 
 export const CATEGORY_CRITERIA = {
-  ALL: { label: 'Toutes les catégories', icon: 'ico-all', facetFilter: '' },
+  ALL: {
+    label: 'Toutes les catégories',
+    icon: 'ico-all',
+    facetFilter: ''
+  },
   CINEMA: {
     label: 'Cinéma',
     icon: 'ico-cinema',

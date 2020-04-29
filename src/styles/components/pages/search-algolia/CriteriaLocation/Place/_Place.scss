@@ -15,13 +15,14 @@
   font-size: rem(16px);
   font-weight: 400;
   margin-right: rem(5px);
-  justify-items: left;
+  text-align: left;
 }
 
 .place-extra-data {
   color: $grey;
   font-size: rem(16px);
   font-weight: 400;
+  text-align: left;
 }
 
 .place-input-wrapper {
@@ -62,13 +63,14 @@
   .place-reset-button {
     img {
       color: $grey;
-      max-width: rem(18px);
+      max-width: rem(20px);
     }
   }
 }
 
 .place-suggestions {
-  padding: rem(5px);
+  overflow: auto;
+
   li {
     border-bottom: 1px solid $grey-light;
     padding: rem(15px) 0;
@@ -78,5 +80,9 @@
       display: flex;
       flex-wrap: wrap;
     }
+  }
+
+  li:last-child {
+    border-bottom: none;
   }
 }

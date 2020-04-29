@@ -40,12 +40,14 @@ export class Place extends PureComponent {
   handleReset = () => {
     this.setState({
       keywords: '',
+      suggestedPlaces: []
     })
   }
 
   render() {
     const { backTo, history, match, title } = this.props
     const { keywords, suggestedPlaces } = this.state
+
     return (
       <div className="place-page">
         <Header

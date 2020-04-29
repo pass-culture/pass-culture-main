@@ -13,7 +13,7 @@ import { GEOLOCATION_CRITERIA } from '../../Criteria/criteriaEnums'
 import { Filters } from '../Filters'
 import { RadioList } from '../RadioList/RadioList'
 import Toggle from '../Toggle/Toggle'
-import { CriteriaLocation } from '../../CriteriaLocation/CriteriaLocation'
+import CriteriaLocation from '../../CriteriaLocation/CriteriaLocation'
 import Checkbox from '../Checkbox/Checkbox'
 import { Criteria } from '../../Criteria/Criteria'
 
@@ -39,10 +39,6 @@ describe('components | Filters', () => {
 
   beforeEach(() => {
     props = {
-      geolocation: {
-        latitude: 40,
-        longitude: 41,
-      },
       history: {
         location: {
           pathname: '',
@@ -59,7 +55,6 @@ describe('components | Filters', () => {
           selectedDate: null,
         },
         offerIsFilteredByDate: false,
-        isSearchAroundMe: false,
         offerCategories: ['VISITE', 'CINEMA'],
         offerIsDuo: false,
         offerIsFree: false,
@@ -69,9 +64,13 @@ describe('components | Filters', () => {
           isThing: false,
         },
         priceRange: [0, 500],
+        searchAround: {
+          everywhere: true,
+          place: false,
+          user: false
+        },
         sortBy: '_by_price',
       },
-      isGeolocationEnabled: false,
       match: {
         params: {},
       },
@@ -80,13 +79,21 @@ describe('components | Filters', () => {
         nbHits: 0,
         nbPages: 0,
       },
+      place: {
+        geolocation: { latitude: null, longitude: null }
+      },
       query: {
         parse: jest.fn(),
       },
       showFailModal: jest.fn(),
-      updateFilters: jest.fn(),
       updateFilteredOffers: jest.fn(),
+      updateFilters: jest.fn(),
       updateNumberOfActiveFilters: jest.fn(),
+      updatePlace: jest.fn(),
+      userGeolocation: {
+        latitude: 40,
+        longitude: 41,
+      },
     }
     props.query.parse.mockReturnValue({
       'mots-cles': '',
@@ -114,7 +121,7 @@ describe('components | Filters', () => {
 
   describe('render', () => {
     describe('localisation filter page', () => {
-      it('should render localisation filter page when on route /recherche/filtres/localisation', () => {
+      it('should render localisation filter page', () => {
         // given
         props.history.location.pathname = '/recherche/resultats/filtres/localisation'
         props.history.location.search = '?mots-cles=librairie'
@@ -125,20 +132,21 @@ describe('components | Filters', () => {
         // then
         const criteria = wrapper.find(CriteriaLocation)
         expect(criteria).toHaveLength(1)
-        expect(criteria.prop('backTo')).toStrictEqual(
-          '/recherche/resultats/filtres?mots-cles=librairie'
-        )
+        expect(criteria.prop('activeCriterionLabel')).toStrictEqual('Partout')
+        expect(criteria.prop('backTo')).toStrictEqual('/recherche/resultats/filtres?mots-cles=librairie')
         expect(criteria.prop('criteria')).toStrictEqual(GEOLOCATION_CRITERIA)
+        expect(criteria.prop('geolocation')).toStrictEqual(props.userGeolocation)
         expect(criteria.prop('history')).toStrictEqual(props.history)
         expect(criteria.prop('match')).toStrictEqual(props.match)
         expect(criteria.prop('onCriterionSelection')).toStrictEqual(expect.any(Function))
+        expect(criteria.prop('onPlaceSelection')).toStrictEqual(expect.any(Function))
+        expect(criteria.prop('place')).toStrictEqual({ geolocation: { latitude: null, longitude: null } })
         expect(criteria.prop('title')).toStrictEqual('Localisation')
       })
 
-      it('should render a CriteriaLocation component with a "Partout" criterion when not searching around me', () => {
+      it('should render a CriteriaLocation component with "Partout" criterion when not searching around me', () => {
         // given
         props.history.location.pathname = '/recherche/resultats/filtres/localisation'
-        props.initialFilters.isSearchAroundMe = false
 
         // when
         const wrapper = shallow(<Filters {...props} />)
@@ -148,146 +156,132 @@ describe('components | Filters', () => {
         expect(criteria.prop('activeCriterionLabel')).toStrictEqual('Partout')
       })
 
-      describe('when clicking on "Partout"', () => {
-        it('should trigger search and redirect to filters page when clicking on "Partout" criterion', () => {
-          // given
-          props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
-          jest.spyOn(props.history, 'push').mockImplementationOnce(() => {})
-          props.history.location.pathname = '/recherche/resultats/filtres/localisation'
-          props.query.parse.mockReturnValue({
-            'autour-de-moi': 'non',
-            categories: 'VISITE;CINEMA',
-            'mots-cles': 'librairie',
-            tri: '_by_price',
-          })
-          fetchAlgolia.mockReturnValue(
-            new Promise(resolve => {
-              resolve({
-                hits: [],
-                nbHits: 0,
-                page: 0,
-              })
-            })
-          )
-          const wrapper = mount(
-            <Router history={props.history}>
-              <Filters {...props} />
-            </Router>
-          )
-          const everywhereButton = wrapper
-            .find(Criteria)
-            .find('button')
-            .first()
-
-          // when
-          everywhereButton.simulate('click')
-
-          // then
-          expect(fetchAlgolia).toHaveBeenCalledWith({
-            aroundRadius: 100,
-            date: null,
-            geolocation: {
-              latitude: 40,
-              longitude: 41,
-            },
-            isSearchAroundMe: false,
-            keywords: 'librairie',
-            offerCategories: ['VISITE', 'CINEMA'],
-            offerIsDuo: false,
-            offerIsFree: false,
-            offerTypes: {
-              isDigital: false,
-              isEvent: false,
-              isThing: false,
-            },
-            priceRange: [0, 500],
-            sortBy: '_by_price',
-          })
-          expect(props.history.replace).toHaveBeenCalledWith({
-            search: '?mots-cles=librairie&autour-de-moi=non&tri=_by_price&categories=VISITE;CINEMA',
-          })
-          expect(props.history.push).toHaveBeenCalledWith(
-            '/recherche/resultats/filtres?mots-cles=librairie&autour-de-moi=non&tri=_by_price&categories=VISITE;CINEMA'
-          )
+      it('should trigger search and redirect to filters page when click on "Partout"', () => {
+        // given
+        props.history = createBrowserHistory()
+        jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
         })
+        jest.spyOn(props.history, 'push').mockImplementationOnce(() => {
+        })
+        props.history.location.pathname = '/recherche/resultats/filtres/localisation'
+        props.query.parse.mockReturnValue({
+          'autour-de': 'non',
+          categories: 'VISITE;CINEMA',
+          'mots-cles': 'librairie',
+          tri: '_by_price',
+        })
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [],
+              nbHits: 0,
+              page: 0,
+            })
+          })
+        )
+        const wrapper = mount(
+          <Router history={props.history}>
+            <Filters {...props} />
+          </Router>
+        )
+        const everywhereButton = wrapper
+          .find(Criteria)
+          .find('button')
+          .first()
+
+        // when
+        everywhereButton.simulate('click')
+
+        // then
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
+          date: null,
+          geolocation: {
+            latitude: 40,
+            longitude: 41,
+          },
+          keywords: 'librairie',
+          offerCategories: ['VISITE', 'CINEMA'],
+          offerIsDuo: false,
+          offerIsFree: false,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false,
+          },
+          priceRange: [0, 500],
+          searchAround: false,
+          sortBy: '_by_price',
+        })
+        expect(props.history.replace).toHaveBeenCalledWith({
+          search: '?mots-cles=librairie&autour-de=non&tri=_by_price&categories=VISITE;CINEMA&latitude=40&longitude=41',
+        })
+        expect(props.history.push).toHaveBeenCalledWith(
+          '/recherche/resultats/filtres?mots-cles=librairie&autour-de=non&tri=_by_price&categories=VISITE;CINEMA&latitude=40&longitude=41'
+        )
       })
 
-      describe('when clicking on "Autour de moi"', () => {
-        it('should trigger search and redirect to filters page when clicking on "Autour de moi" criterion', () => {
-          // given
-          props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
-          jest.spyOn(props.history, 'push').mockImplementationOnce(() => {})
-          props.history.location.pathname = '/recherche/resultats/filtres/localisation'
-          props.initialFilters = {
-            ...props.initialFilters,
-            aroundRadius: 50,
-            isSearchAroundMe: false,
-            offerCategories: ['VISITE'],
-            offerIsDuo: false,
-            offerIsFree: false,
-            offerTypes: {
-              isDigital: false,
-              isEvent: false,
-              isThing: false,
-            },
-            priceRange: [0, 500],
-            sortBy: '_by_price',
-          }
-          props.query.parse.mockReturnValue({
-            'autour-de-moi': 'oui',
-            categories: 'VISITE',
-            'mots-cles': 'librairie',
-            tri: '_by_price',
-          })
-          fetchAlgolia.mockReturnValue(
-            new Promise(resolve => {
-              resolve({
-                hits: [],
-                nbHits: 0,
-                page: 0,
-              })
-            })
-          )
-          const wrapper = mount(
-            <Router history={props.history}>
-              <Filters {...props} />
-            </Router>
-          )
-          const aroundMeButton = wrapper
-            .find(Criteria)
-            .find('button')
-            .at(1)
-
-          // when
-          aroundMeButton.simulate('click')
-
-          // then
-          expect(fetchAlgolia).toHaveBeenCalledWith({
-            aroundRadius: 50,
-            date: null,
-            geolocation: { latitude: 40, longitude: 41 },
-            isSearchAroundMe: true,
-            keywords: 'librairie',
-            offerCategories: ['VISITE'],
-            offerIsDuo: false,
-            offerIsFree: false,
-            offerTypes: {
-              isDigital: false,
-              isEvent: false,
-              isThing: false,
-            },
-            priceRange: [0, 500],
-            sortBy: '_by_price',
-          })
-          expect(props.history.replace).toHaveBeenCalledWith({
-            search: '?mots-cles=librairie&autour-de-moi=oui&tri=_by_price&categories=VISITE',
-          })
-          expect(props.history.push).toHaveBeenCalledWith(
-            '/recherche/resultats/filtres?mots-cles=librairie&autour-de-moi=oui&tri=_by_price&categories=VISITE'
-          )
+      it('should trigger search and redirect to filters page when click on "Autour de moi"', () => {
+        // given
+        props.history = createBrowserHistory()
+        jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
         })
+        jest.spyOn(props.history, 'push').mockImplementationOnce(() => {
+        })
+        props.history.location.pathname = '/recherche/resultats/filtres/localisation'
+        props.initialFilters.offerCategories = ['VISITE']
+        props.query.parse.mockReturnValue({
+          'autour-de': 'oui',
+          categories: 'VISITE',
+          'mots-cles': 'librairie',
+          tri: '_by_price',
+        })
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [],
+              nbHits: 0,
+              page: 0,
+            })
+          })
+        )
+        const wrapper = mount(
+          <Router history={props.history}>
+            <Filters {...props} />
+          </Router>
+        )
+        const aroundMeButton = wrapper
+          .find(Criteria)
+          .find('button')
+          .at(1)
+
+        // when
+        aroundMeButton.simulate('click')
+
+        // then
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
+          date: null,
+          geolocation: { latitude: 40, longitude: 41 },
+          keywords: 'librairie',
+          offerCategories: ['VISITE'],
+          offerIsDuo: false,
+          offerIsFree: false,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false,
+          },
+          priceRange: [0, 500],
+          searchAround: true,
+          sortBy: '_by_price',
+        })
+        expect(props.history.replace).toHaveBeenCalledWith({
+          search: '?mots-cles=librairie&autour-de=oui&tri=_by_price&categories=VISITE&latitude=40&longitude=41',
+        })
+        expect(props.history.push).toHaveBeenCalledWith(
+          '/recherche/resultats/filtres?mots-cles=librairie&autour-de=oui&tri=_by_price&categories=VISITE&latitude=40&longitude=41'
+        )
       })
     })
 
@@ -335,24 +329,6 @@ describe('components | Filters', () => {
         expect(numberOfResults).toHaveLength(1)
       })
 
-      it('should filter offers when clicking on display results button', () => {
-        // given
-        props.history.location.pathname = '/recherche/filtres'
-        props.offers.nbHits = 1000
-        const wrapper = shallow(<Filters {...props} />)
-        const resultsButton = wrapper.find('.sf-button')
-
-        // when
-        resultsButton.simulate('click')
-
-        // then
-        expect(props.updateFilteredOffers).toHaveBeenCalledWith({
-          hits: [],
-          nbHits: 1000,
-          nbPages: 0,
-        })
-      })
-
       it('should pass the number of selected filters when clicking on the results button', () => {
         // given
         props.initialFilters.offerCategories = ['VISITE', 'CINEMA']
@@ -393,6 +369,27 @@ describe('components | Filters', () => {
 
         // then
         expect(props.updateNumberOfActiveFilters).toHaveBeenCalledWith(5)
+      })
+
+      it('should pass place information when clicking on the results button', () => {
+        // given
+        props.history.location.pathname = '/recherche/filtres'
+        props.history.location.search = '?mots-cles=librairie'
+        props.place = {
+          geolocation: { latitude: 30, longitude: 2 },
+          name: 'Paris'
+        }
+        const wrapper = shallow(<Filters {...props} />)
+        const resultsButton = wrapper.find('.sf-button')
+
+        // when
+        resultsButton.simulate('click')
+
+        // then
+        expect(props.updatePlace).toHaveBeenCalledWith({
+          geolocation: { latitude: 30, longitude: 2 },
+          name: 'Paris'
+        })
       })
 
       it('should redirect to results page with query param when clicking on display results button', () => {
@@ -439,7 +436,6 @@ describe('components | Filters', () => {
         // then
         expect(props.updateFilters).toHaveBeenCalledWith({
           aroundRadius: 100,
-          isSearchAroundMe: false,
           offerIsFilteredByDate: true,
           date: {
             option: 'currentWeek',
@@ -454,56 +450,44 @@ describe('components | Filters', () => {
             isThing: false,
           },
           priceRange: [0, 500],
+          searchAround: {
+            everywhere: true,
+            place: false,
+            user: false
+          },
           sortBy: '_by_price',
         })
       })
 
-      it('should not allow click on display results button when no results', async () => {
+      it('should not allow click on display results button when no results', () => {
         // given
         props.history.location.pathname = '/recherche/filtres'
         props.query.parse.mockReturnValue({
           'mots-cles': 'librairies',
         })
         props.offers = {
-          hits: [{}, {}],
-          nbHits: 2,
+          hits: [],
+          nbHits: 0,
           page: 0,
         }
-        fetchAlgolia.mockReturnValue(
-          new Promise(resolve => {
-            resolve({
-              hits: [],
-              nbHits: 0,
-              page: 0,
-            })
-          })
-        )
         const wrapper = shallow(<Filters {...props} />)
-        const offerIsDuoFilter = wrapper
-          .find({ children: 'Uniquement les offres duo' })
-          .closest('li')
-          .find(Toggle)
-        await offerIsDuoFilter.simulate('change', {
-          target: {
-            name: 'offerIsDuo',
-            checked: true,
-          },
-        })
         const resultsButton = wrapper.find('.sf-button')
 
         // when
         resultsButton.simulate('click')
 
         // then
-        expect(props.updateFilters).toHaveBeenCalledTimes(1)
-        expect(props.updateFilteredOffers).toHaveBeenCalledTimes(1)
         expect(resultsButton.text()).toStrictEqual('Aucun résultat')
       })
 
-      it('should display a warning message when searching around me', () => {
+      it('should display a warning message when searching around user', () => {
         // given
         props.history.location.pathname = '/recherche/filtres'
-        props.initialFilters.isSearchAroundMe = true
+        props.initialFilters.searchAround = {
+          everywhere: false,
+          place: false,
+          user: true
+        }
 
         // when
         const wrapper = shallow(<Filters {...props} />)
@@ -515,10 +499,28 @@ describe('components | Filters', () => {
         expect(message).toHaveLength(1)
       })
 
-      it('should not display a warning message when not searching around me', () => {
+      it('should display a warning message when searching around a place', () => {
         // given
         props.history.location.pathname = '/recherche/filtres'
-        props.initialFilters.isSearchAroundMe = false
+        props.initialFilters.searchAround = {
+          everywhere: false,
+          place: true,
+          user: false
+        }
+
+        // when
+        const wrapper = shallow(<Filters {...props} />)
+
+        // then
+        const message = wrapper.find({
+          children: 'Seules les offres Sorties et Physiques seront affichées',
+        })
+        expect(message).toHaveLength(1)
+      })
+
+      it('should not display a warning message when not searching around user or place', () => {
+        // given
+        props.history.location.pathname = '/recherche/filtres'
 
         // when
         const wrapper = shallow(<Filters {...props} />)
@@ -530,8 +532,43 @@ describe('components | Filters', () => {
         expect(message).toHaveLength(0)
       })
 
+      it('should update offers to parent when using a filter', async () => {
+        // given
+        props.history.location.pathname = '/recherche/filtres'
+        const wrapper = shallow(<Filters {...props} />)
+        const offerIsDuoFilter = wrapper
+          .find({ children: 'Uniquement les offres duo' })
+          .closest('li')
+          .find(Toggle)
+        props.query.parse.mockReturnValue({})
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ name: 'offer1' }, { name: 'offer2' }],
+              nbHits: 2,
+              page: 0,
+            })
+          })
+        )
+
+        // when
+        await offerIsDuoFilter.simulate('change', {
+          target: {
+            name: 'offerIsDuo',
+            checked: true,
+          },
+        })
+
+        // then
+        expect(props.updateFilteredOffers).toHaveBeenCalledWith({
+          hits: [{ name: 'offer1' }, { name: 'offer2' }],
+          nbHits: 2,
+          page: 0
+        })
+      })
+
       describe('geolocation filter', () => {
-        it('should display a "Localisation" title for geolocation filter', () => {
+        it('should display a "Localisation" title', () => {
           // given
           props.history.location.pathname = '/recherche/filtres'
 
@@ -543,10 +580,14 @@ describe('components | Filters', () => {
           expect(title).toHaveLength(1)
         })
 
-        it('should display a "Partout" for geolocation filter when initial filter is "Partout"', () => {
+        it('should display a "Partout" title when initial filter is "Partout"', () => {
           // given
           props.history.location.pathname = '/recherche/filtres'
-          props.initialFilters.isSearchAroundMe = false
+          props.initialFilters.searchAround = {
+            everywhere: true,
+            place: false,
+            user: false,
+          }
 
           // when
           const wrapper = shallow(<Filters {...props} />)
@@ -556,29 +597,58 @@ describe('components | Filters', () => {
           expect(button).toHaveLength(1)
         })
 
-        it('should display a "Autour de moi" for geolocation filter when initial filter is "Autour de moi"', () => {
+        it('should display a "Autour de moi" title when initial filter is "Autour de moi"', () => {
           // given
           props.history.location.pathname = '/recherche/filtres'
-          props.initialFilters.isSearchAroundMe = true
+          props.initialFilters.searchAround = {
+            everywhere: false,
+            place: false,
+            user: true,
+          }
 
           // when
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const button = wrapper.find({ children: 'Autour de moi' }).first()
+          const button = wrapper.find({ children: 'Autour de moi' })
           expect(button).toHaveLength(1)
         })
 
-        it('should redirect to localisation filter page with given query params when clicking on geolocation filter button', () => {
+        it('should display place name when initial filter is place', () => {
+          // given
+          props.history.location.pathname = '/recherche/filtres'
+          props.place = {
+            geolocation: { latitude: 30, longitude: 2 },
+            name: 'Paris',
+          }
+          props.initialFilters.searchAround = {
+            everywhere: false,
+            place: true,
+            user: false,
+          }
+
+          // when
+          const wrapper = shallow(<Filters {...props} />)
+
+          // then
+          const button = wrapper.find({ children: 'Paris' })
+          expect(button).toHaveLength(1)
+        })
+
+        it('should redirect to localisation filter page with given query params when click on button', () => {
           // given
           props.history.location.pathname = '/recherche/filtres'
           props.history.location.search = '?mots-cles=librairie'
-          props.initialFilters.isSearchAroundMe = true
+          props.initialFilters.searchAround = {
+            everywhere: false,
+            place: false,
+            user: true,
+          }
           const wrapper = shallow(<Filters {...props} />)
-          const button = wrapper.find({ children: 'Autour de moi' })
+          const geolocationButton = wrapper.find({ children: 'Autour de moi' })
 
           // when
-          button.simulate('click')
+          geolocationButton.simulate('click')
 
           // then
           expect(props.history.push).toHaveBeenCalledWith(
@@ -586,15 +656,19 @@ describe('components | Filters', () => {
           )
         })
 
-        it('should redirect to localisation filter page with no query params when clicking on geolocation filter button', () => {
+        it('should redirect to localisation filter page with no query params when click on button', () => {
           // given
           props.history.location.pathname = '/recherche/filtres'
-          props.initialFilters.isSearchAroundMe = true
+          props.initialFilters.searchAround = {
+            everywhere: false,
+            place: false,
+            user: true,
+          }
           const wrapper = shallow(<Filters {...props} />)
-          const button = wrapper.find({ children: 'Autour de moi' })
+          const geolocationButton = wrapper.find({ children: 'Autour de moi' })
 
           // when
-          button.simulate('click')
+          geolocationButton.simulate('click')
 
           // then
           expect(props.history.push).toHaveBeenCalledWith(
@@ -622,7 +696,11 @@ describe('components | Filters', () => {
             // given
             props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.aroundRadius = 0
-            props.initialFilters.isSearchAroundMe = false
+            props.initialFilters.searchAround = {
+              everywhere: true,
+              place: false,
+              user: false,
+            }
 
             // when
             const wrapper = shallow(<Filters {...props} />)
@@ -635,7 +713,11 @@ describe('components | Filters', () => {
           it('should not render a Slider component', () => {
             // given
             props.history.location.pathname = '/recherche/filtres'
-            props.initialFilters.isSearchAroundMe = false
+            props.initialFilters.searchAround = {
+              everywhere: true,
+              place: false,
+              user: false,
+            }
 
             // when
             const wrapper = shallow(<Filters {...props} />)
@@ -650,7 +732,11 @@ describe('components | Filters', () => {
           it('should display a "Rayon" title', () => {
             // given
             props.history.location.pathname = '/recherche/filtres'
-            props.initialFilters.isSearchAroundMe = true
+            props.initialFilters.searchAround = {
+              everywhere: false,
+              place: false,
+              user: true,
+            }
 
             // when
             const wrapper = shallow(<Filters {...props} />)
@@ -664,7 +750,11 @@ describe('components | Filters', () => {
             // given
             props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.aroundRadius = 50
-            props.initialFilters.isSearchAroundMe = true
+            props.initialFilters.searchAround = {
+              everywhere: false,
+              place: false,
+              user: true,
+            }
 
             // when
             const wrapper = shallow(<Filters {...props} />)
@@ -678,7 +768,71 @@ describe('components | Filters', () => {
             // given
             props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.aroundRadius = 20
-            props.initialFilters.isSearchAroundMe = true
+            props.initialFilters.searchAround = {
+              everywhere: false,
+              place: false,
+              user: true,
+            }
+
+            // when
+            const wrapper = shallow(<Filters {...props} />)
+
+            // then
+            const slider = wrapper.find(Slider)
+            expect(slider).toHaveLength(1)
+            expect(slider.prop('max')).toStrictEqual(100)
+            expect(slider.prop('min')).toStrictEqual(0)
+            expect(slider.prop('onChange')).toStrictEqual(expect.any(Function))
+            expect(slider.prop('onAfterChange')).toStrictEqual(expect.any(Function))
+            expect(slider.prop('value')).toStrictEqual(20)
+          })
+        })
+
+        describe('when geolocation filter is a place', () => {
+          it('should display a "Rayon" title', () => {
+            // given
+            props.history.location.pathname = '/recherche/filtres'
+            props.initialFilters.searchAround = {
+              everywhere: false,
+              place: true,
+              user: false,
+            }
+
+            // when
+            const wrapper = shallow(<Filters {...props} />)
+
+            // then
+            const title = wrapper.find({ children: 'Rayon' })
+            expect(title).toHaveLength(1)
+          })
+
+          it('should display the kilometers radius value', () => {
+            // given
+            props.history.location.pathname = '/recherche/filtres'
+            props.initialFilters.aroundRadius = 50
+            props.initialFilters.searchAround = {
+              everywhere: false,
+              place: true,
+              user: false,
+            }
+
+            // when
+            const wrapper = shallow(<Filters {...props} />)
+
+            // then
+            const kilometersRadius = wrapper.find({ children: '50 km' })
+            expect(kilometersRadius).toHaveLength(1)
+          })
+
+          it('should render a Slider component', () => {
+            // given
+            props.history.location.pathname = '/recherche/filtres'
+            props.initialFilters.aroundRadius = 20
+            props.initialFilters.searchAround = {
+              everywhere: false,
+              place: true,
+              user: false,
+            }
 
             // when
             const wrapper = shallow(<Filters {...props} />)
@@ -704,7 +858,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const title = wrapper.find({ children: "Type d'offres" })
+          const title = wrapper.find({ children: 'Type d\'offres' })
           expect(title).toHaveLength(1)
         })
 
@@ -840,7 +994,6 @@ describe('components | Filters', () => {
               latitude: 40,
               longitude: 41,
             },
-            isSearchAroundMe: false,
             keywords: 'librairies',
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: false,
@@ -851,6 +1004,7 @@ describe('components | Filters', () => {
               isThing: false,
             },
             priceRange: [0, 500],
+            searchAround: false,
             sortBy: '_by_price',
           })
         })
@@ -929,7 +1083,6 @@ describe('components | Filters', () => {
               latitude: 40,
               longitude: 41,
             },
-            isSearchAroundMe: false,
             keywords: '',
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: true,
@@ -940,6 +1093,7 @@ describe('components | Filters', () => {
               isThing: false,
             },
             priceRange: [0, 500],
+            searchAround: false,
             sortBy: '_by_price',
           })
         })
@@ -1053,7 +1207,6 @@ describe('components | Filters', () => {
               latitude: 40,
               longitude: 41,
             },
-            isSearchAroundMe: false,
             keywords: '',
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: false,
@@ -1064,6 +1217,7 @@ describe('components | Filters', () => {
               isThing: false,
             },
             priceRange: [0, 500],
+            searchAround: false,
             sortBy: '_by_price',
           })
         })
@@ -1406,7 +1560,8 @@ describe('components | Filters', () => {
         it('should reset filters and trigger search to Algolia with given categories when price range is selected', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
+          })
           props.history.location.pathname = '/recherche/resultats/filtres'
           props.initialFilters = {
             date: {
@@ -1414,7 +1569,6 @@ describe('components | Filters', () => {
               selectedDate: new Date(),
             },
             offerIsFilteredByDate: true,
-            isSearchAroundMe: true,
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: true,
             offerIsFree: false,
@@ -1424,6 +1578,11 @@ describe('components | Filters', () => {
               isThing: true,
             },
             priceRange: [5, 40],
+            searchAround: {
+              everywhere: true,
+              place: false,
+              user: false,
+            },
             sortBy: '_by_price',
           }
           props.query.parse.mockReturnValue({
@@ -1459,7 +1618,6 @@ describe('components | Filters', () => {
               latitude: 40,
               longitude: 41,
             },
-            isSearchAroundMe: false,
             keywords: 'librairie',
             offerCategories: [],
             offerIsDuo: false,
@@ -1470,6 +1628,7 @@ describe('components | Filters', () => {
               isThing: false,
             },
             priceRange: [0, 500],
+            searchAround: false,
             sortBy: '_by_price',
           })
         })
@@ -1477,7 +1636,8 @@ describe('components | Filters', () => {
         it('should reset filters and trigger search to Algolia with given categories when offer is free is selected', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
+          })
           props.history.location.pathname = '/recherche/resultats/filtres'
           props.initialFilters = {
             date: {
@@ -1485,7 +1645,6 @@ describe('components | Filters', () => {
               selectedDate: new Date(),
             },
             offerIsFilteredByDate: true,
-            isSearchAroundMe: true,
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: true,
             offerIsFree: true,
@@ -1495,6 +1654,11 @@ describe('components | Filters', () => {
               isThing: true,
             },
             priceRange: [0, 500],
+            searchAround: {
+              everywhere: true,
+              place: false,
+              user: false
+            },
             sortBy: '_by_price',
           }
           props.query.parse.mockReturnValue({
@@ -1530,7 +1694,6 @@ describe('components | Filters', () => {
               latitude: 40,
               longitude: 41,
             },
-            isSearchAroundMe: false,
             keywords: 'librairie',
             offerCategories: [],
             offerIsDuo: false,
@@ -1541,6 +1704,7 @@ describe('components | Filters', () => {
               isThing: false,
             },
             priceRange: [0, 500],
+            searchAround: false,
             sortBy: '_by_price',
           })
         })
@@ -1602,7 +1766,7 @@ describe('components | Filters', () => {
           expect(numberOfDateSelected).toHaveLength(1)
         })
 
-        it('should fetch Algolia with date parameter on date filter toggle', () => {
+        it('should fetch offers with date parameter on date filter toggle', () => {
           // given
           const wrapper = shallow(<Filters {...props} />)
           stubRef(wrapper)
@@ -1622,7 +1786,6 @@ describe('components | Filters', () => {
               option: 'today',
               selectedDate: now,
             },
-            isSearchAroundMe: false,
             geolocation: {
               latitude: 40,
               longitude: 41,
@@ -1637,11 +1800,12 @@ describe('components | Filters', () => {
               isThing: false,
             },
             priceRange: [0, 500],
+            searchAround: false,
             sortBy: '_by_price',
           })
         })
 
-        it('should fetch Algolia with given date option', () => {
+        it('should fetch offers with given date option', () => {
           // given
           global.Date = actualDate
           const wrapper = shallow(<Filters {...props} />)
@@ -1665,7 +1829,6 @@ describe('components | Filters', () => {
               option: 'picked',
               selectedDate: expect.any(Date),
             },
-            isSearchAroundMe: false,
             geolocation: {
               latitude: 40,
               longitude: 41,
@@ -1680,6 +1843,7 @@ describe('components | Filters', () => {
               isThing: false,
             },
             priceRange: [0, 500],
+            searchAround: false,
             sortBy: '_by_price',
           })
         })
@@ -1706,7 +1870,6 @@ describe('components | Filters', () => {
               option: 'picked',
               selectedDate: now,
             },
-            isSearchAroundMe: false,
             geolocation: {
               latitude: 40,
               longitude: 41,
@@ -1721,6 +1884,7 @@ describe('components | Filters', () => {
               isThing: false,
             },
             priceRange: [0, 500],
+            searchAround: false,
             sortBy: '_by_price',
           })
         })

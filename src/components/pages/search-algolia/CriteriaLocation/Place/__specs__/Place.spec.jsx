@@ -16,8 +16,8 @@ describe('components | Place', () => {
       backTo: '/recherche/criteres-localisation',
       history: createBrowserHistory(),
       match: { params: {} },
-      title: 'Choisir un lieu',
       onPlaceSelection: jest.fn(),
+      title: 'Choisir un lieu',
     }
 
     fetchPlaces.mockReturnValue(
@@ -181,7 +181,7 @@ describe('components | Place', () => {
     expect(resetButton).toHaveLength(0)
   })
 
-  it('should reset text search input when clicking on reset button', async () => {
+  it('should reset text search input and suggestions when clicking on reset button', async () => {
     // Given
     fetchPlaces.mockReturnValue(
       new Promise(resolve => {
@@ -207,6 +207,11 @@ describe('components | Place', () => {
     // Then
     const inputText = wrapper.find('input')
     expect(inputText.prop('value')).toBe('')
+    const suggestedPlaces = wrapper
+      .find('ul')
+      .find('li')
+      .find('button')
+    expect(suggestedPlaces).toHaveLength(0)
   })
 
   it('should update place and redirect to search main page when clicking on a suggested place', async () => {
@@ -267,7 +272,7 @@ describe('components | Place', () => {
     // Given
     jest.spyOn(props.history, 'push').mockImplementation(() => jest.fn())
     props.history.location.pathname = '/recherche/resultats/filtres/localisation/place'
-    props.history.location.search = '?mots-cles=&autour-de-moi=non&tri=&categories='
+    props.history.location.search = '?mots-cles=&autour-de=non&tri=&categories='
     fetchPlaces.mockReturnValue(
       new Promise(resolve => {
         resolve([
@@ -315,7 +320,7 @@ describe('components | Place', () => {
       extraData: 'Paris',
     })
     expect(props.history.push).toHaveBeenCalledWith(
-      '/recherche/resultats/filtres/localisation?mots-cles=&autour-de-moi=non&tri=&categories='
+      '/recherche/resultats/filtres/localisation?mots-cles=&autour-de=non&tri=&categories='
     )
   })
 })

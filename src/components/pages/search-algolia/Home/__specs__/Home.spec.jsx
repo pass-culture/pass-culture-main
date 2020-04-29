@@ -9,6 +9,7 @@ import { CriterionItem } from '../CriterionItem/CriterionItem'
 
 describe('components | Home', () => {
   let props
+
   beforeEach(() => {
     props = {
       categoryCriterion: {
@@ -18,12 +19,27 @@ describe('components | Home', () => {
         facetFilter: '',
       },
       geolocationCriterion: {
-        isSearchAroundMe: false,
+        searchAround: {
+          everywhere: false,
+          place: false,
+          user: false
+        },
         params: {
           icon: 'ico-globe',
           label: 'Partout',
           requiresGeolocation: false,
         },
+        place: {
+          geolocation: {
+            latitude: 59.2,
+            longitude: 4.3
+          },
+          name: 'Paris'
+        },
+        userGeolocation: {
+          latitude: 40,
+          longitude: 41
+        }
       },
       history: {
         push: jest.fn(),
@@ -33,7 +49,7 @@ describe('components | Home', () => {
         icon: 'ico-relevance',
         label: 'Pertinence',
         requiresGeolocation: false,
-      },
+      }
     }
   })
 
@@ -101,9 +117,13 @@ describe('components | Home', () => {
     expect(resetInput.is(':focus')).toBe(true)
   })
 
-  it('should redirect to result page when search is triggered with no search around me', () => {
+  it('should redirect to result page when search is everywhere', () => {
     // given
-    props.geolocationCriterion.isSearchAroundMe = false
+    props.geolocationCriterion.searchAround = {
+      everywhere: true,
+      place: false,
+      user: false
+    }
     props.categoryCriterion.facetFilter = 'CINEMA'
     props.sortCriterion.index = '_by_price'
     const wrapper = shallow(<Home {...props} />)
@@ -124,13 +144,17 @@ describe('components | Home', () => {
     // then
     expect(props.history.push).toHaveBeenCalledWith({
       pathname: '/recherche/resultats',
-      search: '?mots-cles=search keyword&autour-de-moi=non&tri=_by_price&categories=CINEMA',
+      search: '?mots-cles=search keyword&autour-de=non&tri=_by_price&categories=CINEMA&latitude=40&longitude=41',
     })
   })
 
-  it('should redirect to result page when search is triggered with search around me', () => {
+  it('should redirect to result page when search is around user', () => {
     // given
-    props.geolocationCriterion.isSearchAroundMe = true
+    props.geolocationCriterion.searchAround = {
+      everywhere: false,
+      place: false,
+      user: true
+    }
     const wrapper = shallow(<Home {...props} />)
     const form = wrapper.find('form')
     const input = form.find('input')
@@ -149,7 +173,36 @@ describe('components | Home', () => {
     // then
     expect(props.history.push).toHaveBeenCalledWith({
       pathname: '/recherche/resultats',
-      search: '?mots-cles=search keyword&autour-de-moi=oui&tri=&categories=',
+      search: '?mots-cles=search keyword&autour-de=oui&tri=&categories=&latitude=40&longitude=41',
+    })
+  })
+
+  it('should redirect to result page when search is around place', () => {
+    // given
+    props.geolocationCriterion.searchAround = {
+      everywhere: false,
+      place: true,
+      user: false
+    }
+    const wrapper = shallow(<Home {...props} />)
+    const form = wrapper.find('form')
+    const input = form.find('input')
+
+    // when
+    input.simulate('change', {
+      target: {
+        value: 'search keyword',
+      },
+      preventDefault: jest.fn(),
+    })
+    form.simulate('submit', {
+      preventDefault: jest.fn(),
+    })
+
+    // then
+    expect(props.history.push).toHaveBeenCalledWith({
+      pathname: '/recherche/resultats',
+      search: '?mots-cles=search keyword&autour-de=oui&tri=&categories=&latitude=59.2&longitude=4.3&place=Paris',
     })
   })
 

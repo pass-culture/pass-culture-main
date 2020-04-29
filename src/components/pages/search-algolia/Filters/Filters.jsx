@@ -4,7 +4,7 @@ import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
 import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA } from '../Criteria/criteriaEnums'
 import CriteriaLocation from '../CriteriaLocation/CriteriaLocation'
-import { checkIfAroundMe } from '../utils/checkIfAroundMe'
+import { checkIfSearchAround } from '../utils/checkIfSearchAround'
 import Checkbox from './Checkbox/Checkbox'
 import { RadioList } from './RadioList/RadioList'
 import { DATE_FILTER, PRICE_FILTER } from './filtersEnums'
@@ -16,16 +16,15 @@ import HeaderContainer from '../../../layout/Header/HeaderContainer'
 export class Filters extends PureComponent {
   constructor(props) {
     super(props)
-
     const {
       aroundRadius,
       date,
       offerIsFilteredByDate,
-      isSearchAroundMe,
       offerIsDuo,
       offerIsFree,
       offerTypes,
       priceRange,
+      searchAround,
       sortBy,
     } = props.initialFilters
     const offerCategories = this.buildCategoriesStateFromProps()
@@ -35,17 +34,17 @@ export class Filters extends PureComponent {
         aroundRadius,
         date,
         offerIsFilteredByDate,
-        isSearchAroundMe,
         offerCategories,
         offerIsFree,
         offerIsDuo,
         offerTypes,
         priceRange,
+        searchAround,
         sortBy,
       },
-      offers: props.offers,
+      place: props.place,
+      userGeolocation: props.userGeolocation
     }
-
     this.radioListRef = React.createRef()
   }
 
@@ -59,36 +58,36 @@ export class Filters extends PureComponent {
   }
 
   fetchOffers = ({
-    aroundRadius,
-    date,
-    geolocation,
-    isSearchAroundMe,
-    keywords,
-    offerCategories,
-    offerIsDuo,
-    offerIsFree,
-    offerTypes,
-    priceRange,
-    sortBy,
-  }) => {
-    const { showFailModal } = this.props
+                   aroundRadius,
+                   date,
+                   geolocation,
+                   keywords,
+                   offerCategories,
+                   offerIsDuo,
+                   offerIsFree,
+                   offerTypes,
+                   priceRange,
+                   searchAround,
+                   sortBy,
+                 }) => {
+    const { showFailModal, updateFilteredOffers } = this.props
+    const searchAroundUserOrPlace = searchAround.everywhere !== true
+
     fetchAlgolia({
       aroundRadius,
       date,
       geolocation,
-      isSearchAroundMe,
       keywords,
       offerCategories,
       offerIsDuo,
       offerIsFree,
       offerTypes,
       priceRange,
+      searchAround: searchAroundUserOrPlace,
       sortBy,
     })
       .then(offers => {
-        this.setState({
-          offers: offers,
-        })
+        updateFilteredOffers(offers)
       })
       .catch(() => {
         showFailModal()
@@ -96,20 +95,20 @@ export class Filters extends PureComponent {
   }
 
   handleOffersFetchAndUrlUpdate = () => {
-    const { history, geolocation, query } = this.props
-    const { filters } = this.state
+    const { history, query } = this.props
+    const { filters, place, userGeolocation } = this.state
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles'] || ''
 
     const {
       aroundRadius,
       date,
-      isSearchAroundMe,
       offerIsFilteredByDate,
       offerIsDuo,
       offerIsFree,
       offerTypes,
       priceRange,
+      searchAround,
       sortBy,
     } = filters
     const offerCategories = this.getSelectedCategories()
@@ -118,14 +117,14 @@ export class Filters extends PureComponent {
     this.fetchOffers({
       aroundRadius,
       date: dateFilter,
-      geolocation,
-      isSearchAroundMe,
+      geolocation: searchAround.place ? place.geolocation : userGeolocation,
       keywords,
       offerCategories,
       offerIsDuo,
       offerIsFree,
       offerTypes,
       priceRange,
+      searchAround,
       sortBy,
     })
 
@@ -134,16 +133,23 @@ export class Filters extends PureComponent {
   }
 
   buildSearchParameter = () => {
-    const { filters } = this.state
+    const { filters, place, userGeolocation } = this.state
     const { query } = this.props
-    const { isSearchAroundMe, sortBy } = filters
+    const { searchAround, sortBy } = filters
     const offerCategories = this.getSelectedCategories()
-    const autourDeMoi = checkIfAroundMe(isSearchAroundMe)
+    const autourDe = checkIfSearchAround(searchAround)
     const categories = offerCategories.join(';') || ''
     const tri = sortBy
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles'] || ''
-    return `?mots-cles=${keywords}&autour-de-moi=${autourDeMoi}&tri=${tri}&categories=${categories}`
+
+    let search = `?mots-cles=${keywords}&autour-de=${autourDe}&tri=${tri}&categories=${categories}` +
+      `&latitude=${userGeolocation.latitude}&longitude=${userGeolocation.longitude}`
+    if (searchAround.place) {
+      search = `?mots-cles=${keywords}&autour-de=${autourDe}&tri=${tri}&categories=${categories}` +
+        `&place=${place.name}&latitude=${place.geolocation.latitude}&longitude=${place.geolocation.longitude}`
+    }
+    return search
   }
 
   resetFilters = () => {
@@ -158,7 +164,6 @@ export class Filters extends PureComponent {
             option: DATE_FILTER.TODAY.value,
             selectedDate: null,
           },
-          isSearchAroundMe: false,
           offerIsFilteredByDate: false,
           offerCategories: [],
           offerIsDuo: false,
@@ -169,7 +174,13 @@ export class Filters extends PureComponent {
             isThing: false,
           },
           priceRange: PRICE_FILTER.DEFAULT_RANGE,
+          searchAround: {
+            everywhere: true,
+            place: false,
+            user: false
+          }
         },
+        place: null
       },
       () => {
         this.handleOffersFetchAndUrlUpdate()
@@ -185,9 +196,7 @@ export class Filters extends PureComponent {
   }
 
   buildNumberOfResults = () => {
-    const {
-      offers: { nbHits },
-    } = this.state
+    const { offers: { nbHits } } = this.props
 
     if (nbHits === 0) {
       return 'Aucun résultat'
@@ -198,15 +207,22 @@ export class Filters extends PureComponent {
   }
 
   buildGeolocationFilter = () => {
-    const { filters } = this.state
-    return filters.isSearchAroundMe ? 'Autour de moi' : 'Partout'
+    const { filters: { searchAround }, place = {} } = this.state
+
+    if (searchAround.everywhere) return 'Partout'
+    if (searchAround.place) return place.name
+    if (searchAround.user) return 'Autour de moi'
   }
 
   getActiveCriterionLabel = () => {
-    const { filters } = this.state
-    return filters.isSearchAroundMe
-      ? GEOLOCATION_CRITERIA.AROUND_ME.label
-      : GEOLOCATION_CRITERIA.EVERYWHERE.label
+    const { query } = this.props
+    const queryParams = query.parse()
+    const place = queryParams['place'] || ''
+    const { filters: { searchAround } } = this.state
+
+    if (searchAround.everywhere) return GEOLOCATION_CRITERIA.EVERYWHERE.label
+    if (searchAround.place) return place
+    if (searchAround.user) return GEOLOCATION_CRITERIA.AROUND_ME.label
   }
 
   getNumberOfSelectedFilters = filter => {
@@ -220,7 +236,7 @@ export class Filters extends PureComponent {
     return counter
   }
 
-  getPriceRangeCounter(priceRange) {
+  getPriceRangeCounter = (priceRange) => {
     const [lowestPrice, highestPrice] = priceRange
     const [defaultLowestPrice, defaultHighestPrice] = PRICE_FILTER.DEFAULT_RANGE
     return lowestPrice !== defaultLowestPrice || highestPrice !== defaultHighestPrice ? 1 : 0
@@ -228,17 +244,31 @@ export class Filters extends PureComponent {
 
   getNumberFromBoolean = boolean => (boolean === true ? 1 : 0)
 
+  getNumberFromSearchAround = searchAround => {
+    if (searchAround.user || searchAround.place) {
+      return 1
+    }
+    return 0
+  }
+
   handleGeolocationCriterionSelection = criterionKey => {
     const { filters } = this.state
     const { history } = this.props
 
+    const isSearchEverywhere = GEOLOCATION_CRITERIA[criterionKey].label === GEOLOCATION_CRITERIA.EVERYWHERE.label
+    const isSearchAroundUser = GEOLOCATION_CRITERIA[criterionKey].label === GEOLOCATION_CRITERIA.AROUND_ME.label
+    const isSearchAroundPlace = !isSearchEverywhere && !isSearchAroundUser
     this.setState(
       {
         filters: {
           ...filters,
-          isSearchAroundMe:
-            GEOLOCATION_CRITERIA[criterionKey].label === GEOLOCATION_CRITERIA.AROUND_ME.label,
+          searchAround: {
+            everywhere: isSearchEverywhere,
+            place: isSearchAroundPlace,
+            user: isSearchAroundUser,
+          }
         },
+        place: null
       },
       () => {
         this.handleOffersFetchAndUrlUpdate()
@@ -246,6 +276,23 @@ export class Filters extends PureComponent {
         history.push(`/recherche/resultats/filtres${search}`)
       }
     )
+  }
+
+  handleOnPlaceSelection = place => {
+    const { filters } = this.state
+    this.setState({
+      filters: {
+        ...filters,
+        searchAround: {
+          everywhere: false,
+          place: true,
+          user: false
+        },
+      },
+      place
+    }, () => {
+      this.handleOffersFetchAndUrlUpdate()
+    })
   }
 
   handleGoToGeolocationFilter = () => {
@@ -257,23 +304,23 @@ export class Filters extends PureComponent {
   }
 
   handleFilterOffers = () => {
-    const { history, updateFilteredOffers, updateFilters, updateNumberOfActiveFilters } = this.props
+    const { history, updateFilters, updateNumberOfActiveFilters, updatePlace } = this.props
     const {
       location: { search = '' },
     } = history
-    const { filters, offers } = this.state
+    const { filters, place } = this.state
     const {
       offerIsFilteredByDate,
-      isSearchAroundMe,
       offerCategories,
       offerTypes,
       offerIsDuo,
       offerIsFree,
       priceRange,
+      searchAround
     } = filters
     const updatedFilters = { ...filters }
     updatedFilters.offerCategories = this.getSelectedCategories()
-    const geolocationFilterCounter = this.getNumberFromBoolean(isSearchAroundMe)
+    const geolocationFilterCounter = this.getNumberFromSearchAround(searchAround)
     const offerTypesFilterCounter = this.getNumberOfSelectedFilters(offerTypes)
     const offerCategoriesFilterCounter = this.getNumberOfSelectedFilters(offerCategories)
     const offerIsDuoFilterCounter = this.getNumberFromBoolean(offerIsDuo)
@@ -288,10 +335,9 @@ export class Filters extends PureComponent {
       offerIsFreeFilterCounter +
       priceRangeFilterCounter +
       dateFilterCounter
-
     updateFilters(updatedFilters)
-    updateFilteredOffers(offers)
     updateNumberOfActiveFilters(numberOfActiveFilters)
+    updatePlace(place)
     history.push(`/recherche/resultats${search}`)
   }
 
@@ -448,25 +494,25 @@ export class Filters extends PureComponent {
   }
 
   render() {
-    const { areCategoriesVisible, filters, offers } = this.state
-    const { nbHits } = offers
+    const { offers: { nbHits } } = this.props
+    const { areCategoriesVisible, filters, place } = this.state
     const {
       aroundRadius,
       date,
       offerIsFilteredByDate,
-      isSearchAroundMe,
       offerCategories,
       offerIsDuo,
       offerIsFree,
       offerTypes,
       priceRange,
+      searchAround
     } = filters
-    const { history, match, geolocation } = this.props
+    const { history, match, userGeolocation } = this.props
     const { location } = history
     const { search = '' } = location
     const numberOfOfferTypesSelected = this.getNumberOfSelectedFilters(offerTypes)
     const numberOfOfferCategoriesSelected = this.getNumberOfSelectedFilters(offerCategories)
-    const geolocationFilterCounter = this.getNumberFromBoolean(isSearchAroundMe)
+    const geolocationFilterCounter = this.getNumberFromSearchAround(searchAround)
     const offerIsDuoCounter = this.getNumberFromBoolean(offerIsDuo)
     const offerIsFreeCounter = this.getNumberFromBoolean(offerIsFree)
     const priceRangeCounter = this.getPriceRangeCounter(priceRange)
@@ -480,10 +526,12 @@ export class Filters extends PureComponent {
               activeCriterionLabel={this.getActiveCriterionLabel()}
               backTo={`/recherche/resultats/filtres${search}`}
               criteria={GEOLOCATION_CRITERIA}
-              geolocation={geolocation}
+              geolocation={userGeolocation}
               history={history}
               match={match}
               onCriterionSelection={this.handleGeolocationCriterionSelection}
+              onPlaceSelection={this.handleOnPlaceSelection}
+              place={place}
               title="Localisation"
             />
           </Route>
@@ -513,14 +561,14 @@ export class Filters extends PureComponent {
                 >
                   {this.buildGeolocationFilter()}
                 </button>
-                {isSearchAroundMe && (
+                {(searchAround.user === true || searchAround.place === true) && (
                   <span className="sf-warning-message">
                     {'Seules les offres Sorties et Physiques seront affichées'}
                   </span>
                 )}
                 <span className="sf-filter-separator" />
               </li>
-              {isSearchAroundMe && (
+              {(searchAround.user === true || searchAround.place === true) && (
                 <li>
                   <h4 className="sf-title">
                     {'Rayon'}
@@ -593,7 +641,7 @@ export class Filters extends PureComponent {
               <li>
                 <div className="sf-title-wrapper">
                   <h4 className="sf-title">
-                    {"Type d'offres"}
+                    {'Type d\'offres'}
                   </h4>
                   {numberOfOfferTypesSelected > 0 && (
                     <span className="sf-selected-filter-counter">
@@ -755,7 +803,6 @@ Filters.defaultProps = {
     aroundRadius: DEFAULT_RADIUS_IN_KILOMETERS,
     date: null,
     offerIsFilteredByDate: false,
-    isSearchAroundMe: false,
     offerCategories: [],
     offerIsDuo: false,
     offerIsFree: false,
@@ -765,12 +812,20 @@ Filters.defaultProps = {
       isThing: false,
     },
     priceRange: PRICE_FILTER.DEFAULT_RANGE,
+    searchAround: {
+      everywhere: true,
+      place: false,
+      user: false
+    },
     sortBy: '',
   },
+  place: {
+    geolocation: { latitude: null, longitude: null },
+    name: null
+  }
 }
 
 Filters.propTypes = {
-  geolocation: PropTypes.shape().isRequired,
   history: PropTypes.shape().isRequired,
   initialFilters: PropTypes.shape({
     aroundRadius: PropTypes.number,
@@ -779,7 +834,6 @@ Filters.propTypes = {
       selectedDate: PropTypes.instanceOf(Date),
     }),
     offerIsFilteredByDate: PropTypes.bool,
-    isSearchAroundMe: PropTypes.bool,
     offerCategories: PropTypes.arrayOf(PropTypes.string),
     offerIsDuo: PropTypes.bool,
     offerIsFree: PropTypes.bool,
@@ -789,13 +843,27 @@ Filters.propTypes = {
       isThing: PropTypes.bool,
     }),
     priceRange: PropTypes.arrayOf(PropTypes.number),
+    searchAround: PropTypes.shape({
+      everywhere: PropTypes.bool,
+      place: PropTypes.bool,
+      user: PropTypes.bool,
+    }),
     sortBy: PropTypes.string,
   }),
   match: PropTypes.shape().isRequired,
   offers: PropTypes.shape().isRequired,
+  place: PropTypes.shape({
+    geolocation: PropTypes.shape({
+      latitude: PropTypes.number,
+      longitude: PropTypes.number,
+    }),
+    name: PropTypes.string
+  }),
   query: PropTypes.shape().isRequired,
   showFailModal: PropTypes.func.isRequired,
   updateFilteredOffers: PropTypes.func.isRequired,
   updateFilters: PropTypes.func.isRequired,
   updateNumberOfActiveFilters: PropTypes.func.isRequired,
+  updatePlace: PropTypes.func.isRequired,
+  userGeolocation: PropTypes.shape().isRequired,
 }

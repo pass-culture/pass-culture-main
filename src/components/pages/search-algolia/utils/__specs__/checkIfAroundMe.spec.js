@@ -1,21 +1,43 @@
-import { checkIfAroundMe } from '../checkIfAroundMe'
+import { checkIfSearchAround } from '../checkIfSearchAround'
 
-describe('utils | checkIfAroundMe', () => {
+describe('utils | checkIfSearchAround', () => {
   it('should return oui when is search around me', () => {
-    const criteria = true
+    const searchAround = {
+      everywhere: false,
+      place: false,
+      user: true,
+    }
 
     // when
-    const result = checkIfAroundMe(criteria)
+    const result = checkIfSearchAround(searchAround)
 
     // then
     expect(result).toBe('oui')
   })
 
-  it('should return non when is search around me', () => {
-    const criteria = false
+  it('should return oui when is search around place', () => {
+    const searchAround = {
+      everywhere: false,
+      place: true,
+      user: false,
+    }
 
     // when
-    const result = checkIfAroundMe(criteria)
+    const result = checkIfSearchAround(searchAround)
+
+    // then
+    expect(result).toBe('oui')
+  })
+
+  it('should return non when is search everywhere', () => {
+    const searchAround = {
+      everywhere: true,
+      place: false,
+      user: false,
+    }
+
+    // when
+    const result = checkIfSearchAround(searchAround)
 
     // then
     expect(result).toBe('non')

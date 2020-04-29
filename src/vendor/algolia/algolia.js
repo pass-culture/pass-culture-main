@@ -16,7 +16,6 @@ export const fetchAlgolia = ({
                                date = null,
                                geolocation = null,
                                keywords = '',
-                               isSearchAroundMe = false,
                                offerCategories = [],
                                offerIsDuo = false,
                                offerIsFree = false,
@@ -28,12 +27,13 @@ export const fetchAlgolia = ({
                                page = 0,
                                priceRange = [],
                                sortBy = '',
+                               searchAround = false,
                              } = {}) => {
   const searchParameters = {
     page: page,
     ...buildFacetFilters(offerCategories, offerTypes, offerIsDuo),
     ...buildNumericFilters(offerIsFree, priceRange, date),
-    ...buildGeolocationParameter(aroundRadius, geolocation, isSearchAroundMe),
+    ...buildGeolocationParameter(aroundRadius, geolocation, searchAround),
   }
   const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_SEARCH_API_KEY)
   const index = client.initIndex(ALGOLIA_INDEX_NAME + sortBy)
@@ -100,7 +100,7 @@ const buildOfferPriceRangePredicate = (offerIsFree, offerPriceRange) => {
   }
 }
 
-function buildDatePredicate(date) {
+const buildDatePredicate = (date) => {
   if (date) {
     let beginningDate, endingDate
     switch (date.option) {
@@ -150,22 +150,22 @@ const buildOfferTypesPredicate = offerTypes => {
   }
 }
 
-const buildGeolocationParameter = (aroundRadius, geolocation, isSearchAroundMe) => {
+const buildGeolocationParameter = (aroundRadius, geolocation, searchAround) => {
   if (geolocation) {
     const { longitude, latitude } = geolocation
     if (latitude && longitude) {
-      const aroundRadiusInMeters = computeRadiusInMeters(aroundRadius, isSearchAroundMe)
+      const aroundRadiusInMeters = computeRadiusInMeters(aroundRadius, searchAround)
 
       return {
         aroundLatLng: `${latitude}, ${longitude}`,
-        aroundRadius: isSearchAroundMe ? aroundRadiusInMeters : FILTERS.UNLIMITED_RADIUS
+        aroundRadius: searchAround ? aroundRadiusInMeters : FILTERS.UNLIMITED_RADIUS
       }
     }
   }
 }
 
-const computeRadiusInMeters = (aroundRadius, isSearchAroundMe) => {
-  if (isSearchAroundMe && aroundRadius === 0) {
+const computeRadiusInMeters = (aroundRadius, searchAround) => {
+  if (searchAround && aroundRadius === 0) {
     return RADIUS_IN_METERS_FOR_NO_OFFERS
   }
   return aroundRadius * 1000

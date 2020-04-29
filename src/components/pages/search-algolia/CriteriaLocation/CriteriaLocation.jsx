@@ -10,7 +10,7 @@ class CriteriaLocation extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      place: null
+      place: props.place
     }
   }
 
@@ -33,9 +33,31 @@ class CriteriaLocation extends PureComponent {
     this.setState({
       place: place
     }, () => {
-      const { onPlaceSelection } = this.props
+      const { history, onPlaceSelection } = this.props
+      const { location: { pathname, search } } = history
       onPlaceSelection(place)
+      const pathnameWithoutLocation = pathname
+        .replace('/criteres-localisation', '')
+        .replace('/localisation', '')
+      history.push(`${pathnameWithoutLocation}${search}`)
     })
+  }
+
+  buildBackToUrl = () => {
+    const { history } = this.props
+    const { location } = history
+    const { pathname, search } = location
+
+    const pathnameWithoutPlace = pathname.replace('/place', '')
+    return `${pathnameWithoutPlace}${search}`
+  }
+
+  checkIfIsPlacePage = () => {
+    const { history } = this.props
+    const { location } = history
+    const { pathname } = location
+
+    return pathname.includes('place')
   }
 
   render() {
@@ -48,13 +70,18 @@ class CriteriaLocation extends PureComponent {
       title,
     } = this.props
     const { place } = this.state
-    const { location } = history
-    const { pathname, search } = location
-    const pathnameWithoutPlace = pathname.replace('/place', '')
 
     return (
       <div className="criteria-location-page">
-        {!pathname.includes('place') ?
+        {this.checkIfIsPlacePage() ?
+          <Place
+            backTo={this.buildBackToUrl()}
+            history={history}
+            match={match}
+            onPlaceSelection={this.handleUpdatePlaceInformation}
+            title='Choisir un lieu'
+          />
+          :
           <div>
             <Header
               backTo={backTo}
@@ -98,15 +125,7 @@ class CriteriaLocation extends PureComponent {
               onCriterionSelection={this.checkUserCanSelectCriterion()}
               title={title}
             />
-          </div>
-          :
-          <Place
-            backTo={`${pathnameWithoutPlace}${search}`}
-            history={history}
-            match={match}
-            onPlaceSelection={this.handleUpdatePlaceInformation}
-            title='Choisir un lieu'
-          />}
+          </div>}
       </div>
     )
   }
@@ -114,6 +133,10 @@ class CriteriaLocation extends PureComponent {
 
 CriteriaLocation.defaultProps = {
   geolocation: {},
+  place: {
+    geolocation: { latitude: null, longitude: null },
+    name: null
+  },
 }
 
 CriteriaLocation.propTypes = {
@@ -142,6 +165,13 @@ CriteriaLocation.propTypes = {
   }).isRequired,
   onCriterionSelection: PropTypes.func.isRequired,
   onPlaceSelection: PropTypes.func.isRequired,
+  place: PropTypes.shape({
+    geolocation: PropTypes.shape({
+      latitude: PropTypes.number,
+      longitude: PropTypes.number,
+    }),
+    name: PropTypes.string
+  }),
   title: PropTypes.string.isRequired,
 }
 
