@@ -9,40 +9,6 @@ from use_cases.update_user_informations import AlterableUserInformations, update
 
 class UpdateUserInformationsTest:
     @clean_database
-    def test_should_save_any_allowed_parameters(self, app):
-        # Given
-        user = create_user()
-        repository.save(user)
-
-        user_informations = AlterableUserInformations(
-            id=user.id,
-            has_seen_tutorials=False,
-            cultural_survey_id=None,
-            cultural_survey_filled_date=datetime(2020, 4, 22),
-            department_code='76',
-            email='son@goku.dbz',
-            needs_to_fill_cultural_survey=True,
-            phone_number='06 66 66 66 66',
-            postal_code='76530',
-            public_name='Son Goku',
-        )
-
-        # When
-        update_user_informations(user_informations)
-
-        # Then
-        saved_user = User.query.filter(User.id==user_informations.id).one()
-        assert saved_user.hasSeenTutorials == False
-        assert saved_user.culturalSurveyId == None
-        assert saved_user.culturalSurveyFilledDate == datetime(2020, 4, 22)
-        assert saved_user.departementCode == '76'
-        assert saved_user.email == 'son@goku.dbz'
-        assert saved_user.needsToFillCulturalSurvey == True
-        assert saved_user.phoneNumber == '06 66 66 66 66'
-        assert saved_user.postalCode == '76530'
-        assert saved_user.publicName == 'Son Goku'
-
-    @clean_database
     def test_should_return_user_with_proper_infos(self, app):
         # Given
         user = create_user()
@@ -93,22 +59,3 @@ class UpdateUserInformationsTest:
         # Then
         assert updatedUser.hasSeenTutorials == True
         assert updatedUser.phoneNumber == '01 02 03 04 05'
-
-    @clean_database
-    def test_should_not_update_user_info_in_db_if_not_given(self, app):
-        # Given
-        user = create_user(phone_number='01 02 03 04 05')
-        repository.save(user)
-
-        user_informations = AlterableUserInformations(
-            id=user.id,
-            has_seen_tutorials=True
-        )
-
-        # When
-        update_user_informations(user_informations)
-
-        # Then
-        saved_user = User.query.filter(User.id==user_informations.id).one()
-        assert saved_user.hasSeenTutorials == True
-        assert saved_user.phoneNumber == '01 02 03 04 05'

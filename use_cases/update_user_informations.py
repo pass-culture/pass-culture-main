@@ -3,7 +3,17 @@ from repository.user_queries import find_user_by_id
 from repository import repository
 
 class AlterableUserInformations(object):
-    def __init__(self, id: int, cultural_survey_id: str = None, cultural_survey_filled_date: datetime = None, department_code: str = None, email: str = None, needs_to_fill_cultural_survey: bool = None, phone_number: str = None, postal_code: str = None, public_name: str = None, has_seen_tutorials: bool = None):
+    def __init__(self,
+                 id: int,
+                 cultural_survey_id: str = None,
+                 cultural_survey_filled_date: datetime = None,
+                 department_code: str = None,
+                 email: str = None,
+                 needs_to_fill_cultural_survey: bool = None,
+                 phone_number: str = None,
+                 postal_code: str = None,
+                 public_name: str = None,
+                 has_seen_tutorials: bool = None):
         self.id = id
         self.cultural_survey_id = cultural_survey_id
         self.cultural_survey_filled_date = cultural_survey_filled_date
