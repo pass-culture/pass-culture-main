@@ -6,18 +6,19 @@ import Icon from '../../../../../layout/Icon/Icon'
 import { NON_BREAKING_SPACE } from '../../../../../../utils/specialCharacters'
 
 describe('components | CreditGauge', () => {
-  it('should render the gauge picto', () => {
+  it('should render the gauge picto, remaining credit and some explanations', () => {
     // Given
     const props = {
       extraClassName: '',
       remainingCredit: 12.0,
-      detailsText: 'Some explanations',
       creditLimit: 200,
       picto: 'picto-svg',
     }
 
     // When
-    const wrapper = shallow(<CreditGauge {...props} />)
+    const wrapper = shallow(<CreditGauge {...props}>
+      {'Some explanations'}
+    </CreditGauge>)
 
     // Then
     const picto = wrapper.find(Icon)

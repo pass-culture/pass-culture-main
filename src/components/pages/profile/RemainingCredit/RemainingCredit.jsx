@@ -38,25 +38,28 @@ class RemainingCredit extends PureComponent {
             <div className="rc-gauges">
               <CreditGauge
                 creditLimit={digitalCreditLimit}
-                detailsText="en offres numériques (streaming…)"
                 extraClassName="gauge-digital"
                 picto="picto-digital-good"
                 remainingCredit={digitalRemainingCredit}
-              />
+              >
+                {`en offres\u000Anumériques\u000A(streaming…)`}
+              </CreditGauge>
               <CreditGauge
                 creditLimit={physicalCreditLimit}
-                detailsText="en offres physiques (livres…)"
                 extraClassName="gauge-physical"
                 picto="picto-physical-good"
                 remainingCredit={physicalRemainingCredit}
-              />
+              >
+                {`en offres\u000Aphysiques\u000A(livres…)`}
+              </CreditGauge>
               <CreditGauge
                 creditLimit={initialDeposit}
-                detailsText="en sorties (spectacles…)"
                 extraClassName="gauge-total"
                 picto="picto-ticket"
                 remainingCredit={walletBalance}
-              />
+              >
+                {`en sorties\u000A(spectacles…)`}
+              </CreditGauge>
             </div>
           </div>
           <div className="rc-read-more">

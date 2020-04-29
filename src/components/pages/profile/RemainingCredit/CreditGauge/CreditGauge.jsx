@@ -5,7 +5,7 @@ import Icon from '../../../../layout/Icon/Icon'
 import formatDecimals from '../../../../../utils/numbers/formatDecimals'
 import { NON_BREAKING_SPACE } from '../../../../../utils/specialCharacters'
 
-const CreditGauge = ({ extraClassName, creditLimit, detailsText, picto, remainingCredit }) => {
+const CreditGauge = ({ children, extraClassName, creditLimit, picto, remainingCredit }) => {
   const isGaugeEmpty = remainingCredit === 0
   const fillingStep = computeFillingStep(remainingCredit, creditLimit)
   const formattedRemainingCredit = formatDecimals(remainingCredit)
@@ -22,12 +22,12 @@ const CreditGauge = ({ extraClassName, creditLimit, detailsText, picto, remainin
           <div className={`cg-remaining cg-gauge-width-${fillingStep}`} />
         </div>
       </div>
-      <p className="cg-written-remaining">
+      <div className="cg-written-remaining">
         {`${formattedRemainingCredit}${NON_BREAKING_SPACE}€`}
-      </p>
-      <p>
-        {detailsText}
-      </p>
+      </div>
+      <pre className="cg-pre">
+        {children}
+      </pre>
     </div>
   )
 }
@@ -40,8 +40,8 @@ export const computeFillingStep = (remainingCredit, creditLimit) => {
 }
 
 CreditGauge.propTypes = {
+  children: PropTypes.node.isRequired,
   creditLimit: PropTypes.number.isRequired,
-  detailsText: PropTypes.string.isRequired,
   extraClassName: PropTypes.string.isRequired,
   picto: PropTypes.string.isRequired,
   remainingCredit: PropTypes.number.isRequired,

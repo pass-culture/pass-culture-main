@@ -6,7 +6,9 @@
 }
 
 .cg-container {
-  flex: 1 1 0px;
+  margin-right: rem(3px);
+  overflow-wrap: break-word;
+  width: 34%;
 }
 
 .cg-remaining {
@@ -20,7 +22,7 @@
   justify-content: center;
   width: rem(32px);
   height: rem(32px);
-  z-index: 1;  
+  z-index: 1;
 }
 
 .cg-gauge {
@@ -40,8 +42,6 @@
 
 
 .gauge-digital {
-  margin-right: rem(3px);
-
   .cg-circle {
     background: $primary;
   }
@@ -56,8 +56,6 @@
 }
 
 .gauge-physical {
-  margin-right: rem(3px);
-
   .cg-circle {
     background: $purple-blue;
   }
@@ -67,7 +65,7 @@
   }
 
   .cg-written-remaining {
-    color: $purple-blue; 
+    color: $purple-blue;
   }
 }
 
@@ -91,7 +89,7 @@
   }
 
   .cg-written-remaining {
-    color: $grey; 
+    color: $grey;
   }
 }
 
@@ -138,4 +136,8 @@
 .cg-gauge-width-10 {
   border-radius: rem(10px);
   width: 100%;
+}
+
+.cg-pre {
+  font-family: $family-sans-serif;
 }
