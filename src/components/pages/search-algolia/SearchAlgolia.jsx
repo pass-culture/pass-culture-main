@@ -62,6 +62,21 @@ class SearchAlgolia extends PureComponent {
     redirectToSearchMainPage()
   }
 
+  handleOnPlaceSelection = placeName => {
+    this.setState(() => {
+      return {
+        geolocationCriterion: {
+          isSearchAroundMe: true,
+          params: {
+            label: placeName,
+            icon: 'ico-there',
+            requiresGeolocation: false
+          },
+        },
+      }
+    })
+  }
+
   handleCategoryCriterionSelection = criterionKey => () => {
     this.setState({
       categoryCriterion: CATEGORY_CRITERIA[criterionKey],
@@ -119,6 +134,7 @@ class SearchAlgolia extends PureComponent {
             history={history}
             match={match}
             onCriterionSelection={this.handleGeolocationCriterionSelection}
+            onPlaceSelection={this.handleOnPlaceSelection}
             title="Localisation"
           />
         </Route>

@@ -1,3 +1,5 @@
+import typeEnum from './typeEnum'
+
 const API_ADRESSE_URL = `https://api-adresse.data.gouv.fr/search`
 
 export const fetchPlaces = ({ keywords, limit = 10 }) => {
@@ -6,9 +8,10 @@ export const fetchPlaces = ({ keywords, limit = 10 }) => {
     .then(suggestedPlaces => {
       return suggestedPlaces.features.map(feature => {
         const { geometry: { coordinates }, properties } = feature
-        const { city, context, label } = properties
+        const { city, context, label, name, type } = properties
         const contextWithoutSpaces = context.replace(/\s+/g, '')
         const splittedInformation = contextWithoutSpaces.split(',')
+        const { STREET, HOUSE_NUMBER } = typeEnum
 
         return {
           extraData: {
@@ -18,10 +21,10 @@ export const fetchPlaces = ({ keywords, limit = 10 }) => {
             region: splittedInformation[2] || ''
           },
           geolocation: {
-            latitude: coordinates[0] || '',
-            longitude: coordinates[1] || '',
+            longitude: coordinates[0] || '',
+            latitude: coordinates[1] || '',
           },
-          name: city,
+          name: type === STREET || type === HOUSE_NUMBER ? name : city
         }
       })
     })

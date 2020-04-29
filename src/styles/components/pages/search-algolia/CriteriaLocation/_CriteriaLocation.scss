@@ -26,3 +26,18 @@
   font-size: rem(14px);
   font-weight: 500;
 }
+
+.cl-place-wrapper {
+  background-color: $white;
+  padding-top: rem(15px);
+
+  button {
+    color: $black;
+    font-size: rem(16px);
+    font-weight: 700;
+  }
+
+  .cl-icon {
+    padding: 0 rem(20px) 0 rem(20px);
+  }
+}

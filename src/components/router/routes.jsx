@@ -116,9 +116,9 @@ const routes = [
     icon: 'ico-search',
     path:
       '/recherche' +
-      '/(resultats|criteres-localisation|criteres-categorie|criteres-tri)?' +
+      '/(resultats|criteres-localisation/place|criteres-localisation|criteres-categorie|criteres-tri)?' +
       '/(filtres|tri)?' +
-      '/(localisation)?' +
+      '/(localisation|localisation/place)?' +
       '/:details(details|transition)?' +
       '/:offerId([A-Z0-9]+)?' +
       '/:mediationId(vide|[A-Z0-9]+)?' +

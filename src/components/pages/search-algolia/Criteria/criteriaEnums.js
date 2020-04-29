@@ -8,7 +8,7 @@ export const GEOLOCATION_CRITERIA = {
     label: 'Autour de moi',
     icon: 'ico-around-me',
     requiresGeolocation: true,
-  },
+  }
 }
 
 export const CATEGORY_CRITERIA = {

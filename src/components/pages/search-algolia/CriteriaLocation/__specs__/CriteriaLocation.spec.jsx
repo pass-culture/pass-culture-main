@@ -8,6 +8,7 @@ import Icon from '../../../../layout/Icon/Icon'
 
 describe('components | CriteriaLocation', () => {
   let props
+
   beforeEach(() => {
     props = {
       activeCriterionLabel: 'Autour de moi',
@@ -15,11 +16,11 @@ describe('components | CriteriaLocation', () => {
       criteria: GEOLOCATION_CRITERIA,
       history: {
         location: {
-          pathname: '',
+          pathname: '/recherche/criteres-localisation',
           search: '',
         },
-        push: () => {},
-        replace: () => {},
+        push: jest.fn(),
+        replace: jest.fn(),
       },
       match: {
         params: {},
@@ -79,5 +80,26 @@ describe('components | CriteriaLocation', () => {
         'Seules les offres Sorties et Physiques seront affichées pour une recherche avec une localisation',
     })
     expect(message).toHaveLength(1)
+  })
+
+  it('should render a button to redirect to search place page', () => {
+    // when
+    const wrapper = shallow(<CriteriaLocation {...props} />)
+
+    // then
+    const chooseAPlaceButton = wrapper.find({ children: 'Choisir un lieu' })
+    expect(chooseAPlaceButton).toHaveLength(1)
+  })
+
+  it('should redirect /recherche/criteres-localisation/place when clicking on button', () => {
+    // given
+    const wrapper = shallow(<CriteriaLocation {...props} />)
+    const chooseAPlaceButton = wrapper.find({ children: 'Choisir un lieu' })
+
+    // when
+    chooseAPlaceButton.simulate('click')
+
+    // then
+    expect(props.history.push).toHaveBeenCalledWith('/recherche/criteres-localisation/place')
   })
 })

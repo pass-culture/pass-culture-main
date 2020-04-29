@@ -1,62 +1,116 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { Component } from 'react'
 import Header from '../../../layout/Header/Header'
 import Icon from '../../../layout/Icon/Icon'
 import { Criteria } from '../Criteria/Criteria'
 import { checkUserIsGeolocated } from '../utils/checkUserIsGeolocated'
+import { Place } from './Place/Place'
 
-export const CriteriaLocation = props => {
-  const {
-    activeCriterionLabel,
-    backTo,
-    criteria,
-    geolocation,
-    history,
-    match,
-    onCriterionSelection,
-    title,
-  } = props
+class CriteriaLocation extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      placeName: null
+    }
+  }
 
-  const checkUserCanSelectCriterion = () => {
+  checkUserCanSelectCriterion = () => {
+    const { geolocation, onCriterionSelection } = this.props
     return criterionKey => () => {
       checkUserIsGeolocated(criterionKey, geolocation, onCriterionSelection)
     }
   }
 
-  return (
-    <div className="criteria-location-page">
-      <Header
-        backTo={backTo}
-        closeTo={null}
-        extraClassName="criteria-header"
-        history={history}
-        location={history.location}
-        match={match}
-        title={title}
-      />
-      <div>
-        <div className="cl-wrapper">
-          <Icon
-            className="cl-icon"
-            svg="ico-alert"
+  redirectToSearchPlacePage = () => {
+    const { history } = this.props
+    const { location } = history
+    const { pathname, search } = location
+
+    history.push(`${pathname}/place${search}`)
+  }
+
+  handleUpdatePlaceInformation = (place) => {
+    const { name } = place
+
+    this.setState({
+      placeName: name
+    }, () => {
+      const { onPlaceSelection } = this.props
+      onPlaceSelection(name)
+    })
+  }
+
+  render() {
+    const {
+      activeCriterionLabel,
+      backTo,
+      criteria,
+      history,
+      match,
+      title,
+    } = this.props
+    const { location } = history
+    const { pathname } = location
+
+    return (
+      <div className="criteria-location-page">
+        {!pathname.includes('place') ?
+          <div>
+            <Header
+              backTo={backTo}
+              closeTo={null}
+              extraClassName="criteria-header"
+              history={history}
+              location={history.location}
+              match={match}
+              title={title}
+            />
+            <div>
+              <div className="cl-wrapper">
+                <Icon
+                  className="cl-icon"
+                  svg="ico-alert"
+                />
+                <span className="cl-warning-message">
+                  {`Seules les offres Sorties et Physiques seront affichées pour une recherche avec une localisation`}
+                </span>
+              </div>
+            </div>
+            <div className="cl-place-wrapper">
+              <Icon
+                className="cl-icon"
+                svg="ico-there"
+              />
+              <button
+                onClick={this.redirectToSearchPlacePage}
+                type="button">
+                {this.state.placeName ? this.state.placeName : 'Choisir un lieu'}
+              </button>
+            </div>
+            <Criteria
+              activeCriterionLabel={activeCriterionLabel}
+              backTo={backTo}
+              criteria={criteria}
+              history={history}
+              match={match}
+              onCriterionSelection={this.checkUserCanSelectCriterion()}
+              title={title}
+            />
+          </div>
+          :
+          <Place
+            backTo={backTo}
+            history={history}
+            match={match}
+            title={'Choisir un lieu'}
+            updatePlaceInformation={this.handleUpdatePlaceInformation}
           />
-          <span className="cl-warning-message">
-            {`Seules les offres Sorties et Physiques seront affichées pour une recherche avec une localisation`}
-          </span>
-        </div>
+        }
       </div>
-      <Criteria
-        activeCriterionLabel={activeCriterionLabel}
-        backTo={backTo}
-        criteria={criteria}
-        history={history}
-        match={match}
-        onCriterionSelection={checkUserCanSelectCriterion()}
-        title={title}
-      />
-    </div>
-  )
+    )
+  }
 }
+
 CriteriaLocation.defaultProps = {
   geolocation: {},
 }

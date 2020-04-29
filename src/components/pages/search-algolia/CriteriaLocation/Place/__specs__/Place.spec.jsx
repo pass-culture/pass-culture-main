@@ -10,13 +10,14 @@ jest.mock('../../../../../../vendor/api-geo/placesService', () => ({
 }))
 describe('components | Place', () => {
   let props
+
   beforeEach(() => {
     props = {
       backTo: '/recherche/criteres-localisation',
       history: createBrowserHistory(),
       match: { params: {} },
       title: 'Choisir un lieu',
-      updatePlaceInformations: jest.fn(),
+      updatePlaceInformation: jest.fn(),
     }
 
     fetchPlaces.mockReturnValue(
@@ -90,7 +91,12 @@ describe('components | Place', () => {
               longitude: 2,
             },
             name: 'Paris 15ème arrondissement',
-            extraData: 'Paris',
+            extraData: {
+              departmentCode: '75',
+              department: 'Paris',
+              label: 'Paris',
+              region: 'Ile-De-France'
+            },
           },
           {
             geolocation: {
@@ -98,7 +104,12 @@ describe('components | Place', () => {
               longitude: 4,
             },
             name: '34 avenue de l\'Opéra',
-            extraData: 'Paris',
+            extraData: {
+              departmentCode: '75',
+              department: 'Paris',
+              label: 'Paris',
+              region: 'Ile-De-France'
+            },
           },
         ])
       })
@@ -119,10 +130,90 @@ describe('components | Place', () => {
     expect(suggestedPlaces.at(1).text()).toBe('34 avenue de l\'Opéra Paris')
   })
 
-  it('should update and redirect to parent when clicking on a suggested place', async () => {
+  it('should render no suggested places when fetching is in error', async () => {
     // Given
-    jest.spyOn(props.history, 'push').mockImplementation(() => {
-    })
+    fetchPlaces.mockRejectedValueOnce()
+    const wrapper = shallow(<Place {...props} />)
+    const input = wrapper.find('input')
+
+    // When
+    await input.simulate('change', { target: { value: '' } })
+
+    // Then
+    const suggestedPlaces = wrapper
+      .find('ul')
+      .find('li')
+      .find('button')
+    expect(suggestedPlaces).toHaveLength(0)
+  })
+
+  it('should render a reset button when keywords are typed', async () => {
+    // Given
+    fetchPlaces.mockReturnValue(
+      new Promise(resolve => {
+        resolve([{
+          geolocation: {
+            latitude: 1,
+            longitude: 2,
+          },
+          name: 'Paris 15ème arrondissement',
+          extraData: 'Paris',
+        }])
+      })
+    )
+    const wrapper = shallow(<Place {...props} />)
+    const inputText = wrapper.find('input')
+
+    // When
+    await inputText.simulate('change', { target: { value: 'Par' } })
+
+    // Then
+    const resetButton = wrapper.find('button[type="reset"]')
+    expect(resetButton).toHaveLength(1)
+  })
+
+  it('should not render a reset button when no keywords are typed', async () => {
+    // When
+    const wrapper = shallow(<Place {...props} />)
+
+    // Then
+    const resetButton = wrapper.find('button[type="reset"]')
+    expect(resetButton).toHaveLength(0)
+  })
+
+  it('should reset text search input when clicking on reset button', async () => {
+    // Given
+    fetchPlaces.mockReturnValue(
+      new Promise(resolve => {
+        resolve([{
+          geolocation: {
+            latitude: 1,
+            longitude: 2,
+          },
+          name: 'Paris 15ème arrondissement',
+          extraData: 'Paris',
+        }])
+      })
+    )
+    const wrapper = shallow(<Place {...props} />)
+    await wrapper
+      .find('input')
+      .simulate('change', { target: { value: 'Par' } })
+
+    // When
+    const resetButton = wrapper.find('button[type="reset"]')
+    resetButton.simulate('click')
+
+    // Then
+    const inputText = wrapper.find('input')
+    expect(inputText.prop('value')).toBe('')
+  })
+
+  it('should update place and redirect to search main page when clicking on a suggested place', async () => {
+    // Given
+    jest.spyOn(props.history, 'push').mockImplementation(() => jest.fn())
+    props.history.location.pathname = '/recherche/criteres-localisation/place'
+    props.history.location.search = ''
     fetchPlaces.mockReturnValue(
       new Promise(resolve => {
         resolve([
@@ -155,13 +246,13 @@ describe('components | Place', () => {
 
     // When
     suggestedPlaces.at(0).simulate('click', {
-      target: {
+      currentTarget: {
         value: 0,
       },
     })
 
     // Then
-    expect(props.updatePlaceInformations).toHaveBeenCalledWith({
+    expect(props.updatePlaceInformation).toHaveBeenCalledWith({
       geolocation: {
         latitude: 1,
         longitude: 2,
@@ -172,21 +263,59 @@ describe('components | Place', () => {
     expect(props.history.push).toHaveBeenCalledWith('/recherche/criteres-localisation')
   })
 
-  it('should render no suggested places when fetching is in error', async () => {
+  it('should update place and redirect to filters page when clicking on a suggested place', async () => {
     // Given
-    jest.spyOn(props.history, 'push').mockImplementation(() => {})
-    fetchPlaces.mockRejectedValueOnce()
+    jest.spyOn(props.history, 'push').mockImplementation(() => jest.fn())
+    props.history.location.pathname = '/recherche/resultats/filtres/localisation/place'
+    props.history.location.search = '?mots-cles=&autour-de-moi=non&tri=&categories='
+    fetchPlaces.mockReturnValue(
+      new Promise(resolve => {
+        resolve([
+          {
+            geolocation: {
+              latitude: 1,
+              longitude: 2,
+            },
+            name: 'Paris 15ème arrondissement',
+            extraData: 'Paris',
+          },
+          {
+            geolocation: {
+              latitude: 3,
+              longitude: 4,
+            },
+            name: '34 avenue de l\'Opéra',
+            extraData: 'Paris',
+          },
+        ])
+      })
+    )
     const wrapper = shallow(<Place {...props} />)
     const input = wrapper.find('input')
-
-    // When
-    await input.simulate('change', { target: { value: '' } })
-
-    // Then
+    await input.simulate('change', { target: { value: 'Par' } })
     const suggestedPlaces = wrapper
       .find('ul')
       .find('li')
       .find('button')
-    expect(suggestedPlaces).toHaveLength(0)
+
+    // When
+    suggestedPlaces.at(0).simulate('click', {
+      currentTarget: {
+        value: 0,
+      },
+    })
+
+    // Then
+    expect(props.updatePlaceInformation).toHaveBeenCalledWith({
+      geolocation: {
+        latitude: 1,
+        longitude: 2,
+      },
+      name: 'Paris 15ème arrondissement',
+      extraData: 'Paris',
+    })
+    expect(props.history.push).toHaveBeenCalledWith(
+      '/recherche/resultats/filtres/localisation?mots-cles=&autour-de-moi=non&tri=&categories='
+    )
   })
 })

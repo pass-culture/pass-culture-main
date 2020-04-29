@@ -1,0 +1,82 @@
+.place-page {
+  background-color: $white;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100%;
+}
+
+.place-wrapper {
+  padding: rem(22px);
+}
+
+.place-name {
+  color: $black;
+  font-size: rem(16px);
+  font-weight: 400;
+  margin-right: rem(5px);
+  justify-items: left;
+}
+
+.place-extra-data {
+  color: $grey;
+  font-size: rem(16px);
+  font-weight: 400;
+}
+
+.place-input-wrapper {
+  align-items: center;
+  display: flex;
+  border-radius: rem(22px);
+  box-shadow: 0 rem(2px) rem(10px) 0 rgba(0, 0, 0, 0.1);
+  height: rem(40px);
+  margin-bottom: rem(5px);
+  margin-top: rem(10px);
+}
+
+.place-text-input {
+  border: none;
+  color: $black;
+  flex: 2;
+  font-size: rem(16px);
+  font-weight: 400;
+  margin: 0 0 0 rem(30px);
+  height: 100%;
+  width: 80%;
+
+  &::placeholder {
+    font-size: rem(18px);
+    font-style: italic;
+    font-weight: 400;
+  }
+}
+
+.place-reset-wrapper {
+  display: flex;
+  align-items: center;
+  background: none;
+  border-radius: rem(20px);
+  justify-content: center;
+  margin-right: rem(15px);
+
+  .place-reset-button {
+    img {
+      color: $grey;
+      max-width: rem(18px);
+    }
+  }
+}
+
+.place-suggestions {
+  padding: rem(5px);
+  li {
+    border-bottom: 1px solid $grey-light;
+    padding: rem(15px) 0;
+
+    button {
+      color: $black;
+      display: flex;
+      flex-wrap: wrap;
+    }
+  }
+}
