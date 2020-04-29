@@ -7,7 +7,7 @@ import FieldErrors from '../../FieldErrors'
 import PropTypes from 'prop-types'
 
 const required = value => {
-  return value ? undefined : 'Ce champs est obligatoire'
+  return value ? undefined : 'Ce champ est obligatoire'
 }
 
 const mustHaveTheProperLength = value => {

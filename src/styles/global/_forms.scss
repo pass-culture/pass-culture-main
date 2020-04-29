@@ -362,14 +362,18 @@
 
 .field-errors {
   color: $red;
+  display: flex;
+  font-size: rem(14px);
+  font-weight: $weight-medium;
   min-height: 24px;
 
-  &:empty {
-    min-height: 0;
+  .field-error-icon {
+    flex-shrink: 0;
+    margin-right: rem(12px);
+    margin-top: rem(2px);
+    width: rem(16px);
   }
 
-  &.field-error-message + .field-error-message {
-    // si on a plusieurs erreurs pour un seul champ
-    @extend .pl12;
+  &.field-error-message {
   }
 }

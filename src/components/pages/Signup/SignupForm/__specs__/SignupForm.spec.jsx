@@ -213,7 +213,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const errors = wrapper.find('.errors')
+      const errors = wrapper.find('.field-error-message')
       expect(errors.text()).toBe('erreur sur le mail')
     })
 

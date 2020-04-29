@@ -5,9 +5,9 @@ import { NavLink } from 'react-router-dom'
 import { Field, Form } from 'react-final-form'
 import { CGU_URL } from '../../../../utils/config'
 import bindAddressAndDesignationFromSiren from '../../Offerer/OffererCreation/decorators/bindSirenFieldToDesignation'
-import Icon from '../../../layout/Icon'
 import PasswordField from '../../../layout/form/fields/PasswordField'
 import SirenField from '../../../layout/form/fields/SirenField/SirenField'
+import FieldErrors from '../../../layout/form/FieldErrors'
 
 const addressAndDesignationFromSirenDecorator = createDecorator({
   field: 'siren',
@@ -116,18 +116,11 @@ class SignupForm extends PureComponent {
                     component="input"
                     name="email"
                     placeholder="nom@exemple.fr"
+                    required
                     type="text"
                     validate={required}
                   />
-                  {errors && errors.email && (
-                    <p className="errors">
-                      <Icon
-                        alt="Une erreur est survenue"
-                        svg="picto-warning"
-                      />
-                      {errors && errors.email}
-                    </p>
-                  )}
+                  <FieldErrors customMessage={errors ? errors.email : null} />
                 </label>
 
                 <label>
@@ -144,15 +137,7 @@ class SignupForm extends PureComponent {
                     required
                     validate={required}
                   />
-                  {errors && errors.password && (
-                    <p className="errors">
-                      <Icon
-                        alt="Une erreur est survenue"
-                        svg="picto-warning"
-                      />
-                      {errors && errors.password}
-                    </p>
-                  )}
+                  <FieldErrors customMessage={errors ? errors.password : null} />
                 </label>
 
                 <label>
@@ -167,15 +152,7 @@ class SignupForm extends PureComponent {
                     required
                     validate={required}
                   />
-                  {errors && errors.lastName && (
-                    <p className="errors">
-                      <Icon
-                        alt="Une erreur est survenue"
-                        svg="picto-warning"
-                      />
-                      {errors && errors.lastName}
-                    </p>
-                  )}
+                  <FieldErrors customMessage={errors ? errors.lastName : null} />
                 </label>
 
                 <label>
@@ -190,15 +167,8 @@ class SignupForm extends PureComponent {
                     required
                     validate={required}
                   />
-                  {errors && errors.firstName && (
-                    <p className="errors">
-                      <Icon
-                        alt="Une erreur est survenue"
-                        svg="picto-warning"
-                      />
-                      {errors && errors.firstName}
-                    </p>
-                  )}
+                  <FieldErrors customMessage={errors ? errors.firstName : null} />
+                  <FieldErrors customMessage={errors ? errors.publicName : null} />
                 </label>
 
                 <label>
@@ -216,15 +186,7 @@ class SignupForm extends PureComponent {
                     required
                     validate={required}
                   />
-                  {errors && errors.phoneNumber && (
-                    <p className="errors">
-                      <Icon
-                        alt="Une erreur est survenue"
-                        svg="picto-warning"
-                      />
-                      {errors && errors.phoneNumber}
-                    </p>
-                  )}
+                  <FieldErrors customMessage={errors ? errors.phoneNumber : null} />
                 </label>
 
                 <SirenField
@@ -239,15 +201,7 @@ class SignupForm extends PureComponent {
                     type="checkbox"
                   />
                   {'Je souhaite recevoir les actualités du pass Culture'}
-                  {errors && errors.newsletter_ok && (
-                    <p className="errors">
-                      <Icon
-                        alt="Une erreur est survenue"
-                        svg="picto-warning"
-                      />
-                      {errors && errors.newsletter_ok}
-                    </p>
-                  )}
+                  <FieldErrors customMessage={errors ? errors.newsletter_ok : null} />
                 </label>
 
                 <label className="sign-up-checkbox">
@@ -262,15 +216,7 @@ class SignupForm extends PureComponent {
                   <span className="field-asterisk">
                     {'*'}
                   </span>
-                  {errors && errors.contact_ok && (
-                    <p className="errors">
-                      <Icon
-                        alt="Une erreur est survenue"
-                        svg="picto-warning"
-                      />
-                      {errors && errors.contact_ok}
-                    </p>
-                  )}
+                  <FieldErrors customMessage={errors ? errors.contact_ok : null} />
                 </label>
 
                 <label className="sign-up-cgu">
@@ -285,15 +231,7 @@ class SignupForm extends PureComponent {
                   <span className="field-asterisk">
                     {'*'}
                   </span>
-                  {errors && errors.cgu_ok && (
-                    <p className="errors">
-                      <Icon
-                        alt="Une erreur est survenue"
-                        svg="picto-warning"
-                      />
-                      {errors && errors.cgu_ok}
-                    </p>
-                  )}
+                  <FieldErrors customMessage={errors ? errors.cgu_ok : null} />
                 </label>
 
                 <div className="buttons-field">

@@ -1,25 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="49px" height="49px" viewBox="0 0 49 49" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: sketchtool 51.2 (57519) - http://www.bohemiancoding.com/sketch -->
-    <title>9015C753-BF75-4BC8-8FAE-99F5648F14CA</title>
-    <desc>Created with sketchtool.</desc>
-    <defs></defs>
-    <g id="Portail-pro" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Passculture-Pro-guichet3" transform="translate(-353.000000, -491.000000)">
-            <g id="Group-" transform="translate(268.000000, 54.000000)">
-                <g id="Stacked-Group-[30v]" transform="translate(85.000000, 66.000000)">
-                    <g id="BLOCKS/FooterForms-AnnulValid" transform="translate(0.000000, 362.000000)">
-                        <g id="Group-4" transform="translate(0.000000, 9.000000)">
-                            <g id="PICTOS/picto-echec">
-                                <g>
-                                    <circle id="Oval" fill="#D0021B" cx="24.5" cy="24.5" r="24.5"></circle>
-                                    <path d="M24.5,29.9444444 C24.1241395,29.9444444 23.8194444,29.6397493 23.8194444,29.2638889 L23.8194444,12.9305556 C23.8194444,12.5546951 24.1241395,12.25 24.5,12.25 C24.8758605,12.25 25.1805556,12.5546951 25.1805556,12.9305556 L25.1805556,29.2638889 C25.1805556,29.6397493 24.8758605,29.9444444 24.5,29.9444444 Z M24.5,36.75 C23.7482791,36.75 23.1388889,36.1406098 23.1388889,35.3888889 C23.1388889,34.637168 23.7482791,34.0277778 24.5,34.0277778 C25.2517209,34.0277778 25.8611111,34.637168 25.8611111,35.3888889 C25.8611111,36.1406098 25.2517209,36.75 24.5,36.75 Z" id="Combined-Shape" fill="#FFFFFF" fill-rule="nonzero"></path>
-                                </g>
-                            </g>
-                        </g>
-                    </g>
-                </g>
-            </g>
-        </g>
-    </g>
+<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+  <path d="M0 0h24v24H0z" fill="none"/>
+  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="#D0021B"/>
 </svg>

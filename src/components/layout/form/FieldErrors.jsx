@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import Icon from '../Icon'
 
 // NOTE: les index d'array ne doit pas servir de clé unique
 // pour les éléments d'une liste d'éléménts
@@ -22,30 +23,27 @@ const FieldErrors = ({ className, customMessage, meta }) => {
     ? null
     : (Array.isArray(errorMessage) && errorMessage) || [].concat(errorMessage)
   return (
-    <span className={`field-errors is-block ${className}`}>
-      {(errorMessage && (
-        <span className="flex-columns">
-          <span className="flex-0 mr3">
-            <span
-              aria-hidden
-              className="icon-warning-circled fs18"
-              title=""
-            />
-          </span>
-          <span className="flex-1 is-semi-bold fs12">
-            {errorMessage.map((err, index) => (
-              <span
-                className="field-error-message is-block mt2"
-                key={setDangerousArrayKeyIndex(index)}
-              >
-                {err}
-              </span>
-            ))}
-          </span>
+    (errorMessage && (
+      <span className={`field-errors ${className}`}>
+        <span className="field-error-icon">
+          <Icon
+            alt="Une erreur est survenue"
+            svg="picto-echec"
+          />
         </span>
-      )) ||
-        null}
-    </span>
+        <span className="field-error-messages">
+          {errorMessage.map((err, index) => (
+            <p
+              className="field-error-message"
+              key={setDangerousArrayKeyIndex(index)}
+            >
+              {err}
+            </p>
+          ))}
+        </span>
+      </span>
+    )) ||
+    null
   )
 }
 
