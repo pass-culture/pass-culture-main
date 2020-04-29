@@ -1,4 +1,5 @@
 from models import ApiErrors
+from models.bank_information import BankInformationStatus
 from tests.model_creators.generic_creators import create_bank_information
 from validation.models.bank_information import validate
 
@@ -12,7 +13,8 @@ def test_should_return_error_message_when_iban_is_invalid():
     api_error = validate(bank_information, api_errors)
 
     # Then
-    assert api_error.errors['iban'] == ['L’IBAN renseigné ("FR76") est invalide']
+    assert api_error.errors['iban'] == [
+        'L’IBAN renseigné ("FR76") est invalide']
 
 
 def test_should_return_error_message_when_bic_is_invalid():
@@ -24,7 +26,8 @@ def test_should_return_error_message_when_bic_is_invalid():
     api_error = validate(bank_information, api_errors)
 
     # Then
-    assert api_error.errors['bic'] == ['Le BIC renseigné ("1234") est invalide']
+    assert api_error.errors['bic'] == [
+        'Le BIC renseigné ("1234") est invalide']
 
 
 def test_should_return_error_messages_when_iban_and_bic_are_invalid():
@@ -45,6 +48,36 @@ def test_should_return_error_messages_when_iban_and_bic_are_invalid():
 def test_should_return_no_error_message_when_iban_and_bic_are_valid():
     # Given
     bank_information = create_bank_information()
+    api_errors = ApiErrors()
+
+    # When
+    api_error = validate(bank_information, api_errors)
+
+    # Then
+    assert api_error.errors == {}
+
+
+def test_should_return_an_error_if_status_is_not_accepted_and_bic_or_iban_is_present():
+    # Given
+    bank_information = create_bank_information(
+        status=BankInformationStatus.DRAFT)
+    api_errors = ApiErrors()
+
+    # When
+    api_error = validate(bank_information, api_errors)
+
+    # Then
+    assert api_error.errors == {
+        'bic': ['Le BIC doit être vide pour le statut DRAFT'],
+        'iban': ['L’IBAN doit être vide pour le statut DRAFT']
+    }
+
+
+def test_should__notreturn_an_error_if_status_is_not_accepted_and_bic_and_iban_are_empty():
+    # Given
+    bank_information = create_bank_information(bic=None,
+                                               iban=None,
+                                               status=BankInformationStatus.DRAFT)
     api_errors = ApiErrors()
 
     # When

@@ -376,13 +376,13 @@ class OffererBankInformationProviderProviderTest:
         offerer3 = create_offerer(siren='793875018')
         offerer4 = create_offerer(siren='793875019')
         bank_information1 = create_bank_information(
-            id_at_providers="793875016", offerer=offerer1, application_id=5, status="REJECTED")
+            id_at_providers="793875016", offerer=offerer1, bic=None, iban=None, application_id=5, status=BankInformationStatus.REJECTED)
         bank_information2 = create_bank_information(
-            id_at_providers="793875017", offerer=offerer2, application_id=6, status="DRAFT")
+            id_at_providers="793875017", offerer=offerer2, bic=None, iban=None, application_id=6, status=BankInformationStatus.DRAFT)
         bank_information3 = create_bank_information(
-            id_at_providers="793875018", offerer=offerer3, application_id=7, status="ACCEPTED")
+            id_at_providers="793875018", offerer=offerer3, application_id=7, status=BankInformationStatus.ACCEPTED)
         bank_information4 = create_bank_information(
-            id_at_providers="793875019", offerer=offerer4, application_id=8, status="DRAFT")
+            id_at_providers="793875019", offerer=offerer4, bic=None, iban=None, application_id=8, status=BankInformationStatus.DRAFT)
         repository.save(bank_information1, bank_information2,
                         bank_information3, bank_information4)
         activate_provider('OffererBankInformationProvider')
@@ -428,9 +428,9 @@ class OffererBankInformationProviderProviderTest:
         offerer1 = create_offerer(siren='793875016')
         offerer2 = create_offerer(siren='793875017')
         bank_information1 = create_bank_information(
-            id_at_providers="793875016", offerer=offerer1, application_id=1, status="DRAFT", date_modified_at_last_provider=datetime(2020, 1, 2), last_provider_id=offerer_bank_information_provider.provider.id)
+            id_at_providers="793875016", offerer=offerer1, application_id=1, bic=None, iban=None, status=BankInformationStatus.DRAFT, date_modified_at_last_provider=datetime(2020, 1, 2), last_provider_id=offerer_bank_information_provider.provider.id)
         bank_information2 = create_bank_information(
-            id_at_providers="793875017", offerer=offerer2, application_id=2, status="DRAFT", date_modified_at_last_provider=datetime(2020, 1, 2), last_provider_id=offerer_bank_information_provider.provider.id)
+            id_at_providers="793875017", offerer=offerer2, application_id=2, bic=None, iban=None, status=BankInformationStatus.DRAFT, date_modified_at_last_provider=datetime(2020, 1, 2), last_provider_id=offerer_bank_information_provider.provider.id)
         repository.save(bank_information1, bank_information2)
 
         # When

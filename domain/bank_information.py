@@ -11,7 +11,6 @@ status_weight = {
 def new_application_can_update_bank_information(bank_information: BankInformation,
                                                 new_application_id: int,
                                                 new_application_status: int):
-    print(new_application_id, bank_information.applicationId)
     same_demarches_simplifiees_application = new_application_id == bank_information.applicationId
 
     new_status_is_more_advanced_than_previous = (

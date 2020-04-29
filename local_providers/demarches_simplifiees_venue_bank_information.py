@@ -9,6 +9,7 @@ from domain.demarches_simplifiees import get_closed_application_ids_for_demarche
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
 from models import BankInformation
+from models.bank_information import BankInformationStatus
 from models.local_provider_event import LocalProviderEventType
 from repository import offerer_queries, venue_queries
 from repository.bank_information_queries import get_last_update_from_bank_information
@@ -60,6 +61,7 @@ class VenueBankInformationProvider(LocalProvider):
         bank_information.applicationId = self.bank_information_dict['applicationId']
         bank_information.venueId = self.bank_information_dict.get(
             'venueId', None)
+        bank_information.status = BankInformationStatus.ACCEPTED
 
     def retrieve_bank_information(self, application_details: Dict) -> Optional[Dict]:
         bank_information_dict = dict()

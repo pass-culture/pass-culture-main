@@ -18,6 +18,7 @@ from models.allocine_venue_provider import AllocineVenueProvider
 from models.email import EmailStatus
 from models.payment_status import TransactionStatus
 from models.venue_type import VenueType
+from models.bank_information import BankInformationStatus
 from scripts.iris.import_iris import WGS_SPATIAL_REFERENCE_IDENTIFIER, \
     create_centroid_from_polygon
 from tests.model_creators.specific_creators import \
@@ -53,7 +54,7 @@ def create_bank_information(application_id: int = 1,
                             last_provider_id: int = None,
                             offerer: Offerer = None,
                             venue: Venue = None,
-                            status: str = "ACCEPTED") -> BankInformation:
+                            status: str = BankInformationStatus.ACCEPTED) -> BankInformation:
     bank_information = BankInformation()
     bank_information.applicationId = application_id
     bank_information.bic = bic

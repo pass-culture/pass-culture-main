@@ -48,32 +48,12 @@ def get_by_offer_id(offer_id):
     return Offerer.query.join(Venue).join(Offer).filter_by(id=offer_id).first()
 
 
-def get_by_venue_id_and_offer_id(offer_id: str, venue_id: str) -> Offerer:
-    return Offerer.query \
-        .join(Venue) \
-        .filter_by(id=venue_id) \
-        .join(Offer) \
-        .filter_by(id=offer_id) \
-        .first()
-
-
-def find_all_admin_offerer_emails(offerer_id):
-    return [result.email for result in
-            Offerer.query.filter_by(id=offerer_id).join(UserOfferer).filter_by(rights=RightsType.admin).filter_by(
-                validationToken=None).join(
-                User).with_entities(User.email)]
-
-
 def find_new_offerer_user_email(offerer_id):
     return UserOfferer.query \
         .filter_by(offererId=offerer_id) \
         .join(User) \
         .with_entities(User.email) \
         .first()[0]
-
-
-def find_all_recommendations_for_offerer(offerer):
-    return Recommendation.query.join(Offer).join(Venue).join(Offerer).filter_by(id=offerer.id).all()
 
 
 def find_all_offerers_with_managing_user_information():
@@ -106,7 +86,8 @@ def find_all_offerers_with_managing_user_information_and_not_virtual_venue():
         .join(User, User.id == UserOfferer.userId) \
         .join(Venue)
 
-    result = query.filter(Venue.isVirtual == False).order_by(Offerer.name, Venue.name, User.email).all()
+    result = query.filter(Venue.isVirtual == False).order_by(
+        Offerer.name, Venue.name, User.email).all()
     return result
 
 
@@ -200,7 +181,8 @@ def find_filtered_offerers(sirens=None,
         query = query.join(UserOfferer)
 
     if has_validated_user_offerer is not None:
-        query = _filter_by_has_validated_user_offerer(query, has_validated_user_offerer)
+        query = _filter_by_has_validated_user_offerer(
+            query, has_validated_user_offerer)
 
     if has_validated_user is not None:
         query = query.join(User)
@@ -378,26 +360,6 @@ def check_if_siren_already_exists(siren):
 
 def keep_offerers_with_at_least_one_physical_venue(query):
     return query.filter(Offerer.managedVenues.any(Venue.isVirtual == False))
-
-
-def keep_offerers_with_at_least_one_physical_venue_at_departement_code_with_has_iban(
-        query,
-        departement_code,
-        has_venue_iban
-):
-    if has_venue_iban:
-        iban_venue_condition = Venue.iban == None
-    else:
-        iban_venue_condition = Venue.iban != None
-
-    return query.join(Venue) \
-        .filter(
-        Offerer.managedVenues.any(
-            (Venue.isVirtual == False) & \
-            (Venue.postalCode.startswith(departement_code)) &
-            iban_venue_condition
-        )
-    )
 
 
 def keep_offerers_with_no_physical_venue(query):
