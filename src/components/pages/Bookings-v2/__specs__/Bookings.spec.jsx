@@ -1,8 +1,8 @@
 import React from 'react'
-import {shallow} from 'enzyme'
+import { shallow } from 'enzyme'
 import Titles from '../../../layout/Titles/Titles'
 import Bookings from '../Bookings.jsx'
-import BookingsTable from "../BookingsTable/BookingsTable"
+import BookingsTable from '../BookingsTable/BookingsTable'
 
 describe('src | components | pages | Bookings-v2', () => {
   let props
@@ -26,8 +26,8 @@ describe('src | components | pages | Bookings-v2', () => {
     })
   })
 
-  describe('handleSuccess', function () {
-    it('should set bookingsRecap with api response data', function () {
+  describe('handleSuccess', function() {
+    it('should set bookingsRecap with api response data', function() {
       // Given
       const state = {}
       const action = {
@@ -39,14 +39,16 @@ describe('src | components | pages | Bookings-v2', () => {
           ],
         },
       }
-      props.requestGetAllBookingsRecap = jest.fn((handleSuccess, handleFail) => handleSuccess(state, action))
+      jest
+        .spyOn(props, 'requestGetAllBookingsRecap')
+        .mockImplementation(handleSuccess => handleSuccess(state, action))
 
       // When
       const bookings = shallow(<Bookings {...props} />)
 
       // Then
       const bookingsTable = bookings.find(BookingsTable)
-      expect(bookingsTable.prop('bookingsRecap')).toEqual([
+      expect(bookingsTable.prop('bookingsRecap')).toStrictEqual([
         {
           'offer-name': 'My Offer',
         },

@@ -1,16 +1,17 @@
 import React from 'react'
 
 function BeneficiaryCell(props) {
-  const beneficiaryInfo = props.values
+  const { beneficiaryInfos } = props
+  const beneficiaryName = beneficiaryInfos.firstname.concat(' ', beneficiaryInfos.lastname)
   return (
     <div>
-        <span>
-          {beneficiaryInfo.firstname} {beneficiaryInfo.lastname}
-        </span>
-      <br/>
-      <span className={"cell-subtitle"}>
-          {beneficiaryInfo.email}
-        </span>
+      <span>
+        {beneficiaryName}
+      </span>
+      <br />
+      <span className="cell-subtitle">
+        {beneficiaryInfos.email}
+      </span>
     </div>
   )
 }

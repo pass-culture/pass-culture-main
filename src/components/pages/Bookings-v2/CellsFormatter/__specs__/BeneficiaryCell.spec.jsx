@@ -1,15 +1,15 @@
-import {shallow} from "enzyme/build"
-import BeneficiaryCell from "../BeneficiaryCell"
-import React from "react"
+import { shallow } from 'enzyme/build'
+import BeneficiaryCell from '../BeneficiaryCell'
+import React from 'react'
 
 describe('components | pages | bookings-v2 | CellsFormatter | BeneficiaryCell', () => {
   it('should render a div with two span, one with firstname and lastname and the other the email address', () => {
     // Given
     const props = {
-      'values': {
-        'firstname': 'Laurent',
-        'lastname': 'Durond',
-        'email': 'email@example.com',
+      beneficiaryInfos: {
+        firstname: 'Laurent',
+        lastname: 'Durond',
+        email: 'email@example.com',
       },
     }
 
