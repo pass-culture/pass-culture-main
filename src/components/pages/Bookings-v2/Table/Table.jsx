@@ -23,7 +23,7 @@ function Table({ columns, data }) {
                 key={column.id}
                 {...column.getHeaderProps()}
               >
-                {column.render('Header')}
+                {column.render('headerTitle')}
               </th>
             ))}
           </tr>

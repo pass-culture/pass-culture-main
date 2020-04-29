@@ -9,24 +9,24 @@ class BookingsTable extends PureComponent {
     this.state = {
       columns: [
         {
-          Header: "Nom de l'offre",
+          headerTitle: "Nom de l'offre",
           accessor: 'stock',
           Cell: ({ value }) => (<span className="offer-link">
             {value.offer_name}
           </span>),
         },
         {
-          Header: 'Bénéficiaire',
+          headerTitle: 'Bénéficiaire',
           accessor: 'beneficiary',
           Cell: ({ value }) => <BeneficiaryCell beneficiaryInfos={value} />,
         },
         {
-          Header: 'Réservation',
+          headerTitle: 'Réservation',
           accessor: 'booking_date',
           Cell: ({ value }) => <BookingDateCell bookingDateInfos={value} />,
         },
         {
-          Header: 'Contremarque',
+          headerTitle: 'Contremarque',
           accessor: 'booking_token',
         },
       ],

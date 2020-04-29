@@ -1,6 +1,6 @@
 import { mapDispatchToProps } from '../BookingsContainer'
 
-describe('src | components | pages | Bookings-v2 | BookingsContainer', function() {
+describe('src | components | pages | Bookings-v2 | BookingsContainer', () => {
   describe('mapDispatchToProps', function() {
     let dispatch
 
@@ -8,7 +8,7 @@ describe('src | components | pages | Bookings-v2 | BookingsContainer', function(
       dispatch = jest.fn()
     })
 
-    it('should call api to load all bookings recap', function() {
+    it('should call api to load all bookings recap', () => {
       // Given
       const functions = mapDispatchToProps(dispatch)
       const handleSuccess = jest.fn()

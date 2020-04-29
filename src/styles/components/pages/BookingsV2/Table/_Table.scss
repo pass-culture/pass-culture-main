@@ -7,7 +7,7 @@ table#bookings-table {
   }
 
   tbody > tr:nth-child(odd) {
-    background-color: #ecf0f1;
+    background-color: $grey-light-bis;
   }
 
   td {

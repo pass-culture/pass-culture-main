@@ -26,8 +26,8 @@ describe('src | components | pages | Bookings-v2', () => {
     })
   })
 
-  describe('handleSuccess', function() {
-    it('should set bookingsRecap with api response data', function() {
+  describe('handleSuccess', () => {
+    it('should set bookingsRecap with api response data', () => {
       // Given
       const state = {}
       const action = {
