@@ -3,15 +3,15 @@ import { Selector } from 'testcafe'
 import { ROOT_PATH } from '../src/utils/config'
 import { fetchSandbox } from './helpers/sandboxes'
 
-const emailInput = Selector('#user-email')
-const passwordInput = Selector('#user-password')
-const lastNameInput = Selector('#user-lastName')
-const firstNameInput = Selector('#user-firstName')
-const phoneNumberInput = Selector('#user-phoneNumber')
-const sirenInput = Selector('#user-siren')
-const newsletterOkInput = Selector('#user-newsletter_ok')
-const contactOkInput = Selector('#user-contact_ok')
-const cguOkInput = Selector('#user-cgu_ok')
+const emailInput = Selector('input[name="email"')
+const passwordInput = Selector('input[name="password"')
+const lastNameInput = Selector('input[name="lastName"')
+const firstNameInput = Selector('input[name="firstName"')
+const phoneNumberInput = Selector('input[name="phoneNumber"')
+const sirenInput = Selector('input[name="siren"')
+const newsletterOkInput = Selector('input[name="newsletter_ok"')
+const contactOkInput = Selector('input[name="contact_ok"')
+const cguOkInput = Selector('input[name="cgu_ok"')
 const signUpButton = Selector('button.button.is-primary')
 
 fixture("Création d'un compte utilisateur·trice").page(`${ROOT_PATH + 'inscription'}`)
