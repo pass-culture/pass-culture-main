@@ -1,9 +1,7 @@
-table {
-  width: 100%;
-  min-width: 700px;
+table#bookings-table {
 
   tr > th {
-    color: #151515;
+    color: $black;
     font-size: rem(14px);
     padding: 14px;
   }
@@ -31,6 +29,6 @@ table {
   }
 
   td span.cell-subtitle {
-    color: #757575;
+    color: $grey;
   }
 }
