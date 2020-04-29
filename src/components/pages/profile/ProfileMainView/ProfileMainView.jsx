@@ -18,7 +18,7 @@ const ProfileMainView = ({ currentUser }) => (
         {currentUser && <RemainingCredit currentUser={currentUser} />}
         <MesInformationsContainer />
         <div className="app-version">
-          {`v${version}`}
+          {`Version ${version}`}
         </div>
       </div>
     </main>
