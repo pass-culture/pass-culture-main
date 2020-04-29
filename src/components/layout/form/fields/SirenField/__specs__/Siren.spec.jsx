@@ -1,11 +1,11 @@
 import React from 'react'
 import { shallow } from 'enzyme'
-import Siren, { existsInINSEERegistry } from '../Siren'
+import SirenField, { existsInINSEERegistry } from '../SirenField'
 
-describe('src | components | pages | Offerer | OffererCreation | Fields | Siren', () => {
+describe('src | components | pages | Offerer | OffererCreation | Fields | SirenField', () => {
   it('should match snapshot', () => {
     // when
-    const wrapper = shallow(<Siren />)
+    const wrapper = shallow(<SirenField />)
 
     // then
     expect(wrapper).toMatchSnapshot()

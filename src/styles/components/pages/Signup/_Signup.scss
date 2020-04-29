@@ -104,21 +104,11 @@
     margin-bottom: rem(32px);
   }
 
-  .field-asterisk {
-    color: $violet;
-  }
-
   label {
     display: block;
     margin-bottom: rem(32px);
     color: $grey-darker;
     font-size: rem(20px);
-
-    p {
-      color: $grey;
-      font-size: rem(14px);
-      display: inline;
-    }
   }
 
   label.sign-up-checkbox {
@@ -136,6 +126,12 @@
     & a {
       text-decoration: underline;
     }
+  }
+
+  .sub-label {
+    color: $grey;
+    font-size: rem(14px);
+    display: inline;
   }
 
   input:not([type='checkbox']) {
@@ -193,6 +189,28 @@
         height: 100%;
       }
     }
+  }
+
+  .field-siren-control {
+    margin-top: rem(8px);
+  }
+
+  .field-siren-control input {
+    width: 8rem;
+    margin-top: 0;
+  }
+
+  .field-siren-input-value {
+    display: flex;
+    align-items: center;
+  }
+
+  .field-siren-value {
+    color: $black;
+    font-size: $font-size;
+    font-weight: $weight-semibold;
+    padding-left: 0.25rem;
+    text-transform: uppercase;
   }
 
   .field-password {

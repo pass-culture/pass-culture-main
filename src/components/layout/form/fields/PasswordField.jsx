@@ -1,6 +1,4 @@
-import classnames from 'classnames'
-import PropTypes from 'prop-types'
-import React, { Component, PureComponent } from 'react'
+import React, { PureComponent } from 'react'
 import { Field } from 'react-final-form'
 import Icon from '../../Icon'
 
@@ -12,7 +10,7 @@ class PasswordInput extends PureComponent {
     }
   }
 
-  toggleHidden = e => {
+  handleToggleHidden = e => {
     e.preventDefault()
     this.setState(previousState => ({
       isPasswordHidden: !previousState.isPasswordHidden,
@@ -38,19 +36,19 @@ class PasswordInput extends PureComponent {
       <span className="field-password">
         <Field
           {...this.props}
-          component='input'
+          component="input"
           type={isPasswordHidden ? 'password' : 'text'}
         />
         <button
           className="button button-show-password"
-          onClick={this.toggleHidden}
+          onClick={this.handleToggleHidden}
           type="button"
         >
           <Icon
             alt={isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'}
             svg={isPasswordHidden ? 'ico-eye close' : 'ico-eye'}
           />
-            &nbsp;
+          &nbsp;
         </button>
 
         <Icon

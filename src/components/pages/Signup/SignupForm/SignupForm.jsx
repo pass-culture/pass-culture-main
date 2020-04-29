@@ -4,10 +4,10 @@ import createDecorator from 'final-form-calculate'
 import { NavLink } from 'react-router-dom'
 import { Field, Form } from 'react-final-form'
 import { CGU_URL } from '../../../../utils/config'
-import Siren from '../../Offerer/OffererCreation/Fields/Siren/Siren'
 import bindAddressAndDesignationFromSiren from '../../Offerer/OffererCreation/decorators/bindSirenFieldToDesignation'
 import Icon from '../../../layout/Icon'
 import PasswordField from '../../../layout/form/fields/PasswordField'
+import SirenField from '../../../layout/form/fields/SirenField/SirenField'
 
 const addressAndDesignationFromSirenDecorator = createDecorator({
   field: 'siren',
@@ -91,7 +91,7 @@ class SignupForm extends PureComponent {
           </h2>
           <div className="sign-up-tips">
             <span className="field-asterisk">
-              {' *'}
+              {'*'}
             </span>
             {' Champs obligatoires'}
           </div>
@@ -102,12 +102,12 @@ class SignupForm extends PureComponent {
             decorators={[addressAndDesignationFromSirenDecorator]}
             onSubmit={this.handleSubmit}
           >
-            {({ handleSubmit, valid }) => (
+            {({ handleSubmit, valid, values }) => (
               <form onSubmit={handleSubmit}>
                 <label>
                   {'Adresse e-mail'}
                   <span className="field-asterisk">
-                    {' *'}
+                    {'*'}
                   </span>
                   <p className="sub-label">
                     {'...pour se connecter et récupérer son mot de passe en cas d’oubli'}
@@ -133,14 +133,15 @@ class SignupForm extends PureComponent {
                 <label>
                   {'Mot de passe'}
                   <span className="field-asterisk">
-                    {' *'}
+                    {'*'}
                   </span>
-                  <p className="sub-label">
+                  <span className="sub-label">
                     {'...pour se connecter'}
-                  </p>
+                  </span>
                   <PasswordField
                     name="password"
                     placeholder="Mon mot de passe"
+                    required
                     validate={required}
                   />
                   {errors && errors.password && (
@@ -157,12 +158,13 @@ class SignupForm extends PureComponent {
                 <label>
                   {'Nom'}
                   <span className="field-asterisk">
-                    {' *'}
+                    {'*'}
                   </span>
                   <Field
                     component="input"
                     name="lastName"
                     placeholder="Mon nom"
+                    required
                     validate={required}
                   />
                   {errors && errors.lastName && (
@@ -179,12 +181,13 @@ class SignupForm extends PureComponent {
                 <label>
                   {'Prénom'}
                   <span className="field-asterisk">
-                    {' *'}
+                    {'*'}
                   </span>
                   <Field
                     component="input"
                     name="firstName"
                     placeholder="Mon prénom"
+                    required
                     validate={required}
                   />
                   {errors && errors.firstName && (
@@ -201,7 +204,7 @@ class SignupForm extends PureComponent {
                 <label>
                   {'Téléphone'}
                   <span className="field-asterisk">
-                    {' *'}
+                    {'*'}
                   </span>
                   <p className="sub-label">
                     {'...utilisé uniquement par l’équipe du pass Culture'}
@@ -210,6 +213,7 @@ class SignupForm extends PureComponent {
                     component="input"
                     name="phoneNumber"
                     placeholder="Mon numéro de téléphone"
+                    required
                     validate={required}
                   />
                   {errors && errors.phoneNumber && (
@@ -223,7 +227,10 @@ class SignupForm extends PureComponent {
                   )}
                 </label>
 
-                <Siren />
+                <SirenField
+                  subLabel="... de la structure que vous représentez"
+                  value={values.name}
+                />
 
                 <label className="sign-up-checkbox">
                   <Field
@@ -247,12 +254,13 @@ class SignupForm extends PureComponent {
                   <Field
                     component="input"
                     name="contact_ok"
+                    required
                     type="checkbox"
                     validate={required}
                   />
                   {'J’accepte d’être contacté par e-mail pour donner mon avis sur le pass Culture'}
                   <span className="field-asterisk">
-                    {' *'}
+                    {'*'}
                   </span>
                   {errors && errors.contact_ok && (
                     <p className="errors">
@@ -269,12 +277,13 @@ class SignupForm extends PureComponent {
                   <Field
                     component="input"
                     name="cgu_ok"
+                    required
                     type="checkbox"
                     validate={required}
                   />
                   {this.renderCguContent()}
                   <span className="field-asterisk">
-                    {' *'}
+                    {'*'}
                   </span>
                   {errors && errors.cgu_ok && (
                     <p className="errors">
@@ -286,6 +295,7 @@ class SignupForm extends PureComponent {
                     </p>
                   )}
                 </label>
+
                 <div className="buttons-field">
                   <NavLink
                     className="button is-secondary"
@@ -315,7 +325,6 @@ SignupForm.propTypes = {
   closeNotification: PropTypes.func.isRequired,
   createNewProUser: PropTypes.func.isRequired,
   errors: PropTypes.arrayOf(PropTypes.string).isRequired,
-  offererName: PropTypes.string.isRequired,
   redirectToConfirmation: PropTypes.func.isRequired,
   showNotification: PropTypes.func.isRequired,
 }

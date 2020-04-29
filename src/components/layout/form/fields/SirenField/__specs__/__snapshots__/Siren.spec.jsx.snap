@@ -1,9 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Offerer | OffererCreation | Fields | Siren should match snapshot 1`] = `
+exports[`src | components | pages | Offerer | OffererCreation | Fields | SirenField should match snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <Siren />,
+  Symbol(enzyme.__unrendered__): <SirenField
+    subLabel={null}
+    value={null}
+  />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
     "checkPropTypes": [Function],

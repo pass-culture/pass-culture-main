@@ -11,7 +11,6 @@ import { removeErrors } from '../../../../reducers/errors'
 const STATE_ERROR_NAME = 'user'
 
 export const mapStateToProps = state => ({
-  offererName: get(state, 'form.user.name'),
   errors: get(state, `errors["${STATE_ERROR_NAME}"]`),
 })
 

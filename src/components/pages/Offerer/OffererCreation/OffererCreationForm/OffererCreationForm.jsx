@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import Siren from '../Fields/Siren/Siren'
 import { NavLink } from 'react-router-dom'
 import { FormSpy } from 'react-final-form'
+import SirenField from '../../../../layout/form/fields/SirenField/SirenField'
 
 class OffererCreationForm extends Component {
   shouldComponentUpdate() {
@@ -26,10 +26,9 @@ class OffererCreationForm extends Component {
       <span>
         {'Désignation : '}
       </span>
-      {values.name &&
-        <span>
-          {values.name}
-        </span>}
+      {values.name && <span>
+        {values.name}
+                      </span>}
     </div>
   )
 
@@ -39,7 +38,7 @@ class OffererCreationForm extends Component {
       <form onSubmit={handleSubmit}>
         <div className="section">
           <div className="op-creation-form">
-            <Siren />
+            <SirenField />
             <FormSpy render={this.renderName} />
             <FormSpy render={this.renderAddress} />
           </div>

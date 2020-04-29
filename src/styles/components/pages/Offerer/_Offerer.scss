@@ -11,7 +11,7 @@
     }
   }
 
-  .op-field-siren {
+  .field-siren {
     margin: rem(8px) 0;
     display: flex;
 
@@ -22,19 +22,19 @@
     }
   }
 
-  .op-field-label-siren {
+  .field-siren-label {
     @extend .field-label;
     flex: 0;
     padding-bottom: 0;
     margin: rem(6px) 0 0;
   }
 
-  .op-field-control-siren {
+  .field-siren-control {
     flex: 1;
     margin-bottom: rem(20px);
   }
 
-  .op-field-error-siren {
+  .field-siren-error {
     position: absolute;
   }
 

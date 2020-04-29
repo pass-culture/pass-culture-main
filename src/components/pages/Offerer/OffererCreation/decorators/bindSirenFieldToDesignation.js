@@ -1,6 +1,6 @@
 import { removeWhitespaces } from 'react-final-form-utils'
-import formatSiren from '../Fields/Siren/formatSiren'
 import getSirenInformation from './getSirenInformation'
+import formatSiren from '../../../../layout/form/fields/SirenField/formatSiren'
 
 export const bindAddressAndDesignationFromSiren = async siren => {
   const formattedSiren = formatSiren(siren)

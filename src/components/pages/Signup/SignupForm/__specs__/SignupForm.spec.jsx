@@ -1,226 +1,229 @@
 import React from 'react'
 import SignupForm from '../SignupForm'
-import { shallow } from 'enzyme'
-import { Field, Form, SubmitButton } from 'pass-culture-shared'
+import { mount } from 'enzyme'
 import { NavLink } from 'react-router-dom'
+import { createBrowserHistory } from 'history'
+import { Router } from 'react-router'
 
 describe('src | components | pages | Signup | SignupForm', () => {
   let props
+  let history
 
   beforeEach(() => {
     props = {
+      closeNotification: jest.fn(),
+      createNewProUser: jest.fn(),
       errors: [],
-      offererName: 'super structure',
-      patch: {},
+      redirectToConfirmation: jest.fn(),
+      showNotification: jest.fn(),
     }
-  })
 
-  it('should match snapshot', () => {
-    // when
-    const wrapper = shallow(<SignupForm {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
+    history = createBrowserHistory()
   })
 
   describe('render', () => {
     it('should render a disabled submit button when required inputs are not filled', () => {
       // when
-      const wrapper = shallow(<SignupForm {...props} />)
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
 
       // then
-      const submitButton = wrapper
-        .find(SubmitButton)
-        .dive()
-        .find('button')
+      const submitButton = wrapper.find('button[type="submit"]')
       expect(submitButton.prop('disabled')).toBe(true)
-    })
-
-    it('should render a Form component with the right props', () => {
-      // when
-      const wrapper = shallow(<SignupForm {...props} />)
-
-      // then
-      const form = wrapper.find(Form)
-      expect(form).toHaveLength(1)
-      expect(form.prop('action')).toBe('/users/signup/pro')
-      expect(form.prop('BlockComponent')).toBeNull()
-      expect(form.prop('formatPatch')).toStrictEqual(expect.any(Function))
-      expect(form.prop('handleSuccessNotification')).toBeNull()
-      expect(form.prop('handleSuccessRedirect')).toStrictEqual(expect.any(Function))
-      expect(form.prop('layout')).toBe('vertical')
-      expect(form.prop('name')).toBe('user')
-      expect(form.prop('patch')).toStrictEqual({})
     })
 
     it('should render nine Field components', () => {
       // when
-      const wrapper = shallow(<SignupForm {...props} />)
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
 
       // then
-      const fields = wrapper.find(Field)
+      const fields = wrapper.find('label')
       expect(fields).toHaveLength(9)
     })
 
     it('should render a Field component for email with the right props', () => {
       // when
-      const wrapper = shallow(<SignupForm {...props} />)
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
 
       // then
-      const field = wrapper.find(Field).at(0)
-      expect(field.prop('label')).toBe('Adresse e-mail')
-      expect(field.prop('name')).toBe('email')
-      expect(field.prop('placeholder')).toBe('nom@exemple.fr')
-      expect(field.prop('required')).toBe(true)
-      expect(field.prop('sublabel')).toBe(
-        'pour se connecter et récupérer son mot de passe en cas d’oubli'
+      const field = wrapper.find('label').at(0)
+      expect(field.text()).toBe(
+        'Adresse e-mail*...pour se connecter et récupérer son mot de passe en cas d’oubli'
       )
-      expect(field.prop('type')).toBe('email')
+      const input = field.find('input')
+      expect(input.prop('name')).toBe('email')
+      expect(input.prop('placeholder')).toBe('nom@exemple.fr')
+      expect(input.prop('type')).toBe('text')
     })
 
     it('should render a Field component for password with the right props', () => {
-      // given
-      const infoContent = `
-          <Fragment>Votre mot de passe doit contenir au moins :
-            <ul>
-              <li>12 caractères</li>
-              <li>une majuscule et une minuscule</li>
-              <li>un chiffre</li>
-              <li>un caractère spécial (signe de ponctuation, symbole monétaire ou mathématique)</li>
-            </ul>
-          </Fragment>`
-
       // when
-      const wrapper = shallow(<SignupForm {...props} />)
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
 
       // then
-      const field = wrapper.find(Field).at(1)
-      expect(field.prop('info')).toBe(infoContent)
-      expect(field.prop('label')).toBe('Mot de passe')
-      expect(field.prop('name')).toBe('password')
-      expect(field.prop('placeholder')).toBe('Mon mot de passe')
-      expect(field.prop('required')).toBe(true)
-      expect(field.prop('sublabel')).toBe('pour se connecter')
-      expect(field.prop('type')).toBe('password')
+      const field = wrapper.find('label').at(1)
+      expect(field.text()).toBe('Mot de passe*...pour se connecter ')
+      const input = field.find('input')
+      expect(input.prop('name')).toBe('password')
+      expect(input.prop('placeholder')).toBe('Mon mot de passe')
+      expect(input.prop('type')).toBe('password')
     })
 
     it('should render a Field component for lastname with the right props', () => {
       // when
-      const wrapper = shallow(<SignupForm {...props} />)
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
 
       // then
-      const field = wrapper.find(Field).at(2)
-      expect(field.prop('label')).toBe('Nom')
-      expect(field.prop('name')).toBe('lastName')
-      expect(field.prop('placeholder')).toBe('Mon nom')
-      expect(field.prop('required')).toBe(true)
+      const field = wrapper.find('label').at(2)
+      expect(field.text()).toBe('Nom*')
+      const input = field.find('input')
+      expect(input.prop('name')).toBe('lastName')
+      expect(input.prop('placeholder')).toBe('Mon nom')
     })
 
     it('should render a Field component for firstname with the right props', () => {
       // when
-      const wrapper = shallow(<SignupForm {...props} />)
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
 
       // then
-      const field = wrapper.find(Field).at(3)
-      expect(field.prop('label')).toBe('Prénom')
-      expect(field.prop('name')).toBe('firstName')
-      expect(field.prop('placeholder')).toBe('Mon prénom')
-      expect(field.prop('required')).toBe(true)
+      const field = wrapper.find('label').at(3)
+      expect(field.text()).toBe('Prénom*')
+      const input = field.find('input')
+      expect(input.prop('name')).toBe('firstName')
+      expect(input.prop('placeholder')).toBe('Mon prénom')
     })
 
     it('should render a Field component for phone number with the right props', () => {
       // when
-      const wrapper = shallow(<SignupForm {...props} />)
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
 
       // then
-      const field = wrapper.find(Field).at(4)
-      expect(field.prop('label')).toBe('Téléphone')
-      expect(field.prop('name')).toBe('phoneNumber')
-      expect(field.prop('placeholder')).toBe('Mon numéro de téléphone')
-      expect(field.prop('sublabel')).toBe("utilisé uniquement par l'équipe du pass Culture")
-      expect(field.prop('required')).toBe(true)
+      const field = wrapper.find('label').at(4)
+      expect(field.text()).toBe('Téléphone*...utilisé uniquement par l’équipe du pass Culture')
+      const input = field.find('input')
+      expect(input.prop('name')).toBe('phoneNumber')
+      expect(input.prop('placeholder')).toBe('Mon numéro de téléphone')
     })
 
     it('should render a Field component for siren with the right props', () => {
       // when
-      const wrapper = shallow(<SignupForm {...props} />)
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
 
       // then
-      const field = wrapper.find(Field).at(5)
-      expect(field.prop('disabling')).toStrictEqual(expect.any(Function))
-      expect(field.prop('label')).toBe('SIREN')
-      expect(field.prop('name')).toBe('siren')
-      expect(field.prop('placeholder')).toBe('123 456 789')
-      expect(field.prop('required')).toBe(true)
-      expect(field.prop('sublabel')).toBe('de la structure que vous représentez')
-      expect(field.prop('type')).toBe('siren')
-      expect(field.prop('withFetchedName')).toBe(true)
+      const field = wrapper.find('label').at(5)
+      expect(field.text()).toBe('SIREN*... de la structure que vous représentez')
+      const input = field.find('input')
+      expect(input.prop('name')).toBe('siren')
+      expect(input.prop('placeholder')).toBe('123 456 789')
+      expect(input.prop('type')).toBe('text')
     })
 
     it('should render a Field component for newsletter agreement with the right props', () => {
       // when
-      const wrapper = shallow(<SignupForm {...props} />)
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
 
       // then
-      const field = wrapper.find(Field).at(6)
-      expect(field.prop('label')).toBe('Je souhaite recevoir les actualités du pass Culture')
-      expect(field.prop('name')).toBe('newsletter_ok')
-      expect(field.prop('type')).toBe('checkbox')
+      const field = wrapper.find('label').at(6)
+      expect(field.text()).toBe('Je souhaite recevoir les actualités du pass Culture')
+      const input = field.find('input')
+      expect(input.prop('name')).toBe('newsletter_ok')
+      expect(input.prop('type')).toBe('checkbox')
     })
 
     it('should render a Field component for contact agreement with the right props', () => {
       // when
-      const wrapper = shallow(<SignupForm {...props} />)
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
 
       // then
-      const field = wrapper.find(Field).at(7)
-      expect(field.prop('label')).toBe(
-        "J’accepte d'être contacté par e-mail pour donner mon avis sur le pass Culture"
+      const field = wrapper.find('label').at(7)
+      expect(field.text()).toBe(
+        'J’accepte d’être contacté par e-mail pour donner mon avis sur le pass Culture*'
       )
-      expect(field.prop('name')).toBe('contact_ok')
-      expect(field.prop('required')).toBe(true)
-      expect(field.prop('type')).toBe('checkbox')
+      const input = field.find('input')
+      expect(input.prop('name')).toBe('contact_ok')
+      expect(input.prop('type')).toBe('checkbox')
     })
 
     it('should render a Field component for cgu agreement with the right props', () => {
       // when
-      const wrapper = shallow(<SignupForm {...props} />)
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
 
       // then
-      const field = wrapper.find(Field).at(8)
-      expect(field.prop('label')).toStrictEqual(
-        <React.Fragment>
-          {'J’ai lu et j’accepte les '}
-          <a
-            href="https://docs.passculture.app/textes-normatifs"
-            id="accept-cgu-link"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            {'Conditions Générales d’Utilisation'}
-          </a>
-        </React.Fragment>
+      const field = wrapper.find('label').at(8)
+      expect(field.text()).toStrictEqual(
+        'J’ai lu et j’accepte les Conditions Générales d’Utilisation*'
       )
-      expect(field.prop('name')).toBe('cgu_ok')
-      expect(field.prop('required')).toBe(true)
-      expect(field.prop('type')).toBe('checkbox')
+      const input = field.find('input')
+      expect(input.prop('name')).toBe('cgu_ok')
+      expect(input.prop('type')).toBe('checkbox')
     })
 
     it('should render errors when provided', () => {
       // given
-      props.errors = ['error1']
+      props.errors = { email: 'erreur sur le mail' }
 
       // when
-      const wrapper = shallow(<SignupForm {...props} />)
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
 
       // then
       const errors = wrapper.find('.errors')
-      expect(errors.text()).toBe('error1')
+      expect(errors.text()).toBe('erreur sur le mail')
     })
 
     it('should render a NavLink component with the right props', () => {
       // when
-      const wrapper = shallow(<SignupForm {...props} />)
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
 
       // then
       const navLink = wrapper.find(NavLink)
@@ -231,15 +234,18 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
     it('should render a SubmitButton component with the right props', () => {
       // when
-      const wrapper = shallow(<SignupForm {...props} />)
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
 
       // then
-      const submitButton = wrapper.find(SubmitButton)
+      const submitButton = wrapper.find('button[type="submit"]')
       expect(submitButton).toHaveLength(1)
       expect(submitButton.prop('className')).toBe('button is-primary is-outlined')
       expect(submitButton.prop('type')).toBe('submit')
-      expect(submitButton.dive().text()).toBe('Créer')
+      expect(submitButton.text()).toBe('Créer')
     })
   })
-
 })
