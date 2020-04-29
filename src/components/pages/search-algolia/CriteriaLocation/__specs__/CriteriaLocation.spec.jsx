@@ -4,7 +4,8 @@ import Header from '../../../../layout/Header/Header'
 import { GEOLOCATION_CRITERIA } from '../../Criteria/criteriaEnums'
 import CriteriaLocation from '../CriteriaLocation'
 import { Criteria } from '../../Criteria/Criteria'
-import Icon from '../../../../layout/Icon/Icon'
+import { Place } from '../Place/Place'
+import { createBrowserHistory } from 'history'
 
 describe('components | CriteriaLocation', () => {
   let props
@@ -14,17 +15,11 @@ describe('components | CriteriaLocation', () => {
       activeCriterionLabel: 'Autour de moi',
       backTo: '/recherche',
       criteria: GEOLOCATION_CRITERIA,
-      history: {
-        location: {
-          pathname: '/recherche/criteres-localisation',
-          search: '',
-        },
-        push: jest.fn(),
-        replace: jest.fn(),
-      },
+      history: createBrowserHistory(),
       match: {
         params: {},
       },
+      onPlaceSelection: jest.fn(),
       onCriterionSelection: jest.fn(),
       title: 'Où',
     }
@@ -65,9 +60,8 @@ describe('components | CriteriaLocation', () => {
     const wrapper = shallow(<CriteriaLocation {...props} />)
 
     // then
-    const icon = wrapper.find(Icon)
+    const icon = wrapper.find('Icon[svg="ico-alert"]')
     expect(icon).toHaveLength(1)
-    expect(icon.prop('svg')).toBe('ico-alert')
   })
 
   it('should render a warning message', () => {
@@ -82,6 +76,15 @@ describe('components | CriteriaLocation', () => {
     expect(message).toHaveLength(1)
   })
 
+  it('should render an Icon component for search by place', () => {
+    // when
+    const wrapper = shallow(<CriteriaLocation {...props} />)
+
+    // then
+    const icon = wrapper.find('Icon[svg="ico-there"]')
+    expect(icon).toHaveLength(1)
+  })
+
   it('should render a button to redirect to search place page', () => {
     // when
     const wrapper = shallow(<CriteriaLocation {...props} />)
@@ -93,6 +96,8 @@ describe('components | CriteriaLocation', () => {
 
   it('should redirect /recherche/criteres-localisation/place when clicking on button', () => {
     // given
+    props.history.push('/recherche/criteres-localisation')
+    jest.spyOn(props.history, 'push').mockImplementation(() => jest.fn())
     const wrapper = shallow(<CriteriaLocation {...props} />)
     const chooseAPlaceButton = wrapper.find({ children: 'Choisir un lieu' })
 
@@ -101,5 +106,39 @@ describe('components | CriteriaLocation', () => {
 
     // then
     expect(props.history.push).toHaveBeenCalledWith('/recherche/criteres-localisation/place')
+  })
+
+  it('should render a Place component when route is /recherche/criteres-localisation/place', () => {
+    // given
+    props.history.location.pathname = '/recherche/criteres-localisation/place'
+
+    // when
+    const wrapper = shallow(<CriteriaLocation {...props} />)
+
+    // then
+    const place = wrapper.find(Place)
+    expect(place).toHaveLength(1)
+    expect(place.prop('backTo')).toStrictEqual('/recherche/criteres-localisation')
+    expect(place.prop('history')).toStrictEqual(props.history)
+    expect(place.prop('match')).toStrictEqual(props.match)
+    expect(place.prop('title')).toStrictEqual('Choisir un lieu')
+    expect(place.prop('onPlaceSelection')).toStrictEqual(expect.any(Function))
+  })
+
+  it('should render a Place component when route is /recherche/resultats/filtres/localisation', () => {
+    // given
+    props.history.location.pathname = '/recherche/resultats/filtres/localisation/place?mots-cles=livre'
+
+    // when
+    const wrapper = shallow(<CriteriaLocation {...props} />)
+
+    // then
+    const place = wrapper.find(Place)
+    expect(place).toHaveLength(1)
+    expect(place.prop('backTo')).toStrictEqual('/recherche/resultats/filtres/localisation?mots-cles=livre')
+    expect(place.prop('history')).toStrictEqual(props.history)
+    expect(place.prop('match')).toStrictEqual(props.match)
+    expect(place.prop('title')).toStrictEqual('Choisir un lieu')
+    expect(place.prop('onPlaceSelection')).toStrictEqual(expect.any(Function))
   })
 })

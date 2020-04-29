@@ -31,13 +31,24 @@
   background-color: $white;
   padding-top: rem(15px);
 
-  button {
+  .cl-place-button {
     color: $black;
     font-size: rem(16px);
     font-weight: 700;
   }
 
   .cl-icon {
+    padding: 0 rem(20px) 0 rem(20px);
+  }
+
+  .cl-place-button-active {
+    color: $primary;
+    font-size: rem(16px);
+    font-weight: 700;
+  }
+
+  .cl-icon-active {
+    filter: invert(22%) sepia(100%) saturate(6963%) hue-rotate(331deg) brightness(89%) contrast(107%);
     padding: 0 rem(20px) 0 rem(20px);
   }
 }

@@ -17,7 +17,7 @@ describe('components | Place', () => {
       history: createBrowserHistory(),
       match: { params: {} },
       title: 'Choisir un lieu',
-      updatePlaceInformation: jest.fn(),
+      onPlaceSelection: jest.fn(),
     }
 
     fetchPlaces.mockReturnValue(
@@ -252,7 +252,7 @@ describe('components | Place', () => {
     })
 
     // Then
-    expect(props.updatePlaceInformation).toHaveBeenCalledWith({
+    expect(props.onPlaceSelection).toHaveBeenCalledWith({
       geolocation: {
         latitude: 1,
         longitude: 2,
@@ -306,7 +306,7 @@ describe('components | Place', () => {
     })
 
     // Then
-    expect(props.updatePlaceInformation).toHaveBeenCalledWith({
+    expect(props.onPlaceSelection).toHaveBeenCalledWith({
       geolocation: {
         latitude: 1,
         longitude: 2,

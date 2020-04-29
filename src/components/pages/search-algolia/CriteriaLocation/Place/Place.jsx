@@ -11,7 +11,6 @@ export class Place extends PureComponent {
       keywords: '',
       suggestedPlaces: [],
     }
-    this.handlePlaceSelection = this.handlePlaceSelection.bind(this)
   }
 
   handleOnChange = event => {
@@ -26,13 +25,13 @@ export class Place extends PureComponent {
 
   handlePlaceSelection = event => {
     const { suggestedPlaces } = this.state
-    const { history, updatePlaceInformation } = this.props
+    const { history, onPlaceSelection } = this.props
     const { location } = history
     const { pathname, search } = location
     const index = event.currentTarget.value
 
     const place = suggestedPlaces[index]
-    updatePlaceInformation(place)
+    onPlaceSelection(place)
 
     const pathnameWithoutPlace = pathname.replace('/place', '')
     history.push(`${pathnameWithoutPlace}${search}`)
@@ -121,6 +120,6 @@ Place.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({}).isRequired,
   }).isRequired,
+  onPlaceSelection: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
-  updatePlaceInformation: PropTypes.func.isRequired,
 }

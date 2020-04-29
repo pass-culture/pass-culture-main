@@ -1,16 +1,16 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import Header from '../../../layout/Header/Header'
 import Icon from '../../../layout/Icon/Icon'
 import { Criteria } from '../Criteria/Criteria'
 import { checkUserIsGeolocated } from '../utils/checkUserIsGeolocated'
 import { Place } from './Place/Place'
 
-class CriteriaLocation extends Component {
+class CriteriaLocation extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      placeName: null
+      place: null
     }
   }
 
@@ -21,7 +21,7 @@ class CriteriaLocation extends Component {
     }
   }
 
-  redirectToSearchPlacePage = () => {
+  handleRedirectToPlacePage = () => {
     const { history } = this.props
     const { location } = history
     const { pathname, search } = location
@@ -30,13 +30,11 @@ class CriteriaLocation extends Component {
   }
 
   handleUpdatePlaceInformation = (place) => {
-    const { name } = place
-
     this.setState({
-      placeName: name
+      place: place
     }, () => {
       const { onPlaceSelection } = this.props
-      onPlaceSelection(name)
+      onPlaceSelection(place)
     })
   }
 
@@ -49,8 +47,10 @@ class CriteriaLocation extends Component {
       match,
       title,
     } = this.props
+    const { place } = this.state
     const { location } = history
-    const { pathname } = location
+    const { pathname, search } = location
+    const pathnameWithoutPlace = pathname.replace('/place', '')
 
     return (
       <div className="criteria-location-page">
@@ -78,13 +78,15 @@ class CriteriaLocation extends Component {
             </div>
             <div className="cl-place-wrapper">
               <Icon
-                className="cl-icon"
+                className={place ? 'cl-icon-active' : 'cl-icon'}
                 svg="ico-there"
               />
               <button
-                onClick={this.redirectToSearchPlacePage}
-                type="button">
-                {this.state.placeName ? this.state.placeName : 'Choisir un lieu'}
+                className={place ? 'cl-place-button-active' : 'cl-place-button'}
+                onClick={this.handleRedirectToPlacePage}
+                type="button"
+              >
+                {place ? place.name : 'Choisir un lieu'}
               </button>
             </div>
             <Criteria
@@ -99,13 +101,12 @@ class CriteriaLocation extends Component {
           </div>
           :
           <Place
-            backTo={backTo}
+            backTo={`${pathnameWithoutPlace}${search}`}
             history={history}
             match={match}
-            title={'Choisir un lieu'}
-            updatePlaceInformation={this.handleUpdatePlaceInformation}
-          />
-        }
+            onPlaceSelection={this.handleUpdatePlaceInformation}
+            title='Choisir un lieu'
+          />}
       </div>
     )
   }
@@ -140,6 +141,7 @@ CriteriaLocation.propTypes = {
     }).isRequired,
   }).isRequired,
   onCriterionSelection: PropTypes.func.isRequired,
+  onPlaceSelection: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
 }
 
