@@ -1,27 +1,23 @@
-import React, {PureComponent} from 'react'
+import React, { PureComponent } from 'react'
 import Main from '../../layout/Main'
 import Titles from '../../layout/Titles/Titles'
 import BookingsTable from './BookingsTable/BookingsTable'
 
 class Bookings extends PureComponent {
-  constructor(props){
+  constructor(props) {
     super(props)
-    this.state = {bookingsRecap: []}
+    this.state = { bookingsRecap: [] }
   }
 
   componentDidMount() {
     const { requestGetAllBookingsRecap } = this.props
-    requestGetAllBookingsRecap(this.handleSuccess, this.handleFailure)
+    requestGetAllBookingsRecap(this.handleSuccess)
   }
 
   handleSuccess = (state, action = {}) => {
-    const {payload = {}} = action
-    const {data} = payload
-    this.setState({bookingsRecap: data})
-  }
-
-  handleFailure = () => {
-    console.log("HandleFailure")
+    const { payload = {} } = action
+    const { data } = payload
+    this.setState({ bookingsRecap: data })
   }
 
   render() {
