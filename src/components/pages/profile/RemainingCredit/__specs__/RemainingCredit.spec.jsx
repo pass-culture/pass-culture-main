@@ -1,8 +1,7 @@
 import React from 'react'
-import { shallow } from 'enzyme'
+import { shallow, mount } from 'enzyme'
 
 import RemainingCredit from '../RemainingCredit'
-import CreditGauge from '../CreditGauge/CreditGauge'
 import Icon from '../../../../layout/Icon/Icon'
 import { NON_BREAKING_SPACE } from '../../../../../utils/specialCharacters'
 
@@ -64,38 +63,34 @@ describe('components | RemainingCredit', () => {
       }
 
       // When
-      const wrapper = shallow(<RemainingCredit {...props} />)
+      const wrapper = mount(<RemainingCredit {...props} />)
 
       // Then
       const gaugeTitle = wrapper.find({
-        children: `Vous pouvez encore dépenser jusqu’à${NON_BREAKING_SPACE}:`,
+        children: `Tu peux encore dépenser jusqu’à${NON_BREAKING_SPACE}:`,
       })
 
-      const gauges = wrapper.find(CreditGauge)
-      const digitalGauge = gauges.at(0)
-      const physicalGauge = gauges.at(1)
-      const initialDepositGauge = gauges.at(2)
+      const digitalRemainingCredit = wrapper.find({ children: `181${NON_BREAKING_SPACE}€` })
+      const physicalRemainingCredit = wrapper.find({ children: `172${NON_BREAKING_SPACE}€` })
+      const remainingCredit = wrapper.find({ children: `351${NON_BREAKING_SPACE}€` })
 
-      const digitalRemainingCredit = digitalGauge.prop('remainingCredit')
-      const physicalRemainingCredit = physicalGauge.prop('remainingCredit')
-      const remainingCredit = initialDepositGauge.prop('remainingCredit')
-
-      const digitalCreditLimit = digitalGauge.prop('creditLimit')
-      const physicalCreditLimit = physicalGauge.prop('creditLimit')
-      const initialDeposit = initialDepositGauge.prop('creditLimit')
+      const digitalRemainingCreditText = wrapper.find({
+        children: 'en offres numériques (streaming…)',
+      })
+      const physicalRemainingCreditText = wrapper.find({
+        children: 'en offres physiques (livres…)',
+      })
+      const remainingCreditText = wrapper.find({ children: 'en sorties (spectacles…)' })
 
       expect(gaugeTitle).toHaveLength(1)
-      expect(digitalGauge).toHaveLength(1)
-      expect(physicalGauge).toHaveLength(1)
-      expect(initialDepositGauge).toHaveLength(1)
 
-      expect(digitalRemainingCredit).toBe(181)
-      expect(physicalRemainingCredit).toBe(172)
-      expect(remainingCredit).toBe(351)
+      expect(digitalRemainingCredit).toHaveLength(1)
+      expect(physicalRemainingCredit).toHaveLength(1)
+      expect(remainingCredit).toHaveLength(2)
 
-      expect(digitalCreditLimit).toBe(201)
-      expect(physicalCreditLimit).toBe(202)
-      expect(initialDeposit).toBe(500)
+      expect(digitalRemainingCreditText).toHaveLength(1)
+      expect(physicalRemainingCreditText).toHaveLength(1)
+      expect(remainingCreditText).toHaveLength(1)
     })
 
     describe('readMore', () => {

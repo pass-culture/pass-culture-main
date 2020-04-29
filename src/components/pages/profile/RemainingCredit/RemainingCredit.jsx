@@ -62,7 +62,7 @@ class RemainingCredit extends PureComponent {
           </div>
           <div className="rc-gauges-container">
             <div className="rc-gauges-title">
-              {`Vous pouvez encore dépenser jusqu’à${NON_BREAKING_SPACE}:`}
+              {`Tu peux encore dépenser jusqu’à${NON_BREAKING_SPACE}:`}
             </div>
             <div className="rc-gauges">
               <CreditGauge
@@ -81,7 +81,7 @@ class RemainingCredit extends PureComponent {
               />
               <CreditGauge
                 creditLimit={initialDeposit}
-                detailsText="en autres offres (concerts…)"
+                detailsText="en sorties (spectacles…)"
                 extraClassName="gauge-total"
                 picto="picto-ticket"
                 remainingCredit={walletBalance}
