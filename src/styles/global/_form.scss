@@ -59,6 +59,11 @@ textarea.textarea {
 
       &:active,
       &:checked {
+
+        &:focus {
+          background-image: url(/icons/checkbox-focused.svg);
+        }
+
         &::after {
           content: '';
           background-repeat: no-repeat;

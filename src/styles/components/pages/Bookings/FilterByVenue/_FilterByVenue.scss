@@ -24,6 +24,10 @@
   border-radius: 0;
   margin-bottom: rem(54px);
 
+  &:focus {
+    background-image: url(/icons/checkbox-focused.svg);
+  }
+
   &:active,
   &:checked {
     &::after {

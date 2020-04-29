@@ -178,6 +178,10 @@
     height: $body-line-height;
     width: $body-line-height;
 
+    &:focus {
+      background-image: url(/icons/checkbox-focused.svg);
+    }
+
     &:checked {
       &::after {
         content: '';
