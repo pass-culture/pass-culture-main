@@ -248,8 +248,13 @@ jobs:
             cd pro
             nvm install
             yarn install
-            set -a; source ~/pass-culture/config/run_envs/"${CIRCLE_BRANCH}" && yarn build
-            source ~/pass-culture/config/run_envs/"${CIRCLE_BRANCH}"
+
+            set -a; source ~/pass-culture/config/run_envs/"${CIRCLE_BRANCH}"
+            # TODO : Remove once env variables are cleaned in every app
+            export NODE_ENV=${CIRCLE_BRANCH}
+
+            yarn build
+
             npm install -g netlify-cli@2.46.0
             netlify deploy -s "${NETLIFY_SITE_ID_PRO}" -a "${NETLIFY_TOKEN}" -d build/ --prod
       - run:
