@@ -89,6 +89,10 @@
           }
         }
 
+        &.inactive .button {
+          padding: 0;
+        }
+
         td {
           font-size: rem(12px);
           font-weight: 500;

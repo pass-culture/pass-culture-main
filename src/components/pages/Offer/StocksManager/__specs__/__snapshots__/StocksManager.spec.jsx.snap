@@ -144,10 +144,10 @@ ShallowWrapper {
                 </td>
               </tr>
             </thead>
-            <tbody>
-              <tr
-                className=""
-              >
+            <tbody
+              className=""
+            >
+              <tr>
                 <td
                   colSpan="10"
                 >
@@ -327,10 +327,10 @@ ShallowWrapper {
                   </td>
                 </tr>
               </thead>
-              <tbody>
-                <tr
-                  className=""
-                >
+              <tbody
+                className=""
+              >
+                <tr>
                   <td
                     colSpan="10"
                   >
@@ -440,10 +440,10 @@ ShallowWrapper {
                     </td>
                   </tr>
                 </thead>,
-                <tbody>
-                  <tr
-                    className=""
-                  >
+                <tbody
+                  className=""
+                >
+                  <tr>
                     <td
                       colSpan="10"
                     >
@@ -662,9 +662,7 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": <tr
-                    className=""
-                  >
+                  "children": <tr>
                     <td
                       colSpan="10"
                     >
@@ -679,6 +677,7 @@ ShallowWrapper {
                       </button>
                     </td>
                   </tr>,
+                  "className": "",
                 },
                 "ref": null,
                 "rendered": Object {
@@ -699,7 +698,6 @@ ShallowWrapper {
                         
                       </button>
                     </td>,
-                    "className": "",
                   },
                   "ref": null,
                   "rendered": Object {
@@ -875,10 +873,10 @@ ShallowWrapper {
                   </td>
                 </tr>
               </thead>
-              <tbody>
-                <tr
-                  className=""
-                >
+              <tbody
+                className=""
+              >
+                <tr>
                   <td
                     colSpan="10"
                   >
@@ -1058,10 +1056,10 @@ ShallowWrapper {
                     </td>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr
-                    className=""
-                  >
+                <tbody
+                  className=""
+                >
+                  <tr>
                     <td
                       colSpan="10"
                     >
@@ -1171,10 +1169,10 @@ ShallowWrapper {
                       </td>
                     </tr>
                   </thead>,
-                  <tbody>
-                    <tr
-                      className=""
-                    >
+                  <tbody
+                    className=""
+                  >
+                    <tr>
                       <td
                         colSpan="10"
                       >
@@ -1393,9 +1391,7 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": <tr
-                      className=""
-                    >
+                    "children": <tr>
                       <td
                         colSpan="10"
                       >
@@ -1410,6 +1406,7 @@ ShallowWrapper {
                         </button>
                       </td>
                     </tr>,
+                    "className": "",
                   },
                   "ref": null,
                   "rendered": Object {
@@ -1430,7 +1427,6 @@ ShallowWrapper {
                           
                         </button>
                       </td>,
-                      "className": "",
                     },
                     "ref": null,
                     "rendered": Object {
@@ -1731,10 +1727,10 @@ ShallowWrapper {
                 </td>
               </tr>
             </thead>
-            <tbody>
-              <tr
-                className=""
-              >
+            <tbody
+              className=""
+            >
+              <tr>
                 <td
                   colSpan="10"
                 >
@@ -1924,10 +1920,10 @@ ShallowWrapper {
                   </td>
                 </tr>
               </thead>
-              <tbody>
-                <tr
-                  className=""
-                >
+              <tbody
+                className=""
+              >
+                <tr>
                   <td
                     colSpan="10"
                   >
@@ -2047,10 +2043,10 @@ ShallowWrapper {
                     </td>
                   </tr>
                 </thead>,
-                <tbody>
-                  <tr
-                    className=""
-                  >
+                <tbody
+                  className=""
+                >
+                  <tr>
                     <td
                       colSpan="10"
                     >
@@ -2346,9 +2342,7 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": <tr
-                    className=""
-                  >
+                  "children": <tr>
                     <td
                       colSpan="10"
                     >
@@ -2363,6 +2357,7 @@ ShallowWrapper {
                       </button>
                     </td>
                   </tr>,
+                  "className": "",
                 },
                 "ref": null,
                 "rendered": Object {
@@ -2383,7 +2378,6 @@ ShallowWrapper {
                         + Ajouter une date
                       </button>
                     </td>,
-                    "className": "",
                   },
                   "ref": null,
                   "rendered": Object {
@@ -2569,10 +2563,10 @@ ShallowWrapper {
                   </td>
                 </tr>
               </thead>
-              <tbody>
-                <tr
-                  className=""
-                >
+              <tbody
+                className=""
+              >
+                <tr>
                   <td
                     colSpan="10"
                   >
@@ -2762,10 +2756,10 @@ ShallowWrapper {
                     </td>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr
-                    className=""
-                  >
+                <tbody
+                  className=""
+                >
+                  <tr>
                     <td
                       colSpan="10"
                     >
@@ -2885,10 +2879,10 @@ ShallowWrapper {
                       </td>
                     </tr>
                   </thead>,
-                  <tbody>
-                    <tr
-                      className=""
-                    >
+                  <tbody
+                    className=""
+                  >
+                    <tr>
                       <td
                         colSpan="10"
                       >
@@ -3184,9 +3178,7 @@ ShallowWrapper {
                   "key": undefined,
                   "nodeType": "host",
                   "props": Object {
-                    "children": <tr
-                      className=""
-                    >
+                    "children": <tr>
                       <td
                         colSpan="10"
                       >
@@ -3201,6 +3193,7 @@ ShallowWrapper {
                         </button>
                       </td>
                     </tr>,
+                    "className": "",
                   },
                   "ref": null,
                   "rendered": Object {
@@ -3221,7 +3214,6 @@ ShallowWrapper {
                           + Ajouter une date
                         </button>
                       </td>,
-                      "className": "",
                     },
                     "ref": null,
                     "rendered": Object {

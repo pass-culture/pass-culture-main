@@ -224,12 +224,12 @@ class StocksManager extends PureComponent {
                 </tr>
               </tbody>
             ) : (
-              <tbody>
-                <tr
-                  className={classnames({
-                    inactive: !isStockCreationAllowed,
-                  })}
-                >
+              <tbody
+                className={classnames({
+                  inactive: !isStockCreationAllowed,
+                })}
+              >
+                <tr>
                   <td colSpan="10">
                     <button
                       className="button is-tertiary"
