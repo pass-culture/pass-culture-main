@@ -2,22 +2,21 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
 import { toast } from 'react-toastify'
-import { isGeolocationEnabled } from '../../../../utils/geolocation'
 
+import { isGeolocationEnabled } from '../../../../utils/geolocation'
+import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
+import { DEFAULT_RADIUS_IN_KILOMETERS } from '../../../../vendor/algolia/filters'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import Icon from '../../../layout/Icon/Icon'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 import Spinner from '../../../layout/Spinner/Spinner'
 import { SORT_CRITERIA } from '../Criteria/criteriaEnums'
-
+import CriteriaSort from '../CriteriaSort/CriteriaSort'
 import { Filters } from '../Filters/Filters'
 import { DATE_FILTER, PRICE_FILTER } from '../Filters/filtersEnums'
 import { EmptySearchResult } from './EmptySearchResult'
 import SearchAlgoliaDetailsContainer from './ResultDetail/ResultDetailContainer'
 import { SearchResultsList } from './SearchResultsList'
-import { DEFAULT_RADIUS_IN_KILOMETERS } from '../../../../vendor/algolia/filters'
-import CriteriaSort from '../CriteriaSort/CriteriaSort'
-import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 
 const SEARCH_RESULTS_URI = '/recherche/resultats'
 
@@ -57,12 +56,15 @@ class SearchResults extends PureComponent {
       place: placeFromUrlOrProps,
       resultsCount: 0,
       results: [],
+      scrollPosition: 0,
       searchedKeywords: '',
+      shouldGoBackToScrollPosition: false,
       sortCriterionLabel: this.getSortCriterionLabelFromIndex(sortByFromUrlOrProps),
       totalPagesNumber: 0,
       userGeolocation: props.userGeolocation
     }
     this.inputRef = React.createRef()
+    this.scrollRef = React.createRef()
   }
 
   componentDidMount() {
@@ -71,6 +73,21 @@ class SearchResults extends PureComponent {
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles'] || ''
     this.fetchOffers({ keywords, page: currentPage })
+  }
+
+  componentDidUpdate() {
+    const { shouldGoBackToScrollPosition, scrollPosition } = this.state
+    const scrollRef = this.scrollRef.current
+
+    if (shouldGoBackToScrollPosition && scrollRef) {
+      scrollRef.scrollTo(0, scrollPosition)
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState({ shouldGoBackToScrollPosition: false })
+    }
+  }
+
+  retrieveScrollPosition = () => {
+    this.setState({ shouldGoBackToScrollPosition: true })
   }
 
   getCategoriesFromUrlOrProps = categoriesFromProps => {
@@ -319,7 +336,23 @@ class SearchResults extends PureComponent {
     })
   }
 
-  blurInput = () => () => this.inputRef.current.blur()
+  handleOnScroll = event => {
+    this.inputRef.current.blur()
+    this.rememberScrollPosition(event.target)
+  }
+
+  rememberScrollPosition(eventTarget) {
+    const { scrollPosition: previousScrollPosition } = this.state
+    const resultHeight = 100
+
+    const currentScrollPosition = eventTarget.scrollTop
+    const distance = currentScrollPosition - previousScrollPosition
+    const scrollHeight = Math.sign(distance) * distance
+
+    if (scrollHeight > resultHeight) {
+      this.setState({ scrollPosition: currentScrollPosition })
+    }
+  }
 
   getSortCriterionLabelFromIndex = (index) => {
     const criterionLabels = Object.keys(SORT_CRITERIA).map(criterionKey => {
@@ -374,7 +407,7 @@ class SearchResults extends PureComponent {
           history.push(`/recherche/resultats?mots-cles=&autour-de=oui&tri=&categories=&latitude=${userGeolocation.latitude}&longitude=${userGeolocation.longitude}`)
           this.fetchOffers()
         } else {
-          window.alert('Veuillez activer la géolocalisation pour voir les offres autour de vous.')
+          window.alert('Active ta géolocalisation pour voir les offres autour de toi !')
         }
       }
     )
@@ -451,7 +484,8 @@ class SearchResults extends PureComponent {
             </form>
             <div
               className="sr-items-wrapper"
-              onScroll={this.blurInput()}
+              onScroll={this.handleOnScroll}
+              ref={this.scrollRef}
             >
               <div className="sr-spinner">
                 {isLoading && <Spinner label="Recherche en cours" />}
@@ -511,6 +545,7 @@ class SearchResults extends PureComponent {
             path={`${SEARCH_RESULTS_URI}/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
           >
             <HeaderContainer
+              backActionOnClick={this.retrieveScrollPosition}
               closeTitle="Retourner à la page découverte"
               closeTo="/decouverte"
               shouldBackFromDetails={this.shouldBackFromDetails()}

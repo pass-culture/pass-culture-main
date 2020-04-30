@@ -145,6 +145,18 @@ describe('component | SearchResultsList', () => {
     expect(numberOfResults).toHaveLength(1)
   })
 
+  it('should display the number of results with a space every 3 digits', () => {
+    // Given
+    props.resultsCount = 1000000
+
+    // When
+    const wrapper = shallow(<SearchResultsList {...props} />)
+
+    // Then
+    const numberOfResults = wrapper.find({ children: '1 000 000 résultats' })
+    expect(numberOfResults).toHaveLength(1)
+  })
+
   it('should display the sort filter received from props', async () => {
     // Given
     props.sortCriterionLabel = 'Prix'

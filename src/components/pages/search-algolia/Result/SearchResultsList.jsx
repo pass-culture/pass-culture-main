@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
+import { LOCALE_FRANCE } from "../../../../utils/date/date"
 import Icon from '../../../layout/Icon/Icon'
 import Result from './Result'
 
 const getNumberOfResultsToDisplay = resultsCount => {
   const pluralizedResultatWord = resultsCount > 1 ? 'résultats' : 'résultat'
-  return `${resultsCount} ${pluralizedResultatWord}`
+  return `${resultsCount.toLocaleString(LOCALE_FRANCE)} ${pluralizedResultatWord}`
 }
 
 export const SearchResultsList = ({

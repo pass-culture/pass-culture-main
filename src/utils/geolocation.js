@@ -80,7 +80,7 @@ export const isGeolocationEnabled = geolocation => {
 
 export const isUserAllowedToSelectCriterion = (criterionKey, isGeolocationEnabled) => {
   if (GEOLOCATED_CRITERIA[criterionKey].requiresGeolocation && !isGeolocationEnabled) {
-    window.alert('Veuillez activer la géolocalisation pour voir les offres autour de vous.')
+    window.alert('Active ta géolocalisation pour voir les offres autour de toi !')
     return false
   }
   return true

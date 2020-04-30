@@ -7,19 +7,19 @@ import { toast } from 'react-toastify'
 import configureStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import state from '../../../../../mocks/state'
+import { isGeolocationEnabled } from '../../../../../utils/geolocation'
 import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import RelativeFooterContainer from '../../../../layout/RelativeFooter/RelativeFooterContainer'
 import Spinner from '../../../../layout/Spinner/Spinner'
 import { SORT_CRITERIA } from '../../Criteria/criteriaEnums'
+import CriteriaSort from '../../CriteriaSort/CriteriaSort'
 import { Filters } from '../../Filters/Filters'
 import { EmptySearchResult } from '../EmptySearchResult'
 import Result from '../Result'
 import SearchAlgoliaDetailsContainer from '../ResultDetail/ResultDetailContainer'
 import SearchResults from '../SearchResults'
 import { SearchResultsList } from '../SearchResultsList'
-import CriteriaSort from '../../CriteriaSort/CriteriaSort'
-import { isGeolocationEnabled } from '../../../../../utils/geolocation'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
@@ -42,6 +42,11 @@ const stubRef = wrapper => {
   instance['inputRef'] = {
     current: {
       blur: jest.fn(),
+    },
+  }
+  instance['scrollRef'] = {
+    current: {
+      scrollTo: jest.fn(),
     },
   }
 }
@@ -67,7 +72,7 @@ describe('components | SearchResults', () => {
         searchAround: {
           everywhere: true,
           place: false,
-          user: false
+          user: false,
         },
         sortBy: '',
       },
@@ -85,7 +90,7 @@ describe('components | SearchResults', () => {
       },
       place: {
         geolocation: { latitude: null, longitude: null },
-        name: null
+        name: null,
       },
       query: {
         change,
@@ -125,6 +130,13 @@ describe('components | SearchResults', () => {
       // then
       const header = wrapper.find(HeaderContainer)
       expect(header).toHaveLength(1)
+      expect(header.prop('backActionOnClick')).toStrictEqual(
+        wrapper.instance().retrieveScrollPosition
+      )
+      expect(header.prop('closeTitle')).toBe('Retourner à la page découverte')
+      expect(header.prop('closeTo')).toBe('/decouverte')
+      expect(header.prop('shouldBackFromDetails')).toBe(false)
+      expect(header.prop('title')).toBe('Recherche')
     })
 
     it('should display a form element with an input text', () => {
@@ -146,7 +158,7 @@ describe('components | SearchResults', () => {
       const wrapper = shallow(<SearchResults {...props} />)
 
       // then
-      const filterButton = wrapper.find({ children: 'Filtrer'})
+      const filterButton = wrapper.find({ children: 'Filtrer' })
       expect(filterButton).toHaveLength(1)
     })
 
@@ -155,7 +167,7 @@ describe('components | SearchResults', () => {
       props.criteria.searchAround = {
         everywhere: false,
         place: false,
-        user: true
+        user: true,
       }
       props.criteria.categories = ['CINEMA']
 
@@ -187,7 +199,7 @@ describe('components | SearchResults', () => {
       props.criteria.searchAround = {
         everywhere: false,
         place: false,
-        user: true
+        user: true,
       }
       props.criteria.categories = ['CINEMA']
       props.query.parse.mockReturnValue({
@@ -253,7 +265,7 @@ describe('components | SearchResults', () => {
       props.criteria.searchAround = {
         everywhere: false,
         place: false,
-        user: true
+        user: true,
       }
       parse.mockReturnValue({
         'autour-de': 'oui',
@@ -296,7 +308,7 @@ describe('components | SearchResults', () => {
           searchAround: {
             everywhere: false,
             place: false,
-            user: true
+            user: true,
           },
           sortBy: '_by_proximity',
         }
@@ -418,7 +430,9 @@ describe('components | SearchResults', () => {
           sortBy: '',
         })
         const expectedUri = props.history.location.pathname + props.history.location.search
-        expect(expectedUri).toBe('/recherche/resultats?mots-cles=&autour-de=oui&tri=&categories=&latitude=40.1&longitude=41.1')
+        expect(expectedUri).toBe(
+          '/recherche/resultats?mots-cles=&autour-de=oui&tri=&categories=&latitude=40.1&longitude=41.1'
+        )
       })
     })
 
@@ -709,7 +723,7 @@ describe('components | SearchResults', () => {
           priceRange: [0, 500],
           page: 0,
           searchAround: false,
-          sortBy: ''
+          sortBy: '',
         })
       })
 
@@ -873,7 +887,7 @@ describe('components | SearchResults', () => {
           page: 0,
           priceRange: [0, 500],
           searchAround: false,
-          sortBy: ''
+          sortBy: '',
         })
       })
 
@@ -932,7 +946,6 @@ describe('components | SearchResults', () => {
       const wrapper = shallow(<SearchResults {...props} />)
       stubRef(wrapper)
       const form = wrapper.find('form')
-
       // when
       form.simulate('submit', {
         target: {
@@ -1082,7 +1095,7 @@ describe('components | SearchResults', () => {
               hitsPerPage: 2,
               processingTimeMS: 1,
               query: 'librairie',
-              params: 'query=\'librairie\'&hitsPerPage=2',
+              params: "query='librairie'&hitsPerPage=2",
             })
           })
         )
@@ -1096,7 +1109,7 @@ describe('components | SearchResults', () => {
               hitsPerPage: 2,
               processingTimeMS: 1,
               query: 'librairie',
-              params: 'query=\'librairie\'&hitsPerPage=2',
+              params: "query='librairie'&hitsPerPage=2",
             })
           })
         )
@@ -1144,7 +1157,7 @@ describe('components | SearchResults', () => {
             hitsPerPage: 2,
             processingTimeMS: 1,
             query: 'librairie',
-            params: 'query=\'librairie\'&hitsPerPage=2',
+            params: "query='librairie'&hitsPerPage=2",
           })
         })
       )
@@ -1214,7 +1227,7 @@ describe('components | SearchResults', () => {
           searchAround: {
             everywhere: true,
             place: false,
-            user: false
+            user: false,
           },
           sortBy: '',
         },
@@ -1223,17 +1236,19 @@ describe('components | SearchResults', () => {
         numberOfActiveFilters: 0,
         place: {
           geolocation: { latitude: null, longitude: null },
-          name: null
+          name: null,
         },
         results: [{ objectID: 'AG', offer: { name: 'Livre nul' } }],
         resultsCount: 1,
+        scrollPosition: 0,
         searchedKeywords: 'vas-y',
+        shouldGoBackToScrollPosition: false,
         sortCriterionLabel: 'Pertinence',
         totalPagesNumber: 0,
         userGeolocation: {
           latitude: 40.1,
-          longitude: 41.1
-        }
+          longitude: 41.1,
+        },
       })
     })
 
@@ -1339,7 +1354,7 @@ describe('components | SearchResults', () => {
       // then
       await toast.info
       expect(toast.info).toHaveBeenCalledWith(
-        'La recherche n\'a pas pu aboutir, veuillez ré-essayer plus tard.'
+        "La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard."
       )
     })
 
@@ -1382,7 +1397,8 @@ describe('components | SearchResults', () => {
 
       // then
       expect(replace).toHaveBeenCalledWith({
-        search: '?mots-cles=librairie&autour-de=oui&tri=_by_price&categories=VISITE&latitude=40&longitude=2&place=Paris',
+        search:
+          '?mots-cles=librairie&autour-de=oui&tri=_by_price&categories=VISITE&latitude=40&longitude=2&place=Paris',
       })
     })
 
@@ -1643,7 +1659,7 @@ describe('components | SearchResults', () => {
         searchAround: {
           everywhere: true,
           place: false,
-          user: false
+          user: false,
         },
         sortBy: '_by_price',
       })
@@ -1809,6 +1825,32 @@ describe('components | SearchResults', () => {
         // then
         const header = wrapper.find(HeaderContainer)
         expect(header).toHaveLength(1)
+      })
+    })
+
+    describe('scroll', () => {
+      it('should scroll to last known position when coming back from details page', async () => {
+        // Given
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
+              nbHits: 1,
+              nbPages: 0,
+              page: 0,
+            })
+          })
+        )
+        const wrapper = await shallow(<SearchResults {...props} />)
+        stubRef(wrapper)
+        const resultsList = wrapper.find(SearchResultsList).closest('div')
+        resultsList.simulate('scroll', { target: { scrollTop: 1030 } })
+
+        // When
+        wrapper.instance().retrieveScrollPosition()
+
+        // Then
+        expect(wrapper.instance().scrollRef.current.scrollTo).toHaveBeenCalledWith(0, 1030)
       })
     })
   })

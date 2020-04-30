@@ -330,7 +330,7 @@ describe('utils | geolocation', () => {
         // Then
         expect(isUserAllowed).toBe(false)
         expect(mockedAlert).toHaveBeenCalledWith(
-          'Veuillez activer la géolocalisation pour voir les offres autour de vous.'
+          'Active ta géolocalisation pour voir les offres autour de toi !'
         )
       })
 
