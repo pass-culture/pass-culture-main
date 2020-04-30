@@ -112,17 +112,21 @@ def save_bookings_recap_sandbox():
     booking2_beneficiary2 = create_booking(
         user=beneficiary2,
         stock=stock_1_offer1_venue2,
-        date_created=datetime(2020, 4, 12, 14, 31, 12, 0)
+        date_created=datetime(2020, 4, 12, 14, 31, 12, 0),
+        is_cancelled=True
     )
     booking1_beneficiary3 = create_booking(
         user=beneficiary3,
         stock=stock_1_offer2_venue1,
-        date_created=datetime(2020, 1, 4, 19, 31, 12, 0)
+        date_created=datetime(2020, 1, 4, 19, 31, 12, 0),
+        is_cancelled=True,
+        is_used=True
     )
     booking2_beneficiary3 = create_booking(
         user=beneficiary3,
         stock=stock_1_offer1_venue2,
-        date_created=datetime(2020, 3, 21, 22, 9, 12, 0)
+        date_created=datetime(2020, 3, 21, 22, 9, 12, 0),
+        is_cancelled=True
     )
 
     booking3_beneficiary1 = create_booking(
@@ -133,7 +137,8 @@ def save_bookings_recap_sandbox():
     booking3_beneficiary2 = create_booking(
         user=beneficiary2,
         stock=stock_1_offer1_venue3,
-        date_created=datetime(2020, 4, 12, 19, 31, 12, 0)
+        date_created=datetime(2020, 4, 12, 19, 31, 12, 0),
+        is_used=True
     )
     booking3_beneficiary3 = create_booking(
         user=beneficiary3,
