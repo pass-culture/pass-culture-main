@@ -1,10 +1,5 @@
 API_URL='https://backend.passculture-integration.beta.gouv.fr'
-THUMBS_URL='https://storage.gra3.cloud.ovh.net/v1/AUTH_688df1e25bd84a48a3804e7fa8938085/storage-pc-integration/thumbs'
 NETLIFY_SITE_ID_WEBAPP="65141ad7-1524-4e4f-8d1f-77e2abc63252"
 NETLIFY_SITE_ID_PRO="df2b3ea9-e45e-4e73-bbcb-3dbefc2fa1af"
 NODE_ENV="production"
 ENVIRONMENT_NAME="integration"
-SENTRY_SERVER_URL_FOR_PRO=https://50f5694849704813b4154c5868b73365@logs.passculture.app/2
-PRO_URL_FOR_MAINTENANCE=https://maintenance.passculture.app?source=https://pro.passculture-integration.beta.gouv.fr/
-DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL=https://www.demarches-simplifiees.fr/commencer/test/549ae483-be80-4a03-8700-394514b0e90d
-DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL=https://www.demarches-simplifiees.fr/commencer/test/7f08a1d7-8ffe-40b9-b93d-f6078ea89df8
