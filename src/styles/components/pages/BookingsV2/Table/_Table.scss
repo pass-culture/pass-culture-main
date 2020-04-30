@@ -35,15 +35,15 @@ table#bookings-table {
       font-size: 14px;
 
       &.booking-status {
-        &--reserve {
+        &--booked {
           background-color: $purple-dark;
         }
 
-        &--valide {
+        &--validated {
           background-color: $blue-dark;
         }
 
-        &--annule {
+        &--cancelled {
           background-color: $grey;
         }
       }
