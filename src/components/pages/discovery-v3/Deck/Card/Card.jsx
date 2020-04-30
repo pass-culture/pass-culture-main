@@ -42,7 +42,7 @@ class Card extends PureComponent {
 
     const isCurrent = recommendation && position === 'current'
     const hasJustBeenRead =
-      position === 'previous' &&
+      position === 'current' &&
       (recommendation && recommendation.id) !==
         (prevProps.recommendation && prevProps.recommendation.id)
 

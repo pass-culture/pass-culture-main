@@ -106,7 +106,7 @@ describe('src | components | pages | discovery | Deck | Card', () => {
       // when
       wrapper.setProps({
         recommendation: { id: 'TE23' },
-        position: 'previous',
+        position: 'current',
       })
 
       // then
@@ -139,7 +139,7 @@ describe('src | components | pages | discovery | Deck | Card', () => {
       expect(props.handleSeenOffer).toHaveBeenCalledTimes(0)
     })
 
-    it('should not call handleSeenOffer when position is not on previous card', () => {
+    it('should not call handleSeenOffer when position is not on current card', () => {
       // given
       const props = {
         handleClickRecommendation: jest.fn(),
@@ -147,7 +147,7 @@ describe('src | components | pages | discovery | Deck | Card', () => {
         handleSeenOffer: jest.fn(),
         isSeenOfferFeatureActive: true,
         match: { params: {} },
-        position: 'current',
+        position: 'previous',
         width: 500,
         seenOffer: {},
         recommendation: { id: 'UZ7' },
