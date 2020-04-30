@@ -4,7 +4,7 @@ from decimal import Decimal
 import pytest
 from freezegun import freeze_time
 
-from domain.booking_recap.booking_recap import BookingRecap
+from domain.booking_recap.booking_recap import BookingRecapStatus
 from models import Booking, EventType, ThingType
 from models.api_errors import ApiErrors, ResourceNotFoundError
 from models.stock import EVENT_AUTOMATIC_REFUND_DELAY
@@ -1708,7 +1708,8 @@ class FindByProUserIdTest:
         offer = create_offer_with_thing_product(venue, thing_name='Harry Potter')
         stock = create_stock(offer=offer, price=0)
         yesterday = datetime.utcnow()
-        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF')
+        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF',
+                                 is_cancelled=False, is_used=True)
         repository.save(user_offerer, booking)
 
         # When
@@ -1723,6 +1724,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.beneficiary_email == 'beneficiary@example.com'
         assert expected_booking_recap.booking_date == yesterday
         assert expected_booking_recap.booking_token == 'ABCDEF'
+        assert expected_booking_recap.booking_status == BookingRecapStatus.validated
 
     @clean_database
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app):

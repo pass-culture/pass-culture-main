@@ -2,7 +2,7 @@ from datetime import datetime
 
 from flask import json
 
-from domain.booking_recap.booking_recap import BookingRecap
+from domain.booking_recap.booking_recap import BookingRecap, BookingRecapStatus
 from routes.serialization.bookings_recap_serialize import serialize_bookings_recap
 from utils.date import format_into_ISO_8601
 
@@ -18,7 +18,8 @@ class SerializeBookingRecapTest:
                 beneficiary_lastname="Seldon",
                 beneficiary_email="hari.seldon@example.com",
                 booking_date=date,
-                booking_token="FOND"
+                booking_token="FOND",
+                booking_status=BookingRecapStatus.validated
             ),
             BookingRecap(
                 offer_name="Fondation",
@@ -26,7 +27,8 @@ class SerializeBookingRecapTest:
                 beneficiary_lastname="Trevize",
                 beneficiary_email="golan.trevize@example.com",
                 booking_date=date,
-                booking_token="FOND"
+                booking_token="FOND",
+                booking_status=BookingRecapStatus.booked
             )
         ]
 
@@ -46,7 +48,8 @@ class SerializeBookingRecapTest:
                     "email": "hari.seldon@example.com",
                 },
                 "booking_date": format_into_ISO_8601(date),
-                "booking_token": "FOND"
+                "booking_token": "FOND",
+                "booking_status": "Validé"
             },
             {
                 "stock": {
@@ -58,7 +61,8 @@ class SerializeBookingRecapTest:
                     "email": "golan.trevize@example.com",
                 },
                 "booking_date": format_into_ISO_8601(date),
-                "booking_token": "FOND"
+                "booking_token": "FOND",
+                "booking_status": "Réservé"
             }
         ]
         assert response == expected_response

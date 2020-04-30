@@ -1,14 +1,24 @@
 import datetime
+from enum import Enum
+
+from models.booking import Booking
+
+
+class BookingRecapStatus(Enum):
+    booked = 'Réservé'
+    validated = 'Validé'
+    cancelled = 'Annulé'
 
 
 class BookingRecap:
     def __init__(self,
-                 offer_name,
-                 beneficiary_lastname,
-                 beneficiary_firstname,
-                 beneficiary_email,
-                 booking_token,
-                 booking_date
+                 offer_name: str,
+                 beneficiary_lastname: str,
+                 beneficiary_firstname: str,
+                 beneficiary_email: str,
+                 booking_token: str,
+                 booking_date: datetime,
+                 booking_status: BookingRecapStatus
                  ):
         self.offer_name: str = offer_name
         self.beneficiary_lastname: str = beneficiary_lastname
@@ -16,3 +26,12 @@ class BookingRecap:
         self.beneficiary_email: str = beneficiary_email
         self.booking_token: str = booking_token
         self.booking_date: datetime = booking_date
+        self.booking_status = booking_status
+
+
+def compute_booking_recap_status(booking: Booking) -> BookingRecapStatus:
+    if booking.isCancelled:
+        return BookingRecapStatus.cancelled
+    if booking.isUsed:
+        return BookingRecapStatus.validated
+    return BookingRecapStatus.booked

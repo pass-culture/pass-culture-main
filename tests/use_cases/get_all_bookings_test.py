@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from domain.booking_recap.booking_recap import BookingRecap
+from domain.booking_recap.booking_recap import BookingRecap, BookingRecapStatus
 from domain.users import UnauthorizedForAdminUser
 from tests.model_creators.generic_creators import create_user
 from use_cases.get_all_bookings_by_pro_user import get_all_bookings_by_pro_user
@@ -17,7 +17,8 @@ class BookingRecapMock(BookingRecap):
             beneficiary_firstname="Eve",
             beneficiary_email="eve.polastri@example.com",
             booking_token="ABCDE",
-            booking_date=datetime.utcnow()
+            booking_date=datetime.utcnow(),
+            booking_status=BookingRecapStatus.validated,
         )
 
 

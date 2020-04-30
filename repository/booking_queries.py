@@ -5,7 +5,7 @@ from typing import List, Set, Union
 from sqlalchemy import func
 from sqlalchemy.orm import Query
 
-from domain.booking_recap.booking_recap import BookingRecap
+from domain.booking_recap.booking_recap import BookingRecap, compute_booking_recap_status
 from models import UserOfferer
 from models.api_errors import ResourceNotFoundError
 from models.booking import Booking
@@ -141,12 +141,12 @@ def find_from_recommendation(recommendation: Recommendation, user: User) -> List
 
 def is_offer_already_booked_by_user(current_user: User, offer: Offer) -> bool:
     return Booking.query \
-        .filter_by(userId=current_user.id) \
-        .filter_by(isCancelled=False) \
-        .join(Stock) \
-        .join(Offer) \
-        .filter(Offer.id == offer.id) \
-        .count() > 0
+               .filter_by(userId=current_user.id) \
+               .filter_by(isCancelled=False) \
+               .join(Stock) \
+               .join(Offer) \
+               .filter(Offer.id == offer.id) \
+               .count() > 0
 
 
 def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
@@ -193,14 +193,15 @@ def find_by_pro_user_id(user_id: int) -> List[BookingRecap]:
         .filter(UserOfferer.userId == user_id) \
         .filter(UserOfferer.validationToken == None) \
         .with_entities(
-            Booking.token.label("bookingToken"),
-            Offer.name.label("offerName"),
-            User.firstName.label("beneficiaryFirstname"),
-            User.lastName.label("beneficiaryLastname"),
-            User.email.label("beneficiaryEmail"),
-            Booking.dateCreated.label("bookingDate"),
-        ) \
-        .all()
+        Booking.token.label("bookingToken"),
+        Offer.name.label("offerName"),
+        User.firstName.label("beneficiaryFirstname"),
+        User.lastName.label("beneficiaryLastname"),
+        User.email.label("beneficiaryEmail"),
+        Booking.dateCreated.label("bookingDate"),
+        Booking.isCancelled.label("isCancelled"),
+        Booking.isUsed.label("isUsed")
+    ).all()
 
     return _bookings_sql_entities_to_bookings_recap(bookings)
 
@@ -216,7 +217,8 @@ def _serialize_booking_recap(booking: Booking) -> BookingRecap:
         beneficiary_firstname=booking.beneficiaryFirstname,
         beneficiary_lastname=booking.beneficiaryLastname,
         booking_token=booking.bookingToken,
-        booking_date=booking.bookingDate
+        booking_date=booking.bookingDate,
+        booking_status=compute_booking_recap_status(booking)
     )
 
 
