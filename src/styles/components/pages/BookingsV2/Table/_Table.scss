@@ -1,9 +1,12 @@
 table#bookings-table {
 
+  width:100%;
+
   tr > th {
     color: $black;
     font-size: rem(14px);
     padding: 14px;
+    font-weight: $weight-medium;
   }
 
   tbody > tr:nth-child(odd) {
@@ -16,16 +19,12 @@ table#bookings-table {
   }
 
   td > span.offer-link {
-    font-weight: bold;
+    font-weight: $weight-bold;
     white-space: nowrap;
     text-overflow: ellipsis;
     max-width: 175px;
     display: block;
     overflow: hidden;
-  }
-
-  td > span.offer-link:hover {
-    cursor: pointer;
   }
 
   td span.cell-subtitle {
