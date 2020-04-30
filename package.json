@@ -1,6 +1,6 @@
 {
   "name": "pass-culture-pro",
-  "version": "80.0.0",
+  "version": "81.0.0",
   "private": true,
   "homepage": "/",
   "engines": {
@@ -72,6 +72,7 @@
     "react-redux": "^5.0.3",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.0.0",
+    "react-table": "7.0.4",
     "react-time-input": "^0.0.19",
     "react-tooltip": "^3.8.4",
     "react-tracking": "^7.1.0",
@@ -93,8 +94,7 @@
     "webpack-manifest-plugin": "2.0.4",
     "whatwg-fetch": "3.0.0",
     "with-query-router": "3.2.1",
-    "with-react-redux-login": "1.7.0",
-    "react-table": "7.0.4"
+    "with-react-redux-login": "1.7.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.2",
