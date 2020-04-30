@@ -158,7 +158,7 @@ const routes = [
   {
     component: ProfileContainer,
     icon: 'ico-user',
-    path: '/profil/:view?/:status?',
+    path: '/profil/:view(password|informations)?/:status?',
     title: 'Mon compte',
   },
   {

@@ -7,6 +7,7 @@ import NotMatch from '../not-match/NotMatch'
 import UserPasswordField from './forms/fields/UserPasswordField'
 import ProfileMainView from './ProfileMainView/ProfileMainView'
 import ProfileUpdateSuccess from './ProfileUpdateSuccess/ProfileUpdateSuccess'
+import PersonalInformationsContainer from './PersonalInformations/PersonalInformationsContainer'
 
 class Profile extends PureComponent {
   renderProfileMainView = currentUser => () => <ProfileMainView currentUser={currentUser} />
@@ -22,6 +23,13 @@ class Profile extends PureComponent {
     <UserPasswordField
       {...routeProps}
       title="Votre mot de passe"
+    />
+  )
+
+  renderPersonalInformationsEdition = routeProps => (
+    <PersonalInformationsContainer
+      {...routeProps}
+      title="Informations Personnelles"
     />
   )
 
@@ -58,6 +66,12 @@ class Profile extends PureComponent {
               key="route-profile-edit-form"
               path="/profil/:view(password)/:menu(menu)?"
               render={this.renderPasswordEditForm}
+            />
+            <Route
+              exact
+              key="route-profile-edit-personal-informations"
+              path="/profil/:view(informations)/:menu(menu)?"
+              render={this.renderPersonalInformationsEdition}
             />
             <Route component={this.renderNoMatch} />
           </Switch>

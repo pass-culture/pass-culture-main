@@ -5,7 +5,7 @@ import { selectCurrentUser } from '../../../redux/selectors/data/usersSelectors'
 import Profile from './Profile'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 
-const mapStateToProps = state => ({
+export const mapStateToProps = state => ({
   currentUser: selectCurrentUser(state),
 })
 
