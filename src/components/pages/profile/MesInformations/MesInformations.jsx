@@ -41,6 +41,22 @@ class MesInformations extends PureComponent {
     const { errors, publicName } = this.state
     return (
       <section>
+        <Link
+          className="mi-link"
+          to="/profil/informations"
+        >
+          <img
+            alt=""
+            src="/icons/ico-informations.svg"
+          />
+          <div className="mi-link-label">
+            {'Informations personnelles'}
+          </div>
+          <img
+            alt=""
+            src="/icons/ico-next-lightgrey.svg"
+          />
+        </Link>
         <header className="mes-informations-title-container">
           <h2 className="mes-informations-title">
             {'Mes informations'}
