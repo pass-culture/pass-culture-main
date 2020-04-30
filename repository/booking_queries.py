@@ -74,13 +74,6 @@ def _query_cancelled_bookings_on_non_activation_offers() -> Query:
         .filter(BookingSQLEntity.isCancelled == True)
 
 
-def find_active_bookings_by_user_id(user_id: int) -> List[BookingSQLEntity]:
-    return BookingSQLEntity.query \
-        .filter_by(userId=user_id) \
-        .filter_by(isCancelled=False) \
-        .all()
-
-
 def find_all_bookings_info(offerer_id: int,
                            venue_id: int = None,
                            offer_id: int = None,

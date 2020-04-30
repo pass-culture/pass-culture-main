@@ -81,7 +81,7 @@ class BookingSQLEntity(PcObject, Model, VersionedMixin):
                     default=False)
 
     @property
-    def value(self):
+    def total_amount(self):
         return self.amount * self.quantity
 
     @property

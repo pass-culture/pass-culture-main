@@ -41,7 +41,7 @@ class ReimbursementRule(ABC):
         pass
 
     def apply(self, booking: BookingSQLEntity):
-        return Decimal(booking.value * self.rate)
+        return Decimal(booking.total_amount * self.rate)
 
 
 class DigitalThingsReimbursement(ReimbursementRule):
@@ -189,7 +189,7 @@ def find_all_booking_reimbursements(bookings: List[BookingSQLEntity],
 
         if ReimbursementRules.PHYSICAL_OFFERS.value.is_relevant(booking):
             cumulative_bookings_value_by_year[booking_civil_year] = cumulative_bookings_value_by_year[
-                                                                        booking_civil_year] + booking.value
+                                                                        booking_civil_year] + booking.total_amount
 
         potential_rules = _find_potential_rules(booking, active_rules,
                                                 cumulative_bookings_value_by_year[booking_civil_year])

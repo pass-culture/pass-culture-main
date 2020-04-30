@@ -10,6 +10,7 @@ from domain.user.user import User
 from infrastructure.services.notification.mailjet_service import MailjetService
 from models import BookingSQLEntity
 from repository import repository
+from repository.booking.booking_sql_repository import BookingSQLRepository
 from repository.stock.stock_sql_repository import StockSQLRepository
 from repository.user.user_sql_repository import UserSQLRepository
 from tests.conftest import clean_database
@@ -21,6 +22,7 @@ from use_cases.book_an_offer import BookAnOffer, BookingInformation
 
 class BookAnOfferTest:
     def setup_method(self):
+        self.booking_repository = BookingSQLRepository()
         self.stock_repository = StockSQLRepository()
         self.user_repository = UserSQLRepository()
         self.stock_repository.find_stock_by_id = MagicMock()

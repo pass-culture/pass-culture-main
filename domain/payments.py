@@ -78,7 +78,7 @@ class PaymentDetails:
             self.offer_name = payment.booking.stock.offer.product.name
             self.offer_type = payment.booking.stock.offer.product.offerType['proLabel']
             self.booking_date = payment.booking.dateCreated
-            self.booking_amount = payment.booking.value
+            self.booking_amount = payment.booking.total_amount
             self.booking_used_date = booking_used_date
             self.payment_iban = payment.iban
             self.payment_message_name = payment.paymentMessageName

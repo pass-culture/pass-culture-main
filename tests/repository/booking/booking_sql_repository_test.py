@@ -1,9 +1,14 @@
-from conftest import clean_database
-from model_creators.generic_creators import create_user, create_offerer, create_venue, create_booking
-from model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
+from domain.booking.booking import Booking
 from models import ThingType
+from models.booking_sql_entity import BookingSQLEntity
 from repository import repository
 from repository.booking.booking_sql_repository import BookingSQLRepository
+from tests.conftest import clean_database
+from tests.model_creators.generic_creators import (create_booking,
+                                                   create_offerer, create_user,
+                                                   create_venue)
+from tests.model_creators.specific_creators import (
+    create_offer_with_thing_product, create_stock_from_offer)
 
 
 class BookingSQLRepositoryTest:
@@ -32,3 +37,30 @@ class BookingSQLRepositoryTest:
         # then
         assert len(bookings) == 2
         assert booking1 not in bookings
+
+    @clean_database
+    def test_should_create_booking_when_booking_does_not_exist(self, app):
+        # given
+        user = create_user()
+        offerer = create_offerer()
+        venue_online = create_venue(offerer, siret=None, is_virtual=True)
+        book_offer = create_offer_with_thing_product(
+            venue_online, thing_type=ThingType.LIVRE_EDITION)
+        book_stock = create_stock_from_offer(book_offer, price=0, quantity=200)
+        booking = Booking(user=user, stock=book_stock, amount=0, quantity=1)
+        repository.save(book_stock)
+
+        # when
+        self.booking_sql_repository.save(booking)
+
+        # then
+        bookings = BookingSQLEntity.query.all()
+        assert len(bookings) == 1
+
+    # @clean_database
+    # def test_should_update_booking_when_booking_exists(self, app):
+    #     # given
+
+    #     # when
+
+    #     # then

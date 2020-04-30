@@ -24,6 +24,7 @@ class BookAnOffer:
                  stock_repository: StockRepository,
                  user_repository: UserRepository,
                  notification_service: NotificationService):
+        self.booking_repository = booking_repository
         self.stock_repository = stock_repository
         self.user_repository = user_repository
         self.notification_service = notification_service
@@ -38,7 +39,7 @@ class BookAnOffer:
         check_stock_is_bookable(stock)
 
         booking = self._create_booking_with_booking_information(booking_information, stock)
-        bookings = booking_queries.find_active_bookings_by_user_id(booking_information.user_id)
+        bookings = self.booking_repository.find_active_bookings_by_user_id(booking_information.user_id)
         expenses = get_expenses(bookings)
         check_expenses_limits(expenses, booking)
 

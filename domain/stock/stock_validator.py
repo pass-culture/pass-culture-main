@@ -27,15 +27,15 @@ def check_expenses_limits(expenses: Dict, booking: BookingSQLEntity,
     stock = find_stock(booking.stockId)
     offer = stock.offer
 
-    if (expenses['all']['actual'] + booking.value) > expenses['all']['max']:
+    if (expenses['all']['actual'] + booking.total_amount) > expenses['all']['max']:
         raise UserHasInsufficientFunds()
 
     if is_eligible_to_physical_offers_capping(offer):
-        if (expenses['physical']['actual'] + booking.value) > expenses['physical']['max']:
+        if (expenses['physical']['actual'] + booking.total_amount) > expenses['physical']['max']:
             raise PhysicalExpenseLimitHasBeenReached(expenses['physical']['max'])
 
     if is_eligible_to_digital_offers_capping(offer):
-        if (expenses['digital']['actual'] + booking.value) > expenses['digital']['max']:
+        if (expenses['digital']['actual'] + booking.total_amount) > expenses['digital']['max']:
             raise DigitalExpenseLimitHasBeenReached(expenses['digital']['max'])
 
 
