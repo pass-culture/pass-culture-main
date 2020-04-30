@@ -1,7 +1,4 @@
 table#bookings-table {
-
-  width:100%;
-
   tr > th {
     color: $black;
     font-size: rem(14px);
@@ -16,18 +13,40 @@ table#bookings-table {
   td {
     font-size: rem(16px);
     padding: 16px;
-  }
 
-  td > span.offer-link {
-    font-weight: $weight-bold;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    max-width: 175px;
-    display: block;
-    overflow: hidden;
-  }
+    & > span.offer-link {
+      font-weight: bold;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      max-width: 175px;
+      display: block;
+      overflow: hidden;
+    }
 
-  td span.cell-subtitle {
-    color: $grey;
+    & span.cell-subtitle {
+      color: $grey;
+    }
+
+    & > span.booking-status-label {
+      border-radius: 5px;
+      padding: 2px 5px;
+      color: $white;
+      font-weight: $weight-medium;
+      font-size: 14px;
+
+      &.booking-status {
+        &--reserve {
+          background-color: $purple-dark;
+        }
+
+        &--valide {
+          background-color: $blue-dark;
+        }
+
+        &--annule {
+          background-color: $grey;
+        }
+      }
+    }
   }
 }
