@@ -33,3 +33,7 @@ def feature_request_profiling_enabled() -> bool:
 
 def feature_write_dashboard_enabled():
     return os.environ.get('WRITE_DASHBOARD', False)
+
+
+def feature_clean_seen_offers_enabled():
+    return os.environ.get('CLEAN_SEEN_OFFERS', False)

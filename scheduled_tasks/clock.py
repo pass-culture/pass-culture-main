@@ -10,8 +10,9 @@ from local_providers.provider_manager import \
 from models import DiscoveryView, DiscoveryViewV3
 from models.db import db
 from models.feature import FeatureToggle
-from repository.feature_queries import feature_write_dashboard_enabled
+from repository.feature_queries import feature_write_dashboard_enabled, feature_clean_seen_offers_enabled
 from repository.provider_queries import get_provider_by_local_class
+from repository.seen_offer_queries import remove_old_seen_offers
 from repository.user_queries import find_most_recent_beneficiary_creation_date_for_procedure_id
 from scheduled_tasks.decorators import cron_context, cron_require_feature, \
     log_cron
@@ -21,8 +22,10 @@ from scripts.update_booking_used import \
     update_booking_used_after_stock_occurrence
 from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
 
-DEMARCHES_SIMPLIFIEES_OLD_ENROLLMENT_PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID', None)
-DEMARCHES_SIMPLIFIEES_NEW_ENROLLMENT_PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2', None)
+DEMARCHES_SIMPLIFIEES_OLD_ENROLLMENT_PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID',
+                                                                   None)
+DEMARCHES_SIMPLIFIEES_NEW_ENROLLMENT_PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2',
+                                                                   None)
 
 
 @log_cron
@@ -56,6 +59,7 @@ def pc_retrieve_bank_information(app):
     synchronize_data_for_provider("OffererBankInformationProvider")
     synchronize_data_for_provider("VenueBankInformationProvider")
 
+
 @log_cron
 @cron_context
 @cron_require_feature(FeatureToggle.BENEFICIARIES_IMPORT)
@@ -71,6 +75,13 @@ def pc_remote_import_beneficiaries(app):
     procedure_id = int(DEMARCHES_SIMPLIFIEES_NEW_ENROLLMENT_PROCEDURE_ID)
     import_from_date = find_most_recent_beneficiary_creation_date_for_procedure_id(procedure_id)
     remote_import.run(import_from_date)
+
+
+@log_cron
+@cron_context
+@cron_require_feature(FeatureToggle.SAVE_SEEN_OFFERS)
+def pc_remove_old_seen_offers(app):
+    remove_old_seen_offers()
 
 
 @log_cron
@@ -101,6 +112,7 @@ if __name__ == '__main__':
     app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
 
     discovery_view_refresh_frequency = os.environ.get('RECO_VIEW_REFRESH_FREQUENCY', '*')
+    old_seen_offers_delete_frequency = os.environ.get('SEEN_OFFERS_DELETE_FREQUENCY', '*')
 
     orm.configure_mappers()
     scheduler = BlockingScheduler()
@@ -129,6 +141,11 @@ if __name__ == '__main__':
         scheduler.add_job(pc_write_dashboard, 'cron',
                           [app],
                           day='*', hour='4')
+
+    if feature_clean_seen_offers_enabled():
+        scheduler.add_job(pc_remove_old_seen_offers, 'cron',
+                          [app],
+                          day=old_seen_offers_delete_frequency)
 
     scheduler.add_job(update_booking_used, 'cron',
                       [app],
