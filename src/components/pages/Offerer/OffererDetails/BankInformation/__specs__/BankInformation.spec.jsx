@@ -41,6 +41,7 @@ describe('src | Offerer | BankInformation ', () => {
       address: 'fake address',
       bic: 'offererBic',
       iban: 'offererIban',
+      demarchesSimplifieesApplicationId: '12',
     })
 
     // when
@@ -60,5 +61,30 @@ describe('src | Offerer | BankInformation ', () => {
     expect(linkToDemarcheSimplifieeProcedure.prop('href')).toBe(
       'link/to/offerer/demarchesSimplifiees/procedure'
     )
+  })
+
+  it('should render current application detail when demarchesSimplifieesApplicationId is provided', () => {
+    // Given
+    const offererWithoutBankInformation = new Offerer({
+      id: 'AA',
+      name: 'fake offerer name',
+      address: 'fake address',
+      bic: null,
+      iban: null,
+      demarchesSimplifieesApplicationId: '12',
+    })
+
+    // when
+    const wrapper = shallow(<BankInformation offerer={offererWithoutBankInformation} />)
+
+    // then
+    const bankInstructions = wrapper.find({
+      children: 'Votre dossier est en cours pour cette structure',
+    })
+    const linkToDemarcheSimplifieeProcedure = wrapper.find('a')
+    expect(linkToDemarcheSimplifieeProcedure.prop('href')).toBe(
+      'https://www.demarches-simplifiees.fr/dossiers/12'
+    )
+    expect(bankInstructions).toHaveLength(1)
   })
 })

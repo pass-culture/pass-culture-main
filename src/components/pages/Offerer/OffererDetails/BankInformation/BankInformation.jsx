@@ -46,6 +46,27 @@ const BankInformation = ({ offerer }) => (
           </span>
         </div>
       </Fragment>
+    ) : offerer.demarchesSimplifieesApplicationId ? (
+      <div className="bi-banner">
+        <p>
+          {'Votre dossier est en cours pour cette structure'}
+        </p>
+
+        <p>
+          <a
+            className="bi-external-link"
+            href={`https://www.demarches-simplifiees.fr/dossiers/${offerer.demarchesSimplifieesApplicationId}`}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <Icon
+              alt=""
+              svg="ico-external-site"
+            />
+            {'Accéder au dossier'}
+          </a>
+        </p>
+      </div>
     ) : (
       <Fragment>
         <p className="bi-subtitle">
