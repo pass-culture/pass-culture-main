@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react'
 import BeneficiaryCell from '../CellsFormatter/BeneficiaryCell'
 import BookingDateCell from '../CellsFormatter/BookingsDateCell'
 import Table from '../Table/Table'
+import BookingStatusCell from '../CellsFormatter/BookingsStatusCell'
 
 class BookingsTable extends PureComponent {
   constructor(props) {
@@ -28,6 +29,11 @@ class BookingsTable extends PureComponent {
         {
           headerTitle: 'Contremarque',
           accessor: 'booking_token',
+        },
+        {
+          headerTitle: 'Status',
+          accessor: 'booking_status',
+          Cell: ({ value }) => <BookingStatusCell bookingStatusInfos={value} />,
         },
       ],
     }
