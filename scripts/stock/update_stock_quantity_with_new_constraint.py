@@ -5,7 +5,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import aliased
 
 from connectors import redis
-from models import StockSQLEntity, Booking
+from models import StockSQLEntity, BookingSQLEntity
 from repository import repository
 
 
@@ -74,7 +74,7 @@ def _get_old_remaining_quantity(stock: StockSQLEntity) -> int:
 
 def _get_stocks_to_check(page: int = 0, page_size: int = 100) -> List[StockSQLEntity]:
     return StockSQLEntity.query \
-        .join(Booking) \
+        .join(BookingSQLEntity) \
         .filter(StockSQLEntity.quantity != None) \
         .filter(StockSQLEntity.isSoftDeleted == False) \
         .filter(StockSQLEntity.hasBeenMigrated == None) \

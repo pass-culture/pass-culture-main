@@ -1,12 +1,14 @@
+from domain.booking.booking import Booking
 from domain.booking.booking_repository import BookingRepository
 from domain.booking.booking_validator import check_offer_already_booked, check_quantity_is_valid
 from domain.expenses import get_expenses
 from domain.services.notification.notification_service import NotificationService
+from domain.stock.stock import Stock
 from domain.stock.stock_repository import StockRepository
 from domain.stock.stock_validator import check_stock_is_bookable, check_expenses_limits, check_can_book_free_offer
+from domain.user.user import User
 from domain.user.user_repository import UserRepository
 from models import BookingSQLEntity
-from repository import booking_queries, repository
 from utils.token import random_token
 
 
@@ -29,7 +31,7 @@ class BookAnOffer:
         self.user_repository = user_repository
         self.notification_service = notification_service
 
-    def execute(self, booking_information: BookingInformation) -> BookingSQLEntity:
+    def execute(self, booking_information: BookingInformation) -> Booking:
         stock = self.stock_repository.find_stock_by_id(booking_information.stock_id)
         user = self.user_repository.find_user_by_id(booking_information.user_id)
 
@@ -38,24 +40,31 @@ class BookAnOffer:
         check_can_book_free_offer(user, stock)
         check_stock_is_bookable(stock)
 
-        booking = self._create_booking_with_booking_information(booking_information, stock)
+        booking = self._create_booking_with_booking_information(booking_information, stock, user)
         bookings = self.booking_repository.find_active_bookings_by_user_id(booking_information.user_id)
         expenses = get_expenses(bookings)
         check_expenses_limits(expenses, booking)
 
-        repository.save(booking)
+        self.booking_repository.save(booking)
 
         self.notification_service.send_booking_recap_emails(booking)
         self.notification_service.send_booking_confirmation_email_to_beneficiary(booking)
 
         return booking
 
-    def _create_booking_with_booking_information(self, booking_information, stock) -> BookingSQLEntity:
-        booking = BookingSQLEntity()
-        booking.stockId = booking_information.stock_id
-        booking.userId = booking_information.user_id
-        booking.quantity = booking_information.quantity
-        booking.recommendationId = booking_information.recommendation_id
-        booking.amount = stock.price
-        booking.token = random_token()
+    def _create_booking_with_booking_information(
+            self,
+            booking_information: BookingInformation,
+            stock: Stock,
+            user: User) -> Booking:
+        quantity = booking_information.quantity
+        recommendation_id = booking_information.recommendation_id
+        amount = stock.price
+        booking = Booking(
+            stock=stock,
+            user=user,
+            quantity=quantity,
+            amount=amount,
+            recommendation_id=recommendation_id
+        )
         return booking

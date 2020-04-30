@@ -47,20 +47,15 @@ class BookingSQLRepositoryTest:
         book_offer = create_offer_with_thing_product(
             venue_online, thing_type=ThingType.LIVRE_EDITION)
         book_stock = create_stock_from_offer(book_offer, price=0, quantity=200)
-        booking = Booking(user=user, stock=book_stock, amount=0, quantity=1)
+        booking_to_save = Booking(user=user, stock=book_stock, amount=0, quantity=1)
         repository.save(book_stock)
 
         # when
-        self.booking_sql_repository.save(booking)
+        self.booking_sql_repository.save(booking_to_save)
 
         # then
-        bookings = BookingSQLEntity.query.all()
-        assert len(bookings) == 1
-
-    # @clean_database
-    # def test_should_update_booking_when_booking_exists(self, app):
-    #     # given
-
-    #     # when
-
-    #     # then
+        booking = BookingSQLEntity.query.one()
+        booking_saved = self.booking_sql_repository.to_domain(booking)
+        assert booking_saved.user.id == booking_to_save.user.id
+        assert booking_saved.stock.id == booking_to_save.stock.id
+        assert booking_saved.identifier is not None

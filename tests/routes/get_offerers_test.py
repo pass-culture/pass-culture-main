@@ -163,7 +163,7 @@ class Get:
             assert offerer_response['name'] == 'offreur A'
             assert set(offerer_response.keys()) == {
                 'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider', 'demarchesSimplifieesApplicationId', 'fieldsUpdated', 'iban', 'id',
-                'idAtProviders', 'isActive', 'isValidated', 'lastProviderId', 'managedVenues', 'modelName', 'nOffers',
+                'idAtProviders', 'isActive', 'isValidated', 'lastProviderId', 'managedVenues', 'nOffers',
                 'name', 'postalCode', 'siren', 'thumbCount', 'userHasAccess'
             }
 
@@ -278,7 +278,7 @@ class Get:
             assert list(response.json[0].keys()) == [
                 'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider', 'demarchesSimplifieesApplicationId',
                 'fieldsUpdated', 'iban', 'id', 'idAtProviders', 'isActive',
-                'isValidated', 'lastProviderId', 'managedVenues', 'modelName', 'nOffers',
+                'isValidated', 'lastProviderId', 'managedVenues', 'nOffers',
                 'name', 'postalCode', 'siren', 'thumbCount', 'userHasAccess'
             ]
 

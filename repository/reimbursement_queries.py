@@ -18,7 +18,7 @@ def find_all_offerer_payments(offerer_id: int) -> List[namedtuple]:
     return Payment.query \
         .join(payment_status_query) \
         .reset_joinpoint() \
-        .join(Booking) \
+        .join(BookingSQLEntity) \
         .join(UserSQLEntity) \
         .reset_joinpoint() \
         .join(StockSQLEntity) \
@@ -31,8 +31,8 @@ def find_all_offerer_payments(offerer_id: int) -> List[namedtuple]:
                   payment_status_query.c.date.desc()) \
         .with_entities(UserSQLEntity.lastName.label('user_lastName'),
                        UserSQLEntity.firstName.label('user_firstName'),
-                       Booking.token.label('booking_token'),
-                       Booking.dateUsed.label('booking_dateUsed'),
+                       BookingSQLEntity.token.label('booking_token'),
+                       BookingSQLEntity.dateUsed.label('booking_dateUsed'),
                        Offer.name.label('offer_name'),
                        Offerer.address.label('offerer_address'),
                        Venue.name.label('venue_name'),

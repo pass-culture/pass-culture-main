@@ -80,7 +80,7 @@ class PhysicalOffersReimbursementTest:
         reimbursed_amount = ReimbursementRules.PHYSICAL_OFFERS.value.apply(booking)
 
         # then
-        assert reimbursed_amount == booking.value
+        assert reimbursed_amount == booking.total_amount
 
     def test_is_relevant_for_booking_on_physical_things(self):
         # given
@@ -800,7 +800,7 @@ class FindAllBookingsReimbursementsTest:
 def assert_total_reimbursement(booking_reimbursement, booking):
     assert booking_reimbursement.booking == booking
     assert booking_reimbursement.reimbursement == ReimbursementRules.PHYSICAL_OFFERS
-    assert booking_reimbursement.reimbursed_amount == booking.value
+    assert booking_reimbursement.reimbursed_amount == booking.total_amount
 
 
 def assert_no_reimbursement_for_digital(booking_reimbursement, booking):
@@ -820,13 +820,13 @@ def assert_degressive_reimbursement(booking_reimbursement, booking, total_amount
     if 20000 < total_amount <= 40000:
         assert booking_reimbursement.reimbursement == ReimbursementRules.BETWEEN_20000_AND_40000_EUROS
         assert booking_reimbursement.reimbursed_amount == ReimbursementRules.BETWEEN_20000_AND_40000_EUROS.value.rate \
-               * booking.value
+               * booking.total_amount
     elif 40000 < total_amount <= 100000:
         assert booking_reimbursement.reimbursement == ReimbursementRules.BETWEEN_40000_AND_100000_EUROS
         assert booking_reimbursement.reimbursed_amount == ReimbursementRules.BETWEEN_40000_AND_100000_EUROS.value.rate \
-               * booking.value
+               * booking.total_amount
     elif total_amount > 100000:
         assert booking_reimbursement.reimbursement == ReimbursementRules.ABOVE_100000_EUROS
-        assert booking_reimbursement.reimbursed_amount == ReimbursementRules.ABOVE_100000_EUROS.value.rate * booking.value
+        assert booking_reimbursement.reimbursed_amount == ReimbursementRules.ABOVE_100000_EUROS.value.rate * booking.total_amount
     else:
         assert False

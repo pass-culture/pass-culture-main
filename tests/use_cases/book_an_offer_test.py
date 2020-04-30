@@ -67,9 +67,11 @@ class BookAnOfferTest:
 
         # When
         booking = self.book_an_offer.execute(booking_information=booking_information)
+        print(booking.__dict__)
 
         # Then
-        assert booking == BookingSQLEntity.query.filter(BookingSQLEntity.isCancelled == False).one()
+        new_booking = BookingSQLEntity.query.filter(BookingSQLEntity.isCancelled == False).one()
+        assert new_booking == self.booking_repository.to_model(booking)
 
     @clean_database
     def test_send_a_booking_recap_email(self, app):

@@ -20,12 +20,14 @@ class BookingSQLRepository(BookingRepository):
         return Booking(user=booking_sql_entity.user,
                        stock=booking_sql_entity.stock,
                        amount=booking_sql_entity.amount,
-                       quantity=booking_sql_entity.quantity)
+                       quantity=booking_sql_entity.quantity,
+                       identifier=booking_sql_entity.id,
+                       recommendation_id=booking_sql_entity.recommendationId)
 
     def to_model(self, booking: Booking) -> BookingSQLEntity:
         booking_sql_entity = BookingSQLEntity()
-        booking_sql_entity.user = booking.user
-        booking_sql_entity.stock = booking.stock
+        booking_sql_entity.userId = booking.user.id
+        booking_sql_entity.stockId = booking.stock.id
         booking_sql_entity.amount = booking.amount
         booking_sql_entity.quantity = booking.quantity
         booking_sql_entity.token = random_token()
@@ -33,16 +35,8 @@ class BookingSQLRepository(BookingRepository):
 
         return booking_sql_entity
 
-    def save(self, booking: Booking) -> Booking:
+
+    def save(self, booking: Booking) -> None:
         booking_sql_entity = self.to_model(booking)
-
-        if booking_sql_entity.id:
-            self._update(booking_sql_entity)
-        else:
-            self._insert(booking_sql_entity)
-
-    def _insert(self, booking_sql_entity: Booking) -> Booking:
-        repository.save(booking_sql_entity)
-
-    def _update(self, booking_sql_entity: Booking) -> Booking:
+        print(booking_sql_entity.__dict__)
         repository.save(booking_sql_entity)

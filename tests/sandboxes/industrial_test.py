@@ -27,7 +27,7 @@ def test_save_industrial_sandbox(mock_request, app):
     # then
     assert_created_counts(
         ApiKey=13,
-        Booking=43,
+        BookingSQLEntity=43,
         Deposit=8,
         Mediation=84,
         Offer=106,
