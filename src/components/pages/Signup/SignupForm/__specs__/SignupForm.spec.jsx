@@ -243,7 +243,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       // then
       const submitButton = wrapper.find('button[type="submit"]')
       expect(submitButton).toHaveLength(1)
-      expect(submitButton.prop('className')).toBe('button is-primary is-outlined')
+      expect(submitButton.prop('className')).toBe('button is-primary')
       expect(submitButton.prop('type')).toBe('submit')
       expect(submitButton.text()).toBe('Créer')
     })

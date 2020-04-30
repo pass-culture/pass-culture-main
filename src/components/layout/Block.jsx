@@ -20,14 +20,14 @@ const Block = ({ cancelText, confirmText, text, onConfirmation, onCancel }) =>
       </ul>
       <div className="level">
         <button
-          className="button is-secondary level-item"
+          className="button is-tertiary level-item"
           onClick={onConfirmation}
           type="button"
         >
           {confirmText}
         </button>
         <button
-          className="button is-secondary level-item"
+          className="button is-tertiary level-item"
           onClick={onCancel}
           type="button"
         >

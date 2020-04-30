@@ -2,7 +2,9 @@
   font-weight: $weight-bold;
   font-size: $font-size;
   line-height: $body-line-height;
-  border-radius: 1px;
+  border-radius: rem(24px);
+  padding-left: rem(16px);
+  padding-right: rem(16px);
 
   &:focus {
     outline: none;
@@ -17,11 +19,90 @@
   }
 
   &.is-primary {
-    box-shadow: inset 0 -2px 0 1px rgba(153, 0, 38, 0.6);
+    &:active {
+      background-color: $red-darker;
+    }
+
+    &:disabled {
+      opacity: 1;
+      background-color: $grey-medium;
+    }
+
+    &:focus:not(:active) {
+      box-shadow: none;
+      border: rem(3px) solid $red-darker;
+      padding-left: rem(13px);
+      padding-right: rem(13px);
+    }
+  }
+
+  &.is-secondary {
+    background: none;
+    border: rem(2px) solid $red;
+    color: $red;
+    padding-left: rem(14px);
+    padding-right: rem(14px);
+
+    &:active {
+      background-color: $red-darker;
+      border: none;
+      color: $white;
+      padding-left: rem(16px);
+      padding-right: rem(16px);
+    }
+
+    &:disabled {
+      opacity: 1;
+      border-color: $grey-medium;
+      color: $grey-medium;
+    }
+
+    &:focus:not(:active) {
+      box-shadow: 0 0 4px $red;
+      border-width: rem(3px);
+      padding-left: rem(13px);
+      padding-right: rem(13px);
+    }
+  }
+
+  &.is-tertiary {
+    background: none;
+    border-color: transparent;
+    color: $red;
+    text-decoration: none;
+
+    &:active {
+      color: $red-darker;
+    }
+
+    &:disabled {
+      opacity: 1;
+      color: $grey;
+    }
+
+    &[disabled] {
+      opacity: 1;
+      color: $grey;
+    }
+
+    &:focus:not(:active) {
+      box-shadow: none;
+      border: rem(1px) solid $grey-medium;
+      padding-left: rem(15px);
+      padding-right: rem(15px);
+    }
+
+    &.is-inversed {
+      color: $white;
+    }
   }
 
   &.is-outlined {
     box-shadow: none;
+
+    &:disabled {
+      opacity: 0.3;
+    }
   }
 
   &.is-intermediate {
@@ -29,19 +110,6 @@
     text-decoration: none;
     border: 1px solid $red;
     color: $red;
-  }
-
-  &.is-secondary {
-    background: none;
-    border-color: transparent;
-    color: $red;
-    text-decoration: none;
-    padding-left: 0;
-    padding-right: 0;
-
-    &.is-inversed {
-      color: $white;
-    }
   }
 
   &.is-flex-button {

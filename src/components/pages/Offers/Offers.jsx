@@ -208,7 +208,7 @@ class Offers extends PureComponent {
                 {'OK'}
               </button>
               <button
-                className="button is-secondary"
+                className="button is-tertiary"
                 disabled
                 type="button"
               >
@@ -273,7 +273,7 @@ class Offers extends PureComponent {
               </div>
               <div>
                 <button
-                  className="button is-secondary"
+                  className="button is-tertiary"
                   onClick={this.handleOnClick}
                   type="button"
                 >
@@ -288,7 +288,7 @@ class Offers extends PureComponent {
           {offers && venue && (
             <div className="offers-list-actions">
               <button
-                className="button deactivate is-secondary is-small"
+                className="button deactivate is-tertiary is-small"
                 onClick={handleOnDeactivateAllVenueOffersClick(venue)}
                 type="button"
               >
@@ -296,7 +296,7 @@ class Offers extends PureComponent {
               </button>
 
               <button
-                className="button activate is-secondary is-small"
+                className="button activate is-tertiary is-small"
                 onClick={handleOnActivateAllVenueOffersClick(venue)}
                 type="button"
               >

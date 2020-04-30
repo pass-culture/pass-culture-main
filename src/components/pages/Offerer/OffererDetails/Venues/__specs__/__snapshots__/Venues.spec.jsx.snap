@@ -36,7 +36,7 @@ ShallowWrapper {
           <NavLink
             activeClassName="active"
             aria-current="page"
-            className="button is-secondary is-outlined"
+            className="button is-tertiary is-outlined"
             to="/structures/5767Fdtre/lieux/creation"
           >
             + Ajouter un lieu
@@ -79,7 +79,7 @@ ShallowWrapper {
           "children": <NavLink
             activeClassName="active"
             aria-current="page"
-            className="button is-secondary is-outlined"
+            className="button is-tertiary is-outlined"
             to="/structures/5767Fdtre/lieux/creation"
           >
             + Ajouter un lieu
@@ -95,7 +95,7 @@ ShallowWrapper {
             "activeClassName": "active",
             "aria-current": "page",
             "children": "+ Ajouter un lieu",
-            "className": "button is-secondary is-outlined",
+            "className": "button is-tertiary is-outlined",
             "to": "/structures/5767Fdtre/lieux/creation",
           },
           "ref": null,
@@ -128,7 +128,7 @@ ShallowWrapper {
             <NavLink
               activeClassName="active"
               aria-current="page"
-              className="button is-secondary is-outlined"
+              className="button is-tertiary is-outlined"
               to="/structures/5767Fdtre/lieux/creation"
             >
               + Ajouter un lieu
@@ -171,7 +171,7 @@ ShallowWrapper {
             "children": <NavLink
               activeClassName="active"
               aria-current="page"
-              className="button is-secondary is-outlined"
+              className="button is-tertiary is-outlined"
               to="/structures/5767Fdtre/lieux/creation"
             >
               + Ajouter un lieu
@@ -187,7 +187,7 @@ ShallowWrapper {
               "activeClassName": "active",
               "aria-current": "page",
               "children": "+ Ajouter un lieu",
-              "className": "button is-secondary is-outlined",
+              "className": "button is-tertiary is-outlined",
               "to": "/structures/5767Fdtre/lieux/creation",
             },
             "ref": null,

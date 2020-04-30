@@ -20,7 +20,7 @@ class ModifyOrCancelControl extends PureComponent {
       <div className="control">
         {readOnly ? (
           <NavLink
-            className="button is-secondary is-medium"
+            className="button is-tertiary is-medium"
             id="modify-venue"
             to={`/structures/${offererId}/lieux/${venueId}?modification`}
           >
@@ -28,7 +28,7 @@ class ModifyOrCancelControl extends PureComponent {
           </NavLink>
         ) : (
           <button
-            className="button is-secondary is-medium"
+            className="button is-tertiary is-medium"
             onClick={this.handleOnCLick}
             type="reset"
           >

@@ -174,7 +174,7 @@ ShallowWrapper {
                 OK
               </button>
               <button
-                className="button is-secondary"
+                className="button is-tertiary"
                 disabled={true}
                 type="button"
               >
@@ -210,13 +210,13 @@ ShallowWrapper {
             className="offers-list-actions"
           >
             <button
-              className="button deactivate is-secondary is-small"
+              className="button deactivate is-tertiary is-small"
               type="button"
             >
               Désactiver toutes les offres
             </button>
             <button
-              className="button activate is-secondary is-small"
+              className="button activate is-tertiary is-small"
               type="button"
             >
               Activer toutes les offres
@@ -318,7 +318,7 @@ ShallowWrapper {
                   OK
                 </button>
                 <button
-                  className="button is-secondary"
+                  className="button is-tertiary"
                   disabled={true}
                   type="button"
                 >
@@ -374,7 +374,7 @@ ShallowWrapper {
                     OK
                   </button>
                   <button
-                    className="button is-secondary"
+                    className="button is-tertiary"
                     disabled={true}
                     type="button"
                   >
@@ -434,7 +434,7 @@ ShallowWrapper {
                       OK
                     </button>,
                     <button
-                      className="button is-secondary"
+                      className="button is-tertiary"
                       disabled={true}
                       type="button"
                     >
@@ -473,7 +473,7 @@ ShallowWrapper {
                           svg="ico-filter"
                         />,
                       ],
-                      "className": "button is-secondary",
+                      "className": "button is-tertiary",
                       "disabled": true,
                       "type": "button",
                     },
@@ -590,13 +590,13 @@ ShallowWrapper {
               className="offers-list-actions"
             >
               <button
-                className="button deactivate is-secondary is-small"
+                className="button deactivate is-tertiary is-small"
                 type="button"
               >
                 Désactiver toutes les offres
               </button>
               <button
-                className="button activate is-secondary is-small"
+                className="button activate is-tertiary is-small"
                 type="button"
               >
                 Activer toutes les offres
@@ -641,13 +641,13 @@ ShallowWrapper {
             "props": Object {
               "children": Array [
                 <button
-                  className="button deactivate is-secondary is-small"
+                  className="button deactivate is-tertiary is-small"
                   type="button"
                 >
                   Désactiver toutes les offres
                 </button>,
                 <button
-                  className="button activate is-secondary is-small"
+                  className="button activate is-tertiary is-small"
                   type="button"
                 >
                   Activer toutes les offres
@@ -663,7 +663,7 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": "Désactiver toutes les offres",
-                  "className": "button deactivate is-secondary is-small",
+                  "className": "button deactivate is-tertiary is-small",
                   "onClick": undefined,
                   "type": "button",
                 },
@@ -677,7 +677,7 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": "Activer toutes les offres",
-                  "className": "button activate is-secondary is-small",
+                  "className": "button activate is-tertiary is-small",
                   "onClick": undefined,
                   "type": "button",
                 },
@@ -790,7 +790,7 @@ ShallowWrapper {
                   OK
                 </button>
                 <button
-                  className="button is-secondary"
+                  className="button is-tertiary"
                   disabled={true}
                   type="button"
                 >
@@ -826,13 +826,13 @@ ShallowWrapper {
               className="offers-list-actions"
             >
               <button
-                className="button deactivate is-secondary is-small"
+                className="button deactivate is-tertiary is-small"
                 type="button"
               >
                 Désactiver toutes les offres
               </button>
               <button
-                className="button activate is-secondary is-small"
+                className="button activate is-tertiary is-small"
                 type="button"
               >
                 Activer toutes les offres
@@ -934,7 +934,7 @@ ShallowWrapper {
                     OK
                   </button>
                   <button
-                    className="button is-secondary"
+                    className="button is-tertiary"
                     disabled={true}
                     type="button"
                   >
@@ -990,7 +990,7 @@ ShallowWrapper {
                       OK
                     </button>
                     <button
-                      className="button is-secondary"
+                      className="button is-tertiary"
                       disabled={true}
                       type="button"
                     >
@@ -1050,7 +1050,7 @@ ShallowWrapper {
                         OK
                       </button>,
                       <button
-                        className="button is-secondary"
+                        className="button is-tertiary"
                         disabled={true}
                         type="button"
                       >
@@ -1089,7 +1089,7 @@ ShallowWrapper {
                             svg="ico-filter"
                           />,
                         ],
-                        "className": "button is-secondary",
+                        "className": "button is-tertiary",
                         "disabled": true,
                         "type": "button",
                       },
@@ -1206,13 +1206,13 @@ ShallowWrapper {
                 className="offers-list-actions"
               >
                 <button
-                  className="button deactivate is-secondary is-small"
+                  className="button deactivate is-tertiary is-small"
                   type="button"
                 >
                   Désactiver toutes les offres
                 </button>
                 <button
-                  className="button activate is-secondary is-small"
+                  className="button activate is-tertiary is-small"
                   type="button"
                 >
                   Activer toutes les offres
@@ -1257,13 +1257,13 @@ ShallowWrapper {
               "props": Object {
                 "children": Array [
                   <button
-                    className="button deactivate is-secondary is-small"
+                    className="button deactivate is-tertiary is-small"
                     type="button"
                   >
                     Désactiver toutes les offres
                   </button>,
                   <button
-                    className="button activate is-secondary is-small"
+                    className="button activate is-tertiary is-small"
                     type="button"
                   >
                     Activer toutes les offres
@@ -1279,7 +1279,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": "Désactiver toutes les offres",
-                    "className": "button deactivate is-secondary is-small",
+                    "className": "button deactivate is-tertiary is-small",
                     "onClick": undefined,
                     "type": "button",
                   },
@@ -1293,7 +1293,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": "Activer toutes les offres",
-                    "className": "button activate is-secondary is-small",
+                    "className": "button activate is-tertiary is-small",
                     "onClick": undefined,
                     "type": "button",
                   },

@@ -682,7 +682,7 @@ class OfferEdition extends PureComponent {
           >
             <div className="control">
               <Link
-                className="button is-secondary is-medium"
+                className="button is-tertiary is-medium"
                 id="cancel-button"
                 to={'/offres/' + offerId}
                 type="button"

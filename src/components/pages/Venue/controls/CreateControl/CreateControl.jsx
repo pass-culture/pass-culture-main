@@ -10,7 +10,7 @@ const CreateControl = ({ venueId, offererId }) => (
     >
       <div className="control">
         <NavLink
-          className="button is-secondary is-medium"
+          className="button is-tertiary is-medium"
           to={`/offres/creation?lieu=${venueId}&structure=${offererId}`}
         >
           <span>

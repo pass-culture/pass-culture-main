@@ -166,7 +166,7 @@ ShallowWrapper {
                         Créer un compte
                       </NavLink>
                       <SubmitButton
-                        className="button is-primary is-outlined"
+                        className="button is-primary"
                         getDisabled={[Function]}
                         getTitle={[Function]}
                         id="signin-submit-button"
@@ -348,7 +348,7 @@ ShallowWrapper {
                         Créer un compte
                       </NavLink>
                       <SubmitButton
-                        className="button is-primary is-outlined"
+                        className="button is-primary"
                         getDisabled={[Function]}
                         getTitle={[Function]}
                         id="signin-submit-button"
@@ -493,7 +493,7 @@ ShallowWrapper {
                         Créer un compte
                       </NavLink>
                       <SubmitButton
-                        className="button is-primary is-outlined"
+                        className="button is-primary"
                         getDisabled={[Function]}
                         getTitle={[Function]}
                         id="signin-submit-button"
@@ -634,7 +634,7 @@ ShallowWrapper {
                         Créer un compte
                       </NavLink>
                       <SubmitButton
-                        className="button is-primary is-outlined"
+                        className="button is-primary"
                         getDisabled={[Function]}
                         getTitle={[Function]}
                         id="signin-submit-button"
@@ -771,7 +771,7 @@ ShallowWrapper {
                         Créer un compte
                       </NavLink>
                       <SubmitButton
-                        className="button is-primary is-outlined"
+                        className="button is-primary"
                         getDisabled={[Function]}
                         getTitle={[Function]}
                         id="signin-submit-button"
@@ -905,7 +905,7 @@ ShallowWrapper {
                           Créer un compte
                         </NavLink>
                         <SubmitButton
-                          className="button is-primary is-outlined"
+                          className="button is-primary"
                           getDisabled={[Function]}
                           getTitle={[Function]}
                           id="signin-submit-button"
@@ -1096,7 +1096,7 @@ ShallowWrapper {
                             Créer un compte
                           </NavLink>
                           <SubmitButton
-                            className="button is-primary is-outlined"
+                            className="button is-primary"
                             getDisabled={[Function]}
                             getTitle={[Function]}
                             id="signin-submit-button"
@@ -1274,7 +1274,7 @@ ShallowWrapper {
                               Créer un compte
                             </NavLink>,
                             <SubmitButton
-                              className="button is-primary is-outlined"
+                              className="button is-primary"
                               getDisabled={[Function]}
                               getTitle={[Function]}
                               id="signin-submit-button"
@@ -1309,7 +1309,7 @@ ShallowWrapper {
                             "nodeType": "function",
                             "props": Object {
                               "children": "Se connecter",
-                              "className": "button is-primary is-outlined",
+                              "className": "button is-primary",
                               "getDisabled": [Function],
                               "getTitle": [Function],
                               "id": "signin-submit-button",
@@ -1485,7 +1485,7 @@ ShallowWrapper {
                           Créer un compte
                         </NavLink>
                         <SubmitButton
-                          className="button is-primary is-outlined"
+                          className="button is-primary"
                           getDisabled={[Function]}
                           getTitle={[Function]}
                           id="signin-submit-button"
@@ -1667,7 +1667,7 @@ ShallowWrapper {
                           Créer un compte
                         </NavLink>
                         <SubmitButton
-                          className="button is-primary is-outlined"
+                          className="button is-primary"
                           getDisabled={[Function]}
                           getTitle={[Function]}
                           id="signin-submit-button"
@@ -1812,7 +1812,7 @@ ShallowWrapper {
                           Créer un compte
                         </NavLink>
                         <SubmitButton
-                          className="button is-primary is-outlined"
+                          className="button is-primary"
                           getDisabled={[Function]}
                           getTitle={[Function]}
                           id="signin-submit-button"
@@ -1953,7 +1953,7 @@ ShallowWrapper {
                           Créer un compte
                         </NavLink>
                         <SubmitButton
-                          className="button is-primary is-outlined"
+                          className="button is-primary"
                           getDisabled={[Function]}
                           getTitle={[Function]}
                           id="signin-submit-button"
@@ -2090,7 +2090,7 @@ ShallowWrapper {
                           Créer un compte
                         </NavLink>
                         <SubmitButton
-                          className="button is-primary is-outlined"
+                          className="button is-primary"
                           getDisabled={[Function]}
                           getTitle={[Function]}
                           id="signin-submit-button"
@@ -2224,7 +2224,7 @@ ShallowWrapper {
                             Créer un compte
                           </NavLink>
                           <SubmitButton
-                            className="button is-primary is-outlined"
+                            className="button is-primary"
                             getDisabled={[Function]}
                             getTitle={[Function]}
                             id="signin-submit-button"
@@ -2415,7 +2415,7 @@ ShallowWrapper {
                               Créer un compte
                             </NavLink>
                             <SubmitButton
-                              className="button is-primary is-outlined"
+                              className="button is-primary"
                               getDisabled={[Function]}
                               getTitle={[Function]}
                               id="signin-submit-button"
@@ -2593,7 +2593,7 @@ ShallowWrapper {
                                 Créer un compte
                               </NavLink>,
                               <SubmitButton
-                                className="button is-primary is-outlined"
+                                className="button is-primary"
                                 getDisabled={[Function]}
                                 getTitle={[Function]}
                                 id="signin-submit-button"
@@ -2628,7 +2628,7 @@ ShallowWrapper {
                               "nodeType": "function",
                               "props": Object {
                                 "children": "Se connecter",
-                                "className": "button is-primary is-outlined",
+                                "className": "button is-primary",
                                 "getDisabled": [Function],
                                 "getTitle": [Function],
                                 "id": "signin-submit-button",

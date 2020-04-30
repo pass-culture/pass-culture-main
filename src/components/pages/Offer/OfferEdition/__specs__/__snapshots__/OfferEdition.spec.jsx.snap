@@ -304,7 +304,7 @@ ShallowWrapper {
               className="control"
             >
               <Link
-                className="button is-secondary is-medium"
+                className="button is-tertiary is-medium"
                 id="cancel-button"
                 replace={false}
                 to="/offres/SN"
@@ -529,7 +529,7 @@ ShallowWrapper {
                 className="control"
               >
                 <Link
-                  className="button is-secondary is-medium"
+                  className="button is-tertiary is-medium"
                   id="cancel-button"
                   replace={false}
                   to="/offres/SN"
@@ -1276,7 +1276,7 @@ ShallowWrapper {
                   className="control"
                 >
                   <Link
-                    className="button is-secondary is-medium"
+                    className="button is-tertiary is-medium"
                     id="cancel-button"
                     replace={false}
                     to="/offres/SN"
@@ -1312,7 +1312,7 @@ ShallowWrapper {
                 "nodeType": "host",
                 "props": Object {
                   "children": <Link
-                    className="button is-secondary is-medium"
+                    className="button is-tertiary is-medium"
                     id="cancel-button"
                     replace={false}
                     to="/offres/SN"
@@ -1329,7 +1329,7 @@ ShallowWrapper {
                   "nodeType": "class",
                   "props": Object {
                     "children": "Annuler",
-                    "className": "button is-secondary is-medium",
+                    "className": "button is-tertiary is-medium",
                     "id": "cancel-button",
                     "replace": false,
                     "to": "/offres/SN",
@@ -1599,7 +1599,7 @@ ShallowWrapper {
                 className="control"
               >
                 <Link
-                  className="button is-secondary is-medium"
+                  className="button is-tertiary is-medium"
                   id="cancel-button"
                   replace={false}
                   to="/offres/SN"
@@ -1824,7 +1824,7 @@ ShallowWrapper {
                   className="control"
                 >
                   <Link
-                    className="button is-secondary is-medium"
+                    className="button is-tertiary is-medium"
                     id="cancel-button"
                     replace={false}
                     to="/offres/SN"
@@ -2571,7 +2571,7 @@ ShallowWrapper {
                     className="control"
                   >
                     <Link
-                      className="button is-secondary is-medium"
+                      className="button is-tertiary is-medium"
                       id="cancel-button"
                       replace={false}
                       to="/offres/SN"
@@ -2607,7 +2607,7 @@ ShallowWrapper {
                   "nodeType": "host",
                   "props": Object {
                     "children": <Link
-                      className="button is-secondary is-medium"
+                      className="button is-tertiary is-medium"
                       id="cancel-button"
                       replace={false}
                       to="/offres/SN"
@@ -2624,7 +2624,7 @@ ShallowWrapper {
                     "nodeType": "class",
                     "props": Object {
                       "children": "Annuler",
-                      "className": "button is-secondary is-medium",
+                      "className": "button is-tertiary is-medium",
                       "id": "cancel-button",
                       "replace": false,
                       "to": "/offres/SN",

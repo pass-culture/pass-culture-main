@@ -107,7 +107,7 @@ class Offerers extends PureComponent {
         {'OK'}
       </button>
       <button
-        className="button is-secondary"
+        className="button is-tertiary"
         disabled
         type="button"
       >

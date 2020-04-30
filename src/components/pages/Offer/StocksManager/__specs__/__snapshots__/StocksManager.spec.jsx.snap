@@ -152,7 +152,7 @@ ShallowWrapper {
                   colSpan="10"
                 >
                   <button
-                    className="button is-secondary"
+                    className="button is-tertiary"
                     disabled={true}
                     id="add-stock"
                     onClick={[Function]}
@@ -210,7 +210,7 @@ ShallowWrapper {
           </table>
         </div>,
         <button
-          className="button is-secondary is-pulled-right"
+          className="button is-tertiary is-pulled-right"
           id="close-manager"
           onClick={[Function]}
           type="button"
@@ -335,7 +335,7 @@ ShallowWrapper {
                     colSpan="10"
                   >
                     <button
-                      className="button is-secondary"
+                      className="button is-tertiary"
                       disabled={true}
                       id="add-stock"
                       onClick={[Function]}
@@ -448,7 +448,7 @@ ShallowWrapper {
                       colSpan="10"
                     >
                       <button
-                        className="button is-secondary"
+                        className="button is-tertiary"
                         disabled={true}
                         id="add-stock"
                         onClick={[Function]}
@@ -669,7 +669,7 @@ ShallowWrapper {
                       colSpan="10"
                     >
                       <button
-                        className="button is-secondary"
+                        className="button is-tertiary"
                         disabled={true}
                         id="add-stock"
                         onClick={[Function]}
@@ -690,7 +690,7 @@ ShallowWrapper {
                       colSpan="10"
                     >
                       <button
-                        className="button is-secondary"
+                        className="button is-tertiary"
                         disabled={true}
                         id="add-stock"
                         onClick={[Function]}
@@ -708,7 +708,7 @@ ShallowWrapper {
                     "nodeType": "host",
                     "props": Object {
                       "children": <button
-                        className="button is-secondary"
+                        className="button is-tertiary"
                         disabled={true}
                         id="add-stock"
                         onClick={[Function]}
@@ -725,7 +725,7 @@ ShallowWrapper {
                       "nodeType": "host",
                       "props": Object {
                         "children": "",
-                        "className": "button is-secondary",
+                        "className": "button is-tertiary",
                         "disabled": true,
                         "id": "add-stock",
                         "onClick": [Function],
@@ -803,7 +803,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": "Fermer",
-          "className": "button is-secondary is-pulled-right",
+          "className": "button is-tertiary is-pulled-right",
           "id": "close-manager",
           "onClick": [Function],
           "type": "button",
@@ -883,7 +883,7 @@ ShallowWrapper {
                     colSpan="10"
                   >
                     <button
-                      className="button is-secondary"
+                      className="button is-tertiary"
                       disabled={true}
                       id="add-stock"
                       onClick={[Function]}
@@ -941,7 +941,7 @@ ShallowWrapper {
             </table>
           </div>,
           <button
-            className="button is-secondary is-pulled-right"
+            className="button is-tertiary is-pulled-right"
             id="close-manager"
             onClick={[Function]}
             type="button"
@@ -1066,7 +1066,7 @@ ShallowWrapper {
                       colSpan="10"
                     >
                       <button
-                        className="button is-secondary"
+                        className="button is-tertiary"
                         disabled={true}
                         id="add-stock"
                         onClick={[Function]}
@@ -1179,7 +1179,7 @@ ShallowWrapper {
                         colSpan="10"
                       >
                         <button
-                          className="button is-secondary"
+                          className="button is-tertiary"
                           disabled={true}
                           id="add-stock"
                           onClick={[Function]}
@@ -1400,7 +1400,7 @@ ShallowWrapper {
                         colSpan="10"
                       >
                         <button
-                          className="button is-secondary"
+                          className="button is-tertiary"
                           disabled={true}
                           id="add-stock"
                           onClick={[Function]}
@@ -1421,7 +1421,7 @@ ShallowWrapper {
                         colSpan="10"
                       >
                         <button
-                          className="button is-secondary"
+                          className="button is-tertiary"
                           disabled={true}
                           id="add-stock"
                           onClick={[Function]}
@@ -1439,7 +1439,7 @@ ShallowWrapper {
                       "nodeType": "host",
                       "props": Object {
                         "children": <button
-                          className="button is-secondary"
+                          className="button is-tertiary"
                           disabled={true}
                           id="add-stock"
                           onClick={[Function]}
@@ -1456,7 +1456,7 @@ ShallowWrapper {
                         "nodeType": "host",
                         "props": Object {
                           "children": "",
-                          "className": "button is-secondary",
+                          "className": "button is-tertiary",
                           "disabled": true,
                           "id": "add-stock",
                           "onClick": [Function],
@@ -1534,7 +1534,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "Fermer",
-            "className": "button is-secondary is-pulled-right",
+            "className": "button is-tertiary is-pulled-right",
             "id": "close-manager",
             "onClick": [Function],
             "type": "button",
@@ -1739,7 +1739,7 @@ ShallowWrapper {
                   colSpan="10"
                 >
                   <button
-                    className="button is-secondary"
+                    className="button is-tertiary"
                     disabled={true}
                     id="add-stock"
                     onClick={[Function]}
@@ -1797,7 +1797,7 @@ ShallowWrapper {
           </table>
         </div>,
         <button
-          className="button is-secondary is-pulled-right"
+          className="button is-tertiary is-pulled-right"
           id="close-manager"
           onClick={[Function]}
           type="button"
@@ -1932,7 +1932,7 @@ ShallowWrapper {
                     colSpan="10"
                   >
                     <button
-                      className="button is-secondary"
+                      className="button is-tertiary"
                       disabled={true}
                       id="add-stock"
                       onClick={[Function]}
@@ -2055,7 +2055,7 @@ ShallowWrapper {
                       colSpan="10"
                     >
                       <button
-                        className="button is-secondary"
+                        className="button is-tertiary"
                         disabled={true}
                         id="add-stock"
                         onClick={[Function]}
@@ -2353,7 +2353,7 @@ ShallowWrapper {
                       colSpan="10"
                     >
                       <button
-                        className="button is-secondary"
+                        className="button is-tertiary"
                         disabled={true}
                         id="add-stock"
                         onClick={[Function]}
@@ -2374,7 +2374,7 @@ ShallowWrapper {
                       colSpan="10"
                     >
                       <button
-                        className="button is-secondary"
+                        className="button is-tertiary"
                         disabled={true}
                         id="add-stock"
                         onClick={[Function]}
@@ -2392,7 +2392,7 @@ ShallowWrapper {
                     "nodeType": "host",
                     "props": Object {
                       "children": <button
-                        className="button is-secondary"
+                        className="button is-tertiary"
                         disabled={true}
                         id="add-stock"
                         onClick={[Function]}
@@ -2409,7 +2409,7 @@ ShallowWrapper {
                       "nodeType": "host",
                       "props": Object {
                         "children": "+ Ajouter une date",
-                        "className": "button is-secondary",
+                        "className": "button is-tertiary",
                         "disabled": true,
                         "id": "add-stock",
                         "onClick": [Function],
@@ -2487,7 +2487,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": "Fermer",
-          "className": "button is-secondary is-pulled-right",
+          "className": "button is-tertiary is-pulled-right",
           "id": "close-manager",
           "onClick": [Function],
           "type": "button",
@@ -2577,7 +2577,7 @@ ShallowWrapper {
                     colSpan="10"
                   >
                     <button
-                      className="button is-secondary"
+                      className="button is-tertiary"
                       disabled={true}
                       id="add-stock"
                       onClick={[Function]}
@@ -2635,7 +2635,7 @@ ShallowWrapper {
             </table>
           </div>,
           <button
-            className="button is-secondary is-pulled-right"
+            className="button is-tertiary is-pulled-right"
             id="close-manager"
             onClick={[Function]}
             type="button"
@@ -2770,7 +2770,7 @@ ShallowWrapper {
                       colSpan="10"
                     >
                       <button
-                        className="button is-secondary"
+                        className="button is-tertiary"
                         disabled={true}
                         id="add-stock"
                         onClick={[Function]}
@@ -2893,7 +2893,7 @@ ShallowWrapper {
                         colSpan="10"
                       >
                         <button
-                          className="button is-secondary"
+                          className="button is-tertiary"
                           disabled={true}
                           id="add-stock"
                           onClick={[Function]}
@@ -3191,7 +3191,7 @@ ShallowWrapper {
                         colSpan="10"
                       >
                         <button
-                          className="button is-secondary"
+                          className="button is-tertiary"
                           disabled={true}
                           id="add-stock"
                           onClick={[Function]}
@@ -3212,7 +3212,7 @@ ShallowWrapper {
                         colSpan="10"
                       >
                         <button
-                          className="button is-secondary"
+                          className="button is-tertiary"
                           disabled={true}
                           id="add-stock"
                           onClick={[Function]}
@@ -3230,7 +3230,7 @@ ShallowWrapper {
                       "nodeType": "host",
                       "props": Object {
                         "children": <button
-                          className="button is-secondary"
+                          className="button is-tertiary"
                           disabled={true}
                           id="add-stock"
                           onClick={[Function]}
@@ -3247,7 +3247,7 @@ ShallowWrapper {
                         "nodeType": "host",
                         "props": Object {
                           "children": "+ Ajouter une date",
-                          "className": "button is-secondary",
+                          "className": "button is-tertiary",
                           "disabled": true,
                           "id": "add-stock",
                           "onClick": [Function],
@@ -3325,7 +3325,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "Fermer",
-            "className": "button is-secondary is-pulled-right",
+            "className": "button is-tertiary is-pulled-right",
             "id": "close-manager",
             "onClick": [Function],
             "type": "button",

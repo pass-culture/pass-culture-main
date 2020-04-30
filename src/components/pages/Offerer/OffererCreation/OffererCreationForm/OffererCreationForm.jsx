@@ -26,9 +26,10 @@ class OffererCreationForm extends Component {
       <span>
         {'Désignation : '}
       </span>
-      {values.name && <span>
+      {values.name &&
+      <span>
         {values.name}
-                      </span>}
+      </span>}
     </div>
   )
 
@@ -45,7 +46,7 @@ class OffererCreationForm extends Component {
           <div className="offerer-form-validation">
             <div className="control">
               <NavLink
-                className="button is-secondary is-medium"
+                className="button is-tertiary is-medium"
                 to="/structures"
               >
                 {'Retour'}

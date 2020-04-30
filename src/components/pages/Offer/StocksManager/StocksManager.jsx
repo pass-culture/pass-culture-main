@@ -232,7 +232,7 @@ class StocksManager extends PureComponent {
                 >
                   <td colSpan="10">
                     <button
-                      className="button is-secondary"
+                      className="button is-tertiary"
                       disabled={!readOnly}
                       id="add-stock"
                       onClick={this.handleOnClickCreateStockItem}
@@ -273,7 +273,7 @@ class StocksManager extends PureComponent {
           </table>
         </div>
         <button
-          className="button is-secondary is-pulled-right"
+          className="button is-tertiary is-pulled-right"
           id="close-manager"
           onClick={this.handleOnCloseClick}
           type="button"

@@ -133,9 +133,10 @@ class OfferItem extends PureComponent {
             <li>
               {maxDate && `jusqu’au ${maxDate.format('DD/MM/YYYY')}`}
             </li>
-            {availabilityMessage && <li>
+            {availabilityMessage &&
+            <li>
               {availabilityMessage}
-                                    </li>}
+            </li>}
             <li>
               {priceMin === priceMax ? (
                 <Price value={priceMin || 0} />
@@ -152,7 +153,7 @@ class OfferItem extends PureComponent {
             <li>
               <NavLink
                 className={`button is-small ${
-                  numberOfMediations ? 'is-secondary' : 'is-primary is-outlined'
+                  numberOfMediations ? 'is-tertiary' : 'is-primary is-outlined'
                 } add-mediations-link`}
                 to={`/offres/${offer.id}${numberOfMediations ? '' : `/accroches/nouveau${search}`}`}
               >
@@ -167,7 +168,7 @@ class OfferItem extends PureComponent {
             {offerHasActiveMediations && (
               <li>
                 <OfferPreviewLink
-                  className="button is-secondary is-small offer-preview-link"
+                  className="button is-tertiary is-small offer-preview-link"
                   href={offerWebappUrl}
                   onClick={this.handleHrefClick}
                 />
@@ -176,7 +177,7 @@ class OfferItem extends PureComponent {
             {offerisEditable && (
               <li>
                 <NavLink
-                  className="button is-secondary is-small edit-link"
+                  className="button is-tertiary is-small edit-link"
                   to={`/offres/${offer.id}`}
                 >
                   <Icon svg="ico-pen-r" />
@@ -186,7 +187,7 @@ class OfferItem extends PureComponent {
             )}
             <li>
               <button
-                className="button is-secondary is-small activ-switch"
+                className="button is-tertiary is-small activ-switch"
                 onClick={this.handleOnDeactivateClick}
                 type="button"
               >

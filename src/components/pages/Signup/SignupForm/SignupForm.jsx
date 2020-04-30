@@ -243,7 +243,7 @@ class SignupForm extends PureComponent {
                   </NavLink>
 
                   <button
-                    className="button is-primary is-outlined"
+                    className="button is-primary"
                     disabled={!valid}
                     type="submit"
                   >

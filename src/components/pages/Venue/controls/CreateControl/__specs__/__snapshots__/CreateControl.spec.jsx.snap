@@ -35,7 +35,7 @@ ShallowWrapper {
           <NavLink
             activeClassName="active"
             aria-current="page"
-            className="button is-secondary is-medium"
+            className="button is-tertiary is-medium"
             to="/offres/creation?lieu=1&structure=RG"
           >
             <span>
@@ -58,7 +58,7 @@ ShallowWrapper {
           <NavLink
             activeClassName="active"
             aria-current="page"
-            className="button is-secondary is-medium"
+            className="button is-tertiary is-medium"
             to="/offres/creation?lieu=1&structure=RG"
           >
             <span>
@@ -80,7 +80,7 @@ ShallowWrapper {
           "children": <NavLink
             activeClassName="active"
             aria-current="page"
-            className="button is-secondary is-medium"
+            className="button is-tertiary is-medium"
             to="/offres/creation?lieu=1&structure=RG"
           >
             <span>
@@ -100,7 +100,7 @@ ShallowWrapper {
             "children": <span>
               Créer une offre dans ce lieu
             </span>,
-            "className": "button is-secondary is-medium",
+            "className": "button is-tertiary is-medium",
             "to": "/offres/creation?lieu=1&structure=RG",
           },
           "ref": null,
@@ -143,7 +143,7 @@ ShallowWrapper {
             <NavLink
               activeClassName="active"
               aria-current="page"
-              className="button is-secondary is-medium"
+              className="button is-tertiary is-medium"
               to="/offres/creation?lieu=1&structure=RG"
             >
               <span>
@@ -166,7 +166,7 @@ ShallowWrapper {
             <NavLink
               activeClassName="active"
               aria-current="page"
-              className="button is-secondary is-medium"
+              className="button is-tertiary is-medium"
               to="/offres/creation?lieu=1&structure=RG"
             >
               <span>
@@ -188,7 +188,7 @@ ShallowWrapper {
             "children": <NavLink
               activeClassName="active"
               aria-current="page"
-              className="button is-secondary is-medium"
+              className="button is-tertiary is-medium"
               to="/offres/creation?lieu=1&structure=RG"
             >
               <span>
@@ -208,7 +208,7 @@ ShallowWrapper {
               "children": <span>
                 Créer une offre dans ce lieu
               </span>,
-              "className": "button is-secondary is-medium",
+              "className": "button is-tertiary is-medium",
               "to": "/offres/creation?lieu=1&structure=RG",
             },
             "ref": null,

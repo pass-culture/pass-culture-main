@@ -237,8 +237,10 @@
   }
 
   .field-password > button {
-    border-bottom-right-radius: $control-radius;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
     border-top-right-radius: $control-radius;
+    border-bottom-right-radius: $control-radius;
     border-width: 2px;
     padding-left: 1em;
     padding-right: 1em;

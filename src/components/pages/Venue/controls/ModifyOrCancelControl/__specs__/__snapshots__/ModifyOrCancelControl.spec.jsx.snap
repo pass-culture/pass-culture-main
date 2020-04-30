@@ -31,7 +31,7 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": <button
-        className="button is-secondary is-medium"
+        className="button is-tertiary is-medium"
         onClick={[Function]}
         type="reset"
       >
@@ -46,7 +46,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": "Annuler",
-        "className": "button is-secondary is-medium",
+        "className": "button is-tertiary is-medium",
         "onClick": [Function],
         "type": "reset",
       },
@@ -63,7 +63,7 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": <button
-          className="button is-secondary is-medium"
+          className="button is-tertiary is-medium"
           onClick={[Function]}
           type="reset"
         >
@@ -78,7 +78,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": "Annuler",
-          "className": "button is-secondary is-medium",
+          "className": "button is-tertiary is-medium",
           "onClick": [Function],
           "type": "reset",
         },

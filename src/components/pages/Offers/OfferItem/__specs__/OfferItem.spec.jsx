@@ -234,7 +234,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           // then
           expect(addMediationsLink).toHaveLength(1)
           expect(addMediationsLink.prop('className')).toBe(
-            'button is-small is-secondary add-mediations-link'
+            'button is-small is-tertiary add-mediations-link'
           )
           expect(addMediationsLink.prop('to')).toBe('/offres/M4')
           expect(icon.prop('svg')).toBe('ico-stars')

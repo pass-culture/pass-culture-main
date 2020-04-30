@@ -27,7 +27,7 @@ class SubmitAndCancelControl extends PureComponent {
         </td>
         <td className="is-clipped">
           <button
-            className="button is-secondary is-small cancel-step"
+            className="button is-tertiary is-small cancel-step"
             onClick={this.handleOnClick(form, query, stockId)}
             type="reset"
           >

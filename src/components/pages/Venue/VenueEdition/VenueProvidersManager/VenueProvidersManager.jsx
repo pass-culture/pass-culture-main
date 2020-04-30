@@ -166,7 +166,7 @@ class VenueProvidersManager extends PureComponent {
         {hasAtLeastOneProvider && hasNoVenueProvider && !isCreationMode && (
           <div className="has-text-centered">
             <button
-              className="button is-secondary"
+              className="button is-tertiary"
               id="add-venue-provider-btn"
               onClick={this.handleAddVenueProvider}
               type="button"

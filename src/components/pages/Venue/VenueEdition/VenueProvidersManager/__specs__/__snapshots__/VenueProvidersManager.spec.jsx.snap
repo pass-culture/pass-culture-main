@@ -74,7 +74,7 @@ ShallowWrapper {
           className="has-text-centered"
         >
           <button
-            className="button is-secondary"
+            className="button is-tertiary"
             id="add-venue-provider-btn"
             onClick={[Function]}
             type="button"
@@ -122,7 +122,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": <button
-            className="button is-secondary"
+            className="button is-tertiary"
             id="add-venue-provider-btn"
             onClick={[Function]}
             type="button"
@@ -138,7 +138,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "+ Importer des offres",
-            "className": "button is-secondary",
+            "className": "button is-tertiary",
             "id": "add-venue-provider-btn",
             "onClick": [Function],
             "type": "button",
@@ -171,7 +171,7 @@ ShallowWrapper {
             className="has-text-centered"
           >
             <button
-              className="button is-secondary"
+              className="button is-tertiary"
               id="add-venue-provider-btn"
               onClick={[Function]}
               type="button"
@@ -219,7 +219,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": <button
-              className="button is-secondary"
+              className="button is-tertiary"
               id="add-venue-provider-btn"
               onClick={[Function]}
               type="button"
@@ -235,7 +235,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": "+ Importer des offres",
-              "className": "button is-secondary",
+              "className": "button is-tertiary",
               "id": "add-venue-provider-btn",
               "onClick": [Function],
               "type": "button",

@@ -79,7 +79,7 @@ class EditAndDeleteControl extends PureComponent {
       <Fragment>
         <td>
           <button
-            className="button is-small is-secondary edit-stock"
+            className="button is-small is-tertiary edit-stock"
             disabled={isEventExpired}
             id={`edit-stock-${stockId}-button`}
             onClick={this.handleOnClick(query, stockId)}
@@ -97,7 +97,7 @@ class EditAndDeleteControl extends PureComponent {
         <td className="is-clipped">
           {!isDeleting && (
             <button
-              className="button is-small is-secondary delete-stock"
+              className="button is-small is-tertiary delete-stock"
               disabled={!isEventDeletable}
               onClick={this.handleOnDeleteClick}
               style={{ width: '100%' }}

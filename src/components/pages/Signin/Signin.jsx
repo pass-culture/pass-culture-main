@@ -109,7 +109,7 @@ class Signin extends PureComponent {
                         {'Créer un compte'}
                       </NavLink>
                       <SubmitButton
-                        className="button is-primary is-outlined"
+                        className="button is-primary"
                         id="signin-submit-button"
                       >
                         {'Se connecter'}
