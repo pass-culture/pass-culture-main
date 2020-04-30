@@ -15,6 +15,8 @@ target.zip
 .DS_Store
 .env.local
 .env.development.local
+.env.staging.local
+.env.integration.local
 .env.test.local
 .env.production.local
 .tern-port

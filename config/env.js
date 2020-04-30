@@ -65,21 +65,13 @@ function getClientEnvironment(publicUrl) {
       {
         API_URL: process.env.API_URL,
         ENVIRONMENT_NAME: process.env.ENVIRONMENT_NAME,
-        // package name for api
         NAME: name,
-        // Useful for determining whether we’re running in production mode.
-        // Most importantly, it switches React into the correct mode.
-        NODE_ENV: process.env.NODE_ENV || 'development',
-        // Useful for resolving the correct path to static assets in `public`.
-        // For example, <img src={process.env.PUBLIC_URL + '/img/logo.png'} />.
-        // This should only be used as an escape hatch. Normally you would put
-        // images into the `src` and `import` them in code to get their paths.
+        NODE_ENV: process.env.NODE_ENV,
         PUBLIC_URL: publicUrl,
-        // VERSION FOR API
         VERSION: version,
         MATOMO_SERVER_URL: process.env.MATOMO_SERVER_URL,
-        SENTRY_SERVER_URL_FOR_PRO: process.env.SENTRY_SERVER_URL_FOR_PRO,
-        URL_FOR_MAINTENANCE: process.env.PRO_URL_FOR_MAINTENANCE,
+        SENTRY_SERVER_URL: process.env.SENTRY_SERVER_URL,
+        URL_FOR_MAINTENANCE: process.env.URL_FOR_MAINTENANCE,
         MAINTENANCE_PAGE_AVAILABLE: process.env.MAINTENANCE_PAGE_AVAILABLE === 'true' || false,
         DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL:
           process.env.DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL,
