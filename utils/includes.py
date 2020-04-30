@@ -15,6 +15,7 @@ OFFERER_INCLUDES = [
     "userHasAccess",
     "bic",
     "iban",
+    "demarchesSimplifieesApplicationId",
     "-validationToken"
 ]
 

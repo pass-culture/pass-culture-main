@@ -1,4 +1,5 @@
 from models import ApiErrors
+from models.bank_information import BankInformationStatus
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer, \
@@ -45,7 +46,8 @@ class OffererBankInformationTest:
     def test_bic_property_returns_bank_information_bic_when_offerer_has_bank_information(self, app):
         # Given
         offerer = create_offerer(siren='123456789')
-        bank_information = create_bank_information(bic='BDFEFR2LCCB', id_at_providers='123456789', offerer=offerer)
+        bank_information = create_bank_information(
+            bic='BDFEFR2LCCB', id_at_providers='123456789', offerer=offerer)
         repository.save(bank_information)
 
         # When
@@ -92,6 +94,20 @@ class OffererBankInformationTest:
         # Then
         assert iban is None
 
+    @clean_database
+    def test_demarchesSimplifieesApplicationId_returns_none_if_status_is_rejected(self, app):
+        # Given
+        offerer = create_offerer(siren='123456789')
+        bank_information = create_bank_information(
+            id_at_providers='123456789', offerer=offerer, status=BankInformationStatus.REJECTED, iban=None, bic=None)
+        repository.save(bank_information)
+
+        # When
+        field = offerer.demarchesSimplifieesApplicationId
+
+        # Then
+        assert field is None
+
 
 class IsValidatedTest:
     @clean_database
@@ -99,7 +115,8 @@ class IsValidatedTest:
         # Given
         offerer = create_offerer(siren='123456789')
         user = create_user(postal_code=None)
-        user_offerer = create_user_offerer(user, offerer, validation_token=None)
+        user_offerer = create_user_offerer(
+            user, offerer, validation_token=None)
         repository.save(user_offerer)
 
         # When
@@ -151,7 +168,8 @@ class AppendUserHasAccessAttributeTest:
         # Given
         current_user = create_user(postal_code=None)
         offerer = create_offerer()
-        user_offerer = create_user_offerer(current_user, offerer, validation_token=None)
+        user_offerer = create_user_offerer(
+            current_user, offerer, validation_token=None)
         repository.save(user_offerer)
 
         # When
@@ -165,7 +183,8 @@ class AppendUserHasAccessAttributeTest:
         # Given
         current_user = create_user(postal_code=None)
         offerer = create_offerer()
-        user_offerer = create_user_offerer(current_user, offerer, validation_token='TOKEN')
+        user_offerer = create_user_offerer(
+            current_user, offerer, validation_token='TOKEN')
         repository.save(user_offerer)
 
         # When
@@ -177,10 +196,12 @@ class AppendUserHasAccessAttributeTest:
     @clean_database
     def test_should_return_false_when_current_user_has_no_access(self, app):
         # Given
-        current_user = create_user(email='current@example.net', postal_code=None)
+        current_user = create_user(
+            email='current@example.net', postal_code=None)
         user = create_user(postal_code=None)
         offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer, validation_token=None)
+        user_offerer = create_user_offerer(
+            user, offerer, validation_token=None)
         repository.save(user_offerer)
 
         # When
@@ -192,10 +213,12 @@ class AppendUserHasAccessAttributeTest:
     @clean_database
     def test_should_return_true_when_current_user_is_admin(self, app):
         # Given
-        current_user = create_user(email='current@example.net', is_admin=True, postal_code=None)
+        current_user = create_user(
+            email='current@example.net', is_admin=True, postal_code=None)
         user = create_user(postal_code=None)
         offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer, validation_token=None)
+        user_offerer = create_user_offerer(
+            user, offerer, validation_token=None)
         repository.save(user_offerer)
 
         # When

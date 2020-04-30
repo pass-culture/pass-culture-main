@@ -9,7 +9,8 @@ class Get:
         @clean_database
         def when_user_is_not_logged_in(self, app):
             # when
-            response = TestClient(app.test_client()).get('/offerers', headers={'origin': 'http://localhost:3000'})
+            response = TestClient(app.test_client()).get(
+                '/offerers', headers={'origin': 'http://localhost:3000'})
 
             # then
             assert response.status_code == 401
@@ -68,9 +69,12 @@ class Get:
             offerer1 = create_offerer(siren='123456781', name='offreur A')
             offerer2 = create_offerer(siren='123456782', name='offreur B')
             offerer3 = create_offerer(siren='123456783', name='offreur C')
-            user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
-            user_offerer2 = create_user_offerer(user, offerer2, validation_token='AZE123')
-            user_offerer3 = create_user_offerer(user, offerer3, validation_token=None)
+            user_offerer1 = create_user_offerer(
+                user, offerer1, validation_token=None)
+            user_offerer2 = create_user_offerer(
+                user, offerer2, validation_token='AZE123')
+            user_offerer3 = create_user_offerer(
+                user, offerer3, validation_token=None)
             repository.save(user_offerer1, user_offerer2, user_offerer3)
 
             # when
@@ -135,10 +139,13 @@ class Get:
         def when_user_is_admin_and_param_validated_is_false_and_returns_all_info_of_all_offerers(
                 self, app):
             # given
-            offerer1 = create_offerer(siren='123456781', name='offreur A', validation_token='F1TVYSGV')
+            offerer1 = create_offerer(
+                siren='123456781', name='offreur A', validation_token='F1TVYSGV')
             offerer2 = create_offerer(siren='123456782', name='offreur B')
-            bank_information1 = create_bank_information(id_at_providers='123456781', offerer=offerer1)
-            bank_information2 = create_bank_information(id_at_providers='123456782', offerer=offerer2)
+            bank_information1 = create_bank_information(
+                id_at_providers='123456781', offerer=offerer1)
+            bank_information2 = create_bank_information(
+                id_at_providers='123456782', offerer=offerer2)
 
             user = create_user(can_book_free_offers=False, is_admin=True)
             user.offerers = [offerer1, offerer2]
@@ -155,7 +162,7 @@ class Get:
             offerer_response = response.json[0]
             assert offerer_response['name'] == 'offreur A'
             assert set(offerer_response.keys()) == {
-                'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider', 'fieldsUpdated', 'iban', 'id',
+                'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider', 'demarchesSimplifieesApplicationId', 'fieldsUpdated', 'iban', 'id',
                 'idAtProviders', 'isActive', 'isValidated', 'lastProviderId', 'managedVenues', 'modelName', 'nOffers',
                 'name', 'postalCode', 'siren', 'thumbCount', 'userHasAccess'
             }
@@ -164,10 +171,14 @@ class Get:
         def when_user_is_admin_and_param_validated_is_true_and_returns_only_validated_offerer(
                 self, app):
             # given
-            offerer1 = create_offerer(siren='123456781', name='offreur C', validation_token=None)
-            offerer2 = create_offerer(siren='123456782', name='offreur A', validation_token='AFYDAA')
-            bank_information1 = create_bank_information(id_at_providers='123456781', offerer=offerer1)
-            bank_information2 = create_bank_information(id_at_providers='123456782', offerer=offerer2)
+            offerer1 = create_offerer(
+                siren='123456781', name='offreur C', validation_token=None)
+            offerer2 = create_offerer(
+                siren='123456782', name='offreur A', validation_token='AFYDAA')
+            bank_information1 = create_bank_information(
+                id_at_providers='123456781', offerer=offerer1)
+            bank_information2 = create_bank_information(
+                id_at_providers='123456782', offerer=offerer2)
 
             user = create_user(can_book_free_offers=False, is_admin=True)
             user.offerers = [offerer1, offerer2]
@@ -188,9 +199,12 @@ class Get:
         def when_param_validated_is_false_and_returns_only_not_validated_offerers(self, app):
             # given
             user = create_user()
-            offerer1 = create_offerer(siren='123456781', name='offreur C', validation_token=None)
-            offerer2 = create_offerer(siren='123456782', name='offreur A', validation_token='AZE123')
-            offerer3 = create_offerer(siren='123456783', name='offreur B', validation_token=None)
+            offerer1 = create_offerer(
+                siren='123456781', name='offreur C', validation_token=None)
+            offerer2 = create_offerer(
+                siren='123456782', name='offreur A', validation_token='AZE123')
+            offerer3 = create_offerer(
+                siren='123456783', name='offreur B', validation_token=None)
             user_offerer1 = create_user_offerer(user, offerer1)
             user_offerer2 = create_user_offerer(user, offerer2)
             user_offerer3 = create_user_offerer(user, offerer3)
@@ -209,9 +223,12 @@ class Get:
         def when_param_validated_is_true_and_returns_only_validated_offerers(self, app):
             # given
             user = create_user()
-            offerer1 = create_offerer(siren='123456781', name='offreur C', validation_token=None)
-            offerer2 = create_offerer(siren='123456782', name='offreur A', validation_token='AZE123')
-            offerer3 = create_offerer(siren='123456783', name='offreur B', validation_token=None)
+            offerer1 = create_offerer(
+                siren='123456781', name='offreur C', validation_token=None)
+            offerer2 = create_offerer(
+                siren='123456782', name='offreur A', validation_token='AZE123')
+            offerer3 = create_offerer(
+                siren='123456783', name='offreur B', validation_token=None)
             user_offerer1 = create_user_offerer(user, offerer1)
             user_offerer2 = create_user_offerer(user, offerer2)
             user_offerer3 = create_user_offerer(user, offerer3)
@@ -232,17 +249,23 @@ class Get:
         def when_param_validated_is_true_returns_all_info_of_validated_offerers(self, app):
             # given
             user = create_user()
-            offerer1 = create_offerer(siren='123456781', name='offreur C', validation_token=None)
-            offerer2 = create_offerer(siren='123456782', name='offreur A', validation_token='AZE123')
-            offerer3 = create_offerer(siren='123456783', name='offreur B', validation_token=None)
+            offerer1 = create_offerer(
+                siren='123456781', name='offreur C', validation_token=None)
+            offerer2 = create_offerer(
+                siren='123456782', name='offreur A', validation_token='AZE123')
+            offerer3 = create_offerer(
+                siren='123456783', name='offreur B', validation_token=None)
             user_offerer1 = create_user_offerer(user, offerer1)
             user_offerer2 = create_user_offerer(user, offerer2)
             user_offerer3 = create_user_offerer(user, offerer3)
-            bank_information1 = create_bank_information(id_at_providers='123456781', offerer=offerer1)
-            bank_information2 = create_bank_information(id_at_providers='123456782', offerer=offerer2)
-            bank_information3 = create_bank_information(id_at_providers='123456783', offerer=offerer3)
+            bank_information1 = create_bank_information(
+                id_at_providers='123456781', offerer=offerer1)
+            bank_information2 = create_bank_information(
+                id_at_providers='123456782', offerer=offerer2)
+            bank_information3 = create_bank_information(
+                id_at_providers='123456783', offerer=offerer3)
             repository.save(bank_information1, bank_information2, bank_information3, user_offerer1,
-                          user_offerer2, user_offerer3)
+                            user_offerer2, user_offerer3)
 
             # when
             response = TestClient(app.test_client()) \
@@ -253,8 +276,8 @@ class Get:
             assert response.status_code == 200
             assert len(response.json) == 2
             assert list(response.json[0].keys()) == [
-                'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider', 'fieldsUpdated',
-                'iban', 'id', 'idAtProviders', 'isActive',
+                'address', 'bic', 'city', 'dateCreated', 'dateModifiedAtLastProvider', 'demarchesSimplifieesApplicationId',
+                'fieldsUpdated', 'iban', 'id', 'idAtProviders', 'isActive',
                 'isValidated', 'lastProviderId', 'managedVenues', 'modelName', 'nOffers',
                 'name', 'postalCode', 'siren', 'thumbCount', 'userHasAccess'
             ]
@@ -285,7 +308,8 @@ class Get:
             offerer = create_offerer(name='offreur C')
             user_offerer = create_user_offerer(user, offerer)
             repository.save(user_offerer)
-            auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
+            auth_request = TestClient(
+                app.test_client()).with_auth(email='user@test.com')
 
             # when
             response = auth_request.get('/offerers')
@@ -305,7 +329,8 @@ class Get:
             venue1 = create_venue(offerer1)
             venue2 = create_venue(siret='12345678912346', offerer=offerer1)
             repository.save(user_offerer1, user_offerer2, venue1, venue2)
-            auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
+            auth_request = TestClient(
+                app.test_client()).with_auth(email='user@test.com')
 
             # when
             response = auth_request.get('/offerers')
@@ -334,4 +359,5 @@ class Get:
 
             # then
             assert response.status_code == 400
-            assert response.json['validated'] == ["Le paramètre 'validated' doit être 'true' ou 'false'"]
+            assert response.json['validated'] == [
+                "Le paramètre 'validated' doit être 'true' ou 'false'"]
