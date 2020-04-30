@@ -13,10 +13,11 @@ import {
   selectUsedThingBookings,
 } from '../bookingsSelectors'
 
+jest.spyOn(Date, 'now').mockImplementation(() => '2000-01-01T20:00:00+02:00')
+
 describe('selectEventBookingsOfTheWeek', () => {
   it('should return bookings of the week', () => {
     // given
-    jest.spyOn(Date, 'now').mockImplementation(() => '2000-01-01T20:00:00Z')
     const stockYesterday = {
       beginningDatetime: new Date('1999-12-31T20:00:00.00Z').toISOString(),
       id: 's1',
@@ -32,13 +33,13 @@ describe('selectEventBookingsOfTheWeek', () => {
       id: 's2',
       offerId: 'o1',
     }
-    const stockInEightDays = {
-      beginningDatetime: new Date('2000-01-08T20:00:00.01Z').toISOString(),
+    const stockInSevenDays = {
+      beginningDatetime: new Date('2000-01-08T18:00:00.00Z').toISOString(),
       id: 's6',
       offerId: 'o1',
     }
     const stockInNineDays = {
-      beginningDatetime: new Date('2000-01-09T20:00:00.01Z').toISOString(),
+      beginningDatetime: new Date('2000-01-09T20:00:00.00Z').toISOString(),
       id: 's3',
       offerId: 'o1',
     }
@@ -66,7 +67,7 @@ describe('selectEventBookingsOfTheWeek', () => {
             id: 'b7',
             isCancelled: false,
             isUsed: false,
-            stockId: stockInEightDays.id,
+            stockId: stockInSevenDays.id,
           },
           {
             id: 'b2',
@@ -117,7 +118,7 @@ describe('selectEventBookingsOfTheWeek', () => {
           stockYesterday,
           stockToday,
           stockInTwoDays,
-          stockInEightDays,
+          stockInSevenDays,
           stockInNineDays,
           stockPermanent,
         ],
@@ -151,7 +152,7 @@ describe('selectEventBookingsOfTheWeek', () => {
         id: 'b7',
         isCancelled: false,
         isUsed: false,
-        stockId: stockInEightDays.id,
+        stockId: stockInSevenDays.id,
       },
     ])
   })
@@ -160,7 +161,6 @@ describe('selectEventBookingsOfTheWeek', () => {
 describe('selectUpComingBookings', () => {
   it('should return up coming bookings', () => {
     // given
-    jest.spyOn(Date, 'now').mockImplementation(() => '2000-01-01T20:00:00Z')
     const oneDayBeforeNow = new Date('1999-12-31T20:00:00.00Z').toISOString()
     const fourDaysAfterNow = new Date('2000-01-04T20:00:00.00Z').toISOString()
     const nineDaysAfterNow = new Date('2000-01-09T20:00:00.01Z').toISOString()
@@ -578,7 +578,6 @@ describe('selectCancelledBookings', () => {
 describe('selectUsedThingBookings', () => {
   it('should not return bookings on events', () => {
     // given
-    jest.spyOn(Date, 'now').mockImplementation(() => '2000-01-01T20:00:00Z')
     const state = {
       data: {
         bookings: [
@@ -668,7 +667,6 @@ describe('selectUsedThingBookings', () => {
 describe('selectBookingsOrderedByBeginningDateTimeAsc', () => {
   it('should return bookings ordered by beginning date time', () => {
     // given
-    jest.spyOn(Date, 'now').mockImplementation(() => '2000-01-01T20:00:00Z')
     const oneDayBeforeNow = new Date('1999-12-31T20:00:00.00Z').toISOString()
     const fourDaysAfterNow = new Date('2000-01-04T20:00:00.00Z').toISOString()
     const nineDaysAfterNow = new Date('2000-01-09T20:00:00.01Z').toISOString()

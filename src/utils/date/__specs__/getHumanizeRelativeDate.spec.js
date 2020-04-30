@@ -1,7 +1,6 @@
 import getHumanizeRelativeDate from '../getHumanizeRelativeDate'
 import moment from 'moment-timezone'
 
-
 describe('src | utils | date | getHumanizeRelativeDate', () => {
   describe('getHumanizeRelativeDate()', () => {
     describe('when there is a null date (e.g.: tuto)', () => {

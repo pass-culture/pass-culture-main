@@ -6,7 +6,7 @@ import { dateStringPlusTimeZone } from '../../../utils/date/date'
 import { selectOfferById } from './offersSelectors'
 import { selectStockById, selectStocksByOfferId } from './stocksSelectors'
 
-const SLIDING_DAYS = 8
+const SLIDING_DAYS = 7
 
 export const selectBookings = state => state.data.bookings
 
