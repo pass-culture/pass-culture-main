@@ -15,21 +15,29 @@
 }
 
 .pc-checkbox {
-  background: url(/icons/checkbox.svg) no-repeat;
-  background-size: 20px;
-  border: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -o-appearance: none;
+  border: 2px solid $grey;
+  border-radius: 4px;
   width: 20px;
   height: 20px;
   padding: 0;
-  border-radius: 0;
+  outline: none;
   margin-bottom: rem(54px);
 
   &:focus {
-    background-image: url(/icons/checkbox-focused.svg);
+    border-color: $thumb-color;
   }
 
   &:active,
   &:checked {
+    background-color: $grey;
+
+    &:focus {
+      background-color: $thumb-color;
+    }
+
     &::after {
       content: '';
       background: url(/icons/checkbox-check.svg) center no-repeat;

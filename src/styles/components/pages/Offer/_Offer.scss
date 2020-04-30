@@ -66,20 +66,28 @@
   }
 
   .offer-duo-checkbox {
-    background: url(/icons/checkbox.svg) no-repeat;
-    background-size: 20px;
-    border: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -o-appearance: none;
+    border: 2px solid $grey;
+    border-radius: 4px;
     width: 20px;
     height: 20px;
     padding: 0;
-    border-radius: 0;
     margin-bottom: rem(12px);
+    outline: none;
 
     &:focus {
-      background-image: url(/icons/checkbox-focused.svg);
+      border-color: $thumb-color;
     }
 
     &:checked {
+      background-color: $grey;
+
+      &:focus {
+        background-color: $thumb-color;
+      }
+
       &::after {
         content: '';
         background: url(/icons/checkbox-check.svg) center no-repeat;

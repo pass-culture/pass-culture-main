@@ -165,11 +165,10 @@
 
   input[type='checkbox'] {
     -webkit-appearance: none;
-    background-image: url(/icons/checkbox.svg);
-    background-repeat: no-repeat;
-    background-size: $body-line-height;
-    border: none;
-    border-radius: 0;
+    -moz-appearance: none;
+    -o-appearance: none;
+    border: 2px solid $grey;
+    border-radius: 4px;
     font-size: 1rem;
     margin-right: 0.5rem;
     padding: 0;
@@ -179,10 +178,16 @@
     width: $body-line-height;
 
     &:focus {
-      background-image: url(/icons/checkbox-focused.svg);
+      border-color: $thumb-color;
     }
 
     &:checked {
+      background-color: $grey;
+
+      &:focus {
+        background-color: $thumb-color;
+      }
+
       &::after {
         content: '';
         background-repeat: no-repeat;

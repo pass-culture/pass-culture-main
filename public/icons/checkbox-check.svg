@@ -16,7 +16,7 @@
                                         <g id="FORMS/checkbox-red" transform="translate(0.000000, 1.000000)">
                                             <g id="FORMS/checkbox-check-red" transform="translate(3.200000, 3.200000)">
                                                 <rect id="Background" x="0" y="0" width="9.6" height="9.6"></rect>
-                                                <polyline id="Path-2" stroke="#E60039" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="0.8 4.01663783 4 7.21663783 8.81663783 2.4"></polyline>
+                                                <polyline id="Path-2" stroke="#FFFFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="0.8 4.01663783 4 7.21663783 8.81663783 2.4"></polyline>
                                             </g>
                                         </g>
                                     </g>

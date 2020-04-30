@@ -46,22 +46,27 @@ textarea.textarea {
     display: flex;
 
     input {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      -o-appearance: none;
+      border: 2px solid $grey;
+      border-radius: 4px;
       margin-right: 0.5rem;
-      background-image: url(/icons/checkbox.svg);
-      border: none;
-      background-repeat
-      : no-repeat;
-      background-size: $body-line-height;
       width: $body-line-height;
       height: $body-line-height;
       padding: 0;
-      border-radius: 0;
+      outline: none;
+
+      &:focus {
+        border-color: $thumb-color;
+      }
 
       &:active,
       &:checked {
+        background-color: $grey;
 
         &:focus {
-          background-image: url(/icons/checkbox-focused.svg);
+          background-color: $thumb-color;
         }
 
         &::after {
