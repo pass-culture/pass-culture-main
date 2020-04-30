@@ -8,6 +8,7 @@ import { fetchPlaces } from '../../../../../../vendor/api-geo/placesService'
 jest.mock('../../../../../../vendor/api-geo/placesService', () => ({
   fetchPlaces: jest.fn(),
 }))
+jest.mock('lodash.debounce', () => jest.fn(callback => callback))
 describe('components | Place', () => {
   let props
 
@@ -25,6 +26,10 @@ describe('components | Place', () => {
         resolve([])
       })
     )
+  })
+
+  afterEach(() => {
+    fetchPlaces.mockReset()
   })
 
   it('should render a Header component', () => {
@@ -55,16 +60,40 @@ describe('components | Place', () => {
     expect(input.prop('value')).toStrictEqual('')
   })
 
-  it('should fetch places when typing in search input', () => {
+  it('should fetch places when typing in search input', async () => {
     // Given
     const wrapper = shallow(<Place {...props} />)
     const input = wrapper.find('input')
 
     // When
-    input.simulate('change', { target: { value: 'Pari' } })
+    await input.simulate('change', { target: { value: 'Pari' } })
 
     // Then
     expect(fetchPlaces).toHaveBeenCalledWith({ keywords: 'Pari' })
+  })
+
+  it('should not fetch places when keywords length is odd', async () => {
+    // Given
+    const wrapper = shallow(<Place {...props} />)
+    const input = wrapper.find('input')
+
+    // When
+    await input.simulate('change', { target: { value: 'P' } })
+
+    // Then
+    expect(fetchPlaces).toHaveBeenCalledTimes(0)
+  })
+
+  it('should fetch places when keywords length is even', async () => {
+    // Given
+    const wrapper = shallow(<Place {...props} />)
+    const input = wrapper.find('input')
+
+    // When
+    await input.simulate('change', { target: { value: 'Pa' } })
+
+    // Then
+    expect(fetchPlaces).toHaveBeenCalledTimes(1)
   })
 
   it('should not render a list of suggested places while typing when no result', async () => {
@@ -118,7 +147,7 @@ describe('components | Place', () => {
     const input = wrapper.find('input')
 
     // When
-    await input.simulate('change', { target: { value: 'Par' } })
+    await input.simulate('change', { target: { value: 'Pari' } })
 
     // Then
     const suggestedPlaces = wrapper
@@ -243,7 +272,7 @@ describe('components | Place', () => {
     )
     const wrapper = shallow(<Place {...props} />)
     const input = wrapper.find('input')
-    await input.simulate('change', { target: { value: 'Par' } })
+    await input.simulate('change', { target: { value: 'Pari' } })
     const suggestedPlaces = wrapper
       .find('ul')
       .find('li')
@@ -297,7 +326,7 @@ describe('components | Place', () => {
     )
     const wrapper = shallow(<Place {...props} />)
     const input = wrapper.find('input')
-    await input.simulate('change', { target: { value: 'Par' } })
+    await input.simulate('change', { target: { value: 'Pari' } })
     const suggestedPlaces = wrapper
       .find('ul')
       .find('li')

@@ -3,6 +3,9 @@ import React, { PureComponent } from 'react'
 import Header from '../../../../layout/Header/Header'
 import { fetchPlaces } from '../../../../../vendor/api-geo/placesService'
 import Icon from '../../../../layout/Icon/Icon'
+import debounce from 'lodash.debounce'
+
+const WAITING_TIME_BEFORE_FETCHING_DATA = 500
 
 export class Place extends PureComponent {
   constructor(props) {
@@ -13,15 +16,20 @@ export class Place extends PureComponent {
     }
   }
 
-  handleOnChange = event => {
-    this.setState({ keywords: event.target.value }, () => {
+  handleOnChange = (event => {
+    const searchedKeywords = event.target.value
+
+    this.setState({ keywords: searchedKeywords }, debounce(() => {
       const { keywords } = this.state
-      fetchPlaces({ keywords })
-        .then(suggestedPlaces => {
-          this.setState({ suggestedPlaces })
-        })
-    })
-  }
+
+      if (searchedKeywords.length % 2 === 0) {
+        fetchPlaces({ keywords })
+          .then(suggestedPlaces => {
+            this.setState({ suggestedPlaces })
+          })
+      }
+    }, WAITING_TIME_BEFORE_FETCHING_DATA))
+  })
 
   handlePlaceSelection = event => {
     const { suggestedPlaces } = this.state
