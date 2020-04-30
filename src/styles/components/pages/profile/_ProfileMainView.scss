@@ -1,10 +1,33 @@
-.app-version {
-  color: $grey;
-  font-size: rem(14px);
-  font-weight: 500;
-  margin: 0 0 rem(24px) rem(22px);
-}
+.pm-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100%;
+  min-width: 100%;
+  width: 100%;
 
-.pm-ministry-of-culture {
-  margin: 0 0 rem(22px) rem(24px);
+  .pm-main {
+    overflow: hidden !important;
+  }
+
+  .pm-scroll {
+    height: 100%;
+    max-height: 100%;
+    max-width: 100%;
+    min-height: 100%;
+    min-width: 100%;
+    overflow: auto;
+    width: 100%;
+  }
+
+  .pm-app-version {
+    color: $grey;
+    font-size: rem(14px);
+    font-weight: 500;
+    margin: 0 0 rem(24px) rem(22px);
+  }
+
+  .pm-ministry-of-culture {
+    margin: 0 0 rem(22px) rem(24px);
+  }
 }

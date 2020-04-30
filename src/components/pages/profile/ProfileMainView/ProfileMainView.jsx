@@ -8,16 +8,13 @@ import MesInformationsContainer from '../MesInformations/MesInformationsContaine
 import RemainingCredit from '../RemainingCredit/RemainingCredit'
 
 const ProfileMainView = ({ currentUser }) => (
-  <div
-    className="pc-page-view pc-theme-default flex-rows with-header"
-    id="profile-page-main-view"
-  >
-    <main className="pc-main is-clipped is-relative">
-      <div className="pc-scroll-container">
+  <div className="pm-wrapper">
+    <main className="pm-main">
+      <div className="pm-scroll">
         <ProfileHeader currentUser={currentUser} />
         {currentUser && <RemainingCredit currentUser={currentUser} />}
         <MesInformationsContainer />
-        <div className="app-version">
+        <div className="pm-app-version">
           {`Version ${version}`}
         </div>
         <img

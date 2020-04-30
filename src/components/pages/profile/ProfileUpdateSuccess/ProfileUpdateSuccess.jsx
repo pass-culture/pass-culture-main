@@ -7,10 +7,7 @@ import Icon from '../../../layout/Icon/Icon'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 
 const ProfileUpdateSuccess = ({ title }) => (
-  <div
-    className="pc-page-view pc-theme-default flex-rows with-header"
-    id="profile-page-main-view"
-  >
+  <div className="pc-page-view pc-theme-default flex-rows with-header">
     <Header
       backTo="/profil"
       closeTo={null}
