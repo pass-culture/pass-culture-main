@@ -37,6 +37,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
             {
               id: 'AA',
               offerId: 'CCCC',
+              beginningDatetime: null,
             },
           ],
         },
@@ -80,7 +81,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
           thumbUrl: 'https://example.net/mediation/image',
         },
         ribbon: null,
-        stock: { id: 'AA', offerId: 'CCCC' },
+        stock: { beginningDatetime: null, id: 'AA', offerId: 'CCCC' },
       })
     })
 
@@ -118,7 +119,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
           label: 'Retiré',
           type: 'finished',
         },
-        stock: { id: 'AA', offerId: 'CCCC' },
+        stock: { beginningDatetime: null, id: 'AA', offerId: 'CCCC' },
       })
     })
 
@@ -154,7 +155,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
           label: 'Utilisé',
           type: 'finished',
         },
-        stock: { id: 'AA', offerId: 'CCCC' },
+        stock: { beginningDatetime: null, id: 'AA', offerId: 'CCCC' },
       })
     })
 
@@ -188,7 +189,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
           label: 'Terminé',
           type: 'finished',
         },
-        stock: { id: 'AA', offerId: 'CCCC' },
+        stock: { beginningDatetime: null, id: 'AA', offerId: 'CCCC' },
       })
     })
 
@@ -296,7 +297,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
           label: 'Annulé',
           type: 'cancelled',
         },
-        stock: { id: 'AA', offerId: 'CCCC' },
+        stock: { beginningDatetime: null, id: 'AA', offerId: 'CCCC' },
       })
     })
   })

@@ -74,8 +74,7 @@ export const mapStateToProps = (state, ownProps) => {
   const offer = selectOfferById(state, stock.offerId)
   const { isDigital, isEvent } = offer
   const timezone = getTimezoneFromOffer(offer)
-  const humanizeRelativeBeginningDate =
-    beginningDatetime && getHumanizeRelativeDate(beginningDatetime, timezone)
+  const humanizeRelativeBeginningDate = getHumanizeRelativeDate(beginningDatetime, timezone)
   const { isEventExpired } = booking
   const isPhysical = !isDigital && !isEvent
   const ribbon = ribbonLabelAndType(

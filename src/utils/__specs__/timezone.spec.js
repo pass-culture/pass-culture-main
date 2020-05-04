@@ -1,6 +1,6 @@
-import { getTimezone, setTimezoneOnBeginningDatetime } from '../timezone'
+import { getTimezone, getTimezoneFromOffer, setTimezoneOnBeginningDatetime } from '../timezone'
 
-describe('timezone', () => {
+describe('getTimezone', () => {
   it('should return America/Cayenne when departement code is 973', () => {
     expect(getTimezone('973')).toBe('America/Cayenne')
   })
@@ -11,6 +11,52 @@ describe('timezone', () => {
 
   it('should return Europe/Paris by default', () => {
     expect(getTimezone('')).toBe('Europe/Paris')
+  })
+})
+
+describe('getTimezoneFromOffer', () => {
+  it('should return America/Cayenne when departement code is 973', () => {
+    // given
+    const offer = {
+      venue: {
+        departementCode: '973',
+      },
+    }
+
+    // when
+    const result = getTimezoneFromOffer(offer)
+
+    // then
+    expect(result).toBe('America/Cayenne')
+  })
+
+  it('should return Indian/Reunion when departement code is 974', () => {
+    // given
+    const offer = {
+      venue: {
+        departementCode: '974',
+      },
+    }
+
+    // when
+    const result = getTimezoneFromOffer(offer)
+
+    // then
+    expect(result).toBe('Indian/Reunion')
+  })
+
+  it('should return Europe/Paris by default', () => {
+    // given
+    const offer = {
+      venue: {
+        departementCode: 'Other Department',
+      },
+    }
+    // when
+    const result = getTimezoneFromOffer(offer)
+
+    // then
+    expect(result).toBe('Europe/Paris')
   })
 })
 
