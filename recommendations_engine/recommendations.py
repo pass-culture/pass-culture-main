@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from models import DiscoveryView, Mediation, Offer, Recommendation, User
 from models.db import db
-from recommendations_engine import get_offers_for_recommendations_discovery_v2
+from recommendations_engine import get_offers_for_recommendations_discovery
 from repository import mediation_queries, repository
 from repository.offer_queries import find_searchable_offer, \
     get_offers_for_recommendation_v3
@@ -29,12 +29,12 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
     return recommendation
 
 
-def create_recommendations_for_discovery_v2(user: User,
-                                            seen_recommendation_ids: List[int] = [],
-                                            limit: int = 3) -> List[Recommendation]:
+def create_recommendations_for_discovery(user: User,
+                                         seen_recommendation_ids: List[int] = [],
+                                         limit: int = 3) -> List[Recommendation]:
     recommendations = []
 
-    offers = get_offers_for_recommendations_discovery_v2(
+    offers = get_offers_for_recommendations_discovery(
         limit=limit,
         user=user,
         seen_recommendation_ids=seen_recommendation_ids

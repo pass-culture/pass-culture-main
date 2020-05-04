@@ -1,10 +1,10 @@
-from flask import current_app as app, jsonify, request
+from flask import current_app as app, jsonify, request, redirect
 from flask_login import current_user, login_required
 
 from domain.build_recommendations import move_requested_recommendation_first
 from models import Recommendation
 from models.feature import FeatureToggle
-from recommendations_engine import create_recommendations_for_discovery_v2, \
+from recommendations_engine import create_recommendations_for_discovery, \
     give_requested_recommendation_to_user
 from recommendations_engine.recommendations import create_recommendations_for_discovery_v3
 from repository import repository
@@ -17,6 +17,7 @@ from utils.human_ids import dehumanize
 from utils.rest import expect_json_data
 
 DEFAULT_PAGE = 1
+RECOMMENDATIONS_OLD_URL = "/recommendations/v2"
 
 
 @app.route('/recommendations/offers/<offer_id>', methods=['GET'])
@@ -56,10 +57,15 @@ def put_read_recommendations():
     return jsonify(serialize_recommendations(read_recommendations, current_user)), 200
 
 
-@app.route('/recommendations/v2', methods=['PUT'])
+@app.route(RECOMMENDATIONS_OLD_URL, methods=['PUT'])
+def put_recommendations_old():
+    return redirect("/recommendations", code=308)
+
+
+@app.route('/recommendations', methods=['PUT'])
 @login_required
 @expect_json_data
-def put_recommendations_v2():
+def put_recommendations():
     json_keys = request.json.keys()
 
     if 'readRecommendations' in json_keys:
@@ -81,9 +87,9 @@ def put_recommendations_v2():
         mediation_id
     )
 
-    recommendations = create_recommendations_for_discovery_v2(limit=BLOB_SIZE,
-                                                                      user=current_user,
-                                                                      seen_recommendation_ids=seen_recommendation_ids)
+    recommendations = create_recommendations_for_discovery(limit=BLOB_SIZE,
+                                                           user=current_user,
+                                                           seen_recommendation_ids=seen_recommendation_ids)
 
     if requested_recommendation:
         recommendations = move_requested_recommendation_first(recommendations,

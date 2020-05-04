@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from models import Offerer, Stock
 from models.discovery_view import DiscoveryView
-from recommendations_engine import create_recommendations_for_discovery_v2
+from recommendations_engine import create_recommendations_for_discovery
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_mediation, \
@@ -33,8 +33,8 @@ class CreateRecommendationsForDiscoveryTest:
         DiscoveryView.refresh(concurrently=False)
 
         # When
-        recommendations = create_recommendations_for_discovery_v2(seen_recommendation_ids=seen_recommendation_ids,
-                                                                  user=user)
+        recommendations = create_recommendations_for_discovery(seen_recommendation_ids=seen_recommendation_ids,
+                                                               user=user)
 
         # Then
         mediations = list(map(lambda x: x.mediationId, recommendations))
@@ -64,24 +64,24 @@ class CreateRecommendationsForDiscoveryTest:
         DiscoveryView.refresh(concurrently=False)
 
         # When
-        recommendations = create_recommendations_for_discovery_v2(seen_recommendation_ids=seen_recommendation_ids, user=user)
+        recommendations = create_recommendations_for_discovery(seen_recommendation_ids=seen_recommendation_ids, user=user)
 
         # Then
         assert len(recommendations) == 2
 
-    @patch('recommendations_engine.recommendations.get_offers_for_recommendations_discovery_v2')
+    @patch('recommendations_engine.recommendations.get_offers_for_recommendations_discovery')
     def test_should_get_offers_using_pagination_when_query_params_provided(self,
-                                                                           get_offers_for_recommendations_discovery_v2,
+                                                                           get_offers_for_recommendations_discovery,
                                                                            app):
         # Given
         seen_recommendation_ids = []
         user = create_user()
 
         # When
-        create_recommendations_for_discovery_v2(user=user, seen_recommendation_ids=seen_recommendation_ids)
+        create_recommendations_for_discovery(user=user, seen_recommendation_ids=seen_recommendation_ids)
 
         # Then
-        get_offers_for_recommendations_discovery_v2.assert_called_once_with(limit=3,
+        get_offers_for_recommendations_discovery.assert_called_once_with(limit=3,
                                                                             seen_recommendation_ids=seen_recommendation_ids,
                                                                             user=user)
 
@@ -106,9 +106,9 @@ class CreateRecommendationsForDiscoveryTest:
         offer_ids_in_adjacent_department = set([stock.offerId for stock in expected_stocks_recommended])
 
         #  when
-        recommendations = create_recommendations_for_discovery_v2(seen_recommendation_ids=seen_recommendation_ids,
-                                                                  limit=10,
-                                                                  user=user)
+        recommendations = create_recommendations_for_discovery(seen_recommendation_ids=seen_recommendation_ids,
+                                                               limit=10,
+                                                               user=user)
 
         # then
         recommended_offer_ids = set([recommendation.offerId for recommendation in recommendations])
@@ -132,9 +132,9 @@ class CreateRecommendationsForDiscoveryTest:
         offer_ids_in_all_department = set([stock.offerId for stock in expected_stocks_recommended])
 
         #  when
-        recommendations = create_recommendations_for_discovery_v2(limit=10,
-                                                                  seen_recommendation_ids=seen_recommendation_ids,
-                                                                  user=user)
+        recommendations = create_recommendations_for_discovery(limit=10,
+                                                               seen_recommendation_ids=seen_recommendation_ids,
+                                                               user=user)
 
         # then
         recommended_offer_ids = set([recommendation.offerId for recommendation in recommendations])

@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from recommendations_engine import get_offers_for_recommendations_discovery_v2
+from recommendations_engine import get_offers_for_recommendations_discovery
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product
@@ -19,9 +19,9 @@ class GetOffersForRecommendationsDiscoveryTest:
         get_offers_for_recommendation.return_value = [offer]
 
         # When
-        offers = get_offers_for_recommendations_discovery_v2(limit=5,
-                                                             seen_recommendation_ids=seen_recommendation_ids,
-                                                             user=authenticated_user)
+        offers = get_offers_for_recommendations_discovery(limit=5,
+                                                          seen_recommendation_ids=seen_recommendation_ids,
+                                                          user=authenticated_user)
 
         # Then
         get_offers_for_recommendation.assert_called_once_with(departement_codes=['54'],
