@@ -1,15 +1,13 @@
 import random
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from models import DiscoveryView, Mediation, Offer, Recommendation, User
 from models.db import db
-from recommendations_engine import get_offers_for_recommendations_discovery, \
-    get_offers_for_recommendations_discovery_v2
+from recommendations_engine import get_offers_for_recommendations_discovery_v2
 from repository import mediation_queries, repository
 from repository.offer_queries import find_searchable_offer, \
     get_offers_for_recommendation_v3
-from repository.recommendation_queries import count_read_recommendations_for_user, \
-    find_recommendation_already_created_on_discovery
+from repository.recommendation_queries import find_recommendation_already_created_on_discovery
 from utils.logger import logger
 
 MAX_OF_MAX_DISTANCE = "20000"
@@ -29,21 +27,6 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
             logger.debug(lambda: 'Creating Recommendation with offer_id=%s mediation_id=%s' % (offer_id, mediation_id))
 
     return recommendation
-
-
-def create_recommendations_for_discovery(user: User, pagination_params: Dict, limit: int = 3) -> List[Recommendation]:
-    recommendations = []
-
-    offers = get_offers_for_recommendations_discovery(
-        limit=limit,
-        pagination_params=pagination_params,
-        user=user,
-    )
-
-    for (index, offer) in enumerate(offers):
-        recommendations.append(_create_recommendation(user, offer))
-    repository.save(*recommendations)
-    return recommendations
 
 
 def create_recommendations_for_discovery_v2(user: User,
