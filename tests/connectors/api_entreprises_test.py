@@ -1,4 +1,3 @@
-import secrets
 from unittest.mock import patch, MagicMock
 
 import pytest
@@ -44,7 +43,7 @@ class GetByOffererTest:
         requests_get.return_value = mocked_api_response
 
         # When
-        response = get_by_offerer(offerer)
+        get_by_offerer(offerer)
 
         # Then
         requests_get.assert_called_once_with("https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/732075312",
@@ -97,7 +96,7 @@ class GetByOffererTest:
                 {
                     "siren": "395251440",
                     "siret": "39525144000032",
-                    "etablissement_siege": "false",
+                    "etablissement_siege": "true",
                     "enseigne_1": "UGC CAFE",
                 }
             ]
@@ -111,6 +110,41 @@ class GetByOffererTest:
 
         # Then
         assert "etablissements" not in response["unite_legale"]
+
+    @patch('connectors.api_entreprises.requests.get')
+    def test_returns_unite_legale_informations_with_empty_other_etablissements_sirets_when_no_other_etablissements(self, requests_get):
+        # Given
+        offerer = create_offerer(siren='732075312')
+
+        mocked_api_response = MagicMock(status_code=200)
+        requests_get.return_value = mocked_api_response
+
+        json_response = {"unite_legale": {
+            "siren": "395251440",
+            "denomination": "UGC CINE CITE ILE DE FRANCE",
+            "etablissement_siege": {
+                "siren": "395251440",
+                "siret": "39525144000016",
+                "etablissement_siege": "true",
+            },
+            "etablissements": [
+                {
+                    "siren": "395251440",
+                    "siret": "39525144000032",
+                    "etablissement_siege": "true",
+                    "enseigne_1": "UGC CAFE",
+                }
+            ]
+        }}
+        mocked_api_response = MagicMock(status_code=200, text='')
+        mocked_api_response.json = MagicMock(return_value=json_response)
+        requests_get.return_value = mocked_api_response
+
+        # When
+        response = get_by_offerer(offerer)
+
+        # Then
+        assert response["other_etablissements_sirets"] == []
 
     @patch('connectors.api_entreprises.requests.get')
     def test_returns_other_etablissements_sirets_with_all_etablissement_siret(self, requests_get):

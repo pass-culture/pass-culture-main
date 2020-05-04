@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 from tests.conftest import clean_database, mocked_mail
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
-from tests.utils.mailing_test import get_by_siren_mock
+from tests.utils.mailing_test import get_by_siren_stub
 from utils.mailing import make_validation_email_object
 
 
@@ -22,7 +22,7 @@ def test_write_object_validation_email(app):
     user_offerer = create_user_offerer(user=user, offerer=offerer, validation_token=validation_token)
 
     # When
-    email = make_validation_email_object(offerer, user_offerer, get_by_siren=get_by_siren_mock)
+    email = make_validation_email_object(offerer, user_offerer, get_by_siren=get_by_siren_stub)
 
     # Then
     html = BeautifulSoup(email['Html-part'], features="html.parser")
@@ -64,7 +64,7 @@ def test_validation_email_object_does_not_include_validation_link_if_user_offere
     user_offerer = create_user_offerer(user, offerer)
 
     # When
-    email = make_validation_email_object(offerer, user_offerer, get_by_siren=get_by_siren_mock)
+    email = make_validation_email_object(offerer, user_offerer, get_by_siren=get_by_siren_stub)
 
     # Then
     html = BeautifulSoup(email['Html-part'], features="html.parser")
@@ -81,7 +81,7 @@ def test_validation_email_object_does_not_include_validation_link_if_offerer_is_
     user_offerer = create_user_offerer(user=user, offerer=offerer)
 
     # When
-    email = make_validation_email_object(offerer, user_offerer, get_by_siren=get_by_siren_mock)
+    email = make_validation_email_object(offerer, user_offerer, get_by_siren=get_by_siren_stub)
 
     # Then
     html = BeautifulSoup(email['Html-part'], features="html.parser")
@@ -97,7 +97,7 @@ def test_validation_email_should_neither_return_clearTextPassword_nor_totallysaf
     user = create_user()
     user_offerer = create_user_offerer(user=user, offerer=offerer)
 
-    mocked_api_entreprises = get_by_siren_mock
+    mocked_api_entreprises = get_by_siren_stub
 
     # When
     email = make_validation_email_object(offerer, user_offerer, get_by_siren=mocked_api_entreprises)

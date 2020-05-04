@@ -28,7 +28,7 @@ def get_mocked_response_status_200(entity):
     return response
 
 
-def get_by_siren_mock(offerer):
+def get_by_siren_stub(offerer):
     return {
         "unite_legale": {
             "siren": "395251440",
@@ -317,7 +317,7 @@ class MakeValidationEmailObjectTest:
 
         # When
         email_object = make_validation_email_object(user_offerer=user_offerer, offerer=offerer,
-                                                    get_by_siren=get_by_siren_mock)
+                                                    get_by_siren=get_by_siren_stub)
 
         # Then
         assert email_object.get("Subject") == '95 - inscription / rattachement PRO à valider : Test Offerer'
