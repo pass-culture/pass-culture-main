@@ -1,5 +1,5 @@
-table#bookings-table {
-  tr > th {
+.bookings-table {
+  th {
     color: $black;
     font-size: rem(14px);
     padding: rem(14px);
@@ -14,39 +14,37 @@ table#bookings-table {
     font-size: rem(16px);
     padding: rem(16px);
 
-    & > span.offer-link {
+    .offer-link {
       font-weight: bold;
       white-space: nowrap;
       text-overflow: ellipsis;
-      max-width: 175px;
+      max-width: rem(175px);
       display: block;
       overflow: hidden;
     }
 
-    & span.cell-subtitle {
+    .cell-subtitle {
       color: $grey;
     }
+  }
 
-    & > span.booking-status-label {
-      border-radius: 5px;
-      padding: 2px 5px;
-      color: $white;
-      font-weight: $weight-medium;
-      font-size: rem(14px);
+  .bookings-status-label {
+    border-radius: rem(5px);
+    padding: rem(2px) rem(5px);
+    color: $white;
+    font-weight: $weight-medium;
+    font-size: rem(14px);
+  }
 
-      &.booking-status {
-        &--booked {
-          background-color: $purple-dark;
-        }
+  .bookings-status-booked {
+    background-color: $purple-dark;
+  }
 
-        &--validated {
-          background-color: $blue-dark;
-        }
+  .bookings-status-validated {
+    background-color: $blue-dark;
+  }
 
-        &--cancelled {
-          background-color: $grey;
-        }
-      }
-    }
+  .bookings-status-cancelled {
+    background-color: $grey;
   }
 }

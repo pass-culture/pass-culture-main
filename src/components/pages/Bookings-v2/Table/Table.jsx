@@ -9,7 +9,7 @@ function Table({ columns, data }) {
 
   return (
     <table
-      id="bookings-table"
+      className="bookings-table"
       {...getTableProps()}
     >
       <thead>

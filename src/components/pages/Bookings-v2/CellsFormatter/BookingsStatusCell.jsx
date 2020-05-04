@@ -16,12 +16,11 @@ const BOOKING_STATUS_ENUM = [
   },
 ]
 
-function BookingStatusCell(props) {
-  let { bookingStatus } = props
+const BookingStatusCell = ({ bookingStatus }) => {
   bookingStatus = bookingStatus.toLowerCase()
 
-  function computeStatusClassName(bookingStatusInfos) {
-    const prefix = 'booking-status--'
+  const computeStatusClassName = bookingStatusInfos => {
+    const prefix = 'bookings-status-'
     const [{ status }] = BOOKING_STATUS_ENUM.filter(({ value }) => bookingStatusInfos === value)
     return prefix + status
   }
@@ -29,7 +28,7 @@ function BookingStatusCell(props) {
   const statusClassName = computeStatusClassName(bookingStatus)
 
   return (
-    <span className={classnames('booking-status-label', statusClassName)}>
+    <span className={classnames('bookings-status-label', statusClassName)}>
       {bookingStatus}
     </span>
   )

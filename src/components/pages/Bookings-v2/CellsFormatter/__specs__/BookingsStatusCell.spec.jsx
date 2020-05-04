@@ -15,7 +15,7 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell
 
     // Then
     expect(status.text()).toBe('validé')
-    expect(status.hasClass('booking-status-label')).toStrictEqual(true)
-    expect(status.hasClass('booking-status--validated')).toStrictEqual(true)
+    expect(status.hasClass('bookings-status-label')).toStrictEqual(true)
+    expect(status.hasClass('bookings-status-validated')).toStrictEqual(true)
   })
 })
