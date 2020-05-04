@@ -44,7 +44,7 @@ describe('src | components | layout | Teaser | TeaserContainer', () => {
         stocks: [
           {
             id: 's1',
-            beginningDatetime: new Date().toISOString(),
+            beginningDatetime: '2002-07-21T21:00:00Z',
             offerId: 'o1',
           },
         ],

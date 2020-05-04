@@ -11,6 +11,7 @@ const getHumanizeRelativeDate = (offerDate, offerTimezone) => {
 
   const offerMoment = moment(offerDateObject).tz(offerTimezone)
   const todayMoment = moment(todayDate).tz(offerTimezone)
+
   const tomorrowMoment = moment(todayMoment)
   tomorrowMoment.add(1, 'day')
 

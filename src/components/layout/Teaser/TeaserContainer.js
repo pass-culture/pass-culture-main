@@ -9,6 +9,7 @@ import { formatRecommendationDates } from '../../../utils/date/date'
 import { getHumanizeRelativeDistance } from '../../../utils/geolocation'
 import getHumanizeRelativeDate from '../../../utils/date/getHumanizeRelativeDate'
 import getIsBooked from '../../../utils/getIsBooked'
+import { getTimezone } from '../../../utils/timezone'
 import { selectOfferById } from '../../../redux/selectors/data/offersSelectors'
 import { selectStockById } from '../../../redux/selectors/data/stocksSelectors'
 import { selectFirstMatchingBookingByOfferId } from '../../../redux/selectors/data/bookingsSelectors'
@@ -18,7 +19,12 @@ export const humanizeBeginningDateTime = (hasBookings, state, booking) => {
 
   if (hasBookings) {
     const stock = selectStockById(state, booking.stockId)
-    humanizeRelativeDate = getHumanizeRelativeDate(stock.beginningDatetime)
+    const { offerId } = stock
+    const offer = selectOfferById(state, offerId)
+    const { venue } = offer
+    const { departementCode } = venue
+    const timezone = getTimezone(departementCode)
+    humanizeRelativeDate = getHumanizeRelativeDate(stock.beginningDatetime, timezone)
   }
 
   return humanizeRelativeDate
