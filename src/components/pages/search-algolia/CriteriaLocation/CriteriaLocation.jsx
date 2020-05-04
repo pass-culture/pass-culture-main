@@ -1,17 +1,18 @@
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import Header from '../../../layout/Header/Header'
 import Icon from '../../../layout/Icon/Icon'
 import { Criteria } from '../Criteria/Criteria'
 import { checkUserIsGeolocated } from '../utils/checkUserIsGeolocated'
-import { Place } from './Place/Place'
+import Place from './Place/Place'
 
-class CriteriaLocation extends PureComponent {
+class CriteriaLocation extends Component {
   constructor(props) {
     super(props)
-    this.state = {
-      place: props.place
-    }
+  }
+
+  shouldComponentUpdate() {
+    return true
   }
 
   checkUserCanSelectCriterion = () => {
@@ -30,17 +31,14 @@ class CriteriaLocation extends PureComponent {
   }
 
   handleUpdatePlaceInformation = (place) => {
-    this.setState({
-      place: place
-    }, () => {
-      const { history, onPlaceSelection } = this.props
-      const { location: { pathname, search } } = history
-      onPlaceSelection(place)
-      const pathnameWithoutLocation = pathname
-        .replace('/criteres-localisation', '')
-        .replace('/localisation', '')
-      history.push(`${pathnameWithoutLocation}${search}`)
-    })
+    const { history, onPlaceSelection } = this.props
+    const { location: { pathname, search } } = history
+    onPlaceSelection(place)
+
+    const pathnameWithoutLocation = pathname
+      .replace('/criteres-localisation', '')
+      .replace('/localisation', '')
+    history.push(`${pathnameWithoutLocation}${search}`)
   }
 
   buildBackToUrl = () => {
@@ -67,9 +65,9 @@ class CriteriaLocation extends PureComponent {
       criteria,
       history,
       match,
+      place,
       title,
     } = this.props
-    const { place } = this.state
 
     return (
       <div className="criteria-location-page">

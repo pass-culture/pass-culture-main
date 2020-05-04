@@ -4,7 +4,7 @@ import Header from '../../../../layout/Header/Header'
 import { GEOLOCATION_CRITERIA } from '../../Criteria/criteriaEnums'
 import CriteriaLocation from '../CriteriaLocation'
 import { Criteria } from '../../Criteria/Criteria'
-import { Place } from '../Place/Place'
+import Place from '../Place/Place'
 import { createBrowserHistory } from 'history'
 
 describe('components | CriteriaLocation', () => {

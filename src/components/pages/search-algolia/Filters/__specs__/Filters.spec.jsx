@@ -501,6 +501,10 @@ describe('components | Filters', () => {
 
       it('should display a warning message when searching around a place', () => {
         // given
+        props.place = {
+          geolocation: { latitude: 40, longitude: 1 },
+          name: 'Paris'
+        }
         props.history.location.pathname = '/recherche/filtres'
         props.initialFilters.searchAround = {
           everywhere: false,
@@ -791,6 +795,10 @@ describe('components | Filters', () => {
         describe('when geolocation filter is a place', () => {
           it('should display a "Rayon" title', () => {
             // given
+            props.place = {
+              geolocation: { latitude: 41, longitude: 2 },
+              name: 'Paris'
+            }
             props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.searchAround = {
               everywhere: false,
@@ -808,6 +816,10 @@ describe('components | Filters', () => {
 
           it('should display the kilometers radius value', () => {
             // given
+            props.place = {
+              geolocation: { latitude: 41, longitude: 2 },
+              name: 'Paris'
+            }
             props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.aroundRadius = 50
             props.initialFilters.searchAround = {
@@ -826,6 +838,10 @@ describe('components | Filters', () => {
 
           it('should render a Slider component', () => {
             // given
+            props.place = {
+              geolocation: { latitude: 41, longitude: 2 },
+              name: 'Paris'
+            }
             props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.aroundRadius = 20
             props.initialFilters.searchAround = {

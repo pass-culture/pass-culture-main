@@ -71,7 +71,7 @@ export class Filters extends PureComponent {
                    sortBy,
                  }) => {
     const { showFailModal, updateFilteredOffers } = this.props
-    const searchAroundUserOrPlace = searchAround.everywhere !== true
+    const searchAroundUserOrPlace = !searchAround.everywhere
 
     fetchAlgolia({
       aroundRadius,
@@ -143,13 +143,11 @@ export class Filters extends PureComponent {
     const queryParams = query.parse()
     const keywords = queryParams['mots-cles'] || ''
 
-    let search = `?mots-cles=${keywords}&autour-de=${autourDe}&tri=${tri}&categories=${categories}` +
-      `&latitude=${userGeolocation.latitude}&longitude=${userGeolocation.longitude}`
-    if (searchAround.place) {
-      search = `?mots-cles=${keywords}&autour-de=${autourDe}&tri=${tri}&categories=${categories}` +
-        `&place=${place.name}&latitude=${place.geolocation.latitude}&longitude=${place.geolocation.longitude}`
-    }
-    return search
+    return `?mots-cles=${keywords}` +
+      `&autour-de=${autourDe}&tri=${tri}&categories=${categories}` +
+      `&latitude=${searchAround.place ? place.geolocation.latitude : userGeolocation.latitude}` +
+      `&longitude=${searchAround.place ? place.geolocation.longitude : userGeolocation.longitude}` +
+      `${searchAround.place ? `&place=${place.name}` : ''}`
   }
 
   resetFilters = () => {
@@ -561,14 +559,14 @@ export class Filters extends PureComponent {
                 >
                   {this.buildGeolocationFilter()}
                 </button>
-                {(searchAround.user === true || searchAround.place === true) && (
+                {(searchAround.user || searchAround.place) && (
                   <span className="sf-warning-message">
                     {'Seules les offres Sorties et Physiques seront affichées'}
                   </span>
                 )}
                 <span className="sf-filter-separator" />
               </li>
-              {(searchAround.user === true || searchAround.place === true) && (
+              {(searchAround.user || searchAround.place) && (
                 <li>
                   <h4 className="sf-title">
                     {'Rayon'}

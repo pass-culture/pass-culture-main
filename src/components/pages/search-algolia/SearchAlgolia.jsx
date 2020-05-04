@@ -75,22 +75,23 @@ class SearchAlgolia extends PureComponent {
   }
 
   handleOnPlaceSelection = place => {
-    const { geolocationCriterion: { userGeolocation } } = this.state
-    this.setState({
-      geolocationCriterion: {
-        params: {
-          label: place.name,
-          icon: 'ico-there',
-          requiresGeolocation: false
+    this.setState((prevState) => {
+      return {
+        geolocationCriterion: {
+          params: {
+            label: place.name,
+            icon: 'ico-there',
+            requiresGeolocation: false
+          },
+          place: place,
+          searchAround: {
+            everywhere: false,
+            place: true,
+            user: false
+          },
+          userGeolocation: prevState.geolocationCriterion.userGeolocation
         },
-        place: place,
-        searchAround: {
-          everywhere: false,
-          place: true,
-          user: false
-        },
-        userGeolocation
-      },
+      }
     })
   }
 

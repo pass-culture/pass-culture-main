@@ -19,22 +19,20 @@ export class Home extends PureComponent {
     event.preventDefault()
     const { categoryCriterion, geolocationCriterion, history, sortCriterion } = this.props
     const { keywordsToSearch } = this.state
-    const { place, userGeolocation } = geolocationCriterion
-    const { geolocation: placeGeolocation, name } = place || {}
+    const { place, searchAround, userGeolocation } = geolocationCriterion
+    const { geolocation: placeGeolocation, name = '' } = place || {}
 
-    const autourDeMoi = checkIfSearchAround(geolocationCriterion.searchAround)
+    const autourDe = checkIfSearchAround(searchAround)
     const categories = categoryCriterion.facetFilter
     const tri = sortCriterion.index
 
-    let search =
-      `?mots-cles=${keywordsToSearch}&autour-de=${autourDeMoi}&tri=${tri}&categories=${categories}` +
-      `&latitude=${userGeolocation.latitude}&longitude=${userGeolocation.longitude}`
+    const search =
+      `?mots-cles=${keywordsToSearch}` +
+      `&autour-de=${autourDe}&tri=${tri}&categories=${categories}` +
+      `&latitude=${searchAround.place ? placeGeolocation.latitude : userGeolocation.latitude}` +
+      `&longitude=${searchAround.place ? placeGeolocation.longitude : userGeolocation.longitude}` +
+      `${searchAround.place ? `&place=${name}` : ''}`
 
-    if (geolocationCriterion.searchAround.place) {
-      search =
-        `?mots-cles=${keywordsToSearch}&autour-de=${autourDeMoi}&tri=${tri}&categories=${categories}` +
-        `&latitude=${placeGeolocation.latitude}&longitude=${placeGeolocation.longitude}&place=${name}`
-    }
     history.push({
       pathname: '/recherche/resultats',
       search,

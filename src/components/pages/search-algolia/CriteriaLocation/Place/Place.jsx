@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import Header from '../../../../layout/Header/Header'
 import { fetchPlaces } from '../../../../../vendor/api-geo/placesService'
 import Icon from '../../../../layout/Icon/Icon'
 import debounce from 'lodash.debounce'
 
-const WAITING_TIME_BEFORE_FETCHING_DATA = 500
+const WAITING_TIME_BEFORE_FETCHING_DATA_IN_MILLISECONDS = 300
 
-export class Place extends PureComponent {
+class Place extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -16,20 +16,23 @@ export class Place extends PureComponent {
     }
   }
 
-  handleOnChange = (event => {
+  shouldComponentUpdate() {
+    return true
+  }
+
+  handleOnChange = event => {
     const searchedKeywords = event.target.value
 
-    this.setState({ keywords: searchedKeywords }, debounce(() => {
-      const { keywords } = this.state
+    this.setState({ keywords: searchedKeywords })
+    this.triggerFetchPlaces(searchedKeywords)
+  }
 
-      if (searchedKeywords.length % 2 === 0) {
-        fetchPlaces({ keywords })
-          .then(suggestedPlaces => {
-            this.setState({ suggestedPlaces })
-          })
-      }
-    }, WAITING_TIME_BEFORE_FETCHING_DATA))
-  })
+  triggerFetchPlaces = debounce((keywords) => {
+    fetchPlaces({ keywords })
+      .then(suggestedPlaces => {
+        this.setState({ suggestedPlaces })
+      })
+  }, WAITING_TIME_BEFORE_FETCHING_DATA_IN_MILLISECONDS)
 
   handlePlaceSelection = event => {
     const { suggestedPlaces } = this.state
@@ -104,10 +107,10 @@ export class Place extends PureComponent {
                     value={index}
                   >
                     <span className="place-name">
-                      {`${suggestedPlace.name} `}
+                      {suggestedPlace.name}
                     </span>
                     <span className="place-extra-data">
-                      {`${suggestedPlace.extraData.department}`}
+                      {suggestedPlace.extraData.department}
                     </span>
                   </button>
                 </li>
@@ -120,7 +123,8 @@ export class Place extends PureComponent {
   }
 }
 
-Place.propTypes = {
+Place
+  .propTypes = {
   backTo: PropTypes.string.isRequired,
   history: PropTypes.shape({
     location: PropTypes.shape(),
@@ -133,3 +137,5 @@ Place.propTypes = {
   onPlaceSelection: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
 }
+
+export default Place

@@ -1348,6 +1348,9 @@ describe('components | SearchResults', () => {
       props.query.parse.mockReturnValue({
         'autour-de': 'oui',
         categories: 'VISITE',
+        latitude: 40,
+        longitude: 2,
+        place: 'Paris',
         tri: '_by_price',
       })
       const wrapper = shallow(<SearchResults {...props} />)
@@ -1379,7 +1382,7 @@ describe('components | SearchResults', () => {
 
       // then
       expect(replace).toHaveBeenCalledWith({
-        search: '?mots-cles=librairie&autour-de=oui&tri=_by_price&categories=VISITE',
+        search: '?mots-cles=librairie&autour-de=oui&tri=_by_price&categories=VISITE&latitude=40&longitude=2&place=Paris',
       })
     })
 

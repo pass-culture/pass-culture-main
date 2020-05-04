@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import Header from '../../../../../layout/Header/Header'
-import { Place } from '../Place'
+import Place from '../Place'
 import { fetchPlaces } from '../../../../../../vendor/api-geo/placesService'
 
 jest.mock('../../../../../../vendor/api-geo/placesService', () => ({
@@ -72,30 +72,6 @@ describe('components | Place', () => {
     expect(fetchPlaces).toHaveBeenCalledWith({ keywords: 'Pari' })
   })
 
-  it('should not fetch places when keywords length is odd', async () => {
-    // Given
-    const wrapper = shallow(<Place {...props} />)
-    const input = wrapper.find('input')
-
-    // When
-    await input.simulate('change', { target: { value: 'P' } })
-
-    // Then
-    expect(fetchPlaces).toHaveBeenCalledTimes(0)
-  })
-
-  it('should fetch places when keywords length is even', async () => {
-    // Given
-    const wrapper = shallow(<Place {...props} />)
-    const input = wrapper.find('input')
-
-    // When
-    await input.simulate('change', { target: { value: 'Pa' } })
-
-    // Then
-    expect(fetchPlaces).toHaveBeenCalledTimes(1)
-  })
-
   it('should not render a list of suggested places while typing when no result', async () => {
     // Given
     const wrapper = shallow(<Place {...props} />)
@@ -155,8 +131,14 @@ describe('components | Place', () => {
       .find('li')
       .find('button')
     expect(suggestedPlaces).toHaveLength(2)
-    expect(suggestedPlaces.at(0).text()).toBe('Paris 15ème arrondissement Paris')
-    expect(suggestedPlaces.at(1).text()).toBe('34 avenue de l\'Opéra Paris')
+
+    const firstSuggestedPlace = suggestedPlaces.at(0).find('span')
+    expect(firstSuggestedPlace.at(0).text()).toBe('Paris 15ème arrondissement')
+    expect(firstSuggestedPlace.at(1).text()).toBe('Paris')
+
+    const secondSuggestedPlace = suggestedPlaces.at(1).find('span')
+    expect(secondSuggestedPlace.at(0).text()).toBe('34 avenue de l\'Opéra')
+    expect(secondSuggestedPlace.at(1).text()).toBe('Paris')
   })
 
   it('should render no suggested places when fetching is in error', async () => {

@@ -24,10 +24,7 @@ const SEARCH_RESULTS_URI = '/recherche/resultats'
 class SearchResults extends PureComponent {
   constructor(props) {
     super(props)
-    const {
-      criteria: { categories, searchAround, sortBy },
-      place
-    } = props
+    const { criteria: { categories, searchAround, sortBy }, place } = props
     const searchAroundFromUrlOrProps = this.getSearchAroundFromUrlOrProps(searchAround)
     const categoriesFromUrlOrProps = this.getCategoriesFromUrlOrProps(categories)
     const sortByFromUrlOrProps = this.getSortByFromUrlOrProps(sortBy)
@@ -161,18 +158,26 @@ class SearchResults extends PureComponent {
   handleOnSubmit = event => {
     event.preventDefault()
     const { history, query } = this.props
-    const { searchedKeywords, filters } = this.state
+    const { filters, searchedKeywords } = this.state
     const { offerCategories, sortBy: tri } = filters
     const keywordsToSearch = event.target.keywords.value
     const trimmedKeywordsToSearch = keywordsToSearch.trim()
 
     const queryParams = query.parse()
-    const autourDeMoi = queryParams['autour-de']
+    const autourDe = queryParams['autour-de']
     const categories = offerCategories.join(';')
+    const longitude = queryParams['longitude']
+    const latitude = queryParams['latitude']
+    const place = queryParams['place']
 
-    trimmedKeywordsToSearch &&
+    const search =
+      `?mots-cles=${trimmedKeywordsToSearch}` +
+      `&autour-de=${autourDe}&tri=${tri}&categories=${categories}` +
+      `&latitude=${latitude}` +
+      `&longitude=${longitude}` +
+      `${place ? `&place=${place}` : ''}`
     history.replace({
-      search: `?mots-cles=${trimmedKeywordsToSearch}&autour-de=${autourDeMoi}&tri=${tri}&categories=${categories}`,
+      search: search,
     })
 
     if (searchedKeywords !== trimmedKeywordsToSearch) {
