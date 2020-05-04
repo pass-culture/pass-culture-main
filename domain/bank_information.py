@@ -12,15 +12,11 @@ def new_application_can_update_bank_information(bank_information: BankInformatio
                                                 new_application_id: int,
                                                 new_application_status: int):
     same_demarches_simplifiees_application = new_application_id == bank_information.applicationId
-    if(same_demarches_simplifiees_application):
-        return True
 
     new_status_is_more_advanced_than_previous = (
         status_weight[new_application_status] >= status_weight[bank_information.status])
-    if(new_status_is_more_advanced_than_previous):
-        return True
 
-    return False
+    return same_demarches_simplifiees_application or new_status_is_more_advanced_than_previous
 
 
 class VenueMatchingError(Exception):

@@ -98,7 +98,7 @@ class OffererBankInformationProviderProviderTest:
             1, 2]
         get_application_details.side_effect = [
             demarche_simplifiee_application_detail_response(
-                siren="793875019", bic="BDFEFR2LCCB", iban="FR7630006000011234567890189", idx=1),
+                siren="793875019", bic="BdFefr2LCCB", iban="FR76 3000 6000  0112 3456 7890 189", idx=1),
             demarche_simplifiee_application_detail_response(
                 siren="793875030", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=2, state=DmsApplicationStates.received.name),
         ]
@@ -162,32 +162,6 @@ class OffererBankInformationProviderProviderTest:
         assert events[0].type == LocalProviderEventType.SyncStart
         assert events[1].type == LocalProviderEventType.SyncError
         assert events[2].type == LocalProviderEventType.SyncEnd
-
-    @patch(
-        'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_demarche_simplifiee')
-    @patch('local_providers.demarches_simplifiees_offerer_bank_information.get_application_details')
-    @clean_database
-    def test_provider_creates_one_bank_information_and_format_IBAN_and_BIC(self,
-                                                                           get_application_details,
-                                                                           get_all_application_ids_for_demarche_simplifiee,
-                                                                           app):
-        # Given
-        get_all_application_ids_for_demarche_simplifiee.return_value = [1]
-        get_application_details.return_value = demarche_simplifiee_application_detail_response(
-            siren="793875030", bic="BdFefr2LCCB", iban="FR76 3000 6000  0112 3456 7890 189")
-        offerer = create_offerer(siren='793875030')
-
-        repository.save(offerer)
-        activate_provider('OffererBankInformationProvider')
-        offerer_bank_information_provider = OffererBankInformationProvider()
-
-        # When
-        offerer_bank_information_provider.updateObjects()
-
-        # Then
-        bank_information = BankInformation.query.one()
-        assert bank_information.iban == 'FR7630006000011234567890189'
-        assert bank_information.bic == 'BDFEFR2LCCB'
 
     @patch(
         'local_providers.demarches_simplifiees_offerer_bank_information.get_all_application_ids_for_demarche_simplifiee')
