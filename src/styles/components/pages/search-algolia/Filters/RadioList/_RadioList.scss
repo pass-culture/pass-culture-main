@@ -81,15 +81,18 @@
     display: none;
   }
 
-  li {
-    height: rem(26px);
+  div {
     margin-bottom: rem(24px);
-    display: flex;
-    align-items: center;
 
     &:last-child {
       margin-bottom: rem(12px);
     }
+  }
+
+  li {
+    height: rem(26px);
+    display: flex;
+    align-items: center;
 
     img {
       height: rem(24px);
