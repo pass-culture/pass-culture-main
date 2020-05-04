@@ -1,7 +1,7 @@
 import React from 'react'
 import classnames from 'classnames'
 
-const BOOKINGS_RECAP_STATUS_ENUM = [
+const BOOKING_STATUS_ENUM = [
   {
     value: 'validé',
     status: 'validated',
@@ -17,22 +17,20 @@ const BOOKINGS_RECAP_STATUS_ENUM = [
 ]
 
 function BookingStatusCell(props) {
-  let { bookingStatusInfos } = props
-  bookingStatusInfos = bookingStatusInfos.toLowerCase()
+  let { bookingStatus } = props
+  bookingStatus = bookingStatus.toLowerCase()
 
   function computeStatusClassName(bookingStatusInfos) {
     const prefix = 'booking-status--'
-    const [{ status }] = BOOKINGS_RECAP_STATUS_ENUM.filter(
-      ({ value }) => bookingStatusInfos === value
-    )
+    const [{ status }] = BOOKING_STATUS_ENUM.filter(({ value }) => bookingStatusInfos === value)
     return prefix + status
   }
 
-  const statusClassName = computeStatusClassName(bookingStatusInfos)
+  const statusClassName = computeStatusClassName(bookingStatus)
 
   return (
     <span className={classnames('booking-status-label', statusClassName)}>
-      {bookingStatusInfos}
+      {bookingStatus}
     </span>
   )
 }

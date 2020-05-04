@@ -6,7 +6,7 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingsDateCell',
   it('should render a div with two span, one containing the date and the other one the time', () => {
     // Given
     const props = {
-      bookingDateInfos: '2020-04-03T12:00:00Z',
+      bookingDate: '2020-04-03T12:00:00Z',
     }
 
     // When

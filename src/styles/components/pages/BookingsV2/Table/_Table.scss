@@ -2,7 +2,7 @@ table#bookings-table {
   tr > th {
     color: $black;
     font-size: rem(14px);
-    padding: 14px;
+    padding: rem(14px);
     font-weight: $weight-medium;
   }
 
@@ -12,7 +12,7 @@ table#bookings-table {
 
   td {
     font-size: rem(16px);
-    padding: 16px;
+    padding: rem(16px);
 
     & > span.offer-link {
       font-weight: bold;
@@ -32,7 +32,7 @@ table#bookings-table {
       padding: 2px 5px;
       color: $white;
       font-weight: $weight-medium;
-      font-size: 14px;
+      font-size: rem(14px);
 
       &.booking-status {
         &--booked {

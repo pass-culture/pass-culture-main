@@ -3,7 +3,7 @@ import React from 'react'
 import Table from '../Table'
 
 describe('components | pages | bookings-v2 | table', () => {
-  it('should display the correct numbers of columns', () => {
+  it('should display the correct given numbers of columns', () => {
     // Given
     const props = {
       columns: [

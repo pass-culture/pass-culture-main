@@ -24,16 +24,16 @@ class BookingsTable extends PureComponent {
         {
           headerTitle: 'Réservation',
           accessor: 'booking_date',
-          Cell: ({ value }) => <BookingDateCell bookingDateInfos={value} />,
+          Cell: ({ value }) => <BookingDateCell bookingDate={value} />,
         },
         {
           headerTitle: 'Contremarque',
           accessor: 'booking_token',
         },
         {
-          headerTitle: 'Status',
+          headerTitle: 'Statut',
           accessor: 'booking_status',
-          Cell: ({ value }) => <BookingStatusCell bookingStatusInfos={value} />,
+          Cell: ({ value }) => <BookingStatusCell bookingStatus={value} />,
         },
       ],
     }

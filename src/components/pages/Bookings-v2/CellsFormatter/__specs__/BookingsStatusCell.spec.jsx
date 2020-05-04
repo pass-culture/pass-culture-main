@@ -3,16 +3,19 @@ import React from 'react'
 import BookingStatusCell from '../BookingsStatusCell'
 
 describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell', () => {
-  it('should render a div with XXXXXXXXXXXXXX', () => {
+  it('should render a div with the corresponding tag value and tag classnames for the given status', () => {
     // Given
     const props = {
-      bookingStatusInfos: 'Validé',
+      bookingStatus: 'Validé',
     }
 
     // When
     const wrapper = shallow(<BookingStatusCell {...props} />)
+    let status = wrapper.find('span')
 
     // Then
-    expect(wrapper).toBeNull()
+    expect(status.text()).toBe('validé')
+    expect(status.hasClass('booking-status-label')).toStrictEqual(true)
+    expect(status.hasClass('booking-status--validated')).toStrictEqual(true)
   })
 })

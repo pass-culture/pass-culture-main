@@ -17,6 +17,7 @@ describe('components | pages | Bookings-v2 | BookingsTable', function() {
         },
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
+        booking_status: 'Validé',
       },
       {
         stock: {
@@ -29,6 +30,7 @@ describe('components | pages | Bookings-v2 | BookingsTable', function() {
         },
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
+        booking_status: 'Validé',
       },
     ]
 
@@ -43,7 +45,7 @@ describe('components | pages | Bookings-v2 | BookingsTable', function() {
     // Then
     expect(table).toHaveLength(1)
     const tableProps = table.props()
-    expect(tableProps['columns']).toHaveLength(4)
+    expect(tableProps['columns']).toHaveLength(5)
     expect(tableProps['data']).toHaveLength(2)
   })
 
@@ -61,12 +63,15 @@ describe('components | pages | Bookings-v2 | BookingsTable', function() {
     const secondHeader = wrapper.find('th').at(1)
     const thirdHeader = wrapper.find('th').at(2)
     const fourthHeader = wrapper.find('th').at(3)
+    const fifthHeader = wrapper.find('th').at(4)
 
     // Then
+    expect(wrapper.find('th')).toHaveLength(5)
     expect(firstHeader.text()).toBe("Nom de l'offre")
     expect(secondHeader.text()).toBe('Bénéficiaire')
     expect(thirdHeader.text()).toBe('Réservation')
     expect(fourthHeader.text()).toBe('Contremarque')
+    expect(fifthHeader.text()).toBe('Statut')
   })
 
   it('should render the expected table rows', function() {
@@ -83,6 +88,7 @@ describe('components | pages | Bookings-v2 | BookingsTable', function() {
         },
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
+        booking_status: 'Validé',
       },
       {
         stock: {
@@ -95,6 +101,7 @@ describe('components | pages | Bookings-v2 | BookingsTable', function() {
         },
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
+        booking_status: 'Validé',
       },
     ]
 

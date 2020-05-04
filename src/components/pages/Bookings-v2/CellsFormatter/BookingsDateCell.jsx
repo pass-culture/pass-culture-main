@@ -2,10 +2,10 @@ import moment from 'moment/moment'
 import React from 'react'
 
 function BookingDateCell(props) {
-  const { bookingDateInfos } = props
-  let bookingDate = moment(bookingDateInfos).utc()
-  let bookingDateDay = bookingDate.format('DD/MM/YYYY')
-  let bookingDateHour = bookingDate.format('HH:mm')
+  const { bookingDate } = props
+  let bookingDateUTC = moment(bookingDate).utc()
+  let bookingDateDay = bookingDateUTC.format('DD/MM/YYYY')
+  let bookingDateHour = bookingDateUTC.format('HH:mm')
   return (
     <div>
       <span>
