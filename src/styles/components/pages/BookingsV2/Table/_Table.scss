@@ -15,7 +15,7 @@
     padding: rem(16px);
 
     .offer-link {
-      font-weight: bold;
+      font-weight: $weight-bold;
       white-space: nowrap;
       text-overflow: ellipsis;
       max-width: rem(175px);
