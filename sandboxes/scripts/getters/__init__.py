@@ -24,4 +24,3 @@ import sandboxes.scripts.getters.webapp_08_booking
 import sandboxes.scripts.getters.webapp_09_lost_password
 import sandboxes.scripts.getters.webapp_10_menu
 import sandboxes.scripts.getters.webapp_11_tutos
-import sandboxes.scripts.getters.webapp_12_previsualisation
