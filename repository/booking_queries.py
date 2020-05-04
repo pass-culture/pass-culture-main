@@ -141,12 +141,12 @@ def find_from_recommendation(recommendation: Recommendation, user: User) -> List
 
 def is_offer_already_booked_by_user(current_user: User, offer: Offer) -> bool:
     return Booking.query \
-               .filter_by(userId=current_user.id) \
-               .filter_by(isCancelled=False) \
-               .join(Stock) \
-               .join(Offer) \
-               .filter(Offer.id == offer.id) \
-               .count() > 0
+           .filter_by(userId=current_user.id) \
+           .filter_by(isCancelled=False) \
+           .join(Stock) \
+           .join(Offer) \
+           .filter(Offer.id == offer.id) \
+           .count() > 0
 
 
 def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
@@ -193,15 +193,15 @@ def find_by_pro_user_id(user_id: int) -> List[BookingRecap]:
         .filter(UserOfferer.userId == user_id) \
         .filter(UserOfferer.validationToken == None) \
         .with_entities(
-        Booking.token.label("bookingToken"),
-        Offer.name.label("offerName"),
-        User.firstName.label("beneficiaryFirstname"),
-        User.lastName.label("beneficiaryLastname"),
-        User.email.label("beneficiaryEmail"),
-        Booking.dateCreated.label("bookingDate"),
-        Booking.isCancelled.label("isCancelled"),
-        Booking.isUsed.label("isUsed")
-    ).all()
+            Booking.token.label("bookingToken"),
+            Offer.name.label("offerName"),
+            User.firstName.label("beneficiaryFirstname"),
+            User.lastName.label("beneficiaryLastname"),
+            User.email.label("beneficiaryEmail"),
+            Booking.dateCreated.label("bookingDate"),
+            Booking.isCancelled.label("isCancelled"),
+            Booking.isUsed.label("isUsed")
+        ).all()
 
     return _bookings_sql_entities_to_bookings_recap(bookings)
 

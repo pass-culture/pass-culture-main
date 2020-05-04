@@ -60,7 +60,8 @@ class Get:
                         'lastname': 'Granger',
                     },
                     'booking_date': '2020-04-03T12:00:00Z',
-                    'booking_token': 'ABCD'
+                    'booking_token': 'ABCD',
+                    'booking_status': 'Réservé',
                 }
             ]
             assert response.status_code == 200
