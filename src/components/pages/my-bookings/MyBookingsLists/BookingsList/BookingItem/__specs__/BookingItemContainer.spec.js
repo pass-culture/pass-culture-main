@@ -1,5 +1,7 @@
 import { mapStateToProps, mergeProps, ribbonLabelAndType } from '../BookingItemContainer'
 
+global.Date.now = jest.fn(() => new Date('2020-05-31T16:00:00+02:00'))
+
 describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList | BookingItem | BookingItemContainer', () => {
   describe('mapStateToProps()', () => {
     let state
@@ -192,7 +194,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
 
     it('should return props with "aujourd’hui" ribbon when booking is today', () => {
       // given
-      const today = new Date()
+      const today = '2020-05-31T17:00:00+02:00'
       state.data.offers[0].isEvent = true
       state.data.stocks[0].beginningDatetime = today
 
@@ -229,9 +231,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
 
     it('should return props with "demain" ribbon when booking is tomorrow', () => {
       // given
-      const today = new Date()
-      const tomorrow = new Date()
-      tomorrow.setDate(today.getDate() + 1)
+      const tomorrow = '2020-06-01T17:00:00+02:00'
       state.data.offers[0].isEvent = true
       state.data.stocks[0].beginningDatetime = tomorrow
 
