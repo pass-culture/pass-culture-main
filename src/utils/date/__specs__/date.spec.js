@@ -123,7 +123,7 @@ describe('src | utils | date', () => {
       it('should indicate beginning datetime as starting date when beginning datetime and end datetime are not the same day', () => {
         // given
         const departmentCode = null
-        const dates = [1585308698, 1585484866]
+        const dates = [1585308698, 1585484866, 1585571266]
 
         // when
         const result = formatSearchResultDate(departmentCode, dates)

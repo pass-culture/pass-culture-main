@@ -58,19 +58,24 @@ export const humanizeDate = (date, timezone) =>
   )
 export const formatSearchResultDate = (departmentCode, dates = []) => {
   if (dates.length === 0) return null
+
   const timezone = getTimezone(departmentCode)
-  let beginningDatetime = new Date(dates[0] * 1000)
 
-  let endingDatetime = new Date(dates[1] * 1000)
-  const day = beginningDatetime.toLocaleString(LOCALE_FRANCE, { timezone, day: '2-digit' })
+  const numberOfBookableDates = dates.length
+  let firstBookableDate = new Date(dates[0] * 1000)
+  let lastBookableDate = new Date(dates[numberOfBookableDates - 1] * 1000)
 
-  const month = beginningDatetime.toLocaleString(LOCALE_FRANCE, { timezone, month: 'long' })
-  if (beginningDatetime.getDate() === endingDatetime.getDate() || dates.length === 1) {
-    const hours = beginningDatetime.getHours()
-    const minutes = beginningDatetime.getMinutes()
+  const day = firstBookableDate.toLocaleString(LOCALE_FRANCE, { timezone, day: '2-digit' })
+  const month = firstBookableDate.toLocaleString(LOCALE_FRANCE, { timezone, month: 'long' })
+
+  const bookableDatesAreOnTheSameDay = firstBookableDate.getDate() === lastBookableDate.getDate()
+  const onlyOneBookableDate = numberOfBookableDates === 1
+  if (bookableDatesAreOnTheSameDay || onlyOneBookableDate) {
+    const hours = firstBookableDate.getHours()
+    const minutes = firstBookableDate.getMinutes()
     const hoursWithLeadingZero = hours < 10 ? '0' + hours : hours
     const minutesWithLeadingZero = minutes < 10 ? '0' + minutes : minutes
-    const weekDay = beginningDatetime.toLocaleString(LOCALE_FRANCE, { timezone, weekday: 'long' })
+    const weekDay = firstBookableDate.toLocaleString(LOCALE_FRANCE, { timezone, weekday: 'long' })
 
     const capitalizedWeekDay = weekDay.charAt(0).toUpperCase() + weekDay.slice(1)
     return `${capitalizedWeekDay} ${day} ${month} ${hoursWithLeadingZero}:${minutesWithLeadingZero}`
