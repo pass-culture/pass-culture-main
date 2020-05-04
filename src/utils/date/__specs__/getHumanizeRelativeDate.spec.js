@@ -1,5 +1,4 @@
 import getHumanizeRelativeDate from '../getHumanizeRelativeDate'
-import moment from 'moment-timezone'
 
 describe('src | utils | date | getHumanizeRelativeDate', () => {
   describe('getHumanizeRelativeDate()', () => {
@@ -45,7 +44,8 @@ describe('src | utils | date | getHumanizeRelativeDate', () => {
     describe('when the beginning date is today', () => {
       it('should return "Aujourd’hui"', () => {
         // given
-        const offerDate = new Date().toISOString()
+        jest.spyOn(Date, 'now').mockImplementation(() => '2020-05-30T20:00:00+02:00')
+        const offerDate = '2020-05-30T21:00:00+02:00'
 
         // when
         const expected = getHumanizeRelativeDate(offerDate, 'Europe/Paris')
@@ -58,13 +58,11 @@ describe('src | utils | date | getHumanizeRelativeDate', () => {
     describe('when the beginning date is tomorrow', () => {
       it('should return "Demain"', () => {
         // given
-        const todayDate = new Date()
-        const offerDate = new Date(todayDate)
-        const currentDateDay = todayDate.getDate()
-        offerDate.setDate(currentDateDay + 1)
+        jest.spyOn(Date, 'now').mockImplementation(() => '2020-05-30T20:00:00+02:00')
+        const offerDate = '2020-05-31T19:00:00+02:00'
 
         // when
-        const expected = getHumanizeRelativeDate(offerDate.toISOString(), 'Europe/Paris')
+        const expected = getHumanizeRelativeDate(offerDate, 'Europe/Paris')
 
         // then
         expect(expected).toBe('Demain')
@@ -73,9 +71,9 @@ describe('src | utils | date | getHumanizeRelativeDate', () => {
 
     describe('when user has a different timezone than the offer (edge cases)', () => {
       const offerDateInLaReunion = '2020-06-01T20:00:00+04:00'
-      it('should return null when user date is more than one day before offer', () => {
+      it('should return nothing when user date is more than one day before offer', () => {
         // given
-        global.Date.now = jest.fn(() => new Date('2020-05-30T21:59:59+02:00'))
+        jest.spyOn(Date, 'now').mockImplementation(() => '2020-05-30T21:59:59+02:00')
         const offerDate = new Date(offerDateInLaReunion)
 
         // when
@@ -85,9 +83,9 @@ describe('src | utils | date | getHumanizeRelativeDate', () => {
         expect(expected).toBeNull()
       })
 
-      it('should start return Demain when user day is one day before offer', () => {
+      it('should start return "Demain" when user day is one day before offer', () => {
         // given
-        global.Date.now = jest.fn(() => new Date('2020-05-30T22:00:00+02:00'))
+        jest.spyOn(Date, 'now').mockImplementation(() => '2020-05-30T22:00:00+02:00')
         const offerDate = new Date(offerDateInLaReunion)
 
         // when
@@ -97,9 +95,9 @@ describe('src | utils | date | getHumanizeRelativeDate', () => {
         expect(expected).toBe('Demain')
       })
 
-      it('should return Demain for the last time when user day is one second before offer d day', () => {
+      it('should return "Demain" for the last time when user day is one second before offer d day', () => {
         // given
-        global.Date.now = jest.fn(() => new Date('2020-05-31T21:59:59+02:00'))
+        jest.spyOn(Date, 'now').mockImplementation(() => '2020-05-31T21:59:59+02:00')
         const offerDate = new Date(offerDateInLaReunion)
 
         // when
@@ -109,33 +107,33 @@ describe('src | utils | date | getHumanizeRelativeDate', () => {
         expect(expected).toBe('Demain')
       })
 
-      it('should start return aujourd\'hui when user day is the same as offer', () => {
+      it('should start return "Aujourd’hui"  when user day is the same as offer', () => {
         // given
-        global.Date.now = jest.fn(() => new Date('2020-05-31T22:00:00+02:00'))
+        jest.spyOn(Date, 'now').mockImplementation(() => '2020-05-31T22:00:00+02:00')
         const offerDate = new Date(offerDateInLaReunion)
 
         // when
         const expected = getHumanizeRelativeDate(offerDate.toISOString(), 'Indian/Reunion')
 
         // then
-        expect(expected).toBe("Aujourd’hui")
+        expect(expected).toBe('Aujourd’hui')
       })
 
-      it('should return aujourd\'hui for the last time when user day is one second away from offer being finished', () => {
+      it('should return "Aujourd’hui"  for the last time when user day is one second away from offer being finished', () => {
         // given
-        global.Date.now = jest.fn(() => new Date('2020-06-01T17:59:59+02:00'))
+        jest.spyOn(Date, 'now').mockImplementation(() => '2020-06-01T17:59:59+02:00')
         const offerDate = new Date(offerDateInLaReunion)
 
         // when
         const expected = getHumanizeRelativeDate(offerDate.toISOString(), 'Indian/Reunion')
 
         // then
-        expect(expected).toBe("Aujourd’hui")
+        expect(expected).toBe('Aujourd’hui')
       })
 
-      it('should return null when user date is after offer date', () => {
+      it('should return nothing when user date is after offer date', () => {
         // given
-        global.Date.now = jest.fn(() => new Date('2020-06-01T18:00:01+02:00'))
+        jest.spyOn(Date, 'now').mockImplementation(() => '2020-06-01T18:00:01+02:00')
         const offerDate = new Date(offerDateInLaReunion)
 
         // when

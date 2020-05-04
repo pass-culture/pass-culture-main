@@ -1,6 +1,6 @@
 import { mapStateToProps, mergeProps, ribbonLabelAndType } from '../BookingItemContainer'
 
-global.Date.now = jest.fn(() => new Date('2020-05-31T16:00:00+02:00'))
+jest.spyOn(Date, 'now').mockImplementation(() => '2020-05-31T16:00:00+02:00')
 
 describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList | BookingItem | BookingItemContainer', () => {
   describe('mapStateToProps()', () => {

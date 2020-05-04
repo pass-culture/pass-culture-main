@@ -11,6 +11,12 @@ export const getTimezone = departementCode => {
   }
 }
 
+export const getTimezoneFromOffer = offer => {
+  const { venue } = offer
+  const { departementCode } = venue
+  return getTimezone(departementCode)
+}
+
 export const setTimezoneOnBeginningDatetime = timezone => stocks =>
   stocks.map(stock => {
     let extend = {}

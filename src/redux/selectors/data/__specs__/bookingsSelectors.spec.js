@@ -1028,7 +1028,7 @@ describe('selectPastEventBookingByOfferId', () => {
     expect(pastBooking).toStrictEqual({ id: 'C1', stockId: 'B1', isCancelled: false })
   })
 
-  it('should return null when bookings are on things', () => {
+  it('should return nothing when bookings are on things', () => {
     // given
     const state = {
       data: {
