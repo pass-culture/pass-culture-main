@@ -158,7 +158,7 @@ export const selectFirstMatchingBookingByOfferId = createCachedSelector(
   }
 )((state, offerId = '') => offerId)
 
-export const selectPastBookingByOfferId = createCachedSelector(
+export const selectPastEventBookingByOfferId = createCachedSelector(
   selectBookings,
   state => state.data.stocks,
   (state, offerId) => offerId,
@@ -178,11 +178,11 @@ export const selectPastBookingByOfferId = createCachedSelector(
         continue
       }
 
+      const now = moment()
       for (let j in bookings) {
         let booking = bookings[j]
 
-        const stockBeginningDateTimeIsBeforeNow = moment(stock.beginningDatetime).isBefore(moment())
-
+        const stockBeginningDateTimeIsBeforeNow = moment(stock.beginningDatetime).isBefore(now)
         if (
           booking.stockId === stock.id &&
           !booking.isCancelled &&

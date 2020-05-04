@@ -6,7 +6,7 @@ import getPriceRangeFromStocks from '../../../../../../utils/getPriceRangeFromSt
 import { selectOfferByRouterMatch } from '../../../../../../redux/selectors/data/offersSelectors'
 import { selectStocksByOfferId } from '../../../../../../redux/selectors/data/stocksSelectors'
 import BookingAction from './BookingAction'
-import { selectPastBookingByOfferId } from '../../../../../../redux/selectors/data/bookingsSelectors'
+import { selectPastEventBookingByOfferId } from '../../../../../../redux/selectors/data/bookingsSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { location, match } = ownProps
@@ -18,7 +18,7 @@ export const mapStateToProps = (state, ownProps) => {
   const stocks = selectStocksByOfferId(state, offer.id)
   const priceRange = getPriceRangeFromStocks(stocks)
 
-  const userPastBookingForThisOffer = selectPastBookingByOfferId(state, offer.id)
+  const userPastBookingForThisOffer = selectPastEventBookingByOfferId(state, offer.id)
 
   const offerCannotBeBooked = userPastBookingForThisOffer !== null || !offer.isBookable
 

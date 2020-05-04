@@ -10,7 +10,7 @@ import { bookingNormalizer } from '../../../../../../utils/normalizers'
 import { closeSharePopin, openSharePopin } from '../../../../../../redux/actions/share'
 import {
   selectBookingByRouterMatch,
-  selectPastBookingByOfferId,
+  selectPastEventBookingByOfferId,
 } from '../../../../../../redux/selectors/data/bookingsSelectors'
 import { selectOfferByRouterMatch } from '../../../../../../redux/selectors/data/offersSelectors'
 import { selectStockById } from '../../../../../../redux/selectors/data/stocksSelectors'
@@ -36,7 +36,7 @@ export const mapStateToProps = (state, ownProps) => {
   const stock = selectStockById(state, booking.stockId)
   const price = stock.price * booking.quantity
 
-  const userPastBookingForThisOffer = selectPastBookingByOfferId(state, offer.id)
+  const userPastBookingForThisOffer = selectPastEventBookingByOfferId(state, offer.id)
   const offerCanBeCancelled = userPastBookingForThisOffer === null
 
   return { booking, cancellingUrl, offer, offerCanBeCancelled, price }

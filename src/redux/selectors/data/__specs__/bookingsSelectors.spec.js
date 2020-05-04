@@ -8,7 +8,7 @@ import {
   selectEventBookingsOfTheWeek,
   selectFinishedEventBookings,
   selectFirstMatchingBookingByOfferId,
-  selectPastBookingByOfferId,
+  selectPastEventBookingByOfferId,
   selectUpComingBookings,
   selectUsedThingBookings,
 } from '../bookingsSelectors'
@@ -971,7 +971,7 @@ describe('selectBookingByRouterMatch', () => {
   })
 })
 
-describe('selectPastBookingByOfferId', () => {
+describe('selectPastEventBookingByOfferId', () => {
   it('should return empty when no booking', () => {
     // given
     const state = {
@@ -983,7 +983,7 @@ describe('selectPastBookingByOfferId', () => {
     }
 
     // when
-    const pastBooking = selectPastBookingByOfferId(state, 'A1')
+    const pastBooking = selectPastEventBookingByOfferId(state, 'A1')
 
     // then
     expect(pastBooking).toBeNull()
@@ -1000,7 +1000,7 @@ describe('selectPastBookingByOfferId', () => {
     }
 
     // when
-    const pastBooking = selectPastBookingByOfferId(state, 'A1')
+    const pastBooking = selectPastEventBookingByOfferId(state, 'A1')
 
     // then
     expect(pastBooking).toBeNull()
@@ -1022,10 +1022,30 @@ describe('selectPastBookingByOfferId', () => {
     }
 
     // when
-    const pastBooking = selectPastBookingByOfferId(state, 'A1')
+    const pastBooking = selectPastEventBookingByOfferId(state, 'A1')
 
     // then
     expect(pastBooking).toStrictEqual({ id: 'C1', stockId: 'B1', isCancelled: false })
+  })
+
+  it('should return null when bookings are on things', () => {
+    // given
+    const state = {
+      data: {
+        offer: [{ id: 'A1' }],
+        stocks: [{ id: 'B1', offerId: 'A1', beginningDatetime: null }],
+        bookings: [
+          { id: 'C1', stockId: 'B1', isCancelled: false },
+          { id: 'D1', stockId: 'B1', isCancelled: true },
+        ],
+      },
+    }
+
+    // when
+    const pastBooking = selectPastEventBookingByOfferId(state, 'A1')
+
+    // then
+    expect(pastBooking).toBeNull()
   })
 
   it('should not return cancelled booking', () => {
@@ -1041,7 +1061,7 @@ describe('selectPastBookingByOfferId', () => {
     }
 
     // when
-    const pastBooking = selectPastBookingByOfferId(state, 'A1')
+    const pastBooking = selectPastEventBookingByOfferId(state, 'A1')
 
     // then
     expect(pastBooking).toBeNull()
@@ -1060,7 +1080,7 @@ describe('selectPastBookingByOfferId', () => {
     }
 
     // when
-    const pastBooking = selectPastBookingByOfferId(state, 'A1')
+    const pastBooking = selectPastEventBookingByOfferId(state, 'A1')
 
     // then
     expect(pastBooking).toBeNull()

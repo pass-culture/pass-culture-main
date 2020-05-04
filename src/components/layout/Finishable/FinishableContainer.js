@@ -6,7 +6,7 @@ import getIsBooked from '../../../utils/getIsBooked'
 import { selectStockById } from '../../../redux/selectors/data/stocksSelectors'
 import {
   selectBookingByRouterMatch,
-  selectPastBookingByOfferId,
+  selectPastEventBookingByOfferId,
 } from '../../../redux/selectors/data/bookingsSelectors'
 import { selectOfferById } from '../../../redux/selectors/data/offersSelectors'
 
@@ -36,8 +36,7 @@ export const mapStateToProps = (state, ownProps) => {
   }
 
   const offer = selectOfferById(state, offerId) || {}
-  const userPastBookingForThisOffer = selectPastBookingByOfferId(state, offerId)
-
+  const userPastBookingForThisOffer = selectPastEventBookingByOfferId(state, offerId)
   const shouldDisplayFinishedBanner = computeShouldDisplayFinishedBanner(
     offer,
     userPastBookingForThisOffer,
