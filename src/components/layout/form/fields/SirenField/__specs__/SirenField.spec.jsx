@@ -1,15 +1,6 @@
-import React from 'react'
-import { shallow } from 'enzyme'
-import SirenField, { existsInINSEERegistry } from '../SirenField'
+import { existsInINSEERegistry } from '../SirenField'
 
 describe('src | components | pages | Offerer | OffererCreation | Fields | SirenField', () => {
-  it('should match snapshot', () => {
-    // when
-    const wrapper = shallow(<SirenField />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
 
   describe('existsInINSEERegistry', () => {
     beforeEach(() => {
