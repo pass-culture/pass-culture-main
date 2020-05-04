@@ -37,7 +37,7 @@ def build_object(offer: Offer) -> Dict:
             'author': author,
             'category': offer.offer_category,
             'dateCreated': date_created,
-            'dates': dates,
+            'dates': sorted(dates),
             'description': offer.description,
             'id': humanize_offer_id,
             'isbn': isbn,

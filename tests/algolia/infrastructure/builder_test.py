@@ -302,22 +302,26 @@ class BuildObjectTest:
 
     @freeze_time('2020-10-15 09:00:00')
     @clean_database
-    def test_should_return_event_beginning_datetimes_as_timestamp_when_event(self, app):
+    def test_should_return_event_beginning_datetimes_as_timestamp_sorted_from_oldest_to_newest_when_event(self, app):
         # Given
+        in_three_days = datetime.utcnow() + timedelta(days=3)
         in_four_days = datetime.utcnow() + timedelta(days=4)
         in_five_days = datetime.utcnow() + timedelta(days=5)
+        in_ten_days = datetime.utcnow() + timedelta(days=10)
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_event_product(venue=venue)
         stock1 = create_stock(beginning_datetime=in_four_days, offer=offer)
-        stock2 = create_stock(beginning_datetime=in_five_days, offer=offer)
-        repository.save(stock1, stock2)
+        stock2 = create_stock(beginning_datetime=in_three_days, offer=offer)
+        stock3 = create_stock(beginning_datetime=in_ten_days, offer=offer)
+        stock4 = create_stock(beginning_datetime=in_five_days, offer=offer)
+        repository.save(stock1, stock2, stock3, stock4)
 
         # When
         result = build_object(offer)
 
         # Then
-        assert set(result['offer']['dates']) == {1603098000.0, 1603184400.0}
+        assert result['offer']['dates'] == [1603011600.0, 1603098000.0, 1603184400.0, 1603616400.0]
 
     @clean_database
     def test_should_not_return_event_beginning_datetimes_as_timestamp_when_thing(self, app):
