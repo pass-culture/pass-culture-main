@@ -13,19 +13,23 @@
   td {
     font-size: rem(16px);
     padding: rem(16px);
+  }
 
-    .offer-link {
-      font-weight: $weight-bold;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      max-width: rem(175px);
-      display: block;
-      overflow: hidden;
-    }
+  .cell-offer-link {
+    font-weight: $weight-bold;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: rem(175px);
+    display: block;
+    overflow: hidden;
+  }
 
-    .cell-subtitle {
-      color: $grey;
-    }
+  .cell-subtitle {
+    color: $grey;
+  }
+
+  .td-bookings-status{
+    vertical-align:middle;
   }
 
   .bookings-status-label {

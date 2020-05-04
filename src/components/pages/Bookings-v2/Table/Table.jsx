@@ -41,7 +41,7 @@ function Table({ columns, data }) {
                 return (
                   <td
                     key={cell.id}
-                    {...cell.getCellProps()}
+                    {...cell.getCellProps({ className: cell.column.className })}
                   >
                     {cell.render('Cell')}
                   </td>

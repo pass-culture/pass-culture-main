@@ -12,7 +12,7 @@ class BookingsTable extends PureComponent {
         {
           headerTitle: "Nom de l'offre",
           accessor: 'stock',
-          Cell: ({ value }) => (<span className="offer-link">
+          Cell: ({ value }) => (<span className="cell-offer-link">
             {value.offer_name}
           </span>),
         },
@@ -34,6 +34,7 @@ class BookingsTable extends PureComponent {
           headerTitle: 'Statut',
           accessor: 'booking_status',
           Cell: ({ value }) => <BookingStatusCell bookingStatus={value} />,
+          className: 'td-bookings-status',
         },
       ],
     }

@@ -90,19 +90,6 @@ describe('components | pages | Bookings-v2 | BookingsTable', function() {
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
       },
-      {
-        stock: {
-          offer_name: "Harry Potter et le prisonnier d'Azkaban",
-        },
-        beneficiary: {
-          lastname: 'Klepi',
-          firstname: 'Sonia',
-          email: 'sonia.klepi@example.com',
-        },
-        booking_date: '2020-04-03T12:00:00Z',
-        booking_token: 'ZEHBGD',
-        booking_status: 'Validé',
-      },
     ]
 
     const props = {
@@ -111,31 +98,18 @@ describe('components | pages | Bookings-v2 | BookingsTable', function() {
 
     // When
     const wrapper = mount(<BookingsTable {...props} />)
-    const firstRowStock = wrapper
-      .find('tr')
-      .at(1)
-      .find('td')
-      .at(0)
-    const firstRowBeneficiary = wrapper
-      .find('tr')
-      .at(1)
-      .find('td')
-      .at(1)
-    const firstRowBookingDate = wrapper
-      .find('tr')
-      .at(1)
-      .find('td')
-      .at(2)
-    const firstRowToken = wrapper
-      .find('tr')
-      .at(1)
-      .find('td')
-      .at(3)
+    const firstRow = wrapper.find('tr').at(1)
+    const firstRowStock = firstRow.find('td').at(0)
+    const firstRowBeneficiary = firstRow.find('td').at(1)
+    const firstRowBookingDate = firstRow.find('td').at(2)
+    const firstRowToken = firstRow.find('td').at(3)
+    const firstRowStatus = firstRow.find('td').at(4)
 
     // Then
     expect(firstRowStock.text()).toBe('Avez-vous déjà vu')
     expect(firstRowBeneficiary.text()).toBe('Sonia Klepisonia.klepi@example.com')
     expect(firstRowBookingDate.text()).toBe('03/04/202012:00')
     expect(firstRowToken.text()).toBe('ZEHBGD')
+    expect(firstRowStatus.text()).toBe('validé')
   })
 })
