@@ -11,13 +11,13 @@ def get_existing_pro_validated_user_with_at_least_one_visible_activated_offer():
     query = query.join(Venue).join(Offer).filter(Offer.isActive == True)
     user = query.first()
 
-    for uo in user.UserOfferers:
-        if uo.offerer.validationToken == None and uo.validationToken == None:
-            for venue in uo.offerer.managedVenues:
+    for userOfferer in user.UserOfferers:
+        if userOfferer.offerer.validationToken is None and userOfferer.validationToken is None:
+            for venue in userOfferer.offerer.managedVenues:
                 for offer in venue.offers:
                     if offer.isActive:
                         return {
                             "offer": get_offer_helper(offer),
-                            "mediationId": [humanize(m.id) for m in offer.mediations if m.isActive][0],
+                            "mediationId": [humanize(mediation.id) for mediation in offer.mediations if mediation.isActive][0],
                             "user": get_user_helper(user)
                         }

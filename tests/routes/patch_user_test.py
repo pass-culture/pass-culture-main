@@ -14,7 +14,7 @@ class Patch:
             repository.save(user)
             user_id = user.id
             data = {'publicName': 'plop', 'email': 'new@email.com', 'postalCode': '93020', 'phoneNumber': '0612345678',
-                    'departementCode': '97', 'hasSeenTutorials': False}
+                    'departementCode': '97', 'hasSeenTutorials': True}
 
             # when
             response = TestClient(app.test_client()).with_auth(email=user.email) \
@@ -34,8 +34,7 @@ class Patch:
             assert user.phoneNumber == data['phoneNumber']
             assert response.json['departementCode'] == user.departementCode
             assert user.departementCode == data['departementCode']
-            assert response.json['hasSeenTutorials'] == user.hasSeenTutorials
-            assert user.hasSeenTutorials == data['hasSeenTutorials']
+            assert response.json['needsToSeeTutorials'] == False
             assert 'expenses' in response.json
 
 

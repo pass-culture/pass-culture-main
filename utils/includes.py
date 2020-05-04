@@ -156,6 +156,7 @@ RECOMMENDATION_INCLUDES = [
 USER_INCLUDES = [
     '-culturalSurveyId',
     '-culturalSurveyFilledDate',
+    '-hasSeenTutorials',
     '-password',
     '-resetPasswordToken',
     '-resetPasswordTokenValidityLimit',
@@ -165,7 +166,8 @@ USER_INCLUDES = [
     'hasOffers',
     'wallet_balance',
     'wallet_is_activated',
-    'wallet_date_created'
+    'wallet_date_created',
+    'needsToSeeTutorials'
 ]
 
 WEBAPP_GET_BOOKING_INCLUDES = [

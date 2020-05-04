@@ -314,3 +314,32 @@ class nOffersTest:
 
         # then
         assert user.hasOffers is True
+
+
+class needsToSeeTutorialsTest:
+    @clean_database
+    def test_beneficiary_has_to_see_tutorials_when_not_already_seen(self, app):
+        # given
+        user = create_user(can_book_free_offers=True, has_seen_tutorials=False)
+        # when
+        repository.save(user)
+        # then
+        assert user.needsToSeeTutorials is True
+
+    @clean_database
+    def test_beneficiary_has_not_to_see_tutorials_when_already_seen(self, app):
+        # given
+        user = create_user(can_book_free_offers=True, has_seen_tutorials=True)
+        # when
+        repository.save(user)
+        # then
+        assert user.needsToSeeTutorials is False
+        
+    @clean_database
+    def test_pro_user_has_not_to_see_tutorials_when_already_seen(self, app):
+        # given
+        user = create_user(can_book_free_offers=False)
+        # when
+        repository.save(user)
+        # then
+        assert user.needsToSeeTutorials is False

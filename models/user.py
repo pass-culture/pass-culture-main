@@ -162,6 +162,10 @@ class User(PcObject,
         return False
 
     @property
+    def needsToSeeTutorials(self):
+        return self.canBookFreeOffers and self.hasSeenTutorials is False
+
+    @property
     def hasOffers(self):
         return any([offerer.nOffers > 0 for offerer in self.offerers])
 
