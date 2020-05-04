@@ -23,11 +23,11 @@ class NewApplicationCanUpdateBankInformationTest():
 
     def test_always_returns_true_if_application_is_validated(self):
         # given
-        bank_information1 = create_bank_information()
+        bank_information1 = create_bank_information(idx=1)
         bank_information2 = create_bank_information(
-            status=BankInformationStatus.DRAFT, bic="", iban="")
+            status=BankInformationStatus.DRAFT, bic="", iban="", idx=2)
         bank_information3 = create_bank_information(
-            status=BankInformationStatus.REJECTED, bic="", iban="")
+            status=BankInformationStatus.REJECTED, bic="", iban="", idx=2)
 
         # when
         can_update_witness = new_application_can_update_bank_information(
@@ -45,17 +45,17 @@ class NewApplicationCanUpdateBankInformationTest():
         assert can_update2
         assert can_update3
 
-    def test_doesnt_returns_trus_if_previous_application_was_valready_validated(self):
+    def test_doesnt_returns_true_if_previous_application_was_already_validated(self):
         # given
-        bank_information = create_bank_information()
+        bank_information = create_bank_information(idx=1)
 
         # when
         can_update1 = new_application_can_update_bank_information(
-            bank_information, 4, BankInformationStatus.ACCEPTED)
+            bank_information, 2, BankInformationStatus.ACCEPTED)
         can_update2 = new_application_can_update_bank_information(
-            bank_information, 4, BankInformationStatus.REJECTED)
+            bank_information, 2, BankInformationStatus.REJECTED)
         can_update3 = new_application_can_update_bank_information(
-            bank_information, 4, BankInformationStatus.DRAFT)
+            bank_information, 2, BankInformationStatus.DRAFT)
 
         # then
         assert can_update1

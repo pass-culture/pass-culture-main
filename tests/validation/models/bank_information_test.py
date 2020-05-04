@@ -45,7 +45,7 @@ def test_should_return_error_messages_when_iban_and_bic_are_invalid():
     }
 
 
-def test_should_return_no_error_message_when_iban_and_bic_are_valid():
+def test_should_return_no_error_message_when_iban_and_bic_are_valid_and_status_accepted():
     # Given
     bank_information = create_bank_information()
     api_errors = ApiErrors()
@@ -73,7 +73,7 @@ def test_should_return_an_error_if_status_is_not_accepted_and_bic_or_iban_is_pre
     }
 
 
-def test_should__notreturn_an_error_if_status_is_not_accepted_and_bic_and_iban_are_empty():
+def test_should_not_return_an_error_if_status_is_not_accepted_and_bic_and_iban_are_empty():
     # Given
     bank_information = create_bank_information(bic=None,
                                                iban=None,

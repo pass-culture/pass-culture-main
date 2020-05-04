@@ -116,15 +116,3 @@ def test_validate_bank_information_raises_an_error_if_iban_is_missing():
 
     # then
     assert errors.errors['iban'] == ['Cette information est obligatoire']
-
-
-def test_bic_and_iban_can_be_empty_if_status_is_not_accepted():
-    # given
-    bank_information = create_bank_information(
-        bic=None, iban=None, status="REJECTED")
-
-    # when
-    errors = entity_validator.validate(bank_information)
-
-    # then
-    assert True

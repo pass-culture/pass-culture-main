@@ -95,6 +95,20 @@ class OffererBankInformationTest:
         assert iban is None
 
     @clean_database
+    def test_demarchesSimplifieesApplicationId_returns_id_if_status_is_draft(self, app):
+        # Given
+        offerer = create_offerer(siren='123456789')
+        bank_information = create_bank_information(
+            id_at_providers='123456789', application_id=12345, offerer=offerer, status=BankInformationStatus.DRAFT, iban=None, bic=None)
+        repository.save(bank_information)
+
+        # When
+        field = offerer.demarchesSimplifieesApplicationId
+
+        # Then
+        assert field == 12345
+
+    @clean_database
     def test_demarchesSimplifieesApplicationId_returns_none_if_status_is_rejected(self, app):
         # Given
         offerer = create_offerer(siren='123456789')
