@@ -31,7 +31,5 @@ def _get_by_siren(siren: str) -> Dict:
 
 
 def _extract_etablissements_communs_siren(etablissements):
-    etablissements_communs = filter(lambda etablissement: etablissement["etablissement_siege"] == "false",
-                                    etablissements)
-    etablissements_communs_siren = map(lambda etablissement: etablissement["siret"], etablissements_communs)
-    return list(etablissements_communs_siren)
+    etablissements_communs = [etablissement for etablissement in etablissements if etablissement["etablissement_siege"] == "false"]
+    return [etablissement["siret"] for etablissement in etablissements_communs]
