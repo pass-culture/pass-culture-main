@@ -142,25 +142,6 @@ def get_active_offers(user, pagination_params, departement_codes=None, offer_id=
     return query.all()
 
 
-def get_active_offers_with_digital_first(user, pagination_params, departement_codes=None, offer_id=None, limit=None,
-                                         order_by=order_by_with_criteria_and_is_digital,
-                                         end_of_quarantine_date: datetime = datetime.utcnow()):
-    seed_number = pagination_params.get('seed')
-    page = pagination_params.get('page')
-    sql = text(f'SET SEED TO {seed_number}')
-    db.session.execute(sql)
-
-    active_offer_ids = get_active_offers_ids_query(user, departement_codes, offer_id)
-    query = Offer.query.filter(Offer.id.in_(active_offer_ids))
-    query = query.order_by(*order_by(end_of_quarantine_date))
-    query = query.options(joinedload('mediations'),
-                          joinedload('product'))
-
-    if limit:
-        query = _get_paginated_active_offers(limit, page, query)
-    return query.all()
-
-
 def _get_paginated_active_offers(limit, page, query):
     if page:
         query = query \
