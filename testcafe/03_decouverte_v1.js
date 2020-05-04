@@ -12,10 +12,10 @@ const closeVersoLink = Selector('#deck .close-link')
 
 let userRole
 
-fixture('Sur la page découverte v2,').beforeEach(async t => {
+fixture('Sur la page découverte v1,').beforeEach(async t => {
   if (!userRole) {
     userRole = await createUserRoleFromUserSandbox(
-      'webapp_03_decouverte',
+      'webapp_03_decouverte_v1',
       'get_existing_webapp_user_with_bookings'
     )
   }
@@ -23,7 +23,7 @@ fixture('Sur la page découverte v2,').beforeEach(async t => {
 })
 
 test('je peux parcourir les offres de gauche à droite et de droite à gauche', async t => {
-  await t.navigateTo(`${ROOT_PATH}decouverte-v2`)
+  await t.navigateTo(`${ROOT_PATH}decouverte`)
   await t.expect(nextButton.visible).ok()
 
   const urlAtStart = getPageUrl()
