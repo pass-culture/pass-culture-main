@@ -62,8 +62,8 @@ export const formatSearchResultDate = (departmentCode, dates = []) => {
   const timezone = getTimezone(departmentCode)
 
   const numberOfBookableDates = dates.length
-  let firstBookableDate = new Date(dates[0] * 1000)
-  let lastBookableDate = new Date(dates[numberOfBookableDates - 1] * 1000)
+  let firstBookableDate = new Date(dates[0] * MILLISECONDS_IN_A_SECOND)
+  let lastBookableDate = new Date(dates[numberOfBookableDates - 1] * MILLISECONDS_IN_A_SECOND)
 
   const day = firstBookableDate.toLocaleString(LOCALE_FRANCE, { timezone, day: '2-digit' })
   const month = firstBookableDate.toLocaleString(LOCALE_FRANCE, { timezone, month: 'long' })
