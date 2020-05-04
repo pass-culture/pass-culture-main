@@ -2,8 +2,8 @@ export const DEFAULT_TYPEFORM_LOCATION = '/typeform'
 const TUTORIALS_LOCATION = '/bienvenue'
 
 export const getRedirectionPath = ({ currentUser }) => {
-  const { needsToFillCulturalSurvey, hasSeenTutorials } = currentUser || {}
-  const needsToSeeTutorials = !hasSeenTutorials
+  const { needsToFillCulturalSurvey, needsToSeeTutorials } = currentUser || {}
+
   if (needsToFillCulturalSurvey) {
     return DEFAULT_TYPEFORM_LOCATION
   } else if (needsToSeeTutorials) {

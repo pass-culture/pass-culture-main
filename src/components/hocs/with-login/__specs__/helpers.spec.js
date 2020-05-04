@@ -28,7 +28,7 @@ describe('src | hocs | with-login | helpers', () => {
           const props = {
             currentUser: {
               needsToFillCulturalSurvey: false,
-              hasSeenTutorials: false,
+              needsToSeeTutorials: true,
             },
             pathname: '/my-page',
             search: '?any=any',
@@ -48,7 +48,7 @@ describe('src | hocs | with-login | helpers', () => {
           const props = {
             currentUser: {
               needsToFillCulturalSurvey: false,
-              hasSeenTutorials: true,
+              needsToSeeTutorials: false,
             },
             pathname: '/my-page',
             search: '?any=any',

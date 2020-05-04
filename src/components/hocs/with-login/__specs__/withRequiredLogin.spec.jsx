@@ -38,7 +38,7 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin - uni
               datum: {
                 email: 'michel.marx@example.com',
                 needsToFillCulturalSurvey: false,
-                hasSeenTutorials: true,
+                needsToSeeTutorials: false,
               },
             },
           }
@@ -69,7 +69,7 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin - uni
               datum: {
                 email: 'michel.marx@example.com',
                 needsToFillCulturalSurvey: false,
-                hasSeenTutorials: false,
+                needsToSeeTutorials: true,
               },
             },
           }
@@ -100,7 +100,6 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin - uni
               datum: {
                 email: 'michel.marx@example.com',
                 needsToFillCulturalSurvey: true,
-                hasSeenTutorials: false,
               },
             },
           }

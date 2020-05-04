@@ -93,7 +93,7 @@ test("quand j'ai fini de voir le 3ème tutoriel, je suis rediriger vers une autr
   await t.click(nextArrow)
 
   const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/decouverte')
+  await t.expect(location.pathname).contains('/decouverte')
 })
 
 test("quand je n'ai pas fini de voir le 3ème tutoriel, je ne peux pas naviguer sur une autre page", async t => {
