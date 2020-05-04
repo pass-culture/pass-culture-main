@@ -149,29 +149,6 @@ class Put:
             # then
             assert response.status_code == 404
 
-    class Returns403:
-        @clean_database
-        def when_feature_is_not_active(self, app):
-            # Given
-            user = create_user(can_book_free_offers=True, departement_code='973', is_admin=False)
-            feature = Feature.query.filter_by(name=FeatureToggle.RECOMMENDATIONS_WITH_DISCOVERY_VIEW).first()
-            feature.isActive = False
-            repository.save(feature, user)
-            reads = [
-                {"id": humanize(1), "dateRead": "2018-12-17T15:59:11.689000Z"},
-                {"id": humanize(2), "dateRead": "2018-12-17T15:59:15.689000Z"},
-                {"id": humanize(3), "dateRead": "2018-12-17T15:59:21.689000Z"},
-            ]
-            data = {'readRecommendations': reads}
-            auth_request = TestClient(app.test_client()).with_auth(user.email)
-
-            # When
-            response = auth_request.put(RECOMMENDATION_URL_V2,
-                      json=data, headers={'origin': 'http://localhost:3000'})
-
-            # Then
-            assert response.status_code == 403
-
     class Returns200:
         @clean_database
         def when_updating_read_recommendations(self, app):

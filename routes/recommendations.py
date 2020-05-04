@@ -57,7 +57,6 @@ def put_read_recommendations():
 
 
 @app.route('/recommendations/v2', methods=['PUT'])
-@feature_required(FeatureToggle.RECOMMENDATIONS_WITH_DISCOVERY_VIEW)
 @login_required
 @expect_json_data
 def put_recommendations_v2():
