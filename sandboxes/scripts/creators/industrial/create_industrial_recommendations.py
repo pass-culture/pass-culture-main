@@ -1,6 +1,6 @@
 from recommendations_engine.offers import get_departement_codes_from_user
 from repository import repository
-from repository.offer_queries import get_active_offers
+from repository.offer_queries import get_offers_for_recommendation
 from sandboxes.scripts.utils.select import remove_every
 from sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 from tests.model_creators.generic_creators import create_recommendation
@@ -42,10 +42,9 @@ def create_industrial_recommendations(offers_by_name, users_by_name):
 
         active_offer_ids = [
             offer.id for offer in
-            get_active_offers(
+            get_offers_for_recommendation(
                 departement_codes=departement_codes,
                 limit=None,
-                pagination_params={'page': 1, 'seed': 0.5},
                 user=user
             )
         ]

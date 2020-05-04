@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import List, Optional
 
 from flask_sqlalchemy import BaseQuery
-from sqlalchemy import desc, func, or_, text
+from sqlalchemy import desc, func, or_
 from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql import selectable
@@ -19,7 +19,7 @@ from models import EventType, \
     ThingType, \
     Venue, \
     Product, Favorite, Booking, DiscoveryView, DiscoveryViewV3, User
-from models.db import Model, db
+from models.db import Model
 from repository.booking_queries import get_only_offer_ids_from_bookings
 from repository.favorite_queries import get_only_offer_ids_from_favorites
 from repository.iris_venues_queries import find_venues_located_near_iris
@@ -122,24 +122,6 @@ def get_offers_for_recommendation(user: User,
 def keep_only_offers_in_venues_or_national(query: BaseQuery, venue_ids: selectable.Alias) -> BaseQuery:
     return query \
         .filter(or_(DiscoveryView.venueId.in_(venue_ids), DiscoveryView.isNational == True))
-
-
-def get_active_offers(user, pagination_params, departement_codes=None, offer_id=None, limit=None,
-                      order_by=_order_by_occurs_soon_or_is_thing_then_randomize):
-    seed_number = pagination_params.get('seed')
-    page = pagination_params.get('page')
-    sql = text(f'SET SEED TO {seed_number}')
-    db.session.execute(sql)
-
-    active_offer_ids = get_active_offers_ids_query(user, departement_codes, offer_id)
-    query = Offer.query.filter(Offer.id.in_(active_offer_ids))
-    query = query.order_by(_round_robin_by_type_onlineness_and_criteria(order_by))
-    query = query.options(joinedload('mediations'),
-                          joinedload('product'))
-
-    if limit:
-        query = _get_paginated_active_offers(limit, page, query)
-    return query.all()
 
 
 def _get_paginated_active_offers(limit, page, query):
