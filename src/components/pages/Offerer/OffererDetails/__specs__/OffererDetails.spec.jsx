@@ -21,14 +21,6 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
     }
   })
 
-  it('should match snapshot', () => {
-    // when
-    const wrapper = shallow(<OffererDetails {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   describe('render', () => {
     it('should render a bank instructions block', () => {
       // given
