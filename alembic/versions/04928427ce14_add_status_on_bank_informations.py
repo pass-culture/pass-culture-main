@@ -1,7 +1,7 @@
 """add_status_on_bank_informations
 
 Revision ID: 04928427ce14
-Revises: 176d931e5dbc
+Revises: 5b12b14f1b17
 Create Date: 2020-04-28 09:58:34.287483
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '04928427ce14'
-down_revision = '176d931e5dbc'
+down_revision = '5b12b14f1b17'
 branch_labels = None
 depends_on = None
 
@@ -32,8 +32,11 @@ def upgrade():
 
 
 def downgrade():
-    op.alter_column('bank_information', 'bic', nullable=False)
-    op.alter_column('bank_information', 'iban', nullable=False)
+    op.execute(
+        "DELETE FROM bank_information WHERE status = 'DRAFT' OR status = 'REJECTED'")
 
     op.drop_column('bank_information', 'status')
     enum.drop(op.get_bind(), checkfirst=False)
+
+    op.alter_column('bank_information', 'bic', nullable=False)
+    op.alter_column('bank_information', 'iban', nullable=False)
