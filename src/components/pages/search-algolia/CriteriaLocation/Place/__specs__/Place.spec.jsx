@@ -117,7 +117,7 @@ describe('components | Place', () => {
     expect(suggestedPlaces).toHaveLength(0)
   })
 
-  it('should render a list of suggested places while typing', async () => {
+  it('should render a list of suggested places with department while typing a city name', async () => {
     // Given
     fetchPlaces.mockReturnValue(
       new Promise(resolve => {
@@ -127,12 +127,13 @@ describe('components | Place', () => {
               latitude: 1,
               longitude: 2,
             },
-            name: 'Paris 15ème arrondissement',
+            name: 'Nice',
             extraData: {
-              departmentCode: '75',
-              department: 'Paris',
-              label: 'Paris',
-              region: 'Ile-De-France'
+              city: 'Nice',
+              departmentCode: '06',
+              department: 'Alpes-Maritimes',
+              label: 'Nice',
+              region: 'Provence-Alpes-Côte d\'Azur'
             },
           },
           {
@@ -140,12 +141,13 @@ describe('components | Place', () => {
               latitude: 3,
               longitude: 4,
             },
-            name: '34 avenue de l\'Opéra',
+            name: 'Niort',
             extraData: {
-              departmentCode: '75',
-              department: 'Paris',
-              label: 'Paris',
-              region: 'Ile-De-France'
+              city: 'Niort',
+              departmentCode: '79',
+              department: 'Deux-Sèvres',
+              label: 'Niort',
+              region: 'Nouvelle-Aquitaine'
             },
           },
         ])
@@ -159,7 +161,7 @@ describe('components | Place', () => {
     const input = wrapper.find('input')
 
     // When
-    await input.simulate('change', { target: { value: 'Pari' } })
+    await input.simulate('change', { target: { value: 'Ni' } })
     wrapper.update()
 
     // Then
@@ -171,12 +173,76 @@ describe('components | Place', () => {
     expect(suggestedPlaces).toHaveLength(2)
 
     const firstSuggestedPlace = suggestedPlaces.at(0).find('span')
-    expect(firstSuggestedPlace.at(0).text()).toBe('Paris 15ème arrondissement')
+    expect(firstSuggestedPlace.at(0).text()).toBe('Nice')
+    expect(firstSuggestedPlace.at(1).text()).toBe('Alpes-Maritimes')
+
+    const secondSuggestedPlace = suggestedPlaces.at(1).find('span')
+    expect(secondSuggestedPlace.at(0).text()).toBe('Niort')
+    expect(secondSuggestedPlace.at(1).text()).toBe('Deux-Sèvres')
+  })
+
+  it('should render a list of suggested places with city while typing an address', async () => {
+    // Given
+    fetchPlaces.mockReturnValue(
+      new Promise(resolve => {
+        resolve([
+          {
+            geolocation: {
+              latitude: 1,
+              longitude: 2,
+            },
+            name: '34 avenue de l\'opéra',
+            extraData: {
+              city: 'Paris',
+              departmentCode: '75',
+              department: 'Paris',
+              label: 'Paris',
+              region: 'Ile-De-France'
+            },
+          },
+          {
+            geolocation: {
+              latitude: 3,
+              longitude: 4,
+            },
+            name: '34 avenue Angla',
+            extraData: {
+              city: 'Toulouse',
+              departmentCode: '',
+              department: 'Haute-Garonne',
+              label: 'Toulouse',
+              region: 'Occitanie'
+            },
+          },
+        ])
+      })
+    )
+    const wrapper = mount(
+      <Router history={props.history}>
+        <Place {...props} />
+      </Router>
+    )
+    const input = wrapper.find('input')
+
+    // When
+    await input.simulate('change', { target: { value: '34 av' } })
+    wrapper.update()
+
+    // Then
+    const suggestedPlaces = wrapper
+      .find(Place)
+      .find('ul')
+      .find('li')
+      .find('button')
+    expect(suggestedPlaces).toHaveLength(2)
+
+    const firstSuggestedPlace = suggestedPlaces.at(0).find('span')
+    expect(firstSuggestedPlace.at(0).text()).toBe('34 avenue de l\'opéra')
     expect(firstSuggestedPlace.at(1).text()).toBe('Paris')
 
     const secondSuggestedPlace = suggestedPlaces.at(1).find('span')
-    expect(secondSuggestedPlace.at(0).text()).toBe('34 avenue de l\'Opéra')
-    expect(secondSuggestedPlace.at(1).text()).toBe('Paris')
+    expect(secondSuggestedPlace.at(0).text()).toBe('34 avenue Angla')
+    expect(secondSuggestedPlace.at(1).text()).toBe('Toulouse')
   })
 
   it('should render no suggested places when fetching is in error', async () => {

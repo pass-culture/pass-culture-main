@@ -134,7 +134,7 @@ class Place extends Component {
                       {suggestedPlace.name}
                     </span>
                     <span className="place-extra-data">
-                      {suggestedPlace.extraData.department}
+                      {/^\d/.test(suggestedPlace.name) ? suggestedPlace.extraData.city : suggestedPlace.extraData.department}
                     </span>
                   </button>
                 </li>

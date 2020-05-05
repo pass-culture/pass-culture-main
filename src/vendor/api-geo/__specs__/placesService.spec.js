@@ -27,6 +27,7 @@ describe('vendor | api-geo | placesService', () => {
     // then
     expect(results).toStrictEqual([{
       extraData: {
+        city: 'Paris',
         departmentCode: '75',
         department: 'Paris',
         label: '34 avenue opéra',
@@ -61,6 +62,7 @@ describe('vendor | api-geo | placesService', () => {
     // then
     expect(results).toStrictEqual([{
       extraData: {
+        city: 'Paris',
         departmentCode: '',
         department: '',
         label: '',
@@ -108,6 +110,7 @@ describe('vendor | api-geo | placesService', () => {
     // then
     expect(results).toStrictEqual([{
       extraData: {
+        city: 'Paris',
         departmentCode: '',
         department: '',
         label: '',
@@ -143,6 +146,7 @@ describe('vendor | api-geo | placesService', () => {
     // then
     expect(results).toStrictEqual([{
       extraData: {
+        city: 'Paris',
         departmentCode: '',
         department: '',
         label: '',

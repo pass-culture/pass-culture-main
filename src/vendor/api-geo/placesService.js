@@ -15,6 +15,7 @@ export const fetchPlaces = ({ keywords, limit = 20 }) => {
 
         return {
           extraData: {
+            city: city,
             departmentCode: splittedInformation[0] || '',
             department: splittedInformation[1] || '',
             label: label,
