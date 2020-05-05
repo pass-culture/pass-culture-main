@@ -67,6 +67,7 @@ class Place extends Component {
   blurInput = () => () => this.inputRef.current.blur()
 
   handleOnSubmit = (event) => {
+    this.inputRef.current.blur()
     event.preventDefault()
   }
 

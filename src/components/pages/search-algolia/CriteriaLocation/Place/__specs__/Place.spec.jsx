@@ -41,7 +41,7 @@ describe('components | Place', () => {
       </Router>
     )
 
-    // Then
+    // then
     const header = wrapper.find(Header)
     expect(header).toHaveLength(1)
     expect(header.prop('backTo')).toBe('/recherche/criteres-localisation')
@@ -61,7 +61,7 @@ describe('components | Place', () => {
       </Router>
     )
 
-    // Then
+    // then
     const input = wrapper.find('input')
     expect(input).toHaveLength(1)
     expect(input.prop('type')).toBe('search')
@@ -76,7 +76,7 @@ describe('components | Place', () => {
       </Router>
     )
 
-    // Then
+    // then
     const input = wrapper.find('input')
     expect(input).toHaveLength(1)
     expect(input.prop('type')).toBe('search')
@@ -85,7 +85,7 @@ describe('components | Place', () => {
   })
 
   it('should fetch places when typing in search input', async () => {
-    // Given
+    // given
     const wrapper = mount(
       <Router history={props.history}>
         <Place {...props} />
@@ -96,12 +96,12 @@ describe('components | Place', () => {
     // When
     await input.simulate('change', { target: { value: 'Pari' } })
 
-    // Then
+    // then
     expect(fetchPlaces).toHaveBeenCalledWith({ keywords: 'Pari' })
   })
 
   it('should not render a list of suggested places while typing when no result', async () => {
-    // Given
+    // given
     const wrapper = mount(
       <Router history={props.history}>
         <Place {...props} />
@@ -112,13 +112,13 @@ describe('components | Place', () => {
     // When
     await input.simulate('change', { target: { value: 'Par' } })
 
-    // Then
+    // then
     const suggestedPlaces = wrapper.find('ul')
     expect(suggestedPlaces).toHaveLength(0)
   })
 
   it('should render a list of suggested places with department while typing a city name', async () => {
-    // Given
+    // given
     fetchPlaces.mockReturnValue(
       new Promise(resolve => {
         resolve([
@@ -164,7 +164,7 @@ describe('components | Place', () => {
     await input.simulate('change', { target: { value: 'Ni' } })
     wrapper.update()
 
-    // Then
+    // then
     const suggestedPlaces = wrapper
       .find(Place)
       .find('ul')
@@ -182,7 +182,7 @@ describe('components | Place', () => {
   })
 
   it('should render a list of suggested places with city while typing an address', async () => {
-    // Given
+    // given
     fetchPlaces.mockReturnValue(
       new Promise(resolve => {
         resolve([
@@ -228,7 +228,7 @@ describe('components | Place', () => {
     await input.simulate('change', { target: { value: '34 av' } })
     wrapper.update()
 
-    // Then
+    // then
     const suggestedPlaces = wrapper
       .find(Place)
       .find('ul')
@@ -246,7 +246,7 @@ describe('components | Place', () => {
   })
 
   it('should render no suggested places when fetching is in error', async () => {
-    // Given
+    // given
     fetchPlaces.mockRejectedValueOnce()
     const wrapper = mount(
       <Router history={props.history}>
@@ -258,7 +258,7 @@ describe('components | Place', () => {
     // When
     await input.simulate('change', { target: { value: '' } })
 
-    // Then
+    // then
     const suggestedPlaces = wrapper
       .find('ul')
       .find('li')
@@ -267,7 +267,7 @@ describe('components | Place', () => {
   })
 
   it('should render a reset button when keywords are typed', async () => {
-    // Given
+    // given
     fetchPlaces.mockReturnValue(
       new Promise(resolve => {
         resolve([{
@@ -290,7 +290,7 @@ describe('components | Place', () => {
     // When
     await inputText.simulate('change', { target: { value: 'Par' } })
 
-    // Then
+    // then
     const resetButton = wrapper.find('button[type="reset"]')
     expect(resetButton).toHaveLength(1)
   })
@@ -303,13 +303,13 @@ describe('components | Place', () => {
       </Router>
     )
 
-    // Then
+    // then
     const resetButton = wrapper.find('button[type="reset"]')
     expect(resetButton).toHaveLength(0)
   })
 
   it('should reset text search input and suggestions when clicking on reset button', async () => {
-    // Given
+    // given
     fetchPlaces.mockReturnValue(
       new Promise(resolve => {
         resolve([{
@@ -339,7 +339,7 @@ describe('components | Place', () => {
     const resetButton = wrapper.find('button[type="reset"]')
     resetButton.simulate('click')
 
-    // Then
+    // then
     const inputText = wrapper.find('input')
     expect(inputText.prop('value')).toBe('')
     const suggestedPlaces = wrapper
@@ -351,7 +351,7 @@ describe('components | Place', () => {
   })
 
   it('should update place and redirect to search main page when clicking on a suggested place', async () => {
-    // Given
+    // given
     jest.spyOn(props.history, 'push').mockImplementation(() => jest.fn())
     props.history.location.pathname = '/recherche/criteres-localisation/place'
     props.history.location.search = ''
@@ -397,7 +397,7 @@ describe('components | Place', () => {
       },
     })
 
-    // Then
+    // then
     expect(props.onPlaceSelection).toHaveBeenCalledWith({
       geolocation: {
         latitude: 1,
@@ -410,7 +410,7 @@ describe('components | Place', () => {
   })
 
   it('should update place and redirect to previous page when clicking on a suggested place', async () => {
-    // Given
+    // given
     jest.spyOn(props.history, 'push').mockImplementation(() => jest.fn())
     props.history.location.pathname = '/recherche/resultats/filtres/localisation/place'
     props.history.location.search = '?mots-cles=&autour-de=non&tri=&categories='
@@ -456,7 +456,7 @@ describe('components | Place', () => {
       },
     })
 
-    // Then
+    // then
     expect(props.onPlaceSelection).toHaveBeenCalledWith({
       geolocation: {
         latitude: 1,
@@ -471,7 +471,7 @@ describe('components | Place', () => {
   })
 
   it('should blur input when scrolling results', async () => {
-    // Given
+    // given
     fetchPlaces.mockReturnValue(
       new Promise(resolve => {
         resolve([{
@@ -504,7 +504,38 @@ describe('components | Place', () => {
       .at(2)
     resultsList.simulate('scroll')
 
-    // Then
+    // then
+    expect(input.blur).toHaveBeenCalledTimes(1)
+  })
+
+  it('should blur input when submitting form', async () => {
+    // given
+    fetchPlaces.mockReturnValue(
+      new Promise(resolve => {
+        resolve([{
+          geolocation: {
+            latitude: 1,
+            longitude: 2,
+          },
+          name: 'Paris 15ème arrondissement',
+          extraData: 'Paris',
+        }])
+      })
+    )
+    const wrapper = mount(
+      <Router history={props.history}>
+        <Place {...props} />
+      </Router>
+    )
+    const input = wrapper.find(Place).instance().inputRef.current
+    jest.spyOn(input, 'blur').mockImplementation(jest.fn())
+
+    // when
+    await wrapper
+      .find('form')
+      .simulate('submit', { preventDefault: jest.fn() })
+
+    // then
     expect(input.blur).toHaveBeenCalledTimes(1)
   })
 })
