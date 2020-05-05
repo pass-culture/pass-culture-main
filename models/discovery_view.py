@@ -1,10 +1,27 @@
 import os
+from typing import Callable
 
 from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm.scoping import scoped_session
 from sqlalchemy_utils import refresh_materialized_view
 
 from models.db import Model, db
+
+
+def _order_by_digital_offers() -> str:
+    return f"""
+        ROW_NUMBER() OVER (
+            ORDER BY
+                (
+                    SELECT COALESCE(SUM(criterion."scoreDelta"), 0) AS coalesce_1
+                    FROM criterion, offer_criterion
+                    WHERE criterion.id = offer_criterion."criterionId"
+                        AND offer_criterion."offerId" = offer.id
+                ) DESC,
+                offer.url IS NOT NULL DESC,
+                RANDOM()
+        )
+    """
 
 
 class DiscoveryView(Model):
@@ -30,7 +47,7 @@ class DiscoveryView(Model):
         self.session = session
 
     def create(self) -> None:
-        get_recommendable_offers_ordered_by_digital_offers = self._create_function_get_recommendable_offers_ordered_by_digital_offers()
+        get_recommendable_offers_ordered_by_digital_offers = self._create_function_get_recommendable_offers()
 
         self.session.execute(f"""
             CREATE MATERIALIZED VIEW IF NOT EXISTS {self.__tablename__} AS
@@ -53,10 +70,7 @@ class DiscoveryView(Model):
         """)
         self.session.commit()
 
-    def get_feature_end_of_quarantine_date(self) -> str:
-        return os.environ.get('END_OF_QUARANTINE_DATE', '2020-04-25')
-
-    def _create_function_get_recommendable_offers_ordered_by_digital_offers(self) -> str:
+    def _create_function_get_recommendable_offers(self, order: Callable = _order_by_digital_offers) -> str:
         function_name = 'get_recommendable_offers_ordered_by_digital_offers'
         get_offer_score = self._create_function_get_offer_score()
         get_active_offers_ids = self._create_function_get_active_offers_ids()
@@ -83,31 +97,15 @@ class DiscoveryView(Model):
                     offer.name AS name,
                     offer.url AS url,
                     offer."isNational" AS "isNational",
-                    {self._order_by_digital_offers()} AS partitioned_offers
+                    {order()} AS partitioned_offers
                 FROM offer
                 WHERE offer.id IN (SELECT * FROM {get_active_offers_ids}(TRUE))
-                ORDER BY {self._order_by_digital_offers()};
+                ORDER BY {order()};
             END
             $body$
             LANGUAGE plpgsql;
         """)
         return function_name
-
-    def _order_by_digital_offers(self) -> str:
-        return f"""
-            ROW_NUMBER() OVER (
-                ORDER BY
-                    offer.url IS NOT NULL DESC,
-                    (EXISTS (SELECT 1 FROM stock WHERE stock."offerId" = offer.id AND stock."beginningDatetime" > '{self.get_feature_end_of_quarantine_date()}T00:00:00'::TIMESTAMP)) DESC,
-                    (
-                        SELECT COALESCE(SUM(criterion."scoreDelta"), 0) AS coalesce_1
-                        FROM criterion, offer_criterion
-                        WHERE criterion.id = offer_criterion."criterionId"
-                            AND offer_criterion."offerId" = offer.id
-                    ) DESC,
-                    RANDOM()
-            )
-        """
 
     def _create_function_offer_has_at_least_one_bookable_stock(self) -> str:
         function_name = 'offer_has_at_least_one_bookable_stock'
