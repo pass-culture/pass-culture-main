@@ -12,7 +12,6 @@ jest.mock('redux-thunk-data', () => {
     requestData,
   }
 })
-
 jest.useFakeTimers()
 
 describe('src | components | pages | discovery | DiscoveryContainer', () => {
