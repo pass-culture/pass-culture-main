@@ -54,7 +54,7 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
 
     dispatch(
       requestData({
-        apiPath: `/recommendations/v2?${queryParams}`,
+        apiPath: `/recommendations?${queryParams}`,
         body: {
           readRecommendations,
           seenRecommendationIds,

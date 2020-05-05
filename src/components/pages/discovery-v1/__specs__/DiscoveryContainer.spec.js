@@ -12,6 +12,7 @@ jest.mock('redux-thunk-data', () => {
     requestData,
   }
 })
+
 jest.useFakeTimers()
 
 describe('src | components | pages | discovery | DiscoveryContainer', () => {
@@ -96,7 +97,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         // then
         expect(dispatch.mock.calls[0][0]).toStrictEqual({
           config: {
-            apiPath: `/recommendations/v2?`,
+            apiPath: `/recommendations?`,
             body: {
               readRecommendations: null,
               seenRecommendationIds: [],
@@ -106,7 +107,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
             method: 'PUT',
             normalizer: recommendationNormalizer,
           },
-          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS/V2?',
+          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?',
         })
       })
 
@@ -138,7 +139,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         // then
         expect(dispatch.mock.calls[0][0]).toStrictEqual({
           config: {
-            apiPath: `/recommendations/v2?`,
+            apiPath: `/recommendations?`,
             body: {
               readRecommendations: null,
               seenRecommendationIds: ['AE4'],
@@ -148,7 +149,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
             method: 'PUT',
             normalizer: recommendationNormalizer,
           },
-          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS/V2?',
+          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?',
         })
       })
     })
