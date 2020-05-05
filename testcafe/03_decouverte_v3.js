@@ -15,7 +15,7 @@ let userRole
 fixture('Sur la page découverte v3,').beforeEach(async t => {
   if (!userRole) {
     userRole = await createUserRoleFromUserSandbox(
-      'webapp_03_decouverte_v1',
+      'webapp_03_decouverte',
       'get_existing_webapp_user_with_bookings'
     )
   }
