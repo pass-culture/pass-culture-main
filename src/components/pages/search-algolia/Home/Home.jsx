@@ -20,7 +20,7 @@ export class Home extends PureComponent {
     const { categoryCriterion, geolocationCriterion, history, sortCriterion } = this.props
     const { keywordsToSearch } = this.state
     const { place, searchAround, userGeolocation } = geolocationCriterion
-    const { geolocation: placeGeolocation, name = '' } = place || {}
+    const { geolocation: placeGeolocation, name: { long } } = place || {}
 
     const autourDe = checkIfSearchAround(searchAround)
     const categories = categoryCriterion.facetFilter
@@ -31,7 +31,7 @@ export class Home extends PureComponent {
       `&autour-de=${autourDe}&tri=${tri}&categories=${categories}` +
       `&latitude=${searchAround.place ? placeGeolocation.latitude : userGeolocation.latitude}` +
       `&longitude=${searchAround.place ? placeGeolocation.longitude : userGeolocation.longitude}` +
-      `${searchAround.place ? `&place=${name}` : ''}`
+      `${searchAround.place ? `&place=${long}` : ''}`
 
     history.push({
       pathname: '/recherche/resultats',
@@ -158,8 +158,10 @@ Home.propTypes = {
         latitude: PropTypes.number,
         longitude: PropTypes.number,
       }),
-      name: PropTypes.string
-    }),
+      name: PropTypes.shape({
+        long: PropTypes.string,
+        short: PropTypes.string,
+      }),    }),
     searchAround: PropTypes.shape({
       everywhere: PropTypes.bool,
       place: PropTypes.bool,

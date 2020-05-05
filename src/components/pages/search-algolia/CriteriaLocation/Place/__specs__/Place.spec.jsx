@@ -127,28 +127,28 @@ describe('components | Place', () => {
               latitude: 1,
               longitude: 2,
             },
-            name: 'Nice',
             extraData: {
               city: 'Nice',
-              departmentCode: '06',
               department: 'Alpes-Maritimes',
-              label: 'Nice',
-              region: 'Provence-Alpes-Côte d\'Azur'
             },
+            name: {
+              long: 'Nice',
+              short: 'Nice',
+            }
           },
           {
             geolocation: {
               latitude: 3,
               longitude: 4,
             },
-            name: 'Niort',
             extraData: {
               city: 'Niort',
-              departmentCode: '79',
               department: 'Deux-Sèvres',
-              label: 'Niort',
-              region: 'Nouvelle-Aquitaine'
             },
+            name: {
+              long: 'Niort',
+              short: 'Niort',
+            }
           },
         ])
       })
@@ -191,28 +191,28 @@ describe('components | Place', () => {
               latitude: 1,
               longitude: 2,
             },
-            name: '34 avenue de l\'opéra',
             extraData: {
               city: 'Paris',
-              departmentCode: '75',
               department: 'Paris',
-              label: 'Paris',
-              region: 'Ile-De-France'
             },
+            name: {
+              long: '34 avenue de l\'opéra, Paris',
+              short: '34 avenue de l\'opéra',
+            }
           },
           {
             geolocation: {
               latitude: 3,
               longitude: 4,
             },
-            name: '34 avenue Angla',
             extraData: {
               city: 'Toulouse',
-              departmentCode: '',
               department: 'Haute-Garonne',
-              label: 'Toulouse',
-              region: 'Occitanie'
             },
+            name: {
+              long: '34 avenue Angla, Toulouse',
+              short: '34 avenue Angla',
+            }
           },
         ])
       })
@@ -275,8 +275,14 @@ describe('components | Place', () => {
             latitude: 1,
             longitude: 2,
           },
-          name: 'Paris 15ème arrondissement',
-          extraData: 'Paris',
+          extraData: {
+            city: 'Paris',
+            department: 'Paris'
+          },
+          name: {
+            long: 'Paris',
+            short: 'Paris',
+          }
         }])
       })
     )
@@ -317,8 +323,14 @@ describe('components | Place', () => {
             latitude: 1,
             longitude: 2,
           },
-          name: 'Paris 15ème arrondissement',
-          extraData: 'Paris',
+          extraData: {
+            city: 'Paris',
+            department: 'Paris'
+          },
+          name: {
+            long: 'Paris',
+            short: 'Paris',
+          }
         }])
       })
     )
@@ -363,16 +375,28 @@ describe('components | Place', () => {
               latitude: 1,
               longitude: 2,
             },
-            name: 'Paris 15ème arrondissement',
-            extraData: 'Paris',
+            extraData: {
+              city: 'Paris',
+              department: 'Paris'
+            },
+            name: {
+              long: 'Paris',
+              short: 'Paris',
+            }
           },
           {
             geolocation: {
               latitude: 3,
               longitude: 4,
             },
-            name: '34 avenue de l\'Opéra',
-            extraData: 'Paris',
+            extraData: {
+              city: 'Pau',
+              department: 'Pyrénées-Atlantiques'
+            },
+            name: {
+              long: 'Pau',
+              short: 'Pau',
+            }
           },
         ])
       })
@@ -403,8 +427,14 @@ describe('components | Place', () => {
         latitude: 1,
         longitude: 2,
       },
-      name: 'Paris 15ème arrondissement',
-      extraData: 'Paris',
+      extraData: {
+        city: 'Paris',
+        department: 'Paris'
+      },
+      name: {
+        long: 'Paris',
+        short: 'Paris',
+      }
     })
     expect(props.history.push).toHaveBeenCalledWith('/recherche')
   })
@@ -422,16 +452,28 @@ describe('components | Place', () => {
               latitude: 1,
               longitude: 2,
             },
-            name: 'Paris 15ème arrondissement',
-            extraData: 'Paris',
+            extraData: {
+              city: 'Paris',
+              department: 'Paris'
+            },
+            name: {
+              long: 'Paris',
+              short: 'Paris',
+            }
           },
           {
             geolocation: {
               latitude: 3,
               longitude: 4,
             },
-            name: '34 avenue de l\'Opéra',
-            extraData: 'Paris',
+            extraData: {
+              city: 'Paris',
+              department: 'Paris'
+            },
+            name: {
+              long: '34 avenue de l\'opéra, Paris',
+              short: '34 avenue de l\'opéra',
+            }
           },
         ])
       })
@@ -462,8 +504,14 @@ describe('components | Place', () => {
         latitude: 1,
         longitude: 2,
       },
-      name: 'Paris 15ème arrondissement',
-      extraData: 'Paris',
+      extraData: {
+        city: 'Paris',
+        department: 'Paris'
+      },
+      name: {
+        long: 'Paris',
+        short: 'Paris',
+      }
     })
     expect(props.history.push).toHaveBeenCalledWith(
       '/recherche/resultats/filtres?mots-cles=&autour-de=non&tri=&categories='
@@ -479,8 +527,14 @@ describe('components | Place', () => {
             latitude: 1,
             longitude: 2,
           },
-          name: 'Paris 15ème arrondissement',
-          extraData: 'Paris',
+          extraData: {
+            city: 'Paris',
+            department: 'Paris'
+          },
+          name: {
+            long: 'Paris',
+            short: 'Paris',
+          }
         }])
       })
     )
@@ -517,8 +571,14 @@ describe('components | Place', () => {
             latitude: 1,
             longitude: 2,
           },
-          name: 'Paris 15ème arrondissement',
-          extraData: 'Paris',
+          extraData: {
+            city: 'Paris',
+            department: 'Paris'
+          },
+          name: {
+            long: 'Paris',
+            short: 'Paris',
+          }
         }])
       })
     )

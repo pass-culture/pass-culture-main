@@ -5,6 +5,7 @@ import Icon from '../../../layout/Icon/Icon'
 import { Criteria } from '../Criteria/Criteria'
 import { checkUserIsGeolocated } from '../utils/checkUserIsGeolocated'
 import Place from './Place/Place'
+import { buildPlaceLabel } from './utils/buildPlaceLabel'
 
 class CriteriaLocation extends Component {
   constructor(props) {
@@ -103,7 +104,7 @@ class CriteriaLocation extends Component {
                 onClick={this.handleRedirectToPlacePage}
                 type="button"
               >
-                {place ? place.name : 'Choisir un lieu'}
+                {buildPlaceLabel(place)}
               </button>
             </div>
             <Criteria
@@ -160,7 +161,10 @@ CriteriaLocation.propTypes = {
       latitude: PropTypes.number,
       longitude: PropTypes.number,
     }),
-    name: PropTypes.string
+    name: PropTypes.shape({
+      long: PropTypes.string,
+      short: PropTypes.string
+    })
   }),
   title: PropTypes.string.isRequired,
 }

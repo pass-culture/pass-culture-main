@@ -8,24 +8,24 @@ export const fetchPlaces = ({ keywords, limit = 20 }) => {
     .then(suggestedPlaces => {
       return suggestedPlaces.features.map(feature => {
         const { geometry: { coordinates }, properties } = feature
-        const { city, context, label, name, type } = properties
+        const { city, context, name, type } = properties
         const contextWithoutSpaces = context.replace(/\s+/g, '')
         const splittedInformation = contextWithoutSpaces.split(',')
         const { STREET, HOUSE_NUMBER } = typeEnum
 
         return {
+          name: {
+            long: type === STREET || type === HOUSE_NUMBER ? `${name}, ${city}` : city,
+            short: type === STREET || type === HOUSE_NUMBER ? name : city
+          },
           extraData: {
             city: city,
-            departmentCode: splittedInformation[0] || '',
             department: splittedInformation[1] || '',
-            label: label,
-            region: splittedInformation[2] || ''
           },
           geolocation: {
             longitude: coordinates[0] || '',
             latitude: coordinates[1] || '',
           },
-          name: type === STREET || type === HOUSE_NUMBER ? name : city
         }
       })
     })

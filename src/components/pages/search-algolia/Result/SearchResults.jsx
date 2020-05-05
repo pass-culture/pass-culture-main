@@ -103,12 +103,17 @@ class SearchResults extends PureComponent {
     const queryParams = query.parse()
     const latitudeFromUrl = queryParams['latitude']
     const longitudeFromUrl = queryParams['longitude']
-    const placeNameFromUrl = queryParams['place']
+    const placeFromUrl = queryParams['place']
 
-    if (latitudeFromUrl && longitudeFromUrl && placeNameFromUrl) {
+    if (latitudeFromUrl && longitudeFromUrl && placeFromUrl) {
+      const splittedPlace = placeFromUrl.split(',')
+
       return {
         geolocation: { latitude: latitudeFromUrl, longitude: longitudeFromUrl },
-        name: placeNameFromUrl
+        name: {
+          long: placeFromUrl,
+          short: splittedPlace[0]
+        }
       }
     } else {
       return placeFromUrlOrProps

@@ -132,10 +132,10 @@ class Place extends Component {
                     value={index}
                   >
                     <span className="place-name">
-                      {suggestedPlace.name}
+                      {suggestedPlace.name.short}
                     </span>
                     <span className="place-extra-data">
-                      {/^\d/.test(suggestedPlace.name) ? suggestedPlace.extraData.city : suggestedPlace.extraData.department}
+                      {/^\d/.test(suggestedPlace.name.short) ? suggestedPlace.extraData.city : suggestedPlace.extraData.department}
                     </span>
                   </button>
                 </li>

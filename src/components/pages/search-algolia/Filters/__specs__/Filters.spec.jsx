@@ -79,9 +79,7 @@ describe('components | Filters', () => {
         nbHits: 0,
         nbPages: 0,
       },
-      place: {
-        geolocation: { latitude: null, longitude: null }
-      },
+      place: null,
       query: {
         parse: jest.fn(),
       },
@@ -140,7 +138,7 @@ describe('components | Filters', () => {
         expect(criteria.prop('match')).toStrictEqual(props.match)
         expect(criteria.prop('onCriterionSelection')).toStrictEqual(expect.any(Function))
         expect(criteria.prop('onPlaceSelection')).toStrictEqual(expect.any(Function))
-        expect(criteria.prop('place')).toStrictEqual({ geolocation: { latitude: null, longitude: null } })
+        expect(criteria.prop('place')).toBeNull()
         expect(criteria.prop('title')).toStrictEqual('Localisation')
       })
 
@@ -159,10 +157,9 @@ describe('components | Filters', () => {
       it('should trigger search and redirect to filters page when click on "Partout"', () => {
         // given
         props.history = createBrowserHistory()
-        jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-        })
-        jest.spyOn(props.history, 'push').mockImplementationOnce(() => {
-        })
+        props.place = null
+        jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+        jest.spyOn(props.history, 'push').mockImplementationOnce(() => {})
         props.history.location.pathname = '/recherche/resultats/filtres/localisation'
         props.query.parse.mockReturnValue({
           'autour-de': 'non',
@@ -224,10 +221,8 @@ describe('components | Filters', () => {
       it('should trigger search and redirect to filters page when click on "Autour de moi"', () => {
         // given
         props.history = createBrowserHistory()
-        jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-        })
-        jest.spyOn(props.history, 'push').mockImplementationOnce(() => {
-        })
+        jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
+        jest.spyOn(props.history, 'push').mockImplementationOnce(() => {})
         props.history.location.pathname = '/recherche/resultats/filtres/localisation'
         props.initialFilters.offerCategories = ['VISITE']
         props.query.parse.mockReturnValue({
@@ -377,7 +372,10 @@ describe('components | Filters', () => {
         props.history.location.search = '?mots-cles=librairie'
         props.place = {
           geolocation: { latitude: 30, longitude: 2 },
-          name: 'Paris'
+          name: {
+            long: 'Paris',
+            short: 'Paris'
+          }
         }
         const wrapper = shallow(<Filters {...props} />)
         const resultsButton = wrapper.find('.sf-button')
@@ -388,7 +386,10 @@ describe('components | Filters', () => {
         // then
         expect(props.updatePlace).toHaveBeenCalledWith({
           geolocation: { latitude: 30, longitude: 2 },
-          name: 'Paris'
+          name: {
+            long: 'Paris',
+            short: 'Paris'
+          }
         })
       })
 
@@ -503,7 +504,10 @@ describe('components | Filters', () => {
         // given
         props.place = {
           geolocation: { latitude: 40, longitude: 1 },
-          name: 'Paris'
+          name: {
+            long: 'Paris',
+            short: 'Paris',
+          }
         }
         props.history.location.pathname = '/recherche/filtres'
         props.initialFilters.searchAround = {
@@ -623,7 +627,10 @@ describe('components | Filters', () => {
           props.history.location.pathname = '/recherche/filtres'
           props.place = {
             geolocation: { latitude: 30, longitude: 2 },
-            name: 'Paris',
+            name: {
+              long: '34 avenue de l\'opéra, Paris',
+              short: '34 avenue de l\'opéra'
+            },
           }
           props.initialFilters.searchAround = {
             everywhere: false,
@@ -635,7 +642,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const button = wrapper.find({ children: 'Paris' })
+          const button = wrapper.find({ children: '34 avenue de l\'opéra, Paris' })
           expect(button).toHaveLength(1)
         })
 

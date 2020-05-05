@@ -106,7 +106,10 @@ describe('components | CriteriaLocation', () => {
     it('should render a button with place name to redirect to search place page when place was already filled', () => {
       // given
       props.place = {
-        name: 'Paris'
+        name: {
+          long: 'Paris',
+          short: 'Paris',
+        }
       }
       props.history.push('/recherche/criteres-localisation')
 

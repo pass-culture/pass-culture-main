@@ -28,13 +28,13 @@ describe('vendor | api-geo | placesService', () => {
     expect(results).toStrictEqual([{
       extraData: {
         city: 'Paris',
-        departmentCode: '75',
         department: 'Paris',
-        label: '34 avenue opéra',
-        region: 'Ile-De-France'
       },
       geolocation: { 'latitude': 41, 'longitude': 40 },
-      name: 'Paris'
+      name: {
+        long: 'Paris',
+        short: 'Paris'
+      }
     }])
   })
 
@@ -63,13 +63,13 @@ describe('vendor | api-geo | placesService', () => {
     expect(results).toStrictEqual([{
       extraData: {
         city: 'Paris',
-        departmentCode: '',
         department: '',
-        label: '',
-        region: ''
       },
       geolocation: { 'latitude': 41, 'longitude': 40 },
-      name: 'Paris'
+      name: {
+        long: 'Paris',
+        short: 'Paris'
+      }
     }])
   })
 
@@ -97,7 +97,7 @@ describe('vendor | api-geo | placesService', () => {
           city: 'Paris',
           context: '',
           label: '',
-          name: '34 avenue opéra Paris',
+          name: '34 avenue opéra',
           type: typeEnum.STREET
         }
       }]
@@ -111,13 +111,13 @@ describe('vendor | api-geo | placesService', () => {
     expect(results).toStrictEqual([{
       extraData: {
         city: 'Paris',
-        departmentCode: '',
         department: '',
-        label: '',
-        region: ''
       },
       geolocation: { 'latitude': 41, 'longitude': 40 },
-      name: '34 avenue opéra Paris'
+      name: {
+        long: '34 avenue opéra, Paris',
+        short: '34 avenue opéra'
+      }
     }])
   })
 
@@ -133,7 +133,7 @@ describe('vendor | api-geo | placesService', () => {
           city: 'Paris',
           context: '',
           label: '',
-          name: '34 avenue opéra Paris',
+          name: '34 avenue opéra',
           type: typeEnum.HOUSE_NUMBER
         }
       }]
@@ -147,13 +147,13 @@ describe('vendor | api-geo | placesService', () => {
     expect(results).toStrictEqual([{
       extraData: {
         city: 'Paris',
-        departmentCode: '',
         department: '',
-        label: '',
-        region: ''
       },
       geolocation: { 'latitude': 41, 'longitude': 40 },
-      name: '34 avenue opéra Paris'
+      name: {
+        long: '34 avenue opéra, Paris',
+        short: '34 avenue opéra'
+      }
     }])
   })
 })

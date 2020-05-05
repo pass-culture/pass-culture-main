@@ -7,6 +7,7 @@ import SearchResults from './Result/SearchResults'
 import CriteriaLocation from './CriteriaLocation/CriteriaLocation'
 import CriteriaCategory from './CriteriaCategory/CriteriaCategory'
 import CriteriaSort from './CriteriaSort/CriteriaSort'
+import { buildPlaceLabel } from './CriteriaLocation/utils/buildPlaceLabel'
 
 const DEFAULT_META_VIEWPORT_CONTENT =
   'width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no'
@@ -79,7 +80,7 @@ class SearchAlgolia extends PureComponent {
       return {
         geolocationCriterion: {
           params: {
-            label: place.name,
+            label: buildPlaceLabel(place),
             icon: 'ico-there',
             requiresGeolocation: false
           },

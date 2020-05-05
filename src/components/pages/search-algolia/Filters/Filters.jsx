@@ -12,6 +12,7 @@ import Toggle from './Toggle/Toggle'
 import { DEFAULT_RADIUS_IN_KILOMETERS } from '../../../../vendor/algolia/filters'
 import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
+import { buildPlaceLabel } from '../CriteriaLocation/utils/buildPlaceLabel'
 
 export class Filters extends PureComponent {
   constructor(props) {
@@ -147,7 +148,7 @@ export class Filters extends PureComponent {
       `&autour-de=${autourDe}&tri=${tri}&categories=${categories}` +
       `&latitude=${searchAround.place ? place.geolocation.latitude : userGeolocation.latitude}` +
       `&longitude=${searchAround.place ? place.geolocation.longitude : userGeolocation.longitude}` +
-      `${searchAround.place ? `&place=${place.name}` : ''}`
+      `${searchAround.place ? `&place=${place.name.long}` : ''}`
   }
 
   resetFilters = () => {
@@ -205,10 +206,10 @@ export class Filters extends PureComponent {
   }
 
   buildGeolocationFilter = () => {
-    const { filters: { searchAround }, place = {} } = this.state
+    const { filters: { searchAround }, place }  = this.state
 
     if (searchAround.everywhere) return 'Partout'
-    if (searchAround.place) return place.name
+    if (searchAround.place) return buildPlaceLabel(place)
     if (searchAround.user) return 'Autour de moi'
   }
 
@@ -855,7 +856,10 @@ Filters.propTypes = {
       latitude: PropTypes.number,
       longitude: PropTypes.number,
     }),
-    name: PropTypes.string
+    name: PropTypes.shape({
+      long: PropTypes.string,
+      short: PropTypes.string,
+    })
   }),
   query: PropTypes.shape().isRequired,
   showFailModal: PropTypes.func.isRequired,
