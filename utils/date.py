@@ -83,3 +83,10 @@ def get_date_formatted_for_email(date_time: datetime) -> str:
 
 def get_time_formatted_for_email(date_time: datetime) -> str:
     return date_time.strftime('%Hh%M')
+
+
+def get_time_in_seconds_from_datetime(date_time: datetime) -> int:
+    hour_in_seconds = datetime.time(date_time).hour * 60 * 60
+    minute_in_seconds = datetime.time(date_time).minute * 60
+    seconds = datetime.time(date_time).second
+    return hour_in_seconds + minute_in_seconds + seconds

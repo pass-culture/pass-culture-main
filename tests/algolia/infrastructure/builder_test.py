@@ -96,6 +96,7 @@ class BuildObjectTest:
                 'stageDirector': None,
                 'stocksDateCreated': [1606820400.0, 1607166000.0, 1607673600.0],
                 'thumbUrl': f'http://localhost/storage/thumbs/products/{humanized_product_id}',
+                'times': [32400],
                 'type': 'Écouter',
                 'visa': None,
             },
@@ -344,3 +345,26 @@ class BuildObjectTest:
 
         # Then
         assert result['offer']['dates'] == []
+
+    @freeze_time('2020-10-15 18:30:00')
+    @clean_database
+    def test_should_return_event_beginning_times_in_seconds(self, app):
+        # Given
+        in_three_days_at_eighteen_thirty = datetime.utcnow() + timedelta(days=3)
+        in_four_days_at_eighteen_thirty = datetime.utcnow() + timedelta(days=4)
+        in_five_days_at_twenty_one_thirty = datetime.utcnow() + timedelta(days=5, hours=3, seconds=18)
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        offer = create_offer_with_event_product(venue=venue)
+        stock1 = create_stock(offer=offer, beginning_datetime=in_three_days_at_eighteen_thirty)
+        stock2 = create_stock(offer=offer, beginning_datetime=in_five_days_at_twenty_one_thirty)
+        stock3 = create_stock(offer=offer, beginning_datetime=in_four_days_at_eighteen_thirty)
+        repository.save(stock1, stock2, stock3)
+
+        # When
+        result = build_object(offer)
+
+        # Then
+        eighteen_thirty_in_seconds = 66600
+        twenty_one_thirty_in_seconds = 77418
+        assert sorted(result['offer']['times']) == sorted([eighteen_thirty_in_seconds, twenty_one_thirty_in_seconds])
