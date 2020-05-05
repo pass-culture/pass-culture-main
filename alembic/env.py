@@ -59,7 +59,7 @@ def run_migrations_offline():
         include_object=include_object,
         include_schemas=True,
         compare_type=True,
-        transaction_per_migration=True
+        transaction_per_migration=False
     )
 
     with context.begin_transaction():
@@ -81,7 +81,7 @@ def run_migrations_online():
             target_metadata=target_metadata,
             include_object=include_object,
             include_schemas=True,
-            transaction_per_migration=True
+            transaction_per_migration=False
         )
 
         connection.execute('UPDATE feature SET "isActive" = FALSE WHERE name = \'UPDATE_DISCOVERY_VIEW\'')
