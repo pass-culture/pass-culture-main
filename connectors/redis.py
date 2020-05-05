@@ -15,6 +15,7 @@ REDIS_OFFER_IDS_CHUNK_SIZE = int(os.environ.get('REDIS_OFFER_IDS_CHUNK_SIZE', 10
 REDIS_OFFER_IDS_IN_ERROR_CHUNK_SIZE = int(os.environ.get('REDIS_OFFER_IDS_IN_ERROR_CHUNK_SIZE', 1000))
 REDIS_VENUE_IDS_CHUNK_SIZE = int(os.environ.get('REDIS_VENUE_IDS_CHUNK_SIZE', 1000))
 REDIS_VENUE_PROVIDERS_CHUNK_SIZE = int(os.environ.get('REDIS_VENUE_PROVIDERS_LRANGE_END', 1))
+REDIS_RIBS_UPLOAD_CHUNK_SIZE = int(os.environ.get('REDIS_VENUE_PROVIDERS_LRANGE_END', 1000))
 
 
 class RedisBucket(Enum):
@@ -24,6 +25,7 @@ class RedisBucket(Enum):
     REDIS_LIST_VENUE_PROVIDERS_NAME = 'venue_providers'
     REDIS_HASHMAP_INDEXED_OFFERS_NAME = 'indexed_offers'
     REDIS_HASHMAP_VENUE_PROVIDERS_IN_SYNC_NAME = 'venue_providers_in_sync'
+    REDIS_OFFERER_DMS_APPLICATION_IDS_NAME = 'offerer_dms_application_ids'
 
 
 def add_offer_id(client: Redis, offer_id: int) -> None:
@@ -204,6 +206,32 @@ def get_offer_ids_in_error(client: Redis) -> List[int]:
 def delete_offer_ids_in_error(client: Redis) -> None:
     try:
         client.ltrim(RedisBucket.REDIS_LIST_OFFER_IDS_IN_ERROR_NAME.value, REDIS_OFFER_IDS_IN_ERROR_CHUNK_SIZE, -1)
+        logger.debug('[REDIS] offer ids in error were deleted')
+    except redis.exceptions.RedisError as error:
+        logger.error(f'[REDIS] {error}')
+
+
+def add_application_ids(client: Redis, application_ids: List[int]) -> None:
+    try:
+        client.rpush(RedisBucket.REDIS_OFFERER_DMS_APPLICATION_IDS_NAME.value, *application_ids)
+        logger.debug(f'[REDIS] {len(application_ids)} application ids were added')
+    except redis.exceptions.RedisError as error:
+        logger.error(f'[REDIS] {error}')
+
+
+def get_application_ids(client: Redis) -> List[int]:
+    try:
+        application_ids = client.lrange(RedisBucket.REDIS_OFFERER_DMS_APPLICATION_IDS_NAME.value,
+                                        0, REDIS_RIBS_UPLOAD_CHUNK_SIZE)
+        return application_ids
+    except redis.exceptions.RedisError as error:
+        logger.error(f'[REDIS] {error}')
+        return []
+
+
+def delete_application_ids(client: Redis) -> None:
+    try:
+        client.ltrim(RedisBucket.REDIS_OFFERER_DMS_APPLICATION_IDS_NAME.value, REDIS_RIBS_UPLOAD_CHUNK_SIZE, -1)
         logger.debug('[REDIS] offer ids in error were deleted')
     except redis.exceptions.RedisError as error:
         logger.error(f'[REDIS] {error}')

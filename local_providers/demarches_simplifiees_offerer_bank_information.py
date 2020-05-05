@@ -25,22 +25,27 @@ class OffererBankInformationProvider(LocalProvider):
     name = "Demarches simplifiees / Offerer Bank Information"
     can_create = True
 
-    def __init__(self, minimum_requested_datetime: datetime = datetime.utcnow()):
+    def __init__(self, application_ids: Optional[List[int]] = None, minimum_requested_datetime: datetime = datetime.utcnow()):
         super().__init__()
         self.PROCEDURE_ID = os.environ.get(
             'DEMARCHES_SIMPLIFIEES_RIB_OFFERER_PROCEDURE_ID')
         self.TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_TOKEN')
 
-        most_recent_known_application_date = get_last_update_from_bank_information(
-            last_provider_id=self.provider.id)
-        requested_datetime = min(
-            minimum_requested_datetime, most_recent_known_application_date)
+        if application_ids is not None:
+            self.application_ids = iter(application_ids)
 
-        self.application_ids = iter(
-            get_all_application_ids_for_demarche_simplifiee(self.PROCEDURE_ID, self.TOKEN,
-                                                            requested_datetime))
+        else:
+            most_recent_known_application_date = get_last_update_from_bank_information(
+                last_provider_id=self.provider.id)
+            requested_datetime = min(
+                minimum_requested_datetime, most_recent_known_application_date)
+
+            self.application_ids = iter(
+                get_all_application_ids_for_demarche_simplifiee(self.PROCEDURE_ID, self.TOKEN,
+                                                                requested_datetime))
 
     def __next__(self) -> List[ProvidableInfo]:
+        print("GOT AN APPLICATION")
         self.bank_information_dict = self.retrieve_next_bank_information()
 
         if not self.bank_information_dict:

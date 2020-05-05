@@ -1,4 +1,4 @@
-from flask import current_app as app, jsonify
+from flask import current_app as app, jsonify, request
 from flask_login import login_required
 
 from local_providers import AllocineStocks
@@ -8,6 +8,7 @@ from repository.provider_queries import get_enabled_providers_for_pro, \
     get_providers_enabled_for_pro_excluding_specific_provider
 from routes.serialization import as_dict
 from utils.rest import load_or_404
+from connectors import redis
 
 
 @app.route('/providers', methods=['GET'])
@@ -40,3 +41,10 @@ def get_providers_by_venue(venue_id: str):
         del provider_dict['apiKeyGenerationDate']
         result.append(provider_dict)
     return jsonify(result)
+
+
+@app.route('/providers/OffererBankInformationProvider/application_update', methods=['POST'])
+def post_DMS_application_update():
+    application_id = request.form['dossier_id']
+    redis.add_application_ids(client=app.redis_client, application_ids=[application_id])
+    return '', 202
