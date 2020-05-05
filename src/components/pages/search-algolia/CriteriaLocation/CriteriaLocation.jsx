@@ -31,14 +31,8 @@ class CriteriaLocation extends Component {
   }
 
   handleUpdatePlaceInformation = (place) => {
-    const { history, onPlaceSelection } = this.props
-    const { location: { pathname, search } } = history
+    const { onPlaceSelection } = this.props
     onPlaceSelection(place)
-
-    const pathnameWithoutLocation = pathname
-      .replace('/criteres-localisation', '')
-      .replace('/localisation', '')
-    history.push(`${pathnameWithoutLocation}${search}`)
   }
 
   buildBackToUrl = () => {

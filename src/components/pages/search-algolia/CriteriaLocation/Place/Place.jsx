@@ -49,8 +49,11 @@ class Place extends Component {
     const place = suggestedPlaces[index]
     onPlaceSelection(place)
 
-    const pathnameWithoutPlace = pathname.replace('/place', '')
-    history.push(`${pathnameWithoutPlace}${search}`)
+    const pathnameWithoutLocation = pathname
+      .replace('/criteres-localisation', '')
+      .replace('/localisation', '')
+      .replace('/place', '')
+    history.push(`${pathnameWithoutLocation}${search}`)
   }
 
   handleReset = () => {

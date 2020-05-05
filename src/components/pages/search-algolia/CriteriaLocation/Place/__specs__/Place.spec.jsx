@@ -340,10 +340,10 @@ describe('components | Place', () => {
       name: 'Paris 15ème arrondissement',
       extraData: 'Paris',
     })
-    expect(props.history.push).toHaveBeenCalledWith('/recherche/criteres-localisation')
+    expect(props.history.push).toHaveBeenCalledWith('/recherche')
   })
 
-  it('should update place and redirect to filters page when clicking on a suggested place', async () => {
+  it('should update place and redirect to previous page when clicking on a suggested place', async () => {
     // Given
     jest.spyOn(props.history, 'push').mockImplementation(() => jest.fn())
     props.history.location.pathname = '/recherche/resultats/filtres/localisation/place'
@@ -400,7 +400,7 @@ describe('components | Place', () => {
       extraData: 'Paris',
     })
     expect(props.history.push).toHaveBeenCalledWith(
-      '/recherche/resultats/filtres/localisation?mots-cles=&autour-de=non&tri=&categories='
+      '/recherche/resultats/filtres?mots-cles=&autour-de=non&tri=&categories='
     )
   })
 
