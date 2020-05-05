@@ -1,13 +1,14 @@
 import datetime
 from enum import Enum
 
-from models.booking import Booking
+from models.payment_status import TransactionStatus
 
 
 class BookingRecapStatus(Enum):
     booked = 'Réservé'
     validated = 'Validé'
     cancelled = 'Annulé'
+    reimbursed = 'Remboursé'
 
 
 class BookingRecap:
@@ -29,7 +30,9 @@ class BookingRecap:
         self.booking_status = booking_status
 
 
-def compute_booking_recap_status(booking: Booking) -> BookingRecapStatus:
+def compute_booking_recap_status(booking: object) -> BookingRecapStatus:
+    if booking.paymentStatus == TransactionStatus.SENT:
+        return BookingRecapStatus.reimbursed
     if booking.isCancelled:
         return BookingRecapStatus.cancelled
     if booking.isUsed:

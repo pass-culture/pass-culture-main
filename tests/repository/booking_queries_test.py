@@ -7,6 +7,7 @@ from freezegun import freeze_time
 from domain.booking_recap.booking_recap import BookingRecapStatus
 from models import Booking, EventType, ThingType
 from models.api_errors import ApiErrors, ResourceNotFoundError
+from models.payment_status import TransactionStatus
 from models.stock import EVENT_AUTOMATIC_REFUND_DELAY
 from repository import booking_queries, repository
 from repository.booking_queries import find_by_pro_user_id
@@ -1708,8 +1709,7 @@ class FindByProUserIdTest:
         offer = create_offer_with_thing_product(venue, thing_name='Harry Potter')
         stock = create_stock(offer=offer, price=0)
         yesterday = datetime.utcnow()
-        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF',
-                                 is_cancelled=False, is_used=True)
+        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF', is_used=True)
         repository.save(user_offerer, booking)
 
         # When
@@ -1725,6 +1725,36 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_date == yesterday
         assert expected_booking_recap.booking_token == 'ABCDEF'
         assert expected_booking_recap.booking_status == BookingRecapStatus.validated
+
+    @clean_database
+    def test_should_return_booking_with_reimbursed_status_when_a_payment_was_sent(self, app):
+        # Given
+        beneficiary = create_user(email='beneficiary@example.com',
+                                  first_name='Ron', last_name='Weasley')
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, thing_name='Harry Potter')
+        stock = create_stock(offer=offer, price=0)
+        yesterday = datetime.utcnow()
+        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF', is_used=True)
+        payment = create_payment(booking=booking, offerer=offerer, status=TransactionStatus.SENT)
+        repository.save(user_offerer, payment)
+
+        # When
+        bookings_recap = find_by_pro_user_id(user.id)
+
+        # Then
+        assert len(bookings_recap) == 1
+        expected_booking_recap = bookings_recap[0]
+        assert expected_booking_recap.offer_name == 'Harry Potter'
+        assert expected_booking_recap.beneficiary_firstname == 'Ron'
+        assert expected_booking_recap.beneficiary_lastname == 'Weasley'
+        assert expected_booking_recap.beneficiary_email == 'beneficiary@example.com'
+        assert expected_booking_recap.booking_date == yesterday
+        assert expected_booking_recap.booking_token == 'ABCDEF'
+        assert expected_booking_recap.booking_status == BookingRecapStatus.reimbursed
 
     @clean_database
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app):

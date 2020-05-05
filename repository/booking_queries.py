@@ -6,7 +6,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Query
 
 from domain.booking_recap.booking_recap import BookingRecap, compute_booking_recap_status
-from models import UserOfferer
+from models import UserOfferer, PaymentStatus
 from models.api_errors import ResourceNotFoundError
 from models.booking import Booking
 from models.db import db
@@ -184,6 +184,8 @@ def find_by_id(booking_id: int) -> Booking:
 
 def find_by_pro_user_id(user_id: int) -> List[BookingRecap]:
     bookings = Booking.query \
+        .outerjoin(Payment) \
+        .reset_joinpoint() \
         .join(User) \
         .join(Stock) \
         .join(Offer) \
@@ -200,17 +202,18 @@ def find_by_pro_user_id(user_id: int) -> List[BookingRecap]:
             User.email.label("beneficiaryEmail"),
             Booking.dateCreated.label("bookingDate"),
             Booking.isCancelled.label("isCancelled"),
-            Booking.isUsed.label("isUsed")
+            Booking.isUsed.label("isUsed"),
+            Payment.currentStatus.label("paymentStatus"),
         ).all()
 
     return _bookings_sql_entities_to_bookings_recap(bookings)
 
 
-def _bookings_sql_entities_to_bookings_recap(bookings: List[Booking]) -> List[BookingRecap]:
+def _bookings_sql_entities_to_bookings_recap(bookings: List[object]) -> List[BookingRecap]:
     return [_serialize_booking_recap(booking) for booking in bookings]
 
 
-def _serialize_booking_recap(booking: Booking) -> BookingRecap:
+def _serialize_booking_recap(booking: object) -> BookingRecap:
     return BookingRecap(
         offer_name=booking.offerName,
         beneficiary_email=booking.beneficiaryEmail,
@@ -235,6 +238,7 @@ def find_not_cancelled_bookings_by_stock(stock: Stock) -> List[Booking]:
 
 
 def find_eligible_bookings_for_offerer(offerer_id: int) -> List[Booking]:
+    print("toto")
     return _query_keep_only_used_or_finished_bookings_on_non_activation_offers() \
         .join(Offerer) \
         .filter(Offerer.id == offerer_id) \
