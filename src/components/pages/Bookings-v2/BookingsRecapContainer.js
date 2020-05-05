@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-import Bookings from '../Bookings-v2/Bookings'
+import BookingsRecap from '../Bookings-v2/BookingsRecap'
 import { withRequiredLogin } from '../../hocs'
 import { requestData } from 'redux-saga-data'
 
@@ -21,4 +21,4 @@ export default compose(
     null,
     mapDispatchToProps
   )
-)(Bookings)
+)(BookingsRecap)

@@ -1,7 +1,7 @@
 import React from 'react'
 import classnames from 'classnames'
 
-const BOOKING_STATUS_ENUM = [
+const BOOKING_STATUS = [
   {
     value: 'validé',
     status: 'validated',
@@ -21,7 +21,7 @@ const BookingStatusCell = ({ bookingStatus }) => {
 
   const computeStatusClassName = bookingStatusInfos => {
     const prefix = 'bookings-status-'
-    const [{ status }] = BOOKING_STATUS_ENUM.filter(({ value }) => bookingStatusInfos === value)
+    const [{ status }] = BOOKING_STATUS.filter(({ value }) => bookingStatusInfos === value)
     return prefix + status
   }
 

@@ -1,9 +1,9 @@
 import React, { PureComponent } from 'react'
 import Main from '../../layout/Main'
 import Titles from '../../layout/Titles/Titles'
-import BookingsTable from './BookingsTable/BookingsTable'
+import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
 
-class Bookings extends PureComponent {
+class BookingsRecap extends PureComponent {
   constructor(props) {
     super(props)
     this.state = { bookingsRecap: [] }
@@ -25,10 +25,10 @@ class Bookings extends PureComponent {
     return (
       <Main name="bookings-v2">
         <Titles title="Réservations V2" />
-        <BookingsTable bookingsRecap={bookingsRecap} />
+        <BookingsRecapTable bookingsRecap={bookingsRecap} />
       </Main>
     )
   }
 }
 
-export default Bookings
+export default BookingsRecap

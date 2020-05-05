@@ -1,6 +1,6 @@
-import { mapDispatchToProps } from '../BookingsContainer'
+import { mapDispatchToProps } from '../BookingsRecapContainer'
 
-describe('src | components | pages | Bookings-v2 | BookingsContainer', () => {
+describe('src | components | pages | Bookings-v2 | BookingsRecapContainer', () => {
   describe('mapDispatchToProps', function() {
     let dispatch
 

@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 
 import BookingsRouter from '../BookingsRouter'
 import BookingsContainer from '../../../pages/Bookings/BookingsContainer'
-import BookingsContainerV2 from '../../../pages/Bookings-v2/BookingsContainer'
+import BookingsContainerV2 from '../../../pages/Bookings-v2/BookingsRecapContainer'
 
 describe('bookingsRouter', () => {
   describe('when Bookings-v2 feature flipping is active', () => {

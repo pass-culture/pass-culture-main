@@ -1,8 +1,8 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 import Titles from '../../../layout/Titles/Titles'
-import Bookings from '../Bookings.jsx'
-import BookingsTable from '../BookingsTable/BookingsTable'
+import BookingsRecap from '../BookingsRecap'
+import BookingsRecapTable from '../BookingsRecapTable/BookingsRecapTable'
 
 describe('src | components | pages | Bookings-v2', () => {
   let props
@@ -14,14 +14,14 @@ describe('src | components | pages | Bookings-v2', () => {
   })
 
   describe('the main section', () => {
-    it('should render a Titles component and a BookingsTable component', () => {
+    it('should render a Titles component and a BookingsRecapTable component', () => {
       // When
-      const wrapper = shallow(<Bookings {...props} />)
+      const wrapper = shallow(<BookingsRecap {...props} />)
 
       // Then
       const title = wrapper.find(Titles)
       expect(title).toHaveLength(1)
-      const bookingsTable = wrapper.find(BookingsTable)
+      const bookingsTable = wrapper.find(BookingsRecapTable)
       expect(bookingsTable).toHaveLength(1)
     })
   })
@@ -44,10 +44,10 @@ describe('src | components | pages | Bookings-v2', () => {
         .mockImplementation(handleSuccess => handleSuccess(state, action))
 
       // When
-      const bookings = shallow(<Bookings {...props} />)
+      const bookings = shallow(<BookingsRecap {...props} />)
 
       // Then
-      const bookingsTable = bookings.find(BookingsTable)
+      const bookingsTable = bookings.find(BookingsRecapTable)
       expect(bookingsTable.prop('bookingsRecap')).toStrictEqual([
         {
           'offer-name': 'My Offer',

@@ -1,8 +1,8 @@
-import BookingsTable from '../BookingsTable'
+import BookingsRecapTable from '../BookingsRecapTable'
 import React from 'react'
 import { mount, shallow } from 'enzyme'
 
-describe('components | pages | Bookings-v2 | BookingsTable', function() {
+describe('components | pages | Bookings-v2 | BookingsRecapTable', function() {
   it('should call the Table component with columns and data props', function() {
     // Given
     const data = [
@@ -39,7 +39,7 @@ describe('components | pages | Bookings-v2 | BookingsTable', function() {
     }
 
     // When
-    const wrapper = shallow(<BookingsTable {...props} />)
+    const wrapper = shallow(<BookingsRecapTable {...props} />)
     const table = wrapper.find('Table')
 
     // Then
@@ -58,7 +58,7 @@ describe('components | pages | Bookings-v2 | BookingsTable', function() {
     }
 
     // When
-    const wrapper = mount(<BookingsTable {...props} />)
+    const wrapper = mount(<BookingsRecapTable {...props} />)
     const firstHeader = wrapper.find('th').at(0)
     const secondHeader = wrapper.find('th').at(1)
     const thirdHeader = wrapper.find('th').at(2)
@@ -97,7 +97,7 @@ describe('components | pages | Bookings-v2 | BookingsTable', function() {
     }
 
     // When
-    const wrapper = mount(<BookingsTable {...props} />)
+    const wrapper = mount(<BookingsRecapTable {...props} />)
     const firstRow = wrapper.find('tr').at(1)
     const firstRowStock = firstRow.find('td').at(0)
     const firstRowBeneficiary = firstRow.find('td').at(1)

@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react'
 import BeneficiaryCell from '../CellsFormatter/BeneficiaryCell'
 import BookingDateCell from '../CellsFormatter/BookingsDateCell'
-import Table from '../Table/Table'
 import BookingStatusCell from '../CellsFormatter/BookingsStatusCell'
+import Table from '../Table/Table'
 
-class BookingsTable extends PureComponent {
+class BookingsRecapTable extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -50,4 +50,4 @@ class BookingsTable extends PureComponent {
   }
 }
 
-export default BookingsTable
+export default BookingsRecapTable
