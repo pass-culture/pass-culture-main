@@ -31,6 +31,7 @@
 }
 
 .cl-place-wrapper {
+  display: flex;
   background-color: $white;
   padding-top: rem(15px);
 
@@ -38,6 +39,7 @@
     color: $black;
     font-size: rem(16px);
     font-weight: 700;
+    text-align: left;
   }
 
   .cl-icon {
@@ -48,6 +50,7 @@
     color: $primary;
     font-size: rem(16px);
     font-weight: 700;
+    text-align: left;
   }
 
   .cl-icon-active {

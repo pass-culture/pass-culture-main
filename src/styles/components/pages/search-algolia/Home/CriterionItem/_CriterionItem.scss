@@ -16,7 +16,6 @@
   .ci-page-link {
     align-items: center;
     color: $black-light;
-    display: flex;
     font-size: rem(22px);
     font-weight: bold;
     line-height: 1.18;
@@ -56,6 +55,10 @@
 
     .ci-page-link {
       font-size: rem(18px);
+
+      span {
+        padding: 0;
+      }
     }
   }
 }

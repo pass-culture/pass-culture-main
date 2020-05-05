@@ -20,7 +20,8 @@ export class Home extends PureComponent {
     const { categoryCriterion, geolocationCriterion, history, sortCriterion } = this.props
     const { keywordsToSearch } = this.state
     const { place, searchAround, userGeolocation } = geolocationCriterion
-    const { geolocation: placeGeolocation, name: { long } } = place || {}
+    const { geolocation: placeGeolocation, name } = place || {}
+    const { long = '' } = name || {}
 
     const autourDe = checkIfSearchAround(searchAround)
     const categories = categoryCriterion.facetFilter
