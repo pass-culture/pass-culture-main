@@ -1,9 +1,10 @@
 from datetime import timedelta, datetime
 
 from models import EventType, ThingType
+from models.payment_status import TransactionStatus
 from repository import repository
 from tests.model_creators.generic_creators import create_user, create_deposit, create_offerer, create_venue, \
-    create_stock, create_booking, create_user_offerer
+    create_stock, create_booking, create_user_offerer, create_payment
 from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
 
 
@@ -50,7 +51,7 @@ def save_bookings_recap_sandbox():
     venue3 = create_venue(offerer, name='Théatre Mordor', siret='64538954601379')
 
     offer1_venue3 = create_offer_with_event_product(
-        venue=venue2,
+        venue=venue3,
         event_name='Danse des haricots',
         event_type=EventType.SPECTACLE_VIVANT,
     )
@@ -97,7 +98,8 @@ def save_bookings_recap_sandbox():
     booking1_beneficiary1 = create_booking(
         user=beneficiary1,
         stock=stock_1_offer1_venue1,
-        date_created=datetime(2020, 3, 18, 14, 56, 12, 0)
+        date_created=datetime(2020, 3, 18, 14, 56, 12, 0),
+        is_used=True,
     )
     booking2_beneficiary1 = create_booking(
         user=beneficiary1,
@@ -107,7 +109,8 @@ def save_bookings_recap_sandbox():
     booking1_beneficiary2 = create_booking(
         user=beneficiary2,
         stock=stock_1_offer1_venue1,
-        date_created=datetime(2020, 3, 18, 12, 18, 12, 0)
+        date_created=datetime(2020, 3, 18, 12, 18, 12, 0),
+        is_used=True,
     )
     booking2_beneficiary2 = create_booking(
         user=beneficiary2,
@@ -133,25 +136,31 @@ def save_bookings_recap_sandbox():
         user=beneficiary1,
         stock=stock_1_offer1_venue3,
         date_created=datetime(2020, 4, 12, 14, 31, 12, 0)
-        )
+    )
+    payment_booking3_beneficiary1 = create_payment(booking=booking3_beneficiary1, offerer=offerer,
+                                                   status=TransactionStatus.PENDING)
     booking3_beneficiary2 = create_booking(
         user=beneficiary2,
         stock=stock_1_offer1_venue3,
         date_created=datetime(2020, 4, 12, 19, 31, 12, 0),
-        is_used=True
+        is_used=True,
+        is_cancelled=True
     )
+    payment_booking3_beneficiary2 = create_payment(booking=booking3_beneficiary2, offerer=offerer,
+                                                   status=TransactionStatus.SENT)
     booking3_beneficiary3 = create_booking(
         user=beneficiary3,
         stock=stock_1_offer1_venue3,
         date_created=datetime(2020, 4, 12, 22, 9, 12, 0)
     )
+    payment_booking3_beneficiary3 = create_payment(booking=booking3_beneficiary3, offerer=offerer,
+                                                   status=TransactionStatus.ERROR)
 
     repository.save(
         pro,
         booking1_beneficiary1, booking2_beneficiary1,
         booking1_beneficiary2, booking2_beneficiary2,
         booking1_beneficiary3, booking2_beneficiary3,
-        booking3_beneficiary1, booking3_beneficiary2,
-        booking3_beneficiary3, user_offerer
+        payment_booking3_beneficiary1, payment_booking3_beneficiary2,
+        payment_booking3_beneficiary3, user_offerer
     )
-
