@@ -63,6 +63,10 @@ class Place extends Component {
 
   blurInput = () => () => this.inputRef.current.blur()
 
+  handleOnSubmit = (event) => {
+    event.preventDefault()
+  }
+
   render() {
     const { backTo, history, match, title } = this.props
     const { keywords, suggestedPlaces } = this.state
@@ -82,30 +86,35 @@ class Place extends Component {
           className="place-wrapper"
           onScroll={this.blurInput()}
         >
-          <div className="place-input-wrapper">
-            <input
-              className="place-text-input"
-              name="keywords"
-              onChange={this.handleOnChange}
-              placeholder="Choisir un lieu..."
-              ref={this.inputRef}
-              type="search"
-              value={keywords}
-            />
-            <div className="place-reset-wrapper">
-              {keywords && (
-                <button
-                  className="place-reset-button"
-                  onClick={this.handleReset}
-                  type="reset"
-                >
-                  <Icon
-                    alt="Supprimer la saisie"
-                    svg="picto-reset"
-                  />
-                </button>
-              )}
-            </div>
+          <div className="place-form-wrapper">
+            <form
+              action=""
+              onSubmit={this.handleOnSubmit}
+            >
+              <input
+                className="place-text-input"
+                name="search"
+                onChange={this.handleOnChange}
+                placeholder="Choisir un lieu..."
+                ref={this.inputRef}
+                type="search"
+                value={keywords}
+              />
+              <div className="place-reset-wrapper">
+                {keywords && (
+                  <button
+                    className="place-reset-button"
+                    onClick={this.handleReset}
+                    type="reset"
+                  >
+                    <Icon
+                      alt="Supprimer la saisie"
+                      svg="picto-reset"
+                    />
+                  </button>
+                )}
+              </div>
+            </form>
           </div>
           {suggestedPlaces.length > 0 && (
             <ul className="place-suggestions">
