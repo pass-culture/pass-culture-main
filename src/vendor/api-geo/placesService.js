@@ -2,7 +2,7 @@ import typeEnum from './typeEnum'
 
 const API_ADRESSE_URL = `https://api-adresse.data.gouv.fr/search`
 
-export const fetchPlaces = ({ keywords, limit = 10 }) => {
+export const fetchPlaces = ({ keywords, limit = 20 }) => {
   return fetch(`${API_ADRESSE_URL}/?limit=${limit}&q=${keywords}`)
     .then(response => response.json())
     .then(suggestedPlaces => {

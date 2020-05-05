@@ -1,9 +1,10 @@
-import { shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import Header from '../../../../../layout/Header/Header'
 import Place from '../Place'
 import { fetchPlaces } from '../../../../../../vendor/api-geo/placesService'
+import { Router } from 'react-router'
 
 jest.mock('../../../../../../vendor/api-geo/placesService', () => ({
   fetchPlaces: jest.fn(),
@@ -34,7 +35,11 @@ describe('components | Place', () => {
 
   it('should render a Header component', () => {
     // When
-    const wrapper = shallow(<Place {...props} />)
+    const wrapper = mount(
+      <Router history={props.history}>
+        <Place {...props} />
+      </Router>
+    )
 
     // Then
     const header = wrapper.find(Header)
@@ -50,7 +55,26 @@ describe('components | Place', () => {
 
   it('should render an input', () => {
     // When
-    const wrapper = shallow(<Place {...props} />)
+    const wrapper = mount(
+      <Router history={props.history}>
+        <Place {...props} />
+      </Router>
+    )
+
+    // Then
+    const input = wrapper.find('input')
+    expect(input).toHaveLength(1)
+    expect(input.prop('type')).toBe('search')
+    expect(input.prop('onChange')).toStrictEqual(expect.any(Function))
+    expect(input.prop('value')).toStrictEqual('')
+  })
+
+  it('should focus on input when component is mounted', () => {
+    const wrapper = mount(
+      <Router history={props.history}>
+        <Place {...props} />
+      </Router>
+    )
 
     // Then
     const input = wrapper.find('input')
@@ -62,7 +86,11 @@ describe('components | Place', () => {
 
   it('should fetch places when typing in search input', async () => {
     // Given
-    const wrapper = shallow(<Place {...props} />)
+    const wrapper = mount(
+      <Router history={props.history}>
+        <Place {...props} />
+      </Router>
+    )
     const input = wrapper.find('input')
 
     // When
@@ -74,7 +102,11 @@ describe('components | Place', () => {
 
   it('should not render a list of suggested places while typing when no result', async () => {
     // Given
-    const wrapper = shallow(<Place {...props} />)
+    const wrapper = mount(
+      <Router history={props.history}>
+        <Place {...props} />
+      </Router>
+    )
     const input = wrapper.find('input')
 
     // When
@@ -119,14 +151,20 @@ describe('components | Place', () => {
         ])
       })
     )
-    const wrapper = shallow(<Place {...props} />)
+    const wrapper = mount(
+      <Router history={props.history}>
+        <Place {...props} />
+      </Router>
+    )
     const input = wrapper.find('input')
 
     // When
     await input.simulate('change', { target: { value: 'Pari' } })
+    wrapper.update()
 
     // Then
     const suggestedPlaces = wrapper
+      .find(Place)
       .find('ul')
       .find('li')
       .find('button')
@@ -144,7 +182,11 @@ describe('components | Place', () => {
   it('should render no suggested places when fetching is in error', async () => {
     // Given
     fetchPlaces.mockRejectedValueOnce()
-    const wrapper = shallow(<Place {...props} />)
+    const wrapper = mount(
+      <Router history={props.history}>
+        <Place {...props} />
+      </Router>
+    )
     const input = wrapper.find('input')
 
     // When
@@ -172,7 +214,11 @@ describe('components | Place', () => {
         }])
       })
     )
-    const wrapper = shallow(<Place {...props} />)
+    const wrapper = mount(
+      <Router history={props.history}>
+        <Place {...props} />
+      </Router>
+    )
     const inputText = wrapper.find('input')
 
     // When
@@ -185,7 +231,11 @@ describe('components | Place', () => {
 
   it('should not render a reset button when no keywords are typed', async () => {
     // When
-    const wrapper = shallow(<Place {...props} />)
+    const wrapper = mount(
+      <Router history={props.history}>
+        <Place {...props} />
+      </Router>
+    )
 
     // Then
     const resetButton = wrapper.find('button[type="reset"]')
@@ -206,10 +256,18 @@ describe('components | Place', () => {
         }])
       })
     )
-    const wrapper = shallow(<Place {...props} />)
+    const wrapper = mount(
+      <Router history={props.history}>
+        <Place {...props} />
+      </Router>
+    )
     await wrapper
       .find('input')
       .simulate('change', { target: { value: 'Par' } })
+    const input = wrapper
+      .find(Place)
+      .instance().inputRef.current
+    jest.spyOn(input, 'focus').mockImplementation(jest.fn())
 
     // When
     const resetButton = wrapper.find('button[type="reset"]')
@@ -223,6 +281,7 @@ describe('components | Place', () => {
       .find('li')
       .find('button')
     expect(suggestedPlaces).toHaveLength(0)
+    expect(input.focus).toHaveBeenCalledTimes(1)
   })
 
   it('should update place and redirect to search main page when clicking on a suggested place', async () => {
@@ -252,9 +311,14 @@ describe('components | Place', () => {
         ])
       })
     )
-    const wrapper = shallow(<Place {...props} />)
+    const wrapper = mount(
+      <Router history={props.history}>
+        <Place {...props} />
+      </Router>
+    )
     const input = wrapper.find('input')
     await input.simulate('change', { target: { value: 'Pari' } })
+    await wrapper.update()
     const suggestedPlaces = wrapper
       .find('ul')
       .find('li')
@@ -306,9 +370,14 @@ describe('components | Place', () => {
         ])
       })
     )
-    const wrapper = shallow(<Place {...props} />)
+    const wrapper = mount(
+      <Router history={props.history}>
+        <Place {...props} />
+      </Router>
+    )
     const input = wrapper.find('input')
     await input.simulate('change', { target: { value: 'Pari' } })
+    await wrapper.update()
     const suggestedPlaces = wrapper
       .find('ul')
       .find('li')
@@ -333,5 +402,43 @@ describe('components | Place', () => {
     expect(props.history.push).toHaveBeenCalledWith(
       '/recherche/resultats/filtres/localisation?mots-cles=&autour-de=non&tri=&categories='
     )
+  })
+
+  it('should blur input when scrolling results', async () => {
+    // Given
+    fetchPlaces.mockReturnValue(
+      new Promise(resolve => {
+        resolve([{
+          geolocation: {
+            latitude: 1,
+            longitude: 2,
+          },
+          name: 'Paris 15ème arrondissement',
+          extraData: 'Paris',
+        }])
+      })
+    )
+    const wrapper = mount(
+      <Router history={props.history}>
+        <Place {...props} />
+      </Router>
+    )
+    await wrapper
+      .find('input')
+      .simulate('change', { target: { value: 'Par' } })
+    const input = wrapper
+      .find(Place)
+      .instance().inputRef.current
+    jest.spyOn(input, 'blur').mockImplementation(jest.fn())
+
+    // When
+    const resultsList = wrapper
+      .find(Place)
+      .find('div')
+      .at(2)
+    resultsList.simulate('scroll')
+
+    // Then
+    expect(input.blur).toHaveBeenCalledTimes(1)
   })
 })

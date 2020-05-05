@@ -14,6 +14,11 @@ class Place extends Component {
       keywords: '',
       suggestedPlaces: [],
     }
+    this.inputRef = React.createRef()
+  }
+
+  componentDidMount() {
+    this.inputRef.current.focus()
   }
 
   shouldComponentUpdate() {
@@ -53,7 +58,10 @@ class Place extends Component {
       keywords: '',
       suggestedPlaces: []
     })
+    this.inputRef.current.focus()
   }
+
+  blurInput = () => () => this.inputRef.current.blur()
 
   render() {
     const { backTo, history, match, title } = this.props
@@ -70,13 +78,17 @@ class Place extends Component {
           match={match}
           title={title}
         />
-        <div className="place-wrapper">
+        <div
+          className="place-wrapper"
+          onScroll={this.blurInput()}
+        >
           <div className="place-input-wrapper">
             <input
               className="place-text-input"
               name="keywords"
               onChange={this.handleOnChange}
               placeholder="Choisir un lieu..."
+              ref={this.inputRef}
               type="search"
               value={keywords}
             />

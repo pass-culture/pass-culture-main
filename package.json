@@ -65,7 +65,7 @@
     "css-loader": "^3.2.0",
     "dotenv": "^8.2.0",
     "enzyme": "^3.10.0",
-    "enzyme-adapter-react-16": "^1.15.1",
+    "enzyme-adapter-react-16": "^1.15.2",
     "es5-shim": "^4.5.13",
     "eslint": "^6.6.0",
     "eslint-loader": "^3.0.2",
