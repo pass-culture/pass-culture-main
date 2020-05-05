@@ -10,21 +10,24 @@
   align-items: center;
   display: flex;
   border-bottom: rem(1px) solid $grey-even-more-light;
-  margin-left: rem(20px);
-  margin-right: rem(20px);
+  justify-content: center;
   padding-bottom: rem(20px);
   padding-top: rem(20px);
-}
 
-.cl-icon {
-  padding-left: rem(3px);
-  padding-right: rem(25px);
-}
+  .cl-icon {
+    height: rem(48px);
+    margin-left: rem(20px);
+    margin-right: rem(20px);
+    width: rem(48px);
+  }
 
-.cl-warning-message {
-  color: $grey;
-  font-size: rem(14px);
-  font-weight: 500;
+  .cl-warning-message {
+    color: $grey;
+    flex: 1;
+    font-size: rem(14px);
+    font-weight: 500;
+    padding-right: rem(20px);
+  }
 }
 
 .cl-place-wrapper {

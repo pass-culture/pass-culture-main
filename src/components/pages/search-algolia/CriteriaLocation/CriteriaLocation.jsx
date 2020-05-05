@@ -84,16 +84,14 @@ class CriteriaLocation extends Component {
               match={match}
               title={title}
             />
-            <div>
-              <div className="cl-wrapper">
-                <Icon
-                  className="cl-icon"
-                  svg="ico-alert"
-                />
-                <span className="cl-warning-message">
-                  {`Seules les offres Sorties et Physiques seront affichées pour une recherche avec une localisation`}
-                </span>
-              </div>
+            <div className="cl-wrapper">
+              <Icon
+                className="cl-icon"
+                svg="ico-alert"
+              />
+              <span className="cl-warning-message">
+                {`Seules les offres Sorties et Physiques seront affichées pour une recherche avec une localisation`}
+              </span>
             </div>
             <div className="cl-place-wrapper">
               <Icon
