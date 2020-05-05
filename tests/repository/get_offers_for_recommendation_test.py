@@ -252,36 +252,6 @@ class GetOfferForRecommendationsTest:
             # Then
             assert offers == []
 
-        @clean_database
-        def test_should_return_all_offers_when_department_code_00(self, app):
-            # Given
-            offerer = create_offerer(siren='123456789')
-            user = create_user()
-            venue_34 = create_venue(offerer, postal_code='34000', departement_code='34', siret=offerer.siren + '11111')
-            venue_93 = create_venue(offerer, postal_code='93000', departement_code='93', siret=offerer.siren + '22222')
-            venue_75 = create_venue(offerer, postal_code='75000', departement_code='75', siret=offerer.siren + '33333')
-            offer_34 = create_offer_with_thing_product(venue=venue_34)
-            offer_93 = create_offer_with_thing_product(venue=venue_93)
-            offer_75 = create_offer_with_thing_product(venue=venue_75)
-            stock_34 = create_stock_from_offer(offer_34)
-            stock_93 = create_stock_from_offer(offer_93)
-            stock_75 = create_stock_from_offer(offer_75)
-            create_mediation(stock_34.offer)
-            create_mediation(stock_93.offer)
-            create_mediation(stock_75.offer)
-
-            repository.save(stock_34, stock_93, stock_75)
-            DiscoveryView.refresh(concurrently=False)
-
-            # When
-            offers = get_offers_for_recommendation(departement_codes=['00'],
-                                                   user=user)
-
-            # Then
-            assert offer_34 in offers
-            assert offer_93 in offers
-            assert offer_75 in offers
-
     class OrderTest:
         @clean_database
         def test_should_return_digital_offers_first_when_offers_have_same_criterion_score(self, app):
@@ -323,6 +293,7 @@ class GetOfferForRecommendationsTest:
             create_mediation(physical_offer)
             create_mediation(digital_offer)
             digital_offer.criteria = [create_criterion(name='negative', score_delta=-1)]
+            physical_offer.criteria = [create_criterion(name='negative', score_delta=-1), create_criterion(name='positive', score_delta=1)]
 
             repository.save(user, stock_digital_offer, stock_physical_offer)
 
@@ -334,4 +305,3 @@ class GetOfferForRecommendationsTest:
 
             # Then
             assert offers == [physical_offer, digital_offer]
-

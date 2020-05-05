@@ -8,7 +8,7 @@ from sqlalchemy_utils import refresh_materialized_view
 from models.db import Model, db
 
 
-def _order_by_digital_offers() -> str:
+def _ordrer_by_score_and_digital_offers() -> str:
     return f"""
         ROW_NUMBER() OVER (
             ORDER BY
@@ -70,13 +70,12 @@ class DiscoveryView(Model):
         """)
         self.session.commit()
 
-    def _create_function_get_recommendable_offers(self, order: Callable = _order_by_digital_offers) -> str:
-        function_name = 'get_recommendable_offers_ordered_by_digital_offers'
+    def _create_function_get_recommendable_offers(self, order: Callable = _ordrer_by_score_and_digital_offers, postgres_function_name: str = 'get_recommendable_offers_ordered_by_score_and_digital_offers') -> str:
         get_offer_score = self._create_function_get_offer_score()
         get_active_offers_ids = self._create_function_get_active_offers_ids()
 
         self.session.execute(f"""
-            CREATE OR REPLACE FUNCTION {function_name}()
+            CREATE OR REPLACE FUNCTION {postgres_function_name}()
             RETURNS TABLE (
                 criterion_score BIGINT,
                 id BIGINT,
@@ -105,7 +104,7 @@ class DiscoveryView(Model):
             $body$
             LANGUAGE plpgsql;
         """)
-        return function_name
+        return postgres_function_name
 
     def _create_function_offer_has_at_least_one_bookable_stock(self) -> str:
         function_name = 'offer_has_at_least_one_bookable_stock'
