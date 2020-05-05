@@ -1,7 +1,7 @@
 """clean_mediation_table
 
 Revision ID: 2556f5577098
-Revises: edb77d0140b7
+Revises: 5b12b14f1b17
 Create Date: 2020-04-21 09:18:38.064455
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '2556f5577098'
-down_revision = 'edb77d0140b7'
+down_revision = '5b12b14f1b17'
 branch_labels = None
 depends_on = None
 
@@ -34,4 +34,3 @@ def downgrade():
     op.add_column('mediation', sa.Column('backText', sa.Text, nullable=True, index=True))
     op.add_column('mediation', sa.Column('frontText', sa.Text, nullable=True, index=True))
     op.add_column('mediation', sa.Column('tutoIndex', sa.Integer(), nullable=True, index=True))
-

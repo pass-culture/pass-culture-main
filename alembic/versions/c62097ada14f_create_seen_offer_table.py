@@ -1,7 +1,7 @@
 """create_seen_offer_table
 
 Revision ID: c62097ada14f
-Revises: 2556f5577098
+Revises: edb77d0140b7
 Create Date: 2020-04-10 13:51:57.162488
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = 'c62097ada14f'
-down_revision = '2556f5577098'
+down_revision = 'edb77d0140b7'
 branch_labels = None
 depends_on = None
 

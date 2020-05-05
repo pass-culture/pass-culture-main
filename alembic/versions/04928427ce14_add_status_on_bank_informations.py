@@ -1,7 +1,7 @@
 """add_status_on_bank_informations
 
 Revision ID: 04928427ce14
-Revises: 5b12b14f1b17
+Revises: 2556f5577098
 Create Date: 2020-04-28 09:58:34.287483
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '04928427ce14'
-down_revision = '5b12b14f1b17'
+down_revision = '2556f5577098'
 branch_labels = None
 depends_on = None
 
