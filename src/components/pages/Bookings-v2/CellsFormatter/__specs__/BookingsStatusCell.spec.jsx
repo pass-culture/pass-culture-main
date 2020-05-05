@@ -18,4 +18,20 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell
     expect(status.hasClass('bookings-status-label')).toBe(true)
     expect(status.hasClass('bookings-status-validated')).toBe(true)
   })
+
+  it('should render a div with the default tag classname for an unknown status', () => {
+    // Given
+    const props = {
+      bookingStatus: 'Unknown',
+    }
+
+    // When
+    const wrapper = shallow(<BookingStatusCell {...props} />)
+    let status = wrapper.find('span')
+
+    // Then
+    expect(status.text()).toBe('unknown')
+    expect(status.hasClass('bookings-status-label')).toStrictEqual(true)
+    expect(status.hasClass('bookings-status-default')).toStrictEqual(true)
+  })
 })

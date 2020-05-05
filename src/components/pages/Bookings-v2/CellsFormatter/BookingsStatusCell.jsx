@@ -21,7 +21,8 @@ const BookingStatusCell = ({ bookingStatus }) => {
 
   const computeStatusClassName = bookingStatusInfos => {
     const prefix = 'bookings-status-'
-    const [{ status }] = BOOKING_STATUS.filter(({ value }) => bookingStatusInfos === value)
+    const bookingStatus = BOOKING_STATUS.find(({ value }) => bookingStatusInfos === value)
+    const status = bookingStatus ? bookingStatus.status : 'default'
     return prefix + status
   }
 
