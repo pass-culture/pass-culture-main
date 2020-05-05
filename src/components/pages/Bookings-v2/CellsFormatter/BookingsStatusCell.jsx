@@ -14,6 +14,10 @@ const BOOKING_STATUS = [
     value: 'réservé',
     status: 'booked',
   },
+  {
+    value: 'remboursé',
+    status: 'reimbursed',
+  },
 ]
 
 const BookingStatusCell = ({ bookingStatus }) => {
