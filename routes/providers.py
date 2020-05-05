@@ -10,6 +10,10 @@ from routes.serialization import as_dict
 from utils.rest import load_or_404
 from connectors import redis
 
+from rq import Worker, Queue, Connection
+from workers import worker
+from workers.save_offerer_bank_informations import pc_synchronize_new_bank_informations
+
 
 @app.route('/providers', methods=['GET'])
 @login_required
@@ -43,8 +47,11 @@ def get_providers_by_venue(venue_id: str):
     return jsonify(result)
 
 
+
+q = Queue(connection=worker.conn)
+
 @app.route('/providers/OffererBankInformationProvider/application_update', methods=['POST'])
 def post_DMS_application_update():
     application_id = request.form['dossier_id']
-    redis.add_application_ids(client=app.redis_client, application_ids=[application_id])
+    q.enqueue_call(func=pc_synchronize_new_bank_informations, args=(application_id, ))
     return '', 202
