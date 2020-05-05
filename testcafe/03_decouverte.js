@@ -12,7 +12,7 @@ const closeVersoLink = Selector('#deck .close-link')
 
 let userRole
 
-fixture('Sur la page découverte v1,').beforeEach(async t => {
+fixture('Sur la page découverte ,').beforeEach(async t => {
   if (!userRole) {
     userRole = await createUserRoleFromUserSandbox(
       'webapp_03_decouverte',

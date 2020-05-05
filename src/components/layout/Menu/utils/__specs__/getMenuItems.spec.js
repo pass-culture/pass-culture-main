@@ -1,4 +1,4 @@
-import DiscoveryContainerV1 from '../../../../pages/discovery-v1/DiscoveryContainer'
+import DiscoveryContainer from '../../../../pages/discovery/DiscoveryContainer'
 import DiscoveryContainerV3 from '../../../../pages/discovery-v3/DiscoveryContainer'
 import MyFavoritesContainer from '../../../../pages/my-favorites/MyFavoritesContainer'
 import MyBookingsContainer from '../../../../pages/my-bookings/MyBookingsContainer'
@@ -34,7 +34,7 @@ describe('getMenuItemsFromRoutes', () => {
     const items = getMenuItemsFromRoutes(routes)
     const expected = [
       {
-        component: DiscoveryContainerV1,
+        component: DiscoveryContainer,
         icon: 'ico-offres',
         path: '/decouverte',
         title: 'Les offres',

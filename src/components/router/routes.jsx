@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom'
 import ActivationContainer from '../pages/activation/ActivationContainer'
 import BetaPageContainer from '../pages/beta-page/BetaPageContainer'
 import MyBookingsContainer from '../pages/my-bookings/MyBookingsContainer'
-import DiscoveryContainerV1 from '../pages/discovery-v1/DiscoveryContainer'
+import DiscoveryContainer from '../pages/discovery/DiscoveryContainer'
 import DiscoveryContainerV3 from '../pages/discovery-v3/DiscoveryContainer'
 import MyFavoritesContainer from '../pages/my-favorites/MyFavoritesContainer'
 import TutorialsContainer from '../pages/tutorials/TutorialsContainer'
@@ -83,7 +83,7 @@ const routes = [
    *
    ---------------------------------------------------  */
   {
-    component: DiscoveryContainerV1,
+    component: DiscoveryContainer,
     icon: 'ico-offres',
     path:
       '/decouverte' +
