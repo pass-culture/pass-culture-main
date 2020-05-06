@@ -74,7 +74,7 @@ describe('remainingCredit', () => {
     })
 
     describe('readMore', () => {
-      const READ_MORE_TEXT = `Le but du pass Culture est de renforcer vos pratiques culturelles,
+      const READ_MORE_TEXT = `Le but du pass Culture est de renforcer tes pratiques culturelles,
                 mais aussi d’en créer de nouvelles. Ces plafonds ont été mis en place
                 pour favoriser la diversification des pratiques culturelles.`
 
