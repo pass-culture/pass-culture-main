@@ -107,7 +107,7 @@ describe('components | pages | Bookings-v2 | BookingsRecapTable', function() {
     // Then
     const bookingOfferCell = wrapper.find(BookingOfferCell)
     expect(bookingOfferCell).toHaveLength(1)
-    expect(bookingOfferCell.props()).toStrictEqual({ stock: { offer_name: 'Avez-vous déjà vu' } })
+    expect(bookingOfferCell.props()).toStrictEqual({ offer: { offer_name: 'Avez-vous déjà vu' } })
     const beneficiaryCell = wrapper.find(BeneficiaryCell)
     expect(beneficiaryCell).toHaveLength(1)
     expect(beneficiaryCell.props()).toStrictEqual({

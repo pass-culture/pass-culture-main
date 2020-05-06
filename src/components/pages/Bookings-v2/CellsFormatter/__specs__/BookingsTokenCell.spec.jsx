@@ -3,7 +3,7 @@ import React from 'react'
 import BookingTokenCell from '../BookingsTokenCell'
 
 describe('components | pages | bookings-v2 | CellsFormatter | BookingsTokenCell', () => {
-  it('should render a bookingToken when value is provided', () => {
+  it('should render a booking token when value is provided', () => {
     // Given
     const props = {
       bookingToken: 'ABCDEF',

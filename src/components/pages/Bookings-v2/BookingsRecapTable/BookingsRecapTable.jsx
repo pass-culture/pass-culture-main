@@ -14,7 +14,7 @@ class BookingsRecapTable extends PureComponent {
         {
           headerTitle: "Nom de l'offre",
           accessor: 'stock',
-          Cell: ({ value }) => <BookingOfferCell stock={value} />,
+          Cell: ({ value }) => <BookingOfferCell offer={value} />,
         },
         {
           headerTitle: 'Bénéficiaire',
