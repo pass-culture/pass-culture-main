@@ -4,6 +4,9 @@ from sqlalchemy_utils import refresh_materialized_view
 
 from models import DiscoveryView
 from models.db import Model, db
+from repository.discovery_view_queries import _create_function_offer_has_at_least_one_bookable_stock, \
+    _create_function_offer_has_at_least_one_active_mediation, _create_function_event_is_in_less_than_10_days, \
+    _create_function_get_offer_score
 
 
 class DiscoveryViewV3(Model):
@@ -27,7 +30,6 @@ class DiscoveryViewV3(Model):
 
     def __init__(self, session: scoped_session):
         self.session = session
-        self.discovery_view = DiscoveryView(session)
 
     def create(self) -> None:
         get_recommendable_offers = self._create_function_get_recommendable_offers()
@@ -120,16 +122,16 @@ class DiscoveryViewV3(Model):
         """
 
     def _create_function_offer_has_at_least_one_bookable_stock(self) -> str:
-        return self.discovery_view._create_function_offer_has_at_least_one_bookable_stock()
+        return _create_function_offer_has_at_least_one_bookable_stock(self.session)
 
     def _create_function_offer_has_at_least_one_active_mediation(self) -> str:
-        return self.discovery_view._create_function_offer_has_at_least_one_active_mediation()
+        return _create_function_offer_has_at_least_one_active_mediation(self.session)
 
     def _create_function_event_is_in_less_than_10_days(self) -> str:
-        return self.discovery_view._create_function_event_is_in_less_than_10_days()
+        return _create_function_event_is_in_less_than_10_days(self.session)
 
     def _create_function_get_offer_score(self) -> str:
-        return self.discovery_view._create_function_get_offer_score()
+        return _create_function_get_offer_score(self.session)
 
     @classmethod
     def refresh(cls, concurrently: bool = True) -> None:

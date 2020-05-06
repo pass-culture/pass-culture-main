@@ -1,6 +1,5 @@
-from models import DiscoveryView
 from models.offer_type import EventType, ThingType
-from repository import repository
+from repository import repository, discovery_view_queries
 from repository.offer_queries import get_offers_for_recommendation
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_criterion, \
@@ -38,7 +37,7 @@ class GetOfferForRecommendationsTest:
 
             repository.save(user, stock_34, stock_93, stock_75)
 
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -66,7 +65,7 @@ class GetOfferForRecommendationsTest:
 
             repository.save(user, stock_34, stock_national)
 
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation(departement_codes=['93'],
@@ -94,7 +93,7 @@ class GetOfferForRecommendationsTest:
             repository.save(user, stock_93, stock_activation_93,
                             mediation1, mediation2)
 
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -121,7 +120,7 @@ class GetOfferForRecommendationsTest:
 
             repository.save(user, stock_93, stock_activation_93)
 
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -145,7 +144,7 @@ class GetOfferForRecommendationsTest:
             create_mediation(stock.offer)
             repository.save(user, stock)
 
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -166,7 +165,7 @@ class GetOfferForRecommendationsTest:
             create_mediation(stock1.offer)
             repository.save(user, stock1, stock2)
 
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -193,7 +192,7 @@ class GetOfferForRecommendationsTest:
                 user=user, stock=stock, quantity=2, venue=venue)
             create_mediation(stock.offer)
             repository.save(user, booking1, booking2)
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -215,7 +214,7 @@ class GetOfferForRecommendationsTest:
             booking = create_booking(user=user, stock=stock)
             create_mediation(stock.offer)
             repository.save(user, booking)
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -239,7 +238,7 @@ class GetOfferForRecommendationsTest:
             favorite = create_favorite(mediation=mediation, offer=offer, user=user)
 
             repository.save(user, favorite)
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -266,7 +265,7 @@ class GetOfferForRecommendationsTest:
             create_mediation(digital_offer)
             repository.save(user, stock_digital_offer, stock_physical_offer)
 
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -296,7 +295,7 @@ class GetOfferForRecommendationsTest:
 
             repository.save(user, stock_digital_offer, stock_physical_offer)
 
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation(departement_codes=['00'],
@@ -345,7 +344,7 @@ class GetOfferForRecommendationsTest:
             repository.save(user, stock_digital_offer_with_bonus, stock_digital_offer, stock_digital_offer_with_malus,
                             stock_physical_offer, stock_physical_offer_with_super_bonus)
 
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation(departement_codes=['00'],

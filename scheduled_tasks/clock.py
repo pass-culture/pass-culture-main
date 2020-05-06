@@ -7,9 +7,10 @@ from sqlalchemy import orm
 
 from local_providers.provider_manager import \
     synchronize_data_for_provider, synchronize_venue_providers_for_provider
-from models import DiscoveryView, DiscoveryViewV3
+from models import DiscoveryViewV3
 from models.db import db
 from models.feature import FeatureToggle
+from repository import discovery_view_queries
 from repository.feature_queries import feature_write_dashboard_enabled, feature_clean_seen_offers_enabled
 from repository.provider_queries import get_provider_by_local_class
 from repository.seen_offer_queries import remove_old_seen_offers
@@ -94,7 +95,7 @@ def pc_write_dashboard(app):
 @cron_context
 @cron_require_feature(FeatureToggle.UPDATE_DISCOVERY_VIEW)
 def pc_update_recommendations_view(app):
-    DiscoveryView.refresh()
+    discovery_view_queries.refresh()
 
 
 @log_cron

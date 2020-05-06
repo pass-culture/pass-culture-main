@@ -1,4 +1,5 @@
 from models import DiscoveryView, DiscoveryViewV3
+from repository import discovery_view_queries
 from sandboxes.scripts.creators.industrial.create_industrial_activation_offers import \
     create_industrial_activation_offers
 from sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
@@ -75,7 +76,7 @@ def save_industrial_sandbox():
 
     create_industrial_mediations(offers_by_name)
 
-    DiscoveryView.refresh()
+    discovery_view_queries.refresh()
     DiscoveryViewV3.refresh()
 
     recommendations_by_name = create_industrial_recommendations(

@@ -1,9 +1,9 @@
 from typing import List
 from unittest.mock import patch
 
-from models import Offerer, Stock, DiscoveryView
 from recommendations_engine import give_requested_recommendation_to_user, create_recommendations_for_discovery
-from repository import repository
+from models import Offerer, Stock
+from repository import repository, discovery_view_queries
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
     create_recommendation, create_mediation
@@ -27,7 +27,7 @@ class CreateRecommendationsForDiscoveryTest:
         mediation2 = create_mediation(offer2, is_active=False)
         mediation3 = create_mediation(offer2, is_active=True)
         repository.save(user, stock1, mediation1, stock2, mediation2, mediation3)
-        DiscoveryView.refresh(concurrently=False)
+        discovery_view_queries.refresh(concurrently=False)
 
         # When
         recommendations = create_recommendations_for_discovery(seen_recommendation_ids=seen_recommendation_ids,
@@ -58,7 +58,7 @@ class CreateRecommendationsForDiscoveryTest:
         recommendation = create_recommendation(offer=offer2, user=user, mediation=mediation2, search="bla")
 
         repository.save(user, stock1, mediation1, stock2, mediation2, recommendation)
-        DiscoveryView.refresh(concurrently=False)
+        discovery_view_queries.refresh(concurrently=False)
 
         # When
         recommendations = create_recommendations_for_discovery(seen_recommendation_ids=seen_recommendation_ids, user=user)
@@ -98,7 +98,7 @@ class CreateRecommendationsForDiscoveryTest:
                                                                                              departements_ko)
         repository.save(user)
         repository.save(*(expected_stocks_recommended + expected_stocks_not_recommended))
-        DiscoveryView.refresh(concurrently=False)
+        discovery_view_queries.refresh(concurrently=False)
 
         offer_ids_in_adjacent_department = set([stock.offerId for stock in expected_stocks_recommended])
 
@@ -124,7 +124,7 @@ class CreateRecommendationsForDiscoveryTest:
                                                                                          departements_ok)
         repository.save(user)
         repository.save(*expected_stocks_recommended)
-        DiscoveryView.refresh(concurrently=False)
+        discovery_view_queries.refresh(concurrently=False)
 
         offer_ids_in_all_department = set([stock.offerId for stock in expected_stocks_recommended])
 
