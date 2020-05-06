@@ -4,14 +4,18 @@ import {
   ALGOLIA_INDEX_NAME,
   ALGOLIA_SEARCH_API_KEY,
 } from '../../../utils/config'
-import { fetchAlgolia } from '../algolia'
 import {
-  getFirstTimestampOfTheWeekEndForGivenDate,
+  computeTimeRangeFromHoursToSeconds,
+  getBeginningAndEndingTimestampsForGivenTimeRange,
   getFirstTimestampForGivenDate,
-  getLastTimestampOfTheWeekForGivenDate,
+  getFirstTimestampOfTheWeekEndForGivenDate,
   getLastTimestampForGivenDate,
+  getLastTimestampOfTheWeekForGivenDate,
   getTimestampFromDate,
+  getTimestampsOfTheWeekEndIncludingTimeRange,
+  getTimestampsOfTheWeekIncludingTimeRange,
 } from '../../../utils/date/date'
+import { fetchAlgolia } from '../algolia'
 
 jest.mock('algoliasearch')
 jest.mock('../../../utils/config', () => ({
@@ -25,6 +29,10 @@ jest.mock('../../../utils/date/date', () => ({
   getTimestampFromDate: jest.fn(),
   getFirstTimestampOfTheWeekEndForGivenDate: jest.fn(),
   getFirstTimestampForGivenDate: jest.fn(),
+  getTimestampsOfTheWeekIncludingTimeRange: jest.fn(),
+  getTimestampsOfTheWeekEndIncludingTimeRange: jest.fn(),
+  getBeginningAndEndingTimestampsForGivenTimeRange: jest.fn(),
+  computeTimeRangeFromHoursToSeconds: jest.fn(),
 }))
 
 describe('fetchAlgolia', () => {
@@ -145,7 +153,7 @@ describe('fetchAlgolia', () => {
       fetchAlgolia({
         geolocation: geolocation,
         keywords: keywords,
-        searchAround: false
+        searchAround: false,
       })
 
       // then
@@ -169,7 +177,7 @@ describe('fetchAlgolia', () => {
         aroundRadius: 15,
         geolocation: geolocation,
         keywords: keywords,
-        searchAround: true
+        searchAround: true,
       })
 
       // then
@@ -193,7 +201,7 @@ describe('fetchAlgolia', () => {
         aroundRadius: 0,
         geolocation: geolocation,
         keywords: keywords,
-        searchAround: true
+        searchAround: true,
       })
 
       // then
@@ -645,103 +653,243 @@ describe('fetchAlgolia', () => {
   })
 
   describe('date', () => {
-    it('should fetch with date filter when date and today option are provided', () => {
-      // Given
-      const keywords = 'search keywords'
-      const selectedDate = new Date(2020, 3, 19, 11)
-      getTimestampFromDate.mockReturnValue(123456789)
-      getLastTimestampForGivenDate.mockReturnValue(987654321)
+    describe('by date only', () => {
+      it('should fetch with date filter when date and today option are provided', () => {
+        // Given
+        const keywords = 'search keywords'
+        const selectedDate = new Date(2020, 3, 19, 11)
+        getTimestampFromDate.mockReturnValue(123456789)
+        getLastTimestampForGivenDate.mockReturnValue(987654321)
 
-      // When
-      fetchAlgolia({
-        keywords,
-        date: {
-          option: 'today',
-          selectedDate,
-        },
+        // When
+        fetchAlgolia({
+          keywords,
+          date: {
+            option: 'today',
+            selectedDate,
+          },
+        })
+
+        // Then
+        expect(getTimestampFromDate).toHaveBeenCalledWith(selectedDate)
+        expect(getLastTimestampForGivenDate).toHaveBeenCalledWith(selectedDate)
+        expect(search).toHaveBeenCalledWith(keywords, {
+          numericFilters: [`offer.dates: 123456789 TO 987654321`],
+          page: 0,
+        })
       })
 
-      // Then
-      expect(getTimestampFromDate).toHaveBeenCalledWith(selectedDate)
-      expect(getLastTimestampForGivenDate).toHaveBeenCalledWith(selectedDate)
-      expect(search).toHaveBeenCalledWith(keywords, {
-        numericFilters: [`offer.dates: 123456789 TO 987654321`],
-        page: 0,
+      it('should fetch with date filter when date and currentWeek option are provided', () => {
+        // Given
+        const keywords = ''
+        const selectedDate = new Date(2020, 3, 19, 11)
+        getTimestampFromDate.mockReturnValue(123456789)
+        getLastTimestampOfTheWeekForGivenDate.mockReturnValue(987654321)
+
+        // When
+        fetchAlgolia({
+          keywords,
+          date: {
+            option: 'currentWeek',
+            selectedDate,
+          },
+        })
+
+        // Then
+        expect(getTimestampFromDate).toHaveBeenCalledWith(selectedDate)
+        expect(getLastTimestampOfTheWeekForGivenDate).toHaveBeenCalledWith(selectedDate)
+        expect(search).toHaveBeenCalledWith(keywords, {
+          numericFilters: [`offer.dates: 123456789 TO 987654321`],
+          page: 0,
+        })
+      })
+
+      it('should fetch with date filter when date and currentWeekEnd option are provided', () => {
+        // Given
+        const keywords = ''
+        const selectedDate = new Date(2020, 3, 19, 11)
+        getFirstTimestampOfTheWeekEndForGivenDate.mockReturnValue(123456789)
+        getLastTimestampOfTheWeekForGivenDate.mockReturnValue(987654321)
+
+        // When
+        fetchAlgolia({
+          keywords,
+          date: {
+            option: 'currentWeekEnd',
+            selectedDate,
+          },
+        })
+
+        // Then
+        expect(getFirstTimestampOfTheWeekEndForGivenDate).toHaveBeenCalledWith(selectedDate)
+        expect(getLastTimestampOfTheWeekForGivenDate).toHaveBeenCalledWith(selectedDate)
+        expect(search).toHaveBeenCalledWith(keywords, {
+          numericFilters: [`offer.dates: 123456789 TO 987654321`],
+          page: 0,
+        })
+      })
+
+      it('should fetch with date filter when date and picked option are provided', () => {
+        // Given
+        const keywords = ''
+        const selectedDate = new Date(2020, 3, 19, 11)
+        getFirstTimestampForGivenDate.mockReturnValue(123456789)
+        getLastTimestampForGivenDate.mockReturnValue(987654321)
+
+        // When
+        fetchAlgolia({
+          keywords,
+          date: {
+            option: 'picked',
+            selectedDate,
+          },
+        })
+
+        // Then
+        expect(getFirstTimestampForGivenDate).toHaveBeenCalledWith(selectedDate)
+        expect(getLastTimestampForGivenDate).toHaveBeenCalledWith(selectedDate)
+        expect(search).toHaveBeenCalledWith(keywords, {
+          numericFilters: [`offer.dates: 123456789 TO 987654321`],
+          page: 0,
+        })
       })
     })
 
-    it('should fetch with date filter when date and currentWeek option are provided', () => {
-      // Given
-      const keywords = ''
-      const selectedDate = new Date(2020, 3, 19, 11)
-      getTimestampFromDate.mockReturnValue(123456789)
-      getLastTimestampOfTheWeekForGivenDate.mockReturnValue(987654321)
+    describe('by time only', () => {
+      it('should fetch with time filter when timeRange is provided', () => {
+        // Given
+        const timeRange = [18, 22]
+        computeTimeRangeFromHoursToSeconds.mockReturnValue([64800, 79200])
 
-      // When
-      fetchAlgolia({
-        keywords,
-        date: {
-          option: 'currentWeek',
-          selectedDate,
-        },
-      })
+        // When
+        fetchAlgolia({ timeRange })
 
-      // Then
-      expect(getTimestampFromDate).toHaveBeenCalledWith(selectedDate)
-      expect(getLastTimestampOfTheWeekForGivenDate).toHaveBeenCalledWith(selectedDate)
-      expect(search).toHaveBeenCalledWith(keywords, {
-        numericFilters: [`offer.dates: 123456789 TO 987654321`],
-        page: 0,
+        // Then
+        expect(computeTimeRangeFromHoursToSeconds).toHaveBeenCalledWith(timeRange)
+        expect(search).toHaveBeenCalledWith('', {
+          numericFilters: [`offer.times: 64800 TO 79200`],
+          page: 0,
+        })
       })
     })
 
-    it('should fetch with date filter when date and currentWeekEnd option are provided', () => {
-      // Given
-      const keywords = ''
-      const selectedDate = new Date(2020, 3, 19, 11)
-      getFirstTimestampOfTheWeekEndForGivenDate.mockReturnValue(123456789)
-      getLastTimestampOfTheWeekForGivenDate.mockReturnValue(987654321)
+    describe('by date and time', () => {
+      it('should fetch with date filter when timeRange, date and today option are provided', () => {
+        // Given
+        const keywords = ''
+        const selectedDate = new Date(2020, 3, 19, 11)
+        const timeRange = [18, 22]
+        getBeginningAndEndingTimestampsForGivenTimeRange.mockReturnValue([123, 124])
 
-      // When
-      fetchAlgolia({
-        keywords,
-        date: {
-          option: 'currentWeekEnd',
+        // When
+        fetchAlgolia({
+          keywords,
+          date: {
+            option: 'today',
+            selectedDate,
+          },
+          timeRange: timeRange,
+        })
+
+        // Then
+        expect(getBeginningAndEndingTimestampsForGivenTimeRange).toHaveBeenCalledWith(
           selectedDate,
-        },
+          timeRange
+        )
+        expect(search).toHaveBeenCalledWith(keywords, {
+          numericFilters: [`offer.dates: 123 TO 124`],
+          page: 0,
+        })
       })
 
-      // Then
-      expect(getFirstTimestampOfTheWeekEndForGivenDate).toHaveBeenCalledWith(selectedDate)
-      expect(getLastTimestampOfTheWeekForGivenDate).toHaveBeenCalledWith(selectedDate)
-      expect(search).toHaveBeenCalledWith(keywords, {
-        numericFilters: [`offer.dates: 123456789 TO 987654321`],
-        page: 0,
-      })
-    })
+      it('should fetch with date filter when timeRange, date and currentWeek option are provided', () => {
+        // Given
+        const keywords = ''
+        const selectedDate = new Date(2020, 3, 19, 11)
+        const timeRange = [18, 22]
+        getTimestampsOfTheWeekIncludingTimeRange.mockReturnValue([
+          [123, 124],
+          [225, 226],
+          [327, 328],
+        ])
 
-    it('should fetch with date filter when date and picked option are provided', () => {
-      // Given
-      const keywords = ''
-      const selectedDate = new Date(2020, 3, 19, 11)
-      getFirstTimestampForGivenDate.mockReturnValue(123456789)
-      getLastTimestampForGivenDate.mockReturnValue(987654321)
+        // When
+        fetchAlgolia({
+          keywords,
+          date: {
+            option: 'currentWeek',
+            selectedDate,
+          },
+          timeRange: timeRange,
+        })
 
-      // When
-      fetchAlgolia({
-        keywords,
-        date: {
-          option: 'picked',
+        // Then
+        expect(getTimestampsOfTheWeekIncludingTimeRange).toHaveBeenCalledWith(
           selectedDate,
-        },
+          timeRange
+        )
+        expect(search).toHaveBeenCalledWith(keywords, {
+          numericFilters: [
+            [`offer.dates: 123 TO 124`, `offer.dates: 225 TO 226`, `offer.dates: 327 TO 328`],
+          ],
+          page: 0,
+        })
       })
 
-      // Then
-      expect(getFirstTimestampForGivenDate).toHaveBeenCalledWith(selectedDate)
-      expect(getLastTimestampForGivenDate).toHaveBeenCalledWith(selectedDate)
-      expect(search).toHaveBeenCalledWith(keywords, {
-        numericFilters: [`offer.dates: 123456789 TO 987654321`],
-        page: 0,
+      it('should fetch with date filter when timeRange, date and currentWeekEnd option are provided', () => {
+        // Given
+        const keywords = ''
+        const selectedDate = new Date(2020, 3, 19, 11)
+        const timeRange = [18, 22]
+        getTimestampsOfTheWeekEndIncludingTimeRange.mockReturnValue([[123, 124], [225, 226]])
+
+        // When
+        fetchAlgolia({
+          keywords,
+          date: {
+            option: 'currentWeekEnd',
+            selectedDate,
+          },
+          timeRange: timeRange,
+        })
+
+        // Then
+        expect(getTimestampsOfTheWeekEndIncludingTimeRange).toHaveBeenCalledWith(
+          selectedDate,
+          timeRange
+        )
+        expect(search).toHaveBeenCalledWith(keywords, {
+          numericFilters: [[`offer.dates: 123 TO 124`, `offer.dates: 225 TO 226`]],
+          page: 0,
+        })
+      })
+
+      it('should fetch with date filter when timeRange, date and picked option are provided', () => {
+        // Given
+        const keywords = ''
+        const selectedDate = new Date(2020, 3, 19, 11)
+        const timeRange = [18, 22]
+        getBeginningAndEndingTimestampsForGivenTimeRange.mockReturnValue([123, 124])
+
+        // When
+        fetchAlgolia({
+          keywords,
+          date: {
+            option: 'picked',
+            selectedDate,
+          },
+          timeRange: timeRange,
+        })
+
+        // Then
+        expect(getBeginningAndEndingTimestampsForGivenTimeRange).toHaveBeenCalledWith(
+          selectedDate,
+          timeRange
+        )
+        expect(search).toHaveBeenCalledWith(keywords, {
+          numericFilters: [`offer.dates: 123 TO 124`],
+          page: 0,
+        })
       })
     })
   })
@@ -767,6 +915,56 @@ describe('fetchAlgolia', () => {
       // Then
       expect(search).toHaveBeenCalledWith(keywords, {
         numericFilters: ['offer.prices = 0', 'offer.dates: 123456789 TO 987654321'],
+        page: 0,
+      })
+    })
+
+    it('should fetch with price and time numericFilters', () => {
+      // Given
+      computeTimeRangeFromHoursToSeconds.mockReturnValue([123456789, 987654321])
+      const keywords = ''
+      const isFree = true
+      const timeRange = [10, 17]
+
+      // When
+      fetchAlgolia({
+        timeRange,
+        offerIsFree: isFree,
+      })
+
+      // Then
+      expect(search).toHaveBeenCalledWith(keywords, {
+        numericFilters: ['offer.prices = 0', 'offer.times: 123456789 TO 987654321'],
+        page: 0,
+      })
+    })
+
+    it('should fetch with price, date and time numericFilters', () => {
+      // Given
+      getTimestampsOfTheWeekEndIncludingTimeRange.mockReturnValue([
+        [123456789, 987654321],
+        [123, 1234],
+      ])
+      const keywords = ''
+      const isFree = true
+      const selectedDate = new Date(2020, 3, 19, 11)
+
+      // When
+      fetchAlgolia({
+        date: {
+          option: 'currentWeekEnd',
+          selectedDate,
+        },
+        timeRange: [18, 22],
+        offerIsFree: isFree,
+      })
+
+      // Then
+      expect(search).toHaveBeenCalledWith(keywords, {
+        numericFilters: [
+          'offer.prices = 0',
+          ['offer.dates: 123456789 TO 987654321', 'offer.dates: 123 TO 1234'],
+        ],
         page: 0,
       })
     })

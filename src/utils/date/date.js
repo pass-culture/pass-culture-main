@@ -124,3 +124,80 @@ const getTimezoneOffsetInMilliseconds = date => {
   const timezoneOffset = date.getTimezoneOffset()
   return timezoneOffset * MILLISECONDS_IN_A_MINUTE
 }
+
+export const getDatesOfTheWeekEnd = date => {
+  const dayOfTheWeek = date.getDay()
+  if (dayOfTheWeek === SUNDAY_INDEX_IN_A_WEEK) {
+    return [date]
+  }
+  const daysUntilSaturday = SATURDAY_INDEX_IN_A_WEEK - dayOfTheWeek
+  const timestampOfNextSaturday = date.getTime() + MILLISECONDS_IN_A_DAY * daysUntilSaturday
+  const dateOfNextSaturday = new Date(timestampOfNextSaturday)
+
+  const daysUntilSunday = DAYS_IN_A_WEEK - dayOfTheWeek
+  const timestampOfNextSunday = date.getTime() + MILLISECONDS_IN_A_DAY * daysUntilSunday
+  const dateOfNextSunday = new Date(timestampOfNextSunday)
+
+  return [dateOfNextSaturday, dateOfNextSunday]
+}
+
+export const getBeginningAndEndingDatesForGivenTimeRange = (date, timeRange) => {
+  const beginningDatetime = getDateAtGivenTime(date, timeRange[0])
+  const endingDatetime = getDateAtGivenTime(date, timeRange[1])
+  return [beginningDatetime, endingDatetime]
+}
+
+export const getBeginningAndEndingTimestampsForGivenTimeRange = (date, timeRange) => {
+  return getBeginningAndEndingDatesForGivenTimeRange(date, timeRange).map(date =>
+    getTimestampFromDate(date)
+  )
+}
+
+const getDateAtGivenTime = (date, time) => {
+  if (time === 24) {
+    const dateWithTime = new Date(date.setHours(23))
+    dateWithTime.setMinutes(59)
+    dateWithTime.setSeconds(59)
+    dateWithTime.setMilliseconds(999)
+    return dateWithTime
+  }
+  const dateWithTime = new Date(date.setHours(time))
+  dateWithTime.setMinutes(0)
+  dateWithTime.setSeconds(0)
+  dateWithTime.setMilliseconds(0)
+  return dateWithTime
+}
+
+export const getDatesOfTheWeek = date => {
+  const dayOfTheWeek = date.getDay()
+  if (dayOfTheWeek === SUNDAY_INDEX_IN_A_WEEK) return [date]
+  let daysUntilSunday = DAYS_IN_A_WEEK - dayOfTheWeek
+  const timestampsOfTheWeek = []
+  while (daysUntilSunday >= 0) {
+    timestampsOfTheWeek.push(date.getTime() + MILLISECONDS_IN_A_DAY * daysUntilSunday)
+    daysUntilSunday--
+  }
+  return timestampsOfTheWeek.sort().map(timestampOfTheWeek => new Date(timestampOfTheWeek))
+}
+
+export const getTimestampsOfTheWeekEndIncludingTimeRange = (date, timeRange) => {
+  const datesOfTheWeekend = getDatesOfTheWeekEnd(date)
+  return getTimestampsIncludingTimeRangeForGivenDates(datesOfTheWeekend, timeRange)
+}
+
+export const getTimestampsOfTheWeekIncludingTimeRange = (date, timeRange) => {
+  const datesOfTheWeek = getDatesOfTheWeek(date)
+  return getTimestampsIncludingTimeRangeForGivenDates(datesOfTheWeek, timeRange)
+}
+
+const getTimestampsIncludingTimeRangeForGivenDates = (dates, timeRange) => {
+  return dates.map(date =>
+    getBeginningAndEndingDatesForGivenTimeRange(date, timeRange).map(dateIncludingTime =>
+      getTimestampFromDate(dateIncludingTime)
+    )
+  )
+}
+
+export const computeTimeRangeFromHoursToSeconds = timeRange => {
+  return timeRange.map(timeInHour => timeInHour * 60 * 60)
+}

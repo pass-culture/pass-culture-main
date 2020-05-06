@@ -21,12 +21,18 @@ jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
 }))
 
-const scrollIntoRef = jest.fn()
+const scrollIntoRadioListRef = jest.fn()
+const scrollIntoTimeRangeRef = jest.fn()
 const stubRef = wrapper => {
   const instance = wrapper.instance()
   instance['radioListRef'] = {
     current: {
-      scrollIntoView: scrollIntoRef,
+      scrollIntoView: scrollIntoRadioListRef,
+    },
+  }
+  instance['timeRangeRef'] = {
+    current: {
+      scrollIntoView: scrollIntoTimeRangeRef,
     },
   }
 }
@@ -55,6 +61,7 @@ describe('components | Filters', () => {
           selectedDate: null,
         },
         offerIsFilteredByDate: false,
+        offerIsFilteredByTime: false,
         offerCategories: ['VISITE', 'CINEMA'],
         offerIsDuo: false,
         offerIsFree: false,
@@ -68,9 +75,10 @@ describe('components | Filters', () => {
         searchAround: {
           everywhere: true,
           place: false,
-          user: false
+          user: false,
         },
         sortBy: '_by_price',
+        timeRange: [8, 24],
       },
       match: {
         params: {},
@@ -132,7 +140,9 @@ describe('components | Filters', () => {
         const criteria = wrapper.find(CriteriaLocation)
         expect(criteria).toHaveLength(1)
         expect(criteria.prop('activeCriterionLabel')).toStrictEqual('Partout')
-        expect(criteria.prop('backTo')).toStrictEqual('/recherche/resultats/filtres?mots-cles=librairie')
+        expect(criteria.prop('backTo')).toStrictEqual(
+          '/recherche/resultats/filtres?mots-cles=librairie'
+        )
         expect(criteria.prop('criteria')).toStrictEqual(GEOLOCATION_CRITERIA)
         expect(criteria.prop('geolocation')).toStrictEqual(props.userGeolocation)
         expect(criteria.prop('history')).toStrictEqual(props.history)
@@ -211,9 +221,11 @@ describe('components | Filters', () => {
           priceRange: [0, 500],
           searchAround: false,
           sortBy: '_by_price',
+          timeRange: [],
         })
         expect(props.history.replace).toHaveBeenCalledWith({
-          search: '?mots-cles=librairie&autour-de=non&tri=_by_price&categories=VISITE;CINEMA&latitude=40&longitude=41',
+          search:
+            '?mots-cles=librairie&autour-de=non&tri=_by_price&categories=VISITE;CINEMA&latitude=40&longitude=41',
         })
         expect(props.history.push).toHaveBeenCalledWith(
           '/recherche/resultats/filtres?mots-cles=librairie&autour-de=non&tri=_by_price&categories=VISITE;CINEMA&latitude=40&longitude=41'
@@ -273,9 +285,11 @@ describe('components | Filters', () => {
           priceRange: [0, 500],
           searchAround: true,
           sortBy: '_by_price',
+          timeRange: [],
         })
         expect(props.history.replace).toHaveBeenCalledWith({
-          search: '?mots-cles=librairie&autour-de=oui&tri=_by_price&categories=VISITE&latitude=40&longitude=41',
+          search:
+            '?mots-cles=librairie&autour-de=oui&tri=_by_price&categories=VISITE&latitude=40&longitude=41',
         })
         expect(props.history.push).toHaveBeenCalledWith(
           '/recherche/resultats/filtres?mots-cles=librairie&autour-de=oui&tri=_by_price&categories=VISITE&latitude=40&longitude=41'
@@ -377,8 +391,8 @@ describe('components | Filters', () => {
           geolocation: { latitude: 30, longitude: 2 },
           name: {
             long: 'Paris',
-            short: 'Paris'
-          }
+            short: 'Paris',
+          },
         }
         const wrapper = shallow(<Filters {...props} />)
         const resultsButton = wrapper.find('.sf-button')
@@ -391,8 +405,8 @@ describe('components | Filters', () => {
           geolocation: { latitude: 30, longitude: 2 },
           name: {
             long: 'Paris',
-            short: 'Paris'
-          }
+            short: 'Paris',
+          },
         })
       })
 
@@ -441,6 +455,7 @@ describe('components | Filters', () => {
         expect(props.updateFilters).toHaveBeenCalledWith({
           aroundRadius: 100,
           offerIsFilteredByDate: true,
+          offerIsFilteredByTime: false,
           date: {
             option: 'currentWeek',
             selectedDate,
@@ -458,9 +473,10 @@ describe('components | Filters', () => {
           searchAround: {
             everywhere: true,
             place: false,
-            user: false
+            user: false,
           },
           sortBy: '_by_price',
+          timeRange: [8, 24],
         })
       })
 
@@ -491,7 +507,7 @@ describe('components | Filters', () => {
         props.initialFilters.searchAround = {
           everywhere: false,
           place: false,
-          user: true
+          user: true,
         }
 
         // when
@@ -511,13 +527,13 @@ describe('components | Filters', () => {
           name: {
             long: 'Paris',
             short: 'Paris',
-          }
+          },
         }
         props.history.location.pathname = '/recherche/filtres'
         props.initialFilters.searchAround = {
           everywhere: false,
           place: true,
-          user: false
+          user: false,
         }
 
         // when
@@ -575,7 +591,7 @@ describe('components | Filters', () => {
         expect(props.updateFilteredOffers).toHaveBeenCalledWith({
           hits: [{ name: 'offer1' }, { name: 'offer2' }],
           nbHits: 2,
-          page: 0
+          page: 0,
         })
       })
 
@@ -632,8 +648,8 @@ describe('components | Filters', () => {
           props.place = {
             geolocation: { latitude: 30, longitude: 2 },
             name: {
-              long: '34 avenue de l\'opéra, Paris',
-              short: '34 avenue de l\'opéra'
+              long: "34 avenue de l'opéra, Paris",
+              short: "34 avenue de l'opéra",
             },
           }
           props.initialFilters.searchAround = {
@@ -646,7 +662,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const button = wrapper.find({ children: '34 avenue de l\'opéra, Paris' })
+          const button = wrapper.find({ children: "34 avenue de l'opéra, Paris" })
           expect(button).toHaveLength(1)
         })
 
@@ -811,7 +827,7 @@ describe('components | Filters', () => {
               name: {
                 long: 'Paris',
                 short: 'Paris',
-              }
+              },
             }
             props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.searchAround = {
@@ -835,7 +851,7 @@ describe('components | Filters', () => {
               name: {
                 long: 'Paris',
                 short: 'Paris',
-              }
+              },
             }
             props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.aroundRadius = 50
@@ -860,7 +876,7 @@ describe('components | Filters', () => {
               name: {
                 long: 'Paris',
                 short: 'Paris',
-              }
+              },
             }
             props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.aroundRadius = 20
@@ -894,7 +910,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
 
           // then
-          const title = wrapper.find({ children: 'Type d\'offres' })
+          const title = wrapper.find({ children: "Type d'offres" })
           expect(title).toHaveLength(1)
         })
 
@@ -1043,6 +1059,7 @@ describe('components | Filters', () => {
             priceRange: [0, 500],
             searchAround: false,
             sortBy: '_by_price',
+            timeRange: [],
           })
         })
       })
@@ -1133,6 +1150,7 @@ describe('components | Filters', () => {
             priceRange: [0, 500],
             searchAround: false,
             sortBy: '_by_price',
+            timeRange: [],
           })
         })
 
@@ -1258,6 +1276,7 @@ describe('components | Filters', () => {
             priceRange: [0, 500],
             searchAround: false,
             sortBy: '_by_price',
+            timeRange: [],
           })
         })
 
@@ -1599,8 +1618,7 @@ describe('components | Filters', () => {
         it('should reset filters and trigger search to Algolia with given categories when price range is selected', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-          })
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
           props.history.location.pathname = '/recherche/resultats/filtres'
           props.initialFilters = {
             date: {
@@ -1671,14 +1689,14 @@ describe('components | Filters', () => {
             priceRange: [0, 500],
             searchAround: false,
             sortBy: '_by_price',
+            timeRange: [],
           })
         })
 
         it('should reset filters and trigger search to Algolia with given categories when offer is free is selected', () => {
           // given
           props.history = createBrowserHistory()
-          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {
-          })
+          jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
           props.history.location.pathname = '/recherche/resultats/filtres'
           props.initialFilters = {
             date: {
@@ -1699,7 +1717,7 @@ describe('components | Filters', () => {
             searchAround: {
               everywhere: true,
               place: false,
-              user: false
+              user: false,
             },
             sortBy: '_by_price',
           }
@@ -1749,6 +1767,7 @@ describe('components | Filters', () => {
             priceRange: [0, 500],
             searchAround: false,
             sortBy: '_by_price',
+            timeRange: [],
           })
         })
       })
@@ -1822,7 +1841,7 @@ describe('components | Filters', () => {
           toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
 
           // then
-          expect(scrollIntoRef).toHaveBeenCalledTimes(1)
+          expect(scrollIntoRadioListRef).toHaveBeenCalledTimes(1)
           expect(fetchAlgolia).toHaveBeenCalledWith({
             aroundRadius: 100,
             date: {
@@ -1846,6 +1865,7 @@ describe('components | Filters', () => {
             priceRange: [0, 500],
             searchAround: false,
             sortBy: '_by_price',
+            timeRange: [],
           })
         })
 
@@ -1866,7 +1886,7 @@ describe('components | Filters', () => {
           pickedRadio.prop('onDateSelection')({ target: { value: 'picked' } })
 
           // Then
-          expect(scrollIntoRef).toHaveBeenCalledTimes(2)
+          expect(scrollIntoRadioListRef).toHaveBeenCalledTimes(2)
           expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
             aroundRadius: 100,
             date: {
@@ -1890,6 +1910,7 @@ describe('components | Filters', () => {
             priceRange: [0, 500],
             searchAround: false,
             sortBy: '_by_price',
+            timeRange: [],
           })
         })
 
@@ -1932,6 +1953,7 @@ describe('components | Filters', () => {
             priceRange: [0, 500],
             searchAround: false,
             sortBy: '_by_price',
+            timeRange: [],
           })
         })
       })
@@ -2022,6 +2044,180 @@ describe('components | Filters', () => {
             priceRange: [0, 500],
             searchAround: false,
             sortBy: '_by_price',
+            timeRange: [],
+          })
+        })
+      })
+
+      describe('time filters', () => {
+        it('should render a Toggle component for time filter unchecked by default', () => {
+          // when
+          const wrapper = shallow(<Filters {...props} />)
+
+          // then
+          const parentLi = wrapper.find({ children: 'Heure précise' }).closest('li')
+          const dateFilterToggle = parentLi.find(Toggle)
+          expect(dateFilterToggle).toHaveLength(1)
+          expect(dateFilterToggle.prop('checked')).toBe(false)
+          expect(dateFilterToggle.prop('id')).toBe('offerIsFilteredByTime')
+          expect(dateFilterToggle.prop('name')).toBe('offerIsFilteredByTime')
+          expect(dateFilterToggle.prop('onChange')).toStrictEqual(expect.any(Function))
+          const dateFilterCounter = parentLi.find({ children: '(1)' })
+          expect(dateFilterCounter).toHaveLength(0)
+        })
+
+        it('should fetch offers with timeRange parameter on time filter toggle on', () => {
+          // given
+          const wrapper = shallow(<Filters {...props} />)
+          stubRef(wrapper)
+
+          // when
+          const toggle = wrapper
+            .find({ children: 'Heure précise' })
+            .closest('li')
+            .find(Toggle)
+          toggle.simulate('change', { target: { name: 'offerIsFilteredByTime', checked: true } })
+
+          // then
+          expect(scrollIntoTimeRangeRef).toHaveBeenCalledTimes(1)
+          expect(fetchAlgolia).toHaveBeenCalledWith({
+            aroundRadius: 100,
+            date: null,
+            geolocation: {
+              latitude: 40,
+              longitude: 41,
+            },
+            keywords: '',
+            offerCategories: ['VISITE', 'CINEMA'],
+            offerIsDuo: false,
+            offerIsFree: false,
+            offerIsNew: false,
+            offerTypes: {
+              isDigital: false,
+              isEvent: false,
+              isThing: false,
+            },
+            priceRange: [0, 500],
+            searchAround: false,
+            sortBy: '_by_price',
+            timeRange: [8, 24],
+          })
+        })
+
+        describe('when time filter is toggled on', () => {
+          it('should display the time range value', () => {
+            // given
+            props.history.location.pathname = '/recherche/filtres'
+            props.initialFilters.offerIsFilteredByTime = true
+            props.initialFilters.timeRange = [8, 24]
+
+            // when
+            const wrapper = shallow(<Filters {...props} />)
+
+            // then
+            const kilometersRadius = wrapper.find({ children: '8h - 0h' })
+            expect(kilometersRadius).toHaveLength(1)
+          })
+
+          it('should render a Range slider component', () => {
+            // given
+            props.history.location.pathname = '/recherche/filtres'
+            props.initialFilters.offerIsFree = true
+            props.initialFilters.offerIsFilteredByTime = true
+            props.initialFilters.timeRange = [8, 24]
+
+            // when
+            const wrapper = shallow(<Filters {...props} />)
+
+            // then
+            const rangeSlider = wrapper.find(Range)
+            expect(rangeSlider).toHaveLength(1)
+            expect(rangeSlider.prop('allowCross')).toStrictEqual(false)
+            expect(rangeSlider.prop('max')).toStrictEqual(24)
+            expect(rangeSlider.prop('min')).toStrictEqual(0)
+            expect(rangeSlider.prop('onChange')).toStrictEqual(expect.any(Function))
+            expect(rangeSlider.prop('onAfterChange')).toStrictEqual(expect.any(Function))
+            expect(rangeSlider.prop('value')).toStrictEqual([8, 24])
+          })
+
+          it('should fetch algolia on time slide', () => {
+            // given
+            props.history.location.pathname = '/recherche/filtres'
+            props.query.parse.mockReturnValue({})
+            props.initialFilters.offerIsFilteredByTime = true
+            fetchAlgolia.mockReturnValue(
+              new Promise(resolve => {
+                resolve({
+                  hits: [],
+                  nbHits: 0,
+                  page: 0,
+                })
+              })
+            )
+            const wrapper = shallow(<Filters {...props} />)
+            const timeRangeSlider = wrapper
+              .find({ children: 'Créneau horaire' })
+              .closest('li')
+              .find(Range)
+
+            // when
+            timeRangeSlider.simulate('change', [18, 22])
+            timeRangeSlider.simulate('afterChange')
+
+            // then
+            expect(fetchAlgolia).toHaveBeenCalledWith({
+              aroundRadius: 100,
+              date: null,
+              geolocation: {
+                latitude: 40,
+                longitude: 41,
+              },
+              keywords: '',
+              offerCategories: ['VISITE', 'CINEMA'],
+              offerIsDuo: false,
+              offerIsFree: false,
+              offerIsNew: false,
+              offerTypes: {
+                isDigital: false,
+                isEvent: false,
+                isThing: false,
+              },
+              priceRange: [0, 500],
+              searchAround: false,
+              sortBy: '_by_price',
+              timeRange: [18, 22],
+            })
+          })
+        })
+
+        describe('when time filter is toggled off', () => {
+          it('should not display the time range value', () => {
+            // given
+            props.history.location.pathname = '/recherche/filtres'
+            props.initialFilters.offerIsFilteredByTime = false
+            props.initialFilters.timeRange = [8, 24]
+
+            // when
+            const wrapper = shallow(<Filters {...props} />)
+
+            // then
+            const kilometersRadius = wrapper.find({ children: '8h - 0h' })
+            expect(kilometersRadius).toHaveLength(0)
+          })
+
+          it('should not render a Range slider component', () => {
+            // given
+            props.history.location.pathname = '/recherche/filtres'
+            props.initialFilters.offerIsFree = true
+            props.initialFilters.offerIsFilteredByTime = false
+            props.initialFilters.timeRange = [8, 24]
+
+            // when
+            const wrapper = shallow(<Filters {...props} />)
+
+            // then
+            const rangeSlider = wrapper.find(Range)
+            expect(rangeSlider).toHaveLength(0)
           })
         })
 

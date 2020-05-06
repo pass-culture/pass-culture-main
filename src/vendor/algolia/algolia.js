@@ -1,39 +1,48 @@
-import { ALGOLIA_APPLICATION_ID, ALGOLIA_INDEX_NAME, ALGOLIA_SEARCH_API_KEY, } from '../../utils/config'
+import algoliasearch from 'algoliasearch'
+import { DATE_FILTER } from '../../components/pages/search/Filters/filtersEnums'
 import {
+  ALGOLIA_APPLICATION_ID,
+  ALGOLIA_INDEX_NAME,
+  ALGOLIA_SEARCH_API_KEY,
+} from '../../utils/config'
+import {
+  computeTimeRangeFromHoursToSeconds,
+  getBeginningAndEndingTimestampsForGivenTimeRange,
   getFirstTimestampForGivenDate,
   getFirstTimestampOfTheWeekEndForGivenDate,
   getLastTimestampForGivenDate,
   getLastTimestampOfTheWeekForGivenDate,
   getTimestampFromDate,
+  getTimestampsOfTheWeekEndIncludingTimeRange,
+  getTimestampsOfTheWeekIncludingTimeRange,
 } from '../../utils/date/date'
 import { FACETS } from './facets'
 import { DEFAULT_RADIUS_IN_KILOMETERS, FILTERS, RADIUS_IN_METERS_FOR_NO_OFFERS } from './filters'
-import algoliasearch from 'algoliasearch'
-import { DATE_FILTER } from '../../components/pages/search/Filters/filtersEnums'
 
 export const fetchAlgolia = ({
-                               aroundRadius = DEFAULT_RADIUS_IN_KILOMETERS,
-                               date = null,
-                               geolocation = null,
-                               keywords = '',
-                               offerCategories = [],
-                               offerIsDuo = false,
-                               offerIsFree = false,
-                               offerIsNew = false,
-                               offerTypes = {
-                                 isDigital: false,
-                                 isEvent: false,
-                                 isThing: false,
-                               },
-                               page = 0,
-                               priceRange = [],
-                               sortBy = '',
-                               searchAround = false,
-                             } = {}) => {
+  aroundRadius = DEFAULT_RADIUS_IN_KILOMETERS,
+  date = null,
+  geolocation = null,
+  keywords = '',
+  offerCategories = [],
+  offerIsDuo = false,
+  offerIsFree = false,
+  offerIsNew = false,
+  offerTypes = {
+    isDigital: false,
+    isEvent: false,
+    isThing: false,
+  },
+  page = 0,
+  priceRange = [],
+  sortBy = '',
+  searchAround = false,
+  timeRange = [],
+} = {}) => {
   const searchParameters = {
     page: page,
     ...buildFacetFilters(offerCategories, offerTypes, offerIsDuo),
-    ...buildNumericFilters(offerIsFree, priceRange, date, offerIsNew),
+    ...buildNumericFilters(offerIsFree, priceRange, date, offerIsNew, timeRange),
     ...buildGeolocationParameter(aroundRadius, geolocation, searchAround),
   }
   const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_SEARCH_API_KEY)
@@ -68,9 +77,9 @@ const buildFacetFilters = (offerCategories, offerTypes, offerIsDuo) => {
   return atLeastOneFacetFilter ? { facetFilters } : {}
 }
 
-const buildNumericFilters = (offerIsFree, priceRange, date, offerIsNew) => {
+const buildNumericFilters = (offerIsFree, priceRange, date, offerIsNew, timeRange) => {
   const priceRangePredicate = buildOfferPriceRangePredicate(offerIsFree, priceRange)
-  const datePredicate = buildDatePredicate(date)
+  const datePredicate = buildDatePredicate(date, timeRange)
   const newestOffersPredicate = buildNewestOffersPredicate(offerIsNew)
   const numericFilters = []
 
@@ -106,29 +115,70 @@ const buildOfferPriceRangePredicate = (offerIsFree, offerPriceRange) => {
   }
 }
 
-const buildDatePredicate = (date) => {
-  if (date) {
-    let beginningDate, endingDate
-    switch (date.option) {
-      case DATE_FILTER.TODAY.value:
-        beginningDate = getTimestampFromDate(date.selectedDate)
-        endingDate = getLastTimestampForGivenDate(date.selectedDate)
-        break
-      case DATE_FILTER.CURRENT_WEEK.value:
-        beginningDate = getTimestampFromDate(date.selectedDate)
-        endingDate = getLastTimestampOfTheWeekForGivenDate(date.selectedDate)
-        break
-      case DATE_FILTER.CURRENT_WEEK_END.value:
-        beginningDate = getFirstTimestampOfTheWeekEndForGivenDate(date.selectedDate)
-        endingDate = getLastTimestampOfTheWeekForGivenDate(date.selectedDate)
-        break
-      case DATE_FILTER.USER_PICK.value:
-        beginningDate = getFirstTimestampForGivenDate(date.selectedDate)
-        endingDate = getLastTimestampForGivenDate(date.selectedDate)
-        break
-    }
-    return `${FACETS.OFFER_DATE}: ${beginningDate} TO ${endingDate}`
+function buildTimeOnlyPredicate(timeRange) {
+  const timeRangeInSeconds = computeTimeRangeFromHoursToSeconds(timeRange)
+  return `${FACETS.OFFER_TIME}: ${timeRangeInSeconds.join(' TO ')}`
+}
+
+const buildDatePredicate = (date, timeRange) => {
+  if (date && timeRange.length > 0) {
+    return buildDateAndTimePredicate(date, timeRange)
+  } else if (date) {
+    return buildDateOnlyPredicate(date)
+  } else if (timeRange.length > 0) {
+    return buildTimeOnlyPredicate(timeRange)
   }
+}
+
+const getDatePredicate = (lowerDate, higherDate) =>
+  `${FACETS.OFFER_DATE}: ${lowerDate} TO ${higherDate}`
+
+const buildDateAndTimePredicate = (date, timeRange) => {
+  let dateFilter, rangeTimestamps
+  switch (date.option) {
+    case DATE_FILTER.CURRENT_WEEK.value:
+      dateFilter = getTimestampsOfTheWeekIncludingTimeRange(date.selectedDate, timeRange).map(
+        timestampsRangeForADay =>
+          getDatePredicate(timestampsRangeForADay[0], timestampsRangeForADay[1])
+      )
+      break
+    case DATE_FILTER.CURRENT_WEEK_END.value:
+      dateFilter = getTimestampsOfTheWeekEndIncludingTimeRange(date.selectedDate, timeRange).map(
+        timestampsRangeForADay =>
+          getDatePredicate(timestampsRangeForADay[0], timestampsRangeForADay[1])
+      )
+      break
+    default:
+      rangeTimestamps = getBeginningAndEndingTimestampsForGivenTimeRange(
+        date.selectedDate,
+        timeRange
+      )
+      dateFilter = getDatePredicate(rangeTimestamps[0], rangeTimestamps[1])
+  }
+  return dateFilter
+}
+
+const buildDateOnlyPredicate = date => {
+  let beginningDate, endingDate
+  switch (date.option) {
+    case DATE_FILTER.TODAY.value:
+      beginningDate = getTimestampFromDate(date.selectedDate)
+      endingDate = getLastTimestampForGivenDate(date.selectedDate)
+      break
+    case DATE_FILTER.CURRENT_WEEK.value:
+      beginningDate = getTimestampFromDate(date.selectedDate)
+      endingDate = getLastTimestampOfTheWeekForGivenDate(date.selectedDate)
+      break
+    case DATE_FILTER.CURRENT_WEEK_END.value:
+      beginningDate = getFirstTimestampOfTheWeekEndForGivenDate(date.selectedDate)
+      endingDate = getLastTimestampOfTheWeekForGivenDate(date.selectedDate)
+      break
+    case DATE_FILTER.USER_PICK.value:
+      beginningDate = getFirstTimestampForGivenDate(date.selectedDate)
+      endingDate = getLastTimestampForGivenDate(date.selectedDate)
+      break
+  }
+  return getDatePredicate(beginningDate, endingDate)
 }
 
 const buildNewestOffersPredicate = offerIsNew => {
@@ -175,7 +225,7 @@ const buildGeolocationParameter = (aroundRadius, geolocation, searchAround) => {
 
       return {
         aroundLatLng: `${latitude}, ${longitude}`,
-        aroundRadius: searchAround ? aroundRadiusInMeters : FILTERS.UNLIMITED_RADIUS
+        aroundRadius: searchAround ? aroundRadiusInMeters : FILTERS.UNLIMITED_RADIUS,
       }
     }
   }

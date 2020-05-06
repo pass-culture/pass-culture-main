@@ -3,11 +3,18 @@ import {
   dateStringPlusTimeZone,
   formatRecommendationDates,
   formatSearchResultDate,
+  getTimestampsOfTheWeekEndIncludingTimeRange,
+  getDatesOfTheWeekEnd,
+  getBeginningAndEndingDatesForGivenTimeRange,
   getFirstTimestampForGivenDate,
   getFirstTimestampOfTheWeekEndForGivenDate,
   getLastTimestampForGivenDate,
   getLastTimestampOfTheWeekForGivenDate,
   getTimestampFromDate,
+  getDatesOfTheWeek,
+  getTimestampsOfTheWeekIncludingTimeRange,
+  getBeginningAndEndingTimestampsForGivenTimeRange,
+  computeTimeRangeFromHoursToSeconds,
 } from '../date'
 
 describe('src | utils | date', () => {
@@ -337,6 +344,226 @@ describe('src | utils | date', () => {
       // Then
       const saturday_may_02_2020_eleven_am_timestamp = 1588418643
       expect(result).toBe(saturday_may_02_2020_eleven_am_timestamp)
+    })
+  })
+
+  describe('getDatesOfTheWeekEnd', () => {
+    it('should return dates of the week end for a given date', () => {
+      // Given
+      const tuesday_april_28_2020_eleven_am = new Date(2020, 3, 28, 11, 0, 0)
+
+      // When
+      const dates = getDatesOfTheWeekEnd(tuesday_april_28_2020_eleven_am)
+
+      // Then
+      const saturday_may_02_2020_eleven_am = new Date(2020, 4, 2, 11)
+      const sunday_may_03_2020_eleven_am = new Date(2020, 4, 3, 11)
+      expect(dates).toStrictEqual([saturday_may_02_2020_eleven_am, sunday_may_03_2020_eleven_am])
+    })
+
+    it('should return date of the week end for a given date when date is sunday', () => {
+      // Given
+      const sunday_may_03_2020_eleven_am = new Date(2020, 4, 3, 11, 0, 0)
+
+      // When
+      const dates = getDatesOfTheWeekEnd(sunday_may_03_2020_eleven_am)
+
+      // Then
+      expect(dates).toStrictEqual([sunday_may_03_2020_eleven_am])
+    })
+  })
+
+  describe('getBeginningAndEndingDatesForGivenTimeRange', () => {
+    it('should return dates with beginning and ending times for given date and timerange', () => {
+      // Given
+      const from_eighteen_to_twenty_two = [18, 22]
+      const tuesday_april_28_2020_eleven_am = new Date(2020, 3, 28, 11, 34, 23, 234)
+
+      // When
+      const dateWithBeginningAndEndingTimes = getBeginningAndEndingDatesForGivenTimeRange(
+        tuesday_april_28_2020_eleven_am,
+        from_eighteen_to_twenty_two
+      )
+
+      // Then
+      const tuesday_april_28_2020_six_pm = new Date(2020, 3, 28, 18, 0, 0, 0)
+      const tuesday_april_28_2020_ten_pm = new Date(2020, 3, 28, 22, 0, 0, 0)
+      expect(dateWithBeginningAndEndingTimes).toStrictEqual([
+        tuesday_april_28_2020_six_pm,
+        tuesday_april_28_2020_ten_pm,
+      ])
+    })
+
+    it('should return dates with beginning and ending times for given date and timerange with extreme values', () => {
+      // Given
+      const from_eighteen_to_twenty_two = [0, 24]
+      const tuesday_april_28_2020_eleven_am = new Date(2020, 3, 28, 11, 34, 23, 234)
+
+      // When
+      const dateWithBeginningAndEndingTimes = getBeginningAndEndingDatesForGivenTimeRange(
+        tuesday_april_28_2020_eleven_am,
+        from_eighteen_to_twenty_two
+      )
+
+      // Then
+      const tuesday_april_28_2020_six_pm = new Date(2020, 3, 28, 0, 0, 0, 0)
+      const tuesday_april_28_2020_ten_pm = new Date(2020, 3, 28, 23, 59, 59, 999)
+      expect(dateWithBeginningAndEndingTimes).toStrictEqual([
+        tuesday_april_28_2020_six_pm,
+        tuesday_april_28_2020_ten_pm,
+      ])
+    })
+  })
+
+  describe('getTimestampsOfTheWeekEndIncludingTimeRange', () => {
+    it('should return dates with beginning and ending times for given date and timerange', () => {
+      // Given
+      const from_eighteen_to_twenty_two = [18, 22]
+      const tuesday_april_28_2020_eleven_am = new Date(2020, 3, 28, 11, 34, 23)
+
+      // When
+      const dateWithBeginningAndEndingTimes = getTimestampsOfTheWeekEndIncludingTimeRange(
+        tuesday_april_28_2020_eleven_am,
+        from_eighteen_to_twenty_two
+      )
+
+      // Then
+      const may_02_2020_six_pm_timestamp = 1588442400
+      const may_02_2020_ten_pm_timestamp = 1588456800
+      const may_03_2020_six_pm_timestamp = 1588528800
+      const may_03_2020_ten_pm_timestamp = 1588543200
+      expect(dateWithBeginningAndEndingTimes).toStrictEqual([
+        [may_02_2020_six_pm_timestamp, may_02_2020_ten_pm_timestamp],
+        [may_03_2020_six_pm_timestamp, may_03_2020_ten_pm_timestamp],
+      ])
+    })
+  })
+
+  describe('getDatesOfTheWeek', () => {
+    it('should return dates of the week for a given date', () => {
+      // Given
+      const monday_april_27_2020_eleven_am = new Date(2020, 3, 27, 11, 0, 0)
+
+      // When
+      const dates = getDatesOfTheWeek(monday_april_27_2020_eleven_am)
+
+      // Then
+      const tuesday_april_28_2020_eleven_am = new Date(2020, 3, 28, 11)
+      const wednesday_april_29_2020_eleven_am = new Date(2020, 3, 29, 11)
+      const thursday_april_30_2020_eleven_am = new Date(2020, 3, 30, 11)
+      const friday_may_01_2020_eleven_am = new Date(2020, 4, 1, 11)
+      const saturday_may_02_2020_eleven_am = new Date(2020, 4, 2, 11)
+      const sunday_may_03_2020_eleven_am = new Date(2020, 4, 3, 11)
+      expect(dates).toStrictEqual([
+        monday_april_27_2020_eleven_am,
+        tuesday_april_28_2020_eleven_am,
+        wednesday_april_29_2020_eleven_am,
+        thursday_april_30_2020_eleven_am,
+        friday_may_01_2020_eleven_am,
+        saturday_may_02_2020_eleven_am,
+        sunday_may_03_2020_eleven_am,
+      ])
+    })
+
+    it('should return dates of the week for a given date when in the middle of the week', () => {
+      // Given
+      const wednesday_april_29_2020_eleven_am = new Date(2020, 3, 29, 11)
+
+      // When
+      const dates = getDatesOfTheWeek(wednesday_april_29_2020_eleven_am)
+
+      // Then
+      const thursday_april_30_2020_eleven_am = new Date(2020, 3, 30, 11)
+      const friday_may_01_2020_eleven_am = new Date(2020, 4, 1, 11)
+      const saturday_may_02_2020_eleven_am = new Date(2020, 4, 2, 11)
+      const sunday_may_03_2020_eleven_am = new Date(2020, 4, 3, 11)
+      expect(dates).toStrictEqual([
+        wednesday_april_29_2020_eleven_am,
+        thursday_april_30_2020_eleven_am,
+        friday_may_01_2020_eleven_am,
+        saturday_may_02_2020_eleven_am,
+        sunday_may_03_2020_eleven_am,
+      ])
+    })
+
+    it('should return date of the week for a given date when date is sunday', () => {
+      // Given
+      const sunday_may_03_2020_eleven_am = new Date(2020, 4, 3, 11, 0, 0)
+
+      // When
+      const dates = getDatesOfTheWeek(sunday_may_03_2020_eleven_am)
+
+      // Then
+      expect(dates).toStrictEqual([sunday_may_03_2020_eleven_am])
+    })
+  })
+
+  describe('getTimestampsOfTheWeekIncludingTimeRange', () => {
+    it('should return dates of the week with beginning and ending times for given date and timerange', () => {
+      // Given
+      const from_eighteen_to_twenty_two = [18, 22]
+      const tuesday_april_28_2020_eleven_am = new Date(2020, 3, 28, 11, 34, 23)
+
+      // When
+      const dateWithBeginningAndEndingTimes = getTimestampsOfTheWeekIncludingTimeRange(
+        tuesday_april_28_2020_eleven_am,
+        from_eighteen_to_twenty_two
+      )
+
+      // Then
+      const april_28_2020_six_pm_timestamp = 1588096800
+      const april_28_2020_ten_pm_timestamp = 1588111200
+      const april_29_2020_six_pm_timestamp = 1588183200
+      const april_29_2020_ten_pm_timestamp = 1588197600
+      const april_30_2020_six_pm_timestamp = 1588269600
+      const april_30_2020_ten_pm_timestamp = 1588284000
+      const may_01_2020_six_pm_timestamp = 1588356000
+      const may_01_2020_ten_pm_timestamp = 1588370400
+      const may_02_2020_six_pm_timestamp = 1588442400
+      const may_02_2020_ten_pm_timestamp = 1588456800
+      const may_03_2020_six_pm_timestamp = 1588528800
+      const may_03_2020_ten_pm_timestamp = 1588543200
+      expect(dateWithBeginningAndEndingTimes).toStrictEqual([
+        [april_28_2020_six_pm_timestamp, april_28_2020_ten_pm_timestamp],
+        [april_29_2020_six_pm_timestamp, april_29_2020_ten_pm_timestamp],
+        [april_30_2020_six_pm_timestamp, april_30_2020_ten_pm_timestamp],
+        [may_01_2020_six_pm_timestamp, may_01_2020_ten_pm_timestamp],
+        [may_02_2020_six_pm_timestamp, may_02_2020_ten_pm_timestamp],
+        [may_03_2020_six_pm_timestamp, may_03_2020_ten_pm_timestamp],
+      ])
+    })
+  })
+
+  describe('getBeginningAndEndingTimestampsForGivenTimeRange', () => {
+    it('should return timestamps with beginning and ending times for given date and time range', () => {
+      // Given
+      const from_eighteen_to_twenty_two = [18, 22]
+      const tuesday_april_28_2020_eleven_am = new Date(2020, 3, 28, 11, 34, 23)
+
+      // When
+      const dateWithBeginningAndEndingTimes = getBeginningAndEndingTimestampsForGivenTimeRange(
+        tuesday_april_28_2020_eleven_am,
+        from_eighteen_to_twenty_two
+      )
+
+      // Then
+      const tuesday_april_28_2020_six_pm_timestamp = 1588096800
+      const tuesday_april_28_2020_ten_pm_timestamp = 1588111200
+
+      expect(dateWithBeginningAndEndingTimes).toStrictEqual([
+        tuesday_april_28_2020_six_pm_timestamp,
+        tuesday_april_28_2020_ten_pm_timestamp,
+      ])
+    })
+  })
+
+  describe('computeTimeRangeFromHoursToSeconds', () => {
+    it('should convert hours in seconds from given time range', () => {
+      // When
+      const timeRangeInSeconds = computeTimeRangeFromHoursToSeconds([18, 22])
+
+      // Then
+      expect(timeRangeInSeconds).toStrictEqual([64800, 79200])
     })
   })
 })

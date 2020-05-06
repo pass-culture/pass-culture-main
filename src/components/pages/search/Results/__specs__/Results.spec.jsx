@@ -1247,6 +1247,7 @@ describe('components | Results', () => {
             user: false,
           },
           sortBy: '',
+          timeRange: [8, 24],
         },
         keywordsToSearch: 'vas-y',
         isLoading: false,
@@ -1683,6 +1684,7 @@ describe('components | Results', () => {
           user: false,
         },
         sortBy: '_by_price',
+        timeRange: [8, 24],
       })
       expect(filters.prop('match')).toStrictEqual(props.match)
       expect(filters.prop('offers')).toStrictEqual({ hits: [], nbHits: 0, nbPages: 0 })

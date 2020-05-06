@@ -24,3 +24,7 @@ export const DATE_FILTER = {
 export const PRICE_FILTER = {
   DEFAULT_RANGE: [0, 500],
 }
+
+export const TIME_FILTER = {
+  DEFAULT_RANGE: [8, 24],
+}
