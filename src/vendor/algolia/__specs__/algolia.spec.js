@@ -544,6 +544,45 @@ describe('fetchAlgolia', () => {
     })
   })
 
+  describe('newest offers date range', () => {
+    it('should fetch with no numericFilters when newest offers date range is null', () => {
+      // given
+      const keywords = 'searched keywords'
+
+      // when
+      fetchAlgolia({
+        keywords: keywords,
+        newestOffersDateRange: null,
+      })
+
+      // then
+      expect(search).toHaveBeenCalledWith(keywords, {
+        page: 0,
+      })
+    })
+
+    it('should fetch with numericFilters when newest offers date range is provided', () => {
+      // given
+      const keywords = 'searched keywords'
+      const newestOffersDateRange = {
+        beginningDate: 1588758952,
+        endingDate: 1589277352
+      }
+
+      // when
+      fetchAlgolia({
+        keywords: keywords,
+        newestOffersDateRange: newestOffersDateRange,
+      })
+
+      // then
+      expect(search).toHaveBeenCalledWith(keywords, {
+        numericFilters: ["offer.dates: 1588758952 TO 1589277352"],
+        page: 0,
+      })
+    })
+  })
+
   describe('offer price', () => {
     it('should fetch with no numericFilters when no price range is specified and offer is not free', () => {
       // given

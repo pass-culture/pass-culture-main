@@ -16,6 +16,7 @@ export const fetchAlgolia = ({
                                date = null,
                                geolocation = null,
                                keywords = '',
+                               newestOffersDateRange = null,
                                offerCategories = [],
                                offerIsDuo = false,
                                offerIsFree = false,
@@ -32,7 +33,7 @@ export const fetchAlgolia = ({
   const searchParameters = {
     page: page,
     ...buildFacetFilters(offerCategories, offerTypes, offerIsDuo),
-    ...buildNumericFilters(offerIsFree, priceRange, date),
+    ...buildNumericFilters(offerIsFree, priceRange, date, newestOffersDateRange),
     ...buildGeolocationParameter(aroundRadius, geolocation, searchAround),
   }
   const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_SEARCH_API_KEY)
@@ -67,9 +68,10 @@ const buildFacetFilters = (offerCategories, offerTypes, offerIsDuo) => {
   return atLeastOneFacetFilter ? { facetFilters } : {}
 }
 
-const buildNumericFilters = (offerIsFree, priceRange, date) => {
+const buildNumericFilters = (offerIsFree, priceRange, date, newestOffersDateRange) => {
   const priceRangePredicate = buildOfferPriceRangePredicate(offerIsFree, priceRange)
   const datePredicate = buildDatePredicate(date)
+  const newestOffersPredicate = buildNewestOffersPredicate(newestOffersDateRange)
   const numericFilters = []
 
   if (priceRangePredicate) {
@@ -78,6 +80,10 @@ const buildNumericFilters = (offerIsFree, priceRange, date) => {
 
   if (datePredicate) {
     numericFilters.push(datePredicate)
+  }
+
+  if (newestOffersPredicate) {
+    numericFilters.push(newestOffersPredicate)
   }
 
   return numericFilters.length > 0 ? { numericFilters } : {}
@@ -121,6 +127,13 @@ const buildDatePredicate = (date) => {
         endingDate = getLastTimestampForGivenDate(date.selectedDate)
         break
     }
+    return `${FACETS.OFFER_DATE}: ${beginningDate} TO ${endingDate}`
+  }
+}
+
+const buildNewestOffersPredicate = newestOffersDateRange => {
+  if (newestOffersDateRange) {
+    const { beginningDate, endingDate } = newestOffersDateRange
     return `${FACETS.OFFER_DATE}: ${beginningDate} TO ${endingDate}`
   }
 }

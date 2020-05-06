@@ -58,6 +58,7 @@ describe('components | Filters', () => {
         offerCategories: ['VISITE', 'CINEMA'],
         offerIsDuo: false,
         offerIsFree: false,
+        offerIsNew: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -201,6 +202,7 @@ describe('components | Filters', () => {
           offerCategories: ['VISITE', 'CINEMA'],
           offerIsDuo: false,
           offerIsFree: false,
+          offerIsNew: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -262,6 +264,7 @@ describe('components | Filters', () => {
           offerCategories: ['VISITE'],
           offerIsDuo: false,
           offerIsFree: false,
+          offerIsNew: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -445,6 +448,7 @@ describe('components | Filters', () => {
           offerCategories: ['VISITE', 'CINEMA'],
           offerIsDuo: false,
           offerIsFree: false,
+          offerIsNew: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -804,7 +808,10 @@ describe('components | Filters', () => {
             // given
             props.place = {
               geolocation: { latitude: 41, longitude: 2 },
-              name: 'Paris'
+              name: {
+                long: 'Paris',
+                short: 'Paris',
+              }
             }
             props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.searchAround = {
@@ -825,7 +832,10 @@ describe('components | Filters', () => {
             // given
             props.place = {
               geolocation: { latitude: 41, longitude: 2 },
-              name: 'Paris'
+              name: {
+                long: 'Paris',
+                short: 'Paris',
+              }
             }
             props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.aroundRadius = 50
@@ -847,7 +857,10 @@ describe('components | Filters', () => {
             // given
             props.place = {
               geolocation: { latitude: 41, longitude: 2 },
-              name: 'Paris'
+              name: {
+                long: 'Paris',
+                short: 'Paris',
+              }
             }
             props.history.location.pathname = '/recherche/filtres'
             props.initialFilters.aroundRadius = 20
@@ -1021,6 +1034,7 @@ describe('components | Filters', () => {
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: false,
             offerIsFree: false,
+            offerIsNew: false,
             offerTypes: {
               isDigital: true,
               isEvent: false,
@@ -1110,6 +1124,7 @@ describe('components | Filters', () => {
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: true,
             offerIsFree: false,
+            offerIsNew: false,
             offerTypes: {
               isDigital: false,
               isEvent: false,
@@ -1234,6 +1249,7 @@ describe('components | Filters', () => {
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: false,
             offerIsFree: true,
+            offerIsNew: false,
             offerTypes: {
               isDigital: false,
               isEvent: false,
@@ -1595,6 +1611,7 @@ describe('components | Filters', () => {
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: true,
             offerIsFree: false,
+            offerIsNew: false,
             offerTypes: {
               isDigital: true,
               isEvent: true,
@@ -1645,6 +1662,7 @@ describe('components | Filters', () => {
             offerCategories: [],
             offerIsDuo: false,
             offerIsFree: false,
+            offerIsNew: false,
             offerTypes: {
               isDigital: false,
               isEvent: false,
@@ -1671,6 +1689,7 @@ describe('components | Filters', () => {
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: true,
             offerIsFree: true,
+            offerIsNew: true,
             offerTypes: {
               isDigital: true,
               isEvent: true,
@@ -1721,6 +1740,7 @@ describe('components | Filters', () => {
             offerCategories: [],
             offerIsDuo: false,
             offerIsFree: false,
+            offerIsNew: false,
             offerTypes: {
               isDigital: false,
               isEvent: false,
@@ -1817,6 +1837,7 @@ describe('components | Filters', () => {
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: false,
             offerIsFree: false,
+            offerIsNew: false,
             offerTypes: {
               isDigital: false,
               isEvent: false,
@@ -1860,6 +1881,7 @@ describe('components | Filters', () => {
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: false,
             offerIsFree: false,
+            offerIsNew: false,
             offerTypes: {
               isDigital: false,
               isEvent: false,
@@ -1901,6 +1923,7 @@ describe('components | Filters', () => {
             offerCategories: ['VISITE', 'CINEMA'],
             offerIsDuo: false,
             offerIsFree: false,
+            offerIsNew: false,
             offerTypes: {
               isDigital: false,
               isEvent: false,

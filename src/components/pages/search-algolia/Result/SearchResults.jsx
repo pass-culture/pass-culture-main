@@ -36,6 +36,7 @@ class SearchResults extends PureComponent {
         offerCategories: categoriesFromUrlOrProps,
         offerIsDuo: false,
         offerIsFree: false,
+        offerIsNew: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -254,6 +255,7 @@ class SearchResults extends PureComponent {
       offerCategories,
       offerIsDuo,
       offerIsFree,
+      offerIsNew,
       offerTypes,
       priceRange,
       searchAround,
@@ -270,6 +272,7 @@ class SearchResults extends PureComponent {
       offerCategories,
       offerIsDuo,
       offerIsFree,
+      offerIsNew,
       offerTypes,
       page,
       priceRange,
@@ -346,7 +349,7 @@ class SearchResults extends PureComponent {
     this.rememberScrollPosition(event.target)
   }
 
-  rememberScrollPosition(eventTarget) {
+  rememberScrollPosition = (eventTarget) => {
     const { scrollPosition: previousScrollPosition } = this.state
     const resultHeight = 100
 

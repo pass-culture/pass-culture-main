@@ -23,6 +23,7 @@ export class Filters extends PureComponent {
       offerIsFilteredByDate,
       offerIsDuo,
       offerIsFree,
+      offerIsNew,
       offerTypes,
       priceRange,
       searchAround,
@@ -36,8 +37,9 @@ export class Filters extends PureComponent {
         date,
         offerIsFilteredByDate,
         offerCategories,
-        offerIsFree,
         offerIsDuo,
+        offerIsFree,
+        offerIsNew,
         offerTypes,
         priceRange,
         searchAround,
@@ -66,6 +68,7 @@ export class Filters extends PureComponent {
                    offerCategories,
                    offerIsDuo,
                    offerIsFree,
+                   offerIsNew,
                    offerTypes,
                    priceRange,
                    searchAround,
@@ -82,6 +85,7 @@ export class Filters extends PureComponent {
       offerCategories,
       offerIsDuo,
       offerIsFree,
+      offerIsNew,
       offerTypes,
       priceRange,
       searchAround: searchAroundUserOrPlace,
@@ -107,6 +111,7 @@ export class Filters extends PureComponent {
       offerIsFilteredByDate,
       offerIsDuo,
       offerIsFree,
+      offerIsNew,
       offerTypes,
       priceRange,
       searchAround,
@@ -123,6 +128,7 @@ export class Filters extends PureComponent {
       offerCategories,
       offerIsDuo,
       offerIsFree,
+      offerIsNew,
       offerTypes,
       priceRange,
       searchAround,
@@ -167,6 +173,7 @@ export class Filters extends PureComponent {
           offerCategories: [],
           offerIsDuo: false,
           offerIsFree: false,
+          offerIsNew: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -311,9 +318,10 @@ export class Filters extends PureComponent {
     const {
       offerIsFilteredByDate,
       offerCategories,
-      offerTypes,
       offerIsDuo,
       offerIsFree,
+      offerIsNew,
+      offerTypes,
       priceRange,
       searchAround
     } = filters
@@ -324,6 +332,7 @@ export class Filters extends PureComponent {
     const offerCategoriesFilterCounter = this.getNumberOfSelectedFilters(offerCategories)
     const offerIsDuoFilterCounter = this.getNumberFromBoolean(offerIsDuo)
     const offerIsFreeFilterCounter = this.getNumberFromBoolean(offerIsFree)
+    const offerIsNewCounter = this.getNumberFromBoolean(offerIsNew)
     const priceRangeFilterCounter = this.getPriceRangeCounter(priceRange)
     const dateFilterCounter = this.getNumberFromBoolean(offerIsFilteredByDate)
     const numberOfActiveFilters =
@@ -332,8 +341,10 @@ export class Filters extends PureComponent {
       geolocationFilterCounter +
       offerIsDuoFilterCounter +
       offerIsFreeFilterCounter +
+      offerIsNewCounter +
       priceRangeFilterCounter +
       dateFilterCounter
+
     updateFilters(updatedFilters)
     updateNumberOfActiveFilters(numberOfActiveFilters)
     updatePlace(place)
@@ -502,6 +513,7 @@ export class Filters extends PureComponent {
       offerCategories,
       offerIsDuo,
       offerIsFree,
+      offerIsNew,
       offerTypes,
       priceRange,
       searchAround
@@ -514,6 +526,7 @@ export class Filters extends PureComponent {
     const geolocationFilterCounter = this.getNumberFromSearchAround(searchAround)
     const offerIsDuoCounter = this.getNumberFromBoolean(offerIsDuo)
     const offerIsFreeCounter = this.getNumberFromBoolean(offerIsFree)
+    const offerIsNewCounter = this.getNumberFromBoolean(offerIsNew)
     const priceRangeCounter = this.getPriceRangeCounter(priceRange)
     const dateFilterCounter = this.getNumberFromBoolean(offerIsFilteredByDate)
 
@@ -751,6 +764,26 @@ export class Filters extends PureComponent {
                 <div className="sf-toggle-wrapper">
                   <div>
                     <h4>
+                      {'Uniquement les nouveautés'}
+                    </h4>
+                    {offerIsNewCounter > 0 && (
+                      <span className="sf-selected-filter-counter">
+                        {`(${offerIsNewCounter})`}
+                      </span>
+                    )}
+                  </div>
+                  <Toggle
+                    checked={offerIsNew}
+                    id="offerIsNew"
+                    name="offerIsNew"
+                    onChange={this.handleOnToggle}
+                  />
+                </div>
+              </li>
+              <li>
+                <div className="sf-toggle-wrapper">
+                  <div>
+                    <h4>
                       {'Date'}
                     </h4>
                     {dateFilterCounter > 0 && (
@@ -836,6 +869,7 @@ Filters.propTypes = {
     offerCategories: PropTypes.arrayOf(PropTypes.string),
     offerIsDuo: PropTypes.bool,
     offerIsFree: PropTypes.bool,
+    offerIsNew: PropTypes.bool,
     offerTypes: PropTypes.shape({
       isDigital: PropTypes.bool,
       isEvent: PropTypes.bool,

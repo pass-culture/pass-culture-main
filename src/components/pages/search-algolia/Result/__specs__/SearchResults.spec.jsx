@@ -289,6 +289,7 @@ describe('components | SearchResults', () => {
         offerCategories: ['MUSEE'],
         offerIsDuo: false,
         offerIsFree: false,
+        offerIsNew: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -324,6 +325,7 @@ describe('components | SearchResults', () => {
           offerCategories: ['Cinéma'],
           offerIsDuo: false,
           offerIsFree: false,
+          offerIsNew: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -419,6 +421,7 @@ describe('components | SearchResults', () => {
           offerCategories: [],
           offerIsDuo: false,
           offerIsFree: false,
+          offerIsNew: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -474,6 +477,7 @@ describe('components | SearchResults', () => {
           offerCategories: [],
           offerIsDuo: false,
           offerIsFree: false,
+          offerIsNew: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -551,6 +555,7 @@ describe('components | SearchResults', () => {
           offerCategories: [],
           offerIsDuo: false,
           offerIsFree: false,
+          offerIsNew: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -598,6 +603,7 @@ describe('components | SearchResults', () => {
           offerCategories: [],
           offerIsDuo: false,
           offerIsFree: false,
+          offerIsNew: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -641,6 +647,7 @@ describe('components | SearchResults', () => {
           offerCategories: ['CINEMA'],
           offerIsDuo: false,
           offerIsFree: false,
+          offerIsNew: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -683,6 +690,7 @@ describe('components | SearchResults', () => {
           offerCategories: ['CINEMA'],
           offerIsDuo: false,
           offerIsFree: false,
+          offerIsNew: false,
           offerTypes: { isDigital: false, isEvent: false, isThing: false },
           priceRange: [0, 500],
           page: 0,
@@ -719,6 +727,7 @@ describe('components | SearchResults', () => {
           offerCategories: ['CINEMA'],
           offerIsDuo: false,
           offerIsFree: false,
+          offerIsNew: false,
           offerTypes: { isDigital: false, isEvent: false, isThing: false },
           priceRange: [0, 500],
           page: 0,
@@ -755,6 +764,7 @@ describe('components | SearchResults', () => {
           offerCategories: [],
           offerIsDuo: false,
           offerIsFree: false,
+          offerIsNew: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -797,6 +807,7 @@ describe('components | SearchResults', () => {
           offerCategories: [],
           offerIsDuo: false,
           offerIsFree: false,
+          offerIsNew: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -838,6 +849,7 @@ describe('components | SearchResults', () => {
           offerCategories: [],
           offerIsDuo: false,
           offerIsFree: false,
+          offerIsNew: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -879,6 +891,7 @@ describe('components | SearchResults', () => {
           offerCategories: [],
           offerIsDuo: false,
           offerIsFree: false,
+          offerIsNew: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -964,6 +977,7 @@ describe('components | SearchResults', () => {
         offerCategories: [],
         offerIsDuo: false,
         offerIsFree: false,
+        offerIsNew: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -1001,6 +1015,7 @@ describe('components | SearchResults', () => {
         offerCategories: [],
         offerIsDuo: false,
         offerIsFree: false,
+        offerIsNew: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -1038,6 +1053,7 @@ describe('components | SearchResults', () => {
         offerCategories: [],
         offerIsDuo: false,
         offerIsFree: false,
+        offerIsNew: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -1218,6 +1234,7 @@ describe('components | SearchResults', () => {
           offerCategories: [],
           offerIsDuo: false,
           offerIsFree: false,
+          offerIsNew: false,
           offerTypes: {
             isDigital: false,
             isEvent: false,
@@ -1301,6 +1318,7 @@ describe('components | SearchResults', () => {
         offerCategories: [],
         offerIsDuo: false,
         offerIsFree: false,
+        offerIsNew: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -1318,6 +1336,7 @@ describe('components | SearchResults', () => {
         offerCategories: [],
         offerIsDuo: false,
         offerIsFree: false,
+        offerIsNew: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -1495,6 +1514,7 @@ describe('components | SearchResults', () => {
         offerCategories: [],
         offerIsDuo: false,
         offerIsFree: false,
+        offerIsNew: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -1650,6 +1670,7 @@ describe('components | SearchResults', () => {
         offerCategories: ['VISITE', 'CINEMA'],
         offerIsDuo: false,
         offerIsFree: false,
+        offerIsNew: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
@@ -1982,6 +2003,7 @@ describe('components | SearchResults', () => {
         offerCategories: [],
         offerIsDuo: false,
         offerIsFree: false,
+        offerIsNew: false,
         offerTypes: {
           isDigital: false,
           isEvent: false,
