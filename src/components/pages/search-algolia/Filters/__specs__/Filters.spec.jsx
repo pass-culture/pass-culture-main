@@ -1935,6 +1935,131 @@ describe('components | Filters', () => {
           })
         })
       })
+
+      describe('offer new', () => {
+        it('should display a "Uniquement les nouveautés" title for offer is new filter', () => {
+          // given
+          props.history.location.pathname = '/recherche/filtres'
+
+          // when
+          const wrapper = shallow(<Filters {...props} />)
+
+          // then
+          const title = wrapper.find({ children: 'Uniquement les nouveautés' })
+          expect(title).toHaveLength(1)
+        })
+
+        it('should render a Toggle component for offer is new unchecked by default', () => {
+          // given
+          props.history.location.pathname = '/recherche/filtres'
+          props.initialFilters.offerIsNew = false
+
+          // when
+          const wrapper = shallow(<Filters {...props} />)
+
+          // then
+          const filterOfferIsNew = wrapper
+            .find({ children: 'Uniquement les nouveautés' })
+            .closest('li')
+            .find(Toggle)
+          expect(filterOfferIsNew).toHaveLength(1)
+          expect(filterOfferIsNew.prop('checked')).toBe(false)
+          expect(filterOfferIsNew.prop('id')).toBe('offerIsNew')
+          expect(filterOfferIsNew.prop('name')).toBe('offerIsNew')
+          expect(filterOfferIsNew.prop('onChange')).toStrictEqual(expect.any(Function))
+          const offerIsNewCounter = wrapper
+            .find({ children: 'Uniquement les nouveautés' })
+            .closest('li')
+            .find({ children: '(1)' })
+          expect(offerIsNewCounter).toHaveLength(0)
+        })
+
+        it('should fetch offers when clicking on offer is new', () => {
+          // given
+          props.history.location.pathname = '/recherche/filtres'
+          const wrapper = shallow(<Filters {...props} />)
+          const offerIsNewFilter = wrapper
+            .find({ children: 'Uniquement les nouveautés' })
+            .closest('li')
+            .find(Toggle)
+          props.query.parse.mockReturnValue({})
+          fetchAlgolia.mockReturnValue(
+            new Promise(resolve => {
+              resolve({
+                hits: [],
+                nbHits: 0,
+                page: 0,
+              })
+            })
+          )
+
+          // when
+          offerIsNewFilter.simulate('change', {
+            target: {
+              name: 'offerIsNew',
+              checked: true,
+            },
+          })
+
+          // then
+          expect(fetchAlgolia).toHaveBeenCalledWith({
+            aroundRadius: 100,
+            date: null,
+            geolocation: {
+              latitude: 40,
+              longitude: 41,
+            },
+            keywords: '',
+            offerCategories: ['VISITE', 'CINEMA'],
+            offerIsDuo: false,
+            offerIsFree: false,
+            offerIsNew: true,
+            offerTypes: {
+              isDigital: false,
+              isEvent: false,
+              isThing: false,
+            },
+            priceRange: [0, 500],
+            searchAround: false,
+            sortBy: '_by_price',
+          })
+        })
+
+        it('should display counter when offer is new is checked', () => {
+          // given
+          props.history.location.pathname = '/recherche/filtres'
+          props.query.parse.mockReturnValue({})
+          fetchAlgolia.mockReturnValue(
+            new Promise(resolve => {
+              resolve({
+                hits: [],
+                nbHits: 0,
+                page: 0,
+              })
+            })
+          )
+          const wrapper = shallow(<Filters {...props} />)
+          const offerIsDuoFilter = wrapper
+            .find({ children: 'Uniquement les nouveautés' })
+            .closest('li')
+            .find(Toggle)
+
+          // when
+          offerIsDuoFilter.simulate('change', {
+            target: {
+              name: 'offerIsNew',
+              checked: true,
+            },
+          })
+
+          // then
+          const offerIsNewCounter = wrapper
+            .find({ children: 'Uniquement les nouveautés' })
+            .closest('li')
+            .find({ children: '(1)' })
+          expect(offerIsNewCounter).toHaveLength(1)
+        })
+      })
     })
   })
 })

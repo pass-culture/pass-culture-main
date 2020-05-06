@@ -545,7 +545,7 @@ describe('fetchAlgolia', () => {
   })
 
   describe('offer is new', () => {
-    it('should fetch with no numericFilters when offer new is false', () => {
+    it('should fetch with no numericFilters when offerIsNew is false', () => {
       // given
       const keywords = 'searched keywords'
 
@@ -561,7 +561,7 @@ describe('fetchAlgolia', () => {
       })
     })
 
-    it('should fetch with numericFilters when offer new is true', () => {
+    it('should fetch with numericFilters when offerIsNew is true', () => {
       // given
       getTimestampFromDate
         .mockReturnValueOnce(1588762412)
