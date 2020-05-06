@@ -81,18 +81,6 @@ export const SORT_CRITERIA = {
     index: '',
     requiresGeolocation: false,
   },
-  NEAR_ME: {
-    label: 'Proximité',
-    icon: 'ico-proximity',
-    index: '_by_proximity',
-    requiresGeolocation: true,
-  },
-  NEW: {
-    label: 'Nouveauté',
-    icon: 'ico-new',
-    index: '_by_novelty',
-    requiresGeolocation: false,
-  },
   PRICE: {
     label: 'Prix',
     icon: 'ico-price',

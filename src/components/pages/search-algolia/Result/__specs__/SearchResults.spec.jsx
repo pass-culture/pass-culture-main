@@ -1965,14 +1965,14 @@ describe('components | SearchResults', () => {
       )
 
       // when
-      const byProximityButton = wrapper.find({ children: 'Proximité' })
-      await byProximityButton.simulate('click')
+      const byRelevanceButton = wrapper.find({ children: 'Pertinence' })
+      await byRelevanceButton.simulate('click')
       wrapper.update()
 
       // then
       const expectedUri = history.location.pathname + history.location.search
-      expect(expectedUri).toBe('/recherche/resultats?mots-cles=librairie&tri=_by_proximity')
-      const sortButton = wrapper.find({ children: 'Proximité' })
+      expect(expectedUri).toBe('/recherche/resultats?mots-cles=librairie&tri=')
+      const sortButton = wrapper.find({ children: 'Pertinence' })
       expect(sortButton).toHaveLength(1)
     })
 
@@ -1991,8 +1991,8 @@ describe('components | SearchResults', () => {
       )
 
       // when
-      const byProximityButton = wrapper.find({ children: 'Proximité' })
-      byProximityButton.simulate('click')
+      const byRelevanceButton = wrapper.find({ children: 'Pertinence' })
+      byRelevanceButton.simulate('click')
 
       // then
       expect(fetchAlgolia).toHaveBeenCalledTimes(2)
@@ -2012,7 +2012,7 @@ describe('components | SearchResults', () => {
         page: 0,
         priceRange: [0, 500],
         searchAround: false,
-        sortBy: '_by_proximity',
+        sortBy: '',
       })
     })
 
@@ -2064,8 +2064,8 @@ describe('components | SearchResults', () => {
       )
 
       // when
-      const byProximityButton = wrapper.find({ children: 'Proximité' })
-      await byProximityButton.simulate('click')
+      const byRelevanceButton = wrapper.find({ children: 'Pertinence' })
+      await byRelevanceButton.simulate('click')
 
       // then
       wrapper.update()
