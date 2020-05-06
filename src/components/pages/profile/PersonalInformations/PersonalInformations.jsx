@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 
 import { MesInformationsField } from '../forms/fields/MesInformationsField'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
-import Icon from '../../../layout/Icon/Icon'
 
 class PersonalInformations extends PureComponent {
   constructor(props) {
@@ -29,16 +28,10 @@ class PersonalInformations extends PureComponent {
   }
 
   handleSubmitSuccess = () => {
-    const { history, toast, pathToProfile } = this.props
+    const { history, displaySnackbar, pathToProfile } = this.props
     this.setState({ errors: null })
     history.push(pathToProfile)
-    toast('Ton pseudo a bien été modifié.', {
-      className: 'toast-success',
-      closeButton: <Icon
-        alt="Fermer"
-        svg="ico-close-toast"
-                   />,
-    })
+    displaySnackbar('Ton pseudo a bien été modifié.', 'success')
   }
 
   handleSubmitPublicName = () => {
@@ -115,11 +108,11 @@ class PersonalInformations extends PureComponent {
 }
 
 PersonalInformations.propTypes = {
+  displaySnackbar: PropTypes.func.isRequired,
   getDepartment: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   pathToProfile: PropTypes.string.isRequired,
-  toast: PropTypes.func.isRequired,
   user: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired,
 }
 

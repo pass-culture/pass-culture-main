@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import { toast } from 'react-toastify'
 
 import MyFavoriteDetailsContainer from './MyFavoriteDetails/MyFavoriteDetailsContainer'
 import HeaderContainer from '../../layout/Header/HeaderContainer'
@@ -8,9 +7,10 @@ import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import NoItems from '../../layout/NoItems/NoItems'
 import RelativeFooterContainer from '../../layout/RelativeFooter/RelativeFooterContainer'
 import Teaser from '../../layout/Teaser/TeaserContainer'
+import {displaySnackbar} from "../../layout/Snackbar/snackbar"
 
 const showFailModal = () => {
-  toast('La suppression d’un favori a échoué, veuillez ré-essayer plus tard.')
+  displaySnackbar('La suppression d’un favori a échoué, veuillez ré-essayer plus tard.', 'error')
 }
 
 class MyFavorites extends PureComponent {

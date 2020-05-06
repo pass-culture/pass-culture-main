@@ -2,7 +2,6 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-thunk-data'
 import { withRouter } from 'react-router-dom'
-import { toast } from 'react-toastify'
 
 import {
   selectCurrentUser,
@@ -10,6 +9,7 @@ import {
 } from '../../../../redux/selectors/data/usersSelectors'
 import getDepartementByCode from '../../../../utils/getDepartementByCode'
 import PersonalInformations from './PersonalInformations'
+import {displaySnackbar} from "../../../layout/Snackbar/snackbar"
 
 export const getDepartment = departmentCode => {
   const departmentName = getDepartementByCode(departmentCode)
@@ -18,7 +18,7 @@ export const getDepartment = departmentCode => {
 
 export const mapStateToProps = state => ({
   getDepartment,
-  toast,
+  displaySnackbar,
   pathToProfile: '/profil',
   user: selectCurrentUser(state),
 })
