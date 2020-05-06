@@ -1,16 +1,9 @@
 from local_providers import OffererBankInformationProvider
 from local_providers.provider_manager import do_update
-from workers.worker import app
-from functools import wraps
 
-def job_context(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        worker_application = app
-        with worker_application.app_context():
-            return func(*args, **kwargs)
+from workers.decorators import job_context
 
-    return wrapper
+
 
 
 @job_context

@@ -47,11 +47,11 @@ def get_providers_by_venue(venue_id: str):
     return jsonify(result)
 
 
-
-q = Queue(connection=worker.conn)
-
-@app.route('/providers/OffererBankInformationProvider/application_update', methods=['POST'])
-def post_DMS_application_update():
-    application_id = request.form['dossier_id']
-    q.enqueue_call(func=pc_synchronize_new_bank_informations, args=(application_id, ))
+@app.route('/providers/<provider_name>/application_update', methods=['POST'])
+def post_update_demarches_simplifiees_application(provider_name: str):
+    try:
+        application_id = request.form['dossier_id']
+    except:
+        return '', 400
+    worker.redis_queue.enqueue_call(func=pc_synchronize_new_bank_informations, args=(application_id, ))
     return '', 202

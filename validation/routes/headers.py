@@ -69,7 +69,7 @@ def _get_endpoint_exceptions():
             'static_files',
             'health_api',
             'health_database',
-            'post_DMS_application_update'
+            'post_update_demarches_simplifiees_application'
             ]
 
 
