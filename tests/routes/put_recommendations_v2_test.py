@@ -2,7 +2,7 @@ from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user
 
 
-RECOMMENDATION_OLD_URL = '/recommendations/v2'
+RECOMMENDATION_V2_URL = '/recommendations/v2'
 
 
 class Put:
@@ -14,7 +14,7 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_OLD_URL,
+            response = auth_request.put(RECOMMENDATION_V2_URL,
                                         json={})
 
             # then

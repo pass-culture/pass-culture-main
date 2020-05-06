@@ -17,7 +17,6 @@ from utils.human_ids import dehumanize
 from utils.rest import expect_json_data
 
 DEFAULT_PAGE = 1
-RECOMMENDATIONS_OLD_URL = "/recommendations/v2"
 
 
 @app.route('/recommendations/offers/<offer_id>', methods=['GET'])
@@ -57,7 +56,7 @@ def put_read_recommendations():
     return jsonify(serialize_recommendations(read_recommendations, current_user)), 200
 
 
-@app.route(RECOMMENDATIONS_OLD_URL, methods=['PUT'])
+@app.route('/recommendations/v2', methods=['PUT'])
 def put_recommendations_old():
     return redirect("/recommendations", code=308)
 
