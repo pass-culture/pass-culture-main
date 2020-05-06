@@ -36,23 +36,28 @@ class BuildObjectTest:
                                                 thumb_count=1,
                                                 date_created=datetime(2020, 1, 1, 10, 0, 0))
         stock1 = create_stock(quantity=10,
+                              date_created=datetime(2020, 12, 5, 11, 0, 0),
                               beginning_datetime=in_four_days,
                               offer=offer,
                               price=10)
         stock2 = create_stock(quantity=10,
+                              date_created=datetime(2020, 12, 11, 8, 0, 0),
                               beginning_datetime=in_four_days,
                               offer=offer,
                               price=20)
         stock3 = create_stock(quantity=10,
+                              date_created=datetime(2020, 12, 1, 11, 0, 0),
                               beginning_datetime=in_four_days,
                               offer=offer,
                               price=0)
         stock4 = create_stock(quantity=10,
+                              date_created=datetime(2020, 12, 4, 7, 0, 0),
                               beginning_datetime=in_four_days,
                               is_soft_deleted=True,
                               offer=offer,
                               price=0)
         stock5 = create_stock(quantity=10,
+                              date_created=datetime(2020, 12, 7, 14, 0, 0),
                               beginning_datetime=three_days_ago,
                               offer=offer,
                               price=0)
@@ -89,6 +94,7 @@ class BuildObjectTest:
                 'showType': None,
                 'speaker': None,
                 'stageDirector': None,
+                'stocksDateCreated': [1606820400.0, 1607166000.0, 1607673600.0],
                 'thumbUrl': f'http://localhost/storage/thumbs/products/{humanized_product_id}',
                 'type': 'Écouter',
                 'visa': None,

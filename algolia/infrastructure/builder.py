@@ -30,6 +30,7 @@ def build_object(offer: Offer) -> Dict:
     if offer.isEvent:
         dates = [datetime.timestamp(stock.beginningDatetime) for stock in active_and_bookable_stocks]
     date_created = datetime.timestamp(offer.dateCreated)
+    stocks_date_created = [datetime.timestamp(stock.dateCreated) for stock in active_and_bookable_stocks]
 
     object_to_index = {
         'objectID': humanize_offer_id,
@@ -57,6 +58,7 @@ def build_object(offer: Offer) -> Dict:
             'showType': show_type,
             'speaker': speaker,
             'stageDirector': stage_director,
+            'stocksDateCreated': sorted(stocks_date_created),
             'thumbUrl': offer.thumb_url,
             'type': offer.offerType['sublabel'],
             'visa': visa,
