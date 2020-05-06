@@ -1,0 +1,38 @@
+.pi-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+
+  .header {
+    padding: 10px;
+  }
+
+  .header-start {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 5px;
+  }
+
+  .pi-form {
+    flex: 1;
+  }
+
+  .pi-form-submit {
+    display: flex;
+    justify-content: center;
+    padding-bottom: rem(24px);
+    width: 100%;
+  }
+
+  .button-submit {
+    background-color: #EB0055;
+    border-radius: 2rem;
+    border: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    height: 3rem;
+    width: 90%;
+  }
+}

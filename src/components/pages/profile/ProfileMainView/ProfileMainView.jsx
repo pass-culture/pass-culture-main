@@ -4,7 +4,7 @@ import React from 'react'
 import { version } from '../../../../../package.json'
 import ProfileHeader from '../ProfileHeader/ProfileHeader'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
-import MesInformationsContainer from '../MesInformations/MesInformationsContainer'
+import MesInformations from '../MesInformations/MesInformations'
 import RemainingCredit from '../RemainingCredit/RemainingCredit'
 
 const ProfileMainView = ({ currentUser }) => (
@@ -13,7 +13,7 @@ const ProfileMainView = ({ currentUser }) => (
       <div className="pm-scroll">
         <ProfileHeader currentUser={currentUser} />
         {currentUser && <RemainingCredit currentUser={currentUser} />}
-        <MesInformationsContainer />
+        <MesInformations />
         <div className="pm-app-version">
           {`Version ${version}`}
         </div>
