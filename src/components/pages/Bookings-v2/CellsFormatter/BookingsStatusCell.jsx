@@ -3,38 +3,57 @@ import classnames from 'classnames'
 
 const BOOKING_STATUS = [
   {
-    value: 'validé',
-    status: 'validated',
+    id: 'validated',
+    status: 'validé',
+    className: 'validated',
   },
   {
-    value: 'annulé',
-    status: 'cancelled',
+    id: 'cancelled',
+    status: 'annulé',
+    className: 'cancelled',
   },
   {
-    value: 'réservé',
-    status: 'booked',
+    id: 'booked',
+    status: 'réservé',
+    className: 'booked',
   },
   {
-    value: 'remboursé',
-    status: 'reimbursed',
+    id: 'reimbursed',
+    status: 'remboursé',
+    className: 'reimbursed',
+  },
+  {
+    id: 'default',
+    className: 'default',
   },
 ]
+
+const STATUS_PREFIX = 'bookings-status-'
 
 const BookingStatusCell = ({ bookingStatus }) => {
   bookingStatus = bookingStatus.toLowerCase()
 
-  const computeStatusClassName = bookingStatusInfos => {
-    const prefix = 'bookings-status-'
-    const bookingStatus = BOOKING_STATUS.find(({ value }) => bookingStatusInfos === value)
-    const status = bookingStatus ? bookingStatus.status : 'default'
-    return prefix + status
+  const getBookingStatusDisplayInformationsOrDefault = bookingStatusInfos => {
+    const bookingStatusFound = BOOKING_STATUS.find(({ id }) => bookingStatusInfos === id)
+    return bookingStatusFound
+      ? bookingStatusFound
+      : BOOKING_STATUS.find(({ id }) => id === 'default')
   }
 
-  const statusClassName = computeStatusClassName(bookingStatus)
+  const computeStatusClassName = bookingStatusDisplayInformations => {
+    return STATUS_PREFIX + bookingStatusDisplayInformations.className
+  }
+
+  const bookingStatusDisplayInformations = getBookingStatusDisplayInformationsOrDefault(
+    bookingStatus
+  )
+  const statusClassName = computeStatusClassName(bookingStatusDisplayInformations)
 
   return (
     <span className={classnames('bookings-status-label', statusClassName)}>
-      {bookingStatus}
+      {bookingStatusDisplayInformations.status
+        ? bookingStatusDisplayInformations.status
+        : bookingStatus}
     </span>
   )
 }
