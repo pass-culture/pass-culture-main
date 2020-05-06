@@ -1,40 +1,32 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+import Icon from '../../../layout/Icon/Icon'
+
 const MesInformations = () => (
   <section>
     <Link
       className="mi-link"
       to="/profil/informations"
     >
-      <img
-        alt=""
-        src="/icons/ico-informations.svg"
-      />
+      <Icon svg="ico-informations" />
       <div className="mi-link-label">
         {'Informations personnelles'}
       </div>
-      <img
-        alt=""
-        src="/icons/ico-next-lightgrey.svg"
-      />
+      <Icon svg="ico-next-lightgrey" />
     </Link>
+    <div className="mi-separator" />
     <Link
       className="mi-link"
       to="/profil/password"
     >
-      <img
-        alt=""
-        src="/icons/ico-lock.svg"
-      />
+      <Icon svg="ico-lock" />
       <div className="mi-link-label">
         {'Mot de passe'}
       </div>
-      <img
-        alt=""
-        src="/icons/ico-next-lightgrey.svg"
-      />
+      <Icon svg="ico-next-lightgrey" />
     </Link>
+    <div className="mi-separator" />
   </section>
 )
 

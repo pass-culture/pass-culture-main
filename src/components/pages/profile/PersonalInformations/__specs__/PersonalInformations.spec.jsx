@@ -29,9 +29,11 @@ describe('src | components | pages | profile | PersonalInformations | PersonalIn
       getDepartment: mockedGetDepartment,
       handleSubmit: jest.fn(),
       toast: jest.fn(),
+      pathToProfile: '/profil',
       user: user,
     }
   })
+
   it('should display profile informations', () => {
     // Given - When
     const wrapper = mount(
@@ -74,12 +76,7 @@ describe('src | components | pages | profile | PersonalInformations | PersonalIn
     // Given - When
     const wrapper = mount(
       <Router history={createBrowserHistory()}>
-        <PersonalInformations
-          getDepartment={mockedGetDepartment}
-          getFormValuesByNames={jest.fn()}
-          handleSubmit={jest.fn()}
-          user={user}
-        />
+        <PersonalInformations {...props} />
       </Router>
     )
 
@@ -95,28 +92,54 @@ describe('src | components | pages | profile | PersonalInformations | PersonalIn
   })
 
   describe('when click on submit button', () => {
-    it('should save form modifications when user clicks on submit button', () => {
-      // Given
-      const wrapper = mount(
-        <Router history={createBrowserHistory()}>
-          <PersonalInformations {...props} />
-        </Router>
-      )
+    describe('when user has not modified his name', () => {
+      it('should redirect to profile without submitting information', () => {
+        // Given
+        const spyHistory = jest.spyOn(history, 'push')
 
-      const submitButton = wrapper.find({ children: 'Enregistrer' })
+        const wrapper = mount(
+          <Router history={createBrowserHistory()}>
+            <PersonalInformations {...props} />
+          </Router>
+        )
 
-      // When
-      submitButton.simulate('click')
+        const submitButton = wrapper.find({ children: 'Enregistrer' })
 
-      // Then
-      expect(props.handleSubmit).toHaveBeenCalledTimes(1)
-      expect(props.handleSubmit).toHaveBeenCalledWith(
-        {
-          publicName: user.publicName,
-        },
-        expect.any(Function),
-        expect.any(Function)
-      )
+        // When
+        submitButton.simulate('click')
+
+        // Then
+        expect(props.handleSubmit).not.toHaveBeenCalled()
+        expect(spyHistory).toHaveBeenCalledWith('/profil')
+      })
+    })
+
+    describe('when user has modified his name', () => {
+      it('should submit information', () => {
+        // Given
+        const wrapper = mount(
+          <Router history={createBrowserHistory()}>
+            <PersonalInformations {...props} />
+          </Router>
+        )
+
+        const publicName = wrapper.find("input[value='Martino']")
+        const submitButton = wrapper.find({ children: 'Enregistrer' })
+
+        // When
+        publicName.simulate('change', { target: { value: 'DifferentName' } })
+        submitButton.simulate('click')
+
+        // Then
+        expect(props.handleSubmit).toHaveBeenCalledTimes(1)
+        expect(props.handleSubmit).toHaveBeenCalledWith(
+          {
+            publicName: 'DifferentName',
+          },
+          expect.any(Function),
+          expect.any(Function)
+        )
+      })
     })
   })
 })

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 import { MesInformationsField } from '../forms/fields/MesInformationsField'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
+import Icon from '../../../layout/Icon/Icon'
 
 class PersonalInformations extends PureComponent {
   constructor(props) {
@@ -31,16 +32,27 @@ class PersonalInformations extends PureComponent {
     const { history, toast, pathToProfile } = this.props
     this.setState({ errors: null })
     history.push(pathToProfile)
-    toast('Ton pseudo a bien été modifié.', 1000000)
+    toast('Ton pseudo a bien été modifié.', {
+      className: 'toast-success',
+      closeButton: <Icon
+        alt="Fermer"
+        svg="ico-close-toast"
+                   />,
+    })
   }
 
   handleSubmitPublicName = () => {
-    const { handleSubmit } = this.props
+    const { handleSubmit, user, pathToProfile, history } = this.props
+    const publicNameInputValue = this.publicNameInputRef.current.value
     const publicNameToSubmit = {
-      publicName: this.publicNameInputRef.current.value,
+      publicName: publicNameInputValue,
     }
 
-    handleSubmit(publicNameToSubmit, this.handleSubmitFail, this.handleSubmitSuccess)
+    if (user.publicName !== publicNameInputValue) {
+      handleSubmit(publicNameToSubmit, this.handleSubmitFail, this.handleSubmitSuccess)
+    } else {
+      history.push(pathToProfile)
+    }
   }
 
   render() {
@@ -105,7 +117,7 @@ class PersonalInformations extends PureComponent {
 PersonalInformations.propTypes = {
   getDepartment: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
-  history: PropTypes.func.isRequired,
+  history: PropTypes.shape().isRequired,
   pathToProfile: PropTypes.string.isRequired,
   toast: PropTypes.func.isRequired,
   user: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired,

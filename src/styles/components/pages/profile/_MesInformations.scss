@@ -1,68 +1,11 @@
-.mi-field {
-  display: flex;
-  flex-direction: column;
-  margin: rem(26px) rem(21px);
-  color: $black-light;
-
-  label {
-    display: flex;
-    flex-direction: column;
-  }
-}
-
-.mi-field-input {
-  border: none;
-  border-radius: rem(22px);
-  box-shadow: 0 rem(2px) rem(6px) 0 rgba(0, 0, 0, 0.25);
-  font-size: inherit;
-  height: rem(40px);
-  margin: rem(9px) 0 rem(10px) 0;
-  padding-left: rem(16px);
-
-  &:disabled {
-    background-color: $grey-even-more-light;
-    box-shadow: none;
-  }
-
-  &:focus {
-    border: rem(2px) solid $primary;
-    box-shadow: none;
-    outline: none;
-  }
-}
-
-.mi-field-button {
-  background-color: $white;
-  border: rem(2px) solid $primary;
-  border-radius: rem(22px);
-  box-sizing: content-box;
-  box-shadow: none;
-  color: $primary;
-  font-weight: bold;
-  line-height: rem(40px);
-  margin: rem(9px) 0 rem(10px) 0;
-  padding-left: rem(16px);
-  text-align: center;
-}
-
-.mi-field-error {
-  align-items: center;
-  color: $primary;
-  display: flex;
-  font-size: rem(14px);
-  font-weight: 500;
-  margin-bottom: rem(10px);
-
-  img {
-    height: rem(17px);
-    margin-right: rem(9px);
-    width: rem(17px);
-  }
+.mi-separator {
+  height: 1px;
+  background-color: $grey-even-more-light;
+  margin: 0 rem(22px);
 }
 
 .mi-link {
   align-items: center;
-  border-bottom: 1px solid $grey-even-more-light;
   color: black;
   display: flex;
   font-size: rem(16px);
