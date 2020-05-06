@@ -8,7 +8,7 @@ from tests.model_creators.generic_creators import create_user, create_offerer, c
 from tests.model_creators.specific_creators import create_offer_with_thing_product
 
 
-class GetAllBookings:
+class GetAllBookingsTest:
     @patch('routes.bookings.get_all_bookings_by_pro_user')
     @clean_database
     def test_should_call_the_usecase_method_get_all_bookings_by_pro_user(self,
@@ -27,8 +27,8 @@ class GetAllBookings:
         get_all_bookings_by_pro_user.assert_called_once_with(user.id)
 
 
-class Get:
-    class Returns200:
+class GetTest:
+    class Returns200Test:
         @clean_database
         def when_user_is_linked_to_a_valid_offerer(self, app):
             # Given
@@ -61,13 +61,13 @@ class Get:
                     },
                     'booking_date': '2020-04-03T12:00:00Z',
                     'booking_token': 'ABCD',
-                    'booking_status': 'Réservé',
+                    'booking_status': 'booked',
                 }
             ]
             assert response.status_code == 200
             assert response.json == expected_bookings_recap
 
-    class Returns401:
+    class Returns401Test:
         @clean_database
         def when_user_is_admin(self, app):
             # Given

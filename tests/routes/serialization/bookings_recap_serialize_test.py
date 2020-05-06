@@ -49,7 +49,7 @@ class SerializeBookingRecapTest:
                 },
                 "booking_date": format_into_ISO_8601(date),
                 "booking_token": "FOND",
-                "booking_status": "Validé"
+                "booking_status": "validated"
             },
             {
                 "stock": {
@@ -62,7 +62,7 @@ class SerializeBookingRecapTest:
                 },
                 "booking_date": format_into_ISO_8601(date),
                 "booking_token": "FOND",
-                "booking_status": "Réservé"
+                "booking_status": "booked"
             }
         ]
         assert response == expected_response

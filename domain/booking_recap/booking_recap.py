@@ -5,10 +5,10 @@ from models.payment_status import TransactionStatus
 
 
 class BookingRecapStatus(Enum):
-    booked = 'Réservé'
-    validated = 'Validé'
-    cancelled = 'Annulé'
-    reimbursed = 'Remboursé'
+    booked = 'booked'
+    validated = 'validated'
+    cancelled = 'cancelled'
+    reimbursed = 'reimbursed'
 
 
 class BookingRecap:

@@ -238,7 +238,6 @@ def find_not_cancelled_bookings_by_stock(stock: Stock) -> List[Booking]:
 
 
 def find_eligible_bookings_for_offerer(offerer_id: int) -> List[Booking]:
-    print("toto")
     return _query_keep_only_used_or_finished_bookings_on_non_activation_offers() \
         .join(Offerer) \
         .filter(Offerer.id == offerer_id) \
