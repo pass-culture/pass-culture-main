@@ -19,6 +19,7 @@ class BookingRecapMock(BookingRecap):
             booking_token="ABCDE",
             booking_date=datetime.utcnow(),
             booking_status=BookingRecapStatus.validated,
+            offer_type="EventType.CINEMA"
         )
 
 

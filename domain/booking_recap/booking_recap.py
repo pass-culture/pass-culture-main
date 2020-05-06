@@ -2,7 +2,6 @@ import datetime
 from enum import Enum
 from typing import Optional
 
-from models.booking import Booking
 from models.offer_type import ProductType
 from models.payment_status import TransactionStatus
 

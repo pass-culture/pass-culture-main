@@ -19,7 +19,8 @@ class SerializeBookingRecapTest:
                 beneficiary_email="hari.seldon@example.com",
                 booking_date=date,
                 booking_token="FOND",
-                booking_status=BookingRecapStatus.validated
+                booking_status=BookingRecapStatus.validated,
+                offer_type='EventType.SPECTACLE_VIVANT'
             ),
             BookingRecap(
                 offer_name="Fondation",
@@ -28,7 +29,8 @@ class SerializeBookingRecapTest:
                 beneficiary_email="golan.trevize@example.com",
                 booking_date=date,
                 booking_token="FOND",
-                booking_status=BookingRecapStatus.booked
+                booking_status=BookingRecapStatus.booked,
+                offer_type='ThingType.LIVRE_EDITION'
             )
         ]
 
