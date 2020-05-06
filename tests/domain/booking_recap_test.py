@@ -1,4 +1,7 @@
-from domain.booking_recap.booking_recap import compute_booking_recap_status, BookingRecapStatus
+from collections import namedtuple
+
+from domain.booking_recap.booking_recap import compute_booking_recap_status, BookingRecapStatus, \
+    compute_booking_recap_token
 from models import Booking
 from models.payment_status import TransactionStatus
 
@@ -162,3 +165,78 @@ class ComputeBookingRecapStatusTest:
 
             # Then
             assert booking_recap_status == BookingRecapStatus.reimbursed
+
+
+
+class ComputeBookingRecapTokenTest:
+    def test_should_not_return_token_when_offer_is_thing_and_booking_is_not_used_nor_cancelled(self):
+        # Given
+        booking = namedtuple("Booking", ["isUsed", "isCancelled", "offerType", "token"])
+        booking.isUsed = False
+        booking.isCancelled = False
+        booking.offerType = 'ThingType.LIVRE_EDITION'
+        booking.bookingToken = 'ABCDE'
+
+        # When
+        booking_recap_token = compute_booking_recap_token(booking)
+
+        # Then
+        assert booking_recap_token is None
+
+    def test_should_return_token_when_offer_is_thing_and_booking_is_used_and_not_cancelled(self):
+        # Given
+        booking = namedtuple("Booking", ["isUsed", "isCancelled", "offerType", "token"])
+        booking.isUsed = True
+        booking.isCancelled = False
+        booking.offerType = 'ThingType.LIVRE_EDITION'
+        booking.bookingToken = 'ABCDE'
+
+        # When
+        booking_recap_token = compute_booking_recap_token(booking)
+
+        # Then
+        assert booking_recap_token == 'ABCDE'
+
+    def test_should_return_token_when_offer_is_thing_and_booking_is_not_used_and_is_cancelled(self):
+        # Given
+        booking = namedtuple("Booking", ["isUsed", "isCancelled", "offerType", "token"])
+        booking.isUsed = False
+        booking.isCancelled = True
+        booking.offerType = 'ThingType.LIVRE_EDITION'
+        booking.bookingToken = 'ABCDE'
+
+        # When
+        booking_recap_token = compute_booking_recap_token(booking)
+
+        # Then
+        assert booking_recap_token == 'ABCDE'
+
+    def test_should_return_token_when_offer_is_thing_and_booking_is_used_and_cancelled(self):
+        # Given
+        booking = namedtuple("Booking", ["isUsed", "isCancelled", "offerType", "token"])
+        booking.isUsed = True
+        booking.isCancelled = True
+        booking.offerType = 'ThingType.LIVRE_EDITION'
+        booking.bookingToken = 'ABCDE'
+
+        # When
+        booking_recap_token = compute_booking_recap_token(booking)
+
+        # Then
+        assert booking_recap_token == 'ABCDE'
+
+    def test_should_return_token_when_offer_is_event(self):
+        # Given
+        booking = namedtuple("Booking", ["isUsed", "isCancelled", "offerType", "token"])
+        booking.isUsed = True
+        booking.isCancelled = False
+        booking.offerType = 'ThingType.CINEMA_CARD'
+        booking.bookingToken = 'ABCDE'
+
+        # When
+        booking_recap_token = compute_booking_recap_token(booking)
+
+        # Then
+        assert booking_recap_token == 'ABCDE'
+
+

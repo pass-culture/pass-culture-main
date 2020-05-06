@@ -7,6 +7,8 @@ from sqlalchemy.orm import Query
 
 from domain.booking_recap.booking_recap import BookingRecap, compute_booking_recap_status
 from models import UserOfferer, PaymentStatus
+from domain.booking_recap.booking_recap import BookingRecap, compute_booking_recap_status, compute_booking_recap_token
+from models import UserOfferer
 from models.api_errors import ResourceNotFoundError
 from models.booking import Booking
 from models.db import db
@@ -204,6 +206,7 @@ def find_by_pro_user_id(user_id: int) -> List[BookingRecap]:
             Booking.isCancelled.label("isCancelled"),
             Booking.isUsed.label("isUsed"),
             Payment.currentStatus.label("paymentStatus"),
+            Offer.type.label("offerType"),
         ).all()
 
     return _bookings_sql_entities_to_bookings_recap(bookings)
@@ -219,9 +222,10 @@ def _serialize_booking_recap(booking: object) -> BookingRecap:
         beneficiary_email=booking.beneficiaryEmail,
         beneficiary_firstname=booking.beneficiaryFirstname,
         beneficiary_lastname=booking.beneficiaryLastname,
-        booking_token=booking.bookingToken,
+        booking_token=compute_booking_recap_token(booking),
         booking_date=booking.bookingDate,
-        booking_status=compute_booking_recap_status(booking)
+        booking_status=compute_booking_recap_status(booking),
+        offer_type=booking.offerType,
     )
 
 
