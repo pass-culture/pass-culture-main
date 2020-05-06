@@ -8,7 +8,7 @@ from domain.demarches_simplifiees import \
     get_closed_application_ids_for_demarche_simplifiee
 from domain.user_activation import create_beneficiary_from_application
 from domain.user_emails import send_activation_email
-from models import ApiErrors, ImportStatus, User
+from models import ApiErrors, ImportStatus, UserSQLEntity
 from repository import repository
 from repository.beneficiary_import_queries import \
     find_applications_ids_to_retry, is_already_imported, \
@@ -27,7 +27,7 @@ def run(
         get_applications_ids_to_retry: Callable[..., List[int]] = find_applications_ids_to_retry,
         get_details: Callable[..., Dict] = get_application_details,
         already_imported: Callable[..., bool] = is_already_imported,
-        already_existing_user: Callable[..., User] = find_user_by_email
+        already_existing_user: Callable[..., UserSQLEntity] = find_user_by_email
 ) -> None:
     procedure_id = int(os.environ.get(
         'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID', None))
@@ -72,10 +72,10 @@ def run(
 def process_beneficiary_application(
         information: Dict,
         error_messages: List[str],
-        new_beneficiaries: List[User],
+        new_beneficiaries: List[UserSQLEntity],
         retry_ids: List[int],
         procedure_id: int,
-        find_duplicate_users: Callable[..., List[User]] = find_by_civility
+        find_duplicate_users: Callable[..., List[UserSQLEntity]] = find_by_civility
 ) -> None:
     duplicate_users = find_duplicate_users(
         information['first_name'],
@@ -123,7 +123,7 @@ def parse_beneficiary_information(application_detail: Dict) -> Dict:
     return information
 
 
-def _process_creation(error_messages: List[str], information: Dict, new_beneficiaries: List[User],
+def _process_creation(error_messages: List[str], information: Dict, new_beneficiaries: List[UserSQLEntity],
                       procedure_id: int) -> None:
     new_beneficiary = create_beneficiary_from_application(information)
     try:
@@ -148,7 +148,7 @@ def _process_creation(error_messages: List[str], information: Dict, new_benefici
                          mail_service_exception)
 
 
-def _process_duplication(duplicate_users: List[User], error_messages: List[str], information: Dict,
+def _process_duplication(duplicate_users: List[UserSQLEntity], error_messages: List[str], information: Dict,
                          procedure_id: int) -> None:
     number_of_beneficiaries = len(duplicate_users)
     duplicate_ids = ", ".join([str(u.id) for u in duplicate_users])

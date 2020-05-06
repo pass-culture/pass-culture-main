@@ -56,7 +56,7 @@ def export_table(model_name):
 
     csvfile = StringIO()
     header = _clean_dict_for_export(model_name, as_dict(objects[0])).keys()
-    if model_name == 'User':
+    if model_name == 'UserSQLEntity':
         header = list(filter(lambda h: h != 'id' and h != 'password', header))
     writer = csv.DictWriter(csvfile, header, extrasaction='ignore')
     writer.writeheader()
@@ -233,7 +233,7 @@ def _is_exportable(model_name):
 
 
 def _clean_dict_for_export(model_name, dct):
-    if model_name == 'User':
+    if model_name == 'UserSQLEntity':
         del (dct['password'])
         del (dct['id'])
     return dct

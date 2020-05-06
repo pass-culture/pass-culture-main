@@ -2,7 +2,6 @@ from collections import namedtuple
 from datetime import datetime
 from typing import List, Set, Union
 
-from models.stock_sql_entity import EVENT_AUTOMATIC_REFUND_DELAY
 from sqlalchemy import func
 from sqlalchemy.orm import Query
 
@@ -16,7 +15,7 @@ from models.offer_type import EventType, ThingType
 from models.offerer import Offerer
 from models.payment import Payment
 from models.recommendation import Recommendation
-from models.stock_sql_entity import StockSQLEntity
+from models.stock_sql_entity import StockSQLEntity, EVENT_AUTOMATIC_REFUND_DELAY
 from models.user_sql_entity import UserSQLEntity
 from models.venue import Venue
 from repository import offer_queries
@@ -207,6 +206,10 @@ def find_by_pro_user_id(user_id: int) -> List[BookingRecap]:
 
 
 def _bookings_sql_entities_to_bookings_recap(bookings: List[object]) -> List[BookingRecap]:
+    return [_serialize_booking_recap(booking) for booking in bookings]
+
+
+def _bookings_sql_entities_to_bookings_recap(bookings: List[BookingSQLEntity]) -> List[BookingRecap]:
     return [_serialize_booking_recap(booking) for booking in bookings]
 
 

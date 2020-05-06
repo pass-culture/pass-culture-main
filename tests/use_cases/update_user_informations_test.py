@@ -1,10 +1,7 @@
-import pytest
-
 from datetime import datetime
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user
-from models import User
 from use_cases.update_user_informations import AlterableUserInformations, update_user_informations
 
 class UpdateUserInformationsTest:

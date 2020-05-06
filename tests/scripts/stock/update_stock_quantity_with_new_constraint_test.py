@@ -340,7 +340,7 @@ class UpdateStockQuantityForNegativeRemainingQuantityTest:
         update_stock_quantity_for_negative_remaining_quantity(mock_application)
 
         # Then
-        existing_stock = Stock.query.first()
+        existing_stock = StockSQLEntity.query.first()
         assert existing_stock.remainingQuantity == 0
         assert existing_stock.quantity == 6
         assert existing_stock.hasBeenMigrated
@@ -364,7 +364,7 @@ class UpdateStockQuantityForNegativeRemainingQuantityTest:
         update_stock_quantity_for_negative_remaining_quantity(mock_application)
 
         # Then
-        existing_stock = Stock.query.first()
+        existing_stock = StockSQLEntity.query.first()
         assert existing_stock.remainingQuantity == 2
         assert existing_stock.quantity == 8
         assert not existing_stock.hasBeenMigrated

@@ -12,6 +12,6 @@ class SeenOffer(PcObject, Model):
     offer = relationship('Offer',
                          foreign_keys=[offerId],
                          backref='SeenOffer')
-    user = relationship('User',
+    user = relationship('UserSQLEntity',
                         foreign_keys=[userId],
                         backref='SeenOffer')

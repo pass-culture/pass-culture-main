@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 
 from mailjet_rest import Client
 
-from models import ApiErrors, BeneficiaryImport, ImportStatus, User
+from models import ApiErrors, BeneficiaryImport, ImportStatus, UserSQLEntity
 from repository import repository
 from scripts.beneficiary import old_remote_import
 from scripts.beneficiary.old_remote_import import parse_beneficiary_information
@@ -125,7 +125,7 @@ class OldRemoteImportRunTest:
         find_applications_ids_to_retry = Mock(return_value=[])
 
         get_details = Mock(return_value=make_old_application_detail(123, 'closed'))
-        user = User()
+        user = UserSQLEntity()
         user.email = 'john.doe@example.com'
         has_already_been_imported = Mock(return_value=True)
         has_already_been_created = Mock(return_value=False)
@@ -154,7 +154,7 @@ class OldRemoteImportRunTest:
         find_applications_ids_to_retry = Mock(return_value=[])
 
         get_details = Mock(return_value=make_old_application_detail(123, 'closed'))
-        user = User()
+        user = UserSQLEntity()
         user.email = 'john.doe@example.com'
         has_already_been_imported = Mock(return_value=False)
         has_already_been_created = Mock(return_value=True)
@@ -247,7 +247,7 @@ class ProcessBeneficiaryApplicationTest:
                                                           retry_ids=[], procedure_id=123456)
 
         # then
-        first = User.query.first()
+        first = UserSQLEntity.query.first()
         assert first.email == 'jane.doe@example.com'
         assert first.wallet_balance == 500
         assert first.civility == 'Mme'
@@ -330,7 +330,7 @@ class ProcessBeneficiaryApplicationTest:
             'civility': 'Mme',
             'activity': 'Étudiant'
         }
-        create_beneficiary_from_application.side_effect = [User()]
+        create_beneficiary_from_application.side_effect = [UserSQLEntity()]
         mock_repository.save.side_effect = [ApiErrors({'postalCode': ['baaaaad value']})]
         new_beneficiaries = []
         error_messages = []

@@ -32,6 +32,6 @@ class Get:
             assert response.status_code == 200
             assert len(response.json) == 2
             assert response.json == [
-                {'id': 'AE', 'label': 'Centre culturel', 'modelName': 'VenueType'},
-                {'id': 'A9', 'label': 'Musée', 'modelName': 'VenueType'}
+                {'id': 'AE', 'label': 'Centre culturel'},
+                {'id': 'A9', 'label': 'Musée'}
             ]

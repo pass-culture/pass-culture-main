@@ -124,7 +124,7 @@ def parse_beneficiary_information(application_detail: Dict) -> Dict:
     return information
 
 
-def _process_creation(error_messages: List[str], information: Dict, new_beneficiaries: List[User], procedure_id: int) -> None:
+def _process_creation(error_messages: List[str], information: Dict, new_beneficiaries: List[UserSQLEntity], procedure_id: int) -> None:
     new_beneficiary = create_beneficiary_from_application(information)
     try:
         repository.save(new_beneficiary)
@@ -148,7 +148,7 @@ def _process_creation(error_messages: List[str], information: Dict, new_benefici
                 f"Email send_activation_email failure for application {information['application_id']} - Procedure {procedure_id}", mail_service_exception)
 
 
-def _process_duplication(duplicate_users: List[User], error_messages: List[str], information: Dict, procedure_id: int) -> None:
+def _process_duplication(duplicate_users: List[UserSQLEntity], error_messages: List[str], information: Dict, procedure_id: int) -> None:
     number_of_beneficiaries = len(duplicate_users)
     duplicate_ids = ", ".join([str(u.id) for u in duplicate_users])
     message = f"{number_of_beneficiaries} utilisateur(s) en doublon {duplicate_ids} pour le dossier {information['application_id']} - Procedure {procedure_id}"

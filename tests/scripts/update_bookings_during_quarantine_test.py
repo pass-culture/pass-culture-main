@@ -5,7 +5,7 @@ from domain.payments import create_payment_for_booking
 from domain.reimbursement import BookingReimbursement, ReimbursementRules
 from scripts.cancel_bookings_during_quarantine import cancel_booking_status_for_events_happening_during_quarantine
 from tests.conftest import clean_database
-from models import Booking
+from models import BookingSQLEntity
 from repository import repository
 from tests.model_creators.generic_creators import create_user, create_stock, create_booking, create_venue, \
     create_offerer
@@ -38,7 +38,7 @@ class UpdateBookingDuringQuarantineTest:
         cancel_booking_status_for_events_happening_during_quarantine()
 
         # Then
-        booking = Booking.query.one()
+        booking = BookingSQLEntity.query.one()
         assert booking.isUsed is False
         assert booking.dateUsed is None
 
@@ -67,7 +67,7 @@ class UpdateBookingDuringQuarantineTest:
         cancel_booking_status_for_events_happening_during_quarantine()
 
         # Then
-        booking = Booking.query.one()
+        booking = BookingSQLEntity.query.one()
         assert booking.isUsed is True
         assert booking.dateUsed == date_used
 
@@ -101,7 +101,7 @@ class UpdateBookingDuringQuarantineTest:
         cancel_booking_status_for_events_happening_during_quarantine()
 
         # Then
-        bookings = Booking.query.all()
+        bookings = BookingSQLEntity.query.all()
 
         assert bookings[0].isUsed is True
         assert bookings[0].dateUsed == date_used

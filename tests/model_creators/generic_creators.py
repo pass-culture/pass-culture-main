@@ -393,7 +393,7 @@ def create_recommendation(offer: Offer = None,
     return recommendation
 
 
-def create_seen_offer(offer: Offer, user: User, date_seen: Optional[datetime] = None) -> SeenOffer:
+def create_seen_offer(offer: Offer, user: UserSQLEntity, date_seen: Optional[datetime] = None) -> SeenOffer:
     if not date_seen:
         date_seen = datetime.utcnow()
     seen_offer = SeenOffer()

@@ -1,8 +1,8 @@
 from collections import namedtuple
 
+from domain.booking.booking import Booking
 from domain.booking_recap.booking_recap import compute_booking_recap_status, BookingRecapStatus, \
     compute_booking_recap_token
-from models import Booking
 from models.payment_status import TransactionStatus
 
 
@@ -167,7 +167,6 @@ class ComputeBookingRecapStatusTest:
             assert booking_recap_status == BookingRecapStatus.reimbursed
 
 
-
 class ComputeBookingRecapTokenTest:
     def test_should_not_return_token_when_offer_is_thing_and_booking_is_not_used_nor_cancelled(self):
         # Given
@@ -238,5 +237,3 @@ class ComputeBookingRecapTokenTest:
 
         # Then
         assert booking_recap_token == 'ABCDE'
-
-

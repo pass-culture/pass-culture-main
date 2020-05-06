@@ -1,7 +1,7 @@
-from models import User
+from models import UserSQLEntity
 
 
-def check_is_authorized_to_access_bookings_recap(user: User):
+def check_is_authorized_to_access_bookings_recap(user: UserSQLEntity):
     if user.isAdmin:
         raise UnauthorizedForAdminUser()
 

@@ -19,21 +19,21 @@ def update_stock_quantity_for_negative_remaining_quantity(application: Flask) ->
         print(f"Update on stock[{stock.id}], {current_quantity} => {new_quantity}")
 
 
-def _get_stocks_with_negative_remaining_quantity() -> List[Stock]:
-    stock_alias = aliased(Stock)
-    booking_subquery = Booking.query \
-        .filter(Booking.stockId == stock_alias.id) \
-        .filter(Booking.isCancelled == False) \
-        .with_entities(func.sum(Booking.quantity).label('remainingQuantity'),
-                       Booking.stockId.label('stockId')) \
-        .group_by(Booking.stockId) \
+def _get_stocks_with_negative_remaining_quantity() -> List[StockSQLEntity]:
+    stock_alias = aliased(StockSQLEntity)
+    booking_subquery = BookingSQLEntity.query \
+        .filter(BookingSQLEntity.stockId == stock_alias.id) \
+        .filter(BookingSQLEntity.isCancelled == False) \
+        .with_entities(func.sum(BookingSQLEntity.quantity).label('remainingQuantity'),
+                       BookingSQLEntity.stockId.label('stockId')) \
+        .group_by(BookingSQLEntity.stockId) \
         .subquery()
 
-    stocks = Stock.query \
+    stocks = StockSQLEntity.query \
         .join(booking_subquery) \
-        .filter(Stock.id == booking_subquery.c.stockId) \
-        .filter(Stock.hasBeenMigrated == None) \
-        .filter(booking_subquery.c.remainingQuantity > Stock.quantity) \
+        .filter(StockSQLEntity.id == booking_subquery.c.stockId) \
+        .filter(StockSQLEntity.hasBeenMigrated == None) \
+        .filter(booking_subquery.c.remainingQuantity > StockSQLEntity.quantity) \
         .all()
 
     return stocks

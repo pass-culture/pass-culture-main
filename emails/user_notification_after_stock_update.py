@@ -2,12 +2,12 @@ from typing import Dict
 
 from babel.dates import format_date
 
-from models import Booking
+from models import BookingSQLEntity
 from repository.feature_queries import feature_send_mail_to_users_enabled
 from utils.mailing import SUPPORT_EMAIL_ADDRESS, DEV_EMAIL_ADDRESS, get_event_datetime, format_booking_hours_for_email
 
 
-def retrieve_data_to_warn_user_after_stock_update_affecting_booking(booking: Booking) -> Dict:
+def retrieve_data_to_warn_user_after_stock_update_affecting_booking(booking: BookingSQLEntity) -> Dict:
     stock = booking.stock
     offer = stock.offer
     offer_name = offer.name

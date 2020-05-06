@@ -3,7 +3,7 @@ from typing import List, Callable
 
 from sqlalchemy import func
 
-from models import Offer, Stock
+from models import Offer, StockSQLEntity
 from models.db import db
 from repository import repository
 
@@ -17,10 +17,10 @@ def get_offers_with_max_stock_date_between_today_and_end_of_quarantine(first_day
 
 def build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine(first_day_after_quarantine, today):
     stock_with_latest_date_by_offer = db.session.query(
-        Stock.offerId,
-        func.max(Stock.beginningDatetime).label('beginningDatetime')
+        StockSQLEntity.offerId,
+        func.max(StockSQLEntity.beginningDatetime).label('beginningDatetime')
     ) \
-        .group_by(Stock.offerId).subquery()
+        .group_by(StockSQLEntity.offerId).subquery()
     quarantine_offers_query = Offer.query.join(stock_with_latest_date_by_offer,
                                                Offer.id == stock_with_latest_date_by_offer.c.offerId).filter(
         stock_with_latest_date_by_offer.c.beginningDatetime < first_day_after_quarantine).filter(

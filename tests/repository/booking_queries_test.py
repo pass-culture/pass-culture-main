@@ -8,7 +8,7 @@ from domain.booking_recap.booking_recap import BookingRecapStatus
 from models import BookingSQLEntity, EventType, ThingType
 from models.api_errors import ApiErrors, ResourceNotFoundError
 from models.payment_status import TransactionStatus
-from models.stock import EVENT_AUTOMATIC_REFUND_DELAY
+from models.stock_sql_entity import EVENT_AUTOMATIC_REFUND_DELAY
 from repository import booking_queries, repository
 from repository.booking_queries import find_by_pro_user_id
 from tests.conftest import clean_database
@@ -1612,7 +1612,7 @@ class IsOfferAlreadyBookedByUserTest:
         user = create_user()
         create_deposit(user)
         offerer = create_offerer()
-        venue = create_venue(offerer )
+        venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock_from_offer(offer)
         booking = create_booking(user=user, stock=stock, is_cancelled=True)

@@ -17,7 +17,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_validated_user_o
                  .filter(Venue.offers.any(~Offer.stocks.any()))
     query = query.join(Offer) \
                  .join(StockSQLEntity) \
-                 .filter(StockSQLEntity.bookings.any(Booking.isUsed == False))
+                 .filter(StockSQLEntity.bookings.any(BookingSQLEntity.isUsed == False))
     user = query.first()
 
     for uo in user.UserOfferers:

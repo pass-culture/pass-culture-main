@@ -388,7 +388,7 @@ class IsEventExpiredTest:
 
 
 class IsEventDeletableTest:
-    @patch('models.stock.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch('models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
     def test_is_deletable_when_stock_is_not_an_event(self):
         # Given
         offerer = create_offerer()
@@ -401,7 +401,7 @@ class IsEventDeletableTest:
         # Then
         assert is_event_deletable is True
 
-    @patch('models.stock.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch('models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
     def test_is_deletable_when_stock_is_an_event_in_the_future(self):
         # Given
         offerer = create_offerer()
@@ -416,7 +416,7 @@ class IsEventDeletableTest:
         # Then
         assert is_event_deletable is True
 
-    @patch('models.stock.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch('models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
     def test_is_deletable_when_stock_is_expired_since_less_than_event_automatic_refund_delay(self):
         # Given
         offerer = create_offerer()
@@ -432,7 +432,7 @@ class IsEventDeletableTest:
         # Then
         assert is_event_deletable is True
 
-    @patch('models.stock.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch('models.stock_sql_entity.EVENT_AUTOMATIC_REFUND_DELAY', EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
     def test_is_not_deletable_when_stock_is_expired_since_more_than_event_automatic_refund_delay(self):
         # Given
         offerer = create_offerer()

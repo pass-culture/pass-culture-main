@@ -1,14 +1,14 @@
 from repository import repository
 from sqlalchemy.sql.expression import func
-from models import User
+from models import UserSQLEntity
 
 
 def update_hasSeenTutorials_for_existing_users():
     print("[USERS UPDATE] START")
-    users_to_update = User.query\
-        .filter(User.email.like('%@%'))\
-        .filter(func.length(User.publicName) > 2)\
-        .filter(User.culturalSurveyFilledDate != None)\
+    users_to_update = UserSQLEntity.query\
+        .filter(UserSQLEntity.email.like('%@%'))\
+        .filter(func.length(UserSQLEntity.publicName) > 2)\
+        .filter(UserSQLEntity.culturalSurveyFilledDate != None)\
         .all()
 
     for user in users_to_update:
