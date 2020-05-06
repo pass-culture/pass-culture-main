@@ -544,15 +544,15 @@ describe('fetchAlgolia', () => {
     })
   })
 
-  describe('newest offers date range', () => {
-    it('should fetch with no numericFilters when newest offers date range is null', () => {
+  describe('offer is new', () => {
+    it('should fetch with no numericFilters when offer new is false', () => {
       // given
       const keywords = 'searched keywords'
 
       // when
       fetchAlgolia({
         keywords: keywords,
-        newestOffersDateRange: null,
+        offerIsNew: false,
       })
 
       // then
@@ -561,23 +561,23 @@ describe('fetchAlgolia', () => {
       })
     })
 
-    it('should fetch with numericFilters when newest offers date range is provided', () => {
+    it('should fetch with numericFilters when offer new is true', () => {
       // given
+      getTimestampFromDate
+        .mockReturnValueOnce(1588762412)
+        .mockReturnValueOnce(1589453612)
       const keywords = 'searched keywords'
-      const newestOffersDateRange = {
-        beginningDate: 1588758952,
-        endingDate: 1589277352
-      }
+      const offerIsNew = true
 
       // when
       fetchAlgolia({
         keywords: keywords,
-        newestOffersDateRange: newestOffersDateRange,
+        offerIsNew: offerIsNew,
       })
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        numericFilters: ["offer.dates: 1588758952 TO 1589277352"],
+        numericFilters: ["offer.stocksDateCreated: 1588762412 TO 1589453612"],
         page: 0,
       })
     })

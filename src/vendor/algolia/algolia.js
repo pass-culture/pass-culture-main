@@ -16,10 +16,10 @@ export const fetchAlgolia = ({
                                date = null,
                                geolocation = null,
                                keywords = '',
-                               newestOffersDateRange = null,
                                offerCategories = [],
                                offerIsDuo = false,
                                offerIsFree = false,
+                               offerIsNew = false,
                                offerTypes = {
                                  isDigital: false,
                                  isEvent: false,
@@ -33,7 +33,7 @@ export const fetchAlgolia = ({
   const searchParameters = {
     page: page,
     ...buildFacetFilters(offerCategories, offerTypes, offerIsDuo),
-    ...buildNumericFilters(offerIsFree, priceRange, date, newestOffersDateRange),
+    ...buildNumericFilters(offerIsFree, priceRange, date, offerIsNew),
     ...buildGeolocationParameter(aroundRadius, geolocation, searchAround),
   }
   const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_SEARCH_API_KEY)
@@ -68,10 +68,10 @@ const buildFacetFilters = (offerCategories, offerTypes, offerIsDuo) => {
   return atLeastOneFacetFilter ? { facetFilters } : {}
 }
 
-const buildNumericFilters = (offerIsFree, priceRange, date, newestOffersDateRange) => {
+const buildNumericFilters = (offerIsFree, priceRange, date, offerIsNew) => {
   const priceRangePredicate = buildOfferPriceRangePredicate(offerIsFree, priceRange)
   const datePredicate = buildDatePredicate(date)
-  const newestOffersPredicate = buildNewestOffersPredicate(newestOffersDateRange)
+  const newestOffersPredicate = buildNewestOffersPredicate(offerIsNew)
   const numericFilters = []
 
   if (priceRangePredicate) {
@@ -131,10 +131,14 @@ const buildDatePredicate = (date) => {
   }
 }
 
-const buildNewestOffersPredicate = newestOffersDateRange => {
-  if (newestOffersDateRange) {
-    const { beginningDate, endingDate } = newestOffersDateRange
-    return `${FACETS.OFFER_DATE}: ${beginningDate} TO ${endingDate}`
+const buildNewestOffersPredicate = offerIsNew => {
+  if (offerIsNew) {
+    const now = new Date()
+    const fifteenDaysBeforeNow = new Date().setDate(now.getDate() - 15)
+    const beginningDate = getTimestampFromDate(new Date(fifteenDaysBeforeNow))
+    const endingDate = getTimestampFromDate(now)
+
+    return `${FACETS.OFFER_STOCKS_DATE_CREATED}: ${beginningDate} TO ${endingDate}`
   }
 }
 
