@@ -2,7 +2,9 @@ import React, { PureComponent } from 'react'
 import BeneficiaryCell from '../CellsFormatter/BeneficiaryCell'
 import BookingDateCell from '../CellsFormatter/BookingsDateCell'
 import BookingStatusCell from '../CellsFormatter/BookingsStatusCell'
+import BookingTokenCell from '../CellsFormatter/BookingsTokenCell'
 import Table from '../Table/Table'
+import BookingOfferCell from '../CellsFormatter/BookingOfferCell'
 
 class BookingsRecapTable extends PureComponent {
   constructor(props) {
@@ -12,9 +14,7 @@ class BookingsRecapTable extends PureComponent {
         {
           headerTitle: "Nom de l'offre",
           accessor: 'stock',
-          Cell: ({ value }) => (<span className="cell-offer-link">
-            {value.offer_name}
-          </span>),
+          Cell: ({ value }) => <BookingOfferCell stock={value} />,
         },
         {
           headerTitle: 'Bénéficiaire',
@@ -29,12 +29,13 @@ class BookingsRecapTable extends PureComponent {
         {
           headerTitle: 'Contremarque',
           accessor: 'booking_token',
+          Cell: ({ value }) => <BookingTokenCell bookingToken={value} />,
         },
         {
           headerTitle: 'Statut',
           accessor: 'booking_status',
           Cell: ({ value }) => <BookingStatusCell bookingStatus={value} />,
-          className: 'td-bookings-status',
+          className: 'bookings-status',
         },
       ],
     }

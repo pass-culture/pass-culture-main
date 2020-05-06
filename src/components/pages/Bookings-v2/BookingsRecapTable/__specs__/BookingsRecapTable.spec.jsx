@@ -1,6 +1,11 @@
 import BookingsRecapTable from '../BookingsRecapTable'
 import React from 'react'
 import { mount, shallow } from 'enzyme'
+import BeneficiaryCell from '../../CellsFormatter/BeneficiaryCell'
+import BookingDateCell from '../../CellsFormatter/BookingsDateCell'
+import BookingTokenCell from '../../CellsFormatter/BookingsTokenCell'
+import BookingStatusCell from '../../CellsFormatter/BookingsStatusCell'
+import BookingOfferCell from '../../CellsFormatter/BookingOfferCell'
 
 describe('components | pages | Bookings-v2 | BookingsRecapTable', function() {
   it('should call the Table component with columns and data props', function() {
@@ -98,18 +103,24 @@ describe('components | pages | Bookings-v2 | BookingsRecapTable', function() {
 
     // When
     const wrapper = mount(<BookingsRecapTable {...props} />)
-    const firstRow = wrapper.find('tr').at(1)
-    const firstRowStock = firstRow.find('td').at(0)
-    const firstRowBeneficiary = firstRow.find('td').at(1)
-    const firstRowBookingDate = firstRow.find('td').at(2)
-    const firstRowToken = firstRow.find('td').at(3)
-    const firstRowStatus = firstRow.find('td').at(4)
 
     // Then
-    expect(firstRowStock.text()).toBe('Avez-vous déjà vu')
-    expect(firstRowBeneficiary.text()).toBe('Sonia Klepisonia.klepi@example.com')
-    expect(firstRowBookingDate.text()).toBe('03/04/202012:00')
-    expect(firstRowToken.text()).toBe('ZEHBGD')
-    expect(firstRowStatus.text()).toBe('validé')
+    const bookingOfferCell = wrapper.find(BookingOfferCell)
+    expect(bookingOfferCell).toHaveLength(1)
+    expect(bookingOfferCell.props()).toStrictEqual({ stock: { offer_name: 'Avez-vous déjà vu' } })
+    const beneficiaryCell = wrapper.find(BeneficiaryCell)
+    expect(beneficiaryCell).toHaveLength(1)
+    expect(beneficiaryCell.props()).toStrictEqual({
+      beneficiaryInfos: { email: 'sonia.klepi@example.com', firstname: 'Sonia', lastname: 'Klepi' },
+    })
+    const bookingDateCell = wrapper.find(BookingDateCell)
+    expect(bookingDateCell).toHaveLength(1)
+    expect(bookingDateCell.props()).toStrictEqual({ bookingDate: '2020-04-03T12:00:00Z' })
+    const bookingTokenCell = wrapper.find(BookingTokenCell)
+    expect(bookingTokenCell).toHaveLength(1)
+    expect(bookingTokenCell.props()).toStrictEqual({ bookingToken: 'ZEHBGD' })
+    const bookingStatusCell = wrapper.find(BookingStatusCell)
+    expect(bookingStatusCell).toHaveLength(1)
+    expect(bookingStatusCell.props()).toStrictEqual({ bookingStatus: 'Validé' })
   })
 })
