@@ -9,7 +9,6 @@ from repository.provider_queries import get_enabled_providers_for_pro, \
 from routes.serialization import as_dict
 from utils.rest import load_or_404
 from validation.routes.providers import check_provider_name
-from workers import worker
 from workers.bank_information_job import synchronize_bank_informations
 
 
@@ -48,11 +47,10 @@ def get_providers_by_venue(venue_id: str):
 @app.route('/providers/<provider_name>/application_update', methods=['POST'])
 def post_update_demarches_simplifiees_application(provider_name: str):
     check_provider_name(provider_name)
-
     try:
         application_id = request.form['dossier_id']
     except:
         return '', 400
 
-    worker.redis_queue.enqueue_call(func=synchronize_bank_informations, args=(application_id, provider_name))
+    synchronize_bank_informations.delay(application_id, provider_name)
     return '', 202

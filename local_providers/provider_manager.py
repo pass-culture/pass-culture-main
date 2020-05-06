@@ -27,6 +27,7 @@ def launch_provider_on_data(provider_name: str, init_args: Optional[int] = None)
     try:
         provider = provider_class(init_args)
         do_update(provider, limit=None)
+
     except Exception:
         formatted_traceback = traceback.format_exc()
         logger.error(build_job_log_message(name=provider_name,
