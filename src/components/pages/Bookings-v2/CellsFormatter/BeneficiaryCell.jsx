@@ -1,7 +1,7 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
-function BeneficiaryCell(props) {
-  const { beneficiaryInfos } = props
+function BeneficiaryCell({ beneficiaryInfos }) {
   const beneficiaryName = beneficiaryInfos.firstname.concat(' ', beneficiaryInfos.lastname)
   return (
     <div>
@@ -14,6 +14,13 @@ function BeneficiaryCell(props) {
       </span>
     </div>
   )
+}
+
+BeneficiaryCell.propTypes = {
+  beneficiaryInfos: PropTypes.shape({
+    firstname: PropTypes.string.isRequired,
+    lastname: PropTypes.string.isRequired,
+  }).isRequired,
 }
 
 export default BeneficiaryCell

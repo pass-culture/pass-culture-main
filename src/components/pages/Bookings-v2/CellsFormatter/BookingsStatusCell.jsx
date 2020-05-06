@@ -1,5 +1,5 @@
 import React from 'react'
-import classnames from 'classnames'
+import PropTypes from 'prop-types'
 
 const BOOKING_STATUS = [
   {
@@ -22,40 +22,40 @@ const BOOKING_STATUS = [
     status: 'remboursé',
     className: 'reimbursed',
   },
-  {
-    id: 'default',
-    className: 'default',
-  },
 ]
 
-const STATUS_PREFIX = 'bookings-status-'
+const BOOKING_STATUS_DEFAULT = {
+  id: 'default',
+  className: 'default',
+}
+
+const getBookingStatusDisplayInformationsOrDefault = bookingStatusInfos => {
+  const bookingStatusFound = BOOKING_STATUS.find(({ id }) => bookingStatusInfos === id)
+  return bookingStatusFound ? bookingStatusFound : BOOKING_STATUS_DEFAULT
+}
+
+const computeStatusClassName = bookingStatusDisplayInformations => {
+  return `bookings-status-${bookingStatusDisplayInformations.className}`
+}
 
 const BookingStatusCell = ({ bookingStatus }) => {
   bookingStatus = bookingStatus.toLowerCase()
-
-  const getBookingStatusDisplayInformationsOrDefault = bookingStatusInfos => {
-    const bookingStatusFound = BOOKING_STATUS.find(({ id }) => bookingStatusInfos === id)
-    return bookingStatusFound
-      ? bookingStatusFound
-      : BOOKING_STATUS.find(({ id }) => id === 'default')
-  }
-
-  const computeStatusClassName = bookingStatusDisplayInformations => {
-    return STATUS_PREFIX + bookingStatusDisplayInformations.className
-  }
 
   const bookingStatusDisplayInformations = getBookingStatusDisplayInformationsOrDefault(
     bookingStatus
   )
   const statusClassName = computeStatusClassName(bookingStatusDisplayInformations)
+  const statusName = bookingStatusDisplayInformations.status
+    ? bookingStatusDisplayInformations.status
+    : bookingStatus
 
-  return (
-    <span className={classnames('bookings-status-label', statusClassName)}>
-      {bookingStatusDisplayInformations.status
-        ? bookingStatusDisplayInformations.status
-        : bookingStatus}
-    </span>
-  )
+  return (<span className={`bookings-status-label ${statusClassName}`}>
+    {statusName}
+  </span>)
+}
+
+BookingStatusCell.propTypes = {
+  bookingStatus: PropTypes.string.isRequired,
 }
 
 export default BookingStatusCell

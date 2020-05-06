@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react'
 import Main from '../../layout/Main'
 import Titles from '../../layout/Titles/Titles'
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
+import PropTypes from 'prop-types'
 
 class BookingsRecap extends PureComponent {
   constructor(props) {
@@ -29,6 +30,10 @@ class BookingsRecap extends PureComponent {
       </Main>
     )
   }
+}
+
+BookingsRecap.propTypes = {
+  requestGetAllBookingsRecap: PropTypes.func.isRequired,
 }
 
 export default BookingsRecap
