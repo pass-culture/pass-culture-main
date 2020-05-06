@@ -1,16 +1,16 @@
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
-import { LOCALE_FRANCE } from "../../../../utils/date/date"
-import Icon from '../../../layout/Icon/Icon'
-import Result from './Result'
+import { LOCALE_FRANCE } from "../../../../../utils/date/date"
+import Icon from '../../../../layout/Icon/Icon'
+import Result from './Result/Result'
 
 const getNumberOfResultsToDisplay = resultsCount => {
   const pluralizedResultatWord = resultsCount > 1 ? 'résultats' : 'résultat'
   return `${resultsCount.toLocaleString(LOCALE_FRANCE)} ${pluralizedResultatWord}`
 }
 
-export const SearchResultsList = ({
+export const ResultsList = ({
   currentPage,
   geolocation,
   isLoading,
@@ -59,10 +59,10 @@ export const SearchResultsList = ({
   )
 }
 
-SearchResultsList.defaultProps = {
+ResultsList.defaultProps = {
   search: '',
 }
-SearchResultsList.propTypes = {
+ResultsList.propTypes = {
   currentPage: PropTypes.number.isRequired,
   geolocation: PropTypes.shape({
     latitude: PropTypes.number,

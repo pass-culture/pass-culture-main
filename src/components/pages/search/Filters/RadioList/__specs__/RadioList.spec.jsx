@@ -1,6 +1,6 @@
 import { mount, shallow } from 'enzyme'
 import React from 'react'
-import { DatePickerCustomHeader } from '../../DatePicker/DatePickerCustomHeader'
+import { DatePickerCustomHeader } from '../DatePickerCustomHeader/DatePickerCustomHeader'
 import { RadioList } from '../RadioList'
 
 describe('components | RadioList', () => {

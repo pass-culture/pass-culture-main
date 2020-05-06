@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import Icon from '../../../layout/Icon/Icon'
+import Icon from '../../../../layout/Icon/Icon'
 
-export const EmptySearchResult = ({ searchedKeywords, onNewSearchAroundMe }) => (
+export const EmptyResult = ({ searchedKeywords, onNewSearchAroundMe }) => (
   <div className='empty-search-result-wrapper'>
     <Icon svg="ico-no-offer" />
     <span>
@@ -28,7 +28,7 @@ export const EmptySearchResult = ({ searchedKeywords, onNewSearchAroundMe }) => 
   </div>
 )
 
-EmptySearchResult.propTypes = {
+EmptyResult.propTypes = {
   onNewSearchAroundMe: PropTypes.func.isRequired,
   searchedKeywords: PropTypes.string.isRequired,
 }

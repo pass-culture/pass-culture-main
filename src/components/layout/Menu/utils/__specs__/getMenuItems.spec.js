@@ -5,7 +5,7 @@ import MyBookingsContainer from '../../../../pages/my-bookings/MyBookingsContain
 import ProfileContainer from '../../../../pages/profile/ProfileContainer'
 import routes from '../../../../router/routes'
 import { getMenuItemsFromRoutes } from '../getMenuItems'
-import SearchAlgoliaContainer from '../../../../pages/search-algolia/SearchAlgoliaContainer'
+import SearchContainer from '../../../../pages/search/SearchContainer'
 
 describe('getMenuItemsFromRoutes', () => {
   it('should filter routes for menu from mock', () => {
@@ -47,7 +47,7 @@ describe('getMenuItemsFromRoutes', () => {
         title: 'Offres géolocalisées',
       },
       {
-        component: SearchAlgoliaContainer,
+        component: SearchContainer,
         featureName: 'SEARCH_ALGOLIA',
         icon: 'ico-search',
         path: '/recherche',

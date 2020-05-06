@@ -1,9 +1,9 @@
 import { shallow } from 'enzyme'
 import React from 'react'
-import Result from '../Result'
-import { SearchResultsList } from '../SearchResultsList'
+import Result from '../Result/Result'
+import { ResultsList } from '../ResultsList'
 
-describe('component | SearchResultsList', () => {
+describe('component | ResultsList', () => {
   let props
   beforeEach(() => {
     props = {
@@ -64,7 +64,7 @@ describe('component | SearchResultsList', () => {
 
   it('should display Result component for each result', () => {
     // When
-    const wrapper = shallow(<SearchResultsList {...props} />)
+    const wrapper = shallow(<ResultsList {...props} />)
 
     // Then
     const resultsComponent = wrapper.find(Result)
@@ -126,7 +126,7 @@ describe('component | SearchResultsList', () => {
     props.resultsCount = 2
 
     // When
-    const wrapper = shallow(<SearchResultsList {...props} />)
+    const wrapper = shallow(<ResultsList {...props} />)
 
     // Then
     const numberOfResults = wrapper.find({ children: '2 résultats' })
@@ -138,7 +138,7 @@ describe('component | SearchResultsList', () => {
     props.resultsCount = 1
 
     // When
-    const wrapper = shallow(<SearchResultsList {...props} />)
+    const wrapper = shallow(<ResultsList {...props} />)
 
     // Then
     const numberOfResults = wrapper.find({ children: '1 résultat' })
@@ -150,7 +150,7 @@ describe('component | SearchResultsList', () => {
     props.resultsCount = 1000000
 
     // When
-    const wrapper = shallow(<SearchResultsList {...props} />)
+    const wrapper = shallow(<ResultsList {...props} />)
 
     // Then
     const numberOfResults = wrapper.find({ children: '1 000 000 résultats' })
@@ -162,7 +162,7 @@ describe('component | SearchResultsList', () => {
     props.sortCriterionLabel = 'Prix'
 
     // When
-    const wrapper = await shallow(<SearchResultsList {...props} />)
+    const wrapper = await shallow(<ResultsList {...props} />)
 
     // Then
     const sortButton = wrapper.find({ children: 'Prix' })

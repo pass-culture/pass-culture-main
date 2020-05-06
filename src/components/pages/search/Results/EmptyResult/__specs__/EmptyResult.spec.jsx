@@ -1,13 +1,13 @@
 import { shallow } from 'enzyme'
 import React from 'react'
-import Icon from '../../../../layout/Icon/Icon'
-import { EmptySearchResult } from '../EmptySearchResult'
+import Icon from '../../../../../layout/Icon/Icon'
+import { EmptyResult } from '../EmptyResult'
 
-describe('components | EmptySearchResult', () => {
+describe('components | EmptyResult', () => {
   it('should display an image of empty search results', () => {
     // When
     const wrapper = shallow(
-      <EmptySearchResult
+      <EmptyResult
         onNewSearchAroundMe={jest.fn()}
         searchedKeywords="mots clés recherchés"
       />
@@ -22,7 +22,7 @@ describe('components | EmptySearchResult', () => {
   it('should display searched keywords', () => {
     // When
     const wrapper = shallow(
-      <EmptySearchResult
+      <EmptyResult
         onNewSearchAroundMe={jest.fn()}
         searchedKeywords="mots clés recherchés"
       />
@@ -39,7 +39,7 @@ describe('components | EmptySearchResult', () => {
     // Given
     const onNewSearchAroundMe = jest.fn()
     const wrapper = shallow(
-      <EmptySearchResult
+      <EmptyResult
         onNewSearchAroundMe={onNewSearchAroundMe}
         searchedKeywords="mots clés recherchés"
       />

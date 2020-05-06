@@ -3,7 +3,7 @@ import { compose } from 'redux'
 import { selectUserGeolocation } from '../../../redux/selectors/geolocationSelectors'
 
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
-import SearchAlgolia from './SearchAlgolia'
+import Search from './Search'
 
 export const mapStateToProps = (state, ownProps) => {
   const geolocation = selectUserGeolocation(state)
@@ -21,4 +21,4 @@ export const mapStateToProps = (state, ownProps) => {
 export default compose(
   withRequiredLogin,
   connect(mapStateToProps)
-)(SearchAlgolia)
+)(Search)

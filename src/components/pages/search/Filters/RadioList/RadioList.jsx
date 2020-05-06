@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import React, { forwardRef } from 'react'
 import DatePicker from 'react-datepicker'
 
-import { DatePickerCustomHeader } from '../DatePicker/DatePickerCustomHeader'
+import { DatePickerCustomHeader } from './DatePickerCustomHeader/DatePickerCustomHeader'
 import { DATE_FILTER } from '../filtersEnums'
 import { Radio } from './Radio/Radio'
 

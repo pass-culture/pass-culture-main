@@ -1,4 +1,4 @@
-import { mapStateToProps } from '../SearchAlgoliaContainer'
+import { mapStateToProps } from '../SearchContainer'
 
 jest.mock('../../../../utils/geolocation', () => ({
   isGeolocationEnabled: jest.fn().mockReturnValue(true),

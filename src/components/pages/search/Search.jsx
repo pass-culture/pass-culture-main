@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
 import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA, SORT_CRITERIA } from './Criteria/criteriaEnums'
 import { Home } from './Home/Home'
-import SearchResults from './Result/SearchResults'
+import Results from './Results/Results'
 import CriteriaLocation from './CriteriaLocation/CriteriaLocation'
 import CriteriaCategory from './CriteriaCategory/CriteriaCategory'
 import CriteriaSort from './CriteriaSort/CriteriaSort'
@@ -12,7 +12,7 @@ import { buildPlaceLabel } from './CriteriaLocation/utils/buildPlaceLabel'
 const DEFAULT_META_VIEWPORT_CONTENT =
   'width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no'
 
-class SearchAlgolia extends PureComponent {
+class Search extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
@@ -132,7 +132,7 @@ class SearchAlgolia extends PureComponent {
           />
         </Route>
         <Route path="/recherche/resultats">
-          <SearchResults
+          <Results
             criteria={{
               categories: categoryCriterion.facetFilter ? [categoryCriterion.facetFilter] : [],
               searchAround: geolocationCriterion.searchAround,
@@ -189,11 +189,11 @@ class SearchAlgolia extends PureComponent {
   }
 }
 
-SearchAlgolia.defaultProps = {
+Search.defaultProps = {
   geolocation: {},
 }
 
-SearchAlgolia.propTypes = {
+Search.propTypes = {
   geolocation: PropTypes.shape({
     latitude: PropTypes.number,
     longitude: PropTypes.number,
@@ -208,4 +208,4 @@ SearchAlgolia.propTypes = {
   redirectToSearchMainPage: PropTypes.func.isRequired,
 }
 
-export default SearchAlgolia
+export default Search

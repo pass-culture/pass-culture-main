@@ -2,10 +2,10 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { formatSearchResultDate } from '../../../../utils/date/date'
-import { getHumanizeRelativeDistance } from '../../../../utils/geolocation'
-import { formatResultPrice } from '../../../../utils/price'
-import { DEFAULT_THUMB_URL } from '../../../../utils/thumb'
+import { formatSearchResultDate } from '../../../../../../utils/date/date'
+import { getHumanizeRelativeDistance } from '../../../../../../utils/geolocation'
+import { formatResultPrice } from '../../../../../../utils/price'
+import { DEFAULT_THUMB_URL } from '../../../../../../utils/thumb'
 
 const Result = ({ result, geolocation, search }) => {
   const { _geoloc = {}, objectID, offer } = result

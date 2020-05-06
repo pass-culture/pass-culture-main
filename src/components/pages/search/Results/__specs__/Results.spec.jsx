@@ -15,11 +15,11 @@ import Spinner from '../../../../layout/Spinner/Spinner'
 import { SORT_CRITERIA } from '../../Criteria/criteriaEnums'
 import CriteriaSort from '../../CriteriaSort/CriteriaSort'
 import { Filters } from '../../Filters/Filters'
-import { EmptySearchResult } from '../EmptySearchResult'
-import Result from '../Result'
-import SearchAlgoliaDetailsContainer from '../ResultDetail/ResultDetailContainer'
-import SearchResults from '../SearchResults'
-import { SearchResultsList } from '../SearchResultsList'
+import { EmptyResult } from '../EmptyResult/EmptyResult'
+import Result from '../ResultsList/Result/Result'
+import SearchAlgoliaDetailsContainer from '../ResultsList/ResultDetail/ResultDetailContainer'
+import Results from '../Results'
+import { ResultsList } from '../ResultsList/ResultsList'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
@@ -51,7 +51,7 @@ const stubRef = wrapper => {
   }
 }
 
-describe('components | SearchResults', () => {
+describe('components | Results', () => {
   let props
   let change
   let clear
@@ -125,7 +125,7 @@ describe('components | SearchResults', () => {
   describe('when render', () => {
     it('should display a header with the right properties', () => {
       // when
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
 
       // then
       const header = wrapper.find(HeaderContainer)
@@ -141,7 +141,7 @@ describe('components | SearchResults', () => {
 
     it('should display a form element with an input text', () => {
       // when
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
 
       // then
       const form = wrapper.find('form')
@@ -155,7 +155,7 @@ describe('components | SearchResults', () => {
 
     it('should display a filter button', () => {
       // when
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
 
       // then
       const filterButton = wrapper.find({ children: 'Filtrer' })
@@ -172,7 +172,7 @@ describe('components | SearchResults', () => {
       props.criteria.categories = ['CINEMA']
 
       // when
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
       const numberOfActiveFilters = wrapper.find('[data-test="sr-filter-button-counter"]')
 
       // then
@@ -187,7 +187,7 @@ describe('components | SearchResults', () => {
       })
 
       // when
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
 
       // then
       const numberOfActiveFilters = wrapper.find('[data-test="sr-filter-button-counter"]')
@@ -208,7 +208,7 @@ describe('components | SearchResults', () => {
       })
 
       // when
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
       const numberOfActiveFilters = wrapper.find('[data-test="sr-filter-button-counter"]')
 
       // then
@@ -217,7 +217,7 @@ describe('components | SearchResults', () => {
 
     it('should display a footer', () => {
       // when
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
 
       // then
       const footer = wrapper.find(RelativeFooterContainer)
@@ -228,7 +228,7 @@ describe('components | SearchResults', () => {
 
     it('should display spinner while loading', () => {
       // when
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
 
       // then
       expect(wrapper.find(Spinner)).toHaveLength(1)
@@ -236,15 +236,15 @@ describe('components | SearchResults', () => {
 
     it('should not display emptySearchResult component when loading', () => {
       // when
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
 
       // then
-      expect(wrapper.find(EmptySearchResult)).toHaveLength(0)
+      expect(wrapper.find(EmptyResult)).toHaveLength(0)
     })
 
     it('should not display spinner while loading is not over', async () => {
       // when
-      const wrapper = await shallow(<SearchResults {...props} />)
+      const wrapper = await shallow(<Results {...props} />)
 
       // then
       expect(wrapper.find(Spinner)).toHaveLength(0)
@@ -276,7 +276,7 @@ describe('components | SearchResults', () => {
       props.criteria = {}
 
       // when
-      await shallow(<SearchResults {...props} />)
+      await shallow(<Results {...props} />)
 
       // then
       expect(fetchAlgolia).toHaveBeenCalledWith({
@@ -315,7 +315,7 @@ describe('components | SearchResults', () => {
         }
 
         // when
-        shallow(<SearchResults {...props} />)
+        shallow(<Results {...props} />)
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
@@ -362,9 +362,9 @@ describe('components | SearchResults', () => {
         props.query.parse.mockReset()
       })
 
-      it('should display EmptySearchResult component when 0 result', async () => {
+      it('should display EmptyResult component when 0 result', async () => {
         // given
-        const wrapper = shallow(<SearchResults {...props} />)
+        const wrapper = shallow(<Results {...props} />)
         stubRef(wrapper)
         const form = wrapper.find('form')
 
@@ -379,7 +379,7 @@ describe('components | SearchResults', () => {
         })
 
         // then
-        const emptySearchResult = wrapper.find(EmptySearchResult)
+        const emptySearchResult = wrapper.find(EmptyResult)
         const filterButton = wrapper.find({ children: 'Filtrer' })
         expect(emptySearchResult).toHaveLength(1)
         expect(filterButton).toHaveLength(0)
@@ -401,7 +401,7 @@ describe('components | SearchResults', () => {
         })
         const wrapper = await mount(
           <Router history={history}>
-            <SearchResults {...props} />
+            <Results {...props} />
           </Router>
         )
         wrapper.update()
@@ -458,10 +458,10 @@ describe('components | SearchResults', () => {
         })
 
         // when
-        const wrapper = await shallow(<SearchResults {...props} />)
+        const wrapper = await shallow(<Results {...props} />)
 
         // then
-        const searchResultsListComponent = wrapper.find(SearchResultsList)
+        const searchResultsListComponent = wrapper.find(ResultsList)
         const results = searchResultsListComponent.prop('results')
         const searchInput = wrapper.find('input')
         expect(results).toHaveLength(1)
@@ -508,10 +508,10 @@ describe('components | SearchResults', () => {
         })
 
         // when
-        const wrapper = await shallow(<SearchResults {...props} />)
+        const wrapper = await shallow(<Results {...props} />)
 
         // then
-        const searchResultsListComponent = wrapper.find(SearchResultsList)
+        const searchResultsListComponent = wrapper.find(ResultsList)
         const results = searchResultsListComponent.prop('results')
         const searchInput = wrapper.find('input')
         expect(results).toHaveLength(2)
@@ -545,7 +545,7 @@ describe('components | SearchResults', () => {
         })
 
         // when
-        shallow(<SearchResults {...props} />)
+        shallow(<Results {...props} />)
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
@@ -590,7 +590,7 @@ describe('components | SearchResults', () => {
         isGeolocationEnabled.mockReturnValue(false)
 
         // when
-        shallow(<SearchResults {...props} />)
+        shallow(<Results {...props} />)
 
         // then
         expect(props.history.replace).toHaveBeenCalledWith({
@@ -637,7 +637,7 @@ describe('components | SearchResults', () => {
         props.criteria.categories = ['CINEMA']
 
         // when
-        await shallow(<SearchResults {...props} />)
+        await shallow(<Results {...props} />)
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
@@ -680,7 +680,7 @@ describe('components | SearchResults', () => {
         props.criteria = {}
 
         // when
-        await shallow(<SearchResults {...props} />)
+        await shallow(<Results {...props} />)
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
@@ -717,7 +717,7 @@ describe('components | SearchResults', () => {
         props.criteria.categories = ['VISITE']
 
         // when
-        await shallow(<SearchResults {...props} />)
+        await shallow(<Results {...props} />)
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
@@ -754,7 +754,7 @@ describe('components | SearchResults', () => {
         })
 
         // when
-        await shallow(<SearchResults {...props} />)
+        await shallow(<Results {...props} />)
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
@@ -797,7 +797,7 @@ describe('components | SearchResults', () => {
         })
 
         // when
-        await shallow(<SearchResults {...props} />)
+        await shallow(<Results {...props} />)
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
@@ -839,7 +839,7 @@ describe('components | SearchResults', () => {
         })
 
         // when
-        await shallow(<SearchResults {...props} />)
+        await shallow(<Results {...props} />)
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
@@ -881,7 +881,7 @@ describe('components | SearchResults', () => {
         })
 
         // when
-        await shallow(<SearchResults {...props} />)
+        await shallow(<Results {...props} />)
 
         // then
         expect(fetchAlgolia).toHaveBeenCalledWith({
@@ -919,10 +919,10 @@ describe('components | SearchResults', () => {
         props.criteria.sortBy = '_by_price'
 
         // when
-        const wrapper = await shallow(<SearchResults {...props} />)
+        const wrapper = await shallow(<Results {...props} />)
 
         // then
-        const sortCriterionLabel = wrapper.find(SearchResultsList).prop('sortCriterionLabel')
+        const sortCriterionLabel = wrapper.find(ResultsList).prop('sortCriterionLabel')
         expect(sortCriterionLabel).toBe('Prix')
       })
 
@@ -944,10 +944,10 @@ describe('components | SearchResults', () => {
         })
 
         // when
-        const wrapper = await shallow(<SearchResults {...props} />)
+        const wrapper = await shallow(<Results {...props} />)
 
         // then
-        const sortCriterionLabel = wrapper.find(SearchResultsList).prop('sortCriterionLabel')
+        const sortCriterionLabel = wrapper.find(ResultsList).prop('sortCriterionLabel')
         expect(sortCriterionLabel).toBe('Prix')
       })
     })
@@ -956,7 +956,7 @@ describe('components | SearchResults', () => {
   describe('when searching', () => {
     it('should trigger search request when keywords have been provided', () => {
       // given
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
       stubRef(wrapper)
       const form = wrapper.find('form')
       // when
@@ -992,7 +992,7 @@ describe('components | SearchResults', () => {
 
     it('should trigger search request when keywords contains only spaces', () => {
       // given
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
       stubRef(wrapper)
       wrapper.setState({ searchedKeywords: 'different previous search' })
       const form = wrapper.find('form')
@@ -1030,7 +1030,7 @@ describe('components | SearchResults', () => {
 
     it('should trigger search request when no keywords', () => {
       // given
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
       stubRef(wrapper)
       wrapper.setState({ searchedKeywords: 'different previous search' })
       const form = wrapper.find('form')
@@ -1068,7 +1068,7 @@ describe('components | SearchResults', () => {
 
     it('should not display results when no results', () => {
       // given
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
       stubRef(wrapper)
       const form = wrapper.find('form')
       fetchAlgolia.mockReturnValue({
@@ -1129,7 +1129,7 @@ describe('components | SearchResults', () => {
             })
           })
         )
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
       stubRef(wrapper)
       const form = wrapper.find('form')
 
@@ -1144,7 +1144,7 @@ describe('components | SearchResults', () => {
       })
 
       // then
-      const results = wrapper.find(SearchResultsList)
+      const results = wrapper.find(ResultsList)
       expect(results).toHaveLength(1)
       expect(results.at(0).prop('currentPage')).toStrictEqual(0)
       expect(results.at(0).prop('geolocation')).toStrictEqual({ latitude: 40.1, longitude: 41.1 })
@@ -1177,7 +1177,7 @@ describe('components | SearchResults', () => {
           })
         })
       )
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
       stubRef(wrapper)
       const form = wrapper.find('form')
 
@@ -1192,7 +1192,7 @@ describe('components | SearchResults', () => {
       })
 
       // then
-      const resultsFirstFetch = wrapper.find(SearchResultsList).prop('results')
+      const resultsFirstFetch = wrapper.find(ResultsList).prop('results')
       expect(resultsFirstFetch).toHaveLength(2)
 
       // when
@@ -1220,7 +1220,7 @@ describe('components | SearchResults', () => {
       })
 
       // then
-      const resultSecondFetch = wrapper.find(SearchResultsList)
+      const resultSecondFetch = wrapper.find(ResultsList)
       expect(resultSecondFetch.prop('results')).toHaveLength(1)
       expect(wrapper.state()).toStrictEqual({
         currentPage: 0,
@@ -1287,7 +1287,7 @@ describe('components | SearchResults', () => {
           })
         })
       )
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
       stubRef(wrapper)
       const form = wrapper.find('form')
 
@@ -1356,7 +1356,7 @@ describe('components | SearchResults', () => {
           reject()
         })
       )
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
       stubRef(wrapper)
       const form = wrapper.find('form')
 
@@ -1387,7 +1387,7 @@ describe('components | SearchResults', () => {
         place: 'Paris',
         tri: '_by_price',
       })
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
       stubRef(wrapper)
       const form = wrapper.find('form')
       fetchAlgolia.mockReturnValue(
@@ -1423,7 +1423,7 @@ describe('components | SearchResults', () => {
 
     it('should remove focus from input when the form is submitted', () => {
       // given
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
       const instance = wrapper.instance()
       stubRef(wrapper)
       const form = wrapper.find('form')
@@ -1458,11 +1458,11 @@ describe('components | SearchResults', () => {
       history.push('/recherche/resultats')
       const wrapper = mount(
         <Router history={history}>
-          <SearchResults {...props} />
+          <Results {...props} />
         </Router>
       )
       wrapper.setState({ isLoading: true })
-      const searchResultsWrapper = wrapper.find(SearchResults)
+      const searchResultsWrapper = wrapper.find(Results)
       const input = searchResultsWrapper.instance().inputRef.current
       jest.spyOn(input, 'blur').mockImplementationOnce()
 
@@ -1477,7 +1477,7 @@ describe('components | SearchResults', () => {
 
     it('should fetch algolia with date filter when enabled', async () => {
       // given
-      const wrapper = shallow(<SearchResults {...props} />)
+      const wrapper = shallow(<Results {...props} />)
       stubRef(wrapper)
       const selectedDate = new Date(2020, 3, 21)
       wrapper.setState({
@@ -1530,7 +1530,7 @@ describe('components | SearchResults', () => {
     describe('reset cross', () => {
       it('should not display reset cross when nothing is typed in text input', () => {
         // when
-        const wrapper = shallow(<SearchResults {...props} />)
+        const wrapper = shallow(<Results {...props} />)
 
         // then
         const resetButton = wrapper.find('button[type="reset"]')
@@ -1539,7 +1539,7 @@ describe('components | SearchResults', () => {
 
       it('should display reset cross when something is typed in text input', () => {
         // given
-        const wrapper = shallow(<SearchResults {...props} />)
+        const wrapper = shallow(<Results {...props} />)
         const form = wrapper.find('form')
         const input = form.find('input')
 
@@ -1563,7 +1563,7 @@ describe('components | SearchResults', () => {
         history.push('/recherche/resultats?mots-cles=librairie&page=2')
         const wrapper = mount(
           <Router history={history}>
-            <SearchResults {...props} />
+            <Results {...props} />
           </Router>
         )
         const form = wrapper.find('form')
@@ -1606,7 +1606,7 @@ describe('components | SearchResults', () => {
       const wrapper = mount(
         <Router history={history}>
           <Provider store={store}>
-            <SearchResults {...props} />
+            <Results {...props} />
           </Provider>
         </Router>
       )
@@ -1626,7 +1626,7 @@ describe('components | SearchResults', () => {
       const wrapper = mount(
         <Router history={history}>
           <Provider store={store}>
-            <SearchResults {...props} />
+            <Results {...props} />
           </Provider>
         </Router>
       )
@@ -1651,7 +1651,7 @@ describe('components | SearchResults', () => {
       const wrapper = mount(
         <Router history={history}>
           <Provider store={store}>
-            <SearchResults {...props} />
+            <Results {...props} />
           </Provider>
         </Router>
       )
@@ -1709,7 +1709,7 @@ describe('components | SearchResults', () => {
       const wrapper = mount(
         <Router history={history}>
           <Provider store={store}>
-            <SearchResults {...props} />
+            <Results {...props} />
           </Provider>
         </Router>
       )
@@ -1744,7 +1744,7 @@ describe('components | SearchResults', () => {
         })
 
         // when
-        const wrapper = shallow(<SearchResults {...props} />)
+        const wrapper = shallow(<Results {...props} />)
 
         // then
         const form = wrapper.find('form')
@@ -1770,7 +1770,7 @@ describe('components | SearchResults', () => {
 
         // when
         const wrapper = await shallow(
-          <SearchResults
+          <Results
             {...props}
             redirectToSearchMainPage={redirectToSearchMainPage}
           />
@@ -1809,7 +1809,7 @@ describe('components | SearchResults', () => {
         )
         const wrapper = mount(
           <Router history={history}>
-            <SearchResults {...props} />
+            <Results {...props} />
           </Router>
         )
         const form = wrapper.find('form')
@@ -1838,7 +1838,7 @@ describe('components | SearchResults', () => {
         const wrapper = mount(
           <Router history={history}>
             <Provider store={store}>
-              <SearchResults {...props} />
+              <Results {...props} />
             </Provider>
           </Router>
         )
@@ -1862,9 +1862,9 @@ describe('components | SearchResults', () => {
             })
           })
         )
-        const wrapper = await shallow(<SearchResults {...props} />)
+        const wrapper = await shallow(<Results {...props} />)
         stubRef(wrapper)
-        const resultsList = wrapper.find(SearchResultsList).closest('div')
+        const resultsList = wrapper.find(ResultsList).closest('div')
         resultsList.simulate('scroll', { target: { scrollTop: 1030 } })
 
         // When
@@ -1892,7 +1892,7 @@ describe('components | SearchResults', () => {
       const wrapper = mount(
         <Provider store={store}>
           <Router history={history}>
-            <SearchResults {...props} />
+            <Results {...props} />
           </Router>
         </Provider>
       )
@@ -1925,7 +1925,7 @@ describe('components | SearchResults', () => {
       const wrapper = await mount(
         <Provider store={store}>
           <Router history={history}>
-            <SearchResults {...props} />
+            <Results {...props} />
           </Router>
         </Provider>
       )
@@ -1959,7 +1959,7 @@ describe('components | SearchResults', () => {
       const wrapper = await mount(
         <Provider store={store}>
           <Router history={history}>
-            <SearchResults {...props} />
+            <Results {...props} />
           </Router>
         </Provider>
       )
@@ -1985,7 +1985,7 @@ describe('components | SearchResults', () => {
       const wrapper = mount(
         <Provider store={store}>
           <Router history={history}>
-            <SearchResults {...props} />
+            <Results {...props} />
           </Router>
         </Provider>
       )
@@ -2058,7 +2058,7 @@ describe('components | SearchResults', () => {
       const wrapper = await mount(
         <Provider store={store}>
           <Router history={history}>
-            <SearchResults {...props} />
+            <Results {...props} />
           </Router>
         </Provider>
       )

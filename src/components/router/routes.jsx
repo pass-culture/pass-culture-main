@@ -15,7 +15,7 @@ import TypeFormContainer from '../pages/typeform/TypeformContainer'
 import SignInContainer from '../pages/signin/SignInContainer'
 import SignupContainer from '../pages/signup/SignupContainer'
 import { WEBAPP_CONTACT_EXTERNAL_PAGE } from '../../utils/config'
-import SearchAlgoliaContainer from '../pages/search-algolia/SearchAlgoliaContainer'
+import SearchContainer from '../pages/search/SearchContainer'
 
 function redirectToBeta() {
   return <Redirect to="/beta" />
@@ -111,7 +111,7 @@ const routes = [
     title: 'Offres géolocalisées',
   },
   {
-    component: SearchAlgoliaContainer,
+    component: SearchContainer,
     featureName: 'SEARCH_ALGOLIA',
     icon: 'ico-search',
     path:

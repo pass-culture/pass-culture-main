@@ -5,8 +5,8 @@ import {
   FULL_MONTH_IN_LETTERS,
   LOCALE_FRANCE,
   YEAR_IN_NUMBER,
-} from '../../../../../utils/date/date'
-import Icon from '../../../../layout/Icon/Icon'
+} from '../../../../../../utils/date/date'
+import Icon from '../../../../../layout/Icon/Icon'
 
 export const DatePickerCustomHeader = ({
   date,

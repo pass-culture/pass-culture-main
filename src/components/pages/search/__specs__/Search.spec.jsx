@@ -7,10 +7,10 @@ import { CriteriaCategory } from '../CriteriaCategory/CriteriaCategory'
 import CriteriaLocation from '../CriteriaLocation/CriteriaLocation'
 import { CriteriaSort } from '../CriteriaSort/CriteriaSort'
 import { Home } from '../Home/Home'
-import SearchResults from '../Result/SearchResults'
-import SearchAlgolia from '../SearchAlgolia'
+import Results from '../Results/Results'
+import Search from '../Search'
 
-describe('components | SearchAlgolia', () => {
+describe('components | Search', () => {
   let props
 
   beforeEach(() => {
@@ -40,7 +40,7 @@ describe('components | SearchAlgolia', () => {
         .spyOn(document, 'querySelector')
         .mockReturnValueOnce({ offsetHeight: 123 })
         .mockReturnValue(metaTag)
-      shallow(<SearchAlgolia {...props} />)
+      shallow(<Search {...props} />)
 
       // When
       window.onresize()
@@ -55,7 +55,7 @@ describe('components | SearchAlgolia', () => {
       // Given
       const metaTag = document.createElement('meta')
       jest.spyOn(document, 'querySelector').mockReturnValue(metaTag)
-      const wrapper = shallow(<SearchAlgolia {...props} />)
+      const wrapper = shallow(<Search {...props} />)
 
       // When
       wrapper.unmount()
@@ -72,7 +72,7 @@ describe('components | SearchAlgolia', () => {
       props.history.location.pathname = '/recherche'
       const wrapper = mount(
         <Router history={props.history}>
-          <SearchAlgolia {...props} />
+          <Search {...props} />
         </Router>
       )
 
@@ -88,7 +88,7 @@ describe('components | SearchAlgolia', () => {
       props.history.location.pathname = '/recherche/criteres-categorie'
       const wrapper = mount(
         <Router history={props.history}>
-          <SearchAlgolia {...props} />
+          <Search {...props} />
         </Router>
       )
 
@@ -104,7 +104,7 @@ describe('components | SearchAlgolia', () => {
       props.history.location.pathname = '/recherche/criteres-tri'
       const wrapper = mount(
         <Router history={props.history}>
-          <SearchAlgolia {...props} />
+          <Search {...props} />
         </Router>
       )
 
@@ -120,7 +120,7 @@ describe('components | SearchAlgolia', () => {
     describe('home page', () => {
       it('should render search home page when path is exactly /recherche', () => {
         // when
-        const wrapper = shallow(<SearchAlgolia {...props} />)
+        const wrapper = shallow(<Search {...props} />)
 
         // then
         const routes = wrapper.find(Route)
@@ -164,7 +164,7 @@ describe('components | SearchAlgolia', () => {
       it('should render search results page when path is /recherche/resultats', () => {
         // given
         props.history.location.pathname = 'recherche/resultats'
-        const wrapper = shallow(<SearchAlgolia {...props} />)
+        const wrapper = shallow(<Search {...props} />)
 
         // when
         const routes = wrapper.find(Route)
@@ -172,7 +172,7 @@ describe('components | SearchAlgolia', () => {
         // then
         const resultatsRoute = routes.at(1)
         expect(resultatsRoute.prop('path')).toBe('/recherche/resultats')
-        const searchResultsComponent = resultatsRoute.find(SearchResults)
+        const searchResultsComponent = resultatsRoute.find(Results)
         expect(searchResultsComponent.prop('criteria')).toStrictEqual({
           categories: [],
           searchAround: { 'everywhere': true, 'place': false, 'user': false },
@@ -189,7 +189,7 @@ describe('components | SearchAlgolia', () => {
       it('should render search results page with given category when path is /recherche/resultats', () => {
         // given
         props.history.location.pathname = 'recherche/resultats'
-        const wrapper = shallow(<SearchAlgolia {...props} />)
+        const wrapper = shallow(<Search {...props} />)
         wrapper.setState({ categoryCriterion: CATEGORY_CRITERIA.CINEMA })
 
         // when
@@ -198,7 +198,7 @@ describe('components | SearchAlgolia', () => {
         // then
         const resultatsRoute = routes.at(1)
         expect(resultatsRoute.prop('path')).toBe('/recherche/resultats')
-        const searchResultsComponent = resultatsRoute.find(SearchResults)
+        const searchResultsComponent = resultatsRoute.find(Results)
         expect(searchResultsComponent.prop('criteria')).toStrictEqual({
           categories: ['CINEMA'],
           searchAround: { 'everywhere': true, 'place': false, 'user': false },
@@ -211,7 +211,7 @@ describe('components | SearchAlgolia', () => {
       it('should render geolocation criteria page when path is /recherche/criteres-localisation', () => {
         // given
         props.history.location.pathname = '/recherche/criteres-localisation'
-        const wrapper = shallow(<SearchAlgolia {...props} />)
+        const wrapper = shallow(<Search {...props} />)
 
         // when
         const routes = wrapper.find(Route)
@@ -237,7 +237,7 @@ describe('components | SearchAlgolia', () => {
         props.history.push('/recherche/criteres-localisation')
         const wrapper = mount(
           <Router history={props.history}>
-            <SearchAlgolia {...props} />
+            <Search {...props} />
           </Router>
         )
         const everywhereButton = wrapper.find({ children: 'Partout' })
@@ -254,7 +254,7 @@ describe('components | SearchAlgolia', () => {
       it('should render category criteria page when path is /recherche/criteres-categorie', () => {
         // given
         props.history.location.pathname = '/recherche/criteres-categorie'
-        const wrapper = shallow(<SearchAlgolia {...props} />)
+        const wrapper = shallow(<Search {...props} />)
 
         // when
         const routes = wrapper.find(Route)
@@ -276,7 +276,7 @@ describe('components | SearchAlgolia', () => {
       it('should render sorting criteria page when path is /recherche/criteres-tri', () => {
         // given
         props.history.location.pathname = '/recherche/criteres-tri'
-        const wrapper = shallow(<SearchAlgolia {...props} />)
+        const wrapper = shallow(<Search {...props} />)
 
         // when
         const routes = wrapper.find(Route)

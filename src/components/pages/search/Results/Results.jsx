@@ -14,13 +14,13 @@ import { SORT_CRITERIA } from '../Criteria/criteriaEnums'
 import CriteriaSort from '../CriteriaSort/CriteriaSort'
 import { Filters } from '../Filters/Filters'
 import { DATE_FILTER, PRICE_FILTER } from '../Filters/filtersEnums'
-import { EmptySearchResult } from './EmptySearchResult'
-import SearchAlgoliaDetailsContainer from './ResultDetail/ResultDetailContainer'
-import { SearchResultsList } from './SearchResultsList'
+import { EmptyResult } from './EmptyResult/EmptyResult'
+import ResultDetailContainer from './ResultsList/ResultDetail/ResultDetailContainer'
+import { ResultsList } from './ResultsList/ResultsList'
 
 const SEARCH_RESULTS_URI = '/recherche/resultats'
 
-class SearchResults extends PureComponent {
+class Results extends PureComponent {
   constructor(props) {
     super(props)
     const { criteria: { categories, searchAround, sortBy }, place } = props
@@ -499,13 +499,13 @@ class SearchResults extends PureComponent {
                 {isLoading && <Spinner label="Recherche en cours" />}
               </div>
               {isSearchEmpty && (
-                <EmptySearchResult
+                <EmptyResult
                   onNewSearchAroundMe={this.handleNewSearchAroundMe}
                   searchedKeywords={searchedKeywords}
                 />
               )}
               {results.length > 0 && (
-                <SearchResultsList
+                <ResultsList
                   currentPage={currentPage}
                   geolocation={searchAround.place ? placeGeolocation : userGeolocation}
                   isLoading={isLoading}
@@ -559,7 +559,7 @@ class SearchResults extends PureComponent {
               shouldBackFromDetails={this.shouldBackFromDetails()}
               title="Recherche"
             />
-            <SearchAlgoliaDetailsContainer />
+            <ResultDetailContainer />
           </Route>
           <Route path={`${SEARCH_RESULTS_URI}/filtres`}>
             <Filters
@@ -599,7 +599,7 @@ class SearchResults extends PureComponent {
   }
 }
 
-SearchResults.defaultProps = {
+Results.defaultProps = {
   criteria: {
     categories: [],
     isSearchAroundMe: false,
@@ -612,7 +612,7 @@ SearchResults.defaultProps = {
   userGeolocation: { longitude: null, latitude: null },
 }
 
-SearchResults.propTypes = {
+Results.propTypes = {
   criteria: PropTypes.shape({
     categories: PropTypes.array,
     searchAround: PropTypes.shape({
@@ -641,4 +641,4 @@ SearchResults.propTypes = {
   }),
 }
 
-export default SearchResults
+export default Results

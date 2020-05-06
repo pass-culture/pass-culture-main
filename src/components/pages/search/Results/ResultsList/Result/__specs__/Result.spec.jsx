@@ -3,7 +3,7 @@ import React from 'react'
 
 import Result from '../Result'
 
-jest.mock('../../../../../utils/thumb', () => ({
+jest.mock('../../../../../../../utils/thumb', () => ({
   DEFAULT_THUMB_URL: '/default/thumb/url',
 }))
 

@@ -3,8 +3,8 @@ import { connect } from 'react-redux'
 import { requestData } from 'redux-thunk-data'
 import { withRouter } from 'react-router-dom'
 
-import DetailsContainer from '../../../../layout/Details/DetailsContainer'
-import { offerNormalizer } from '../../../../../utils/normalizers'
+import DetailsContainer from '../../../../../layout/Details/DetailsContainer'
+import { offerNormalizer } from '../../../../../../utils/normalizers'
 
 export const mapDispatchToProps = dispatch => {
   return {

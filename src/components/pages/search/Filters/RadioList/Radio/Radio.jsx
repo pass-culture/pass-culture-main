@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from "prop-types"
 import Icon from "../../../../../layout/Icon/Icon"
 
-export function Radio({ option, onDateSelection, selectedDateOption }) {
+export const Radio = ({ option, onDateSelection, selectedDateOption }) => {
     return (
       <li>
         <input
