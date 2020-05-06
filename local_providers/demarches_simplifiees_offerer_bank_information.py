@@ -45,7 +45,6 @@ class OffererBankInformationProvider(LocalProvider):
                                                                 requested_datetime))
 
     def __next__(self) -> List[ProvidableInfo]:
-        print("GOT AN APPLICATION")
         self.bank_information_dict = self.retrieve_next_bank_information()
 
         if not self.bank_information_dict:
