@@ -1,4 +1,5 @@
-const REGEX_STARTING_WITH_NUMBERS = /^\d/
+export const REGEX_STARTING_WITH_NUMBERS = /^\d/
+
 export const buildPlaceLabel = (place) => {
   if (!place) {
     return 'Choisir un lieu'

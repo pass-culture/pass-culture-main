@@ -4,6 +4,7 @@ import Header from '../../../../layout/Header/Header'
 import { fetchPlaces } from '../../../../../vendor/api-geo/placesService'
 import Icon from '../../../../layout/Icon/Icon'
 import debounce from 'lodash.debounce'
+import { REGEX_STARTING_WITH_NUMBERS } from '../utils/buildPlaceLabel'
 
 const WAITING_TIME_BEFORE_FETCHING_DATA_IN_MILLISECONDS = 300
 
@@ -135,7 +136,9 @@ class Place extends Component {
                       {suggestedPlace.name.short}
                     </span>
                     <span className="place-extra-data">
-                      {/^\d/.test(suggestedPlace.name.short) ? suggestedPlace.extraData.city : suggestedPlace.extraData.department}
+                      {REGEX_STARTING_WITH_NUMBERS.test(suggestedPlace.name.short) ?
+                        suggestedPlace.extraData.city
+                        : suggestedPlace.extraData.department}
                     </span>
                   </button>
                 </li>

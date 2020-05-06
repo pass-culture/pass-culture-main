@@ -28,7 +28,7 @@ describe('src | utils | buildPlaceLabel', () => {
     expect(placeLabel).toStrictEqual('Paris')
   })
 
-  it('should return the address and the city name when the place is an adresse', () => {
+  it('should return the address and the city name when the place is an adress', () => {
     // given
     const place = {
       name: {
