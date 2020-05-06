@@ -12,7 +12,7 @@ class BookingsRecapTest:
         save_bookings_recap_sandbox()
 
         # Then
-        assert Booking.query.count() == 9
+        assert Booking.query.count() == 10
         assert User.query.count() == 4
         assert Stock.query.count() == 4
         assert Venue.query.count() == 3
@@ -20,7 +20,7 @@ class BookingsRecapTest:
 
         assert self._find_bookings_by_user_firstname("Riri") == 3
         assert self._find_bookings_by_user_firstname("Fifi") == 3
-        assert self._find_bookings_by_user_firstname("Loulou") == 3
+        assert self._find_bookings_by_user_firstname("Loulou") == 4
 
     def _find_bookings_by_user_firstname(self, name: str) -> List[Booking]:
         return Booking.query \

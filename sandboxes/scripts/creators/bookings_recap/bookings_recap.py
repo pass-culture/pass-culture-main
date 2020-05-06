@@ -131,7 +131,6 @@ def save_bookings_recap_sandbox():
         date_created=datetime(2020, 3, 21, 22, 9, 12, 0),
         is_cancelled=True
     )
-
     booking3_beneficiary1 = create_booking(
         user=beneficiary1,
         stock=stock_1_offer1_venue3,
@@ -155,6 +154,13 @@ def save_bookings_recap_sandbox():
     )
     payment_booking3_beneficiary3 = create_payment(booking=booking3_beneficiary3, offerer=offerer,
                                                    status=TransactionStatus.ERROR)
+    booking4_beneficiary3 = create_booking(
+        user=beneficiary3,
+        stock=stock_1_offer1_venue2,
+        date_created=datetime(2020, 3, 21, 22, 9, 12, 0),
+        is_cancelled=False,
+        is_used=False
+    )
 
     repository.save(
         pro,
@@ -162,5 +168,6 @@ def save_bookings_recap_sandbox():
         booking1_beneficiary2, booking2_beneficiary2,
         booking1_beneficiary3, booking2_beneficiary3,
         payment_booking3_beneficiary1, payment_booking3_beneficiary2,
-        payment_booking3_beneficiary3, user_offerer
+        payment_booking3_beneficiary3, user_offerer,
+        booking4_beneficiary3
     )

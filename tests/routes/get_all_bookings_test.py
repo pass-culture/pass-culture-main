@@ -40,7 +40,7 @@ class GetTest:
             offer = create_offer_with_thing_product(venue)
             stock = create_stock(offer=offer, price=0)
             date_created = datetime(2020, 4, 3, 12, 0, 0)
-            booking = create_booking(user=beneficiary, stock=stock, token="ABCD", date_created=date_created)
+            booking = create_booking(user=beneficiary, stock=stock, token="ABCD", date_created=date_created, is_used=True)
             repository.save(user_offerer, booking)
 
             # When
@@ -61,7 +61,7 @@ class GetTest:
                     },
                     'booking_date': '2020-04-03T12:00:00Z',
                     'booking_token': 'ABCD',
-                    'booking_status': 'booked',
+                    'booking_status': 'validated',
                 }
             ]
             assert response.status_code == 200
