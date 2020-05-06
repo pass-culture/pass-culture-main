@@ -24,7 +24,7 @@ export const mapStateToProps = state => ({
 })
 
 export const mapDispatchToProps = dispatch => ({
-  handleSubmit: (formValues, handleSubmitFail, handleSubmitSuccess) => {
+  handleSubmit: (formValues, handleSubmitFail, handleSubmitSuccess) =>
     dispatch(
       requestData({
         apiPath: 'users/current',
@@ -36,7 +36,6 @@ export const mapDispatchToProps = dispatch => ({
         resolve: resolveCurrentUser,
       })
     )
-  },
 })
 
 export default compose(
