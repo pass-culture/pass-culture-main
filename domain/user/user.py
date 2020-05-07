@@ -4,10 +4,12 @@ class User(object):
                  can_book_free_offers: bool,
                  email: str,
                  first_name: str,
-                 last_name: str
+                 last_name: str,
+                 department_code: str
                  ):
         self.identifier = identifier
         self.can_book_free_offers = can_book_free_offers
         self.email = email
         self.firstName = first_name
         self.lastName = last_name
+        self.department_code = department_code

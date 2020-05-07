@@ -1,5 +1,6 @@
 from typing import Dict
 
+from domain.booking.booking import Booking
 from models import BookingSQLEntity, EventType, ThingType
 from routes.serialization import serialize
 from utils.human_ids import humanize
@@ -53,3 +54,20 @@ def serialize_booking(booking: BookingSQLEntity) -> Dict:
         'venueDepartementCode': venue_departement_code,
         'venueName': venue_name
     }
+
+
+def serialize_booking_for_book_an_offer(booking: Booking) -> Dict:
+    return {
+            'amount': booking.amount,
+            'id': humanize(booking.identifier),
+            'quantity': booking.quantity,
+            'offerId': humanize(booking.stock.offer.id),
+            'stock': {
+                'price': booking.stock.price
+            },
+            'token': booking.token,
+            'user': {
+                'id': 'AE',
+                "wallet_balance": booking.user,
+            }
+        }

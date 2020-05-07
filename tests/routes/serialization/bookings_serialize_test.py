@@ -2,8 +2,12 @@ from datetime import datetime
 
 from freezegun import freeze_time
 
+from domain.booking.booking import Booking
+from domain.stock.stock import Stock
+from domain.user.user import User
 from models import EventType, ThingType
 from routes.serialization import serialize_booking
+from routes.serialization.bookings_serialize import serialize_booking_for_book_an_offer
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue
 from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_product_with_thing_type, \
@@ -134,3 +138,51 @@ class SerializeBookingTest:
         # Then
         assert response['dateOfBirth'] == '2001-01-01T00:00:00Z'
         assert response['phoneNumber'] == '0612345678'
+
+
+class SerializeBookingForBookAnOfferTest:
+    def test_should_return_booking_with_expected_information(self):
+        # Give
+        offer = create_offer_with_event_product()
+        user = User(
+            identifier=1,
+            can_book_free_offers=False,
+            email='joe.doe@example.com',
+            first_name='Joe',
+            last_name='Doe'
+        )
+        stock = Stock(
+            identifier=2,
+            quantity=1,
+            offer=offer,
+            price=10
+        )
+        booking = Booking(
+            user=user,
+            stock=stock,
+            amount=1,
+            quantity=1
+        )
+
+        # When
+        booking_json = serialize_booking_for_book_an_offer(booking)
+
+        # Then
+        assert booking_json == {
+            'amount': 2.0,
+            'id': 'AE',
+            'quantity': 1,
+            'offerId': 'AE',
+            'stock': {
+                'price': 2.0
+            },
+            'token': 'GQTQR9',
+            'user': {
+                'expenses': {
+                    'all': {'actual': 0.0, 'max': 500},
+                    'digital': {'actual': 0, 'max': 200},
+                    'physical': {'actual': 0, 'max': 200}
+                },
+                'id': 'AE',
+            }
+        }

@@ -151,7 +151,7 @@ def create_booking():
     created_booking = book_an_offer.execute(booking_information)
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=created_booking.stock.offerId)
+        redis.add_offer_id(client=app.redis_client, offer_id=created_booking.stock.offer.id)
 
     if feature_queries.is_active(FeatureToggle.QR_CODE):
         includes = WEBAPP_PATCH_POST_BOOKING_WITH_QR_CODE_INCLUDES

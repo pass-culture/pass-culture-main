@@ -1,5 +1,6 @@
 from typing import Callable, List
 
+from domain.booking.booking import Booking
 from emails.beneficiary_activation import get_activation_email_data
 from emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
 from emails.beneficiary_booking_confirmation import \
@@ -37,7 +38,7 @@ def send_booking_recap_emails(booking: BookingSQLEntity, send_email: Callable[..
     return send_email(data=email)
 
 
-def send_booking_confirmation_email_to_beneficiary(booking: BookingSQLEntity, send_email: Callable[..., bool]):
+def send_booking_confirmation_email_to_beneficiary(booking: Booking, send_email: Callable[..., bool]):
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
     send_email(data=email_data)
 
@@ -53,7 +54,8 @@ def send_user_driven_cancellation_email_to_offerer(booking: BookingSQLEntity, se
     return send_email(data=mailjet_data)
 
 
-def send_offerer_driven_cancellation_email_to_offerer(booking: BookingSQLEntity, send_email: Callable[..., bool]) -> bool:
+def send_offerer_driven_cancellation_email_to_offerer(booking: BookingSQLEntity,
+                                                      send_email: Callable[..., bool]) -> bool:
     offerer_email = booking.stock.offer.bookingEmail
     recipients = []
     if offerer_email:
@@ -126,7 +128,8 @@ def send_venue_validation_confirmation_email(venue: Venue, send_email: Callable[
     return send_email(data=email)
 
 
-def send_user_validation_email(user: UserSQLEntity, send_email: Callable[..., bool], app_origin_url: str, is_webapp) -> bool:
+def send_user_validation_email(user: UserSQLEntity, send_email: Callable[..., bool], app_origin_url: str,
+                               is_webapp) -> bool:
     email = make_user_validation_email(user, app_origin_url, is_webapp)
     return send_email(data=email)
 
@@ -142,7 +145,8 @@ def send_activation_email(user: UserSQLEntity, send_email: Callable[..., bool]) 
     return send_email(activation_email_data)
 
 
-def send_batch_stock_postponement_emails_to_users(bookings: List[BookingSQLEntity], send_email: Callable[..., bool]) -> None:
+def send_batch_stock_postponement_emails_to_users(bookings: List[BookingSQLEntity],
+                                                  send_email: Callable[..., bool]) -> None:
     for booking in bookings:
         send_booking_postponement_emails_to_users(booking, send_email)
 

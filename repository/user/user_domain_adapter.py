@@ -8,5 +8,6 @@ def to_domain(user_sql_entity: UserSQLEntity) -> User:
         can_book_free_offers=user_sql_entity.canBookFreeOffers,
         email=user_sql_entity.email,
         first_name=user_sql_entity.firstName,
-        last_name=user_sql_entity.lastName
+        last_name=user_sql_entity.lastName,
+        department_code=user_sql_entity.departementCode,
     )
