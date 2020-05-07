@@ -2,14 +2,22 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
+import getDepartementByCode from '../../../utils/getDepartementByCode'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import NotMatch from '../not-match/NotMatch'
 import UserPasswordField from './forms/fields/UserPasswordField'
 import ProfileMainView from './ProfileMainView/ProfileMainView'
 import ProfileUpdateSuccess from './ProfileUpdateSuccess/ProfileUpdateSuccess'
 import PersonalInformationsContainer from './PersonalInformations/PersonalInformationsContainer'
+import { snackbar } from '../../layout/Snackbar/snackbar'
+
+export const getDepartment = departmentCode => {
+  const departmentName = getDepartementByCode(departmentCode)
+  return `${departmentName} (${departmentCode})`
+}
 
 class Profile extends PureComponent {
+
   renderProfileMainView = currentUser => () => <ProfileMainView currentUser={currentUser} />
 
   renderPasswordUpdateSuccess = routeProps => (
@@ -28,8 +36,10 @@ class Profile extends PureComponent {
 
   renderPersonalInformationsEdition = routeProps => (
     <PersonalInformationsContainer
+      getDepartment={getDepartment}
+      pathToProfile='/profil'
+      snackbar={snackbar}
       {...routeProps}
-      title="Informations Personnelles"
     />
   )
 

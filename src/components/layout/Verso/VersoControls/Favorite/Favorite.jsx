@@ -2,14 +2,14 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
 import Icon from '../../../Icon/Icon'
-import {displaySnackbar} from "../../../Snackbar/snackbar"
+import { snackbar } from '../../../Snackbar/snackbar'
 
 const iconClass = isFavorite => `ico-like${isFavorite ? '-filled' : '-empty'}`
 
 const alternativeText = isFavorite => (isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris')
 
 const showFailModal = () => {
-  displaySnackbar('La gestion des favoris ne fonctionne pas pour le moment, veuillez ré-essayer plus tard.', 'error')
+  snackbar('La gestion des favoris ne fonctionne pas pour le moment, veuillez ré-essayer plus tard.', 'error')
 }
 
 class Favorite extends PureComponent {

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 
-import { MesInformationsField } from '../forms/fields/MesInformationsField'
+import { MyInformationsField } from '../forms/fields/MyInformationsField'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 
 class PersonalInformations extends PureComponent {
@@ -28,10 +28,10 @@ class PersonalInformations extends PureComponent {
   }
 
   handleSubmitSuccess = () => {
-    const { history, displaySnackbar, pathToProfile } = this.props
+    const { history, snackbar, pathToProfile } = this.props
     this.setState({ errors: null })
     history.push(pathToProfile)
-    displaySnackbar('Ton pseudo a bien été modifié.', 'success')
+    snackbar('Ton pseudo a bien été modifié.', 'success')
   }
 
   handleSubmitPublicName = () => {
@@ -51,6 +51,7 @@ class PersonalInformations extends PureComponent {
   render() {
     const { user, getDepartment } = this.props
     const { errors, publicName } = this.state
+
     return (
       <div className="pi-container">
         <HeaderContainer
@@ -59,7 +60,7 @@ class PersonalInformations extends PureComponent {
           title="Informations personnelles"
         />
         <form className="pi-form">
-          <MesInformationsField
+          <MyInformationsField
             errors={errors && errors.publicName}
             id="identifiant"
             label="Pseudo"
@@ -71,21 +72,21 @@ class PersonalInformations extends PureComponent {
             required
             value={publicName}
           />
-          <MesInformationsField
+          <MyInformationsField
             disabled
             id="name"
             label="Nom et prénom"
             name="name"
             value={`${user.firstName} ${user.lastName}`}
           />
-          <MesInformationsField
+          <MyInformationsField
             disabled
             id="email"
             label="Adresse e-mail"
             name="email"
             value={user.email}
           />
-          <MesInformationsField
+          <MyInformationsField
             disabled
             id="departementCode"
             label="Département de résidence"
@@ -108,11 +109,11 @@ class PersonalInformations extends PureComponent {
 }
 
 PersonalInformations.propTypes = {
-  displaySnackbar: PropTypes.func.isRequired,
   getDepartment: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   pathToProfile: PropTypes.string.isRequired,
+  snackbar: PropTypes.func.isRequired,
   user: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired,
 }
 

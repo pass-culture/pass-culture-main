@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import Icon from '../../../layout/Icon/Icon'
 
-const MesInformations = () => (
+const MyInformations = () => (
   <section>
     <Link
       className="mi-link"
@@ -15,7 +15,6 @@ const MesInformations = () => (
       </div>
       <Icon svg="ico-next-lightgrey" />
     </Link>
-    <div className="mi-separator" />
     <Link
       className="mi-link"
       to="/profil/password"
@@ -26,8 +25,7 @@ const MesInformations = () => (
       </div>
       <Icon svg="ico-next-lightgrey" />
     </Link>
-    <div className="mi-separator" />
   </section>
 )
 
-export default MesInformations
+export default MyInformations

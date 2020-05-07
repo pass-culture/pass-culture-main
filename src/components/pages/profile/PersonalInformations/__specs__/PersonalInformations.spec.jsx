@@ -14,7 +14,7 @@ describe('src | components | pages | profile | PersonalInformations | PersonalIn
   user.publicName = 'Martino'
   user.firstName = 'Martin'
   user.lastName = 'Dupont'
-  user.email = 'm.dupont@test.com'
+  user.email = 'm.dupont@example.com'
   user.departementCode = '93'
 
   const mockedGetDepartment = jest.fn().mockReturnValue('Seine-Saint-Denis (93)')
@@ -28,7 +28,7 @@ describe('src | components | pages | profile | PersonalInformations | PersonalIn
       history,
       getDepartment: mockedGetDepartment,
       handleSubmit: jest.fn(),
-      toast: jest.fn(),
+      snackbar: jest.fn(),
       pathToProfile: '/profil',
       user: user,
     }
@@ -64,7 +64,7 @@ describe('src | components | pages | profile | PersonalInformations | PersonalIn
     // Then
     const publicName = wrapper.find("input[value='Martino']")
     const name = wrapper.find("input[value='Martin Dupont']")
-    const email = wrapper.find("input[value='m.dupont@test.com']")
+    const email = wrapper.find("input[value='m.dupont@example.com']")
     const departmentCode = wrapper.find("input[value='Seine-Saint-Denis (93)']")
     expect(publicName).toHaveLength(1)
     expect(name).toHaveLength(1)
@@ -83,7 +83,7 @@ describe('src | components | pages | profile | PersonalInformations | PersonalIn
     // Then
     const publicName = wrapper.find("input[value='Martino']")
     const name = wrapper.find("input[value='Martin Dupont']")
-    const email = wrapper.find("input[value='m.dupont@test.com']")
+    const email = wrapper.find("input[value='m.dupont@example.com']")
     const departmentCode = wrapper.find("input[value='Seine-Saint-Denis (93)']")
     expect(publicName.props().disabled).toBe(false)
     expect(name.props().disabled).toBe(true)
@@ -115,8 +115,14 @@ describe('src | components | pages | profile | PersonalInformations | PersonalIn
     })
 
     describe('when user has modified his name', () => {
-      it('should submit information', () => {
+      it('should redirect to profile and call snackbar with proper informations', () => {
         // Given
+        props.handleSubmit = jest
+          .spyOn(props, 'handleSubmit')
+          .mockImplementation((values, fail, success) => {
+            return success()
+          })
+
         const wrapper = mount(
           <Router history={createBrowserHistory()}>
             <PersonalInformations {...props} />
@@ -131,14 +137,46 @@ describe('src | components | pages | profile | PersonalInformations | PersonalIn
         submitButton.simulate('click')
 
         // Then
-        expect(props.handleSubmit).toHaveBeenCalledTimes(1)
-        expect(props.handleSubmit).toHaveBeenCalledWith(
-          {
-            publicName: 'DifferentName',
-          },
-          expect.any(Function),
-          expect.any(Function)
+        expect(props.history.push).toHaveBeenCalledWith('/profil')
+        expect(props.snackbar).toHaveBeenCalledWith('Ton pseudo a bien été modifié.', 'success')
+      })
+    })
+
+    describe('when input name value is not valid', () => {
+      it('should display an error message', () => {
+        // Given
+        props.handleSubmit = jest
+          .spyOn(props, 'handleSubmit')
+          .mockImplementation((values, fail) => {
+            return fail(
+              { ...state },
+              {
+                payload: {
+                  errors: {
+                    publicName: ['Pseudo invalide'],
+                  },
+                },
+              }
+            )
+          })
+
+        const wrapper = mount(
+          <Router history={createBrowserHistory()}>
+            <PersonalInformations {...props} />
+          </Router>
         )
+
+        const publicName = wrapper.find("input[value='Martino']")
+        const submitButton = wrapper.find({ children: 'Enregistrer' })
+
+        // When
+        publicName.simulate('change', { target: { value: 'AA' } })
+        submitButton.simulate('click')
+
+        // Then
+        const wrongPublicName = wrapper.find({ children: 'Pseudo invalide' })
+
+        expect(wrongPublicName).toHaveLength(1)
       })
     })
   })

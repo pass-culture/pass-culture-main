@@ -5,14 +5,14 @@
   justify-content: space-between;
 
   .header {
-    padding: 10px;
+    padding: rem(10px);
   }
 
   .header-start {
     position: absolute;
     top: 0;
     left: 0;
-    padding: 5px;
+    padding: rem(5px);
   }
 
   .pi-form {
@@ -88,13 +88,13 @@
     }
   }
 
-    .button-submit {
+  .button-submit {
     background-color: #EB0055;
-    border-radius: 2rem;
+    border-radius: rem(32px);
     border: 0;
-    font-size: 1rem;
+    font-size: rem(16px);
     font-weight: 700;
-    height: 3rem;
+    height: rem(48px);
     width: 90%;
   }
 }

@@ -7,19 +7,9 @@ import {
   selectCurrentUser,
   resolveCurrentUser,
 } from '../../../../redux/selectors/data/usersSelectors'
-import getDepartementByCode from '../../../../utils/getDepartementByCode'
 import PersonalInformations from './PersonalInformations'
-import {displaySnackbar} from "../../../layout/Snackbar/snackbar"
-
-export const getDepartment = departmentCode => {
-  const departmentName = getDepartementByCode(departmentCode)
-  return `${departmentName} (${departmentCode})`
-}
 
 export const mapStateToProps = state => ({
-  getDepartment,
-  displaySnackbar,
-  pathToProfile: '/profil',
   user: selectCurrentUser(state),
 })
 
@@ -35,7 +25,7 @@ export const mapDispatchToProps = dispatch => ({
         method: 'PATCH',
         resolve: resolveCurrentUser,
       })
-    )
+    ),
 })
 
 export default compose(

@@ -5,7 +5,7 @@ import Icon from '../../../../layout/Icon/Icon'
 
 const NOOP = () => {}
 
-export const MesInformationsField = forwardRef(function MesInformationsField(props, ref) {
+export const MyInformationsField = forwardRef(function MyInformationsField(props, ref) {
   const {
     disabled,
     errors,
@@ -61,7 +61,7 @@ export const MesInformationsField = forwardRef(function MesInformationsField(pro
   )
 })
 
-MesInformationsField.defaultProps = {
+MyInformationsField.defaultProps = {
   disabled: false,
   errors: null,
   maxLength: -1,
@@ -72,7 +72,7 @@ MesInformationsField.defaultProps = {
   value: '',
 }
 
-MesInformationsField.propTypes = {
+MyInformationsField.propTypes = {
   disabled: PropTypes.bool,
   errors: PropTypes.arrayOf(PropTypes.string),
   id: PropTypes.string.isRequired,

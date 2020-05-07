@@ -6,11 +6,13 @@
 
 .mi-link {
   align-items: center;
-  color: black;
+  border-bottom: 1px solid $grey-even-more-light;
+  color: $black;
   display: flex;
   font-size: rem(16px);
   font-weight: 600;
-  padding: rem(24px) rem(22px);
+  margin: 0 rem(22px);
+  padding: rem(24px) 0;
   text-decoration: none;
 }
 

@@ -4,7 +4,7 @@ import React from 'react'
 import ProfileMainView from '../ProfileMainView'
 import ProfileHeader from '../../ProfileHeader/ProfileHeader'
 import RelativeFooterContainer from '../../../../layout/RelativeFooter/RelativeFooterContainer'
-import MesInformations from '../../MesInformations/MesInformations'
+import MyInformations from '../../MyInformations/MyInformations'
 import RemainingCredit from '../../RemainingCredit/RemainingCredit'
 
 jest.mock('../../../../../../package.json', () => ({
@@ -25,13 +25,13 @@ describe('profileMainView', () => {
     const wrapper = shallow(<ProfileMainView {...props} />)
     const ProfileHeaderWrapper = wrapper.find(ProfileHeader)
     const RemainingCreditWrapper = wrapper.find(RemainingCredit)
-    const MesInformationsWrapper = wrapper.find(MesInformations)
+    const MyInformationsWrapper = wrapper.find(MyInformations)
     const RelativeFooterContainerWrapper = wrapper.find(RelativeFooterContainer)
 
     // Then
     expect(ProfileHeaderWrapper).toHaveLength(1)
     expect(RemainingCreditWrapper).toHaveLength(1)
-    expect(MesInformationsWrapper).toHaveLength(1)
+    expect(MyInformationsWrapper).toHaveLength(1)
     expect(RelativeFooterContainerWrapper).toHaveLength(1)
   })
 

@@ -1,10 +1,10 @@
 import { shallow } from 'enzyme'
 import React from 'react'
-import { MesInformationsField } from '../MesInformationsField'
+import { MyInformationsField } from '../MyInformationsField'
 
 const ERROR_MESSAGE = 'Vous devez renseigner au moins 3 caractères'
 
-describe('src | components | pages | profile | forms | fields | MesInformationsField', () => {
+describe('src | components | pages | profile | forms | fields | MyInformationsField', () => {
   it('should display error messages when there are validation errors', () => {
     // Given
     const secondErrorMessage = 'Vous ne devez pas renseigner plus de 10 caractères'
@@ -12,7 +12,7 @@ describe('src | components | pages | profile | forms | fields | MesInformationsF
 
     // When
     const wrapper = shallow(
-      <MesInformationsField
+      <MyInformationsField
         errors={errors}
         id="inputId"
         label="input label"
@@ -33,7 +33,7 @@ describe('src | components | pages | profile | forms | fields | MesInformationsF
 
     // When
     const wrapper = shallow(
-      <MesInformationsField
+      <MyInformationsField
         errors={errors}
         id="inputId"
         label="input label"
@@ -52,7 +52,7 @@ describe('src | components | pages | profile | forms | fields | MesInformationsF
 
     // When
     const wrapper = shallow(
-      <MesInformationsField
+      <MyInformationsField
         errors={errors}
         id="inputId"
         label="input label"
@@ -71,7 +71,7 @@ describe('src | components | pages | profile | forms | fields | MesInformationsF
 
     // When
     const wrapper = shallow(
-      <MesInformationsField
+      <MyInformationsField
         errors={errors}
         id="inputId"
         label="input label"
