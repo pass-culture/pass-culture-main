@@ -1,25 +1,8 @@
-from typing import Callable
-
 from sqlalchemy_utils import refresh_materialized_view
+from typing import Callable
 
 from models import DiscoveryView
 from models.db import db
-
-
-def _ordrer_by_score_and_digital_offers() -> str:
-    return f"""
-        ROW_NUMBER() OVER (
-            ORDER BY
-                (
-                    SELECT COALESCE(SUM(criterion."scoreDelta"), 0) AS coalesce_1
-                    FROM criterion, offer_criterion
-                    WHERE criterion.id = offer_criterion."criterionId"
-                        AND offer_criterion."offerId" = offer.id
-                ) DESC,
-                offer.url IS NOT NULL DESC,
-                RANDOM()
-        )
-    """
 
 
 def create(session) -> None:
@@ -47,7 +30,56 @@ def create(session) -> None:
     session.commit()
 
 
-def _create_function_get_recommendable_offers(session, order: Callable = _ordrer_by_score_and_digital_offers,
+def update(session, order: Callable) -> None:
+    get_recommendable_offers = _create_function_get_recommendable_offers(session, order)
+    session.execute(f"""
+            CREATE MATERIALIZED VIEW IF NOT EXISTS discovery_view_tmp AS
+                SELECT
+                    ROW_NUMBER() OVER ()                AS "offerDiscoveryOrder",
+                    recommendable_offers.id             AS id,
+                    recommendable_offers."venueId"      AS "venueId",
+                    recommendable_offers.type           AS type,
+                    recommendable_offers.name           AS name,
+                    recommendable_offers.url            AS url,
+                    recommendable_offers."isNational"   AS "isNational",
+                    offer_mediation.id                  AS "mediationId"
+                FROM (SELECT * FROM {get_recommendable_offers}()) AS recommendable_offers
+                LEFT OUTER JOIN mediation AS offer_mediation ON recommendable_offers.id = offer_mediation."offerId"
+                    AND offer_mediation."isActive"
+                ORDER BY recommendable_offers.partitioned_offers;
+        """)
+    session.execute(f"""
+            CREATE UNIQUE INDEX ON  discovery_view_tmp ("offerDiscoveryOrder");
+        """)
+
+    session.execute("""
+            DROP MATERIALIZED VIEW discovery_view;
+        """)
+
+    session.execute("""
+            ALTER MATERIALIZED VIEW discovery_view_tmp RENAME TO discovery_view;
+                """)
+
+    session.commit()
+
+
+def order_by_score_and_digital_offers() -> str:
+    return f"""
+        ROW_NUMBER() OVER (
+            ORDER BY
+                (
+                    SELECT COALESCE(SUM(criterion."scoreDelta"), 0) AS coalesce_1
+                    FROM criterion, offer_criterion
+                    WHERE criterion.id = offer_criterion."criterionId"
+                        AND offer_criterion."offerId" = offer.id
+                ) DESC,
+                offer.url IS NOT NULL DESC,
+                RANDOM()
+        )
+    """
+
+
+def _create_function_get_recommendable_offers(session, order: Callable = order_by_score_and_digital_offers,
                                               postgres_function_name: str = 'get_recommendable_offers_ordered_by_score_and_digital_offers') -> str:
     get_offer_score = _create_function_get_offer_score(session)
     get_active_offers_ids = _create_function_get_active_offers_ids(session)
