@@ -22,6 +22,7 @@ from repository.user_offerer_queries import \
     filter_query_where_user_is_user_offerer_and_is_validated
 from routes.serialization import as_dict, serialize, serialize_booking
 from routes.serialization.bookings_recap_serialize import serialize_bookings_recap
+from routes.serialization.bookings_serialize import serialize_booking_for_book_an_offer
 from use_cases.book_an_offer import BookingInformation
 from use_cases.get_all_bookings_by_pro_user import get_all_bookings_by_pro_user
 from utils.human_ids import dehumanize, humanize
@@ -153,12 +154,7 @@ def create_booking():
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=created_booking.stock.offer.id)
 
-    if feature_queries.is_active(FeatureToggle.QR_CODE):
-        includes = WEBAPP_PATCH_POST_BOOKING_WITH_QR_CODE_INCLUDES
-    else:
-        includes = WEBAPP_PATCH_POST_BOOKING_INCLUDES
-
-    return jsonify(as_dict(created_booking, includes=includes)), 201
+    return jsonify(serialize_booking_for_book_an_offer(created_booking)), 201
 
 
 @app.route('/bookings/<booking_id>/cancel', methods=['PUT'])

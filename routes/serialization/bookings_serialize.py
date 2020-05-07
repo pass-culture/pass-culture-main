@@ -58,16 +58,15 @@ def serialize_booking(booking: BookingSQLEntity) -> Dict:
 
 def serialize_booking_for_book_an_offer(booking: Booking) -> Dict:
     return {
-            'amount': booking.amount,
             'id': humanize(booking.identifier),
             'quantity': booking.quantity,
-            'offerId': humanize(booking.stock.offer.id),
+            'stockId': humanize(booking.stock.identifier),
             'stock': {
                 'price': booking.stock.price
             },
             'token': booking.token,
             'user': {
-                'id': 'AE',
-                "wallet_balance": booking.user,
+                'id': humanize(booking.user.identifier),
+                "wallet_balance": booking.user.wallet_balance,
             }
         }

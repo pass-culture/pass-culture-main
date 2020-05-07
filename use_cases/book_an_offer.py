@@ -44,12 +44,12 @@ class BookAnOffer:
         expenses = get_expenses(bookings)
         check_expenses_limits(expenses, booking)
 
-        self.booking_repository.save(booking)
+        booking_saved = self.booking_repository.save(booking)
 
-        self.notification_service.send_booking_recap_emails(booking)
-        self.notification_service.send_booking_confirmation_email_to_beneficiary(booking)
+        self.notification_service.send_booking_recap_emails(booking_saved)
+        self.notification_service.send_booking_confirmation_email_to_beneficiary(booking_saved)
 
-        return booking
+        return booking_saved
 
     def _create_booking_with_booking_information(
             self,

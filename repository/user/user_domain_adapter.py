@@ -10,4 +10,5 @@ def to_domain(user_sql_entity: UserSQLEntity) -> User:
         first_name=user_sql_entity.firstName,
         last_name=user_sql_entity.lastName,
         department_code=user_sql_entity.departementCode,
+        wallet_balance=user_sql_entity.wallet_balance,
     )

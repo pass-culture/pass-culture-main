@@ -2,11 +2,12 @@ from unittest.mock import MagicMock, call
 
 import pytest
 
+from domain.booking.booking import Booking
 from domain.booking.booking_exceptions import OfferIsAlreadyBooked, CannotBookFreeOffers, StockIsNotBookable, \
     UserHasInsufficientFunds, PhysicalExpenseLimitHasBeenReached, QuantityIsInvalid
 from domain.stock.stock import Stock
 from domain.stock.stock_exceptions import StockDoesntExist
-from domain.user.user import User
+from domain_creators.generic_creators import create_domain_user
 from infrastructure.services.notification.mailjet_service import MailjetService
 from repository import repository
 from repository.booking.booking_sql_repository import BookingSQLRepository
@@ -43,7 +44,6 @@ class BookAnOfferTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=50, quantity=1, offer=offer)
-        create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
         create_deposit(user, amount=50)
         repository.save(user, stock)
 
@@ -52,7 +52,7 @@ class BookAnOfferTest:
             user.id,
             stock.quantity
         )
-        expected_user = User(
+        expected_user = create_domain_user(
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )
@@ -66,11 +66,14 @@ class BookAnOfferTest:
         self.stock_repository.find_stock_by_id.return_value = expected_stock
 
         # When
-        booking = self.book_an_offer.execute(booking_information=booking_information)
+        self.book_an_offer.execute(booking_information=booking_information)
 
         # Then
         self.booking_repository.save.assert_called_once()
-        assert self.booking_repository.save.call_args == call(booking)
+        saved_booking = self.booking_repository.save.call_args[0][0]
+        assert saved_booking.stock.identifier == booking_information.stock_id
+        assert saved_booking.user.identifier == booking_information.user_id
+        assert saved_booking.quantity == booking_information.quantity
 
     @clean_database
     def test_send_a_booking_recap_email(self, app):
@@ -80,7 +83,6 @@ class BookAnOfferTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(price=50, quantity=1, offer=offer)
-        create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
         create_deposit(user, amount=50)
         repository.save(user, stock)
 
@@ -89,7 +91,7 @@ class BookAnOfferTest:
             user.id,
             stock.quantity
         )
-        expected_user = User(
+        expected_user = create_domain_user(
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )
@@ -101,12 +103,14 @@ class BookAnOfferTest:
             price=50
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
+        saved_booking = Booking(user=user, stock=stock, amount=0, quantity=1)
+        self.booking_repository.save.return_value = saved_booking
 
         # When
-        booking = self.book_an_offer.execute(booking_information=booking_information)
+        self.book_an_offer.execute(booking_information=booking_information)
 
         # Then
-        self.notification_service.send_booking_recap_emails.assert_called_once_with(booking)
+        self.notification_service.send_booking_recap_emails.assert_called_once_with(saved_booking)
 
     @clean_database
     def test_send_booking_confirmation_email_to_beneficiary(self, app):
@@ -115,17 +119,16 @@ class BookAnOfferTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
-        stock = create_stock(price=50, quantity=1, offer=offer)
-        create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
-        create_deposit(user, amount=50)
+        stock = create_stock(offer=offer)
+        create_deposit(user)
         repository.save(user, stock)
 
         booking_information = BookingInformation(
-            stock.id,
-            user.id,
-            stock.quantity
+            stock_id=stock.id,
+            user_id=user.id,
+            quantity=1
         )
-        expected_user = User(
+        expected_user = create_domain_user(
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )
@@ -137,12 +140,50 @@ class BookAnOfferTest:
             price=50
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
+        saved_booking = Booking(user=user, stock=stock, amount=0, quantity=1)
+        self.booking_repository.save.return_value = saved_booking
+
+        # When
+        self.book_an_offer.execute(booking_information=booking_information)
+
+        # Then
+        self.notification_service.send_booking_confirmation_email_to_beneficiary.assert_called_once_with(saved_booking)
+
+    @clean_database
+    def test_return_saved_booking(self, app):
+        # Given
+        user = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(price=50, quantity=1, offer=offer)
+        create_deposit(user)
+        repository.save(user, stock)
+
+        booking_information = BookingInformation(
+            stock.id,
+            user.id,
+            stock.quantity
+        )
+        expected_user = create_domain_user(
+            identifier=user.id,
+            can_book_free_offers=user.canBookFreeOffers
+        )
+        self.user_repository.find_user_by_id.return_value = expected_user
+        expected_stock = Stock(
+            identifier=stock.id,
+            quantity=1,
+            offer=offer,
+            price=50)
+        self.stock_repository.find_stock_by_id.return_value = expected_stock
+        saved_booking = Booking(user=user, stock=stock, amount=0, quantity=1)
+        self.booking_repository.save.return_value = saved_booking
 
         # When
         booking = self.book_an_offer.execute(booking_information=booking_information)
 
         # Then
-        self.notification_service.send_booking_confirmation_email_to_beneficiary.assert_called_once_with(booking)
+        assert booking == saved_booking
 
     @clean_database
     def test_should_return_failure_when_stock_id_does_not_match_any_existing_stock(self, app):
@@ -191,7 +232,7 @@ class BookAnOfferTest:
             offer=offer
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
-        expected_user = User(
+        expected_user = create_domain_user(
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )
@@ -228,7 +269,7 @@ class BookAnOfferTest:
             offer=offer
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
-        expected_user = User(
+        expected_user = create_domain_user(
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )
@@ -265,7 +306,7 @@ class BookAnOfferTest:
             offer=thing_offer
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
-        expected_user = User(
+        expected_user = create_domain_user(
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )
@@ -300,7 +341,7 @@ class BookAnOfferTest:
             offer=offer
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
-        expected_user = User(
+        expected_user = create_domain_user(
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )
@@ -344,7 +385,7 @@ class BookAnOfferTest:
             offer=offer2
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
-        expected_user = User(
+        expected_user = create_domain_user(
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )
@@ -385,7 +426,7 @@ class BookAnOfferTest:
             offer=offer
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
-        expected_user = User(
+        expected_user = create_domain_user(
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )

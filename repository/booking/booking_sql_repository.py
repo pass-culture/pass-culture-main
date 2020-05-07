@@ -16,6 +16,7 @@ class BookingSQLRepository(BookingRepository):
 
         return [booking_domain_adapter.to_domain(booking_sql_entity) for booking_sql_entity in booking_sql_entities]
 
-    def save(self, booking: Booking) -> None:
+    def save(self, booking: Booking) -> Booking:
         booking_sql_entity = booking_domain_adapter.to_model(booking)
         repository.save(booking_sql_entity)
+        return booking_domain_adapter.to_domain(booking_sql_entity)

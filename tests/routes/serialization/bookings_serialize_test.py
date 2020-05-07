@@ -5,6 +5,7 @@ from freezegun import freeze_time
 from domain.booking.booking import Booking
 from domain.stock.stock import Stock
 from domain.user.user import User
+from domain_creators.generic_creators import create_domain_user
 from models import EventType, ThingType
 from routes.serialization import serialize_booking
 from routes.serialization.bookings_serialize import serialize_booking_for_book_an_offer
@@ -143,9 +144,9 @@ class SerializeBookingTest:
 class SerializeBookingForBookAnOfferTest:
     def test_should_return_booking_with_expected_information(self):
         # Give
-        offer = create_offer_with_event_product()
-        user = User(
-            identifier=1,
+        offer = create_offer_with_event_product(idx=4)
+        user = create_domain_user(
+            identifier=10,
             can_book_free_offers=False,
             email='joe.doe@example.com',
             first_name='Joe',
@@ -158,10 +159,12 @@ class SerializeBookingForBookAnOfferTest:
             price=10
         )
         booking = Booking(
+            identifier=3,
             user=user,
             stock=stock,
             amount=1,
-            quantity=1
+            quantity=1,
+            token='GQTQR9'
         )
 
         # When
@@ -169,20 +172,15 @@ class SerializeBookingForBookAnOfferTest:
 
         # Then
         assert booking_json == {
-            'amount': 2.0,
-            'id': 'AE',
+            'id': 'AM',
+            'stockId': 'A9',
             'quantity': 1,
-            'offerId': 'AE',
             'stock': {
-                'price': 2.0
+                'price': 10
             },
             'token': 'GQTQR9',
             'user': {
-                'expenses': {
-                    'all': {'actual': 0.0, 'max': 500},
-                    'digital': {'actual': 0, 'max': 200},
-                    'physical': {'actual': 0, 'max': 200}
-                },
-                'id': 'AE',
+                'id': 'B9',
+                'wallet_balance': None
             }
         }
