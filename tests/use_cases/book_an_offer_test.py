@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock, call
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -7,13 +7,13 @@ from domain.booking.booking_exceptions import OfferIsAlreadyBooked, CannotBookFr
     UserHasInsufficientFunds, PhysicalExpenseLimitHasBeenReached, QuantityIsInvalid
 from domain.stock.stock import Stock
 from domain.stock.stock_exceptions import StockDoesntExist
-from domain_creators.generic_creators import create_domain_user
 from infrastructure.services.notification.mailjet_service import MailjetService
 from repository import repository
 from repository.booking.booking_sql_repository import BookingSQLRepository
 from repository.stock.stock_sql_repository import StockSQLRepository
 from repository.user.user_sql_repository import UserSQLRepository
 from tests.conftest import clean_database
+from tests.domain_creators.generic_creators import create_domain_user
 from tests.model_creators.generic_creators import create_user, create_deposit, create_offerer, create_venue, \
     create_booking, create_stock, create_recommendation
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product

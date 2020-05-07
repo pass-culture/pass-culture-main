@@ -1,8 +1,8 @@
 from domain.booking.booking import Booking
 from domain.expenses import get_expenses
 from domain.stock.stock import Stock
-from domain.user.user import User
 from models import ThingType, EventType
+from tests.domain_creators.generic_creators import create_domain_user
 from tests.model_creators.generic_creators import create_offerer, create_venue
 from tests.model_creators.specific_creators import create_booking_for_thing, create_booking_for_event, \
     create_offer_with_thing_product
@@ -10,16 +10,13 @@ from tests.model_creators.specific_creators import create_booking_for_thing, cre
 
 class ExpensesTest:
     class DomainBookingTemporaryTest:
-        def test_foobar(self):
+        def test_should_return_expenses(self):
             # Given
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, is_digital=True)
 
-            user = User(
-                identifier=1,
-                can_book_free_offers=True
-            )
+            user = create_domain_user(identifier=1)
             stock = Stock(
                 identifier=1,
                 quantity=None,
@@ -384,7 +381,6 @@ class ExpensesTest:
                 assert expenses['digital']['actual'] == 0
                 assert expenses['physical']['actual'] == 0
 
-
         class PratiqueArtistiqueTest:
             def test_offline_offer_increase_total_expense(self):
                 # Given
@@ -497,4 +493,3 @@ class ExpensesTest:
                 # Then
                 assert expenses['digital']['max'] == 200
                 assert expenses['digital']['actual'] == 0
-

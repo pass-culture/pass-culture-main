@@ -1,7 +1,7 @@
 import os
 from typing import Dict
 
-from models import BookingSQLEntity
+from domain.booking.booking import Booking
 from utils.date import utc_datetime_to_department_timezone, get_date_formatted_for_email, get_time_formatted_for_email
 from utils.human_ids import humanize
 from utils.mailing import format_environment_for_email
@@ -9,7 +9,7 @@ from utils.mailing import format_environment_for_email
 SUPPORT_EMAIL_ADDRESS = os.environ.get('SUPPORT_EMAIL_ADDRESS')
 
 
-def make_beneficiary_booking_cancellation_email_data(booking: BookingSQLEntity) -> Dict:
+def make_beneficiary_booking_cancellation_email_data(booking: Booking) -> Dict:
     stock = booking.stock
     beneficiary = booking.user
     offer = stock.offer
@@ -26,7 +26,8 @@ def make_beneficiary_booking_cancellation_email_data(booking: BookingSQLEntity) 
     mediation_id = humanize(booking.mediationId) if booking.mediationId is not None else 'vide'
 
     if is_event:
-        beginning_date_time_in_tz = utc_datetime_to_department_timezone(stock.beginningDatetime, offer.venue.departementCode)
+        beginning_date_time_in_tz = utc_datetime_to_department_timezone(stock.beginningDatetime,
+                                                                        offer.venue.departementCode)
         event_date = get_date_formatted_for_email(beginning_date_time_in_tz)
         event_hour = get_time_formatted_for_email(beginning_date_time_in_tz)
 

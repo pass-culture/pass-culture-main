@@ -18,7 +18,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     is_physical_offer = ProductType.is_thing(name=offer.type) and not is_digital_offer
     is_event = ProductType.is_event(name=offer.type)
 
-    department_code = venue.departementCode if not is_digital_offer else beneficiary.department_code
+    department_code = venue.departementCode if not is_digital_offer else beneficiary.departmentCode
     booking_date_in_tz = utc_datetime_to_department_timezone(booking.dateCreated, department_code)
 
     beneficiary_email = beneficiary.email if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS

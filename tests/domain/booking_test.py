@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
-from unittest.mock import Mock
 
 import pytest
 
@@ -18,13 +17,13 @@ from models import ApiErrors, BookingSQLEntity, StockSQLEntity, Offer, ThingType
 from models.api_errors import ResourceGoneError, ForbiddenError
 from repository import repository
 from tests.conftest import clean_database
+from tests.domain_creators.generic_creators import create_domain_user
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
     create_user_offerer, create_payment, create_deposit
-from tests.model_creators.specific_creators import create_booking_for_thing, create_stock_from_offer, \
+from tests.model_creators.specific_creators import create_stock_from_offer, \
     create_product_with_thing_type, create_product_with_event_type, create_offer_with_thing_product, \
     create_offer_with_event_product
-from utils.human_ids import humanize
 from validation.routes.bookings import \
     check_booking_is_cancellable_by_user, \
     check_rights_to_get_bookings_csv, \
@@ -47,10 +46,7 @@ class CheckExpenseLimitsTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION)
 
-        user = User(
-            identifier=1,
-            can_book_free_offers=True
-        )
+        user = create_domain_user(identifier=1)
         stock = Stock(
             identifier=1,
             quantity=None,
@@ -78,10 +74,7 @@ class CheckExpenseLimitsTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, url='http://on.line', thing_type=ThingType.JEUX_VIDEO)
 
-        user = User(
-            identifier=1,
-            can_book_free_offers=True
-        )
+        user = create_domain_user(identifier=1)
         stock = Stock(
             identifier=1,
             quantity=None,
@@ -107,10 +100,7 @@ class CheckExpenseLimitsTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
 
-        user = User(
-            identifier=1,
-            can_book_free_offers=True
-        )
+        user = create_domain_user(identifier=1)
         stock = Stock(
             identifier=1,
             quantity=None,
@@ -689,7 +679,7 @@ class CheckCanBookFreeOfferTest:
     @clean_database
     def test_should_not_raise_exception_when_user_can_book_a_free_offer(self, app):
         # Given
-        user = User(identifier=1, can_book_free_offers=True)
+        user = create_domain_user(identifier=1)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -705,7 +695,7 @@ class CheckCanBookFreeOfferTest:
     @clean_database
     def test_should_raise_exception_when_user_cannot_book_a_free_offer(self, app):
         # Given
-        user = User(identifier=1, can_book_free_offers=False)
+        user = create_domain_user(identifier=1, can_book_free_offers=False)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -718,8 +708,7 @@ class CheckCanBookFreeOfferTest:
 
         # Then
         assert error.value.errors == {
-            'cannotBookFreeOffers':
-                ["Votre compte ne vous permet pas de faire de réservation."]
+            'cannotBookFreeOffers': ["Votre compte ne vous permet pas de faire de réservation."]
         }
 
 

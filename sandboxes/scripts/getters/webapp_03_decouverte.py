@@ -20,10 +20,10 @@ def get_existing_webapp_user_with_no_date_read():
     )
     user = query.first()
 
-
     return {
         "user": get_user_helper(user),
     }
+
 
 def get_existing_webapp_user_with_at_least_one_recommendation():
     query = Recommendation.query.join(UserSQLEntity)
@@ -39,7 +39,7 @@ def get_existing_webapp_user_with_at_least_one_recommendation():
 
 def get_existing_webapp_user_with_bookings():
     query = keep_only_webapp_users(UserSQLEntity.query)
-    query = query.join(Booking)
+    query = query.join(BookingSQLEntity)
     user = query.first()
 
     return {

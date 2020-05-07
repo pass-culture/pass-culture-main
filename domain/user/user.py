@@ -13,5 +13,5 @@ class User(object):
         self.email = email
         self.firstName = first_name
         self.lastName = last_name
-        self.department_code = department_code
+        self.departmentCode = department_code
         self.wallet_balance = wallet_balance

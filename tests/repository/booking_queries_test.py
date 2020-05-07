@@ -317,7 +317,7 @@ def test_find_all_ongoing_bookings(app):
     repository.save(ongoing_booking, validated_booking, cancelled_booking)
 
     # When
-    all_ongoing_bookings = booking_queries.find_ongoing_bookings_by_stock(stock)
+    all_ongoing_bookings = booking_queries.find_ongoing_bookings_by_stock(stock.id)
 
     # Then
     assert all_ongoing_bookings == [ongoing_booking]

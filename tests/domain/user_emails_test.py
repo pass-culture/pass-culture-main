@@ -1,5 +1,7 @@
 from unittest.mock import patch, Mock, call
 
+from domain.booking.booking import Booking
+from domain.stock.stock import Stock
 from domain.user_emails import send_beneficiary_booking_cancellation_email, \
     send_warning_to_beneficiary_after_pro_booking_cancellation, \
     send_offerer_driven_cancellation_email_to_offerer, \
@@ -15,10 +17,10 @@ from domain.user_emails import send_beneficiary_booking_cancellation_email, \
 from models import Offerer
 from repository import repository
 from tests.conftest import clean_database
+from tests.domain_creators.generic_creators import create_domain_user
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_user_offerer, create_deposit
-from tests.model_creators.specific_creators import create_stock_with_event_offer, create_stock_with_thing_offer, \
-    create_offer_with_thing_product
+from tests.model_creators.specific_creators import create_stock_with_event_offer, create_offer_with_thing_product
 from tests.test_utils import create_mocked_bookings
 
 
@@ -211,12 +213,18 @@ class SendBookingRecapEmailsTest:
                                                                                  mock_feature_send_mail_to_users_enabled,
                                                                                  app):
         # given
-        user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, booking_email='offer.booking.email@example.net')
-        stock = create_stock_with_thing_offer(offerer, venue, offer)
-        booking = create_booking(user=user, stock=stock)
+
+        user = create_domain_user(identifier=1)
+        stock = Stock(
+            identifier=1,
+            quantity=None,
+            offer=offer,
+            price=10
+        )
+        booking = Booking(user=user, stock=stock, amount=1, quantity=10)
         mocked_send_email = Mock()
 
         # when
@@ -234,12 +242,19 @@ class SendBookingRecapEmailsTest:
                                                                                                             mock_feature_send_mail_to_users_enabled,
                                                                                                             app):
         # given
-        user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, booking_email='offer.booking.email@example.net')
-        stock = create_stock_with_thing_offer(offerer, venue, offer, booking_email='offer.booking.email@example.net')
-        booking = create_booking(user=user, stock=stock)
+
+        user = create_domain_user(identifier=1)
+        stock = Stock(
+            identifier=1,
+            quantity=None,
+            offer=offer,
+            price=10
+        )
+        booking = Booking(user=user, stock=stock, amount=1, quantity=10)
+
         mocked_send_email = Mock()
 
         # when
@@ -257,12 +272,19 @@ class SendBookingRecapEmailsTest:
             self,
             feature_send_mail_to_users_enabled):
         # given
-        user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, booking_email=None)
-        stock = create_stock_with_thing_offer(offerer, venue, offer, booking_email=None)
-        booking = create_booking(user=user, stock=stock)
+
+        user = create_domain_user(identifier=1)
+        stock = Stock(
+            identifier=1,
+            quantity=None,
+            offer=offer,
+            price=10
+        )
+        booking = Booking(user=user, stock=stock, amount=1, quantity=10)
+
         mocked_send_email = Mock()
 
         # when

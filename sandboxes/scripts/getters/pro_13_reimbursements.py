@@ -3,8 +3,8 @@ from models.offer import Offer
 from models.offerer import Offerer
 from models.payment import Payment
 from models.stock_sql_entity import StockSQLEntity
-from models.user_sql_entity import UserSQLEntity
 from models.user_offerer import UserOfferer
+from models.user_sql_entity import UserSQLEntity
 from models.venue import Venue
 from sandboxes.scripts.utils.helpers import get_booking_helper, \
     get_offer_helper, \
@@ -16,20 +16,20 @@ from sandboxes.scripts.utils.helpers import get_booking_helper, \
 
 
 def get_existing_pro_validated_user_with_validated_offerer_with_reimbursement():
-    query = Payment.query.join(Booking) \
-                         .join(StockSQLEntity) \
-                         .join(Offer) \
-                         .join(Venue) \
-                         .join(Offerer) \
-                         .join(UserOfferer) \
-                         .filter(
-                            (Offerer.validationToken == None) & \
-                            (UserOfferer.validationToken == None)
-                         ) \
-                         .join(UserSQLEntity) \
-                         .filter(UserSQLEntity.validationToken == None)
+    query = Payment.query.join(BookingSQLEntity) \
+        .join(StockSQLEntity) \
+        .join(Offer) \
+        .join(Venue) \
+        .join(Offerer) \
+        .join(UserOfferer) \
+        .filter(
+        (Offerer.validationToken == None) & \
+        (UserOfferer.validationToken == None)
+    ) \
+        .join(UserSQLEntity) \
+        .filter(UserSQLEntity.validationToken == None)
 
-    payment =  query.first()
+    payment = query.first()
     booking = payment.booking
     stock = booking.stock
     offer = stock.offer

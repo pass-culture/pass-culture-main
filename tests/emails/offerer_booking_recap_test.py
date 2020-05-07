@@ -1,12 +1,15 @@
 from datetime import datetime, timezone
 from unittest.mock import patch
 
+from domain.booking.booking import Booking
+from domain.stock.stock import Stock
 from emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
 from models import ThingType
 from repository import repository
 from tests.conftest import clean_database
+from tests.domain_creators.generic_creators import create_domain_user
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
-    create_deposit
+    create_deposit, create_stock
 from tests.model_creators.specific_creators import create_stock_from_offer, create_product_with_thing_type, \
     create_offer_with_thing_product, create_offer_with_event_product
 
@@ -17,17 +20,28 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     @clean_database
     def test_should_write_email_with_right_data_when_offer_is_an_event(self, app):
         # Given
-        user = create_user(email='test@example.com', first_name='John', last_name='Doe')
+        user_sql_entity = create_user(idx=1, email='test@example.com', first_name='John', last_name='Doe')
         offerer = create_offerer(idx=1)
         venue = create_venue(offerer, name='Test offerer', idx=1, postal_code='75000')
         event_offer = create_offer_with_event_product(venue, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 59, 5, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=0)
-        booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
+        stock_sql_entity = create_stock(idx=1, offer=event_offer, beginning_datetime=beginning_datetime, price=0)
+        booking_sql_entity = create_booking(idx=1, user=user_sql_entity, stock=stock_sql_entity, venue=venue,
+                                            token='ABC123')
+        repository.save(booking_sql_entity)
+
+        user = create_domain_user(identifier=1, email='test@example.com', first_name='John', last_name='Doe')
+        stock = Stock(
+            identifier=1,
+            quantity=None,
+            offer=event_offer,
+            price=0,
+            beginning_datetime=beginning_datetime,
+        )
+        booking = Booking(identifier=1, user=user, stock=stock, amount=0, quantity=1, token='ABC123')
+
         recipient = ['initial_recipient@example.com']
         stock.bookings = [booking]
-
-        repository.save(stock)
 
         # When
         email = retrieve_data_for_offerer_booking_recap_email(booking, recipient)
@@ -69,18 +83,26 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     @clean_database
     def test_should_write_email_with_right_data_when_offer_is_a_book(self, app):
         # Given
-        user = create_user(email='test@example.com', first_name='John', last_name='Doe')
+        user = create_user(idx=1, email='test@example.com', first_name='John', last_name='Doe')
         offerer = create_offerer(idx=1)
         extra_data = {'isbn': '123456789'}
         venue = create_venue(offerer, name='Test offerer', is_virtual=True, siret=None, idx=1)
 
         thing_product = create_product_with_thing_type(thing_name='Le récit de voyage', extra_data=extra_data)
         event_offer = create_offer_with_thing_product(venue=venue, product=thing_product, idx=1)
-        stock = create_stock_from_offer(event_offer, price=0)
-        booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
-        stock.bookings = [booking]
+        stock = create_stock(idx=1, offer=event_offer, price=0)
+        booking = create_booking(idx=1, user=user, stock=stock, venue=venue, token='ABC123')
+        repository.save(booking)
 
-        repository.save(stock)
+        user = create_domain_user(identifier=1, email='test@example.com', first_name='John', last_name='Doe')
+        stock = Stock(
+            identifier=1,
+            quantity=None,
+            offer=event_offer,
+            price=0,
+        )
+        booking = Booking(identifier=1, user=user, stock=stock, amount=0, quantity=1, token='ABC123')
+        stock.bookings = [booking]
 
         # When
         email = retrieve_data_for_offerer_booking_recap_email(booking, [])
@@ -123,17 +145,28 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     @clean_database
     def test_should_not_truncate_price(self, app):
         # Given
-        user = create_user(email='test@example.com', first_name='John', last_name='Doe')
+        user_sql_entity = create_user(idx=1, email='test@example.com', first_name='John', last_name='Doe')
         offerer = create_offerer(idx=1)
-        deposit = create_deposit(user, amount=50, source='public')
+        deposit = create_deposit(user_sql_entity, amount=50, source='public')
         venue = create_venue(offerer, name='Test offerer', idx=1, postal_code='75000')
         event_offer = create_offer_with_event_product(venue, is_duo=True, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(event_offer, beginning_datetime=beginning_datetime, price=5.86)
-        booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
-        stock.bookings = [booking]
+        stock_sql_entity = create_stock(idx=1, offer=event_offer, beginning_datetime=beginning_datetime, price=5.86)
+        booking_sql_entity = create_booking(idx=1, user=user_sql_entity, stock=stock_sql_entity, venue=venue,
+                                            token='ABC123')
+        repository.save(deposit, booking_sql_entity)
 
-        repository.save(deposit, stock)
+        user = create_domain_user(identifier=1, email='test@example.com', first_name='John', last_name='Doe',
+                                  wallet_balance=50)
+        stock = Stock(
+            identifier=1,
+            quantity=None,
+            offer=event_offer,
+            price=5.86,
+            beginning_datetime=beginning_datetime
+        )
+        booking = Booking(identifier=1, user=user, stock=stock, amount=0, quantity=1, token='ABC123')
+        stock.bookings = [booking]
 
         # When
         email = retrieve_data_for_offerer_booking_recap_email(booking, [])
@@ -175,17 +208,27 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     @clean_database
     def test_returns_empty_ISBN_when_no_extra_data(self, app):
         # Given
-        user = create_user(email='test@example.com', first_name='John', last_name='Doe')
+        user_sql_entity = create_user(idx=1, email='test@example.com', first_name='John', last_name='Doe')
         offerer = create_offerer(idx=1)
         venue = create_venue(offerer, name='Test offerer', is_virtual=True, siret=None, idx=1)
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
-        beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0)
-        booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
-        stock.bookings = [booking]
-        repository.save(stock)
-
         thing_offer.extraData = None
+        beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
+        stock_sql_entity = create_stock(idx=1, offer=thing_offer, beginning_datetime=beginning_datetime, price=0)
+        booking_sql_entity = create_booking(idx=1, user=user_sql_entity, stock=stock_sql_entity, venue=venue,
+                                            token='ABC123')
+        repository.save(booking_sql_entity)
+
+        user = create_domain_user(identifier=1, email='test@example.com', first_name='John', last_name='Doe')
+        stock = Stock(
+            identifier=1,
+            quantity=None,
+            offer=thing_offer,
+            price=0,
+            beginning_datetime=beginning_datetime
+        )
+        booking = Booking(identifier=1, user=user, stock=stock, amount=0, quantity=1, token='ABC123')
+        stock.bookings = [booking]
 
         # When
         email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, [])
@@ -227,16 +270,27 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     @clean_database
     def test_returns_empty_ISBN_when_extra_data_has_no_key_isbn(self, app):
         # Given
-        user = create_user(email="test@example.com", first_name='John', last_name='Doe')
+        user_sql_entity = create_user(idx=1, email="test@example.com", first_name='John', last_name='Doe')
         offerer = create_offerer(idx=1)
         venue = create_venue(offerer, name='Test offerer', is_virtual=True, siret=None, idx=1)
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0)
-        booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
-        stock.bookings = [booking]
+        stock_sql_entity = create_stock(idx=1, offer=thing_offer, beginning_datetime=beginning_datetime, price=0)
+        booking_sql_entity = create_booking(idx=1, user=user_sql_entity, stock=stock_sql_entity, venue=venue,
+                                            token='ABC123')
 
-        repository.save(stock)
+        repository.save(booking_sql_entity)
+
+        user = create_domain_user(identifier=1, email='test@example.com', first_name='John', last_name='Doe')
+        stock = Stock(
+            identifier=1,
+            quantity=None,
+            offer=thing_offer,
+            price=0,
+            beginning_datetime=beginning_datetime
+        )
+        booking = Booking(identifier=1, user=user, stock=stock, amount=0, quantity=1, token='ABC123')
+        stock.bookings = [booking]
 
         # When
         thing_offer.extraData = {}
@@ -279,17 +333,28 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     @clean_database
     def test_returns_recipients_email_when_production_environment(self, app):
         # Given
-        user = create_user(email='test@example.com', first_name='John', last_name='Doe')
+        user_sql_entity = create_user(email='test@example.com', first_name='John', last_name='Doe')
         offerer = create_offerer(idx=1)
         venue = create_venue(offerer, name='Test offerer', idx=1, postal_code='75000')
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0)
-        booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
-        stock.bookings = [booking]
-        recipients = ['dev@example.com', 'administration@example.com']
+        stock_sql_entity = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0)
+        booking_sql_entity = create_booking(user=user_sql_entity, stock=stock_sql_entity, venue=venue, token='ABC123')
 
-        repository.save(stock)
+        repository.save(booking_sql_entity)
+
+        user = create_domain_user(identifier=1, email='test@example.com', first_name='John', last_name='Doe')
+        stock = Stock(
+            identifier=1,
+            quantity=None,
+            offer=thing_offer,
+            price=0,
+            beginning_datetime=beginning_datetime
+        )
+        booking = Booking(identifier=1, user=user, stock=stock, amount=0, quantity=1, token='ABC123')
+        stock.bookings = [booking]
+
+        recipients = ['dev@example.com', 'administration@example.com']
 
         # When
         email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, recipients)
@@ -302,17 +367,29 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     @clean_database
     def test_returns_dev_email_adress_when_feature_send_mail_to_users_disabled(self, app):
         # Given
-        user = create_user(email='test@example.com', first_name='John', last_name='Doe')
+        user_sql_entity = create_user(idx=1, email='test@example.com', first_name='John', last_name='Doe')
         offerer = create_offerer(idx=1)
         venue = create_venue(offerer, name='Test offerer', idx=1, postal_code='75000')
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0)
-        booking = create_booking(user=user, stock=stock, venue=venue, token='ABC123')
-        stock.bookings = [booking]
-        recipients = ['dev@example.com', 'administration@example.com']
+        stock_sql_entity = create_stock(idx=1, offer=thing_offer, beginning_datetime=beginning_datetime, price=0)
+        booking_sql_entity = create_booking(idx=1, user=user_sql_entity, stock=stock_sql_entity, venue=venue,
+                                            token='ABC123')
 
-        repository.save(stock)
+        repository.save(booking_sql_entity)
+
+        user = create_domain_user(identifier=1, email='test@example.com', first_name='John', last_name='Doe')
+        stock = Stock(
+            identifier=1,
+            quantity=None,
+            offer=thing_offer,
+            price=0,
+            beginning_datetime=beginning_datetime
+        )
+        booking = Booking(identifier=1, user=user, stock=stock, amount=0, quantity=1, token='ABC123')
+        stock.bookings = [booking]
+
+        recipients = ['dev@example.com', 'administration@example.com']
 
         # When
         email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, recipients)
@@ -326,21 +403,35 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     @clean_database
     def test_returns_email_with_correct_data_when_two_users_book_the_same_offer(self, app):
         # Given
-        user_1 = create_user(email='test@example.com', first_name='Jean', last_name='Dupont')
-        user_2 = create_user(email='mail@example.com', first_name='Jaja', last_name='Dudu')
+        user_sql_entity_1 = create_user(idx=1, email='test@example.com', first_name='Jean', last_name='Dupont')
+        user_sql_entity_2 = create_user(idx=2, email='mail@example.com', first_name='Jaja', last_name='Dudu')
         offerer = create_offerer(idx=1)
         venue = create_venue(offerer, idx=1, postal_code='75000')
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=1)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0)
-        booking_1 = create_booking(user=user_1, stock=stock, venue=venue, token='ACVSDC')
-        booking_2 = create_booking(user=user_2, stock=stock, venue=venue, token='TEST95')
-        stock.bookings = [booking_1, booking_2]
+        stock_sql_entity = create_stock(idx=1, offer=thing_offer, beginning_datetime=beginning_datetime, price=0)
+        booking_sql_entity_1 = create_booking(idx=1, user=user_sql_entity_1, stock=stock_sql_entity, venue=venue,
+                                              token='ACVSDC')
+        booking_sql_entity_2 = create_booking(idx=2, user=user_sql_entity_2, stock=stock_sql_entity, venue=venue,
+                                              token='TEST95')
 
-        repository.save(stock)
+        repository.save(booking_sql_entity_1, booking_sql_entity_2)
+
+        user1 = create_domain_user(identifier=1, email='test@example.com', first_name='Jean', last_name='Dupont')
+        user2 = create_domain_user(identifier=2, email='mail@example.com', first_name='Jaja', last_name='Dudu')
+        stock = Stock(
+            identifier=1,
+            quantity=None,
+            offer=thing_offer,
+            price=0,
+            beginning_datetime=beginning_datetime
+        )
+        booking1 = Booking(identifier=1, user=user1, stock=stock, amount=0, quantity=1, token='ACVSDC')
+        booking2 = Booking(identifier=2, user=user2, stock=stock, amount=0, quantity=1, token='TEST95')
+        stock.bookings = [booking1, booking2]
 
         # When
-        email_data_template = retrieve_data_for_offerer_booking_recap_email(booking_1, [])
+        email_data_template = retrieve_data_for_offerer_booking_recap_email(booking1, [])
 
         # Then
         email_data_template_users = email_data_template.get('Vars').get('users')
@@ -360,16 +451,26 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
     @clean_database
     def test_returns_email_with_link_to_the_corresponding_offer(self, app):
         # Given
-        user = create_user(email='test@example.com', first_name='Jean', last_name='Dupont')
+        user_sql_entity = create_user(idx=1, email='test@example.com', first_name='Jean', last_name='Dupont')
         offerer = create_offerer(idx=1)
         venue = create_venue(offerer, name='Test offerer', idx=1, postal_code='75000')
         thing_offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, idx=3)
         beginning_datetime = datetime(2019, 11, 6, 14, 00, 0, tzinfo=timezone.utc)
-        stock = create_stock_from_offer(thing_offer, beginning_datetime=beginning_datetime, price=0)
-        booking = create_booking(user=user, stock=stock, venue=venue, token='ACVSDC')
-        stock.bookings = [booking]
+        stock_sql_entity = create_stock(idx=1, offer=thing_offer, beginning_datetime=beginning_datetime, price=0)
+        booking_sql_entity = create_booking(idx=1, user=user_sql_entity, stock=stock_sql_entity, venue=venue,
+                                            token='ACVSDC')
+        repository.save(booking_sql_entity)
 
-        repository.save(stock)
+        user = create_domain_user(identifier=1, email='test@example.com', first_name='Jean', last_name='Dupont')
+        stock = Stock(
+            identifier=1,
+            quantity=None,
+            offer=thing_offer,
+            price=0,
+            beginning_datetime=beginning_datetime
+        )
+        booking = Booking(identifier=1, user=user, stock=stock, amount=0, quantity=1, token='ACVSDC')
+        stock.bookings = [booking]
 
         # When
         email_data_template = retrieve_data_for_offerer_booking_recap_email(booking, [])

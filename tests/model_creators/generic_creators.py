@@ -407,7 +407,7 @@ def create_stock(quantity: int = None, booking_limit_datetime: datetime = None, 
                  date_created: datetime = datetime.utcnow(), date_modified: datetime = datetime.utcnow(),
                  date_modified_at_last_provider: datetime = None, has_been_migrated: bool = None, idx: int = None,
                  id_at_providers: str = None, is_soft_deleted: bool = False, last_provider_id: int = None,
-                 offer: Offer = None, price: int = 10) -> StockSQLEntity:
+                 offer: Offer = None, price: float = 10) -> StockSQLEntity:
     stock = StockSQLEntity()
     stock.quantity = quantity
     stock.beginningDatetime = beginning_datetime

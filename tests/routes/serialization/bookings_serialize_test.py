@@ -4,11 +4,10 @@ from freezegun import freeze_time
 
 from domain.booking.booking import Booking
 from domain.stock.stock import Stock
-from domain.user.user import User
-from domain_creators.generic_creators import create_domain_user
 from models import EventType, ThingType
 from routes.serialization import serialize_booking
 from routes.serialization.bookings_serialize import serialize_booking_for_book_an_offer
+from tests.domain_creators.generic_creators import create_domain_user
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue
 from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_product_with_thing_type, \

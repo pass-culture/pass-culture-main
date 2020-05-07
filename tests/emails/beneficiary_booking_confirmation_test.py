@@ -1,7 +1,10 @@
 from datetime import datetime, timezone
 from unittest.mock import patch
 
+from domain.booking.booking import Booking
+from domain.stock.stock import Stock
 from emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
+from tests.domain_creators.generic_creators import create_domain_user
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_mediation
 from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product, \
@@ -162,13 +165,20 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing(mock_
 @patch('emails.beneficiary_booking_confirmation.format_environment_for_email', return_value='')
 def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_digital_thing(mock_format_environment_for_email):
     # Given
-    user = create_user(first_name='Joe')
     offerer = create_offerer(idx=1, name="Théâtre de l'angle")
     venue = create_venue(offerer=offerer, name='Lieu', idx=1, address=None, postal_code=None, city=None)
     digital_thing_offer = create_offer_with_thing_product(venue, url='http://mon.url', thing_name='Super offre numérique', idx=32)
-    stock = create_stock_from_offer(digital_thing_offer, price=0)
+
+    user = create_domain_user(identifier=1, first_name='Joe')
+    stock = Stock(
+        identifier=1,
+        quantity=None,
+        offer=digital_thing_offer,
+        price=0
+    )
     booking_datetime = datetime(2019, 10, 3, 13, 24, 6, tzinfo=timezone.utc)
-    booking = create_booking(date_created=booking_datetime, user=user, stock=stock, venue=venue, token='123ABC')
+    booking = Booking(user=user, stock=stock, amount=1, quantity=10, date_booked=booking_datetime, token='123ABC')
+
 
     # When
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)

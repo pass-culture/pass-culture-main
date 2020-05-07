@@ -1,18 +1,15 @@
 from domain.booking.booking import Booking
 from domain.stock.stock import Stock
-from domain.user.user import User
-from domain_creators.generic_creators import create_domain_user
 from models import ThingType
-from models.booking_sql_entity import BookingSQLEntity
 from repository import repository
 from repository.booking import booking_domain_adapter
 from repository.booking.booking_sql_repository import BookingSQLRepository
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import (create_booking,
-                                                   create_offerer, create_user,
-                                                   create_venue, create_stock, create_deposit)
-from tests.model_creators.specific_creators import (
-    create_offer_with_thing_product, create_stock_from_offer)
+from tests.domain_creators.generic_creators import create_domain_user
+from tests.model_creators.generic_creators import create_booking, \
+    create_offerer, create_user, \
+    create_venue, create_stock, create_deposit
+from tests.model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
 
 
 class BookingSQLRepositoryTest:

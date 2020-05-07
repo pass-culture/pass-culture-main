@@ -28,7 +28,7 @@ from utils.mailing import ADMINISTRATION_EMAIL_ADDRESS, \
     make_venue_validated_email
 
 
-def send_booking_recap_emails(booking: BookingSQLEntity, send_email: Callable[..., bool]) -> bool:
+def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool]) -> bool:
     recipients = [ADMINISTRATION_EMAIL_ADDRESS]
     booking_email = booking.stock.offer.bookingEmail
     if booking_email:
@@ -43,7 +43,7 @@ def send_booking_confirmation_email_to_beneficiary(booking: Booking, send_email:
     send_email(data=email_data)
 
 
-def send_beneficiary_booking_cancellation_email(booking: BookingSQLEntity, send_email: Callable[..., bool]):
+def send_beneficiary_booking_cancellation_email(booking: Booking, send_email: Callable[..., bool]):
     beneficiary_booking_cancellation_email_data = make_beneficiary_booking_cancellation_email_data(booking)
     send_email(data=beneficiary_booking_cancellation_email_data)
 
