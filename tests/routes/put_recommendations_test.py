@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from models.discovery_view import DiscoveryView
 from models.recommendation import Recommendation
-from repository import repository
+from repository import repository, discovery_view_queries
 from tests.conftest import TestClient, clean_database
 from tests.model_creators.generic_creators import create_booking, \
     create_mediation, create_offerer, create_recommendation, \
@@ -228,7 +228,7 @@ class Put:
             create_mediation(thing_offer1)
             create_mediation(thing_offer2)
             repository.save(user, stock1, stock2)
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email) \
@@ -267,7 +267,7 @@ class Put:
             create_mediation(thing_offer2)
             create_mediation(event_offer)
             repository.save(user, event_stock, soft_deleted_event_stock, thing_stock, soft_deleted_thing_stock)
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             event_offer_id = event_offer.id
             thing_offer2_id = thing_offer2.id
@@ -350,7 +350,7 @@ class Put:
             stock = create_stock_from_offer(offer, price=0)
             mediation = create_mediation(offer)
             repository.save(user, stock, mediation)
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -377,7 +377,7 @@ class Put:
             )
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, quantity=20)
             repository.save(user, stock)
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -406,7 +406,7 @@ class Put:
             mediation = create_mediation(offer)
             stock = create_stock_from_event_occurrence(event_occurrence, price=0, quantity=20)
             repository.save(user, stock, mediation)
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -459,7 +459,7 @@ class Put:
             create_mediation(offer_venue_not_validated)
             create_mediation(offer_venue_validated)
             repository.save(stock_venue_not_validated, stock_venue_validated, user)
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             venue_validated_id = venue_validated.id
             venue_not_validated_id = venue_not_validated.id
@@ -489,7 +489,7 @@ class Put:
             mediation2 = create_mediation(offer2, is_active=False)
             mediation3 = create_mediation(offer2, is_active=True)
             repository.save(user, stock1, mediation1, stock2, mediation2, mediation3)
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
             mediation3_id = mediation3.id
@@ -529,7 +529,7 @@ class Put:
             stock3 = create_stock_from_offer(offer3, price=0)
             stock4 = create_stock_from_offer(offer4, price=0)
             repository.save(user, stock1, stock2, stock3, stock4)
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             offer1_id = offer1.id
             offer2_id = offer2.id
@@ -573,7 +573,7 @@ class Put:
             create_mediation(offer_thing)
             create_mediation(offer_event)
             repository.save(user, event_stock, stock_thing)
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -599,7 +599,7 @@ class Put:
             mediation2 = create_mediation(offer2, is_active=True)
             recommendation = create_recommendation(offer=offer2, user=user, mediation=mediation2, search="bla")
             repository.save(user, stock1, mediation1, stock2, mediation2, recommendation)
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -695,7 +695,7 @@ class Put:
             active_mediation = create_mediation(offer1, is_active=True)
             invalid_recommendation = create_recommendation(offer=offer1, user=user, mediation=inactive_mediation)
             repository.save(user, stock1, inactive_mediation, active_mediation, invalid_recommendation)
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             active_mediation_id = active_mediation.id
             inactive_mediation_id = inactive_mediation.id
@@ -779,7 +779,7 @@ class Put:
                 create_mediation(offer_event)
                 repository.save(event_stock, stock_thing)
 
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
@@ -811,7 +811,7 @@ class Put:
 
             recommendation = create_recommendation(offer=offer, user=user, mediation=mediation)
             repository.save(user, recommendation)
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -839,7 +839,7 @@ class Put:
             booking = create_booking(user=user, stock=stock, venue=venue)
             create_mediation(offer)
             repository.save(booking)
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email) \
