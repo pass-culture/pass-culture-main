@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "passCulture_testing",
+    "package_name": "app.passculture.testing.webapp",
+    "sha256_cert_fingerprints": [
+      "BB:14:2E:15:DE:C9:22:EA:4B:1D:24:BC:8A:10:3C:A5:DC:76:0F:32:B1:90:3D:17:EA:AB:EF:44:A3:A9:07:60"
+    ]
+  }
+}]

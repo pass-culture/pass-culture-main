@@ -84,12 +84,12 @@ module.exports = {
           .concat(
             process.env.HAS_WORKERS
               ? [
-                {
-                  loader: 'worker-loader',
-                  options: { inline: true },
-                  test: /index\.(.*)\.worker\.js$/,
-                },
-              ]
+                  {
+                    loader: 'worker-loader',
+                    options: { inline: true },
+                    test: /index\.(.*)\.worker\.js$/,
+                  },
+                ]
               : []
           )
           .concat([
@@ -116,8 +116,8 @@ module.exports = {
     minimize: true,
     minimizer: [new TerserPlugin()],
     splitChunks: {
-      chunks: 'all'
-    }
+      chunks: 'all',
+    },
   },
   output: {
     chunkFilename: 'static/js/[name].[chunkhash:8].js',
@@ -133,7 +133,7 @@ module.exports = {
   },
   plugins: [
     new CopyWebpackPlugin(
-      ['bmp', 'pdf', 'jpg', 'jpeg', 'png'].map(extension => ({
+      ['bmp', 'pdf', 'jpg', 'jpeg', 'png', 'json'].map(extension => ({
         from: path.resolve(`${paths.appPublic}/**/*.${extension}`),
         to: path.resolve(`${paths.appBuild}/**/*.${extension}`),
       }))
@@ -186,7 +186,7 @@ module.exports = {
       dest: 'index.html',
       inline: true,
       minify: true,
-    })
+    }),
   ],
   resolve: {
     alias: {
