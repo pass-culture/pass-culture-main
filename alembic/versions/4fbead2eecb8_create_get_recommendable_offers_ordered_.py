@@ -1,7 +1,7 @@
 """create_get_recommendable_offers_ordered_by_score_and_digital_offers_function
 
 Revision ID: 4fbead2eecb8
-Revises: 04928427ce14
+Revises: 44d783e1c855
 Create Date: 2020-05-05 16:43:48.994091
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '4fbead2eecb8'
-down_revision = '04928427ce14'
+down_revision = '44d783e1c855'
 branch_labels = None
 depends_on = None
 
