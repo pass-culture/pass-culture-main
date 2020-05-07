@@ -22,17 +22,6 @@ def synchronize_data_for_provider(provider_name: str, limit: Optional[int] = Non
                                             status=CronStatus.FAILED,
                                             traceback=formatted_traceback))
 
-def launch_provider_on_data(provider_name: str, init_args: Optional[int] = None) -> None:
-    provider_class = get_local_provider_class_by_name(provider_name)
-    try:
-        provider = provider_class(init_args)
-        do_update(provider, limit=None)
-
-    except Exception:
-        formatted_traceback = traceback.format_exc()
-        logger.error(build_job_log_message(name=provider_name,
-                                            traceback=formatted_traceback))
-
 
 def synchronize_venue_providers_for_provider(provider_id: int, limit: Optional[int] = None) -> None:
     venue_providers = get_active_venue_providers_for_specific_provider(provider_id)
