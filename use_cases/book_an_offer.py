@@ -8,8 +8,6 @@ from domain.stock.stock_repository import StockRepository
 from domain.stock.stock_validator import check_stock_is_bookable, check_expenses_limits, check_can_book_free_offer
 from domain.user.user import User
 from domain.user.user_repository import UserRepository
-from models import BookingSQLEntity
-from utils.token import random_token
 
 
 class BookingInformation(object):
@@ -42,6 +40,7 @@ class BookAnOffer:
 
         booking = self._create_booking_with_booking_information(booking_information, stock, user)
         bookings = self.booking_repository.find_active_bookings_by_user_id(booking_information.user_id)
+        # TODO: wtf
         expenses = get_expenses(bookings)
         check_expenses_limits(expenses, booking)
 

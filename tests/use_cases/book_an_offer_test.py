@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, call
 
 import pytest
 
@@ -8,7 +8,6 @@ from domain.stock.stock import Stock
 from domain.stock.stock_exceptions import StockDoesntExist
 from domain.user.user import User
 from infrastructure.services.notification.mailjet_service import MailjetService
-from models import BookingSQLEntity
 from repository import repository
 from repository.booking.booking_sql_repository import BookingSQLRepository
 from repository.stock.stock_sql_repository import StockSQLRepository
@@ -23,6 +22,7 @@ from use_cases.book_an_offer import BookAnOffer, BookingInformation
 class BookAnOfferTest:
     def setup_method(self):
         self.booking_repository = BookingSQLRepository()
+        self.booking_repository.save = MagicMock()
         self.stock_repository = StockSQLRepository()
         self.user_repository = UserSQLRepository()
         self.stock_repository.find_stock_by_id = MagicMock()
@@ -67,11 +67,10 @@ class BookAnOfferTest:
 
         # When
         booking = self.book_an_offer.execute(booking_information=booking_information)
-        print(booking.__dict__)
 
         # Then
-        new_booking = BookingSQLEntity.query.filter(BookingSQLEntity.isCancelled == False).one()
-        assert new_booking == self.booking_repository.to_model(booking)
+        self.booking_repository.save.assert_called_once()
+        assert self.booking_repository.save.call_args == call(booking)
 
     @clean_database
     def test_send_a_booking_recap_email(self, app):

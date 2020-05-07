@@ -22,8 +22,7 @@ def check_stock_is_bookable(stock: Stock):
         raise stock_is_not_bookable
 
 
-def check_expenses_limits(expenses: Dict, booking: Booking,
-                          find_stock: Callable[..., Stock] = stock_queries.find_stock_by_id) -> None:
+def check_expenses_limits(expenses: Dict, booking: Booking) -> None:
     stock = booking.stock
     offer = stock.offer
 

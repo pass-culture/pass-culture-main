@@ -4,14 +4,15 @@ from unittest.mock import Mock
 
 import pytest
 
+from domain.booking.booking import Booking
 from domain.booking.booking_exceptions import PhysicalExpenseLimitHasBeenReached, \
     QuantityIsInvalid, \
     StockIsNotBookable, OfferIsAlreadyBooked, CannotBookFreeOffers, UserHasInsufficientFunds, \
     DigitalExpenseLimitHasBeenReached
 from domain.booking.booking_validator import check_offer_already_booked, check_quantity_is_valid
-from domain.stock.stock_validator import check_stock_is_bookable, check_expenses_limits, check_can_book_free_offer
 from domain.expenses import SUBVENTION_PHYSICAL_THINGS, SUBVENTION_DIGITAL_THINGS, SUBVENTION_TOTAL
 from domain.stock.stock import Stock
+from domain.stock.stock_validator import check_stock_is_bookable, check_expenses_limits, check_can_book_free_offer
 from domain.user.user import User
 from models import ApiErrors, BookingSQLEntity, StockSQLEntity, Offer, ThingType, UserSQLEntity, EventType
 from models.api_errors import ResourceGoneError, ForbiddenError
@@ -42,13 +43,30 @@ class CheckExpenseLimitsTest:
             'physical': {'max': SUBVENTION_PHYSICAL_THINGS, 'actual': 190},
             'digital': {'max': SUBVENTION_DIGITAL_THINGS, 'actual': 10}
         }
-        booking = BookingSQLEntity(from_dict={'stockId': humanize(123), 'amount': 11, 'quantity': 1})
-        stock = create_booking_for_thing(product_type=ThingType.LIVRE_EDITION).stock
-        mocked_query = Mock(return_value=stock)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION)
+
+        user = User(
+            identifier=1,
+            can_book_free_offers=True
+        )
+        stock = Stock(
+            identifier=1,
+            quantity=None,
+            offer=offer,
+            price=1
+        )
+        booking = Booking(
+            user=user,
+            stock=stock,
+            amount=1,
+            quantity=11
+        )
 
         # when
         with pytest.raises(PhysicalExpenseLimitHasBeenReached) as error:
-            check_expenses_limits(expenses, booking, mocked_query)
+            check_expenses_limits(expenses, booking)
 
         # then
         assert error.value.errors['global'] == ['Le plafond de %s € pour les biens culturels ne vous permet pas ' \
@@ -61,13 +79,30 @@ class CheckExpenseLimitsTest:
             'physical': {'max': SUBVENTION_PHYSICAL_THINGS, 'actual': 10},
             'digital': {'max': SUBVENTION_DIGITAL_THINGS, 'actual': 190}
         }
-        booking = BookingSQLEntity(from_dict={'stockId': humanize(123), 'amount': 11, 'quantity': 1})
-        stock = create_booking_for_thing(url='http://on.line', product_type=ThingType.JEUX_VIDEO).stock
-        mocked_query = Mock(return_value=stock)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue, url='http://on.line', thing_type=ThingType.JEUX_VIDEO)
+
+        user = User(
+            identifier=1,
+            can_book_free_offers=True
+        )
+        stock = Stock(
+            identifier=1,
+            quantity=None,
+            offer=offer,
+            price=1
+        )
+        booking = Booking(
+            user=user,
+            stock=stock,
+            amount=1,
+            quantity=11
+        )
 
         # when
         with pytest.raises(DigitalExpenseLimitHasBeenReached) as error:
-            check_expenses_limits(expenses, booking, mocked_query)
+            check_expenses_limits(expenses, booking)
 
         # then
         assert error.value.errors['global'] == ['Le plafond de %s € pour les offres numériques ne vous permet pas ' \
@@ -78,12 +113,30 @@ class CheckExpenseLimitsTest:
         expenses = {
             'all': {'max': SUBVENTION_TOTAL, 'actual': 400}
         }
-        booking = BookingSQLEntity(from_dict={'stockId': humanize(123), 'amount': 1, 'quantity': 120})
-        mocked_query = Mock()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+
+        user = User(
+            identifier=1,
+            can_book_free_offers=True
+        )
+        stock = Stock(
+            identifier=1,
+            quantity=None,
+            offer=offer,
+            price=1
+        )
+        booking = Booking(
+            user=user,
+            stock=stock,
+            amount=1,
+            quantity=120
+        )
 
         # when
         with pytest.raises(UserHasInsufficientFunds) as error:
-            check_expenses_limits(expenses, booking, mocked_query)
+            check_expenses_limits(expenses, booking)
 
         # then
         assert error.value.errors['insufficientFunds'] == ['Le solde de votre pass est insuffisant'
