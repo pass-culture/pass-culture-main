@@ -4,7 +4,7 @@ from domain.booking.booking import Booking
 from domain.booking.booking_repository import BookingRepository
 from models import BookingSQLEntity
 from repository import repository
-from utils.token import random_token
+from repository.booking import booking_domain_adapter
 
 
 class BookingSQLRepository(BookingRepository):
@@ -14,27 +14,8 @@ class BookingSQLRepository(BookingRepository):
             .filter_by(isCancelled=False) \
             .all()
 
-        return [self.to_domain(booking_sql_entity) for booking_sql_entity in booking_sql_entities]
-
-    def to_domain(self, booking_sql_entity: BookingSQLEntity) -> Booking:
-        return Booking(user=booking_sql_entity.user,
-                       stock=booking_sql_entity.stock,
-                       amount=booking_sql_entity.amount,
-                       quantity=booking_sql_entity.quantity,
-                       identifier=booking_sql_entity.id,
-                       recommendation_id=booking_sql_entity.recommendationId)
-
-    def to_model(self, booking: Booking) -> BookingSQLEntity:
-        booking_sql_entity = BookingSQLEntity()
-        booking_sql_entity.userId = booking.user.identifier
-        booking_sql_entity.stockId = booking.stock.identifier
-        booking_sql_entity.amount = booking.amount
-        booking_sql_entity.quantity = booking.quantity
-        booking_sql_entity.token = random_token()
-        booking_sql_entity.id = booking.identifier
-
-        return booking_sql_entity
+        return [booking_domain_adapter.to_domain(booking_sql_entity) for booking_sql_entity in booking_sql_entities]
 
     def save(self, booking: Booking) -> None:
-        booking_sql_entity = self.to_model(booking)
+        booking_sql_entity = booking_domain_adapter.to_model(booking)
         repository.save(booking_sql_entity)

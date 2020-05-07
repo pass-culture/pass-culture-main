@@ -20,5 +20,6 @@ class Booking(object):
         self.isCancelled = is_cancelled
         self.recommendation_id = recommendation_id
 
+    @property
     def total_amount(self) -> float:
         return self.amount * self.quantity

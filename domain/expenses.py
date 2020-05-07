@@ -41,7 +41,7 @@ def get_expenses(bookings: List[BookingSQLEntity]) -> Dict:
 
 def _compute_booking_expenses(bookings: List[BookingSQLEntity], get_bookings=lambda booking: booking) -> Decimal:
     bookings_to_sum = filter(lambda booking: not booking.isCancelled, get_bookings(bookings))
-    expenses = map(lambda booking: booking.total_amount(), bookings_to_sum)
+    expenses = map(lambda booking: booking.total_amount, bookings_to_sum)
     return Decimal(sum(expenses))
 
 

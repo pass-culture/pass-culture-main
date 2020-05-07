@@ -1,9 +1,48 @@
+from domain.booking.booking import Booking
 from domain.expenses import get_expenses
+from domain.stock.stock import Stock
+from domain.user.user import User
 from models import ThingType, EventType
-from tests.model_creators.specific_creators import create_booking_for_thing, create_booking_for_event
+from tests.model_creators.generic_creators import create_offerer, create_venue
+from tests.model_creators.specific_creators import create_booking_for_thing, create_booking_for_event, \
+    create_offer_with_thing_product
 
 
 class ExpensesTest:
+    class DomainBookingTemporaryTest:
+        def test_foobar(self):
+            # Given
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, is_digital=True)
+
+            user = User(
+                identifier=1,
+                can_book_free_offers=True
+            )
+            stock = Stock(
+                identifier=1,
+                quantity=None,
+                offer=offer,
+                price=2
+            )
+            booking = Booking(
+                user=user,
+                stock=stock,
+                amount=2,
+                quantity=25
+            )
+            bookings = [
+                booking
+            ]
+
+            # When
+            expenses = get_expenses(bookings)
+
+            # Then
+            assert expenses['digital']['actual'] == 50
+            assert expenses['physical']['actual'] == 0
+
     class ThingsTest:
         class AudiovisuelTest:
             def test_online_offer_increase_digital_expense(self):

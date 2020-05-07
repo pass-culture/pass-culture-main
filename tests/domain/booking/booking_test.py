@@ -16,7 +16,7 @@ class TotalAmountTest:
         )
 
         # When
-        total_amount = booking.total_amount()
+        total_amount = booking.total_amount
 
         # Then
         assert total_amount == 2.4

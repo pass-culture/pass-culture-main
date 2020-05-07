@@ -3,6 +3,7 @@ from domain.user.user_exceptions import UserDoesntExist
 from domain.user.user_repository import UserRepository
 from models import UserSQLEntity
 from models.db import db
+from repository.user import user_domain_adapter
 
 
 class UserSQLRepository(UserRepository):
@@ -13,7 +14,4 @@ class UserSQLRepository(UserRepository):
         if user_sql_entity is None:
             raise UserDoesntExist()
 
-        return User(
-            identifier=user_sql_entity.id,
-            can_book_free_offers=user_sql_entity.canBookFreeOffers
-        )
+        return user_domain_adapter.to_domain(user_sql_entity)
