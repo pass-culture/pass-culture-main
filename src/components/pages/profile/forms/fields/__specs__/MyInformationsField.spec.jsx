@@ -1,10 +1,11 @@
 import { shallow } from 'enzyme'
 import React from 'react'
-import { MyInformationsField } from '../MyInformationsField'
 
-const ERROR_MESSAGE = 'Vous devez renseigner au moins 3 caractères'
+import MyInformationsField from '../MyInformationsField'
 
-describe('src | components | pages | profile | forms | fields | MyInformationsField', () => {
+describe('my informations field', () => {
+  const ERROR_MESSAGE = 'Vous devez renseigner au moins 3 caractères'
+
   it('should display error messages when there are validation errors', () => {
     // Given
     const secondErrorMessage = 'Vous ne devez pas renseigner plus de 10 caractères'
@@ -14,7 +15,6 @@ describe('src | components | pages | profile | forms | fields | MyInformationsFi
     const wrapper = shallow(
       <MyInformationsField
         errors={errors}
-        id="inputId"
         label="input label"
         name="inputName"
       />
@@ -35,15 +35,15 @@ describe('src | components | pages | profile | forms | fields | MyInformationsFi
     const wrapper = shallow(
       <MyInformationsField
         errors={errors}
-        id="inputId"
         label="input label"
         name="inputName"
+        value="MEFA"
       />
     )
 
     // Then
-    const publicNameInput = wrapper.find("input[name='inputName']")
-    expect(publicNameInput.props()['aria-invalid']).toBe(true)
+    const publicNameInput = wrapper.find("input[value='MEFA']")
+    expect(publicNameInput.prop('aria-invalid')).toBe(true)
   })
 
   it('should not display error message when there is no validation error', () => {
@@ -54,7 +54,6 @@ describe('src | components | pages | profile | forms | fields | MyInformationsFi
     const wrapper = shallow(
       <MyInformationsField
         errors={errors}
-        id="inputId"
         label="input label"
         name="inputName"
       />
@@ -73,14 +72,14 @@ describe('src | components | pages | profile | forms | fields | MyInformationsFi
     const wrapper = shallow(
       <MyInformationsField
         errors={errors}
-        id="inputId"
         label="input label"
         name="inputName"
+        value="MEFA"
       />
     )
 
     // Then
-    const publicNameInput = wrapper.find("input[name='inputName']")
-    expect(publicNameInput.props()['aria-invalid']).toBe(false)
+    const publicNameInput = wrapper.find("input[value='MEFA']")
+    expect(publicNameInput.prop('aria-invalid')).toBe(false)
   })
 })

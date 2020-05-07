@@ -1,17 +1,17 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import ProfileMainView from '../ProfileMainView'
-import ProfileHeader from '../../ProfileHeader/ProfileHeader'
 import RelativeFooterContainer from '../../../../layout/RelativeFooter/RelativeFooterContainer'
 import MyInformations from '../../MyInformations/MyInformations'
+import ProfileHeader from '../../ProfileHeader/ProfileHeader'
 import RemainingCredit from '../../RemainingCredit/RemainingCredit'
+import ProfileMainView from '../ProfileMainView'
 
 jest.mock('../../../../../../package.json', () => ({
   version: '78.0.0',
 }))
 
-describe('profileMainView', () => {
+describe('profile main view', () => {
   let props
 
   beforeEach(() => {
@@ -49,8 +49,8 @@ describe('profileMainView', () => {
     const wrapper = shallow(<ProfileMainView {...props} />)
 
     // Then
-    const logo = wrapper.find('img').props()
-    expect(logo.src).toBe('/min-culture-rvb@2x.png')
-    expect(logo.alt).toBe('')
+    const logo = wrapper.find('img')
+    expect(logo.prop('src')).toBe('/min-culture-rvb@2x.png')
+    expect(logo.prop('alt')).toBe('')
   })
 })

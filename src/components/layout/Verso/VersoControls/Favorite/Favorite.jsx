@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
 import Icon from '../../../Icon/Icon'
-import { snackbar } from '../../../Snackbar/snackbar'
+import { snackbar } from '../../../../../utils/snackbar'
 
 const iconClass = isFavorite => `ico-like${isFavorite ? '-filled' : '-empty'}`
 

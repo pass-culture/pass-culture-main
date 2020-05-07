@@ -1,59 +1,39 @@
 import { Selector } from 'testcafe'
-import { ROOT_PATH } from '../src/utils/config'
-import { fetchSandbox } from './helpers/sandboxes'
-import { createUserRole } from './helpers/roles'
 
-fixture('Quand je navigue vers Mon Compte,').beforeEach(async t => {
-  const { user } = await fetchSandbox(
+import { ROOT_PATH } from '../src/utils/config'
+import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
+import getPageUrl from './helpers/getPageUrl'
+
+const profilPath = `${ROOT_PATH}profil`
+
+fixture('Étant connecté, je vais sur mon compte,').beforeEach(async t => {
+  const userRole = await createUserRoleFromUserSandbox(
     'webapp_10_menu',
     'get_existing_webapp_validated_user_with_has_filled_cultural_survey'
   )
 
-  await t.useRole(createUserRole(user)).navigateTo(`${ROOT_PATH}profil`)
+  await t.useRole(userRole).navigateTo(profilPath)
 })
 
-test('je vois le lien vers Informations Personnelles', async t => {
+test('je clique sur le lien pour accéder au formulaire de mes informations personnelles et je modifie mon pseudo', async t => {
+  const personalInformationsPath = `${ROOT_PATH}profil/informations`
   const personalInformationsLink = Selector('a').withText('Informations personnelles')
-
-  await t.expect(personalInformationsLink.exists).ok()
-})
-
-test('je vois le lien vers Mot de Passe', async t => {
-  const passwordLink = Selector('a').withText('Mot de passe')
-
-  await t.expect(passwordLink.exists).ok()
-})
-
-test('je suis redirigé.e vers la page Informations personnelles quand je clique sur le lien Informations Personnelles', async t => {
-  const personalInformationsLink = Selector('a').withText('Informations personnelles')
-
-  await t.click(personalInformationsLink)
-
-  const location = await t.eval(() => window.location)
-
-  await t.expect(location.pathname).contains('/profil/informations')
-})
-
-test('quand je suis sur la page Informations Personnelles et que je clique sur Enregistrer, je suis redirigé.e vers Mon Compte', async t => {
-  const personalInformationsLink = Selector('a').withText('Informations personnelles')
-
-  await t.click(personalInformationsLink)
-
+  const nicknameInput = Selector('input[name="publicName"]')
+  const newNickname = 'pseudo different'
+  const emptyField = 'ctrl+a delete'
   const submitButton = Selector('button').withText('Enregistrer')
+  const updatedNickname = Selector('main').withText(newNickname)
 
-  await t.click(submitButton)
-
-  const location = await t.eval(() => window.location)
-
-  await t.expect(location.pathname).contains('/profil')
-})
-
-test('je suis redirigé.e vers la page Mot de passe quand je clique sur le lien Mot de passe', async t => {
-  const passwordLink = Selector('a').withText('Mot de passe')
-
-  await t.click(passwordLink)
-
-  const location = await t.eval(() => window.location)
-
-  await t.expect(location.pathname).contains('/profil/password')
+  await t
+    .click(personalInformationsLink)
+    .expect(getPageUrl())
+    .contains(personalInformationsPath)
+    .click(nicknameInput)
+    .pressKey(emptyField)
+    .typeText(nicknameInput, newNickname)
+    .click(submitButton)
+    .expect(getPageUrl())
+    .contains(profilPath)
+    .expect(updatedNickname.exists)
+    .ok()
 })

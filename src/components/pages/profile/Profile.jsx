@@ -3,13 +3,13 @@ import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import getDepartementByCode from '../../../utils/getDepartementByCode'
+import { snackbar } from '../../../utils/snackbar'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import NotMatch from '../not-match/NotMatch'
 import UserPasswordField from './forms/fields/UserPasswordField'
+import PersonalInformationsContainer from './PersonalInformations/PersonalInformationsContainer'
 import ProfileMainView from './ProfileMainView/ProfileMainView'
 import ProfileUpdateSuccess from './ProfileUpdateSuccess/ProfileUpdateSuccess'
-import PersonalInformationsContainer from './PersonalInformations/PersonalInformationsContainer'
-import { snackbar } from '../../layout/Snackbar/snackbar'
 
 export const getDepartment = departmentCode => {
   const departmentName = getDepartementByCode(departmentCode)
@@ -17,7 +17,6 @@ export const getDepartment = departmentCode => {
 }
 
 class Profile extends PureComponent {
-
   renderProfileMainView = currentUser => () => <ProfileMainView currentUser={currentUser} />
 
   renderPasswordUpdateSuccess = routeProps => (
@@ -34,14 +33,20 @@ class Profile extends PureComponent {
     />
   )
 
-  renderPersonalInformationsEdition = routeProps => (
-    <PersonalInformationsContainer
-      getDepartment={getDepartment}
-      pathToProfile='/profil'
-      snackbar={snackbar}
-      {...routeProps}
-    />
-  )
+  renderPersonalInformationsEdition = routeProps => {
+    const { currentUser, history } = this.props
+
+    return (
+      <PersonalInformationsContainer
+        getDepartment={getDepartment}
+        history={history}
+        pathToProfile="/profil"
+        snackbar={snackbar}
+        user={currentUser}
+        {...routeProps}
+      />
+    )
+  }
 
   renderNoMatch = routeProps => (<NotMatch
     {...routeProps}
@@ -94,6 +99,7 @@ class Profile extends PureComponent {
 
 Profile.propTypes = {
   currentUser: PropTypes.shape().isRequired,
+  history: PropTypes.shape().isRequired,
   location: PropTypes.shape().isRequired,
 }
 

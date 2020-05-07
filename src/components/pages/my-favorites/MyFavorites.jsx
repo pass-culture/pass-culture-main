@@ -7,7 +7,7 @@ import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import NoItems from '../../layout/NoItems/NoItems'
 import RelativeFooterContainer from '../../layout/RelativeFooter/RelativeFooterContainer'
 import Teaser from '../../layout/Teaser/TeaserContainer'
-import { snackbar } from '../../layout/Snackbar/snackbar'
+import { snackbar } from '../../../utils/snackbar'
 
 const showFailModal = () => {
   snackbar('La suppression d’un favori a échoué, veuillez ré-essayer plus tard.', 'error')

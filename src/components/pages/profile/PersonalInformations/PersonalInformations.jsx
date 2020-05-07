@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 
-import { MyInformationsField } from '../forms/fields/MyInformationsField'
+import MyInformationsField from '../forms/fields/MyInformationsField'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 
 class PersonalInformations extends PureComponent {
@@ -9,22 +9,22 @@ class PersonalInformations extends PureComponent {
     super(props)
 
     this.state = {
-      publicName: props.user.publicName,
+      nickname: props.user.publicName,
       errors: null,
     }
 
-    this.publicNameInputRef = React.createRef()
+    this.nicknameInputRef = React.createRef()
   }
 
-  handlePublicNameChange = event => {
+  handleNicknameChange = event => {
     const newValue = event.target.value
-    this.setState({ publicName: newValue })
+    this.setState({ nickname: newValue })
   }
 
   handleSubmitFail = (state, action) => {
     this.setState({ errors: { ...action.payload.errors } })
-    this.publicNameInputRef.current.focus()
-    this.publicNameInputRef.current.select()
+    this.nicknameInputRef.current.focus()
+    this.nicknameInputRef.current.select()
   }
 
   handleSubmitSuccess = () => {
@@ -34,15 +34,15 @@ class PersonalInformations extends PureComponent {
     snackbar('Ton pseudo a bien été modifié.', 'success')
   }
 
-  handleSubmitPublicName = () => {
+  handleSubmitNickname = () => {
     const { handleSubmit, user, pathToProfile, history } = this.props
-    const publicNameInputValue = this.publicNameInputRef.current.value
-    const publicNameToSubmit = {
-      publicName: publicNameInputValue,
+    const nicknameInputValue = this.nicknameInputRef.current.value
+    const nicknameToSubmit = {
+      publicName: nicknameInputValue,
     }
 
-    if (user.publicName !== publicNameInputValue) {
-      handleSubmit(publicNameToSubmit, this.handleSubmitFail, this.handleSubmitSuccess)
+    if (user.publicName !== nicknameInputValue) {
+      handleSubmit(nicknameToSubmit, this.handleSubmitFail, this.handleSubmitSuccess)
     } else {
       history.push(pathToProfile)
     }
@@ -50,7 +50,7 @@ class PersonalInformations extends PureComponent {
 
   render() {
     const { user, getDepartment } = this.props
-    const { errors, publicName } = this.state
+    const { errors, nickname } = this.state
 
     return (
       <div className="pi-container">
@@ -62,33 +62,29 @@ class PersonalInformations extends PureComponent {
         <form className="pi-form">
           <MyInformationsField
             errors={errors && errors.publicName}
-            id="identifiant"
             label="Pseudo"
             maxLength={255}
             minLength={3}
             name="publicName"
-            onChange={this.handlePublicNameChange}
-            ref={this.publicNameInputRef}
+            onChange={this.handleNicknameChange}
+            ref={this.nicknameInputRef}
             required
-            value={publicName}
+            value={nickname}
           />
           <MyInformationsField
             disabled
-            id="name"
             label="Nom et prénom"
             name="name"
             value={`${user.firstName} ${user.lastName}`}
           />
           <MyInformationsField
             disabled
-            id="email"
             label="Adresse e-mail"
             name="email"
             value={user.email}
           />
           <MyInformationsField
             disabled
-            id="departementCode"
             label="Département de résidence"
             name="departementCode"
             value={getDepartment(user.departementCode)}
@@ -97,7 +93,7 @@ class PersonalInformations extends PureComponent {
         <div className="pi-form-submit">
           <button
             className="button-submit"
-            onClick={this.handleSubmitPublicName}
+            onClick={this.handleSubmitNickname}
             type="button"
           >
             {'Enregistrer'}

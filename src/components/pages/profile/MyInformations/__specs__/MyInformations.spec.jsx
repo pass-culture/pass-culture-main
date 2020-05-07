@@ -3,9 +3,8 @@ import React from 'react'
 
 import MyInformations from '../MyInformations'
 
-describe('src | components | pages | profile | MyInformations | MyInformations', () => {
+describe('my informations', () => {
   it('should display a link to personal informations page', () => {
-    // Given
     // When
     const wrapper = shallow(<MyInformations />)
 
@@ -13,14 +12,12 @@ describe('src | components | pages | profile | MyInformations | MyInformations',
     const linkToPersonalInformationsPage = wrapper
       .find({ children: 'Informations personnelles' })
       .parent()
-      .props()
-      .to
+      .prop('to')
 
     expect(linkToPersonalInformationsPage).toBe('/profil/informations')
   })
 
   it('should display a link to password modification page', () => {
-    // Given
     // When
     const wrapper = shallow(<MyInformations />)
 
@@ -28,8 +25,7 @@ describe('src | components | pages | profile | MyInformations | MyInformations',
     const linkToPasswordChangePage = wrapper
       .find({ children: 'Mot de passe' })
       .parent()
-      .props()
-      .to
+      .prop('to')
 
     expect(linkToPasswordChangePage).toBe('/profil/password')
   })

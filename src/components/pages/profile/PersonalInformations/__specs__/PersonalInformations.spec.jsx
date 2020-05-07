@@ -3,58 +3,32 @@ import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Router } from 'react-router'
 
-import state from '../../../../../mocks/state'
 import PersonalInformations from '../PersonalInformations'
 
-describe('src | components | pages | profile | PersonalInformations | PersonalInformations', () => {
+describe('personal informations', () => {
   let props
-  let history
-  const user = { ...state.user }
-
-  user.publicName = 'Martino'
-  user.firstName = 'Martin'
-  user.lastName = 'Dupont'
-  user.email = 'm.dupont@example.com'
-  user.departementCode = '93'
-
-  const mockedGetDepartment = jest.fn().mockReturnValue('Seine-Saint-Denis (93)')
 
   beforeEach(() => {
-    history = {
-      push: jest.fn(),
-    }
-
     props = {
-      history,
-      getDepartment: mockedGetDepartment,
+      history: {
+        push: jest.fn(),
+      },
+      getDepartment: jest.fn(() => 'Seine-Saint-Denis (93)'),
       handleSubmit: jest.fn(),
       snackbar: jest.fn(),
       pathToProfile: '/profil',
-      user: user,
+      user: {
+        publicName: 'Martino',
+        firstName: 'Martin',
+        lastName: 'Dupont',
+        email: 'm.dupont@example.com',
+        departementCode: '93',
+      },
     }
   })
 
-  it('should display profile informations', () => {
-    // Given - When
-    const wrapper = mount(
-      <Router history={createBrowserHistory()}>
-        <PersonalInformations {...props} />
-      </Router>
-    )
-
-    // Then
-    const publicNameLabel = wrapper.find({ children: 'Pseudo' })
-    const nameLabel = wrapper.find({ children: 'Nom et prénom' })
-    const emailLabel = wrapper.find({ children: 'Adresse e-mail' })
-    const departmentCodeLabel = wrapper.find({ children: 'Département de résidence' })
-    expect(publicNameLabel).toHaveLength(1)
-    expect(nameLabel).toHaveLength(1)
-    expect(emailLabel).toHaveLength(1)
-    expect(departmentCodeLabel).toHaveLength(1)
-  })
-
   it("should display beneficiary's profile informations", () => {
-    // Given - When
+    // When
     const wrapper = mount(
       <Router history={createBrowserHistory()}>
         <PersonalInformations {...props} />
@@ -62,18 +36,28 @@ describe('src | components | pages | profile | PersonalInformations | PersonalIn
     )
 
     // Then
-    const publicName = wrapper.find("input[value='Martino']")
-    const name = wrapper.find("input[value='Martin Dupont']")
-    const email = wrapper.find("input[value='m.dupont@example.com']")
-    const departmentCode = wrapper.find("input[value='Seine-Saint-Denis (93)']")
-    expect(publicName).toHaveLength(1)
-    expect(name).toHaveLength(1)
-    expect(email).toHaveLength(1)
-    expect(departmentCode).toHaveLength(1)
+    const labels = wrapper.find('label')
+    const nicknameLabel = labels.at(0).text()
+    const nameLabel = labels.at(1).text()
+    const emailLabel = labels.at(2).text()
+    const departmentCodeLabel = labels.at(3).text()
+    expect(nicknameLabel).toBe('Pseudo')
+    expect(nameLabel).toBe('Nom et prénom')
+    expect(emailLabel).toBe('Adresse e-mail')
+    expect(departmentCodeLabel).toBe('Département de résidence')
+    const inputs = wrapper.find('input')
+    const nickname = inputs.at(0).prop('value')
+    const name = inputs.at(1).prop('value')
+    const email = inputs.at(2).prop('value')
+    const departmentCode = inputs.at(3).prop('value')
+    expect(nickname).toBe('Martino')
+    expect(name).toBe('Martin Dupont')
+    expect(email).toBe('m.dupont@example.com')
+    expect(departmentCode).toBe('Seine-Saint-Denis (93)')
   })
 
-  it('should prevent name, email and departmentCode modifications', () => {
-    // Given - When
+  it('should prevent name, email and department code modifications', () => {
+    // When
     const wrapper = mount(
       <Router history={createBrowserHistory()}>
         <PersonalInformations {...props} />
@@ -85,24 +69,21 @@ describe('src | components | pages | profile | PersonalInformations | PersonalIn
     const name = wrapper.find("input[value='Martin Dupont']")
     const email = wrapper.find("input[value='m.dupont@example.com']")
     const departmentCode = wrapper.find("input[value='Seine-Saint-Denis (93)']")
-    expect(publicName.props().disabled).toBe(false)
-    expect(name.props().disabled).toBe(true)
-    expect(email.props().disabled).toBe(true)
-    expect(departmentCode.props().disabled).toBe(true)
+    expect(publicName.prop('disabled')).toBe(false)
+    expect(name.prop('disabled')).toBe(true)
+    expect(email.prop('disabled')).toBe(true)
+    expect(departmentCode.prop('disabled')).toBe(true)
   })
 
   describe('when click on submit button', () => {
-    describe('when user has not modified his name', () => {
+    describe('when user has not modified his nickname', () => {
       it('should redirect to profile without submitting information', () => {
         // Given
-        const spyHistory = jest.spyOn(history, 'push')
-
         const wrapper = mount(
           <Router history={createBrowserHistory()}>
             <PersonalInformations {...props} />
           </Router>
         )
-
         const submitButton = wrapper.find({ children: 'Enregistrer' })
 
         // When
@@ -110,18 +91,14 @@ describe('src | components | pages | profile | PersonalInformations | PersonalIn
 
         // Then
         expect(props.handleSubmit).not.toHaveBeenCalled()
-        expect(spyHistory).toHaveBeenCalledWith('/profil')
+        expect(props.history.push).toHaveBeenCalledWith('/profil')
       })
     })
 
-    describe('when user has modified his name', () => {
+    describe('when user has modified his nickname', () => {
       it('should redirect to profile and call snackbar with proper informations', () => {
         // Given
-        props.handleSubmit = jest
-          .spyOn(props, 'handleSubmit')
-          .mockImplementation((values, fail, success) => {
-            return success()
-          })
+        jest.spyOn(props, 'handleSubmit').mockImplementation((values, fail, success) => success())
 
         const wrapper = mount(
           <Router history={createBrowserHistory()}>
@@ -129,11 +106,11 @@ describe('src | components | pages | profile | PersonalInformations | PersonalIn
           </Router>
         )
 
-        const publicName = wrapper.find("input[value='Martino']")
+        const nickname = wrapper.find('input[value="Martino"]')
         const submitButton = wrapper.find({ children: 'Enregistrer' })
 
         // When
-        publicName.simulate('change', { target: { value: 'DifferentName' } })
+        nickname.simulate('change', { target: { value: 'DifferentNickname' } })
         submitButton.simulate('click')
 
         // Then
@@ -142,41 +119,36 @@ describe('src | components | pages | profile | PersonalInformations | PersonalIn
       })
     })
 
-    describe('when input name value is not valid', () => {
+    describe('when input nickname value is not valid', () => {
       it('should display an error message', () => {
         // Given
-        props.handleSubmit = jest
-          .spyOn(props, 'handleSubmit')
-          .mockImplementation((values, fail) => {
-            return fail(
-              { ...state },
-              {
-                payload: {
-                  errors: {
-                    publicName: ['Pseudo invalide'],
-                  },
+        jest.spyOn(props, 'handleSubmit').mockImplementation((values, fail) => {
+          return fail(
+            {},
+            {
+              payload: {
+                errors: {
+                  publicName: ['Pseudo invalide'],
                 },
-              }
-            )
-          })
-
+              },
+            }
+          )
+        })
         const wrapper = mount(
           <Router history={createBrowserHistory()}>
             <PersonalInformations {...props} />
           </Router>
         )
-
-        const publicName = wrapper.find("input[value='Martino']")
+        const nickname = wrapper.find("input[value='Martino']")
         const submitButton = wrapper.find({ children: 'Enregistrer' })
 
         // When
-        publicName.simulate('change', { target: { value: 'AA' } })
+        nickname.simulate('change', { target: { value: 'AA' } })
         submitButton.simulate('click')
 
         // Then
-        const wrongPublicName = wrapper.find({ children: 'Pseudo invalide' })
-
-        expect(wrongPublicName).toHaveLength(1)
+        const wrongNickname = wrapper.find({ children: 'Pseudo invalide' })
+        expect(wrongNickname).toHaveLength(1)
       })
     })
   })

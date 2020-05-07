@@ -1,20 +1,11 @@
 import { connect } from 'react-redux'
-import { compose } from 'redux'
 import { requestData } from 'redux-thunk-data'
-import { withRouter } from 'react-router-dom'
 
-import {
-  selectCurrentUser,
-  resolveCurrentUser,
-} from '../../../../redux/selectors/data/usersSelectors'
+import { resolveCurrentUser } from '../../../../redux/selectors/data/usersSelectors'
 import PersonalInformations from './PersonalInformations'
 
-export const mapStateToProps = state => ({
-  user: selectCurrentUser(state),
-})
-
-export const mapDispatchToProps = dispatch => ({
-  handleSubmit: (formValues, handleSubmitFail, handleSubmitSuccess) =>
+const mapDispatchToProps = dispatch => ({
+  handleSubmit: (formValues, handleSubmitFail, handleSubmitSuccess) => {
     dispatch(
       requestData({
         apiPath: 'users/current',
@@ -25,13 +16,11 @@ export const mapDispatchToProps = dispatch => ({
         method: 'PATCH',
         resolve: resolveCurrentUser,
       })
-    ),
+    )
+  },
 })
 
-export default compose(
-  withRouter,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
+export default connect(
+  null,
+  mapDispatchToProps
 )(PersonalInformations)
