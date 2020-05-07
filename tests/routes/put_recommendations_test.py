@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 
-from models.discovery_view import DiscoveryView
 from models.recommendation import Recommendation
 from repository import repository, discovery_view_queries
 from tests.conftest import TestClient, clean_database
@@ -168,7 +167,7 @@ class Put:
             recommendation2 = create_recommendation(thing_offer1, user)
             recommendation3 = create_recommendation(thing_offer2, user)
             repository.save(stock1, stock2, stock3, stock4, recommendation1, recommendation2, recommendation3)
-            DiscoveryView.refresh(concurrently=False)
+            discovery_view_queries.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
