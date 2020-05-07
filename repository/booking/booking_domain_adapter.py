@@ -9,12 +9,9 @@ def to_domain(booking_sql_entity: BookingSQLEntity) -> Booking:
     user = user_domain_adapter.to_domain(booking_sql_entity.user)
     stock = stock_domain_adapter.to_domain(booking_sql_entity.stock)
 
-    return Booking(user=user,
-                   stock=stock,
-                   amount=booking_sql_entity.amount,
-                   quantity=booking_sql_entity.quantity,
-                   identifier=booking_sql_entity.id,
-                   recommendation_id=booking_sql_entity.recommendationId)
+    return Booking(user=user, stock=stock, amount=booking_sql_entity.amount, quantity=booking_sql_entity.quantity,
+                   recommendation_id=booking_sql_entity.recommendationId, identifier=booking_sql_entity.id,
+                   token=booking_sql_entity.token, date_booked=booking_sql_entity.dateCreated)
 
 
 def to_model(booking: Booking) -> BookingSQLEntity:

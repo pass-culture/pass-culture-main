@@ -58,7 +58,7 @@ class StockSQLRepositoryTest:
 
     def _are_stocks_equals(self, stock1: Stock, stock2: Stock) -> bool:
         return stock1.quantity == stock2.quantity \
-               and stock1.booking_limit_datetime == stock2.booking_limit_datetime \
-               and stock1.beginning_datetime == stock2.beginning_datetime \
+               and stock1.bookingLimitDatetime == stock2.bookingLimitDatetime \
+               and stock1.beginningDatetime == stock2.beginningDatetime \
                and stock1.price == stock2.price \
                and stock1.offer == stock2.offer

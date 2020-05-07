@@ -57,12 +57,7 @@ class CheckExpenseLimitsTest:
             offer=offer,
             price=1
         )
-        booking = Booking(
-            user=user,
-            stock=stock,
-            amount=1,
-            quantity=11
-        )
+        booking = Booking(user=user, stock=stock, amount=1, quantity=11)
 
         # when
         with pytest.raises(PhysicalExpenseLimitHasBeenReached) as error:
@@ -93,12 +88,7 @@ class CheckExpenseLimitsTest:
             offer=offer,
             price=1
         )
-        booking = Booking(
-            user=user,
-            stock=stock,
-            amount=1,
-            quantity=11
-        )
+        booking = Booking(user=user, stock=stock, amount=1, quantity=11)
 
         # when
         with pytest.raises(DigitalExpenseLimitHasBeenReached) as error:
@@ -127,12 +117,7 @@ class CheckExpenseLimitsTest:
             offer=offer,
             price=1
         )
-        booking = Booking(
-            user=user,
-            stock=stock,
-            amount=1,
-            quantity=120
-        )
+        booking = Booking(user=user, stock=stock, amount=1, quantity=120)
 
         # when
         with pytest.raises(UserHasInsufficientFunds) as error:

@@ -10,23 +10,23 @@ class Stock(object):
                  identifier: int,
                  quantity: Optional[int],
                  offer: Offer,
-                 price: int,
+                 price: float,
                  beginning_datetime: Optional[datetime] = None,
                  booking_limit_datetime: Optional[datetime] = None,
                  is_soft_deleted: bool = False,
                  bookings: List[BookingSQLEntity] = []):
         self.identifier = identifier
         self.quantity = quantity
-        self.beginning_datetime: datetime = beginning_datetime
+        self.beginningDatetime: datetime = beginning_datetime
         self.offer = offer
         self.price = price
-        self.booking_limit_datetime = booking_limit_datetime
+        self.bookingLimitDatetime = booking_limit_datetime
         # TODO: à retirer du domain
         self.is_soft_deleted = is_soft_deleted
         self.bookings = bookings
 
     def has_booking_limit_datetime_passed(self):
-        if self.booking_limit_datetime and self.booking_limit_datetime < datetime.utcnow():
+        if self.bookingLimitDatetime and self.bookingLimitDatetime < datetime.utcnow():
             return True
         return False
 
@@ -49,7 +49,7 @@ class Stock(object):
             return False
         if self.is_soft_deleted:
             return False
-        if self.beginning_datetime and self.beginning_datetime < datetime.utcnow():
+        if self.beginningDatetime and self.beginningDatetime < datetime.utcnow():
             return False
         if self.quantity is not None and self.remaining_quantity() == 0:
             return False

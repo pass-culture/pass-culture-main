@@ -26,12 +26,7 @@ class ExpensesTest:
                 offer=offer,
                 price=2
             )
-            booking = Booking(
-                user=user,
-                stock=stock,
-                amount=2,
-                quantity=25
-            )
+            booking = Booking(user=user, stock=stock, amount=2, quantity=25)
             bookings = [
                 booking
             ]

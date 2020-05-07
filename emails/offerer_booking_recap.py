@@ -1,6 +1,6 @@
 from typing import List, Dict
 
-from models import BookingSQLEntity
+from domain.booking.booking import Booking
 from models.offer_type import ProductType
 from repository import booking_queries
 from utils.mailing import build_pc_pro_offer_link, format_environment_for_email, SUPPORT_EMAIL_ADDRESS, \
@@ -8,7 +8,7 @@ from utils.mailing import build_pc_pro_offer_link, format_environment_for_email,
     format_booking_hours_for_email
 
 
-def retrieve_data_for_offerer_booking_recap_email(booking: BookingSQLEntity, recipients: List[str]) -> Dict:
+def retrieve_data_for_offerer_booking_recap_email(booking: Booking, recipients: List[str]) -> Dict:
     offer = booking.stock.offer
     venue_name = offer.venue.name
     offer_name = offer.product.name
@@ -20,8 +20,7 @@ def retrieve_data_for_offerer_booking_recap_email(booking: BookingSQLEntity, rec
     departement_code = offer.venue.departementCode or 'numérique'
     offer_type = offer.type
     is_event = int(offer.isEvent)
-    bookings = booking_queries.find_ongoing_bookings_by_stock(
-        booking.stock)
+    bookings = booking_queries.find_ongoing_bookings_by_stock(booking.stock.identifier)
 
     offer_link = build_pc_pro_offer_link(offer)
     environment = format_environment_for_email()

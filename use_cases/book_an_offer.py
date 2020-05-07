@@ -59,11 +59,5 @@ class BookAnOffer:
         quantity = booking_information.quantity
         recommendation_id = booking_information.recommendation_id
         amount = stock.price
-        booking = Booking(
-            stock=stock,
-            user=user,
-            quantity=quantity,
-            amount=amount,
-            recommendation_id=recommendation_id
-        )
+        booking = Booking(user=user, stock=stock, amount=amount, quantity=quantity, recommendation_id=recommendation_id)
         return booking

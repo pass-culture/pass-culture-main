@@ -132,7 +132,7 @@ def make_offerer_driven_cancellation_email_for_offerer(booking: BookingSQLEntity
     email_subject = 'Confirmation de votre annulation de réservation pour {}, proposé par {}'.format(stock_name,
                                                                                                      venue.name)
     ongoing_stock_bookings = booking_queries.find_ongoing_bookings_by_stock(
-        booking.stock)
+        booking.stock.id)
     stock_date_time = None
     booking_is_on_event = booking.stock.beginningDatetime is not None
     if booking_is_on_event:

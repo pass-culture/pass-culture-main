@@ -227,9 +227,9 @@ def _serialize_booking_recap(booking: object) -> BookingRecap:
     )
 
 
-def find_ongoing_bookings_by_stock(stock: StockSQLEntity) -> List[BookingSQLEntity]:
+def find_ongoing_bookings_by_stock(stock_id: int) -> List[BookingSQLEntity]:
     return BookingSQLEntity.query \
-        .filter_by(stockId=stock.id, isCancelled=False, isUsed=False) \
+        .filter_by(stockId=stock_id, isCancelled=False, isUsed=False) \
         .all()
 
 
