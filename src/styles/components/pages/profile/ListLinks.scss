@@ -1,0 +1,16 @@
+.list-links {
+  a {
+    align-items: center;
+    border-bottom: 1px solid $grey-even-more-light;
+    color: $black;
+    display: flex;
+    font-size: rem(16px);
+    font-weight: 600;
+    padding: rem(24px) 0;
+  }
+}
+
+.list-link-label {
+  flex: 1;
+  margin-left: rem(16px);
+}

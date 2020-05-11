@@ -3,7 +3,7 @@ import React from 'react'
 
 import { version } from '../../../../../package.json'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
-import MyInformations from '../MyInformations/MyInformations'
+import ListLinks from '../ListLinks/ListLinks'
 import ProfileHeader from '../ProfileHeader/ProfileHeader'
 import RemainingCredit from '../RemainingCredit/RemainingCredit'
 
@@ -13,16 +13,18 @@ const ProfileMainView = ({ currentUser }) => (
       <div className="pm-scroll">
         <ProfileHeader currentUser={currentUser} />
         <RemainingCredit currentUser={currentUser} />
-        <MyInformations />
-        <div className="pm-app-version">
-          {`Version ${version}`}
-        </div>
-        <img
-          alt=""
-          className="pm-ministry-of-culture"
-          src="/min-culture-rvb@2x.png"
-          width="161"
-        />
+        <ListLinks />
+        <section className="pm-section">
+          <div className="pm-app-version">
+            {`Version ${version}`}
+          </div>
+          <img
+            alt=""
+            className="pm-ministry-of-culture"
+            src="/min-culture-rvb@2x.png"
+            width="161"
+          />
+        </section>
       </div>
     </main>
     <RelativeFooterContainer

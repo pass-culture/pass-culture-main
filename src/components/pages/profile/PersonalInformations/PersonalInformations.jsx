@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 
-import MyInformationsField from '../forms/fields/MyInformationsField'
+import PersonalInformationsField from '../forms/fields/PersonalInformationsField'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 
 class PersonalInformations extends PureComponent {
@@ -34,7 +34,8 @@ class PersonalInformations extends PureComponent {
     snackbar('Ton pseudo a bien été modifié.', 'success')
   }
 
-  handleSubmitNickname = () => {
+  handleSubmitNickname = event => {
+    event.preventDefault()
     const { handleSubmit, user, pathToProfile, history } = this.props
     const nicknameInputValue = this.nicknameInputRef.current.value
     const nicknameToSubmit = {
@@ -59,46 +60,50 @@ class PersonalInformations extends PureComponent {
           closeTo={null}
           title="Informations personnelles"
         />
-        <form className="pi-form">
-          <MyInformationsField
-            errors={errors && errors.publicName}
-            label="Pseudo"
-            maxLength={255}
-            minLength={3}
-            name="publicName"
-            onChange={this.handleNicknameChange}
-            ref={this.nicknameInputRef}
-            required
-            value={nickname}
-          />
-          <MyInformationsField
-            disabled
-            label="Nom et prénom"
-            name="name"
-            value={`${user.firstName} ${user.lastName}`}
-          />
-          <MyInformationsField
-            disabled
-            label="Adresse e-mail"
-            name="email"
-            value={user.email}
-          />
-          <MyInformationsField
-            disabled
-            label="Département de résidence"
-            name="departementCode"
-            value={getDepartment(user.departementCode)}
-          />
+        <form
+          className="pi-form"
+          onSubmit={this.handleSubmitNickname}
+        >
+          <div>
+            <PersonalInformationsField
+              errors={errors && errors.publicName}
+              label="Pseudo"
+              maxLength={255}
+              minLength={3}
+              name="publicName"
+              onChange={this.handleNicknameChange}
+              ref={this.nicknameInputRef}
+              required
+              value={nickname}
+            />
+            <PersonalInformationsField
+              disabled
+              label="Nom et prénom"
+              name="name"
+              value={`${user.firstName} ${user.lastName}`}
+            />
+            <PersonalInformationsField
+              disabled
+              label="Adresse e-mail"
+              name="email"
+              value={user.email}
+            />
+            <PersonalInformationsField
+              disabled
+              label="Département de résidence"
+              name="departementCode"
+              value={getDepartment(user.departementCode)}
+            />
+          </div>
+          <div className="pi-form-submit">
+            <input
+              className="button-submit"
+              onClick={this.handleSubmitNickname}
+              type="submit"
+              value="Enregistrer"
+            />
+          </div>
         </form>
-        <div className="pi-form-submit">
-          <button
-            className="button-submit"
-            onClick={this.handleSubmitNickname}
-            type="button"
-          >
-            {'Enregistrer'}
-          </button>
-        </div>
       </div>
     )
   }

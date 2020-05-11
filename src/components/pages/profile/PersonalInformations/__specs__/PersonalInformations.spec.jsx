@@ -84,7 +84,7 @@ describe('personal informations', () => {
             <PersonalInformations {...props} />
           </Router>
         )
-        const submitButton = wrapper.find({ children: 'Enregistrer' })
+        const submitButton = wrapper.find('input[value="Enregistrer"]')
 
         // When
         submitButton.simulate('click')
@@ -107,7 +107,7 @@ describe('personal informations', () => {
         )
 
         const nickname = wrapper.find('input[value="Martino"]')
-        const submitButton = wrapper.find({ children: 'Enregistrer' })
+        const submitButton = wrapper.find('input[value="Enregistrer"]')
 
         // When
         nickname.simulate('change', { target: { value: 'DifferentNickname' } })
@@ -140,7 +140,7 @@ describe('personal informations', () => {
           </Router>
         )
         const nickname = wrapper.find("input[value='Martino']")
-        const submitButton = wrapper.find({ children: 'Enregistrer' })
+        const submitButton = wrapper.find('input[value="Enregistrer"]')
 
         // When
         nickname.simulate('change', { target: { value: 'AA' } })

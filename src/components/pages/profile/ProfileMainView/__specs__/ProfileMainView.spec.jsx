@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import RelativeFooterContainer from '../../../../layout/RelativeFooter/RelativeFooterContainer'
-import MyInformations from '../../MyInformations/MyInformations'
+import ListLinks from '../../ListLinks/ListLinks'
 import ProfileHeader from '../../ProfileHeader/ProfileHeader'
 import RemainingCredit from '../../RemainingCredit/RemainingCredit'
 import ProfileMainView from '../ProfileMainView'
@@ -25,13 +25,13 @@ describe('profile main view', () => {
     const wrapper = shallow(<ProfileMainView {...props} />)
     const ProfileHeaderWrapper = wrapper.find(ProfileHeader)
     const RemainingCreditWrapper = wrapper.find(RemainingCredit)
-    const MyInformationsWrapper = wrapper.find(MyInformations)
+    const PersonalInformationsWrapper = wrapper.find(ListLinks)
     const RelativeFooterContainerWrapper = wrapper.find(RelativeFooterContainer)
 
     // Then
     expect(ProfileHeaderWrapper).toHaveLength(1)
     expect(RemainingCreditWrapper).toHaveLength(1)
-    expect(MyInformationsWrapper).toHaveLength(1)
+    expect(PersonalInformationsWrapper).toHaveLength(1)
     expect(RelativeFooterContainerWrapper).toHaveLength(1)
   })
 

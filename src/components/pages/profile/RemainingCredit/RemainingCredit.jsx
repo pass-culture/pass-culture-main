@@ -29,7 +29,7 @@ class RemainingCredit extends PureComponent {
     const physicalRemainingCredit = getRemainingCreditForGivenCreditLimit(walletBalance)(physical)
 
     return (
-      <section>
+      <section className="pm-section">
         <div className="rc-informations-container">
           <div className="rc-gauges-container">
             <div className="rc-gauges-title">

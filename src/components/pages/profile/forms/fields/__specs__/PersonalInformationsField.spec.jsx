@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import MyInformationsField from '../MyInformationsField'
+import PersonalInformationsField from '../PersonalInformationsField'
 
 describe('my informations field', () => {
   const ERROR_MESSAGE = 'Vous devez renseigner au moins 3 caractères'
@@ -13,7 +13,7 @@ describe('my informations field', () => {
 
     // When
     const wrapper = shallow(
-      <MyInformationsField
+      <PersonalInformationsField
         errors={errors}
         label="input label"
         name="inputName"
@@ -33,7 +33,7 @@ describe('my informations field', () => {
 
     // When
     const wrapper = shallow(
-      <MyInformationsField
+      <PersonalInformationsField
         errors={errors}
         label="input label"
         name="inputName"
@@ -52,7 +52,7 @@ describe('my informations field', () => {
 
     // When
     const wrapper = shallow(
-      <MyInformationsField
+      <PersonalInformationsField
         errors={errors}
         label="input label"
         name="inputName"
@@ -70,7 +70,7 @@ describe('my informations field', () => {
 
     // When
     const wrapper = shallow(
-      <MyInformationsField
+      <PersonalInformationsField
         errors={errors}
         label="input label"
         name="inputName"

@@ -1,12 +1,12 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import MyInformations from '../MyInformations'
+import ListLinks from '../ListLinks'
 
 describe('my informations', () => {
   it('should display a link to personal informations page', () => {
     // When
-    const wrapper = shallow(<MyInformations />)
+    const wrapper = shallow(<ListLinks />)
 
     // Then
     const linkToPersonalInformationsPage = wrapper
@@ -19,7 +19,7 @@ describe('my informations', () => {
 
   it('should display a link to password modification page', () => {
     // When
-    const wrapper = shallow(<MyInformations />)
+    const wrapper = shallow(<ListLinks />)
 
     // Then
     const linkToPasswordChangePage = wrapper

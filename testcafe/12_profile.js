@@ -21,7 +21,7 @@ test('je clique sur le lien pour accéder au formulaire de mes informations pers
   const nicknameInput = Selector('input[name="publicName"]')
   const newNickname = 'pseudo different'
   const emptyField = 'ctrl+a delete'
-  const submitButton = Selector('button').withText('Enregistrer')
+  const submitInput = Selector('input[type="submit"]')
   const updatedNickname = Selector('main').withText(newNickname)
 
   await t
@@ -31,9 +31,30 @@ test('je clique sur le lien pour accéder au formulaire de mes informations pers
     .click(nicknameInput)
     .pressKey(emptyField)
     .typeText(nicknameInput, newNickname)
-    .click(submitButton)
+    .click(submitInput)
     .expect(getPageUrl())
     .contains(profilPath)
     .expect(updatedNickname.exists)
+    .ok()
+})
+
+test("je clique sur le lien pour accéder au formulaire de mes informations personnelles et j'ai une erreur si je saisie un pseudo de moins de 3 caracteres", async t => {
+  const personalInformationsPath = `${ROOT_PATH}profil/informations`
+  const personalInformationsLink = Selector('a').withText('Informations personnelles')
+  const nicknameInput = Selector('input[name="publicName"]')
+  const newNickname = 'aa'
+  const emptyField = 'ctrl+a delete'
+  const submitInput = Selector('input[type="submit"]')
+  const errorMessage = Selector('p').withText('Vous devez saisir au moins 3 caractères.')
+
+  await t
+    .click(personalInformationsLink)
+    .expect(getPageUrl())
+    .contains(personalInformationsPath)
+    .click(nicknameInput)
+    .pressKey(emptyField)
+    .typeText(nicknameInput, newNickname)
+    .click(submitInput)
+    .expect(errorMessage.exists)
     .ok()
 })
