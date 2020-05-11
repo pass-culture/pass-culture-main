@@ -15,3 +15,15 @@ def get_last_update_from_bank_information(last_provider_id: Optional[int] = None
     else:
         first_of_january_1900 = datetime(1900, 1, 1)
         return first_of_january_1900
+
+
+def get_by_application_id(application_id: int) -> Optional[BankInformation]:
+    return BankInformation.query \
+        .filter_by(applicationId=application_id) \
+        .one_or_none()
+
+
+def get_by_offerer(offerer_id: int) -> Optional[BankInformation]:
+    return BankInformation.query \
+        .filter_by(offererId=offerer_id) \
+        .one_or_none()

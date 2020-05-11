@@ -1,21 +1,20 @@
 import os
 from workers.decorators import job_context
 from rq.decorators import job
+from datetime import datetime
 
+from utils.date import DATE_ISO_FORMAT
 from connectors.api_demarches_simplifiees import get_application_details, DmsApplicationStates
 from models import BankInformation
 from models.bank_information import BankInformationStatus
-from repository import repository, offerer_queries
+from repository import repository, offerer_queries, bank_information_queries
 from workers import worker
+from domain.bank_information import status_weight
 
 PROCEDURE_ID = os.environ.get(
     'DEMARCHES_SIMPLIFIEES_RIB_OFFERER_PROCEDURE_ID')
 TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_TOKEN')
 
-REJECTED_STATES = [DmsApplicationStates.refused,
-                   DmsApplicationStates.without_continuation]
-ACCEPTED_STATES = [DmsApplicationStates.closed]
-DRAFT_STATES = [DmsApplicationStates.received, DmsApplicationStates.initiated]
 
 @job(worker.redis_queue, connection=worker.conn)
 @job_context
@@ -35,25 +34,39 @@ def save_offerer_bank_informations(application_id: str):
     if offerer is None:
         raise NoRefererException(f'Offerer not found for application id {application_id}.')
 
-    bank_information = offerer.bankInformation or BankInformation()
+    save_bank_information(application_details, offerer.id)
+
+
+def save_bank_information(application_details, offerer_id):
+    status = _get_status_from_demarches_simplifiees_application_state(
+        DmsApplicationStates[application_details['dossier']['state']])
+    application_id = application_details['dossier']["id"]
+
+    bank_information = bank_information_queries.get_by_application_id(
+        application_id)
+
+    if bank_information is None:
+        bank_information = bank_information_queries.get_by_offerer(
+            offerer_id) or BankInformation()
+
+        if (bank_information.dateModifiedAtLastProvider is not None and
+                datetime.strptime(application_details['dossier']['updated_at'], DATE_ISO_FORMAT) < bank_information.dateModifiedAtLastProvider):
+            return
+        if (bank_information.status and
+                status_weight[status] < status_weight[bank_information.status]):
+            return
 
     bank_information.applicationId = int(application_id)
-    state = DmsApplicationStates[application_details['dossier']['state']]
+    bank_information.offererId = offerer_id
+    bank_information.venuId = None
+    bank_information.status = status
 
-    if state in REJECTED_STATES:
-        bank_information.status = BankInformationStatus.REJECTED
-        bank_information.iban = None
-        bank_information.bic = None
-
-    elif state in ACCEPTED_STATES:
-        bank_information.status = BankInformationStatus.ACCEPTED
+    if status == BankInformationStatus.ACCEPTED:
         bank_information.iban = _find_value_in_fields(
             application_details['dossier']["champs"], "IBAN")
         bank_information.bic = _find_value_in_fields(
             application_details['dossier']["champs"], "BIC")
-
-    elif state in DRAFT_STATES:
-        bank_information.status = BankInformationStatus.DRAFT
+    else:
         bank_information.iban = None
         bank_information.bic = None
 
@@ -63,6 +76,21 @@ def save_offerer_bank_informations(application_id: str):
 def save_venue_bank_informations(application_id: str):
     return
 
+
+def _get_status_from_demarches_simplifiees_application_state(state: str) -> BankInformationStatus:
+    rejected_states = [DmsApplicationStates.refused,
+                       DmsApplicationStates.without_continuation]
+    accepted_states = [DmsApplicationStates.closed]
+    draft_states = [DmsApplicationStates.received, DmsApplicationStates.initiated]
+
+    if state in rejected_states:
+        return BankInformationStatus.REJECTED
+    elif state in accepted_states:
+        return BankInformationStatus.ACCEPTED
+    elif state in draft_states:
+        return BankInformationStatus.DRAFT
+
+    raise Exception(f'Unknown Demarches Simplifiées state {state}')
 
 
 def _find_value_in_fields(fields, value_name):
