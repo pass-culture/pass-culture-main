@@ -100,41 +100,44 @@ def save_bookings_recap_sandbox():
         stock=stock_1_offer1_venue1,
         date_created=datetime(2020, 3, 18, 14, 56, 12, 0),
         is_used=True,
+        quantity=2,
     )
     booking2_beneficiary1 = create_booking(
         user=beneficiary1,
         stock=stock_1_offer2_venue1,
-        date_created=datetime(2020, 4, 22, 9, 17, 12, 0)
+        date_created=datetime(2020, 4, 22, 9, 17, 12, 0),
     )
     booking1_beneficiary2 = create_booking(
         user=beneficiary2,
         stock=stock_1_offer1_venue1,
         date_created=datetime(2020, 3, 18, 12, 18, 12, 0),
         is_used=True,
+        quantity=2,
     )
     booking2_beneficiary2 = create_booking(
         user=beneficiary2,
         stock=stock_1_offer1_venue2,
         date_created=datetime(2020, 4, 12, 14, 31, 12, 0),
-        is_cancelled=True
+        is_cancelled=True,
     )
     booking1_beneficiary3 = create_booking(
         user=beneficiary3,
         stock=stock_1_offer2_venue1,
         date_created=datetime(2020, 1, 4, 19, 31, 12, 0),
         is_cancelled=True,
-        is_used=True
+        is_used=True,
+        quantity=2,
     )
     booking2_beneficiary3 = create_booking(
         user=beneficiary3,
         stock=stock_1_offer1_venue2,
         date_created=datetime(2020, 3, 21, 22, 9, 12, 0),
-        is_cancelled=True
+        is_cancelled=True,
     )
     booking3_beneficiary1 = create_booking(
         user=beneficiary1,
         stock=stock_1_offer1_venue3,
-        date_created=datetime(2020, 4, 12, 14, 31, 12, 0)
+        date_created=datetime(2020, 4, 12, 14, 31, 12, 0),
     )
     payment_booking3_beneficiary1 = create_payment(booking=booking3_beneficiary1, offerer=offerer,
                                                    status=TransactionStatus.PENDING)
@@ -143,14 +146,14 @@ def save_bookings_recap_sandbox():
         stock=stock_1_offer1_venue3,
         date_created=datetime(2020, 4, 12, 19, 31, 12, 0),
         is_used=True,
-        is_cancelled=True
+        is_cancelled=True,
     )
     payment_booking3_beneficiary2 = create_payment(booking=booking3_beneficiary2, offerer=offerer,
                                                    status=TransactionStatus.SENT)
     booking3_beneficiary3 = create_booking(
         user=beneficiary3,
         stock=stock_1_offer1_venue3,
-        date_created=datetime(2020, 4, 12, 22, 9, 12, 0)
+        date_created=datetime(2020, 4, 12, 22, 9, 12, 0),
     )
     payment_booking3_beneficiary3 = create_payment(booking=booking3_beneficiary3, offerer=offerer,
                                                    status=TransactionStatus.ERROR)
