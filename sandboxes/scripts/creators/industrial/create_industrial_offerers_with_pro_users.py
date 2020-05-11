@@ -81,6 +81,7 @@ def create_industrial_offerers_with_pro_users():
     iban_prefix = 'FR7630001007941234567890185'
     bic_prefix, bic_suffix = 'QSDFGH8Z', 555
     user_offerer_validation_prefix, user_offerer_validation_suffix = 'AZERTY', 123
+    application_id_prefix = "23"
 
     for (location_index, location) in enumerate(locations):
 
@@ -105,7 +106,7 @@ def create_industrial_offerers_with_pro_users():
         # create every OFFERERS_WITH_IBAN_REMOVE_MODULO an offerer with no iban
         if location_index % OFFERERS_WITH_IBAN_REMOVE_MODULO:
             create_bank_information(bic=bic_prefix + str(bic_suffix), iban=iban_prefix,
-                                    id_at_providers=offerer.siren, offerer=offerer)
+                                    id_at_providers=offerer.siren, offerer=offerer, application_id=application_id_prefix + str(location_index))
 
         offerers_by_name[offerer_name] = offerer
 

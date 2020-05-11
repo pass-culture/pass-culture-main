@@ -22,6 +22,7 @@ def create_industrial_venues(offerers_by_name: Dict, venue_types: List[VenueType
     iban_count = 0
     iban_prefix = 'FR7630001007941234567890185'
     bic_prefix, bic_suffix = 'QSDFGH8Z', 556
+    application_id_prefix = "12"
 
     for (offerer_index, (offerer_name, offerer)) in enumerate(offerers_by_name.items()):
         random.shuffle(venue_types)
@@ -75,7 +76,7 @@ def create_industrial_venues(offerers_by_name: Dict, venue_types: List[VenueType
             if iban and venue_by_name[venue_name].siret:
                 create_bank_information(bic=bic, iban=iban,
                                         id_at_providers=venue_by_name[venue_name].siret,
-                                        venue=venue_by_name[venue_name])
+                                        venue=venue_by_name[venue_name], application_id=application_id_prefix + str(offerer_index))
         bic_suffix += 1
         mock_index += 1
 
