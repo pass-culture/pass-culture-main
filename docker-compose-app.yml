@@ -114,9 +114,9 @@ services:
     depends_on:
       - flask
 
-  dms_worker:
+  worker:
     image: passcultureapp/api-flask:latest
-    container_name: pc-dms-worker
+    container_name: pc-worker
     command: >
       bash -c "set -x;
                cd /opt/services/flaskapp/src;
