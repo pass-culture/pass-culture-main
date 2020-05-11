@@ -1,10 +1,11 @@
 from unittest.mock import patch, call
 
 from local_providers.libraires_stocks import LibrairesStocks
-from models import Offer, Stock, Booking
+from models import Offer, Stock
 from repository import repository
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_venue_provider, create_venue, create_offerer, create_stock, create_booking, create_user
+from tests.model_creators.generic_creators import create_venue_provider, create_venue, create_offerer, create_stock, \
+    create_booking, create_user
 from tests.model_creators.provider_creators import activate_provider
 from tests.model_creators.specific_creators import create_product_with_thing_type, create_offer_with_thing_product
 
@@ -124,78 +125,9 @@ class LibrairesStocksTest:
 
         @clean_database
         @patch('local_providers.libraires_stocks.get_libraires_stock_information')
-        def test_libraires_stock_provider_deactivate_offer_if_stock_available_equals_0(self,
-                                                                                       mock_libraires_api_response,
-                                                                                       app):
-            # Given
-            mock_libraires_api_response.return_value = iter([{
-                "ref": "9780199536986",
-                "available": 0,
-                "price": 16
-            }])
-
-            offerer = create_offerer()
-            venue = create_venue(offerer, siret='12345678912345')
-
-            libraires_stocks_provider = activate_provider('LibrairesStocks')
-            venue_provider = create_venue_provider(venue, libraires_stocks_provider, is_active=True,
-                                                   venue_id_at_offer_provider='12345678912345')
-            product = create_product_with_thing_type(id_at_providers='9780199536986')
-
-            offer = create_offer_with_thing_product(venue, product=product,
-                                                    id_at_providers='9780199536986@12345678912345')
-            stock = create_stock(id_at_providers='9780199536986@12345678912345', offer=offer)
-            repository.save(product, venue_provider, stock)
-
-            libraires_stocks = LibrairesStocks(venue_provider)
-
-            # When
-            libraires_stocks.updateObjects()
-
-            # Then
-            offer = Offer.query.one()
-            assert not offer.isActive
-
-        @clean_database
-        @patch('local_providers.libraires_stocks.get_libraires_stock_information')
-        def test_libraires_stock_provider_reactivate_offer_if_new_stocks_are_available(self,
-                                                                                       mock_libraires_api_response,
-                                                                                       app):
-            # Given
-            mock_libraires_api_response.side_effect = [iter([{
-                "ref": "9780199536986",
-                "available": 20,
-                "price": 17
-            }])
-            ]
-
-            offerer = create_offerer()
-            venue = create_venue(offerer, siret='12345678912345')
-
-            libraires_stocks_provider = activate_provider('LibrairesStocks')
-            venue_provider = create_venue_provider(venue, libraires_stocks_provider, is_active=True,
-                                                   venue_id_at_offer_provider='12345678912345')
-            product = create_product_with_thing_type(id_at_providers='9780199536986')
-
-            offer = create_offer_with_thing_product(venue, product=product, is_active=False,
-                                                    id_at_providers='9780199536986@12345678912345')
-            stock = create_stock(quantity=0, id_at_providers='9780199536986@12345678912345', offer=offer)
-            repository.save(offer, stock, product, venue_provider, libraires_stocks_provider)
-
-            libraires_stocks = LibrairesStocks(venue_provider)
-
-            # When
-            libraires_stocks.updateObjects()
-
-            # Then
-            offer = Offer.query.one()
-            assert offer.isActive
-
-        @clean_database
-        @patch('local_providers.libraires_stocks.get_libraires_stock_information')
         def test_libraires_stocks_create_2_stocks_and_2_offers_even_if_existing_offer_on_same_product(self,
-                                                                                                     mock_libraires_api_response,
-                                                                                                     app):
+                                                                                                      mock_libraires_api_response,
+                                                                                                      app):
             # Given
             mock_libraires_api_response.return_value = iter([{
                 "ref": "9780199536986",
@@ -214,7 +146,8 @@ class LibrairesStocksTest:
                                                    venue_id_at_offer_provider='12345678912345')
             product_1 = create_product_with_thing_type(id_at_providers='9780199536986')
             product_2 = create_product_with_thing_type(id_at_providers='1550199555555')
-            offer = create_offer_with_thing_product(venue, product=product_2, id_at_providers='everything_but_libraires')
+            offer = create_offer_with_thing_product(venue, product=product_2,
+                                                    id_at_providers='everything_but_libraires')
 
             repository.save(offer, product_1, product_2, venue_provider)
 
@@ -278,7 +211,6 @@ class LibrairesStocksTest:
             # Then
             stock = Stock.query.one()
             assert stock.quantity == 67
-
 
     class WhenSynchronizedTwiceTest:
         @clean_database

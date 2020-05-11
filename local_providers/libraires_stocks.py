@@ -70,9 +70,6 @@ class LibrairesStocks(LocalProvider):
 
         self.offer_id = offer.id
 
-        offer_has_available_stock = self.libraires_stock['available'] > 0
-        offer.isActive = offer_has_available_stock
-
     def fill_stock_attributes(self, stock: Stock):
         bookings_quantity = count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
         stock.quantity = self.libraires_stock['available'] + bookings_quantity
