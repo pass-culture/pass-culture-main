@@ -5,3 +5,4 @@ postdeploy: python scripts/pc.py install_postgres_extension &&
 clock: python scheduled_tasks/clock.py
 algoliaclock: python scheduled_tasks/algolia_clock.py
 titeliveclock: python scheduled_tasks/titelive_clock.py
+worker: python workers/worker.py
