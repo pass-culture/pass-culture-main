@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from models.offer_type import EventType, ThingType
 from repository import repository, discovery_view_queries
 from repository.offer_queries import get_offers_for_recommendation
@@ -305,25 +307,32 @@ class GetOfferForRecommendationsTest:
             assert [view_offer.offer for view_offer in view_offers] == [physical_offer, digital_offer]
 
         @clean_database
-        def test_should_show_unseen_offers_first(self, app):
+        def test_should_return_unseen_offers_first(self, app):
             # Given
             offerer = create_offerer()
             user = create_user()
             venue = create_venue(offerer, postal_code='34000',
                                  departement_code='34')
-            digital_offer = create_offer_with_thing_product(venue=venue, is_national=True,
-                                                            thing_type=ThingType.LIVRE_EDITION, url='https://url.com')
-            physical_offer = create_offer_with_thing_product(venue=venue, is_national=True,
-                                                             thing_type=ThingType.LIVRE_EDITION, url=None)
+            offer_1 = create_offer_with_thing_product(venue=venue, is_national=True,
+                                                      thing_type=ThingType.LIVRE_EDITION, url='https://url.com')
+            offer_2 = create_offer_with_thing_product(venue=venue, is_national=True,
+                                                      thing_type=ThingType.LIVRE_EDITION, url=None)
+            offer_3 = create_offer_with_thing_product(venue=venue, is_national=True,
+                                                      thing_type=ThingType.LIVRE_EDITION, url=None)
 
-            stock_digital_offer = create_stock_from_offer(digital_offer, quantity=2)
-            stock_physical_offer = create_stock_from_offer(physical_offer, quantity=2)
-            create_mediation(physical_offer)
-            create_mediation(digital_offer)
+            stock_digital_offer_1 = create_stock_from_offer(offer_1, quantity=2)
+            stock_physical_offer_2 = create_stock_from_offer(offer_2, quantity=2)
+            stock_physical_offer_3 = create_stock_from_offer(offer_3, quantity=2)
 
-            seen_offer = create_seen_offer(digital_offer, user, date_seen=datetime.utcnow())
+            create_mediation(offer_1)
+            create_mediation(offer_2)
+            create_mediation(offer_3)
 
-            repository.save(user, stock_digital_offer, stock_physical_offer, seen_offer)
+            seen_offer_1 = create_seen_offer(offer_1, user, date_seen=datetime.utcnow() - timedelta(hours=12))
+            seen_offer_2 = create_seen_offer(offer_2, user, date_seen=datetime.utcnow())
+
+            repository.save(user, stock_digital_offer_1, stock_physical_offer_2, stock_physical_offer_3, seen_offer_1,
+                            seen_offer_2)
 
             discovery_view_queries.refresh(concurrently=False)
 
@@ -332,4 +341,4 @@ class GetOfferForRecommendationsTest:
                                                    user=user)
 
             # Then
-            assert offers == [physical_offer, digital_offer]
+            assert offers == [offer_3, offer_1, offer_2]
