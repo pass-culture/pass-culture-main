@@ -7,6 +7,7 @@ from models import DiscoveryViewV3
 from models.db import db
 from models.feature import FeatureToggle, Feature
 from repository import repository, discovery_view_queries
+from repository.discovery_view_queries import order_by_score_and_digital_offers
 
 
 def install_database_extensions():
@@ -28,7 +29,7 @@ def install_models():
 
 
 def install_materialized_views():
-    discovery_view_queries.create(db.session)
+    discovery_view_queries.create(db.session, order_by_score_and_digital_offers)
     DiscoveryViewV3(session=db.session).create()
 
 

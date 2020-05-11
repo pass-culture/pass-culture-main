@@ -5,8 +5,24 @@ from models import DiscoveryView
 from models.db import db
 
 
-def create(session) -> None:
-    get_recommendable_offers_ordered_by_digital_offers = _create_function_get_recommendable_offers(session)
+def order_by_score_and_digital_offers() -> str:
+    return f"""
+        ROW_NUMBER() OVER (
+            ORDER BY
+                (
+                    SELECT COALESCE(SUM(criterion."scoreDelta"), 0) AS coalesce_1
+                    FROM criterion, offer_criterion
+                    WHERE criterion.id = offer_criterion."criterionId"
+                        AND offer_criterion."offerId" = offer.id
+                ) DESC,
+                offer.url IS NOT NULL DESC,
+                RANDOM()
+        )
+    """
+
+
+def create(session, order: Callable = order_by_score_and_digital_offers) -> None:
+    get_recommendable_offers_ordered_by_digital_offers = _create_function_get_recommendable_offers(session, order)
 
     session.execute(f"""
         CREATE MATERIALIZED VIEW IF NOT EXISTS {DiscoveryView.__tablename__} AS
@@ -63,23 +79,7 @@ def update(session, order: Callable) -> None:
     session.commit()
 
 
-def order_by_score_and_digital_offers() -> str:
-    return f"""
-        ROW_NUMBER() OVER (
-            ORDER BY
-                (
-                    SELECT COALESCE(SUM(criterion."scoreDelta"), 0) AS coalesce_1
-                    FROM criterion, offer_criterion
-                    WHERE criterion.id = offer_criterion."criterionId"
-                        AND offer_criterion."offerId" = offer.id
-                ) DESC,
-                offer.url IS NOT NULL DESC,
-                RANDOM()
-        )
-    """
-
-
-def _create_function_get_recommendable_offers(session, order: Callable = order_by_score_and_digital_offers,
+def _create_function_get_recommendable_offers(session, order: Callable,
                                               postgres_function_name: str = 'get_recommendable_offers_ordered_by_score_and_digital_offers') -> str:
     get_offer_score = _create_function_get_offer_score(session)
     get_active_offers_ids = _create_function_get_active_offers_ids(session)
