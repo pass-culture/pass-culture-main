@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-const Titles = ({ action, subtitle, title }) => (
+const Titles = ({ action, subtitle, title, withSectionIcon }) => (
   <div className="section hero-section">
-    <div className="section-icon-mask">
-      <div className="section-icon" />
-    </div>
+    {withSectionIcon && (
+      <div className="section-icon-mask">
+        <div className="section-icon" />
+      </div>
+    )}
 
     <div className="title-subtitle-link-block">
       {subtitle && <h2>
@@ -24,12 +26,14 @@ const Titles = ({ action, subtitle, title }) => (
 Titles.defaultProps = {
   action: null,
   subtitle: null,
+  withSectionIcon: true,
 }
 
 Titles.propTypes = {
   action: PropTypes.element,
   subtitle: PropTypes.string,
   title: PropTypes.string.isRequired,
+  withSectionIcon: PropTypes.bool,
 }
 
 export default Titles

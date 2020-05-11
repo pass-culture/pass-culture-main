@@ -9,6 +9,7 @@ ShallowWrapper {
     currentUser={Object {}}
     dispatch={[MockFunction]}
     fullscreen={false}
+    fullwidthContent={false}
     handleDataRequest={null}
     header={Object {}}
     history={Object {}}

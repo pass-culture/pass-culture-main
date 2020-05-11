@@ -81,6 +81,10 @@
         padding: 4.125rem 5.3rem;
         position: relative;
 
+        &.full-width-content {
+          padding: rem(24px);
+        }
+
         &.with-padding {
           padding-top: 4.625rem;
         }
