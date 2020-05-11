@@ -7,13 +7,17 @@ from utils.date import DATE_ISO_FORMAT
 from connectors.api_demarches_simplifiees import get_application_details, DmsApplicationStates
 from models import BankInformation
 from models.bank_information import BankInformationStatus
-from repository import repository, offerer_queries, bank_information_queries
+from repository import bank_information_queries, offerer_queries, repository, venue_queries
 from workers import worker
-from domain.bank_information import status_weight
+from domain.bank_information import check_offerer_presence, check_venue_presence, check_venue_queried_by_name, status_weight
 
-PROCEDURE_ID = os.environ.get(
+OFFERER_PROCEDURE_ID = os.environ.get(
     'DEMARCHES_SIMPLIFIEES_RIB_OFFERER_PROCEDURE_ID')
+VENUE_PROCEDURE_ID = os.environ.get(
+    'DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID')
 TOKEN = os.environ.get('DEMARCHES_SIMPLIFIEES_TOKEN')
+FIELD_FOR_VENUE_WITH_SIRET = "Si vous souhaitez renseigner les coordonn\u00e9es bancaires d'un lieu avec SIRET, merci de saisir son SIRET :"
+FIELD_FOR_VENUE_WITHOUT_SIRET = "Si vous souhaitez renseigner les coordonn\u00e9es bancaires d'un lieu sans SIRET, merci de saisir le \"Nom du lieu\", \u00e0 l'identique de celui dans le pass Culture Pro :"
 
 
 @job(worker.redis_queue, connection=worker.conn)
@@ -26,18 +30,42 @@ def synchronize_bank_informations(application_id: str, provider_name: str):
 
 
 def save_offerer_bank_informations(application_id: str):
-    application_details = get_application_details(application_id, procedure_id=PROCEDURE_ID, token=TOKEN)
+    application_details = get_application_details(application_id, procedure_id=OFFERER_PROCEDURE_ID, token=TOKEN)
 
     siren = application_details['dossier']['entreprise']['siren']
     offerer = offerer_queries.find_by_siren(siren)
 
-    if offerer is None:
-        raise NoRefererException(f'Offerer not found for application id {application_id}.')
+    check_offerer_presence(offerer)
 
-    save_bank_information(application_details, offerer.id)
+    save_bank_information(application_details, offerer.id, None)
 
 
-def save_bank_information(application_details, offerer_id):
+def save_venue_bank_informations(application_id: str):
+    application_details = get_application_details(application_id, procedure_id=VENUE_PROCEDURE_ID, token=TOKEN)
+
+    siren = application_details['dossier']['entreprise']['siren']
+    offerer = offerer_queries.find_by_siren(siren)
+
+    check_offerer_presence(offerer)
+
+    siret = _find_value_in_fields(
+        application_details['dossier']["champs"], FIELD_FOR_VENUE_WITH_SIRET)
+    if siret:
+        venue = venue_queries.find_by_managing_offerer_id_and_siret(
+            offerer.id, siret)
+        check_venue_presence(venue)
+    else:
+        name = _find_value_in_fields(
+            application_details['dossier']["champs"], FIELD_FOR_VENUE_WITHOUT_SIRET)
+        venues = venue_queries.find_venue_without_siret_by_managing_offerer_id_and_name(
+            offerer.id, name)
+        check_venue_queried_by_name(venues)
+        venue = venues[0]
+
+    save_bank_information(application_details, None,  venue.id)
+
+
+def save_bank_information(application_details, offerer_id, venue_id):
     status = _get_status_from_demarches_simplifiees_application_state(
         DmsApplicationStates[application_details['dossier']['state']])
     application_id = application_details['dossier']["id"]
@@ -46,8 +74,8 @@ def save_bank_information(application_details, offerer_id):
         application_id)
 
     if bank_information is None:
-        bank_information = bank_information_queries.get_by_offerer(
-            offerer_id) or BankInformation()
+        bank_information = bank_information_queries.get_by_offerer_and_venue(
+            offerer_id, venue_id) or BankInformation()
 
         if (bank_information.dateModifiedAtLastProvider is not None and
                 datetime.strptime(application_details['dossier']['updated_at'], DATE_ISO_FORMAT) < bank_information.dateModifiedAtLastProvider):
@@ -58,7 +86,7 @@ def save_bank_information(application_details, offerer_id):
 
     bank_information.applicationId = int(application_id)
     bank_information.offererId = offerer_id
-    bank_information.venuId = None
+    bank_information.venueId = venue_id
     bank_information.status = status
 
     if status == BankInformationStatus.ACCEPTED:
@@ -71,10 +99,6 @@ def save_bank_information(application_details, offerer_id):
         bank_information.bic = None
 
     repository.save(bank_information)
-
-
-def save_venue_bank_informations(application_id: str):
-    return
 
 
 def _get_status_from_demarches_simplifiees_application_state(state: str) -> BankInformationStatus:
@@ -99,5 +123,4 @@ def _find_value_in_fields(fields, value_name):
             return field["value"]
 
 
-class NoRefererException(Exception):
-    pass
+

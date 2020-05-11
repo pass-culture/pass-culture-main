@@ -19,22 +19,22 @@ def new_application_can_update_bank_information(bank_information: BankInformatio
     return same_demarches_simplifiees_application or new_status_is_more_advanced_than_previous
 
 
-class VenueMatchingError(Exception):
+class NoRefererException(Exception):
     pass
 
 
 def check_offerer_presence(offerer):
     if not offerer:
-        raise VenueMatchingError("Offerer not found")
+        raise NoRefererException("Offerer not found")
 
 
 def check_venue_presence(venue):
     if not venue:
-        raise VenueMatchingError("Venue not found")
+        raise NoRefererException("Venue not found")
 
 
 def check_venue_queried_by_name(venues):
     if len(venues) == 0:
-        raise VenueMatchingError("Venue name for found")
+        raise NoRefererException("Venue name not found")
     if len(venues) > 1:
-        raise VenueMatchingError("Multiple venues found")
+        raise NoRefererException("Multiple venues found")

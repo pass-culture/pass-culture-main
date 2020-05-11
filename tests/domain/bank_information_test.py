@@ -1,7 +1,7 @@
 import pytest
 from tests.model_creators.generic_creators import (create_offerer,
                                                    create_venue)
-from domain.bank_information import check_offerer_presence, check_venue_presence, check_venue_queried_by_name, VenueMatchingError, new_application_can_update_bank_information
+from domain.bank_information import check_offerer_presence, check_venue_presence, check_venue_queried_by_name, NoRefererException, new_application_can_update_bank_information
 from tests.model_creators.generic_creators import create_bank_information
 from models.bank_information import BankInformationStatus
 
@@ -70,7 +70,7 @@ class CheckOffererPresenceTest:
         offerer = None
 
         # when
-        with pytest.raises(VenueMatchingError) as error:
+        with pytest.raises(NoRefererException) as error:
             check_offerer_presence(offerer)
 
         # then
@@ -83,7 +83,7 @@ class CheckVenuePresenceTest:
         venue = None
 
         # when
-        with pytest.raises(VenueMatchingError) as error:
+        with pytest.raises(NoRefererException) as error:
             check_venue_presence(venue)
 
         # then
@@ -96,11 +96,11 @@ class CheckVenueQueriedByNameTest:
         venues = []
 
         # when
-        with pytest.raises(VenueMatchingError) as error:
+        with pytest.raises(NoRefererException) as error:
             check_venue_queried_by_name(venues)
 
         # then
-        assert error.value.args == ("Venue name for found",)
+        assert error.value.args == ("Venue name not found",)
 
     def test_raise_an_error_if_more_than_one_venue_found(self):
         # given
@@ -110,7 +110,7 @@ class CheckVenueQueriedByNameTest:
         venues = [venue, venue1]
 
         # when
-        with pytest.raises(VenueMatchingError) as error:
+        with pytest.raises(NoRefererException) as error:
             check_venue_queried_by_name(venues)
 
         # then
