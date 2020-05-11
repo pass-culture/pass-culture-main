@@ -7,7 +7,6 @@ from models.venue_provider import VenueProvider
 from repository import repository
 from repository.venue_provider_queries import get_active_venue_providers_for_specific_provider
 from scheduled_tasks.logger import build_cron_log_message, CronStatus
-from workers.logger import build_job_log_message
 from utils.logger import logger
 
 

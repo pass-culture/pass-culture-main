@@ -21,8 +21,6 @@ from scripts.dashboard.write_dashboard import write_dashboard
 from scripts.update_booking_used import \
     update_booking_used_after_stock_occurrence
 from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
-from local_providers.demarches_simplifiees_offerer_bank_information import OffererBankInformationProvider
-from connectors import redis
 
 DEMARCHES_SIMPLIFIEES_OLD_ENROLLMENT_PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID',
                                                                    None)
