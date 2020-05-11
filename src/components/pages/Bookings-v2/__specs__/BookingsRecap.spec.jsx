@@ -4,55 +4,90 @@ import Titles from '../../../layout/Titles/Titles'
 import BookingsRecap from '../BookingsRecap'
 import BookingsRecapTable from '../BookingsRecapTable/BookingsRecapTable'
 
+function flushPromises() {
+  return new Promise(resolve => setImmediate(resolve))
+}
+
 describe('src | components | pages | Bookings-v2', () => {
-  let props
+  let mockJsonPromise
+  let mockFetchPromise
 
   beforeEach(() => {
-    props = {
-      requestGetAllBookingsRecap: jest.fn(),
+    mockJsonPromise = Promise.resolve([{}])
+    mockFetchPromise = Promise.resolve({
+      json: () => mockJsonPromise,
+    })
+    jest.spyOn(global, 'fetch').mockImplementation(() => mockFetchPromise)
+  })
+
+  it('should render a Titles component and a BookingsRecapTable', async () => {
+    // When
+    const wrapper = shallow(<BookingsRecap />)
+
+    // Then
+    const title = wrapper.find(Titles)
+    expect(title).toHaveLength(1)
+    const bookingsTable = wrapper.find(BookingsRecapTable)
+    expect(bookingsTable).toHaveLength(1)
+  })
+
+  it('should render the BookingsRecapTable with api values', async () => {
+    // Given
+    const oneBooking = {
+      beneficiary: { email: 'user@example.com', firstname: 'First', lastname: 'Last' },
+      booking_date: '2020-04-12T19:31:12Z',
+      booking_is_duo: false,
+      booking_status: 'reimbursed',
+      booking_token: 'TOKEN',
+      stock: { offer_name: 'My offer name' },
     }
+    mockJsonPromise = Promise.resolve([oneBooking])
+
+    // When
+    const wrapper = shallow(<BookingsRecap />)
+
+    // Then
+    await flushPromises()
+    const title = wrapper.find(Titles)
+    expect(title).toHaveLength(1)
+    const bookingsTable = wrapper.find(BookingsRecapTable)
+    expect(bookingsTable).toHaveLength(1)
+    expect(bookingsTable.prop('bookingsRecap')).toStrictEqual([oneBooking])
   })
 
-  describe('the main section', () => {
-    it('should render a Titles component and a BookingsRecapTable component', () => {
-      // When
-      const wrapper = shallow(<BookingsRecap {...props} />)
+  it('should render the BookingsRecapTable with duplicated booking data together when booking is duo', async () => {
+    // Given
+    const oneDuoBooking = {
+      beneficiary: { email: 'user@example.com', firstname: 'First', lastname: 'Last' },
+      booking_date: '2020-04-12T19:31:12Z',
+      booking_is_duo: true,
+      booking_status: 'reimbursed',
+      booking_token: 'TOKEN',
+      stock: { offer_name: 'My offer name' },
+    }
+    const oneNonDuoBooking = {
+      beneficiary: { email: 'another@example.com', firstname: 'An', lastname: 'Other' },
+      booking_date: '2020-02-22T19:31:12Z',
+      booking_is_duo: false,
+      booking_status: 'booked',
+      booking_token: 'NEKOT',
+      stock: { offer_name: 'My other offer name' },
+    }
+    mockJsonPromise = Promise.resolve([oneDuoBooking, oneNonDuoBooking])
 
-      // Then
-      const title = wrapper.find(Titles)
-      expect(title).toHaveLength(1)
-      const bookingsTable = wrapper.find(BookingsRecapTable)
-      expect(bookingsTable).toHaveLength(1)
-    })
-  })
+    // When
+    const wrapper = shallow(<BookingsRecap />)
 
-  describe('handleSuccess', () => {
-    it('should set bookingsRecap with api response data', () => {
-      // Given
-      const state = {}
-      const action = {
-        payload: {
-          data: [
-            {
-              'offer-name': 'My Offer',
-            },
-          ],
-        },
-      }
-      jest
-        .spyOn(props, 'requestGetAllBookingsRecap')
-        .mockImplementation(handleSuccess => handleSuccess(state, action))
-
-      // When
-      const bookings = shallow(<BookingsRecap {...props} />)
-
-      // Then
-      const bookingsTable = bookings.find(BookingsRecapTable)
-      expect(bookingsTable.prop('bookingsRecap')).toStrictEqual([
-        {
-          'offer-name': 'My Offer',
-        },
-      ])
-    })
+    // Then
+    await flushPromises()
+    const title = wrapper.find(Titles)
+    expect(title).toHaveLength(1)
+    const bookingsTable = wrapper.find(BookingsRecapTable)
+    expect(bookingsTable).toHaveLength(1)
+    expect(bookingsTable.prop('bookingsRecap')).toStrictEqual([
+      oneDuoBooking,
+      oneDuoBooking,
+      oneNonDuoBooking,
+    ])
   })
 })

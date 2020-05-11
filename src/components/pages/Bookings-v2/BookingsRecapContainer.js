@@ -1,24 +1,22 @@
-import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import BookingsRecap from '../Bookings-v2/BookingsRecap'
 import { withRequiredLogin } from '../../hocs'
-import { requestData } from 'redux-saga-data'
+import { API_URL } from '../../../utils/config'
 
-export const mapDispatchToProps = dispatch => ({
-  requestGetAllBookingsRecap: handleSuccess =>
-    dispatch(
-      requestData({
-        apiPath: '/bookings/pro',
-        handleSuccess: handleSuccess,
-      })
-    ),
-})
+function duplicateDuoBookings(bookingRecaps) {
+  return bookingRecaps
+    .map(bookingRecap =>
+      bookingRecap.booking_is_duo ? [bookingRecap, bookingRecap] : bookingRecap
+    )
+    .reduce((accumulator, currentValue) => accumulator.concat(currentValue), [])
+}
 
-export default compose(
-  withRequiredLogin,
-  connect(
-    null,
-    mapDispatchToProps
-  )
-)(BookingsRecap)
+export const fetchAllBookingsRecap = handleSuccess => {
+  return fetch(`${API_URL}/bookings/pro`, { credentials: 'include' })
+    .then(response => response.json())
+    .then(duplicateDuoBookings)
+    .then(handleSuccess)
+}
+
+export default compose(withRequiredLogin)(BookingsRecap)
