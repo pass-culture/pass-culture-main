@@ -1,10 +1,10 @@
 from tests.conftest import clean_database, TestClient
 from unittest.mock import call, patch
-from workers.bank_information_job import synchronize_bank_informations
+from workers.bank_information_job import bank_information_job
 
 class Post:
     class Returns202:
-        @patch('routes.providers.synchronize_bank_informations.delay')
+        @patch('routes.providers.bank_information_job.delay')
         @clean_database
         def when_has_valid_provider_name_and_dossier_id(self, mock_add_to_redis_queue, app):
             # Given
@@ -20,7 +20,7 @@ class Post:
             ]
 
     class Returns400:
-        @patch('routes.providers.synchronize_bank_informations.delay')
+        @patch('routes.providers.bank_information_job.delay')
         @clean_database
         def when_has_not_dossier_in_request_form_data(self, mock_add_to_redis_queue, app):
             # Given
@@ -32,7 +32,7 @@ class Post:
             # Then
             assert response.status_code == 400
 
-        @patch('routes.providers.synchronize_bank_informations.delay')
+        @patch('routes.providers.bank_information_job.delay')
         @clean_database
         def when_provider_is_not_offerer_or_venue(self, mock_add_to_redis_queue, app):
             # Given

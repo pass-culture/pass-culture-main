@@ -9,7 +9,7 @@ from repository.provider_queries import get_enabled_providers_for_pro, \
 from routes.serialization import as_dict
 from utils.rest import load_or_404
 from validation.routes.providers import check_provider_name
-from workers.bank_information_job import synchronize_bank_informations
+from workers.bank_information_job import bank_information_job
 
 
 @app.route('/providers', methods=['GET'])
@@ -52,5 +52,5 @@ def post_update_demarches_simplifiees_application(provider_name: str):
     except:
         return '', 400
 
-    synchronize_bank_informations.delay(application_id, provider_name)
+    bank_information_job.delay(application_id, provider_name)
     return '', 202
