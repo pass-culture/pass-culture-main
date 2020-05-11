@@ -4,7 +4,7 @@ from repository.offer_queries import get_offers_for_recommendation
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_criterion, \
     create_user, create_offerer, create_venue, \
-    create_favorite, create_mediation
+    create_favorite, create_mediation, create_seen_offer
 from tests.model_creators.specific_creators import create_stock_from_offer, \
     create_stock_with_thing_offer, create_product_with_thing_type, \
     create_offer_with_thing_product, create_offer_with_event_product
@@ -303,3 +303,33 @@ class GetOfferForRecommendationsTest:
 
             # Then
             assert [view_offer.offer for view_offer in view_offers] == [physical_offer, digital_offer]
+
+        @clean_database
+        def test_should_show_unseen_offers_first(self, app):
+            # Given
+            offerer = create_offerer()
+            user = create_user()
+            venue = create_venue(offerer, postal_code='34000',
+                                 departement_code='34')
+            digital_offer = create_offer_with_thing_product(venue=venue, is_national=True,
+                                                            thing_type=ThingType.LIVRE_EDITION, url='https://url.com')
+            physical_offer = create_offer_with_thing_product(venue=venue, is_national=True,
+                                                             thing_type=ThingType.LIVRE_EDITION, url=None)
+
+            stock_digital_offer = create_stock_from_offer(digital_offer, quantity=2)
+            stock_physical_offer = create_stock_from_offer(physical_offer, quantity=2)
+            create_mediation(physical_offer)
+            create_mediation(digital_offer)
+
+            seen_offer = create_seen_offer(digital_offer, user, date_seen=datetime.utcnow())
+
+            repository.save(user, stock_digital_offer, stock_physical_offer, seen_offer)
+
+            discovery_view_queries.refresh(concurrently=False)
+
+            # When
+            offers = get_offers_for_recommendation(departement_codes=['00'],
+                                                   user=user)
+
+            # Then
+            assert offers == [physical_offer, digital_offer]

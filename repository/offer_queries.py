@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import List, Optional
 
 from flask_sqlalchemy import BaseQuery
-from sqlalchemy import desc, func, or_
+from sqlalchemy import desc, func, or_, asc, nullsfirst
 from sqlalchemy.orm import aliased, joinedload
 from sqlalchemy.orm.query import Query
 from sqlalchemy.sql import selectable
@@ -18,7 +18,7 @@ from models import EventType, \
     Stock, \
     ThingType, \
     Venue, \
-    Product, Favorite, Booking, DiscoveryView, DiscoveryViewV3, User
+    Product, Favorite, Booking, DiscoveryView, DiscoveryViewV3, User, SeenOffer
 from models.db import Model
 from repository.booking_queries import get_only_offer_ids_from_bookings
 from repository.favorite_queries import get_only_offer_ids_from_favorites
@@ -111,12 +111,21 @@ def get_offers_for_recommendation(user: User,
         venue_ids = get_only_venue_ids_for_department_codes(departement_codes)
         discovery_view_query = keep_only_offers_in_venues_or_national(discovery_view_query, venue_ids)
 
-    discovery_view_query = discovery_view_query.order_by(DiscoveryView.offerDiscoveryOrder)
+    discovery_view_query = order_offers(discovery_view_query)
 
     if limit:
         discovery_view_query = discovery_view_query.limit(limit)
 
     return discovery_view_query.all()
+
+
+def order_offers(discovery_view_query):
+    offers_subquery = discovery_view_query.outerjoin(SeenOffer, SeenOffer.offerId == DiscoveryView.id)\
+        .with_entities(SeenOffer.dateSeen.label('dateSeen'), DiscoveryView.id.label('offerId'))\
+        .subquery()
+
+    return discovery_view_query.outerjoin(offers_subquery, offers_subquery.c.offerId == DiscoveryView.id)\
+        .order_by(nullsfirst(asc(offers_subquery.c.dateSeen)))
 
 
 def keep_only_offers_in_venues_or_national(query: BaseQuery, venue_ids: selectable.Alias) -> BaseQuery:
