@@ -15,6 +15,15 @@
     padding: rem(16px);
   }
 
+  .td-bookings-duo {
+    padding: 0;
+    vertical-align: middle;
+  }
+
+  .td-bookings-status {
+    vertical-align: middle;
+  }
+
   .cell-offer-link {
     font-weight: $weight-bold;
     white-space: nowrap;
@@ -28,8 +37,9 @@
     color: $grey;
   }
 
-  .bookings-status {
-    vertical-align: middle;
+  .bookings-duo {
+    height: rem(24px);
+    width: rem(24px);
   }
 
   .bookings-status-label {

@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react'
 import BeneficiaryCell from '../CellsFormatter/BeneficiaryCell'
 import BookingDateCell from '../CellsFormatter/BookingsDateCell'
 import BookingStatusCell from '../CellsFormatter/BookingsStatusCell'
+import IsDuoCell from '../CellsFormatter/IsDuoCell'
 import BookingTokenCell from '../CellsFormatter/BookingsTokenCell'
 import Table from '../Table/Table'
 import BookingOfferCell from '../CellsFormatter/BookingOfferCell'
@@ -15,6 +16,12 @@ class BookingsRecapTable extends PureComponent {
           headerTitle: "Nom de l'offre",
           accessor: 'stock',
           Cell: ({ value }) => <BookingOfferCell offer={value} />,
+        },
+        {
+          headerTitle: '',
+          accessor: 'booking_is_duo',
+          Cell: ({ value }) => <IsDuoCell isDuo={value} />,
+          className: 'td-bookings-duo',
         },
         {
           headerTitle: 'Bénéficiaire',

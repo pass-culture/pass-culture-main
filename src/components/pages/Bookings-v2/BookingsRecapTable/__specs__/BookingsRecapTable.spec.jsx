@@ -1,6 +1,7 @@
 import BookingsRecapTable from '../BookingsRecapTable'
 import React from 'react'
 import { mount, shallow } from 'enzyme'
+import IsDuoCell from '../../CellsFormatter/IsDuoCell'
 import BeneficiaryCell from '../../CellsFormatter/BeneficiaryCell'
 import BookingDateCell from '../../CellsFormatter/BookingsDateCell'
 import BookingTokenCell from '../../CellsFormatter/BookingsTokenCell'
@@ -23,6 +24,7 @@ describe('components | pages | Bookings-v2 | BookingsRecapTable', function() {
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
+        booking_is_duo: false,
       },
       {
         stock: {
@@ -36,6 +38,7 @@ describe('components | pages | Bookings-v2 | BookingsRecapTable', function() {
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
+        booking_is_duo: true,
       },
     ]
 
@@ -50,7 +53,7 @@ describe('components | pages | Bookings-v2 | BookingsRecapTable', function() {
     // Then
     expect(table).toHaveLength(1)
     const tableProps = table.props()
-    expect(tableProps['columns']).toHaveLength(5)
+    expect(tableProps['columns']).toHaveLength(6)
     expect(tableProps['data']).toHaveLength(2)
   })
 
@@ -69,14 +72,16 @@ describe('components | pages | Bookings-v2 | BookingsRecapTable', function() {
     const thirdHeader = wrapper.find('th').at(2)
     const fourthHeader = wrapper.find('th').at(3)
     const fifthHeader = wrapper.find('th').at(4)
+    const sixthHeader = wrapper.find('th').at(5)
 
     // Then
-    expect(wrapper.find('th')).toHaveLength(5)
+    expect(wrapper.find('th')).toHaveLength(6)
     expect(firstHeader.text()).toBe("Nom de l'offre")
-    expect(secondHeader.text()).toBe('Bénéficiaire')
-    expect(thirdHeader.text()).toBe('Réservation')
-    expect(fourthHeader.text()).toBe('Contremarque')
-    expect(fifthHeader.text()).toBe('Statut')
+    expect(secondHeader.text()).toBe('')
+    expect(thirdHeader.text()).toBe('Bénéficiaire')
+    expect(fourthHeader.text()).toBe('Réservation')
+    expect(fifthHeader.text()).toBe('Contremarque')
+    expect(sixthHeader.text()).toBe('Statut')
   })
 
   it('should render the expected table rows', function() {
@@ -94,6 +99,7 @@ describe('components | pages | Bookings-v2 | BookingsRecapTable', function() {
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
+        booking_is_duo: true,
       },
     ]
 
@@ -108,6 +114,11 @@ describe('components | pages | Bookings-v2 | BookingsRecapTable', function() {
     const bookingOfferCell = wrapper.find(BookingOfferCell)
     expect(bookingOfferCell).toHaveLength(1)
     expect(bookingOfferCell.props()).toStrictEqual({ offer: { offer_name: 'Avez-vous déjà vu' } })
+    const duoCell = wrapper.find(IsDuoCell)
+    expect(duoCell.find('Icon').props()).toMatchObject({
+      alt: 'Réservation DUO',
+      svg: 'ico-duo',
+    })
     const beneficiaryCell = wrapper.find(BeneficiaryCell)
     expect(beneficiaryCell).toHaveLength(1)
     expect(beneficiaryCell.props()).toStrictEqual({
