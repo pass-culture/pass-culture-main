@@ -5,8 +5,6 @@ from typing import List, Set, Union
 from sqlalchemy import func
 from sqlalchemy.orm import Query
 
-from domain.booking_recap.booking_recap import BookingRecap, compute_booking_recap_status
-from models import UserOfferer, PaymentStatus
 from domain.booking_recap.booking_recap import BookingRecap, compute_booking_recap_status, compute_booking_recap_token
 from models import UserOfferer
 from models.api_errors import ResourceNotFoundError
@@ -22,6 +20,8 @@ from models.stock import Stock
 from models.user import User
 from models.venue import Venue
 from repository import offer_queries
+
+DUO_QUANTITY = 2
 
 
 def _query_keep_on_non_activation_offers() -> Query:
@@ -205,6 +205,7 @@ def find_by_pro_user_id(user_id: int) -> List[BookingRecap]:
             Booking.dateCreated.label("bookingDate"),
             Booking.isCancelled.label("isCancelled"),
             Booking.isUsed.label("isUsed"),
+            Booking.quantity.label("quantity"),
             Payment.currentStatus.label("paymentStatus"),
             Offer.type.label("offerType"),
         ).all()
@@ -219,13 +220,14 @@ def _bookings_sql_entities_to_bookings_recap(bookings: List[object]) -> List[Boo
 def _serialize_booking_recap(booking: object) -> BookingRecap:
     return BookingRecap(
         offer_name=booking.offerName,
+        offer_type=booking.offerType,
         beneficiary_email=booking.beneficiaryEmail,
         beneficiary_firstname=booking.beneficiaryFirstname,
         beneficiary_lastname=booking.beneficiaryLastname,
         booking_token=compute_booking_recap_token(booking),
         booking_date=booking.bookingDate,
         booking_status=compute_booking_recap_status(booking),
-        offer_type=booking.offerType,
+        booking_is_duo=booking.quantity == DUO_QUANTITY,
     )
 
 

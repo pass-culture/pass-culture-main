@@ -16,22 +16,24 @@ class BookingRecapStatus(Enum):
 class BookingRecap:
     def __init__(self,
                  offer_name: str,
+                 offer_type: str,
                  beneficiary_lastname: str,
                  beneficiary_firstname: str,
                  beneficiary_email: str,
                  booking_token: str,
                  booking_date: datetime,
                  booking_status: BookingRecapStatus,
-                 offer_type: str
+                 booking_is_duo: bool,
                  ):
         self.offer_name: str = offer_name
+        self.offer_type = offer_type
         self.beneficiary_lastname: str = beneficiary_lastname
         self.beneficiary_firstname: str = beneficiary_firstname
         self.beneficiary_email: str = beneficiary_email
         self.booking_token: str = booking_token
         self.booking_date: datetime = booking_date
         self.booking_status = booking_status
-        self.offer_type = offer_type
+        self.booking_is_duo = booking_is_duo
 
 
 def compute_booking_recap_status(booking: object) -> BookingRecapStatus:

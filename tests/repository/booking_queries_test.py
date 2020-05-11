@@ -1725,6 +1725,28 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_date == yesterday
         assert expected_booking_recap.booking_token == 'ABCDEF'
         assert expected_booking_recap.booking_status == BookingRecapStatus.validated
+        assert expected_booking_recap.booking_is_duo is False
+
+    @clean_database
+    def test_should_return_booking_as_duo_when_quantity_is_two(self, app):
+        # Given
+        beneficiary = create_user(email='beneficiary@example.com')
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock(offer=offer, price=0)
+        booking = create_booking(user=beneficiary, stock=stock, quantity=2)
+        repository.save(user_offerer, booking)
+
+        # When
+        bookings_recap = find_by_pro_user_id(user.id)
+
+        # Then
+        assert len(bookings_recap) == 1
+        expected_booking_recap = bookings_recap[0]
+        assert expected_booking_recap.booking_is_duo is True
 
     @clean_database
     def test_should_return_booking_with_reimbursed_status_when_a_payment_was_sent(self, app):

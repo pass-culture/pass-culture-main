@@ -13,13 +13,14 @@ class BookingRecapMock(BookingRecap):
     def __init__(self):
         super().__init__(
             offer_name="Nom de mon offre",
+            offer_type="EventType.CINEMA",
             beneficiary_lastname="Polastri",
             beneficiary_firstname="Eve",
             beneficiary_email="eve.polastri@example.com",
             booking_token="ABCDE",
             booking_date=datetime.utcnow(),
             booking_status=BookingRecapStatus.validated,
-            offer_type="EventType.CINEMA"
+            booking_is_duo=False,
         )
 
 

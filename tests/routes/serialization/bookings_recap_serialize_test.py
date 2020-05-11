@@ -14,23 +14,25 @@ class SerializeBookingRecapTest:
         bookings_recap = [
             BookingRecap(
                 offer_name="Fondation",
+                offer_type='EventType.SPECTACLE_VIVANT',
                 beneficiary_firstname="Hari",
                 beneficiary_lastname="Seldon",
                 beneficiary_email="hari.seldon@example.com",
                 booking_date=date,
                 booking_token="FOND",
                 booking_status=BookingRecapStatus.validated,
-                offer_type='EventType.SPECTACLE_VIVANT'
+                booking_is_duo=False,
             ),
             BookingRecap(
                 offer_name="Fondation",
+                offer_type='ThingType.LIVRE_EDITION',
                 beneficiary_firstname="Golan",
                 beneficiary_lastname="Trevize",
                 beneficiary_email="golan.trevize@example.com",
                 booking_date=date,
                 booking_token="FOND",
                 booking_status=BookingRecapStatus.booked,
-                offer_type='ThingType.LIVRE_EDITION'
+                booking_is_duo=True,
             )
         ]
 
@@ -51,7 +53,8 @@ class SerializeBookingRecapTest:
                 },
                 "booking_date": format_into_ISO_8601(date),
                 "booking_token": "FOND",
-                "booking_status": "validated"
+                "booking_status": "validated",
+                "booking_is_duo": False,
             },
             {
                 "stock": {
@@ -64,7 +67,8 @@ class SerializeBookingRecapTest:
                 },
                 "booking_date": format_into_ISO_8601(date),
                 "booking_token": "FOND",
-                "booking_status": "booked"
+                "booking_status": "booked",
+                "booking_is_duo": True,
             }
         ]
         assert response == expected_response

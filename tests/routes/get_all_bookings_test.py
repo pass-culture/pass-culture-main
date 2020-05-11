@@ -62,6 +62,7 @@ class GetTest:
                     'booking_date': '2020-04-03T12:00:00Z',
                     'booking_token': 'ABCD',
                     'booking_status': 'validated',
+                    'booking_is_duo': False
                 }
             ]
             assert response.status_code == 200
