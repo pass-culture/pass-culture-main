@@ -1,5 +1,7 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from unittest.mock import patch
+
+from freezegun import freeze_time
 
 from models import Stock, Provider
 from repository import repository
@@ -129,30 +131,29 @@ class Patch:
             assert updated_stock.quantity == 5
             assert updated_stock.price == 20
 
+        @clean_database
         @patch('routes.stocks.have_beginning_date_been_modified')
-        @patch('routes.stocks.send_batch_stock_postponement_emails_to_users')
         @patch('routes.stocks.send_raw_email')
         @patch('routes.stocks.find_not_cancelled_bookings_by_stock')
-        @clean_database
-        def when_stock_changes_date_and_should_send_email_to_users(self,
-                                                                   find_not_cancelled_bookings_by_stock,
-                                                                   email_function,
-                                                                   mocked_send_batch_stock_postponement_emails_to_users,
-                                                                   mocked_check_have_beginning_date_been_modified,
-                                                                   app):
+        @freeze_time('2020-10-15 09:20:00')
+        def when_stock_changes_date_and_should_send_email_to_users_with_correct_info(self,
+                                                                                     find_not_cancelled_bookings_by_stock,
+                                                                                     email_function,
+                                                                                     mocked_check_have_beginning_date_been_modified,
+                                                                                     app):
             # Given
+            event_date = datetime.utcnow() + timedelta(days=1)
             user = create_user()
             admin = create_user(can_book_free_offers=False, email='admin@example.com', is_admin=True)
             offerer = create_offerer()
             venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0)
+            stock = create_stock_with_event_offer(offerer, venue, price=0, beginning_datetime=event_date,
+                                                  booking_limit_datetime=event_date)
             booking = create_booking(user=user, stock=stock)
-            booking_cancelled = create_booking(user=user, stock=stock, venue=venue, is_cancelled=True)
-            booking_used = create_booking(user=user, stock=stock, venue=venue, is_used=True)
-            repository.save(booking, booking_used, booking_cancelled, admin)
+            repository.save(booking, admin)
             mocked_check_have_beginning_date_been_modified.return_value = True
-            find_not_cancelled_bookings_by_stock.return_value = [booking, booking_used]
-            serialized_date = serialize(stock.beginningDatetime + timedelta(days=1))
+            find_not_cancelled_bookings_by_stock.return_value = [booking]
+            serialized_date = serialize(stock.beginningDatetime + timedelta(days=1) + timedelta(hours=3))
 
             # When
             request_update = TestClient(app.test_client()).with_auth(admin.email) \
@@ -161,9 +162,10 @@ class Patch:
             # Then
             assert request_update.status_code == 200
             mocked_check_have_beginning_date_been_modified.assert_called_once()
-            assert mocked_send_batch_stock_postponement_emails_to_users.call_count == 1
-            assert set(mocked_send_batch_stock_postponement_emails_to_users.call_args[0][0]) == {booking, booking_used}
-            assert mocked_send_batch_stock_postponement_emails_to_users.call_args[0][1] == email_function
+            assert email_function.call_count == 1
+            data_email = email_function.call_args[1]
+            assert data_email['data']['Vars']['event_date'] == 'samedi 17 octobre 2020'
+            assert data_email['data']['Vars']['event_hour'] == '14h20'
 
         @patch('routes.stocks.have_beginning_date_been_modified')
         @patch('routes.stocks.send_batch_stock_postponement_emails_to_users')

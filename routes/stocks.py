@@ -116,15 +116,15 @@ def edit_stock(stock_id):
 
         stock.fieldsUpdated = fields_to_update
 
+    stock.populate_from_dict(stock_data)
     if have_beginning_date_been_modified(stock_data, stock):
         bookings = find_not_cancelled_bookings_by_stock(stock)
         if bookings:
             try:
-                send_batch_stock_postponement_emails_to_users(bookings, send_raw_email)
+                send_batch_stock_postponement_emails_to_users(bookings, send_email=send_raw_email)
             except MailServiceException as mail_service_exception:
                 app.logger.error('Email service failure', mail_service_exception)
 
-    stock.populate_from_dict(stock_data)
     repository.save(stock)
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):

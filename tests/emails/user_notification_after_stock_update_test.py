@@ -2,9 +2,9 @@ from datetime import datetime
 from unittest.mock import patch
 
 from emails.user_notification_after_stock_update import retrieve_data_to_warn_user_after_stock_update_affecting_booking
-from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_booking
-from tests.model_creators.specific_creators import create_offer_with_event_product, create_event_occurrence, \
-    create_stock_from_event_occurrence
+from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_booking, \
+    create_stock, create_deposit
+from tests.model_creators.specific_creators import create_offer_with_event_product
 
 
 class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
@@ -16,8 +16,7 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        event_occurrence = create_event_occurrence(offer)
-        stock = create_stock_from_event_occurrence(event_occurrence)
+        stock = create_stock(offer=offer, beginning_datetime=datetime.utcnow())
         booking = create_booking(user=user, stock=stock)
         feature_send_mail_to_users_enabled.return_value = True
 
@@ -36,8 +35,7 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
-        event_occurrence = create_event_occurrence(offer)
-        stock = create_stock_from_event_occurrence(event_occurrence)
+        stock = create_stock(offer=offer, beginning_datetime=datetime.utcnow())
         booking = create_booking(user=user, stock=stock)
         feature_send_mail_to_users_enabled.return_value = False
 
@@ -49,17 +47,20 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
 
     @patch('emails.user_notification_after_stock_update.DEV_EMAIL_ADDRESS', 'dev@example.com')
     @patch('emails.user_notification_after_stock_update.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
-    def test_should_send_email_when_booking_date_have_been_changed(self, app):
+    def test_should_send_email_when_stock_date_have_been_changed(self, app):
         # Given
         beginning_datetime = datetime(2019, 7, 20, 12, 0, 0)
+        new_beginning_datetime = datetime(2019, 8, 20, 12, 0, 0)
 
         user = create_user()
+        create_deposit(user)
         offerer = create_offerer()
         venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        event_occurrence = create_event_occurrence(offer, beginning_datetime=beginning_datetime)
-        stock = create_stock_from_event_occurrence(event_occurrence, price=20)
+        offer = create_offer_with_event_product(venue, event_name='Offer name')
+        stock = create_stock(offer=offer, beginning_datetime=beginning_datetime, price=20)
         booking = create_booking(user=user, stock=stock)
+
+        stock.beginningDatetime = new_beginning_datetime
 
         # When
         booking_info_for_mailjet = retrieve_data_to_warn_user_after_stock_update_affecting_booking(booking)
@@ -74,7 +75,7 @@ class RetrieveDataToWarnUserAfterStockUpdateAffectingBookingTest:
                 'offer_name': booking.stock.offer.name,
                 'user_first_name': user.firstName,
                 'venue_name': booking.stock.offer.venue.name,
-                'event_date': 'samedi 20 juillet 2019',
+                'event_date': 'mardi 20 août 2019',
                 'event_hour': '14h',
             }
         }
