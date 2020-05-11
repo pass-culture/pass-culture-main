@@ -7,7 +7,6 @@ ShallowWrapper {
     action={null}
     subtitle="Fake subtitle"
     title="Fake title"
-    withSectionIcon={true}
   >
      
   </Titles>,
@@ -27,13 +26,6 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <div
-          className="section-icon-mask"
-        >
-          <div
-            className="section-icon"
-          />
-        </div>,
-        <div
           className="title-subtitle-link-block"
         >
           <h2>
@@ -48,30 +40,6 @@ ShallowWrapper {
     },
     "ref": null,
     "rendered": Array [
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": <div
-            className="section-icon"
-          />,
-          "className": "section-icon-mask",
-        },
-        "ref": null,
-        "rendered": Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "className": "section-icon",
-          },
-          "ref": null,
-          "rendered": null,
-          "type": "div",
-        },
-        "type": "div",
-      },
       Object {
         "instance": null,
         "key": undefined,
@@ -124,13 +92,6 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <div
-            className="section-icon-mask"
-          >
-            <div
-              className="section-icon"
-            />
-          </div>,
-          <div
             className="title-subtitle-link-block"
           >
             <h2>
@@ -145,30 +106,6 @@ ShallowWrapper {
       },
       "ref": null,
       "rendered": Array [
-        Object {
-          "instance": null,
-          "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": <div
-              className="section-icon"
-            />,
-            "className": "section-icon-mask",
-          },
-          "ref": null,
-          "rendered": Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "className": "section-icon",
-            },
-            "ref": null,
-            "rendered": null,
-            "type": "div",
-          },
-          "type": "div",
-        },
         Object {
           "instance": null,
           "key": undefined,

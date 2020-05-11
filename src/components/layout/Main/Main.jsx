@@ -76,7 +76,6 @@ class Main extends PureComponent {
       backTo,
       children,
       fullscreen,
-      fullwidthContent,
       header,
       name,
       redBg,
@@ -126,7 +125,6 @@ class Main extends PureComponent {
                 <div
                   className={classnames('after-notification-content', {
                     'with-padding': backTo,
-                    'full-width-content': fullwidthContent,
                   })}
                 >
                   {backTo && (
@@ -158,7 +156,6 @@ Main.defaultProps = {
   Tag: 'main',
   backTo: null,
   fullscreen: false,
-  fullwidthContent: false,
   handleDataRequest: null,
   header: {},
   redBg: null,
@@ -173,7 +170,6 @@ Main.propTypes = {
   currentUser: PropTypes.shape().isRequired,
   dispatch: PropTypes.func.isRequired,
   fullscreen: PropTypes.bool,
-  fullwidthContent: PropTypes.bool,
   handleDataRequest: PropTypes.func,
   header: PropTypes.shape(),
   location: PropTypes.shape().isRequired,

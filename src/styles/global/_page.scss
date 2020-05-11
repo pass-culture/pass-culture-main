@@ -78,12 +78,8 @@
       min-width: 800px;
 
       .after-notification-content {
-        padding: 4.125rem 5.3rem;
+        padding: rem(24px);
         position: relative;
-
-        &.full-width-content {
-          padding: rem(24px);
-        }
 
         &.with-padding {
           padding-top: 4.625rem;
@@ -91,11 +87,12 @@
 
         .back-button {
           position: absolute;
-          top: 1rem;
+          top: rem(24px);
+          padding-left: rem(30px);
 
           img {
             position: absolute;
-            left: -2rem;
+            left: rem(0px)
           }
         }
       }

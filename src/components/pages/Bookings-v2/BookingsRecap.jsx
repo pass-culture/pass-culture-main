@@ -31,14 +31,8 @@ class BookingsRecap extends PureComponent {
   render() {
     const { bookingsRecap } = this.state
     return (
-      <Main
-        fullwidthContent
-        name="bookings-v2"
-      >
-        <Titles
-          title="Réservations V2"
-          withSectionIcon={false}
-        />
+      <Main name="bookings-v2">
+        <Titles title="Réservations V2" />
         <BookingsRecapTable bookingsRecap={bookingsRecap} />
       </Main>
     )
