@@ -160,10 +160,10 @@ def venue_demarche_simplifiee_application_detail_response_without_siret(siret, b
 
 
 class SaveOffererBankInformationsTest:
+    @patch('use_cases.save_bank_informations.get_application_details')
     class CreateNewBankInformationTest:
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_dms_state_is_refused_should_create_the_correct_bank_information(self, mock_application_details, app):
+        def test_when_dms_state_is_refused_should_create_the_correct_bank_information(self, mock_application_details, app):
             # Given
             application_id = '8'
             offerer = create_offerer(siren='793875030')
@@ -183,8 +183,7 @@ class SaveOffererBankInformationsTest:
             assert bank_information.status == BankInformationStatus.REJECTED
 
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_dms_state_is_without_continuation_should_create_the_correct_bank_information(self, mock_application_details, app):
+        def test_when_dms_state_is_without_continuation_should_create_the_correct_bank_information(self, mock_application_details, app):
             # Given
             application_id = '8'
             offerer = create_offerer(siren='793875030')
@@ -204,8 +203,7 @@ class SaveOffererBankInformationsTest:
             assert bank_information.status == BankInformationStatus.REJECTED
 
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_dms_state_is_closed_should_create_the_correct_bank_information(self, mock_application_details, app):
+        def test_when_dms_state_is_closed_should_create_the_correct_bank_information(self, mock_application_details, app):
             # Given
             application_id = '8'
             offerer = create_offerer(siren='793875030')
@@ -225,8 +223,7 @@ class SaveOffererBankInformationsTest:
             assert bank_information.status == BankInformationStatus.ACCEPTED
 
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_dms_state_is_received_should_create_the_correct_bank_information(self, mock_application_details,
+        def test_when_dms_state_is_received_should_create_the_correct_bank_information(self, mock_application_details,
                                                                                   app):
             # Given
             application_id = '8'
@@ -247,8 +244,7 @@ class SaveOffererBankInformationsTest:
             assert bank_information.status == BankInformationStatus.DRAFT
 
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_dms_state_is_initiated_should_create_the_correct_bank_information(self, mock_application_details,
+        def test_when_dms_state_is_initiated_should_create_the_correct_bank_information(self, mock_application_details,
                                                                                    app):
             # Given
             application_id = '8'
@@ -269,8 +265,7 @@ class SaveOffererBankInformationsTest:
             assert bank_information.status == BankInformationStatus.DRAFT
 
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_no_offerer_siren_specified_should_not_create_bank_information(self, mock_application_details, app):
+        def test_when_no_offerer_siren_specified_should_not_create_bank_information(self, mock_application_details, app):
             # Given
             application_id = '8'
             mock_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(
@@ -285,10 +280,10 @@ class SaveOffererBankInformationsTest:
             assert bank_information_count == 0
             assert error.value.args == (f'Offerer not found',)
 
+    @patch('use_cases.save_bank_informations.get_application_details')
     class UpdateBankInformationByApplicationIdTest:
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_rib_and_offerer_change_everything_should_be_updated(self, mock_application_details, app):
+        def test_when_rib_and_offerer_change_everything_should_be_updated(self, mock_application_details, app):
             # Given
             application_id = '8'
             offerer = create_offerer(siren='793875030')
@@ -315,8 +310,7 @@ class SaveOffererBankInformationsTest:
             assert bank_information.offererId == new_offerer.id
 
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_status_change_rib_should_be_correctly_updated(self, mock_application_details, app):
+        def test_when_status_change_rib_should_be_correctly_updated(self, mock_application_details, app):
             # Given
             application_id = '8'
             offerer = create_offerer(siren='793875030')
@@ -343,8 +337,7 @@ class SaveOffererBankInformationsTest:
             assert bank_information.status == BankInformationStatus.DRAFT
 
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_overriding_another_bank_information_should_raise(self, mock_application_details, app):
+        def test_when_overriding_another_bank_information_should_raise(self, mock_application_details, app):
             # Given
             application_id = '8'
             offerer = create_offerer(siren='793875030')
@@ -377,10 +370,10 @@ class SaveOffererBankInformationsTest:
             assert errors.value.errors['"offererId"'] == [
                 'Une entrée avec cet identifiant existe déjà dans notre base de données']
 
+    @patch('use_cases.save_bank_informations.get_application_details')
     class OverrideBankInformationByReffererTest:
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_receive_new_closed_application_should_override_previous_one(self, mock_application_details, app):
+        def test_when_receive_new_closed_application_should_override_previous_one(self, mock_application_details, app):
             # Given
             application_id = '8'
             offerer = create_offerer(siren='793875030')
@@ -407,8 +400,7 @@ class SaveOffererBankInformationsTest:
             assert bank_information.applicationId == 8
 
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_receive_new_application_with_draft_state_should_update_previously_rejected_bank_information(self, mock_application_details, app):
+        def test_when_receive_new_application_with_draft_state_should_update_previously_rejected_bank_information(self, mock_application_details, app):
             # Given
             application_id = '8'
             offerer = create_offerer(siren='793875030')
@@ -436,8 +428,7 @@ class SaveOffererBankInformationsTest:
             assert bank_information.status == BankInformationStatus.DRAFT
 
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_receive_new_application_with_lower_status_should_reject(self, mock_application_details, app):
+        def test_when_receive_new_application_with_lower_status_should_reject(self, mock_application_details, app):
             # Given
             application_id = '8'
             offerer = create_offerer(siren='793875030')
@@ -466,8 +457,7 @@ class SaveOffererBankInformationsTest:
             assert bank_information.applicationId == 79
 
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_receive_older_application_should_reject(self, mock_application_details, app):
+        def test_when_receive_older_application_should_reject(self, mock_application_details, app):
             # Given
             application_id = '8'
             offerer = create_offerer(siren='793875030')
@@ -497,10 +487,10 @@ class SaveOffererBankInformationsTest:
 
 class SaveVenueBankInformationsTest:
     class CreateNewBankInformationTest:
+        @patch('use_cases.save_bank_informations.get_application_details')
         class VenueWithSiretTest:
             @clean_database
-            @patch('use_cases.save_bank_informations.get_application_details')
-            def when_dms_state_is_refused_should_create_the_correct_bank_information(self, mock_application_details, app):
+            def test_when_dms_state_is_refused_should_create_the_correct_bank_information(self, mock_application_details, app):
                 # Given
                 application_id = '8'
                 offerer = create_offerer(siren='793875030')
@@ -521,8 +511,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.REJECTED
 
             @clean_database
-            @patch('use_cases.save_bank_informations.get_application_details')
-            def when_dms_state_is_without_continuation_should_create_the_correct_bank_information(self, mock_application_details, app):
+            def test_when_dms_state_is_without_continuation_should_create_the_correct_bank_information(self, mock_application_details, app):
                 # Given
                 application_id = '8'
                 offerer = create_offerer(siren='793875030')
@@ -543,8 +532,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.REJECTED
 
             @clean_database
-            @patch('use_cases.save_bank_informations.get_application_details')
-            def when_dms_state_is_closed_should_create_the_correct_bank_information(self, mock_application_details, app):
+            def test_when_dms_state_is_closed_should_create_the_correct_bank_information(self, mock_application_details, app):
                 # Given
                 application_id = '8'
                 offerer = create_offerer(siren='793875030')
@@ -565,8 +553,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.ACCEPTED
 
             @clean_database
-            @patch('use_cases.save_bank_informations.get_application_details')
-            def when_dms_state_is_received_should_create_the_correct_bank_information(self, mock_application_details,
+            def test_when_dms_state_is_received_should_create_the_correct_bank_information(self, mock_application_details,
                                                                                       app):
                 # Given
                 application_id = '8'
@@ -588,8 +575,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.DRAFT
 
             @clean_database
-            @patch('use_cases.save_bank_informations.get_application_details')
-            def when_dms_state_is_initiated_should_create_the_correct_bank_information(self, mock_application_details,
+            def test_when_dms_state_is_initiated_should_create_the_correct_bank_information(self, mock_application_details,
                                                                                        app):
                 # Given
                 application_id = '8'
@@ -611,8 +597,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.DRAFT
 
             @clean_database
-            @patch('use_cases.save_bank_informations.get_application_details')
-            def when_no_venue_siret_specified_should_not_create_bank_information(self, mock_application_details, app):
+            def test_when_no_venue_siret_specified_should_not_create_bank_information(self, mock_application_details, app):
                 # Given
                 application_id = '8'
                 offerer = create_offerer(siren='793875030')
@@ -629,10 +614,10 @@ class SaveVenueBankInformationsTest:
                 assert bank_information_count == 0
                 assert error.value.args == (f'Venue not found',)
 
+        @patch('use_cases.save_bank_informations.get_application_details')
         class VenueWitoutSiretTest:
             @clean_database
-            @patch('use_cases.save_bank_informations.get_application_details')
-            def when_dms_state_is_refused_should_create_the_correct_bank_information(self, mock_application_details, app):
+            def test_when_dms_state_is_refused_should_create_the_correct_bank_information(self, mock_application_details, app):
                 # Given
                 application_id = '8'
                 offerer = create_offerer(siren='793875030')
@@ -654,8 +639,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.REJECTED
 
             @clean_database
-            @patch('use_cases.save_bank_informations.get_application_details')
-            def when_dms_state_is_without_continuation_should_create_the_correct_bank_information(self, mock_application_details, app):
+            def test_when_dms_state_is_without_continuation_should_create_the_correct_bank_information(self, mock_application_details, app):
                 # Given
                 application_id = '8'
                 offerer = create_offerer(siren='793875030')
@@ -677,8 +661,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.REJECTED
 
             @clean_database
-            @patch('use_cases.save_bank_informations.get_application_details')
-            def when_dms_state_is_closed_should_create_the_correct_bank_information(self, mock_application_details, app):
+            def test_when_dms_state_is_closed_should_create_the_correct_bank_information(self, mock_application_details, app):
                 # Given
                 application_id = '8'
                 offerer = create_offerer(siren='793875030')
@@ -700,8 +683,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.ACCEPTED
 
             @clean_database
-            @patch('use_cases.save_bank_informations.get_application_details')
-            def when_dms_state_is_received_should_create_the_correct_bank_information(self, mock_application_details,
+            def test_when_dms_state_is_received_should_create_the_correct_bank_information(self, mock_application_details,
                                                                                       app):
                 # Given
                 application_id = '8'
@@ -724,8 +706,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.DRAFT
 
             @clean_database
-            @patch('use_cases.save_bank_informations.get_application_details')
-            def when_dms_state_is_initiated_should_create_the_correct_bank_information(self, mock_application_details,
+            def test_when_dms_state_is_initiated_should_create_the_correct_bank_information(self, mock_application_details,
                                                                                        app):
                 # Given
                 application_id = '8'
@@ -748,8 +729,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.DRAFT
 
             @clean_database
-            @patch('use_cases.save_bank_informations.get_application_details')
-            def when_no_venue_without_siret_specified_should_not_create_bank_information(self, mock_application_details, app):
+            def test_when_no_venue_without_siret_specified_should_not_create_bank_information(self, mock_application_details, app):
                 # Given
                 application_id = '8'
                 offerer = create_offerer(siren='793875030')
@@ -767,10 +747,10 @@ class SaveVenueBankInformationsTest:
                 assert bank_information_count == 0
                 assert error.value.args == (f'Venue name not found',)
 
+    @patch('use_cases.save_bank_informations.get_application_details')
     class UpdateBankInformationByApplicationIdTest:
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_rib_and_offerer_change_everything_should_be_updated(self, mock_application_details, app):
+        def test_when_rib_and_offerer_change_everything_should_be_updated(self, mock_application_details, app):
             # Given
             application_id = '8'
             offerer = create_offerer(siren='793875030')
@@ -799,8 +779,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.venueId == new_venue.id
 
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_status_change_rib_should_be_correctly_updated(self, mock_application_details, app):
+        def test_when_status_change_rib_should_be_correctly_updated(self, mock_application_details, app):
             # Given
             application_id = '8'
             offerer = create_offerer(siren='793875030')
@@ -828,8 +807,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.status == BankInformationStatus.DRAFT
 
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_overriding_another_bank_information_should_raise(self, mock_application_details, app):
+        def test_when_overriding_another_bank_information_should_raise(self, mock_application_details, app):
             # Given
             application_id = '8'
             offerer = create_offerer(siren='793875030')
@@ -863,10 +841,10 @@ class SaveVenueBankInformationsTest:
             assert errors.value.errors['"venueId"'] == [
                 'Une entrée avec cet identifiant existe déjà dans notre base de données']
 
+    @patch('use_cases.save_bank_informations.get_application_details')
     class OverrideBankInformationByReffererTest:
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_receive_new_closed_application_should_override_previous_one(self, mock_application_details, app):
+        def test_when_receive_new_closed_application_should_override_previous_one(self, mock_application_details, app):
             # Given
             application_id = '8'
             offerer = create_offerer(siren='793875030')
@@ -894,8 +872,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.applicationId == 8
 
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_receive_new_application_with_draft_state_should_update_previously_rejected_bank_information(self, mock_application_details, app):
+        def test_when_receive_new_application_with_draft_state_should_update_previously_rejected_bank_information(self, mock_application_details, app):
             # Given
             application_id = '8'
             offerer = create_offerer(siren='793875030')
@@ -924,8 +901,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.status == BankInformationStatus.DRAFT
 
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_receive_new_application_with_lower_status_should_reject(self, mock_application_details, app):
+        def test_when_receive_new_application_with_lower_status_should_reject(self, mock_application_details, app):
             # Given
             application_id = '8'
             offerer = create_offerer(siren='793875030')
@@ -955,8 +931,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.applicationId == 79
 
         @clean_database
-        @patch('use_cases.save_bank_informations.get_application_details')
-        def when_receive_older_application_should_reject(self, mock_application_details, app):
+        def test_when_receive_older_application_should_reject(self, mock_application_details, app):
             # Given
             application_id = '8'
             offerer = create_offerer(siren='793875030')
