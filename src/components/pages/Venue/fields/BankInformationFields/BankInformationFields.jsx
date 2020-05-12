@@ -9,6 +9,7 @@ const BankInformation = ({ venue, offerer }) => {
   const iban = venueHasBankInformation ? venue.iban : offerer.iban
   const bic = venueHasBankInformation ? venue.bic : offerer.bic
 
+  const displayModifierLink = !!(venue.iban && venue.bic)
   const displayBankInformations = !!(bic && iban)
   const displayApplicationLink =
     !venueHasBankInformation && !!venue.demarchesSimplifieesApplicationId
@@ -21,18 +22,20 @@ const BankInformation = ({ venue, offerer }) => {
 
       {displayBankInformations && (
         <Fragment>
-          <a
-            className="bi-external-link bi-external-link--mod-topright"
-            href={DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <Icon
-              alt=""
-              svg="ico-external-site"
-            />
-            {'Modifier'}
-          </a>
+          {displayModifierLink && (
+            <a
+              className="bi-external-link bi-external-link--mod-topright"
+              href={DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <Icon
+                alt=""
+                svg="ico-external-site"
+              />
+              {'Modifier'}
+            </a>
+          )}
           <p className="bi-subtitle">
             {
               'Les remboursements des offres éligibles présentées dans ce lieu sont effectués sur le compte ci-dessous :'
