@@ -18,9 +18,6 @@ depends_on = None
 
 def upgrade():
     op.execute("""
-        DELETE FROM recommendation where "mediationId" IN (SELECT id FROM mediation WHERE "tutoIndex" IS NOT NULL)
-    """)
-    op.execute("""
         DELETE FROM mediation WHERE "tutoIndex" IS NOT NULL;
         """)
     op.drop_column('mediation', 'tutoIndex')
