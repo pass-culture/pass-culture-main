@@ -64,6 +64,6 @@ if __name__ == '__main__':
 
     scheduler.add_job(synchronize_titelive_stocks, 'cron',
                       [app],
-                      day='*', hour='6')
+                      day='*', hour='2', minute='30')
 
     scheduler.start()
