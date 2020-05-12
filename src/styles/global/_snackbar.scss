@@ -5,6 +5,10 @@
   width: 100% !important;
 }
 
+.Toastify__toast-container {
+  padding: 0;
+}
+
 .toast-default {
   padding: 0 rem(20px);
   button, div {
@@ -19,5 +23,3 @@
 .toast-success {
   background-color: $green-valid;
 }
-
-

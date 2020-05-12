@@ -9,8 +9,9 @@ class PersonalInformations extends PureComponent {
     super(props)
 
     this.state = {
-      nickname: props.user.publicName,
       errors: null,
+      isSubmitButtonDisabled: false,
+      nickname: props.user.publicName,
     }
 
     this.nicknameInputRef = React.createRef()
@@ -22,7 +23,10 @@ class PersonalInformations extends PureComponent {
   }
 
   handleSubmitFail = (state, action) => {
-    this.setState({ errors: { ...action.payload.errors } })
+    this.setState({
+      errors: { ...action.payload.errors },
+      isSubmitButtonDisabled: false
+    })
     this.nicknameInputRef.current.focus()
     this.nicknameInputRef.current.select()
   }
@@ -43,6 +47,7 @@ class PersonalInformations extends PureComponent {
     }
 
     if (user.publicName !== nicknameInputValue) {
+      this.setState({ isSubmitButtonDisabled: true })
       handleSubmit(nicknameToSubmit, this.handleSubmitFail, this.handleSubmitSuccess)
     } else {
       history.push(pathToProfile)
@@ -51,7 +56,7 @@ class PersonalInformations extends PureComponent {
 
   render() {
     const { user, getDepartment } = this.props
-    const { errors, nickname } = this.state
+    const { errors, isSubmitButtonDisabled, nickname } = this.state
 
     return (
       <div className="pi-container">
@@ -98,6 +103,7 @@ class PersonalInformations extends PureComponent {
           <div className="pi-form-submit">
             <input
               className="button-submit"
+              disabled={isSubmitButtonDisabled}
               onClick={this.handleSubmitNickname}
               type="submit"
               value="Enregistrer"

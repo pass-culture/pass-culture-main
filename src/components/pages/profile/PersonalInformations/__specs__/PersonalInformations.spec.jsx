@@ -96,7 +96,7 @@ describe('personal informations', () => {
     })
 
     describe('when user has modified his nickname', () => {
-      it('should redirect to profile and call snackbar with proper informations', () => {
+      it('should redirect to profile and call snackbar once with proper informations', () => {
         // Given
         jest.spyOn(props, 'handleSubmit').mockImplementation((values, fail, success) => success())
 
@@ -112,9 +112,11 @@ describe('personal informations', () => {
         // When
         nickname.simulate('change', { target: { value: 'DifferentNickname' } })
         submitButton.simulate('click')
+        submitButton.simulate('click')
 
         // Then
         expect(props.history.push).toHaveBeenCalledWith('/profil')
+        expect(props.snackbar).toHaveBeenCalledTimes(1)
         expect(props.snackbar).toHaveBeenCalledWith('Ton pseudo a bien été modifié.', 'success')
       })
     })

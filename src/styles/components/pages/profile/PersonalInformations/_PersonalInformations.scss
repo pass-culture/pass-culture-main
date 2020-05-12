@@ -53,6 +53,10 @@
       box-shadow: none;
       outline: none;
     }
+
+    &[aria-invalid="true"] {
+      border: rem(2px) solid $primary-error;
+    }
   }
 
   .mi-field-button {
@@ -88,10 +92,15 @@
     border-radius: rem(32px);
     border: 0;
     color: $white;
+    cursor: pointer;
     font-size: rem(16px);
     font-weight: 700;
     height: rem(48px);
     width: 90%;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
   }
 
   .pi-form-submit{
@@ -100,7 +109,4 @@
     padding-bottom: rem(24px);
     width: 100%;
   }
-
 }
-
-
