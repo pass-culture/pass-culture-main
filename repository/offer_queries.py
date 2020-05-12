@@ -20,6 +20,8 @@ from models import EventType, \
     Venue, \
     Product, Favorite, Booking, DiscoveryView, DiscoveryViewV3, User, SeenOffer
 from models.db import Model
+from models.feature import FeatureToggle
+from repository import feature_queries
 from repository.booking_queries import get_only_offer_ids_from_bookings
 from repository.favorite_queries import get_only_offer_ids_from_favorites
 from repository.iris_venues_queries import find_venues_located_near_iris
@@ -111,7 +113,9 @@ def get_offers_for_recommendation(user: User,
         venue_ids = get_only_venue_ids_for_department_codes(departement_codes)
         discovery_view_query = keep_only_offers_in_venues_or_national(discovery_view_query, venue_ids)
 
-    discovery_view_query = order_offers_by_unseen_offers_first(discovery_view_query)
+    if feature_queries.is_active(FeatureToggle.SAVE_SEEN_OFFERS):
+        discovery_view_query = order_offers_by_unseen_offers_first(discovery_view_query)
+
     discovery_view_query = discovery_view_query.order_by(DiscoveryView.offerDiscoveryOrder)
 
     if limit:

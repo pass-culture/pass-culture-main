@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from unittest.mock import patch
 
 from models.offer_type import EventType, ThingType
 from repository import repository, discovery_view_queries
@@ -300,14 +301,15 @@ class GetOfferForRecommendationsTest:
             discovery_view_queries.refresh(concurrently=False)
 
             # When
-            view_offers = get_offers_for_recommendation(departement_codes=['00'],
+            offers = get_offers_for_recommendation(departement_codes=['00'],
                                                    user=user)
 
             # Then
-            assert [view_offer.offer for view_offer in view_offers] == [physical_offer, digital_offer]
+            assert offers == [physical_offer, digital_offer]
 
         @clean_database
-        def test_should_return_unseen_offers_first(self, app):
+        @patch('repository.offer_queries.feature_queries.is_active', return_value=True)
+        def test_should_return_ordered_offers_by_dateSeen_when_feature_is_active(self, app):
             # Given
             offerer = create_offerer()
             user = create_user()
@@ -317,21 +319,17 @@ class GetOfferForRecommendationsTest:
                                                       thing_type=ThingType.LIVRE_EDITION, url='https://url.com')
             offer_2 = create_offer_with_thing_product(venue=venue, is_national=True,
                                                       thing_type=ThingType.LIVRE_EDITION, url=None)
-            offer_3 = create_offer_with_thing_product(venue=venue, is_national=True,
-                                                      thing_type=ThingType.LIVRE_EDITION, url=None)
 
             stock_digital_offer_1 = create_stock_from_offer(offer_1, quantity=2)
             stock_physical_offer_2 = create_stock_from_offer(offer_2, quantity=2)
-            stock_physical_offer_3 = create_stock_from_offer(offer_3, quantity=2)
 
             create_mediation(offer_1)
             create_mediation(offer_2)
-            create_mediation(offer_3)
 
             seen_offer_1 = create_seen_offer(offer_1, user, date_seen=datetime.utcnow() - timedelta(hours=12))
             seen_offer_2 = create_seen_offer(offer_2, user, date_seen=datetime.utcnow())
 
-            repository.save(user, stock_digital_offer_1, stock_physical_offer_2, stock_physical_offer_3, seen_offer_1,
+            repository.save(user, stock_digital_offer_1, stock_physical_offer_2, seen_offer_1,
                             seen_offer_2)
 
             discovery_view_queries.refresh(concurrently=False)
@@ -341,4 +339,60 @@ class GetOfferForRecommendationsTest:
                                                    user=user)
 
             # Then
-            assert offers == [offer_3, offer_1, offer_2]
+            assert offers == [offer_1, offer_2]
+
+        @clean_database
+        @patch('repository.offer_queries.feature_queries.is_active', return_value=True)
+        def test_should_return_unseen_offers_first_when_feature_is_active(self, app):
+            # Given
+            offerer = create_offerer()
+            user = create_user()
+            venue = create_venue(offerer, postal_code='34000',
+                                 departement_code='34')
+            offer_1 = create_offer_with_thing_product(venue=venue, is_national=True,
+                                                      thing_type=ThingType.LIVRE_EDITION, url=None)
+            offer_2 = create_offer_with_thing_product(venue=venue, is_national=True,
+                                                      thing_type=ThingType.LIVRE_EDITION, url='https://url.com')
+
+            stock_digital_offer_1 = create_stock_from_offer(offer_1, quantity=2)
+            stock_physical_offer_2 = create_stock_from_offer(offer_2, quantity=2)
+
+            create_mediation(offer_1)
+            create_mediation(offer_2)
+
+            seen_offer = create_seen_offer(offer_2, user, date_seen=datetime.utcnow())
+
+            repository.save(user, stock_digital_offer_1, stock_physical_offer_2, seen_offer)
+
+            discovery_view_queries.refresh(concurrently=False)
+
+            # When
+            offers = get_offers_for_recommendation(departement_codes=['00'],
+                                                   user=user)
+
+            # Then
+            assert offers == [offer_1, offer_2]
+
+        @clean_database
+        @patch('repository.offer_queries.feature_queries.is_active', return_value=False)
+        @patch('repository.offer_queries.order_offers_by_unseen_offers_first')
+        def test_should_not_order_offers_by_dateSeen_when_feature_is_not_active(self, mock_order_offers_by_unseen_offers_first, app):
+            # Given
+            offerer = create_offerer()
+            user = create_user()
+            venue = create_venue(offerer, postal_code='34000', departement_code='34')
+            offer = create_offer_with_thing_product(venue=venue, is_national=True, thing_type=ThingType.LIVRE_EDITION)
+
+            stock_offer = create_stock_from_offer(offer, quantity=2)
+
+            create_mediation(offer)
+
+            repository.save(user, stock_offer)
+
+            discovery_view_queries.refresh(concurrently=False)
+
+            # When
+            offers = get_offers_for_recommendation(departement_codes=['00'],
+                                                   user=user)
+            # Then
+            mock_order_offers_by_unseen_offers_first.assert_not_called()
