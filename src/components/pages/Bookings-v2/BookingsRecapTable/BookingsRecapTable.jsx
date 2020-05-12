@@ -1,13 +1,14 @@
-import React, { PureComponent } from 'react'
-import BeneficiaryCell from '../CellsFormatter/BeneficiaryCell'
-import BookingDateCell from '../CellsFormatter/BookingsDateCell'
-import BookingStatusCell from '../CellsFormatter/BookingsStatusCell'
-import IsDuoCell from '../CellsFormatter/IsDuoCell'
-import BookingTokenCell from '../CellsFormatter/BookingsTokenCell'
-import Table from '../Table/Table'
-import BookingOfferCell from '../CellsFormatter/BookingOfferCell'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import BeneficiaryCell from './CellsFormatter/BeneficiaryCell'
+import BookingDateCell from './CellsFormatter/BookingsDateCell'
+import BookingStatusCell from './CellsFormatter/BookingsStatusCell'
+import BookingTokenCell from './CellsFormatter/BookingsTokenCell'
+import Table from './Table/Table'
+import BookingOfferCell from './CellsFormatter/BookingOfferCell'
+import IsDuoCell from './CellsFormatter/IsDuoCell'
 
-class BookingsRecapTable extends PureComponent {
+class BookingsRecapTable extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -48,14 +49,25 @@ class BookingsRecapTable extends PureComponent {
     }
   }
 
+  shouldComponentUpdate() {
+    return true
+  }
+
   render() {
     const { bookingsRecap } = this.props
     const { columns } = this.state
-    return (<Table
-      columns={columns}
-      data={bookingsRecap}
-            />)
+
+    return (
+      <Table
+        columns={columns}
+        data={bookingsRecap}
+      />
+    )
   }
+}
+
+BookingsRecapTable.propTypes = {
+  bookingsRecap: PropTypes.shape({}).isRequired,
 }
 
 export default BookingsRecapTable

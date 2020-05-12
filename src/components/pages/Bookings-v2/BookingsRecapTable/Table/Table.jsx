@@ -1,18 +1,36 @@
 import React from 'react'
-import { useTable } from 'react-table'
+import { useTable, usePagination } from 'react-table'
 
-function Table({ columns, data }) {
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
-    columns,
-    data,
-  })
+function Table({columns, data}) {
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    prepareRow,
+    page,
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    nextPage,
+    previousPage,
+    state: { pageIndex },
+  } = useTable(
+    {
+      columns,
+      data,
+      initialState: { pageIndex: 0, pageSize: 5 },
+    },
+    usePagination
+  )
 
   return (
-    <table
-      className="bookings-table"
-      {...getTableProps()}
-    >
-      <thead>
+    <div>
+      <table
+        className="bookings-table"
+        {...getTableProps()}
+      >
+        <thead>
         {headerGroups.map(headerGroup => (
           <tr
             key={headerGroup.id}
@@ -28,9 +46,9 @@ function Table({ columns, data }) {
             ))}
           </tr>
         ))}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map(row => {
+        </thead>
+        <tbody {...getTableBodyProps()}>
+        {page.map(row => {
           prepareRow(row)
           return (
             <tr
@@ -50,8 +68,11 @@ function Table({ columns, data }) {
             </tr>
           )
         })}
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+
+
+    </div>
   )
 }
 

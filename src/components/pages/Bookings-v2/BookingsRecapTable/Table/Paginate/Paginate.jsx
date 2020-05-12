@@ -1,0 +1,46 @@
+import React from 'react'
+import PropTypes from 'prop-types'
+import Icon from '../../../../../layout/Icon'
+
+const Paginate = ({ canNextPage,
+                    canPreviousPage,
+                    currentPage,
+                    previousPage,
+                    nbPages,
+                    nextPage
+}) => (
+  <div className='pagination'>
+    {canPreviousPage && (
+      <button
+        onClick={previousPage}
+        type='button'
+      >
+        <Icon svg='ico-left-arrow' />
+      </button>
+    )}
+
+    <span>
+      { `Page ${currentPage}/${nbPages}` }
+    </span>
+
+    {canNextPage && (
+      <button
+        onClick={nextPage}
+        type='button'
+      >
+        <Icon svg='ico-right-arrow' />
+      </button>
+    )}
+  </div>
+)
+
+Paginate.propTypes = {
+  canNextPage: PropTypes.bool.isRequired,
+  canPreviousPage: PropTypes.bool.isRequired,
+  currentPage: PropTypes.number.isRequired,
+  nbPages: PropTypes.number.isRequired,
+  nextPage: PropTypes.func.isRequired,
+  previousPage: PropTypes.func.isRequired
+}
+
+export default Paginate

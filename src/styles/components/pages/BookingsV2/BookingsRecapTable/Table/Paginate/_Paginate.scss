@@ -1,0 +1,13 @@
+.pagination {
+  margin: rem(24px);
+  color: $black;
+  font-weight: $weight-medium;
+  font-size: rem(14px);
+
+  button {
+    border: none;
+  }
+  button:hover {
+    cursor: pointer;
+  }
+}

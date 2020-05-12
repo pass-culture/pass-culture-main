@@ -1,12 +1,12 @@
 import BookingsRecapTable from '../BookingsRecapTable'
 import React from 'react'
 import { mount, shallow } from 'enzyme'
-import IsDuoCell from '../../CellsFormatter/IsDuoCell'
-import BeneficiaryCell from '../../CellsFormatter/BeneficiaryCell'
-import BookingDateCell from '../../CellsFormatter/BookingsDateCell'
-import BookingTokenCell from '../../CellsFormatter/BookingsTokenCell'
-import BookingStatusCell from '../../CellsFormatter/BookingsStatusCell'
-import BookingOfferCell from '../../CellsFormatter/BookingOfferCell'
+import IsDuoCell from '../CellsFormatter/IsDuoCell'
+import BeneficiaryCell from '../CellsFormatter/BeneficiaryCell'
+import BookingDateCell from '../CellsFormatter/BookingsDateCell'
+import BookingTokenCell from '../CellsFormatter/BookingsTokenCell'
+import BookingStatusCell from '../CellsFormatter/BookingsStatusCell'
+import BookingOfferCell from '../CellsFormatter/BookingOfferCell'
 
 describe('components | pages | Bookings-v2 | BookingsRecapTable', function() {
   it('should call the Table component with columns and data props', function() {

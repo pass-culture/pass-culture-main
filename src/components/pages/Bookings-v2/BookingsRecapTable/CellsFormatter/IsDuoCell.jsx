@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Icon from '../../../layout/Icon'
+import Icon from '../../../../layout/Icon'
 
 function IsDuoCell({ isDuo }) {
   return (
