@@ -97,11 +97,13 @@ describe('src | Venue | BankInformation ', () => {
   })
 
   it('should render modification block when BIC and IBAN are provided', () => {
-    // when
+    // Given
     props.venue = {
       bic: 'ABC',
       iban: 'DEF',
     }
+
+    // when
     const wrapper = shallow(<BankInformation {...props} />)
 
     // then
@@ -114,5 +116,63 @@ describe('src | Venue | BankInformation ', () => {
     expect(linkToDemarcheSimplifieeProcedure.prop('href')).toBe(
       'link/to/venue/demarchesSimplifiees/procedure'
     )
+  })
+
+  it('should render current application detail when demarchesSimplifieesApplicationId is provided', () => {
+    // Given
+    props.venue = {
+      id: 'AA',
+      name: 'fake venue name',
+      bic: null,
+      iban: null,
+      demarchesSimplifieesApplicationId: '12',
+    }
+
+    // when
+    const wrapper = shallow(<BankInformation {...props} />)
+
+    // then
+    const bankInstructions = wrapper.find({
+      children: 'Votre dossier est en cours pour ce lieu',
+    })
+    const linkToDemarcheSimplifieeProcedure = wrapper.find('a')
+    expect(linkToDemarcheSimplifieeProcedure.prop('href')).toBe(
+      'https://www.demarches-simplifiees.fr/dossiers/12'
+    )
+    expect(bankInstructions).toHaveLength(1)
+  })
+
+  it('should render current application detail and offerer bank informations when both presents in props', () => {
+    // Given
+    props.venue = {
+      id: 'AA',
+      name: 'fake venue name',
+      bic: null,
+      iban: null,
+      demarchesSimplifieesApplicationId: '12',
+    }
+    props.offerer = {
+      id: 'BB',
+      name: 'fake offerer name',
+      bic: 'offererBic',
+      iban: 'offererIban',
+    }
+
+    // when
+    const wrapper = shallow(<BankInformation {...props} />)
+
+    // then
+    const bankInstructions = wrapper.find({
+      children: 'Votre dossier est en cours pour ce lieu',
+    })
+    const linkToDemarcheSimplifieeProcedure = wrapper.find('a')
+    expect(linkToDemarcheSimplifieeProcedure.prop('href')).toBe(
+      'https://www.demarches-simplifiees.fr/dossiers/12'
+    )
+    expect(bankInstructions).toHaveLength(1)
+    const expectedBic = wrapper.find({ children: 'offererBic' })
+    const expectedIban = wrapper.find({ children: 'offererIban' })
+    expect(expectedBic).toHaveLength(1)
+    expect(expectedIban).toHaveLength(1)
   })
 })

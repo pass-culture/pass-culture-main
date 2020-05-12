@@ -4,9 +4,14 @@ import React, { Fragment } from 'react'
 import Icon from '../../../../layout/Icon'
 
 const BankInformation = ({ venue, offerer }) => {
-  const venueBankInformation = venue.iban && venue.bic
-  const iban = venueBankInformation ? venue.iban : offerer.iban
-  const bic = venueBankInformation ? venue.bic : offerer.bic
+  const venueHasBankInformation = !!(venue.iban && venue.bic)
+
+  const iban = venueHasBankInformation ? venue.iban : offerer.iban
+  const bic = venueHasBankInformation ? venue.bic : offerer.bic
+
+  const displayBankInformations = !!(bic && iban)
+  const displayApplicationLink =
+    !venueHasBankInformation && !!venue.demarchesSimplifieesApplicationId
 
   return (
     <div className="section vp-content-section bank-information">
@@ -14,7 +19,7 @@ const BankInformation = ({ venue, offerer }) => {
         {'Coordonnées bancaires du lieu'}
       </h2>
 
-      {bic && iban ? (
+      {displayBankInformations && (
         <Fragment>
           <a
             className="bi-external-link bi-external-link--mod-topright"
@@ -50,7 +55,30 @@ const BankInformation = ({ venue, offerer }) => {
             </span>
           </div>
         </Fragment>
-      ) : (
+      )}
+      {displayApplicationLink && (
+        <div className="bi-banner">
+          <p>
+            {'Votre dossier est en cours pour ce lieu'}
+          </p>
+
+          <p>
+            <a
+              className="bi-external-link"
+              href={`https://www.demarches-simplifiees.fr/dossiers/${venue.demarchesSimplifieesApplicationId}`}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <Icon
+                alt=""
+                svg="ico-external-site"
+              />
+              {'Accéder au dossier'}
+            </a>
+          </p>
+        </div>
+      )}
+      {!displayBankInformations && !displayApplicationLink && (
         <Fragment>
           <p className="bi-subtitle">
             {'Aucune coordonnée bancaire renseignée'}
@@ -84,7 +112,7 @@ const BankInformation = ({ venue, offerer }) => {
 }
 
 BankInformation.defaultProps = {
-  venue: {}
+  venue: {},
 }
 BankInformation.propTypes = {
   offerer: PropTypes.shape().isRequired,
