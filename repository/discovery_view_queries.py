@@ -1,3 +1,4 @@
+from sqlalchemy.orm import Session
 from sqlalchemy_utils import refresh_materialized_view
 from typing import Callable
 
@@ -5,7 +6,7 @@ from models import DiscoveryView
 from models.db import db
 
 
-def order_by_score_and_digital_offers() -> str:
+def _order_by_score_and_digital_offers() -> str:
     return f"""
         ROW_NUMBER() OVER (
             ORDER BY
@@ -21,52 +22,14 @@ def order_by_score_and_digital_offers() -> str:
     """
 
 
-def create(session, order: Callable = order_by_score_and_digital_offers) -> None:
-    get_recommendable_offers_ordered_by_digital_offers = _create_function_get_recommendable_offers(session, order)
-
-    session.execute(f"""
-        CREATE MATERIALIZED VIEW IF NOT EXISTS {DiscoveryView.__tablename__} AS
-            SELECT
-                ROW_NUMBER() OVER ()                AS "offerDiscoveryOrder",
-                recommendable_offers.id             AS id,
-                recommendable_offers."venueId"      AS "venueId",
-                recommendable_offers.type           AS type,
-                recommendable_offers.name           AS name,
-                recommendable_offers.url            AS url,
-                recommendable_offers."isNational"   AS "isNational",
-                offer_mediation.id                  AS "mediationId"
-            FROM (SELECT * FROM {get_recommendable_offers_ordered_by_digital_offers}()) AS recommendable_offers
-            LEFT OUTER JOIN mediation AS offer_mediation ON recommendable_offers.id = offer_mediation."offerId"
-                AND offer_mediation."isActive"
-            ORDER BY recommendable_offers.partitioned_offers;
-    """)
-    session.execute(f"""
-        CREATE UNIQUE INDEX ON {DiscoveryView.__tablename__} ("offerDiscoveryOrder");
-    """)
+def create(session, order: Callable = _order_by_score_and_digital_offers) -> None:
+    _create_discovery_view(session, order, DiscoveryView.__tablename__)
     session.commit()
 
 
 def update(session, order: Callable) -> None:
-    get_recommendable_offers = _create_function_get_recommendable_offers(session, order)
-    session.execute(f"""
-            CREATE MATERIALIZED VIEW IF NOT EXISTS discovery_view_tmp AS
-                SELECT
-                    ROW_NUMBER() OVER ()                AS "offerDiscoveryOrder",
-                    recommendable_offers.id             AS id,
-                    recommendable_offers."venueId"      AS "venueId",
-                    recommendable_offers.type           AS type,
-                    recommendable_offers.name           AS name,
-                    recommendable_offers.url            AS url,
-                    recommendable_offers."isNational"   AS "isNational",
-                    offer_mediation.id                  AS "mediationId"
-                FROM (SELECT * FROM {get_recommendable_offers}()) AS recommendable_offers
-                LEFT OUTER JOIN mediation AS offer_mediation ON recommendable_offers.id = offer_mediation."offerId"
-                    AND offer_mediation."isActive"
-                ORDER BY recommendable_offers.partitioned_offers;
-        """)
-    session.execute(f"""
-            CREATE UNIQUE INDEX ON  discovery_view_tmp ("offerDiscoveryOrder");
-        """)
+    # Create temporary view to minimize downtime
+    _create_discovery_view(session, order, 'discovery_view_tmp')
 
     session.execute("""
             DROP MATERIALIZED VIEW discovery_view;
@@ -79,13 +42,40 @@ def update(session, order: Callable) -> None:
     session.commit()
 
 
-def _create_function_get_recommendable_offers(session, order: Callable,
-                                              postgres_function_name: str = 'get_recommendable_offers_ordered_by_score_and_digital_offers') -> str:
+def refresh(concurrently: bool = True) -> None:
+    refresh_materialized_view(db.session, DiscoveryView.__tablename__, concurrently)
+    db.session.commit()
+
+
+def _create_discovery_view(session: Session, order: Callable, name: str) -> None:
+    get_recommendable_offers = _create_function_get_recommendable_offers(session, order)
+    session.execute(f"""
+        CREATE MATERIALIZED VIEW IF NOT EXISTS {name} AS
+            SELECT
+                ROW_NUMBER() OVER ()                AS "offerDiscoveryOrder",
+                recommendable_offers.id             AS id,
+                recommendable_offers."venueId"      AS "venueId",
+                recommendable_offers.type           AS type,
+                recommendable_offers.name           AS name,
+                recommendable_offers.url            AS url,
+                recommendable_offers."isNational"   AS "isNational",
+                offer_mediation.id                  AS "mediationId"
+            FROM (SELECT * FROM {get_recommendable_offers}()) AS recommendable_offers
+            LEFT OUTER JOIN mediation AS offer_mediation ON recommendable_offers.id = offer_mediation."offerId"
+                AND offer_mediation."isActive"
+            ORDER BY recommendable_offers.partitioned_offers;
+    """)
+    session.execute(f"""
+        CREATE UNIQUE INDEX ON {name} ("offerDiscoveryOrder");
+    """)
+
+
+def _create_function_get_recommendable_offers(session, order: Callable) -> str:
     get_offer_score = _create_function_get_offer_score(session)
     get_active_offers_ids = _create_function_get_active_offers_ids(session)
 
     session.execute(f"""
-        CREATE OR REPLACE FUNCTION {postgres_function_name}()
+        CREATE OR REPLACE FUNCTION get_recommendable_offers_ordered()
         RETURNS TABLE (
             criterion_score BIGINT,
             id BIGINT,
@@ -114,7 +104,7 @@ def _create_function_get_recommendable_offers(session, order: Callable,
         $body$
         LANGUAGE plpgsql;
     """)
-    return postgres_function_name
+    return 'get_recommendable_offers_ordered'
 
 
 def _create_function_offer_has_at_least_one_bookable_stock(session) -> str:
@@ -234,8 +224,3 @@ def _create_function_get_offer_score(session) -> str:
         LANGUAGE plpgsql;
     """)
     return function_name
-
-
-def refresh(concurrently: bool = True) -> None:
-    refresh_materialized_view(db.session, DiscoveryView.__tablename__, concurrently)
-    db.session.commit()
