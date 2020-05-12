@@ -100,7 +100,7 @@
     }
   }
 
-    fetch("https://backend.passculture.beta.gouv.fr/health", { "mode": "cors" })
+    fetch("https://backend.passculture.beta.gouv.fr/health/api", { "mode": "cors" })
         .then(doRedirect)
         .catch(error => {
       console.log('API is unavailable')
