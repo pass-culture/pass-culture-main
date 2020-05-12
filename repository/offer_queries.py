@@ -97,7 +97,7 @@ def order_by_with_criteria_and_is_digital(end_of_quarantine_date: datetime) -> L
 def get_offers_for_recommendation(user: User,
                                   departement_codes: List[str] = None,
                                   limit: int = None,
-                                  seen_recommendation_ids: List[int] = []) -> List:
+                                  seen_recommendation_ids: List[int] = []) -> List[DiscoveryView]:
     favorite_ids = get_only_offer_ids_from_favorites(user)
 
     offer_booked_ids = get_only_offer_ids_from_bookings(user)

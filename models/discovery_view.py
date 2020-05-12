@@ -1,4 +1,5 @@
 from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
 
 from models.db import Model
 
@@ -10,7 +11,7 @@ class DiscoveryView(Model):
 
     mediationId = Column(BigInteger, ForeignKey('mediation.id'))
 
-    id = Column(BigInteger, primary_key=True)
+    id = Column(BigInteger, ForeignKey('offer.id'), primary_key=True)
 
     type = Column(String(50))
 
@@ -21,3 +22,6 @@ class DiscoveryView(Model):
     name = Column(String(140))
 
     isNational = Column(Boolean)
+
+    offer = relationship('Offer',
+                         foreign_keys=[id])

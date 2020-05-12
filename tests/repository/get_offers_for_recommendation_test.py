@@ -298,8 +298,8 @@ class GetOfferForRecommendationsTest:
             discovery_view_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation(departement_codes=['00'],
+            view_offers = get_offers_for_recommendation(departement_codes=['00'],
                                                    user=user)
 
             # Then
-            assert offers == [physical_offer, digital_offer]
+            assert [view_offer.offer for view_offer in view_offers] == [physical_offer, digital_offer]

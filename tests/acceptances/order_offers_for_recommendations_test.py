@@ -1,6 +1,7 @@
 from models.db import db
 from models.offer_type import ThingType
 from repository import repository, discovery_view_queries
+from repository.discovery_view_queries import _order_by_score_and_digital_offers
 from repository.offer_queries import get_offers_for_recommendation
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_criterion, \
@@ -124,8 +125,12 @@ def test_updating_offers_order_should_change_order_in_materialized_view():
     new_ordered_offers = get_offers_for_recommendation(departement_codes=['00'],
                                                        user=user)
 
-    # Check
+    # Then
     assert old_ordered_offers == [physical_offer_with_super_bonus, digital_offer_with_bonus, digital_offer, physical_offer,
                                   digital_offer_with_malus]
     assert new_ordered_offers == [digital_offer_with_bonus, digital_offer, digital_offer_with_malus,
                                   physical_offer_with_super_bonus, physical_offer]
+
+    # Restore default discovery view order
+    discovery_view_queries.update(db.session, _order_by_score_and_digital_offers)
+
