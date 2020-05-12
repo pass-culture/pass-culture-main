@@ -15,7 +15,7 @@ class Get:
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, name='L\'encre et la plume')
             bank_information = create_bank_information(bic='QSDFGH8Z555', iban='FR7630006000011234567890189',
-                                                       venue=venue)
+                                                       venue=venue, application_id=1234)
             repository.save(user_offerer, bank_information)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
@@ -27,6 +27,7 @@ class Get:
             response_json = response.json
             assert response_json['bic'] == 'QSDFGH8Z555'
             assert response_json['iban'] == 'FR7630006000011234567890189'
+            assert response_json['demarchesSimplifieesApplicationId'] == 1234
             assert 'validationToken' not in response_json
             assert 'validationToken' not in response_json['managingOfferer']
 

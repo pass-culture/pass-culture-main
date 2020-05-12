@@ -1,6 +1,7 @@
 import pytest
 
 from models import ApiErrors
+from models.bank_information import BankInformationStatus
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_bank_information
@@ -311,3 +312,33 @@ class VenueBankInformationTest:
 
         # Then
         assert iban is None
+
+    @clean_database
+    def test_demarchesSimplifieesApplicationId_returns_id_if_status_is_draft(self, app):
+        # Given
+        offerer = create_offerer(siren='123456789')
+        venue = create_venue(offerer, siret='12345678912345')
+        bank_information = create_bank_information(
+            id_at_providers='123456789', application_id=12345, venue=venue, status=BankInformationStatus.DRAFT, iban=None, bic=None)
+        repository.save(bank_information)
+
+        # When
+        field = venue.demarchesSimplifieesApplicationId
+
+        # Then
+        assert field == 12345
+
+    @clean_database
+    def test_demarchesSimplifieesApplicationId_returns_none_if_status_is_rejected(self, app):
+        # Given
+        offerer = create_offerer(siren='123456789')
+        venue = create_venue(offerer, siret='12345678912345')
+        bank_information = create_bank_information(
+            id_at_providers='123456789', venue=venue, status=BankInformationStatus.REJECTED, iban=None, bic=None)
+        repository.save(bank_information)
+
+        # When
+        field = venue.demarchesSimplifieesApplicationId
+
+        # Then
+        assert field is None
