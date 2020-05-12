@@ -1,6 +1,5 @@
 from collections import namedtuple
 
-from domain.booking.booking import Booking
 from domain.booking_recap.booking_recap import compute_booking_recap_status, BookingRecapStatus, \
     compute_booking_recap_token
 from models.payment_status import TransactionStatus
@@ -10,7 +9,7 @@ class ComputeBookingRecapStatusTest:
     class WhenBookingHasNoPaymentsTest:
         def test_should_return_booked_status_when_booking_is_not_cancelled_nor_used(self):
             # Given
-            booking = Booking()
+            booking = namedtuple("Booking", ["isUsed", "isCancelled", "paymentStatus"])
             booking.isUsed = False
             booking.isCancelled = False
             booking.paymentStatus = None
@@ -23,7 +22,7 @@ class ComputeBookingRecapStatusTest:
 
         def test_should_return_validated_status_when_booking_is_used_and_not_cancelled(self):
             # Given
-            booking = Booking()
+            booking = namedtuple("Booking", ["isUsed", "isCancelled", "paymentStatus"])
             booking.isUsed = True
             booking.isCancelled = False
             booking.paymentStatus = None
@@ -36,7 +35,7 @@ class ComputeBookingRecapStatusTest:
 
         def test_should_return_cancelled_status_when_booking_is_cancelled_but_not_used(self):
             # Given
-            booking = Booking()
+            booking = namedtuple("Booking", ["isUsed", "isCancelled", "paymentStatus"])
             booking.isUsed = False
             booking.isCancelled = True
             booking.paymentStatus = None
@@ -49,7 +48,7 @@ class ComputeBookingRecapStatusTest:
 
         def test_should_return_cancelled_status_when_booking_is_cancelled_and_used(self):
             # Given
-            booking = Booking()
+            booking = namedtuple("Booking", ["isUsed", "isCancelled", "paymentStatus"])
             booking.isUsed = True
             booking.isCancelled = True
             booking.paymentStatus = None
@@ -63,7 +62,7 @@ class ComputeBookingRecapStatusTest:
     class WhenBookingPaymentStatusIsNotSentTest:
         def test_should_return_cancelled_status_when_booking_is_cancelled_and_payment_status_is_pending(self):
             # Given
-            booking = Booking()
+            booking = namedtuple("Booking", ["isUsed", "isCancelled", "paymentStatus"])
             booking.isUsed = False
             booking.isCancelled = True
             booking.paymentStatus = TransactionStatus.PENDING
@@ -76,7 +75,7 @@ class ComputeBookingRecapStatusTest:
 
         def test_should_return_cancelled_status_when_booking_is_cancelled_and_payment_status_is_not_processable(self):
             # Given
-            booking = Booking()
+            booking = namedtuple("Booking", ["isUsed", "isCancelled", "paymentStatus"])
             booking.isUsed = False
             booking.isCancelled = True
             booking.paymentStatus = TransactionStatus.NOT_PROCESSABLE
@@ -89,7 +88,7 @@ class ComputeBookingRecapStatusTest:
 
         def test_should_return_cancelled_status_when_booking_is_cancelled_and_payment_status_is_error(self):
             # Given
-            booking = Booking()
+            booking = namedtuple("Booking", ["isUsed", "isCancelled", "paymentStatus"])
             booking.isUsed = False
             booking.isCancelled = True
             booking.paymentStatus = TransactionStatus.ERROR
@@ -102,7 +101,7 @@ class ComputeBookingRecapStatusTest:
 
         def test_should_return_cancelled_status_when_booking_is_cancelled_and_payment_status_is_retry(self):
             # Given
-            booking = Booking()
+            booking = namedtuple("Booking", ["isUsed", "isCancelled", "paymentStatus"])
             booking.isUsed = False
             booking.isCancelled = True
             booking.paymentStatus = TransactionStatus.RETRY
@@ -115,7 +114,7 @@ class ComputeBookingRecapStatusTest:
 
         def test_should_return_cancelled_status_when_booking_is_cancelled_and_payment_status_is_banned(self):
             # Given
-            booking = Booking()
+            booking = namedtuple("Booking", ["isUsed", "isCancelled", "paymentStatus"])
             booking.isUsed = False
             booking.isCancelled = True
             booking.paymentStatus = TransactionStatus.BANNED
@@ -129,7 +128,7 @@ class ComputeBookingRecapStatusTest:
     class WhenBookingPaymentStatusIsSentTest:
         def test_should_return_reimbursed_status_when_booking_is_not_cancelled_nor_used(self):
             # Given
-            booking = Booking()
+            booking = namedtuple("Booking", ["isUsed", "isCancelled", "paymentStatus"])
             booking.isUsed = False
             booking.isCancelled = False
             booking.paymentStatus = TransactionStatus.SENT
@@ -142,7 +141,7 @@ class ComputeBookingRecapStatusTest:
 
         def test_should_return_reimbursed_status_when_booking_is_used_and_not_cancelled(self):
             # Given
-            booking = Booking()
+            booking = namedtuple("Booking", ["isUsed", "isCancelled", "paymentStatus"])
             booking.isUsed = True
             booking.isCancelled = False
             booking.paymentStatus = TransactionStatus.SENT
@@ -155,7 +154,7 @@ class ComputeBookingRecapStatusTest:
 
         def test_should_return_reimbursed_status_when_booking_is_used_and_cancelled(self):
             # Given
-            booking = Booking()
+            booking = namedtuple("Booking", ["isUsed", "isCancelled", "paymentStatus"])
             booking.isUsed = True
             booking.isCancelled = True
             booking.paymentStatus = TransactionStatus.SENT
