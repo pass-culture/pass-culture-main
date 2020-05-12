@@ -1,8 +1,15 @@
-import { shallow } from 'enzyme'
+import { mount, shallow } from 'enzyme'
 import React from 'react'
 import Table from '../Table'
+import Paginate from '../Paginate/Paginate'
 
-describe('components | pages | bookings-v2 | table', () => {
+const CellMock = ({ offer: { offer_name: offerName } }) => (
+  <span>
+    {offerName}
+  </span>
+)
+
+describe('components | Table', () => {
   it('should display the correct given numbers of columns', () => {
     // Given
     const props = {
@@ -17,6 +24,7 @@ describe('components | pages | bookings-v2 | table', () => {
         },
       ],
       data: [{}],
+      nbHitsPerPage: 1
     }
 
     // When
@@ -66,6 +74,7 @@ describe('components | pages | bookings-v2 | table', () => {
           booking_token: 'ZEHBGD',
         },
       ],
+      nbHitsPerPage: 2
     }
 
     // When
@@ -74,5 +83,90 @@ describe('components | pages | bookings-v2 | table', () => {
     // Then
     const tableRows = table.find('tbody > tr')
     expect(tableRows).toHaveLength(2)
+  })
+
+  describe('pagination', () => {
+    it('should render a Paginate component with the right props', () => {
+      // Given
+      const props = {
+        columns: [
+          {
+            headerTitle: 'Stock',
+            accessor: 'stock',
+            // eslint-disable-next-line react/display-name, react/no-multi-comp
+            Cell: ({ value }) => <CellMock offer={value} />
+          }
+        ],
+        data: [
+          { stock: { offer_name: 'Avez-vous déjà vu' } },
+          { stock: { offer_name: 'Avez-vous déjà vu' } },
+          { stock: { offer_name: 'Avez-vous déjà vu' } },
+          { stock: { offer_name: 'Avez-vous déjà vu' } },
+          { stock: { offer_name: 'Avez-vous déjà vu' } },
+          { stock: { offer_name: 'Avez-vous déjà vu' } }
+        ],
+        nbHitsPerPage: 5
+      }
+
+      // When
+      const wrapper = mount(<Table {...props} />)
+
+      // Then
+      const paginate = wrapper.find(Paginate)
+      expect(paginate).toHaveLength(1)
+      expect(paginate.props()).toStrictEqual({
+        canNextPage: true,
+        canPreviousPage: false,
+        currentPage: 1,
+        nbPages: 2,
+        nextPage: expect.any(Function),
+        previousPage: expect.any(Function)
+      })
+    })
+
+    it('should render five bookings on page 1 & one booking on page 2 when clicking on next page',  () => {
+      // Given
+      const props = {
+        columns: [
+          {
+            headerTitle: 'Stock',
+            accessor: 'stock',
+            // eslint-disable-next-line react/display-name, react/no-multi-comp
+            Cell: ({ value }) => <CellMock offer={value} />
+          }
+        ],
+        data: [
+          { stock: {offer_name: 'Avez-vous déjà vu 1'} },
+          { stock: {offer_name: 'Avez-vous déjà vu 2'} },
+          { stock: {offer_name: 'Avez-vous déjà vu 3'} },
+          { stock: {offer_name: 'Avez-vous déjà vu 4'} },
+          { stock: {offer_name: 'Avez-vous déjà vu 5'} },
+          { stock: {offer_name: 'Avez-vous déjà vu 6'} }
+        ],
+        nbHitsPerPage: 5
+      }
+
+      // When
+      const wrapper = mount(<Table {...props} />)
+
+      // Then
+      const paginate = wrapper.find(Paginate)
+      const bookingsOnPageOne = wrapper.find('tbody').find('tr')
+      expect(bookingsOnPageOne.at(0).text()).toBe('Avez-vous déjà vu 1')
+      expect(bookingsOnPageOne.at(1).text()).toBe('Avez-vous déjà vu 2')
+      expect(bookingsOnPageOne.at(2).text()).toBe('Avez-vous déjà vu 3')
+      expect(bookingsOnPageOne.at(3).text()).toBe('Avez-vous déjà vu 4')
+      expect(bookingsOnPageOne.at(4).text()).toBe('Avez-vous déjà vu 5')
+      expect(bookingsOnPageOne).toHaveLength(5)
+
+      // When
+      const nextPageButton = paginate.find('button')
+      nextPageButton.simulate('click')
+
+      // Then
+      const bookingsOnPageTwo = wrapper.find('tbody').find('tr')
+      expect(bookingsOnPageTwo).toHaveLength(1)
+      expect(bookingsOnPageTwo.at(0).text()).toBe('Avez-vous déjà vu 6')
+    })
   })
 })

@@ -6,7 +6,10 @@ import BookingStatusCell from './CellsFormatter/BookingsStatusCell'
 import BookingTokenCell from './CellsFormatter/BookingsTokenCell'
 import Table from './Table/Table'
 import BookingOfferCell from './CellsFormatter/BookingOfferCell'
+import Header from './Header/Header'
 import IsDuoCell from './CellsFormatter/IsDuoCell'
+
+export const NB_HITS_PER_PAGE = 2
 
 class BookingsRecapTable extends Component {
   constructor(props) {
@@ -14,7 +17,7 @@ class BookingsRecapTable extends Component {
     this.state = {
       columns: [
         {
-          headerTitle: "Nom de l'offre",
+          headerTitle: 'Nom de l\'offre',
           accessor: 'stock',
           Cell: ({ value }) => <BookingOfferCell offer={value} />,
         },
@@ -58,16 +61,20 @@ class BookingsRecapTable extends Component {
     const { columns } = this.state
 
     return (
-      <Table
-        columns={columns}
-        data={bookingsRecap}
-      />
+      <div>
+        <Header nbBookings={bookingsRecap.length} />
+        <Table
+          columns={columns}
+          data={bookingsRecap}
+          nbHitsPerPage={NB_HITS_PER_PAGE}
+        />
+      </div>
     )
   }
 }
 
 BookingsRecapTable.propTypes = {
-  bookingsRecap: PropTypes.shape({}).isRequired,
+  bookingsRecap: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 }
 
 export default BookingsRecapTable

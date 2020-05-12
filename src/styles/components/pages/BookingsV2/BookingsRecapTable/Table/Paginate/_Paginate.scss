@@ -1,13 +1,21 @@
-.pagination {
-  margin: rem(24px);
+.paginate-wrapper {
+  align-items: center;
+  justify-content: center;
   color: $black;
+  display: flex;
   font-weight: $weight-medium;
-  font-size: rem(14px);
+  height: 100%;
 
   button {
     border: none;
+    cursor:pointer;
+    display: flex;
+    align-items: center;
   }
-  button:hover {
-    cursor: pointer;
+
+  span {
+    font-size: rem(14px);
+    margin: 0 rem(16px);
+    height: inherit;
   }
 }

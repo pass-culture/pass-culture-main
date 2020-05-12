@@ -9,7 +9,7 @@ const Paginate = ({ canNextPage,
                     nbPages,
                     nextPage
 }) => (
-  <div className='pagination'>
+  <div className='paginate-wrapper'>
     {canPreviousPage && (
       <button
         onClick={previousPage}
