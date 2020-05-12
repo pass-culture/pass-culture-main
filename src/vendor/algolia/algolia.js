@@ -1,21 +1,14 @@
 import algoliasearch from 'algoliasearch'
 import { DATE_FILTER } from '../../components/pages/search/Filters/filtersEnums'
 import {
+  computeTimeRangeFromHoursToSeconds,
+  TIMESTAMP,
+} from '../../components/pages/search/utils/date/time'
+import {
   ALGOLIA_APPLICATION_ID,
   ALGOLIA_INDEX_NAME,
   ALGOLIA_SEARCH_API_KEY,
 } from '../../utils/config'
-import {
-  computeTimeRangeFromHoursToSeconds,
-  getBeginningAndEndingTimestampsForGivenTimeRange,
-  getFirstTimestampForGivenDate,
-  getFirstTimestampOfTheWeekEndForGivenDate,
-  getLastTimestampForGivenDate,
-  getLastTimestampOfTheWeekForGivenDate,
-  getTimestampFromDate,
-  getTimestampsOfTheWeekEndIncludingTimeRange,
-  getTimestampsOfTheWeekIncludingTimeRange,
-} from '../../utils/date/date'
 import { FACETS } from './facets'
 import { DEFAULT_RADIUS_IN_KILOMETERS, FILTERS, RADIUS_IN_METERS_FOR_NO_OFFERS } from './filters'
 
@@ -115,7 +108,7 @@ const buildOfferPriceRangePredicate = (offerIsFree, offerPriceRange) => {
   }
 }
 
-function buildTimeOnlyPredicate(timeRange) {
+const buildTimeOnlyPredicate = timeRange => {
   const timeRangeInSeconds = computeTimeRangeFromHoursToSeconds(timeRange)
   return `${FACETS.OFFER_TIME}: ${timeRangeInSeconds.join(' TO ')}`
 }
@@ -137,22 +130,19 @@ const buildDateAndTimePredicate = (date, timeRange) => {
   let dateFilter, rangeTimestamps
   switch (date.option) {
     case DATE_FILTER.CURRENT_WEEK.value:
-      dateFilter = getTimestampsOfTheWeekIncludingTimeRange(date.selectedDate, timeRange).map(
+      dateFilter = TIMESTAMP.WEEK.getAllFromTimeRangeAndDate(date.selectedDate, timeRange).map(
         timestampsRangeForADay =>
           getDatePredicate(timestampsRangeForADay[0], timestampsRangeForADay[1])
       )
       break
     case DATE_FILTER.CURRENT_WEEK_END.value:
-      dateFilter = getTimestampsOfTheWeekEndIncludingTimeRange(date.selectedDate, timeRange).map(
+      dateFilter = TIMESTAMP.WEEK_END.getAllFromTimeRangeAndDate(date.selectedDate, timeRange).map(
         timestampsRangeForADay =>
           getDatePredicate(timestampsRangeForADay[0], timestampsRangeForADay[1])
       )
       break
     default:
-      rangeTimestamps = getBeginningAndEndingTimestampsForGivenTimeRange(
-        date.selectedDate,
-        timeRange
-      )
+      rangeTimestamps = TIMESTAMP.getAllFromTimeRangeAndDate(date.selectedDate, timeRange)
       dateFilter = getDatePredicate(rangeTimestamps[0], rangeTimestamps[1])
   }
   return dateFilter
@@ -162,20 +152,20 @@ const buildDateOnlyPredicate = date => {
   let beginningDate, endingDate
   switch (date.option) {
     case DATE_FILTER.TODAY.value:
-      beginningDate = getTimestampFromDate(date.selectedDate)
-      endingDate = getLastTimestampForGivenDate(date.selectedDate)
+      beginningDate = TIMESTAMP.getFromDate(date.selectedDate)
+      endingDate = TIMESTAMP.getLastOfDate(date.selectedDate)
       break
     case DATE_FILTER.CURRENT_WEEK.value:
-      beginningDate = getTimestampFromDate(date.selectedDate)
-      endingDate = getLastTimestampOfTheWeekForGivenDate(date.selectedDate)
+      beginningDate = TIMESTAMP.getFromDate(date.selectedDate)
+      endingDate = TIMESTAMP.WEEK.getLastFromDate(date.selectedDate)
       break
     case DATE_FILTER.CURRENT_WEEK_END.value:
-      beginningDate = getFirstTimestampOfTheWeekEndForGivenDate(date.selectedDate)
-      endingDate = getLastTimestampOfTheWeekForGivenDate(date.selectedDate)
+      beginningDate = TIMESTAMP.WEEK_END.getFirstFromDate(date.selectedDate)
+      endingDate = TIMESTAMP.WEEK.getLastFromDate(date.selectedDate)
       break
     case DATE_FILTER.USER_PICK.value:
-      beginningDate = getFirstTimestampForGivenDate(date.selectedDate)
-      endingDate = getLastTimestampForGivenDate(date.selectedDate)
+      beginningDate = TIMESTAMP.getFirstOfDate(date.selectedDate)
+      endingDate = TIMESTAMP.getLastOfDate(date.selectedDate)
       break
   }
   return getDatePredicate(beginningDate, endingDate)
@@ -185,8 +175,8 @@ const buildNewestOffersPredicate = offerIsNew => {
   if (offerIsNew) {
     const now = new Date()
     const fifteenDaysBeforeNow = new Date().setDate(now.getDate() - 15)
-    const beginningDate = getTimestampFromDate(new Date(fifteenDaysBeforeNow))
-    const endingDate = getTimestampFromDate(now)
+    const beginningDate = TIMESTAMP.getFromDate(new Date(fifteenDaysBeforeNow))
+    const endingDate = TIMESTAMP.getFromDate(now)
 
     return `${FACETS.OFFER_STOCKS_DATE_CREATED}: ${beginningDate} TO ${endingDate}`
   }

@@ -1,20 +1,13 @@
 import algoliasearch from 'algoliasearch'
 import {
+  computeTimeRangeFromHoursToSeconds,
+  TIMESTAMP,
+} from '../../../components/pages/search/utils/date/time'
+import {
   ALGOLIA_APPLICATION_ID,
   ALGOLIA_INDEX_NAME,
   ALGOLIA_SEARCH_API_KEY,
 } from '../../../utils/config'
-import {
-  computeTimeRangeFromHoursToSeconds,
-  getBeginningAndEndingTimestampsForGivenTimeRange,
-  getFirstTimestampForGivenDate,
-  getFirstTimestampOfTheWeekEndForGivenDate,
-  getLastTimestampForGivenDate,
-  getLastTimestampOfTheWeekForGivenDate,
-  getTimestampFromDate,
-  getTimestampsOfTheWeekEndIncludingTimeRange,
-  getTimestampsOfTheWeekIncludingTimeRange,
-} from '../../../utils/date/date'
 import { fetchAlgolia } from '../algolia'
 
 jest.mock('algoliasearch')
@@ -23,15 +16,21 @@ jest.mock('../../../utils/config', () => ({
   ALGOLIA_INDEX_NAME: 'indexName',
   ALGOLIA_SEARCH_API_KEY: 'apiKey',
 }))
-jest.mock('../../../utils/date/date', () => ({
-  getLastTimestampForGivenDate: jest.fn(),
-  getLastTimestampOfTheWeekForGivenDate: jest.fn(),
-  getTimestampFromDate: jest.fn(),
-  getFirstTimestampOfTheWeekEndForGivenDate: jest.fn(),
-  getFirstTimestampForGivenDate: jest.fn(),
-  getTimestampsOfTheWeekIncludingTimeRange: jest.fn(),
-  getTimestampsOfTheWeekEndIncludingTimeRange: jest.fn(),
-  getBeginningAndEndingTimestampsForGivenTimeRange: jest.fn(),
+jest.mock('../../../components/pages/search/utils/date/time', () => ({
+  TIMESTAMP: {
+    getLastOfDate: jest.fn(),
+    getFromDate: jest.fn(),
+    getFirstOfDate: jest.fn(),
+    getAllFromTimeRangeAndDate: jest.fn(),
+    WEEK_END: {
+      getFirstFromDate: jest.fn(),
+      getAllFromTimeRangeAndDate: jest.fn(),
+    },
+    WEEK: {
+      getLastFromDate: jest.fn(),
+      getAllFromTimeRangeAndDate: jest.fn(),
+    },
+  },
   computeTimeRangeFromHoursToSeconds: jest.fn(),
 }))
 
@@ -571,9 +570,7 @@ describe('fetchAlgolia', () => {
 
     it('should fetch with numericFilters when offerIsNew is true', () => {
       // given
-      getTimestampFromDate
-        .mockReturnValueOnce(1588762412)
-        .mockReturnValueOnce(1589453612)
+      TIMESTAMP.getFromDate.mockReturnValueOnce(1588762412).mockReturnValueOnce(1589453612)
       const keywords = 'searched keywords'
       const offerIsNew = true
 
@@ -585,7 +582,7 @@ describe('fetchAlgolia', () => {
 
       // then
       expect(search).toHaveBeenCalledWith(keywords, {
-        numericFilters: ["offer.stocksDateCreated: 1588762412 TO 1589453612"],
+        numericFilters: ['offer.stocksDateCreated: 1588762412 TO 1589453612'],
         page: 0,
       })
     })
@@ -658,8 +655,8 @@ describe('fetchAlgolia', () => {
         // Given
         const keywords = 'search keywords'
         const selectedDate = new Date(2020, 3, 19, 11)
-        getTimestampFromDate.mockReturnValue(123456789)
-        getLastTimestampForGivenDate.mockReturnValue(987654321)
+        TIMESTAMP.getFromDate.mockReturnValue(123456789)
+        TIMESTAMP.getLastOfDate.mockReturnValue(987654321)
 
         // When
         fetchAlgolia({
@@ -671,8 +668,8 @@ describe('fetchAlgolia', () => {
         })
 
         // Then
-        expect(getTimestampFromDate).toHaveBeenCalledWith(selectedDate)
-        expect(getLastTimestampForGivenDate).toHaveBeenCalledWith(selectedDate)
+        expect(TIMESTAMP.getFromDate).toHaveBeenCalledWith(selectedDate)
+        expect(TIMESTAMP.getLastOfDate).toHaveBeenCalledWith(selectedDate)
         expect(search).toHaveBeenCalledWith(keywords, {
           numericFilters: [`offer.dates: 123456789 TO 987654321`],
           page: 0,
@@ -683,8 +680,8 @@ describe('fetchAlgolia', () => {
         // Given
         const keywords = ''
         const selectedDate = new Date(2020, 3, 19, 11)
-        getTimestampFromDate.mockReturnValue(123456789)
-        getLastTimestampOfTheWeekForGivenDate.mockReturnValue(987654321)
+        TIMESTAMP.getFromDate.mockReturnValue(123456789)
+        TIMESTAMP.WEEK.getLastFromDate.mockReturnValue(987654321)
 
         // When
         fetchAlgolia({
@@ -696,8 +693,8 @@ describe('fetchAlgolia', () => {
         })
 
         // Then
-        expect(getTimestampFromDate).toHaveBeenCalledWith(selectedDate)
-        expect(getLastTimestampOfTheWeekForGivenDate).toHaveBeenCalledWith(selectedDate)
+        expect(TIMESTAMP.getFromDate).toHaveBeenCalledWith(selectedDate)
+        expect(TIMESTAMP.WEEK.getLastFromDate).toHaveBeenCalledWith(selectedDate)
         expect(search).toHaveBeenCalledWith(keywords, {
           numericFilters: [`offer.dates: 123456789 TO 987654321`],
           page: 0,
@@ -708,8 +705,8 @@ describe('fetchAlgolia', () => {
         // Given
         const keywords = ''
         const selectedDate = new Date(2020, 3, 19, 11)
-        getFirstTimestampOfTheWeekEndForGivenDate.mockReturnValue(123456789)
-        getLastTimestampOfTheWeekForGivenDate.mockReturnValue(987654321)
+        TIMESTAMP.WEEK_END.getFirstFromDate.mockReturnValue(123456789)
+        TIMESTAMP.WEEK.getLastFromDate.mockReturnValue(987654321)
 
         // When
         fetchAlgolia({
@@ -721,8 +718,8 @@ describe('fetchAlgolia', () => {
         })
 
         // Then
-        expect(getFirstTimestampOfTheWeekEndForGivenDate).toHaveBeenCalledWith(selectedDate)
-        expect(getLastTimestampOfTheWeekForGivenDate).toHaveBeenCalledWith(selectedDate)
+        expect(TIMESTAMP.WEEK_END.getFirstFromDate).toHaveBeenCalledWith(selectedDate)
+        expect(TIMESTAMP.WEEK.getLastFromDate).toHaveBeenCalledWith(selectedDate)
         expect(search).toHaveBeenCalledWith(keywords, {
           numericFilters: [`offer.dates: 123456789 TO 987654321`],
           page: 0,
@@ -733,8 +730,8 @@ describe('fetchAlgolia', () => {
         // Given
         const keywords = ''
         const selectedDate = new Date(2020, 3, 19, 11)
-        getFirstTimestampForGivenDate.mockReturnValue(123456789)
-        getLastTimestampForGivenDate.mockReturnValue(987654321)
+        TIMESTAMP.getFirstOfDate.mockReturnValue(123456789)
+        TIMESTAMP.getLastOfDate.mockReturnValue(987654321)
 
         // When
         fetchAlgolia({
@@ -746,8 +743,8 @@ describe('fetchAlgolia', () => {
         })
 
         // Then
-        expect(getFirstTimestampForGivenDate).toHaveBeenCalledWith(selectedDate)
-        expect(getLastTimestampForGivenDate).toHaveBeenCalledWith(selectedDate)
+        expect(TIMESTAMP.getFirstOfDate).toHaveBeenCalledWith(selectedDate)
+        expect(TIMESTAMP.getLastOfDate).toHaveBeenCalledWith(selectedDate)
         expect(search).toHaveBeenCalledWith(keywords, {
           numericFilters: [`offer.dates: 123456789 TO 987654321`],
           page: 0,
@@ -779,7 +776,7 @@ describe('fetchAlgolia', () => {
         const keywords = ''
         const selectedDate = new Date(2020, 3, 19, 11)
         const timeRange = [18, 22]
-        getBeginningAndEndingTimestampsForGivenTimeRange.mockReturnValue([123, 124])
+        TIMESTAMP.getAllFromTimeRangeAndDate.mockReturnValue([123, 124])
 
         // When
         fetchAlgolia({
@@ -792,10 +789,7 @@ describe('fetchAlgolia', () => {
         })
 
         // Then
-        expect(getBeginningAndEndingTimestampsForGivenTimeRange).toHaveBeenCalledWith(
-          selectedDate,
-          timeRange
-        )
+        expect(TIMESTAMP.getAllFromTimeRangeAndDate).toHaveBeenCalledWith(selectedDate, timeRange)
         expect(search).toHaveBeenCalledWith(keywords, {
           numericFilters: [`offer.dates: 123 TO 124`],
           page: 0,
@@ -807,7 +801,7 @@ describe('fetchAlgolia', () => {
         const keywords = ''
         const selectedDate = new Date(2020, 3, 19, 11)
         const timeRange = [18, 22]
-        getTimestampsOfTheWeekIncludingTimeRange.mockReturnValue([
+        TIMESTAMP.WEEK.getAllFromTimeRangeAndDate.mockReturnValue([
           [123, 124],
           [225, 226],
           [327, 328],
@@ -824,7 +818,7 @@ describe('fetchAlgolia', () => {
         })
 
         // Then
-        expect(getTimestampsOfTheWeekIncludingTimeRange).toHaveBeenCalledWith(
+        expect(TIMESTAMP.WEEK.getAllFromTimeRangeAndDate).toHaveBeenCalledWith(
           selectedDate,
           timeRange
         )
@@ -841,7 +835,7 @@ describe('fetchAlgolia', () => {
         const keywords = ''
         const selectedDate = new Date(2020, 3, 19, 11)
         const timeRange = [18, 22]
-        getTimestampsOfTheWeekEndIncludingTimeRange.mockReturnValue([[123, 124], [225, 226]])
+        TIMESTAMP.WEEK_END.getAllFromTimeRangeAndDate.mockReturnValue([[123, 124], [225, 226]])
 
         // When
         fetchAlgolia({
@@ -854,7 +848,7 @@ describe('fetchAlgolia', () => {
         })
 
         // Then
-        expect(getTimestampsOfTheWeekEndIncludingTimeRange).toHaveBeenCalledWith(
+        expect(TIMESTAMP.WEEK_END.getAllFromTimeRangeAndDate).toHaveBeenCalledWith(
           selectedDate,
           timeRange
         )
@@ -869,7 +863,7 @@ describe('fetchAlgolia', () => {
         const keywords = ''
         const selectedDate = new Date(2020, 3, 19, 11)
         const timeRange = [18, 22]
-        getBeginningAndEndingTimestampsForGivenTimeRange.mockReturnValue([123, 124])
+        TIMESTAMP.getAllFromTimeRangeAndDate.mockReturnValue([123, 124])
 
         // When
         fetchAlgolia({
@@ -882,10 +876,7 @@ describe('fetchAlgolia', () => {
         })
 
         // Then
-        expect(getBeginningAndEndingTimestampsForGivenTimeRange).toHaveBeenCalledWith(
-          selectedDate,
-          timeRange
-        )
+        expect(TIMESTAMP.getAllFromTimeRangeAndDate).toHaveBeenCalledWith(selectedDate, timeRange)
         expect(search).toHaveBeenCalledWith(keywords, {
           numericFilters: [`offer.dates: 123 TO 124`],
           page: 0,
@@ -897,8 +888,8 @@ describe('fetchAlgolia', () => {
   describe('multiple parameters', () => {
     it('should fetch with price and date numericFilters', () => {
       // Given
-      getFirstTimestampForGivenDate.mockReturnValue(123456789)
-      getLastTimestampForGivenDate.mockReturnValue(987654321)
+      TIMESTAMP.getFirstOfDate.mockReturnValue(123456789)
+      TIMESTAMP.getLastOfDate.mockReturnValue(987654321)
       const keywords = ''
       const isFree = true
       const selectedDate = new Date(2020, 3, 19, 11)
@@ -941,7 +932,7 @@ describe('fetchAlgolia', () => {
 
     it('should fetch with price, date and time numericFilters', () => {
       // Given
-      getTimestampsOfTheWeekEndIncludingTimeRange.mockReturnValue([
+      TIMESTAMP.WEEK_END.getAllFromTimeRangeAndDate.mockReturnValue([
         [123456789, 987654321],
         [123, 1234],
       ])
