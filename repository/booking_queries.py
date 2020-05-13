@@ -5,7 +5,7 @@ from typing import List, Set, Union
 from sqlalchemy import func
 from sqlalchemy.orm import Query
 
-from domain.booking_recap.booking_recap import BookingRecap, compute_booking_recap_status, compute_booking_recap_token
+from domain.booking_recap.booking_recap import BookingRecap, compute_booking_recap_status, compute_booking_recap_token, EventBookingRecap
 from models import UserOfferer
 from models.api_errors import ResourceNotFoundError
 from models.booking_sql_entity import BookingSQLEntity
@@ -189,17 +189,18 @@ def find_by_pro_user_id(user_id: int) -> List[BookingRecap]:
         .filter(UserOfferer.userId == user_id) \
         .filter(UserOfferer.validationToken == None) \
         .with_entities(
-            BookingSQLEntity.token.label("bookingToken"),
             Offer.name.label("offerName"),
+            Offer.type.label("offerType"),
             UserSQLEntity.firstName.label("beneficiaryFirstname"),
             UserSQLEntity.lastName.label("beneficiaryLastname"),
             UserSQLEntity.email.label("beneficiaryEmail"),
+            BookingSQLEntity.token.label("bookingToken"),
             BookingSQLEntity.dateCreated.label("bookingDate"),
             BookingSQLEntity.isCancelled.label("isCancelled"),
             BookingSQLEntity.isUsed.label("isUsed"),
             BookingSQLEntity.quantity.label("quantity"),
             Payment.currentStatus.label("paymentStatus"),
-            Offer.type.label("offerType"),
+            StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
     ).all()
 
     return _bookings_sql_entities_to_bookings_recap(bookings)
@@ -214,7 +215,18 @@ def _bookings_sql_entities_to_bookings_recap(bookings: List[BookingSQLEntity]) -
 
 
 def _serialize_booking_recap(booking: object) -> BookingRecap:
-    return BookingRecap(
+    return EventBookingRecap(
+        offer_name=booking.offerName,
+        offer_type=booking.offerType,
+        beneficiary_email=booking.beneficiaryEmail,
+        beneficiary_firstname=booking.beneficiaryFirstname,
+        beneficiary_lastname=booking.beneficiaryLastname,
+        booking_token=booking.bookingToken,
+        booking_date=booking.bookingDate,
+        booking_status=compute_booking_recap_status(booking),
+        booking_is_duo=booking.quantity == DUO_QUANTITY,
+        event_beginning_datetime=booking.stockBeginningDatetime,
+    ) if booking.stockBeginningDatetime is not None else BookingRecap(
         offer_name=booking.offerName,
         offer_type=booking.offerType,
         beneficiary_email=booking.beneficiaryEmail,

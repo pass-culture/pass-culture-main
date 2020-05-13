@@ -4,7 +4,7 @@ from decimal import Decimal
 import pytest
 from freezegun import freeze_time
 
-from domain.booking_recap.booking_recap import BookingRecapStatus
+from domain.booking_recap.booking_recap import BookingRecapStatus, EventBookingRecap, BookingRecap
 from models import BookingSQLEntity, EventType, ThingType
 from models.api_errors import ApiErrors, ResourceNotFoundError
 from models.payment_status import TransactionStatus
@@ -1683,9 +1683,8 @@ class FindByProUserIdTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, thing_name='Harry Potter')
-        stock = create_stock(offer=offer, price=0)
-        yesterday = datetime.utcnow()
+        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=0, name='Harry Potter')
+        yesterday = datetime.utcnow() - timedelta(days=1)
         booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF', is_used=True)
         repository.save(user_offerer, booking)
 
@@ -1734,9 +1733,8 @@ class FindByProUserIdTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, thing_name='Harry Potter')
-        stock = create_stock(offer=offer, price=0)
-        yesterday = datetime.utcnow()
+        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=0, name='Harry Potter')
+        yesterday = datetime.utcnow() - timedelta(days=1)
         booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF', is_used=True)
         payment = create_payment(booking=booking, offerer=offerer, status=TransactionStatus.SENT)
         repository.save(user_offerer, payment)
@@ -1747,6 +1745,7 @@ class FindByProUserIdTest:
         # Then
         assert len(bookings_recap) == 1
         expected_booking_recap = bookings_recap[0]
+        assert not isinstance(expected_booking_recap, EventBookingRecap)
         assert expected_booking_recap.offer_name == 'Harry Potter'
         assert expected_booking_recap.beneficiary_firstname == 'Ron'
         assert expected_booking_recap.beneficiary_lastname == 'Weasley'
@@ -1754,6 +1753,36 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_date == yesterday
         assert expected_booking_recap.booking_token == 'ABCDEF'
         assert expected_booking_recap.booking_status == BookingRecapStatus.reimbursed
+
+    @clean_database
+    def test_should_return_event_booking_when_booking_is_on_an_event(self, app):
+        # Given
+        beneficiary = create_user(email='beneficiary@example.com',
+                                  first_name='Ron', last_name='Weasley')
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF')
+        repository.save(user_offerer, booking)
+
+        # When
+        bookings_recap = find_by_pro_user_id(user.id)
+
+        # Then
+        assert len(bookings_recap) == 1
+        expected_booking_recap = bookings_recap[0]
+        assert isinstance(expected_booking_recap, EventBookingRecap)
+        assert expected_booking_recap.offer_name == stock.offer.name
+        assert expected_booking_recap.beneficiary_firstname == 'Ron'
+        assert expected_booking_recap.beneficiary_lastname == 'Weasley'
+        assert expected_booking_recap.beneficiary_email == 'beneficiary@example.com'
+        assert expected_booking_recap.booking_date == yesterday
+        assert expected_booking_recap.booking_token == 'ABCDEF'
+        assert expected_booking_recap.booking_status == BookingRecapStatus.booked
+        assert expected_booking_recap.event_beginning_datetime == stock.beginningDatetime
 
     @clean_database
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app):

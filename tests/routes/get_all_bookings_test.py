@@ -52,6 +52,7 @@ class GetTest:
             expected_bookings_recap = [
                 {
                     'stock': {
+                        'type': 'thing',
                         'offer_name': 'Test Book'
                     },
                     'beneficiary': {

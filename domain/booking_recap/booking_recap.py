@@ -36,6 +36,12 @@ class BookingRecap:
         self.booking_is_duo = booking_is_duo
 
 
+class EventBookingRecap(BookingRecap):
+    def __init__(self, event_beginning_datetime: datetime, **kwargs):
+        super().__init__(**kwargs)
+        self.event_beginning_datetime = event_beginning_datetime
+
+
 def compute_booking_recap_status(booking: object) -> BookingRecapStatus:
     if booking.paymentStatus == TransactionStatus.SENT:
         return BookingRecapStatus.reimbursed
