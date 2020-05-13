@@ -132,14 +132,12 @@ class Patch:
             assert updated_stock.price == 20
 
         @clean_database
-        @patch('routes.stocks.have_beginning_date_been_modified')
         @patch('routes.stocks.send_raw_email')
         @patch('routes.stocks.find_not_cancelled_bookings_by_stock')
         @freeze_time('2020-10-15 09:20:00')
         def when_stock_changes_date_and_should_send_email_to_users_with_correct_info(self,
                                                                                      find_not_cancelled_bookings_by_stock,
                                                                                      email_function,
-                                                                                     mocked_check_have_beginning_date_been_modified,
                                                                                      app):
             # Given
             event_date = datetime.utcnow() + timedelta(days=1)
@@ -151,7 +149,6 @@ class Patch:
                                                   booking_limit_datetime=event_date)
             booking = create_booking(user=user, stock=stock)
             repository.save(booking, admin)
-            mocked_check_have_beginning_date_been_modified.return_value = True
             find_not_cancelled_bookings_by_stock.return_value = [booking]
             serialized_date = serialize(stock.beginningDatetime + timedelta(days=1) + timedelta(hours=3))
 
@@ -161,7 +158,6 @@ class Patch:
 
             # Then
             assert request_update.status_code == 200
-            mocked_check_have_beginning_date_been_modified.assert_called_once()
             assert email_function.call_count == 1
             data_email = email_function.call_args[1]
             assert data_email['data']['Vars']['event_date'] == 'samedi 17 octobre 2020'

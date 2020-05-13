@@ -29,10 +29,10 @@ def delete_stock_and_cancel_bookings(stock: Stock) -> List[Booking]:
     return unused_bookings
 
 
-def have_beginning_date_been_modified(request_data: Dict, stock: Stock) -> bool:
+def have_beginning_date_been_modified(request_data: Dict, stock_beginning_date: datetime) -> bool:
     if 'beginningDatetime' in request_data:
         new_date = _deserialize_datetime(request_data['beginningDatetime'])
-        if new_date != stock.beginningDatetime:
+        if new_date != stock_beginning_date:
             return True
     return False
 

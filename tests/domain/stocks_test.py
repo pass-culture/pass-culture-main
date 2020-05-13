@@ -138,7 +138,7 @@ class CheckDateHaveBeenModifiedTest:
         }
 
         # When
-        check_date = have_beginning_date_been_modified(request_data, self.stock)
+        check_date = have_beginning_date_been_modified(request_data, self.stock.beginningDatetime)
 
         # Then
         assert check_date is True
@@ -150,7 +150,7 @@ class CheckDateHaveBeenModifiedTest:
         }
 
         # When
-        check_date = have_beginning_date_been_modified(request_data, self.stock)
+        check_date = have_beginning_date_been_modified(request_data, self.stock.beginningDatetime)
 
         # Then
         assert check_date is True
@@ -162,7 +162,7 @@ class CheckDateHaveBeenModifiedTest:
         }
 
         # When
-        check_date = have_beginning_date_been_modified(request_data, self.stock)
+        check_date = have_beginning_date_been_modified(request_data, self.stock.beginningDatetime)
 
         # Then
         assert check_date is True
@@ -174,7 +174,7 @@ class CheckDateHaveBeenModifiedTest:
         }
 
         # When
-        check_date = have_beginning_date_been_modified(request_data, self.stock)
+        check_date = have_beginning_date_been_modified(request_data, self.stock.beginningDatetime)
 
         # Then
         assert check_date is False
@@ -186,7 +186,7 @@ class CheckDateHaveBeenModifiedTest:
         }
 
         # When
-        check_date = have_beginning_date_been_modified(request_data, self.stock)
+        check_date = have_beginning_date_been_modified(request_data, self.stock.beginningDatetime)
 
         # Then
         assert check_date is False
@@ -198,7 +198,7 @@ class CheckDateHaveBeenModifiedTest:
         }
 
         # When
-        check_date = have_beginning_date_been_modified(request_data, self.stock)
+        check_date = have_beginning_date_been_modified(request_data, self.stock.beginningDatetime)
 
         # Then
         assert check_date is False

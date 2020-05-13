@@ -116,8 +116,10 @@ def edit_stock(stock_id):
 
         stock.fieldsUpdated = fields_to_update
 
+    previous_beginning_datetime = stock.beginningDatetime
     stock.populate_from_dict(stock_data)
-    if have_beginning_date_been_modified(stock_data, stock):
+
+    if have_beginning_date_been_modified(stock_data, previous_beginning_datetime):
         bookings = find_not_cancelled_bookings_by_stock(stock)
         if bookings:
             try:
