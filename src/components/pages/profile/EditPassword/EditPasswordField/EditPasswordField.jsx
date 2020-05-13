@@ -35,29 +35,31 @@ class EditPasswordField extends PureComponent {
     const { alt, iconName, inputType } = this.state
 
     return (
-      <div className="mi-field">
-        <label>
+      <div className="pf-field">
+        <label className="pf-field-label">
           {label}
-          <input
-            aria-invalid={errors ? true : false}
-            className="mi-field-input"
-            minLength="12"
-            onChange={onChange}
-            placeholder={placeholder}
-            ref={inputRef}
-            required
-            type={inputType}
-            value={value}
-          />
-          <button
-            onClick={this.handleToggleVisibility}
-            type="button"
-          >
-            <Icon
-              alt={alt}
-              svg={iconName}
+          <div className={`pf-input-container ${errors ? 'pf-input-error' : ''}`}>
+            <input
+              aria-invalid={errors ? true : false}
+              className="pf-field-input"
+              minLength="12"
+              onChange={onChange}
+              placeholder={placeholder}
+              ref={inputRef}
+              required
+              type={inputType}
+              value={value}
             />
-          </button>
+            <button
+              onClick={this.handleToggleVisibility}
+              type="button"
+            >
+              <Icon
+                alt={alt}
+                svg={iconName}
+              />
+            </button>
+          </div>
         </label>
         <div
           aria-live="assertive"
@@ -66,7 +68,7 @@ class EditPasswordField extends PureComponent {
           {errors &&
             errors.map(error => (
               <div
-                className="mi-field-error"
+                className="pf-field-error"
                 key={error}
               >
                 <Icon svg="ico-error" />

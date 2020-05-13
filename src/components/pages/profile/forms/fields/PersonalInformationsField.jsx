@@ -9,22 +9,28 @@ const PersonalInformationsField = forwardRef(function PersonalInformationsField(
   const { disabled, errors, label, onChange, maxLength, minLength, name, required, value } = props
 
   return (
-    <div className="mi-field">
-      <label>
+    <div className="pf-field">
+      <label className="pf-field-label">
         {label}
-        <input
-          aria-invalid={errors ? true : false}
-          className="mi-field-input"
-          disabled={disabled}
-          maxLength={maxLength}
-          minLength={minLength}
-          name={name}
-          onChange={onChange}
-          ref={ref}
-          required={required}
-          type="text"
-          value={value}
-        />
+        <span
+          className={`pf-input-container
+         ${disabled ? 'pf-input-disabled' : ''}
+         ${errors ? 'pf-input-error' : ''}`}
+        >
+          <input
+            aria-invalid={errors ? true : false}
+            className="pf-field-input"
+            disabled={disabled}
+            maxLength={maxLength}
+            minLength={minLength}
+            name={name}
+            onChange={onChange}
+            ref={ref}
+            required={required}
+            type="text"
+            value={value}
+          />
+        </span>
       </label>
       <div
         aria-live="assertive"
@@ -33,7 +39,7 @@ const PersonalInformationsField = forwardRef(function PersonalInformationsField(
         {errors &&
           errors.map(error => (
             <div
-              className="mi-field-error"
+              className="pf-field-error"
               key={error}
             >
               <Icon svg="ico-error" />

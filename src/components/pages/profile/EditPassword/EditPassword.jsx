@@ -85,13 +85,16 @@ class EditPassword extends PureComponent {
     const { currentPassword, errors, newConfirmationPassword, newPassword } = this.state
 
     return (
-      <div>
+      <div className="password-container pf-container">
         <HeaderContainer
           backTo={pathToProfile}
           closeTo={null}
           title="Mot de passe"
         />
-        <form onSubmit={this.handleSubmitPassword}>
+        <form
+          className="pf-form"
+          onSubmit={this.handleSubmitPassword}
+        >
           <div>
             <EditPasswordField
               errors={errors && errors.oldPassword}
@@ -117,8 +120,9 @@ class EditPassword extends PureComponent {
               value={newConfirmationPassword}
             />
           </div>
-          <div>
+          <div className="pf-form-submit">
             <input
+              className="pf-button-submit"
               onClick={this.handleSubmitPassword}
               type="submit"
               value="Enregistrer"

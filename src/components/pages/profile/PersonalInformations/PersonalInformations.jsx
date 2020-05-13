@@ -59,14 +59,14 @@ class PersonalInformations extends PureComponent {
     const { errors, isSubmitButtonDisabled, nickname } = this.state
 
     return (
-      <div className="pi-container">
+      <div className="pf-container">
         <HeaderContainer
           backTo={pathToProfile}
           closeTo={null}
           title="Informations personnelles"
         />
         <form
-          className="pi-form"
+          className="pf-form"
           onSubmit={this.handleSubmitNickname}
         >
           <div>
@@ -100,9 +100,9 @@ class PersonalInformations extends PureComponent {
               value={getDepartment(user.departementCode)}
             />
           </div>
-          <div className="pi-form-submit">
+          <div className="pf-form-submit">
             <input
-              className="button-submit"
+              className="pf-button-submit"
               disabled={isSubmitButtonDisabled}
               onClick={this.handleSubmitNickname}
               type="submit"
