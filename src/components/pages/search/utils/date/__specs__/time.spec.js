@@ -22,32 +22,6 @@ describe('time', () => {
       // Then
       expect(timeRangeInSeconds).toStrictEqual([64800, 79200])
     })
-
-    it('should convert hours in seconds from given time range in UTC+2 France', () => {
-      // Given
-      const january_01_2020_ten_am_utc_plus_two = new Date(2020, 0, 1, 10, 0, 0)
-      dateSpyOffset = jest.spyOn(january_01_2020_ten_am_utc_plus_two, 'getTimezoneOffset').mockReturnValue(-120)
-      dateSpyNow = jest.spyOn(global, 'Date').mockImplementationOnce(() => january_01_2020_ten_am_utc_plus_two)
-
-      // When
-      const timeRangeInSeconds = computeTimeRangeFromHoursToSeconds([18, 22])
-
-      // Then
-      expect(timeRangeInSeconds).toStrictEqual([57600, 72000])
-    })
-
-    it('should convert hours in seconds from given time range in UTC-3 Brasil', () => {
-      // Given
-      const january_01_2020_ten_am_utc_minus_three = new Date(2020, 0, 1, 10, 0, 0)
-      dateSpyOffset = jest.spyOn(january_01_2020_ten_am_utc_minus_three, 'getTimezoneOffset').mockReturnValue(180)
-      dateSpyNow = jest.spyOn(global, 'Date').mockImplementationOnce(() => january_01_2020_ten_am_utc_minus_three)
-
-      // When
-      const timeRangeInSeconds = computeTimeRangeFromHoursToSeconds([18, 22])
-
-      // Then
-      expect(timeRangeInSeconds).toStrictEqual([54000, 68400])
-    })
   })
 
   describe('getFirstTimestampForGivenDate', () => {
@@ -121,7 +95,6 @@ describe('time', () => {
       // Given
       const from_eighteen_to_twenty_two_in_utc = [18, 22]
       const tuesday_april_28_2020_eleven_am_in_utc = new Date(2020, 3, 28, 11, 0, 0)
-      dateSpyOffset = jest.spyOn(tuesday_april_28_2020_eleven_am_in_utc, 'getTimezoneOffset').mockReturnValue(0)
 
       // When
       const dateWithBeginningAndEndingTimes = TIMESTAMP.getAllFromTimeRangeAndDate(
@@ -136,50 +109,6 @@ describe('time', () => {
       expect(dateWithBeginningAndEndingTimes).toStrictEqual([
         tuesday_april_28_2020_six_pm_timestamp_in_utc,
         tuesday_april_28_2020_ten_pm_timestamp_in_utc,
-      ])
-    })
-
-    it('should return timestamps with beginning and ending times for given date and time range in UTC+2 France', () => {
-      // Given
-      const from_eighteen_to_twenty_two_in_utc_plus_two = [18, 22]
-      const tuesday_april_28_2020_eleven_am_in_utc_plus_two = new Date(2020, 3, 28, 11, 34, 23)
-      jest.spyOn(tuesday_april_28_2020_eleven_am_in_utc_plus_two, 'getTimezoneOffset').mockReturnValue(-120)
-
-      // When
-      const dateWithBeginningAndEndingTimes = TIMESTAMP.getAllFromTimeRangeAndDate(
-        tuesday_april_28_2020_eleven_am_in_utc_plus_two,
-        from_eighteen_to_twenty_two_in_utc_plus_two
-      )
-
-      // Then
-      const tuesday_april_28_2020_four_pm_timestamp_in_utc = 1588089600
-      const tuesday_april_28_2020_eight_pm_timestamp_in_utc = 1588104000
-
-      expect(dateWithBeginningAndEndingTimes).toStrictEqual([
-        tuesday_april_28_2020_four_pm_timestamp_in_utc,
-        tuesday_april_28_2020_eight_pm_timestamp_in_utc,
-      ])
-    })
-
-    it('should return timestamps with beginning and ending times for given date and time range in UTC-3 Brasil', () => {
-      // Given
-      const from_eighteen_to_twenty_two_in_utc_minus_three = [18, 22]
-      const tuesday_april_28_2020_eleven_am_in_utc_minus_three = new Date(2020, 3, 28, 11, 0, 0)
-      dateSpyOffset = jest.spyOn(tuesday_april_28_2020_eleven_am_in_utc_minus_three, 'getTimezoneOffset').mockReturnValue(180)
-
-      // When
-      const dateWithBeginningAndEndingTimes = TIMESTAMP.getAllFromTimeRangeAndDate(
-        tuesday_april_28_2020_eleven_am_in_utc_minus_three,
-        from_eighteen_to_twenty_two_in_utc_minus_three
-      )
-
-      // Then
-      const tuesday_april_28_2020_three_pm_timestamp_in_utc_minus_three = 1588086000
-      const tuesday_april_28_2020_seven_pm_timestamp_in_utc_minus_three = 1588100400
-
-      expect(dateWithBeginningAndEndingTimes).toStrictEqual([
-        tuesday_april_28_2020_three_pm_timestamp_in_utc_minus_three,
-        tuesday_april_28_2020_seven_pm_timestamp_in_utc_minus_three,
       ])
     })
   })

@@ -11,18 +11,8 @@ export const getDatesFromTimeRangeAndDate = (date, timeRange) => {
 }
 
 const getDateAtGivenTime = (date, time) => {
-  const offsetInHours = date.getTimezoneOffset() / 60
-  const sign = Math.sign(offsetInHours)
-
-  let timeAdaptedToTimeZone
-  if (sign === 1) {
-    timeAdaptedToTimeZone = time - offsetInHours
-  } else {
-    timeAdaptedToTimeZone = time + offsetInHours
-  }
-
   const dateWithTime = new Date(date.getTime())
-  dateWithTime.setHours(timeAdaptedToTimeZone)
+  dateWithTime.setHours(time)
   dateWithTime.setMinutes(0)
   dateWithTime.setSeconds(0)
   dateWithTime.setMilliseconds(0)

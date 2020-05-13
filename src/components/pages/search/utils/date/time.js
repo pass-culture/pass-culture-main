@@ -1,12 +1,11 @@
 import { DATE, DAYS_IN_A_WEEK, SATURDAY_INDEX_IN_A_WEEK, SUNDAY_INDEX_IN_A_WEEK } from './date'
 
 export const MILLISECONDS_IN_A_DAY = 86400000
-export const MILLISECONDS_IN_A_MINUTE = 60000
 export const MILLISECONDS_IN_A_SECOND = 1000
 
 const getTimestampFromDate = date => {
   const dateInTimestamp =
-    (date.getTime() - getTimezoneOffsetInMilliseconds(date)) / MILLISECONDS_IN_A_SECOND
+    (date.getTime()) / MILLISECONDS_IN_A_SECOND
   return Math.ceil(dateInTimestamp)
 }
 
@@ -16,11 +15,6 @@ const getTimestampsFromTimeRangeAndDates = (dates, timeRange) => {
 
 const getTimestampsFromTimeRangeAndDate = (date, timeRange) => {
   return DATE.getAllFromTimeRangeAndDate(date, timeRange).map(date => getTimestampFromDate(date))
-}
-
-const getTimezoneOffsetInMilliseconds = date => {
-  const timezoneOffset = date.getTimezoneOffset()
-  return timezoneOffset * MILLISECONDS_IN_A_MINUTE
 }
 
 const getFirstTimestampOfDate = date => {
@@ -83,14 +77,11 @@ export const TIMESTAMP = {
 export const computeTimeRangeFromHoursToSeconds = timeRange => {
   const now = new Date()
   const offsetInMinutes = now.getTimezoneOffset()
-  const sign = Math.sign(offsetInMinutes)
 
   return timeRange.map(timeInHour => {
     const timeInSeconds = timeInHour * 60 * 60
     const offsetInSeconds = offsetInMinutes * 60
 
-    return sign === 1 ?
-      timeInSeconds - offsetInSeconds
-      : timeInSeconds + offsetInSeconds
+    return timeInSeconds + offsetInSeconds
   })
 }

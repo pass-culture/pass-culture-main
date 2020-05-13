@@ -6,7 +6,6 @@ describe('getDatesFromTimeRangeAndDate', () => {
       // Given
       const from_eighteen_to_twenty_two = [18, 22]
       const tuesday_april_28_2020_eleven_thirty_four_am = new Date(2020, 3, 28, 11, 34, 23, 234)
-      jest.spyOn(tuesday_april_28_2020_eleven_thirty_four_am, 'getTimezoneOffset').mockReturnValue(0)
 
       // When
       const dateWithBeginningAndEndingTimes = DATE.getAllFromTimeRangeAndDate(
@@ -41,73 +40,6 @@ describe('getDatesFromTimeRangeAndDate', () => {
       expect(dateWithBeginningAndEndingTimes).toStrictEqual([
         tuesday_april_28_2020_midnight,
         wednesday_april_29_2020_midnight,
-      ])
-    })
-  })
-
-  describe('utc+2', () => {
-    it('should return dates with beginning and ending times for given date and timerange', () => {
-      // Given
-      const from_eighteen_to_twenty_two = [18, 22]
-      const tuesday_april_28_2020_eleven_am_utc_plus_two = new Date(2020, 3, 28, 11, 0, 0)
-      jest.spyOn(tuesday_april_28_2020_eleven_am_utc_plus_two, 'getTimezoneOffset').mockReturnValue(-120)
-
-      // When
-      const dateWithBeginningAndEndingTimes = DATE.getAllFromTimeRangeAndDate(
-        tuesday_april_28_2020_eleven_am_utc_plus_two,
-        from_eighteen_to_twenty_two
-      )
-
-      // Then
-      const tuesday_april_28_2020_four_pm_utc = new Date(2020, 3, 28, 16, 0, 0, 0)
-      const tuesday_april_28_2020_eight_pm_utc = new Date(2020, 3, 28, 20, 0, 0, 0)
-      expect(dateWithBeginningAndEndingTimes).toStrictEqual([
-        tuesday_april_28_2020_four_pm_utc,
-        tuesday_april_28_2020_eight_pm_utc,
-      ])
-    })
-
-    it('should return dates with beginning and ending times for given date and timerange with extreme values', () => {
-      // Given
-      const from_midnight_to_midnight = [0, 24]
-      const tuesday_april_28_2020_eleven_am_utc_plus_two = new Date(2020, 3, 28, 11, 0, 0)
-      jest.spyOn(tuesday_april_28_2020_eleven_am_utc_plus_two, 'getTimezoneOffset').mockReturnValue(-120)
-
-      // When
-      const dateWithBeginningAndEndingTimes = DATE.getAllFromTimeRangeAndDate(
-        tuesday_april_28_2020_eleven_am_utc_plus_two,
-        from_midnight_to_midnight
-      )
-
-      // Then
-      const tuesday_april_27_2020_ten_pm_utc = new Date(2020, 3, 27, 22, 0, 0, 0)
-      const wednesday_april_28_2020_ten_pm_utc = new Date(2020, 3, 28, 22, 0, 0, 0)
-      expect(dateWithBeginningAndEndingTimes).toStrictEqual([
-        tuesday_april_27_2020_ten_pm_utc,
-        wednesday_april_28_2020_ten_pm_utc,
-      ])
-    })
-  })
-
-  describe('utc-3', () => {
-    it('should return dates with beginning and ending times for given date and timerange', () => {
-      // Given
-      const from_eighteen_to_twenty_two = [18, 22]
-      const tuesday_april_28_2020_eleven_am_utc_minus_three = new Date(2020, 3, 28, 11, 0, 0)
-      jest.spyOn(tuesday_april_28_2020_eleven_am_utc_minus_three, 'getTimezoneOffset').mockReturnValue(180)
-
-      // When
-      const dateWithBeginningAndEndingTimes = DATE.getAllFromTimeRangeAndDate(
-        tuesday_april_28_2020_eleven_am_utc_minus_three,
-        from_eighteen_to_twenty_two
-      )
-
-      // Then
-      const tuesday_april_28_2020_nine_pm_utc = new Date(2020, 3, 28, 15, 0, 0, 0)
-      const tuesday_april_28_2020_one_am_utc = new Date(2020, 3, 28, 19, 0, 0, 0)
-      expect(dateWithBeginningAndEndingTimes).toStrictEqual([
-        tuesday_april_28_2020_nine_pm_utc,
-        tuesday_april_28_2020_one_am_utc,
       ])
     })
   })
