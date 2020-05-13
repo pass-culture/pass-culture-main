@@ -86,9 +86,10 @@ class TextField extends PureComponent {
               <span>
                 {label}
               </span>
-              {required && !readOnly && <span className="field-asterisk">
+              {required && !readOnly &&
+              <span className="field-asterisk">
                 {'*'}
-                                        </span>}
+              </span>}
             </span>
           </label>
         )}

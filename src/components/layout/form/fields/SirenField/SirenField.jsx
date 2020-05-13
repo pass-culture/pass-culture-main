@@ -38,9 +38,10 @@ const SirenField = props => (
             </span>
           </span>
 
-          {props.subLabel && <span className="sub-label">
+          {props.subLabel &&
+          <span className="sub-label">
             {props.subLabel}
-                             </span>}
+          </span>}
 
           <div className="field-siren-control">
             <span className="field-siren-input-value">
@@ -52,9 +53,10 @@ const SirenField = props => (
                 type="text"
               />
 
-              {props.value && <span className="field-siren-value">
+              {props.value &&
+              <span className="field-siren-value">
                 {props.value}
-                              </span>}
+              </span>}
             </span>
 
             <FieldErrors

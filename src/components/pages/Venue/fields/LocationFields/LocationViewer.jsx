@@ -197,9 +197,11 @@ class LocationViewer extends PureComponent {
 
   renderSuggestionsMenu = suggestionElements => {
     const empty = suggestionElements.length === 0
-    return (<div className={classnames('menu', { empty })}>
-      {suggestionElements}
-    </div>)
+    return (
+      <div className={classnames('menu', { empty })}>
+        {suggestionElements}
+      </div>
+    )
   }
 
   renderSuggestion = ({ id, label, placeholder }, highlighted) => (

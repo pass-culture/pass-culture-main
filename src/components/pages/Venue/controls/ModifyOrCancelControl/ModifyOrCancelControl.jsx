@@ -41,8 +41,8 @@ class ModifyOrCancelControl extends PureComponent {
 }
 
 ModifyOrCancelControl.defaultProps = {
-  venueId: null,
   isCreatedEntity: false,
+  venueId: null,
 }
 
 ModifyOrCancelControl.propTypes = {

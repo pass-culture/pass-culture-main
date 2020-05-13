@@ -49,9 +49,11 @@ const BookingStatusCell = ({ bookingStatus }) => {
     ? bookingStatusDisplayInformations.status
     : bookingStatus
 
-  return (<span className={`bookings-status-label ${statusClassName}`}>
-    {statusName}
-  </span>)
+  return (
+    <span className={`bookings-status-label ${statusClassName}`}>
+      {statusName}
+    </span>
+  )
 }
 
 BookingStatusCell.propTypes = {

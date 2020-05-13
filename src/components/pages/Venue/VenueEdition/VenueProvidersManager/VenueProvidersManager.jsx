@@ -34,8 +34,12 @@ class VenueProvidersManager extends PureComponent {
     ReactTooltip.rebuild()
     const { venueProviders } = this.props
     if (prevProps.venueProviders.length < venueProviders.length) {
-      this.setState({ isCreationMode: false })
+      this.updateIsCreationMode()
     }
+  }
+
+  updateIsCreationMode = () => {
+    this.setState({ isCreationMode: false })
   }
 
   handleAddVenueProvider = () => {
