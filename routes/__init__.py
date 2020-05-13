@@ -6,7 +6,6 @@ def install_routes():
     import routes.bookings
     import routes.bookings_error_handlers
     import routes.error_handlers
-    import routes.export
     import routes.favorites
     import routes.features
     import routes.mediations
