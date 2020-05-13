@@ -27,8 +27,7 @@
     vertical-align: middle;
   }
 
-  .cell-offer-link {
-    font-weight: $weight-bold;
+  .cell-offer {
     white-space: nowrap;
     text-overflow: ellipsis;
     max-width: rem(175px);
@@ -67,6 +66,14 @@
 
   .bookings-status-reimbursed {
     background-color: $green-dark;
+  }
+
+  .offer-name {
+    font-weight: $weight-bold;
+  }
+
+  .event-date {
+    color: $grey;
   }
 }
 
