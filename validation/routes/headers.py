@@ -36,7 +36,7 @@ def _get_origin_header_whitelist():
     # Handle migration to Scalingo
     elif ENV == 'testing':
         valid_urls = [
-            'https://[a-zA-Z-]+.passculture.app',
+            'https://[.a-zA-Z-]+.passculture.app',
             'https://app-passculture-testing.scalingo.io',
             'https://passculture-team.netlify.com',
             'http://localhost:3000',

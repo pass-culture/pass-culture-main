@@ -29,7 +29,7 @@ elif IS_TESTING:
     API_URL = 'https://backend.passculture-%s.beta.gouv.fr' % ENV
     API_APPLICATION_NAME = 'pass-culture-api-dev'
     WEBAPP_URL = 'https://app.passculture-%s.beta.gouv.fr' % ENV
-    PRO_URL = 'https://pro.passculture-%s.beta.gouv.fr' % ENV
+    PRO_URL = 'https://pro.testing.passculture.app' % ENV
 else:
     API_URL = 'https://backend.passculture-%s.beta.gouv.fr' % ENV
     API_APPLICATION_NAME = 'pass-culture-api-%s' % ENV
