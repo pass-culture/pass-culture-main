@@ -39,7 +39,6 @@ const Table = ({ columns, data, nbHitsPerPage }) => {
         {...getTableProps()}
       >
         <Head headerGroups={headerGroups} />
-
         <tbody {...getTableBodyProps()}>
           {page.map(row => {
             prepareRow(row)

@@ -1,54 +1,29 @@
 import { mount, shallow } from 'enzyme'
-import { useTable } from 'react-table'
 import React from 'react'
 import Table from '../Table'
 import Paginate from '../Paginate/Paginate'
 import Head from '../Head/Head'
+import * as reactTable from 'react-table'
 
-const CellMock = ({ offer: { offer_name: offerName } }) => (<span>
-  {offerName}
-</span>)
-
-jest.mock('react-table', () => ({
-  usePagination: jest.fn(),
-  useTable: jest.fn(),
-}))
+const CellMock = ({ offer: { offer_name: offerName } }) => (
+  <span>
+    {offerName}
+  </span>
+)
 
 describe('components | Table', () => {
-  it('should display the correct given numbers of columns', () => {
+  it('should render a Head component with the right props', () => {
     // Given
+    const useTableSpy = jest.spyOn(reactTable, 'useTable').mockImplementationOnce(jest.fn())
     const props = {
       columns: [
         {
+          id: 1,
           headerTitle: 'Stock',
           accessor: 'stock',
         },
         {
-          headerTitle: 'Beneficiaire',
-          accessor: 'beneficiary',
-        },
-      ],
-      data: [{}],
-      nbHitsPerPage: 1,
-    }
-
-    // When
-    const table = shallow(<Table {...props} />)
-
-    // Then
-    const tableColumns = table.find('th')
-    expect(tableColumns).toHaveLength(2)
-  })
-
-  it('should render a Head component with the right props', function() {
-    // Given
-    const props = {
-      columns: [
-        {
-          headerTitle: 'Stock',
-          accessor: 'stock',
-        },
-        {
+          id: 2,
           headerTitle: 'Beneficiaire',
           accessor: 'beneficiary',
         },
@@ -68,16 +43,20 @@ describe('components | Table', () => {
             {
               id: 1,
               headerTitle: 'Offres',
-              render: jest.fn(() => (<span>
-                {'Offres'}
-              </span>)),
+              render: jest.fn(() => (
+                <span>
+                  {'Offres'}
+                </span>
+              )),
             },
             {
               id: 2,
               headerTitle: 'Beneficiaires',
-              render: jest.fn(() => (<span>
-                {'Beneficiaires'}
-              </span>)),
+              render: jest.fn(() => (
+                <span>
+                  {'Beneficiaires'}
+                </span>
+              )),
             },
           ],
         },
@@ -91,7 +70,7 @@ describe('components | Table', () => {
         pageIndex: 0,
       },
     }
-    useTable.mockReturnValue(mockedValues)
+    useTableSpy.mockReturnValue(mockedValues)
 
     // When
     const table = shallow(<Table {...props} />)
@@ -102,6 +81,7 @@ describe('components | Table', () => {
     expect(tableHead.props()).toStrictEqual({
       headerGroups: mockedValues.headerGroups,
     })
+    useTableSpy.mockRestore()
   })
 
   it('should display the correct numbers of rows', () => {
@@ -109,10 +89,12 @@ describe('components | Table', () => {
     const props = {
       columns: [
         {
+          id: 1,
           headerTitle: 'Stock',
           accessor: 'stock',
         },
         {
+          id: 2,
           headerTitle: 'Beneficiaire',
           accessor: 'beneficiary',
         },
@@ -160,6 +142,7 @@ describe('components | Table', () => {
       const props = {
         columns: [
           {
+            id: 1,
             headerTitle: 'Stock',
             accessor: 'stock',
             // eslint-disable-next-line react/display-name, react/no-multi-comp
@@ -167,12 +150,12 @@ describe('components | Table', () => {
           },
         ],
         data: [
-          { stock: { offer_name: 'Avez-vous déjà vu' } },
-          { stock: { offer_name: 'Avez-vous déjà vu' } },
-          { stock: { offer_name: 'Avez-vous déjà vu' } },
-          { stock: { offer_name: 'Avez-vous déjà vu' } },
-          { stock: { offer_name: 'Avez-vous déjà vu' } },
-          { stock: { offer_name: 'Avez-vous déjà vu' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 1' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 2' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 3' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 4' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 5' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 6' } },
         ],
         nbHitsPerPage: 5,
       }
@@ -198,6 +181,7 @@ describe('components | Table', () => {
       const props = {
         columns: [
           {
+            id: 1,
             headerTitle: 'Stock',
             accessor: 'stock',
             // eslint-disable-next-line react/display-name, react/no-multi-comp
