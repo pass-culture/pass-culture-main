@@ -18,6 +18,7 @@ target.zip
 .env.staging.local
 .env.integration.local
 .env.test.local
+.env.testing.local
 .env.production.local
 .tern-port
 .tern-project
