@@ -97,7 +97,7 @@ jobs:
             nvm install
             yarn install
 
-            source ~/pass-culture-main/config/run_envs/testing
+            set -a; source ~/pass-culture-main/config/run_envs/testing
 
             yarn build
             npm install -g netlify-cli@2.46.0
