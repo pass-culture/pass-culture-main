@@ -88,6 +88,7 @@ __all__ = (
     'Product',
     'Recommendation',
     'DiscoveryView',
+    'DiscoveryViewV3',
     'RightsType',
     'ThingType',
     'UserOfferer',

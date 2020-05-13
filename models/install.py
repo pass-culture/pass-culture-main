@@ -3,10 +3,9 @@ from sqlalchemy import orm
 from sqlalchemy.exc import ProgrammingError
 
 import models
-from models import DiscoveryViewV3
 from models.db import db
 from models.feature import FeatureToggle, Feature
-from repository import repository, discovery_view_queries
+from repository import repository, discovery_view_queries, discovery_view_v3_queries
 from repository.discovery_view_queries import _order_by_score_and_digital_offers
 
 
@@ -30,7 +29,7 @@ def install_models():
 
 def install_materialized_views():
     discovery_view_queries.create(db.session, _order_by_score_and_digital_offers)
-    DiscoveryViewV3(session=db.session).create()
+    discovery_view_v3_queries.create(db.session)
 
 
 def install_features():

@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 
 from shapely.geometry import Polygon
 
-from models import DiscoveryViewV3, EventType, ThingType
-from repository import repository
+from models import EventType, ThingType
+from repository import repository, discovery_view_v3_queries
 from repository.offer_queries import get_offers_for_recommendation_v3
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, \
@@ -38,7 +38,7 @@ class GetOffersForRecommendationV3Test:
 
             repository.save(user, stock, stock_activation, mediation1, mediation2)
 
-            DiscoveryViewV3.refresh(concurrently=False)
+            discovery_view_v3_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
@@ -63,7 +63,7 @@ class GetOffersForRecommendationV3Test:
 
             repository.save(user, stock_93, stock_activation_93)
 
-            DiscoveryViewV3.refresh(concurrently=False)
+            discovery_view_v3_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
@@ -86,7 +86,7 @@ class GetOffersForRecommendationV3Test:
 
             repository.save(user, stock)
 
-            DiscoveryViewV3.refresh(concurrently=False)
+            discovery_view_v3_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
@@ -105,7 +105,7 @@ class GetOffersForRecommendationV3Test:
             create_mediation(stock1.offer)
 
             repository.save(user, stock1, stock2)
-            DiscoveryViewV3.refresh(concurrently=False)
+            discovery_view_v3_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
@@ -134,7 +134,7 @@ class GetOffersForRecommendationV3Test:
 
             repository.save(user, stock1, stock2, stock3)
 
-            DiscoveryViewV3.refresh(concurrently=False)
+            discovery_view_v3_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
@@ -169,7 +169,7 @@ class GetOffersForRecommendationV3Test:
 
             repository.save(user, stock1, stock2, stock3, stock4, stock5, stock6, user)
 
-            DiscoveryViewV3.refresh(concurrently=False)
+            discovery_view_v3_queries.refresh(concurrently=False)
 
             def _first_four_offers_have_different_type_and_onlineness(offers):
                 return len(set([o.type + (o.url or '')
@@ -197,7 +197,7 @@ class GetOffersForRecommendationV3Test:
 
             repository.save(user, booking1, booking2)
 
-            DiscoveryViewV3.refresh(concurrently=False)
+            discovery_view_v3_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
@@ -225,7 +225,7 @@ class GetOffersForRecommendationV3Test:
 
             repository.save(user, stock1, stock2)
 
-            DiscoveryViewV3.refresh(concurrently=False)
+            discovery_view_v3_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
@@ -258,7 +258,7 @@ class GetOffersForRecommendationV3Test:
 
             repository.save(user, stock1, stock2, stock3)
 
-            DiscoveryViewV3.refresh(concurrently=False)
+            discovery_view_v3_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
@@ -280,7 +280,7 @@ class GetOffersForRecommendationV3Test:
 
             repository.save(user, stock)
 
-            DiscoveryViewV3.refresh(concurrently=False)
+            discovery_view_v3_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
@@ -302,7 +302,7 @@ class GetOffersForRecommendationV3Test:
 
             repository.save(user, stock)
 
-            DiscoveryViewV3.refresh(concurrently=False)
+            discovery_view_v3_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
@@ -324,7 +324,7 @@ class GetOffersForRecommendationV3Test:
 
             repository.save(user, stock)
 
-            DiscoveryViewV3.refresh(concurrently=False)
+            discovery_view_v3_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
@@ -347,7 +347,7 @@ class GetOffersForRecommendationV3Test:
 
             repository.save(user, stock)
 
-            DiscoveryViewV3.refresh(concurrently=False)
+            discovery_view_v3_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
@@ -370,7 +370,7 @@ class GetOffersForRecommendationV3Test:
 
             repository.save(user, booking)
 
-            DiscoveryViewV3.refresh(concurrently=False)
+            discovery_view_v3_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
@@ -392,7 +392,7 @@ class GetOffersForRecommendationV3Test:
 
             repository.save(user, favorite)
 
-            DiscoveryViewV3.refresh(concurrently=False)
+            discovery_view_v3_queries.refresh(concurrently=False)
 
             # When
             offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
@@ -423,7 +423,7 @@ class GetOffersForRecommendationV3Test:
                 iris_venue = create_iris_venue(venue_location_iris, venue)
                 repository.save(iris_venue)
 
-                DiscoveryViewV3.refresh(concurrently=False)
+                discovery_view_v3_queries.refresh(concurrently=False)
 
                 # When
                 offers = get_offers_for_recommendation_v3(user=user, user_iris_id=user_location_iris.id,
@@ -453,7 +453,7 @@ class GetOffersForRecommendationV3Test:
                 iris_venue = create_iris_venue(venue_location_iris, venue)
                 repository.save(iris_venue)
 
-                DiscoveryViewV3.refresh(concurrently=False)
+                discovery_view_v3_queries.refresh(concurrently=False)
 
                 # when
                 offers = get_offers_for_recommendation_v3(user=user, user_iris_id=user_location_iris.id,
@@ -482,7 +482,7 @@ class GetOffersForRecommendationV3Test:
 
                 repository.save(user, stock, stock_on_digital_offer, stock_on_national_offer)
 
-                DiscoveryViewV3.refresh(concurrently=False)
+                discovery_view_v3_queries.refresh(concurrently=False)
 
                 # when
                 offers = get_offers_for_recommendation_v3(user=user, user_iris_id=None, user_is_geolocated=True)
@@ -506,7 +506,7 @@ class GetOffersForRecommendationV3Test:
 
                 repository.save(user, stock)
 
-                DiscoveryViewV3.refresh(concurrently=False)
+                discovery_view_v3_queries.refresh(concurrently=False)
 
                 # when
                 offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
