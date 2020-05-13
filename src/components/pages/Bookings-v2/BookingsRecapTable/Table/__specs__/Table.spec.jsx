@@ -1,13 +1,18 @@
 import { mount, shallow } from 'enzyme'
+import { useTable } from 'react-table'
 import React from 'react'
 import Table from '../Table'
 import Paginate from '../Paginate/Paginate'
+import Head from '../Head/Head'
 
-const CellMock = ({ offer: { offer_name: offerName } }) => (
-  <span>
-    {offerName}
-  </span>
-)
+const CellMock = ({ offer: { offer_name: offerName } }) => (<span>
+  {offerName}
+</span>)
+
+jest.mock('react-table', () => ({
+  usePagination: jest.fn(),
+  useTable: jest.fn(),
+}))
 
 describe('components | Table', () => {
   it('should display the correct given numbers of columns', () => {
@@ -24,7 +29,7 @@ describe('components | Table', () => {
         },
       ],
       data: [{}],
-      nbHitsPerPage: 1
+      nbHitsPerPage: 1,
     }
 
     // When
@@ -33,6 +38,70 @@ describe('components | Table', () => {
     // Then
     const tableColumns = table.find('th')
     expect(tableColumns).toHaveLength(2)
+  })
+
+  it('should render a Head component with the right props', function() {
+    // Given
+    const props = {
+      columns: [
+        {
+          headerTitle: 'Stock',
+          accessor: 'stock',
+        },
+        {
+          headerTitle: 'Beneficiaire',
+          accessor: 'beneficiary',
+        },
+      ],
+      data: [{}],
+      nbHitsPerPage: 1,
+    }
+    const mockedValues = {
+      canPreviousPage: true,
+      canNextPage: true,
+      getTableProps: jest.fn(),
+      getTableBodyProps: jest.fn(),
+      headerGroups: [
+        {
+          id: 1,
+          headers: [
+            {
+              id: 1,
+              headerTitle: 'Offres',
+              render: jest.fn(() => (<span>
+                {'Offres'}
+              </span>)),
+            },
+            {
+              id: 2,
+              headerTitle: 'Beneficiaires',
+              render: jest.fn(() => (<span>
+                {'Beneficiaires'}
+              </span>)),
+            },
+          ],
+        },
+      ],
+      nextPage: jest.fn(),
+      previousPage: jest.fn(),
+      prepareRow: jest.fn(),
+      page: [],
+      pageCount: 1,
+      state: {
+        pageIndex: 0,
+      },
+    }
+    useTable.mockReturnValue(mockedValues)
+
+    // When
+    const table = shallow(<Table {...props} />)
+
+    // Then
+    const tableHead = table.find(Head)
+    expect(tableHead).toHaveLength(1)
+    expect(tableHead.props()).toStrictEqual({
+      headerGroups: mockedValues.headerGroups,
+    })
   })
 
   it('should display the correct numbers of rows', () => {
@@ -74,7 +143,7 @@ describe('components | Table', () => {
           booking_token: 'ZEHBGD',
         },
       ],
-      nbHitsPerPage: 2
+      nbHitsPerPage: 2,
     }
 
     // When
@@ -94,8 +163,8 @@ describe('components | Table', () => {
             headerTitle: 'Stock',
             accessor: 'stock',
             // eslint-disable-next-line react/display-name, react/no-multi-comp
-            Cell: ({ value }) => <CellMock offer={value} />
-          }
+            Cell: ({ value }) => <CellMock offer={value} />,
+          },
         ],
         data: [
           { stock: { offer_name: 'Avez-vous déjà vu' } },
@@ -103,9 +172,9 @@ describe('components | Table', () => {
           { stock: { offer_name: 'Avez-vous déjà vu' } },
           { stock: { offer_name: 'Avez-vous déjà vu' } },
           { stock: { offer_name: 'Avez-vous déjà vu' } },
-          { stock: { offer_name: 'Avez-vous déjà vu' } }
+          { stock: { offer_name: 'Avez-vous déjà vu' } },
         ],
-        nbHitsPerPage: 5
+        nbHitsPerPage: 5,
       }
 
       // When
@@ -120,11 +189,11 @@ describe('components | Table', () => {
         currentPage: 1,
         nbPages: 2,
         nextPage: expect.any(Function),
-        previousPage: expect.any(Function)
+        previousPage: expect.any(Function),
       })
     })
 
-    it('should render five bookings on page 1 & one booking on page 2 when clicking on next page',  () => {
+    it('should render five bookings on page 1 & one booking on page 2 when clicking on next page', () => {
       // Given
       const props = {
         columns: [
@@ -132,18 +201,18 @@ describe('components | Table', () => {
             headerTitle: 'Stock',
             accessor: 'stock',
             // eslint-disable-next-line react/display-name, react/no-multi-comp
-            Cell: ({ value }) => <CellMock offer={value} />
-          }
+            Cell: ({ value }) => <CellMock offer={value} />,
+          },
         ],
         data: [
-          { stock: {offer_name: 'Avez-vous déjà vu 1'} },
-          { stock: {offer_name: 'Avez-vous déjà vu 2'} },
-          { stock: {offer_name: 'Avez-vous déjà vu 3'} },
-          { stock: {offer_name: 'Avez-vous déjà vu 4'} },
-          { stock: {offer_name: 'Avez-vous déjà vu 5'} },
-          { stock: {offer_name: 'Avez-vous déjà vu 6'} }
+          { stock: { offer_name: 'Avez-vous déjà vu 1' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 2' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 3' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 4' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 5' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 6' } },
         ],
-        nbHitsPerPage: 5
+        nbHitsPerPage: 5,
       }
 
       // When
