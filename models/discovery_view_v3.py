@@ -1,12 +1,7 @@
 from sqlalchemy import BigInteger, Boolean, Column, ForeignKey, Integer, String
-from sqlalchemy.orm.scoping import scoped_session
-from sqlalchemy_utils import refresh_materialized_view
+from sqlalchemy.orm import relationship
 
-from models import DiscoveryView
-from models.db import Model, db
-from repository.discovery_view_queries import _create_function_offer_has_at_least_one_bookable_stock, \
-    _create_function_offer_has_at_least_one_active_mediation, _create_function_event_is_in_less_than_10_days, \
-    _create_function_get_offer_score
+from models.db import Model
 
 
 class DiscoveryViewV3(Model):
@@ -16,7 +11,7 @@ class DiscoveryViewV3(Model):
 
     mediationId = Column(BigInteger, ForeignKey('mediation.id'))
 
-    id = Column(BigInteger, primary_key=True)
+    id = Column(BigInteger, ForeignKey('offer.id'), primary_key=True)
 
     type = Column(String(50))
 
@@ -27,3 +22,6 @@ class DiscoveryViewV3(Model):
     name = Column(String(140))
 
     isNational = Column(Boolean)
+
+    offer = relationship('Offer',
+                         foreign_keys=[id])

@@ -476,7 +476,7 @@ def get_paginated_expired_offer_ids(limit: int, page: int) -> List[tuple]:
 
 
 def get_offers_for_recommendation_v3(user: User, user_iris_id: Optional[int] = None, user_is_geolocated: bool = False,
-                                     limit: Optional[int] = None, seen_recommendation_ids: List[int] = []) -> List:
+                                     limit: Optional[int] = None, seen_recommendation_ids: List[int] = []) -> List[DiscoveryViewV3]:
     favorite_offers_ids = get_only_offer_ids_from_favorites(user)
 
     booked_offers_ids = get_only_offer_ids_from_bookings(user)

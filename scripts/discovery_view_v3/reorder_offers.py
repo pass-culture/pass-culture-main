@@ -4,4 +4,3 @@ from repository.discovery_view_v3_queries import update, _order_by_score_and_dig
 
 def update_offers_order_in_discovery_view_v3():
     update(db.session, _order_by_score_and_digital_offers)
-

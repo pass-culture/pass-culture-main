@@ -29,7 +29,7 @@ def install_models():
 
 def install_materialized_views():
     discovery_view_queries.create(db.session, _order_by_score_and_digital_offers)
-    discovery_view_v3_queries.create(db.session)
+    discovery_view_v3_queries.create(db.session, _order_by_score_and_digital_offers)
 
 
 def install_features():
