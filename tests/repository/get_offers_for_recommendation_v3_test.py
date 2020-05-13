@@ -23,7 +23,7 @@ from tests.test_utils import POLYGON_TEST
 class GetOffersForRecommendationV3Test:
     class UniversalBehaviorTest:
         @clean_database
-        def test_should_not_return_activation_event(self, app):
+        def test_filter_should_not_return_activation_event(self, app):
             # Given
             offerer = create_offerer(siren='123456789')
             user = create_user()
@@ -48,7 +48,7 @@ class GetOffersForRecommendationV3Test:
             assert offer_activation not in offers
 
         @clean_database
-        def test_should_not_return_activation_thing(self, app):
+        def test_filter_should_not_return_activation_thing(self, app):
             # Given
             offerer = create_offerer(siren='123456789')
             user = create_user()
@@ -73,7 +73,7 @@ class GetOffersForRecommendationV3Test:
             assert offer_activation_93 not in offers
 
         @clean_database
-        def test_should_return_offers_with_stock(self, app):
+        def test_filter_should_return_offers_with_stock(self, app):
             # Given
             product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
             offerer = create_offerer()
@@ -95,7 +95,7 @@ class GetOffersForRecommendationV3Test:
             assert len(offers) == 1
 
         @clean_database
-        def test_should_return_offers_with_mediation_only(self, app):
+        def test_filter_should_return_offers_with_mediation_only(self, app):
             # Given
             offerer = create_offerer()
             user = create_user()
@@ -115,7 +115,7 @@ class GetOffersForRecommendationV3Test:
             assert offers[0].name == 'thing_with_mediation'
 
         @clean_database
-        def test_should_not_return_offers_with_no_stock(self, app):
+        def test_filter_should_not_return_offers_with_no_stock(self, app):
             # Given
             product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
             offerer = create_offerer()
@@ -138,7 +138,96 @@ class GetOffersForRecommendationV3Test:
             assert len(offers) == 0
 
         @clean_database
-        def test_with_criteria_should_return_offer_with_highest_base_score_first(self, app):
+        def test_filter_should_not_return_offers_having_only_soft_deleted_stocks(self, app):
+            # Given
+            product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+            offerer = create_offerer()
+            user = create_user()
+            venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
+                                 latitude=49.894171)
+            offer = create_offer_with_thing_product(venue=venue, product=product)
+            stock = create_stock_from_offer(offer, quantity=2, soft_deleted=True)
+            create_mediation(stock.offer)
+
+            repository.save(user, stock)
+
+            discovery_view_v3_queries.refresh(concurrently=False)
+
+            # When
+            offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
+
+            # Then
+            assert len(offers) == 0
+
+        @clean_database
+        def test_filter_should_not_return_offers_from_non_validated_venue(self, app):
+            # Given
+            product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+            offerer = create_offerer()
+            user = create_user()
+            venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
+                                 latitude=49.894171, validation_token='nimportequoi')
+            offer = create_offer_with_thing_product(venue=venue, product=product)
+            stock = create_stock_from_offer(offer, quantity=2)
+            create_mediation(stock.offer)
+
+            repository.save(user, stock)
+
+            discovery_view_v3_queries.refresh(concurrently=False)
+
+            # When
+            offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
+
+            # Then
+            assert len(offers) == 0
+
+        @clean_database
+        def test_filter_should_not_return_offers_from_non_validated_offerers(self, app):
+            # Given
+            product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+            offerer = create_offerer(validation_token='nimportequoi')
+            user = create_user()
+            venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
+                                 latitude=49.894171)
+            offer = create_offer_with_thing_product(venue=venue, product=product)
+            stock = create_stock_from_offer(offer, quantity=2)
+            create_mediation(stock.offer)
+
+            repository.save(user, stock)
+
+            discovery_view_v3_queries.refresh(concurrently=False)
+
+            # When
+            offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
+
+            # Then
+            assert len(offers) == 0
+
+        @clean_database
+        def test_filter_should_not_return_offers_having_only_stocks_with_past_booking_limit_date_time(self, app):
+            # Given
+            product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
+            offerer = create_offerer()
+            user = create_user()
+            venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
+                                 latitude=49.894171)
+            offer = create_offer_with_thing_product(venue=venue, product=product)
+            one_day_ago = datetime.utcnow() - timedelta(days=1)
+            stock = create_stock_from_offer(offer, quantity=2, booking_limit_datetime=one_day_ago)
+            create_mediation(stock.offer)
+
+            repository.save(user, stock)
+
+            discovery_view_v3_queries.refresh(concurrently=False)
+
+            # When
+            offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
+
+            # Then
+            assert len(offers) == 0
+
+        @clean_database
+        def test_order_with_criteria_should_return_offer_with_highest_base_score_first(self, app):
             # Given
             offerer = create_offerer()
             user = create_user()
@@ -166,7 +255,7 @@ class GetOffersForRecommendationV3Test:
             assert offers == [offer2, offer1]
 
         @clean_database
-        def test_should_return_digital_offers_first_when_offers_have_same_criterion_score(self, app):
+        def test_order_should_return_digital_offers_first_when_offers_have_same_criterion_score(self, app):
             # Given
             offerer = create_offerer()
             user = create_user()
@@ -190,99 +279,9 @@ class GetOffersForRecommendationV3Test:
             # Then
             assert offers == [digital_offer, physical_offer]
 
-        @clean_database
-        def test_should_not_return_offers_having_only_soft_deleted_stocks(self, app):
-            # Given
-            product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
-            offerer = create_offerer()
-            user = create_user()
-            venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
-                                 latitude=49.894171)
-            offer = create_offer_with_thing_product(venue=venue, product=product)
-            stock = create_stock_from_offer(offer, quantity=2, soft_deleted=True)
-            create_mediation(stock.offer)
-
-            repository.save(user, stock)
-
-            discovery_view_v3_queries.refresh(concurrently=False)
-
-            # When
-            offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
-
-            # Then
-            assert len(offers) == 0
-
-        @clean_database
-        def test_should_not_return_offers_from_non_validated_venue(self, app):
-            # Given
-            product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
-            offerer = create_offerer()
-            user = create_user()
-            venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
-                                 latitude=49.894171, validation_token='nimportequoi')
-            offer = create_offer_with_thing_product(venue=venue, product=product)
-            stock = create_stock_from_offer(offer, quantity=2)
-            create_mediation(stock.offer)
-
-            repository.save(user, stock)
-
-            discovery_view_v3_queries.refresh(concurrently=False)
-
-            # When
-            offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
-
-            # Then
-            assert len(offers) == 0
-
-        @clean_database
-        def test_should_not_return_offers_from_non_validated_offerers(self, app):
-            # Given
-            product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
-            offerer = create_offerer(validation_token='nimportequoi')
-            user = create_user()
-            venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
-                                 latitude=49.894171)
-            offer = create_offer_with_thing_product(venue=venue, product=product)
-            stock = create_stock_from_offer(offer, quantity=2)
-            create_mediation(stock.offer)
-
-            repository.save(user, stock)
-
-            discovery_view_v3_queries.refresh(concurrently=False)
-
-            # When
-            offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
-
-            # Then
-            assert len(offers) == 0
-
-        @clean_database
-        def test_should_not_return_offers_having_only_stocks_with_past_booking_limit_date_time(self, app):
-            # Given
-            product = create_product_with_thing_type(thing_name='Lire un livre', is_national=True)
-            offerer = create_offerer()
-            user = create_user()
-            venue = create_venue(offerer, postal_code='34000', departement_code='34', longitude=2.295695,
-                                 latitude=49.894171)
-            offer = create_offer_with_thing_product(venue=venue, product=product)
-            one_day_ago = datetime.utcnow() - timedelta(days=1)
-            stock = create_stock_from_offer(offer, quantity=2, booking_limit_datetime=one_day_ago)
-            create_mediation(stock.offer)
-
-            repository.save(user, stock)
-
-            discovery_view_v3_queries.refresh(concurrently=False)
-
-            # When
-            offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
-
-            # Then
-            assert len(offers) == 0
-
     class UserSpecificBehaviorTest:
-
         @clean_database
-        def test_should_not_return_booked_offers(self, app):
+        def test_filter_should_not_return_booked_offers(self, app):
             # Given
             offerer = create_offerer()
             venue = create_venue(offerer, postal_code='34000', departement_code='34')
@@ -303,7 +302,7 @@ class GetOffersForRecommendationV3Test:
             assert offers == []
 
         @clean_database
-        def test_should_not_return_favorite_offers(self, app):
+        def test_filter_should_not_return_favorite_offers(self, app):
             # Given
             offerer = create_offerer()
             user = create_user()
@@ -327,7 +326,7 @@ class GetOffersForRecommendationV3Test:
         class WhenUserIsGeolocatedTest:
 
             @clean_database
-            def test_should_return_offer_when_offer_is_national(self, app):
+            def test_filter_should_return_offer_when_offer_is_national(self, app):
                 # Given
                 offerer = create_offerer(siren='123456789')
                 user = create_user()
@@ -357,7 +356,7 @@ class GetOffersForRecommendationV3Test:
                 assert offers == [offer]
 
             @clean_database
-            def test_should_not_return_offers_from_venue_outside_user_iris(self, app):
+            def test_filter_should_not_return_offers_from_venue_outside_user_iris(self, app):
                 # given
                 offerer = create_offerer(siren='123456789')
                 user = create_user()
@@ -387,7 +386,7 @@ class GetOffersForRecommendationV3Test:
                 assert offers == []
 
             @clean_database
-            def test_should_return_only_national_offers_when_user_is_geolocated_abroad(self, app):
+            def test_filter_should_return_only_national_offers_when_user_is_geolocated_abroad(self, app):
                 # given
                 offerer = create_offerer(siren='123456789')
                 user = create_user()
@@ -419,7 +418,7 @@ class GetOffersForRecommendationV3Test:
         class WhenUserIsNotGeolocatedTest:
 
             @clean_database
-            def test_should_return_offers_regardless_of_location(self, app):
+            def test_filter_should_return_offers_regardless_of_location(self, app):
                 # given
                 offerer = create_offerer(siren='123456789')
                 user = create_user()

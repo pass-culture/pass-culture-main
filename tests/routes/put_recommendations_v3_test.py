@@ -5,7 +5,7 @@ from shapely.geometry import Polygon
 
 from models import Feature, DiscoveryViewV3, ThingType
 from models.feature import FeatureToggle
-from repository import repository
+from repository import repository, discovery_view_v3_queries
 from tests.conftest import TestClient, clean_database
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_mediation, \
     create_iris, create_iris_venue
@@ -70,7 +70,7 @@ class Put:
             feature.isActive = True
 
             repository.save(user, stock, mediation, feature, iris_venue)
-            DiscoveryViewV3.refresh(concurrently=False)
+            discovery_view_v3_queries.refresh(concurrently=False)
 
             reads = [
                 {"id": humanize(1), "dateRead": "2018-12-17T15:59:11.689000Z"},
@@ -110,7 +110,7 @@ class Put:
 
             repository.save(user, stock1)
 
-            DiscoveryViewV3.refresh(concurrently=False)
+            discovery_view_v3_queries.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -155,7 +155,7 @@ class Put:
             feature.isActive = True
 
             repository.save(user, stock, stock_of_digital_offer, mediation, mediation_of_digital_offer, feature)
-            DiscoveryViewV3.refresh(concurrently=False)
+            discovery_view_v3_queries.refresh(concurrently=False)
 
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
@@ -204,7 +204,7 @@ class Put:
             iris_venue = create_iris_venue(iris, venue)
             repository.save(iris_venue)
 
-            DiscoveryViewV3.refresh(concurrently=False)
+            discovery_view_v3_queries.refresh(concurrently=False)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
