@@ -31,4 +31,16 @@ describe('src | services | bookingRecapsService', () => {
     expect(bookingRecaps).toHaveLength(1)
     expect(bookingRecaps).toStrictEqual([oneBooking])
   })
+
+  it('should return empty list when an error occurred', async () => {
+    // Given
+    mockJsonPromise = Promise.reject('An error occured')
+
+    // When
+    const bookingRecaps = await fetchBookingRecaps()
+
+    // Then
+    expect(bookingRecaps).toHaveLength(0)
+    expect(bookingRecaps).toStrictEqual([])
+  })
 })
