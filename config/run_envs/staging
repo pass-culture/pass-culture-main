@@ -1,6 +1,6 @@
 API_URL='https://backend.passculture-staging.beta.gouv.fr'
 NETLIFY_SITE_ID_WEBAPP="06e0e1fc-3714-4947-89bb-090a014be86e"
 NETLIFY_SITE_ID_PRO="c1e753e4-ace5-4dd5-a6ee-5d86bc895e73"
-NODE_ENV="production"
+NODE_ENV="staging"
 MATOMO_SERVER_URL="https://pc-matomo.scalingo.io/"
 ENVIRONMENT_NAME="staging"
