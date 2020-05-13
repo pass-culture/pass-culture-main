@@ -32,7 +32,7 @@ class BookingsRecap extends PureComponent {
     const { bookingsRecap } = this.state
     return (
       <Main name="bookings-v2">
-        <Titles title="Réservations V2" />
+        <Titles title="Réservations" />
         <BookingsRecapTable bookingsRecap={bookingsRecap} />
       </Main>
     )
