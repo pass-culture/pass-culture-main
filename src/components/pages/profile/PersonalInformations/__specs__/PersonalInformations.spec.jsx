@@ -1,8 +1,9 @@
-import { mount } from 'enzyme'
+import { mount, shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Router } from 'react-router'
 
+import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import PersonalInformations from '../PersonalInformations'
 
 describe('personal informations', () => {
@@ -54,6 +55,17 @@ describe('personal informations', () => {
     expect(name).toBe('Martin Dupont')
     expect(email).toBe('m.dupont@example.com')
     expect(departmentCode).toBe('Seine-Saint-Denis (93)')
+  })
+
+  it('should display the header', () => {
+    // When
+    const wrapper = shallow(<PersonalInformations {...props} />)
+
+    // Then
+    const header = wrapper.find(HeaderContainer)
+    expect(header.prop('backTo')).toBe('/profil')
+    expect(header.prop('closeTo')).toBeNull()
+    expect(header.prop('title')).toBe('Informations personnelles')
   })
 
   it('should prevent name, email and department code modifications', () => {

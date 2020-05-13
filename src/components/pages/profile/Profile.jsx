@@ -6,7 +6,7 @@ import getDepartementByCode from '../../../utils/getDepartementByCode'
 import { snackbar } from '../../../utils/snackbar'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import NotMatch from '../not-match/NotMatch'
-import UserPasswordField from './forms/fields/UserPasswordField'
+import EditPasswordContainer from './EditPassword/EditPasswordContainer'
 import PersonalInformationsContainer from './PersonalInformations/PersonalInformationsContainer'
 import ProfileMainView from './ProfileMainView/ProfileMainView'
 import ProfileUpdateSuccess from './ProfileUpdateSuccess/ProfileUpdateSuccess'
@@ -26,12 +26,19 @@ class Profile extends PureComponent {
     />
   )
 
-  renderPasswordEditForm = routeProps => (
-    <UserPasswordField
-      {...routeProps}
-      title="Votre mot de passe"
-    />
-  )
+  renderPasswordEditForm = routeProps => {
+    const { currentUser, history } = this.props
+
+    return (
+      <EditPasswordContainer
+        history={history}
+        pathToProfile="/profil"
+        snackbar={snackbar}
+        user={currentUser}
+        {...routeProps}
+      />
+    )
+  }
 
   renderPersonalInformationsEdition = routeProps => {
     const { currentUser, history } = this.props
@@ -73,13 +80,13 @@ class Profile extends PureComponent {
             <Route
               exact
               key="route-profile-update-success"
-              path="/profil/:view(password)/success/:menu(menu)?"
+              path="/profil/:view(mot-de-passe)/success/:menu(menu)?"
               render={this.renderPasswordUpdateSuccess}
             />
             <Route
               exact
               key="route-profile-edit-form"
-              path="/profil/:view(password)/:menu(menu)?"
+              path="/profil/:view(mot-de-passe)/:menu(menu)?"
               render={this.renderPasswordEditForm}
             />
             <Route

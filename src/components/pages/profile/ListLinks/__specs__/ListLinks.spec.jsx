@@ -27,6 +27,6 @@ describe('my informations', () => {
       .parent()
       .prop('to')
 
-    expect(linkToPasswordChangePage).toBe('/profil/password')
+    expect(linkToPasswordChangePage).toBe('/profil/mot-de-passe')
   })
 })

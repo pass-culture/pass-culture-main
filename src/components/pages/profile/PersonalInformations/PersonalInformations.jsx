@@ -25,7 +25,7 @@ class PersonalInformations extends PureComponent {
   handleSubmitFail = (state, action) => {
     this.setState({
       errors: { ...action.payload.errors },
-      isSubmitButtonDisabled: false
+      isSubmitButtonDisabled: false,
     })
     this.nicknameInputRef.current.focus()
     this.nicknameInputRef.current.select()
@@ -55,13 +55,13 @@ class PersonalInformations extends PureComponent {
   }
 
   render() {
-    const { user, getDepartment } = this.props
+    const { user, getDepartment, pathToProfile } = this.props
     const { errors, isSubmitButtonDisabled, nickname } = this.state
 
     return (
       <div className="pi-container">
         <HeaderContainer
-          backTo="/profil"
+          backTo={pathToProfile}
           closeTo={null}
           title="Informations personnelles"
         />

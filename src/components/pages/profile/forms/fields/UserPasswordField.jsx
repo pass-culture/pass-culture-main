@@ -25,19 +25,19 @@ export class UserPasswordField extends PureComponent {
       <Fragment>
         <PasswordField
           disabled={isLoading}
-          label="Saisissez votre mot de passe actuel"
+          label="Mot de passe actuel"
           name="oldPassword"
           required={this.buildOldPasswordLabel()}
         />
         <PasswordField
           disabled={isLoading}
-          label="Saisissez votre nouveau mot de passe"
+          label="Nouveau mot de passe"
           name="newPassword"
           required
         />
         <PasswordField
           disabled={isLoading}
-          label="Confirmez votre nouveau mot de passe"
+          label="Confirmation nouveau mot de passe"
           name="newPasswordConfirm"
           required={this.validateNewPassword()}
         />

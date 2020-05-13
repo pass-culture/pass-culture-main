@@ -40,8 +40,8 @@ describe('profile page', () => {
       // then
       const routes = wrapper.find(Route)
       expect(routes.at(0).prop('path')).toBe('/profil/:menu(menu)?')
-      expect(routes.at(1).prop('path')).toBe('/profil/:view(password)/success/:menu(menu)?')
-      expect(routes.at(2).prop('path')).toBe('/profil/:view(password)/:menu(menu)?')
+      expect(routes.at(1).prop('path')).toBe('/profil/:view(mot-de-passe)/success/:menu(menu)?')
+      expect(routes.at(2).prop('path')).toBe('/profil/:view(mot-de-passe)/:menu(menu)?')
       expect(routes.at(3).prop('path')).toBe('/profil/:view(informations)/:menu(menu)?')
     })
   })

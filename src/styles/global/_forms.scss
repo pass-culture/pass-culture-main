@@ -73,8 +73,9 @@
 }
 
 .form-error-message {
-  font-size: rem(15px);
-  font-weight: 500;
+  color: $primary-error;
+  font-size: rem(14px);
+  font-weight: 400;
   margin-top: rem(2px);
 }
 
