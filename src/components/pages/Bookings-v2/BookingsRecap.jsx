@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import Main from '../../layout/Main'
 import Titles from '../../layout/Titles/Titles'
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
-import { API_URL } from '../../../utils/config'
+import { fetchBookingRecaps } from '../../../services/bookingRecapsService'
 
 class BookingsRecap extends PureComponent {
   constructor(props) {
@@ -11,8 +11,7 @@ class BookingsRecap extends PureComponent {
   }
 
   componentDidMount() {
-    fetch(`${API_URL}/bookings/pro`, { credentials: 'include' })
-      .then(response => response.json())
+    fetchBookingRecaps()
       .then(this.duplicateDuoBookings)
       .then(this.handleSuccess)
   }

@@ -3,21 +3,20 @@ import { shallow } from 'enzyme'
 import Titles from '../../../layout/Titles/Titles'
 import BookingsRecap from '../BookingsRecap'
 import BookingsRecapTable from '../BookingsRecapTable/BookingsRecapTable'
+import * as bookingRecapsService from '../../../../services/bookingRecapsService'
 
 function flushPromises() {
   return new Promise(resolve => setImmediate(resolve))
 }
 
 describe('src | components | pages | Bookings-v2', () => {
-  let mockJsonPromise
-  let mockFetchPromise
+  let fetchBookingRecapsStub
 
   beforeEach(() => {
-    mockJsonPromise = Promise.resolve([{}])
-    mockFetchPromise = Promise.resolve({
-      json: () => mockJsonPromise,
-    })
-    jest.spyOn(global, 'fetch').mockImplementation(() => mockFetchPromise)
+    fetchBookingRecapsStub = Promise.resolve([{}])
+    jest
+      .spyOn(bookingRecapsService, 'fetchBookingRecaps')
+      .mockImplementation(() => fetchBookingRecapsStub)
   })
 
   it('should render a Titles component and a BookingsRecapTable', async () => {
@@ -41,7 +40,7 @@ describe('src | components | pages | Bookings-v2', () => {
       booking_token: 'TOKEN',
       stock: { offer_name: 'My offer name' },
     }
-    mockJsonPromise = Promise.resolve([oneBooking])
+    fetchBookingRecapsStub = Promise.resolve([oneBooking])
 
     // When
     const wrapper = shallow(<BookingsRecap />)
@@ -73,7 +72,7 @@ describe('src | components | pages | Bookings-v2', () => {
       booking_token: 'NEKOT',
       stock: { offer_name: 'My other offer name' },
     }
-    mockJsonPromise = Promise.resolve([oneDuoBooking, oneNonDuoBooking])
+    fetchBookingRecapsStub = Promise.resolve([oneDuoBooking, oneNonDuoBooking])
 
     // When
     const wrapper = shallow(<BookingsRecap />)
