@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import { usePagination, useTable } from 'react-table'
 import Paginate from './Paginate/Paginate'
 import Head from './Head/Head'
+import Body from './Body/Body'
 
 const FIRST_PAGE_INDEX = 0
 
@@ -39,28 +40,11 @@ const Table = ({ columns, data, nbHitsPerPage }) => {
         {...getTableProps()}
       >
         <Head headerGroups={headerGroups} />
-        <tbody {...getTableBodyProps()}>
-          {page.map(row => {
-            prepareRow(row)
-            return (
-              <tr
-                key={row.id}
-                {...row.getRowProps()}
-              >
-                {row.cells.map(cell => {
-                  return (
-                    <td
-                      key={cell.id}
-                      {...cell.getCellProps({ className: cell.column.className })}
-                    >
-                      {cell.render('Cell')}
-                    </td>
-                  )
-                })}
-              </tr>
-            )
-          })}
-        </tbody>
+        <Body
+          page={page}
+          prepareRow={prepareRow}
+          tableBodyProps={getTableBodyProps()}
+        />
       </table>
       <Paginate
         canNextPage={canNextPage}

@@ -34,8 +34,8 @@ describe('components | Table', () => {
     const mockedValues = {
       canPreviousPage: true,
       canNextPage: true,
-      getTableProps: jest.fn(),
-      getTableBodyProps: jest.fn(),
+      getTableProps: jest.fn(() => ({})),
+      getTableBodyProps: jest.fn(() => ({})),
       headerGroups: [
         {
           id: 1,
@@ -92,11 +92,15 @@ describe('components | Table', () => {
           id: 1,
           headerTitle: 'Stock',
           accessor: 'stock',
+          // eslint-disable-next-line react/display-name, react/no-multi-comp
+          Cell: ({ value }) => <CellMock offer={value} />,
         },
         {
           id: 2,
           headerTitle: 'Beneficiaire',
           accessor: 'beneficiary',
+          // eslint-disable-next-line react/display-name, react/no-multi-comp
+          Cell: ({ value }) => <CellMock offer={value} />,
         },
       ],
       data: [
@@ -129,7 +133,7 @@ describe('components | Table', () => {
     }
 
     // When
-    const table = shallow(<Table {...props} />)
+    const table = mount(<Table {...props} />)
 
     // Then
     const tableRows = table.find('tbody > tr')
