@@ -1,5 +1,5 @@
 API_URL='https://backend.passculture-integration.beta.gouv.fr'
 NETLIFY_SITE_ID_WEBAPP="65141ad7-1524-4e4f-8d1f-77e2abc63252"
 NETLIFY_SITE_ID_PRO="df2b3ea9-e45e-4e73-bbcb-3dbefc2fa1af"
-NODE_ENV="production"
+NODE_ENV="integration"
 ENVIRONMENT_NAME="integration"

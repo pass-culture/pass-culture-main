@@ -250,8 +250,6 @@ jobs:
             yarn install
 
             set -a; source ~/pass-culture/config/run_envs/"${CIRCLE_BRANCH}"
-            # TODO : Remove once env variables are cleaned in every app
-            export NODE_ENV=${CIRCLE_BRANCH}
 
             yarn build
 
@@ -290,8 +288,6 @@ jobs:
             yarn install
 
             set -a; source ~/pass-culture/config/run_envs/"${CIRCLE_BRANCH}";
-            # TODO : Remove once env variables are cleaned in every app
-            export NODE_ENV=${CIRCLE_BRANCH}
 
             yarn build
 
