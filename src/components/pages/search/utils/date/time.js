@@ -81,5 +81,16 @@ export const TIMESTAMP = {
 }
 
 export const computeTimeRangeFromHoursToSeconds = timeRange => {
-  return timeRange.map(timeInHour => timeInHour * 60 * 60)
+  const now = new Date()
+  const offsetInMinutes = now.getTimezoneOffset()
+  const sign = Math.sign(offsetInMinutes)
+
+  return timeRange.map(timeInHour => {
+    const timeInSeconds = timeInHour * 60 * 60
+    const offsetInSeconds = offsetInMinutes * 60
+
+    return sign === 1 ?
+      timeInSeconds - offsetInSeconds
+      : timeInSeconds + offsetInSeconds
+  })
 }
