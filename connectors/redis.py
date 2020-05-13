@@ -207,4 +207,3 @@ def delete_offer_ids_in_error(client: Redis) -> None:
         logger.debug('[REDIS] offer ids in error were deleted')
     except redis.exceptions.RedisError as error:
         logger.error(f'[REDIS] {error}')
-

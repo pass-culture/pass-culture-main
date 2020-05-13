@@ -14,7 +14,7 @@ from repository import offerer_queries, venue_queries
 from repository.bank_information_queries import get_last_update_from_bank_information
 from utils.date import DATE_ISO_FORMAT
 from sqlalchemy.orm.exc import MultipleResultsFound
-from domain.bank_information import check_offerer_presence, check_venue_presence, check_venue_queried_by_name, NoRefererException
+from domain.bank_information import check_offerer_presence, check_venue_presence, check_venue_queried_by_name, CannotRegisterBankInformation
 
 
 class VenueBankInformationProvider(LocalProvider):
@@ -95,7 +95,7 @@ class VenueBankInformationProvider(LocalProvider):
             bank_information_dict['idAtProviders'] = _compute_id_at_provider(
                 venue, offerer)
 
-        except NoRefererException as err:
+        except CannotRegisterBankInformation as err:
             self.log_provider_event(LocalProviderEventType.SyncError,
                                     f"{err} for application id {bank_information_dict['applicationId']}")
             return {}

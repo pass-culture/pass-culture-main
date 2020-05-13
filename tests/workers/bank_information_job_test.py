@@ -1,4 +1,4 @@
-from unittest.mock import patch, call
+from unittest.mock import patch
 
 from workers.bank_information_job import bank_information_job
 
@@ -14,9 +14,7 @@ class synchronizeBankInformationsTest:
         bank_information_job(application_id, provider_name)
 
         # Then
-        assert mock_save_offerer_bank_informations.call_args_list == [
-            call('id')
-        ]
+        mock_save_offerer_bank_informations.assert_called_once_with('id')
 
 
     @patch('workers.bank_information_job.save_venue_bank_informations')
@@ -29,9 +27,7 @@ class synchronizeBankInformationsTest:
         bank_information_job(application_id, provider_name)
 
         # Then
-        assert mock_save_venue_bank_informations.call_args_list == [
-            call('id')
-        ]
+        mock_save_venue_bank_informations.assert_called_once_with('id')
 
 
     @patch('workers.bank_information_job.save_venue_bank_informations')

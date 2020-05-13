@@ -1,4 +1,4 @@
-from flask import current_app as app, jsonify, request
+from flask import current_app as app, jsonify
 from flask_login import login_required
 
 from local_providers import AllocineStocks

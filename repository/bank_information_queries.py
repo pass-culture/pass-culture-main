@@ -20,7 +20,7 @@ def get_last_update_from_bank_information(last_provider_id: Optional[int] = None
 def get_by_application_id(application_id: int) -> Optional[BankInformation]:
     return BankInformation.query \
         .filter_by(applicationId=application_id) \
-        .one_or_none()
+        .first()
 
 
 def get_by_offerer_and_venue(offerer_id: int, venue_id: int) -> Optional[BankInformation]:

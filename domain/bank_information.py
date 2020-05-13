@@ -1,4 +1,6 @@
-from models import BankInformation
+from typing import List
+
+from models import BankInformation, Venue, Offerer
 from models.bank_information import BankInformationStatus
 
 status_weight = {
@@ -19,22 +21,22 @@ def new_application_can_update_bank_information(bank_information: BankInformatio
     return same_demarches_simplifiees_application or new_status_is_more_advanced_than_previous
 
 
-class NoRefererException(Exception):
+class CannotRegisterBankInformation(Exception):
     pass
 
 
-def check_offerer_presence(offerer):
+def check_offerer_presence(offerer: Offerer):
     if not offerer:
-        raise NoRefererException("Offerer not found")
+        raise CannotRegisterBankInformation("Offerer not found")
 
 
-def check_venue_presence(venue):
+def check_venue_presence(venue: Venue):
     if not venue:
-        raise NoRefererException("Venue not found")
+        raise CannotRegisterBankInformation("Venue not found")
 
 
-def check_venue_queried_by_name(venues):
+def check_venue_queried_by_name(venues: List[Venue]):
     if len(venues) == 0:
-        raise NoRefererException("Venue name not found")
+        raise CannotRegisterBankInformation("Venue name not found")
     if len(venues) > 1:
-        raise NoRefererException("Multiple venues found")
+        raise CannotRegisterBankInformation("Multiple venues found")
