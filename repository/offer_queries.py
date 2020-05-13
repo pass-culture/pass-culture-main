@@ -114,7 +114,7 @@ def get_offers_for_recommendation(user: User,
         discovery_view_query = keep_only_offers_in_venues_or_national(discovery_view_query, venue_ids)
 
     if feature_queries.is_active(FeatureToggle.SAVE_SEEN_OFFERS):
-        discovery_view_query = order_offers_by_unseen_offers_first(discovery_view_query)
+        discovery_view_query = order_offers_by_unseen_offers_first(discovery_view_query, DiscoveryView)
 
     discovery_view_query = discovery_view_query.order_by(DiscoveryView.offerDiscoveryOrder)
 
@@ -124,13 +124,45 @@ def get_offers_for_recommendation(user: User,
     return discovery_view_query.all()
 
 
-def order_offers_by_unseen_offers_first(query: BaseQuery):
-    offers_subquery = query.outerjoin(SeenOffer, SeenOffer.offerId == DiscoveryView.id)\
-        .with_entities(SeenOffer.dateSeen.label('dateSeen'), DiscoveryView.id.label('offerId'))\
+def get_offers_for_recommendation_v3(user: User, user_iris_id: Optional[int] = None, user_is_geolocated: bool = False,
+                                     limit: Optional[int] = None, seen_recommendation_ids: List[int] = []) -> List[DiscoveryViewV3]:
+    favorite_offers_ids = get_only_offer_ids_from_favorites(user)
+
+    booked_offers_ids = get_only_offer_ids_from_bookings(user)
+
+    discovery_view_query = DiscoveryViewV3.query \
+        .filter(DiscoveryViewV3.id.notin_(favorite_offers_ids)) \
+        .filter(DiscoveryViewV3.id.notin_(seen_recommendation_ids)) \
+        .filter(DiscoveryViewV3.id.notin_(booked_offers_ids))
+
+    if user_is_geolocated:
+        venue_ids = find_venues_located_near_iris(user_iris_id)
+        discovery_view_query = keep_only_offers_from_venues_located_near_to_user_or_national(discovery_view_query,
+                                                                                             venue_ids)
+
+    if feature_queries.is_active(FeatureToggle.SAVE_SEEN_OFFERS):
+        discovery_view_query = order_offers_by_unseen_offers_first(discovery_view_query, DiscoveryViewV3)
+
+    discovery_view_query = discovery_view_query.order_by(DiscoveryViewV3.offerDiscoveryOrder)
+
+    if limit:
+        discovery_view_query = discovery_view_query.limit(limit)
+
+    return discovery_view_query.all()
+
+
+def order_offers_by_unseen_offers_first(query: BaseQuery, discovery_view_model: Model):
+    offers_subquery = query.outerjoin(SeenOffer, SeenOffer.offerId == discovery_view_model.id)\
+        .with_entities(SeenOffer.dateSeen.label('dateSeen'), discovery_view_model.id.label('offerId'))\
         .subquery()
 
-    return query.outerjoin(offers_subquery, offers_subquery.c.offerId == DiscoveryView.id)\
+    return query.outerjoin(offers_subquery, offers_subquery.c.offerId == discovery_view_model.id)\
         .order_by(nullsfirst(offers_subquery.c.dateSeen))
+
+
+def keep_only_offers_from_venues_located_near_to_user_or_national(query: BaseQuery,
+                                                                  venue_ids: List[int] = []) -> BaseQuery:
+    return query.filter(or_(DiscoveryViewV3.venueId.in_(venue_ids), DiscoveryViewV3.isNational == True))
 
 
 def keep_only_offers_in_venues_or_national(query: BaseQuery, venue_ids: selectable.Alias) -> BaseQuery:
@@ -473,32 +505,3 @@ def get_paginated_expired_offer_ids(limit: int, page: int) -> List[tuple]:
         .offset(page * limit) \
         .limit(limit) \
         .all()
-
-
-def get_offers_for_recommendation_v3(user: User, user_iris_id: Optional[int] = None, user_is_geolocated: bool = False,
-                                     limit: Optional[int] = None, seen_recommendation_ids: List[int] = []) -> List[DiscoveryViewV3]:
-    favorite_offers_ids = get_only_offer_ids_from_favorites(user)
-
-    booked_offers_ids = get_only_offer_ids_from_bookings(user)
-
-    discovery_view_query = DiscoveryViewV3.query \
-        .filter(DiscoveryViewV3.id.notin_(favorite_offers_ids)) \
-        .filter(DiscoveryViewV3.id.notin_(seen_recommendation_ids)) \
-        .filter(DiscoveryViewV3.id.notin_(booked_offers_ids))
-
-    if user_is_geolocated:
-        venue_ids = find_venues_located_near_iris(user_iris_id)
-        discovery_view_query = keep_only_offers_from_venues_located_near_to_user_or_national(discovery_view_query,
-                                                                                             venue_ids)
-
-    discovery_view_query = discovery_view_query.order_by(DiscoveryViewV3.offerDiscoveryOrder)
-
-    if limit:
-        discovery_view_query = discovery_view_query.limit(limit)
-
-    return discovery_view_query.all()
-
-
-def keep_only_offers_from_venues_located_near_to_user_or_national(query: BaseQuery,
-                                                                  venue_ids: List[int] = []) -> BaseQuery:
-    return query.filter(or_(DiscoveryViewV3.venueId.in_(venue_ids), DiscoveryViewV3.isNational == True))
