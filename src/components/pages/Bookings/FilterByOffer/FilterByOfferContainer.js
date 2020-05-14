@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { requestData } from 'redux-saga-data'
 
 import FilterByOffer from './FilterByOffer'
-import selectIsUserAdmin from '../../../../selectors/userSelectors'
+import { selectIsUserAdmin } from '../../../../selectors/data/usersSelectors'
 import {
   selectDigitalOffers,
   selectOffersByVenueId,

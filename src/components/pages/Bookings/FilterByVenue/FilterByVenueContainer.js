@@ -5,7 +5,8 @@ import withFrenchQueryRouter from '../../../hocs/withFrenchQueryRouter'
 
 import FilterByVenue from './FilterByVenue'
 import { closeNotification, showNotification } from 'pass-culture-shared'
-import selectIsUserAdmin from '../../../../selectors/userSelectors'
+import { selectIsUserAdmin } from '../../../../selectors/data/usersSelectors'
+
 import { selectNonVirtualVenues } from '../../../../selectors/data/venuesSelectors'
 
 export const mapDispatchToProps = dispatch => ({
