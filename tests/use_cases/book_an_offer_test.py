@@ -7,11 +7,11 @@ from domain.booking.booking_exceptions import OfferIsAlreadyBooked, CannotBookFr
     UserHasInsufficientFunds, PhysicalExpenseLimitHasBeenReached, QuantityIsInvalid
 from domain.stock.stock import Stock
 from domain.stock.stock_exceptions import StockDoesntExist
-from infrastructure.services.notification.mailjet_service import MailjetService
+from infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
 from repository import repository
-from repository.booking.booking_sql_repository import BookingSQLRepository
-from repository.stock.stock_sql_repository import StockSQLRepository
-from repository.user.user_sql_repository import UserSQLRepository
+from infrastructure.repository.booking.booking_sql_repository import BookingSQLRepository
+from infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
+from infrastructure.repository.user.user_sql_repository import UserSQLRepository
 from tests.conftest import clean_database
 from tests.domain_creators.generic_creators import create_domain_user
 from tests.model_creators.generic_creators import create_user, create_deposit, create_offerer, create_venue, \
@@ -28,9 +28,9 @@ class BookAnOfferTest:
         self.user_repository = UserSQLRepository()
         self.stock_repository.find_stock_by_id = MagicMock()
         self.user_repository.find_user_by_id = MagicMock()
-        self.notification_service = MailjetService()
-        self.notification_service.send_booking_recap_emails = MagicMock()
-        self.notification_service.send_booking_confirmation_email_to_beneficiary = MagicMock()
+        self.notification_service = MailjetNotificationService()
+        self.notification_service.send_booking_recap = MagicMock()
+        self.notification_service.send_booking_confirmation_to_beneficiary = MagicMock()
         self.book_an_offer = BookAnOffer(booking_repository=self.booking_repository,
                                          user_repository=self.user_repository,
                                          stock_repository=self.stock_repository,
@@ -110,7 +110,7 @@ class BookAnOfferTest:
         self.book_an_offer.execute(booking_information=booking_information)
 
         # Then
-        self.notification_service.send_booking_recap_emails.assert_called_once_with(saved_booking)
+        self.notification_service.send_booking_recap.assert_called_once_with(saved_booking)
 
     @clean_database
     def test_send_booking_confirmation_email_to_beneficiary(self, app):
@@ -147,7 +147,7 @@ class BookAnOfferTest:
         self.book_an_offer.execute(booking_information=booking_information)
 
         # Then
-        self.notification_service.send_booking_confirmation_email_to_beneficiary.assert_called_once_with(saved_booking)
+        self.notification_service.send_booking_confirmation_to_beneficiary.assert_called_once_with(saved_booking)
 
     @clean_database
     def test_return_saved_booking(self, app):

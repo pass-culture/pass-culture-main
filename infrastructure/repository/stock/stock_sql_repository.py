@@ -3,7 +3,7 @@ from domain.stock.stock_exceptions import StockDoesntExist
 from domain.stock.stock_repository import StockRepository
 from models import StockSQLEntity
 from models.db import db
-from repository.stock import stock_domain_adapter
+from infrastructure.repository.stock import stock_domain_converter
 
 
 class StockSQLRepository(StockRepository):
@@ -13,4 +13,4 @@ class StockSQLRepository(StockRepository):
         if stock_sql_entity is None:
             raise StockDoesntExist()
 
-        return stock_domain_adapter.to_domain(stock_sql_entity)
+        return stock_domain_converter.to_domain(stock_sql_entity)

@@ -1,9 +1,9 @@
 from domain.booking.booking import Booking
 from domain.stock.stock import Stock
+from infrastructure.repository.booking import booking_domain_converter
+from infrastructure.repository.booking.booking_sql_repository import BookingSQLRepository
 from models import ThingType
 from repository import repository
-from repository.booking import booking_domain_adapter
-from repository.booking.booking_sql_repository import BookingSQLRepository
 from tests.conftest import clean_database
 from tests.domain_creators.generic_creators import create_domain_user
 from tests.model_creators.generic_creators import create_booking, \
@@ -30,7 +30,7 @@ class BookingSQLRepositoryTest:
         booking_sql_entity3 = create_booking(user=user, stock=book_stock, venue=venue_online)
         repository.save(booking_sql_entity1, booking_sql_entity2, booking_sql_entity3)
 
-        booking1 = booking_domain_adapter.to_domain(booking_sql_entity1)
+        booking1 = booking_domain_converter.to_domain(booking_sql_entity1)
 
         # when
         bookings = self.booking_sql_repository.find_active_bookings_by_user_id(user.id)

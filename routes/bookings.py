@@ -28,8 +28,7 @@ from use_cases.get_all_bookings_by_pro_user import get_all_bookings_by_pro_user
 from utils.human_ids import dehumanize, humanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, \
     WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES, \
-    WEBAPP_PATCH_POST_BOOKING_INCLUDES, \
-    WEBAPP_PATCH_POST_BOOKING_WITH_QR_CODE_INCLUDES
+    WEBAPP_PATCH_POST_BOOKING_INCLUDES
 from utils.mailing import MailServiceException, send_raw_email
 from utils.rest import ensure_current_user_has_rights, expect_json_data
 from validation.routes.bookings import check_booking_is_cancellable_by_user, \

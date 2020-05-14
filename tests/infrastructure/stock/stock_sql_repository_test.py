@@ -5,7 +5,7 @@ import pytest
 from domain.stock.stock_exceptions import StockDoesntExist
 from domain.stock.stock import Stock
 from repository import repository
-from repository.stock.stock_sql_repository import StockSQLRepository
+from infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer

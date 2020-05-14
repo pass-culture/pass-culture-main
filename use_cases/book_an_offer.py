@@ -46,8 +46,8 @@ class BookAnOffer:
 
         booking_saved = self.booking_repository.save(booking)
 
-        self.notification_service.send_booking_recap_emails(booking_saved)
-        self.notification_service.send_booking_confirmation_email_to_beneficiary(booking_saved)
+        self.notification_service.send_booking_recap(booking_saved)
+        self.notification_service.send_booking_confirmation_to_beneficiary(booking_saved)
 
         return booking_saved
 

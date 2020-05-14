@@ -3,7 +3,7 @@ import pytest
 from domain.user.user import User
 from domain.user.user_exceptions import UserDoesntExist
 from repository import repository
-from repository.user.user_sql_repository import UserSQLRepository
+from infrastructure.repository.user.user_sql_repository import UserSQLRepository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_deposit
 
