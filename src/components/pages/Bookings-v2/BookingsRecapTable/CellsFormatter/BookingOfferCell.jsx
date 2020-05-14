@@ -8,6 +8,7 @@ const BookingOfferCell = ({ offer }) => {
     <BookingOfferCellForEvent
       eventDatetime={offer.event_beginning_datetime}
       offerName={offer.offer_name}
+      venueDepartmentCode={offer.venue_department_code}
     />
   ) : (
     <BookingOfferCellForThing offerName={offer.offer_name} />
