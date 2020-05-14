@@ -17,7 +17,7 @@ from domain.user_emails import send_beneficiary_booking_cancellation_email, \
 from models import Offerer
 from repository import repository
 from tests.conftest import clean_database
-from tests.domain_creators.generic_creators import create_domain_user
+from tests.domain_creators.generic_creators import create_domain_beneficiary
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_user_offerer, create_deposit
 from tests.model_creators.specific_creators import create_stock_with_event_offer, create_offer_with_thing_product
@@ -217,7 +217,7 @@ class SendBookingRecapEmailsTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, booking_email='offer.booking.email@example.net')
 
-        user = create_domain_user(identifier=1)
+        user = create_domain_beneficiary(identifier=1)
         stock = Stock(
             identifier=1,
             quantity=None,
@@ -246,7 +246,7 @@ class SendBookingRecapEmailsTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, booking_email='offer.booking.email@example.net')
 
-        user = create_domain_user(identifier=1)
+        user = create_domain_beneficiary(identifier=1)
         stock = Stock(
             identifier=1,
             quantity=None,
@@ -276,7 +276,7 @@ class SendBookingRecapEmailsTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue, booking_email=None)
 
-        user = create_domain_user(identifier=1)
+        user = create_domain_beneficiary(identifier=1)
         stock = Stock(
             identifier=1,
             quantity=None,

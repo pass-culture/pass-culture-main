@@ -51,4 +51,4 @@ class BeneficiarySQLRepositoryTest:
             self.beneficiary_sql_repository.find_beneficiary_by_user_id(unknown_id)
 
         # Then
-        assert error.value.errors['userId'] == ['userId ne correspond à aucun user']
+        assert error.value.errors['userId'] == ['userId ne correspond à aucun bénéficiaire']

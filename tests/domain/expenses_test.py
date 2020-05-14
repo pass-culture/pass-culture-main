@@ -2,7 +2,7 @@ from domain.booking.booking import Booking
 from domain.expenses import get_expenses
 from domain.stock.stock import Stock
 from models import ThingType, EventType
-from tests.domain_creators.generic_creators import create_domain_user
+from tests.domain_creators.generic_creators import create_domain_beneficiary
 from tests.model_creators.generic_creators import create_offerer, create_venue
 from tests.model_creators.specific_creators import create_booking_for_thing, create_booking_for_event, \
     create_offer_with_thing_product
@@ -16,7 +16,7 @@ class ExpensesTest:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue, thing_type=ThingType.LIVRE_EDITION, is_digital=True)
 
-            user = create_domain_user(identifier=1)
+            user = create_domain_beneficiary(identifier=1)
             stock = Stock(
                 identifier=1,
                 quantity=None,

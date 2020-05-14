@@ -66,7 +66,7 @@ def serialize_booking_for_book_an_offer(booking: Booking) -> Dict:
             },
             'token': booking.token,
             'user': {
-                'id': humanize(booking.user.identifier),
-                "wallet_balance": booking.user.wallet_balance,
+                'id': humanize(booking.beneficiary.identifier),
+                "wallet_balance": booking.beneficiary.wallet_balance,
             }
         }

@@ -13,7 +13,7 @@ from infrastructure.repository.booking.booking_sql_repository import BookingSQLR
 from infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
 from infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 from tests.conftest import clean_database
-from tests.domain_creators.generic_creators import create_domain_user
+from tests.domain_creators.generic_creators import create_domain_beneficiary
 from tests.model_creators.generic_creators import create_user, create_deposit, create_offerer, create_venue, \
     create_booking, create_stock, create_recommendation
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_offer_with_event_product
@@ -52,7 +52,7 @@ class BookAnOfferTest:
             user.id,
             stock.quantity
         )
-        expected_user = create_domain_user(
+        expected_user = create_domain_beneficiary(
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )
@@ -72,7 +72,7 @@ class BookAnOfferTest:
         self.booking_repository.save.assert_called_once()
         saved_booking = self.booking_repository.save.call_args[0][0]
         assert saved_booking.stock.identifier == booking_information.stock_id
-        assert saved_booking.user.identifier == booking_information.user_id
+        assert saved_booking.beneficiary.identifier == booking_information.user_id
         assert saved_booking.quantity == booking_information.quantity
 
     @clean_database
@@ -91,7 +91,7 @@ class BookAnOfferTest:
             user.id,
             stock.quantity
         )
-        expected_user = create_domain_user(
+        expected_user = create_domain_beneficiary(
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )
@@ -128,7 +128,7 @@ class BookAnOfferTest:
             user_id=user.id,
             quantity=1
         )
-        expected_user = create_domain_user(
+        expected_user = create_domain_beneficiary(
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )
@@ -165,7 +165,7 @@ class BookAnOfferTest:
             user.id,
             stock.quantity
         )
-        expected_user = create_domain_user(
+        expected_user = create_domain_beneficiary(
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )
@@ -232,7 +232,7 @@ class BookAnOfferTest:
             offer=offer
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
-        expected_user = create_domain_user(
+        expected_user = create_domain_beneficiary(
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )
@@ -269,7 +269,7 @@ class BookAnOfferTest:
             offer=offer
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
-        expected_user = create_domain_user(
+        expected_user = create_domain_beneficiary(
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )
@@ -306,7 +306,7 @@ class BookAnOfferTest:
             offer=thing_offer
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
-        expected_user = create_domain_user(
+        expected_user = create_domain_beneficiary(
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )
@@ -341,7 +341,7 @@ class BookAnOfferTest:
             offer=offer
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
-        expected_user = create_domain_user(
+        expected_user = create_domain_beneficiary(
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )
@@ -385,7 +385,7 @@ class BookAnOfferTest:
             offer=offer2
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
-        expected_user = create_domain_user(
+        expected_user = create_domain_beneficiary(
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )
@@ -426,7 +426,7 @@ class BookAnOfferTest:
             offer=offer
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
-        expected_user = create_domain_user(
+        expected_user = create_domain_beneficiary(
             identifier=user.id,
             can_book_free_offers=user.canBookFreeOffers
         )

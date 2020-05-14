@@ -7,7 +7,7 @@ from domain.stock.stock import Stock
 from models import EventType, ThingType
 from routes.serialization import serialize_booking
 from routes.serialization.bookings_serialize import serialize_booking_for_book_an_offer
-from tests.domain_creators.generic_creators import create_domain_user
+from tests.domain_creators.generic_creators import create_domain_beneficiary
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue
 from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_product_with_thing_type, \
@@ -144,7 +144,7 @@ class SerializeBookingForBookAnOfferTest:
     def test_should_return_booking_with_expected_information(self):
         # Give
         offer = create_offer_with_event_product(idx=4)
-        user = create_domain_user(
+        user = create_domain_beneficiary(
             identifier=10,
             can_book_free_offers=False,
             email='joe.doe@example.com',

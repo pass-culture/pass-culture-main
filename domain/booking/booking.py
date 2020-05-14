@@ -16,7 +16,7 @@ class Booking(object):
                  token: str = None,
                  date_booked: datetime = datetime.utcnow()):
         self.identifier = identifier
-        self.user = beneficiary
+        self.beneficiary = beneficiary
         self.stock = stock
         self.amount = amount
         self.quantity = quantity

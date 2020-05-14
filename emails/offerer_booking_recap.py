@@ -14,9 +14,9 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking, recipients: 
     offer_name = offer.product.name
     price = 'Gratuit' if booking.stock.price == 0 else str(booking.stock.price)
     quantity = booking.quantity
-    user_email = booking.user.email
-    user_firstname = booking.user.firstName
-    user_lastname = booking.user.lastName
+    user_email = booking.beneficiary.email
+    user_firstname = booking.beneficiary.firstName
+    user_lastname = booking.beneficiary.lastName
     departement_code = offer.venue.departementCode or 'numérique'
     offer_type = offer.type
     is_event = int(offer.isEvent)

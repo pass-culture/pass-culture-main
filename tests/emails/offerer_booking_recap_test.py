@@ -7,7 +7,7 @@ from emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap
 from models import ThingType
 from repository import repository
 from tests.conftest import clean_database
-from tests.domain_creators.generic_creators import create_domain_user
+from tests.domain_creators.generic_creators import create_domain_beneficiary
 from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
     create_deposit, create_stock
 from tests.model_creators.specific_creators import create_stock_from_offer, create_product_with_thing_type, \
@@ -30,7 +30,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                                             token='ABC123')
         repository.save(booking_sql_entity)
 
-        user = create_domain_user(identifier=1, email='test@example.com', first_name='John', last_name='Doe')
+        user = create_domain_beneficiary(identifier=1, email='test@example.com', first_name='John', last_name='Doe')
         stock = Stock(
             identifier=1,
             quantity=None,
@@ -94,7 +94,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
         booking = create_booking(idx=1, user=user, stock=stock, venue=venue, token='ABC123')
         repository.save(booking)
 
-        user = create_domain_user(identifier=1, email='test@example.com', first_name='John', last_name='Doe')
+        user = create_domain_beneficiary(identifier=1, email='test@example.com', first_name='John', last_name='Doe')
         stock = Stock(
             identifier=1,
             quantity=None,
@@ -156,8 +156,8 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                                             token='ABC123')
         repository.save(deposit, booking_sql_entity)
 
-        user = create_domain_user(identifier=1, email='test@example.com', first_name='John', last_name='Doe',
-                                  wallet_balance=50)
+        user = create_domain_beneficiary(identifier=1, email='test@example.com', first_name='John', last_name='Doe',
+                                         wallet_balance=50)
         stock = Stock(
             identifier=1,
             quantity=None,
@@ -219,7 +219,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                                             token='ABC123')
         repository.save(booking_sql_entity)
 
-        user = create_domain_user(identifier=1, email='test@example.com', first_name='John', last_name='Doe')
+        user = create_domain_beneficiary(identifier=1, email='test@example.com', first_name='John', last_name='Doe')
         stock = Stock(
             identifier=1,
             quantity=None,
@@ -281,7 +281,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
 
         repository.save(booking_sql_entity)
 
-        user = create_domain_user(identifier=1, email='test@example.com', first_name='John', last_name='Doe')
+        user = create_domain_beneficiary(identifier=1, email='test@example.com', first_name='John', last_name='Doe')
         stock = Stock(
             identifier=1,
             quantity=None,
@@ -343,7 +343,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
 
         repository.save(booking_sql_entity)
 
-        user = create_domain_user(identifier=1, email='test@example.com', first_name='John', last_name='Doe')
+        user = create_domain_beneficiary(identifier=1, email='test@example.com', first_name='John', last_name='Doe')
         stock = Stock(
             identifier=1,
             quantity=None,
@@ -378,7 +378,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
 
         repository.save(booking_sql_entity)
 
-        user = create_domain_user(identifier=1, email='test@example.com', first_name='John', last_name='Doe')
+        user = create_domain_beneficiary(identifier=1, email='test@example.com', first_name='John', last_name='Doe')
         stock = Stock(
             identifier=1,
             quantity=None,
@@ -417,8 +417,8 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
 
         repository.save(booking_sql_entity_1, booking_sql_entity_2)
 
-        user1 = create_domain_user(identifier=1, email='test@example.com', first_name='Jean', last_name='Dupont')
-        user2 = create_domain_user(identifier=2, email='mail@example.com', first_name='Jaja', last_name='Dudu')
+        user1 = create_domain_beneficiary(identifier=1, email='test@example.com', first_name='Jean', last_name='Dupont')
+        user2 = create_domain_beneficiary(identifier=2, email='mail@example.com', first_name='Jaja', last_name='Dudu')
         stock = Stock(
             identifier=1,
             quantity=None,
@@ -461,7 +461,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
                                             token='ACVSDC')
         repository.save(booking_sql_entity)
 
-        user = create_domain_user(identifier=1, email='test@example.com', first_name='Jean', last_name='Dupont')
+        user = create_domain_beneficiary(identifier=1, email='test@example.com', first_name='Jean', last_name='Dupont')
         stock = Stock(
             identifier=1,
             quantity=None,

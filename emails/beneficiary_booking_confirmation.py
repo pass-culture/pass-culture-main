@@ -12,7 +12,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     stock = booking.stock
     offer = stock.offer
     venue = offer.venue
-    beneficiary = booking.user
+    beneficiary = booking.beneficiary
 
     is_digital_offer = offer.isDigital
     is_physical_offer = ProductType.is_thing(name=offer.type) and not is_digital_offer

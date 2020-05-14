@@ -5,7 +5,7 @@ from infrastructure.repository.booking.booking_sql_repository import BookingSQLR
 from models import ThingType
 from repository import repository
 from tests.conftest import clean_database
-from tests.domain_creators.generic_creators import create_domain_user
+from tests.domain_creators.generic_creators import create_domain_beneficiary
 from tests.model_creators.generic_creators import create_booking, \
     create_offerer, create_user, \
     create_venue, create_stock, create_deposit
@@ -49,7 +49,7 @@ class BookingSQLRepositoryTest:
             venue_online, thing_type=ThingType.LIVRE_EDITION, is_digital=True)
         stock_sql_entity = create_stock(offer=offer, quantity=200, price=0, idx=23)
 
-        user = create_domain_user(identifier=4)
+        user = create_domain_beneficiary(identifier=4)
         stock = Stock(
             identifier=23,
             quantity=200,
@@ -64,7 +64,7 @@ class BookingSQLRepositoryTest:
         booking_saved = self.booking_sql_repository.save(booking_to_save)
 
         # then
-        assert booking_saved.user.identifier == booking_to_save.user.identifier
+        assert booking_saved.beneficiary.identifier == booking_to_save.beneficiary.identifier
         assert booking_saved.stock.identifier == booking_to_save.stock.identifier
         assert booking_saved.identifier is not None
 
@@ -79,7 +79,7 @@ class BookingSQLRepositoryTest:
             venue, thing_type=ThingType.LIVRE_EDITION)
         stock_sql_entity = create_stock(offer=offer, price=20, idx=23)
 
-        user = create_domain_user(identifier=4)
+        user = create_domain_beneficiary(identifier=4)
         stock = Stock(
             identifier=23,
             quantity=None,
@@ -94,4 +94,4 @@ class BookingSQLRepositoryTest:
         booking_saved = self.booking_sql_repository.save(booking_to_save)
 
         # then
-        assert booking_saved.user.wallet_balance == deposit.amount - stock.price
+        assert booking_saved.beneficiary.wallet_balance == deposit.amount - stock.price

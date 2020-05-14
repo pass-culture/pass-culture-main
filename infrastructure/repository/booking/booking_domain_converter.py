@@ -21,7 +21,7 @@ def to_domain(booking_sql_entity: BookingSQLEntity) -> Booking:
 
 def to_model(booking: Booking) -> BookingSQLEntity:
     booking_sql_entity = BookingSQLEntity()
-    booking_sql_entity.userId = booking.user.identifier
+    booking_sql_entity.userId = booking.beneficiary.identifier
     booking_sql_entity.stockId = booking.stock.identifier
     booking_sql_entity.amount = booking.amount
     booking_sql_entity.quantity = booking.quantity

@@ -43,7 +43,7 @@ def send_booking_confirmation_email_to_beneficiary(booking: Booking, send_email:
     send_email(data=email_data)
 
 
-def send_beneficiary_booking_cancellation_email(booking: Booking, send_email: Callable[..., bool]):
+def send_beneficiary_booking_cancellation_email(booking: BookingSQLEntity, send_email: Callable[..., bool]):
     beneficiary_booking_cancellation_email_data = make_beneficiary_booking_cancellation_email_data(booking)
     send_email(data=beneficiary_booking_cancellation_email_data)
 
