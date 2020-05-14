@@ -1,13 +1,12 @@
-import React from 'react'
 import { shallow } from 'enzyme'
 import { Field, Form } from 'pass-culture-shared'
+import React from 'react'
 import { showModal } from '../../../../../reducers/modal'
-
 import Titles from '../../../../layout/Titles/Titles'
-import OfferCreation from '../OfferCreation'
-import MediationsManager from '../../MediationsManager/MediationsManagerContainer'
 import LocalProviderInformation from '../../LocalProviderInformation/LocalProviderInformationContainer'
+import MediationsManager from '../../MediationsManager/MediationsManagerContainer'
 import StocksManagerContainer from '../../StocksManager/StocksManagerContainer'
+import OfferCreation from '../OfferCreation'
 
 describe('src  OfferCreation ', () => {
   let dispatch
@@ -55,14 +54,6 @@ describe('src  OfferCreation ', () => {
       trackModifyOffer: jest.fn(),
       venuesMatchingOfferType: [],
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<OfferCreation {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('handleSuccess', () => {
@@ -332,7 +323,7 @@ describe('src  OfferCreation ', () => {
           const fieldGroups = wrapper.find('.field-group')
           const fieldGroupForUsefulInformation = fieldGroups.at(2)
           const durationField = fieldGroupForUsefulInformation.find(Field).at(0)
-          expect(fieldGroups).toHaveLength(4)
+          expect(fieldGroups).toHaveLength(5)
           expect(durationField.prop('name')).toStrictEqual('durationMinutes')
         })
 
@@ -376,7 +367,7 @@ describe('src  OfferCreation ', () => {
           const fieldGroups = wrapper.find('.field-group')
           const fieldGroupForUsefulInformation = fieldGroups.at(2)
           const bookingEmailField = fieldGroupForUsefulInformation.find(Field).at(0)
-          expect(fieldGroups).toHaveLength(4)
+          expect(fieldGroups).toHaveLength(5)
           expect(bookingEmailField.prop('name')).toStrictEqual('bookingEmail')
         })
 
@@ -561,7 +552,7 @@ describe('src  OfferCreation ', () => {
         const fieldGroups = wrapper.find('.field-group')
         const fieldGroupForUsefulInformation = fieldGroups.at(1)
         const venueField = fieldGroupForUsefulInformation.find(Field).at(1)
-        expect(fieldGroups).toHaveLength(4)
+        expect(fieldGroups).toHaveLength(5)
         expect(venueField.prop('options')).toStrictEqual(expectedOptions)
       })
 
@@ -589,7 +580,7 @@ describe('src  OfferCreation ', () => {
         const fieldGroups = wrapper.find('.field-group')
         const fieldGroupForUsefulInformation = fieldGroups.at(1)
         const venueField = fieldGroupForUsefulInformation.find(Field).at(1)
-        expect(fieldGroups).toHaveLength(4)
+        expect(fieldGroups).toHaveLength(5)
         expect(venueField.prop('options')).toStrictEqual(expectedOptions)
       })
     })

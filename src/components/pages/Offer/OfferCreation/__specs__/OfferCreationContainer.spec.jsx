@@ -43,6 +43,7 @@ describe('src | OfferCreationContainer ', () => {
           type: undefined,
           url: undefined,
           venueId: 'DA',
+          withdrawalDetails: undefined,
         },
         formOffererId: 'BA',
         formVenueId: 'DA',

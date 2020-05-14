@@ -37,6 +37,7 @@ const selectFormInitialValuesByProductAndOfferAndOffererAndVenue = createCachedS
       bookingEmail: get(offer, 'bookingEmail'),
       offererId: get(offerer, 'id'),
       venueId: get(venue, 'id'),
+      withdrawalDetails: get(offer, 'withdrawalDetails'),
     })
   }
 )(mapArgsToCacheKey)

@@ -15,6 +15,7 @@ export default class Offer {
     this.productId = offer.productId
     this.stocksIds = offer.stocksIds
     this.venueId = offer.venueId
+    this.withdrawalDetails = offer.withdrawalDetails
   }
 
   get hasBeenProvidedByAllocine() {

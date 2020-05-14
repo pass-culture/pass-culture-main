@@ -53,6 +53,7 @@ describe('components | OfferEdition | selectFormInitialValuesByProductAndOfferAn
       type: 'EventType.CINEMA',
       url: undefined,
       venueId: 'CE',
+      withdrawalDetails: undefined,
     }
     expect(value).toStrictEqual(expectedValue)
   })
