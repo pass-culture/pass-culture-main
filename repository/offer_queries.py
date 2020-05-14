@@ -18,7 +18,7 @@ from models import EventType, \
     StockSQLEntity, \
     ThingType, \
     Venue, \
-    Product, Favorite, BookingSQLEntity, DiscoveryView, DiscoveryViewV3, User, SeenOffer
+    Product, Favorite, BookingSQLEntity, DiscoveryView, DiscoveryViewV3, UserSQLEntity, SeenOffer
 from models.db import Model
 from models.feature import FeatureToggle
 from repository import feature_queries
@@ -124,7 +124,7 @@ def get_offers_for_recommendation(user: UserSQLEntity,
     return discovery_view_query.all()
 
 
-def get_offers_for_recommendation_v3(user: User, user_iris_id: Optional[int] = None, user_is_geolocated: bool = False,
+def get_offers_for_recommendation_v3(user: UserSQLEntity, user_iris_id: Optional[int] = None, user_is_geolocated: bool = False,
                                      limit: Optional[int] = None, seen_recommendation_ids: List[int] = []) -> List[DiscoveryViewV3]:
     favorite_offers_ids = get_only_offer_ids_from_favorites(user)
 
