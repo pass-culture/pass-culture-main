@@ -1,11 +1,11 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
 
-import CreditGauge, { computeFillingStep } from '../CreditGauge'
-import Icon from '../../../../../layout/Icon/Icon'
 import { NON_BREAKING_SPACE } from '../../../../../../utils/specialCharacters'
+import Icon from '../../../../../layout/Icon/Icon'
+import CreditGauge, { computeFillingStep } from '../CreditGauge'
 
-describe('components | CreditGauge', () => {
+describe('credit gauge', () => {
   it('should render the gauge picto, remaining credit and some explanations', () => {
     // Given
     const props = {

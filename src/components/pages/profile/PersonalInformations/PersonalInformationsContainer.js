@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { requestData } from 'redux-thunk-data'
 
-import { resolveCurrentUser } from '../../../../components/hocs/with-login/withLogin'
+import { resolveCurrentUser } from '../../../hocs/with-login/withLogin'
 import PersonalInformations from './PersonalInformations'
 
 const mapDispatchToProps = dispatch => ({

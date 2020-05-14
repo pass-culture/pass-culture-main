@@ -97,10 +97,12 @@ describe('edit password', () => {
         currentPassword.invoke('onChange')({ target: { value: 'current password' } })
         newPassword.invoke('onChange')({ target: { value: 'new password' } })
         newConfirmationPassword.invoke('onChange')({ target: { value: 'new password' } })
-        submitButton.invoke('onClick')({ preventDefault: jest.fn() })
+        submitButton.simulate('click')
+        submitButton.simulate('click')
 
         // Then
         expect(props.history.push).toHaveBeenCalledWith('/profil')
+        expect(props.snackbar).toHaveBeenCalledTimes(1)
         expect(props.snackbar).toHaveBeenCalledWith(
           'Ton mot de passe a bien été modifié.',
           'success'

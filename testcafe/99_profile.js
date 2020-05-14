@@ -81,7 +81,7 @@ test(`je clique sur le lien pour accéder au formulaire de changement de mot de 
   )
 
   const weakPasswordErrorMessage = Selector('pre').withText(
-    'Ton mot de passe doit contenir au moins : \n- 12 caractères \n- Un chiffre \n- Une majuscule et une minuscule \n- Un caractère spécial'
+    'Ton mot de passe doit contenir au moins :\n- 12 caractères\n- Un chiffre\n- Une majuscule et une minuscule\n- Un caractère spécial'
   )
 
   // Je rentre un ancien mot de passe incorrect et j'ai un message d'errreur

@@ -100,7 +100,7 @@ describe('personal informations', () => {
         const submitButton = wrapper.find('input[value="Enregistrer"]')
 
         // When
-        submitButton.simulate('click')
+        submitButton.invoke('onClick')({ preventDefault: jest.fn() })
 
         // Then
         expect(props.handleSubmit).not.toHaveBeenCalled()
@@ -123,7 +123,7 @@ describe('personal informations', () => {
         const submitButton = wrapper.find('input[value="Enregistrer"]')
 
         // When
-        nickname.simulate('change', { target: { value: 'DifferentNickname' } })
+        nickname.invoke('onChange')({ target: { value: 'DifferentNickname' } })
         submitButton.simulate('click')
         submitButton.simulate('click')
 
@@ -158,8 +158,8 @@ describe('personal informations', () => {
         const submitButton = wrapper.find('input[value="Enregistrer"]')
 
         // When
-        nickname.simulate('change', { target: { value: 'AA' } })
-        submitButton.simulate('click')
+        nickname.invoke('onChange')({ target: { value: 'AA' } })
+        submitButton.invoke('onClick')({ preventDefault: jest.fn() })
 
         // Then
         const wrongNickname = wrapper.find({ children: 'Pseudo invalide' })

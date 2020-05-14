@@ -34,7 +34,6 @@ class PersonalInformations extends PureComponent {
 
   handleSubmitSuccess = () => {
     const { history, snackbar, pathToProfile } = this.props
-    this.setState({ errors: null })
     history.push(pathToProfile)
     snackbar('Ton pseudo a bien été modifié.', 'success')
   }

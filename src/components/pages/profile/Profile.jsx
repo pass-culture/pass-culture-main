@@ -9,7 +9,6 @@ import NotMatch from '../not-match/NotMatch'
 import EditPasswordContainer from './EditPassword/EditPasswordContainer'
 import PersonalInformationsContainer from './PersonalInformations/PersonalInformationsContainer'
 import ProfileMainView from './ProfileMainView/ProfileMainView'
-import ProfileUpdateSuccess from './ProfileUpdateSuccess/ProfileUpdateSuccess'
 import User from './ValueObjects/User'
 
 export const getDepartment = departmentCode => {
@@ -19,13 +18,6 @@ export const getDepartment = departmentCode => {
 
 class Profile extends PureComponent {
   renderProfileMainView = user => () => <ProfileMainView user={user} />
-
-  renderPasswordUpdateSuccess = routeProps => (
-    <ProfileUpdateSuccess
-      {...routeProps}
-      title="Votre mot de passe"
-    />
-  )
 
   renderPasswordEditForm = routeProps => {
     const { user, history } = this.props
@@ -77,12 +69,6 @@ class Profile extends PureComponent {
               key="route-profile-main-view"
               path="/profil/:menu(menu)?"
               render={this.renderProfileMainView(user)}
-            />
-            <Route
-              exact
-              key="route-profile-update-success"
-              path="/profil/:view(mot-de-passe)/success/:menu(menu)?"
-              render={this.renderPasswordUpdateSuccess}
             />
             <Route
               exact

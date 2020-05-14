@@ -24,14 +24,14 @@ describe('remainingCredit', () => {
   describe('render', () => {
     it('should display three gauges and prices', () => {
       // Given
-      props.user = {
+      props.user = new User({
         expenses: {
           all: { actual: 10, max: 500 },
           digital: { actual: 20, max: 201 },
           physical: { actual: 30, max: 202 },
         },
         wallet_balance: 351,
-      }
+      })
 
       // When
       const wrapper = mount(<RemainingCredit {...props} />)
@@ -45,14 +45,14 @@ describe('remainingCredit', () => {
 
     it('should display details text', () => {
       // Given
-      props.user = {
+      props.user = new User({
         expenses: {
           all: { actual: 10, max: 500 },
           digital: { actual: 20, max: 201 },
           physical: { actual: 30, max: 202 },
         },
         wallet_balance: 351,
-      }
+      })
 
       // When
       const wrapper = shallow(<RemainingCredit {...props} />)
@@ -93,7 +93,7 @@ describe('remainingCredit', () => {
         const wrapper = shallow(<RemainingCredit {...props} />)
         const readMoreTitle = `Pourquoi les biens physiques et numériques sont-ils limités${NON_BREAKING_SPACE}?`
         const readMoreTitleNode = wrapper.find({ children: readMoreTitle })
-        readMoreTitleNode.simulate('click')
+        readMoreTitleNode.invoke('onClick')()
 
         // Then
         const readMoreExplanationNode = wrapper.find({ children: READ_MORE_TEXT })

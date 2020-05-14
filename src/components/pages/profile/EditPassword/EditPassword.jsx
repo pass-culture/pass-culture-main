@@ -11,6 +11,7 @@ class EditPassword extends PureComponent {
     this.state = {
       currentPassword: '',
       errors: null,
+      isSubmitButtonDisabled: false,
       newConfirmationPassword: '',
       newPassword: '',
     }
@@ -42,7 +43,10 @@ class EditPassword extends PureComponent {
   }
 
   handleSubmitFail = (state, action) => {
-    this.setState({ errors: { ...action.payload.errors } })
+    this.setState({
+      errors: { ...action.payload.errors },
+      isSubmitButtonDisabled: false,
+    })
 
     if (action.payload.errors.oldPassword) {
       this.currentPasswordInputRef.current.focus()
@@ -77,12 +81,13 @@ class EditPassword extends PureComponent {
         oldPassword: currentPasswordInputValue,
       }
       handleSubmit(passwordToSubmit, this.handleSubmitFail, this.handleSubmitSuccess)
+      this.setState({ isSubmitButtonDisabled: true })
     }
   }
 
   render() {
     const { pathToProfile } = this.props
-    const { currentPassword, errors, newConfirmationPassword, newPassword } = this.state
+    const { currentPassword, errors, isSubmitButtonDisabled, newConfirmationPassword, newPassword } = this.state
 
     return (
       <div className="password-container pf-container">
@@ -123,6 +128,7 @@ class EditPassword extends PureComponent {
           <div className="pf-form-submit">
             <input
               className="pf-button-submit"
+              disabled={isSubmitButtonDisabled}
               onClick={this.handleSubmitPassword}
               type="submit"
               value="Enregistrer"

@@ -12,7 +12,7 @@ const PersonalInformationsField = forwardRef(function PersonalInformationsField(
     <div className="pf-field">
       <label className="pf-field-label">
         {label}
-        <span
+        <div
           className={`pf-input-container
          ${disabled ? 'pf-input-disabled' : ''}
          ${errors ? 'pf-input-error' : ''}`}
@@ -30,7 +30,7 @@ const PersonalInformationsField = forwardRef(function PersonalInformationsField(
             type="text"
             value={value}
           />
-        </span>
+        </div>
       </label>
       <div
         aria-live="assertive"
