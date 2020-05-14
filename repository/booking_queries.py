@@ -190,18 +190,19 @@ def find_by_pro_user_id(user_id: int) -> List[BookingRecap]:
         .filter(UserOfferer.userId == user_id) \
         .filter(UserOfferer.validationToken == None) \
         .with_entities(
-            Offer.name.label("offerName"),
-            Offer.type.label("offerType"),
-            UserSQLEntity.firstName.label("beneficiaryFirstname"),
-            UserSQLEntity.lastName.label("beneficiaryLastname"),
-            UserSQLEntity.email.label("beneficiaryEmail"),
             BookingSQLEntity.token.label("bookingToken"),
             BookingSQLEntity.dateCreated.label("bookingDate"),
             BookingSQLEntity.isCancelled.label("isCancelled"),
             BookingSQLEntity.isUsed.label("isUsed"),
             BookingSQLEntity.quantity.label("quantity"),
+            Offer.name.label("offerName"),
+            Offer.type.label("offerType"),
             Payment.currentStatus.label("paymentStatus"),
+            UserSQLEntity.firstName.label("beneficiaryFirstname"),
+            UserSQLEntity.lastName.label("beneficiaryLastname"),
+            UserSQLEntity.email.label("beneficiaryEmail"),
             StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
+            Venue.departementCode.label('venueDepartementCode'),
     ).all()
 
     return _bookings_sql_entities_to_bookings_recap(bookings)
@@ -228,6 +229,7 @@ def _serialize_booking_recap(booking: object) -> BookingRecap:
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
         event_beginning_datetime=booking.stockBeginningDatetime,
+        venue_department_code=booking.venueDepartementCode,
     ) if booking.stockBeginningDatetime is not None else ThingBookingRecap(
         offer_name=booking.offerName,
         beneficiary_email=booking.beneficiaryEmail,

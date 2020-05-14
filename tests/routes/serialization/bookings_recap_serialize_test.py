@@ -84,6 +84,7 @@ class SerializeBookingRecapTest:
                 booking_date=today,
                 booking_token="SOLEIL",
                 event_beginning_datetime=tomorrow,
+                venue_department_code='75'
             )
         ]
 
@@ -98,6 +99,7 @@ class SerializeBookingRecapTest:
                     "type": "event",
                     "offer_name": "Cirque du soleil",
                     "event_beginning_datetime": format_into_ISO_8601(tomorrow),
+                    "venue_department_code": "75",
                 },
                 "beneficiary": {
                     "lastname": "Seldon",

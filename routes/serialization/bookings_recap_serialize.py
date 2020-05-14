@@ -29,6 +29,7 @@ def __serialize_booking_recap(booking_recap: BookingRecap) -> Dict:
 
     if isinstance(booking_recap, EventBookingRecap):
         serialized_booking_recap['stock']['type'] = "event"
+        serialized_booking_recap['stock']['venue_department_code'] = booking_recap.venue_department_code
         serialized_booking_recap['stock']['event_beginning_datetime'] = format_into_ISO_8601(
             booking_recap.event_beginning_datetime)
 

@@ -72,6 +72,7 @@ class ThingBookingRecap(BookingRecap):
 
 
 class EventBookingRecap(BookingRecap):
-    def __init__(self, event_beginning_datetime: datetime, **kwargs):
+    def __init__(self, event_beginning_datetime: datetime, venue_department_code: str, **kwargs):
         super().__init__(**kwargs)
         self.event_beginning_datetime = event_beginning_datetime
+        self.venue_department_code = venue_department_code

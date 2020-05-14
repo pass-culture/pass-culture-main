@@ -4,7 +4,6 @@ from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 
-from domain.departments import OVERSEAS_DEPT_CODES
 from domain.keywords import create_ts_vector_and_table_args
 from domain.postal_code.postal_code import PostalCode
 from models.db import Model

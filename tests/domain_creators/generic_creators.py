@@ -56,7 +56,8 @@ def create_domain_event_booking_recap(offer_name: str = "Le cirque du Soleil",
                                       booking_is_used: bool = False,
                                       booking_is_cancelled: bool = False,
                                       booking_is_reimbursed: bool = False,
-                                      event_beginning_datetime: datetime = datetime(2020, 5, 26, 20, 30, 0, 0)) -> EventBookingRecap:
+                                      event_beginning_datetime: datetime = datetime(2020, 5, 26, 20, 30, 0, 0),
+                                      venue_department_code: str = "75") -> EventBookingRecap:
     return EventBookingRecap(
         offer_name=offer_name,
         beneficiary_lastname=beneficiary_lastname,
@@ -69,4 +70,5 @@ def create_domain_event_booking_recap(offer_name: str = "Le cirque du Soleil",
         booking_is_cancelled=booking_is_cancelled,
         booking_is_reimbursed=booking_is_reimbursed,
         event_beginning_datetime=event_beginning_datetime,
+        venue_department_code=venue_department_code,
     )

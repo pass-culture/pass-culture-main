@@ -20,7 +20,6 @@ DEPARTEMENT_CODE_VISIBILITY = {
     '973': ['97', '971', '972', '973'],
 }
 ILE_DE_FRANCE_DEPT_CODES = ['75', '78', '91', '94', '93', '95']
-OVERSEAS_DEPT_CODES = ['971', '972', '973', '974', '976']
 
 
 def get_departement_codes_from_user(user: UserSQLEntity) -> List[str]:

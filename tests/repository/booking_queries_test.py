@@ -1789,6 +1789,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_cancelled is False
         assert expected_booking_recap.booking_is_reimbursed is False
         assert expected_booking_recap.event_beginning_datetime == stock.beginningDatetime
+        assert expected_booking_recap.venue_department_code == venue.departementCode
 
     @clean_database
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app):
