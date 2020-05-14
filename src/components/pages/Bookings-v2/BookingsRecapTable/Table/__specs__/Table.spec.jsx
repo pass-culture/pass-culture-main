@@ -217,7 +217,7 @@ describe('components | Table', () => {
       expect(bookingsOnPageOne).toHaveLength(5)
 
       // When
-      const nextPageButton = paginate.find('button')
+      const nextPageButton = paginate.find('button').at(1)
       nextPageButton.simulate('click')
 
       // Then

@@ -9,7 +9,7 @@ import BookingOfferCell from './CellsFormatter/BookingOfferCell'
 import Header from './Header/Header'
 import IsDuoCell from './CellsFormatter/IsDuoCell'
 
-export const NB_HITS_PER_PAGE = 2
+export const NB_HITS_PER_PAGE = 20
 
 class BookingsRecapTable extends Component {
   constructor(props) {

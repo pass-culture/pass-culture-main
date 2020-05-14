@@ -10,27 +10,23 @@ const Paginate = ({ canNextPage,
                     nextPage
 }) => (
   <div className='paginate-wrapper'>
-    {canPreviousPage && (
-      <button
-        onClick={previousPage}
-        type='button'
-      >
-        <Icon svg='ico-left-arrow' />
-      </button>
-    )}
-
+    <button
+      disabled={!canPreviousPage}
+      onClick={previousPage}
+      type='button'
+    >
+      <Icon svg='ico-left-arrow' />
+    </button>
     <span>
       { `Page ${currentPage}/${nbPages}` }
     </span>
-
-    {canNextPage && (
-      <button
-        onClick={nextPage}
-        type='button'
-      >
-        <Icon svg='ico-right-arrow' />
-      </button>
-    )}
+    <button
+      disabled={!canNextPage}
+      onClick={nextPage}
+      type='button'
+    >
+      <Icon svg='ico-right-arrow' />
+    </button>
   </div>
 )
 

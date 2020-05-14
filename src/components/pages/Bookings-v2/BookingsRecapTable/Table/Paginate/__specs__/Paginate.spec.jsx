@@ -26,21 +26,10 @@ describe('components | Paginate', () => {
       const wrapper = shallow(<Paginate {...props} />)
 
       // then
-      const previousPageButton = wrapper.find('button').find(Icon)
-      expect(previousPageButton).toHaveLength(1)
-      expect(previousPageButton.prop('svg')).toStrictEqual('ico-left-arrow')
-    })
-
-    it('should not display previous button when user cannot go back to previous page', () => {
-      // given
-      props.canPreviousPage = false
-
-      // when
-      const wrapper = shallow(<Paginate {...props} />)
-
-      // then
-      const previousPageButton = wrapper.find('button').find(Icon)
-      expect(previousPageButton).toHaveLength(0)
+      const buttons = wrapper.find('button').find(Icon)
+      const previousButton = buttons.at(0)
+      expect(previousButton.prop('svg')).toStrictEqual('ico-left-arrow')
+      expect(previousButton.prop('disabled')).toBeUndefined()
     })
 
     it('should display current page position', () => {
@@ -64,39 +53,9 @@ describe('components | Paginate', () => {
       const wrapper = shallow(<Paginate {...props} />)
 
       // then
-      const nextPageButton = wrapper.find('button').find(Icon)
-      expect(nextPageButton).toHaveLength(1)
-      expect(nextPageButton.prop('svg')).toStrictEqual('ico-right-arrow')
-    })
-
-    it('should not display next button when user cannot go to next page', () => {
-      // given
-      props.canNextPage = false
-
-      // when
-      const wrapper = shallow(<Paginate {...props} />)
-
-      // then
-      const nextPageButton = wrapper.find('button').find(Icon)
-      expect(nextPageButton).toHaveLength(0)
-    })
-
-    it('should display both previous & next buttons when user can go to previous or next page', () => {
-      // given
-      props.canNextPage = true
-      props.canPreviousPage = true
-
-      // when
-      const wrapper = shallow(<Paginate {...props} />)
-
-      // then
-      const buttons = wrapper.find('button')
-      expect(buttons).toHaveLength(2)
-
-      const previousButton = buttons.at(0).find(Icon)
-      expect(previousButton.prop('svg')).toStrictEqual('ico-left-arrow')
-
-      const nextButton = buttons.at(1).find(Icon)
+      const buttons = wrapper.find('button').find(Icon)
+      const nextButton = buttons.at(1)
+      expect(nextButton).toHaveLength(1)
       expect(nextButton.prop('svg')).toStrictEqual('ico-right-arrow')
     })
   })
@@ -106,7 +65,8 @@ describe('components | Paginate', () => {
       // given
       props.canPreviousPage = true
       const wrapper = shallow(<Paginate {...props} />)
-      const previousButton = wrapper.find('button')
+      const buttons = wrapper.find('button')
+      const previousButton = buttons.at(0)
 
       // when
       previousButton.simulate('click')
@@ -119,7 +79,8 @@ describe('components | Paginate', () => {
       // given
       props.canNextPage = true
       const wrapper = shallow(<Paginate {...props} />)
-      const nextButton = wrapper.find('button')
+      const buttons = wrapper.find('button')
+      const nextButton = buttons.at(1)
 
       // when
       nextButton.simulate('click')

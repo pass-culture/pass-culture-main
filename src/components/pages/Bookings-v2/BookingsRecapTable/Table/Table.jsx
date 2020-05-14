@@ -67,6 +67,7 @@ Table.propTypes = {
     })
   ).isRequired,
   data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  nbHitsPerPage: PropTypes.number.isRequired,
 }
 
 export default Table
