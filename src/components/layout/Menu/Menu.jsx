@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import { Transition } from 'react-transition-group'
 
+import { Transition } from 'react-transition-group'
+import User from '../../pages/profile/ValueObjects/User'
+import CloseLink from '../Header/CloseLink/CloseLink'
 import Header from './Header/Header'
-import getMenuItems from './utils/getMenuItems'
 import MenuItemContainer from './MenuItem/MenuItemContainer'
 import SignoutButtonContainer from './SignoutButton/SignoutButtonContainer'
-import CloseLink from '../Header/CloseLink/CloseLink'
+import getMenuItems from './utils/getMenuItems'
 
 class Menu extends PureComponent {
   componentDidMount() {
@@ -74,7 +75,7 @@ Menu.defaultProps = {
 }
 
 Menu.propTypes = {
-  currentUser: PropTypes.shape(),
+  currentUser: PropTypes.instanceOf(User),
   history: PropTypes.shape().isRequired,
   readRecommendations: PropTypes.arrayOf(PropTypes.shape().isRequired).isRequired,
   toggleOverlay: PropTypes.func.isRequired,

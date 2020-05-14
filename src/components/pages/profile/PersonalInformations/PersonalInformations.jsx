@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 import PersonalInformationsField from '../forms/fields/PersonalInformationsField'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
+import User from '../ValueObjects/User'
 
 class PersonalInformations extends PureComponent {
   constructor(props) {
@@ -121,7 +122,7 @@ PersonalInformations.propTypes = {
   history: PropTypes.shape().isRequired,
   pathToProfile: PropTypes.string.isRequired,
   snackbar: PropTypes.func.isRequired,
-  user: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired,
+  user: PropTypes.instanceOf(User).isRequired,
 }
 
 export default PersonalInformations

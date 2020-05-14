@@ -3,27 +3,28 @@ import { shallow, mount } from 'enzyme'
 
 import RemainingCredit from '../RemainingCredit'
 import { NON_BREAKING_SPACE } from '../../../../../utils/specialCharacters'
+import User from '../../../../pages/profile/ValueObjects/User'
 
 describe('remainingCredit', () => {
   let props
 
   beforeEach(() => {
     props = {
-      currentUser: {
+      user: new User({
         expenses: {
           all: { actual: 10, max: 300 },
           digital: { actual: 100, max: 200 },
           physical: { actual: 100, max: 200 },
         },
         wallet_balance: 0,
-      },
+      }),
     }
   })
 
   describe('render', () => {
     it('should display three gauges and prices', () => {
       // Given
-      props.currentUser = {
+      props.user = {
         expenses: {
           all: { actual: 10, max: 500 },
           digital: { actual: 20, max: 201 },
@@ -44,7 +45,7 @@ describe('remainingCredit', () => {
 
     it('should display details text', () => {
       // Given
-      props.currentUser = {
+      props.user = {
         expenses: {
           all: { actual: 10, max: 500 },
           digital: { actual: 20, max: 201 },

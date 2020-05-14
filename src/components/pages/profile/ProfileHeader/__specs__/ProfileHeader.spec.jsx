@@ -1,19 +1,20 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import ProfileHeader from '../ProfileHeader'
 import { NON_BREAKING_SPACE } from '../../../../../utils/specialCharacters'
+import ProfileHeader from '../ProfileHeader'
+import User from '../../../../pages/profile/ValueObjects/User'
 
 describe('profileHeader', () => {
   let props
 
   beforeEach(() => {
     props = {
-      currentUser: {
+      user: new User({
         publicName: 'Rosa Bonheur',
         wallet_balance: 153,
         wallet_date_created: '2018-12-23T09:07:48.914901Z',
-      },
+      }),
     }
   })
 

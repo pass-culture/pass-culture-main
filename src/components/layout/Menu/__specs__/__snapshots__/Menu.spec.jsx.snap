@@ -4,7 +4,18 @@ exports[`components | Menu should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Menu
-    currentUser={Object {}}
+    currentUser={
+      User {
+        "departementCode": undefined,
+        "email": undefined,
+        "expenses": undefined,
+        "firstName": undefined,
+        "lastName": undefined,
+        "publicName": undefined,
+        "wallet_balance": undefined,
+        "wallet_date_created": undefined,
+      }
+    }
     history={
       Object {
         "goBack": [MockFunction],

@@ -139,7 +139,6 @@ EditPassword.propTypes = {
   history: PropTypes.shape().isRequired,
   pathToProfile: PropTypes.string.isRequired,
   snackbar: PropTypes.func.isRequired,
-  // user: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired,
 }
 
 export default EditPassword

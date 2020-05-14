@@ -63,12 +63,17 @@
 
   .pf-field-input {
     border: none;
+    flex: 1 1;
     font-size: inherit;
     margin: rem(9px) 0 rem(10px) 0;
     padding-left: rem(16px);
 
     &:focus {
       outline: none;
+    }
+
+    &:disabled {
+      background-color: $grey-even-more-light;
     }
 
     &[aria-invalid="true"] {

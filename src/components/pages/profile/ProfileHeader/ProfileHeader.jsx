@@ -3,13 +3,10 @@ import React from 'react'
 
 import { NON_BREAKING_SPACE } from '../../../../utils/specialCharacters'
 import { computeEndValidityDate } from '../../../../utils/date/date'
+import User from '../ValueObjects/User'
 
-const ProfileHeader = ({ currentUser }) => {
-  const {
-    publicName,
-    wallet_date_created: walletDateCreated,
-    wallet_balance: walletBalance,
-  } = currentUser
+const ProfileHeader = ({ user }) => {
+  const { publicName, wallet_date_created: walletDateCreated, wallet_balance: walletBalance } = user
   const endValidityDate = computeEndValidityDate(new Date(walletDateCreated))
 
   return (
@@ -28,7 +25,7 @@ const ProfileHeader = ({ currentUser }) => {
 }
 
 ProfileHeader.propTypes = {
-  currentUser: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired,
+  user: PropTypes.instanceOf(User).isRequired,
 }
 
 export default ProfileHeader

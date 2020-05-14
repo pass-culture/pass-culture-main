@@ -10,6 +10,7 @@ import EditPasswordContainer from './EditPassword/EditPasswordContainer'
 import PersonalInformationsContainer from './PersonalInformations/PersonalInformationsContainer'
 import ProfileMainView from './ProfileMainView/ProfileMainView'
 import ProfileUpdateSuccess from './ProfileUpdateSuccess/ProfileUpdateSuccess'
+import User from './ValueObjects/User'
 
 export const getDepartment = departmentCode => {
   const departmentName = getDepartementByCode(departmentCode)
@@ -17,7 +18,7 @@ export const getDepartment = departmentCode => {
 }
 
 class Profile extends PureComponent {
-  renderProfileMainView = currentUser => () => <ProfileMainView currentUser={currentUser} />
+  renderProfileMainView = user => () => <ProfileMainView user={user} />
 
   renderPasswordUpdateSuccess = routeProps => (
     <ProfileUpdateSuccess
@@ -27,21 +28,21 @@ class Profile extends PureComponent {
   )
 
   renderPasswordEditForm = routeProps => {
-    const { currentUser, history } = this.props
+    const { user, history } = this.props
 
     return (
       <EditPasswordContainer
         history={history}
         pathToProfile="/profil"
         snackbar={snackbar}
-        user={currentUser}
+        user={user}
         {...routeProps}
       />
     )
   }
 
   renderPersonalInformationsEdition = routeProps => {
-    const { currentUser, history } = this.props
+    const { user, history } = this.props
 
     return (
       <PersonalInformationsContainer
@@ -49,7 +50,7 @@ class Profile extends PureComponent {
         history={history}
         pathToProfile="/profil"
         snackbar={snackbar}
-        user={currentUser}
+        user={user}
         {...routeProps}
       />
     )
@@ -62,20 +63,20 @@ class Profile extends PureComponent {
                                  />)
 
   render() {
-    const { currentUser, location } = this.props
+    const { user, location } = this.props
 
     return (
       <div
         className="page is-relative"
         id="profile-page"
       >
-        {currentUser && (
+        {user && (
           <Switch location={location}>
             <Route
               exact
               key="route-profile-main-view"
               path="/profil/:menu(menu)?"
-              render={this.renderProfileMainView(currentUser)}
+              render={this.renderProfileMainView(user)}
             />
             <Route
               exact
@@ -98,16 +99,16 @@ class Profile extends PureComponent {
             <Route component={this.renderNoMatch} />
           </Switch>
         )}
-        {!currentUser && <LoaderContainer isLoading />}
+        {!user && <LoaderContainer isLoading />}
       </div>
     )
   }
 }
 
 Profile.propTypes = {
-  currentUser: PropTypes.shape().isRequired,
   history: PropTypes.shape().isRequired,
   location: PropTypes.shape().isRequired,
+  user: PropTypes.instanceOf(User).isRequired,
 }
 
 export default Profile

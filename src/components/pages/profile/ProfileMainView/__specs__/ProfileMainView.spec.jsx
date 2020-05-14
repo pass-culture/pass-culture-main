@@ -6,6 +6,7 @@ import ListLinks from '../../ListLinks/ListLinks'
 import ProfileHeader from '../../ProfileHeader/ProfileHeader'
 import RemainingCredit from '../../RemainingCredit/RemainingCredit'
 import ProfileMainView from '../ProfileMainView'
+import User from '../../../../pages/profile/ValueObjects/User'
 
 jest.mock('../../../../../../package.json', () => ({
   version: '78.0.0',
@@ -16,7 +17,7 @@ describe('profile main view', () => {
 
   beforeEach(() => {
     props = {
-      currentUser: {},
+      user: new User({}),
     }
   })
 

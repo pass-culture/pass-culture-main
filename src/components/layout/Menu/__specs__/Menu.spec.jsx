@@ -11,6 +11,7 @@ import Header from '../Header/Header'
 import Menu from '../Menu'
 import MenuItem from '../MenuItem/MenuItem'
 import SignoutButtonContainer from '../SignoutButton/SignoutButtonContainer'
+import User from '../../../pages/profile/ValueObjects/User'
 
 jest.mock('../../../../redux/actions/overlay', () => ({
   toggleOverlay: jest.fn(),
@@ -21,7 +22,7 @@ describe('components | Menu', () => {
 
   beforeEach(() => {
     props = {
-      currentUser: {},
+      currentUser: new User({}),
       history: {
         goBack: jest.fn(),
         location: {

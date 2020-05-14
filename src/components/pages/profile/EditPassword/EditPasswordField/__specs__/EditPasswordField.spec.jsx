@@ -8,8 +8,11 @@ describe('edit password field', () => {
 
   beforeEach(() => {
     props = {
+      inputRef: {},
       label: 'fake label',
+      onChange: jest.fn(),
       placeholder: 'fake placeholder',
+      value: '',
     }
   })
 

@@ -6,13 +6,14 @@ import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFoot
 import ListLinks from '../ListLinks/ListLinks'
 import ProfileHeader from '../ProfileHeader/ProfileHeader'
 import RemainingCredit from '../RemainingCredit/RemainingCredit'
+import User from '../ValueObjects/User'
 
-const ProfileMainView = ({ currentUser }) => (
+const ProfileMainView = ({ user }) => (
   <div className="pm-wrapper">
     <main className="pm-main">
       <div className="pm-scroll">
-        <ProfileHeader currentUser={currentUser} />
-        <RemainingCredit currentUser={currentUser} />
+        <ProfileHeader user={user} />
+        <RemainingCredit user={user} />
         <ListLinks />
         <section className="pm-section">
           <div className="pm-app-version">
@@ -35,7 +36,7 @@ const ProfileMainView = ({ currentUser }) => (
 )
 
 ProfileMainView.propTypes = {
-  currentUser: PropTypes.oneOfType([PropTypes.bool, PropTypes.shape()]).isRequired,
+  user: PropTypes.instanceOf(User).isRequired,
 }
 
 export default ProfileMainView

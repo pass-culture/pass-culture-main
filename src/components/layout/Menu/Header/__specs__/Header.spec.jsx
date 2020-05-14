@@ -2,16 +2,17 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import Header from '../Header'
+import User from '../../../../pages/profile/ValueObjects/User'
 
 describe('src | components | menu | Header', () => {
   let props
 
   beforeEach(() => {
     props = {
-      currentUser: {
+      currentUser: new User({
         publicName: 'Emmanuel Macron',
         wallet_balance: 500,
-      },
+      }),
     }
   })
 

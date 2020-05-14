@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import formatDecimals from '../../../../utils/numbers/formatDecimals'
+import User from '../../../pages/profile/ValueObjects/User'
 
 const Header = ({ currentUser }) => (
   <div
@@ -44,7 +45,7 @@ const Header = ({ currentUser }) => (
 )
 
 Header.propTypes = {
-  currentUser: PropTypes.shape().isRequired,
+  currentUser: PropTypes.instanceOf(User).isRequired,
 }
 
 export default Header

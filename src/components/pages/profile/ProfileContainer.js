@@ -6,7 +6,7 @@ import Profile from './Profile'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 
 const mapStateToProps = state => ({
-  currentUser: selectCurrentUser(state),
+  user: selectCurrentUser(state),
 })
 
 export default compose(

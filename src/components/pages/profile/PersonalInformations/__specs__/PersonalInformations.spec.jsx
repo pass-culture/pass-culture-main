@@ -5,6 +5,7 @@ import { Router } from 'react-router'
 
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import PersonalInformations from '../PersonalInformations'
+import User from '../../../../pages/profile/ValueObjects/User'
 
 describe('personal informations', () => {
   let props
@@ -18,13 +19,13 @@ describe('personal informations', () => {
       handleSubmit: jest.fn(),
       snackbar: jest.fn(),
       pathToProfile: '/profil',
-      user: {
+      user: new User({
         publicName: 'Martino',
         firstName: 'Martin',
         lastName: 'Dupont',
         email: 'm.dupont@example.com',
         departementCode: '93',
-      },
+      }),
     }
   })
 

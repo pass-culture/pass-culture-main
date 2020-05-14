@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
+import { NON_BREAKING_SPACE } from '../../../../utils/specialCharacters'
 import getRemainingCreditForGivenCreditLimit from '../utils/utils'
 import CreditGauge from './CreditGauge/CreditGauge'
-import { NON_BREAKING_SPACE } from '../../../../utils/specialCharacters'
+import User from '../ValueObjects/User'
 
 class RemainingCredit extends PureComponent {
   constructor(props) {
@@ -18,9 +19,9 @@ class RemainingCredit extends PureComponent {
   }
 
   render() {
-    const { currentUser } = this.props
+    const { user } = this.props
     const { isReadMoreVisible } = this.state
-    const { expenses, wallet_balance: walletBalance } = currentUser
+    const { expenses, wallet_balance: walletBalance } = user
     const { digital, physical, all } = expenses
     const digitalCreditLimit = digital.max
     const physicalCreditLimit = physical.max
@@ -87,7 +88,7 @@ class RemainingCredit extends PureComponent {
 }
 
 RemainingCredit.propTypes = {
-  currentUser: PropTypes.shape().isRequired,
+  user: PropTypes.instanceOf(User).isRequired,
 }
 
 export default RemainingCredit
