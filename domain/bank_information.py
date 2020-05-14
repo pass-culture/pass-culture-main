@@ -3,6 +3,7 @@ from typing import List
 from models import BankInformation, Venue, Offerer
 from models.bank_information import BankInformationStatus
 
+
 status_weight = {
     BankInformationStatus.ACCEPTED: 2,
     BankInformationStatus.DRAFT: 1,
@@ -40,3 +41,18 @@ def check_venue_queried_by_name(venues: List[Venue]):
         raise CannotRegisterBankInformation("Venue name not found")
     if len(venues) > 1:
         raise CannotRegisterBankInformation("Multiple venues found")
+
+
+def check_new_bank_information_older_than_saved_one(bank_information: BankInformation, application_details):
+    is_new_bank_information_older_than_saved_one = bank_information.dateModifiedAtLastProvider is not None and application_details.modification_date < bank_information.dateModifiedAtLastProvider
+    if is_new_bank_information_older_than_saved_one:
+        raise CannotRegisterBankInformation(
+            'Received application details are older than saved one')
+
+
+def check_new_bank_information_has_a_more_advanced_status(bank_information: BankInformation, application_details):
+    is_new_bank_information_status_more_important_than_saved_one = bank_information.status and status_weight[
+        application_details.status] < status_weight[bank_information.status]
+    if is_new_bank_information_status_more_important_than_saved_one:
+        raise CannotRegisterBankInformation(
+            'Received application details state does not allow to change bank information')
