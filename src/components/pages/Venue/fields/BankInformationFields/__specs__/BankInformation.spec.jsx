@@ -1,6 +1,8 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 import BankInformation from '../BankInformationFields'
+import { BicIbanFields } from '../BicIbanFields'
+import { ApplicationBanner } from '../ApplicationBanner'
 
 jest.mock('../../../../../../utils/config', () => ({
   DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL:
@@ -70,17 +72,17 @@ describe('src | Venue | BankInformation ', () => {
         const wrapper = shallow(<BankInformation {...props} />)
 
         // then
-        const expectedBic = wrapper.find({ children: 'offererBic' })
-        const expectedIban = wrapper.find({ children: 'offererIban' })
-        expect(expectedBic).toHaveLength(1)
-        expect(expectedIban).toHaveLength(1)
+        const bicIbanFields = wrapper.find(BicIbanFields)
+        expect(bicIbanFields.exists()).toBe(true)
+        expect(bicIbanFields.prop('iban')).toBe('offererIban')
+        expect(bicIbanFields.prop('bic')).toBe('offererBic')
       })
     })
   })
 
   describe('when application has been validated', () => {
     describe('when venue and offerer banking information are both provided', () => {
-      it('should render venue information', () => {
+      it('should render venue informations', () => {
         // Given
         props.venue = {
           id: 'AA',
@@ -99,36 +101,10 @@ describe('src | Venue | BankInformation ', () => {
         const wrapper = shallow(<BankInformation {...props} />)
 
         // then
-        const modificationLink = wrapper.findWhere(node => node.text() === 'Modifier').first()
-        const expectedBic = wrapper.find({ children: 'venueBic' })
-        const expectedIban = wrapper.find({ children: 'venueIban' })
-        expect(expectedBic).toHaveLength(1)
-        expect(expectedIban).toHaveLength(1)
-        expect(modificationLink).toHaveLength(1)
-      })
-    })
-
-    describe('when venue banking information are provided', () => {
-      it('should render modification block', () => {
-        // Given
-        props.venue = {
-          bic: 'ABC',
-          iban: 'DEF',
-        }
-
-        // when
-        const wrapper = shallow(<BankInformation {...props} />)
-
-        // then
-        const bankInstructions = wrapper.find({
-          children:
-            'Les remboursements des offres éligibles présentées dans ce lieu sont effectués sur le compte ci-dessous :',
-        })
-        expect(bankInstructions).toHaveLength(1)
-        const linkToDemarcheSimplifieeProcedure = wrapper.find('a')
-        expect(linkToDemarcheSimplifieeProcedure.prop('href')).toBe(
-          'link/to/venue/demarchesSimplifiees/procedure'
-        )
+        const bicIbanFields = wrapper.find(BicIbanFields)
+        expect(bicIbanFields.exists()).toBe(true)
+        expect(bicIbanFields.prop('iban')).toBe('venueIban')
+        expect(bicIbanFields.prop('bic')).toBe('venueBic')
       })
     })
   })
@@ -142,21 +118,16 @@ describe('src | Venue | BankInformation ', () => {
           name: 'fake venue name',
           bic: null,
           iban: null,
-          demarchesSimplifieesApplicationId: 12,
+          demarchesSimplifieesApplicationId: '12',
         }
 
         // when
         const wrapper = shallow(<BankInformation {...props} />)
 
         // then
-        const bankInstructions = wrapper.find({
-          children: 'Votre dossier est en cours pour ce lieu',
-        })
-        const linkToDemarcheSimplifieeProcedure = wrapper.find('a')
-        expect(linkToDemarcheSimplifieeProcedure.prop('href')).toBe(
-          'https://www.demarches-simplifiees.fr/dossiers/12'
-        )
-        expect(bankInstructions).toHaveLength(1)
+        const applicationBanner = wrapper.find(ApplicationBanner)
+        expect(applicationBanner.exists()).toBe(true)
+        expect(applicationBanner.prop('applicationId')).toBe('12')
       })
     })
 
@@ -168,7 +139,7 @@ describe('src | Venue | BankInformation ', () => {
           name: 'fake venue name',
           bic: null,
           iban: null,
-          demarchesSimplifieesApplicationId: 12,
+          demarchesSimplifieesApplicationId: '12',
         }
         props.offerer = {
           id: 'BB',
@@ -181,24 +152,83 @@ describe('src | Venue | BankInformation ', () => {
         const wrapper = shallow(<BankInformation {...props} />)
 
         // then
-        const bankInstructions = wrapper.find({
-          children: 'Votre dossier est en cours pour ce lieu',
-        })
+        const applicationBanner = wrapper.find(ApplicationBanner)
+        expect(applicationBanner.exists()).toBe(true)
+        expect(applicationBanner.prop('applicationId')).toBe('12')
 
-        const modificationLink = wrapper.findWhere(node => node.text() === 'Modifier').first()
-        const linkToDemarcheSimplifieeProcedure = wrapper
-          .findWhere(
-            node => node.prop('href') === 'https://www.demarches-simplifiees.fr/dossiers/12'
-          )
-          .first()
+        const bicIbanFields = wrapper.find(BicIbanFields)
+        expect(bicIbanFields.exists()).toBe(true)
+        expect(bicIbanFields.prop('iban')).toBe('offererIban')
+        expect(bicIbanFields.prop('bic')).toBe('offererBic')
+      })
 
-        expect(linkToDemarcheSimplifieeProcedure).toHaveLength(1)
-        expect(modificationLink).toHaveLength(0)
-        expect(bankInstructions).toHaveLength(1)
-        const expectedBic = wrapper.find({ children: 'offererBic' })
-        const expectedIban = wrapper.find({ children: 'offererIban' })
-        expect(expectedBic).toHaveLength(1)
-        expect(expectedIban).toHaveLength(1)
+      it('should render modification block when BIC and IBAN are provided', () => {
+        // Given
+        props.venue = {
+          bic: 'ABC',
+          iban: 'DEF',
+        }
+
+        // when
+        const wrapper = shallow(<BankInformation {...props} />)
+
+        // then
+        const bicIbanFields = wrapper.find(BicIbanFields)
+        expect(bicIbanFields.exists()).toBe(true)
+        expect(bicIbanFields.prop('iban')).toBe('DEF')
+        expect(bicIbanFields.prop('bic')).toBe('ABC')
+      })
+
+      it('should render current application detail when demarchesSimplifieesApplicationId is provided', () => {
+        // Given
+        props.venue = {
+          id: 'AA',
+          name: 'fake venue name',
+          bic: null,
+          iban: null,
+          demarchesSimplifieesApplicationId: '12',
+        }
+
+        // when
+        const wrapper = shallow(<BankInformation {...props} />)
+
+        // then
+        const applicationBanner = wrapper.find(ApplicationBanner)
+        expect(applicationBanner.exists()).toBe(true)
+        expect(applicationBanner.prop('applicationId')).toBe('12')
+
+        const bicIbanFields = wrapper.find(BicIbanFields)
+        expect(bicIbanFields.exists()).toBe(false)
+      })
+
+      it('should render current application detail and offerer bank informations when both presents in props', () => {
+        // Given
+        props.venue = {
+          id: 'AA',
+          name: 'fake venue name',
+          bic: null,
+          iban: null,
+          demarchesSimplifieesApplicationId: '12',
+        }
+        props.offerer = {
+          id: 'BB',
+          name: 'fake offerer name',
+          bic: 'offererBic',
+          iban: 'offererIban',
+        }
+
+        // when
+        const wrapper = shallow(<BankInformation {...props} />)
+
+        // then
+        const applicationBanner = wrapper.find(ApplicationBanner)
+        expect(applicationBanner.exists()).toBe(true)
+        expect(applicationBanner.prop('applicationId')).toBe('12')
+
+        const bicIbanFields = wrapper.find(BicIbanFields)
+        expect(bicIbanFields.exists()).toBe(true)
+        expect(bicIbanFields.prop('iban')).toBe('offererIban')
+        expect(bicIbanFields.prop('bic')).toBe('offererBic')
       })
     })
   })

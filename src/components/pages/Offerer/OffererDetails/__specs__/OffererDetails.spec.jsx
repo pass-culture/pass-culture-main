@@ -32,7 +32,7 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
 
       // then
       const bankInstructions = wrapper.find(BankInformation)
-      expect(bankInstructions).toHaveLength(1)
+      expect(bankInstructions).toHaveLength(1) 
     })
 
     it('should render Venues', () => {
