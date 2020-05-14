@@ -29,4 +29,19 @@ describe('my informations', () => {
 
     expect(linkToPasswordChangePage).toBe('/profil/mot-de-passe')
   })
+
+  it('should display a link to help page', () => {
+    // When
+    const wrapper = shallow(<ListLinks />)
+
+    // Then
+    const linkToHelpPage = wrapper
+      .find({ children: 'Aide' })
+      .parent()
+
+    expect(linkToHelpPage.prop('href')).toBe('https://aide.passculture.app/fr/category/18-ans-1dnil5r/')
+    expect(linkToHelpPage.prop('rel')).toBe('noopener noreferrer')
+    expect(linkToHelpPage.prop('target')).toBe('_blank')
+    expect(linkToHelpPage.prop('title')).toBe('Ouverture de l’aide dans une nouvelle fenêtre')
+  })
 })

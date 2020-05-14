@@ -14,7 +14,6 @@ import ProfileContainer from '../pages/profile/ProfileContainer'
 import TypeFormContainer from '../pages/typeform/TypeformContainer'
 import SignInContainer from '../pages/signin/SignInContainer'
 import SignupContainer from '../pages/signup/SignupContainer'
-import { WEBAPP_CONTACT_EXTERNAL_PAGE } from '../../utils/config'
 import SearchContainer from '../pages/search/SearchContainer'
 
 function redirectToBeta() {
@@ -160,12 +159,6 @@ const routes = [
     icon: 'ico-user',
     path: '/profil/:view(mot-de-passe|informations)?',
     title: 'Mon compte',
-  },
-  {
-    href: WEBAPP_CONTACT_EXTERNAL_PAGE,
-    icon: 'ico-help',
-    target: '_blank',
-    title: 'Aide',
   },
   {
     href:

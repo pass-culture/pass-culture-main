@@ -51,10 +51,3 @@ test('je peux naviguer vers les favoris', async t => {
   const location = await t.eval(() => window.location)
   await t.expect(location.pathname).eql('/favoris')
 })
-
-test('je peux naviguer vers l\'aide', async t => {
-  const expected = `https://aide.passculture.app/fr/category/18-ans-1dnil5r/`
-  const menuContact = Selector('.navlink').withText('Aide')
-  await t.expect(menuContact.exists).ok()
-  await t.expect(menuContact.getAttribute('href')).contains(expected)
-})

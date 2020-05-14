@@ -72,12 +72,6 @@ describe('getMenuItemsFromRoutes', () => {
         title: 'Mon compte',
       },
       {
-        href: 'https://aide.passculture.app/fr/category/18-ans-1dnil5r/',
-        icon: 'ico-help',
-        target: '_blank',
-        title: 'Aide',
-      },
-      {
         href:
           'https://pass-culture.gitbook.io/documents/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture',
         icon: 'ico-txt',
