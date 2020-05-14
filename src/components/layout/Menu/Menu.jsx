@@ -6,7 +6,6 @@ import User from '../../pages/profile/ValueObjects/User'
 import CloseLink from '../Header/CloseLink/CloseLink'
 import Header from './Header/Header'
 import MenuItemContainer from './MenuItem/MenuItemContainer'
-import SignoutButtonContainer from './SignoutButton/SignoutButtonContainer'
 import getMenuItems from './utils/getMenuItems'
 
 class Menu extends PureComponent {
@@ -23,7 +22,7 @@ class Menu extends PureComponent {
   urlWithoutMenuElement = history => () => history.location.pathname.replace('/menu', '')
 
   render() {
-    const { currentUser, history, readRecommendations } = this.props
+    const { currentUser, history } = this.props
 
     return (
       <Transition
@@ -56,10 +55,6 @@ class Menu extends PureComponent {
                       key={menuItem.href || menuItem.path}
                     />
                   ))}
-                  <SignoutButtonContainer
-                    history={history}
-                    readRecommendations={readRecommendations}
-                  />
                 </nav>
               </div>
             </div>
@@ -77,7 +72,6 @@ Menu.defaultProps = {
 Menu.propTypes = {
   currentUser: PropTypes.instanceOf(User),
   history: PropTypes.shape().isRequired,
-  readRecommendations: PropTypes.arrayOf(PropTypes.shape().isRequired).isRequired,
   toggleOverlay: PropTypes.func.isRequired,
 }
 

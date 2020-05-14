@@ -13,8 +13,7 @@ describe('src | components | menu | MenuContainer', () => {
 
       // then
       expect(result).toStrictEqual({
-        currentUser: undefined,
-        readRecommendations: [],
+        currentUser: undefined
       })
     })
   })

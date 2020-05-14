@@ -17,7 +17,12 @@ export const getDepartment = departmentCode => {
 }
 
 class Profile extends PureComponent {
-  renderProfileMainView = user => () => <ProfileMainView user={user} />
+  renderProfileMainView = (user, history) => () => (
+    <ProfileMainView
+      historyPush={history.push}
+      user={user}
+    />
+  )
 
   renderPasswordEditForm = routeProps => {
     const { user, history } = this.props
@@ -55,7 +60,7 @@ class Profile extends PureComponent {
                                  />)
 
   render() {
-    const { user, location } = this.props
+    const { user, history, location } = this.props
 
     return (
       <div
@@ -68,7 +73,7 @@ class Profile extends PureComponent {
               exact
               key="route-profile-main-view"
               path="/profil/:menu(menu)?"
-              render={this.renderProfileMainView(user)}
+              render={this.renderProfileMainView(user, history)}
             />
             <Route
               exact

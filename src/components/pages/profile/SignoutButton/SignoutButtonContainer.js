@@ -2,14 +2,18 @@ import { connect } from 'react-redux'
 import { requestData, reinitializeData } from 'redux-thunk-data'
 
 import SignoutButton from './SignoutButton'
-import { updatePage, updateSeed, updateSeedLastRequestTimestamp } from '../../../../redux/actions/pagination'
+import {
+  updatePage,
+  updateSeed,
+  updateSeedLastRequestTimestamp,
+} from '../../../../redux/actions/pagination'
 import { toggleMainMenu } from '../../../../redux/actions/menu'
 
 export const mapDispatchToProps = dispatch => ({
-  onSignOutClick: ({ history, readRecommendations }) => () => {
+  onSignOutClick: (historyPush, readRecommendations) => () => {
     const handleRequestSignout = () => {
       const handleSuccessAfterSignOut = () => {
-        history.push('/connexion')
+        historyPush('/connexion')
         dispatch(toggleMainMenu())
         dispatch(reinitializeData({ excludes: ['features'] }))
       }
@@ -19,15 +23,9 @@ export const mapDispatchToProps = dispatch => ({
           handleSuccess: handleSuccessAfterSignOut,
         })
       )
-      dispatch(
-        updatePage(1)
-      )
-      dispatch(
-        updateSeed(Math.random())
-      )
-      dispatch(
-        updateSeedLastRequestTimestamp(Date.now())
-      )
+      dispatch(updatePage(1))
+      dispatch(updateSeed(Math.random()))
+      dispatch(updateSeedLastRequestTimestamp(Date.now()))
     }
 
     if (!readRecommendations || readRecommendations.length === 0) {

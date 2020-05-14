@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import RelativeFooterContainer from '../../../../layout/RelativeFooter/RelativeFooterContainer'
-import ListLinks from '../../ListLinks/ListLinks'
+import ListLinksContainer from '../../ListLinks/ListLinksContainer'
 import ProfileHeader from '../../ProfileHeader/ProfileHeader'
 import RemainingCredit from '../../RemainingCredit/RemainingCredit'
 import ProfileMainView from '../ProfileMainView'
@@ -18,6 +18,7 @@ describe('profile main view', () => {
   beforeEach(() => {
     props = {
       user: new User({}),
+      historyPush: jest.fn(),
     }
   })
 
@@ -26,7 +27,7 @@ describe('profile main view', () => {
     const wrapper = shallow(<ProfileMainView {...props} />)
     const ProfileHeaderWrapper = wrapper.find(ProfileHeader)
     const RemainingCreditWrapper = wrapper.find(RemainingCredit)
-    const PersonalInformationsWrapper = wrapper.find(ListLinks)
+    const PersonalInformationsWrapper = wrapper.find(ListLinksContainer)
     const RelativeFooterContainerWrapper = wrapper.find(RelativeFooterContainer)
 
     // Then

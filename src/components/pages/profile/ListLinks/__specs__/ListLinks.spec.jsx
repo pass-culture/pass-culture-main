@@ -2,11 +2,21 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import ListLinks from '../ListLinks'
+import SignoutButtonContainer from '../../SignoutButton/SignoutButtonContainer'
 
 describe('my informations', () => {
+  let props
+
+  beforeEach(function() {
+    props = {
+      historyPush: jest.fn(),
+      readRecommendations: [],
+    }
+  })
+
   it('should display a link to personal informations page', () => {
     // When
-    const wrapper = shallow(<ListLinks />)
+    const wrapper = shallow(<ListLinks {...props} />)
 
     // Then
     const linkToPersonalInformationsPage = wrapper
@@ -19,7 +29,7 @@ describe('my informations', () => {
 
   it('should display a link to password modification page', () => {
     // When
-    const wrapper = shallow(<ListLinks />)
+    const wrapper = shallow(<ListLinks {...props} />)
 
     // Then
     const linkToPasswordChangePage = wrapper
@@ -32,16 +42,25 @@ describe('my informations', () => {
 
   it('should display a link to help page', () => {
     // When
-    const wrapper = shallow(<ListLinks />)
+    const wrapper = shallow(<ListLinks {...props} />)
 
     // Then
-    const linkToHelpPage = wrapper
-      .find({ children: 'Aide' })
-      .parent()
+    const linkToHelpPage = wrapper.find({ children: 'Aide' }).parent()
 
-    expect(linkToHelpPage.prop('href')).toBe('https://aide.passculture.app/fr/category/18-ans-1dnil5r/')
+    expect(linkToHelpPage.prop('href')).toBe(
+      'https://aide.passculture.app/fr/category/18-ans-1dnil5r/'
+    )
     expect(linkToHelpPage.prop('rel')).toBe('noopener noreferrer')
     expect(linkToHelpPage.prop('target')).toBe('_blank')
     expect(linkToHelpPage.prop('title')).toBe('Ouverture de l’aide dans une nouvelle fenêtre')
+  })
+
+  it('should display a signout button', () => {
+    // When
+    const wrapper = shallow(<ListLinks {...props} />)
+
+    // Then
+    const signoutButton = wrapper.find(SignoutButtonContainer)
+    expect(signoutButton).toHaveLength(1)
   })
 })

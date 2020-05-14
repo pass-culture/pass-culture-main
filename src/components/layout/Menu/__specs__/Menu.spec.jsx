@@ -10,7 +10,6 @@ import CloseLink from '../../Header/CloseLink/CloseLink'
 import Header from '../Header/Header'
 import Menu from '../Menu'
 import MenuItem from '../MenuItem/MenuItem'
-import SignoutButtonContainer from '../SignoutButton/SignoutButtonContainer'
 import User from '../../../pages/profile/ValueObjects/User'
 
 jest.mock('../../../../redux/actions/overlay', () => ({
@@ -77,7 +76,7 @@ describe('components | Menu', () => {
           ],
         },
       }
-      props.currentUser = { wallet_balance: 300 }
+      props.currentUser = new User({ wallet_balance: 300 })
       const store = configureStore([])(initialState)
       const wrapper = mount(
         <Provider store={store}>
@@ -93,7 +92,6 @@ describe('components | Menu', () => {
       const header = wrapper.find(Header)
       const anchor = wrapper.find(MenuItem).find('a')
       const link = wrapper.find(MenuItem).find(Link)
-      const signoutButtonContainer = wrapper.find(SignoutButtonContainer)
 
       // then
       expect(transition).toHaveLength(1)
@@ -101,7 +99,6 @@ describe('components | Menu', () => {
       expect(header).toHaveLength(1)
       expect(anchor).toHaveLength(6)
       expect(link).toHaveLength(5)
-      expect(signoutButtonContainer).toHaveLength(1)
       expect(props.toggleOverlay).toHaveBeenCalledWith()
     })
   })

@@ -3,18 +3,18 @@ import React from 'react'
 
 import { version } from '../../../../../package.json'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
-import ListLinks from '../ListLinks/ListLinks'
 import ProfileHeader from '../ProfileHeader/ProfileHeader'
 import RemainingCredit from '../RemainingCredit/RemainingCredit'
 import User from '../ValueObjects/User'
+import ListLinksContainer from '../ListLinks/ListLinksContainer'
 
-const ProfileMainView = ({ user }) => (
+const ProfileMainView = ({ user, historyPush }) => (
   <div className="pm-wrapper">
     <main className="pm-main">
       <div className="pm-scroll">
         <ProfileHeader user={user} />
         <RemainingCredit user={user} />
-        <ListLinks />
+        <ListLinksContainer historyPush={historyPush} />
         <section className="pm-section">
           <div className="pm-app-version">
             {`Version ${version}`}
@@ -36,6 +36,7 @@ const ProfileMainView = ({ user }) => (
 )
 
 ProfileMainView.propTypes = {
+  historyPush: PropTypes.func.isRequired,
   user: PropTypes.instanceOf(User).isRequired,
 }
 

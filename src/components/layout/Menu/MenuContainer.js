@@ -6,7 +6,6 @@ import { toggleOverlay } from '../../../redux/actions/overlay'
 
 export const mapStateToProps = state => ({
   currentUser: selectCurrentUser(state),
-  readRecommendations: state.data.readRecommendations,
 })
 
 export const mapDispatchToProps = dispatch => ({

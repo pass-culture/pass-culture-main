@@ -56,7 +56,7 @@ test('je clique sur le lien pour accéder au formulaire de mes informations pers
     .ok()
 })
 
-test(`je clique sur le lien pour accéder au formulaire de changement de mot de passe`, async t => {
+test('je clique sur le lien pour accéder au formulaire de changement de mot de passe', async t => {
   const passwordPath = `${ROOT_PATH}profil/mot-de-passe`
   const passwordLink = Selector('a').withText('Mot de passe')
   const currentPasswordInput = Selector('input').nth(0)
@@ -66,8 +66,7 @@ test(`je clique sur le lien pour accéder au formulaire de changement de mot de 
   const userNewPassword = 'user@AZERTY1234'
   const weakPassword = 'weak'
   const incorrectPassword = 'incorrect password'
-  const menuButton = Selector('a[href="/profil/menu"]')
-  const logoutButton = Selector('button').withText('Déconnexion')
+  const signoutLink = Selector('a').withText('Déconnexion')
   const userEmailInput = Selector('input[type="email"]')
   const userPasswordInput = Selector('input[type="password"]')
   const signInButton = Selector('button[type="submit"]')
@@ -137,8 +136,7 @@ test(`je clique sur le lien pour accéder au formulaire de changement de mot de 
 
   // Je me déconnecte et je peux me reconnecter avec mon nouveau mot de passe définit au préalable
   await t
-    .click(menuButton)
-    .click(logoutButton)
+    .click(signoutLink)
     .typeText(userEmailInput, email)
     .typeText(userPasswordInput, userNewPassword)
     .click(signInButton)

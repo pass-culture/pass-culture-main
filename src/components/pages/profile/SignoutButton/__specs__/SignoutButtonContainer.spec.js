@@ -37,10 +37,7 @@ describe('src | components | layout | Menu | SignoutButton | SignoutButtonContai
         ]
 
         // when
-        mapDispatchToProps(store.dispatch).onSignOutClick({
-          history,
-          readRecommendations,
-        })()
+        mapDispatchToProps(store.dispatch).onSignOutClick(history.push, readRecommendations)()
 
         // then
         const { data, menu, pagination } = store.getState()
