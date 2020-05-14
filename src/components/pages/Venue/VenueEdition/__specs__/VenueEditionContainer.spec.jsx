@@ -1,6 +1,5 @@
 import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueEditionContainer'
 import { venueNormalizer } from '../../../../../utils/normalizers'
-import { getCurrentUserUUID } from 'with-react-redux-login'
 import VenueType from '../../ValueObjects/VenueType'
 
 window.scroll = () => {}
@@ -76,7 +75,6 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
           users: [
             {
               email: 'john.do e@example.net',
-              currentUserUUID: getCurrentUserUUID(),
             },
           ],
         },

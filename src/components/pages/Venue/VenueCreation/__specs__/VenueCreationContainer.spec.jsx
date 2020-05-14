@@ -1,6 +1,5 @@
 import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueCreationContainer'
 import { venueNormalizer } from '../../../../../utils/normalizers'
-import { getCurrentUserUUID } from 'with-react-redux-login'
 import VenueType from '../../ValueObjects/VenueType'
 
 jest.mock('../../Notification', () => {
@@ -75,7 +74,6 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
           users: [
             {
               email: 'john.doe@example.net',
-              currentUserUUID: getCurrentUserUUID(),
             },
           ],
         },

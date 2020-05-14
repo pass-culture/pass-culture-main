@@ -4,7 +4,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 import { NavLink } from 'react-router-dom'
-import * as reactReduxLogin from 'with-react-redux-login'
+import * as usersSelectors from '../../../../selectors/data/usersSelectors'
 import configureStore from '../../../../utils/store'
 import OfferItem from '../OfferItem/OfferItemContainer'
 
@@ -195,7 +195,7 @@ describe('src | components | pages | Offers | Offers', () => {
           const store = configureStore().store
           const history = createBrowserHistory()
           jest
-            .spyOn(reactReduxLogin, 'selectCurrentUser')
+            .spyOn(usersSelectors, 'selectCurrentUser')
             .mockReturnValue({ currentUser: props.currentUser })
           const wrapper = mount(
             <Provider store={store}>
@@ -222,7 +222,7 @@ describe('src | components | pages | Offers | Offers', () => {
           const store = configureStore().store
           const history = createBrowserHistory()
           jest
-            .spyOn(reactReduxLogin, 'selectCurrentUser')
+            .spyOn(usersSelectors, 'selectCurrentUser')
             .mockReturnValue({ currentUser: props.currentUser })
           jest.spyOn(props.query, 'parse').mockReturnValue({ structure: 'XY' })
           const wrapper = mount(
@@ -249,7 +249,7 @@ describe('src | components | pages | Offers | Offers', () => {
           const store = configureStore().store
           const history = createBrowserHistory()
           jest
-            .spyOn(reactReduxLogin, 'selectCurrentUser')
+            .spyOn(usersSelectors, 'selectCurrentUser')
             .mockReturnValue({ currentUser: props.currentUser })
           jest.spyOn(props.query, 'parse').mockReturnValue({ lieu: 'G6' })
           const wrapper = mount(

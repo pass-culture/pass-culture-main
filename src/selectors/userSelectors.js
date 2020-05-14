@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect'
-import { selectCurrentUser } from 'with-react-redux-login'
+import { selectCurrentUser } from './data/usersSelectors'
 
 const selectIsUserAdmin = createSelector(
   selectCurrentUser,

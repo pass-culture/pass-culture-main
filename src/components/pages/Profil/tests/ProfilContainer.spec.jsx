@@ -1,5 +1,3 @@
-import { getCurrentUserUUID } from 'with-react-redux-login'
-
 import { mapStateToProps } from '../ProfilContainer'
 
 describe('src | components | pages | Profil | ProfilContainer', () => {
@@ -7,9 +5,8 @@ describe('src | components | pages | Profil | ProfilContainer', () => {
     it('should return an object of props', () => {
       // given
       const id = '1'
-      const currentUserUUID = getCurrentUserUUID()
       const state = {
-        data: { users: [{ currentUserUUID, id }] },
+        data: { users: [{ id }] },
       }
 
       // when
@@ -18,7 +15,6 @@ describe('src | components | pages | Profil | ProfilContainer', () => {
       // then
       expect(result).toStrictEqual({
         currentUser: {
-          currentUserUUID,
           id: '1',
         },
       })

@@ -1,5 +1,4 @@
 import { mapStateToProps, mapDispatchToProps } from '../FilterByOfferContainer'
-import { getCurrentUserUUID } from 'with-react-redux-login'
 
 describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
   describe('mapStateToProps', () => {
@@ -50,7 +49,6 @@ describe('src | components | pages | Bookings | FilterByOfferContainer', () => {
             {
               id: 'EY',
               isAdmin: 'True',
-              currentUserUUID: getCurrentUserUUID(),
             },
           ],
         },

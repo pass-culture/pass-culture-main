@@ -1,5 +1,5 @@
 import { compose } from 'redux'
-import withLogin from 'with-react-redux-login'
+import withLogin from './withLogin'
 
 import { getRedirectToSignin } from './helpers'
 import withFrenchQueryRouter from '../withFrenchQueryRouter'
@@ -9,7 +9,7 @@ const withRequiredLogin = compose(
   withLogin({
     handleFail: (state, action, ownProps) => {
       const { history, location } = ownProps
-      history.push(getRedirectToSignin({...location}))
+      history.push(getRedirectToSignin({ ...location }))
     },
     isRequired: true,
   })

@@ -1,4 +1,3 @@
-import { getCurrentUserUUID } from 'with-react-redux-login'
 import selectIsUserAdmin from '../userSelectors'
 
 describe('src | components | pages | Bookings | selectors | selectIsUserAdmin', () => {
@@ -25,7 +24,6 @@ describe('src | components | pages | Bookings | selectors | selectIsUserAdmin', 
           {
             id: 'FA',
             isAdmin: true,
-            currentUserUUID: getCurrentUserUUID(),
           },
         ],
       },

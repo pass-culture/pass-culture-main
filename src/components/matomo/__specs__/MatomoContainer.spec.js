@@ -1,5 +1,4 @@
 import { mapStateToProps } from '../MatomoContainer'
-import { getCurrentUserUUID } from 'with-react-redux-login'
 
 describe('src | components | matomo | MatomoContainer', () => {
   describe('mapStateToProps', () => {
@@ -7,11 +6,12 @@ describe('src | components | matomo | MatomoContainer', () => {
       // given
       const state = {
         data: {
-          users: [{
-            id: 'TY7',
-            currentUserUUID: getCurrentUserUUID(),
-          }]
-        }
+          users: [
+            {
+              id: 'TY7',
+            },
+          ],
+        },
       }
 
       // when
@@ -25,8 +25,8 @@ describe('src | components | matomo | MatomoContainer', () => {
       // given
       const state = {
         data: {
-          users: []
-        }
+          users: [],
+        },
       }
 
       // when

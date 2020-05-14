@@ -1,5 +1,4 @@
 import { mapStateToProps } from '../../HeaderContainer'
-import { getCurrentUserUUID } from 'with-react-redux-login'
 
 describe('src | components | Layout | Header | HeaderContainer', () => {
   describe('mapStateToProps', () => {
@@ -8,10 +7,11 @@ describe('src | components | Layout | Header | HeaderContainer', () => {
       const state = {
         data: {
           offerers: [],
-          users: [{
-            publicName: 'super nom',
-            currentUserUUID: getCurrentUserUUID(),
-          }]
+          users: [
+            {
+              publicName: 'super nom',
+            },
+          ],
         },
       }
 
@@ -21,7 +21,7 @@ describe('src | components | Layout | Header | HeaderContainer', () => {
       // then
       expect(result).toStrictEqual({
         name: 'super nom',
-        offerers: []
+        offerers: [],
       })
     })
   })

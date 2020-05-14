@@ -1,7 +1,7 @@
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
-import { selectCurrentUser } from 'with-react-redux-login'
+import { selectCurrentUser } from '../../selectors/data/usersSelectors'
 
 import Matomo from './Matomo'
 

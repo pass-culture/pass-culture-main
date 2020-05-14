@@ -6,7 +6,6 @@ import React from 'react'
 import { Router } from 'react-router'
 
 import MatomoContainer from '../MatomoContainer'
-import { getCurrentUserUUID } from 'with-react-redux-login'
 
 describe('src | components | matomo | Matomo', () => {
   let fakeMatomo
@@ -104,10 +103,11 @@ describe('src | components | matomo | Matomo', () => {
       // given
       store = mockStore({
         data: {
-          users: [{
-            id: 'TY',
-            currentUserUUID: getCurrentUserUUID(),
-          }],
+          users: [
+            {
+              id: 'TY',
+            },
+          ],
         },
       })
 

@@ -4,7 +4,7 @@ import React from 'react'
 import { Form } from 'react-final-form'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
-import * as reactReduxLogin from 'with-react-redux-login'
+import * as usersSelectors from '../../../../../selectors/data/usersSelectors'
 import configureStore from '../../../../../utils/store'
 import AddressField from '../../fields/LocationFields/AddressField'
 import LocationFields from '../../fields/LocationFields/LocationFields'
@@ -162,9 +162,7 @@ describe('src | components | pages | Venue', () => {
           siret: null,
         }
 
-        jest
-          .spyOn(reactReduxLogin, 'selectCurrentUser')
-          .mockReturnValue({ currentUser: 'fakeUser' })
+        jest.spyOn(usersSelectors, 'selectCurrentUser').mockReturnValue({ currentUser: 'fakeUser' })
 
         props.venue = {
           publicName: 'fake public name',
