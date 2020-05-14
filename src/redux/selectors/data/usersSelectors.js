@@ -8,10 +8,3 @@ export const selectCurrentUser = createSelector(
     }
   }
 )
-
-export const resolveCurrentUser = userFromRequest => {
-  if (!userFromRequest) {
-    return null
-  }
-  return userFromRequest
-}

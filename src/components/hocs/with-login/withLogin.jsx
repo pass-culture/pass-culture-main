@@ -5,7 +5,14 @@ import React, { PureComponent } from 'react'
 import LoadingPage from '../../layout/LoadingPage/LoadingPage'
 
 import { connect } from 'react-redux'
-import { selectCurrentUser, resolveCurrentUser } from '../../../redux/selectors/data/usersSelectors'
+import { selectCurrentUser } from '../../../redux/selectors/data/usersSelectors'
+
+export const resolveCurrentUser = userFromRequest => {
+  if (!userFromRequest) {
+    return null
+  }
+  return userFromRequest
+}
 
 export default (config = {}) => WrappedComponent => {
   const { handleFail, handleSuccess } = config

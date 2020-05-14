@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form as FinalForm } from 'react-final-form'
 import { requestData } from 'redux-thunk-data'
-import { resolveCurrentUser } from '../../../../redux/selectors/data/usersSelectors'
+import { resolveCurrentUser } from '../../../../components/hocs/with-login/withLogin'
 
 import parseSubmitErrors from '../../../forms/utils/parseSubmitErrors'
 import Header from '../../../layout/Header/Header'
