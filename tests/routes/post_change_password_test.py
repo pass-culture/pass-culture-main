@@ -72,6 +72,9 @@ class PostChangePassword:
             # then
             assert response.status_code == 400
             assert response.json['newPassword'] == [
-                'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
-                '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
+                'Ton mot de passe doit contenir au moins :\n'
+                '- 12 caractères\n'
+                '- Un chiffre\n'
+                '- Une majuscule et une minuscule\n'
+                '- Un caractère spécial'
             ]

@@ -12,11 +12,11 @@ def test_change_password_raises_and_error_if_old_password_does_not_match_existin
     new_password = 'n3w__p455w0rd'
 
     # when
-    with pytest.raises(ApiErrors) as e:
+    with pytest.raises(ApiErrors) as api_errors:
         check_new_password_validity(user, old_password, new_password)
 
     # then
-    assert e.value.errors['oldPassword'] == ['Votre ancien mot de passe est incorrect']
+    assert api_errors.value.errors['oldPassword'] == ['Ton ancien mot de passe est incorrect.']
 
 
 def test_change_password_raises_and_error_if_old_password_is_the_same_as_the_new_password():
@@ -27,11 +27,11 @@ def test_change_password_raises_and_error_if_old_password_is_the_same_as_the_new
     new_password = '0ld__p455w0rd'
 
     # when
-    with pytest.raises(ApiErrors) as e:
+    with pytest.raises(ApiErrors) as api_errors:
         check_new_password_validity(user, old_password, new_password)
 
     # then
-    assert e.value.errors['newPassword'] == ['Votre nouveau mot de passe est identique à l\'ancien']
+    assert api_errors.value.errors['newPassword'] == ['Ton nouveau mot de passe est identique à l’ancien.']
 
 
 @pytest.mark.parametrize('password', [
@@ -73,11 +73,14 @@ def test_valid_passwords(password):
 ])
 def test_invalid_passwords(password):
     # when
-    with pytest.raises(ApiErrors) as e:
+    with pytest.raises(ApiErrors) as api_errors:
         check_password_strength('password', password)
 
     # then
-    assert e.value.errors['password'] == [
-        'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
-        '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
+    assert api_errors.value.errors['password'] == [
+        'Ton mot de passe doit contenir au moins :\n'
+        '- 12 caractères\n'
+        '- Un chiffre\n'
+        '- Une majuscule et une minuscule\n'
+        '- Un caractère spécial'
     ]

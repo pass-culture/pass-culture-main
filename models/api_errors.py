@@ -13,7 +13,7 @@ class ApiErrors(Exception):
 
     def check_min_length(self, field, value, length):
         if len(value) < length:
-            self.add_error(field, 'Vous devez saisir au moins ' + str(length) + ' caractères.')
+            self.add_error(field, 'Tu dois saisir au moins ' + str(length) + ' caractères.')
 
     def check_email(self, field, value):
         if not "@" in value:

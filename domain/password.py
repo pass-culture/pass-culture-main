@@ -12,15 +12,16 @@ RESET_PASSWORD_TOKEN_LENGTH = 10
 def random_password():
     return bcrypt.hashpw(random_token(length=12).encode('utf-8'), bcrypt.gensalt())
 
+
 def check_new_password_validity(user, old_password, new_password):
     errors = ApiErrors()
 
     if not user.checkPassword(old_password):
-        errors.add_error('oldPassword', 'Votre ancien mot de passe est incorrect')
+        errors.add_error('oldPassword', 'Ton ancien mot de passe est incorrect.')
         raise errors
 
     if user.checkPassword(new_password):
-        errors.add_error('newPassword', 'Votre nouveau mot de passe est identique à l\'ancien')
+        errors.add_error('newPassword', 'Ton nouveau mot de passe est identique à l’ancien.')
         raise errors
 
 
@@ -70,7 +71,7 @@ def check_reset_token_validity(user):
     if datetime.utcnow() > user.resetPasswordTokenValidityLimit:
         errors = ApiErrors()
         errors.add_error('token',
-                        'Votre lien de changement de mot de passe est périmé. Veuillez effectuer une nouvelle demande.')
+                         'Votre lien de changement de mot de passe est périmé. Veuillez effectuer une nouvelle demande.')
         raise errors
 
 
@@ -93,7 +94,10 @@ def check_password_strength(field_name, field_value):
         errors = ApiErrors()
         errors.add_error(
             field_name,
-            'Le mot de passe doit faire au moins 12 caractères et contenir à minima '
-            '1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
+            'Ton mot de passe doit contenir au moins :\n'
+            '- 12 caractères\n'
+            '- Un chiffre\n'
+            '- Une majuscule et une minuscule\n'
+            '- Un caractère spécial'
         )
         raise errors

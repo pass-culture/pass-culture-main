@@ -69,7 +69,13 @@ def test_check_valid_signup_webapp_raises_api_error_if_password_is_not_strong_en
         check_valid_signup_webapp(mocked_request)
 
     # Then
-    assert errors.value.errors['password'] == ['Le mot de passe doit faire au moins 12 caractères et contenir à minima 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi ''_-&?~#|^@=+.$,<>%*!:;']
+    assert errors.value.errors['password'] == [
+        'Ton mot de passe doit contenir au moins :\n'
+        '- 12 caractères\n'
+        '- Un chiffre\n'
+        '- Une majuscule et une minuscule\n'
+        '- Un caractère spécial'
+    ]
 
 
 def test_check_valid_signup_webapp_raises_api_error_if_no_email():

@@ -159,7 +159,7 @@ def test_should_return_errors_when_invalid_user(mock_count_users_by_email, app):
     api_errors = validate(user)
 
     # Then
-    assert api_errors.errors == {'publicName': ['Vous devez saisir au moins 3 caractères.']}
+    assert api_errors.errors == {'publicName': ['Tu dois saisir au moins 3 caractères.']}
 
 
 @patch('validation.models.user.user_queries.count_users_by_email')

@@ -77,7 +77,7 @@ class PublicNameTest:
         api_error = validate(user, api_errors)
 
         # Then
-        assert api_error.errors['publicName'] == ['Vous devez saisir au moins 3 caractères.']
+        assert api_error.errors['publicName'] == ['Tu dois saisir au moins 3 caractères.']
 
     def test_should_return_error_message_when_user_public_name_is_empty(self, app):
         # Given
@@ -88,7 +88,7 @@ class PublicNameTest:
         api_error = validate(user, api_errors)
 
         # Then
-        assert api_error.errors['publicName'] == ['Vous devez saisir au moins 3 caractères.']
+        assert api_error.errors['publicName'] == ['Tu dois saisir au moins 3 caractères.']
 
     @patch('validation.models.user.user_queries.count_users_by_email')
     def test_should_not_return_error_message_when_user_public_name_is_correct(self, mocked_count_users_by_email, app):
@@ -153,7 +153,7 @@ class PasswordTest:
         api_error = validate(user, api_errors)
 
         # Then
-        assert api_error.errors['password'] == ['Vous devez saisir au moins 8 caractères.']
+        assert api_error.errors['password'] == ['Tu dois saisir au moins 8 caractères.']
 
     @patch('validation.models.user.user_queries.count_users_by_email')
     def test_should_not_return_error_message_when_user_password_is_correct(self, mocked_count_users_by_email, app):
