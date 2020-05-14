@@ -1,4 +1,4 @@
-from domain.user.user import User
+from domain.beneficiary.beneficiary import Beneficiary
 
 
 def create_domain_user(identifier: int = None,
@@ -7,8 +7,8 @@ def create_domain_user(identifier: int = None,
                        last_name: str = None,
                        department_code: str = '93',
                        can_book_free_offers: bool = True,
-                       wallet_balance: int = None) -> User:
-    user = User(identifier=identifier,
+                       wallet_balance: int = None) -> Beneficiary:
+    user = Beneficiary(identifier=identifier,
                 can_book_free_offers=can_book_free_offers,
                 email=email,
                 first_name=first_name,

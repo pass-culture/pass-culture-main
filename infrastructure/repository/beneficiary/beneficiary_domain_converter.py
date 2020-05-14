@@ -1,9 +1,9 @@
-from domain.user.user import User
+from domain.beneficiary.beneficiary import Beneficiary
 from models import UserSQLEntity
 
 
-def to_domain(user_sql_entity: UserSQLEntity) -> User:
-    return User(
+def to_domain(user_sql_entity: UserSQLEntity) -> Beneficiary:
+    return Beneficiary(
         identifier=user_sql_entity.id,
         can_book_free_offers=user_sql_entity.canBookFreeOffers,
         email=user_sql_entity.email,

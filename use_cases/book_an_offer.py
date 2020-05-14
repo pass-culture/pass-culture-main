@@ -6,8 +6,8 @@ from domain.services.notification.notification_service import NotificationServic
 from domain.stock.stock import Stock
 from domain.stock.stock_repository import StockRepository
 from domain.stock.stock_validator import check_stock_is_bookable, check_expenses_limits, check_can_book_free_offer
-from domain.user.user import User
-from domain.user.user_repository import UserRepository
+from domain.beneficiary.beneficiary import Beneficiary
+from domain.beneficiary.beneficiary_repository import BeneficiaryRepository
 
 
 class BookingInformation(object):
@@ -22,7 +22,7 @@ class BookAnOffer:
     def __init__(self,
                  booking_repository: BookingRepository,
                  stock_repository: StockRepository,
-                 user_repository: UserRepository,
+                 user_repository: BeneficiaryRepository,
                  notification_service: NotificationService):
         self.booking_repository = booking_repository
         self.stock_repository = stock_repository
@@ -31,7 +31,7 @@ class BookAnOffer:
 
     def execute(self, booking_information: BookingInformation) -> Booking:
         stock = self.stock_repository.find_stock_by_id(booking_information.stock_id)
-        user = self.user_repository.find_user_by_id(booking_information.user_id)
+        user = self.user_repository.find_beneficiary_by_user_id(booking_information.user_id)
 
         check_offer_already_booked(stock.offer, user.identifier)
         check_quantity_is_valid(booking_information.quantity, stock.offer.isDuo)
@@ -55,9 +55,9 @@ class BookAnOffer:
             self,
             booking_information: BookingInformation,
             stock: Stock,
-            user: User) -> Booking:
+            user: Beneficiary) -> Booking:
         quantity = booking_information.quantity
         recommendation_id = booking_information.recommendation_id
         amount = stock.price
-        booking = Booking(user=user, stock=stock, amount=amount, quantity=quantity, recommendation_id=recommendation_id)
+        booking = Booking(beneficiary=user, stock=stock, amount=amount, quantity=quantity, recommendation_id=recommendation_id)
         return booking

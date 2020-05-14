@@ -7,7 +7,7 @@ class TotalAmountTest:
         # Given
         user = create_user()
         stock = create_stock()
-        booking = Booking(user=user, stock=stock, amount=1.2, quantity=2, is_cancelled=False)
+        booking = Booking(beneficiary=user, stock=stock, amount=1.2, quantity=2, is_cancelled=False)
 
         # When
         total_amount = booking.total_amount

@@ -177,7 +177,7 @@ def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_dig
         price=0
     )
     booking_datetime = datetime(2019, 10, 3, 13, 24, 6, tzinfo=timezone.utc)
-    booking = Booking(user=user, stock=stock, amount=1, quantity=10, date_booked=booking_datetime, token='123ABC')
+    booking = Booking(beneficiary=user, stock=stock, amount=1, quantity=10, date_booked=booking_datetime, token='123ABC')
 
 
     # When

@@ -57,7 +57,7 @@ class BookingSQLRepositoryTest:
             price=0
         )
 
-        booking_to_save = Booking(user=user, stock=stock, amount=0, quantity=1)
+        booking_to_save = Booking(beneficiary=user, stock=stock, amount=0, quantity=1)
         repository.save(offer, user_sql_entity, stock_sql_entity)
 
         # when
@@ -87,7 +87,7 @@ class BookingSQLRepositoryTest:
             price=20
         )
 
-        booking_to_save = Booking(user=user, stock=stock, amount=20, quantity=1)
+        booking_to_save = Booking(beneficiary=user, stock=stock, amount=20, quantity=1)
         repository.save(deposit, offer, user_sql_entity, stock_sql_entity)
 
         # when

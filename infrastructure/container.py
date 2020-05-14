@@ -1,12 +1,12 @@
 from infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
 from infrastructure.repository.booking.booking_sql_repository import BookingSQLRepository
 from infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
-from infrastructure.repository.user.user_sql_repository import UserSQLRepository
+from infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 from use_cases.book_an_offer import BookAnOffer
 
 # Repositories
 booking_repository = BookingSQLRepository()
-user_repository = UserSQLRepository()
+user_repository = BeneficiarySQLRepository()
 stock_repository = StockSQLRepository()
 notification_service = MailjetNotificationService()
 

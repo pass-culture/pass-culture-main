@@ -38,7 +38,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
             price=0,
             beginning_datetime=beginning_datetime,
         )
-        booking = Booking(identifier=1, user=user, stock=stock, amount=0, quantity=1, token='ABC123')
+        booking = Booking(identifier=1, beneficiary=user, stock=stock, amount=0, quantity=1, token='ABC123')
 
         recipient = ['initial_recipient@example.com']
         stock.bookings = [booking]
@@ -101,7 +101,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
             offer=event_offer,
             price=0,
         )
-        booking = Booking(identifier=1, user=user, stock=stock, amount=0, quantity=1, token='ABC123')
+        booking = Booking(identifier=1, beneficiary=user, stock=stock, amount=0, quantity=1, token='ABC123')
         stock.bookings = [booking]
 
         # When
@@ -165,7 +165,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
             price=5.86,
             beginning_datetime=beginning_datetime
         )
-        booking = Booking(identifier=1, user=user, stock=stock, amount=0, quantity=1, token='ABC123')
+        booking = Booking(identifier=1, beneficiary=user, stock=stock, amount=0, quantity=1, token='ABC123')
         stock.bookings = [booking]
 
         # When
@@ -227,7 +227,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
             price=0,
             beginning_datetime=beginning_datetime
         )
-        booking = Booking(identifier=1, user=user, stock=stock, amount=0, quantity=1, token='ABC123')
+        booking = Booking(identifier=1, beneficiary=user, stock=stock, amount=0, quantity=1, token='ABC123')
         stock.bookings = [booking]
 
         # When
@@ -289,7 +289,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
             price=0,
             beginning_datetime=beginning_datetime
         )
-        booking = Booking(identifier=1, user=user, stock=stock, amount=0, quantity=1, token='ABC123')
+        booking = Booking(identifier=1, beneficiary=user, stock=stock, amount=0, quantity=1, token='ABC123')
         stock.bookings = [booking]
 
         # When
@@ -351,7 +351,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
             price=0,
             beginning_datetime=beginning_datetime
         )
-        booking = Booking(identifier=1, user=user, stock=stock, amount=0, quantity=1, token='ABC123')
+        booking = Booking(identifier=1, beneficiary=user, stock=stock, amount=0, quantity=1, token='ABC123')
         stock.bookings = [booking]
 
         recipients = ['dev@example.com', 'administration@example.com']
@@ -386,7 +386,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
             price=0,
             beginning_datetime=beginning_datetime
         )
-        booking = Booking(identifier=1, user=user, stock=stock, amount=0, quantity=1, token='ABC123')
+        booking = Booking(identifier=1, beneficiary=user, stock=stock, amount=0, quantity=1, token='ABC123')
         stock.bookings = [booking]
 
         recipients = ['dev@example.com', 'administration@example.com']
@@ -426,8 +426,8 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
             price=0,
             beginning_datetime=beginning_datetime
         )
-        booking1 = Booking(identifier=1, user=user1, stock=stock, amount=0, quantity=1, token='ACVSDC')
-        booking2 = Booking(identifier=2, user=user2, stock=stock, amount=0, quantity=1, token='TEST95')
+        booking1 = Booking(identifier=1, beneficiary=user1, stock=stock, amount=0, quantity=1, token='ACVSDC')
+        booking2 = Booking(identifier=2, beneficiary=user2, stock=stock, amount=0, quantity=1, token='TEST95')
         stock.bookings = [booking1, booking2]
 
         # When
@@ -469,7 +469,7 @@ class MakeOffererBookingRecapEmailWithMailjetTemplateTest:
             price=0,
             beginning_datetime=beginning_datetime
         )
-        booking = Booking(identifier=1, user=user, stock=stock, amount=0, quantity=1, token='ACVSDC')
+        booking = Booking(identifier=1, beneficiary=user, stock=stock, amount=0, quantity=1, token='ACVSDC')
         stock.bookings = [booking]
 
         # When

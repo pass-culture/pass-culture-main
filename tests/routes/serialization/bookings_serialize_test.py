@@ -159,7 +159,7 @@ class SerializeBookingForBookAnOfferTest:
         )
         booking = Booking(
             identifier=3,
-            user=user,
+            beneficiary=user,
             stock=stock,
             amount=1,
             quantity=1,

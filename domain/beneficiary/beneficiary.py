@@ -1,4 +1,4 @@
-class User(object):
+class Beneficiary(object):
     def __init__(self,
                  identifier: int,
                  can_book_free_offers: bool,

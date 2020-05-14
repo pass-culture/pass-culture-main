@@ -1,15 +1,15 @@
 from domain.booking.booking import Booking
 from models import BookingSQLEntity
 from infrastructure.repository.stock import stock_domain_converter
-from infrastructure.repository.user import user_domain_converter
+from infrastructure.repository.beneficiary import beneficiary_domain_converter
 from utils.token import random_token
 
 
 def to_domain(booking_sql_entity: BookingSQLEntity) -> Booking:
-    user = user_domain_converter.to_domain(booking_sql_entity.user)
+    user = beneficiary_domain_converter.to_domain(booking_sql_entity.user)
     stock = stock_domain_converter.to_domain(booking_sql_entity.stock)
 
-    return Booking(user=user,
+    return Booking(beneficiary=user,
                    stock=stock,
                    amount=booking_sql_entity.amount,
                    quantity=booking_sql_entity.quantity,

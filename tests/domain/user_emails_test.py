@@ -224,7 +224,7 @@ class SendBookingRecapEmailsTest:
             offer=offer,
             price=10
         )
-        booking = Booking(user=user, stock=stock, amount=1, quantity=10)
+        booking = Booking(beneficiary=user, stock=stock, amount=1, quantity=10)
         mocked_send_email = Mock()
 
         # when
@@ -253,7 +253,7 @@ class SendBookingRecapEmailsTest:
             offer=offer,
             price=10
         )
-        booking = Booking(user=user, stock=stock, amount=1, quantity=10)
+        booking = Booking(beneficiary=user, stock=stock, amount=1, quantity=10)
 
         mocked_send_email = Mock()
 
@@ -283,7 +283,7 @@ class SendBookingRecapEmailsTest:
             offer=offer,
             price=10
         )
-        booking = Booking(user=user, stock=stock, amount=1, quantity=10)
+        booking = Booking(beneficiary=user, stock=stock, amount=1, quantity=10)
 
         mocked_send_email = Mock()
 

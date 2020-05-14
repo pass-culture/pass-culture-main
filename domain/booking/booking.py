@@ -1,12 +1,12 @@
 from datetime import datetime
 
 from domain.stock.stock import Stock
-from domain.user.user import User
+from domain.beneficiary.beneficiary import Beneficiary
 
 
 class Booking(object):
     def __init__(self,
-                 user: User,
+                 beneficiary: Beneficiary,
                  stock: Stock,
                  amount: float,
                  quantity: int,
@@ -16,7 +16,7 @@ class Booking(object):
                  token: str = None,
                  date_booked: datetime = datetime.utcnow()):
         self.identifier = identifier
-        self.user = user
+        self.user = beneficiary
         self.stock = stock
         self.amount = amount
         self.quantity = quantity

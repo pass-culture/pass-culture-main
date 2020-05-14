@@ -1,13 +1,12 @@
-from typing import Dict, Callable
+from typing import Dict
 
+from domain.beneficiary.beneficiary import Beneficiary
 from domain.booking.booking import Booking
 from domain.booking.booking_exceptions import StockIsNotBookable, UserHasInsufficientFunds, \
     PhysicalExpenseLimitHasBeenReached, DigitalExpenseLimitHasBeenReached, CannotBookFreeOffers
 from domain.expenses import is_eligible_to_physical_offers_capping, is_eligible_to_digital_offers_capping
 from domain.stock.stock import Stock
 from domain.stock.stock_exceptions import StockDoesntExist
-from domain.user.user import User
-from repository import stock_queries
 
 
 def check_existing_stock(stock: Stock) -> None:
@@ -38,6 +37,6 @@ def check_expenses_limits(expenses: Dict, booking: Booking) -> None:
             raise DigitalExpenseLimitHasBeenReached(expenses['digital']['max'])
 
 
-def check_can_book_free_offer(user: User, stock: Stock):
+def check_can_book_free_offer(user: Beneficiary, stock: Stock):
     if not user.can_book_free_offers and stock.price == 0:
         raise CannotBookFreeOffers()

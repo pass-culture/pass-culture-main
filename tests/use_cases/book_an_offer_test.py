@@ -11,7 +11,7 @@ from infrastructure.services.notification.mailjet_notification_service import Ma
 from repository import repository
 from infrastructure.repository.booking.booking_sql_repository import BookingSQLRepository
 from infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
-from infrastructure.repository.user.user_sql_repository import UserSQLRepository
+from infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 from tests.conftest import clean_database
 from tests.domain_creators.generic_creators import create_domain_user
 from tests.model_creators.generic_creators import create_user, create_deposit, create_offerer, create_venue, \
@@ -25,7 +25,7 @@ class BookAnOfferTest:
         self.booking_repository = BookingSQLRepository()
         self.booking_repository.save = MagicMock()
         self.stock_repository = StockSQLRepository()
-        self.user_repository = UserSQLRepository()
+        self.user_repository = BeneficiarySQLRepository()
         self.stock_repository.find_stock_by_id = MagicMock()
         self.user_repository.find_user_by_id = MagicMock()
         self.notification_service = MailjetNotificationService()
@@ -103,7 +103,7 @@ class BookAnOfferTest:
             price=50
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
-        saved_booking = Booking(user=user, stock=stock, amount=0, quantity=1)
+        saved_booking = Booking(beneficiary=user, stock=stock, amount=0, quantity=1)
         self.booking_repository.save.return_value = saved_booking
 
         # When
@@ -140,7 +140,7 @@ class BookAnOfferTest:
             price=50
         )
         self.stock_repository.find_stock_by_id.return_value = expected_stock
-        saved_booking = Booking(user=user, stock=stock, amount=0, quantity=1)
+        saved_booking = Booking(beneficiary=user, stock=stock, amount=0, quantity=1)
         self.booking_repository.save.return_value = saved_booking
 
         # When
@@ -176,7 +176,7 @@ class BookAnOfferTest:
             offer=offer,
             price=50)
         self.stock_repository.find_stock_by_id.return_value = expected_stock
-        saved_booking = Booking(user=user, stock=stock, amount=0, quantity=1)
+        saved_booking = Booking(beneficiary=user, stock=stock, amount=0, quantity=1)
         self.booking_repository.save.return_value = saved_booking
 
         # When
