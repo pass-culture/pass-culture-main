@@ -11,6 +11,8 @@ import VenueEdition from './VenueEdition'
 import { selectVenueTypes } from '../../../../selectors/data/venueTypesSelectors'
 import VenueType from '../ValueObjects/VenueType'
 import { formatVenuePayload } from '../utils/formatVenuePayload'
+import { selectVenueLabels } from '../../../../selectors/data/venueLabelsSelectors'
+import VenueLabel from '../ValueObjects/VenueLabel'
 
 export const mapStateToProps = (
   state,
@@ -21,6 +23,7 @@ export const mapStateToProps = (
   }
 ) => ({
   venueTypes: selectVenueTypes(state).map(type => new VenueType(type)),
+  venueLabels: selectVenueLabels(state).map(label => new VenueLabel(label)),
   venue: selectVenueById(state, venueId),
   offerer: selectOffererById(state, offererId),
 })
@@ -51,6 +54,7 @@ export const mapDispatchToProps = (
       )
       dispatch(requestData({ apiPath: `/userOfferers/${offererId}` }))
       dispatch(requestData({ apiPath: `/venue-types` }))
+      dispatch(requestData({ apiPath: `/venue-labels` }))
     },
 
     handleSubmitRequest: ({ formValues, handleFail, handleSuccess }) => {
@@ -107,5 +111,9 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 export default compose(
   withTracking('Venue'),
   withRequiredLogin,
-  connect(mapStateToProps, mapDispatchToProps, mergeProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps,
+    mergeProps
+  )
 )(VenueEdition)

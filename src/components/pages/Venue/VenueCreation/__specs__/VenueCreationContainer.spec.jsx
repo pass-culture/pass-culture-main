@@ -1,6 +1,7 @@
 import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueCreationContainer'
 import { venueNormalizer } from '../../../../../utils/normalizers'
 import VenueType from '../../ValueObjects/VenueType'
+import VenueLabel from '../../ValueObjects/VenueLabel'
 
 jest.mock('../../Notification', () => {
   return jest.fn().mockImplementation(() => 'Some text')
@@ -57,6 +58,7 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
           managingOffererId: 1,
         },
         venueTypes: [],
+        venueLabels: [],
       })
     })
 
@@ -90,6 +92,40 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
         venueTypes: [
           new VenueType({ id: 'AE', label: 'Patrimoine et tourisme' }),
           new VenueType({ id: 'AF', label: 'Autre' }),
+        ],
+      })
+    })
+
+    it('should map venue labels for the component', () => {
+      // given
+      const state = {
+        data: {
+          offerers: [],
+          userOfferers: [],
+          venues: [],
+          'venue-labels': [
+            { id: 'AE', label: "CAC - Centre d'art contemporain d'intérêt national" },
+            { id: 'AF', label: "Ville et Pays d'art et d'histoire" },
+          ],
+          users: [
+            {
+              email: 'john.doe@example.net',
+            },
+          ],
+        },
+      }
+
+      // when
+      const props = mapStateToProps(state, ownProps)
+
+      // then
+      expect(props).toHaveProperty('venueLabels')
+      const venueLabel = props.venueLabels[0]
+      expect(venueLabel).toBeInstanceOf(VenueLabel)
+      expect(props).toMatchObject({
+        venueLabels: [
+          new VenueLabel({ id: 'AE', label: "CAC - Centre d'art contemporain d'intérêt national" }),
+          new VenueLabel({ id: 'AF', label: "Ville et Pays d'art et d'histoire" }),
         ],
       })
     })
@@ -139,6 +175,11 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
       expect(dispatch.mock.calls[2][0]).toStrictEqual({
         config: { apiPath: '/venue-types', method: 'GET' },
         type: 'REQUEST_DATA_GET_/VENUE-TYPES',
+      })
+
+      expect(dispatch.mock.calls[3][0]).toStrictEqual({
+        config: { apiPath: '/venue-labels', method: 'GET' },
+        type: 'REQUEST_DATA_GET_/VENUE-LABELS',
       })
     })
   })

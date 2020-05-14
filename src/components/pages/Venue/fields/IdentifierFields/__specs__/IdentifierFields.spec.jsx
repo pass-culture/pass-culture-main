@@ -5,6 +5,7 @@ import TextareaField from '../../../../../layout/form/fields/TextareaField'
 import TextField from '../../../../../layout/form/fields/TextField'
 import { Field } from 'react-final-form'
 import VenueType from '../../../ValueObjects/VenueType'
+import VenueLabel from '../../../ValueObjects/VenueLabel'
 
 describe('src | components | pages | Venue | fields | IdentifierFields', () => {
   let props
@@ -19,15 +20,9 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       readOnly: true,
       venueTypes: [],
       venueTypeId: null,
+      venueLabels: [],
+      venueLabelId: null,
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<IdentifierFields {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {
@@ -84,6 +79,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           initialSiret: null,
           readOnly: false,
           venueTypes: [],
+          venueLabels: [],
         }
 
         // when
@@ -118,7 +114,10 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         const wrapper = shallow(<IdentifierFields {...props} />)
 
         // then
-        const label = wrapper.find('label').at(0).text()
+        const label = wrapper
+          .find('label')
+          .at(0)
+          .text()
         expect(label).toBe('SIRET du lieu qui accueille vos offres (si applicable) : ')
       })
 
@@ -134,7 +133,10 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         const wrapper = shallow(<IdentifierFields {...props} />)
 
         // then
-        const label = wrapper.find('label').at(0).text()
+        const label = wrapper
+          .find('label')
+          .at(0)
+          .text()
         expect(label).toBe('SIRET : ')
       })
     })
@@ -148,6 +150,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           fieldReadOnlyBecauseFrozenFormSiret: false,
           readOnly: false,
           venueTypes: [],
+          venueLabels: [],
         }
 
         // when
@@ -166,6 +169,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           isModifiedEntity: true,
           readOnly: true,
           venueTypes: [],
+          venueLabels: [],
         }
 
         // when
@@ -184,6 +188,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           isModifiedEntity: true,
           fieldReadOnlyBecauseFrozenFormSiretdisplay: true,
           venueTypes: [],
+          venueLabels: [],
         }
 
         // when
@@ -205,6 +210,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           fieldReadOnlyBecauseFrozenFormSiret: false,
           readOnly: false,
           venueTypes: [],
+          venueLabels: [],
         }
 
         // when
@@ -223,6 +229,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           isModifiedEntity: true,
           readOnly: true,
           venueTypes: [],
+          venueLabels: [],
         }
 
         // when
@@ -244,6 +251,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           fieldReadOnlyBecauseFrozenFormSiret: false,
           readOnly: false,
           venueTypes: [],
+          venueLabels: [],
         }
 
         // when
@@ -262,6 +270,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           isModifiedEntity: true,
           readOnly: true,
           venueTypes: [],
+          venueLabels: [],
         }
 
         // when
@@ -282,6 +291,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           isModifiedEntity: true,
           readOnly: false,
           venueTypes: [],
+          venueLabels: [],
         }
 
         // when
@@ -300,6 +310,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           isModifiedEntity: true,
           readOnly: true,
           venueTypes: [],
+          venueLabels: [],
         }
 
         // when
@@ -410,6 +421,96 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
 
             // Then
             const selectField = wrapper.find(Field).findWhere(n => n.prop('id') === 'venue-type')
+            expect(selectField.prop('disabled')).toBe(true)
+          })
+        })
+      })
+    })
+
+    describe('label of venue field', () => {
+      describe('when the form is in edition mode', () => {
+        it('should be editable', () => {
+          // Given
+          props.readOnly = false
+          props.venueLabels = [
+            new VenueLabel({
+              id: 'A1',
+              label: "CAC - Centre d'art contemporain d'intérêt national",
+            }),
+          ]
+
+          // When
+          const wrapper = shallow(<IdentifierFields {...props} />)
+
+          // Then
+          const selectField = wrapper.find(Field).findWhere(n => n.prop('id') === 'venue-label')
+          expect(selectField.prop('disabled')).toBe(false)
+        })
+
+        it('should have a list of options with venue labels', () => {
+          // Given
+          props.readOnly = false
+          props.venueLabels = [
+            new VenueLabel({
+              id: 'A1',
+              label: "CAC - Centre d'art contemporain d'intérêt national",
+            }),
+          ]
+
+          // When
+          const wrapper = shallow(<IdentifierFields {...props} />)
+
+          // Then
+          const selectField = wrapper.find(Field).findWhere(n => n.prop('id') === 'venue-label')
+          expect(selectField.prop('component')).toBe('select')
+
+          const venueLabelOptions = selectField.find('option')
+          expect(venueLabelOptions.at(0).text()).toBe('Choisissez un label dans la liste')
+          expect(venueLabelOptions.at(1).text()).toBe(
+            "CAC - Centre d'art contemporain d'intérêt national"
+          )
+        })
+      })
+
+      describe('when the form is in detail mode', () => {
+        describe('when no venue label has been chosen', () => {
+          it('should not exist', () => {
+            // Given
+            props.readOnly = true
+            props.venueLabelId = null
+            props.venueLabels = [
+              new VenueLabel({
+                id: 'A1',
+                label: "CAC - Centre d'art contemporain d'intérêt national",
+              }),
+            ]
+
+            // When
+            const wrapper = shallow(<IdentifierFields {...props} />)
+
+            // Then
+            const selectField = wrapper.find(Field).findWhere(n => n.prop('id') === 'venue-label')
+            expect(selectField).toHaveLength(0)
+          })
+        })
+
+        describe('when venue label is defined', () => {
+          it('should be disabled', () => {
+            // Given
+            props.readOnly = true
+            props.venueLabelId = 'A1'
+            props.venueLabels = [
+              new VenueLabel({
+                id: 'A1',
+                label: "CAC - Centre d'art contemporain d'intérêt national",
+              }),
+            ]
+
+            // When
+            const wrapper = shallow(<IdentifierFields {...props} />)
+
+            // Then
+            const selectField = wrapper.find(Field).findWhere(n => n.prop('id') === 'venue-label')
             expect(selectField.prop('disabled')).toBe(true)
           })
         })

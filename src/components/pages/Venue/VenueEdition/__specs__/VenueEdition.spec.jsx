@@ -51,15 +51,8 @@ describe('src | components | pages | VenueEdition', () => {
       },
       trackModifyVenue: jest.fn(),
       venueTypes: [],
+      venueLabels: [],
     }
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<VenueEdition {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {

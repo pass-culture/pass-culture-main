@@ -12,6 +12,8 @@ import VenueCreation from './VenueCreation'
 import { selectVenueTypes } from '../../../../selectors/data/venueTypesSelectors'
 import VenueType from '../ValueObjects/VenueType'
 import { formatVenuePayload } from '../utils/formatVenuePayload'
+import VenueLabel from '../ValueObjects/VenueLabel'
+import { selectVenueLabels } from '../../../../selectors/data/venueLabelsSelectors'
 
 export const mapStateToProps = (
   state,
@@ -23,6 +25,7 @@ export const mapStateToProps = (
   }
 ) => ({
   venueTypes: selectVenueTypes(state).map(type => new VenueType(type)),
+  venueLabels: selectVenueLabels(state).map(label => new VenueLabel(label)),
   formInitialValues: {
     managingOffererId: offererId,
     bookingEmail: currentUser.email,
@@ -58,6 +61,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
       )
       dispatch(requestData({ apiPath: `/userOfferers/${offererId}` }))
       dispatch(requestData({ apiPath: `/venue-types` }))
+      dispatch(requestData({ apiPath: `/venue-labels` }))
     },
 
     handleSubmitRequest: ({ formValues, handleFail, handleSuccess }) => {

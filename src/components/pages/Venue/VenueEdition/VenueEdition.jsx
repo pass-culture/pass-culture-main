@@ -19,6 +19,7 @@ import VenueProvidersManagerContainer from './VenueProvidersManager/VenueProvide
 import RibsUploadFeatureFlip from '../../../layout/FeatureFlip/RibsUploadFeatureFlip'
 import BankInformation from '../fields/BankInformationFields/BankInformationFields'
 import VenueType from '../ValueObjects/VenueType'
+import VenueLabel from '../ValueObjects/VenueLabel'
 
 const noop = () => {}
 
@@ -87,6 +88,7 @@ class VenueEdition extends PureComponent {
       query,
       offerer,
       venueTypes,
+      venueLabels,
     } = this.props
     const { isRequestPending } = this.state
     const { readOnly } = query.context({
@@ -103,6 +105,7 @@ class VenueEdition extends PureComponent {
       longitude: formLongitude,
       siret: formSiret,
       venueTypeId,
+      venueLabelId,
     } = values
 
     const siretValidOnModification = initialSiret !== null
@@ -119,6 +122,8 @@ class VenueEdition extends PureComponent {
           formSiret={formSiret}
           initialSiret={initialSiret}
           readOnly={readOnly}
+          venueLabelId={venueLabelId}
+          venueLabels={venueLabels}
           venueTypeId={venueTypeId}
           venueTypes={venueTypes}
         />
@@ -240,6 +245,7 @@ VenueEdition.propTypes = {
   query: PropTypes.shape().isRequired,
   trackModifyVenue: PropTypes.func.isRequired,
   venue: PropTypes.shape().isRequired,
+  venueLabels: PropTypes.arrayOf(PropTypes.instanceOf(VenueLabel)).isRequired,
   venueTypes: PropTypes.arrayOf(PropTypes.instanceOf(VenueType)).isRequired,
 }
 

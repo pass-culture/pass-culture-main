@@ -12,6 +12,7 @@ import { removeWhitespaces } from 'react-final-form-utils'
 import { Field } from 'react-final-form'
 import VenueType from '../../ValueObjects/VenueType'
 import classnames from 'classnames'
+import VenueLabel from '../../ValueObjects/VenueLabel'
 
 class IdentifierFields extends PureComponent {
   componentDidUpdate() {
@@ -83,6 +84,8 @@ class IdentifierFields extends PureComponent {
       initialSiret,
       isCreatedEntity,
       readOnly,
+      venueLabels,
+      venueLabelId,
       venueTypes,
       venueTypeId,
     } = this.props
@@ -207,6 +210,51 @@ class IdentifierFields extends PureComponent {
               </div>
             </div>
           </div>
+          <div
+            className={classnames('field field-select is-horizontal', {
+              readonly: readOnly,
+            })}
+          >
+            <div className="field-label is-normal">
+              <label
+                className="label"
+                htmlFor="venue-label"
+              >
+                {'Label du lieu :'}
+              </label>
+            </div>
+
+            <div className="field-body">
+              <div className="control control-select">
+                {!(readOnly && venueLabelId == null) && (
+                  <div
+                    className={classnames('select is-normal', {
+                      readonly: readOnly,
+                    })}
+                  >
+                    <Field
+                      component="select"
+                      disabled={readOnly}
+                      id="venue-label"
+                      name="venueLabelId"
+                    >
+                      <option value="">
+                        {'Choisissez un label dans la liste'}
+                      </option>
+                      {venueLabels.map(venueLabel => (
+                        <option
+                          key={`venue-label-${venueLabel.id}`}
+                          value={venueLabel.id}
+                        >
+                          {venueLabel.label}
+                        </option>
+                      ))}
+                    </Field>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -219,6 +267,7 @@ IdentifierFields.defaultProps = {
   initialSiret: null,
   isCreatedEntity: false,
   readOnly: true,
+  venueLabelId: null,
   venueTypeId: null,
 }
 
@@ -228,6 +277,8 @@ IdentifierFields.propTypes = {
   initialSiret: PropTypes.string,
   isCreatedEntity: PropTypes.bool,
   readOnly: PropTypes.bool,
+  venueLabelId: PropTypes.string,
+  venueLabels: PropTypes.arrayOf(PropTypes.instanceOf(VenueLabel)).isRequired,
   venueTypeId: PropTypes.string,
   venueTypes: PropTypes.arrayOf(PropTypes.instanceOf(VenueType)).isRequired,
 }

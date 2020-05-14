@@ -17,6 +17,7 @@ import LocationFields from '../fields/LocationFields/LocationFields'
 import { FRANCE_POSITION } from '../fields/LocationFields/utils/positions'
 import VenueType from '../ValueObjects/VenueType'
 import BankInformation from '../fields/BankInformationFields/BankInformationFields'
+import VenueLabel from '../ValueObjects/VenueLabel'
 
 const noop = () => {}
 
@@ -92,12 +93,13 @@ class VenueCreation extends PureComponent {
         params: { offererId, venueId },
       },
       venueTypes,
+      venueLabels,
       offerer,
     } = this.props
     const { isRequestPending } = this.state
     const readOnly = false
 
-    const { bic, iban, siret: initialSiret, venueTypeId } = formInitialValues || {}
+    const { bic, iban, siret: initialSiret, venueTypeId, venueLabelId } = formInitialValues || {}
 
     const canSubmit = getCanSubmit(formProps)
     const { form, handleSubmit, values } = formProps
@@ -122,6 +124,8 @@ class VenueCreation extends PureComponent {
           initialSiret={initialSiret}
           isCreatedEntity
           readOnly={readOnly}
+          venueLabelId={venueLabelId}
+          venueLabels={venueLabels}
           venueTypeId={venueTypeId}
           venueTypes={venueTypes}
         />
@@ -225,6 +229,7 @@ VenueCreation.propTypes = {
   history: PropTypes.shape().isRequired,
   offerer: PropTypes.shape().isRequired,
   trackCreateVenue: PropTypes.func.isRequired,
+  venueLabels: PropTypes.arrayOf(PropTypes.instanceOf(VenueLabel)).isRequired,
   venueTypes: PropTypes.arrayOf(PropTypes.instanceOf(VenueType)).isRequired,
 }
 
