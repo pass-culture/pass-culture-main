@@ -34,8 +34,6 @@ jobs:
           name: Running API server
           command: |
             cd api
-            gpg --passphrase $PASS_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
-            tar xf private.tar.gz
             pc start-backend
           background: true
       - run:
@@ -69,8 +67,6 @@ jobs:
           name: Running API server
           command: |
             cd api
-            gpg --passphrase $PASS_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
-            tar xf private.tar.gz
             pc start-backend
           background: true
       - run:
@@ -129,8 +125,6 @@ jobs:
           name: Running API server
           command: |
             cd api
-            gpg --passphrase $PASS_PRIVATE --batch --output private.tar.gz -d private.tar.gz.gpg
-            tar xf private.tar.gz
             pc start-backend
           background: true
       - run:
