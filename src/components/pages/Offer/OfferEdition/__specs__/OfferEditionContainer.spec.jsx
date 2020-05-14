@@ -43,6 +43,7 @@ describe('components | OfferEdition | OfferEditionContainer ', () => {
           type: undefined,
           url: undefined,
           venueId: 'DA',
+          withdrawalDetails: undefined,
         },
         formOffererId: 'BA',
         formVenueId: 'DA',
@@ -299,6 +300,7 @@ describe('components | OfferEdition | OfferEditionContainer ', () => {
         type: undefined,
         url: undefined,
         venueId: 'DA',
+        withdrawalDetails: undefined,
       })
     })
 

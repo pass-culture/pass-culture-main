@@ -63,14 +63,6 @@ describe('components | OfferEdition ', () => {
     }
   })
 
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = shallow(<OfferEdition {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   describe('handleSuccess', () => {
     describe('when the offer is successfully modified', () => {
       it('should redirect to offer page', () => {
@@ -260,6 +252,7 @@ describe('components | OfferEdition ', () => {
             form_fields.find("[label='Email auquel envoyer les réservations']").prop('readOnly')
           ).toBe(true)
           expect(form_fields.find("[label='Description']").prop('readOnly')).toBe(true)
+          expect(form_fields.find("[label='Informations de retrait']").prop('readOnly')).toBe(true)
         })
 
         it('should be possible to manage stocks', () => {
@@ -307,7 +300,7 @@ describe('components | OfferEdition ', () => {
           expect(form_fields.find("[label='Titre de l’offre']").prop('readOnly')).toBe(true)
         })
 
-        it('should not allow to edit description', () => {
+        it('should not allow to edit description nor withdrawalDetails', () => {
           // given
           props.match.params = {
             offerId: 'VAG',
@@ -322,6 +315,7 @@ describe('components | OfferEdition ', () => {
           // then
           const form_fields = wrapper.find(Field)
           expect(form_fields.find("[label='Description']").prop('readOnly')).toBe(true)
+          expect(form_fields.find("[label='Informations de retrait']").prop('readOnly')).toBe(true)
         })
 
         it('should not be possible to manage stocks', () => {
@@ -454,6 +448,7 @@ describe('components | OfferEdition ', () => {
             form_fields.find("[label='Email auquel envoyer les réservations']").prop('readOnly')
           ).toBe(false)
           expect(form_fields.find("[label='Description']").prop('readOnly')).toBe(false)
+          expect(form_fields.find("[label='Informations de retrait']").prop('readOnly')).toBe(false)
         })
 
         it('should be possible to manage stocks', () => {

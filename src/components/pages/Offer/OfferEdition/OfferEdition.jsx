@@ -672,6 +672,22 @@ class OfferEdition extends PureComponent {
                   />
                 )}
               </div>
+
+              <h2 className="main-list-title">
+                {'Infos artistiques'}
+              </h2>
+              <div className="field-group">
+                <Field
+                  displayMaxLength
+                  isExpanded
+                  label="Informations de retrait"
+                  maxLength={500}
+                  name="withdrawalDetails"
+                  readOnly={offerFromLocalProvider}
+                  rows={readOnly ? 1 : 5}
+                  type="textarea"
+                />
+              </div>
             </div>
           )}
 
