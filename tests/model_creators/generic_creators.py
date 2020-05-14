@@ -15,10 +15,11 @@ from models import AllocinePivot, AllocineVenueProviderPriceRule, ApiKey, \
     Provider, Recommendation, RightsType, StockSQLEntity, ThingType, UserSQLEntity, UserOfferer, \
     Venue, VenueProvider, SeenOffer
 from models.allocine_venue_provider import AllocineVenueProvider
+from models.bank_information import BankInformationStatus
 from models.email import EmailStatus
 from models.payment_status import TransactionStatus
+from models.venue_label import VenueLabel
 from models.venue_type import VenueType
-from models.bank_information import BankInformationStatus
 from scripts.iris.import_iris import WGS_SPATIAL_REFERENCE_IDENTIFIER, \
     create_centroid_from_polygon
 from tests.model_creators.specific_creators import \
@@ -570,17 +571,22 @@ def create_venue_provider(venue: Venue,
 
 def create_venue_type(label: str, idx: Optional[int] = None) -> VenueType:
     venue_type = VenueType()
-
     if idx:
         venue_type.id = idx
-
     venue_type.label = label
-
     return venue_type
 
 
+def create_venue_label(label: str, idx: Optional[int] = None) -> VenueLabel:
+    venue_label = VenueLabel()
+    venue_label.id = idx
+    venue_label.label = label
+    return venue_label
+
+
 def create_allocine_venue_provider(venue: Provider, allocine_provider: Venue, is_duo: bool = False,
-                                   quantity: Optional[int] = None, venue_id_at_offer_provider: str = None) -> AllocineVenueProvider:
+                                   quantity: Optional[int] = None,
+                                   venue_id_at_offer_provider: str = None) -> AllocineVenueProvider:
     allocine_venue_provider = AllocineVenueProvider()
     allocine_venue_provider.venue = venue
     allocine_venue_provider.provider = allocine_provider

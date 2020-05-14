@@ -101,10 +101,9 @@ class Venue(PcObject,
                          ForeignKey('venue_type.id'),
                          nullable=True)
 
-    # openingHours = Column(ARRAY(TIME))
-    # Ex: [['09:00', '18:00'], ['09:00', '19:00'], null,  ['09:00', '18:00']]
-    # means open monday 9 to 18 and tuesday 9 to 19, closed wednesday,
-    # open thursday 9 to 18, closed the rest of the week
+    venueLabelId = Column(Integer,
+                          ForeignKey('venue_label.id'),
+                          nullable=True)
 
     def store_departement_code(self):
         self.departementCode = PostalCode(self.postalCode).get_departement_code()
@@ -152,6 +151,5 @@ ts_indexes = [('idx_venue_fts_name', Venue.name),
               ('idx_venue_fts_address', Venue.address),
               ('idx_venue_fts_siret', Venue.siret),
               ('idx_venue_fts_city', Venue.city)]
-
 
 (Venue.__ts_vectors__, Venue.__table_args__) = create_ts_vector_and_table_args(ts_indexes)
