@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 
-import PersonalInformationsField from '../forms/fields/PersonalInformationsField'
+import PersonalInformationsField from './PersonalInformationsField/PersonalInformationsField'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import User from '../ValueObjects/User'
 

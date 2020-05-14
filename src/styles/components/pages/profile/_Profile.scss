@@ -66,7 +66,6 @@
     flex: 1 1;
     font-size: inherit;
     margin: rem(9px) 0 rem(10px) 0;
-    padding-left: rem(16px);
 
     &:focus {
       outline: none;
@@ -92,6 +91,11 @@
       height: rem(17px);
       margin-right: rem(9px);
       width: rem(17px);
+    }
+
+    pre {
+      font-family: inherit;
+      white-space: pre-wrap;
     }
   }
 

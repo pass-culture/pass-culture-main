@@ -29,7 +29,7 @@ test('je clique sur le lien pour accéder au formulaire de mes informations pers
   const nicknameInput = Selector('input[name="publicName"]')
   const newNickname = 'aa'
   const validNickname = 'pseudo different'
-  const errorMessage = Selector('p').withText('Vous devez saisir au moins 3 caractères.')
+  const errorMessage = Selector('pre').withText('Tu dois saisir au moins 3 caractères.')
   const updatedNickname = Selector('main').withText(validNickname)
 
   // Je saisis un pseudo invalide et j'ai un message d'erreur
@@ -73,14 +73,15 @@ test(`je clique sur le lien pour accéder au formulaire de changement de mot de 
   const signInButton = Selector('button[type="submit"]')
   const { email } = t.ctx.user
 
-  const incorrectPasswordErrorMessage = Selector('p').withText(
-    'Votre ancien mot de passe est incorrect'
+  const incorrectPasswordErrorMessage = Selector('pre').withText(
+    'Ton ancien mot de passe est incorrect.'
   )
-  const samePasswordErrorMessage = Selector('p').withText(
-    "Votre nouveau mot de passe est identique à l'ancien"
+  const samePasswordErrorMessage = Selector('pre').withText(
+    'Ton nouveau mot de passe est identique à l’ancien.'
   )
-  const weakPasswordErrorMessage = Selector('p').withText(
-    'Le mot de passe doit faire au moins 12 caractères et contenir à minima 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial parmi _-&?~#|^@=+.$,<>%*!:;'
+
+  const weakPasswordErrorMessage = Selector('pre').withText(
+    'Ton mot de passe doit contenir au moins : \n- 12 caractères \n- Un chiffre \n- Une majuscule et une minuscule \n- Un caractère spécial'
   )
 
   // Je rentre un ancien mot de passe incorrect et j'ai un message d'errreur

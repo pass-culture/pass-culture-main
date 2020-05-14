@@ -8,7 +8,7 @@ describe('edit password field', () => {
 
   beforeEach(() => {
     props = {
-      inputRef: {},
+      inputRef: React.createRef(),
       label: 'fake label',
       onChange: jest.fn(),
       placeholder: 'fake placeholder',

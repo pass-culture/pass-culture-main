@@ -43,9 +43,9 @@ const PersonalInformationsField = forwardRef(function PersonalInformationsField(
               key={error}
             >
               <Icon svg="ico-error" />
-              <p>
+              <pre>
                 {error}
-              </p>
+              </pre>
             </div>
           ))}
       </div>
