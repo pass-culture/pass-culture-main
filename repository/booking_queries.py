@@ -5,7 +5,7 @@ from typing import List, Set, Union
 from sqlalchemy import func
 from sqlalchemy.orm import Query
 
-from domain.booking_recap.booking_recap import BookingRecap, compute_booking_recap_token, EventBookingRecap
+from domain.booking_recap.booking_recap import BookingRecap, EventBookingRecap, ThingBookingRecap
 from models import UserOfferer
 from models.api_errors import ResourceNotFoundError
 from models.booking_sql_entity import BookingSQLEntity
@@ -221,7 +221,6 @@ def _serialize_booking_recap(booking: object) -> BookingRecap:
         beneficiary_email=booking.beneficiaryEmail,
         beneficiary_firstname=booking.beneficiaryFirstname,
         beneficiary_lastname=booking.beneficiaryLastname,
-        # TODO: remettre ça d'équerre avec la story sur le token
         booking_token=booking.bookingToken,
         booking_date=booking.bookingDate,
         booking_is_used=booking.isUsed,
@@ -229,12 +228,12 @@ def _serialize_booking_recap(booking: object) -> BookingRecap:
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
         event_beginning_datetime=booking.stockBeginningDatetime,
-    ) if booking.stockBeginningDatetime is not None else BookingRecap(
+    ) if booking.stockBeginningDatetime is not None else ThingBookingRecap(
         offer_name=booking.offerName,
         beneficiary_email=booking.beneficiaryEmail,
         beneficiary_firstname=booking.beneficiaryFirstname,
         beneficiary_lastname=booking.beneficiaryLastname,
-        booking_token=compute_booking_recap_token(booking),
+        booking_token=booking.bookingToken,
         booking_date=booking.bookingDate,
         booking_is_used=booking.isUsed,
         booking_is_cancelled=booking.isCancelled,

@@ -1,8 +1,5 @@
-from collections import namedtuple
-
-from domain.booking_recap.booking_recap import BookingRecapStatus, \
-    compute_booking_recap_token
-from domain_creators.generic_creators import create_domain_booking_recap
+from domain.booking_recap.booking_recap import BookingRecapStatus
+from tests.domain_creators.generic_creators import create_domain_thing_booking_recap, create_domain_event_booking_recap
 
 
 class BookingRecapTest:
@@ -10,7 +7,7 @@ class BookingRecapTest:
         class WhenBookingHasNoPaymentsTest:
             def test_should_return_booked_status_when_booking_is_not_cancelled_nor_used(self):
                 # Given
-                booking_recap = create_domain_booking_recap(
+                booking_recap = create_domain_thing_booking_recap(
                     booking_is_used=False,
                     booking_is_cancelled=False,
                     booking_is_reimbursed=False)
@@ -23,7 +20,7 @@ class BookingRecapTest:
 
             def test_should_return_validated_status_when_booking_is_used_and_not_cancelled(self):
                 # Given
-                booking_recap = create_domain_booking_recap(
+                booking_recap = create_domain_thing_booking_recap(
                     booking_is_used=True,
                     booking_is_cancelled=False,
                     booking_is_reimbursed=False)
@@ -36,7 +33,7 @@ class BookingRecapTest:
 
             def test_should_return_cancelled_status_when_booking_is_cancelled_but_not_used(self):
                 # Given
-                booking_recap = create_domain_booking_recap(
+                booking_recap = create_domain_thing_booking_recap(
                     booking_is_used=False,
                     booking_is_cancelled=True,
                     booking_is_reimbursed=False)
@@ -49,7 +46,7 @@ class BookingRecapTest:
 
             def test_should_return_cancelled_status_when_booking_is_cancelled_and_used(self):
                 # Given
-                booking_recap = create_domain_booking_recap(
+                booking_recap = create_domain_thing_booking_recap(
                     booking_is_used=True,
                     booking_is_cancelled=True,
                     booking_is_reimbursed=False)
@@ -63,7 +60,7 @@ class BookingRecapTest:
         class WhenBookingIsReimbursedTest:
             def test_should_return_reimbursed_status_when_booking_is_not_cancelled_nor_used(self):
                 # Given
-                booking_recap = create_domain_booking_recap(
+                booking_recap = create_domain_thing_booking_recap(
                     booking_is_used=False,
                     booking_is_cancelled=False,
                     booking_is_reimbursed=True)
@@ -76,7 +73,7 @@ class BookingRecapTest:
 
             def test_should_return_reimbursed_status_when_booking_is_used_and_not_cancelled(self):
                 # Given
-                booking_recap = create_domain_booking_recap(
+                booking_recap = create_domain_thing_booking_recap(
                     booking_is_used=True,
                     booking_is_cancelled=False,
                     booking_is_reimbursed=True)
@@ -89,7 +86,7 @@ class BookingRecapTest:
 
             def test_should_return_reimbursed_status_when_booking_is_used_and_cancelled(self):
                 # Given
-                booking_recap = create_domain_booking_recap(
+                booking_recap = create_domain_thing_booking_recap(
                     booking_is_used=True,
                     booking_is_cancelled=True,
                     booking_is_reimbursed=True)
@@ -100,73 +97,58 @@ class BookingRecapTest:
                 # Then
                 assert booking_recap_status == BookingRecapStatus.reimbursed
 
-    class ComputeBookingRecapTokenTest:
+    class TokenTest:
         def test_should_not_return_token_when_offer_is_thing_and_booking_is_not_used_nor_cancelled(self):
             # Given
-            booking = namedtuple("Booking", ["isUsed", "isCancelled", "offerType", "token"])
-            booking.isUsed = False
-            booking.isCancelled = False
-            booking.offerType = 'ThingType.LIVRE_EDITION'
-            booking.bookingToken = 'ABCDE'
+            booking_recap = create_domain_thing_booking_recap(booking_token='ABCDE', booking_is_used=False,
+                                                              booking_is_cancelled=False)
 
             # When
-            booking_recap_token = compute_booking_recap_token(booking)
+            booking_recap_token = booking_recap.booking_token
 
             # Then
             assert booking_recap_token is None
 
         def test_should_return_token_when_offer_is_thing_and_booking_is_used_and_not_cancelled(self):
             # Given
-            booking = namedtuple("Booking", ["isUsed", "isCancelled", "offerType", "token"])
-            booking.isUsed = True
-            booking.isCancelled = False
-            booking.offerType = 'ThingType.LIVRE_EDITION'
-            booking.bookingToken = 'ABCDE'
+            booking_recap = create_domain_thing_booking_recap(booking_token='ABCDE', booking_is_used=True,
+                                                              booking_is_cancelled=False)
 
             # When
-            booking_recap_token = compute_booking_recap_token(booking)
+            booking_recap_token = booking_recap.booking_token
 
             # Then
             assert booking_recap_token == 'ABCDE'
 
         def test_should_return_token_when_offer_is_thing_and_booking_is_not_used_and_is_cancelled(self):
             # Given
-            booking = namedtuple("Booking", ["isUsed", "isCancelled", "offerType", "token"])
-            booking.isUsed = False
-            booking.isCancelled = True
-            booking.offerType = 'ThingType.LIVRE_EDITION'
-            booking.bookingToken = 'ABCDE'
+            booking_recap = create_domain_thing_booking_recap(booking_token='ABCDE', booking_is_used=False,
+                                                              booking_is_cancelled=True)
 
             # When
-            booking_recap_token = compute_booking_recap_token(booking)
+            booking_recap_token = booking_recap.booking_token
 
             # Then
             assert booking_recap_token == 'ABCDE'
 
         def test_should_return_token_when_offer_is_thing_and_booking_is_used_and_cancelled(self):
             # Given
-            booking = namedtuple("Booking", ["isUsed", "isCancelled", "offerType", "token"])
-            booking.isUsed = True
-            booking.isCancelled = True
-            booking.offerType = 'ThingType.LIVRE_EDITION'
-            booking.bookingToken = 'ABCDE'
+            booking_recap = create_domain_thing_booking_recap(booking_token='ABCDE', booking_is_used=True,
+                                                              booking_is_cancelled=True)
 
             # When
-            booking_recap_token = compute_booking_recap_token(booking)
+            booking_recap_token = booking_recap.booking_token
 
             # Then
             assert booking_recap_token == 'ABCDE'
 
-        def test_should_return_token_when_offer_is_event(self):
+        def test_should_return_token_when_offer_is_event_and_booking_is_not_used_nor_cancelled(self):
             # Given
-            booking = namedtuple("Booking", ["isUsed", "isCancelled", "offerType", "token"])
-            booking.isUsed = True
-            booking.isCancelled = False
-            booking.offerType = 'ThingType.CINEMA_CARD'
-            booking.bookingToken = 'ABCDE'
+            booking_recap = create_domain_event_booking_recap(booking_token='ABCDE', booking_is_used=False,
+                                                              booking_is_cancelled=False)
 
             # When
-            booking_recap_token = compute_booking_recap_token(booking)
+            booking_recap_token = booking_recap.booking_token
 
             # Then
             assert booking_recap_token == 'ABCDE'

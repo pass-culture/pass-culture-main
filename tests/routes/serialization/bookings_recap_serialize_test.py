@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from flask import json
 
-from domain.booking_recap.booking_recap import BookingRecap, BookingRecapStatus, EventBookingRecap
+from tests.domain_creators.generic_creators import create_domain_thing_booking_recap, create_domain_event_booking_recap
 from routes.serialization.bookings_recap_serialize import serialize_bookings_recap
 from utils.date import format_into_ISO_8601
 
@@ -12,26 +12,22 @@ class SerializeBookingRecapTest:
         # Given
         date = datetime.utcnow()
         bookings_recap = [
-            BookingRecap(
+            create_domain_thing_booking_recap(
                 offer_name="Fondation",
-                offer_type='EventType.SPECTACLE_VIVANT',
                 beneficiary_firstname="Hari",
                 beneficiary_lastname="Seldon",
                 beneficiary_email="hari.seldon@example.com",
                 booking_date=date,
                 booking_token="FOND",
-                booking_status=BookingRecapStatus.validated,
-                booking_is_duo=False,
+                booking_is_used=True,
             ),
-            BookingRecap(
+            create_domain_thing_booking_recap(
                 offer_name="Fondation",
-                offer_type='ThingType.LIVRE_EDITION',
                 beneficiary_firstname="Golan",
                 beneficiary_lastname="Trevize",
                 beneficiary_email="golan.trevize@example.com",
                 booking_date=date,
                 booking_token="FOND",
-                booking_status=BookingRecapStatus.booked,
                 booking_is_duo=True,
             )
         ]
@@ -68,7 +64,7 @@ class SerializeBookingRecapTest:
                     "email": "golan.trevize@example.com",
                 },
                 "booking_date": format_into_ISO_8601(date),
-                "booking_token": "FOND",
+                "booking_token": None,
                 "booking_status": "booked",
                 "booking_is_duo": True,
             }
@@ -80,17 +76,14 @@ class SerializeBookingRecapTest:
         today = datetime.utcnow()
         tomorrow = today + timedelta(days=1)
         bookings_recap = [
-            EventBookingRecap(
+            create_domain_event_booking_recap(
                 offer_name="Cirque du soleil",
-                offer_type='EventType.SPECTACLE_VIVANT',
                 beneficiary_firstname="Hari",
                 beneficiary_lastname="Seldon",
                 beneficiary_email="hari.seldon@example.com",
                 booking_date=today,
                 booking_token="SOLEIL",
-                booking_status=BookingRecapStatus.validated,
                 event_beginning_datetime=tomorrow,
-                booking_is_duo=False,
             )
         ]
 
@@ -113,7 +106,7 @@ class SerializeBookingRecapTest:
                 },
                 "booking_date": format_into_ISO_8601(today),
                 "booking_token": "SOLEIL",
-                "booking_status": "validated",
+                "booking_status": "booked",
                 "booking_is_duo": False,
             },
         ]
