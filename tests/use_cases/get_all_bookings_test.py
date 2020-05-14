@@ -3,25 +3,10 @@ from unittest.mock import patch
 
 import pytest
 
-from domain.booking_recap.booking_recap import BookingRecap, BookingRecapStatus
 from domain.users import UnauthorizedForAdminUser
+from tests.domain_creators.generic_creators import create_domain_thing_booking_recap, create_domain_event_booking_recap
 from tests.model_creators.generic_creators import create_user
 from use_cases.get_all_bookings_by_pro_user import get_all_bookings_by_pro_user
-
-
-class BookingRecapMock(BookingRecap):
-    def __init__(self):
-        super().__init__(
-            offer_name="Nom de mon offre",
-            offer_type="EventType.CINEMA",
-            beneficiary_lastname="Polastri",
-            beneficiary_firstname="Eve",
-            beneficiary_email="eve.polastri@example.com",
-            booking_token="ABCDE",
-            booking_date=datetime.utcnow(),
-            booking_status=BookingRecapStatus.validated,
-            booking_is_duo=False,
-        )
 
 
 class GetAllBookingsTest:
@@ -33,8 +18,8 @@ class GetAllBookingsTest:
         # Given
         user = create_user(is_admin=False, can_book_free_offers=True)
 
-        booking = BookingRecapMock()
-        booking2 = BookingRecapMock()
+        booking = create_domain_thing_booking_recap()
+        booking2 = create_domain_event_booking_recap()
 
         find_user_by_id.return_value = user
         find_by_pro_user_id.return_value = [booking, booking2]

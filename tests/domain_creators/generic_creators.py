@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from domain.beneficiary.beneficiary import Beneficiary
+from domain.booking_recap.booking_recap import BookingRecap
 
 
 def create_domain_beneficiary(identifier: int = None,
@@ -9,11 +12,35 @@ def create_domain_beneficiary(identifier: int = None,
                               can_book_free_offers: bool = True,
                               wallet_balance: int = None) -> Beneficiary:
     user = Beneficiary(identifier=identifier,
-                can_book_free_offers=can_book_free_offers,
-                email=email,
-                first_name=first_name,
-                last_name=last_name,
-                department_code=department_code,
-                wallet_balance=wallet_balance)
+                       can_book_free_offers=can_book_free_offers,
+                       email=email,
+                       first_name=first_name,
+                       last_name=last_name,
+                       department_code=department_code,
+                       wallet_balance=wallet_balance)
 
     return user
+
+
+def create_domain_booking_recap(offer_name: str = "Le livre de la jungle",
+                                beneficiary_lastname: str = "Sans Nom",
+                                beneficiary_firstname: str = "Mowgli",
+                                beneficiary_email: str = "mowgli@example.com",
+                                booking_token: str = "JUNGLE",
+                                booking_date: datetime = datetime(2020, 3, 14, 19, 5, 3, 0),
+                                booking_is_duo: bool = False,
+                                booking_is_used: bool = False,
+                                booking_is_cancelled: bool = False,
+                                booking_is_reimbursed: bool = False) -> BookingRecap:
+    return BookingRecap(
+        offer_name=offer_name,
+        beneficiary_lastname=beneficiary_lastname,
+        beneficiary_firstname=beneficiary_firstname,
+        beneficiary_email=beneficiary_email,
+        booking_token=booking_token,
+        booking_date=booking_date,
+        booking_is_duo=booking_is_duo,
+        booking_is_used=booking_is_used,
+        booking_is_cancelled=booking_is_cancelled,
+        booking_is_reimbursed=booking_is_reimbursed,
+    )

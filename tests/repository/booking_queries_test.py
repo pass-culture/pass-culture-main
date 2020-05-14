@@ -1700,7 +1700,9 @@ class FindByProUserIdTest:
         assert expected_booking_recap.beneficiary_email == 'beneficiary@example.com'
         assert expected_booking_recap.booking_date == yesterday
         assert expected_booking_recap.booking_token == 'ABCDEF'
-        assert expected_booking_recap.booking_status == BookingRecapStatus.validated
+        assert expected_booking_recap.booking_is_used is True
+        assert expected_booking_recap.booking_is_cancelled is False
+        assert expected_booking_recap.booking_is_reimbursed is False
         assert expected_booking_recap.booking_is_duo is False
 
     @clean_database
@@ -1725,7 +1727,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_duo is True
 
     @clean_database
-    def test_should_return_booking_with_reimbursed_status_when_a_payment_was_sent(self, app):
+    def test_should_return_booking_with_reimbursed_when_a_payment_was_sent(self, app):
         # Given
         beneficiary = create_user(email='beneficiary@example.com',
                                   first_name='Ron', last_name='Weasley')
@@ -1735,7 +1737,7 @@ class FindByProUserIdTest:
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=0, name='Harry Potter')
         yesterday = datetime.utcnow() - timedelta(days=1)
-        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF', is_used=True)
+        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF', is_cancelled=True)
         payment = create_payment(booking=booking, offerer=offerer, status=TransactionStatus.SENT)
         repository.save(user_offerer, payment)
 
@@ -1752,7 +1754,9 @@ class FindByProUserIdTest:
         assert expected_booking_recap.beneficiary_email == 'beneficiary@example.com'
         assert expected_booking_recap.booking_date == yesterday
         assert expected_booking_recap.booking_token == 'ABCDEF'
-        assert expected_booking_recap.booking_status == BookingRecapStatus.reimbursed
+        assert expected_booking_recap.booking_is_used is False
+        assert expected_booking_recap.booking_is_cancelled is True
+        assert expected_booking_recap.booking_is_reimbursed is True
 
     @clean_database
     def test_should_return_event_booking_when_booking_is_on_an_event(self, app):
@@ -1781,7 +1785,9 @@ class FindByProUserIdTest:
         assert expected_booking_recap.beneficiary_email == 'beneficiary@example.com'
         assert expected_booking_recap.booking_date == yesterday
         assert expected_booking_recap.booking_token == 'ABCDEF'
-        assert expected_booking_recap.booking_status == BookingRecapStatus.booked
+        assert expected_booking_recap.booking_is_used is False
+        assert expected_booking_recap.booking_is_cancelled is False
+        assert expected_booking_recap.booking_is_reimbursed is False
         assert expected_booking_recap.event_beginning_datetime == stock.beginningDatetime
 
     @clean_database

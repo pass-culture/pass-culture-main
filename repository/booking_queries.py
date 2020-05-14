@@ -5,7 +5,7 @@ from typing import List, Set, Union
 from sqlalchemy import func
 from sqlalchemy.orm import Query
 
-from domain.booking_recap.booking_recap import BookingRecap, compute_booking_recap_status, compute_booking_recap_token, EventBookingRecap
+from domain.booking_recap.booking_recap import BookingRecap, compute_booking_recap_token, EventBookingRecap
 from models import UserOfferer
 from models.api_errors import ResourceNotFoundError
 from models.booking_sql_entity import BookingSQLEntity
@@ -14,6 +14,7 @@ from models.offer import Offer
 from models.offer_type import EventType, ThingType
 from models.offerer import Offerer
 from models.payment import Payment
+from models.payment_status import TransactionStatus
 from models.recommendation import Recommendation
 from models.stock_sql_entity import StockSQLEntity, EVENT_AUTOMATIC_REFUND_DELAY
 from models.user_sql_entity import UserSQLEntity
@@ -217,24 +218,27 @@ def _bookings_sql_entities_to_bookings_recap(bookings: List[BookingSQLEntity]) -
 def _serialize_booking_recap(booking: object) -> BookingRecap:
     return EventBookingRecap(
         offer_name=booking.offerName,
-        offer_type=booking.offerType,
         beneficiary_email=booking.beneficiaryEmail,
         beneficiary_firstname=booking.beneficiaryFirstname,
         beneficiary_lastname=booking.beneficiaryLastname,
+        # TODO: remettre ça d'équerre avec la story sur le token
         booking_token=booking.bookingToken,
         booking_date=booking.bookingDate,
-        booking_status=compute_booking_recap_status(booking),
+        booking_is_used=booking.isUsed,
+        booking_is_cancelled=booking.isCancelled,
+        booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
         event_beginning_datetime=booking.stockBeginningDatetime,
     ) if booking.stockBeginningDatetime is not None else BookingRecap(
         offer_name=booking.offerName,
-        offer_type=booking.offerType,
         beneficiary_email=booking.beneficiaryEmail,
         beneficiary_firstname=booking.beneficiaryFirstname,
         beneficiary_lastname=booking.beneficiaryLastname,
         booking_token=compute_booking_recap_token(booking),
         booking_date=booking.bookingDate,
-        booking_status=compute_booking_recap_status(booking),
+        booking_is_used=booking.isUsed,
+        booking_is_cancelled=booking.isCancelled,
+        booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
     )
 
