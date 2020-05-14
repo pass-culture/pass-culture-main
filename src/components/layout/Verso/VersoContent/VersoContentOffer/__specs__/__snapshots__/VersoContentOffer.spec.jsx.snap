@@ -5,7 +5,6 @@ ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <VersoContentOffer
     bookables={Array []}
-    booking={null}
     distance="1"
     handleRequestMusicAndShowTypes={
       [MockFunction] {

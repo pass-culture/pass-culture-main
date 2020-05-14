@@ -2,11 +2,11 @@ import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 
 import { navigationLink } from '../../../../../utils/geolocation'
+import { capitalize } from '../../../../../utils/react-form-utils/functions'
 import DuoOfferContainer from '../../../DuoOffer/DuoOfferContainer'
 import Icon from '../../../Icon/Icon'
 import getDurationFromMinutes from './utils/getDurationFromMinutes'
 import VersoActionsBar from './VersoActionsBar/VersoActionsBar'
-import { capitalize } from '../../../../../utils/react-form-utils/functions'
 
 class VersoContentOffer extends PureComponent {
   componentDidMount() {
@@ -17,7 +17,7 @@ class VersoContentOffer extends PureComponent {
 
   renderOfferDetails() {
     const { offer } = this.props
-    const { description } = offer || {}
+    const { description } = offer
 
     if (!description) return null
 
@@ -38,7 +38,7 @@ class VersoContentOffer extends PureComponent {
 
   renderOfferWhat() {
     const { offer, style } = this.props
-    const { durationMinutes, extraData, offerType } = offer || {}
+    const { durationMinutes, extraData, offerType } = offer
     const { author, performer, speaker, stageDirector } = extraData || {}
     const { appLabel } = offerType || {}
     const duration = getDurationFromMinutes(durationMinutes)
@@ -95,8 +95,8 @@ class VersoContentOffer extends PureComponent {
           <li key={bookable.id}>
             {capitalize(bookable.humanBeginningDate)}
             {!bookable.userHasCancelledThisDate &&
-            bookable.userHasAlreadyBookedThisDate &&
-            ' (réservé)'}
+              bookable.userHasAlreadyBookedThisDate &&
+              ' (réservé)'}
           </li>
         ))}
         {hasMoreBookables && <li>
@@ -118,7 +118,7 @@ class VersoContentOffer extends PureComponent {
 
   renderOfferWhen() {
     const { isBookable, offer } = this.props
-    const { isThing } = offer || {}
+    const { isThing } = offer
 
     const offerDateInfos = isThing
       ? this.renderThingOfferDateInfos()
@@ -140,7 +140,7 @@ class VersoContentOffer extends PureComponent {
 
   renderOfferWhere() {
     const { distance, offer, userGeolocation } = this.props
-    const { venue } = offer || {}
+    const { venue } = offer
     const { address, city, latitude, longitude, name, postalCode, publicName } = venue || {}
     const isNotDigitalOffer = latitude && longitude
 
@@ -206,12 +206,11 @@ class VersoContentOffer extends PureComponent {
   }
 
   render() {
-    const { booking, isCancelled } = this.props
-    const { completedUrl } = booking || {}
+    const { isCancelled, offer } = this.props
 
     return (
       <div className="verso-info">
-        {isCancelled === false && completedUrl && <VersoActionsBar url={completedUrl} />}
+        {isCancelled === false && offer.url && <VersoActionsBar url={offer.url} />}
         {this.renderOfferWhat()}
         {this.renderOfferDetails()}
         {this.renderOfferWhen()}
@@ -222,26 +221,36 @@ class VersoContentOffer extends PureComponent {
 }
 
 VersoContentOffer.defaultProps = {
-  booking: null,
   distance: null,
   isBookable: true,
   isCancelled: true,
   maxShownDates: 7,
-  offer: null,
+  offer: {},
   style: '',
 }
 
 VersoContentOffer.propTypes = {
   bookables: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  booking: PropTypes.shape(),
   distance: PropTypes.string,
   handleRequestMusicAndShowTypes: PropTypes.func.isRequired,
   isBookable: PropTypes.bool,
   isCancelled: PropTypes.bool,
   maxShownDates: PropTypes.number,
   offer: PropTypes.shape({
+    durationMinutes: PropTypes.number,
+    description: PropTypes.string,
     id: PropTypes.string,
+    isThing: PropTypes.bool,
+    venue: PropTypes.shape(),
     product: PropTypes.shape(),
+    url: PropTypes.string,
+    extraData: PropTypes.shape({
+      author: PropTypes.string,
+      performer: PropTypes.string,
+      speaker: PropTypes.string,
+      stageDirector: PropTypes.string,
+    }),
+    offerType: PropTypes.shape({ appLabel: PropTypes.string }),
   }),
   style: PropTypes.string,
   userGeolocation: PropTypes.shape().isRequired,

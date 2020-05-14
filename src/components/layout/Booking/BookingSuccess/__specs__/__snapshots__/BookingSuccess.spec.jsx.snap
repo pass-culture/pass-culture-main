@@ -6,8 +6,12 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <BookingSuccess
     bookedPayload={
       Object {
-        "completedUrl": "http://fake-url.com",
         "quantity": 2,
+        "recommendation": Object {
+          "offer": Object {
+            "url": "http://fake-url.com",
+          },
+        },
         "stock": Object {
           "price": 12.5,
         },
@@ -948,8 +952,12 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <BookingSuccess
     bookedPayload={
       Object {
-        "completedUrl": "http://fake-url.com",
         "quantity": 1,
+        "recommendation": Object {
+          "offer": Object {
+            "url": "http://fake-url.com",
+          },
+        },
         "stock": Object {
           "price": 12.5,
         },
@@ -2008,8 +2016,12 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <BookingSuccess
     bookedPayload={
       Object {
-        "completedUrl": "http://fake-url.com",
         "quantity": 1,
+        "recommendation": Object {
+          "offer": Object {
+            "url": "http://fake-url.com",
+          },
+        },
         "stock": Object {
           "price": 12.5,
         },

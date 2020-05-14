@@ -9,7 +9,11 @@ describe('src | components | layout | Booking | BookingSuccess', () => {
   beforeEach(() => {
     props = {
       bookedPayload: {
-        completedUrl: 'http://fake-url.com',
+        recommendation: {
+          offer: {
+            url: 'http://fake-url.com',
+          },
+        },
         quantity: 1,
         token: 'G8G8G8',
         stock: {

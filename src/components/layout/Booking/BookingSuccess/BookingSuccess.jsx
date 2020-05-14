@@ -2,13 +2,14 @@ import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 
-import Icon from '../../../layout/Icon/Icon'
 import getDisplayPrice from '../../../../utils/getDisplayPrice'
+import Icon from '../../../layout/Icon/Icon'
 
 const BookingSuccess = ({ bookedPayload, isEvent }) => {
-  const { completedUrl, quantity, stock, token } = bookedPayload || {}
+  const { quantity, recommendation, stock, token } = bookedPayload
+  const url = recommendation ? recommendation.offer.url : null
   const { price } = stock || {}
-  const isDuo = quantity == 2
+  const isDuo = quantity === 2
   const cssClass = (isEvent && 'event') || 'thing'
   return (
     <div className={`booked text-center ${cssClass}`}>
@@ -39,14 +40,12 @@ const BookingSuccess = ({ bookedPayload, isEvent }) => {
           {getDisplayPrice(price * quantity)}
           {' ont été déduits de votre pass.'}
         </span>
-        {!completedUrl && (
-          <span className="is-block">
-            {'Présentez le code suivant sur place :'}
-          </span>
-        )}
+        {!url && <span className="is-block">
+          {'Présentez le code suivant sur place :'}
+        </span>}
       </p>
       <p className="my28">
-        {!completedUrl && (
+        {!url && (
           <b
             className="is-block is-size-1 fs48"
             data-token={token.toLowerCase()}
@@ -55,11 +54,11 @@ const BookingSuccess = ({ bookedPayload, isEvent }) => {
             {token.toLowerCase()}
           </b>
         )}
-        {completedUrl && (
+        {url && (
           <a
             className="is-primary-text is-primary-border px12 py8"
             data-token={token.toLowerCase()}
-            href={completedUrl}
+            href={url}
             id="booking-online-booked-button"
             rel="noopener noreferrer"
             target="_blank"
@@ -71,7 +70,7 @@ const BookingSuccess = ({ bookedPayload, isEvent }) => {
         )}
       </p>
       <p>
-        {!completedUrl && (
+        {!url && (
           <Fragment>
             <span className="is-block">
               {'Retrouvez ce code et les détails de l’offre dans'}
@@ -87,7 +86,7 @@ const BookingSuccess = ({ bookedPayload, isEvent }) => {
             </span>
           </Fragment>
         )}
-        {completedUrl && (
+        {url && (
           <Fragment>
             <span className="is-block">
               {'Retrouvez l’adresse Internet et les détails de'}
@@ -112,7 +111,12 @@ const BookingSuccess = ({ bookedPayload, isEvent }) => {
 
 BookingSuccess.propTypes = {
   bookedPayload: PropTypes.shape({
-    completedUrl: PropTypes.string,
+    quantity: PropTypes.number,
+    recommendation: PropTypes.shape({
+      offer: PropTypes.shape({
+        url: PropTypes.string,
+      }).isRequired,
+    }).isRequired,
     stock: PropTypes.shape({
       price: PropTypes.number.isRequired,
     }).isRequired,

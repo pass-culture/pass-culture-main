@@ -305,9 +305,7 @@ describe('components | VersoContentOffer', () => {
     const wrapper = shallow(<VersoContentOffer {...props} />)
 
     // then
-    const distance = wrapper
-      .findWhere(node => node.text() === 'À 20km')
-      .first()
+    const distance = wrapper.findWhere(node => node.text() === 'À 20km').first()
     expect(distance).toHaveLength(0)
   })
 
@@ -330,9 +328,7 @@ describe('components | VersoContentOffer', () => {
     const wrapper = shallow(<VersoContentOffer {...props} />)
 
     // then
-    const distance = wrapper
-      .findWhere(node => node.text() === 'À 20km')
-      .first()
+    const distance = wrapper.findWhere(node => node.text() === 'À 20km').first()
     expect(distance).toHaveLength(1)
   })
 
@@ -484,22 +480,19 @@ describe('components | VersoContentOffer', () => {
         expect(wrapper.find('a')).toHaveLength(0)
       })
     })
-
   })
 
   describe('when the offer is booked and have a link offer', () => {
     it('should render the offer link', () => {
       // given
       const props = {
-        booking: {
-          completedUrl: 'http://fake-url.com',
-        },
         bookables: [],
         isCancelled: false,
         distance: '1',
         handleRequestMusicAndShowTypes: jest.fn(),
         offer: {
           id: 'ID',
+          url: 'http://fake-url.com',
         },
         userGeolocation: {
           latitude: null,
