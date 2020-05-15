@@ -47,7 +47,7 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
     shouldReloadRecommendations
   ) => {
     const { match } = prevProps
-    const seenRecommendationIds =
+    const offersSentInLastCall =
       (shouldReloadRecommendations && []) ||
       (recommendations && recommendations.map(reco => reco.offerId))
     let queryParams = getOfferIdAndMediationIdApiPathQueryString(match, currentRecommendation)
@@ -57,7 +57,7 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
         apiPath: `/recommendations?${queryParams}`,
         body: {
           readRecommendations,
-          seenRecommendationIds,
+          offersSentInLastCall,
         },
         handleFail: handleFail,
         handleSuccess: handleSuccess,

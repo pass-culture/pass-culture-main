@@ -50,7 +50,7 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
     shouldReloadRecommendations,
     coordinates
   ) => {
-    const seenRecommendationIds =
+    const offersSentInLastCall =
       (shouldReloadRecommendations && []) ||
       (recommendations && recommendations.map(reco => reco.offerId))
     let queryParams = getCoordinatesApiPathQueryString(coordinates)
@@ -60,7 +60,7 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
         apiPath: `/recommendations/v3?${queryParams}`,
         body: {
           readRecommendations,
-          seenRecommendationIds,
+          offersSentInLastCall,
         },
         handleFail: handleFail,
         handleSuccess: handleSuccess,

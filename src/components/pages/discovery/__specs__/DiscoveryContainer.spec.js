@@ -99,7 +99,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
             apiPath: `/recommendations?`,
             body: {
               readRecommendations: null,
-              seenRecommendationIds: [],
+              offersSentInLastCall: [],
             },
             handleFail: handleRequestFail,
             handleSuccess: handleRequestSuccess,
@@ -141,7 +141,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
             apiPath: `/recommendations?`,
             body: {
               readRecommendations: null,
-              seenRecommendationIds: ['AE4'],
+              offersSentInLastCall: ['AE4'],
             },
             handleFail: handleRequestFail,
             handleSuccess: handleRequestSuccess,

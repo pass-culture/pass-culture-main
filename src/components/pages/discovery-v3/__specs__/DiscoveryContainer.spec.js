@@ -109,7 +109,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
             apiPath: `/recommendations/v3?`,
             body: {
               readRecommendations: null,
-              seenRecommendationIds: [],
+              offersSentInLastCall: [],
             },
             handleFail: handleRequestFail,
             handleSuccess: handleRequestSuccess,
@@ -129,7 +129,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
           index: 1,
           offerId: 'ABC2',
         }
-        const recommendations = [{ id: 'AE3', index: 3, offerId: 'AE4' }]
+        const recommendations = [{ id: 'AE3', index: 3, offerId: 'AE5' }]
         const readRecommendations = null
         const shouldReloadRecommendations = false
         const functions = mapDispatchToProps(dispatch, props)
@@ -151,7 +151,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
             apiPath: `/recommendations/v3?`,
             body: {
               readRecommendations: null,
-              seenRecommendationIds: ['AE4'],
+              offersSentInLastCall: ['AE5'],
             },
             handleFail: handleRequestFail,
             handleSuccess: handleRequestSuccess,
@@ -195,7 +195,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
             apiPath: `/recommendations/v3?longitude=1.291&latitude=48.192`,
             body: {
               readRecommendations: null,
-              seenRecommendationIds: ['AE4'],
+              offersSentInLastCall: ['AE4'],
             },
             handleFail: handleRequestFail,
             handleSuccess: handleRequestSuccess,
@@ -243,7 +243,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
             apiPath: `/recommendations/v3?longitude=48.256756&latitude=2.8796567`,
             body: {
               readRecommendations: null,
-              seenRecommendationIds: ['AE4'],
+              offersSentInLastCall: ['AE4'],
             },
             handleFail: handleRequestFail,
             handleSuccess: handleRequestSuccess,
@@ -291,7 +291,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
             apiPath: `/recommendations/v3?`,
             body: {
               readRecommendations: null,
-              seenRecommendationIds: ['AE4'],
+              offersSentInLastCall: ['AE4'],
             },
             handleFail: handleRequestFail,
             handleSuccess: handleRequestSuccess,
