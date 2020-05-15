@@ -13,7 +13,7 @@ from repository.recommendation_queries import update_read_recommendations
 from routes.serialization.recommendation_serialize import serialize_recommendations, serialize_recommendation
 from utils.config import BLOB_SIZE
 from utils.feature import feature_required
-from utils.human_ids import dehumanize
+from utils.human_ids import dehumanize, dehumanize_ids_list
 from utils.rest import expect_json_data
 
 DEFAULT_PAGE = 1
@@ -65,17 +65,8 @@ def put_recommendations_old():
 @login_required
 @expect_json_data
 def put_recommendations():
-    json_keys = request.json.keys()
-
-    if 'readRecommendations' in json_keys:
-        update_read_recommendations(request.json['readRecommendations'])
-
-    if 'offersSentInLastCall' in json_keys:
-        humanized_sent_offers_ids = request.json['offersSentInLastCall']
-        sent_offers_ids = list(
-            map(dehumanize, humanized_sent_offers_ids))
-    else:
-        sent_offers_ids = []
+    update_read_recommendations(request.json.get('readRecommendations'))
+    sent_offers_ids = dehumanize_ids_list(request.json.get('offersSentInLastCall'))
 
     offer_id = dehumanize(request.args.get('offerId'))
     mediation_id = dehumanize(request.args.get('mediationId'))
@@ -102,21 +93,13 @@ def put_recommendations():
 @login_required
 @expect_json_data
 def put_recommendations_v3():
-    json_keys = request.json.keys()
     latitude = request.args.get('latitude')
     longitude = request.args.get('longitude')
     user_is_geolocated = latitude is not None and longitude is not None
     user_iris_id = get_iris_containing_user_location(latitude, longitude) if latitude and longitude else None
 
-    if 'readRecommendations' in json_keys:
-        update_read_recommendations(request.json['readRecommendations'])
-
-    if 'offersSentInLastCall' in json_keys:
-        humanized_sent_offers_ids = request.json['offersSentInLastCall']
-        sent_offers_ids = list(
-            map(dehumanize, humanized_sent_offers_ids))
-    else:
-        sent_offers_ids = []
+    update_read_recommendations(request.json.get('readRecommendations'))
+    sent_offers_ids = dehumanize_ids_list(request.json.get('offersSentInLastCall'))
 
     recommendations = create_recommendations_for_discovery_v3(user=current_user,
                                                               user_iris_id=user_iris_id,

@@ -18,9 +18,10 @@ from utils.logger import logger
 
 EIGHT_DAYS_AGO = datetime.utcnow() - timedelta(days=8)
 
+
 def count_read_recommendations_for_user(user, limit=None):
     query = Recommendation.query.filter((Recommendation.user == user)
-                                        & (Recommendation.dateRead != None))
+                                        & (Recommendation.dateRead is not None))
     if limit:
         query = query.with_entities(literal(1)) \
             .limit(limit) \
@@ -28,7 +29,7 @@ def count_read_recommendations_for_user(user, limit=None):
     return query.count()
 
 
-def update_read_recommendations(read_recommendations):
+def update_read_recommendations(read_recommendations: List):
     if read_recommendations:
         for read_recommendation in read_recommendations:
             recommendation_id = dehumanize(read_recommendation['id'])
@@ -37,11 +38,11 @@ def update_read_recommendations(read_recommendations):
         db.session.commit()
 
 
-def _has_no_mediation_or_mediation_does_not_match_offer(mediation: Mediation, offer_id: int) -> bool:
+def _has_no_mediation_or_mediation_does_not_match_offer(mediation: Mediation, offer_id: str) -> bool:
     return mediation is None or (offer_id and (mediation.offerId != offer_id))
 
 
-def find_recommendation_already_created_on_discovery(offer_id: int, mediation_id: int, user_id: int) -> Recommendation:
+def find_recommendation_already_created_on_discovery(offer_id: str, mediation_id: str, user_id: int) -> Recommendation:
     logger.debug(lambda: 'Requested Recommendation with offer_id=%s mediation_id=%s' % (
         offer_id, mediation_id))
     query = Recommendation.query.filter((Recommendation.userId == user_id)

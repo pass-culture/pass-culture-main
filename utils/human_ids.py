@@ -6,7 +6,7 @@ from base64 import b32encode, b32decode
 # length and being usable by humans
 # We use base32, but replace O and I, which can be mistaken for 0 and 1
 # by 8 and 9
-from typing import Optional
+from typing import Optional, List
 
 
 class NonDehumanizableId(Exception):
@@ -35,6 +35,10 @@ def humanize(integer):
               .replace('O', '8')\
               .replace('I', '9')\
               .rstrip('=')
+
+
+def dehumanize_ids_list(humanized_list: List):
+    return list(map(dehumanize, humanized_list)) if humanized_list else []
 
 
 def int_to_bytes(x):
