@@ -4,6 +4,7 @@ import Titles from '../../../layout/Titles/Titles'
 import BookingsRecap from '../BookingsRecap'
 import BookingsRecapTable from '../BookingsRecapTable/BookingsRecapTable'
 import * as bookingRecapsService from '../../../../services/bookingRecapsService'
+import NoBookingsMessage from '../NoBookingsMessage/NoBookingsMessage'
 
 function flushPromises() {
   return new Promise(resolve => setImmediate(resolve))
@@ -13,21 +14,49 @@ describe('src | components | pages | Bookings-v2', () => {
   let fetchBookingRecapsStub
 
   beforeEach(() => {
-    fetchBookingRecapsStub = Promise.resolve([{}])
+    fetchBookingRecapsStub = Promise.resolve([])
     jest
       .spyOn(bookingRecapsService, 'fetchBookingRecaps')
       .mockImplementation(() => fetchBookingRecapsStub)
   })
 
-  it('should render a Titles component and a BookingsRecapTable', async () => {
+  it('should render a Titles component and a NoBookingsMessage when api returned no bookings', async () => {
     // When
     const wrapper = shallow(<BookingsRecap />)
 
     // Then
+    await flushPromises()
+    const title = wrapper.find(Titles)
+    expect(title).toHaveLength(1)
+    const bookingsTable = wrapper.find(BookingsRecapTable)
+    expect(bookingsTable).toHaveLength(0)
+    const noBookingsMessage = wrapper.find(NoBookingsMessage)
+    expect(noBookingsMessage).toHaveLength(1)
+  })
+
+  it('should render a Titles component and a BookingsRecapTable when api returned at least one booking', async () => {
+    // Given
+    const oneBooking = {
+      beneficiary: { email: 'user@example.com', firstname: 'First', lastname: 'Last' },
+      booking_date: '2020-04-12T19:31:12Z',
+      booking_is_duo: false,
+      booking_status: 'reimbursed',
+      booking_token: 'TOKEN',
+      stock: { offer_name: 'My offer name' },
+    }
+    fetchBookingRecapsStub = Promise.resolve([oneBooking])
+
+    // When
+    const wrapper = shallow(<BookingsRecap />)
+
+    // Then
+    await flushPromises()
     const title = wrapper.find(Titles)
     expect(title).toHaveLength(1)
     const bookingsTable = wrapper.find(BookingsRecapTable)
     expect(bookingsTable).toHaveLength(1)
+    const noBookingsMessage = wrapper.find(NoBookingsMessage)
+    expect(noBookingsMessage).toHaveLength(0)
   })
 
   it('should render the BookingsRecapTable with api values', async () => {

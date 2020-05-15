@@ -3,6 +3,7 @@ import Main from '../../layout/Main'
 import Titles from '../../layout/Titles/Titles'
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
 import { fetchBookingRecaps } from '../../../services/bookingRecapsService'
+import NoBookingsMessage from './NoBookingsMessage/NoBookingsMessage'
 
 class BookingsRecap extends PureComponent {
   constructor(props) {
@@ -33,7 +34,11 @@ class BookingsRecap extends PureComponent {
     return (
       <Main name="bookings-v2">
         <Titles title="Réservations" />
-        <BookingsRecapTable bookingsRecap={bookingsRecap} />
+        {bookingsRecap.length > 0 ? (
+          <BookingsRecapTable bookingsRecap={bookingsRecap} />
+        ) : (
+          <NoBookingsMessage />
+        )}
       </Main>
     )
   }
