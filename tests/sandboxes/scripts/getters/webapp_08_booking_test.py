@@ -54,7 +54,8 @@ class GetNonFreeThingOfferWithActiveMediationTest:
                 'url': None,
                 'venueCity': 'Montreuil',
                 'venueId': humanize(venue.id),
-                'venueName': 'La petite librairie'
+                'venueName': 'La petite librairie',
+                'withdrawalDetails': None
             }
         }
 
@@ -121,7 +122,8 @@ class GetNonFreeEventOfferTest:
                 'url': None,
                 'venueCity': 'Montreuil',
                 'venueId': humanize(venue.id),
-                'venueName': 'La petite librairie'
+                'venueName': 'La petite librairie',
+                'withdrawalDetails': None
             }
         }
 

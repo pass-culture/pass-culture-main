@@ -66,7 +66,8 @@ def create_offer_with_event_product(venue: Venue = None,
                                     last_provider_id: int = None,
                                     product: Product = None,
                                     last_provider: Provider = None,
-                                    thumb_count: int = 0) -> Offer:
+                                    thumb_count: int = 0,
+                                    withdrawal_details: Optional[str] = None) -> Offer:
     offer = Offer()
     if product is None:
         product = create_product_with_event_type(event_name=event_name, event_type=event_type,
@@ -87,6 +88,7 @@ def create_offer_with_event_product(venue: Venue = None,
     offer.lastProvider = last_provider
     offer.idAtProviders = id_at_providers
     offer.isDuo = is_duo
+    offer.withdrawalDetails = withdrawal_details
 
     return offer
 
@@ -120,7 +122,8 @@ def create_offer_with_thing_product(venue: Venue,
                                     url: Optional[str] = None,
                                     last_provider_id: int = None,
                                     last_provider: Provider = None,
-                                    extra_data: Dict = None) -> Offer:
+                                    extra_data: Dict = None,
+                                    withdrawal_details: Optional[str] = None) -> Offer:
     offer = Offer()
     if product:
         offer.product = product
@@ -157,6 +160,7 @@ def create_offer_with_thing_product(venue: Venue,
     offer.lastProviderId = last_provider_id
     offer.lastProvider = last_provider
     offer.id = idx
+    offer.withdrawalDetails = withdrawal_details
 
     if extra_data:
         offer.extraData = extra_data

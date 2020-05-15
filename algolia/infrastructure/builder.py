@@ -66,6 +66,7 @@ def build_object(offer: Offer) -> Dict:
             'times': list(set(times)),
             'type': offer.offerType['sublabel'],
             'visa': visa,
+            'withdrawalDetails': offer.withdrawalDetails,
         },
         'offerer': {
             'name': offerer.name,

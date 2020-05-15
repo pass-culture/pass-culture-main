@@ -29,6 +29,7 @@ class BuildObjectTest:
                              public_name='Venue public name')
         offer = create_offer_with_event_product(venue=venue,
                                                 description='Un lit sous une rivière',
+                                                withdrawal_details='A emporter sur place',
                                                 idx=3,
                                                 is_active=True,
                                                 event_name='Event name',
@@ -76,6 +77,7 @@ class BuildObjectTest:
                 'dateCreated': 1577872800.0,
                 'dates': [1603098000.0, 1603098000.0, 1603098000.0],
                 'description': 'Un lit sous une rivière',
+                'withdrawalDetails': 'A emporter sur place',
                 'id': 'AM',
                 'isbn': None,
                 'isDuo': False,

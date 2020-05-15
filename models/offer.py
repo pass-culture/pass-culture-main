@@ -61,7 +61,9 @@ class Offer(PcObject,
 
     name = Column(String(140), nullable=False)
 
-    description = Column(Text, nullable=True)
+    description = Column(Text, nullable=True )
+
+    withdrawalDetails = Column(Text, nullable=True)
 
     conditions = Column(String(120),
                         nullable=True)
