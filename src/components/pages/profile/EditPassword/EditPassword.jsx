@@ -37,8 +37,8 @@ class EditPassword extends PureComponent {
   }
 
   handleSubmitSuccess = () => {
-    const { history, snackbar, pathToProfile } = this.props
-    history.push(pathToProfile)
+    const { historyPush, snackbar, pathToProfile } = this.props
+    historyPush(pathToProfile)
     snackbar('Ton mot de passe a bien été modifié.', 'success')
   }
 
@@ -87,7 +87,13 @@ class EditPassword extends PureComponent {
 
   render() {
     const { pathToProfile } = this.props
-    const { currentPassword, errors, isSubmitButtonDisabled, newConfirmationPassword, newPassword } = this.state
+    const {
+      currentPassword,
+      errors,
+      isSubmitButtonDisabled,
+      newConfirmationPassword,
+      newPassword,
+    } = this.state
 
     return (
       <div className="password-container pf-container">
@@ -142,7 +148,7 @@ class EditPassword extends PureComponent {
 
 EditPassword.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
-  history: PropTypes.shape().isRequired,
+  historyPush: PropTypes.func.isRequired,
   pathToProfile: PropTypes.string.isRequired,
   snackbar: PropTypes.func.isRequired,
 }

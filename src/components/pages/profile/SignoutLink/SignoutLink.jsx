@@ -6,7 +6,7 @@ import Icon from '../../../layout/Icon/Icon'
 
 const noOp = () => false
 
-const SignoutButton = ({ historyPush, onSignOutClick, readRecommendations }) => (
+const SignoutLink = ({ historyPush, onSignOutClick, readRecommendations }) => (
   <Link
     onClick={onSignOutClick(historyPush, readRecommendations)}
     to={noOp}
@@ -19,10 +19,10 @@ const SignoutButton = ({ historyPush, onSignOutClick, readRecommendations }) => 
   </Link>
 )
 
-SignoutButton.propTypes = {
+SignoutLink.propTypes = {
   historyPush: PropTypes.func.isRequired,
   onSignOutClick: PropTypes.func.isRequired,
   readRecommendations: PropTypes.PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
-export default SignoutButton
+export default SignoutLink

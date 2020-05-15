@@ -17,9 +17,9 @@ export const getDepartment = departmentCode => {
 }
 
 class Profile extends PureComponent {
-  renderProfileMainView = (user, history) => () => (
+  renderProfileMainView = (user, historyPush) => () => (
     <ProfileMainView
-      historyPush={history.push}
+      historyPush={historyPush}
       user={user}
     />
   )
@@ -29,7 +29,7 @@ class Profile extends PureComponent {
 
     return (
       <EditPasswordContainer
-        history={history}
+        historyPush={history.push}
         pathToProfile="/profil"
         snackbar={snackbar}
         user={user}
@@ -44,7 +44,7 @@ class Profile extends PureComponent {
     return (
       <PersonalInformationsContainer
         getDepartment={getDepartment}
-        history={history}
+        historyPush={history.push}
         pathToProfile="/profil"
         snackbar={snackbar}
         user={user}
@@ -73,7 +73,7 @@ class Profile extends PureComponent {
               exact
               key="route-profile-main-view"
               path="/profil/:menu(menu)?"
-              render={this.renderProfileMainView(user, history)}
+              render={this.renderProfileMainView(user, history.push)}
             />
             <Route
               exact

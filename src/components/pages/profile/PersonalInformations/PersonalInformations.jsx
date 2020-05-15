@@ -33,14 +33,14 @@ class PersonalInformations extends PureComponent {
   }
 
   handleSubmitSuccess = () => {
-    const { history, snackbar, pathToProfile } = this.props
-    history.push(pathToProfile)
+    const { historyPush, snackbar, pathToProfile } = this.props
+    historyPush(pathToProfile)
     snackbar('Ton pseudo a bien été modifié.', 'success')
   }
 
   handleSubmitNickname = event => {
     event.preventDefault()
-    const { handleSubmit, user, pathToProfile, history } = this.props
+    const { handleSubmit, historyPush, user, pathToProfile } = this.props
     const nicknameInputValue = this.nicknameInputRef.current.value
     const nicknameToSubmit = {
       publicName: nicknameInputValue,
@@ -50,7 +50,7 @@ class PersonalInformations extends PureComponent {
       this.setState({ isSubmitButtonDisabled: true })
       handleSubmit(nicknameToSubmit, this.handleSubmitFail, this.handleSubmitSuccess)
     } else {
-      history.push(pathToProfile)
+      historyPush(pathToProfile)
     }
   }
 
@@ -118,7 +118,7 @@ class PersonalInformations extends PureComponent {
 PersonalInformations.propTypes = {
   getDepartment: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
-  history: PropTypes.shape().isRequired,
+  historyPush: PropTypes.func.isRequired,
   pathToProfile: PropTypes.string.isRequired,
   snackbar: PropTypes.func.isRequired,
   user: PropTypes.instanceOf(User).isRequired,

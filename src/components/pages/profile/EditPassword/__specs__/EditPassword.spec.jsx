@@ -11,9 +11,7 @@ describe('edit password', () => {
 
   beforeEach(() => {
     props = {
-      history: {
-        push: jest.fn(),
-      },
+      historyPush: jest.fn(),
       handleSubmit: jest.fn(),
       snackbar: jest.fn(),
       pathToProfile: '/profil',
@@ -101,7 +99,7 @@ describe('edit password', () => {
         submitButton.simulate('click')
 
         // Then
-        expect(props.history.push).toHaveBeenCalledWith('/profil')
+        expect(props.historyPush).toHaveBeenCalledWith('/profil')
         expect(props.snackbar).toHaveBeenCalledTimes(1)
         expect(props.snackbar).toHaveBeenCalledWith(
           'Ton mot de passe a bien été modifié.',

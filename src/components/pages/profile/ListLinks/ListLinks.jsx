@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 import Icon from '../../../layout/Icon/Icon'
 import { WEBAPP_CONTACT_EXTERNAL_PAGE } from '../../../../utils/config'
-import SignoutButtonContainer from '../SignoutButton/SignoutButtonContainer'
+import SignoutLinkContainer from '../SignoutLink/SignoutLinkContainer'
 
 const ListLinks = ({ historyPush, readRecommendations }) => (
   <section className="list-links pm-section">
@@ -42,7 +42,7 @@ const ListLinks = ({ historyPush, readRecommendations }) => (
         </a>
       </li>
       <li>
-        <SignoutButtonContainer
+        <SignoutLinkContainer
           historyPush={historyPush}
           readRecommendations={readRecommendations}
         />

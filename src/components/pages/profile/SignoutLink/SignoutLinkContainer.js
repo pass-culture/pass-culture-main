@@ -1,20 +1,14 @@
 import { connect } from 'react-redux'
-import { requestData, reinitializeData } from 'redux-thunk-data'
+import { reinitializeData, requestData } from 'redux-thunk-data'
 
-import SignoutButton from './SignoutButton'
-import {
-  updatePage,
-  updateSeed,
-  updateSeedLastRequestTimestamp,
-} from '../../../../redux/actions/pagination'
-import { toggleMainMenu } from '../../../../redux/actions/menu'
+import SignoutLink from './SignoutLink'
+import { updateSeedLastRequestTimestamp } from '../../../../redux/actions/pagination'
 
 export const mapDispatchToProps = dispatch => ({
   onSignOutClick: (historyPush, readRecommendations) => () => {
     const handleRequestSignout = () => {
       const handleSuccessAfterSignOut = () => {
         historyPush('/connexion')
-        dispatch(toggleMainMenu())
         dispatch(reinitializeData({ excludes: ['features'] }))
       }
       dispatch(
@@ -23,8 +17,6 @@ export const mapDispatchToProps = dispatch => ({
           handleSuccess: handleSuccessAfterSignOut,
         })
       )
-      dispatch(updatePage(1))
-      dispatch(updateSeed(Math.random()))
       dispatch(updateSeedLastRequestTimestamp(Date.now()))
     }
 
@@ -47,4 +39,4 @@ export const mapDispatchToProps = dispatch => ({
 export default connect(
   null,
   mapDispatchToProps
-)(SignoutButton)
+)(SignoutLink)

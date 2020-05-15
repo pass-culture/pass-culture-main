@@ -2,12 +2,12 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import ListLinks from '../ListLinks'
-import SignoutButtonContainer from '../../SignoutButton/SignoutButtonContainer'
+import SignoutLinkContainer from '../../SignoutLink/SignoutLinkContainer'
 
 describe('my informations', () => {
   let props
 
-  beforeEach(function() {
+  beforeEach(() => {
     props = {
       historyPush: jest.fn(),
       readRecommendations: [],
@@ -55,12 +55,12 @@ describe('my informations', () => {
     expect(linkToHelpPage.prop('title')).toBe('Ouverture de l’aide dans une nouvelle fenêtre')
   })
 
-  it('should display a signout button', () => {
+  it('should display a signout link', () => {
     // When
     const wrapper = shallow(<ListLinks {...props} />)
 
     // Then
-    const signoutButton = wrapper.find(SignoutButtonContainer)
-    expect(signoutButton).toHaveLength(1)
+    const SignoutLink = wrapper.find(SignoutLinkContainer)
+    expect(SignoutLink).toHaveLength(1)
   })
 })

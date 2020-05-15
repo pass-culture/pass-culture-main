@@ -55,7 +55,7 @@ describe('components | Menu', () => {
   })
 
   describe('render', () => {
-    it('should open the menu with one CloseLink, one Header, two SimpleLink, five NavLink and one SignoutButton', () => {
+    it('should open the menu with one CloseLink, one Header, two SimpleLink, five NavLink', () => {
       // given
       const history = createBrowserHistory()
       const initialState = {

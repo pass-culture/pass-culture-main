@@ -12,9 +12,7 @@ describe('personal informations', () => {
 
   beforeEach(() => {
     props = {
-      history: {
-        push: jest.fn(),
-      },
+      historyPush: jest.fn(),
       getDepartment: jest.fn(() => 'Seine-Saint-Denis (93)'),
       handleSubmit: jest.fn(),
       snackbar: jest.fn(),
@@ -104,7 +102,7 @@ describe('personal informations', () => {
 
         // Then
         expect(props.handleSubmit).not.toHaveBeenCalled()
-        expect(props.history.push).toHaveBeenCalledWith('/profil')
+        expect(props.historyPush).toHaveBeenCalledWith('/profil')
       })
     })
 
@@ -128,7 +126,7 @@ describe('personal informations', () => {
         submitButton.simulate('click')
 
         // Then
-        expect(props.history.push).toHaveBeenCalledWith('/profil')
+        expect(props.historyPush).toHaveBeenCalledWith('/profil')
         expect(props.snackbar).toHaveBeenCalledTimes(1)
         expect(props.snackbar).toHaveBeenCalledWith('Ton pseudo a bien été modifié.', 'success')
       })
