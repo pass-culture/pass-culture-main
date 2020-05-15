@@ -15,7 +15,7 @@ class CreateRecommendationsForDiscoveryTest:
     @clean_database
     def test_does_not_put_mediation_ids_of_inactive_mediations(self, app):
         # Given
-        seen_recommendation_ids = []
+        sent_offers_ids = []
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -36,7 +36,7 @@ class CreateRecommendationsForDiscoveryTest:
 
         # When
         recommendations = create_recommendations_for_discovery_v3(user=user, user_iris_id=iris.id,
-                                                                  seen_recommendation_ids=seen_recommendation_ids)
+                                                                  sent_offers_ids=sent_offers_ids)
 
         # Then
         mediations = list(map(lambda x: x.mediationId, recommendations))
@@ -52,11 +52,11 @@ class CreateRecommendationsForDiscoveryTest:
 
         # When
         create_recommendations_for_discovery_v3(user, user_iris_id=1, user_is_geolocated=True,
-                                                seen_recommendation_ids=[], limit=30)
+                                                sent_offers_ids=[], limit=30)
 
         # Then
         mock_get_offers_for_recommendation_v3.assert_called_once_with(user=user,
                                                                       user_iris_id=1,
                                                                       user_is_geolocated=True,
                                                                       limit=30,
-                                                                      seen_recommendation_ids=[])
+                                                                      sent_offers_ids=[])

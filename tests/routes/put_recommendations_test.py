@@ -48,7 +48,7 @@ class Put:
             response = auth_request.put(RECOMMENDATION_URL +
                                         "?offerId=" + humanize(offer_thing_1.id) +
                                         "?mediationId=" + humanize(mediation_2.id),
-                                        json={'seenRecommendationIds': []})
+                                        json={'offersSentInLastCall': []})
 
             # then
             assert response.status_code == 404
@@ -69,7 +69,7 @@ class Put:
             response = auth_request.put(RECOMMENDATION_URL +
                                         "?offerId=ABCDE" +
                                         "&mediationId=" + humanize(mediation.id),
-                                        json={'seenRecommendationIds': []})
+                                        json={'offersSentInLastCall': []})
 
             # then
             assert response.status_code == 404
@@ -84,7 +84,7 @@ class Put:
             # when
             response = auth_request.put(RECOMMENDATION_URL +
                                         "?mediationId=ABCDE",
-                                        json={'seenRecommendationIds': []})
+                                        json={'offersSentInLastCall': []})
 
             # then
             assert response.status_code == 404
@@ -105,7 +105,7 @@ class Put:
             response = auth_request.put(RECOMMENDATION_URL +
                                         "?offerId=" + humanize(offer_thing.id) +
                                         "&mediationId=ABCDE",
-                                        json={'seenRecommendationIds': []})
+                                        json={'offersSentInLastCall': []})
 
             # then
             assert response.status_code == 404
@@ -121,7 +121,7 @@ class Put:
             response = auth_request.put(RECOMMENDATION_URL +
                                         "?offerId=ABCDE" +
                                         "&mediationId=ABCDE",
-                                        json={'seenRecommendationIds': []})
+                                        json={'offersSentInLastCall': []})
 
             # then
             assert response.status_code == 404
@@ -138,7 +138,7 @@ class Put:
             repository.save(user, stock1)
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
-            data = {'seenRecommendationIds': []}
+            data = {'offersSentInLastCall': []}
             # when
             response = auth_request.put(RECOMMENDATION_URL +
                                         '?offerId=%s' % humanize(offer1.id),
@@ -294,7 +294,7 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
 
             # then
             assert response.status_code == 200
@@ -313,7 +313,7 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
 
             # then
             assert response.status_code == 200
@@ -332,7 +332,7 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
 
             # then
             assert response.status_code == 200
@@ -354,7 +354,7 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
 
             # then
             assert response.status_code == 200
@@ -381,7 +381,7 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
 
             # then
             assert response.status_code == 200
@@ -410,7 +410,7 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
 
             # then
             assert response.status_code == 200
@@ -437,7 +437,7 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
 
             # then
             assert response.status_code == 200
@@ -465,7 +465,7 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
 
             # Then
             assert response.status_code == 200
@@ -496,7 +496,7 @@ class Put:
             mediation1_id = mediation1.id
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
 
             # then
             assert response.status_code == 200
@@ -540,7 +540,7 @@ class Put:
             # when
             response = auth_request.put(RECOMMENDATION_URL +
                                         "?offerId=" + humanize(offer1.id),
-                                        json={'seenRecommendationIds': []})
+                                        json={'offersSentInLastCall': []})
 
             # then
             assert response.status_code == 200
@@ -577,7 +577,7 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            response = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            response = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
 
             # then
             assert response.status_code == 200
@@ -628,7 +628,7 @@ class Put:
             # when
             response = auth_request.put(RECOMMENDATION_URL +
                                         "?offerId=" + humanize(offer_thing.id) +
-                                        "&mediationId=" + humanize(mediation.id), json={'seenRecommendationIds': []})
+                                        "&mediationId=" + humanize(mediation.id), json={'offersSentInLastCall': []})
             # then
             assert response.status_code == 200
             recos = response.json
@@ -650,7 +650,7 @@ class Put:
 
             # when
             response = auth_request.put(RECOMMENDATION_URL +
-                                        "?offerId=" + humanize(offer_thing.id), json={'seenRecommendationIds': []})
+                                        "?offerId=" + humanize(offer_thing.id), json={'offersSentInLastCall': []})
 
             # then
             assert response.status_code == 200
@@ -674,7 +674,7 @@ class Put:
             # when
             response = auth_request.put(RECOMMENDATION_URL +
                                         "?mediationId=" + humanize(mediation.id),
-                                        json={'seenRecommendationIds': []})
+                                        json={'offersSentInLastCall': []})
 
             # then
             assert response.status_code == 200
@@ -700,7 +700,7 @@ class Put:
             inactive_mediation_id = inactive_mediation.id
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
-            data = {'seenRecommendationIds': []}
+            data = {'offersSentInLastCall': []}
 
             # when
             response = auth_request.put(RECOMMENDATION_URL, json=data)
@@ -735,7 +735,7 @@ class Put:
             assert not recommendations.json
 
         @clean_database
-        def when_user_has_already_seen_recommendation(self, app):
+        def when_user_has_already_seen_offer_sent_in_last_call(self, app):
             # given
             user = create_user()
             offerer = create_offerer()
@@ -749,7 +749,7 @@ class Put:
 
             # when
             response = TestClient(app.test_client()).with_auth(user.email) \
-                .put(RECOMMENDATION_URL, json={'seenRecommendationIds': [humanize(recommendation.id)]})
+                .put(RECOMMENDATION_URL, json={'offersSentInLastCall': [humanize(recommendation.id)]})
 
             # then
             assert response.status_code == 200
@@ -782,8 +782,8 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(user.email)
 
             # when
-            recommendations1 = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
-            recommendations2 = auth_request.put(RECOMMENDATION_URL, json={'seenRecommendationIds': []})
+            recommendations1 = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
+            recommendations2 = auth_request.put(RECOMMENDATION_URL, json={'offersSentInLastCall': []})
 
             # then
             assert recommendations1.status_code == 200

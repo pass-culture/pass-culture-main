@@ -90,7 +90,7 @@ class Put:
             mock_create_recommendations_for_discovery_v3.assert_called_once_with(user=mock_current_user,
                                                                                  user_iris_id=iris.id,
                                                                                  user_is_geolocated=True,
-                                                                                 seen_recommendation_ids=[],
+                                                                                 sent_offers_ids=[],
                                                                                  limit=30)
 
         @patch('routes.recommendations.create_recommendations_for_discovery_v3')
@@ -116,14 +116,14 @@ class Put:
 
             # when
             response = auth_request.put(RECOMMENDATION_URL_V3,
-                                        json={'seenRecommendationIds': []})
+                                        json={'offersSentInLastCall': []})
 
             # then
             assert response.status_code == 200
             mock_create_recommendations_for_discovery_v3.assert_called_once_with(user=mock_current_user,
                                                                                  user_iris_id=None,
                                                                                  user_is_geolocated=False,
-                                                                                 seen_recommendation_ids=[],
+                                                                                 sent_offers_ids=[],
                                                                                  limit=30)
 
         @patch('routes.recommendations.create_recommendations_for_discovery_v3')
@@ -161,14 +161,14 @@ class Put:
 
             # when
             response = auth_request.put(f'{RECOMMENDATION_URL_V3}?longitude={user_longitude}&latitude={user_latitude}',
-                                        json={'seenRecommendationIds': []})
+                                        json={'offersSentInLastCall': []})
 
             # then
             assert response.status_code == 200
             mock_create_recommendations_for_discovery_v3.assert_called_once_with(user=mock_current_user,
                                                                                  user_iris_id=None,
                                                                                  user_is_geolocated=True,
-                                                                                 seen_recommendation_ids=[],
+                                                                                 sent_offers_ids=[],
                                                                                  limit=30)
 
         @clean_database
@@ -210,10 +210,10 @@ class Put:
             # when
             recommendations1 = auth_request.put(
                 f'{RECOMMENDATION_URL_V3}?longitude={user_longitude}&latitude={user_latitude}',
-                json={'seenRecommendationIds': []})
+                json={'offersSentInLastCall': []})
             recommendations2 = auth_request.put(
                 f'{RECOMMENDATION_URL_V3}?longitude={user_longitude}&latitude={user_latitude}',
-                json={'seenRecommendationIds': []})
+                json={'offersSentInLastCall': []})
 
             # then
             assert recommendations1.status_code == 200

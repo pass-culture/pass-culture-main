@@ -42,11 +42,7 @@ def create_industrial_recommendations(offers_by_name, users_by_name):
 
         active_offer_ids = [
             offer.id for offer in
-            get_offers_for_recommendation(
-                departement_codes=departement_codes,
-                limit=None,
-                user=user
-            )
+            get_offers_for_recommendation(user=user, departement_codes=departement_codes, limit=None)
         ]
         active_offer_ids.sort()
 

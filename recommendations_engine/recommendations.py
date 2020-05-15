@@ -30,14 +30,14 @@ def give_requested_recommendation_to_user(user, offer_id, mediation_id):
 
 
 def create_recommendations_for_discovery(user: UserSQLEntity,
-                                         seen_recommendation_ids: List[int] = [],
+                                         sent_offers_ids: List[int] = [],
                                          limit: int = 3) -> List[Recommendation]:
     recommendations = []
 
     offers = get_offers_for_recommendations_discovery(
         limit=limit,
         user=user,
-        seen_recommendation_ids=seen_recommendation_ids
+        sent_offers_ids=sent_offers_ids
     )
 
     for (index, offer) in enumerate(offers):
@@ -47,13 +47,13 @@ def create_recommendations_for_discovery(user: UserSQLEntity,
 
 
 def create_recommendations_for_discovery_v3(user: UserSQLEntity, user_iris_id: Optional[int] = None,
-                                            user_is_geolocated: bool = False, seen_recommendation_ids: List[int] = [],
+                                            user_is_geolocated: bool = False, sent_offers_ids: List[int] = [],
                                             limit: int = 3) -> List[Recommendation]:
     recommendations = []
 
     offers = get_offers_for_recommendation_v3(user=user, user_iris_id=user_iris_id,
                                               user_is_geolocated=user_is_geolocated, limit=limit,
-                                              seen_recommendation_ids=seen_recommendation_ids)
+                                              sent_offers_ids=sent_offers_ids)
 
     for (index, offer) in enumerate(offers):
         recommendations.append(_create_recommendation_from_offers(user, offer))

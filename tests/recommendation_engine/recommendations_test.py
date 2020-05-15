@@ -15,7 +15,7 @@ class CreateRecommendationsForDiscoveryTest:
     @clean_database
     def test_does_not_put_mediation_ids_of_inactive_mediations(self, app):
         # Given
-        seen_recommendation_ids = []
+        sent_offers_ids = []
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -30,7 +30,7 @@ class CreateRecommendationsForDiscoveryTest:
         discovery_view_queries.refresh(concurrently=False)
 
         # When
-        recommendations = create_recommendations_for_discovery(seen_recommendation_ids=seen_recommendation_ids,
+        recommendations = create_recommendations_for_discovery(sent_offers_ids=sent_offers_ids,
                                                                user=user)
 
         # Then
@@ -44,7 +44,7 @@ class CreateRecommendationsForDiscoveryTest:
     def test_should_include_recommendations_on_offers_previously_displayed_in_search_results(
             self, app):
         # Given
-        seen_recommendation_ids = []
+        sent_offers_ids = []
         user = create_user()
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -61,7 +61,7 @@ class CreateRecommendationsForDiscoveryTest:
         discovery_view_queries.refresh(concurrently=False)
 
         # When
-        recommendations = create_recommendations_for_discovery(seen_recommendation_ids=seen_recommendation_ids,
+        recommendations = create_recommendations_for_discovery(sent_offers_ids=sent_offers_ids,
                                                                user=user)
 
         # Then
@@ -72,15 +72,15 @@ class CreateRecommendationsForDiscoveryTest:
                                                                            get_offers_for_recommendations_discovery,
                                                                            app):
         # Given
-        seen_recommendation_ids = []
+        sent_offers_ids = []
         user = create_user()
 
         # When
-        create_recommendations_for_discovery(user=user, seen_recommendation_ids=seen_recommendation_ids)
+        create_recommendations_for_discovery(user=user, sent_offers_ids=sent_offers_ids)
 
         # Then
         get_offers_for_recommendations_discovery.assert_called_once_with(limit=3,
-                                                                         seen_recommendation_ids=seen_recommendation_ids,
+                                                                         sent_offers_ids=sent_offers_ids,
                                                                          user=user)
 
     @clean_database
@@ -88,7 +88,7 @@ class CreateRecommendationsForDiscoveryTest:
         # given
         departements_ok = ['75', '77', '78', '91', '92', '93', '94', '95']
         departements_ko = ['34', '973']
-        seen_recommendation_ids = []
+        sent_offers_ids = []
 
         user = create_user(departement_code='93')
         offerer_ok = create_offerer()
@@ -104,7 +104,7 @@ class CreateRecommendationsForDiscoveryTest:
         offer_ids_in_adjacent_department = set([stock.offerId for stock in expected_stocks_recommended])
 
         #  when
-        recommendations = create_recommendations_for_discovery(seen_recommendation_ids=seen_recommendation_ids,
+        recommendations = create_recommendations_for_discovery(sent_offers_ids=sent_offers_ids,
                                                                limit=10,
                                                                user=user)
 
@@ -117,7 +117,7 @@ class CreateRecommendationsForDiscoveryTest:
     def test_returns_offers_from_any_departement_for_user_from_00(self, app):
         # given
         departements_ok = ['97', '01', '93', '06', '78']
-        seen_recommendation_ids = []
+        sent_offers_ids = []
 
         user = create_user(departement_code='00')
         offerer_ok = create_offerer()
@@ -131,7 +131,7 @@ class CreateRecommendationsForDiscoveryTest:
 
         #  when
         recommendations = create_recommendations_for_discovery(limit=10,
-                                                               seen_recommendation_ids=seen_recommendation_ids,
+                                                               sent_offers_ids=sent_offers_ids,
                                                                user=user)
 
         # then

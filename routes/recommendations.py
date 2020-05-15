@@ -70,12 +70,12 @@ def put_recommendations():
     if 'readRecommendations' in json_keys:
         update_read_recommendations(request.json['readRecommendations'])
 
-    if 'seenRecommendationIds' in json_keys:
-        humanized_seen_recommendation_ids = request.json['seenRecommendationIds']
-        seen_recommendation_ids = list(
-            map(dehumanize, humanized_seen_recommendation_ids))
+    if 'offersSentInLastCall' in json_keys:
+        humanized_sent_offers_ids = request.json['offersSentInLastCall']
+        sent_offers_ids = list(
+            map(dehumanize, humanized_sent_offers_ids))
     else:
-        seen_recommendation_ids = []
+        sent_offers_ids = []
 
     offer_id = dehumanize(request.args.get('offerId'))
     mediation_id = dehumanize(request.args.get('mediationId'))
@@ -88,7 +88,7 @@ def put_recommendations():
 
     recommendations = create_recommendations_for_discovery(limit=BLOB_SIZE,
                                                            user=current_user,
-                                                           seen_recommendation_ids=seen_recommendation_ids)
+                                                           sent_offers_ids=sent_offers_ids)
 
     if requested_recommendation:
         recommendations = move_requested_recommendation_first(recommendations,
@@ -111,17 +111,17 @@ def put_recommendations_v3():
     if 'readRecommendations' in json_keys:
         update_read_recommendations(request.json['readRecommendations'])
 
-    if 'seenRecommendationIds' in json_keys:
-        seen_recommendation_human_ids = request.json['seenRecommendationIds']
-        seen_recommendation_ids = list(
-            map(dehumanize, seen_recommendation_human_ids))
+    if 'offersSentInLastCall' in json_keys:
+        humanized_sent_offers_ids = request.json['offersSentInLastCall']
+        sent_offers_ids = list(
+            map(dehumanize, humanized_sent_offers_ids))
     else:
-        seen_recommendation_ids = []
+        sent_offers_ids = []
 
     recommendations = create_recommendations_for_discovery_v3(user=current_user,
-                                                                      user_iris_id=user_iris_id,
-                                                                      user_is_geolocated=user_is_geolocated,
-                                                                      seen_recommendation_ids=seen_recommendation_ids,
-                                                                      limit=BLOB_SIZE)
+                                                              user_iris_id=user_iris_id,
+                                                              user_is_geolocated=user_is_geolocated,
+                                                              sent_offers_ids=sent_offers_ids,
+                                                              limit=BLOB_SIZE)
 
     return jsonify(serialize_recommendations(recommendations, current_user)), 200

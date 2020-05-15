@@ -61,8 +61,7 @@ class DiscoveryViewTest:
         discovery_view_queries.refresh(concurrently=False)
 
         # When
-        offers = get_offers_for_recommendation(departement_codes=['00'],
-                                               user=user)
+        offers = get_offers_for_recommendation(user=user, departement_codes=['00'])
 
         # Then
         assert offers == [physical_offer_with_super_bonus, digital_offer_with_bonus, digital_offer, physical_offer,
@@ -119,8 +118,7 @@ class DiscoveryViewTest:
         discovery_view_queries.refresh(concurrently=False)
 
         # When
-        offers = get_offers_for_recommendation(departement_codes=['00'],
-                                               user=user)
+        offers = get_offers_for_recommendation(user=user, departement_codes=['00'])
 
         # Then
         assert offers == [physical_offer_with_super_bonus, digital_offer_with_bonus, physical_offer,
@@ -166,8 +164,7 @@ class DiscoveryViewTest:
         repository.save(user, stock_digital_offer_with_bonus, stock_digital_offer, stock_digital_offer_with_malus,
                         stock_physical_offer, stock_physical_offer_with_super_bonus)
         discovery_view_queries.refresh(concurrently=False)
-        old_ordered_offers = get_offers_for_recommendation(departement_codes=['00'],
-                                                           user=user)
+        old_ordered_offers = get_offers_for_recommendation(user=user, departement_codes=['00'])
 
         def order_by_digital_offers_test() -> str:
             return f"""
@@ -186,8 +183,7 @@ class DiscoveryViewTest:
         discovery_view_queries.refresh(concurrently=False)
 
         # When
-        new_ordered_offers = get_offers_for_recommendation(departement_codes=['00'],
-                                                           user=user)
+        new_ordered_offers = get_offers_for_recommendation(user=user, departement_codes=['00'])
 
         # Then
         assert old_ordered_offers == [physical_offer_with_super_bonus, digital_offer_with_bonus, digital_offer, physical_offer,

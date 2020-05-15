@@ -6,13 +6,11 @@ from repository.offer_queries import get_offers_for_recommendation
 
 
 def get_offers_for_recommendations_discovery(user: UserSQLEntity,
-                                             seen_recommendation_ids: List[int] = [],
+                                             sent_offers_ids: List[int] = [],
                                              limit: int = 3) -> List[Offer]:
     departement_codes = get_departement_codes_from_user(user)
 
-    offers = get_offers_for_recommendation(user=user,
-                                           departement_codes=departement_codes,
-                                           limit=limit,
-                                           seen_recommendation_ids=seen_recommendation_ids)
+    offers = get_offers_for_recommendation(user=user, departement_codes=departement_codes, limit=limit,
+                                           sent_offers_ids=sent_offers_ids)
 
     return offers

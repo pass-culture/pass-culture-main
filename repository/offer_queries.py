@@ -96,17 +96,15 @@ def order_by_with_criteria_and_is_digital(end_of_quarantine_date: datetime) -> L
     ]
 
 
-def get_offers_for_recommendation(user: UserSQLEntity,
-                                  departement_codes: List[str] = None,
-                                  limit: int = None,
-                                  seen_recommendation_ids: List[int] = []) -> List[DiscoveryView]:
+def get_offers_for_recommendation(user: UserSQLEntity, departement_codes: List[str] = None, limit: int = None,
+                                  sent_offers_ids: List[int] = []) -> List[DiscoveryView]:
     favorite_ids = get_only_offer_ids_from_favorites(user)
 
     offer_booked_ids = get_only_offer_ids_from_bookings(user)
 
     discovery_view_query = DiscoveryView.query \
         .filter(DiscoveryView.id.notin_(favorite_ids)) \
-        .filter(DiscoveryView.id.notin_(seen_recommendation_ids)) \
+        .filter(DiscoveryView.id.notin_(sent_offers_ids)) \
         .filter(DiscoveryView.id.notin_(offer_booked_ids))
 
     if ALL_DEPARTMENTS_CODE not in departement_codes:
@@ -124,15 +122,16 @@ def get_offers_for_recommendation(user: UserSQLEntity,
     return discovery_view_query.all()
 
 
-def get_offers_for_recommendation_v3(user: UserSQLEntity, user_iris_id: Optional[int] = None, user_is_geolocated: bool = False,
-                                     limit: Optional[int] = None, seen_recommendation_ids: List[int] = []) -> List[DiscoveryViewV3]:
+def get_offers_for_recommendation_v3(user: UserSQLEntity, user_iris_id: Optional[int] = None,
+                                     user_is_geolocated: bool = False, limit: Optional[int] = None,
+                                     sent_offers_ids: List[int] = []) -> List[DiscoveryViewV3]:
     favorite_offers_ids = get_only_offer_ids_from_favorites(user)
 
     booked_offers_ids = get_only_offer_ids_from_bookings(user)
 
     discovery_view_query = DiscoveryViewV3.query \
         .filter(DiscoveryViewV3.id.notin_(favorite_offers_ids)) \
-        .filter(DiscoveryViewV3.id.notin_(seen_recommendation_ids)) \
+        .filter(DiscoveryViewV3.id.notin_(sent_offers_ids)) \
         .filter(DiscoveryViewV3.id.notin_(booked_offers_ids))
 
     if user_is_geolocated:

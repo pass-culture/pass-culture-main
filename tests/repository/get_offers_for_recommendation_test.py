@@ -43,8 +43,7 @@ class GetOfferForRecommendationsTest:
             discovery_view_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation(departement_codes=['00'],
-                                                   user=user)
+            offers = get_offers_for_recommendation(user=user, departement_codes=['00'])
 
             # Then
             assert offer_34 in offers
@@ -71,8 +70,7 @@ class GetOfferForRecommendationsTest:
             discovery_view_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation(departement_codes=['93'],
-                                                   user=user)
+            offers = get_offers_for_recommendation(user=user, departement_codes=['93'])
 
             # Then
             assert offer_34 not in offers
@@ -99,8 +97,7 @@ class GetOfferForRecommendationsTest:
             discovery_view_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation(departement_codes=['00'],
-                                                   user=user)
+            offers = get_offers_for_recommendation(user=user, departement_codes=['00'])
 
             # Then
             assert offer_93 in offers
@@ -126,8 +123,7 @@ class GetOfferForRecommendationsTest:
             discovery_view_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation(departement_codes=['00'],
-                                                   user=user)
+            offers = get_offers_for_recommendation(user=user, departement_codes=['00'])
 
             # Then
             assert offer_93 in offers
@@ -150,8 +146,7 @@ class GetOfferForRecommendationsTest:
             discovery_view_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation(departement_codes=['00'],
-                                                   user=user)
+            offers = get_offers_for_recommendation(user=user, departement_codes=['00'])
 
             # Then
             assert len(offers) == 1
@@ -171,8 +166,7 @@ class GetOfferForRecommendationsTest:
             discovery_view_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation(departement_codes=['00'],
-                                                   user=user)
+            offers = get_offers_for_recommendation(user=user, departement_codes=['00'])
 
             # Then
             assert len(offers) == 1
@@ -198,8 +192,7 @@ class GetOfferForRecommendationsTest:
             discovery_view_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation(departement_codes=['00'],
-                                                   user=user)
+            offers = get_offers_for_recommendation(user=user, departement_codes=['00'])
 
             # Then
             assert len(offers) == 0
@@ -220,8 +213,7 @@ class GetOfferForRecommendationsTest:
             discovery_view_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation(departement_codes=['00'],
-                                                   user=user)
+            offers = get_offers_for_recommendation(user=user, departement_codes=['00'])
 
             # Then
             assert offers == []
@@ -244,8 +236,7 @@ class GetOfferForRecommendationsTest:
             discovery_view_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation(departement_codes=['00'],
-                                                   user=user)
+            offers = get_offers_for_recommendation(user=user, departement_codes=['00'])
 
             # Then
             assert offers == []
@@ -271,8 +262,7 @@ class GetOfferForRecommendationsTest:
             discovery_view_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation(departement_codes=['00'],
-                                                   user=user)
+            offers = get_offers_for_recommendation(user=user, departement_codes=['00'])
 
             # Then
             assert offers == [digital_offer, physical_offer]
@@ -301,8 +291,7 @@ class GetOfferForRecommendationsTest:
             discovery_view_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation(departement_codes=['00'],
-                                                   user=user)
+            offers = get_offers_for_recommendation(user=user, departement_codes=['00'])
 
             # Then
             assert offers == [physical_offer, digital_offer]
@@ -335,8 +324,7 @@ class GetOfferForRecommendationsTest:
             discovery_view_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation(departement_codes=['00'],
-                                                   user=user)
+            offers = get_offers_for_recommendation(user=user, departement_codes=['00'])
 
             # Then
             assert offers == [offer_1, offer_2]
@@ -367,8 +355,7 @@ class GetOfferForRecommendationsTest:
             discovery_view_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation(departement_codes=['00'],
-                                                   user=user)
+            offers = get_offers_for_recommendation(user=user, departement_codes=['00'])
 
             # Then
             assert offers == [offer_1, offer_2]
@@ -392,7 +379,6 @@ class GetOfferForRecommendationsTest:
             discovery_view_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation(departement_codes=['00'],
-                                                   user=user)
+            offers = get_offers_for_recommendation(user=user, departement_codes=['00'])
             # Then
             mock_order_offers_by_unseen_offers_first.assert_not_called()
