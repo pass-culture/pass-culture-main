@@ -3,15 +3,34 @@
   flex-direction: column;
 
   .bookings-table {
+    display: flex;
+    flex-direction: column;
     margin-bottom: rem(10px);
 
-    .td-bookings-duo {
-      padding: 0;
-      vertical-align: middle;
+    .td-offer-name {
+      flex: 1 rem(90px);
     }
 
-    .td-bookings-status {
-      vertical-align: middle;
+    .td-booking-duo {
+      flex: 0.5;
+    }
+
+    .td-beneficiary {
+      flex: 1 rem(150px);
+      word-break: break-word;
+    }
+
+    .td-booking-date {
+      flex: 0.5;
+    }
+
+    .td-booking-token {
+      flex: 1;
+      word-break: break-word;
+    }
+
+    .td-booking-status {
+      flex: 1;
     }
   }
 }

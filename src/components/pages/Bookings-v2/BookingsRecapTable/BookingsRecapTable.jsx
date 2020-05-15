@@ -20,32 +20,37 @@ class BookingsRecapTable extends Component {
           headerTitle: "Nom de l'offre",
           accessor: 'stock',
           Cell: ({ value }) => <BookingOfferCell offer={value} />,
+          className: 'td-offer-name',
         },
         {
           headerTitle: '',
           accessor: 'booking_is_duo',
           Cell: ({ value }) => <BookingIsDuoCell isDuo={value} />,
-          className: 'td-bookings-duo',
+          className: 'td-booking-duo',
         },
         {
           headerTitle: 'Bénéficiaire',
           accessor: 'beneficiary',
           Cell: ({ value }) => <BeneficiaryCell beneficiaryInfos={value} />,
+          className: 'td-beneficiary',
         },
         {
           headerTitle: 'Réservation',
           accessor: 'booking_date',
           Cell: ({ value }) => <BookingDateCell bookingDate={value} />,
+          className: 'td-booking-date'
         },
         {
           headerTitle: 'Contremarque',
           accessor: 'booking_token',
           Cell: ({ value }) => <BookingTokenCell bookingToken={value} />,
+          className: 'td-booking-token'
         },
         {
           headerTitle: 'Statut',
           accessor: 'booking_status',
           Cell: ({ value }) => <BookingStatusCell bookingStatus={value} />,
+          className: 'td-booking-status'
         },
       ],
     }

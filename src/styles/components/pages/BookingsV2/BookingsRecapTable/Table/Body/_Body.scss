@@ -5,6 +5,12 @@
 
   td {
     font-size: rem(16px);
-    padding: rem(16px);
+    padding: rem(16px)
+  }
+
+  tr {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 }
