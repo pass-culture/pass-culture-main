@@ -1,3 +1,5 @@
+from domain.offerer.offerer_repository import OffererRepository
+from domain.bank_informations.bank_informations_repository import BankInformationsRepository
 from models import BankInformation
 from models.bank_information import BankInformationStatus
 from repository import bank_information_queries, offerer_queries, repository
@@ -8,6 +10,13 @@ from domain.demarches_simplifiees import get_offerer_bank_information_applicatio
 
 
 class SaveOffererBankInformations:
+    def __init__(self,
+                 offerer_repository: OffererRepository,
+                 bank_informations_repository: BankInformationsRepository
+                 ):
+        self.offerer_repository = offerer_repository
+        self.bank_informations_repository = bank_informations_repository
+
     def execute(self, application_id: str):
         application_details = get_offerer_bank_information_application_details_by_application_id(
             application_id)
