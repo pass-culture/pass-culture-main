@@ -17,8 +17,8 @@ const BookingOfferCell = ({ offer }) => {
 
 BookingOfferCell.propTypes = {
   offer: PropTypes.shape({
-    type: PropTypes.string.isRequired,
     offer_name: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
   }).isRequired,
 }
 

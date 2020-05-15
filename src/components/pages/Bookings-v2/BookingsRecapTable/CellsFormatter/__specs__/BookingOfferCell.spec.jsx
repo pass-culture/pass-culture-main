@@ -19,7 +19,6 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingOfferCell',
       // Then
       const offerName = wrapper.find({ children: props.offer.offer_name })
       expect(offerName).toHaveLength(1)
-      expect(offerName.hasClass('offer-name')).toBe(true)
     })
   })
 
@@ -41,11 +40,9 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingOfferCell',
       // Then
       const offerName = wrapper.find({ children: props.offer.offer_name })
       expect(offerName).toHaveLength(1)
-      expect(offerName.hasClass('offer-name')).toBe(true)
 
       const eventDatetime = wrapper.find("[children^='12/05/2020']")
       expect(eventDatetime).toHaveLength(1)
-      expect(eventDatetime.hasClass('event-date')).toBe(true)
       expect(eventDatetime.text()).toContain('9:03')
     })
   })

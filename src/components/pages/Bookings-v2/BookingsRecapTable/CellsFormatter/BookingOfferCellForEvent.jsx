@@ -1,12 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { formatLocalTimeDateString } from '../../../../utils/timezone'
+import { formatLocalTimeDateString } from '../../../../../utils/timezone'
 
+const FRENCH_FORMAT_DATETIME = 'DD/MM/YYYY HH:mm'
 const BookingOfferCellForEvent = ({ offerName, eventDatetime, venueDepartmentCode }) => {
   const eventDatetimeFormatted = formatLocalTimeDateString(
     eventDatetime,
     venueDepartmentCode,
-    'DD/MM/YYYY HH:mm'
+    FRENCH_FORMAT_DATETIME
   )
   return (
     <span className="cell-offer">
