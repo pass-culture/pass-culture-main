@@ -36,6 +36,7 @@ describe('components | VersoContentOffer', () => {
         postalCode: '93230',
         publicName: 'fake publicName',
       },
+      withdrawalDetails: 'Some useless details',
     }
   })
 
@@ -330,6 +331,54 @@ describe('components | VersoContentOffer', () => {
     // then
     const distance = wrapper.findWhere(node => node.text() === 'À 20km').first()
     expect(distance).toHaveLength(1)
+  })
+
+  it('should render offer withdrawal details whend given', () => {
+    // given
+    const props = {
+      bookables: [],
+      distance: '1',
+      handleRequestMusicAndShowTypes: jest.fn(),
+      isBookable: true,
+      maxShownDates: 7,
+      offer,
+      userGeolocation: {
+        latitude: null,
+        longitude: null,
+      },
+    }
+
+    // when
+    const wrapper = shallow(<VersoContentOffer {...props} />)
+
+    // then
+    const withdrawalLabel = wrapper.find({ children: 'Modalités de retrait' })
+    expect(withdrawalLabel).toHaveLength(1)
+    const withdrawalDetails = wrapper.find({ children: 'Some useless details' })
+    expect(withdrawalDetails).toHaveLength(1)
+  })
+
+  it('should not render withdrawal labels when details are empty', () => {
+    // given
+    const props = {
+      bookables: [],
+      distance: '1',
+      handleRequestMusicAndShowTypes: jest.fn(),
+      isBookable: true,
+      maxShownDates: 7,
+      offer: { ...offer, withdrawalDetails: null },
+      userGeolocation: {
+        latitude: null,
+        longitude: null,
+      },
+    }
+
+    // when
+    const wrapper = shallow(<VersoContentOffer {...props} />)
+
+    // then
+    const withdrawalLabel = wrapper.find({ children: 'Modalités de retrait' })
+    expect(withdrawalLabel).toHaveLength(0)
   })
 
   describe('distance informations', () => {
