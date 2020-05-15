@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Fragment, PureComponent } from 'react'
+import React, { PureComponent } from 'react'
 
 import siretValidate from './validators/siretValidate'
 import Icon from '../../../../layout/Icon'
@@ -90,8 +90,12 @@ class IdentifierFields extends PureComponent {
       venueTypeId,
     } = this.props
 
+    const siretLabel = isCreatedEntity
+      ? 'SIRET du lieu qui accueille vos offres (si applicable) : '
+      : 'SIRET : '
+
     return (
-      <div className="section">
+      <div className="section identifier-field-section">
         <h2 className="main-list-title is-relative">
           {'Informations lieu'}
           {!readOnly && (
@@ -106,37 +110,16 @@ class IdentifierFields extends PureComponent {
         </h2>
         <div className="field-group">
           {isCreatedEntity && <HiddenField name="managingOffererId" />}
-          <div className="field text-field is-label-aligned">
-            <label
-              className="field-label"
-              htmlFor="siret"
-            >
-              {isCreatedEntity ? (
-                <Fragment>
-                  {'SIRET'}
-                  <span className="siret-label-details">
-                    <span className="siret-label-bold">
-                      {' du lieu qui accueille vos offres'}
-                    </span>
-                    {' (si applicable) : '}
-                  </span>
-                </Fragment>
-              ) : (
-                'SIRET : '
-              )}
-            </label>
-            <TextField
-              className="vp-field"
-              format={formatSiret}
-              name="siret"
-              readOnly={readOnly || initialSiret !== null}
-              renderValue={this.handleRenderValue(fieldReadOnlyBecauseFrozenFormSiret, readOnly)}
-              type="siret"
-              validate={initialSiret ? undefined : siretValidate}
-            />
-          </div>
           <TextField
-            className="vp-field"
+            format={formatSiret}
+            label={siretLabel}
+            name="siret"
+            readOnly={readOnly || initialSiret !== null}
+            renderValue={this.handleRenderValue(fieldReadOnlyBecauseFrozenFormSiret, readOnly)}
+            type="siret"
+            validate={initialSiret ? undefined : siretValidate}
+          />
+          <TextField
             label="Nom du lieu : "
             name="name"
             readOnly={readOnly || fieldReadOnlyBecauseFrozenFormSiret}
@@ -148,8 +131,6 @@ class IdentifierFields extends PureComponent {
             readOnly={readOnly}
           />
           <TextField
-            className="vp-field"
-            innerClassName="col-75"
             label="E-mail : "
             name="bookingEmail"
             readOnly={readOnly}
@@ -158,7 +139,6 @@ class IdentifierFields extends PureComponent {
             type="email"
           />
           <TextareaField
-            className="vp-field"
             label="Commentaire (si pas de SIRET) : "
             name="comment"
             readOnly={readOnly}
@@ -166,24 +146,21 @@ class IdentifierFields extends PureComponent {
             validate={this.commentValidate}
           />
           <div
-            className={classnames('field field-select is-horizontal', {
+            className={classnames('field field-select is-label-aligned', {
               readonly: readOnly,
             })}
           >
-            <div className="field-label is-normal">
-              <label
-                className="label"
-                htmlFor="venue-type"
-              >
+            <div className="field-label">
+              <label htmlFor="venue-type">
                 {'Type de lieu :'}
               </label>
             </div>
 
-            <div className="field-body">
+            <div className="field-control">
               <div className="control control-select">
                 {!(readOnly && venueTypeId == null) && (
                   <div
-                    className={classnames('select is-normal', {
+                    className={classnames('select', {
                       readonly: readOnly,
                     })}
                   >
@@ -211,24 +188,21 @@ class IdentifierFields extends PureComponent {
             </div>
           </div>
           <div
-            className={classnames('field field-select is-horizontal', {
+            className={classnames('field field-select is-label-aligned', {
               readonly: readOnly,
             })}
           >
-            <div className="field-label is-normal">
-              <label
-                className="label"
-                htmlFor="venue-label"
-              >
+            <div className="field-label">
+              <label htmlFor="venue-label">
                 {'Label du lieu :'}
               </label>
             </div>
 
-            <div className="field-body">
+            <div className="field-control">
               <div className="control control-select">
                 {!(readOnly && venueLabelId == null) && (
                   <div
-                    className={classnames('select is-normal', {
+                    className={classnames('select', {
                       readonly: readOnly,
                     })}
                   >

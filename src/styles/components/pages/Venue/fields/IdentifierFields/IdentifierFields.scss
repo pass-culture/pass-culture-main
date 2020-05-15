@@ -1,3 +1,31 @@
+.identifier-field-section {
+  .field {
+    display: flex;
+    align-items: center;
+  }
+
+  .is-label-aligned .field-label{
+    padding: 0;
+    margin: 0;
+  }
+
+  .field-select {
+    padding: 0;
+    width: initial;
+  }
+
+  .field-label {
+    flex: 1;
+    color: $black;
+    font-size: rem(16px);
+    white-space: initial;
+  }
+
+  .field-control {
+    flex: 3
+  }
+}
+
 .siret-label-details {
   font-size: 0.8125rem;
 }
