@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from domain.bank_informations.bank_informations import BankInformations
 from models import BankInformation as BankInformationsSQLEntity
 from infrastructure.repository.stock import stock_domain_converter
@@ -10,7 +12,8 @@ def to_domain(bank_informations_sql_entity: BankInformationsSQLEntity) -> BankIn
     return BankInformations(application_id=bank_informations_sql_entity.applicationId,
                             status=bank_informations_sql_entity.status,
                             iban=bank_informations_sql_entity.iban,
-                            bic=bank_informations_sql_entity.bic)
+                            bic=bank_informations_sql_entity.bic,
+                            date_modified_at_last_provider=bank_informations_sql_entity.dateModifiedAtLastProvider)
 
 
 def to_model(bank_informations: BankInformations) -> BankInformationsSQLEntity:
@@ -19,5 +22,6 @@ def to_model(bank_informations: BankInformations) -> BankInformationsSQLEntity:
     bank_informations_sql_entity.status = bank_informations.status
     bank_informations_sql_entity.iban = bank_informations.iban
     bank_informations_sql_entity.bic = bank_informations.bic
+    bank_informations_sql_entity.offererId = bank_informations.offerer_id
 
     return bank_informations_sql_entity

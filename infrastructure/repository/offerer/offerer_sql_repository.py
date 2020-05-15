@@ -11,5 +11,3 @@ class OffererSQLRepository(OffererRepository):
 
         if offerer_sql_entity is not None:
             return offerer_domain_converter.to_domain(offerer_sql_entity)
-        else:
-            None

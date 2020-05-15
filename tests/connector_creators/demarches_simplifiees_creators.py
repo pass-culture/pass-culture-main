@@ -6,7 +6,7 @@ def offerer_demarche_simplifiee_application_detail_response(siren: str,
                                                             bic: Optional[str],
                                                             iban: Optional[str],
                                                             idx: int = 1,
-                                                            updated_at: str = "2019-01-21T18:55:03.387Z",
+                                                            updated_at: str = "2020-01-21T18:55:03.387Z",
                                                             state: str = "closed") -> Dict:
     return {
         "dossier":

@@ -22,6 +22,7 @@ class OffererSQLRepositoryTest:
 
         # then
         assert offerer.siren == expected_offerer.siren
+        assert offerer.id == expected_offerer.id
 
     @clean_database
     def test_should_not_return_an_offerer_when_no_offerer_was_found(self, app):

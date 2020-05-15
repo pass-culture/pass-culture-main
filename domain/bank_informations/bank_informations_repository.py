@@ -15,3 +15,15 @@ class BankInformationsRepository(ABC):
     @abstractmethod
     def get_by_application(self, application_id: str) -> BankInformations:
         pass
+
+    @abstractmethod
+    def save(self, bank_informations: BankInformations) -> BankInformations:
+        pass
+
+    @abstractmethod
+    def update_by_application_id(self, bank_informations: BankInformations) -> BankInformations:
+       pass
+
+    @abstractmethod
+    def update_by_offerer_id(self, bank_informations: BankInformations) -> BankInformations:
+        pass
