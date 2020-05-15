@@ -89,7 +89,7 @@
       }
 
       &::after {
-        content: '';
+        content: "";
         background: url(/icons/checkbox-check.svg) center no-repeat;
         width: 100%;
         height: 100%;
@@ -120,4 +120,7 @@
     padding-left: 5px;
   }
 
+  .field-body textarea {
+    padding-top: rem(8px);
+  }
 }

@@ -9,7 +9,7 @@ input.input,
 textarea.textarea {
   font-weight: 500;
 
-  &[readonly]:not([type='checkbox']) {
+  &[readonly]:not([type="checkbox"]) {
     border: none;
     background-color: transparent;
     padding-left: 0.125rem;
@@ -70,7 +70,7 @@ textarea.textarea {
         }
 
         &::after {
-          content: '';
+          content: "";
           background-repeat: no-repeat;
           background-image: url(/icons/checkbox-check.svg);
           background-position: center;
@@ -233,7 +233,7 @@ textarea.textarea {
 
   .required:not(.readOnly) {
     &::after {
-      content: ' *';
+      content: " *";
       color: $violet;
       display: inline;
     }
@@ -248,6 +248,10 @@ div.control.control-duration {
   input.field-input.field-duration {
     width: 5.5rem !important;
   }
+}
+
+.large-labels label {
+  min-width: rem(200px);
 }
 
 @media (min-width: $tablet) {

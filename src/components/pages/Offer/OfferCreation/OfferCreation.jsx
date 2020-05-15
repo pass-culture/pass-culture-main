@@ -698,7 +698,7 @@ class OfferCreation extends PureComponent {
               <h2 className="main-list-title">
                 {'Infos artistiques'}
               </h2>
-              <div className="field-group">
+              <div className="field-group large-labels">
                 <Field
                   displayMaxLength
                   isExpanded
@@ -777,7 +777,7 @@ class OfferCreation extends PureComponent {
               <h2 className="main-list-title">
                 {'Informations de retrait'}
               </h2>
-              <div className="field-group">
+              <div className="field-group large-labels">
                 <Field
                   displayMaxLength
                   isExpanded
