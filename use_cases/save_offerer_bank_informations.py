@@ -16,16 +16,16 @@ class SaveOffererBankInformations:
 
         check_offerer_presence(offerer)
 
-        save_bank_information(application_details, offerer.id, None)
+        save_bank_information(application_details, offerer.id)
 
 
-def save_bank_information(application_details: ApplicationDetail, offerer_id: str, venue_id: str):
+def save_bank_information(application_details: ApplicationDetail, offerer_id: str):
     application_bank_information = _get_application_bank_information(
         application_details)
 
     if not application_bank_information:
         previous_bank_information = bank_information_queries.get_by_offerer_and_venue(
-            offerer_id, venue_id)
+            offerer_id, None)
 
         if previous_bank_information:
             check_new_bank_information_older_than_saved_one(
@@ -35,7 +35,7 @@ def save_bank_information(application_details: ApplicationDetail, offerer_id: st
 
     bank_information = application_bank_information or previous_bank_information or BankInformation()
     bank_information = _fill_bank_information(
-        application_details, bank_information, offerer_id, venue_id)
+        application_details, bank_information, offerer_id)
 
     repository.save(bank_information)
 
@@ -46,10 +46,10 @@ def _get_application_bank_information(application_details: ApplicationDetail) ->
     return application_bank_information
 
 
-def _fill_bank_information(application_details: ApplicationDetail, bank_information: BankInformation, offerer_id: str, venue_id: str) -> BankInformation:
+def _fill_bank_information(application_details: ApplicationDetail, bank_information: BankInformation, offerer_id: str) -> BankInformation:
     bank_information.applicationId = application_details.application_id
     bank_information.offererId = offerer_id
-    bank_information.venueId = venue_id
+    bank_information.venueId = None
     bank_information.status = application_details.status
     if application_details.status == BankInformationStatus.ACCEPTED:
         bank_information.iban = application_details.iban
