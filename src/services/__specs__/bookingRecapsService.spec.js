@@ -1,15 +1,12 @@
 import { fetchBookingRecaps } from '../bookingRecapsService'
+import * as fetch from '../../utils/fetch'
 
 describe('src | services | bookingRecapsService', () => {
   let mockJsonPromise
-  let mockFetchPromise
 
   beforeEach(() => {
-    mockJsonPromise = Promise.resolve([{}])
-    mockFetchPromise = Promise.resolve({
-      json: () => mockJsonPromise,
-    })
-    jest.spyOn(global, 'fetch').mockImplementation(() => mockFetchPromise)
+    mockJsonPromise = Promise.resolve([])
+    jest.spyOn(fetch, 'fetchFromApiWithCredentials').mockImplementation(() => mockJsonPromise)
   })
 
   it('should return bookingRecaps values', async () => {
