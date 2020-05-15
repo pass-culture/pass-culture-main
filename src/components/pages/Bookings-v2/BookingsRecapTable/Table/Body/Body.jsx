@@ -3,7 +3,10 @@ import PropTypes from 'prop-types'
 
 const Body = ({ page, prepareRow, tableBodyProps }) => {
   return (
-    <tbody {...tableBodyProps}>
+    <tbody
+      className="bookings-body"
+      {...tableBodyProps}
+    >
       {page.map(row => {
         prepareRow(row)
         return (

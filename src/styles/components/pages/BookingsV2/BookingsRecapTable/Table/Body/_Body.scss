@@ -1,0 +1,10 @@
+.bookings-body {
+  > tr:nth-child(odd) {
+    background-color: $grey-light-bis;
+  }
+
+  td {
+    font-size: rem(16px);
+    padding: rem(16px);
+  }
+}

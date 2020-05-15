@@ -1,15 +1,15 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import BeneficiaryCell from './CellsFormatter/BeneficiaryCell'
-import BookingDateCell from './CellsFormatter/BookingsDateCell'
-import BookingStatusCell from './CellsFormatter/BookingsStatusCell'
-import BookingTokenCell from './CellsFormatter/BookingsTokenCell'
+import BookingDateCell from './CellsFormatter/BookingDateCell'
+import BookingStatusCell from './CellsFormatter/BookingStatusCell'
+import BookingTokenCell from './CellsFormatter/BookingTokenCell'
 import Table from './Table/Table'
 import BookingOfferCell from './CellsFormatter/BookingOfferCell'
 import Header from './Header/Header'
-import IsDuoCell from './CellsFormatter/IsDuoCell'
+import BookingIsDuoCell from './CellsFormatter/BookingIsDuoCell'
 
-export const NB_HITS_PER_PAGE = 20
+export const NB_HITS_PER_PAGE = 5
 
 class BookingsRecapTable extends Component {
   constructor(props) {
@@ -17,14 +17,14 @@ class BookingsRecapTable extends Component {
     this.state = {
       columns: [
         {
-          headerTitle: 'Nom de l\'offre',
+          headerTitle: "Nom de l'offre",
           accessor: 'stock',
           Cell: ({ value }) => <BookingOfferCell offer={value} />,
         },
         {
           headerTitle: '',
           accessor: 'booking_is_duo',
-          Cell: ({ value }) => <IsDuoCell isDuo={value} />,
+          Cell: ({ value }) => <BookingIsDuoCell isDuo={value} />,
           className: 'td-bookings-duo',
         },
         {
@@ -46,7 +46,6 @@ class BookingsRecapTable extends Component {
           headerTitle: 'Statut',
           accessor: 'booking_status',
           Cell: ({ value }) => <BookingStatusCell bookingStatus={value} />,
-          className: 'bookings-status',
         },
       ],
     }

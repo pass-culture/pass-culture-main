@@ -9,7 +9,7 @@ function BeneficiaryCell({ beneficiaryInfos }) {
         {beneficiaryName}
       </span>
       <br />
-      <span className="cell-subtitle">
+      <span className="beneficiary-subtitle">
         {beneficiaryInfos.email}
       </span>
     </div>

@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const Head = ({ headerGroups }) => (
-  <thead>
+  <thead className="bookings-head">
     {headerGroups.map(headerGroup => (
       <tr key={headerGroup.id}>
         {headerGroup.headers.map(column => (

@@ -1,6 +1,6 @@
 import { shallow } from 'enzyme/build'
 import React from 'react'
-import BookingDateCell from '../BookingsDateCell'
+import BookingDateCell from '../BookingDateCell'
 
 describe('components | pages | bookings-v2 | CellsFormatter | BookingsDateCell', () => {
   it('should render a div with two span, one containing the date and the other one the time', () => {

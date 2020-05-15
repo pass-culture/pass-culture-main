@@ -35,7 +35,7 @@ const getBookingStatusDisplayInformationsOrDefault = bookingStatusInfos => {
 }
 
 const computeStatusClassName = bookingStatusDisplayInformations => {
-  return `bookings-status-${bookingStatusDisplayInformations.className}`
+  return `booking-status-${bookingStatusDisplayInformations.className}`
 }
 
 const BookingStatusCell = ({ bookingStatus }) => {
@@ -50,7 +50,7 @@ const BookingStatusCell = ({ bookingStatus }) => {
     : bookingStatus
 
   return (
-    <span className={`bookings-status-label ${statusClassName}`}>
+    <span className={`booking-status-label ${statusClassName}`}>
       {statusName}
     </span>
   )

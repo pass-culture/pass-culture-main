@@ -2,7 +2,7 @@ import { shallow } from 'enzyme/build'
 import BeneficiaryCell from '../BeneficiaryCell'
 import React from 'react'
 
-describe('components | pages | bookings-v2 | CellsFormatter | BeneficiaryCell', () => {
+describe('components | BeneficiaryCell', () => {
   it('should render a div with two span, one with firstname and lastname and the other the email address', () => {
     // Given
     const props = {
@@ -23,6 +23,5 @@ describe('components | pages | bookings-v2 | CellsFormatter | BeneficiaryCell', 
     expect(spans).toHaveLength(2)
     expect(nameSpan.text()).toBe('Laurent Durond')
     expect(emailAddressSpan.text()).toBe('email@example.com')
-    expect(emailAddressSpan.prop('className')).toBe('cell-subtitle')
   })
 })

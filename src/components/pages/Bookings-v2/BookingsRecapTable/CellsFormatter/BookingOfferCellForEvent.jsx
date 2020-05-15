@@ -10,7 +10,7 @@ const BookingOfferCellForEvent = ({ offerName, eventDatetime, venueDepartmentCod
     FRENCH_FORMAT_DATETIME
   )
   return (
-    <span className="cell-offer">
+    <span className="booking-offer-name">
       <p className="offer-name">
         {offerName}
       </p>

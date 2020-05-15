@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 const BookingOfferCellForThing = ({ offerName }) => (
-  <span className="cell-offer">
+  <span className="booking-offer-name">
     <p className="offer-name">
       {offerName}
     </p>

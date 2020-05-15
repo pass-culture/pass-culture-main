@@ -1,15 +1,8 @@
-.cell-offer {
+.booking-offer-name {
+  font-weight: $weight-bold;
   white-space: nowrap;
   text-overflow: ellipsis;
   max-width: rem(175px);
   display: block;
   overflow: hidden;
-
-  .offer-name {
-    font-weight: $weight-bold;
-  }
-
-  .event-date {
-    color: $grey;
-  }
 }

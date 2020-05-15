@@ -1,64 +1,18 @@
-.bookings-table {
-  width: 100%;
-  margin-bottom: rem(10px);
+.bookings-table-wrapper {
+  display: flex;
+  flex-direction: column;
 
-  th {
-    color: $black;
-    font-size: rem(14px);
-    padding: rem(14px);
-    font-weight: $weight-medium;
-  }
+  .bookings-table {
+    margin-bottom: rem(10px);
 
-  tbody > tr:nth-child(odd) {
-    background-color: $grey-light-bis;
-  }
+    .td-bookings-duo {
+      padding: 0;
+      vertical-align: middle;
+    }
 
-  td {
-    font-size: rem(16px);
-    padding: rem(16px);
-  }
-
-  .td-bookings-duo {
-    padding: 0;
-    vertical-align: middle;
-  }
-
-  .td-bookings-status {
-    vertical-align: middle;
-  }
-
-  .cell-subtitle {
-    color: $grey;
-  }
-
-  .bookings-duo {
-    height: rem(24px);
-    width: rem(24px);
-  }
-
-  .bookings-status-label {
-    border-radius: rem(5px);
-    padding: rem(2px) rem(5px);
-    color: $white;
-    font-weight: $weight-medium;
-    font-size: rem(14px);
-  }
-
-  .bookings-status-booked {
-    background-color: $purple-dark;
-  }
-
-  .bookings-status-validated {
-    background-color: $blue-dark;
-  }
-
-  .bookings-status-cancelled {
-    background-color: $grey;
-  }
-
-  .bookings-status-reimbursed {
-    background-color: $green-dark;
+    .td-bookings-status {
+      vertical-align: middle;
+    }
   }
 }
-
 

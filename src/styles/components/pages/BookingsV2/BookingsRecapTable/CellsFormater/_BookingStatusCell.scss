@@ -1,0 +1,23 @@
+.booking-status-label {
+  border-radius: rem(5px);
+  color: $white;
+  font-weight: $weight-medium;
+  font-size: rem(14px);
+  padding: rem(2px) rem(5px);
+}
+
+.booking-status-booked {
+  background-color: $purple-dark;
+}
+
+.booking-status-validated {
+  background-color: $blue-dark;
+}
+
+.booking-status-cancelled {
+  background-color: $grey;
+}
+
+.booking-status-reimbursed {
+  background-color: $green-dark;
+}

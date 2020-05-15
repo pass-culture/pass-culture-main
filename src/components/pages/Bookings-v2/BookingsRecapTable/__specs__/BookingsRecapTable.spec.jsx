@@ -2,11 +2,11 @@ import BookingsRecapTable, { NB_HITS_PER_PAGE } from '../BookingsRecapTable'
 import Table from '../Table/Table'
 import React from 'react'
 import { mount, shallow } from 'enzyme'
-import IsDuoCell from '../CellsFormatter/IsDuoCell'
+import BookingIsDuoCell from '../CellsFormatter/BookingIsDuoCell'
 import BeneficiaryCell from '../CellsFormatter/BeneficiaryCell'
-import BookingDateCell from '../CellsFormatter/BookingsDateCell'
-import BookingTokenCell from '../CellsFormatter/BookingsTokenCell'
-import BookingStatusCell from '../CellsFormatter/BookingsStatusCell'
+import BookingDateCell from '../CellsFormatter/BookingDateCell'
+import BookingTokenCell from '../CellsFormatter/BookingTokenCell'
+import BookingStatusCell from '../CellsFormatter/BookingStatusCell'
 import BookingOfferCell from '../CellsFormatter/BookingOfferCell'
 import Header from '../Header/Header'
 
@@ -116,7 +116,7 @@ describe('components | BookingsRecapTable', () => {
     const bookingOfferCell = wrapper.find(BookingOfferCell)
     expect(bookingOfferCell).toHaveLength(1)
     expect(bookingOfferCell.props()).toStrictEqual({ offer: { offer_name: 'Avez-vous déjà vu' } })
-    const duoCell = wrapper.find(IsDuoCell)
+    const duoCell = wrapper.find(BookingIsDuoCell)
     expect(duoCell.find('Icon').props()).toMatchObject({
       alt: 'Réservation DUO',
       svg: 'ico-duo',

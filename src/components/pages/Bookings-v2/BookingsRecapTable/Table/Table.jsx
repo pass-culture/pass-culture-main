@@ -34,7 +34,7 @@ const Table = ({ columns, data, nbHitsPerPage }) => {
   )
 
   return (
-    <div>
+    <div className="bookings-table-wrapper">
       <table
         className="bookings-table"
         {...getTableProps()}

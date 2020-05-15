@@ -2,9 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Icon from '../../../../layout/Icon'
 
-function IsDuoCell({ isDuo }) {
+const BookingIsDuoCell = ({ isDuo }) => {
   return (
-    <span className="bookings-duo">
+    <span className="bookings-duo-icon">
       {isDuo && <Icon
         alt="Réservation DUO"
         svg="ico-duo"
@@ -13,8 +13,8 @@ function IsDuoCell({ isDuo }) {
   )
 }
 
-IsDuoCell.propTypes = {
+BookingIsDuoCell.propTypes = {
   isDuo: PropTypes.bool.isRequired,
 }
 
-export default IsDuoCell
+export default BookingIsDuoCell
