@@ -40,32 +40,6 @@ describe('components | VersoContentOffer', () => {
     }
   })
 
-  it('should match the snapshot', () => {
-    // given
-    offer.isThing = false
-    offer.isEvent = true
-
-    const props = {
-      bookables: [],
-      distance: '1',
-      handleRequestMusicAndShowTypes: jest.fn(),
-      isBookable: true,
-      maxShownDates: 7,
-      offer,
-      style: 'Rap / Contenders',
-      userGeolocation: {
-        latitude: null,
-        longitude: null,
-      },
-    }
-
-    // when
-    const wrapper = shallow(<VersoContentOffer {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   it('should render offer "what" when description is given', () => {
     // given
     const props = {

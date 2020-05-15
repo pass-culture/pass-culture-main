@@ -205,6 +205,25 @@ class VersoContentOffer extends PureComponent {
     )
   }
 
+  renderOfferWithdraw() {
+    const {
+      offer: { withdrawalDetails },
+    } = this.props
+
+    return withdrawalDetails ? (
+      <Fragment>
+        <h3>
+          {'Modalités de retrait'}
+        </h3>
+        <div>
+          {withdrawalDetails}
+        </div>
+      </Fragment>
+    ) : (
+      false
+    )
+  }
+
   render() {
     const { isCancelled, offer } = this.props
 
@@ -215,6 +234,7 @@ class VersoContentOffer extends PureComponent {
         {this.renderOfferDetails()}
         {this.renderOfferWhen()}
         {this.renderOfferWhere()}
+        {this.renderOfferWithdraw()}
       </div>
     )
   }
@@ -251,6 +271,7 @@ VersoContentOffer.propTypes = {
       stageDirector: PropTypes.string,
     }),
     offerType: PropTypes.shape({ appLabel: PropTypes.string }),
+    withdrawalDetails: PropTypes.string,
   }),
   style: PropTypes.string,
   userGeolocation: PropTypes.shape().isRequired,
