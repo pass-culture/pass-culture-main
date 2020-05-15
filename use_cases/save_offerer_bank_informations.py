@@ -1,33 +1,22 @@
-from models import BankInformation, Venue, Offerer
+from models import BankInformation
 from models.bank_information import BankInformationStatus
-from repository import bank_information_queries, offerer_queries, repository, venue_queries
-from domain.bank_information import check_offerer_presence, check_venue_presence, check_venue_queried_by_name, \
-    CannotRegisterBankInformation, check_new_bank_information_older_than_saved_one, check_new_bank_information_has_a_more_advanced_status
+from repository import bank_information_queries, offerer_queries, repository
+from domain.bank_information import check_offerer_presence, \
+     check_new_bank_information_older_than_saved_one, check_new_bank_information_has_a_more_advanced_status
 from domain.demarches_simplifiees import get_offerer_bank_information_application_details_by_application_id, \
-    get_venue_bank_information_application_details_by_application_id, ApplicationDetail
+     ApplicationDetail
 
 
-def save_offerer_bank_informations(application_id: str):
-    application_details = get_offerer_bank_information_application_details_by_application_id(
-        application_id)
+class SaveOffererBankInformations:
+    def execute(self, application_id: str):
+        application_details = get_offerer_bank_information_application_details_by_application_id(
+            application_id)
 
-    offerer = offerer_queries.find_by_siren(application_details.siren)
+        offerer = offerer_queries.find_by_siren(application_details.siren)
 
-    check_offerer_presence(offerer)
+        check_offerer_presence(offerer)
 
-    save_bank_information(application_details, offerer.id, None)
-
-
-def save_venue_bank_informations(application_id: str):
-    application_details = get_venue_bank_information_application_details_by_application_id(
-        application_id)
-
-    siren = application_details.siren
-    offerer = offerer_queries.find_by_siren(siren)
-    check_offerer_presence(offerer)
-    venue = _get_referent_venue(application_details, offerer)
-
-    save_bank_information(application_details, None,  venue.id)
+        save_bank_information(application_details, offerer.id, None)
 
 
 def save_bank_information(application_details: ApplicationDetail, offerer_id: str, venue_id: str):
@@ -55,22 +44,6 @@ def _get_application_bank_information(application_details: ApplicationDetail) ->
     application_bank_information = bank_information_queries.get_by_application_id(
         application_details.application_id)
     return application_bank_information
-
-
-def _get_referent_venue(application_details: ApplicationDetail, offerer: Offerer) -> Venue:
-    siret = application_details.siret
-
-    if siret:
-        venue = venue_queries.find_by_managing_offerer_id_and_siret(
-            offerer.id, siret)
-        check_venue_presence(venue)
-    else:
-        name = application_details.venue_name
-        venues = venue_queries.find_venue_without_siret_by_managing_offerer_id_and_name(
-            offerer.id, name)
-        check_venue_queried_by_name(venues)
-        venue = venues[0]
-    return venue
 
 
 def _fill_bank_information(application_details: ApplicationDetail, bank_information: BankInformation, offerer_id: str, venue_id: str) -> BankInformation:

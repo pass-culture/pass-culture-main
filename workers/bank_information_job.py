@@ -3,13 +3,14 @@ from rq.decorators import job
 
 from workers import worker
 from workers.decorators import job_context
-from use_cases.save_bank_informations import save_offerer_bank_informations, save_venue_bank_informations
+from use_cases.save_venue_bank_informations import SaveVenueBankInformations
+from use_cases.save_offerer_bank_informations import SaveOffererBankInformations
 
 
 @job(worker.redis_queue, connection=worker.conn)
 @job_context
 def bank_information_job(application_id: str, refferer_type: str):
     if refferer_type == 'offerer':
-        save_offerer_bank_informations(application_id)
+        SaveOffererBankInformations.execute(application_id)
     elif refferer_type == 'venue':
-        save_venue_bank_informations(application_id)
+        SaveVenueBankInformations.execute(application_id)
