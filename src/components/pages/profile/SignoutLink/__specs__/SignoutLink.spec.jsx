@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 import Icon from '../../../../layout/Icon/Icon'
 import SignoutLink from '../SignoutLink'
 
-describe('signout button', () => {
+describe('signout link', () => {
   let props
 
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe('signout button', () => {
     }
   })
 
-  it('should display one button and 2 Icons', () => {
+  it('should display one Link and one Icon', () => {
     // given
     const wrapper = shallow(<SignoutLink {...props} />)
 
@@ -29,7 +29,7 @@ describe('signout button', () => {
 
     // then
     expect(link).toHaveLength(1)
-    expect(icon).toHaveLength(2)
+    expect(icon).toHaveLength(1)
     expect(signoutLabel).toHaveLength(1)
   })
 

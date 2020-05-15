@@ -15,7 +15,6 @@ const SignoutLink = ({ historyPush, onSignOutClick, readRecommendations }) => (
     <div className="list-link-label">
       {'Déconnexion'}
     </div>
-    <Icon svg="ico-next-lightgrey" />
   </Link>
 )
 
