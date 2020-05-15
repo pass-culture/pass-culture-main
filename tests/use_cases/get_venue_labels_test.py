@@ -1,20 +1,29 @@
-from unittest.mock import Mock
+from unittest.mock import MagicMock
 
+from domain.venue.venue_label.venue_label import VenueLabel
+from infrastructure.repository.venue.venue_label.venue_label_sql_repository import VenueLabelSQLRepository
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_venue_label
-from use_cases.get_venue_labels import get_venue_labels
+from use_cases.get_venue_labels import GetVenueLabels
 
 
 class GetVenueLabelsTest:
+    def setup_method(self):
+        self.venue_label_repository = VenueLabelSQLRepository()
+        self.venue_label_repository.get_all = MagicMock()
+        self.get_venue_labels = GetVenueLabels(venue_label_repository=self.venue_label_repository)
+
     @clean_database
     def test_should_return_the_list(self, app):
         # Given
-        venue_labels = [create_venue_label(label='Maison des illustres')]
-        get_all_venue_labels = Mock(return_value=venue_labels)
+        venue_labels = [
+            VenueLabel(identifier=12, label='Maison des illustres'),
+            VenueLabel(identifier=15, label='Monuments historiques'),
+        ]
+        self.venue_label_repository.get_all.return_value = venue_labels
 
         # When
-        result = get_venue_labels(get_all_venue_labels)
+        result = self.get_venue_labels.execute()
 
         # Then
-        get_all_venue_labels.assert_called_once()
+        self.venue_label_repository.get_all.assert_called_once()
         assert result == venue_labels

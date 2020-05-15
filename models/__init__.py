@@ -39,7 +39,7 @@ from models.user_sql_entity import UserSQLEntity
 from models.user_offerer import RightsType, UserOfferer
 from models.user_session import UserSession
 from models.venue import Venue
-from models.venue_label import VenueLabel
+from models.venue_label_sql_entity import VenueLabelSQLEntity
 from models.venue_provider import VenueProvider
 from models.venue_type import VenueType
 from models.versioned_mixin import VersionedMixin
@@ -97,7 +97,7 @@ __all__ = (
     'UserSession',
     'Venue',
     'VenueType',
-    'VenueLabel',
+    'VenueLabelSQLEntity',
     'SeenOffer'
 )
 
@@ -108,7 +108,7 @@ models = (
     Provider,
     Offerer,
     UserOfferer,
-    VenueLabel,
+    VenueLabelSQLEntity,
     VenueType,
     Venue,
     ApiKey,

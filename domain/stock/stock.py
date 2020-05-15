@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import Optional, List
 
-from models.offer import Offer
 from models.booking_sql_entity import BookingSQLEntity
+from models.offer import Offer
 
 
 class Stock(object):
@@ -21,7 +21,6 @@ class Stock(object):
         self.offer = offer
         self.price = price
         self.bookingLimitDatetime = booking_limit_datetime
-        # TODO: à retirer du domain
         self.is_soft_deleted = is_soft_deleted
         self.bookings = bookings
 

@@ -1,3 +1,4 @@
+from domain.venue.venue_label.venue_label import VenueLabel
 from repository import repository
 from tests.conftest import TestClient, clean_database
 from tests.model_creators.generic_creators import create_user, \

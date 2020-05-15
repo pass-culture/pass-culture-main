@@ -4,7 +4,7 @@ from models import Venue
 from repository import repository
 from tests.conftest import TestClient, clean_database
 from tests.model_creators.generic_creators import create_offerer, create_user, \
-    create_user_offerer, create_venue, create_venue_type
+    create_user_offerer, create_venue, create_venue_type, create_venue_label
 from utils.human_ids import dehumanize, humanize
 
 
@@ -157,14 +157,18 @@ class Patch:
             offerer = create_offerer()
             user = create_user()
             venue_type = create_venue_type(label='Musée')
+            venue_label = create_venue_label(label="CAC - Centre d'art contemporain d'intérêt national")
             venue = create_venue(offerer)
             user_offerer = create_user_offerer(user, offerer)
-            repository.save(user_offerer, venue, venue_type)
+            repository.save(user_offerer, venue, venue_type, venue_label)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
             venue_id = venue.id
 
             # when
-            response = auth_request.patch('/venues/%s' % humanize(venue.id), json={'name': 'Ma librairie', 'venueTypeId': humanize(venue_type.id)})
+            response = auth_request.patch('/venues/%s' % humanize(venue.id),
+                                          json={'name': 'Ma librairie',
+                                                'venueTypeId': humanize(venue_type.id),
+                                                'venueLabelId': humanize(venue_label.id), })
 
             # then
             assert response.status_code == 200

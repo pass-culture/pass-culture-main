@@ -18,7 +18,7 @@ from models.allocine_venue_provider import AllocineVenueProvider
 from models.bank_information import BankInformationStatus
 from models.email import EmailStatus
 from models.payment_status import TransactionStatus
-from models.venue_label import VenueLabel
+from models.venue_label_sql_entity import VenueLabelSQLEntity
 from models.venue_type import VenueType
 from scripts.iris.import_iris import WGS_SPATIAL_REFERENCE_IDENTIFIER, \
     create_centroid_from_polygon
@@ -577,8 +577,8 @@ def create_venue_type(label: str, idx: Optional[int] = None) -> VenueType:
     return venue_type
 
 
-def create_venue_label(label: str, idx: Optional[int] = None) -> VenueLabel:
-    venue_label = VenueLabel()
+def create_venue_label(label: str, idx: Optional[int] = None) -> VenueLabelSQLEntity:
+    venue_label = VenueLabelSQLEntity()
     venue_label.id = idx
     venue_label.label = label
     return venue_label

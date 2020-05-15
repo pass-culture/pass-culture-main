@@ -33,7 +33,7 @@ from models.allocine_venue_provider import AllocineVenueProvider
 from models.db import db
 from models.email import Email
 from models.install import install_features, install_materialized_views
-from models.venue_label import VenueLabel
+from models.venue_label_sql_entity import VenueLabelSQLEntity
 
 
 def clean_all_database(*args, **kwargs):
@@ -74,7 +74,7 @@ def clean_all_database(*args, **kwargs):
     Provider.query.delete()
     AllocinePivot.query.delete()
     VenueType.query.delete()
-    VenueLabel.query.delete()
+    VenueLabelSQLEntity.query.delete()
     db.session.commit()
     install_materialized_views()
     install_features()

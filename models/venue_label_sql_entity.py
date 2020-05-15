@@ -5,7 +5,9 @@ from models import PcObject
 from models.db import Model
 
 
-class VenueLabel(PcObject, Model):
+class VenueLabelSQLEntity(PcObject, Model):
+    __tablename__ = 'venue_label'
+
     label = Column(String(100), nullable=False)
 
     venue = relationship('Venue')

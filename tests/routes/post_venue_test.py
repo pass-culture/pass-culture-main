@@ -4,7 +4,7 @@ from models import Venue
 from repository import repository
 from tests.conftest import TestClient, clean_database
 from tests.model_creators.generic_creators import create_offerer, create_user, \
-    create_user_offerer, create_venue, create_venue_type
+    create_user_offerer, create_venue, create_venue_type, create_venue_label
 from utils.human_ids import dehumanize, humanize
 
 
@@ -17,7 +17,8 @@ class Post:
             user = create_user()
             user_offerer = create_user_offerer(user, offerer)
             venue_type = create_venue_type(label='Musée')
-            repository.save(user_offerer, venue_type)
+            venue_label = create_venue_label(label="CAC - Centre d'art contemporain d'intérêt national")
+            repository.save(user_offerer, venue_type, venue_label)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
             venue_data = {
                 'name': 'Ma venue',
@@ -31,6 +32,7 @@ class Post:
                 'longitude': 2.35284,
                 'publicName': 'Ma venue publique',
                 'venueTypeId': humanize(venue_type.id),
+                'venueLabelId': humanize(venue_label.id),
             }
 
             # when
@@ -46,6 +48,7 @@ class Post:
             assert venue.siret == '30255917810045'
             assert venue.isValidated
             assert venue.venueTypeId == venue_type.id
+            assert venue.venueLabelId == venue_label.id
 
     class Returns400:
         @clean_database
