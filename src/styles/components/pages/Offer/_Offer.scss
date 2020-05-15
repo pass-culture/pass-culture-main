@@ -123,4 +123,8 @@
   .field-body textarea {
     padding-top: rem(8px);
   }
+
+  .large-labels label {
+    min-width: rem(200px);
+  }
 }
