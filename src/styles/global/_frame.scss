@@ -12,12 +12,13 @@ body {
   overscroll-behavior: contain;
 }
 
-html {
-  background-color: $black;
+@media screen and (min-width: 500px) {
+  html {
+    background-color: $black;
+  }
 }
 
 body {
-  background-color: $white;
   color: $black;
   font-family: $family-sans-serif;
   font-size: rem(16px);
