@@ -22,6 +22,11 @@ ShallowWrapper {
     }
     isCancelled={false}
     isEvent={false}
+    location={
+      Object {
+        "search": "",
+      }
+    }
     match={
       Object {
         "params": Object {

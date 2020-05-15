@@ -4,21 +4,11 @@ exports[`src | components | layout | Booking | BookingSuccess should match the s
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookingSuccess
-    bookedPayload={
-      Object {
-        "quantity": 2,
-        "recommendation": Object {
-          "offer": Object {
-            "url": "http://fake-url.com",
-          },
-        },
-        "stock": Object {
-          "price": 12.5,
-        },
-        "token": "G8G8G8",
-      }
-    }
     isEvent={true}
+    offerUrl="http://fake-url.com"
+    price={12.5}
+    quantity={2}
+    token="G8G8G8"
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -950,21 +940,11 @@ exports[`src | components | layout | Booking | BookingSuccess should match the s
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookingSuccess
-    bookedPayload={
-      Object {
-        "quantity": 1,
-        "recommendation": Object {
-          "offer": Object {
-            "url": "http://fake-url.com",
-          },
-        },
-        "stock": Object {
-          "price": 12.5,
-        },
-        "token": "G8G8G8",
-      }
-    }
     isEvent={false}
+    offerUrl="http://fake-url.com"
+    price={12.5}
+    quantity={1}
+    token="G8G8G8"
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -2014,21 +1994,11 @@ exports[`src | components | layout | Booking | BookingSuccess should match the s
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <BookingSuccess
-    bookedPayload={
-      Object {
-        "quantity": 1,
-        "recommendation": Object {
-          "offer": Object {
-            "url": "http://fake-url.com",
-          },
-        },
-        "stock": Object {
-          "price": 12.5,
-        },
-        "token": "G8G8G8",
-      }
-    }
     isEvent={true}
+    offerUrl="http://fake-url.com"
+    price={12.5}
+    quantity={1}
+    token="G8G8G8"
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],

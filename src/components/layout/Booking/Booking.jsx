@@ -3,14 +3,14 @@ import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Transition } from 'react-transition-group'
 
-import BookingForm from './BookingForm/BookingForm'
-import BookingError from './BookingError/BookingError'
-import BookingLoader from './BookingLoader/BookingLoader'
-import BookingHeader from './BookingHeader/BookingHeader'
-import BookingSuccess from './BookingSuccess/BookingSuccess'
-import externalSubmitForm from '../../forms/utils/externalSubmitForm'
 import { priceIsDefined } from '../../../utils/getDisplayPrice'
 import getIsBooking from '../../../utils/getIsBooking'
+import externalSubmitForm from '../../forms/utils/externalSubmitForm'
+import BookingError from './BookingError/BookingError'
+import BookingForm from './BookingForm/BookingForm'
+import BookingHeader from './BookingHeader/BookingHeader'
+import BookingLoader from './BookingLoader/BookingLoader'
+import BookingSuccess from './BookingSuccess/BookingSuccess'
 import handleRedirect from './utils/handleRedirect'
 
 class Booking extends PureComponent {
@@ -147,7 +147,7 @@ class Booking extends PureComponent {
 
     const { canSubmitForm, errors, bookedPayload, isErrored, isSubmitting, mounted } = this.state
     const { id: recommendationId } = recommendation || {}
-    const { isEvent, id: offerId } = offer || {}
+    const { isEvent, id: offerId, url: offerUrl } = offer
     const defaultBookable = bookables && bookables[0]
     const showForm = defaultBookable && !bookedPayload && !isErrored && !isSubmitting
 
@@ -189,6 +189,10 @@ class Booking extends PureComponent {
                     <BookingSuccess
                       bookedPayload={bookedPayload}
                       isEvent={isEvent}
+                      offerUrl={offerUrl}
+                      price={bookedPayload.stock.price}
+                      quantity={bookedPayload.quantity}
+                      token={bookedPayload.token}
                     />
                   )}
 
@@ -223,7 +227,6 @@ class Booking extends PureComponent {
 Booking.defaultProps = {
   bookables: null,
   extraClassName: '',
-  offer: null,
   recommendation: null,
 }
 
@@ -244,7 +247,8 @@ Booking.propTypes = {
   offer: PropTypes.shape({
     isEvent: PropTypes.bool,
     id: PropTypes.string,
-  }),
+    url: PropTypes.string,
+  }).isRequired,
   recommendation: PropTypes.shape({
     id: PropTypes.string,
   }),

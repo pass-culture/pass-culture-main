@@ -29,6 +29,9 @@ describe('src | components | layout | Booking | Booking', () => {
       },
       isCancelled: false,
       isEvent: false,
+      location: {
+        search: '',
+      },
       match: {
         params: {
           booking: 'reservations',

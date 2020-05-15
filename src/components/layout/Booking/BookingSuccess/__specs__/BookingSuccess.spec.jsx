@@ -8,19 +8,11 @@ describe('src | components | layout | Booking | BookingSuccess', () => {
 
   beforeEach(() => {
     props = {
-      bookedPayload: {
-        recommendation: {
-          offer: {
-            url: 'http://fake-url.com',
-          },
-        },
-        quantity: 1,
-        token: 'G8G8G8',
-        stock: {
-          price: 12.5,
-        },
-      },
       isEvent: true,
+      offerUrl: 'http://fake-url.com',
+      price: 12.5,
+      quantity: 1,
+      token: 'G8G8G8',
     }
   })
 
@@ -34,7 +26,7 @@ describe('src | components | layout | Booking | BookingSuccess', () => {
 
   it('should match the snapshot when booking a duo event', () => {
     // given
-    props.bookedPayload.quantity = 2
+    props.quantity = 2
 
     // when
     const wrapper = shallow(<BookingSuccess {...props} />)
@@ -45,7 +37,7 @@ describe('src | components | layout | Booking | BookingSuccess', () => {
 
   it('should match the snapshot when booking a thing event', () => {
     // givn
-    props.bookedPayload.quantity = 1
+    props.quantity = 1
     props.isEvent = false
 
     // when
