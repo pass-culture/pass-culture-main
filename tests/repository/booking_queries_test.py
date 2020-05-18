@@ -1689,11 +1689,11 @@ class FindByProUserIdTest:
         repository.save(user_offerer, booking)
 
         # When
-        bookings_recap = find_by_pro_user_id(user.id)
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
 
         # Then
-        assert len(bookings_recap) == 1
-        expected_booking_recap = bookings_recap[0]
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.offer_name == 'Harry Potter'
         assert expected_booking_recap.beneficiary_firstname == 'Ron'
         assert expected_booking_recap.beneficiary_lastname == 'Weasley'
@@ -1719,11 +1719,11 @@ class FindByProUserIdTest:
         repository.save(user_offerer, booking)
 
         # When
-        bookings_recap = find_by_pro_user_id(user.id)
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
 
         # Then
-        assert len(bookings_recap) == 1
-        expected_booking_recap = bookings_recap[0]
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.booking_is_duo is True
 
     @clean_database
@@ -1742,11 +1742,11 @@ class FindByProUserIdTest:
         repository.save(user_offerer, payment)
 
         # When
-        bookings_recap = find_by_pro_user_id(user.id)
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
 
         # Then
-        assert len(bookings_recap) == 1
-        expected_booking_recap = bookings_recap[0]
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert not isinstance(expected_booking_recap, EventBookingRecap)
         assert expected_booking_recap.offer_name == 'Harry Potter'
         assert expected_booking_recap.beneficiary_firstname == 'Ron'
@@ -1773,11 +1773,11 @@ class FindByProUserIdTest:
         repository.save(user_offerer, booking)
 
         # When
-        bookings_recap = find_by_pro_user_id(user.id)
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
 
         # Then
-        assert len(bookings_recap) == 1
-        expected_booking_recap = bookings_recap[0]
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert isinstance(expected_booking_recap, EventBookingRecap)
         assert expected_booking_recap.offer_name == stock.offer.name
         assert expected_booking_recap.beneficiary_firstname == 'Ron'
@@ -1812,10 +1812,34 @@ class FindByProUserIdTest:
         repository.save(user_offerer, user_offerer2, booking, booking2)
 
         # When
-        bookings_recap = find_by_pro_user_id(user.id)
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
 
         # Then
-        assert len(bookings_recap) == 2
+        assert len(bookings_recap_paginated.bookings_recap) == 2
+
+    @clean_database
+    def test_should_return_bookings_from_first_page(self, app):
+        # Given
+        beneficiary = create_user(email='beneficiary@example.com')
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0)
+
+        booking = create_booking(idx=1, user=beneficiary, stock=stock, token="ABCD")
+        booking2 = create_booking(idx=2, user=beneficiary, stock=stock, token="FGHI")
+        repository.save(user_offerer, booking, booking2)
+
+        # When
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id, page=1, per_page_limit=1)
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        assert bookings_recap_paginated.bookings_recap[0].booking_token == booking2.token
+        assert bookings_recap_paginated.page == 1
+        assert bookings_recap_paginated.pages == 2
+        assert bookings_recap_paginated.total == 2
 
     @clean_database
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app):
@@ -1831,10 +1855,11 @@ class FindByProUserIdTest:
         repository.save(user_offerer, booking)
 
         # When
-        bookings = find_by_pro_user_id(user.id)
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
 
         # Then
-        assert bookings == []
+        assert bookings_recap_paginated.bookings_recap == []
+
 
 
 

@@ -5,7 +5,7 @@ from domain.users import check_is_authorized_to_access_bookings_recap
 from repository import user_queries, booking_queries
 
 
-def get_all_bookings_by_pro_user(user_id: int) -> List[BookingRecap]:
+def get_all_bookings_by_pro_user(user_id: int, page: int = 0, per_page_limit=20) -> List[BookingRecap]:
     user = user_queries.find_user_by_id(user_id)
     check_is_authorized_to_access_bookings_recap(user)
 

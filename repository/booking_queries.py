@@ -1,11 +1,12 @@
 from collections import namedtuple
 from datetime import datetime
-from typing import List, Set, Union, Optional
+from typing import List, Set, Union
 
 from sqlalchemy import func, desc
 from sqlalchemy.orm import Query
 
 from domain.booking_recap.booking_recap import BookingRecap, EventBookingRecap, ThingBookingRecap
+from domain.booking_recap.bookings_recap import BookingsRecapPaginated
 from models import UserOfferer
 from models.api_errors import ResourceNotFoundError
 from models.booking_sql_entity import BookingSQLEntity
@@ -177,8 +178,8 @@ def find_by_id(booking_id: int) -> BookingSQLEntity:
         .first_or_404()
 
 
-def find_by_pro_user_id(user_id: int) -> List[BookingRecap]:
-    bookings = BookingSQLEntity.query \
+def find_by_pro_user_id(user_id: int, page: int = 0, per_page_limit=20) -> BookingsRecapPaginated:
+    paginated_bookings = BookingSQLEntity.query \
         .outerjoin(Payment) \
         .reset_joinpoint() \
         .join(UserSQLEntity) \
@@ -203,17 +204,19 @@ def find_by_pro_user_id(user_id: int) -> List[BookingRecap]:
             UserSQLEntity.email.label("beneficiaryEmail"),
             StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
             Venue.departementCode.label('venueDepartementCode'),
-    ).all()
+        ) \
+        .paginate(page=page, per_page=per_page_limit, error_out=False)
 
-    return _bookings_sql_entities_to_bookings_recap(bookings)
-
-
-def _bookings_sql_entities_to_bookings_recap(bookings: List[object]) -> List[BookingRecap]:
-    return [_serialize_booking_recap(booking) for booking in bookings]
+    return _paginated_bookings_sql_entities_to_bookings_recap(paginated_bookings)
 
 
-def _bookings_sql_entities_to_bookings_recap(bookings: List[BookingSQLEntity]) -> List[BookingRecap]:
-    return [_serialize_booking_recap(booking) for booking in bookings]
+def _paginated_bookings_sql_entities_to_bookings_recap(paginated_bookings) -> BookingsRecapPaginated:
+    return BookingsRecapPaginated(
+        bookings_recap=[_serialize_booking_recap(booking) for booking in paginated_bookings.items],
+        page=paginated_bookings.page,
+        pages=paginated_bookings.pages,
+        total=paginated_bookings.total,
+    )
 
 
 def _serialize_booking_recap(booking: object) -> BookingRecap:

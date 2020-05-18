@@ -126,3 +126,13 @@ def check_booking_is_not_used(booking: BookingSQLEntity) -> None:
             "Impossible d'annuler une réservation consommée"
         )
         raise api_errors
+
+
+def check_page_format_is_number(page_number: object):
+    if not isinstance(page_number, int) and not page_number.isdecimal():
+        api_errors = ApiErrors()
+        api_errors.add_error(
+            'global',
+            f"L'argument 'page' {page_number} n'est pas valide"
+        )
+        raise api_errors

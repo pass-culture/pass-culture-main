@@ -11,7 +11,25 @@ from tests.model_creators.specific_creators import create_offer_with_thing_produ
 class GetAllBookingsTest:
     @patch('routes.bookings.get_all_bookings_by_pro_user')
     @clean_database
-    def test_should_call_the_usecase_method_get_all_bookings_by_pro_user(self,
+    def test_should_call_the_usecase_with_user_id_and_page(self,
+                                                                         get_all_bookings_by_pro_user,
+                                                                         app):
+        # Given
+        user = create_user(is_admin=True, can_book_free_offers=False)
+        repository.save(user)
+        page_number = 3
+
+        # When
+        TestClient(app.test_client()) \
+            .with_auth(user.email) \
+            .get(f'/bookings/pro?page={page_number}')
+
+        # Then
+        get_all_bookings_by_pro_user.assert_called_once_with(user.id, page_number)
+
+    @patch('routes.bookings.get_all_bookings_by_pro_user')
+    @clean_database
+    def test_should_call_the_usecase_with_0_when_no_page_provided(self,
                                                                          get_all_bookings_by_pro_user,
                                                                          app):
         # Given
@@ -21,10 +39,10 @@ class GetAllBookingsTest:
         # When
         TestClient(app.test_client()) \
             .with_auth(user.email) \
-            .get('/bookings/pro')
+            .get(f'/bookings/pro')
 
         # Then
-        get_all_bookings_by_pro_user.assert_called_once_with(user.id)
+        get_all_bookings_by_pro_user.assert_called_once_with(user.id, 0)
 
 
 class GetTest:
@@ -69,6 +87,25 @@ class GetTest:
             assert response.status_code == 200
             assert response.json == expected_bookings_recap
 
+    class Returns400Test:
+        @clean_database
+        def when_page_number_is_not_a_number(self, app):
+            # Given
+            user = create_user(is_admin=True, can_book_free_offers=False)
+            repository.save(user)
+            page_number = 'not a number'
+
+            # When
+            response = TestClient(app.test_client()) \
+                .with_auth(user.email) \
+                .get(f'/bookings/pro?page={page_number}')
+
+            # Then
+            assert response.status_code == 400
+            assert response.json == {
+                'global': [f"L'argument 'page' {page_number} n'est pas valide"]
+            }
+
     class Returns401Test:
         @clean_database
         def when_user_is_admin(self, app):
@@ -86,3 +123,4 @@ class GetTest:
             assert response.json == {
                 'global': ["Le statut d'administrateur ne permet pas d'accéder au suivi des réservations"]
             }
+

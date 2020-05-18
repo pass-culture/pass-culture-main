@@ -39,7 +39,7 @@ from validation.routes.bookings import check_booking_is_cancellable_by_user, \
     check_email_and_offer_id_for_anonymous_user, \
     check_has_stock_id, \
     check_is_not_activation_booking, \
-    check_rights_to_get_bookings_csv
+    check_rights_to_get_bookings_csv, check_page_format_is_number
 from validation.routes.users_authentifications import check_user_is_logged_in_or_email_is_provided, \
     login_or_api_key_required_v2
 from validation.routes.users_authorizations import \
@@ -107,7 +107,10 @@ def get_bookings_csv():
 @app.route('/bookings/pro', methods=['GET'])
 @login_required
 def get_all_bookings():
-    bookings_recap = get_all_bookings_by_pro_user(current_user.id)
+    page_query_param = request.args.get('page')
+    page = page_query_param if page_query_param is not None else 0
+    check_page_format_is_number(page)
+    bookings_recap = get_all_bookings_by_pro_user(current_user.id, int(page))
     return serialize_bookings_recap(bookings_recap), 200
 
 
