@@ -35,6 +35,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         isModifiedEntity: true,
         readOnly: true,
         venueTypes: [],
+        venueLabels: [],
       }
 
       // when
@@ -98,6 +99,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           isModifiedEntity: true,
           readOnly: true,
           venueTypes: [],
+          venueLabels: [],
         }
 
         // when
@@ -407,7 +409,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         })
 
         describe('when venue type is defined', () => {
-          it('should be disabled', () => {
+          it('should display the label', () => {
             // Given
             props.readOnly = true
             props.venueTypeId = 'A1'
@@ -417,8 +419,10 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
             const wrapper = shallow(<IdentifierFields {...props} />)
 
             // Then
-            const selectField = wrapper.find(Field).findWhere(n => n.prop('id') === 'venue-type')
-            expect(selectField.prop('disabled')).toBe(true)
+            const venueTypeLabel = wrapper
+              .findWhere(n => n.prop('id') === 'venue-type')
+              .find('span')
+            expect(venueTypeLabel.text()).toBe("Centre d'art et d'essais")
           })
         })
       })
@@ -507,8 +511,12 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
             const wrapper = shallow(<IdentifierFields {...props} />)
 
             // Then
-            const selectField = wrapper.find(Field).findWhere(n => n.prop('id') === 'venue-label')
-            expect(selectField.prop('disabled')).toBe(true)
+            const venueLabelLabel = wrapper
+              .findWhere(n => n.prop('id') === 'venue-label')
+              .find('span')
+            expect(venueLabelLabel.text()).toBe(
+              "CAC - Centre d'art contemporain d'intérêt national"
+            )
           })
         })
       })

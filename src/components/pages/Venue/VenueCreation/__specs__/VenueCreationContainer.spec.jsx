@@ -210,6 +210,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
             comment: 'Commentaire',
             address: '3 Place Saint-Michel',
             venueTypeId: null,
+            venueLabelId: null,
           },
           handleFail: handleFail,
           handleSuccess: handleSuccess,

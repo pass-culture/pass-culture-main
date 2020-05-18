@@ -13,6 +13,7 @@ import { Field } from 'react-final-form'
 import VenueType from '../../ValueObjects/VenueType'
 import classnames from 'classnames'
 import VenueLabel from '../../ValueObjects/VenueLabel'
+import getLabelFromList from './utils/getLabelFromList'
 
 class IdentifierFields extends PureComponent {
   componentDidUpdate() {
@@ -94,6 +95,9 @@ class IdentifierFields extends PureComponent {
       ? 'SIRET du lieu qui accueille vos offres (si applicable) : '
       : 'SIRET : '
 
+    const venueTypeLabel = getLabelFromList(venueTypes, venueTypeId)
+    const venueLabelLabel = getLabelFromList(venueLabels, venueLabelId)
+
     return (
       <div className="section identifier-field-section">
         <h2 className="main-list-title is-relative">
@@ -157,8 +161,8 @@ class IdentifierFields extends PureComponent {
             </div>
 
             <div className="field-control">
-              <div className="control control-select">
-                {!(readOnly && venueTypeId == null) && (
+              {!readOnly ? (
+                <div className="control control-select">
                   <div
                     className={classnames('select', {
                       readonly: readOnly,
@@ -183,8 +187,17 @@ class IdentifierFields extends PureComponent {
                       ))}
                     </Field>
                   </div>
-                )}
-              </div>
+                </div>
+              ) : (
+                <div
+                  className="venue-type-label"
+                  id="venue-type"
+                >
+                  <span>
+                    {venueTypeLabel}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
           <div
@@ -199,8 +212,8 @@ class IdentifierFields extends PureComponent {
             </div>
 
             <div className="field-control">
-              <div className="control control-select">
-                {!(readOnly && venueLabelId == null) && (
+              {!readOnly ? (
+                <div className="control control-select">
                   <div
                     className={classnames('select', {
                       readonly: readOnly,
@@ -225,8 +238,17 @@ class IdentifierFields extends PureComponent {
                       ))}
                     </Field>
                   </div>
-                )}
-              </div>
+                </div>
+              ) : (
+                <div
+                  className="venue-label-label"
+                  id="venue-label"
+                >
+                  <span>
+                    {venueLabelLabel}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>

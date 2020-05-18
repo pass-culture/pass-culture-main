@@ -31,10 +31,7 @@ describe('formatPatch', () => {
       }
 
       // when
-      const result = formatVenuePayload(
-        patch,
-        true
-      )
+      const result = formatVenuePayload(patch, true)
       const expected = {
         address: 'RUE DIDEROT',
         bic: 'QSDFGH8Z564',
@@ -48,7 +45,8 @@ describe('formatPatch', () => {
         publicName: 'Cinéma de la fin des fins',
         postalCode: '93600',
         siret: '22222222911111',
-        venueTypeId: null
+        venueTypeId: null,
+        venueLabelId: null,
       }
       // then
       expect(result).toStrictEqual(expected)
@@ -81,14 +79,11 @@ describe('formatPatch', () => {
         postalCode: '93600',
         siret: '22222222911111',
         thumbCount: 0,
-        venueProvidersIds: []
+        venueProvidersIds: [],
       }
 
       // when
-      const result = formatVenuePayload(
-        patch,
-        false
-      )
+      const result = formatVenuePayload(patch, false)
 
       // then
       expect(result).toStrictEqual({
@@ -103,24 +98,24 @@ describe('formatPatch', () => {
         postalCode: '93600',
         siret: '22222222911111',
         venueTypeId: null,
+        venueLabelId: null,
       })
     })
 
-    it('should preserve venueTypeId when empty', () => {
+    it('should preserve venueTypeId and venueLabelId when empty', () => {
       // given
       const patch = {
-        venueTypeId: ''
+        venueTypeId: '',
+        venueLabelId: '',
       }
 
       // when
-      const result = formatVenuePayload(
-        patch,
-         false
-      )
+      const result = formatVenuePayload(patch, false)
 
       // then
       expect(result).toStrictEqual({
         venueTypeId: null,
+        venueLabelId: null,
       })
     })
   })

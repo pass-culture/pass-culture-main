@@ -14,6 +14,7 @@ export const formatVenuePayload = (payload, isCreatedEntity) => {
     'postalCode',
     'siret',
     'venueTypeId',
+    'venueLabelId',
   ]
 
   const edition_authorized_input_field = [
@@ -28,6 +29,7 @@ export const formatVenuePayload = (payload, isCreatedEntity) => {
     'postalCode',
     'siret',
     'venueTypeId',
+    'venueLabelId',
   ]
 
   const requestPayload = {}
@@ -39,7 +41,7 @@ export const formatVenuePayload = (payload, isCreatedEntity) => {
   authorizedFields.forEach(inputName => {
     if (payload[inputName]) {
       requestPayload[inputName] = payload[inputName]
-    } else if (inputName === 'venueTypeId') {
+    } else if (inputName === 'venueTypeId' || inputName === 'venueLabelId') {
       requestPayload[inputName] = null
     }
   })
