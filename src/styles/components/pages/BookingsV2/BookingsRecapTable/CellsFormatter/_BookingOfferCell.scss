@@ -1,0 +1,13 @@
+.booking-offer-name {
+  .offer-name {
+    font-weight: $weight-bold;
+    text-overflow: ellipsis;
+    max-width: rem(130px);
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .event-date {
+    color: $grey;
+  }
+}
