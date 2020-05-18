@@ -10,7 +10,7 @@ from models.api_errors import ApiErrors, ResourceNotFoundError
 from models.payment_status import TransactionStatus
 from models.stock_sql_entity import EVENT_AUTOMATIC_REFUND_DELAY
 from repository import booking_queries, repository
-from repository.booking_queries import find_by_pro_user_id
+from repository.booking_queries import find_by_pro_user_id, find_first_matching_from_offer_by_user
 from tests.conftest import clean_database
 from tests.model_creators.activity_creators import create_booking_activity, \
     save_all_activities
@@ -1835,3 +1835,61 @@ class FindByProUserIdTest:
 
         # Then
         assert bookings == []
+
+
+
+class FindFirstMatchingFromOfferByUserTest:
+    @clean_database
+    def test_should_return_nothing_when_no_bookings(self, app):
+        # Given
+        beneficiary = create_user()
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue=venue)
+        repository.save(beneficiary, offer)
+
+        # When
+        booking = find_first_matching_from_offer_by_user(offer.id, beneficiary.id)
+
+        # Then
+        assert booking is None
+
+    @clean_database
+    def test_should_return_nothing_when_beneficiary_has_no_bookings(self, app):
+        # Given
+        beneficiary = create_user(idx=1)
+        other_beneficiary = create_user(email='other_beneficiary@example.com', idx=2)
+        create_deposit(user=other_beneficiary)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue=venue)
+        stock = create_stock(offer=offer)
+        my_booking = create_booking(user=other_beneficiary, stock=stock, date_created=datetime(2020, 1, 1))
+        repository.save(beneficiary, my_booking)
+
+        # When
+        booking = find_first_matching_from_offer_by_user(offer.id, beneficiary.id)
+
+        # Then
+        assert booking is None
+
+    @clean_database
+    def test_should_return_first_booking_for_user(self, app):
+        # Given
+        beneficiary = create_user(idx=1)
+        create_deposit(user=beneficiary)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue=venue)
+        stock = create_stock(offer=offer)
+        other_booking = create_booking(user=beneficiary, stock=stock, date_created=datetime(2020, 1, 3))
+        my_booking = create_booking(user=beneficiary, stock=stock, date_created=datetime(2020, 1, 10))
+        repository.save(beneficiary, other_booking, my_booking)
+
+        # When
+        booking = find_first_matching_from_offer_by_user(offer.id, beneficiary.id)
+
+        # Then
+        assert booking.userId == beneficiary.id
+        assert booking.dateCreated == my_booking.dateCreated
+

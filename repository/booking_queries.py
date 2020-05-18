@@ -1,8 +1,8 @@
 from collections import namedtuple
 from datetime import datetime
-from typing import List, Set, Union
+from typing import List, Set, Union, Optional
 
-from sqlalchemy import func
+from sqlalchemy import func, desc
 from sqlalchemy.orm import Query
 
 from domain.booking_recap.booking_recap import BookingRecap, EventBookingRecap, ThingBookingRecap
@@ -368,3 +368,12 @@ def count_not_cancelled_bookings_quantity_by_stock_id(stock_id: int) -> int:
         .all()
 
     return sum([booking.quantity for booking in bookings])
+
+
+def find_first_matching_from_offer_by_user(offer_id: int, user_id: int) -> Optional[BookingSQLEntity]:
+    return BookingSQLEntity.query \
+        .filter_by(userId=user_id) \
+        .join(StockSQLEntity) \
+        .filter(StockSQLEntity.offerId == offer_id) \
+        .order_by(desc(BookingSQLEntity.dateCreated)) \
+        .first()
