@@ -1,9 +1,10 @@
 import re
 from datetime import datetime, timedelta
+from typing import Dict
 
 import bcrypt
 
-from models import ApiErrors
+from models import ApiErrors, UserSQLEntity
 from utils.token import random_token
 
 RESET_PASSWORD_TOKEN_LENGTH = 10
@@ -13,28 +14,24 @@ def random_password():
     return bcrypt.hashpw(random_token(length=12).encode('utf-8'), bcrypt.gensalt())
 
 
-def check_new_password_validity(user, old_password, new_password):
-    errors = ApiErrors()
-
-    if not user.checkPassword(old_password):
-        errors.add_error('oldPassword', 'Ton ancien mot de passe est incorrect.')
-        raise errors
-
-    if user.checkPassword(new_password):
-        errors.add_error('newPassword', 'Ton nouveau mot de passe est identique à l’ancien.')
-        raise errors
+def check_password_validity(new_password, old_password, user):
+    api_errors = ApiErrors()
+    _check_password_strength('newPassword', new_password, api_errors)
+    _check_new_password_validity(user, old_password, new_password, api_errors)
+    if len(api_errors.errors) > 0:
+        raise api_errors
 
 
-def validate_change_password_request(json):
-    errors = ApiErrors()
+def validate_change_password_request(json: Dict) -> None:
+    api_errors = ApiErrors()
+    if 'oldPassword' not in json or not json['oldPassword']:
+        api_errors.add_error('oldPassword', 'Ancien mot de passe manquant')
 
-    if 'oldPassword' not in json:
-        errors.add_error('oldPassword', 'Ancien mot de passe manquant')
-        raise errors
+    if 'newPassword' not in json or not json['newPassword']:
+        api_errors.add_error('newPassword', 'Nouveau mot de passe manquant')
 
-    if 'newPassword' not in json:
-        errors.add_error('newPassword', 'Nouveau mot de passe manquant')
-        raise errors
+    if len(api_errors.errors) > 0:
+        raise api_errors
 
 
 def generate_reset_token(user, validity_duration_hours=24):
@@ -71,11 +68,27 @@ def check_reset_token_validity(user):
     if datetime.utcnow() > user.resetPasswordTokenValidityLimit:
         errors = ApiErrors()
         errors.add_error('token',
-                         'Votre lien de changement de mot de passe est périmé. Veuillez effectuer une nouvelle demande.')
+                         'Votre lien de changement de mot de passe est périmé. Veuillez effectuer une nouvelle '
+                         'demande.')
         raise errors
 
 
-def check_password_strength(field_name, field_value):
+def check_password_strength(key, password):
+    api_errors = ApiErrors()
+    _check_password_strength(key, password, api_errors)
+    if len(api_errors.errors) > 0:
+        raise api_errors
+
+
+def _check_new_password_validity(user: UserSQLEntity, old_password: str, new_password: str, errors: ApiErrors) -> None:
+    if not user.checkPassword(old_password):
+        errors.add_error('oldPassword', 'Ton ancien mot de passe est incorrect.')
+
+    if user.checkPassword(new_password):
+        errors.add_error('newPassword', 'Ton nouveau mot de passe est identique à l’ancien.')
+
+
+def _check_password_strength(field_name: str, field_value: str, errors: ApiErrors) -> None:
     at_least_one_uppercase = '(?=.*?[A-Z])'
     at_least_one_lowercase = '(?=.*?[a-z])'
     at_least_one_digit = '(?=.*?[0-9])'
@@ -91,7 +104,6 @@ def check_password_strength(field_name, field_value):
             + '$'
 
     if not re.match(regex, field_value):
-        errors = ApiErrors()
         errors.add_error(
             field_name,
             'Ton mot de passe doit contenir au moins :\n'
@@ -100,4 +112,3 @@ def check_password_strength(field_name, field_value):
             '- Une majuscule et une minuscule\n'
             '- Un caractère spécial'
         )
-        raise errors

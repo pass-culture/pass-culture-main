@@ -2,7 +2,8 @@ from flask import current_app as app, request
 from flask_login import current_user, login_required
 
 from domain.password import validate_reset_request, check_reset_token_validity, validate_new_password_request, \
-    check_password_strength, check_new_password_validity, generate_reset_token, validate_change_password_request
+    check_password_strength, generate_reset_token, validate_change_password_request, \
+    check_password_validity
 from domain.user_emails import send_reset_password_email_to_user, \
     send_reset_password_email_to_pro
 from models import ApiErrors
@@ -22,8 +23,7 @@ def post_change_password():
     user = find_user_by_email(current_user.email)
     new_password = json['newPassword']
     old_password = json.get('oldPassword')
-    check_password_strength('newPassword', new_password)
-    check_new_password_validity(user, old_password, new_password)
+    check_password_validity(new_password, old_password, user)
     user.setPassword(new_password)
     repository.save(user)
     return '', 204
@@ -75,6 +75,7 @@ def post_new_password():
 
     check_reset_token_validity(user)
     check_password_strength('newPassword', new_password)
+
     user.setPassword(new_password)
     repository.save(user)
 

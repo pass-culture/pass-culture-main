@@ -1,4 +1,7 @@
-from models import UserSQLEntity
+from unittest.mock import patch
+
+from domain.password import validate_change_password_request
+from models import UserSQLEntity, ApiErrors
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user
@@ -26,11 +29,16 @@ class PostChangePassword:
 
     class Returns400:
         @clean_database
-        def when_old_password_is_missing(self, app):
+        @patch('routes.passwords.validate_change_password_request')
+        def when_one_password_is_missing_in_the_request_body(self, validate_change_password_request, app):
             # given
+            api_errors = ApiErrors()
+            api_errors.add_error('password', 'missing password')
+            api_errors.status_code = 400
             user = create_user(email='user@test.com')
             repository.save(user)
-            data = {'newPassword': 'N3W_p4ssw0rd'}
+            validate_change_password_request.side_effect = api_errors
+            data = {}
 
             # when
             response = TestClient(app.test_client()) \
@@ -39,42 +47,5 @@ class PostChangePassword:
 
             # then
             assert response.status_code == 400
-            assert response.json['oldPassword'] == ['Ancien mot de passe manquant']
-
-        @clean_database
-        def when_new_password_is_missing(self, app):
-            # given
-            user = create_user(email='user@test.com')
-            repository.save(user)
-            data = {'oldPassword': '0ldp4ssw0rd'}
-
-            # when
-            response = TestClient(app.test_client()) \
-                .with_auth(user.email).post('/users/current/change-password',
-                                            json=data)
-
-            # then
-            assert response.status_code == 400
-            assert response.json['newPassword'] == ['Nouveau mot de passe manquant']
-
-        @clean_database
-        def when_new_password_is_not_strong_enough(self, app):
-            # given
-            user = create_user(email='user@test.com')
-            repository.save(user)
-            data = {'oldPassword': '0ldp4ssw0rd', 'newPassword': 'weakpassword'}
-
-            # when
-            response = TestClient(app.test_client()) \
-                .with_auth(user.email).post('/users/current/change-password',
-                                            json=data)
-
-            # then
-            assert response.status_code == 400
-            assert response.json['newPassword'] == [
-                'Ton mot de passe doit contenir au moins :\n'
-                '- 12 caractères\n'
-                '- Un chiffre\n'
-                '- Une majuscule et une minuscule\n'
-                '- Un caractère spécial'
-            ]
+            print(response.json)
+            assert response.json['password'] == ['missing password']
