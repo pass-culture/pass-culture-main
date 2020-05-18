@@ -22,7 +22,7 @@ class VersoContentOffer extends PureComponent {
     if (!description) return null
 
     return (
-      <Fragment>
+      <div className="verso-info-block">
         <h3>
           {'Et en détails ?'}
         </h3>
@@ -32,7 +32,7 @@ class VersoContentOffer extends PureComponent {
         >
           {description}
         </pre>
-      </Fragment>
+      </div>
     )
   }
 
@@ -44,7 +44,7 @@ class VersoContentOffer extends PureComponent {
     const duration = getDurationFromMinutes(durationMinutes)
 
     return (
-      <Fragment>
+      <div className="verso-info-block">
         <h3>
           {'Quoi ?'}
         </h3>
@@ -80,7 +80,7 @@ class VersoContentOffer extends PureComponent {
             offerId={offer.id}
           />
         )}
-      </Fragment>
+      </div>
     )
   }
 
@@ -125,7 +125,7 @@ class VersoContentOffer extends PureComponent {
       : this.renderEventOfferDateInfos()
 
     return (
-      <Fragment>
+      <div className="verso-info-block">
         <h3>
           {'Quand ?'}
         </h3>
@@ -134,7 +134,7 @@ class VersoContentOffer extends PureComponent {
             {'L’offre n’est plus disponible.'}
           </li> : offerDateInfos}
         </ul>
-      </Fragment>
+      </div>
     )
   }
 
@@ -145,7 +145,7 @@ class VersoContentOffer extends PureComponent {
     const isNotDigitalOffer = latitude && longitude
 
     return (
-      <Fragment>
+      <div className="verso-info-block">
         <div className="flex-columns flex-between">
           <h3>
             {'Où ?'}
@@ -201,7 +201,7 @@ class VersoContentOffer extends PureComponent {
             </span>
           </a>
         )}
-      </Fragment>
+      </div>
     )
   }
 
@@ -211,14 +211,14 @@ class VersoContentOffer extends PureComponent {
     } = this.props
 
     return withdrawalDetails ? (
-      <Fragment>
+      <div className="verso-info-block">
         <h3>
           {'Modalités de retrait'}
         </h3>
         <div>
           {withdrawalDetails}
         </div>
-      </Fragment>
+      </div>
     ) : (
       false
     )

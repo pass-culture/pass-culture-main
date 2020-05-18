@@ -52,7 +52,7 @@
     .with-triangle::before {
       $triangle-diag: 50px;
 
-      content: '';
+      content: "";
       background-color: inherit;
       height: $triangle-diag;
       left: 0;
@@ -69,10 +69,10 @@
       background-color: $white;
       padding-bottom: $footer-height;
       flex: 1;
+    }
 
-      div.description {
-        margin-top: 0.5rem;
-      }
+    .verso-info-block {
+      margin-top: rem(12px);
 
       h3 {
         padding-top: 0.75rem;
