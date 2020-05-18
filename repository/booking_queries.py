@@ -6,7 +6,7 @@ from sqlalchemy import func, desc
 from sqlalchemy.orm import Query
 
 from domain.booking_recap.booking_recap import BookingRecap, EventBookingRecap, ThingBookingRecap
-from domain.booking_recap.bookings_recap import BookingsRecapPaginated
+from domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from models import UserOfferer
 from models.api_errors import ResourceNotFoundError
 from models.booking_sql_entity import BookingSQLEntity
@@ -178,7 +178,7 @@ def find_by_id(booking_id: int) -> BookingSQLEntity:
         .first_or_404()
 
 
-def find_by_pro_user_id(user_id: int, page: int = 0, per_page_limit=20) -> BookingsRecapPaginated:
+def find_by_pro_user_id(user_id: int, page: int = 1, per_page_limit: int = 20) -> BookingsRecapPaginated:
     paginated_bookings = BookingSQLEntity.query \
         .outerjoin(Payment) \
         .reset_joinpoint() \
@@ -205,6 +205,7 @@ def find_by_pro_user_id(user_id: int, page: int = 0, per_page_limit=20) -> Booki
             StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
             Venue.departementCode.label('venueDepartementCode'),
         ) \
+        .order_by(BookingSQLEntity.id.desc()) \
         .paginate(page=page, per_page=per_page_limit, error_out=False)
 
     return _paginated_bookings_sql_entities_to_bookings_recap(paginated_bookings)

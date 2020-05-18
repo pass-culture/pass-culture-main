@@ -1,9 +1,8 @@
 from datetime import datetime, timedelta
 
-from flask import json
-
+from domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
+from routes.serialization.bookings_recap_serialize import serialize_bookings_recap_paginated
 from tests.domain_creators.generic_creators import create_domain_thing_booking_recap, create_domain_event_booking_recap
-from routes.serialization.bookings_recap_serialize import serialize_bookings_recap
 from utils.date import format_into_ISO_8601
 
 
@@ -31,13 +30,18 @@ class SerializeBookingRecapTest:
                 booking_is_duo=True,
             )
         ]
+        bookings_recap_paginated_response = BookingsRecapPaginated(
+            bookings_recap=bookings_recap,
+            page=0,
+            pages=1,
+            total=2
+        )
 
         # When
-        bookings = serialize_bookings_recap(bookings_recap)
+        result = serialize_bookings_recap_paginated(bookings_recap_paginated_response)
 
         # Then
-        response = json.loads(bookings.get_data().decode("utf-8"))
-        expected_response = [
+        bookings_recap = [
             {
                 "stock": {
                     "type": "thing",
@@ -69,7 +73,10 @@ class SerializeBookingRecapTest:
                 "booking_is_duo": True,
             }
         ]
-        assert response == expected_response
+        assert result['bookings_recap'] == bookings_recap
+        assert result['page'] == 0
+        assert result['pages'] == 1
+        assert result['total'] == 2
 
     def test_should_return_json_with_event_date_additional_parameter_for_event_stock(self, app):
         # Given
@@ -87,12 +94,17 @@ class SerializeBookingRecapTest:
                 venue_department_code='75'
             )
         ]
+        bookings_recap_paginated_response = BookingsRecapPaginated(
+            bookings_recap=bookings_recap,
+            page=0,
+            pages=1,
+            total=2
+        )
 
         # When
-        bookings = serialize_bookings_recap(bookings_recap)
+        results = serialize_bookings_recap_paginated(bookings_recap_paginated_response)
 
         # Then
-        response = json.loads(bookings.get_data().decode("utf-8"))
         expected_response = [
             {
                 "stock": {
@@ -112,4 +124,7 @@ class SerializeBookingRecapTest:
                 "booking_is_duo": False,
             },
         ]
-        assert response == expected_response
+        assert results['bookings_recap'] == expected_response
+        assert results['page'] == 0
+        assert results['pages'] == 1
+        assert results['total'] == 2

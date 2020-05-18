@@ -21,7 +21,7 @@ from repository.api_key_queries import find_api_key_by_value
 from repository.user_offerer_queries import \
     filter_query_where_user_is_user_offerer_and_is_validated
 from routes.serialization import as_dict, serialize, serialize_booking
-from routes.serialization.bookings_recap_serialize import serialize_bookings_recap
+from routes.serialization.bookings_recap_serialize import serialize_bookings_recap_paginated
 from routes.serialization.bookings_serialize import serialize_booking_for_book_an_offer
 from use_cases.book_an_offer import BookingInformation
 from use_cases.get_all_bookings_by_pro_user import get_all_bookings_by_pro_user
@@ -108,10 +108,11 @@ def get_bookings_csv():
 @login_required
 def get_all_bookings():
     page_query_param = request.args.get('page')
-    page = page_query_param if page_query_param is not None else 0
+    page = page_query_param if page_query_param is not None else 1
     check_page_format_is_number(page)
-    bookings_recap = get_all_bookings_by_pro_user(current_user.id, int(page))
-    return serialize_bookings_recap(bookings_recap), 200
+    bookings_recap_paginated = get_all_bookings_by_pro_user(user_id=current_user.id, page=int(page))
+
+    return serialize_bookings_recap_paginated(bookings_recap_paginated), 200
 
 
 @app.route('/bookings', methods=['GET'])

@@ -1,4 +1,3 @@
-from datetime import datetime
 from unittest.mock import patch
 
 import pytest
@@ -9,11 +8,13 @@ from tests.model_creators.generic_creators import create_user
 from use_cases.get_all_bookings_by_pro_user import get_all_bookings_by_pro_user
 
 
-class GetAllBookingsTest:
+class GetAllBookingsByProUserTest:
     @patch('use_cases.get_all_bookings_by_pro_user.check_is_authorized_to_access_bookings_recap')
     @patch('use_cases.get_all_bookings_by_pro_user.user_queries.find_user_by_id')
     @patch('use_cases.get_all_bookings_by_pro_user.booking_queries.find_by_pro_user_id')
-    def test_should_retrieve_all_user_bookings(self, find_by_pro_user_id, find_user_by_id,
+    def test_should_retrieve_all_user_bookings(self,
+                                               find_by_pro_user_id,
+                                               find_user_by_id,
                                                check_is_authorized_to_access_bookings_recap):
         # Given
         user = create_user(is_admin=False, can_book_free_offers=True)
@@ -30,13 +31,14 @@ class GetAllBookingsTest:
         # Then
         find_user_by_id.assert_called_once_with(user.id)
         check_is_authorized_to_access_bookings_recap.assert_called_once_with(user)
-        find_by_pro_user_id.assert_called_once_with(user.id)
+        find_by_pro_user_id.assert_called_once_with(user_id=user.id, page=0)
         assert bookings == [booking, booking2]
 
     @patch('use_cases.get_all_bookings_by_pro_user.user_queries.find_user_by_id')
     @patch('use_cases.get_all_bookings_by_pro_user.check_is_authorized_to_access_bookings_recap')
     @patch('use_cases.get_all_bookings_by_pro_user.booking_queries.find_by_pro_user_id')
-    def test_should_not_retrieve_bookings_when_user_is_not_authorized(self, find_by_pro_user_id,
+    def test_should_not_retrieve_bookings_when_user_is_not_authorized(self,
+                                                                      find_by_pro_user_id,
                                                                       check_is_authorized_to_access_bookings_recap,
                                                                       find_user_by_id):
         # Given

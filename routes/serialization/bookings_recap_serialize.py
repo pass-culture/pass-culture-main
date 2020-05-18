@@ -1,13 +1,19 @@
-from typing import List, Dict
+from typing import Dict
 
 from flask import json, jsonify
 
 from domain.booking_recap.booking_recap import BookingRecap, EventBookingRecap
+from domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from utils.date import format_into_ISO_8601
 
 
-def serialize_bookings_recap(bookings_recap: List[BookingRecap]) -> json:
-    return jsonify([__serialize_booking_recap(booking_recap) for booking_recap in bookings_recap])
+def serialize_bookings_recap_paginated(bookings_recap_paginated: BookingsRecapPaginated) -> json:
+    return {
+        'bookings_recap': [__serialize_booking_recap(booking_recap) for booking_recap in bookings_recap_paginated.bookings_recap],
+        'page': bookings_recap_paginated.page,
+        'pages': bookings_recap_paginated.pages,
+        'total': bookings_recap_paginated.total
+    }
 
 
 def __serialize_booking_recap(booking_recap: BookingRecap) -> Dict:

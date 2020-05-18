@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Union
 
 from domain.bookings import BOOKING_CANCELLATION_DELAY
 from domain.user_activation import is_activation_booking
@@ -128,11 +129,13 @@ def check_booking_is_not_used(booking: BookingSQLEntity) -> None:
         raise api_errors
 
 
-def check_page_format_is_number(page_number: object):
-    if not isinstance(page_number, int) and not page_number.isdecimal():
+def check_page_format_is_number(page: Union[int, str]):
+    page_is_not_decimal = not isinstance(page, int) and not page.isdecimal()
+
+    if page_is_not_decimal or int(page) < 1:
         api_errors = ApiErrors()
         api_errors.add_error(
             'global',
-            f"L'argument 'page' {page_number} n'est pas valide"
+            f"L'argument 'page' {page} n'est pas valide"
         )
         raise api_errors

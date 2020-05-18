@@ -1842,6 +1842,30 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.total == 2
 
     @clean_database
+    def test_should_return_bookings_from_second_page(self, app):
+        # Given
+        beneficiary = create_user(email='beneficiary@example.com')
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer)
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0)
+
+        booking = create_booking(idx=1, user=beneficiary, stock=stock, token="ABCD")
+        booking2 = create_booking(idx=2, user=beneficiary, stock=stock, token="FGHI")
+        repository.save(user_offerer, booking, booking2)
+
+        # When
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id, page=2, per_page_limit=1)
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        assert bookings_recap_paginated.bookings_recap[0].booking_token == booking.token
+        assert bookings_recap_paginated.page == 2
+        assert bookings_recap_paginated.pages == 2
+        assert bookings_recap_paginated.total == 2
+
+    @clean_database
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app):
         # Given
         beneficiary = create_user(email='beneficiary@example.com')
