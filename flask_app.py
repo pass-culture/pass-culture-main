@@ -11,7 +11,7 @@ from werkzeug.middleware.profiler import ProfilerMiddleware
 
 from models.db import db
 from repository.feature_queries import feature_request_profiling_enabled
-from utils.config import IS_DEV, REDIS_URL, ENV
+from utils.config import IS_DEV, ENV
 from utils.health_checker import read_version_from_file
 from utils.json_encoder import EnumJSONEncoder
 
