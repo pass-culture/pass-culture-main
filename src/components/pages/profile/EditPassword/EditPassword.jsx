@@ -11,7 +11,8 @@ class EditPassword extends PureComponent {
     this.state = {
       currentPassword: '',
       errors: null,
-      isSubmitButtonDisabled: false,
+      isMissingField: true,
+      isLoading: false,
       newConfirmationPassword: '',
       newPassword: '',
     }
@@ -21,19 +22,18 @@ class EditPassword extends PureComponent {
     this.newConfirmationPasswordInputRef = React.createRef()
   }
 
-  handleCurrentPassword = event => {
+  handleInputChange = event => {
+    const inputName = event.target.name
     const newValue = event.target.value
-    this.setState({ currentPassword: newValue })
+    this.setState({ [inputName]: newValue }, () => {
+      this.setState({ isMissingField: this.checkIfFieldIsMissing() })
+    })
   }
 
-  handleNewPassword = event => {
-    const newValue = event.target.value
-    this.setState({ newPassword: newValue })
-  }
+  checkIfFieldIsMissing = () => {
+    const { currentPassword, newConfirmationPassword, newPassword } = this.state
 
-  handleNewConfirmationPassword = event => {
-    const newValue = event.target.value
-    this.setState({ newConfirmationPassword: newValue })
+    return currentPassword === '' || newConfirmationPassword === '' || newPassword === ''
   }
 
   handleSubmitSuccess = () => {
@@ -45,7 +45,7 @@ class EditPassword extends PureComponent {
   handleSubmitFail = (state, action) => {
     this.setState({
       errors: { ...action.payload.errors },
-      isSubmitButtonDisabled: false,
+      isLoading: false,
     })
 
     if (action.payload.errors.oldPassword) {
@@ -66,23 +66,13 @@ class EditPassword extends PureComponent {
     const newPasswordInputValue = this.newPasswordInputRef.current.value
     const newConfirmationPasswordInputValue = this.newConfirmationPasswordInputRef.current.value
 
-    if (newPasswordInputValue !== newConfirmationPasswordInputValue) {
-      const payload = {
-        payload: {
-          errors: {
-            newConfirmationPassword: ['Les deux mots de passe ne sont pas identiques.'],
-          },
-        },
-      }
-      this.handleSubmitFail(this.state, payload)
-    } else {
-      const passwordToSubmit = {
-        newPassword: newPasswordInputValue,
-        oldPassword: currentPasswordInputValue,
-      }
-      handleSubmit(passwordToSubmit, this.handleSubmitFail, this.handleSubmitSuccess)
-      this.setState({ isSubmitButtonDisabled: true })
+    const passwordToSubmit = {
+      newPassword: newPasswordInputValue,
+      newConfirmationPassword: newConfirmationPasswordInputValue,
+      oldPassword: currentPasswordInputValue,
     }
+    handleSubmit(passwordToSubmit, this.handleSubmitFail, this.handleSubmitSuccess)
+    this.setState({ isLoading: true })
   }
 
   render() {
@@ -90,7 +80,8 @@ class EditPassword extends PureComponent {
     const {
       currentPassword,
       errors,
-      isSubmitButtonDisabled,
+      isLoading,
+      isMissingField,
       newConfirmationPassword,
       newPassword,
     } = this.state
@@ -111,14 +102,16 @@ class EditPassword extends PureComponent {
               errors={errors && errors.oldPassword}
               inputRef={this.currentPasswordInputRef}
               label="Mot de passe actuel"
-              onChange={this.handleCurrentPassword}
+              name="currentPassword"
+              onChange={this.handleInputChange}
               value={currentPassword}
             />
             <EditPasswordField
               errors={errors && errors.newPassword}
               inputRef={this.newPasswordInputRef}
               label="Nouveau mot de passe"
-              onChange={this.handleNewPassword}
+              name="newPassword"
+              onChange={this.handleInputChange}
               placeholder="Ex : m02pass!"
               value={newPassword}
             />
@@ -126,7 +119,8 @@ class EditPassword extends PureComponent {
               errors={errors && errors.newConfirmationPassword}
               inputRef={this.newConfirmationPasswordInputRef}
               label="Confirmation nouveau mot de passe"
-              onChange={this.handleNewConfirmationPassword}
+              name="newConfirmationPassword"
+              onChange={this.handleInputChange}
               placeholder="Ex : m02pass!"
               value={newConfirmationPassword}
             />
@@ -134,7 +128,7 @@ class EditPassword extends PureComponent {
           <div className="pf-form-submit">
             <input
               className="pf-button-submit"
-              disabled={isSubmitButtonDisabled}
+              disabled={isLoading || isMissingField}
               onClick={this.handleSubmitPassword}
               type="submit"
               value="Enregistrer"

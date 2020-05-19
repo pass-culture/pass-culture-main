@@ -31,7 +31,7 @@ class EditPasswordField extends PureComponent {
   }
 
   render() {
-    const { errors, inputRef, label, onChange, placeholder, value } = this.props
+    const { errors, inputRef, label, onChange, placeholder, value, name } = this.props
     const { alt, iconName, inputType } = this.state
 
     return (
@@ -43,6 +43,7 @@ class EditPasswordField extends PureComponent {
               aria-invalid={errors ? true : false}
               className="pf-field-input"
               minLength="12"
+              name={name}
               onChange={onChange}
               placeholder={placeholder}
               ref={inputRef}
@@ -92,6 +93,7 @@ EditPasswordField.propTypes = {
   errors: PropTypes.arrayOf(PropTypes.string),
   inputRef: PropTypes.shape().isRequired,
   label: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string,
   value: PropTypes.string.isRequired,

@@ -119,7 +119,9 @@
     width: 90%;
 
     &:disabled {
+      background-color: #FF99BE;
       cursor: not-allowed;
+      opacity: 1;
     }
   }
 }

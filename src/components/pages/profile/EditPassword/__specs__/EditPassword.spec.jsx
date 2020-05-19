@@ -74,9 +74,30 @@ describe('edit password', () => {
     expect(submitButton.prop('value')).toBe('Enregistrer')
   })
 
+  it('should not be able to change password while all fields are not completed', () => {
+    // given
+    const wrapper = mount(
+      <Router history={createBrowserHistory()}>
+        <EditPassword {...props} />
+      </Router>
+    )
+
+    const inputs = wrapper.find('input')
+    const currentPassword = inputs.at(0)
+    const newPassword = inputs.at(1)
+    const submitButton = wrapper.find('input[type="submit"]')
+
+    // when
+    currentPassword.invoke('onChange')({ target: { value: 'current password' } })
+    newPassword.invoke('onChange')({ target: { value: 'new password' } })
+
+    // then
+    expect(submitButton.prop('disabled')).toBe(true)
+  })
+
   describe('when click on submit button', () => {
-    describe('when user has modified his password', () => {
-      it('should redirect to profile and call snackbar with proper informations', () => {
+    describe('when user has completed all fields properly', () => {
+      it('should redirect to profile and call snackbar + API with proper informations', () => {
         // Given
         jest.spyOn(props, 'handleSubmit').mockImplementation((values, fail, success) => success())
 
@@ -92,9 +113,13 @@ describe('edit password', () => {
         const submitButton = wrapper.find('input[value="Enregistrer"]')
 
         // When
-        currentPassword.invoke('onChange')({ target: { value: 'current password' } })
-        newPassword.invoke('onChange')({ target: { value: 'new password' } })
-        newConfirmationPassword.invoke('onChange')({ target: { value: 'new password' } })
+        currentPassword.invoke('onChange')({
+          target: { value: 'current password', name: 'currentPassword' },
+        })
+        newPassword.invoke('onChange')({ target: { value: 'new password', name: 'newPassword' } })
+        newConfirmationPassword.invoke('onChange')({
+          target: { value: 'new password', name: 'newConfirmationPassword' },
+        })
         submitButton.simulate('click')
         submitButton.simulate('click')
 
@@ -108,6 +133,7 @@ describe('edit password', () => {
         expect(props.handleSubmit).toHaveBeenCalledWith(
           {
             newPassword: 'new password',
+            newConfirmationPassword: 'new password',
             oldPassword: 'current password',
           },
           expect.any(Function),
@@ -116,61 +142,55 @@ describe('edit password', () => {
       })
     })
 
-    describe('when clicking on submit button', () => {
-      it('should call API with proper parameters', () => {
+    describe('when fields are not valid', () => {
+      it('should display error messages', () => {
         // Given
-        const wrapper = mount(
-          <Router history={createBrowserHistory()}>
-            <EditPassword {...props} />
-          </Router>
-        )
-        const inputs = wrapper.find('input')
-        const currentPassword = inputs.at(0)
-        const newPassword = inputs.at(1)
-        const newConfirmationPassword = inputs.at(2)
-        const submitButton = wrapper.find('input[value="Enregistrer"]')
-
-        // When
-        currentPassword.invoke('onChange')({ target: { value: 'current password' } })
-        newPassword.invoke('onChange')({ target: { value: 'new password' } })
-        newConfirmationPassword.invoke('onChange')({ target: { value: 'new password' } })
-        submitButton.invoke('onClick')({ preventDefault: jest.fn() })
-
-        // Then
-        expect(props.handleSubmit).toHaveBeenCalledWith(
-          {
-            newPassword: 'new password',
-            oldPassword: 'current password',
+        const action = {
+          payload: {
+            errors: {
+              newPassword: ['Nouveau mot de passe invalide.'],
+              newConfirmationPassword: ['Les deux mots de passe ne sont pas identiques.'],
+              oldPassword: ['Ancien mot de passe incorrect.'],
+            },
           },
-          expect.any(Function),
-          expect.any(Function)
-        )
-      })
-    })
+        }
 
-    describe('when new password and confirmation password are not the same', () => {
-      it('should display an error message', () => {
-        // Given
+        jest.spyOn(props, 'handleSubmit').mockImplementation((values, fail) => fail({}, action))
+
         const wrapper = mount(
           <Router history={createBrowserHistory()}>
             <EditPassword {...props} />
           </Router>
         )
+
         const inputs = wrapper.find('input')
+        const oldPassword = inputs.at(0)
         const newPassword = inputs.at(1)
         const newConfirmationPassword = inputs.at(2)
         const submitButton = wrapper.find('input[value="Enregistrer"]')
 
         // When
+        oldPassword.invoke('onChange')({ target: { value: 'old password' } })
         newPassword.invoke('onChange')({ target: { value: 'new password' } })
         newConfirmationPassword.invoke('onChange')({ target: { value: 'wrong new password' } })
         submitButton.invoke('onClick')({ preventDefault: jest.fn() })
 
         // Then
+        const invalidNewPassword = wrapper.find({
+          children: 'Nouveau mot de passe invalide.',
+        })
+
         const missingCurrentPassword = wrapper.find({
           children: 'Les deux mots de passe ne sont pas identiques.',
         })
+
+        const invalidOldPassword = wrapper.find({
+          children: 'Ancien mot de passe incorrect.',
+        })
+
+        expect(invalidNewPassword).toHaveLength(1)
         expect(missingCurrentPassword).toHaveLength(1)
+        expect(invalidOldPassword).toHaveLength(1)
       })
     })
   })
