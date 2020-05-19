@@ -1,7 +1,7 @@
 import pytest
 
-from domain.password import _check_new_password_validity, _check_password_strength, validate_change_password_request, \
-    check_password_validity
+from domain.password import _compute_new_password_validity_errors, _compute_password_strength_errors, validate_change_password_request, \
+    check_password_validity, _compute_confirmation_password_validity_errors
 from models import UserSQLEntity, ApiErrors
 
 
@@ -11,7 +11,8 @@ class ValidateChangePasswordRequestTest:
         user = UserSQLEntity()
         user.setPassword('0ld__p455w0rd')
         json = {
-            "newPassword": "N3w__p455w0rd"
+            "newPassword": "N3w__p455w0rd",
+            "newConfirmationPassword": "N3w__c0nfirm__p455w0rd"
         }
 
         # when
@@ -26,7 +27,8 @@ class ValidateChangePasswordRequestTest:
         user = UserSQLEntity()
         user.setPassword('0ld__p455w0rd')
         json = {
-            "oldPassword": "0ld__p455w0rd"
+            "oldPassword": "0ld__p455w0rd",
+            "newConfirmationPassword": "N3w__c0nfirm__p455w0rd"
         }
 
         # when
@@ -36,13 +38,30 @@ class ValidateChangePasswordRequestTest:
         # then
         assert api_errors.value.errors['newPassword'] == ['Nouveau mot de passe manquant']
 
+    def test_change_password_raises_an_error_if_new_confirmation_password_is_not_given_as_key_in_json(self):
+        # given
+        user = UserSQLEntity()
+        user.setPassword('0ld__p455w0rd')
+        json = {
+            "oldPassword": "0ld__p455w0rd",
+            "newPassword": "N3w__p455w0rd"
+        }
+
+        # when
+        with pytest.raises(ApiErrors) as api_errors:
+            validate_change_password_request(json)
+
+        # then
+        assert api_errors.value.errors['newConfirmationPassword'] == ['Confirmation du nouveau mot de passe manquante']
+
     def test_change_password_raises_an_error_if_old_password_has_no_value_in_json(self):
         # given
         user = UserSQLEntity()
         user.setPassword('0ld__p455w0rd')
         json = {
             "oldPassword": "",
-            "newPassword": "N3w__p455w0rd"
+            "newPassword": "N3w__p455w0rd",
+            "newConfirmationPassword": "N3w__c0nfirm__p455w0rd"
         }
 
         # when
@@ -58,7 +77,8 @@ class ValidateChangePasswordRequestTest:
         user.setPassword('0ld__p455w0rd')
         json = {
             "oldPassword": "0ld__p455w0rd",
-            "newPassword": ""
+            "newPassword": "",
+            "newConfirmationPassword": "N3w__c0nfirm__p455w0rd"
         }
 
         # when
@@ -67,6 +87,23 @@ class ValidateChangePasswordRequestTest:
 
         # then
         assert api_errors.value.errors['newPassword'] == ['Nouveau mot de passe manquant']
+
+    def test_change_password_raises_an_error_if_new_confirmation_password_has_no_value_in_json(self):
+        # given
+        user = UserSQLEntity()
+        user.setPassword('0ld__p455w0rd')
+        json = {
+            "oldPassword": "0ld__p455w0rd",
+            "newPassword": "N3w__p455w0rd",
+            "newConfirmationPassword": ""
+        }
+
+        # when
+        with pytest.raises(ApiErrors) as api_errors:
+            validate_change_password_request(json)
+
+        # then
+        assert api_errors.value.errors['newConfirmationPassword'] == ['Confirmation du nouveau mot de passe manquante']
 
     def test_change_password_raises_an_error_if_no_password_is_provided(self):
         # given
@@ -81,6 +118,7 @@ class ValidateChangePasswordRequestTest:
         # then
         assert api_errors.value.errors['newPassword'] == ['Nouveau mot de passe manquant']
         assert api_errors.value.errors['oldPassword'] == ['Ancien mot de passe manquant']
+        assert api_errors.value.errors['newConfirmationPassword'] == ['Confirmation du nouveau mot de passe manquante']
 
 
 class CheckPasswordValidityTest:
@@ -89,11 +127,12 @@ class CheckPasswordValidityTest:
         user = UserSQLEntity()
         user.setPassword('weakpassword')
         new_password = 'weakpassword'
+        new_confirmation_password = 'weakConfirmationPassword'
         old_password = 'weakpassword'
 
         # when
         with pytest.raises(ApiErrors) as api_errors:
-            check_password_validity(new_password, old_password, user)
+            check_password_validity(new_password, new_confirmation_password, old_password, user)
 
         # then
         assert api_errors.value.errors['newPassword'] == ['Ton mot de passe doit contenir au moins :\n'
@@ -103,8 +142,10 @@ class CheckPasswordValidityTest:
                                                           '- Un caractère spécial',
                                                           'Ton nouveau mot de passe est identique à l’ancien.']
 
+        assert api_errors.value.errors['newConfirmationPassword'] == ['Les deux mots de passe ne sont pas identiques.']
 
-class CheckPasswordStrengthTest:
+
+class ComputePasswordStrengthErrorsTest:
     @pytest.mark.parametrize('newPassword', [
         '_v4l1dP455sw0rd',
         '-v4l1dP455sw0rd',
@@ -130,7 +171,7 @@ class CheckPasswordStrengthTest:
     ])
     def test_should_not_add_errors_when_password_is_valid(self, newPassword):
         api_errors = ApiErrors()
-        _check_password_strength('newPassword', newPassword, api_errors)
+        _compute_password_strength_errors('newPassword', newPassword, api_errors)
         assert len(api_errors.errors) is 0
 
     @pytest.mark.parametrize('newPassword', [
@@ -145,7 +186,7 @@ class CheckPasswordStrengthTest:
         api_errors = ApiErrors()
 
         # when
-        _check_password_strength('newPassword', newPassword, api_errors)
+        _compute_password_strength_errors('newPassword', newPassword, api_errors)
 
         # then
         assert api_errors.errors['newPassword'] == [
@@ -157,8 +198,30 @@ class CheckPasswordStrengthTest:
         ]
 
 
-class CheckNewPasswordValidityTest:
-    def test_change_password_raises_and_error_if_old_password_does_not_match_existing_password(self):
+class ComputeConfirmationPasswordValidityErrorsTest:
+    def test_should_add_an_error_when_new_passwords_are_not_equals(self):
+        # given
+        api_errors = ApiErrors()
+
+        # when
+        _compute_confirmation_password_validity_errors('goodNewPassword', 'wrongNewConfirmationPassword', api_errors)
+
+        # then
+        assert api_errors.errors['newConfirmationPassword'] == ['Les deux mots de passe ne sont pas identiques.']
+
+    def test_should_not_add_an_error_when_new_passwords_are_equals(self):
+        # given
+        api_errors = ApiErrors()
+
+        # when
+        _compute_confirmation_password_validity_errors('goodNewPassword', 'goodNewPassword', api_errors)
+
+        # then
+        assert len(api_errors.errors) is 0
+
+
+class ComputeNewPasswordValidityErrorsTest:
+    def test_change_password_should_add_an_error_if_old_password_does_not_match_existing_password(self):
         # given
         api_errors = ApiErrors()
         user = UserSQLEntity()
@@ -167,12 +230,12 @@ class CheckNewPasswordValidityTest:
         new_password = 'n3w__p455w0rd'
 
         # when
-        _check_new_password_validity(user, old_password, new_password, api_errors)
+        _compute_new_password_validity_errors(user, old_password, new_password, api_errors)
 
         # then
         assert api_errors.errors['oldPassword'] == ['Ton ancien mot de passe est incorrect.']
 
-    def test_change_password_raises_and_error_if_old_password_is_the_same_as_the_new_password(self):
+    def test_change_password_should_add_an_error_if_old_password_is_the_same_as_the_new_password(self):
         # given
         api_errors = ApiErrors()
         user = UserSQLEntity()
@@ -181,7 +244,7 @@ class CheckNewPasswordValidityTest:
         new_password = '0ld__p455w0rd'
 
         # when
-        _check_new_password_validity(user, old_password, new_password, api_errors)
+        _compute_new_password_validity_errors(user, old_password, new_password, api_errors)
 
         # then
         assert api_errors.errors['newPassword'] == ['Ton nouveau mot de passe est identique à l’ancien.']

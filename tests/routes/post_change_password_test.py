@@ -14,7 +14,7 @@ class PostChangePassword:
             # given
             user = create_user(email='user@test.com')
             repository.save(user)
-            data = {'oldPassword': user.clearTextPassword, 'newPassword': 'N3W_p4ssw0rd'}
+            data = {'oldPassword': user.clearTextPassword, 'newPassword': 'N3W_p4ssw0rd', 'newConfirmationPassword': 'N3W_p4ssw0rd'}
             user_id = user.id
 
             # when
@@ -47,5 +47,4 @@ class PostChangePassword:
 
             # then
             assert response.status_code == 400
-            print(response.json)
             assert response.json['password'] == ['missing password']

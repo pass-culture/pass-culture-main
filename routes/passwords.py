@@ -22,8 +22,9 @@ def post_change_password():
     validate_change_password_request(json)
     user = find_user_by_email(current_user.email)
     new_password = json['newPassword']
-    old_password = json.get('oldPassword')
-    check_password_validity(new_password, old_password, user)
+    new_confirmation_password = json['newConfirmationPassword']
+    old_password = json['oldPassword']
+    check_password_validity(new_password, new_confirmation_password, old_password, user)
     user.setPassword(new_password)
     repository.save(user)
     return '', 204
