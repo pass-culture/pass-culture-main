@@ -48,7 +48,7 @@ def app():
     db.init_app(app)
 
     app.app_context().push()
-    install_database_extensions()
+    install_database_extensions(app)
 
     alembic_cfg = Config("alembic.ini")
     alembic_cfg.attributes['sqlalchemy.url'] = os.environ.get('DATABASE_URL_TEST')

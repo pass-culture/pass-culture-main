@@ -1,11 +1,11 @@
-from flask_app import app
 from models.db import db
 
 
-def install_database_extensions():
-    _create_text_search_configuration_if_not_exists()
-    _create_index_btree_gist_extension()
-    _create_postgis_extension()
+def install_database_extensions(app):
+    with app.app_context():
+        _create_text_search_configuration_if_not_exists()
+        _create_index_btree_gist_extension()
+        _create_postgis_extension()
 
 
 def _create_text_search_configuration_if_not_exists():
@@ -26,6 +26,3 @@ def _create_index_btree_gist_extension():
 
 def _create_postgis_extension():
     db.engine.execute("CREATE EXTENSION IF NOT EXISTS postgis;")
-
-with app.app_context():
-    install_database_extensions()
