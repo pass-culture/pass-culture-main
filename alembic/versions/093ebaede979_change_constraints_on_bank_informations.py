@@ -1,7 +1,7 @@
 """change_constraints_on_bank_informations
 
 Revision ID: 093ebaede979
-Revises: 44d783e1c855
+Revises: 61fe7b7c5a31
 Create Date: 2020-05-11 15:08:32.330029
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '093ebaede979'
-down_revision = '44d783e1c855'
+down_revision = '61fe7b7c5a31'
 branch_labels = None
 depends_on = None
 
