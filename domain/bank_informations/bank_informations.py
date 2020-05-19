@@ -8,10 +8,12 @@ class BankInformations(object):
                  iban: str = None,
                  bic: str = None,
                  offerer_id: int = None,
+                 venue_id: int = None,
                  date_modified_at_last_provider: datetime = None):
         self.application_id = application_id
         self.status = status
         self.iban = iban
         self.bic = bic
         self.offerer_id = offerer_id
+        self.venue_id = venue_id
         self.date_modified_at_last_provider = date_modified_at_last_provider

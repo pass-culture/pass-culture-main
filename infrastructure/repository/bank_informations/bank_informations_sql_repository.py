@@ -46,6 +46,7 @@ class BankInformationsSQLRepository(BankInformationsRepository):
             bank_informations_sql_entity.iban = bank_informations.iban
             bank_informations_sql_entity.status = bank_informations.status
             bank_informations_sql_entity.offererId = bank_informations.offerer_id
+            bank_informations_sql_entity.venueId = bank_informations.venue_id
 
             repository.save(bank_informations_sql_entity)
             return bank_informations
@@ -61,6 +62,21 @@ class BankInformationsSQLRepository(BankInformationsRepository):
             bank_informations_sql_entity.iban = bank_informations.iban
             bank_informations_sql_entity.status = bank_informations.status
             bank_informations_sql_entity.offererId = bank_informations.offerer_id
+
+            repository.save(bank_informations_sql_entity)
+            return bank_informations
+
+    def update_by_venue_id(self, bank_informations: BankInformations) -> BankInformations:
+        bank_informations_sql_entity = BankInformationsSQLEntity.query \
+            .filter_by(venueId=bank_informations.venue_id) \
+            .one_or_none()
+
+        if bank_informations_sql_entity is not None:
+            bank_informations_sql_entity.applicationId = bank_informations.application_id
+            bank_informations_sql_entity.bic = bank_informations.bic
+            bank_informations_sql_entity.iban = bank_informations.iban
+            bank_informations_sql_entity.status = bank_informations.status
+            bank_informations_sql_entity.venueId = bank_informations.venue_id
 
             repository.save(bank_informations_sql_entity)
             return bank_informations

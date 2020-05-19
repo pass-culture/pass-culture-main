@@ -23,5 +23,6 @@ def to_model(bank_informations: BankInformations) -> BankInformationsSQLEntity:
     bank_informations_sql_entity.iban = bank_informations.iban
     bank_informations_sql_entity.bic = bank_informations.bic
     bank_informations_sql_entity.offererId = bank_informations.offerer_id
+    bank_informations_sql_entity.venueId = bank_informations.venue_id
 
     return bank_informations_sql_entity

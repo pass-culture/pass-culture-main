@@ -13,14 +13,20 @@ from repository import repository
 from tests.conftest import clean_database
 from models import BankInformation
 from domain.bank_information import CannotRegisterBankInformation
-
+from infrastructure.repository.venue.venue_sql_repository import VenueSQLRepository
+from infrastructure.repository.offerer.offerer_sql_repository import OffererSQLRepository
+from infrastructure.repository.bank_informations.bank_informations_sql_repository import BankInformationsSQLRepository
 
 class SaveVenueBankInformationsTest:
-    class CreateNewBankInformationTest:
+    class SaveBankInformationTest:
         @patch('domain.demarches_simplifiees.get_application_details')
         class VenueWithSiretTest:
             def setup_method(self):
-                self.save_venue_bank_informations = SaveVenueBankInformations()
+                self.save_venue_bank_informations = SaveVenueBankInformations(
+                    offerer_repository=OffererSQLRepository(),
+                    venue_repository=VenueSQLRepository(),
+                    bank_informations_repository=BankInformationsSQLRepository()
+                )
 
             @clean_database
             def test_when_dms_state_is_refused_should_create_the_correct_bank_information(self, mock_application_details, app):
@@ -150,7 +156,11 @@ class SaveVenueBankInformationsTest:
         @patch('domain.demarches_simplifiees.get_application_details')
         class VenueWitoutSiretTest:
             def setup_method(self):
-                self.save_venue_bank_informations = SaveVenueBankInformations()
+                self.save_venue_bank_informations = SaveVenueBankInformations(
+                    offerer_repository=OffererSQLRepository(),
+                    venue_repository=VenueSQLRepository(),
+                    bank_informations_repository=BankInformationsSQLRepository()
+                )
 
             @clean_database
             def test_when_dms_state_is_refused_should_create_the_correct_bank_information(self, mock_application_details, app):
@@ -286,24 +296,30 @@ class SaveVenueBankInformationsTest:
     @patch('domain.demarches_simplifiees.get_application_details')
     class UpdateBankInformationByApplicationIdTest:
         def setup_method(self):
-            self.save_venue_bank_informations = SaveVenueBankInformations()
+            self.save_venue_bank_informations = SaveVenueBankInformations(
+                offerer_repository=OffererSQLRepository(),
+                venue_repository=VenueSQLRepository(),
+                bank_informations_repository=BankInformationsSQLRepository()
+            )
 
         @clean_database
         def test_when_rib_and_offerer_change_everything_should_be_updated(self, mock_application_details, app):
             # Given
             application_id = '8'
             offerer = create_offerer(siren='793875030')
-            new_offerer = create_offerer(siren='793875019')
-            new_venue = create_venue(new_offerer, siret='79387501912345')
+            venue = create_venue(offerer, siret='79387503012345')
+            new_offerer = create_offerer(siren='123456789')
+            new_venue = create_venue(new_offerer, siret='12345678912345')
             bank_information = create_bank_information(
                 application_id=8,
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
-                offerer=offerer,
+                venue=venue,
+                date_modified_at_last_provider=datetime(2012,1,1)
             )
-            repository.save(offerer, new_venue, bank_information)
+            repository.save(new_venue, bank_information)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret='79387501912345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8)
+                siret='12345678912345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8)
 
             # When
             self.save_venue_bank_informations.execute(application_id)
@@ -328,7 +344,8 @@ class SaveVenueBankInformationsTest:
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
                 venue=venue,
-                status=BankInformationStatus.ACCEPTED
+                status=BankInformationStatus.ACCEPTED,
+                date_modified_at_last_provider=datetime(2012,1,1)
             )
             repository.save(offerer, bank_information)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
@@ -358,12 +375,14 @@ class SaveVenueBankInformationsTest:
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
                 venue=venue,
+                date_modified_at_last_provider=datetime(2012,1,1)
             )
             other_bank_information = create_bank_information(
                 application_id=79,
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
                 venue=other_venue,
+                date_modified_at_last_provider=datetime(2012,1,1)
             )
             repository.save(bank_information, other_bank_information)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
@@ -380,9 +399,13 @@ class SaveVenueBankInformationsTest:
                 'Une entrée avec cet identifiant existe déjà dans notre base de données']
 
     @patch('domain.demarches_simplifiees.get_application_details')
-    class OverrideBankInformationByReffererTest:
+    class UpdateBankInformationByVenueIdTest:
         def setup_method(self):
-            self.save_venue_bank_informations = SaveVenueBankInformations()
+            self.save_venue_bank_informations = SaveVenueBankInformations(
+                offerer_repository=OffererSQLRepository(),
+                venue_repository=VenueSQLRepository(),
+                bank_informations_repository=BankInformationsSQLRepository()
+            )
 
         @clean_database
         def test_when_receive_new_closed_application_should_override_previous_one(self, mock_application_details, app):
@@ -485,7 +508,7 @@ class SaveVenueBankInformationsTest:
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
                 venue=venue,
-                date_modified_at_last_provider=datetime(2020, 1, 1)
+                date_modified_at_last_provider=datetime(2021, 1, 1)
             )
             repository.save(bank_information)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(

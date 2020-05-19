@@ -27,3 +27,7 @@ class BankInformationsRepository(ABC):
     @abstractmethod
     def update_by_offerer_id(self, bank_informations: BankInformations) -> BankInformations:
         pass
+
+    @abstractmethod
+    def update_by_venue_id(self, bank_informations: BankInformations) -> BankInformations:
+        pass

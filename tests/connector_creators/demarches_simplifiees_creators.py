@@ -51,7 +51,7 @@ def venue_demarche_simplifiee_application_detail_response_with_siret(siret: str,
                                                                      bic: Optional[str],
                                                                      iban: Optional[str],
                                                                      idx: int = 1,
-                                                                     updated_at: str = "2019-01-21T18:55:03.387Z",
+                                                                     updated_at: str = "2020-01-21T18:55:03.387Z",
                                                                      siren: Optional[str] = None,
                                                                      state: str = "closed") -> Dict:
     return {
@@ -109,7 +109,7 @@ def venue_demarche_simplifiee_application_detail_response_without_siret(siret: s
                                                                         bic: Optional[str],
                                                                         iban: Optional[str],
                                                                         idx: int = 1,
-                                                                        updated_at: str = "2019-01-21T18:55:03.387Z",
+                                                                        updated_at: str = "2020-01-21T18:55:03.387Z",
                                                                         state: str = "closed") -> Dict:
     return {
         "dossier": {

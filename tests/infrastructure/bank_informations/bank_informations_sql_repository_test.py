@@ -282,3 +282,54 @@ class BankInformationsSQLRepositoryTest:
         # then
         assert BankInformationsSQLEntity.query.count() == 0
         assert bank_informations_updated is None
+
+    @clean_database
+    def test_should_update_bank_informations_when_bank_informations_already_exist_for_venue(self, app):
+        # given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer)
+        bank_informations_sql = create_bank_information(
+            venue=venue, application_id=9, status=BankInformationStatus.DRAFT, iban=None, bic=None)
+        repository.save(bank_informations_sql)
+
+        bank_informations_to_save = BankInformations(
+            status=BankInformationStatus.ACCEPTED,
+            application_id=9,
+            iban='FR7630006000011234567890189',
+            bic='QSDFGH8Z555',
+            venue_id=venue.id)
+
+        # when
+        bank_informations_saved = self.bank_informations_sql_repository.update_by_venue_id(
+            bank_informations_to_save)
+
+        # then
+        assert BankInformationsSQLEntity.query.count() == 1
+
+        sql_bank_informations_saved = BankInformationsSQLEntity.query.first()
+        assert sql_bank_informations_saved.offererId == None
+        assert sql_bank_informations_saved.venueId == venue.id
+        assert sql_bank_informations_saved.iban == bank_informations_to_save.iban
+        assert sql_bank_informations_saved.bic == bank_informations_to_save.bic
+        assert sql_bank_informations_saved.applicationId == bank_informations_to_save.application_id
+        assert sql_bank_informations_saved.status == bank_informations_to_save.status
+
+        assert bank_informations_saved.iban == bank_informations_to_save.iban
+        assert bank_informations_saved.bic == bank_informations_to_save.bic
+
+    @clean_database
+    def test_should_not_update_bank_informations_when_bank_informations_do_not_exist_for_venue(self, app):
+        # given
+        bank_informations_to_save = BankInformations(
+            status=BankInformationStatus.ACCEPTED,
+            application_id=9,
+            iban='FR7630006000011234567890189',
+            bic='QSDFGH8Z555',
+            venue_id=1)
+
+        # when
+        bank_informations_updated = self.bank_informations_sql_repository.update_by_venue_id(bank_informations_to_save)
+
+        # then
+        assert BankInformationsSQLEntity.query.count() == 0
+        assert bank_informations_updated is None
