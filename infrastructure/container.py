@@ -24,10 +24,10 @@ book_an_offer = BookAnOffer(booking_repository=booking_repository,
                             stock_repository=stock_repository,
                             notification_service=notification_service)
 
-save_offerer_bank_informations = SaveOffererBankInformations(offerer_repository=OffererSQLRepository,
-                                                             bank_informations_repository=BankInformationsSQLRepository
+save_offerer_bank_informations = SaveOffererBankInformations(offerer_repository=offerer_repository,
+                                                             bank_informations_repository=bank_informations_repository
                                                              )
 
-save_venue_bank_informations = SaveVenueBankInformations(offerer_repository=OffererSQLRepository,
-                                                         venue_repository=VenueSQLRepository,
-                                                         bank_informations_repository=BankInformationsSQLRepository)
+save_venue_bank_informations = SaveVenueBankInformations(offerer_repository=offerer_repository,
+                                                         venue_repository=venue_repository,
+                                                         bank_informations_repository=bank_informations_repository)
