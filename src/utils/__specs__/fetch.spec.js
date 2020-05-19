@@ -1,20 +1,14 @@
 import { fetchFromApiWithCredentials } from '../fetch'
 import { API_URL } from '../config'
+import fetch from 'jest-fetch-mock'
 
 describe('fetchFromApiWithCredentials', () => {
-  let mockFetchPromise
-  let fetchMock
-
   beforeEach(() => {
-    mockFetchPromise = Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve([]),
-    })
-    fetchMock = jest.spyOn(global, 'fetch').mockImplementation(() => mockFetchPromise)
+    fetch.mockResponse(JSON.stringify({}), { status: 200 })
   })
 
   afterEach(() => {
-    fetchMock.mockClear()
+    fetch.resetMocks()
   })
 
   it('should call API with given path with credentials', async () => {
@@ -25,7 +19,7 @@ describe('fetchFromApiWithCredentials', () => {
     await fetchFromApiWithCredentials(path)
 
     // Then
-    expect(fetchMock).toHaveBeenCalledWith(`${API_URL}${path}`, { credentials: 'include' })
+    expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, { credentials: 'include' })
   })
 
   it('should add "/" at beginning of path if not present', async () => {
@@ -36,7 +30,7 @@ describe('fetchFromApiWithCredentials', () => {
     await fetchFromApiWithCredentials(path)
 
     // Then
-    expect(fetchMock).toHaveBeenCalledWith(`${API_URL}/${path}`, { credentials: 'include' })
+    expect(fetch).toHaveBeenCalledWith(`${API_URL}/${path}`, { credentials: 'include' })
   })
 
   it('should return json if return status is ok', async () => {
@@ -49,24 +43,25 @@ describe('fetchFromApiWithCredentials', () => {
       booking_token: 'TOKEN',
       stock: { offer_name: 'My offer name' },
     }
-    mockFetchPromise = Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve([oneBooking]),
-    })
+    const paginatedBookingRecapReturned = {
+      page: 1,
+      pages: 1,
+      total: 1,
+      bookings_recap: [oneBooking],
+    }
+    fetch.mockResponseOnce(JSON.stringify(paginatedBookingRecapReturned), { status: 200 })
 
     // When
     const response = await fetchFromApiWithCredentials('/bookings/pro')
 
     // Then
-    expect(response).toHaveLength(1)
-    expect(response).toStrictEqual([oneBooking])
+    expect(response.bookings_recap).toHaveLength(1)
+    expect(response).toStrictEqual(paginatedBookingRecapReturned)
   })
 
   it('should reject promise if return status is not ok', async () => {
     // Given
-    mockFetchPromise = Promise.resolve({
-      ok: false,
-    })
+    fetch.mockResponseOnce('Error happened', { status: 401 })
 
     // When
     const response = fetchFromApiWithCredentials('/bookings/pro')

@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react'
 import Main from '../../layout/Main'
 import Titles from '../../layout/Titles/Titles'
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
-import { fetchBookingRecaps } from '../../../services/bookingRecapsService'
+import { fetchBookingsRecapByPage } from '../../../services/bookingsRecapService'
 import NoBookingsMessage from './NoBookingsMessage/NoBookingsMessage'
 
 class BookingsRecap extends PureComponent {
@@ -12,13 +12,13 @@ class BookingsRecap extends PureComponent {
   }
 
   componentDidMount() {
-    fetchBookingRecaps()
+    fetchBookingsRecapByPage()
       .then(this.duplicateDuoBookings)
       .then(this.handleSuccess)
   }
 
-  duplicateDuoBookings = bookingRecaps => {
-    return bookingRecaps
+  duplicateDuoBookings = paginatedBookingRecaps => {
+    return paginatedBookingRecaps.bookings_recap
       .map(bookingRecap =>
         bookingRecap.booking_is_duo ? [bookingRecap, bookingRecap] : bookingRecap
       )

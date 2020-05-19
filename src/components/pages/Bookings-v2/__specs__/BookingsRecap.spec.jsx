@@ -3,7 +3,7 @@ import { shallow } from 'enzyme'
 import Titles from '../../../layout/Titles/Titles'
 import BookingsRecap from '../BookingsRecap'
 import BookingsRecapTable from '../BookingsRecapTable/BookingsRecapTable'
-import * as bookingRecapsService from '../../../../services/bookingRecapsService'
+import * as bookingRecapsService from '../../../../services/bookingsRecapService'
 import NoBookingsMessage from '../NoBookingsMessage/NoBookingsMessage'
 
 function flushPromises() {
@@ -11,13 +11,18 @@ function flushPromises() {
 }
 
 describe('src | components | pages | Bookings-v2', () => {
-  let fetchBookingRecapsStub
+  let fetchBookingsRecapByPageStub
 
   beforeEach(() => {
-    fetchBookingRecapsStub = Promise.resolve([])
+    fetchBookingsRecapByPageStub = Promise.resolve({
+      page: 0,
+      pages: 0,
+      total: 0,
+      bookings_recap: [],
+    })
     jest
-      .spyOn(bookingRecapsService, 'fetchBookingRecaps')
-      .mockImplementation(() => fetchBookingRecapsStub)
+      .spyOn(bookingRecapsService, 'fetchBookingsRecapByPage')
+      .mockImplementation(() => fetchBookingsRecapByPageStub)
   })
 
   it('should render a Titles component and a NoBookingsMessage when api returned no bookings', async () => {
@@ -44,7 +49,13 @@ describe('src | components | pages | Bookings-v2', () => {
       booking_token: 'TOKEN',
       stock: { offer_name: 'My offer name' },
     }
-    fetchBookingRecapsStub = Promise.resolve([oneBooking])
+    const paginatedBookingRecapReturned = {
+      page: 1,
+      pages: 1,
+      total: 1,
+      bookings_recap: [oneBooking],
+    }
+    fetchBookingsRecapByPageStub = Promise.resolve(paginatedBookingRecapReturned)
 
     // When
     const wrapper = shallow(<BookingsRecap />)
@@ -69,7 +80,13 @@ describe('src | components | pages | Bookings-v2', () => {
       booking_token: 'TOKEN',
       stock: { offer_name: 'My offer name' },
     }
-    fetchBookingRecapsStub = Promise.resolve([oneBooking])
+    const paginatedBookingRecapReturned = {
+      page: 1,
+      pages: 1,
+      total: 1,
+      bookings_recap: [oneBooking],
+    }
+    fetchBookingsRecapByPageStub = Promise.resolve(paginatedBookingRecapReturned)
 
     // When
     const wrapper = shallow(<BookingsRecap />)
@@ -101,7 +118,13 @@ describe('src | components | pages | Bookings-v2', () => {
       booking_token: 'NEKOT',
       stock: { offer_name: 'My other offer name' },
     }
-    fetchBookingRecapsStub = Promise.resolve([oneDuoBooking, oneNonDuoBooking])
+    const paginatedBookingRecapReturned = {
+      page: 1,
+      pages: 1,
+      total: 1,
+      bookings_recap: [oneDuoBooking, oneNonDuoBooking],
+    }
+    fetchBookingsRecapByPageStub = Promise.resolve(paginatedBookingRecapReturned)
 
     // When
     const wrapper = shallow(<BookingsRecap />)
