@@ -179,7 +179,7 @@ class DiscoveryViewTest:
                         )
                     """
 
-        discovery_view_queries.update(db.session, order_by_digital_offers_test)
+        discovery_view_queries.create(db.session, order_by_digital_offers_test)
         discovery_view_queries.refresh(concurrently=False)
 
         # When
@@ -353,7 +353,7 @@ class DiscoveryViewV3Test:
                         )
                     """
 
-        discovery_view_v3_queries.update(db.session, order_by_digital_offers_test)
+        discovery_view_v3_queries.create(db.session, order_by_digital_offers_test)
         discovery_view_v3_queries.refresh(concurrently=False)
 
         # When

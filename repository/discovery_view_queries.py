@@ -27,21 +27,6 @@ def create(session: Session, order: Callable = _order_by_score_and_digital_offer
     session.commit()
 
 
-def update(session: Session, order: Callable) -> None:
-    # Create temporary view to minimize downtime
-    _create_discovery_view(session, order, 'discovery_view_tmp')
-
-    session.execute("""
-            DROP MATERIALIZED VIEW discovery_view;
-        """)
-
-    session.execute("""
-            ALTER MATERIALIZED VIEW discovery_view_tmp RENAME TO discovery_view;
-                """)
-
-    session.commit()
-
-
 def refresh(concurrently: bool = True) -> None:
     refresh_materialized_view(db.session, DiscoveryView.__tablename__, concurrently)
     db.session.commit()
