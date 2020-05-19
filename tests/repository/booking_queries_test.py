@@ -4,7 +4,7 @@ from decimal import Decimal
 import pytest
 from freezegun import freeze_time
 
-from domain.booking_recap.booking_recap import BookingRecapStatus, EventBookingRecap, BookingRecap
+from domain.booking_recap.booking_recap import EventBookingRecap
 from models import BookingSQLEntity, EventType, ThingType
 from models.api_errors import ApiErrors, ResourceNotFoundError
 from models.payment_status import TransactionStatus
@@ -1737,7 +1737,8 @@ class FindByProUserIdTest:
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=0, name='Harry Potter')
         yesterday = datetime.utcnow() - timedelta(days=1)
-        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF', is_cancelled=True)
+        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF',
+                                 is_cancelled=True)
         payment = create_payment(booking=booking, offerer=offerer, status=TransactionStatus.SENT)
         repository.save(user_offerer, payment)
 
@@ -1884,6 +1885,56 @@ class FindByProUserIdTest:
         # Then
         assert bookings_recap_paginated.bookings_recap == []
 
+    @clean_database
+    def test_should_return_one_booking_recap_item_when_offer_is_not_duo(self, app):
+        # Given
+        beneficiary = create_user(email='beneficiary@example.com')
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue, is_duo=False)
+        stock = create_stock(offer=offer, price=0, beginning_datetime=datetime.utcnow())
+
+        today = datetime.utcnow()
+        booking = create_booking(idx=2, user=beneficiary, stock=stock, token="FGHI", date_created=today)
+        repository.save(user_offerer, booking)
+
+        # When
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id, page=1, per_page_limit=4)
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        assert bookings_recap_paginated.bookings_recap[0].booking_token == booking.token
+        assert bookings_recap_paginated.page == 1
+        assert bookings_recap_paginated.pages == 1
+        assert bookings_recap_paginated.total == 1
+
+    @clean_database
+    def test_should_return_two_booking_recap_items_when_offer_is_duo(self, app):
+        # Given
+        beneficiary = create_user(email='beneficiary@example.com')
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue, is_duo=True)
+        stock = create_stock(offer=offer, price=0, beginning_datetime=datetime.utcnow())
+
+        today = datetime.utcnow()
+        booking = create_booking(idx=2, user=beneficiary, stock=stock, token="FGHI", date_created=today)
+        repository.save(user_offerer, booking)
+
+        # When
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id, page=1, per_page_limit=4)
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 2
+        assert bookings_recap_paginated.bookings_recap[0].booking_token == booking.token
+        assert bookings_recap_paginated.bookings_recap[1].booking_token == booking.token
+        assert bookings_recap_paginated.page == 1
+        assert bookings_recap_paginated.pages == 1
+        assert bookings_recap_paginated.total == 2
 
 
 

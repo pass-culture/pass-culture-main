@@ -107,8 +107,7 @@ def get_bookings_csv():
 @app.route('/bookings/pro', methods=['GET'])
 @login_required
 def get_all_bookings():
-    page_query_param = request.args.get('page')
-    page = page_query_param if page_query_param is not None else 1
+    page = request.args.get('page', 1)
     check_page_format_is_number(page)
     bookings_recap_paginated = get_all_bookings_by_pro_user(user_id=current_user.id, page=int(page))
 

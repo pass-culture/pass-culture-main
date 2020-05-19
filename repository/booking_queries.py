@@ -1,8 +1,8 @@
 from collections import namedtuple
 from datetime import datetime
-from typing import List, Set, Union
+from typing import List, Set, Union, Optional
 
-from sqlalchemy import func, desc
+from sqlalchemy import func, desc, text
 from sqlalchemy.orm import Query
 
 from domain.booking_recap.booking_recap import BookingRecap, EventBookingRecap, ThingBookingRecap
@@ -179,7 +179,30 @@ def find_by_id(booking_id: int) -> BookingSQLEntity:
 
 
 def find_by_pro_user_id(user_id: int, page: int = 1, per_page_limit: int = 20) -> BookingsRecapPaginated:
-    paginated_bookings = BookingSQLEntity.query \
+    bookings_recap_query = _build_bookings_recap_query(user_id)
+    bookings_recap_query = _duplicate_booking_when_offer_is_duo(bookings_recap_query)
+
+    total_bookings_recap = bookings_recap_query.count()
+
+    paginated_bookings = bookings_recap_query \
+        .offset((page - 1) * per_page_limit) \
+        .limit(per_page_limit) \
+        .all()
+
+    return _paginated_bookings_sql_entities_to_bookings_recap(paginated_bookings=paginated_bookings,
+                                                              page=page,
+                                                              per_page_limit=per_page_limit,
+                                                              total_bookings_recap=total_bookings_recap)
+
+
+def _duplicate_booking_when_offer_is_duo(bookings_recap_query: Query) -> Query:
+    return bookings_recap_query \
+        .union_all(bookings_recap_query.filter(Offer.isDuo == True)) \
+        .order_by(text('"bookingDate" DESC'))
+
+
+def _build_bookings_recap_query(user_id):
+    return BookingSQLEntity.query \
         .outerjoin(Payment) \
         .reset_joinpoint() \
         .join(UserSQLEntity) \
@@ -191,32 +214,32 @@ def find_by_pro_user_id(user_id: int, page: int = 1, per_page_limit: int = 20) -
         .filter(UserOfferer.userId == user_id) \
         .filter(UserOfferer.validationToken == None) \
         .with_entities(
-            BookingSQLEntity.token.label("bookingToken"),
-            BookingSQLEntity.dateCreated.label("bookingDate"),
-            BookingSQLEntity.isCancelled.label("isCancelled"),
-            BookingSQLEntity.isUsed.label("isUsed"),
-            BookingSQLEntity.quantity.label("quantity"),
-            Offer.name.label("offerName"),
-            Offer.type.label("offerType"),
-            Payment.currentStatus.label("paymentStatus"),
-            UserSQLEntity.firstName.label("beneficiaryFirstname"),
-            UserSQLEntity.lastName.label("beneficiaryLastname"),
-            UserSQLEntity.email.label("beneficiaryEmail"),
-            StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
-            Venue.departementCode.label('venueDepartementCode'),
-        ) \
-        .order_by(BookingSQLEntity.id.desc()) \
-        .paginate(page=page, per_page=per_page_limit, error_out=False)
-
-    return _paginated_bookings_sql_entities_to_bookings_recap(paginated_bookings)
+        BookingSQLEntity.token.label("bookingToken"),
+        BookingSQLEntity.dateCreated.label("bookingDate"),
+        BookingSQLEntity.isCancelled.label("isCancelled"),
+        BookingSQLEntity.isUsed.label("isUsed"),
+        BookingSQLEntity.quantity.label("quantity"),
+        Offer.name.label("offerName"),
+        Offer.type.label("offerType"),
+        Payment.currentStatus.label("paymentStatus"),
+        UserSQLEntity.firstName.label("beneficiaryFirstname"),
+        UserSQLEntity.lastName.label("beneficiaryLastname"),
+        UserSQLEntity.email.label("beneficiaryEmail"),
+        StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
+        Venue.departementCode.label('venueDepartementCode'),
+    )
 
 
-def _paginated_bookings_sql_entities_to_bookings_recap(paginated_bookings) -> BookingsRecapPaginated:
+def _paginated_bookings_sql_entities_to_bookings_recap(paginated_bookings: List[object],
+                                                       page: int,
+                                                       per_page_limit: int,
+                                                       total_bookings_recap: int) -> BookingsRecapPaginated:
+    pages = 1 if total_bookings_recap < per_page_limit else int(total_bookings_recap / per_page_limit)
     return BookingsRecapPaginated(
-        bookings_recap=[_serialize_booking_recap(booking) for booking in paginated_bookings.items],
-        page=paginated_bookings.page,
-        pages=paginated_bookings.pages,
-        total=paginated_bookings.total,
+        bookings_recap=[_serialize_booking_recap(booking) for booking in paginated_bookings],
+        page=page,
+        pages=pages,
+        total=total_bookings_recap,
     )
 
 
