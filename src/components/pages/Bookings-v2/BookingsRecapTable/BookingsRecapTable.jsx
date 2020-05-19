@@ -9,7 +9,7 @@ import BookingOfferCell from './CellsFormatter/BookingOfferCell'
 import Header from './Header/Header'
 import BookingIsDuoCell from './CellsFormatter/BookingIsDuoCell'
 
-export const NB_HITS_PER_PAGE = 5
+export const NB_BOOKINGS_PER_PAGE = 5
 
 class BookingsRecapTable extends Component {
   constructor(props) {
@@ -38,19 +38,19 @@ class BookingsRecapTable extends Component {
           headerTitle: 'Réservation',
           accessor: 'booking_date',
           Cell: ({ value }) => <BookingDateCell bookingDate={value} />,
-          className: 'td-booking-date'
+          className: 'td-booking-date',
         },
         {
           headerTitle: 'Contremarque',
           accessor: 'booking_token',
           Cell: ({ value }) => <BookingTokenCell bookingToken={value} />,
-          className: 'td-booking-token'
+          className: 'td-booking-token',
         },
         {
           headerTitle: 'Statut',
           accessor: 'booking_status',
           Cell: ({ value }) => <BookingStatusCell bookingStatus={value} />,
-          className: 'td-booking-status'
+          className: 'td-booking-status',
         },
       ],
     }
@@ -61,16 +61,17 @@ class BookingsRecapTable extends Component {
   }
 
   render() {
-    const { bookingsRecap } = this.props
+    const { bookingsRecap, nbBookings } = this.props
     const { columns } = this.state
 
     return (
       <div>
-        <Header nbBookings={bookingsRecap.length} />
+        <Header nbBookings={nbBookings} />
         <Table
           columns={columns}
           data={bookingsRecap}
-          nbHitsPerPage={NB_HITS_PER_PAGE}
+          nbBookingsPerPage={NB_BOOKINGS_PER_PAGE}
+          total={nbBookings}
         />
       </div>
     )

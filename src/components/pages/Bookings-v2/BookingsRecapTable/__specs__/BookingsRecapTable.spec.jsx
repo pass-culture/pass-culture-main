@@ -1,4 +1,4 @@
-import BookingsRecapTable, { NB_HITS_PER_PAGE } from '../BookingsRecapTable'
+import BookingsRecapTable, { NB_BOOKINGS_PER_PAGE } from '../BookingsRecapTable'
 import Table from '../Table/Table'
 import React from 'react'
 import { mount, shallow } from 'enzyme'
@@ -156,6 +156,7 @@ describe('components | BookingsRecapTable', () => {
     ]
     const props = {
       bookingsRecap: data,
+      nbBookings: 1,
     }
 
     // When
@@ -167,7 +168,8 @@ describe('components | BookingsRecapTable', () => {
     expect(table.props()).toStrictEqual({
       columns: wrapper.state('columns'),
       data: data,
-      nbHitsPerPage: NB_HITS_PER_PAGE
+      nbBookingsPerPage: NB_BOOKINGS_PER_PAGE,
+      total: 1,
     })
   })
 
@@ -190,6 +192,7 @@ describe('components | BookingsRecapTable', () => {
     ]
     const props = {
       bookingsRecap: data,
+      nbBookings: 1,
     }
 
     // When
@@ -199,7 +202,7 @@ describe('components | BookingsRecapTable', () => {
     const header = wrapper.find(Header)
     expect(header).toHaveLength(1)
     expect(header.props()).toStrictEqual({
-      nbBookings: 1
+      nbBookings: 1,
     })
   })
 })

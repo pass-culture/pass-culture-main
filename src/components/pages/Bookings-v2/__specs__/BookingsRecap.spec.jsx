@@ -10,9 +10,10 @@ function flushPromises() {
   return new Promise(resolve => setImmediate(resolve))
 }
 
-describe('src | components | pages | Bookings-v2', () => {
+describe('components | BookingsRecap', () => {
   let fetchBookingsRecapByPageStub
 
+  let fetchBookingsRecapByPageSpy
   beforeEach(() => {
     fetchBookingsRecapByPageStub = Promise.resolve({
       page: 0,
@@ -20,9 +21,13 @@ describe('src | components | pages | Bookings-v2', () => {
       total: 0,
       bookings_recap: [],
     })
-    jest
+    fetchBookingsRecapByPageSpy = jest
       .spyOn(bookingRecapsService, 'fetchBookingsRecapByPage')
       .mockImplementation(() => fetchBookingsRecapByPageStub)
+  })
+
+  afterEach(() => {
+    fetchBookingsRecapByPageSpy.mockReset()
   })
 
   it('should render a Titles component and a NoBookingsMessage when api returned no bookings', async () => {
@@ -58,7 +63,7 @@ describe('src | components | pages | Bookings-v2', () => {
     fetchBookingsRecapByPageStub = Promise.resolve(paginatedBookingRecapReturned)
 
     // When
-    const wrapper = shallow(<BookingsRecap />)
+    const wrapper = await shallow(<BookingsRecap />)
 
     // Then
     await flushPromises()
@@ -68,6 +73,55 @@ describe('src | components | pages | Bookings-v2', () => {
     expect(bookingsTable).toHaveLength(1)
     const noBookingsMessage = wrapper.find(NoBookingsMessage)
     expect(noBookingsMessage).toHaveLength(0)
+  })
+
+  it('should fetch bookings as many time as the number of pages', async () => {
+    // Given
+    const bookings1 = {
+      beneficiary: { email: 'user@example.com', firstname: 'First', lastname: 'Last' },
+      booking_date: '2020-04-12T19:31:12Z',
+      booking_is_duo: false,
+      booking_status: 'reimbursed',
+      booking_token: 'TOKEN',
+      stock: { offer_name: 'My offer name' },
+    }
+    const bookings2 = {
+      beneficiary: { email: 'user@example.com', firstname: 'First', lastname: 'Last' },
+      booking_date: '2020-04-12T19:31:12Z',
+      booking_is_duo: false,
+      booking_status: 'reimbursed',
+      booking_token: 'TOKEN',
+      stock: { offer_name: 'My offer name' },
+    }
+    const paginatedBookingRecapReturned = {
+      page: 1,
+      pages: 2,
+      total: 2,
+      bookings_recap: [bookings1],
+    }
+    const secondPaginatedBookingRecapReturned = {
+      page: 2,
+      pages: 2,
+      total: 2,
+      bookings_recap: [bookings2],
+    }
+    fetchBookingsRecapByPageSpy
+      .mockResolvedValueOnce(paginatedBookingRecapReturned)
+      .mockResolvedValueOnce(secondPaginatedBookingRecapReturned)
+
+    // When
+    const wrapper = await shallow(<BookingsRecap />)
+
+    // Then
+    await flushPromises()
+    expect(fetchBookingsRecapByPageSpy).toHaveBeenCalledTimes(2)
+    expect(fetchBookingsRecapByPageSpy).toHaveBeenNthCalledWith(1)
+    expect(fetchBookingsRecapByPageSpy).toHaveBeenNthCalledWith(2, 2)
+    const bookingsTable = wrapper.find(BookingsRecapTable)
+    expect(bookingsTable.props()).toStrictEqual({
+      bookingsRecap: [bookings1, bookings2],
+      nbBookings: 2,
+    })
   })
 
   it('should render the BookingsRecapTable with api values', async () => {
@@ -98,47 +152,5 @@ describe('src | components | pages | Bookings-v2', () => {
     const bookingsTable = wrapper.find(BookingsRecapTable)
     expect(bookingsTable).toHaveLength(1)
     expect(bookingsTable.prop('bookingsRecap')).toStrictEqual([oneBooking])
-  })
-
-  it('should render the BookingsRecapTable with duplicated booking data together when booking is duo', async () => {
-    // Given
-    const oneDuoBooking = {
-      beneficiary: { email: 'user@example.com', firstname: 'First', lastname: 'Last' },
-      booking_date: '2020-04-12T19:31:12Z',
-      booking_is_duo: true,
-      booking_status: 'reimbursed',
-      booking_token: 'TOKEN',
-      stock: { offer_name: 'My offer name' },
-    }
-    const oneNonDuoBooking = {
-      beneficiary: { email: 'another@example.com', firstname: 'An', lastname: 'Other' },
-      booking_date: '2020-02-22T19:31:12Z',
-      booking_is_duo: false,
-      booking_status: 'booked',
-      booking_token: 'NEKOT',
-      stock: { offer_name: 'My other offer name' },
-    }
-    const paginatedBookingRecapReturned = {
-      page: 1,
-      pages: 1,
-      total: 1,
-      bookings_recap: [oneDuoBooking, oneNonDuoBooking],
-    }
-    fetchBookingsRecapByPageStub = Promise.resolve(paginatedBookingRecapReturned)
-
-    // When
-    const wrapper = shallow(<BookingsRecap />)
-
-    // Then
-    await flushPromises()
-    const title = wrapper.find(Titles)
-    expect(title).toHaveLength(1)
-    const bookingsTable = wrapper.find(BookingsRecapTable)
-    expect(bookingsTable).toHaveLength(1)
-    expect(bookingsTable.prop('bookingsRecap')).toStrictEqual([
-      oneDuoBooking,
-      oneDuoBooking,
-      oneNonDuoBooking,
-    ])
   })
 })

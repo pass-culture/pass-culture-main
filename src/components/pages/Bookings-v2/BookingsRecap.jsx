@@ -8,34 +8,52 @@ import NoBookingsMessage from './NoBookingsMessage/NoBookingsMessage'
 class BookingsRecap extends PureComponent {
   constructor(props) {
     super(props)
-    this.state = { bookingsRecap: [] }
+    this.state = {
+      bookingsRecap: [],
+      apiPage: 0,
+      apiPages: 0,
+      total: 0,
+    }
   }
 
   componentDidMount() {
     fetchBookingsRecapByPage()
-      .then(this.duplicateDuoBookings)
+      .then(this.updatePages)
       .then(this.handleSuccess)
   }
 
-  duplicateDuoBookings = paginatedBookingRecaps => {
-    return paginatedBookingRecaps.bookings_recap
-      .map(bookingRecap =>
-        bookingRecap.booking_is_duo ? [bookingRecap, bookingRecap] : bookingRecap
-      )
-      .reduce((accumulator, currentValue) => accumulator.concat(currentValue), [])
+  componentDidUpdate() {
+    let { apiPage, apiPages } = this.state
+    if (apiPage < apiPages) {
+      apiPage++
+      fetchBookingsRecapByPage(apiPage).then(this.handleSuccess)
+    }
   }
 
-  handleSuccess = (bookingRecaps = {}) => {
-    this.setState({ bookingsRecap: bookingRecaps })
+  updatePages = paginatedBookingRecaps => {
+    return paginatedBookingRecaps
+  }
+
+  handleSuccess = (paginatedBookingRecaps = {}) => {
+    const { bookingsRecap } = this.state
+    this.setState({
+      apiPage: paginatedBookingRecaps.page,
+      apiPages: paginatedBookingRecaps.pages,
+      bookingsRecap: [...bookingsRecap].concat(paginatedBookingRecaps.bookings_recap),
+      total: paginatedBookingRecaps.total,
+    })
   }
 
   render() {
-    const { bookingsRecap } = this.state
+    const { bookingsRecap, total } = this.state
     return (
       <Main name="bookings-v2">
         <Titles title="Réservations" />
         {bookingsRecap.length > 0 ? (
-          <BookingsRecapTable bookingsRecap={bookingsRecap} />
+          <BookingsRecapTable
+            bookingsRecap={bookingsRecap}
+            nbBookings={total}
+          />
         ) : (
           <NoBookingsMessage />
         )}

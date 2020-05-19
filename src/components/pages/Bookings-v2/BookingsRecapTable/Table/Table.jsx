@@ -8,7 +8,7 @@ import Body from './Body/Body'
 
 const FIRST_PAGE_INDEX = 0
 
-const Table = ({ columns, data, nbHitsPerPage }) => {
+const Table = ({ columns, data, nbBookingsPerPage, total }) => {
   const {
     canPreviousPage,
     canNextPage,
@@ -19,7 +19,6 @@ const Table = ({ columns, data, nbHitsPerPage }) => {
     previousPage,
     prepareRow,
     page,
-    pageCount,
     state: { pageIndex },
   } = useTable(
     {
@@ -27,11 +26,12 @@ const Table = ({ columns, data, nbHitsPerPage }) => {
       data,
       initialState: {
         pageIndex: FIRST_PAGE_INDEX,
-        pageSize: nbHitsPerPage,
+        pageSize: nbBookingsPerPage,
       },
     },
     usePagination
   )
+  let pageCount = Math.ceil(total / nbBookingsPerPage)
 
   return (
     <div className="bookings-table-wrapper">
@@ -68,6 +68,7 @@ Table.propTypes = {
   ).isRequired,
   data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   nbHitsPerPage: PropTypes.number.isRequired,
+  total: PropTypes.number.isRequired,
 }
 
 export default Table

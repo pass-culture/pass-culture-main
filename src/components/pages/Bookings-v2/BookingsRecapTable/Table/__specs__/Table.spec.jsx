@@ -5,11 +5,9 @@ import Paginate from '../Paginate/Paginate'
 import Head from '../Head/Head'
 import * as reactTable from 'react-table'
 
-const CellMock = ({ offer: { offer_name: offerName } }) => (
-  <span>
-    {offerName}
-  </span>
-)
+const CellMock = ({ offer: { offer_name: offerName } }) => (<span>
+  {offerName}
+</span>)
 
 describe('components | Table', () => {
   it('should render a Head component with the right props', () => {
@@ -43,20 +41,16 @@ describe('components | Table', () => {
             {
               id: 1,
               headerTitle: 'Offres',
-              render: jest.fn(() => (
-                <span>
-                  {'Offres'}
-                </span>
-              )),
+              render: jest.fn(() => (<span>
+                {'Offres'}
+              </span>)),
             },
             {
               id: 2,
               headerTitle: 'Beneficiaires',
-              render: jest.fn(() => (
-                <span>
-                  {'Beneficiaires'}
-                </span>
-              )),
+              render: jest.fn(() => (<span>
+                {'Beneficiaires'}
+              </span>)),
             },
           ],
         },
@@ -129,7 +123,8 @@ describe('components | Table', () => {
           booking_token: 'ZEHBGD',
         },
       ],
-      nbHitsPerPage: 2,
+      nbBookingsPerPage: 2,
+      total: 2,
     }
 
     // When
@@ -161,7 +156,8 @@ describe('components | Table', () => {
           { stock: { offer_name: 'Avez-vous déjà vu 5' } },
           { stock: { offer_name: 'Avez-vous déjà vu 6' } },
         ],
-        nbHitsPerPage: 5,
+        nbBookingsPerPage: 5,
+        total: 6,
       }
 
       // When
@@ -200,7 +196,8 @@ describe('components | Table', () => {
           { stock: { offer_name: 'Avez-vous déjà vu 5' } },
           { stock: { offer_name: 'Avez-vous déjà vu 6' } },
         ],
-        nbHitsPerPage: 5,
+        nbBookingsPerPage: 5,
+        total: 6,
       }
 
       // When
