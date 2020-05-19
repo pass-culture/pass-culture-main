@@ -10,6 +10,8 @@ from models.db import db
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
+from utils.config import IS_DEV
+
 config = context.config
 
 # Interpret the config file for Python logging.
@@ -35,37 +37,6 @@ def include_object(object, name, type_, reflected, compare_to):
         return True
 
 
-def get_url():
-    return os.environ.get("DATABASE_URL")
-
-
-def run_migrations_offline():
-    """Run migrations in 'offline' mode.
-
-    This configures the context with just a URL
-    and not an Engine, though an Engine is acceptable
-    here as well.  By skipping the Engine creation
-    we don't even need a DBAPI to be available.
-
-    Calls to context.execute() here emit the given string to the
-    script output.
-
-    """
-    url = get_url()
-    context.configure(
-        url=url,
-        target_metadata=target_metadata,
-        literal_binds=True,
-        include_object=include_object,
-        include_schemas=True,
-        compare_type=True,
-        transaction_per_migration=False
-    )
-
-    with context.begin_transaction():
-        context.run_migrations()
-
-
 def run_migrations_online():
     """Run migrations in 'online' mode.
 
@@ -73,7 +44,8 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-    connectable = create_engine(get_url())
+    database_url = os.environ.get("DATABASE_URL")
+    connectable = create_engine(database_url)
 
     with connectable.connect() as connection:
         context.configure(
@@ -84,15 +56,35 @@ def run_migrations_online():
             transaction_per_migration=False
         )
 
-        connection.execute('UPDATE feature SET "isActive" = FALSE WHERE name = \'UPDATE_DISCOVERY_VIEW\'')
+        if not IS_DEV:
+            connection.execute('UPDATE feature SET "isActive" = FALSE WHERE name = \'UPDATE_DISCOVERY_VIEW\'')
 
         with context.begin_transaction():
             context.run_migrations()
 
-        connection.execute('UPDATE feature SET "isActive" = TRUE WHERE name = \'UPDATE_DISCOVERY_VIEW\'')
+        if not IS_DEV:
+            connection.execute('UPDATE feature SET "isActive" = TRUE WHERE name = \'UPDATE_DISCOVERY_VIEW\'')
+
+def run_migrations_for_tests():
+    """Run migrations in a testing context
+    """
+    database_url = os.environ.get("DATABASE_URL_TEST")
+    connectable = create_engine(database_url)
+
+    with connectable.connect() as connection:
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            include_object=include_object,
+            include_schemas=True,
+            transaction_per_migration=False
+        )
+
+        with context.begin_transaction():
+            context.run_migrations()
 
 
-if context.is_offline_mode():
-    run_migrations_offline()
+if os.environ.get("RUN_ENV") == "tests":
+    run_migrations_for_tests()
 else:
     run_migrations_online()

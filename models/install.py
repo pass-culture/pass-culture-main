@@ -1,28 +1,21 @@
 from sqlalchemy import orm
 from sqlalchemy.exc import ProgrammingError
 
-import models
-from models.db import db, versioning_manager
-from models.feature import FeatureToggle, Feature
-from repository import repository, discovery_view_queries, discovery_view_v3_queries
 from repository.discovery_view_queries import _order_by_digital_offers
 from repository.discovery_view_v3_queries import _order_by_digital_offers
-
-
-def install_database_extensions():
-    create_text_search_configuration_if_not_exists()
-    create_index_btree_gist_extension()
-    create_postgis_extension()
+from models.db import db, \
+    versioning_manager
+from models.feature import FeatureToggle, \
+    Feature
+from repository import repository, \
+    discovery_view_queries, \
+    discovery_view_v3_queries
 
 
 def install_models():
     orm.configure_mappers()
 
     create_versionning_tables()
-
-    for db_model in models.models:
-        model_to_create = db_model.__table__
-        model_to_create.create(bind=db.engine, checkfirst=True)
 
     db.session.commit()
 
@@ -48,18 +41,6 @@ def install_features():
     repository.save(*features)
 
 
-def create_text_search_configuration_if_not_exists():
-    db.engine.execute("CREATE EXTENSION IF NOT EXISTS unaccent;")
-
-    french_unaccent_configuration_query = db.engine.execute(
-        "SELECT * FROM pg_ts_config WHERE cfgname='french_unaccent';")
-    if french_unaccent_configuration_query.fetchone() is None:
-        db.engine.execute("CREATE TEXT SEARCH CONFIGURATION french_unaccent ( COPY = french );")
-        db.engine.execute(
-            "ALTER TEXT SEARCH CONFIGURATION french_unaccent"
-            " ALTER MAPPING FOR hword, hword_part, word WITH unaccent, french_stem;")
-
-
 def create_versionning_tables():
     # FIXME: This is seriously ugly... (based on https://github.com/kvesteri/postgresql-audit/issues/21)
     try:
@@ -70,11 +51,3 @@ def create_versionning_tables():
         versioning_manager.activity_cls.__table__.create(db.session.get_bind())
     except ProgrammingError:
         pass
-
-
-def create_index_btree_gist_extension():
-    db.engine.execute("CREATE EXTENSION IF NOT EXISTS btree_gist;")
-
-
-def create_postgis_extension():
-    db.engine.execute("CREATE EXTENSION IF NOT EXISTS postgis;")

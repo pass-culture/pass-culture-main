@@ -4,16 +4,20 @@ from pprint import pprint
 from unittest.mock import Mock
 
 import pytest
-from flask import Flask, jsonify
+from alembic import command
+from alembic.config import Config
+from flask import Flask, \
+    jsonify
 from flask.testing import FlaskClient
 from flask_login import LoginManager, login_user
 from mailjet_rest import Client
 from requests import Response
 from requests.auth import _basic_auth_str
 
+from install_database_extensions import install_database_extensions
 from local_providers.install import install_local_providers
 from models.db import db
-from models.install import install_models, install_database_extensions, install_materialized_views
+from models.install import install_models, install_materialized_views
 from repository.clean_database import clean_all_database
 from repository.user_queries import find_user_by_email
 from routes import install_routes
@@ -45,6 +49,11 @@ def app():
 
     app.app_context().push()
     install_database_extensions()
+
+    alembic_cfg = Config("alembic.ini")
+    alembic_cfg.attributes['sqlalchemy.url'] = os.environ.get('DATABASE_URL_TEST')
+    command.upgrade(alembic_cfg, "head")
+
     install_models()
     install_materialized_views()
     install_routes()

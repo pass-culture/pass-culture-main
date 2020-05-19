@@ -5,23 +5,21 @@ import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.rq import RqIntegration
 import redis
-from flask import Flask
 from flask_admin import Admin
-from flask_cors import CORS
 from flask_login import LoginManager
 from mailjet_rest import Client
 from werkzeug.middleware.profiler import ProfilerMiddleware
 
 from admin.install import install_admin_views
 from documentation import install_documentation
+from flask_app import app
 from local_providers.install import install_local_providers
 from models.db import db
-from models.install import install_models, install_features, install_database_extensions, install_materialized_views
+from models.install import install_models, install_features, install_materialized_views
 from repository.feature_queries import feature_request_profiling_enabled
 from routes import install_routes
 from utils.config import IS_DEV, REDIS_URL, ENV
 from utils.health_checker import read_version_from_file
-from utils.json_encoder import EnumJSONEncoder
 from utils.mailing import get_contact, \
     MAILJET_API_KEY, \
     MAILJET_API_SECRET, \
@@ -35,7 +33,6 @@ if IS_DEV is False:
         environment=ENV
     )
 
-app = Flask(__name__, static_url_path='/static')
 login_manager = LoginManager()
 admin = Admin(name='pc Back Office', url='/pc/back-office', template_mode='bootstrap3')
 
@@ -45,40 +42,8 @@ if feature_request_profiling_enabled():
     app.wsgi_app = ProfilerMiddleware(app.wsgi_app,
                                       restrictions=profiling_restrictions)
 
-app.secret_key = os.environ.get('FLASK_SECRET', '+%+3Q23!zbc+!Dd@')
-app.json_encoder = EnumJSONEncoder
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SECURE'] = False if IS_DEV else True
-app.config['REMEMBER_COOKIE_DURATION'] = 90 * 24 * 3600
-app.config['PERMANENT_SESSION_LIFETIME'] = 90 * 24 * 3600
-app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
-app.config['FLASK_ADMIN_FLUID_LAYOUT'] = True
-
-
-@app.teardown_request
-def remove_db_session(exc):
-    try:
-        db.session.remove()
-    except AttributeError:
-        pass
-
-
-admin.init_app(app)
-db.init_app(app)
-login_manager.init_app(app)
-cors = CORS(app,
-            resources={r"/*": {"origins": "*"}},
-            supports_credentials=True
-            )
-
-# make Werkzeug match routing rules with or without a trailing slash
-app.url_map.strict_slashes = False
-
 with app.app_context():
     if IS_DEV:
-        install_database_extensions()
         install_models()
         install_materialized_views()
         install_local_providers()
