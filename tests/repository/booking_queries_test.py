@@ -1722,7 +1722,7 @@ class FindByProUserIdTest:
         bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
 
         # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 1
+        assert len(bookings_recap_paginated.bookings_recap) == 2
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.booking_is_duo is True
 
@@ -1886,14 +1886,14 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.bookings_recap == []
 
     @clean_database
-    def test_should_return_one_booking_recap_item_when_offer_is_not_duo(self, app):
+    def test_should_return_one_booking_recap_item_when_quantity_booked_is_one(self, app):
         # Given
         beneficiary = create_user(email='beneficiary@example.com')
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue, is_duo=False)
+        offer = create_offer_with_event_product(venue, is_duo=True)
         stock = create_stock(offer=offer, price=0, beginning_datetime=datetime.utcnow())
 
         today = datetime.utcnow()
@@ -1911,7 +1911,7 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.total == 1
 
     @clean_database
-    def test_should_return_two_booking_recap_items_when_offer_is_duo(self, app):
+    def test_should_return_two_booking_recap_items_when_quantity_booked_is_two(self, app):
         # Given
         beneficiary = create_user(email='beneficiary@example.com')
         user = create_user()
@@ -1922,7 +1922,7 @@ class FindByProUserIdTest:
         stock = create_stock(offer=offer, price=0, beginning_datetime=datetime.utcnow())
 
         today = datetime.utcnow()
-        booking = create_booking(idx=2, user=beneficiary, stock=stock, token="FGHI", date_created=today)
+        booking = create_booking(idx=2, user=beneficiary, stock=stock, token="FGHI", date_created=today, quantity=2)
         repository.save(user_offerer, booking)
 
         # When

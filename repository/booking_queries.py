@@ -197,7 +197,7 @@ def find_by_pro_user_id(user_id: int, page: int = 1, per_page_limit: int = 20) -
 
 def _duplicate_booking_when_offer_is_duo(bookings_recap_query: Query) -> Query:
     return bookings_recap_query \
-        .union_all(bookings_recap_query.filter(Offer.isDuo == True)) \
+        .union_all(bookings_recap_query.filter(BookingSQLEntity.quantity == 2)) \
         .order_by(text('"bookingDate" DESC'))
 
 
