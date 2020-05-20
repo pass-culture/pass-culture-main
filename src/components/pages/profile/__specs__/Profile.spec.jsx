@@ -10,7 +10,9 @@ describe('profile page', () => {
 
   beforeEach(() => {
     props = {
-      history: {},
+      history: {
+        push: jest.fn()
+      },
       location: {},
       user: new User({}),
     }

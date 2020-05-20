@@ -3,11 +3,11 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
 import Icon from '../../../layout/Icon/Icon'
-import { WEBAPP_CONTACT_EXTERNAL_PAGE } from '../../../../utils/config'
 import SignoutLinkContainer from '../SignoutLink/SignoutLinkContainer'
+import { CONTACT_URL } from '../utils/externalLinks'
 
 const ListLinks = ({ historyPush, readRecommendations }) => (
-  <section className="list-links pm-section">
+  <section className="list-links profile-section">
     <ul>
       <li>
         <Link to="/profil/informations">
@@ -29,7 +29,7 @@ const ListLinks = ({ historyPush, readRecommendations }) => (
       </li>
       <li>
         <a
-          href={WEBAPP_CONTACT_EXTERNAL_PAGE}
+          href={CONTACT_URL}
           rel="noopener noreferrer"
           target="_blank"
           title="Ouverture de l’aide dans une nouvelle fenêtre"
@@ -40,6 +40,15 @@ const ListLinks = ({ historyPush, readRecommendations }) => (
           </div>
           <Icon svg="ico-next-lightgrey" />
         </a>
+      </li>
+      <li>
+        <Link to="/profil/mentions-legales">
+          <Icon svg="ico-legal-notice" />
+          <div className="list-link-label">
+            {'Mentions légales'}
+          </div>
+          <Icon svg="ico-next-lightgrey" />
+        </Link>
       </li>
       <li>
         <SignoutLinkContainer

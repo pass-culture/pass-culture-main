@@ -3,7 +3,7 @@ import 'moment/locale/fr'
 import 'moment-duration-format'
 import 'moment-timezone'
 
-import { version } from '../../package.json'
+import {version} from '../../package.json'
 
 moment.locale('fr-fr')
 
@@ -23,8 +23,6 @@ export const APP_VERSION = version
 export const PROJECT_NAME = 'pass Culture'
 export const IS_DEV = NODE_ENV === 'development'
 export const IS_PROD = !IS_DEV
-export const WEBAPP_CONTACT_EXTERNAL_PAGE =
-  'https://aide.passculture.app/fr/category/18-ans-1dnil5r/'
 
 // NOTE: valeur également présente en dur dans:
 // - ./webapp/README.md

@@ -3,7 +3,7 @@
 exports[`src | components | pages | NotMatch should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
-  Symbol(enzyme.__unrendered__): <NoMatch
+  Symbol(enzyme.__unrendered__): <NotMatch
     delay={1}
     location={Object {}}
     redirect="/fake-url"

@@ -7,6 +7,7 @@ import { snackbar } from '../../../utils/snackbar'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import NotMatch from '../not-match/NotMatch'
 import EditPasswordContainer from './EditPassword/EditPasswordContainer'
+import LegalNotice from './LegalNotice/LegalNotice'
 import PersonalInformationsContainer from './PersonalInformations/PersonalInformationsContainer'
 import ProfileMainView from './ProfileMainView/ProfileMainView'
 import User from './ValueObjects/User'
@@ -17,54 +18,20 @@ export const getDepartment = departmentCode => {
 }
 
 class Profile extends PureComponent {
-  renderProfileMainView = (user, historyPush) => () => (
-    <ProfileMainView
-      historyPush={historyPush}
-      user={user}
-    />
-  )
-
-  renderPasswordEditForm = routeProps => {
-    const { user, history } = this.props
-
-    return (
-      <EditPasswordContainer
-        historyPush={history.push}
-        pathToProfile="/profil"
-        snackbar={snackbar}
-        user={user}
-        {...routeProps}
-      />
-    )
-  }
-
-  renderPersonalInformationsEdition = routeProps => {
-    const { user, history } = this.props
-
-    return (
-      <PersonalInformationsContainer
-        getDepartment={getDepartment}
-        historyPush={history.push}
-        pathToProfile="/profil"
-        snackbar={snackbar}
-        user={user}
-        {...routeProps}
-      />
-    )
-  }
-
   renderNoMatch = routeProps => (<NotMatch
-    {...routeProps}
     delay={3}
     redirect="/profil"
+    {...routeProps}
                                  />)
 
   render() {
     const { user, history, location } = this.props
+    const pathToProfile = '/profil'
+    const { email, id } = user
 
     return (
       <div
-        className="page is-relative"
+        className="page is-relative profile-page"
         id="profile-page"
       >
         {user && (
@@ -73,20 +40,50 @@ class Profile extends PureComponent {
               exact
               key="route-profile-main-view"
               path="/profil/:menu(menu)?"
-              render={this.renderProfileMainView(user, history.push)}
-            />
+            >
+              <ProfileMainView
+                historyPush={history.push}
+                user={user}
+              />
+            </Route>
             <Route
               exact
               key="route-profile-edit-form"
               path="/profil/:view(mot-de-passe)/:menu(menu)?"
-              render={this.renderPasswordEditForm}
-            />
+            >
+              <EditPasswordContainer
+                historyPush={history.push}
+                pathToProfile={pathToProfile}
+                snackbar={snackbar}
+                user={user}
+                {...this.props}
+              />
+            </Route>
             <Route
               exact
               key="route-profile-edit-personal-informations"
               path="/profil/:view(informations)/:menu(menu)?"
-              render={this.renderPersonalInformationsEdition}
-            />
+            >
+              <PersonalInformationsContainer
+                getDepartment={getDepartment}
+                historyPush={history.push}
+                pathToProfile={pathToProfile}
+                snackbar={snackbar}
+                user={user}
+              />
+            </Route>
+            <Route
+              exact
+              key="route-legal-notice"
+              path="/profil/:view(mentions-legales)/:menu(menu)?"
+            >
+              <LegalNotice
+                historyPush={history.push}
+                pathToProfile={pathToProfile}
+                userEmail={email}
+                userId={id}
+              />
+            </Route>
             <Route component={this.renderNoMatch} />
           </Switch>
         )}

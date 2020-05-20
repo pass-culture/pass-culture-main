@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Redirect } from 'react-router-dom'
 
-class NoMatch extends PureComponent {
+class NotMatch extends PureComponent {
   constructor(props) {
     super(props)
     this.timer = null
@@ -50,15 +50,15 @@ class NoMatch extends PureComponent {
   }
 }
 
-NoMatch.defaultProps = {
+NotMatch.defaultProps = {
   delay: 5,
   redirect: '/',
 }
 
-NoMatch.propTypes = {
+NotMatch.propTypes = {
   delay: PropTypes.number,
   location: PropTypes.shape().isRequired,
   redirect: PropTypes.string,
 }
 
-export default NoMatch
+export default NotMatch

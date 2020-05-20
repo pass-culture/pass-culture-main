@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
 import { NON_BREAKING_SPACE } from '../../../../utils/specialCharacters'
-import getRemainingCreditForGivenCreditLimit from '../utils/utils'
+import { getRemainingCreditForGivenCreditLimit } from '../utils/utils'
 import CreditGauge from './CreditGauge/CreditGauge'
 import User from '../ValueObjects/User'
 
@@ -30,7 +30,7 @@ class RemainingCredit extends PureComponent {
     const physicalRemainingCredit = getRemainingCreditForGivenCreditLimit(walletBalance)(physical)
 
     return (
-      <section className="pm-section">
+      <section className="profile-section">
         <div className="rc-informations-container">
           <div className="rc-gauges-container">
             <div className="rc-gauges-title">

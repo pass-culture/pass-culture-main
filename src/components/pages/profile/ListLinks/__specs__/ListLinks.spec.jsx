@@ -55,6 +55,19 @@ describe('my informations', () => {
     expect(linkToHelpPage.prop('title')).toBe('Ouverture de l’aide dans une nouvelle fenêtre')
   })
 
+  it('should display a link to legal notice page', () => {
+    // When
+    const wrapper = shallow(<ListLinks {...props} />)
+
+    // Then
+    const legalNoticePage = wrapper
+      .find({ children: 'Mentions légales' })
+      .parent()
+      .prop('to')
+
+    expect(legalNoticePage).toBe('/profil/mentions-legales')
+  })
+
   it('should display a signout link', () => {
     // When
     const wrapper = shallow(<ListLinks {...props} />)

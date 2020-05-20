@@ -15,7 +15,7 @@ const ProfileMainView = ({ user, historyPush }) => (
         <ProfileHeader user={user} />
         <RemainingCredit user={user} />
         <ListLinksContainer historyPush={historyPush} />
-        <section className="pm-section">
+        <section className="profile-section">
           <div className="pm-app-version">
             {`Version ${version}`}
           </div>
