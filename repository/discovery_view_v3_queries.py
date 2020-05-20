@@ -60,7 +60,7 @@ def _create_function_get_recommendable_offers_ordered_by_digital_offers(session,
     get_active_offers_ids = _create_function_get_active_offers_ids(session)
 
     session.execute(f"""
-        CREATE OR REPLACE FUNCTION get_recommendable_offers_ordered_by_digital_offers()
+        CREATE OR REPLACE FUNCTION get_recommendable_offers()
         RETURNS TABLE (
             criterion_score BIGINT,
             id BIGINT,
@@ -89,7 +89,7 @@ def _create_function_get_recommendable_offers_ordered_by_digital_offers(session,
         $body$
         LANGUAGE plpgsql;
     """)
-    return 'get_recommendable_offers_ordered_by_digital_offers'
+    return 'get_recommendable_offers'
 
 
 def _create_function_offer_has_at_least_one_bookable_stock(session) -> str:

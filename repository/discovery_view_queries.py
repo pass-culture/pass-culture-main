@@ -51,7 +51,7 @@ def _create_discovery_view(session: Session, order: Callable, name: str) -> None
             ORDER BY recommendable_offers.partitioned_offers;
     """)
     session.execute(f"""
-        CREATE UNIQUE INDEX ON {name} ("offerDiscoveryOrder");
+        CREATE UNIQUE INDEX IF NOT EXISTS "discovery_view_offerDiscoveryOrder_idx" ON {name} ("offerDiscoveryOrder");
     """)
 
 
