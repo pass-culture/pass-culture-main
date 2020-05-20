@@ -9,5 +9,6 @@ class VenueRepository(ABC):
     def find_by_siret(self, siret: str) -> Venue:
         pass
 
+    @abstractmethod
     def find_by_name(self, name: str, offerer_id: str) -> List[Venue]:
         pass

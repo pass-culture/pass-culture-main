@@ -18,14 +18,7 @@ from models import BankInformation
 from domain.bank_information import CannotRegisterBankInformation
 
 
-@patch('domain.demarches_simplifiees.get_application_details')
 class SaveOffererBankInformationsTest:
-    def setup_method(self):
-        self.save_offerer_bank_informations = SaveOffererBankInformations(
-            offerer_repository=OffererSQLRepository(),
-            bank_informations_repository=BankInformationsSQLRepository()
-        )
-
     @patch('domain.demarches_simplifiees.get_application_details')
     class SaveNewBankInformationsTest:
         def setup_method(self):
