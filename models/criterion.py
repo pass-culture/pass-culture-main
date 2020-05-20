@@ -5,7 +5,7 @@ from models.pc_object import PcObject
 
 
 class Criterion(PcObject, Model):
-    name = Column(String(140), nullable=False)
+    name = Column(String(140), nullable=False, unique=True)
 
     description = Column(Text, nullable=True)
 
