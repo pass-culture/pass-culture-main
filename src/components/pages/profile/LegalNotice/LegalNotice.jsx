@@ -52,7 +52,7 @@ const LegalNotice = ({ pathToProfile, userEmail, userId }) => {
               target="_blank"
               title="Envoyer un mail à support@passculture.app"
             >
-              <Icon svg="ico-data-protection" />
+              <Icon svg="ico-delete-account" />
               <div className="list-link-label">
                 {'Suppression du compte'}
               </div>

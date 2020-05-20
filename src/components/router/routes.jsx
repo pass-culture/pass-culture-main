@@ -160,13 +160,6 @@ const routes = [
     path: '/profil/:view(mot-de-passe|informations|mentions-legales)?',
     title: 'Mon compte',
   },
-  {
-    href:
-      'https://pass-culture.gitbook.io/documents/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture',
-    icon: 'ico-txt',
-    target: '_blank',
-    title: 'Mentions légales',
-  },
 ]
 
 export default routes

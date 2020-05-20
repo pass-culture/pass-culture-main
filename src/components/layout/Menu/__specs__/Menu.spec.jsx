@@ -97,7 +97,7 @@ describe('components | Menu', () => {
       expect(transition).toHaveLength(1)
       expect(closeLink).toHaveLength(1)
       expect(header).toHaveLength(1)
-      expect(anchor).toHaveLength(6)
+      expect(anchor).toHaveLength(5)
       expect(link).toHaveLength(5)
       expect(props.toggleOverlay).toHaveBeenCalledWith()
     })
