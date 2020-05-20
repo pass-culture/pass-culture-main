@@ -17,9 +17,10 @@ def random_password():
 
 def check_password_validity(new_password: str, new_confirmation_password: str, old_password: str, user: UserSQLEntity) -> None:
     api_errors = ApiErrors()
-    _compute_password_strength_errors('newPassword', new_password, api_errors)
-    _compute_new_password_validity_errors(user, old_password, new_password, api_errors)
-    _compute_confirmation_password_validity_errors(new_password, new_confirmation_password, api_errors)
+    _ensure_new_password_is_strong_enough('newPassword', new_password, api_errors)
+    _ensure_given_old_password_is_correct(user, old_password, api_errors)
+    _ensure_new_password_is_different_from_old(user, new_password, api_errors)
+    _ensure_confirmation_password_is_same_as_new_password(new_password, new_confirmation_password, api_errors)
     if len(api_errors.errors) > 0:
         raise api_errors
 
@@ -79,20 +80,22 @@ def check_reset_token_validity(user):
 
 def check_password_strength(key: str, password: str) -> None:
     api_errors = ApiErrors()
-    _compute_password_strength_errors(key, password, api_errors)
+    _ensure_new_password_is_strong_enough(key, password, api_errors)
     if len(api_errors.errors) > 0:
         raise api_errors
 
 
-def _compute_new_password_validity_errors(user: UserSQLEntity, old_password: str, new_password: str, errors: ApiErrors) -> None:
-    if not user.checkPassword(old_password):
-        errors.add_error('oldPassword', 'Ton ancien mot de passe est incorrect.')
-
+def _ensure_new_password_is_different_from_old(user: UserSQLEntity, new_password: str, errors: ApiErrors) -> None:
     if user.checkPassword(new_password):
         errors.add_error('newPassword', 'Ton nouveau mot de passe est identique à l’ancien.')
 
 
-def _compute_password_strength_errors(field_name: str, field_value: str, errors: ApiErrors) -> None:
+def _ensure_given_old_password_is_correct(user: UserSQLEntity, old_password: str, errors: ApiErrors) -> None:
+    if not user.checkPassword(old_password):
+        errors.add_error('oldPassword', 'Ton ancien mot de passe est incorrect.')
+
+
+def _ensure_new_password_is_strong_enough(field_name: str, field_value: str, errors: ApiErrors) -> None:
     at_least_one_uppercase = '(?=.*?[A-Z])'
     at_least_one_lowercase = '(?=.*?[a-z])'
     at_least_one_digit = '(?=.*?[0-9])'
@@ -117,6 +120,6 @@ def _compute_password_strength_errors(field_name: str, field_value: str, errors:
             '- Un caractère spécial'
         )
 
-def _compute_confirmation_password_validity_errors(new_password_value: str, new_confirmation_password_value: str, errors: ApiErrors) -> None:
+def _ensure_confirmation_password_is_same_as_new_password(new_password_value: str, new_confirmation_password_value: str, errors: ApiErrors) -> None:
     if(new_password_value != new_confirmation_password_value):
         errors.add_error('newConfirmationPassword', 'Les deux mots de passe ne sont pas identiques.')

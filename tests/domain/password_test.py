@@ -1,7 +1,9 @@
 import pytest
 
-from domain.password import _compute_new_password_validity_errors, _compute_password_strength_errors, validate_change_password_request, \
-    check_password_validity, _compute_confirmation_password_validity_errors
+from domain.password import _ensure_new_password_is_strong_enough, \
+    validate_change_password_request, \
+    check_password_validity, _ensure_confirmation_password_is_same_as_new_password, _ensure_given_old_password_is_correct, \
+    _ensure_new_password_is_different_from_old
 from models import UserSQLEntity, ApiErrors
 
 
@@ -145,7 +147,7 @@ class CheckPasswordValidityTest:
         assert api_errors.value.errors['newConfirmationPassword'] == ['Les deux mots de passe ne sont pas identiques.']
 
 
-class ComputePasswordStrengthErrorsTest:
+class EnsureNewPasswordIsStrongEnoughTest:
     @pytest.mark.parametrize('newPassword', [
         '_v4l1dP455sw0rd',
         '-v4l1dP455sw0rd',
@@ -170,8 +172,13 @@ class ComputePasswordStrengthErrorsTest:
         '.v4l1dP455sw0rd'
     ])
     def test_should_not_add_errors_when_password_is_valid(self, newPassword):
+        # given
         api_errors = ApiErrors()
-        _compute_password_strength_errors('newPassword', newPassword, api_errors)
+
+        # when
+        _ensure_new_password_is_strong_enough('newPassword', newPassword, api_errors)
+
+        # then
         assert len(api_errors.errors) is 0
 
     @pytest.mark.parametrize('newPassword', [
@@ -186,7 +193,7 @@ class ComputePasswordStrengthErrorsTest:
         api_errors = ApiErrors()
 
         # when
-        _compute_password_strength_errors('newPassword', newPassword, api_errors)
+        _ensure_new_password_is_strong_enough('newPassword', newPassword, api_errors)
 
         # then
         assert api_errors.errors['newPassword'] == [
@@ -198,13 +205,13 @@ class ComputePasswordStrengthErrorsTest:
         ]
 
 
-class ComputeConfirmationPasswordValidityErrorsTest:
+class EnsureConfirmationPasswordIsSameAsNewPasswordTest:
     def test_should_add_an_error_when_new_passwords_are_not_equals(self):
         # given
         api_errors = ApiErrors()
 
         # when
-        _compute_confirmation_password_validity_errors('goodNewPassword', 'wrongNewConfirmationPassword', api_errors)
+        _ensure_confirmation_password_is_same_as_new_password('goodNewPassword', 'wrongNewConfirmationPassword', api_errors)
 
         # then
         assert api_errors.errors['newConfirmationPassword'] == ['Les deux mots de passe ne sont pas identiques.']
@@ -214,37 +221,37 @@ class ComputeConfirmationPasswordValidityErrorsTest:
         api_errors = ApiErrors()
 
         # when
-        _compute_confirmation_password_validity_errors('goodNewPassword', 'goodNewPassword', api_errors)
+        _ensure_confirmation_password_is_same_as_new_password('goodNewPassword', 'goodNewPassword', api_errors)
 
         # then
         assert len(api_errors.errors) is 0
 
 
-class ComputeNewPasswordValidityErrorsTest:
+class EnsureGivenOldPasswordIsCorrectTest:
     def test_change_password_should_add_an_error_if_old_password_does_not_match_existing_password(self):
         # given
         api_errors = ApiErrors()
         user = UserSQLEntity()
         user.setPassword('0ld__p455w0rd')
         old_password = 'ra4nd0m_p455w0rd'
-        new_password = 'n3w__p455w0rd'
 
         # when
-        _compute_new_password_validity_errors(user, old_password, new_password, api_errors)
+        _ensure_given_old_password_is_correct(user, old_password, api_errors)
 
         # then
         assert api_errors.errors['oldPassword'] == ['Ton ancien mot de passe est incorrect.']
 
+
+class EnsureNewPasswordIsDifertFromOldTest:
     def test_change_password_should_add_an_error_if_old_password_is_the_same_as_the_new_password(self):
         # given
         api_errors = ApiErrors()
         user = UserSQLEntity()
         user.setPassword('0ld__p455w0rd')
-        old_password = '0ld__p455w0rd'
         new_password = '0ld__p455w0rd'
 
         # when
-        _compute_new_password_validity_errors(user, old_password, new_password, api_errors)
+        _ensure_new_password_is_different_from_old(user, new_password, api_errors)
 
         # then
         assert api_errors.errors['newPassword'] == ['Ton nouveau mot de passe est identique à l’ancien.']
