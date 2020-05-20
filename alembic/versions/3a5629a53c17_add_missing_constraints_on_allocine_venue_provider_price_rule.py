@@ -1,7 +1,7 @@
 """add_missing_constraints_on_allocine_venue_provider_price_rule
 
 Revision ID: 3a5629a53c17
-Revises: 61fe7b7c5a31
+Revises: 1126d1b72a1b
 Create Date: 2020-05-19 16:01:13.791090
 
 """
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '3a5629a53c17'
-down_revision = '61fe7b7c5a31'
+down_revision = '1126d1b72a1b'
 branch_labels = None
 depends_on = None
 
