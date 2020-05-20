@@ -130,7 +130,7 @@
   }
 
   .sf-button:disabled {
-    background-color: #FF99BE;
+    background-color: $primary-disabled;
     opacity: 1;
   }
 }

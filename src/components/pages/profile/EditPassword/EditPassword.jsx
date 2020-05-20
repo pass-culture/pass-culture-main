@@ -11,7 +11,6 @@ class EditPassword extends PureComponent {
     this.state = {
       currentPassword: '',
       errors: null,
-      isMissingField: true,
       isLoading: false,
       newConfirmationPassword: '',
       newPassword: '',
@@ -25,9 +24,7 @@ class EditPassword extends PureComponent {
   handleInputChange = event => {
     const inputName = event.target.name
     const newValue = event.target.value
-    this.setState({ [inputName]: newValue }, () => {
-      this.setState({ isMissingField: this.checkIfFieldIsMissing() })
-    })
+    this.setState({ [inputName]: newValue })
   }
 
   checkIfFieldIsMissing = () => {
@@ -81,10 +78,10 @@ class EditPassword extends PureComponent {
       currentPassword,
       errors,
       isLoading,
-      isMissingField,
       newConfirmationPassword,
       newPassword,
     } = this.state
+    const isMissingField = this.checkIfFieldIsMissing()
 
     return (
       <div className="password-container pf-container">
