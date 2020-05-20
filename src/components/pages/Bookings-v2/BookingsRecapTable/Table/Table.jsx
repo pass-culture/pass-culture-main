@@ -6,9 +6,7 @@ import Paginate from './Paginate/Paginate'
 import Head from './Head/Head'
 import Body from './Body/Body'
 
-const FIRST_PAGE_INDEX = 0
-
-const Table = ({ columns, data, nbBookingsPerPage, total }) => {
+const Table = ({ columns, data, nbBookings, nbBookingsPerPage, currentPage, foobar }) => {
   const {
     canPreviousPage,
     canNextPage,
@@ -19,19 +17,25 @@ const Table = ({ columns, data, nbBookingsPerPage, total }) => {
     previousPage,
     prepareRow,
     page,
+    pageOptions,
     state: { pageIndex },
   } = useTable(
     {
       columns,
       data,
       initialState: {
-        pageIndex: FIRST_PAGE_INDEX,
+        pageIndex: currentPage,
         pageSize: nbBookingsPerPage,
       },
     },
     usePagination
   )
-  let pageCount = Math.ceil(total / nbBookingsPerPage)
+  const pageCount = Math.ceil(nbBookings / nbBookingsPerPage)
+
+  const a = () => {
+    nextPage()
+    foobar(1)
+  }
 
   return (
     <div className="bookings-table-wrapper">
@@ -67,8 +71,8 @@ Table.propTypes = {
     })
   ).isRequired,
   data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  nbHitsPerPage: PropTypes.number.isRequired,
-  total: PropTypes.number.isRequired,
+  nbBookings: PropTypes.number.isRequired,
+  nbBookingsPerPage: PropTypes.number.isRequired,
 }
 
 export default Table

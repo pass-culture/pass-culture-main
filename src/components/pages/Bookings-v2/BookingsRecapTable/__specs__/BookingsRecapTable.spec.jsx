@@ -11,9 +11,9 @@ import BookingOfferCell from '../CellsFormatter/BookingOfferCell'
 import Header from '../Header/Header'
 
 describe('components | BookingsRecapTable', () => {
-  it('should call the Table component with columns and data props', () => {
+  it('should render a Table component with columns and data props', () => {
     // Given
-    const data = [
+    const bookingsRecap = [
       {
         stock: {
           offer_name: 'Avez-vous déjà vu',
@@ -45,7 +45,8 @@ describe('components | BookingsRecapTable', () => {
     ]
 
     const props = {
-      bookingsRecap: data,
+      bookingsRecap: bookingsRecap,
+      nbBookings: 2
     }
 
     // When
@@ -54,17 +55,19 @@ describe('components | BookingsRecapTable', () => {
 
     // Then
     expect(table).toHaveLength(1)
-    const tableProps = table.props()
-    expect(tableProps['columns']).toHaveLength(6)
-    expect(tableProps['data']).toHaveLength(2)
+    expect(table.props()).toStrictEqual({
+      columns: wrapper.state('columns'),
+      data: bookingsRecap,
+      nbBookings: 2,
+      nbBookingsPerPage: NB_BOOKINGS_PER_PAGE
+    })
   })
 
   it('should render the expected table headers', () => {
     // Given
-    const data = []
-
     const props = {
-      bookingsRecap: data,
+      bookingsRecap: [],
+      nbBookings: 0
     }
 
     // When
@@ -88,10 +91,11 @@ describe('components | BookingsRecapTable', () => {
 
   it('should render the expected table rows', () => {
     // Given
-    const data = [
+    const bookingsRecap = [
       {
         stock: {
           offer_name: 'Avez-vous déjà vu',
+          type: 'thing'
         },
         beneficiary: {
           lastname: 'Klepi',
@@ -106,7 +110,8 @@ describe('components | BookingsRecapTable', () => {
     ]
 
     const props = {
-      bookingsRecap: data,
+      bookingsRecap: bookingsRecap,
+      nbBookings: 1
     }
 
     // When
@@ -115,7 +120,7 @@ describe('components | BookingsRecapTable', () => {
     // Then
     const bookingOfferCell = wrapper.find(BookingOfferCell)
     expect(bookingOfferCell).toHaveLength(1)
-    expect(bookingOfferCell.props()).toStrictEqual({ offer: { offer_name: 'Avez-vous déjà vu' } })
+    expect(bookingOfferCell.props()).toStrictEqual({ offer: { offer_name: 'Avez-vous déjà vu', type: 'thing' } })
     const duoCell = wrapper.find(BookingIsDuoCell)
     expect(duoCell.find('Icon').props()).toMatchObject({
       alt: 'Réservation DUO',
@@ -139,10 +144,11 @@ describe('components | BookingsRecapTable', () => {
 
   it('should render the expected table with max given number of hits per page', () => {
     // Given
-    const data = [
+    const bookingsRecap = [
       {
         stock: {
           offer_name: 'Avez-vous déjà vu',
+          type: 'thing'
         },
         beneficiary: {
           lastname: 'Klepi',
@@ -150,12 +156,13 @@ describe('components | BookingsRecapTable', () => {
           email: 'sonia.klepi@example.com',
         },
         booking_date: '2020-04-03T12:00:00Z',
+        booking_is_duo: false,
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
       },
     ]
     const props = {
-      bookingsRecap: data,
+      bookingsRecap: bookingsRecap,
       nbBookings: 1,
     }
 
@@ -167,15 +174,15 @@ describe('components | BookingsRecapTable', () => {
     expect(table).toHaveLength(1)
     expect(table.props()).toStrictEqual({
       columns: wrapper.state('columns'),
-      data: data,
+      data: bookingsRecap,
+      nbBookings: 1,
       nbBookingsPerPage: NB_BOOKINGS_PER_PAGE,
-      total: 1,
     })
   })
 
   it('should render a Header component', () => {
     // given
-    const data = [
+    const bookingsRecap = [
       {
         stock: {
           offer_name: 'Avez-vous déjà vu',
@@ -191,7 +198,7 @@ describe('components | BookingsRecapTable', () => {
       },
     ]
     const props = {
-      bookingsRecap: data,
+      bookingsRecap: bookingsRecap,
       nbBookings: 1,
     }
 

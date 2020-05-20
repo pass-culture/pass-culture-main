@@ -16,10 +16,10 @@ describe('components | BookingsRecap', () => {
   let fetchBookingsRecapByPageSpy
   beforeEach(() => {
     fetchBookingsRecapByPageStub = Promise.resolve({
+      bookings_recap: [],
       page: 0,
       pages: 0,
       total: 0,
-      bookings_recap: [],
     })
     fetchBookingsRecapByPageSpy = jest
       .spyOn(bookingRecapsService, 'fetchBookingsRecapByPage')

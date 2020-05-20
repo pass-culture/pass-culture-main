@@ -9,50 +9,48 @@ class BookingsRecap extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      bookingsRecap: [],
       apiPage: 0,
       apiPages: 0,
-      total: 0,
+      bookingsRecap: [],
+      nbBookings: 0,
     }
   }
 
   componentDidMount() {
-    fetchBookingsRecapByPage()
-      .then(this.updatePages)
-      .then(this.handleSuccess)
+    fetchBookingsRecapByPage().then(this.handleSuccess)
   }
 
   componentDidUpdate() {
-    let { apiPage, apiPages } = this.state
-    if (apiPage < apiPages) {
-      apiPage++
-      fetchBookingsRecapByPage(apiPage).then(this.handleSuccess)
-    }
-  }
+    const { apiPage, apiPages } = this.state
 
-  updatePages = paginatedBookingRecaps => {
-    return paginatedBookingRecaps
+    let currentApiPage = apiPage
+    if (currentApiPage < apiPages) {
+      currentApiPage++
+      fetchBookingsRecapByPage(currentApiPage).then(this.handleSuccess)
+    }
   }
 
   handleSuccess = (paginatedBookingRecaps = {}) => {
     const { bookingsRecap } = this.state
+
     this.setState({
       apiPage: paginatedBookingRecaps.page,
       apiPages: paginatedBookingRecaps.pages,
       bookingsRecap: [...bookingsRecap].concat(paginatedBookingRecaps.bookings_recap),
-      total: paginatedBookingRecaps.total,
+      nbBookings: paginatedBookingRecaps.total,
     })
   }
 
   render() {
-    const { bookingsRecap, total } = this.state
+    const { bookingsRecap, nbBookings } = this.state
+
     return (
       <Main name="bookings-v2">
         <Titles title="Réservations" />
-        {bookingsRecap.length > 0 ? (
+        {nbBookings > 0 ? (
           <BookingsRecapTable
             bookingsRecap={bookingsRecap}
-            nbBookings={total}
+            nbBookings={nbBookings}
           />
         ) : (
           <NoBookingsMessage />

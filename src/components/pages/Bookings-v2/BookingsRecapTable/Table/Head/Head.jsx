@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 
 const Head = ({ headerGroups }) => (
   <thead className="bookings-head">
-    {headerGroups.map(headerGroup => (
-      <tr key={headerGroup.id}>
+    {headerGroups.map((headerGroup) => (
+      <tr key='header-group'>
         {headerGroup.headers.map(column => (
           <th key={column.id}>
             {column.render('headerTitle')}
