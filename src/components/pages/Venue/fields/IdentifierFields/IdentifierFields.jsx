@@ -96,7 +96,7 @@ class IdentifierFields extends PureComponent {
       : 'SIRET : '
 
     const venueTypeLabel = getLabelFromList(venueTypes, venueTypeId)
-    const venueLabelLabel = getLabelFromList(venueLabels, venueLabelId)
+    const venueLabelText = getLabelFromList(venueLabels, venueLabelId)
 
     return (
       <div className="section identifier-field-section">
@@ -245,7 +245,7 @@ class IdentifierFields extends PureComponent {
                   id="venue-label"
                 >
                   <span>
-                    {venueLabelLabel}
+                    {venueLabelText}
                   </span>
                 </div>
               )}

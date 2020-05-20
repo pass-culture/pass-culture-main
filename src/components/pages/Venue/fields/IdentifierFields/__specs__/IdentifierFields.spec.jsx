@@ -369,7 +369,9 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           const wrapper = shallow(<IdentifierFields {...props} />)
 
           // Then
-          const selectField = wrapper.find(Field).findWhere(n => n.prop('id') === 'venue-type')
+          const selectField = wrapper
+            .find(Field)
+            .findWhere(node => node.prop('id') === 'venue-type')
           expect(selectField.prop('disabled')).toBe(false)
         })
 
@@ -382,7 +384,9 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           const wrapper = shallow(<IdentifierFields {...props} />)
 
           // Then
-          const selectField = wrapper.find(Field).findWhere(n => n.prop('id') === 'venue-type')
+          const selectField = wrapper
+            .find(Field)
+            .findWhere(node => node.prop('id') === 'venue-type')
           expect(selectField.prop('component')).toBe('select')
 
           const venueTypeOptions = wrapper.find('option')
@@ -391,7 +395,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         })
       })
 
-      describe('when the form is in detail mode', () => {
+      describe('when the form is in display mode', () => {
         describe('when no venue type has been chosen', () => {
           it('should not exist', () => {
             // Given
@@ -403,7 +407,9 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
             const wrapper = shallow(<IdentifierFields {...props} />)
 
             // Then
-            const selectField = wrapper.find(Field).findWhere(n => n.prop('id') === 'venue-type')
+            const selectField = wrapper
+              .find(Field)
+              .findWhere(node => node.prop('id') === 'venue-type')
             expect(selectField).toHaveLength(0)
           })
         })
@@ -420,7 +426,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
 
             // Then
             const venueTypeLabel = wrapper
-              .findWhere(n => n.prop('id') === 'venue-type')
+              .findWhere(node => node.prop('id') === 'venue-type')
               .find('span')
             expect(venueTypeLabel.text()).toBe("Centre d'art et d'essais")
           })
@@ -444,7 +450,9 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           const wrapper = shallow(<IdentifierFields {...props} />)
 
           // Then
-          const selectField = wrapper.find(Field).findWhere(n => n.prop('id') === 'venue-label')
+          const selectField = wrapper
+            .find(Field)
+            .findWhere(node => node.prop('id') === 'venue-label')
           expect(selectField.prop('disabled')).toBe(false)
         })
 
@@ -462,7 +470,9 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
           const wrapper = shallow(<IdentifierFields {...props} />)
 
           // Then
-          const selectField = wrapper.find(Field).findWhere(n => n.prop('id') === 'venue-label')
+          const selectField = wrapper
+            .find(Field)
+            .findWhere(node => node.prop('id') === 'venue-label')
           expect(selectField.prop('component')).toBe('select')
 
           const venueLabelOptions = selectField.find('option')
@@ -473,7 +483,7 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         })
       })
 
-      describe('when the form is in detail mode', () => {
+      describe('when the form is in display mode', () => {
         describe('when no venue label has been chosen', () => {
           it('should not exist', () => {
             // Given
@@ -490,7 +500,9 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
             const wrapper = shallow(<IdentifierFields {...props} />)
 
             // Then
-            const selectField = wrapper.find(Field).findWhere(n => n.prop('id') === 'venue-label')
+            const selectField = wrapper
+              .find(Field)
+              .findWhere(node => node.prop('id') === 'venue-label')
             expect(selectField).toHaveLength(0)
           })
         })
@@ -511,12 +523,10 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
             const wrapper = shallow(<IdentifierFields {...props} />)
 
             // Then
-            const venueLabelLabel = wrapper
-              .findWhere(n => n.prop('id') === 'venue-label')
+            const venueLabelText = wrapper
+              .findWhere(node => node.prop('id') === 'venue-label')
               .find('span')
-            expect(venueLabelLabel.text()).toBe(
-              "CAC - Centre d'art contemporain d'intérêt national"
-            )
+            expect(venueLabelText.text()).toBe("CAC - Centre d'art contemporain d'intérêt national")
           })
         })
       })

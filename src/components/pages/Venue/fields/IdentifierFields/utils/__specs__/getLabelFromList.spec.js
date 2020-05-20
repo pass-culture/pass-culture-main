@@ -1,7 +1,7 @@
 import getLabelFromList from '../getLabelFromList'
 
 describe('getLabelFromList', () => {
-  it('should return - when no id matches', () => {
+  it('should return "-" when no id matches', () => {
     // given
     const list = [
       {
@@ -21,7 +21,7 @@ describe('getLabelFromList', () => {
     // then
     expect(result).toStrictEqual('-')
   })
-  it('should return the matchig label when id matches', () => {
+  it('should return the matching label when id matches', () => {
     // give
     const list = [
       {

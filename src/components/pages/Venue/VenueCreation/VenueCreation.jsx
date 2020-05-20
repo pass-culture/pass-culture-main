@@ -221,7 +221,9 @@ class VenueCreation extends PureComponent {
 }
 
 VenueCreation.propTypes = {
-  formInitialValues: PropTypes.shape().isRequired,
+  formInitialValues: PropTypes.shape({
+    // TODO
+  }).isRequired,
   handleInitialRequest: PropTypes.func.isRequired,
   handleSubmitRequest: PropTypes.func.isRequired,
   handleSubmitRequestFail: PropTypes.func.isRequired,

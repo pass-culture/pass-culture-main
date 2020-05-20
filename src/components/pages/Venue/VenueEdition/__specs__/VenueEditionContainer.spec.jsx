@@ -76,7 +76,7 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
           ],
           users: [
             {
-              email: 'john.do e@example.net',
+              email: 'john.doe@example.net',
             },
           ],
         },
@@ -109,7 +109,7 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
           ],
           users: [
             {
-              email: 'john.do e@example.net',
+              email: 'john.doe@example.net',
             },
           ],
         },

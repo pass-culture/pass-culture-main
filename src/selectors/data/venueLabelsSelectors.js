@@ -1,13 +1,13 @@
-import get from 'lodash.get'
+const sorted_alphabetically_by_label = (a, b) => {
+  return a.label < b.label ? -1 : a.label > b.label ? 1 : 0
+}
 
 export const selectVenueLabels = state => {
-  const sorted_by_label = (a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0)
+  const { 'venue-labels': venue_labels = [] } = state.data
 
-  const venue_types = get(state, 'data.venue-labels', [])
+  if (venue_labels.length === 0) return []
 
-  if (venue_types.length === 0) return []
+  venue_labels.sort(sorted_alphabetically_by_label)
 
-  venue_types.sort(sorted_by_label)
-
-  return venue_types
+  return venue_labels
 }
