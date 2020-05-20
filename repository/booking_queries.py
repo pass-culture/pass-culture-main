@@ -2,6 +2,7 @@ from collections import namedtuple
 from datetime import datetime
 from typing import List, Set, Union, Optional
 
+import math
 from sqlalchemy import func, desc, text
 from sqlalchemy.orm import Query
 
@@ -180,11 +181,12 @@ def find_by_id(booking_id: int) -> BookingSQLEntity:
 
 def find_by_pro_user_id(user_id: int, page: int = 1, per_page_limit: int = 1000) -> BookingsRecapPaginated:
     bookings_recap_query = _build_bookings_recap_query(user_id)
-    bookings_recap_query = _duplicate_booking_when_offer_is_duo(bookings_recap_query)
+    bookings_recap_query_with_duplicates = _duplicate_booking_when_quantity_is_two(bookings_recap_query)
 
-    total_bookings_recap = bookings_recap_query.count()
+    total_bookings_recap = bookings_recap_query_with_duplicates.count()
 
-    paginated_bookings = bookings_recap_query \
+    paginated_bookings = bookings_recap_query_with_duplicates \
+        .order_by(text('"bookingDate" DESC')) \
         .offset((page - 1) * per_page_limit) \
         .limit(per_page_limit) \
         .all()
@@ -195,10 +197,9 @@ def find_by_pro_user_id(user_id: int, page: int = 1, per_page_limit: int = 1000)
                                                               total_bookings_recap=total_bookings_recap)
 
 
-def _duplicate_booking_when_offer_is_duo(bookings_recap_query: Query) -> Query:
+def _duplicate_booking_when_quantity_is_two(bookings_recap_query: Query) -> Query:
     return bookings_recap_query \
-        .union_all(bookings_recap_query.filter(BookingSQLEntity.quantity == 2)) \
-        .order_by(text('"bookingDate" DESC'))
+        .union_all(bookings_recap_query.filter(BookingSQLEntity.quantity == 2))
 
 
 def _build_bookings_recap_query(user_id: int) -> Query:
@@ -214,31 +215,30 @@ def _build_bookings_recap_query(user_id: int) -> Query:
         .filter(UserOfferer.userId == user_id) \
         .filter(UserOfferer.validationToken == None) \
         .with_entities(
-        BookingSQLEntity.token.label("bookingToken"),
-        BookingSQLEntity.dateCreated.label("bookingDate"),
-        BookingSQLEntity.isCancelled.label("isCancelled"),
-        BookingSQLEntity.isUsed.label("isUsed"),
-        BookingSQLEntity.quantity.label("quantity"),
-        Offer.name.label("offerName"),
-        Offer.type.label("offerType"),
-        Payment.currentStatus.label("paymentStatus"),
-        UserSQLEntity.firstName.label("beneficiaryFirstname"),
-        UserSQLEntity.lastName.label("beneficiaryLastname"),
-        UserSQLEntity.email.label("beneficiaryEmail"),
-        StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
-        Venue.departementCode.label('venueDepartementCode'),
-    )
+            BookingSQLEntity.token.label("bookingToken"),
+            BookingSQLEntity.dateCreated.label("bookingDate"),
+            BookingSQLEntity.isCancelled.label("isCancelled"),
+            BookingSQLEntity.isUsed.label("isUsed"),
+            BookingSQLEntity.quantity.label("quantity"),
+            Offer.name.label("offerName"),
+            Offer.type.label("offerType"),
+            Payment.currentStatus.label("paymentStatus"),
+            UserSQLEntity.firstName.label("beneficiaryFirstname"),
+            UserSQLEntity.lastName.label("beneficiaryLastname"),
+            UserSQLEntity.email.label("beneficiaryEmail"),
+            StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
+            Venue.departementCode.label('venueDepartementCode'),
+        )
 
 
 def _paginated_bookings_sql_entities_to_bookings_recap(paginated_bookings: List[object],
                                                        page: int,
                                                        per_page_limit: int,
                                                        total_bookings_recap: int) -> BookingsRecapPaginated:
-    pages = 1 if total_bookings_recap < per_page_limit else int(total_bookings_recap / per_page_limit)
     return BookingsRecapPaginated(
         bookings_recap=[_serialize_booking_recap(booking) for booking in paginated_bookings],
         page=page,
-        pages=pages,
+        pages=int(math.ceil(total_bookings_recap / per_page_limit)),
         total=total_bookings_recap,
     )
 
