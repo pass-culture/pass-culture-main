@@ -8,8 +8,7 @@ import Table from './Table/Table'
 import BookingOfferCell from './CellsFormatter/BookingOfferCell'
 import Header from './Header/Header'
 import BookingIsDuoCell from './CellsFormatter/BookingIsDuoCell'
-
-export const NB_BOOKINGS_PER_PAGE = 5
+import { NB_BOOKINGS_PER_PAGE } from './NB_BOOKINGS_PER_PAGE'
 
 class BookingsRecapTable extends Component {
   constructor(props) {
@@ -59,7 +58,7 @@ class BookingsRecapTable extends Component {
           className: 'td-booking-status',
         },
       ],
-      currentPage: 0
+      currentPage: 0,
     }
   }
 
@@ -67,9 +66,9 @@ class BookingsRecapTable extends Component {
     return true
   }
 
-  foobar = (page) => {
+  updateCurrentPage = currentPage => {
     this.setState({
-      currentPage: page
+      currentPage: currentPage,
     })
   }
 
@@ -81,12 +80,12 @@ class BookingsRecapTable extends Component {
       <div>
         <Header nbBookings={nbBookings} />
         <Table
-          currentPage={currentPage}
           columns={columns}
+          currentPage={currentPage}
           data={bookingsRecap}
-          foobar={this.foobar}
           nbBookings={nbBookings}
           nbBookingsPerPage={NB_BOOKINGS_PER_PAGE}
+          updateCurrentPage={this.updateCurrentPage}
         />
       </div>
     )
@@ -95,7 +94,7 @@ class BookingsRecapTable extends Component {
 
 BookingsRecapTable.propTypes = {
   bookingsRecap: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  nbBookings: PropTypes.number.isRequired
+  nbBookings: PropTypes.number.isRequired,
 }
 
 export default BookingsRecapTable

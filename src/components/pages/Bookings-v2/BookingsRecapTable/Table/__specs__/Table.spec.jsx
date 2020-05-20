@@ -5,11 +5,9 @@ import Paginate from '../Paginate/Paginate'
 import Head from '../Head/Head'
 import * as reactTable from 'react-table'
 
-const CellMock = ({ offer: { offer_name: offerName } }) => (
-  <span>
-    {offerName}
-  </span>
-)
+const CellMock = ({ offer: { offer_name: offerName } }) => (<span>
+  {offerName}
+</span>)
 
 describe('components | Table', () => {
   it('should render a Head component with the right props', () => {
@@ -44,20 +42,16 @@ describe('components | Table', () => {
             {
               id: 1,
               headerTitle: 'Offres',
-              render: jest.fn(() => (
-                <span>
-                  {'Offres'}
-                </span>)
-              ),
+              render: jest.fn(() => (<span>
+                {'Offres'}
+              </span>)),
             },
             {
               id: 2,
               headerTitle: 'Beneficiaires',
-              render: jest.fn(() => (
-                <span>
-                  {'Beneficiaires'}
-                </span>)
-              ),
+              render: jest.fn(() => (<span>
+                {'Beneficiaires'}
+              </span>)),
             },
           ],
         },
@@ -131,7 +125,9 @@ describe('components | Table', () => {
         },
       ],
       nbBookings: 2,
-      nbBookingsPerPage: 2
+      nbBookingsPerPage: 2,
+      currentPage: 0,
+      updateCurrentPage: jest.fn(),
     }
 
     // When
@@ -165,6 +161,8 @@ describe('components | Table', () => {
         ],
         nbBookings: 6,
         nbBookingsPerPage: 5,
+        currentPage: 0,
+        updateCurrentPage: jest.fn(),
       }
 
       // When
@@ -205,6 +203,8 @@ describe('components | Table', () => {
         ],
         nbBookings: 6,
         nbBookingsPerPage: 5,
+        currentPage: 0,
+        updateCurrentPage: jest.fn(),
       }
 
       // When
@@ -228,6 +228,44 @@ describe('components | Table', () => {
       const bookingsOnPageTwo = wrapper.find('tbody').find('tr')
       expect(bookingsOnPageTwo).toHaveLength(1)
       expect(bookingsOnPageTwo.at(0).text()).toBe('Avez-vous déjà vu 6')
+      expect(props.updateCurrentPage).toHaveBeenCalledTimes(1)
+      expect(props.updateCurrentPage).toHaveBeenCalledWith(1)
+    })
+
+    it('should go to previous when clicking on previous page button', () => {
+      // Given
+      const props = {
+        columns: [
+          {
+            id: 1,
+            headerTitle: 'Stock',
+            accessor: 'stock',
+            // eslint-disable-next-line react/display-name, react/no-multi-comp
+            Cell: ({ value }) => <CellMock offer={value} />,
+          },
+        ],
+        data: [
+          { stock: { offer_name: 'Avez-vous déjà vu 1' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 2' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 3' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 4' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 5' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 6' } },
+        ],
+        nbBookings: 6,
+        nbBookingsPerPage: 5,
+        currentPage: 1,
+        updateCurrentPage: jest.fn(),
+      }
+      const wrapper = mount(<Table {...props} />)
+      const paginate = wrapper.find(Paginate)
+
+      // When
+      const previousPageButton = paginate.find('button').at(0)
+      previousPageButton.simulate('click')
+
+      // Then
+      expect(props.updateCurrentPage).toHaveBeenNthCalledWith(1, 0)
     })
   })
 })

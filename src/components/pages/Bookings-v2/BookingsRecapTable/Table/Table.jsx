@@ -6,7 +6,14 @@ import Paginate from './Paginate/Paginate'
 import Head from './Head/Head'
 import Body from './Body/Body'
 
-const Table = ({ columns, data, nbBookings, nbBookingsPerPage, currentPage, foobar }) => {
+const Table = ({
+  columns,
+  data,
+  nbBookings,
+  nbBookingsPerPage,
+  currentPage,
+  updateCurrentPage,
+}) => {
   const {
     canPreviousPage,
     canNextPage,
@@ -17,7 +24,6 @@ const Table = ({ columns, data, nbBookings, nbBookingsPerPage, currentPage, foob
     previousPage,
     prepareRow,
     page,
-    pageOptions,
     state: { pageIndex },
   } = useTable(
     {
@@ -32,9 +38,14 @@ const Table = ({ columns, data, nbBookings, nbBookingsPerPage, currentPage, foob
   )
   const pageCount = Math.ceil(nbBookings / nbBookingsPerPage)
 
-  const a = () => {
+  function goToNextPage() {
     nextPage()
-    foobar(1)
+    updateCurrentPage(currentPage + 1)
+  }
+
+  function goToPreviousPage() {
+    previousPage()
+    updateCurrentPage(currentPage - 1)
   }
 
   return (
@@ -55,8 +66,8 @@ const Table = ({ columns, data, nbBookings, nbBookingsPerPage, currentPage, foob
         canPreviousPage={canPreviousPage}
         currentPage={pageIndex + 1}
         nbPages={pageCount}
-        nextPage={nextPage}
-        previousPage={previousPage}
+        nextPage={goToNextPage}
+        previousPage={goToPreviousPage}
       />
     </div>
   )

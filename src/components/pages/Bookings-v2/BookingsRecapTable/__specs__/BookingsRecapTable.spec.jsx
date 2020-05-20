@@ -1,4 +1,4 @@
-import BookingsRecapTable, { NB_BOOKINGS_PER_PAGE } from '../BookingsRecapTable'
+import BookingsRecapTable from '../BookingsRecapTable'
 import Table from '../Table/Table'
 import React from 'react'
 import { mount, shallow } from 'enzyme'
@@ -9,6 +9,12 @@ import BookingTokenCell from '../CellsFormatter/BookingTokenCell'
 import BookingStatusCell from '../CellsFormatter/BookingStatusCell'
 import BookingOfferCell from '../CellsFormatter/BookingOfferCell'
 import Header from '../Header/Header'
+import Paginate from '../Table/Paginate/Paginate'
+import { NB_BOOKINGS_PER_PAGE } from '../NB_BOOKINGS_PER_PAGE'
+
+jest.mock('../NB_BOOKINGS_PER_PAGE', () => ({
+  NB_BOOKINGS_PER_PAGE: 1,
+}))
 
 describe('components | BookingsRecapTable', () => {
   it('should render a Table component with columns and data props', () => {
@@ -46,7 +52,7 @@ describe('components | BookingsRecapTable', () => {
 
     const props = {
       bookingsRecap: bookingsRecap,
-      nbBookings: 2
+      nbBookings: 2,
     }
 
     // When
@@ -59,7 +65,9 @@ describe('components | BookingsRecapTable', () => {
       columns: wrapper.state('columns'),
       data: bookingsRecap,
       nbBookings: 2,
-      nbBookingsPerPage: NB_BOOKINGS_PER_PAGE
+      nbBookingsPerPage: NB_BOOKINGS_PER_PAGE,
+      currentPage: 0,
+      updateCurrentPage: expect.any(Function),
     })
   })
 
@@ -67,7 +75,7 @@ describe('components | BookingsRecapTable', () => {
     // Given
     const props = {
       bookingsRecap: [],
-      nbBookings: 0
+      nbBookings: 0,
     }
 
     // When
@@ -95,7 +103,7 @@ describe('components | BookingsRecapTable', () => {
       {
         stock: {
           offer_name: 'Avez-vous déjà vu',
-          type: 'thing'
+          type: 'thing',
         },
         beneficiary: {
           lastname: 'Klepi',
@@ -111,7 +119,7 @@ describe('components | BookingsRecapTable', () => {
 
     const props = {
       bookingsRecap: bookingsRecap,
-      nbBookings: 1
+      nbBookings: 1,
     }
 
     // When
@@ -120,7 +128,9 @@ describe('components | BookingsRecapTable', () => {
     // Then
     const bookingOfferCell = wrapper.find(BookingOfferCell)
     expect(bookingOfferCell).toHaveLength(1)
-    expect(bookingOfferCell.props()).toStrictEqual({ offer: { offer_name: 'Avez-vous déjà vu', type: 'thing' } })
+    expect(bookingOfferCell.props()).toStrictEqual({
+      offer: { offer_name: 'Avez-vous déjà vu', type: 'thing' },
+    })
     const duoCell = wrapper.find(BookingIsDuoCell)
     expect(duoCell.find('Icon').props()).toMatchObject({
       alt: 'Réservation DUO',
@@ -148,7 +158,7 @@ describe('components | BookingsRecapTable', () => {
       {
         stock: {
           offer_name: 'Avez-vous déjà vu',
-          type: 'thing'
+          type: 'thing',
         },
         beneficiary: {
           lastname: 'Klepi',
@@ -177,6 +187,8 @@ describe('components | BookingsRecapTable', () => {
       data: bookingsRecap,
       nbBookings: 1,
       nbBookingsPerPage: NB_BOOKINGS_PER_PAGE,
+      currentPage: 0,
+      updateCurrentPage: expect.any(Function),
     })
   })
 
@@ -211,5 +223,81 @@ describe('components | BookingsRecapTable', () => {
     expect(header.props()).toStrictEqual({
       nbBookings: 1,
     })
+  })
+
+  it('should update currentPage when clicking on next page button', () => {
+    // Given
+    const bookingsRecap = [
+      {
+        stock: {
+          offer_name: 'Avez-vous déjà vu',
+          type: 'thing',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Sonia',
+          email: 'sonia.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: 'ZEHBGD',
+        booking_status: 'Validé',
+        booking_is_duo: true,
+      },
+      {
+        stock: {
+          offer_name: 'Avez-vous déjà vu',
+          type: 'thing',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Sonia',
+          email: 'sonia.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: 'ZEHBGD',
+        booking_status: 'Validé',
+        booking_is_duo: true,
+      },
+    ]
+
+    const props = {
+      bookingsRecap: bookingsRecap,
+      nbBookings: 1,
+    }
+
+    // When
+    const wrapper = mount(<BookingsRecapTable {...props} />)
+    const paginate = wrapper.find(Paginate)
+    const nextPageButton = paginate.find('button').at(1)
+    nextPageButton.simulate('click')
+
+    // Then
+    const table = wrapper.find(Table)
+    expect(table.prop('nbBookingsPerPage')).toBe(1)
+
+    const bookingOfferCell = wrapper.find(BookingOfferCell)
+    expect(bookingOfferCell).toHaveLength(1)
+    expect(bookingOfferCell.props()).toStrictEqual({
+      offer: { offer_name: 'Avez-vous déjà vu', type: 'thing' },
+    })
+    const duoCell = wrapper.find(BookingIsDuoCell)
+    expect(duoCell.find('Icon').props()).toMatchObject({
+      alt: 'Réservation DUO',
+      svg: 'ico-duo',
+    })
+    const beneficiaryCell = wrapper.find(BeneficiaryCell)
+    expect(beneficiaryCell).toHaveLength(1)
+    expect(beneficiaryCell.props()).toStrictEqual({
+      beneficiaryInfos: { email: 'sonia.klepi@example.com', firstname: 'Sonia', lastname: 'Klepi' },
+    })
+    const bookingDateCell = wrapper.find(BookingDateCell)
+    expect(bookingDateCell).toHaveLength(1)
+    expect(bookingDateCell.props()).toStrictEqual({ bookingDate: '2020-04-03T12:00:00Z' })
+    const bookingTokenCell = wrapper.find(BookingTokenCell)
+    expect(bookingTokenCell).toHaveLength(1)
+    expect(bookingTokenCell.props()).toStrictEqual({ bookingToken: 'ZEHBGD' })
+    const bookingStatusCell = wrapper.find(BookingStatusCell)
+    expect(bookingStatusCell).toHaveLength(1)
+    expect(bookingStatusCell.props()).toStrictEqual({ bookingStatus: 'Validé' })
   })
 })
