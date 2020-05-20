@@ -115,6 +115,32 @@ services:
     depends_on:
       - flask
 
+  worker:
+    image: passcultureapp/api-flask:latest
+    container_name: pc-worker
+    command: >
+      bash -c "set -x;
+               cd /opt/services/flaskapp/src;
+               pip install -r ./requirements.txt;
+               python -m nltk.downloader punkt stopwords;
+               while true; do PYTHONPATH=. python workers/worker.py; done;"
+    volumes:
+      - ./api:/opt/services/flaskapp/src
+    env_file:
+      - env_file
+      - ${ENV:-development}_env_file
+    environment:
+      - DEMARCHES_SIMPLIFIEES_RIB_OFFERER_PROCEDURE_ID=$DEMARCHES_SIMPLIFIEES_RIB_OFFERER_PROCEDURE_ID
+      - DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID=$DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID
+      - DEMARCHES_SIMPLIFIEES_TOKEN=$DEMARCHES_SIMPLIFIEES_TOKEN
+    networks:
+      - db_nw
+      - web_nw
+    depends_on:
+      - postgres
+      - redis
+
+
 networks:
   db_nw:
     driver: bridge
