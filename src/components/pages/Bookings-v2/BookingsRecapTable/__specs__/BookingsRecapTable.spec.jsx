@@ -1,5 +1,5 @@
 import BookingsRecapTable from '../BookingsRecapTable'
-import Table from '../Table/Table'
+import TableFrame from '../Table/TableFrame'
 import React from 'react'
 import { mount, shallow } from 'enzyme'
 import BookingIsDuoCell from '../CellsFormatter/BookingIsDuoCell'
@@ -17,7 +17,7 @@ jest.mock('../NB_BOOKINGS_PER_PAGE', () => ({
 }))
 
 describe('components | BookingsRecapTable', () => {
-  it('should render a Table component with columns and data props', () => {
+  it('should render a TableContainer component with columns and data props', () => {
     // Given
     const bookingsRecap = [
       {
@@ -57,7 +57,7 @@ describe('components | BookingsRecapTable', () => {
 
     // When
     const wrapper = shallow(<BookingsRecapTable {...props} />)
-    const table = wrapper.find('Table')
+    const table = wrapper.find(TableFrame)
 
     // Then
     expect(table).toHaveLength(1)
@@ -180,7 +180,7 @@ describe('components | BookingsRecapTable', () => {
     const wrapper = mount(<BookingsRecapTable {...props} />)
 
     // Then
-    const table = wrapper.find(Table)
+    const table = wrapper.find(TableFrame)
     expect(table).toHaveLength(1)
     expect(table.props()).toStrictEqual({
       columns: wrapper.state('columns'),
@@ -272,7 +272,7 @@ describe('components | BookingsRecapTable', () => {
     nextPageButton.simulate('click')
 
     // Then
-    const table = wrapper.find(Table)
+    const table = wrapper.find(TableFrame)
     expect(table.prop('nbBookingsPerPage')).toBe(1)
 
     const bookingOfferCell = wrapper.find(BookingOfferCell)

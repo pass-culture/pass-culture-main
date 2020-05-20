@@ -9,35 +9,35 @@ class BookingsRecap extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      apiPage: 0,
-      apiPages: 0,
       bookingsRecap: [],
       nbBookings: 0,
+      page: 0,
+      pages: 0,
     }
   }
 
   componentDidMount() {
-    fetchBookingsRecapByPage().then(this.handleSuccess)
+    fetchBookingsRecapByPage().then(this.savePaginatedBookingsRecap)
   }
 
   componentDidUpdate() {
-    const { apiPage, apiPages } = this.state
+    const { page, pages } = this.state
 
-    let currentApiPage = apiPage
-    if (currentApiPage < apiPages) {
-      currentApiPage++
-      fetchBookingsRecapByPage(currentApiPage).then(this.handleSuccess)
+    let currentPage = page
+    if (currentPage < pages) {
+      currentPage++
+      fetchBookingsRecapByPage(currentPage).then(this.savePaginatedBookingsRecap)
     }
   }
 
-  handleSuccess = (paginatedBookingRecaps = {}) => {
+  savePaginatedBookingsRecap = paginatedBookingsRecap => {
     const { bookingsRecap } = this.state
 
     this.setState({
-      apiPage: paginatedBookingRecaps.page,
-      apiPages: paginatedBookingRecaps.pages,
-      bookingsRecap: [...bookingsRecap].concat(paginatedBookingRecaps.bookings_recap),
-      nbBookings: paginatedBookingRecaps.total,
+      bookingsRecap: [...bookingsRecap].concat(paginatedBookingsRecap.bookings_recap),
+      nbBookings: paginatedBookingsRecap.total,
+      page: paginatedBookingsRecap.page,
+      pages: paginatedBookingsRecap.pages,
     })
   }
 

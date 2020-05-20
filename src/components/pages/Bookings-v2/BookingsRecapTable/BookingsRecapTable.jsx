@@ -4,11 +4,11 @@ import BeneficiaryCell from './CellsFormatter/BeneficiaryCell'
 import BookingDateCell from './CellsFormatter/BookingDateCell'
 import BookingStatusCell from './CellsFormatter/BookingStatusCell'
 import BookingTokenCell from './CellsFormatter/BookingTokenCell'
-import Table from './Table/Table'
 import BookingOfferCell from './CellsFormatter/BookingOfferCell'
 import Header from './Header/Header'
 import BookingIsDuoCell from './CellsFormatter/BookingIsDuoCell'
 import { NB_BOOKINGS_PER_PAGE } from './NB_BOOKINGS_PER_PAGE'
+import TableFrame from './Table/TableFrame'
 
 class BookingsRecapTable extends Component {
   constructor(props) {
@@ -79,7 +79,7 @@ class BookingsRecapTable extends Component {
     return (
       <div>
         <Header nbBookings={nbBookings} />
-        <Table
+        <TableFrame
           columns={columns}
           currentPage={currentPage}
           data={bookingsRecap}

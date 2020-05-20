@@ -1,89 +1,77 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-
-import { usePagination, useTable } from 'react-table'
 import Paginate from './Paginate/Paginate'
 import Head from './Head/Head'
 import Body from './Body/Body'
 
-const Table = ({
-  columns,
-  data,
-  nbBookings,
-  nbBookingsPerPage,
-  currentPage,
-  updateCurrentPage,
-}) => {
-  const {
-    canPreviousPage,
-    canNextPage,
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    nextPage,
-    previousPage,
-    prepareRow,
-    page,
-    state: { pageIndex },
-  } = useTable(
-    {
-      columns,
-      data,
-      initialState: {
-        pageIndex: currentPage,
-        pageSize: nbBookingsPerPage,
-      },
-    },
-    usePagination
-  )
-  const pageCount = Math.ceil(nbBookings / nbBookingsPerPage)
+class Table extends React.Component {
+  shouldComponentUpdate() {
+    return true
+  }
 
-  function goToNextPage() {
+  goToNextPage = () => {
+    const { pageIndex, nextPage, updateCurrentPage } = this.props
     nextPage()
-    updateCurrentPage(currentPage + 1)
+    updateCurrentPage(pageIndex + 1)
   }
 
-  function goToPreviousPage() {
+  goToPreviousPage = () => {
+    const { pageIndex, previousPage, updateCurrentPage } = this.props
     previousPage()
-    updateCurrentPage(currentPage - 1)
+    updateCurrentPage(pageIndex - 1)
   }
 
-  return (
-    <div className="bookings-table-wrapper">
-      <table
-        className="bookings-table"
-        {...getTableProps()}
-      >
-        <Head headerGroups={headerGroups} />
-        <Body
-          page={page}
-          prepareRow={prepareRow}
-          tableBodyProps={getTableBodyProps()}
+  render() {
+    const {
+      canNextPage,
+      canPreviousPage,
+      headerGroups,
+      nbPages,
+      page,
+      pageIndex,
+      prepareRow,
+      getTableProps,
+      getTableBodyProps,
+    } = this.props
+    return (
+      <div className="bookings-table-wrapper">
+        <table
+          className="bookings-table"
+          {...getTableProps()}
+        >
+          <Head headerGroups={headerGroups} />
+          <Body
+            page={page}
+            prepareRow={prepareRow}
+            tableBodyProps={getTableBodyProps()}
+          />
+        </table>
+        <Paginate
+          canNextPage={canNextPage}
+          canPreviousPage={canPreviousPage}
+          currentPage={pageIndex + 1}
+          nbPages={nbPages}
+          nextPage={this.goToNextPage}
+          previousPage={this.goToPreviousPage}
         />
-      </table>
-      <Paginate
-        canNextPage={canNextPage}
-        canPreviousPage={canPreviousPage}
-        currentPage={pageIndex + 1}
-        nbPages={pageCount}
-        nextPage={goToNextPage}
-        previousPage={goToPreviousPage}
-      />
-    </div>
-  )
+      </div>
+    )
+  }
 }
 
 Table.propTypes = {
-  columns: PropTypes.arrayOf(
-    PropTypes.shape({
-      headerTitle: PropTypes.string,
-      accessor: PropTypes.string,
-      Cell: PropTypes.func,
-    })
-  ).isRequired,
-  data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  nbBookings: PropTypes.number.isRequired,
-  nbBookingsPerPage: PropTypes.number.isRequired,
+  canNextPage: PropTypes.bool.isRequired,
+  canPreviousPage: PropTypes.bool.isRequired,
+  getTableBodyProps: PropTypes.func.isRequired,
+  getTableProps: PropTypes.func.isRequired,
+  headerGroups: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  nbPages: PropTypes.number.isRequired,
+  nextPage: PropTypes.func.isRequired,
+  page: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  pageIndex: PropTypes.number.isRequired,
+  prepareRow: PropTypes.func.isRequired,
+  previousPage: PropTypes.func.isRequired,
+  updateCurrentPage: PropTypes.func.isRequired,
 }
 
 export default Table

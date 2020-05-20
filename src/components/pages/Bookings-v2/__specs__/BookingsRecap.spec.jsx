@@ -63,7 +63,7 @@ describe('components | BookingsRecap', () => {
     fetchBookingsRecapByPageStub = Promise.resolve(paginatedBookingRecapReturned)
 
     // When
-    const wrapper = await shallow(<BookingsRecap />)
+    const wrapper = shallow(<BookingsRecap />)
 
     // Then
     await flushPromises()
@@ -110,7 +110,7 @@ describe('components | BookingsRecap', () => {
       .mockResolvedValueOnce(secondPaginatedBookingRecapReturned)
 
     // When
-    const wrapper = await shallow(<BookingsRecap />)
+    const wrapper = shallow(<BookingsRecap />)
 
     // Then
     await flushPromises()

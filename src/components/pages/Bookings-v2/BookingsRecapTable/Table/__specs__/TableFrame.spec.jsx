@@ -1,15 +1,16 @@
-import { mount, shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import React from 'react'
-import Table from '../Table'
+import TableFrame from '../TableFrame'
 import Paginate from '../Paginate/Paginate'
 import Head from '../Head/Head'
 import * as reactTable from 'react-table'
 
-const CellMock = ({ offer: { offer_name: offerName } }) => (<span>
-  {offerName}
-</span>)
+const CellMock = ({ offer: { offer_name: offerName } }) => (
+  <span>
+    {offerName}
+  </span>)
 
-describe('components | Table', () => {
+describe('components | TableFrame', () => {
   it('should render a Head component with the right props', () => {
     // Given
     const useTableSpy = jest.spyOn(reactTable, 'useTable').mockImplementationOnce(jest.fn())
@@ -29,6 +30,7 @@ describe('components | Table', () => {
       data: [{}],
       nbBookings: 1,
       nbBookingsPerPage: 1,
+      updateCurrentPage: jest.fn(),
     }
     const mockedValues = {
       canPreviousPage: true,
@@ -42,16 +44,18 @@ describe('components | Table', () => {
             {
               id: 1,
               headerTitle: 'Offres',
-              render: jest.fn(() => (<span>
-                {'Offres'}
-              </span>)),
+              render: jest.fn(() => (
+                <span>
+                  {'Offres'}
+                </span>)),
             },
             {
               id: 2,
               headerTitle: 'Beneficiaires',
-              render: jest.fn(() => (<span>
-                {'Beneficiaires'}
-              </span>)),
+              render: jest.fn(() => (
+                <span>
+                  {'Beneficiaires'}
+                </span>)),
             },
           ],
         },
@@ -68,7 +72,7 @@ describe('components | Table', () => {
     useTableSpy.mockReturnValue(mockedValues)
 
     // When
-    const table = shallow(<Table {...props} />)
+    const table = mount(<TableFrame {...props} />)
 
     // Then
     const tableHead = table.find(Head)
@@ -131,7 +135,7 @@ describe('components | Table', () => {
     }
 
     // When
-    const table = mount(<Table {...props} />)
+    const table = mount(<TableFrame {...props} />)
 
     // Then
     const tableRows = table.find('tbody > tr')
@@ -166,7 +170,7 @@ describe('components | Table', () => {
       }
 
       // When
-      const wrapper = mount(<Table {...props} />)
+      const wrapper = mount(<TableFrame {...props} />)
 
       // Then
       const paginate = wrapper.find(Paginate)
@@ -181,7 +185,7 @@ describe('components | Table', () => {
       })
     })
 
-    it('should render five bookings on page 1 & one booking on page 2 when clicking on next page', () => {
+    it('should render five bookings on page 1', () => {
       // Given
       const props = {
         columns: [
@@ -208,10 +212,9 @@ describe('components | Table', () => {
       }
 
       // When
-      const wrapper = mount(<Table {...props} />)
+      const wrapper = mount(<TableFrame {...props} />)
 
       // Then
-      const paginate = wrapper.find(Paginate)
       const bookingsOnPageOne = wrapper.find('tbody').find('tr')
       expect(bookingsOnPageOne.at(0).text()).toBe('Avez-vous déjà vu 1')
       expect(bookingsOnPageOne.at(1).text()).toBe('Avez-vous déjà vu 2')
@@ -219,9 +222,38 @@ describe('components | Table', () => {
       expect(bookingsOnPageOne.at(3).text()).toBe('Avez-vous déjà vu 4')
       expect(bookingsOnPageOne.at(4).text()).toBe('Avez-vous déjà vu 5')
       expect(bookingsOnPageOne).toHaveLength(5)
+    })
+
+    it('should render one booking on page 2 when clicking on next page', () => {
+      // Given
+      const props = {
+        columns: [
+          {
+            id: 1,
+            headerTitle: 'Stock',
+            accessor: 'stock',
+            // eslint-disable-next-line react/display-name, react/no-multi-comp
+            Cell: ({ value }) => <CellMock offer={value} />,
+          },
+        ],
+        data: [
+          { stock: { offer_name: 'Avez-vous déjà vu 1' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 2' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 3' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 4' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 5' } },
+          { stock: { offer_name: 'Avez-vous déjà vu 6' } },
+        ],
+        nbBookings: 6,
+        nbBookingsPerPage: 5,
+        currentPage: 0,
+        updateCurrentPage: jest.fn(),
+      }
+      const wrapper = mount(<TableFrame {...props} />)
+      const paginate = wrapper.find(Paginate)
+      const nextPageButton = paginate.find('button').at(1)
 
       // When
-      const nextPageButton = paginate.find('button').at(1)
       nextPageButton.simulate('click')
 
       // Then
@@ -257,7 +289,7 @@ describe('components | Table', () => {
         currentPage: 1,
         updateCurrentPage: jest.fn(),
       }
-      const wrapper = mount(<Table {...props} />)
+      const wrapper = mount(<TableFrame {...props} />)
       const paginate = wrapper.find(Paginate)
 
       // When
