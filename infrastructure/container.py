@@ -4,8 +4,6 @@ from infrastructure.repository.stock.stock_sql_repository import StockSQLReposit
 from infrastructure.repository.venue.venue_label.venue_label_sql_repository import VenueLabelSQLRepository
 from infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
 from use_cases.book_an_offer import BookAnOffer
-from use_cases.save_offerer_bank_informations import SaveOffererBankInformations
-from use_cases.save_venue_bank_informations import SaveVenueBankInformations
 from use_cases.get_venue_labels import GetVenueLabels
 
 # Repositories

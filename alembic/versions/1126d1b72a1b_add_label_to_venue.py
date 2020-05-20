@@ -1,7 +1,7 @@
 """add_label_to_venue
 
 Revision ID: 1126d1b72a1b
-Revises: 44d783e1c855
+Revises: 093ebaede979
 Create Date: 2020-05-14 14:54:32.463395
 
 """
@@ -11,7 +11,7 @@ from alembic import op
 from sqlalchemy import ForeignKey
 
 revision = '1126d1b72a1b'
-down_revision = '44d783e1c855'
+down_revision = '093ebaede979'
 branch_labels = None
 depends_on = None
 

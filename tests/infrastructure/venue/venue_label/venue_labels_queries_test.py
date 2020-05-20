@@ -18,7 +18,7 @@ class VenueLabelSQLRepositoryTest:
         monuments = create_venue_label(idx=22, label='Monuments historiques')
         repository.save(house, monuments)
         expected_house_label = VenueLabel(identifier=11, label='Maison des illustres')
-        expected_monuments_abel = VenueLabel(identifier=22, label='Monuments historiques')
+        expected_monuments_label = VenueLabel(identifier=22, label='Monuments historiques')
 
         # When
         venue_labels = self.venue_label_sql_repository.get_all()
@@ -26,7 +26,7 @@ class VenueLabelSQLRepositoryTest:
         # Then
         assert len(venue_labels) == 2
         assert self._are_venue_label_present(expected_house_label, venue_labels)
-        assert self._are_venue_label_present(expected_monuments_abel, venue_labels)
+        assert self._are_venue_label_present(expected_monuments_label, venue_labels)
 
     def _are_venue_label_present(self, expected_venue_label: VenueLabel, venue_labels: List[VenueLabel]) -> bool:
         for venue_label in venue_labels:
