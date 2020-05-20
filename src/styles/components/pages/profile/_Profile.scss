@@ -43,6 +43,11 @@
     overflow: hidden;
     padding: 0 rem(16px);
 
+    input {
+      outline: none;
+      box-shadow: none;
+    }
+
     button {
       outline: none;
     }
