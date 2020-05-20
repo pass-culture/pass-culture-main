@@ -1828,8 +1828,10 @@ class FindByProUserIdTest:
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0)
 
-        booking = create_booking(idx=1, user=beneficiary, stock=stock, token="ABCD")
-        booking2 = create_booking(idx=2, user=beneficiary, stock=stock, token="FGHI")
+        today = datetime.utcnow()
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        booking = create_booking(user=beneficiary, stock=stock, token="ABCD", date_created=yesterday)
+        booking2 = create_booking(user=beneficiary, stock=stock, token="FGHI", date_created=today)
         repository.save(user_offerer, booking, booking2)
 
         # When
@@ -1852,8 +1854,10 @@ class FindByProUserIdTest:
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0)
 
-        booking = create_booking(idx=1, user=beneficiary, stock=stock, token="ABCD")
-        booking2 = create_booking(idx=2, user=beneficiary, stock=stock, token="FGHI")
+        today = datetime.utcnow()
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        booking = create_booking(user=beneficiary, stock=stock, token="ABCD", date_created=yesterday)
+        booking2 = create_booking(user=beneficiary, stock=stock, token="FGHI", date_created=today)
         repository.save(user_offerer, booking, booking2)
 
         # When
@@ -1937,7 +1941,6 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.total == 2
 
 
-
 class FindFirstMatchingFromOfferByUserTest:
     @clean_database
     def test_should_return_nothing_when_no_bookings(self, app):
@@ -1992,4 +1995,3 @@ class FindFirstMatchingFromOfferByUserTest:
         # Then
         assert booking.userId == beneficiary.id
         assert booking.dateCreated == my_booking.dateCreated
-

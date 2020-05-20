@@ -178,7 +178,7 @@ def find_by_id(booking_id: int) -> BookingSQLEntity:
         .first_or_404()
 
 
-def find_by_pro_user_id(user_id: int, page: int = 1, per_page_limit: int = 20) -> BookingsRecapPaginated:
+def find_by_pro_user_id(user_id: int, page: int = 1, per_page_limit: int = 1000) -> BookingsRecapPaginated:
     bookings_recap_query = _build_bookings_recap_query(user_id)
     bookings_recap_query = _duplicate_booking_when_offer_is_duo(bookings_recap_query)
 
@@ -201,7 +201,7 @@ def _duplicate_booking_when_offer_is_duo(bookings_recap_query: Query) -> Query:
         .order_by(text('"bookingDate" DESC'))
 
 
-def _build_bookings_recap_query(user_id):
+def _build_bookings_recap_query(user_id: int) -> Query:
     return BookingSQLEntity.query \
         .outerjoin(Payment) \
         .reset_joinpoint() \
