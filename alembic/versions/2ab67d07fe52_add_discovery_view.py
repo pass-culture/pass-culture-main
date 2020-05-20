@@ -161,7 +161,7 @@ def upgrade():
                 ORDER BY recommendable_offers.partitioned_offers;
         """)
 
-    op.execute(f""" CREATE UNIQUE INDEX ON discovery_view ("offerDiscoveryOrder"); """)
+    op.execute(f""" CREATE UNIQUE INDEX IF NOT EXISTS "discovery_view_offerDiscoveryOrder_idx" ON discovery_view ("offerDiscoveryOrder"); """)
 
 
 def downgrade():
