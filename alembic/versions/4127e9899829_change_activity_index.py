@@ -26,6 +26,7 @@ def upgrade():
         (table_name, CAST((old_data ->> 'id') AS integer));
         '''
     )
+    op.execute("ALTER TABLE activity ALTER COLUMN id SET DEFAULT nextval('activity_id_seq'::regclass);")
 
 
 def downgrade():
@@ -38,3 +39,4 @@ def downgrade():
         (CAST((changed_data ->> 'id') AS integer));
         '''
     )
+    op.execute("ALTER TABLE activity ALTER COLUMN id SET DEFAULT NONE;")
