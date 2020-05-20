@@ -371,6 +371,7 @@ class SaveVenueBankInformationsTest:
             other_offerer = create_offerer(siren='793875019')
             other_venue = create_venue(other_offerer, siret='79387501912345')
             bank_information = create_bank_information(
+                id_at_providers='1',
                 application_id=8,
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
@@ -378,6 +379,7 @@ class SaveVenueBankInformationsTest:
                 date_modified_at_last_provider=datetime(2012,1,1)
             )
             other_bank_information = create_bank_information(
+                id_at_providers='2',
                 application_id=79,
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",

@@ -1,15 +1,20 @@
 from datetime import datetime
-from unittest.mock import patch, ANY
+from unittest.mock import patch, \
+    ANY
 
 from local_providers import VenueBankInformationProvider
 from local_providers import BankInformationProvider
-from models import BankInformation, LocalProviderEvent
+from models import BankInformation, \
+    LocalProviderEvent
 from models.local_provider_event import LocalProviderEventType
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_offerer, create_venue, create_bank_information
-from tests.model_creators.provider_creators import provider_test, activate_provider
+from tests.model_creators.generic_creators import create_offerer, \
+    create_venue, \
+    create_bank_information
+from tests.model_creators.provider_creators import provider_test, \
+    activate_provider
 from utils.date import DATE_ISO_FORMAT
 
 
@@ -22,7 +27,8 @@ class TestableVenueBankInformationProvider(VenueBankInformationProvider):
         pass
 
 
-def demarche_simplifiee_application_detail_response(siret, bic, iban, idx=1, updated_at="2019-01-21T18:55:03.387Z", siren=None):
+def demarche_simplifiee_application_detail_response(siret, bic, iban, idx=1, updated_at="2019-01-21T18:55:03.387Z",
+                                                    siren=None):
     return {
         "dossier": {
             "id": idx,
@@ -74,7 +80,9 @@ def demarche_simplifiee_application_detail_response(siret, bic, iban, idx=1, upd
     }
 
 
-def create_demarche_simplifiee_application_detail_response_without_venue_siret(siret, bic, iban, idx=1, updated_at="2019-01-21T18:55:03.387Z", venue_name='VENUE WITHOUT SIRET'):
+def create_demarche_simplifiee_application_detail_response_without_venue_siret(siret, bic, iban, idx=1,
+                                                                               updated_at="2019-01-21T18:55:03.387Z",
+                                                                               venue_name='VENUE WITHOUT SIRET'):
     return {
         "dossier": {
             "id": idx,
@@ -301,13 +309,15 @@ class VenueBankInformationProviderTest:
                                                        2019, 1, 1),
                                                    last_provider_id=get_provider_by_local_class(
                                                        'VenueBankInformationProvider').id,
-                                                   venue=venue)
+                                                   venue=venue,
+                                                   application_id=1)
         bank_information2 = create_bank_information(id_at_providers='793875019',
                                                     date_modified_at_last_provider=datetime(
                                                         2020, 1, 1),
                                                     last_provider_id=get_provider_by_local_class(
                                                         'VenueBankInformationProvider').id,
-                                                    venue=venue2)
+                                                    venue=venue2,
+                                                    application_id=2)
         repository.save(bank_information, bank_information2)
         provider_object = VenueBankInformationProvider(
             minimum_requested_datetime=datetime(2019, 6, 1))
@@ -683,7 +693,8 @@ class VenueBankInformationProviderTest:
             venue = create_venue(
                 offerer, siret=None, name='VENUE WITHOUT SIRET', comment='venue whithout siret')
             bank_information = create_bank_information(
-                id_at_providers="424861714VENUE WITHOUT SIRET", venue=venue, bic="SOGEFRPP", iban="FR7630007000111234567890144")
+                id_at_providers="424861714VENUE WITHOUT SIRET", venue=venue, bic="SOGEFRPP",
+                iban="FR7630007000111234567890144")
             repository.save(bank_information)
             activate_provider('VenueBankInformationProvider')
             venue_bank_information_provider = VenueBankInformationProvider()
@@ -696,6 +707,7 @@ class VenueBankInformationProviderTest:
             assert updated_bank_information.applicationId == 2
             assert updated_bank_information.iban == "FR7630006000011234567890189"
             assert updated_bank_information.bic == "BDFEFR2LCCB"
+
 
 @patch(
     'local_providers.demarches_simplifiees_venue_bank_information.get_closed_application_ids_for_demarche_simplifiee')
@@ -723,12 +735,14 @@ def test_provider_can_handle_payload_with_both_venues_with_siret_and_venues_with
     offerer1 = create_offerer(siren='424861714')
     venue_with_siret = create_venue(offerer1, siret='42486171400014')
     bank_information1 = create_bank_information(
-        id_at_providers='42486171400014', venue=venue_with_siret, bic="SOGEFRPP", iban="FR7630007000111234567890144")
+        id_at_providers='42486171400014', venue=venue_with_siret, bic="SOGEFRPP", iban="FR7630007000111234567890144",
+        application_id=14562)
     offerer2 = create_offerer(siren='123456789')
     venue_without_siret = create_venue(
         offerer2, siret=None, comment='without siret venue', name='VENUE WITHOUT SIRET')
     bank_information2 = create_bank_information(
-        id_at_providers='123456789VENUE WITHOUT SIRET', venue=venue_without_siret, bic="SOGEFRPP", iban="FR7630007000111234567890144")
+        id_at_providers='123456789VENUE WITHOUT SIRET', venue=venue_without_siret, bic="SOGEFRPP",
+        iban="FR7630007000111234567890144", application_id=3567)
     repository.save(bank_information1, bank_information2)
 
     activate_provider('VenueBankInformationProvider')

@@ -1,8 +1,14 @@
 from repository import repository
 from scripts.payment.batch_steps import generate_new_payments
-from tests.conftest import clean_database, TestClient
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, create_deposit, \
-    create_user_offerer, create_bank_information
+from tests.conftest import clean_database, \
+    TestClient
+from tests.model_creators.generic_creators import create_booking, \
+    create_user, \
+    create_offerer, \
+    create_venue, \
+    create_deposit, \
+    create_user_offerer, \
+    create_bank_information
 from tests.model_creators.specific_creators import create_stock_with_thing_offer
 
 
@@ -20,8 +26,10 @@ class Get:
             venue1 = create_venue(offerer1)
             venue2 = create_venue(offerer1, siret='12345678912346')
             venue3 = create_venue(offerer2, siret='12345678912347')
-            bank_information1 = create_bank_information(id_at_providers='79387501900056', venue=venue1)
-            bank_information2 = create_bank_information(id_at_providers='79387501900057', venue=venue2)
+            bank_information1 = create_bank_information(id_at_providers='79387501900056', venue=venue1,
+                                                        application_id=1)
+            bank_information2 = create_bank_information(id_at_providers='79387501900057', venue=venue2,
+                                                        application_id=2)
             stock1 = create_stock_with_thing_offer(offerer=offerer1, venue=venue1, price=10)
             stock2 = create_stock_with_thing_offer(offerer=offerer1, venue=venue2, price=11)
             stock3 = create_stock_with_thing_offer(offerer=offerer2, venue=venue3, price=12)
@@ -33,8 +41,8 @@ class Get:
             booking5 = create_booking(user=user, stock=stock4, is_used=True, token='ABCDEJ', venue=venue3)
             booking6 = create_booking(user=user, stock=stock4, is_used=True, token='ABCDEK', venue=venue3)
             repository.save(deposit, booking1, booking2, booking3,
-                          booking4, booking5, booking6, user_offerer1,
-                          user_offerer2, bank_information1, bank_information2)
+                            booking4, booking5, booking6, user_offerer1,
+                            user_offerer2, bank_information1, bank_information2)
             generate_new_payments()
 
             # When

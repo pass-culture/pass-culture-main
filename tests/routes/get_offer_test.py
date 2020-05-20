@@ -18,8 +18,8 @@ class Get:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
             stock = create_stock(offer=offer)
-            create_bank_information(venue=venue, id_at_providers=venue.siret)
-            create_bank_information(offerer=offerer, id_at_providers=offerer.siren)
+            create_bank_information(venue=venue, id_at_providers=venue.siret, application_id=1)
+            create_bank_information(offerer=offerer, id_at_providers=offerer.siren, application_id=2)
             repository.save(beneficiary, stock)
 
             # When

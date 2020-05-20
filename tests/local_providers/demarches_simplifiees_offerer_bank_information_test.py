@@ -527,13 +527,13 @@ class OffererBankInformationProviderProviderTest:
                                                        2019, 1, 1),
                                                    last_provider_id=get_provider_by_local_class(
                                                        'OffererBankInformationProvider').id,
-                                                   offerer=offerer)
+                                                   offerer=offerer, application_id=1)
         bank_information2 = create_bank_information(id_at_providers='793875019',
                                                     date_modified_at_last_provider=datetime(
                                                         2020, 1, 1),
                                                     last_provider_id=get_provider_by_local_class(
                                                         'OffererBankInformationProvider').id,
-                                                    offerer=offerer2)
+                                                    offerer=offerer2, application_id=2)
         repository.save(bank_information, bank_information2)
         activate_provider('OffererBankInformationProvider')
         offerer_bank_information_provider = OffererBankInformationProvider()
@@ -568,13 +568,15 @@ class OffererBankInformationProviderProviderTest:
                                                        2019, 1, 1),
                                                    last_provider_id=get_provider_by_local_class(
                                                        'OffererBankInformationProvider').id,
-                                                   offerer=offerer)
+                                                   offerer=offerer,
+                                                   application_id=1)
         bank_information2 = create_bank_information(id_at_providers='793875019',
                                                     date_modified_at_last_provider=datetime(
                                                         2020, 1, 1),
                                                     last_provider_id=get_provider_by_local_class(
                                                         'OffererBankInformationProvider').id,
-                                                    offerer=offerer2)
+                                                    offerer=offerer2,
+                                                    application_id=2)
         repository.save(bank_information, bank_information2)
 
         # When

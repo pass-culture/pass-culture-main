@@ -49,11 +49,13 @@ class GetLastUpdateForBankInformationTest:
         bank_information = create_bank_information(id_at_providers='79387501900056',
                                                    date_modified_at_last_provider=target_date,
                                                    venue=venue,
-                                                   last_provider_id=provider.id)
+                                                   last_provider_id=provider.id,
+                                                   application_id=1)
         other_bank_information = create_bank_information(id_at_providers='79387501900058',
                                                          date_modified_at_last_provider=recent_date,
                                                          venue=other_venue,
-                                                         last_provider_id=other_provider.id)
+                                                         last_provider_id=other_provider.id,
+                                                         application_id=2)
         repository.save(bank_information, other_bank_information)
 
         # when
