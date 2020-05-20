@@ -282,8 +282,9 @@ class GetOfferForRecommendationsTest:
             stock_physical_offer = create_stock_from_offer(physical_offer, quantity=2)
             create_mediation(physical_offer)
             create_mediation(digital_offer)
-            digital_offer.criteria = [create_criterion(name='negative', score_delta=-1)]
-            physical_offer.criteria = [create_criterion(name='negative', score_delta=-1),
+            negative_criterion = create_criterion(name='negative', score_delta=-1)
+            digital_offer.criteria = [negative_criterion]
+            physical_offer.criteria = [negative_criterion,
                                        create_criterion(name='positive', score_delta=1)]
 
             repository.save(user, stock_digital_offer, stock_physical_offer)
