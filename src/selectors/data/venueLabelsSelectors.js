@@ -1,5 +1,9 @@
 const sorted_alphabetically_by_label = (a, b) => {
-  return a.label < b.label ? -1 : a.label > b.label ? 1 : 0
+  return a.label.toLowerCase() < b.label.toLowerCase()
+    ? -1
+    : a.label.toLowerCase() > b.label.toLowerCase()
+    ? 1
+    : 0
 }
 
 export const selectVenueLabels = state => {
