@@ -1,15 +1,23 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { pluralizeWord } from './utils/pluralizeWord'
+import Spinner from '../../../../layout/Spinner'
+import Icon from '../../../../layout/Icon'
 
-const Header = ({nbBookings}) => (
+const Header = ({isLoading, nbBookings}) => (
   <div className="bookings-header">
-    <span>
-      {nbBookings === 0 ?
-        'Aucune réservation'
-        : `${nbBookings} ${pluralizeWord(nbBookings, 'réservation')
-      }`}
-    </span>
+    {isLoading ? (
+      <span>
+        Chargement en cours ...
+      </span>
+    ) : (
+      <span>
+        {nbBookings === 0 ?
+          'Aucune réservation'
+          : `${nbBookings} ${pluralizeWord(nbBookings, 'réservation')
+        }`}
+      </span>
+    )}
   </div>
 )
 

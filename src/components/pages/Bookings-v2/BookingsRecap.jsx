@@ -4,6 +4,7 @@ import Titles from '../../layout/Titles/Titles'
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
 import { fetchBookingsRecapByPage } from '../../../services/bookingsRecapService'
 import NoBookingsMessage from './NoBookingsMessage/NoBookingsMessage'
+import Spinner from '../../layout/Spinner'
 
 class BookingsRecap extends PureComponent {
   constructor(props) {
@@ -13,6 +14,7 @@ class BookingsRecap extends PureComponent {
       nbBookings: 0,
       page: 0,
       pages: 0,
+      isLoading: true,
     }
   }
 
@@ -27,6 +29,10 @@ class BookingsRecap extends PureComponent {
     if (currentPage < pages) {
       currentPage++
       fetchBookingsRecapByPage(currentPage).then(this.savePaginatedBookingsRecap)
+    } else {
+      this.setState({
+        isLoading:false
+      })
     }
   }
 
@@ -42,7 +48,7 @@ class BookingsRecap extends PureComponent {
   }
 
   render() {
-    const { bookingsRecap, nbBookings } = this.state
+    const { bookingsRecap, isLoading, nbBookings } = this.state
 
     return (
       <Main name="bookings-v2">
@@ -50,10 +56,11 @@ class BookingsRecap extends PureComponent {
         {nbBookings > 0 ? (
           <BookingsRecapTable
             bookingsRecap={bookingsRecap}
+            isLoading={isLoading}
             nbBookings={nbBookings}
           />
         ) : (
-          <NoBookingsMessage />
+          isLoading ? <Spinner/> : <NoBookingsMessage/>
         )}
       </Main>
     )

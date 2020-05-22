@@ -9,26 +9,14 @@ import Header from './Header/Header'
 import BookingIsDuoCell from './CellsFormatter/BookingIsDuoCell'
 import { NB_BOOKINGS_PER_PAGE } from './NB_BOOKINGS_PER_PAGE'
 import TableFrame from './Table/TableFrame'
+import BookingsRecapFilters from './Filters/BookingsRecapFilters'
 
-
-class OfferNameFilter extends Component {
-  render() {
-    console.log('props', this.props)
-    return
-    (<select>
-        <option value="all">All</option>
-        <option value="true">Can Drink</option>
-        <option value="false">Can't Drink</option>
-      </select>
-    )
-  }
-
-}
 
 class BookingsRecapTable extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      bookingsRecapFiltered: props.bookingsRecap,
       columns: [
         {
           id: 1,
@@ -36,7 +24,6 @@ class BookingsRecapTable extends Component {
           accessor: 'stock',
           Cell: ({ value }) => <BookingOfferCell offer={value} />,
           className: 'td-offer-name',
-          Filter: OfferNameFilter
         },
         {
           id: 2,
@@ -44,7 +31,6 @@ class BookingsRecapTable extends Component {
           accessor: 'booking_is_duo',
           Cell: ({ value }) => <BookingIsDuoCell isDuo={value} />,
           className: 'td-booking-duo',
-          disableFilters: true,
         },
         {
           id: 3,
@@ -52,7 +38,6 @@ class BookingsRecapTable extends Component {
           accessor: 'beneficiary',
           Cell: ({ value }) => <BeneficiaryCell beneficiaryInfos={value} />,
           className: 'td-beneficiary',
-          disableFilters: true,
         },
         {
           id: 4,
@@ -60,7 +45,6 @@ class BookingsRecapTable extends Component {
           accessor: 'booking_date',
           Cell: ({ value }) => <BookingDateCell bookingDate={value} />,
           className: 'td-booking-date',
-          disableFilters: true,
         },
         {
           id: 5,
@@ -68,7 +52,6 @@ class BookingsRecapTable extends Component {
           accessor: 'booking_token',
           Cell: ({ value }) => <BookingTokenCell bookingToken={value} />,
           className: 'td-booking-token',
-          disableFilters: true,
         },
         {
           id: 6,
@@ -76,15 +59,25 @@ class BookingsRecapTable extends Component {
           accessor: 'booking_status',
           Cell: ({ value }) => <BookingStatusCell bookingStatus={value} />,
           className: 'td-booking-status',
-          disableFilters: true,
         },
       ],
       currentPage: 0,
+      filters: {
+        offerName: null,
+        eventDate: null,
+      },
+      nbBookings: props.nbBookings,
     }
   }
 
   shouldComponentUpdate() {
     return true
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.bookingsRecap.length !== this.props.bookingsRecap.length){
+      this.applyFilters()
+    }
   }
 
   updateCurrentPage = currentPage => {
@@ -93,18 +86,43 @@ class BookingsRecapTable extends Component {
     })
   }
 
+  setFilters = filters => {
+    this.setState({ filters: filters })
+    this.applyFilters()
+  }
+
+  applyFilters = () => {
+    const {filters} = this.state
+    const {bookingsRecap} = this.props
+
+    const bookingsRecapFiltered = filters.offerName ?
+      bookingsRecap.filter(
+        booking => booking.stock.offer_name.toLowerCase().includes(filters.offerName)
+      ) : bookingsRecap
+
+    this.setState({bookingsRecapFiltered: bookingsRecapFiltered})
+    console.log("NB BOOKINGS", bookingsRecapFiltered.length)
+  }
+
   render() {
-    const { bookingsRecap, nbBookings } = this.props
-    const { columns, currentPage } = this.state
+    const { bookingsRecap, isLoading } = this.props
+    const { bookingsRecapFiltered, columns, currentPage } = this.state
 
     return (
       <div>
-        <Header nbBookings={nbBookings} />
+        <BookingsRecapFilters
+          setFilters={this.setFilters}
+          bookingsRecap={bookingsRecap}
+          filters={{ 'offer_name': true, 'booking_date': false }}
+        />
+        <Header isLoading={isLoading}
+                nbBookings={bookingsRecapFiltered.length}
+        />
         <TableFrame
           columns={columns}
           currentPage={currentPage}
-          data={bookingsRecap}
-          nbBookings={nbBookings}
+          data={bookingsRecapFiltered}
+          nbBookings={bookingsRecapFiltered.length}
           nbBookingsPerPage={NB_BOOKINGS_PER_PAGE}
           updateCurrentPage={this.updateCurrentPage}
         />

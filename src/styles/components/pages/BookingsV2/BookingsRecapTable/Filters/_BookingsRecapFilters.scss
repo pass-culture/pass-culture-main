@@ -1,0 +1,16 @@
+.bookings-recap-filters{
+  display: flex;
+  align-items: center;
+  margin-bottom: rem(30px);
+
+  .select-filters {
+    flex: 1;
+    font-weight: 700;
+  }
+
+  .text-filter {
+    flex: 3;
+    box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
+  }
+
+}
