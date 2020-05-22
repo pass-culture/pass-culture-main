@@ -1,7 +1,18 @@
 from datetime import datetime
 from unittest.mock import Mock, patch
+import pytest
 
-from domain.demarches_simplifiees import get_all_application_ids_for_demarche_simplifiee, get_closed_application_ids_for_demarche_simplifiee, DmsApplicationStates
+from tests.connector_creators.demarches_simplifiees_creators import \
+    offerer_demarche_simplifiee_application_detail_response, \
+    venue_demarche_simplifiee_application_detail_response_with_siret, \
+    venue_demarche_simplifiee_application_detail_response_without_siret
+from domain.demarches_simplifiees import get_all_application_ids_for_demarche_simplifiee, \
+    get_closed_application_ids_for_demarche_simplifiee, DmsApplicationStates, \
+    get_offerer_bank_information_application_details_by_application_id, \
+    get_venue_bank_information_application_details_by_application_id, ApplicationDetail, \
+    _get_status_from_demarches_simplifiees_application_state, CannotRegisterBankInformation
+from models.bank_information import BankInformationStatus
+from utils.date import DATE_ISO_FORMAT
 
 
 class GetAllApplicationIdsForBeneficiaryImportTest:
@@ -255,3 +266,102 @@ class GetClosedApplicationIdsForBeneficiaryImportTest:
 
         # Then
         assert application_ids == [2]
+
+
+@patch('domain.demarches_simplifiees.get_application_details')
+class GetOffererBankInformation_applicationDetailsByApplicationId:
+    def test_retrieve_and_format_all_fields(self, get_application_details):
+        # Given
+        updated_at = datetime(2020, 1, 3)
+        get_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(
+            siren="123456789", bic="sogeFRPP", iban="FR76 3000 7000 1112 3456 7890 144", idx=8, state='closed', updated_at=updated_at.strftime(DATE_ISO_FORMAT)
+        )
+
+        # When
+        application_details = get_offerer_bank_information_application_details_by_application_id(8)
+
+        # Then
+        assert type(application_details) is ApplicationDetail
+        assert application_details.siren == "123456789"
+        assert application_details.status == BankInformationStatus.ACCEPTED
+        assert application_details.application_id == 8
+        assert application_details.iban == "FR7630007000111234567890144"
+        assert application_details.bic == "SOGEFRPP"
+        assert application_details.siret == None
+        assert application_details.venue_name == None
+        assert application_details.modification_date == updated_at
+
+
+@patch('domain.demarches_simplifiees.get_application_details')
+class GetVenueBankInformation_applicationDetailsByApplicationId:
+    def test_retrieve_and_format_all_fields_when_with_siret(self, get_application_details):
+        # Given
+        updated_at = datetime(2020, 1, 3)
+        get_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
+            siret="12345678900012", siren="123456789", bic="sogeFRPP", iban="FR76 3000 7000 1112 3456 7890 144", idx=8, state='closed', updated_at=updated_at.strftime(DATE_ISO_FORMAT)
+        )
+
+        # When
+        application_details = get_venue_bank_information_application_details_by_application_id(8)
+
+        # Then
+        assert type(application_details) is ApplicationDetail
+        assert application_details.siren == "123456789"
+        assert application_details.status == BankInformationStatus.ACCEPTED
+        assert application_details.application_id == 8
+        assert application_details.iban == "FR7630007000111234567890144"
+        assert application_details.bic == "SOGEFRPP"
+        assert application_details.siret == "12345678900012"
+        assert application_details.venue_name == None
+        assert application_details.modification_date == updated_at
+
+    def test_retrieve_and_format_all_fields_when_without_siret(self, get_application_details):
+        # Given
+        updated_at = datetime(2020, 1, 3)
+        get_application_details.return_value = venue_demarche_simplifiee_application_detail_response_without_siret(
+            siret="12345678900012", bic="sogeFRPP", iban="FR76 3000 7000 1112 3456 7890 144", idx=8, state='closed', updated_at=updated_at.strftime(DATE_ISO_FORMAT)
+        )
+
+        # When
+        application_details = get_venue_bank_information_application_details_by_application_id(8)
+
+        # Then
+        assert type(application_details) is ApplicationDetail
+        assert application_details.siren == "123456789"
+        assert application_details.status == BankInformationStatus.ACCEPTED
+        assert application_details.application_id == 8
+        assert application_details.iban == "FR7630007000111234567890144"
+        assert application_details.bic == "SOGEFRPP"
+        assert application_details.siret == ""
+        assert application_details.venue_name == 'VENUE_NAME'
+        assert application_details.modification_date == updated_at
+
+
+class GetStatusFromDemarchesSimplifieesApplicationState:
+    def test_correctly_infer_status_from_state(self):
+        # Given
+        states = ["closed", "initiated", "refused", "received", "without_continuation"]
+
+        # when
+        statuses = [_get_status_from_demarches_simplifiees_application_state(state) for state in states]
+
+        # Then
+        assert statuses == [
+            BankInformationStatus.ACCEPTED,
+            BankInformationStatus.DRAFT,
+            BankInformationStatus.REJECTED,
+            BankInformationStatus.DRAFT,
+            BankInformationStatus.REJECTED
+        ]
+
+    def test_raise_error_in_unknown_state(self):
+        # Given
+        state = "wrong"
+
+        # When
+        with pytest.raises(CannotRegisterBankInformation) as error:
+            _get_status_from_demarches_simplifiees_application_state(state)
+
+        # Then
+        assert error.value.args == (
+            f'Unknown Demarches Simplifiées state {state}',)
