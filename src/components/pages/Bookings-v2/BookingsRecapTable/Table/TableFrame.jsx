@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { usePagination, useTable } from 'react-table'
+import { useFilters, usePagination, useTable } from 'react-table'
 
 import Table from './Table'
 
@@ -32,7 +32,8 @@ const TableFrame = ({
         pageSize: nbBookingsPerPage,
       },
     },
-    usePagination
+    useFilters,
+    usePagination,
   )
   const pageCount = Math.ceil(nbBookings / nbBookingsPerPage)
 

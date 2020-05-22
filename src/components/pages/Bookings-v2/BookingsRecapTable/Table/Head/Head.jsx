@@ -8,6 +8,7 @@ const Head = ({ headerGroups }) => (
         {headerGroup.headers.map(column => (
           <th key={column.id}>
             {column.render('headerTitle')}
+            <div>{column.canFilter ? column.render('Filter') : null}</div>
           </th>
         ))}
       </tr>
