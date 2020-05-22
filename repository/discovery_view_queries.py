@@ -6,7 +6,7 @@ from models import DiscoveryView
 from models.db import db
 
 
-def _order_by_score_and_digital_offers() -> str:
+def _order_by_digital_offers() -> str:
     return f"""
         ROW_NUMBER() OVER (
             ORDER BY
@@ -22,7 +22,7 @@ def _order_by_score_and_digital_offers() -> str:
     """
 
 
-def create(session: Session, order: Callable = _order_by_score_and_digital_offers) -> None:
+def create(session: Session, order: Callable = _order_by_digital_offers) -> None:
     _create_discovery_view(session, order, DiscoveryView.__tablename__)
     session.commit()
 
@@ -33,7 +33,7 @@ def refresh(concurrently: bool = True) -> None:
 
 
 def _create_discovery_view(session: Session, order: Callable, name: str) -> None:
-    get_recommendable_offers = _create_function_get_recommendable_offers(session, order)
+    get_recommendable_offers = _create_function_get_recommendable_offers_ordered_by_digital_offers(session, order)
     session.execute(f"""
         CREATE MATERIALIZED VIEW IF NOT EXISTS {name} AS
             SELECT
@@ -55,12 +55,12 @@ def _create_discovery_view(session: Session, order: Callable, name: str) -> None
     """)
 
 
-def _create_function_get_recommendable_offers(session, order: Callable) -> str:
+def _create_function_get_recommendable_offers_ordered_by_digital_offers(session, order: Callable) -> str:
     get_offer_score = _create_function_get_offer_score(session)
     get_active_offers_ids = _create_function_get_active_offers_ids(session)
 
     session.execute(f"""
-        CREATE OR REPLACE FUNCTION get_recommendable_offers_ordered()
+        CREATE OR REPLACE FUNCTION get_recommendable_offers_ordered_by_digital_offers()
         RETURNS TABLE (
             criterion_score BIGINT,
             id BIGINT,
@@ -89,7 +89,7 @@ def _create_function_get_recommendable_offers(session, order: Callable) -> str:
         $body$
         LANGUAGE plpgsql;
     """)
-    return 'get_recommendable_offers_ordered'
+    return 'get_recommendable_offers_ordered_by_digital_offers'
 
 
 def _create_function_offer_has_at_least_one_bookable_stock(session) -> str:
