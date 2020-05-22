@@ -11,18 +11,6 @@ status_weight = {
     BankInformationStatus.REJECTED: 0
 }
 
-
-def new_application_can_update_bank_information(bank_information: BankInformation,
-                                                new_application_id: int,
-                                                new_application_status: int):
-    same_demarches_simplifiees_application = new_application_id == bank_information.applicationId
-
-    new_status_is_more_advanced_than_previous = (
-        status_weight[new_application_status] >= status_weight[bank_information.status])
-
-    return same_demarches_simplifiees_application or new_status_is_more_advanced_than_previous
-
-
 class CannotRegisterBankInformation(Exception):
     pass
 

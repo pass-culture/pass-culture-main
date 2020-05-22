@@ -53,15 +53,6 @@ def synchronize_libraires_stocks(app):
 
 @log_cron
 @cron_context
-@cron_require_feature(FeatureToggle.SYNCHRONIZE_BANK_INFORMATION)
-def pc_retrieve_bank_information(app):
-    synchronize_data_for_provider("BankInformationProvider")
-    synchronize_data_for_provider("OffererBankInformationProvider")
-    synchronize_data_for_provider("VenueBankInformationProvider")
-
-
-@log_cron
-@cron_context
 @cron_require_feature(FeatureToggle.BENEFICIARIES_IMPORT)
 def pc_old_remote_import_beneficiaries(app):
     procedure_id = int(DEMARCHES_SIMPLIFIEES_OLD_ENROLLMENT_PROCEDURE_ID)
@@ -116,10 +107,6 @@ if __name__ == '__main__':
 
     orm.configure_mappers()
     scheduler = BlockingScheduler()
-
-    scheduler.add_job(pc_retrieve_bank_information, 'cron',
-                      [app],
-                      day='*')
 
     scheduler.add_job(synchronize_allocine_stocks, 'cron',
                       [app],
