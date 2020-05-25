@@ -2,11 +2,13 @@ import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import Icon from '../../../layout/Icon/Icon'
-import { GDPR_URL, TERMS_AND_CONDITIONS_URL } from '../utils/externalLinks'
 import { getAccountDeletionEmail } from '../utils/utils'
 
 const LegalNotice = ({ pathToProfile, userEmail, userId }) => {
   const mailToHref = getAccountDeletionEmail(userId, userEmail)
+  const termsAndConditionsUrl =
+    'https://docs.passculture.app/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture'
+  const gdprUrl = 'https://docs.passculture.app/textes-normatifs/charte-des-donnees-personnelles'
 
   return (
     <Fragment>
@@ -15,11 +17,11 @@ const LegalNotice = ({ pathToProfile, userEmail, userId }) => {
         closeTo={null}
         title="Mentions Légales"
       />
-      <section className="legal-notice profile-section">
+      <section className="list-links profile-section">
         <ul>
           <li>
             <a
-              href={TERMS_AND_CONDITIONS_URL}
+              href={termsAndConditionsUrl}
               rel="noopener noreferrer"
               target="_blank"
               title="Ouverture des Conditions Générales d’Utilisation dans une nouvelle page"
@@ -33,7 +35,7 @@ const LegalNotice = ({ pathToProfile, userEmail, userId }) => {
           </li>
           <li>
             <a
-              href={GDPR_URL}
+              href={gdprUrl}
               rel="noopener noreferrer"
               target="_blank"
               title="Ouverture de la charte de protection des données personnelles dans une nouvelle page"

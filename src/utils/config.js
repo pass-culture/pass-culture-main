@@ -3,7 +3,7 @@ import 'moment/locale/fr'
 import 'moment-duration-format'
 import 'moment-timezone'
 
-import {version} from '../../package.json'
+import { version } from '../../package.json'
 
 moment.locale('fr-fr')
 

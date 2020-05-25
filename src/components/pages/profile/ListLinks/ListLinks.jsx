@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom'
 
 import Icon from '../../../layout/Icon/Icon'
 import SignoutLinkContainer from '../SignoutLink/SignoutLinkContainer'
-import { CONTACT_URL } from '../utils/externalLinks'
+
+const contactUrl = 'https://aide.passculture.app/fr/category/18-ans-1dnil5r/'
 
 const ListLinks = ({ historyPush, readRecommendations }) => (
   <section className="list-links profile-section">
@@ -29,7 +30,7 @@ const ListLinks = ({ historyPush, readRecommendations }) => (
       </li>
       <li>
         <a
-          href={CONTACT_URL}
+          href={contactUrl}
           rel="noopener noreferrer"
           target="_blank"
           title="Ouverture de l’aide dans une nouvelle fenêtre"
