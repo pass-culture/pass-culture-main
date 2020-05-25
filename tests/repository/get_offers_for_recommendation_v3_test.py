@@ -256,31 +256,6 @@ class GetOffersForRecommendationV3Test:
             assert offers[0].offer == offer2
 
         @clean_database
-        def test_order_should_return_digital_offers_first_when_offers_have_same_criterion_score(self, app):
-            # Given
-            offerer = create_offerer()
-            user = create_user()
-            venue = create_venue(offerer, postal_code='34000',
-                                 departement_code='34')
-            digital_offer = create_offer_with_thing_product(venue=venue, is_national=True,
-                                                            thing_type=ThingType.LIVRE_EDITION, url='https://url.com')
-            physical_offer = create_offer_with_thing_product(venue=venue, is_national=True,
-                                                             thing_type=ThingType.LIVRE_EDITION, url=None)
-            stock_digital_offer = create_stock_from_offer(digital_offer, quantity=2)
-            stock_physical_offer = create_stock_from_offer(physical_offer, quantity=2)
-            create_mediation(physical_offer)
-            create_mediation(digital_offer)
-            repository.save(user, stock_digital_offer, stock_physical_offer)
-
-            discovery_view_v3_queries.refresh(concurrently=False)
-
-            # When
-            offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False, limit=1)
-
-            # Then
-            assert offers == [digital_offer, physical_offer]
-
-        @clean_database
         @patch('repository.offer_queries.feature_queries.is_active', return_value=True)
         def test_order_should_return_ordered_offers_by_dateSeen_when_feature_is_active(self, app):
             # Given
@@ -289,9 +264,10 @@ class GetOffersForRecommendationV3Test:
             venue = create_venue(offerer, postal_code='34000',
                                  departement_code='34')
             offer_1 = create_offer_with_thing_product(venue=venue, is_national=True,
-                                                      thing_type=ThingType.LIVRE_EDITION, url='https://url.com')
+                                                      thing_type=ThingType.LIVRE_EDITION)
             offer_2 = create_offer_with_thing_product(venue=venue, is_national=True,
-                                                      thing_type=ThingType.LIVRE_EDITION, url=None)
+                                                      thing_type=ThingType.LIVRE_EDITION)
+            offer_2.criteria = [create_criterion(name='positive', score_delta=1)]
 
             stock_digital_offer_1 = create_stock_from_offer(offer_1, quantity=2)
             stock_physical_offer_2 = create_stock_from_offer(offer_2, quantity=2)
@@ -308,10 +284,10 @@ class GetOffersForRecommendationV3Test:
             discovery_view_v3_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
+            offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False, limit=1)
 
             # Then
-            assert offers == [offer_1, offer_2]
+            assert offers[0] == offer_1
 
         @clean_database
         @patch('repository.offer_queries.feature_queries.is_active', return_value=True)
@@ -322,9 +298,10 @@ class GetOffersForRecommendationV3Test:
             venue = create_venue(offerer, postal_code='34000',
                                  departement_code='34')
             offer_1 = create_offer_with_thing_product(venue=venue, is_national=True,
-                                                      thing_type=ThingType.LIVRE_EDITION, url=None)
+                                                      thing_type=ThingType.LIVRE_EDITION)
             offer_2 = create_offer_with_thing_product(venue=venue, is_national=True,
-                                                      thing_type=ThingType.LIVRE_EDITION, url='https://url.com')
+                                                      thing_type=ThingType.LIVRE_EDITION)
+            offer_2.criteria = [create_criterion(name='positive', score_delta=1)]
 
             stock_digital_offer_1 = create_stock_from_offer(offer_1, quantity=2)
             stock_physical_offer_2 = create_stock_from_offer(offer_2, quantity=2)
@@ -339,10 +316,10 @@ class GetOffersForRecommendationV3Test:
             discovery_view_v3_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
+            offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False, limit=1)
 
             # Then
-            assert offers == [offer_1, offer_2]
+            assert offers[0] == offer_1
 
         @clean_database
         @patch('repository.offer_queries.feature_queries.is_active', return_value=False)

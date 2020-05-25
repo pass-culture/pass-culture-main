@@ -16,7 +16,6 @@ def _order_by_digital_offers() -> str:
                     WHERE criterion.id = offer_criterion."criterionId"
                         AND offer_criterion."offerId" = offer.id
                 ) DESC,
-                offer.url IS NOT NULL DESC,
                 RANDOM()
         )
     """
