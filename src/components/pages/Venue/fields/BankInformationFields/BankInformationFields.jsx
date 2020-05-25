@@ -8,7 +8,7 @@ import { ApplicationBanner } from './ApplicationBanner'
 const BankInformation = ({ venue, offerer }) => {
   const venueHasBankInformation = !!(venue.iban && venue.bic)
   const offererHasBankInformation = !!(offerer.iban && offerer.bic)
-  const venusHasApplicationId = !!venue.demarchesSimplifieesApplicationId
+  const venueHasApplicationId = !!venue.demarchesSimplifieesApplicationId
 
   return (
     <div className="section vp-content-section bank-information">
@@ -27,10 +27,10 @@ const BankInformation = ({ venue, offerer }) => {
             bic={offerer.bic}
             iban={offerer.iban}
                                         />}
-          {venusHasApplicationId && (
+          {venueHasApplicationId && (
             <ApplicationBanner applicationId={venue.demarchesSimplifieesApplicationId} />
           )}
-          {!offererHasBankInformation && !venusHasApplicationId && (
+          {!offererHasBankInformation && !venueHasApplicationId && (
             <Fragment>
               <p className="bi-subtitle">
                 {'Aucune coordonnée bancaire renseignée'}
