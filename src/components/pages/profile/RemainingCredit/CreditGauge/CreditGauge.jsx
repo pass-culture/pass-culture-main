@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-
-import Icon from '../../../../layout/Icon/Icon'
 import formatDecimals from '../../../../../utils/numbers/formatDecimals'
 import { NON_BREAKING_SPACE } from '../../../../../utils/specialCharacters'
 
+import Icon from '../../../../layout/Icon/Icon'
+import { computeCreditGaugeFilling } from '../../domain/computeCreditGaugeFilling'
+
 const CreditGauge = ({ children, extraClassName, creditLimit, picto, remainingCredit }) => {
   const isGaugeEmpty = remainingCredit === 0
-  const fillingStep = computeFillingStep(remainingCredit, creditLimit)
+  const fillingStep = computeCreditGaugeFilling(remainingCredit, creditLimit)
   const formattedRemainingCredit = formatDecimals(remainingCredit)
 
   return (
@@ -30,13 +31,6 @@ const CreditGauge = ({ children, extraClassName, creditLimit, picto, remainingCr
       </pre>
     </div>
   )
-}
-
-export const computeFillingStep = (remainingCredit, creditLimit) => {
-  const ratio = (10 * remainingCredit) / creditLimit
-  const step = Math.floor(ratio)
-
-  return step
 }
 
 CreditGauge.propTypes = {

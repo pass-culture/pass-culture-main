@@ -2,12 +2,12 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import { NON_BREAKING_SPACE } from '../../../../utils/specialCharacters'
-import { computeEndValidityDate } from '../../../../utils/date/date'
+import { computeEndValidityDate } from '../domain/computeEndValidityDate'
 import User from '../ValueObjects/User'
 
 const Header = ({ user }) => {
   const { publicName, wallet_date_created: walletDateCreated, wallet_balance: walletBalance } = user
-  const endValidityDate = computeEndValidityDate(new Date(walletDateCreated))
+  const endValidityDate = computeEndValidityDate(walletDateCreated)
 
   return (
     <section className="ph-wrapper">

@@ -10,7 +10,7 @@ describe('getRemainingCreditForGivenCreditLimit', () => {
     const result = getRemainingCreditForGivenCreditLimit(wallet)(expense)
 
     // when
-    expect(result).toStrictEqual(100)
+    expect(result).toBe(100)
   })
 
   it('returns max minus actual if lower than wallet balance', () => {
@@ -22,6 +22,6 @@ describe('getRemainingCreditForGivenCreditLimit', () => {
     const result = getRemainingCreditForGivenCreditLimit(wallet)(expense)
 
     // when
-    expect(result).toStrictEqual(110)
+    expect(result).toBe(110)
   })
 })

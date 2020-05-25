@@ -8,9 +8,8 @@ import { getTimezone } from '../timezone'
 export const LOCALE_FRANCE = 'fr-FR'
 export const FULL_MONTH_IN_LETTERS = { month: 'long' }
 export const MONTH_IN_NUMBER = { month: 'numeric' }
+export const PASS_CULTURE_YEARS_VALIDITY = 2
 export const YEAR_IN_NUMBER = { year: 'numeric' }
-
-const PASS_CULTURE_YEARS_VALIDITY = 2
 
 const formatDate = (date, timeZone) => {
   const options = {
@@ -29,17 +28,6 @@ export const formatRecommendationDates = (departementCode, dateRange = []) => {
 
   const toFormated = formatDate(toDate, timeZone)
   return `du ${fromFormated} au ${toFormated}`
-}
-
-export const computeEndValidityDate = date => {
-  const options = {
-    ...YEAR_IN_NUMBER,
-    ...MONTH_IN_NUMBER,
-    day: 'numeric',
-  }
-
-  date.setFullYear(date.getFullYear() + PASS_CULTURE_YEARS_VALIDITY)
-  return `${date.toLocaleDateString(LOCALE_FRANCE, options)}`
 }
 
 export const dateStringPlusTimeZone = (dateString, departementCode) => {

@@ -1,24 +1,6 @@
-import {
-  computeEndValidityDate,
-  dateStringPlusTimeZone,
-  formatRecommendationDates,
-  formatSearchResultDate,
-} from '../date'
+import { dateStringPlusTimeZone, formatRecommendationDates, formatSearchResultDate } from '../date'
 
 describe('src | utils | date', () => {
-  describe('computeEndValidityDate', () => {
-    it('should return formatted date', () => {
-      // given
-      const date = new Date('2019-09-10T08:05:45.778894Z')
-
-      // when
-      const formattedDate = computeEndValidityDate(date)
-
-      // then
-      expect(formattedDate).toBe('10/09/2021')
-    })
-  })
-
   describe('formatRecommendationDates', () => {
     describe('when there is no date given', () => {
       it('should return permanent', () => {

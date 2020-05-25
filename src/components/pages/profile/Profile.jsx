@@ -11,8 +11,7 @@ import MainView from './MainView/MainView'
 import PersonalInformationsContainer from './PersonalInformations/PersonalInformationsContainer'
 import User from './ValueObjects/User'
 
-const Profile = props => {
-  const { user, history, location } = props
+const Profile = ({ user, history, location }) => {
   const pathToProfile = '/profil'
   const { email, departmentCode } = user
   const department = getDepartment(departmentCode)
@@ -41,7 +40,6 @@ const Profile = props => {
               pathToProfile={pathToProfile}
               snackbar={snackbar}
               user={user}
-              {...props}
             />
           </Route>
           <Route
