@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 
 import { NON_BREAKING_SPACE } from '../../../../../utils/specialCharacters'
-import ProfileHeader from '../ProfileHeader'
+import Header from '../Header'
 import User from '../../../../pages/profile/ValueObjects/User'
 
 describe('profileHeader', () => {
@@ -20,7 +20,7 @@ describe('profileHeader', () => {
 
   it('should display my pseudo, my wallet balance and my end validity date', () => {
     // When
-    const wrapper = shallow(<ProfileHeader {...props} />)
+    const wrapper = shallow(<Header {...props} />)
 
     // Then
     const pseudo = wrapper.find({ children: 'Rosa Bonheur' })

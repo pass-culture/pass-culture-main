@@ -9,7 +9,7 @@ import NotMatch from '../not-match/NotMatch'
 import EditPasswordContainer from './EditPassword/EditPasswordContainer'
 import LegalNotice from './LegalNotice/LegalNotice'
 import PersonalInformationsContainer from './PersonalInformations/PersonalInformationsContainer'
-import ProfileMainView from './ProfileMainView/ProfileMainView'
+import MainView from './MainView/MainView'
 import User from './ValueObjects/User'
 
 export const getDepartment = departmentCode => {
@@ -41,7 +41,7 @@ class Profile extends PureComponent {
               key="route-profile-main-view"
               path="/profil/:menu(menu)?"
             >
-              <ProfileMainView
+              <MainView
                 historyPush={history.push}
                 user={user}
               />

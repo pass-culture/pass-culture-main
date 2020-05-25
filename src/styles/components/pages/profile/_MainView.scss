@@ -1,4 +1,4 @@
-.pm-wrapper {
+.mv-wrapper {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -7,11 +7,11 @@
   min-width: 100%;
   width: 100%;
 
-  .pm-main {
+  .mv-main {
     overflow: auto;
   }
 
-  .pm-scroll {
+  .mv-scroll {
     height: 100%;
     max-height: 100%;
     max-width: 100%;
@@ -21,14 +21,14 @@
     width: 100%;
   }
 
-  .pm-app-version {
+  .mv-app-version {
     color: $grey;
     font-size: rem(14px);
     font-weight: 500;
     margin: rem(24px) 0;
   }
 
-  .pm-ministry-of-culture {
+  .mv-ministry-of-culture {
     margin-bottom: rem(24px);
   }
 }

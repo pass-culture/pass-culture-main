@@ -3,9 +3,9 @@ import React from 'react'
 
 import RelativeFooterContainer from '../../../../layout/RelativeFooter/RelativeFooterContainer'
 import ListLinksContainer from '../../ListLinks/ListLinksContainer'
-import ProfileHeader from '../../ProfileHeader/ProfileHeader'
+import Header from '../../Header/Header'
 import RemainingCredit from '../../RemainingCredit/RemainingCredit'
-import ProfileMainView from '../ProfileMainView'
+import MainView from '../MainView'
 import User from '../../../../pages/profile/ValueObjects/User'
 
 jest.mock('../../../../../../package.json', () => ({
@@ -24,8 +24,8 @@ describe('profile main view', () => {
 
   it('should display header, remaining credit, my informations form and menu', () => {
     // When
-    const wrapper = shallow(<ProfileMainView {...props} />)
-    const ProfileHeaderWrapper = wrapper.find(ProfileHeader)
+    const wrapper = shallow(<MainView {...props} />)
+    const ProfileHeaderWrapper = wrapper.find(Header)
     const RemainingCreditWrapper = wrapper.find(RemainingCredit)
     const PersonalInformationsWrapper = wrapper.find(ListLinksContainer)
     const RelativeFooterContainerWrapper = wrapper.find(RelativeFooterContainer)
@@ -39,7 +39,7 @@ describe('profile main view', () => {
 
   it('should display the current version of package', () => {
     // When
-    const wrapper = shallow(<ProfileMainView {...props} />)
+    const wrapper = shallow(<MainView {...props} />)
 
     // Then
     const version = wrapper.find({ children: 'Version 78.0.0' })
@@ -48,7 +48,7 @@ describe('profile main view', () => {
 
   it('should display the ministry of culture image', () => {
     // When
-    const wrapper = shallow(<ProfileMainView {...props} />)
+    const wrapper = shallow(<MainView {...props} />)
 
     // Then
     const logo = wrapper.find('img')

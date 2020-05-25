@@ -3,25 +3,25 @@ import React from 'react'
 
 import { version } from '../../../../../package.json'
 import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
-import ProfileHeader from '../ProfileHeader/ProfileHeader'
+import Header from '../Header/Header'
 import RemainingCredit from '../RemainingCredit/RemainingCredit'
 import User from '../ValueObjects/User'
 import ListLinksContainer from '../ListLinks/ListLinksContainer'
 
-const ProfileMainView = ({ user, historyPush }) => (
-  <div className="pm-wrapper">
-    <main className="pm-main">
-      <div className="pm-scroll">
-        <ProfileHeader user={user} />
+const MainView = ({ user, historyPush }) => (
+  <div className="mv-wrapper">
+    <main className="mv-main">
+      <div className="mv-scroll">
+        <Header user={user} />
         <RemainingCredit user={user} />
         <ListLinksContainer historyPush={historyPush} />
         <section className="profile-section">
-          <div className="pm-app-version">
+          <div className="mv-app-version">
             {`Version ${version}`}
           </div>
           <img
             alt=""
-            className="pm-ministry-of-culture"
+            className="mv-ministry-of-culture"
             src="/min-culture-rvb@2x.png"
             width="161"
           />
@@ -35,9 +35,9 @@ const ProfileMainView = ({ user, historyPush }) => (
   </div>
 )
 
-ProfileMainView.propTypes = {
+MainView.propTypes = {
   historyPush: PropTypes.func.isRequired,
   user: PropTypes.instanceOf(User).isRequired,
 }
 
-export default ProfileMainView
+export default MainView

@@ -5,7 +5,7 @@ import { NON_BREAKING_SPACE } from '../../../../utils/specialCharacters'
 import { computeEndValidityDate } from '../../../../utils/date/date'
 import User from '../ValueObjects/User'
 
-const ProfileHeader = ({ user }) => {
+const Header = ({ user }) => {
   const { publicName, wallet_date_created: walletDateCreated, wallet_balance: walletBalance } = user
   const endValidityDate = computeEndValidityDate(new Date(walletDateCreated))
 
@@ -24,8 +24,8 @@ const ProfileHeader = ({ user }) => {
   )
 }
 
-ProfileHeader.propTypes = {
+Header.propTypes = {
   user: PropTypes.instanceOf(User).isRequired,
 }
 
-export default ProfileHeader
+export default Header
