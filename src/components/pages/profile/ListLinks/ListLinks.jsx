@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Link } from 'react-router-dom'
 
-import Icon from '../../../layout/Icon/Icon'
 import SignoutLinkContainer from '../SignoutLink/SignoutLinkContainer'
+import ExternalLink from '../ExternalLink/ExternalLink'
+import InternalLink from '../InternalLink/InternalLink'
 
 const contactUrl = 'https://aide.passculture.app/fr/category/18-ans-1dnil5r/'
 
@@ -11,45 +11,33 @@ const ListLinks = ({ historyPush, readRecommendations }) => (
   <section className="list-links profile-section">
     <ul>
       <li>
-        <Link to="/profil/informations">
-          <Icon svg="ico-informations" />
-          <div className="list-link-label">
-            {'Informations personnelles'}
-          </div>
-          <Icon svg="ico-next-lightgrey" />
-        </Link>
+        <InternalLink
+          icon="ico-informations"
+          label="Informations personnelles"
+          to="/profil/informations"
+        />
       </li>
       <li>
-        <Link to="/profil/mot-de-passe">
-          <Icon svg="ico-lock" />
-          <div className="list-link-label">
-            {'Mot de passe'}
-          </div>
-          <Icon svg="ico-next-lightgrey" />
-        </Link>
+        <InternalLink
+          icon="ico-lock"
+          label="Mot de passe"
+          to="/profil/mot-de-passe"
+        />
       </li>
       <li>
-        <a
+        <ExternalLink
           href={contactUrl}
-          rel="noopener noreferrer"
-          target="_blank"
+          icon="ico-help"
+          label="Aide"
           title="Ouverture de l’aide dans une nouvelle fenêtre"
-        >
-          <Icon svg="ico-help" />
-          <div className="list-link-label">
-            {'Aide'}
-          </div>
-          <Icon svg="ico-next-lightgrey" />
-        </a>
+        />
       </li>
       <li>
-        <Link to="/profil/mentions-legales">
-          <Icon svg="ico-legal-notice" />
-          <div className="list-link-label">
-            {'Mentions légales'}
-          </div>
-          <Icon svg="ico-next-lightgrey" />
-        </Link>
+        <InternalLink
+          icon="ico-legal-notice"
+          label="Mentions légales"
+          to="/profil/mentions-legales"
+        />
       </li>
       <li>
         <SignoutLinkContainer

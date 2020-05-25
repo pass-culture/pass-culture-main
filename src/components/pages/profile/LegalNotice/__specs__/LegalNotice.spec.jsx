@@ -1,5 +1,8 @@
-import { shallow } from 'enzyme'
+import { shallow, mount } from 'enzyme'
 import React from 'react'
+import { Router } from 'react-router'
+import { createBrowserHistory } from 'history'
+
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import LegalNotice from '../LegalNotice'
 import { getAccountDeletionEmail } from '../../utils/utils'
@@ -32,7 +35,11 @@ describe('legal notice page', () => {
 
   it('should display a link to terms and conditions page', () => {
     // When
-    const wrapper = shallow(<LegalNotice {...props} />)
+    const wrapper = mount(
+      <Router history={createBrowserHistory()}>
+        <LegalNotice {...props} />
+      </Router>
+    )
 
     // Then
     const termsAndConditionsPage = wrapper
@@ -51,7 +58,11 @@ describe('legal notice page', () => {
 
   it('should display a link to GDPR page', () => {
     // When
-    const wrapper = shallow(<LegalNotice {...props} />)
+    const wrapper = mount(
+      <Router history={createBrowserHistory()}>
+        <LegalNotice {...props} />
+      </Router>
+    )
 
     // Then
     const gdprPage = wrapper
@@ -71,7 +82,11 @@ describe('legal notice page', () => {
   it('should display a link to delete my account', () => {
     // Given
     getAccountDeletionEmail.mockReturnValue('mailto:deletionEmailAddress')
-    const wrapper = shallow(<LegalNotice {...props} />)
+    const wrapper = mount(
+      <Router history={createBrowserHistory()}>
+        <LegalNotice {...props} />
+      </Router>
+    )
 
     // When
     const deleteAccountMailTo = wrapper.find({ children: 'Suppression du compte' }).parent()

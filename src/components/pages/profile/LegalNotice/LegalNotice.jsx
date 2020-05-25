@@ -1,8 +1,9 @@
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
-import HeaderContainer from '../../../layout/Header/HeaderContainer'
-import Icon from '../../../layout/Icon/Icon'
+
 import { getAccountDeletionEmail } from '../utils/utils'
+import HeaderContainer from '../../../layout/Header/HeaderContainer'
+import ExternalLink from '../ExternalLink/ExternalLink'
 
 const LegalNotice = ({ pathToProfile, userEmail, userId }) => {
   const mailToHref = getAccountDeletionEmail(userId, userEmail)
@@ -20,46 +21,28 @@ const LegalNotice = ({ pathToProfile, userEmail, userId }) => {
       <section className="list-links profile-section">
         <ul>
           <li>
-            <a
+            <ExternalLink
               href={termsAndConditionsUrl}
-              rel="noopener noreferrer"
-              target="_blank"
+              icon="ico-terms-and-conditions"
+              label="Conditions Générales d’Utilisation"
               title="Ouverture des Conditions Générales d’Utilisation dans une nouvelle page"
-            >
-              <Icon svg="ico-terms-and-conditions" />
-              <div className="list-link-label">
-                {'Conditions Générales d’Utilisation'}
-              </div>
-              <Icon svg="ico-next-lightgrey" />
-            </a>
+            />
           </li>
           <li>
-            <a
+            <ExternalLink
               href={gdprUrl}
-              rel="noopener noreferrer"
-              target="_blank"
+              icon="ico-data-protection"
+              label="Charte de protection des données personnelles"
               title="Ouverture de la charte de protection des données personnelles dans une nouvelle page"
-            >
-              <Icon svg="ico-data-protection" />
-              <div className="list-link-label">
-                {'Charte de protection des données personnelles'}
-              </div>
-              <Icon svg="ico-next-lightgrey" />
-            </a>
+            />
           </li>
           <li>
-            <a
+            <ExternalLink
               href={mailToHref}
-              rel="noopener noreferrer"
-              target="_blank"
+              icon="ico-delete-account"
+              label="Suppression du compte"
               title="Envoyer un mail à support@passculture.app"
-            >
-              <Icon svg="ico-delete-account" />
-              <div className="list-link-label">
-                {'Suppression du compte'}
-              </div>
-              <Icon svg="ico-next-lightgrey" />
-            </a>
+            />
           </li>
         </ul>
       </section>
