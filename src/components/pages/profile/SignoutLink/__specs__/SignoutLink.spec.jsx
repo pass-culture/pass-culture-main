@@ -13,8 +13,11 @@ describe('signout link', () => {
   beforeEach(() => {
     props = {
       historyPush: jest.fn(),
-      onSignOutClick: jest.fn(),
       readRecommendations: [],
+      reinitializeDataExceptFeatures: jest.fn(),
+      resetSeedLastRequestTimestamp: jest.fn(),
+      signOut: jest.fn(),
+      updateReadRecommendations: jest.fn(),
     }
   })
 
@@ -34,8 +37,9 @@ describe('signout link', () => {
   })
 
   describe('when clicking on link', () => {
-    it('should call the function to sign out', () => {
+    it('should call functions to sign out and redirect to form connection', () => {
       // given
+      jest.spyOn(Date, 'now').mockImplementation(() => 1590428424078)
       const wrapper = mount(
         <Router history={createBrowserHistory()}>
           <SignoutLink {...props} />
@@ -44,12 +48,37 @@ describe('signout link', () => {
       const signoutLink = wrapper.find({ children: 'Déconnexion' }).parent()
 
       // when
-      signoutLink.invoke('onClick')
+      signoutLink.invoke('onClick')({ defaultPrevented: jest.fn() })
 
       // then
-      expect(props.onSignOutClick).toHaveBeenCalledWith(
-        props.historyPush,
-        props.readRecommendations
+      expect(props.updateReadRecommendations).not.toHaveBeenCalled()
+      expect(props.signOut).toHaveBeenCalledWith(props.reinitializeDataExceptFeatures)
+      expect(props.resetSeedLastRequestTimestamp).toHaveBeenCalledWith(1590428424078)
+      expect(props.historyPush).toHaveBeenCalledWith('/connexion')
+    })
+
+    it('should update read recommendations and sign out', () => {
+      // given
+      jest.spyOn(Date, 'now').mockImplementation(() => 1590428424078)
+      props.readRecommendations = [
+        {
+          id: 'GH',
+        },
+      ]
+      const wrapper = mount(
+        <Router history={createBrowserHistory()}>
+          <SignoutLink {...props} />
+        </Router>
+      )
+      const signoutLink = wrapper.find({ children: 'Déconnexion' }).parent()
+
+      // when
+      signoutLink.invoke('onClick')({ defaultPrevented: jest.fn() })
+
+      // then
+      expect(props.updateReadRecommendations).toHaveBeenCalledWith(
+        props.readRecommendations,
+        expect.any(Function)
       )
     })
   })

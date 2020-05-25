@@ -1,56 +1,84 @@
-import { createBrowserHistory } from 'history'
-
 import { mapDispatchToProps } from '../SignoutLinkContainer'
-import { configureStore } from '../../../../../utils/store'
 
-jest.mock('redux-thunk-data', () => ({
-  ...jest.requireActual('redux-thunk-data'),
-  requestData: config => {
-    config.handleSuccess()
-    return { type: 'REQUEST_DATA' }
-  },
-}))
+jest.mock('redux-thunk-data', () => {
+  const { reinitializeData, requestData } = jest.requireActual('fetch-normalize-data')
+
+  return {
+    reinitializeData,
+    requestData,
+  }
+})
 
 describe('signout button container', () => {
-  it('should land to connection page, reset all the store except features', () => {
-    // given
-    const { store } = configureStore({
-      data: {
-        bookings: [{ id: 'b1' }],
-        features: [{ id: 'f1' }],
-        users: [{ id: 'u1' }],
-      },
-    })
-    const history = createBrowserHistory()
-    const readRecommendations = [
-      { dateRead: '2018-12-17T15:59:11.689000Z', id: 'AE' },
-      { dateRead: '2018-12-17T15:59:11.689000Z', id: 'AF' },
-    ]
+  it('should dispatch action to sign out from API', () => {
+    // Given
+    const dispatch = jest.fn()
+    const handleSuccess = jest.fn()
 
     // when
-    mapDispatchToProps(store.dispatch).onSignOutClick(history.push, readRecommendations)()
+    mapDispatchToProps(dispatch).signOut(handleSuccess)
 
     // then
-    const { data } = store.getState()
-    expect(data).toStrictEqual({
-      _persist: {
-        rehydrated: false,
-        version: -1,
+    expect(dispatch).toHaveBeenCalledWith({
+      config: {
+        apiPath: '/users/signout',
+        handleSuccess,
+        method: 'GET',
       },
-      bookings: [],
-      favorites: [],
-      features: [{ id: 'f1' }],
-      mediations: [],
-      musicTypes: [],
-      offers: [],
-      readRecommendations: [],
-      recommendations: [],
-      searchedRecommendations: [],
-      showTypes: [],
-      stocks: [],
-      types: [],
-      users: [],
+      type: 'REQUEST_DATA_GET_/USERS/SIGNOUT',
     })
-    expect(history.location.pathname).toBe('/connexion')
+  })
+
+  it('should dispatch action to reset seed last request timestamp', () => {
+    // Given
+    const dispatch = jest.fn()
+    const date = Date.now()
+
+    // when
+    mapDispatchToProps(dispatch).resetSeedLastRequestTimestamp(date)
+
+    // then
+    expect(dispatch).toHaveBeenCalledWith({
+      seedLastRequestTimestamp: date,
+      type: 'UPDATE_SEED_LAST_REQUEST_TIMESTAMP',
+    })
+  })
+
+  it('should dispatch action to reinitialize data except features', () => {
+    // Given
+    const dispatch = jest.fn()
+
+    // when
+    mapDispatchToProps(dispatch).reinitializeDataExceptFeatures()
+
+    // then
+    expect(dispatch).toHaveBeenCalledWith({
+      config: {
+        excludes: ['features'],
+      },
+      type: 'REINITIALIZE_DATA',
+    })
+  })
+
+  it('should dispatch action to update read recommendations from API', () => {
+    // Given
+    const dispatch = jest.fn()
+    const readRecommendations = []
+    const handleSignOut = jest.fn()
+
+    // when
+    mapDispatchToProps(dispatch).updateReadRecommendations(readRecommendations, handleSignOut)
+
+    // then
+    expect(dispatch).toHaveBeenCalledWith({
+      config: {
+        apiPath: '/recommendations/read',
+        body: readRecommendations,
+        handleFail: handleSignOut,
+        handleSuccess: handleSignOut,
+        method: 'PUT',
+      },
+      type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS/READ',
+    })
   })
 })
