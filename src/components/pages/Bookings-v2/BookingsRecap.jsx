@@ -11,10 +11,9 @@ class BookingsRecap extends PureComponent {
     super(props)
     this.state = {
       bookingsRecap: [],
-      nbBookings: 0,
+      isLoading: true,
       page: 0,
       pages: 0,
-      isLoading: true,
     }
   }
 
@@ -30,10 +29,14 @@ class BookingsRecap extends PureComponent {
       currentPage++
       fetchBookingsRecapByPage(currentPage).then(this.savePaginatedBookingsRecap)
     } else {
-      this.setState({
-        isLoading:false
-      })
+      this.loadData()
     }
+  }
+
+  loadData = () => {
+    this.setState({
+      isLoading:false
+    })
   }
 
   savePaginatedBookingsRecap = paginatedBookingsRecap => {
@@ -41,26 +44,24 @@ class BookingsRecap extends PureComponent {
 
     this.setState({
       bookingsRecap: [...bookingsRecap].concat(paginatedBookingsRecap.bookings_recap),
-      nbBookings: paginatedBookingsRecap.total,
       page: paginatedBookingsRecap.page,
       pages: paginatedBookingsRecap.pages,
     })
   }
 
   render() {
-    const { bookingsRecap, isLoading, nbBookings } = this.state
+    const { bookingsRecap, isLoading } = this.state
 
     return (
       <Main name="bookings-v2">
         <Titles title="Réservations" />
-        {nbBookings > 0 ? (
+        {bookingsRecap.length > 0 ? (
           <BookingsRecapTable
             bookingsRecap={bookingsRecap}
             isLoading={isLoading}
-            nbBookings={nbBookings}
           />
         ) : (
-          isLoading ? <Spinner/> : <NoBookingsMessage/>
+          isLoading ? <Spinner /> : <NoBookingsMessage />
         )}
       </Main>
     )

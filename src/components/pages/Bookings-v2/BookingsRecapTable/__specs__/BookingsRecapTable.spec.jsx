@@ -52,7 +52,7 @@ describe('components | BookingsRecapTable', () => {
 
     const props = {
       bookingsRecap: bookingsRecap,
-      nbBookings: 2,
+      isLoading: false,
     }
 
     // When
@@ -75,7 +75,7 @@ describe('components | BookingsRecapTable', () => {
     // Given
     const props = {
       bookingsRecap: [],
-      nbBookings: 0,
+      isLoading: false,
     }
 
     // When
@@ -119,7 +119,7 @@ describe('components | BookingsRecapTable', () => {
 
     const props = {
       bookingsRecap: bookingsRecap,
-      nbBookings: 1,
+      isLoading: false,
     }
 
     // When
@@ -173,7 +173,7 @@ describe('components | BookingsRecapTable', () => {
     ]
     const props = {
       bookingsRecap: bookingsRecap,
-      nbBookings: 1,
+      isLoading: false,
     }
 
     // When
@@ -211,7 +211,7 @@ describe('components | BookingsRecapTable', () => {
     ]
     const props = {
       bookingsRecap: bookingsRecap,
-      nbBookings: 1,
+      isLoading: false,
     }
 
     // When
@@ -221,6 +221,7 @@ describe('components | BookingsRecapTable', () => {
     const header = wrapper.find(Header)
     expect(header).toHaveLength(1)
     expect(header.props()).toStrictEqual({
+      isLoading: false,
       nbBookings: 1,
     })
   })
@@ -262,7 +263,7 @@ describe('components | BookingsRecapTable', () => {
 
     const props = {
       bookingsRecap: bookingsRecap,
-      nbBookings: 1,
+      isLoading: false,
     }
 
     // When
@@ -299,5 +300,97 @@ describe('components | BookingsRecapTable', () => {
     const bookingStatusCell = wrapper.find(BookingStatusCell)
     expect(bookingStatusCell).toHaveLength(1)
     expect(bookingStatusCell.props()).toStrictEqual({ bookingStatus: 'Validé' })
+  })
+
+  it('should not apply filters when component didnt receive new data', () => {
+    // given
+    const bookingsRecap = [
+      {
+        stock: {
+          offer_name: 'Avez-vous déjà vu',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Sonia',
+          email: 'sonia.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: 'ZEHBGD',
+        booking_status: 'Validé',
+      },
+    ]
+    const props = {
+      bookingsRecap: bookingsRecap,
+      isLoading: false,
+    }
+
+    const wrapper = shallow(<BookingsRecapTable {...props} />)
+
+    // When
+    wrapper.setProps(props)
+
+    // Then
+    const table = wrapper.find(TableFrame)
+    expect(table.props()).toStrictEqual({
+      columns: expect.any(Object),
+      currentPage: 0,
+      data: props.bookingsRecap,
+      nbBookings: props.bookingsRecap.length,
+      nbBookingsPerPage: 1,
+      updateCurrentPage: expect.any(Function),
+    })
+  })
+
+  it('should apply filters when component received new data', async () => {
+    // given
+    const booking = {
+      stock: {
+        offer_name: 'Avez-vous déjà vu',
+      },
+      beneficiary: {
+        lastname: 'Klepi',
+        firstname: 'Sonia',
+        email: 'sonia.klepi@example.com',
+      },
+      booking_date: '2020-04-03T12:00:00Z',
+      booking_token: 'ZEHBGD',
+      booking_status: 'Validé',
+    }
+    const bookingsRecap = [booking]
+    const newBooking = {
+      stock: {
+        offer_name: 'Merlin enchanteur',
+      },
+      beneficiary: {
+        lastname: 'Klepi',
+        firstname: 'Sonia',
+        email: 'sonia.klepi@example.com',
+      },
+      booking_date: '2020-04-03T12:00:00Z',
+      booking_token: 'ZEHBGD',
+      booking_status: 'Validé',
+    }
+    const props = {
+      bookingsRecap: bookingsRecap,
+      isLoading: false,
+    }
+    const wrapper = shallow(<BookingsRecapTable {...props} />)
+
+    // When
+    wrapper.setState({ filters: { offerName: 'Avez' } })
+    wrapper.setProps({
+      bookingsRecap: [...props.bookingsRecap].concat([newBooking]),
+    })
+
+    // Then
+    const table = wrapper.find(TableFrame)
+    expect(table.props()).toStrictEqual({
+      columns: expect.any(Object),
+      currentPage: 0,
+      data: [booking],
+      nbBookings: 1,
+      nbBookingsPerPage: 1,
+      updateCurrentPage: expect.any(Function),
+    })
   })
 })

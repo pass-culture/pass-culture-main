@@ -5,6 +5,7 @@ import BookingsRecap from '../BookingsRecap'
 import BookingsRecapTable from '../BookingsRecapTable/BookingsRecapTable'
 import * as bookingRecapsService from '../../../../services/bookingsRecapService'
 import NoBookingsMessage from '../NoBookingsMessage/NoBookingsMessage'
+import Spinner from '../../../layout/Spinner'
 
 function flushPromises() {
   return new Promise(resolve => setImmediate(resolve))
@@ -42,6 +43,8 @@ describe('components | BookingsRecap', () => {
     expect(bookingsTable).toHaveLength(0)
     const noBookingsMessage = wrapper.find(NoBookingsMessage)
     expect(noBookingsMessage).toHaveLength(1)
+    const spinner = wrapper.find(Spinner)
+    expect(spinner).toHaveLength(0)
   })
 
   it('should render a Titles component and a BookingsRecapTable when api returned at least one booking', async () => {
@@ -73,6 +76,8 @@ describe('components | BookingsRecap', () => {
     expect(bookingsTable).toHaveLength(1)
     const noBookingsMessage = wrapper.find(NoBookingsMessage)
     expect(noBookingsMessage).toHaveLength(0)
+    const spinner = wrapper.find(Spinner)
+    expect(spinner).toHaveLength(0)
   })
 
   it('should fetch bookings as many time as the number of pages', async () => {
@@ -120,7 +125,7 @@ describe('components | BookingsRecap', () => {
     const bookingsTable = wrapper.find(BookingsRecapTable)
     expect(bookingsTable.props()).toStrictEqual({
       bookingsRecap: [bookings1, bookings2],
-      nbBookings: 2,
+      isLoading: false,
     })
   })
 
@@ -153,4 +158,14 @@ describe('components | BookingsRecap', () => {
     expect(bookingsTable).toHaveLength(1)
     expect(bookingsTable.prop('bookingsRecap')).toStrictEqual([oneBooking])
   })
+
+  it('should render a spinner when data from first page are still loading', async () => {
+    // When
+    const wrapper = shallow(<BookingsRecap />)
+
+    // Then
+    const spinner = wrapper.find(Spinner)
+    expect(spinner).toHaveLength(1)
+  })
+
 })

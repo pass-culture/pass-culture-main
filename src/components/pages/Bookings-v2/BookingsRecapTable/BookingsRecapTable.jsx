@@ -9,8 +9,7 @@ import Header from './Header/Header'
 import BookingIsDuoCell from './CellsFormatter/BookingIsDuoCell'
 import { NB_BOOKINGS_PER_PAGE } from './NB_BOOKINGS_PER_PAGE'
 import TableFrame from './Table/TableFrame'
-import BookingsRecapFilters from './Filters/BookingsRecapFilters'
-
+import Filters from './Filters/Filters'
 
 class BookingsRecapTable extends Component {
   constructor(props) {
@@ -63,10 +62,8 @@ class BookingsRecapTable extends Component {
       ],
       currentPage: 0,
       filters: {
-        offerName: null,
-        eventDate: null,
+        offerName: '',
       },
-      nbBookings: props.nbBookings,
     }
   }
 
@@ -75,7 +72,8 @@ class BookingsRecapTable extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.bookingsRecap.length !== this.props.bookingsRecap.length){
+    const { bookingsRecap } = this.props
+    if (prevProps.bookingsRecap.length !== bookingsRecap.length) {
       this.applyFilters()
     }
   }
@@ -87,42 +85,42 @@ class BookingsRecapTable extends Component {
   }
 
   setFilters = filters => {
-    this.setState({ filters: filters })
-    this.applyFilters()
+    this.setState({ filters: filters }, () => this.applyFilters())
   }
 
   applyFilters = () => {
-    const {filters} = this.state
-    const {bookingsRecap} = this.props
+    const { bookingsRecap } = this.props
+    const {
+      filters: { offerName },
+    } = this.state
 
-    const bookingsRecapFiltered = filters.offerName ?
-      bookingsRecap.filter(
-        booking => booking.stock.offer_name.toLowerCase().includes(filters.offerName)
-      ) : bookingsRecap
+    const bookingsRecapFiltered = bookingsRecap.filter(booking => {
+      const offerNameFromBooking = booking.stock.offer_name.toLowerCase()
+      return offerNameFromBooking.includes(offerName.toLowerCase())
+    })
 
-    this.setState({bookingsRecapFiltered: bookingsRecapFiltered})
-    console.log("NB BOOKINGS", bookingsRecapFiltered.length)
+    this.setState({
+      bookingsRecapFiltered: bookingsRecapFiltered,
+    })
   }
 
   render() {
-    const { bookingsRecap, isLoading } = this.props
+    const { isLoading } = this.props
     const { bookingsRecapFiltered, columns, currentPage } = this.state
+    const nbBookings = bookingsRecapFiltered.length
 
     return (
       <div>
-        <BookingsRecapFilters
-          setFilters={this.setFilters}
-          bookingsRecap={bookingsRecap}
-          filters={{ 'offer_name': true, 'booking_date': false }}
-        />
-        <Header isLoading={isLoading}
-                nbBookings={bookingsRecapFiltered.length}
+        <Filters setFilters={this.setFilters} />
+        <Header
+          isLoading={isLoading}
+          nbBookings={nbBookings}
         />
         <TableFrame
           columns={columns}
           currentPage={currentPage}
           data={bookingsRecapFiltered}
-          nbBookings={bookingsRecapFiltered.length}
+          nbBookings={nbBookings}
           nbBookingsPerPage={NB_BOOKINGS_PER_PAGE}
           updateCurrentPage={this.updateCurrentPage}
         />
@@ -133,7 +131,7 @@ class BookingsRecapTable extends Component {
 
 BookingsRecapTable.propTypes = {
   bookingsRecap: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
-  nbBookings: PropTypes.number.isRequired,
+  isLoading: PropTypes.bool.isRequired,
 }
 
 export default BookingsRecapTable
