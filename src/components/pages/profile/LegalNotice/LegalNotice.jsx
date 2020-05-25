@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
+import { SUPPORT_EMAIL } from '../../../../utils/config'
+import { getAccountDeletionEmail } from '../domain/getAccountDeletionEmail'
 
-import { getAccountDeletionEmail } from '../utils/utils'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import ExternalLink from '../ExternalLink/ExternalLink'
 
@@ -41,7 +42,7 @@ const LegalNotice = ({ pathToProfile, userEmail }) => {
               href={mailToHref}
               icon="ico-delete-account"
               label="Suppression du compte"
-              title="Envoyer un mail à support@passculture.app"
+              title={`Envoyer un e-mail à ${SUPPORT_EMAIL}`}
             />
           </li>
         </ul>

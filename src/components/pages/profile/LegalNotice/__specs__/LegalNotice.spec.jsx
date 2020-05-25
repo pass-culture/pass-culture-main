@@ -1,14 +1,13 @@
-import { shallow, mount } from 'enzyme'
+import { mount, shallow } from 'enzyme'
+import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Router } from 'react-router'
-import { createBrowserHistory } from 'history'
 
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import LegalNotice from '../LegalNotice'
-import { getAccountDeletionEmail } from '../../utils/utils'
 
-jest.mock('../../utils/utils', () => ({
-  getAccountDeletionEmail: jest.fn(),
+jest.mock('../../domain/getAccountDeletionEmail', () => ({
+  getAccountDeletionEmail: jest.fn(() => 'mailto:deletionEmailAddress'),
 }))
 
 describe('legal notice page', () => {
@@ -80,7 +79,6 @@ describe('legal notice page', () => {
 
   it('should display a link to delete my account', () => {
     // Given
-    getAccountDeletionEmail.mockReturnValue('mailto:deletionEmailAddress')
     const wrapper = mount(
       <Router history={createBrowserHistory()}>
         <LegalNotice {...props} />
@@ -93,6 +91,6 @@ describe('legal notice page', () => {
     // Then
     expect(deleteAccountMailTo.prop('href')).toBe('mailto:deletionEmailAddress')
     expect(deleteAccountMailTo.prop('rel')).toBe('noopener noreferrer')
-    expect(deleteAccountMailTo.prop('title')).toBe('Envoyer un mail à support@passculture.app')
+    expect(deleteAccountMailTo.prop('title')).toBe('Envoyer un e-mail à support@passculture.app')
   })
 })

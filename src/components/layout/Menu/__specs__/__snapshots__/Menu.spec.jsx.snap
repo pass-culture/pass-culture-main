@@ -10,7 +10,6 @@ ShallowWrapper {
         "email": undefined,
         "expenses": undefined,
         "firstName": undefined,
-        "id": undefined,
         "lastName": undefined,
         "publicName": undefined,
         "wallet_balance": undefined,

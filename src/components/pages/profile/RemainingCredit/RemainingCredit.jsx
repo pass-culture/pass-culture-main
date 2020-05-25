@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
 import { NON_BREAKING_SPACE } from '../../../../utils/specialCharacters'
-import { getRemainingCreditForGivenCreditLimit } from '../utils/utils'
+import { getRemainingCreditForGivenCreditLimit } from '../domain/getRemainingCreditForGivenCreditLimit'
 import CreditGauge from './CreditGauge/CreditGauge'
 import User from '../ValueObjects/User'
 

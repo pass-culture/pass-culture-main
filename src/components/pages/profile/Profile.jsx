@@ -4,11 +4,11 @@ import { Route, Switch } from 'react-router-dom'
 
 import { snackbar } from '../../../utils/snackbar'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
+import { getDepartment } from './domain/getDepartment'
 import EditPasswordContainer from './EditPassword/EditPasswordContainer'
 import LegalNotice from './LegalNotice/LegalNotice'
 import MainView from './MainView/MainView'
 import PersonalInformationsContainer from './PersonalInformations/PersonalInformationsContainer'
-import { getDepartment } from './utils/utils'
 import User from './ValueObjects/User'
 
 const Profile = props => {
