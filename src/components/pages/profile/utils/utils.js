@@ -14,12 +14,12 @@ export const getDepartment = departmentCode => {
   return `${departmentName} (${departmentCode})`
 }
 
-export const getAccountDeletionEmail = (userId, userEmail) => {
+export const getAccountDeletionEmail = userEmail => {
   const supportEmailAddress = 'support@passculture.app'
   const emailSubject = 'Suppression de mon compte pass Culture'
   const emailBody = `Bonjour,
 
-Je vous écris afin de vous demander la suppression de mon compte pass Culture n°${userId}, associé à l’adresse mail ${userEmail}.
+Je vous écris afin de vous demander la suppression de mon compte pass Culture associé à l’adresse e-mail ${userEmail}.
 
 J'ai conscience que la suppression de mon compte entraînera l'annulation définitive de l'ensemble de mes réservations en cours.
 

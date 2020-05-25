@@ -18,7 +18,6 @@ describe('legal notice page', () => {
       historyPush: jest.fn(),
       pathToProfile: 'path/to/profile',
       userEmail: 'user@example.com',
-      userId: '123ABC',
     }
   })
 

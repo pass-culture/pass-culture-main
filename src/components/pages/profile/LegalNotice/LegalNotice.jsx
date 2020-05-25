@@ -5,8 +5,8 @@ import { getAccountDeletionEmail } from '../utils/utils'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import ExternalLink from '../ExternalLink/ExternalLink'
 
-const LegalNotice = ({ pathToProfile, userEmail, userId }) => {
-  const mailToHref = getAccountDeletionEmail(userId, userEmail)
+const LegalNotice = ({ pathToProfile, userEmail }) => {
+  const mailToHref = getAccountDeletionEmail(userEmail)
   const termsAndConditionsUrl =
     'https://docs.passculture.app/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture'
   const gdprUrl = 'https://docs.passculture.app/textes-normatifs/charte-des-donnees-personnelles'
@@ -53,7 +53,6 @@ const LegalNotice = ({ pathToProfile, userEmail, userId }) => {
 LegalNotice.propTypes = {
   pathToProfile: PropTypes.string.isRequired,
   userEmail: PropTypes.string.isRequired,
-  userId: PropTypes.string.isRequired,
 }
 
 export default LegalNotice
