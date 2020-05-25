@@ -11,7 +11,7 @@ from uuid import UUID
 from flask import render_template
 from lxml import etree
 
-from domain.bank_account import format_raw_iban_or_bic
+from domain.bank_account import format_raw_iban_and_bic
 from domain.reimbursement import BookingReimbursement
 from models import PaymentMessage
 from models.payment import Payment
@@ -122,12 +122,12 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
     payment.transactionLabel = make_transaction_label(datetime.utcnow())
 
     if venue.iban:
-        payment.iban = format_raw_iban_or_bic(venue.iban)
-        payment.bic = format_raw_iban_or_bic(venue.bic)
+        payment.iban = format_raw_iban_and_bic(venue.iban)
+        payment.bic = format_raw_iban_and_bic(venue.bic)
     else:
         offerer = venue.managingOfferer
-        payment.iban = format_raw_iban_or_bic(offerer.iban)
-        payment.bic = format_raw_iban_or_bic(offerer.bic)
+        payment.iban = format_raw_iban_and_bic(offerer.iban)
+        payment.bic = format_raw_iban_and_bic(offerer.bic)
 
     payment.recipientName = venue.managingOfferer.name
     payment.recipientSiren = venue.managingOfferer.siren

@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from connectors.api_demarches_simplifiees import get_application_details
-from domain.bank_account import format_raw_iban_or_bic
+from domain.bank_account import format_raw_iban_and_bic
 from domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
 from local_providers.local_provider import LocalProvider
 from local_providers.providable_info import ProvidableInfo
@@ -53,9 +53,9 @@ class VenueBankInformationProvider(LocalProvider):
         return [bank_information_providable_info]
 
     def fill_object_attributes(self, bank_information: BankInformation):
-        bank_information.iban = format_raw_iban_or_bic(
+        bank_information.iban = format_raw_iban_and_bic(
             self.bank_information_dict['iban'])
-        bank_information.bic = format_raw_iban_or_bic(
+        bank_information.bic = format_raw_iban_and_bic(
             self.bank_information_dict['bic'])
         bank_information.applicationId = self.bank_information_dict['applicationId']
         bank_information.venueId = self.bank_information_dict.get(

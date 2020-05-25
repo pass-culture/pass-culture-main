@@ -1,5 +1,5 @@
 from datetime import datetime
-from unittest.mock import Mock, patch
+from unittest.mock import call, Mock, patch
 import pytest
 
 from tests.connector_creators.demarches_simplifiees_creators import \
@@ -274,11 +274,12 @@ class GetOffererBankInformation_applicationDetailsByApplicationId:
         # Given
         updated_at = datetime(2020, 1, 3)
         get_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(
-            siren="123456789", bic="sogeFRPP", iban="FR76 3000 7000 1112 3456 7890 144", idx=8, state='closed', updated_at=updated_at.strftime(DATE_ISO_FORMAT)
+            siren="123456789", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state='closed', updated_at=updated_at.strftime(DATE_ISO_FORMAT)
         )
 
         # When
-        application_details = get_offerer_bank_information_application_details_by_application_id(8)
+        application_details = get_offerer_bank_information_application_details_by_application_id(
+            8)
 
         # Then
         assert type(application_details) is ApplicationDetail
@@ -291,6 +292,23 @@ class GetOffererBankInformation_applicationDetailsByApplicationId:
         assert application_details.venue_name == None
         assert application_details.modification_date == updated_at
 
+    @patch('domain.demarches_simplifiees.format_raw_iban_and_bic')
+    def test_format_bic_and_iban(self, mock_format_raw_iban_and_bic, get_application_details):
+        # Given
+        updated_at = datetime(2020, 1, 3)
+        get_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(
+            siren="123456789", bic="SOGeferp", iban="F R763000 700011123 45 67890144", idx=8, state='closed', updated_at=updated_at.strftime(DATE_ISO_FORMAT)
+        )
+
+        # When
+        get_offerer_bank_information_application_details_by_application_id(8)
+
+        # Then
+        mock_format_raw_iban_and_bic.assert_has_calls([
+            call('F R763000 700011123 45 67890144'),
+            call("SOGeferp")
+        ])
+
 
 @patch('domain.demarches_simplifiees.get_application_details')
 class GetVenueBankInformation_applicationDetailsByApplicationId:
@@ -298,11 +316,12 @@ class GetVenueBankInformation_applicationDetailsByApplicationId:
         # Given
         updated_at = datetime(2020, 1, 3)
         get_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-            siret="12345678900012", siren="123456789", bic="sogeFRPP", iban="FR76 3000 7000 1112 3456 7890 144", idx=8, state='closed', updated_at=updated_at.strftime(DATE_ISO_FORMAT)
+            siret="12345678900012", siren="123456789", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state='closed', updated_at=updated_at.strftime(DATE_ISO_FORMAT)
         )
 
         # When
-        application_details = get_venue_bank_information_application_details_by_application_id(8)
+        application_details = get_venue_bank_information_application_details_by_application_id(
+            8)
 
         # Then
         assert type(application_details) is ApplicationDetail
@@ -319,11 +338,12 @@ class GetVenueBankInformation_applicationDetailsByApplicationId:
         # Given
         updated_at = datetime(2020, 1, 3)
         get_application_details.return_value = venue_demarche_simplifiee_application_detail_response_without_siret(
-            siret="12345678900012", bic="sogeFRPP", iban="FR76 3000 7000 1112 3456 7890 144", idx=8, state='closed', updated_at=updated_at.strftime(DATE_ISO_FORMAT)
+            siret="12345678900012", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state='closed', updated_at=updated_at.strftime(DATE_ISO_FORMAT)
         )
 
         # When
-        application_details = get_venue_bank_information_application_details_by_application_id(8)
+        application_details = get_venue_bank_information_application_details_by_application_id(
+            8)
 
         # Then
         assert type(application_details) is ApplicationDetail
@@ -336,14 +356,50 @@ class GetVenueBankInformation_applicationDetailsByApplicationId:
         assert application_details.venue_name == 'VENUE_NAME'
         assert application_details.modification_date == updated_at
 
+    @patch('domain.demarches_simplifiees.format_raw_iban_and_bic')
+    def test_format_bic_and_iban_when_with_siret(self, mock_format_raw_iban_and_bic, get_application_details):
+        # Given
+        updated_at = datetime(2020, 1, 3)
+        get_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
+            siret="12345678912345", bic="SOGeferp", iban="F R763000 700011123 45 67890144", idx=8, state='closed', updated_at=updated_at.strftime(DATE_ISO_FORMAT)
+        )
+
+        # When
+        get_offerer_bank_information_application_details_by_application_id(8)
+
+        # Then
+        mock_format_raw_iban_and_bic.assert_has_calls([
+            call('F R763000 700011123 45 67890144'),
+            call("SOGeferp")
+        ])
+
+    @patch('domain.demarches_simplifiees.format_raw_iban_and_bic')
+    def test_format_bic_and_iban_when_without_siret(self, mock_format_raw_iban_and_bic, get_application_details):
+        # Given
+        updated_at = datetime(2020, 1, 3)
+        get_application_details.return_value = venue_demarche_simplifiee_application_detail_response_without_siret(
+            siret="12345678912345", bic="SOGeferp", iban="F R763000 700011123 45 67890144", idx=8, state='closed', updated_at=updated_at.strftime(DATE_ISO_FORMAT)
+        )
+
+        # When
+        get_offerer_bank_information_application_details_by_application_id(8)
+
+        # Then
+        mock_format_raw_iban_and_bic.assert_has_calls([
+            call('F R763000 700011123 45 67890144'),
+            call("SOGeferp")
+        ])
+
 
 class GetStatusFromDemarchesSimplifieesApplicationState:
     def test_correctly_infer_status_from_state(self):
         # Given
-        states = ["closed", "initiated", "refused", "received", "without_continuation"]
+        states = ["closed", "initiated", "refused",
+                  "received", "without_continuation"]
 
         # when
-        statuses = [_get_status_from_demarches_simplifiees_application_state(state) for state in states]
+        statuses = [_get_status_from_demarches_simplifiees_application_state(
+            state) for state in states]
 
         # Then
         assert statuses == [

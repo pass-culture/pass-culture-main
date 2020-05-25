@@ -1,4 +1,4 @@
-def format_raw_iban_or_bic(raw_data: str) -> str:
+def format_raw_iban_and_bic(raw_data: str) -> str:
     if not raw_data:
         return None
 

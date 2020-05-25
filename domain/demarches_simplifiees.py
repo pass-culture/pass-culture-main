@@ -5,7 +5,7 @@ from typing import Callable, Dict, List, Optional
 from models.bank_information import BankInformationStatus
 from connectors.api_demarches_simplifiees import get_all_applications_for_procedure, DmsApplicationStates, \
     get_application_details
-from domain.bank_account import format_raw_iban_or_bic
+from domain.bank_account import format_raw_iban_and_bic
 from utils.date import DATE_ISO_FORMAT
 from utils.logger import logger
 from domain.bank_information import check_offerer_presence, check_venue_presence, check_venue_queried_by_name, status_weight, \
@@ -75,10 +75,10 @@ def get_offerer_bank_information_application_details_by_application_id(applicati
         status=_get_status_from_demarches_simplifiees_application_state(
             response_application_details['dossier']['state']),
         application_id=int(response_application_details['dossier']["id"]),
-        iban=format_raw_iban_or_bic(
+        iban=format_raw_iban_and_bic(
             _find_value_in_fields(
                 response_application_details['dossier']["champs"], "IBAN")),
-        bic=format_raw_iban_or_bic(
+        bic=format_raw_iban_and_bic(
             _find_value_in_fields(
                 response_application_details['dossier']["champs"], "BIC")),
         modification_date=datetime.strptime(
@@ -96,10 +96,10 @@ def get_venue_bank_information_application_details_by_application_id(application
         status=_get_status_from_demarches_simplifiees_application_state(
             response_application_details['dossier']['state']),
         application_id=int(response_application_details['dossier']["id"]),
-        iban=format_raw_iban_or_bic(
+        iban=format_raw_iban_and_bic(
             _find_value_in_fields(
                 response_application_details['dossier']["champs"], "IBAN")),
-        bic=format_raw_iban_or_bic(
+        bic=format_raw_iban_and_bic(
             _find_value_in_fields(
                 response_application_details['dossier']["champs"], "BIC")),
         siret=_find_value_in_fields(
