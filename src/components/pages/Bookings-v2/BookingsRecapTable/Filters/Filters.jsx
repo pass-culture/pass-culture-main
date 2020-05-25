@@ -18,13 +18,13 @@ const Filters = ({ setFilters }) => {
     <div className="bookings-recap-filters">
       <label
         className="select-filters"
-        htmlFor="text-filter"
+        htmlFor="text-filter-input"
       >
         {'Offre'}
       </label>
       <input
-        className="field-input field-text text-filter"
-        id="text-filter"
+        className="text-filter"
+        id="text-filter-input"
         onChange={handleOnChange}
         placeholder={"Rechercher par nom d'offre"}
         type="text"
