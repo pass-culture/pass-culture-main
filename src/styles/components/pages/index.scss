@@ -37,20 +37,6 @@
   }
 }
 
-#profile-page {
-  #mes-informations a[disabled] {
-    opacity: 1;
-  }
-
-  #mes-informations .pc-list {
-    background-color: $white;
-  }
-
-  #mes-informations .pc-list .item:last-child {
-    @extend .no-dotted-border;
-  }
-}
-
 .react-embed-typeform-container iframe {
   @extend .is-full-layout;
 }

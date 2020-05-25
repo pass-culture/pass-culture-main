@@ -13,7 +13,7 @@ describe('personal informations', () => {
   beforeEach(() => {
     props = {
       historyPush: jest.fn(),
-      getDepartment: jest.fn(() => 'Seine-Saint-Denis (93)'),
+      department: 'Seine-Saint-Denis (93)',
       handleSubmit: jest.fn(),
       snackbar: jest.fn(),
       pathToProfile: '/profil',
@@ -22,7 +22,6 @@ describe('personal informations', () => {
         firstName: 'Martin',
         lastName: 'Dupont',
         email: 'm.dupont@example.com',
-        departementCode: '93',
       }),
     }
   })

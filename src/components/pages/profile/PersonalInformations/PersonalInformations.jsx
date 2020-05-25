@@ -55,7 +55,7 @@ class PersonalInformations extends PureComponent {
   }
 
   render() {
-    const { user, getDepartment, pathToProfile } = this.props
+    const { user, department, pathToProfile } = this.props
     const { errors, isSubmitButtonDisabled, nickname } = this.state
 
     return (
@@ -97,7 +97,7 @@ class PersonalInformations extends PureComponent {
               disabled
               label="Département de résidence"
               name="departementCode"
-              value={getDepartment(user.departementCode)}
+              value={department}
             />
           </div>
           <div className="pf-form-submit">
@@ -116,7 +116,7 @@ class PersonalInformations extends PureComponent {
 }
 
 PersonalInformations.propTypes = {
-  getDepartment: PropTypes.func.isRequired,
+  department: PropTypes.string.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   historyPush: PropTypes.func.isRequired,
   pathToProfile: PropTypes.string.isRequired,

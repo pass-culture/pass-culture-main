@@ -14,7 +14,10 @@ describe('profile page', () => {
         push: jest.fn()
       },
       location: {},
-      user: new User({}),
+      user: new User({
+        email: 'toto@example.com',
+        id: 'ABC123'
+      })
     }
   })
 

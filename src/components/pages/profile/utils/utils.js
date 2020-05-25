@@ -1,3 +1,5 @@
+import getDepartementByCode from '../../../../utils/getDepartementByCode'
+
 export const getRemainingCreditForGivenCreditLimit = walletBalance => ({
   actual: expenses,
   max: creditLimit,
@@ -5,6 +7,11 @@ export const getRemainingCreditForGivenCreditLimit = walletBalance => ({
   const absoluteRemainingCredit = creditLimit - expenses
   const remainingCredit = Math.min(walletBalance, absoluteRemainingCredit)
   return remainingCredit
+}
+
+export const getDepartment = departmentCode => {
+  const departmentName = getDepartementByCode(departmentCode)
+  return `${departmentName} (${departmentCode})`
 }
 
 export const getAccountDeletionEmail = (userId, userEmail) => {

@@ -2,38 +2,24 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
-import getDepartementByCode from '../../../utils/getDepartementByCode'
 import { snackbar } from '../../../utils/snackbar'
+import { getDepartment } from './utils/utils'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
-import NotMatch from '../not-match/NotMatch'
 import EditPasswordContainer from './EditPassword/EditPasswordContainer'
 import LegalNotice from './LegalNotice/LegalNotice'
 import PersonalInformationsContainer from './PersonalInformations/PersonalInformationsContainer'
 import MainView from './MainView/MainView'
 import User from './ValueObjects/User'
 
-export const getDepartment = departmentCode => {
-  const departmentName = getDepartementByCode(departmentCode)
-  return `${departmentName} (${departmentCode})`
-}
-
 class Profile extends PureComponent {
-  renderNoMatch = routeProps => (<NotMatch
-    delay={3}
-    redirect="/profil"
-    {...routeProps}
-                                 />)
-
   render() {
     const { user, history, location } = this.props
     const pathToProfile = '/profil'
-    const { email, id } = user
+    const { email, id, departmentCode } = user
+    const department = getDepartment(departmentCode)
 
     return (
-      <div
-        className="page is-relative profile-page"
-        id="profile-page"
-      >
+      <div className="page profile-page">
         {user && (
           <Switch location={location}>
             <Route
@@ -65,7 +51,7 @@ class Profile extends PureComponent {
               path="/profil/:view(informations)/:menu(menu)?"
             >
               <PersonalInformationsContainer
-                getDepartment={getDepartment}
+                department={department}
                 historyPush={history.push}
                 pathToProfile={pathToProfile}
                 snackbar={snackbar}
@@ -84,7 +70,6 @@ class Profile extends PureComponent {
                 userId={id}
               />
             </Route>
-            <Route component={this.renderNoMatch} />
           </Switch>
         )}
         {!user && <LoaderContainer isLoading />}

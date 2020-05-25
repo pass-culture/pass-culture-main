@@ -1,4 +1,4 @@
-import { getAccountDeletionEmail, getRemainingCreditForGivenCreditLimit } from '../utils'
+import {getAccountDeletionEmail, getDepartment, getRemainingCreditForGivenCreditLimit} from '../utils'
 
 describe('src | components | pages | profile | utils', () => {
   describe('getRemainingCreditForGivenCreditLimit', () => {
@@ -24,6 +24,19 @@ describe('src | components | pages | profile | utils', () => {
 
       // when
       expect(result).toStrictEqual(110)
+    })
+  })
+
+  describe('getDepartment', () => {
+    it('should return department name & code', () => {
+      // given
+      const departmentCode = '76'
+
+      // when
+      const department = getDepartment(departmentCode)
+
+      // then
+      expect(department).toBe('Seine-Maritime (76)')
     })
   })
 
