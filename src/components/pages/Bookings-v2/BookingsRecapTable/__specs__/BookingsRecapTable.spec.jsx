@@ -103,7 +103,7 @@ describe('components | BookingsRecapTable', () => {
 
     // Then
     expect(wrapper.find('th')).toHaveLength(6)
-    expect(firstHeader.text()).toBe("Nom de l'offre")
+    expect(firstHeader.text()).toBe('Nom de l\'offre')
     expect(secondHeader.text()).toBe('')
     expect(thirdHeader.text()).toBe('Bénéficiaire')
     expect(fourthHeader.text()).toBe('Réservation')
@@ -355,7 +355,7 @@ describe('components | BookingsRecapTable', () => {
     })
   })
 
-  it('should apply filters when component received new data', async () => {
+  it('should apply filters when component received new data', () => {
     // given
     const booking = {
       stock: {
@@ -408,7 +408,7 @@ describe('components | BookingsRecapTable', () => {
     })
   })
 
-  it('should render a NoFilteredBookings when no bookings', async () => {
+  it('should render a NoFilteredBookings when no bookings', () => {
     // given
     const booking = {
       stock: {
@@ -455,7 +455,62 @@ describe('components | BookingsRecapTable', () => {
     const noFilteredBookings = wrapper.find(NoFilteredBookings)
     expect(noFilteredBookings).toHaveLength(1)
     expect(noFilteredBookings.props()).toStrictEqual({
-      setFilters: expect.any(Function)
+      resetFilters: expect.any(Function)
     })
+  })
+
+  it('should reset filters when clicking on "afficher toutes les réservations"', () => {
+    // given
+    const booking = {
+      stock: {
+        offer_name: 'Avez-vous déjà vu',
+      },
+      beneficiary: {
+        lastname: 'Klepi',
+        firstname: 'Sonia',
+        email: 'sonia.klepi@example.com',
+      },
+      booking_date: '2020-04-03T12:00:00Z',
+      booking_token: 'ZEHBGD',
+      booking_status: 'Validé',
+    }
+    const bookingsRecap = [booking]
+    const newBooking = {
+      stock: {
+        offer_name: 'Merlin enchanteur',
+      },
+      beneficiary: {
+        lastname: 'Klepi',
+        firstname: 'Sonia',
+        email: 'sonia.klepi@example.com',
+      },
+      booking_date: '2020-04-03T12:00:00Z',
+      booking_token: 'ZEHBGD',
+      booking_status: 'Validé',
+    }
+    const props = {
+      bookingsRecap: bookingsRecap,
+      isLoading: false,
+    }
+    const wrapper = shallow(<BookingsRecapTable {...props} />)
+    wrapper.setState({ filters: { offerName: 'Not findable' } })
+    wrapper.setProps({
+      bookingsRecap: [...props.bookingsRecap].concat([newBooking]),
+    })
+    const reset = jest.fn()
+    const instance = wrapper.instance()
+    instance['filtersForm'] = {
+      current: {
+        reset: reset,
+      },
+    }
+    const noFilteredBookings = wrapper.find(NoFilteredBookings).dive()
+    const displayAllBookingsButton = noFilteredBookings.find({ children: 'afficher toutes les réservations' })
+
+    // When
+    displayAllBookingsButton.simulate('click')
+
+    // Then
+    expect(reset).toHaveBeenCalledWith()
   })
 })

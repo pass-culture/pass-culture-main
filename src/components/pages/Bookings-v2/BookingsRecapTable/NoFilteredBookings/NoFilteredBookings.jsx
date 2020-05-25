@@ -2,13 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Icon from '../../../../layout/Icon'
 
-const NoFilteredBookings = ({ setFilters }) => {
-  function resetFilters() {
-    setFilters({
-      offerName: ''
-    })
-  }
-
+const NoFilteredBookings = ({ resetFilters }) => {
   return (
     <div className='no-filtered-bookings-wrapper'>
       <Icon
@@ -32,7 +26,7 @@ const NoFilteredBookings = ({ setFilters }) => {
 }
 
 NoFilteredBookings.propTypes = {
-  setFilters: PropTypes.func.isRequired,
+  resetFilters: PropTypes.func.isRequired,
 }
 
 export default NoFilteredBookings

@@ -66,6 +66,7 @@ class BookingsRecapTable extends Component {
         offerName: '',
       },
     }
+    this.filtersForm = React.createRef()
   }
 
   shouldComponentUpdate() {
@@ -87,6 +88,14 @@ class BookingsRecapTable extends Component {
 
   setFilters = filters => {
     this.setState({ filters: filters }, () => this.applyFilters())
+  }
+
+  resetFilters = () => {
+    this.setState({ filters: { offerName: '' } },
+      () => {
+        this.applyFilters()
+        this.filtersForm.current.reset()
+      })
   }
 
   applyFilters = () => {
@@ -112,7 +121,11 @@ class BookingsRecapTable extends Component {
 
     return (
       <div>
-        <Filters setFilters={this.setFilters} />
+        <form ref={this.filtersForm}>
+          <Filters
+            setFilters={this.setFilters}
+          />
+        </form>
         <Header
           isLoading={isLoading}
           nbBookings={nbBookings}
@@ -127,7 +140,7 @@ class BookingsRecapTable extends Component {
             updateCurrentPage={this.updateCurrentPage}
           />
           :
-          <NoFilteredBookings setFilters={this.setFilters} />}
+          <NoFilteredBookings resetFilters={this.resetFilters} />}
       </div>
     )
   }

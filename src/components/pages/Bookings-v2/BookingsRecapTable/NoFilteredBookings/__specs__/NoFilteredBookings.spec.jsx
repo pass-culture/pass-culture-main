@@ -6,7 +6,7 @@ describe('components | NoFilteredBookings', () => {
   it('should reset filters when clicking on reset button', () => {
     // given
     const props = {
-      setFilters: jest.fn()
+      resetFilters: jest.fn()
     }
     const wrapper = shallow(<NoFilteredBookings {...props} />)
     const resetButton = wrapper.find({ children: 'afficher toutes les réservations' })
@@ -15,8 +15,6 @@ describe('components | NoFilteredBookings', () => {
     resetButton.simulate('click')
 
     // then
-    expect(props.setFilters).toHaveBeenCalledWith({
-      offerName: ''
-    })
+    expect(props.resetFilters).toHaveBeenCalledTimes(1)
   })
 })
