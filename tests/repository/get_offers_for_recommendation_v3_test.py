@@ -250,10 +250,10 @@ class GetOffersForRecommendationV3Test:
             discovery_view_v3_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
+            offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False, limit=1)
 
             # Then
-            assert offers == [offer2, offer1]
+            assert offers[0].offer == offer2
 
         @clean_database
         def test_order_should_return_digital_offers_first_when_offers_have_same_criterion_score(self, app):
@@ -275,7 +275,7 @@ class GetOffersForRecommendationV3Test:
             discovery_view_v3_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False)
+            offers = get_offers_for_recommendation_v3(user=user, user_is_geolocated=False, limit=1)
 
             # Then
             assert offers == [digital_offer, physical_offer]

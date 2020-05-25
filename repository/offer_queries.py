@@ -27,6 +27,7 @@ from repository.favorite_queries import get_only_offer_ids_from_favorites
 from repository.iris_venues_queries import find_venues_located_near_iris
 from repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from repository.venue_queries import get_only_venue_ids_for_department_codes
+from use_cases.diversify_recommended_offers import order_offers_by_diversified_types
 from utils.logger import logger
 
 ALL_DEPARTMENTS_CODE = '00'
@@ -147,7 +148,7 @@ def get_offers_for_recommendation_v3(user: UserSQLEntity, user_iris_id: Optional
     if limit:
         discovery_view_query = discovery_view_query.limit(limit)
 
-    return discovery_view_query.all()
+    return order_offers_by_diversified_types(discovery_view_query.all())
 
 
 def order_offers_by_unseen_offers_first(query: BaseQuery, discovery_view_model: Model):
