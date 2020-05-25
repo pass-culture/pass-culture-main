@@ -41,12 +41,13 @@ class PersonalInformations extends PureComponent {
   handleSubmitNickname = event => {
     event.preventDefault()
     const { handleSubmit, historyPush, user, pathToProfile } = this.props
+    const { isSubmitButtonDisabled } = this.state
     const nicknameInputValue = this.nicknameInputRef.current.value
     const nicknameToSubmit = {
       publicName: nicknameInputValue,
     }
 
-    if (user.publicName !== nicknameInputValue) {
+    if (user.publicName !== nicknameInputValue && !isSubmitButtonDisabled) {
       this.setState({ isSubmitButtonDisabled: true })
       handleSubmit(nicknameToSubmit, this.handleSubmitFail, this.handleSubmitSuccess)
     } else {

@@ -8,9 +8,10 @@ import PersonalInformations from '../PersonalInformations'
 import User from '../../../../pages/profile/ValueObjects/User'
 
 describe('personal informations', () => {
-  let props
+  let props, event
 
   beforeEach(() => {
+    event = { preventDefault: jest.fn() }
     props = {
       historyPush: jest.fn(),
       department: 'Seine-Saint-Denis (93)',
@@ -117,12 +118,12 @@ describe('personal informations', () => {
         )
 
         const nickname = wrapper.find('input[value="Martino"]')
-        const submitButton = wrapper.find('input[value="Enregistrer"]')
+        const form = wrapper.find('form')
 
         // When
         nickname.invoke('onChange')({ target: { value: 'DifferentNickname' } })
-        submitButton.simulate('click')
-        submitButton.simulate('click')
+        form.invoke('onSubmit')(event)
+        form.invoke('onSubmit')(event)
 
         // Then
         expect(props.historyPush).toHaveBeenCalledWith('/profil')
