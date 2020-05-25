@@ -393,7 +393,7 @@ describe('components | BookingsRecapTable', () => {
     const wrapper = shallow(<BookingsRecapTable {...props} />)
 
     // When
-    wrapper.setState({ filters: { offerName: 'Avez' } })
+    wrapper.setState({ filters: { offerName: 'Avez', offerDate: null } })
     wrapper.setProps({
       bookingsRecap: [...props.bookingsRecap].concat([newBooking]),
     })

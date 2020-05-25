@@ -13,7 +13,38 @@
     @extend .field-text;
 
     box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
-    flex: 3;
+    flex: 4;
+  }
+
+  .date-filter {
+    @extend .field-input;
+
+    flex: 4;
+    color: $grey;
+  }
+
+  .field-date {
+    height: 32px;
+    padding: 6px;
+    font-size: 16px;
+
+    input.offerDate {
+      @extend .fs12;
+
+      border: 0;
+      cursor: pointer;
+      font-weight: 500;
+      min-width: 60px;
+
+      &:focus {
+        outline: none;
+      }
+    }
+
+    img {
+      height: 15px;
+      width: 15px;
+    }
   }
 
 }

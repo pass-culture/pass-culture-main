@@ -11,6 +11,7 @@ import { NB_BOOKINGS_PER_PAGE } from './NB_BOOKINGS_PER_PAGE'
 import TableFrame from './Table/TableFrame'
 import Filters from './Filters/Filters'
 import NoFilteredBookings from './NoFilteredBookings/NoFilteredBookings'
+import filterBookingsRecap from './utils/filterBookingsRecap'
 
 class BookingsRecapTable extends Component {
   constructor(props) {
@@ -63,7 +64,8 @@ class BookingsRecapTable extends Component {
       ],
       currentPage: 0,
       filters: {
-        offerName: '',
+        offerName: null,
+        offerDate: null,
       },
     }
     this.filtersForm = React.createRef()
@@ -100,14 +102,9 @@ class BookingsRecapTable extends Component {
 
   applyFilters = () => {
     const { bookingsRecap } = this.props
-    const {
-      filters: { offerName },
-    } = this.state
+    const { filters } = this.state
 
-    const bookingsRecapFiltered = bookingsRecap.filter(booking => {
-      const offerNameFromBooking = booking.stock.offer_name.toLowerCase()
-      return offerNameFromBooking.includes(offerName.toLowerCase())
-    })
+    let bookingsRecapFiltered = filterBookingsRecap(bookingsRecap, filters)
 
     this.setState({
       bookingsRecapFiltered: bookingsRecapFiltered,

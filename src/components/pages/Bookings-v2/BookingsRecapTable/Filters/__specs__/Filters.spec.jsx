@@ -17,6 +17,6 @@ describe('components | Filters', () => {
     offerNameInput.simulate('change', { target: { value: 'Jurassic Park' } })
 
     // Then
-    expect(props.setFilters).toHaveBeenCalledWith({ offerName: 'Jurassic Park' })
+    expect(props.setFilters).toHaveBeenCalledWith({ offerName: 'Jurassic Park', offerDate: null })
   })
 })
