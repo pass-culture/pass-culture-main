@@ -11,6 +11,7 @@ import BookingOfferCell from '../CellsFormatter/BookingOfferCell'
 import Header from '../Header/Header'
 import Paginate from '../Table/Paginate/Paginate'
 import { NB_BOOKINGS_PER_PAGE } from '../NB_BOOKINGS_PER_PAGE'
+import NoFilteredBookings from '../NoFilteredBookings/NoFilteredBookings'
 
 jest.mock('../NB_BOOKINGS_PER_PAGE', () => ({
   NB_BOOKINGS_PER_PAGE: 1,
@@ -74,7 +75,20 @@ describe('components | BookingsRecapTable', () => {
   it('should render the expected table headers', () => {
     // Given
     const props = {
-      bookingsRecap: [],
+      bookingsRecap: [{
+        stock: {
+          offer_name: 'Avez-vous déjà vu',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Sonia',
+          email: 'sonia.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: 'ZEHBGD',
+        booking_status: 'Validé',
+        booking_is_duo: true,
+      }],
       isLoading: false,
     }
 
@@ -391,6 +405,57 @@ describe('components | BookingsRecapTable', () => {
       nbBookings: 1,
       nbBookingsPerPage: 1,
       updateCurrentPage: expect.any(Function),
+    })
+  })
+
+  it('should render a NoFilteredBookings when no bookings', async () => {
+    // given
+    const booking = {
+      stock: {
+        offer_name: 'Avez-vous déjà vu',
+      },
+      beneficiary: {
+        lastname: 'Klepi',
+        firstname: 'Sonia',
+        email: 'sonia.klepi@example.com',
+      },
+      booking_date: '2020-04-03T12:00:00Z',
+      booking_token: 'ZEHBGD',
+      booking_status: 'Validé',
+    }
+    const bookingsRecap = [booking]
+    const newBooking = {
+      stock: {
+        offer_name: 'Merlin enchanteur',
+      },
+      beneficiary: {
+        lastname: 'Klepi',
+        firstname: 'Sonia',
+        email: 'sonia.klepi@example.com',
+      },
+      booking_date: '2020-04-03T12:00:00Z',
+      booking_token: 'ZEHBGD',
+      booking_status: 'Validé',
+    }
+    const props = {
+      bookingsRecap: bookingsRecap,
+      isLoading: false,
+    }
+    const wrapper = shallow(<BookingsRecapTable {...props} />)
+
+    // When
+    wrapper.setState({ filters: { offerName: 'Not findable' } })
+    wrapper.setProps({
+      bookingsRecap: [...props.bookingsRecap].concat([newBooking]),
+    })
+
+    // Then
+    const table = wrapper.find(TableFrame)
+    expect(table).toHaveLength(0)
+    const noFilteredBookings = wrapper.find(NoFilteredBookings)
+    expect(noFilteredBookings).toHaveLength(1)
+    expect(noFilteredBookings.props()).toStrictEqual({
+      setFilters: expect.any(Function)
     })
   })
 })

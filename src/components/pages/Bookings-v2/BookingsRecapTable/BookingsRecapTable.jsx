@@ -10,6 +10,7 @@ import BookingIsDuoCell from './CellsFormatter/BookingIsDuoCell'
 import { NB_BOOKINGS_PER_PAGE } from './NB_BOOKINGS_PER_PAGE'
 import TableFrame from './Table/TableFrame'
 import Filters from './Filters/Filters'
+import NoFilteredBookings from './NoFilteredBookings/NoFilteredBookings'
 
 class BookingsRecapTable extends Component {
   constructor(props) {
@@ -19,7 +20,7 @@ class BookingsRecapTable extends Component {
       columns: [
         {
           id: 1,
-          headerTitle: "Nom de l'offre",
+          headerTitle: 'Nom de l\'offre',
           accessor: 'stock',
           Cell: ({ value }) => <BookingOfferCell offer={value} />,
           className: 'td-offer-name',
@@ -116,14 +117,17 @@ class BookingsRecapTable extends Component {
           isLoading={isLoading}
           nbBookings={nbBookings}
         />
-        <TableFrame
-          columns={columns}
-          currentPage={currentPage}
-          data={bookingsRecapFiltered}
-          nbBookings={nbBookings}
-          nbBookingsPerPage={NB_BOOKINGS_PER_PAGE}
-          updateCurrentPage={this.updateCurrentPage}
-        />
+        {nbBookings > 0 ?
+          <TableFrame
+            columns={columns}
+            currentPage={currentPage}
+            data={bookingsRecapFiltered}
+            nbBookings={nbBookings}
+            nbBookingsPerPage={NB_BOOKINGS_PER_PAGE}
+            updateCurrentPage={this.updateCurrentPage}
+          />
+          :
+          <NoFilteredBookings setFilters={this.setFilters} />}
       </div>
     )
   }

@@ -10,9 +10,7 @@ const Header = ({ isLoading, nbBookings }) => (
       </span>
     ) : (
       <span>
-        {nbBookings === 0
-          ? 'Aucune réservation'
-          : `${nbBookings} ${pluralizeWord(nbBookings, 'réservation')}`}
+        {nbBookings > 0 && `${nbBookings} ${pluralizeWord(nbBookings, 'réservation')}`}
       </span>
     )}
   </div>

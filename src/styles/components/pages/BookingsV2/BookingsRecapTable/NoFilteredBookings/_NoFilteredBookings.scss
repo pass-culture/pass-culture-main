@@ -1,0 +1,26 @@
+.no-filtered-bookings-wrapper {
+  align-items: center;
+  display:flex;
+  justify-content: center;
+  flex-direction: column;
+
+  .nfb-icon {
+    margin-bottom: rem(12px);
+  }
+
+  span {
+    color: $grey;
+    font-size: rem(16px);
+
+    &:first-of-type {
+      margin-bottom: rem(16px);
+    }
+  }
+
+  button {
+    border: none;
+    color: $primary;
+    font-weight: $weight-bold;
+    font-size: rem(16px);
+  }
+}
