@@ -13,7 +13,6 @@ class FeatureToggle(enum.Enum):
     FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE = 'Permet la recherche de mots-clés dans les tables structures' \
                                                 ' et lieux en plus de celles des offres'
     QR_CODE = 'Permettre la validation d''une contremarque via QR code'
-    NEW_RIBS_UPLOAD = 'Permettre aux utilisateurs d''uploader leur ribs via la nouvelle démarche DMS'
     SEARCH_ALGOLIA = 'Permettre la recherche via Algolia'
     SYNCHRONIZE_ALGOLIA = 'Permettre la mise à jour des données pour la recherche via Algolia'
     SYNCHRONIZE_ALLOCINE = 'Permettre la synchronisation journalière avec Allociné'
