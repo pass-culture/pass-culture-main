@@ -1,7 +1,11 @@
-.bookings-recap-filters{
+.bookings-recap-filters {
   align-items: center;
   display: flex;
   margin-bottom: rem(30px);
+
+  input::placeholder {
+    color: $grey;
+  }
 
   .select-filters {
     flex: 1;
@@ -14,27 +18,28 @@
 
     box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
     flex: 4;
+    height: rem(40px);
+    padding: rem(10px) rem(16px);
   }
 
   .date-filter {
     @extend .field-input;
 
     flex: 4;
-    color: $grey;
   }
 
   .field-date {
-    height: 32px;
-    padding: 6px;
-    font-size: 16px;
+    height: rem(40px);
+    padding: rem(10px) rem(16px);
 
     input.offerDate {
       @extend .fs12;
 
       border: 0;
       cursor: pointer;
-      font-weight: 500;
-      min-width: 60px;
+      font-size: rem(16px);
+      font-weight: $weight-medium;
+      min-width: rem(60px);
 
       &:focus {
         outline: none;
@@ -46,5 +51,4 @@
       width: 15px;
     }
   }
-
 }

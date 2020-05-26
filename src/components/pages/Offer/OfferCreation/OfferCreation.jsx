@@ -534,7 +534,7 @@ class OfferCreation extends PureComponent {
                       type="button"
                     >
                       <span className="icon">
-                        <Icon svg="ico-calendar" />
+                        <Icon svg="ico-calendar-red" />
                       </span>
                       <span>
                         {isEventType ? 'Gérer les dates et les stocks' : 'Gérer les stocks'}

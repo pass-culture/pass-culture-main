@@ -13,11 +13,30 @@ import Paginate from '../Table/Paginate/Paginate'
 import { NB_BOOKINGS_PER_PAGE } from '../NB_BOOKINGS_PER_PAGE'
 import NoFilteredBookings from '../NoFilteredBookings/NoFilteredBookings'
 import Filters from '../Filters/Filters'
+import filterBookingsRecap from '../utils/filterBookingsRecap'
 
 jest.mock('../NB_BOOKINGS_PER_PAGE', () => ({
   NB_BOOKINGS_PER_PAGE: 1,
 }))
 jest.mock('lodash.debounce', () => jest.fn(callback => callback))
+
+jest.mock('../utils/filterBookingsRecap', () => {
+  return jest.fn().mockImplementation(() => [
+    {
+      stock: {
+        offer_name: 'Avez-vous déjà vu',
+      },
+      beneficiary: {
+        lastname: 'Klepi',
+        firstname: 'Sonia',
+        email: 'sonia.klepi@example.com',
+      },
+      booking_date: '2020-04-03T12:00:00Z',
+      booking_token: 'ZEHBGD',
+      booking_status: 'Validé',
+    },
+  ])
+})
 
 describe('components | BookingsRecapTable', () => {
   it('should render a TableContainer component with columns and data props', () => {
@@ -394,8 +413,9 @@ describe('components | BookingsRecapTable', () => {
 
     // When
     wrapper.setState({ filters: { offerName: 'Avez', offerDate: null } })
+    const expectedBookingsRecap = [...props.bookingsRecap].concat([newBooking])
     wrapper.setProps({
-      bookingsRecap: [...props.bookingsRecap].concat([newBooking]),
+      bookingsRecap: expectedBookingsRecap,
     })
 
     // Then
@@ -407,6 +427,10 @@ describe('components | BookingsRecapTable', () => {
       nbBookings: 1,
       nbBookingsPerPage: 1,
       updateCurrentPage: expect.any(Function),
+    })
+    expect(filterBookingsRecap).toHaveBeenCalledWith(expectedBookingsRecap, {
+      offerName: 'Avez',
+      offerDate: null,
     })
   })
 

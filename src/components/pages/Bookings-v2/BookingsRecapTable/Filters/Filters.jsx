@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import debounce from 'lodash.debounce'
 import DatePicker from 'react-datepicker'
-import moment from 'moment'
 import { InputWithCalendar } from '../../../../layout/form/fields/DateField/InputWithCalendar'
 
 const DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
@@ -47,8 +46,7 @@ class Filters extends Component {
   }
 
   handleOfferDateChange = offerDate => {
-    let dateToFilter = offerDate === null ? null : moment(offerDate).format('YYYY-MM-DD')
-
+    let dateToFilter = offerDate === null ? null : offerDate.format('YYYY-MM-DD')
     const { filters } = this.state
     this.setState(
       {
