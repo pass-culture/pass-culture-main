@@ -4,7 +4,6 @@ import enum
 
 from models.db import Model
 from models.pc_object import PcObject
-from models.providable_mixin import ProvidableMixin
 from models.versioned_mixin import VersionedMixin
 
 
@@ -14,7 +13,7 @@ class BankInformationStatus(enum.Enum):
     ACCEPTED = "ACCEPTED"
 
 
-class BankInformation(PcObject, Model, ProvidableMixin, VersionedMixin):
+class BankInformation(PcObject, Model, VersionedMixin):
     offererId = Column(BigInteger,
                        ForeignKey("offerer.id"),
                        index=True,
@@ -42,6 +41,7 @@ class BankInformation(PcObject, Model, ProvidableMixin, VersionedMixin):
                  nullable=True)
 
     applicationId = Column(Integer,
-                           nullable=False)
+                           nullable=False,
+                           unique=True)
 
     status = Column(Enum(BankInformationStatus), nullable=False)
