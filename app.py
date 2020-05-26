@@ -3,6 +3,7 @@ import os
 
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
+from sentry_sdk.integrations.rq import RqIntegration
 import redis
 from flask import Flask
 from flask_admin import Admin
@@ -29,7 +30,7 @@ from utils.mailing import get_contact, \
 if IS_DEV is False:
     sentry_sdk.init(
         dsn="https://0470142cf8d44893be88ecded2a14e42@logs.passculture.app/5",
-        integrations=[FlaskIntegration()],
+        integrations=[FlaskIntegration(), RqIntegration()],
         release=read_version_from_file(),
         environment=ENV
     )
