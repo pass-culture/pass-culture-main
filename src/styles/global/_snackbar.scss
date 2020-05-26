@@ -1,4 +1,6 @@
-.Toastify__toast-container.Toastify__toast-container--top-right.react-toastify-container {
+@import '~react-toastify/dist/ReactToastify';
+
+.Toastify__toast-container.Toastify__toast-container--top-right {
   left: 0;
   padding: 0;
   position: absolute;
@@ -10,7 +12,8 @@
   }
 }
 
-.Toastify__toast.react-toastify-toast {
+.Toastify__toast {
+  font-family: $family-sans-serif;
   padding: 0 rem(20px) !important;
 }
 

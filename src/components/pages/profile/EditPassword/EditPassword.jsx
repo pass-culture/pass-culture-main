@@ -36,7 +36,7 @@ class EditPassword extends PureComponent {
   handleSubmitSuccess = () => {
     const { historyPush, snackbar, pathToProfile } = this.props
     historyPush(pathToProfile)
-    snackbar('Ton mot de passe a bien été modifié.', 'success')
+    snackbar('Ton mot de passe a bien été modifié.')
   }
 
   handleSubmitFail = (state, action) => {
@@ -74,13 +74,7 @@ class EditPassword extends PureComponent {
 
   render() {
     const { pathToProfile } = this.props
-    const {
-      currentPassword,
-      errors,
-      isLoading,
-      newConfirmationPassword,
-      newPassword,
-    } = this.state
+    const { currentPassword, errors, isLoading, newConfirmationPassword, newPassword } = this.state
     const isMissingField = this.checkIfFieldIsMissing()
 
     return (

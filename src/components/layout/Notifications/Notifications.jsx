@@ -1,19 +1,17 @@
 import React from 'react'
 import { Slide, ToastContainer } from 'react-toastify'
 
-import NotificationCloseButton from './NotificationCloseButton'
+import Icon from '../Icon/Icon'
 
-const Notifications = ({ ...rest }) => (
-  // https://github.com/fkhadra/react-toastify#toastcontainer
+const Notifications = () => (
   <ToastContainer
-    hideProgressBar
-    position="top-center"
+    closeButton={<Icon
+      alt="Fermer"
+      svg="ico-close-toast"
+                 />}
+    hideProgressBar={false}
+    position="top-right"
     transition={Slide}
-    {...rest}
-    bodyClassName="react-toastify-body"
-    className="react-toastify-container"
-    closeButton={<NotificationCloseButton />}
-    toastClassName="react-toastify-toast"
   />
 )
 

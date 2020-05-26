@@ -126,10 +126,7 @@ describe('edit password', () => {
         // Then
         expect(props.historyPush).toHaveBeenCalledWith('/profil')
         expect(props.snackbar).toHaveBeenCalledTimes(1)
-        expect(props.snackbar).toHaveBeenCalledWith(
-          'Ton mot de passe a bien été modifié.',
-          'success'
-        )
+        expect(props.snackbar).toHaveBeenCalledWith('Ton mot de passe a bien été modifié.')
         expect(props.handleSubmit).toHaveBeenCalledWith(
           {
             newPassword: 'new password',

@@ -128,7 +128,7 @@ describe('personal informations', () => {
         // Then
         expect(props.historyPush).toHaveBeenCalledWith('/profil')
         expect(props.snackbar).toHaveBeenCalledTimes(1)
-        expect(props.snackbar).toHaveBeenCalledWith('Ton pseudo a bien été modifié.', 'success')
+        expect(props.snackbar).toHaveBeenCalledWith('Ton pseudo a bien été modifié.')
       })
     })
 

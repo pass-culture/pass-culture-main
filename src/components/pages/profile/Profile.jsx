@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import { Route, Switch } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
-import { snackbar } from '../../../utils/snackbar'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import { getDepartment } from './domain/getDepartment'
 import EditPasswordContainer from './EditPassword/EditPasswordContainer'
@@ -38,7 +38,7 @@ const Profile = ({ user, history, location }) => {
             <EditPasswordContainer
               historyPush={history.push}
               pathToProfile={pathToProfile}
-              snackbar={snackbar}
+              snackbar={toast.success}
               user={user}
             />
           </Route>
@@ -51,7 +51,7 @@ const Profile = ({ user, history, location }) => {
               department={department}
               historyPush={history.push}
               pathToProfile={pathToProfile}
-              snackbar={snackbar}
+              snackbar={toast.success}
               user={user}
             />
           </Route>
