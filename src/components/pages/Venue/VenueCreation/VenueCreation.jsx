@@ -7,8 +7,6 @@ import Titles from '../../../layout/Titles/Titles'
 import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
 
-import BankFieldsContainer from '../fields/BankInformationFields/BankInformationLegacy/BankFieldsContainer'
-import RibsUploadFeatureFlip from '../../../layout/FeatureFlip/RibsUploadFeatureFlip'
 import bindGetSiretInformationToSiret from '../fields/IdentifierFields/decorators/bindGetSiretInformationToSiret'
 import IdentifierFields from '../fields/IdentifierFields/IdentifierFields'
 import bindGetSuggestionsToLatitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLatitude'
@@ -99,7 +97,7 @@ class VenueCreation extends PureComponent {
     const { isRequestPending } = this.state
     const readOnly = false
 
-    const { bic, iban, siret: initialSiret, venueTypeId, venueLabelId } = formInitialValues || {}
+    const { siret: initialSiret, venueTypeId, venueLabelId } = formInitialValues || {}
 
     const canSubmit = getCanSubmit(formProps)
     const { form, handleSubmit, values } = formProps
@@ -112,7 +110,6 @@ class VenueCreation extends PureComponent {
 
     const siretValidOnCreation = formSiret && removeWhitespaces(formSiret).length === 14
 
-    const areBankInformationProvided = bic && iban
     return (
       <form
         name="venue"
@@ -129,16 +126,7 @@ class VenueCreation extends PureComponent {
           venueTypeId={venueTypeId}
           venueTypes={venueTypes}
         />
-        <RibsUploadFeatureFlip
-          legacy={
-            <BankFieldsContainer
-              areBankInformationProvided={areBankInformationProvided}
-              readOnly={readOnly}
-            />
-          }
-        >
-          <BankInformation offerer={offerer} />
-        </RibsUploadFeatureFlip>
+        <BankInformation offerer={offerer} />
         <LocationFields
           fieldReadOnlyBecauseFrozenFormSiret={siretValidOnCreation}
           form={form}

@@ -9,14 +9,12 @@ import Titles from '../../../layout/Titles/Titles'
 import CreateControl from './../controls/CreateControl/CreateControl'
 import ModifyOrCancelControl from './../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from './../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
-import BankFieldsContainer from '../fields/BankInformationFields/BankInformationLegacy/BankFieldsContainer'
 import IdentifierFields from './../fields/IdentifierFields/IdentifierFields'
 import bindGetSuggestionsToLatitude from './../fields/LocationFields/decorators/bindGetSuggestionsToLatitude'
 import bindGetSuggestionsToLongitude from './../fields/LocationFields/decorators/bindGetSuggestionsToLongitude'
 import LocationFields from './../fields/LocationFields/LocationFields'
 import { FRANCE_POSITION } from './../fields/LocationFields/utils/positions'
 import VenueProvidersManagerContainer from './VenueProvidersManager/VenueProvidersManagerContainer'
-import RibsUploadFeatureFlip from '../../../layout/FeatureFlip/RibsUploadFeatureFlip'
 import BankInformation from '../fields/BankInformationFields/BankInformationFields'
 import VenueType from '../ValueObjects/VenueType'
 import VenueLabel from '../ValueObjects/VenueLabel'
@@ -95,7 +93,7 @@ class VenueEdition extends PureComponent {
       id: venueId,
     })
 
-    const { bic, iban, siret: initialSiret } = venue || {}
+    const { siret: initialSiret } = venue || {}
 
     const canSubmit = getCanSubmit(formProps)
     const { form, handleSubmit, values } = formProps
@@ -110,7 +108,6 @@ class VenueEdition extends PureComponent {
 
     const siretValidOnModification = initialSiret !== null
     const fieldReadOnlyBecauseFrozenFormSiret = !readOnly && siretValidOnModification
-    const areBankInformationProvided = bic && iban
 
     return (
       <form
@@ -127,20 +124,10 @@ class VenueEdition extends PureComponent {
           venueTypeId={venueTypeId}
           venueTypes={venueTypes}
         />
-
-        <RibsUploadFeatureFlip
-          legacy={
-            <BankFieldsContainer
-              areBankInformationProvided={areBankInformationProvided}
-              readOnly={readOnly}
-            />
-          }
-        >
-          <BankInformation
-            offerer={offerer}
-            venue={venue}
-          />
-        </RibsUploadFeatureFlip>
+        <BankInformation
+          offerer={offerer}
+          venue={venue}
+        />
         <LocationFields
           fieldReadOnlyBecauseFrozenFormSiret={fieldReadOnlyBecauseFrozenFormSiret}
           form={form}

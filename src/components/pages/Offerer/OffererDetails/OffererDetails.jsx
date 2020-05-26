@@ -6,8 +6,6 @@ import Main from '../../../layout/Main'
 import Venues from './Venues/Venues'
 import Titles from '../../../layout/Titles/Titles'
 import BankInformation from './BankInformation/BankInformation'
-import BankInformationLegacy from './BankInformation/BankInformationLegacy'
-import RibsUploadFeatureFlip from '../../../layout/FeatureFlip/RibsUploadFeatureFlip'
 
 class OffererDetails extends PureComponent {
   componentDidMount() {
@@ -58,11 +56,7 @@ class OffererDetails extends PureComponent {
             </span>
           </div>
         </div>
-
-        <RibsUploadFeatureFlip legacy={<BankInformationLegacy offerer={offerer} />}>
-          <BankInformation offerer={offerer} />
-        </RibsUploadFeatureFlip>
-
+        <BankInformation offerer={offerer} />
         <Venues
           offererId={offerer.id}
           venues={venues}
