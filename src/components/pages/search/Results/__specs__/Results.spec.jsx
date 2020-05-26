@@ -26,7 +26,7 @@ jest.mock('../../../../../vendor/algolia/algolia', () => ({
 }))
 jest.mock('react-toastify', () => ({
   toast: {
-    info: jest.fn(),
+    error: jest.fn(),
   },
 }))
 jest.mock('../../../../../utils/geolocation', () => {
@@ -1357,7 +1357,7 @@ describe('components | Results', () => {
           reject()
         })
       )
-      const wrapper = shallow(<Results {...props} />)
+      const wrapper = await shallow(<Results {...props} />)
       stubRef(wrapper)
       const form = wrapper.find('form')
 
@@ -1372,9 +1372,8 @@ describe('components | Results', () => {
       })
 
       // then
-      await toast.info
-      expect(toast.info).toHaveBeenCalledWith(
-        "La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard."
+      expect(toast.error).toHaveBeenCalledWith(
+        "La recherche n'a pas pu aboutir, réessaie plus tard."
       )
     })
 

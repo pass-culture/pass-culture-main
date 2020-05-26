@@ -10,7 +10,7 @@ import RelativeFooterContainer from '../../layout/RelativeFooter/RelativeFooterC
 import Teaser from '../../layout/Teaser/TeaserContainer'
 
 const showFailModal = () => {
-  toast.error('La suppression d’un favori a échoué, veuillez ré-essayer plus tard.')
+  toast.error('La suppression d’un favori a échoué, réessaie plus tard.')
 }
 
 class MyFavorites extends PureComponent {

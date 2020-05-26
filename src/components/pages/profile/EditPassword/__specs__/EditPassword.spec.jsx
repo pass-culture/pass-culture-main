@@ -13,7 +13,7 @@ describe('edit password', () => {
     props = {
       historyPush: jest.fn(),
       handleSubmit: jest.fn(),
-      snackbar: jest.fn(),
+      triggerSuccessSnackbar: jest.fn(),
       pathToProfile: '/profil',
       user: {
         password: 'correct password',
@@ -125,8 +125,10 @@ describe('edit password', () => {
 
         // Then
         expect(props.historyPush).toHaveBeenCalledWith('/profil')
-        expect(props.snackbar).toHaveBeenCalledTimes(1)
-        expect(props.snackbar).toHaveBeenCalledWith('Ton mot de passe a bien été modifié.')
+        expect(props.triggerSuccessSnackbar).toHaveBeenCalledTimes(1)
+        expect(props.triggerSuccessSnackbar).toHaveBeenCalledWith(
+          'Ton mot de passe a bien été modifié.'
+        )
         expect(props.handleSubmit).toHaveBeenCalledWith(
           {
             newPassword: 'new password',

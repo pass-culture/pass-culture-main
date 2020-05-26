@@ -120,8 +120,8 @@ class Results extends PureComponent {
         geolocation: { latitude: latitudeFromUrl, longitude: longitudeFromUrl },
         name: {
           long: placeFromUrl,
-          short: splittedPlace[0]
-        }
+          short: splittedPlace[0],
+        },
       }
     } else {
       return placeFromUrlOrProps
@@ -183,7 +183,7 @@ class Results extends PureComponent {
   }
 
   showFailModal = () => {
-    toast.info("La recherche n'a pas pu aboutir, veuillez ré-essayer plus tard.")
+    toast.error("La recherche n'a pas pu aboutir, réessaie plus tard.")
   }
 
   handleOnSubmit = event => {
@@ -357,7 +357,7 @@ class Results extends PureComponent {
     this.rememberScrollPosition(event.target)
   }
 
-  rememberScrollPosition = (eventTarget) => {
+  rememberScrollPosition = eventTarget => {
     const { scrollPosition: previousScrollPosition } = this.state
     const resultHeight = 100
 

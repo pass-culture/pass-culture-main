@@ -11,13 +11,12 @@ describe('profile page', () => {
   beforeEach(() => {
     props = {
       history: {
-        push: jest.fn()
+        push: jest.fn(),
       },
       location: {},
       user: new User({
         email: 'toto@example.com',
-        id: 'ABC123'
-      })
+      }),
     }
   })
 

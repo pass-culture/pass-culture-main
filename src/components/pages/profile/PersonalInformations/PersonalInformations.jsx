@@ -33,9 +33,9 @@ class PersonalInformations extends PureComponent {
   }
 
   handleSubmitSuccess = () => {
-    const { historyPush, snackbar, pathToProfile } = this.props
+    const { historyPush, triggerSuccessSnackbar, pathToProfile } = this.props
     historyPush(pathToProfile)
-    snackbar('Ton pseudo a bien été modifié.')
+    triggerSuccessSnackbar('Ton pseudo a bien été modifié.')
   }
 
   handleSubmitNickname = event => {
@@ -121,7 +121,7 @@ PersonalInformations.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   historyPush: PropTypes.func.isRequired,
   pathToProfile: PropTypes.string.isRequired,
-  snackbar: PropTypes.func.isRequired,
+  triggerSuccessSnackbar: PropTypes.func.isRequired,
   user: PropTypes.instanceOf(User).isRequired,
 }
 

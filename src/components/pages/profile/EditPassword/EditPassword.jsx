@@ -34,9 +34,9 @@ class EditPassword extends PureComponent {
   }
 
   handleSubmitSuccess = () => {
-    const { historyPush, snackbar, pathToProfile } = this.props
+    const { historyPush, triggerSuccessSnackbar, pathToProfile } = this.props
     historyPush(pathToProfile)
-    snackbar('Ton mot de passe a bien été modifié.')
+    triggerSuccessSnackbar('Ton mot de passe a bien été modifié.')
   }
 
   handleSubmitFail = (state, action) => {
@@ -135,7 +135,7 @@ EditPassword.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   historyPush: PropTypes.func.isRequired,
   pathToProfile: PropTypes.string.isRequired,
-  snackbar: PropTypes.func.isRequired,
+  triggerSuccessSnackbar: PropTypes.func.isRequired,
 }
 
 export default EditPassword

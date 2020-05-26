@@ -38,7 +38,7 @@ const Profile = ({ user, history, location }) => {
             <EditPasswordContainer
               historyPush={history.push}
               pathToProfile={pathToProfile}
-              snackbar={toast.success}
+              triggerSuccessSnackbar={toast.success}
               user={user}
             />
           </Route>
@@ -51,7 +51,7 @@ const Profile = ({ user, history, location }) => {
               department={department}
               historyPush={history.push}
               pathToProfile={pathToProfile}
-              snackbar={toast.success}
+              triggerSuccessSnackbar={toast.success}
               user={user}
             />
           </Route>

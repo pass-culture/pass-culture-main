@@ -25,13 +25,13 @@ describe('profile main view', () => {
   it('should display header, remaining credit, my informations form and menu', () => {
     // When
     const wrapper = shallow(<MainView {...props} />)
-    const ProfileHeaderWrapper = wrapper.find(Header)
+    const HeaderWrapper = wrapper.find(Header)
     const RemainingCreditWrapper = wrapper.find(RemainingCredit)
     const PersonalInformationsWrapper = wrapper.find(ListLinksContainer)
     const RelativeFooterContainerWrapper = wrapper.find(RelativeFooterContainer)
 
     // Then
-    expect(ProfileHeaderWrapper).toHaveLength(1)
+    expect(HeaderWrapper).toHaveLength(1)
     expect(RemainingCreditWrapper).toHaveLength(1)
     expect(PersonalInformationsWrapper).toHaveLength(1)
     expect(RelativeFooterContainerWrapper).toHaveLength(1)

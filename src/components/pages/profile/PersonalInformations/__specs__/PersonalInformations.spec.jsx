@@ -14,9 +14,9 @@ describe('personal informations', () => {
     event = { preventDefault: jest.fn() }
     props = {
       historyPush: jest.fn(),
-      department: 'Seine-Saint-Denis (93)',
+      department: 'Seine-Saint' + '-Denis (93)',
       handleSubmit: jest.fn(),
-      snackbar: jest.fn(),
+      triggerSuccessSnackbar: jest.fn(),
       pathToProfile: '/profil',
       user: new User({
         publicName: 'Martino',
@@ -127,8 +127,8 @@ describe('personal informations', () => {
 
         // Then
         expect(props.historyPush).toHaveBeenCalledWith('/profil')
-        expect(props.snackbar).toHaveBeenCalledTimes(1)
-        expect(props.snackbar).toHaveBeenCalledWith('Ton pseudo a bien été modifié.')
+        expect(props.triggerSuccessSnackbar).toHaveBeenCalledTimes(1)
+        expect(props.triggerSuccessSnackbar).toHaveBeenCalledWith('Ton pseudo a bien été modifié.')
       })
     })
 

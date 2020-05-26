@@ -10,7 +10,7 @@ const Notifications = () => (
       svg="ico-close-toast"
                  />}
     hideProgressBar={false}
-    position="top-right"
+    position="top-center"
     transition={Slide}
   />
 )

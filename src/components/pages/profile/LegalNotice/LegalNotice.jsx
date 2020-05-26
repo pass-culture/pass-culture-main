@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
-import { SUPPORT_EMAIL } from '../../../../utils/config'
-import { getAccountDeletionEmail } from '../domain/getAccountDeletionEmail'
 
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import ExternalLink from '../ExternalLink/ExternalLink'
+import { SUPPORT_EMAIL } from '../../../../utils/config'
+import { getAccountDeletionEmail } from '../domain/getAccountDeletionEmail'
 
 const LegalNotice = ({ pathToProfile, userEmail }) => {
   const mailToHref = getAccountDeletionEmail(userEmail)
