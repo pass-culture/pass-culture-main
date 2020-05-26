@@ -16,15 +16,6 @@ def find_latest_sync_part_end_event(provider: Provider) -> LocalProviderEvent:
         .first()
 
 
-def find_latest_sync_end_event(provider: Provider) -> LocalProviderEvent:
-    return LocalProviderEvent \
-        .query \
-        .filter((LocalProviderEvent.provider == provider) &
-                (LocalProviderEvent.type == LocalProviderEventType.SyncEnd)) \
-        .order_by(LocalProviderEvent.date.desc()) \
-        .first()
-
-
 def find_latest_sync_start_event(provider: Provider) -> LocalProviderEvent:
     return LocalProviderEvent \
         .query \

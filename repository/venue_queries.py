@@ -29,14 +29,6 @@ def find_by_managing_offerer_id(offerer_id: int) -> Venue:
     return Venue.query.filter_by(managingOffererId=offerer_id).first()
 
 
-def find_venue_without_siret_by_managing_offerer_id_and_name(offerer_id: int, venue_name: str) -> Venue:
-    return Venue.query \
-        .filter_by(managingOffererId=offerer_id) \
-        .filter(Venue.siret == None) \
-        .filter(func.lower(Venue.name) == func.lower(venue_name)) \
-        .all()
-
-
 def find_by_managing_offerer_id_and_siret(offerer_id: int, siret: str) -> Venue:
     return Venue.query \
         .filter_by(managingOffererId=offerer_id) \

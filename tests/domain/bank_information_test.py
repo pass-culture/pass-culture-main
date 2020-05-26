@@ -6,64 +6,6 @@ from tests.model_creators.generic_creators import create_bank_information
 from models.bank_information import BankInformationStatus
 
 
-class NewApplicationCanUpdateBankInformationTest():
-    def test_returns_true_if_same_application_id(self):
-        # given
-        bank_information = create_bank_information(application_id=3)
-
-        # when
-        can_update_witness = new_application_can_update_bank_information(
-            bank_information, 996, BankInformationStatus.DRAFT)
-        can_update = new_application_can_update_bank_information(
-            bank_information, 3, BankInformationStatus.DRAFT)
-
-        # then
-        assert not can_update_witness
-        assert can_update
-
-    def test_always_returns_true_if_application_is_validated(self):
-        # given
-        bank_information1 = create_bank_information()
-        bank_information2 = create_bank_information(
-            status=BankInformationStatus.DRAFT, bic="", iban="")
-        bank_information3 = create_bank_information(
-            status=BankInformationStatus.REJECTED, bic="", iban="")
-
-        # when
-        can_update_witness = new_application_can_update_bank_information(
-            bank_information1, 996, BankInformationStatus.DRAFT)
-        can_update1 = new_application_can_update_bank_information(
-            bank_information1, 996, BankInformationStatus.ACCEPTED)
-        can_update2 = new_application_can_update_bank_information(
-            bank_information2, 996, BankInformationStatus.ACCEPTED)
-        can_update3 = new_application_can_update_bank_information(
-            bank_information3, 996, BankInformationStatus.ACCEPTED)
-
-        # then
-        assert not can_update_witness
-        assert can_update1
-        assert can_update2
-        assert can_update3
-
-    def test_doesnt_returns_true_if_previous_application_was_already_validated(self):
-        # given
-        bank_information = create_bank_information(
-            idx=1, status=BankInformationStatus.ACCEPTED)
-
-        # when
-        can_update1 = new_application_can_update_bank_information(
-            bank_information, 996, BankInformationStatus.ACCEPTED)
-        can_update2 = new_application_can_update_bank_information(
-            bank_information, 996, BankInformationStatus.REJECTED)
-        can_update3 = new_application_can_update_bank_information(
-            bank_information, 996, BankInformationStatus.DRAFT)
-
-        # then
-        assert can_update1
-        assert not can_update2
-        assert not can_update3
-
-
 class CheckOffererPresenceTest:
     def test_raises_an_error_if_no_offerer_found(self):
         # given

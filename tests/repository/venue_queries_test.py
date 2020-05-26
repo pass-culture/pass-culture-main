@@ -5,7 +5,7 @@ from sqlalchemy.orm.exc import MultipleResultsFound
 
 from repository import repository
 from repository.venue_queries import find_by_managing_user, \
-    find_venue_without_siret_by_managing_offerer_id_and_name, find_by_managing_offerer_id_and_siret
+    find_by_managing_offerer_id_and_siret
 from tests.conftest import clean_database
 from tests.model_creators.activity_creators import create_venue_activity, save_all_activities
 from tests.model_creators.generic_creators import create_user, create_offerer, create_venue, create_user_offerer
@@ -42,49 +42,6 @@ class FindVenuesByManagingUserTest:
         # then
         assert len(venues) == 1
         assert venues[0] == managed_venue
-
-
-class FindByManagingOffererIdAndNameForVenueWithoutSiretTest:
-    @clean_database
-    def test_return_none_when_offerer_does_not_have_any_matching_venue_name(self):
-        # Given
-        offerer = create_offerer()
-        not_matching_venue = create_venue(
-            offerer, name='Not matching name', siret=None, comment='comment')
-        repository.save(not_matching_venue)
-
-        # When
-        venue = find_venue_without_siret_by_managing_offerer_id_and_name(
-            offerer.id, 'searched name')
-
-        # Then
-        assert len(venue) == 0
-
-    @clean_database
-    def test_does_not_match_venues_with_a_wrong_attribute(self):
-        # Given
-        offerer = create_offerer()
-        wrong_offerer = create_offerer(siren='123456798')
-        matching_venue = create_venue(
-            offerer, name='Matching name', siret=None, comment='comment')
-        not_matching_venue1 = create_venue(
-            offerer, name='Not matching name', siret=None, comment='comment')
-        not_matching_venue2 = create_venue(offerer, name='Matching name')
-        not_matching_venue3 = create_venue(
-            wrong_offerer, name='Matching name', siret=None, comment='comment')
-        repository.save(matching_venue, not_matching_venue1,
-                        not_matching_venue2, not_matching_venue3)
-
-        # When
-        venues = find_venue_without_siret_by_managing_offerer_id_and_name(
-            offerer.id, 'Matching name')
-
-        # Then
-        assert len(venues) == 1
-        venue = venues[0]
-        assert venue.id == matching_venue.id
-        assert venue.siret is None
-        assert venue.managingOffererId == offerer.id
 
 
 class FindByManagingOffererIdAndSiretTest:
