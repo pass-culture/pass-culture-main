@@ -21,6 +21,7 @@ class BookingRecap:
                  booking_is_used: bool,
                  booking_is_cancelled: bool,
                  booking_is_reimbursed: bool,
+                 venue_department_code: str
                  ):
         self.offer_name = offer_name
         self.beneficiary_lastname = beneficiary_lastname
@@ -32,6 +33,7 @@ class BookingRecap:
         self.booking_is_used = booking_is_used
         self.booking_is_cancelled = booking_is_cancelled
         self.booking_is_reimbursed = booking_is_reimbursed
+        self.venue_department_code = venue_department_code
 
     def __new__(cls, *args, **kwargs):
         if cls is BookingRecap:
@@ -71,7 +73,6 @@ class ThingBookingRecap(BookingRecap):
 
 
 class EventBookingRecap(BookingRecap):
-    def __init__(self, event_beginning_datetime: datetime, venue_department_code: str, **kwargs):
+    def __init__(self, event_beginning_datetime: datetime, **kwargs):
         super().__init__(**kwargs)
         self.event_beginning_datetime = event_beginning_datetime
-        self.venue_department_code = venue_department_code

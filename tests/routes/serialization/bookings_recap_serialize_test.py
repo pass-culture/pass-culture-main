@@ -9,14 +9,14 @@ from utils.date import format_into_ISO_8601
 class SerializeBookingRecapTest:
     def test_should_return_json_with_all_parameters_for_thing_stock(self, app):
         # Given
-        date = datetime.utcnow()
+        booking_date = datetime(2020, 1, 1, 10, 0, 0)
         bookings_recap = [
             create_domain_thing_booking_recap(
                 offer_name="Fondation",
                 beneficiary_firstname="Hari",
                 beneficiary_lastname="Seldon",
                 beneficiary_email="hari.seldon@example.com",
-                booking_date=date,
+                booking_date=booking_date,
                 booking_token="FOND",
                 booking_is_used=True,
             ),
@@ -25,7 +25,7 @@ class SerializeBookingRecapTest:
                 beneficiary_firstname="Golan",
                 beneficiary_lastname="Trevize",
                 beneficiary_email="golan.trevize@example.com",
-                booking_date=date,
+                booking_date=booking_date,
                 booking_token="FOND",
                 booking_is_duo=True,
             )
@@ -52,7 +52,7 @@ class SerializeBookingRecapTest:
                     "firstname": "Hari",
                     "email": "hari.seldon@example.com",
                 },
-                "booking_date": format_into_ISO_8601(date),
+                "booking_date": '2020-01-01 11:00:00+01:00',
                 "booking_token": "FOND",
                 "booking_status": "validated",
                 "booking_is_duo": False,
@@ -67,7 +67,7 @@ class SerializeBookingRecapTest:
                     "firstname": "Golan",
                     "email": "golan.trevize@example.com",
                 },
-                "booking_date": format_into_ISO_8601(date),
+                "booking_date": '2020-01-01 11:00:00+01:00',
                 "booking_token": None,
                 "booking_status": "booked",
                 "booking_is_duo": True,
@@ -80,17 +80,17 @@ class SerializeBookingRecapTest:
 
     def test_should_return_json_with_event_date_additional_parameter_for_event_stock(self, app):
         # Given
-        today = datetime.utcnow()
-        tomorrow = today + timedelta(days=1)
+        booking_date = datetime(2020, 1, 1, 10, 0, 0)
+        day_after_booking_date = booking_date + timedelta(days=1)
         bookings_recap = [
             create_domain_event_booking_recap(
                 offer_name="Cirque du soleil",
                 beneficiary_firstname="Hari",
                 beneficiary_lastname="Seldon",
                 beneficiary_email="hari.seldon@example.com",
-                booking_date=today,
+                booking_date=booking_date,
                 booking_token="SOLEIL",
-                event_beginning_datetime=tomorrow,
+                event_beginning_datetime=day_after_booking_date,
                 venue_department_code='75'
             )
         ]
@@ -110,7 +110,7 @@ class SerializeBookingRecapTest:
                 "stock": {
                     "type": "event",
                     "offer_name": "Cirque du soleil",
-                    "event_beginning_datetime": format_into_ISO_8601(tomorrow),
+                    "event_beginning_datetime": format_into_ISO_8601(day_after_booking_date),
                     "venue_department_code": "75",
                 },
                 "beneficiary": {
@@ -118,7 +118,7 @@ class SerializeBookingRecapTest:
                     "firstname": "Hari",
                     "email": "hari.seldon@example.com",
                 },
-                "booking_date": format_into_ISO_8601(today),
+                "booking_date": '2020-01-01 11:00:00+01:00',
                 "booking_token": "SOLEIL",
                 "booking_status": "booked",
                 "booking_is_duo": False,

@@ -79,7 +79,7 @@ class GetTest:
                         'firstname': 'Hermione',
                         'lastname': 'Granger',
                     },
-                    'booking_date': '2020-04-03T12:00:00Z',
+                    'booking_date': '2020-04-03 14:00:00+02:00',
                     'booking_token': 'ABCD',
                     'booking_status': 'validated',
                     'booking_is_duo': False

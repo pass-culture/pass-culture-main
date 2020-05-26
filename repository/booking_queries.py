@@ -268,6 +268,7 @@ def _serialize_booking_recap(booking: object) -> BookingRecap:
         booking_is_cancelled=booking.isCancelled,
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
+        venue_department_code=booking.venueDepartementCode,
     )
 
 

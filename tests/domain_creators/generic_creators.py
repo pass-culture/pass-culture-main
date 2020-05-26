@@ -31,7 +31,8 @@ def create_domain_thing_booking_recap(offer_name: str = "Le livre de la jungle",
                                       booking_is_duo: bool = False,
                                       booking_is_used: bool = False,
                                       booking_is_cancelled: bool = False,
-                                      booking_is_reimbursed: bool = False) -> ThingBookingRecap:
+                                      booking_is_reimbursed: bool = False,
+                                      venue_department_code: str = "75") -> ThingBookingRecap:
     return ThingBookingRecap(
         offer_name=offer_name,
         beneficiary_lastname=beneficiary_lastname,
@@ -43,6 +44,7 @@ def create_domain_thing_booking_recap(offer_name: str = "Le livre de la jungle",
         booking_is_used=booking_is_used,
         booking_is_cancelled=booking_is_cancelled,
         booking_is_reimbursed=booking_is_reimbursed,
+        venue_department_code=venue_department_code,
     )
 
 
