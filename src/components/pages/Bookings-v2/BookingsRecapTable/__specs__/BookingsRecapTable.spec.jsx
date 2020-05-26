@@ -12,10 +12,12 @@ import Header from '../Header/Header'
 import Paginate from '../Table/Paginate/Paginate'
 import { NB_BOOKINGS_PER_PAGE } from '../NB_BOOKINGS_PER_PAGE'
 import NoFilteredBookings from '../NoFilteredBookings/NoFilteredBookings'
+import Filters from '../Filters/Filters'
 
 jest.mock('../NB_BOOKINGS_PER_PAGE', () => ({
   NB_BOOKINGS_PER_PAGE: 1,
 }))
+jest.mock('lodash.debounce', () => jest.fn(callback => callback))
 
 describe('components | BookingsRecapTable', () => {
   it('should render a TableContainer component with columns and data props', () => {
@@ -413,6 +415,7 @@ describe('components | BookingsRecapTable', () => {
     const booking = {
       stock: {
         offer_name: 'Avez-vous déjà vu',
+        type: 'thing'
       },
       beneficiary: {
         lastname: 'Klepi',
@@ -422,32 +425,19 @@ describe('components | BookingsRecapTable', () => {
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ZEHBGD',
       booking_status: 'Validé',
-    }
-    const bookingsRecap = [booking]
-    const newBooking = {
-      stock: {
-        offer_name: 'Merlin enchanteur',
-      },
-      beneficiary: {
-        lastname: 'Klepi',
-        firstname: 'Sonia',
-        email: 'sonia.klepi@example.com',
-      },
-      booking_date: '2020-04-03T12:00:00Z',
-      booking_token: 'ZEHBGD',
-      booking_status: 'Validé',
+      booking_is_duo: false,
     }
     const props = {
-      bookingsRecap: bookingsRecap,
+      bookingsRecap: [booking],
       isLoading: false,
     }
-    const wrapper = shallow(<BookingsRecapTable {...props} />)
+    const wrapper = mount(<BookingsRecapTable {...props} />)
+    const input = wrapper
+      .find(Filters)
+      .find({ placeholder: "Rechercher par nom d'offre"})
 
     // When
-    wrapper.setState({ filters: { offerName: 'Not findable' } })
-    wrapper.setProps({
-      bookingsRecap: [...props.bookingsRecap].concat([newBooking]),
-    })
+    input.simulate('change', { target: { value: 'not findable' }})
 
     // Then
     const table = wrapper.find(TableFrame)
@@ -461,56 +451,21 @@ describe('components | BookingsRecapTable', () => {
 
   it('should reset filters when clicking on "afficher toutes les réservations"', () => {
     // given
-    const booking = {
-      stock: {
-        offer_name: 'Avez-vous déjà vu',
-      },
-      beneficiary: {
-        lastname: 'Klepi',
-        firstname: 'Sonia',
-        email: 'sonia.klepi@example.com',
-      },
-      booking_date: '2020-04-03T12:00:00Z',
-      booking_token: 'ZEHBGD',
-      booking_status: 'Validé',
-    }
-    const bookingsRecap = [booking]
-    const newBooking = {
-      stock: {
-        offer_name: 'Merlin enchanteur',
-      },
-      beneficiary: {
-        lastname: 'Klepi',
-        firstname: 'Sonia',
-        email: 'sonia.klepi@example.com',
-      },
-      booking_date: '2020-04-03T12:00:00Z',
-      booking_token: 'ZEHBGD',
-      booking_status: 'Validé',
-    }
     const props = {
-      bookingsRecap: bookingsRecap,
+      bookingsRecap: [],
       isLoading: false,
     }
-    const wrapper = shallow(<BookingsRecapTable {...props} />)
-    wrapper.setState({ filters: { offerName: 'Not findable' } })
-    wrapper.setProps({
-      bookingsRecap: [...props.bookingsRecap].concat([newBooking]),
-    })
-    const reset = jest.fn()
-    const instance = wrapper.instance()
-    instance['filtersForm'] = {
-      current: {
-        reset: reset,
-      },
-    }
-    const noFilteredBookings = wrapper.find(NoFilteredBookings).dive()
+    const wrapper = mount(<BookingsRecapTable {...props} />)
+    const noFilteredBookings = wrapper.find(NoFilteredBookings)
     const displayAllBookingsButton = noFilteredBookings.find({ children: 'afficher toutes les réservations' })
 
     // When
     displayAllBookingsButton.simulate('click')
 
     // Then
-    expect(reset).toHaveBeenCalledWith()
+    const offerNameInput = wrapper
+      .find(Filters)
+      .find({ placeholder: "Rechercher par nom d'offre"})
+    expect(offerNameInput.text()).toBe('')
   })
 })
