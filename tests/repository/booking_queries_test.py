@@ -3,6 +3,7 @@ from decimal import Decimal
 
 import pytest
 import pytz
+from dateutil import tz
 from freezegun import freeze_time
 
 from domain.booking_recap.booking_recap import EventBookingRecap
@@ -1699,7 +1700,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.beneficiary_firstname == 'Ron'
         assert expected_booking_recap.beneficiary_lastname == 'Weasley'
         assert expected_booking_recap.beneficiary_email == 'beneficiary@example.com'
-        assert expected_booking_recap.booking_date == booking_date.replace(tzinfo=pytz.timezone("Europe/Paris"))
+        assert expected_booking_recap.booking_date == booking_date.astimezone(tz.gettz('Europe/Paris'))
         assert expected_booking_recap.booking_token == 'ABCDEF'
         assert expected_booking_recap.booking_is_used is True
         assert expected_booking_recap.booking_is_cancelled is False
@@ -1754,7 +1755,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.beneficiary_firstname == 'Ron'
         assert expected_booking_recap.beneficiary_lastname == 'Weasley'
         assert expected_booking_recap.beneficiary_email == 'beneficiary@example.com'
-        assert expected_booking_recap.booking_date == yesterday.replace(tzinfo=pytz.timezone('Europe/Paris'))
+        assert expected_booking_recap.booking_date == yesterday.astimezone(tz.gettz('Europe/Paris'))
         assert expected_booking_recap.booking_token == 'ABCDEF'
         assert expected_booking_recap.booking_is_used is False
         assert expected_booking_recap.booking_is_cancelled is True
@@ -1785,12 +1786,12 @@ class FindByProUserIdTest:
         assert expected_booking_recap.beneficiary_firstname == 'Ron'
         assert expected_booking_recap.beneficiary_lastname == 'Weasley'
         assert expected_booking_recap.beneficiary_email == 'beneficiary@example.com'
-        assert expected_booking_recap.booking_date == yesterday.replace(tzinfo=pytz.timezone('Europe/Paris'))
+        assert expected_booking_recap.booking_date == yesterday.astimezone(tz.gettz('Europe/Paris'))
         assert expected_booking_recap.booking_token == 'ABCDEF'
         assert expected_booking_recap.booking_is_used is False
         assert expected_booking_recap.booking_is_cancelled is False
         assert expected_booking_recap.booking_is_reimbursed is False
-        assert expected_booking_recap.event_beginning_datetime == stock.beginningDatetime.replace(tzinfo=pytz.timezone('Europe/Paris'))
+        assert expected_booking_recap.event_beginning_datetime == stock.beginningDatetime.astimezone(tz.gettz('Europe/Paris'))
 
     @clean_database
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app):

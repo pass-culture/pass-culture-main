@@ -1,11 +1,14 @@
 from datetime import datetime
 from unittest.mock import patch
 
+from dateutil.tz import tz
+
 from repository import repository
 from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue, \
     create_stock, create_booking
 from tests.model_creators.specific_creators import create_offer_with_thing_product
+from utils.date import format_into_ISO_8601_with_timezone
 
 
 class GetAllBookingsTest:
@@ -79,7 +82,9 @@ class GetTest:
                         'firstname': 'Hermione',
                         'lastname': 'Granger',
                     },
-                    'booking_date': '2020-04-03 14:00:00+02:00',
+                    'booking_date': format_into_ISO_8601_with_timezone(
+                        date_created.astimezone(tz.gettz('Europe/Paris'))
+                    ),
                     'booking_token': 'ABCD',
                     'booking_status': 'validated',
                     'booking_is_duo': False

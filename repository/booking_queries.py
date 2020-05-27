@@ -3,7 +3,7 @@ from collections import namedtuple
 from datetime import datetime
 from typing import List, Set, Union, Optional
 
-import pytz
+from dateutil import tz
 from sqlalchemy import func, desc, text
 from sqlalchemy.orm import Query
 
@@ -23,7 +23,7 @@ from models.stock_sql_entity import StockSQLEntity, EVENT_AUTOMATIC_REFUND_DELAY
 from models.user_sql_entity import UserSQLEntity
 from models.venue import Venue
 from repository import offer_queries
-from utils.date import utc_datetime_to_department_timezone, get_department_timezone
+from utils.date import get_department_timezone
 
 DUO_QUANTITY = 2
 
@@ -217,20 +217,20 @@ def _build_bookings_recap_query(user_id: int) -> Query:
         .filter(UserOfferer.userId == user_id) \
         .filter(UserOfferer.validationToken == None) \
         .with_entities(
-        BookingSQLEntity.token.label("bookingToken"),
-        BookingSQLEntity.dateCreated.label("bookingDate"),
-        BookingSQLEntity.isCancelled.label("isCancelled"),
-        BookingSQLEntity.isUsed.label("isUsed"),
-        BookingSQLEntity.quantity.label("quantity"),
-        Offer.name.label("offerName"),
-        Offer.type.label("offerType"),
-        Payment.currentStatus.label("paymentStatus"),
-        UserSQLEntity.firstName.label("beneficiaryFirstname"),
-        UserSQLEntity.lastName.label("beneficiaryLastname"),
-        UserSQLEntity.email.label("beneficiaryEmail"),
-        StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
-        Venue.departementCode.label('venueDepartementCode'),
-    )
+            BookingSQLEntity.token.label("bookingToken"),
+            BookingSQLEntity.dateCreated.label("bookingDate"),
+            BookingSQLEntity.isCancelled.label("isCancelled"),
+            BookingSQLEntity.isUsed.label("isUsed"),
+            BookingSQLEntity.quantity.label("quantity"),
+            Offer.name.label("offerName"),
+            Offer.type.label("offerType"),
+            Payment.currentStatus.label("paymentStatus"),
+            UserSQLEntity.firstName.label("beneficiaryFirstname"),
+            UserSQLEntity.lastName.label("beneficiaryLastname"),
+            UserSQLEntity.email.label("beneficiaryEmail"),
+            StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
+            Venue.departementCode.label('venueDepartementCode'),
+        )
 
 
 def _paginated_bookings_sql_entities_to_bookings_recap(paginated_bookings: List[object],
@@ -245,15 +245,14 @@ def _paginated_bookings_sql_entities_to_bookings_recap(paginated_bookings: List[
     )
 
 
-def _serialize_booking_recap(booking: object) -> BookingRecap:
-    booking_date_timezoned= booking.bookingDate
-    event_beginning_datetime_timezoned = booking.stockBeginningDatetime
-    if booking.venueDepartementCode:
-        departement_timezone = get_department_timezone(booking.venueDepartementCode)
-        booking_date_timezoned = booking.bookingDate.replace(tzinfo=pytz.timezone(departement_timezone))
+def _apply_departement_timezone(date: datetime, departement_code: str) -> datetime:
+    return date.astimezone(tz.gettz(get_department_timezone(departement_code)))
 
-        if booking.stockBeginningDatetime is not None:
-            event_beginning_datetime_timezoned = booking.stockBeginningDatetime.replace(tzinfo=pytz.timezone(departement_timezone))
+
+def _serialize_booking_recap(booking: object) -> BookingRecap:
+    booking_date_timezoned = _apply_departement_timezone(date=booking.bookingDate,
+                                                         departement_code=booking.venueDepartementCode) \
+        if booking.venueDepartementCode else booking.bookingDate
 
     return EventBookingRecap(
         offer_name=booking.offerName,
@@ -266,7 +265,10 @@ def _serialize_booking_recap(booking: object) -> BookingRecap:
         booking_is_cancelled=booking.isCancelled,
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
-        event_beginning_datetime=event_beginning_datetime_timezoned,
+        event_beginning_datetime=_apply_departement_timezone(
+            date=booking.stockBeginningDatetime,
+            departement_code=booking.venueDepartementCode
+        ),
     ) if booking.stockBeginningDatetime is not None else ThingBookingRecap(
         offer_name=booking.offerName,
         beneficiary_email=booking.beneficiaryEmail,

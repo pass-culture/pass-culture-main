@@ -1,6 +1,5 @@
 from datetime import datetime, time
 
-import pytz
 from babel.dates import format_date
 from babel.dates import format_datetime as babel_format_datetime
 from dateutil import tz
@@ -74,8 +73,12 @@ def utc_datetime_to_department_timezone(date_time: datetime, departement_code: s
     return utc_datetime.astimezone(to_zone)
 
 
-def format_into_ISO_8601(value: str) -> str:
-    return value.isoformat() + "Z"
+def format_into_ISO_8601(date_to_format: datetime) -> str:
+    return date_to_format.isoformat() + "Z"
+
+
+def format_into_ISO_8601_with_timezone(date_to_format: datetime) -> str:
+    return date_to_format.isoformat()
 
 
 def get_date_formatted_for_email(date_time: datetime) -> str:
