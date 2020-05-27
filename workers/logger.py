@@ -1,6 +1,7 @@
 from typing import Optional
 from enum import Enum
 import traceback
+from types import TracebackType
 
 
 class JobStatus(Enum):
@@ -12,7 +13,7 @@ class JobStatus(Enum):
         return self.value
 
 
-def build_job_log_message(job: str, status: JobStatus, error: Optional[str] = None, stack: Optional[type(traceback)] = None) -> str:
+def build_job_log_message(job: str, status: JobStatus, error: Optional[str] = None, stack: Optional[TracebackType] = None) -> str:
     log_message = f"type=job name={job} status={status}"
 
     if error:

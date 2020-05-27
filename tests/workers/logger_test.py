@@ -1,5 +1,4 @@
-import traceback
-from unittest.mock import patch
+import sys
 
 from workers.logger import build_job_log_message, JobStatus
 
@@ -26,19 +25,20 @@ class JobLoggerMessageBuilderTest():
         # Then
         assert 'status=started' in message
 
-    @patch('workers.logger.traceback.format_tb')
-    def test_should_contain_stacktrace_attribute_when_the_job_raises_and_exception(self, mock_format_traceback):
+    def test_should_contain_stacktrace_attribute_when_the_job_raises_and_exception(self):
         # given
-        mock_format_traceback.return_value = ['oups ! ']
-
-        # When
         try:
             raise Exception('Failed to execute')
         except Exception:
-            message = build_job_log_message(job='generation_du_document_xml',
-                                             status=JobStatus.FAILED,
-                                             error='my error',
-                                             stack=traceback)
+            # traceback can only be created in an except block
+            traceback = sys.exc_info()[2]
+
+        # When
+        message = build_job_log_message(job='generation_du_document_xml',
+                                        status=JobStatus.FAILED,
+                                        error='my error',
+                                        stack=traceback)
 
         # Then
-        assert "status=failed error=my error stacktrace=oups ! " in message
+        assert "status=failed error=my error stacktrace=" in message
+        assert "raise Exception('Failed to execute')" in message
