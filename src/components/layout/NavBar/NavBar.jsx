@@ -1,41 +1,42 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import { NavLink } from 'react-router-dom'
 
-import { Link } from 'react-router-dom'
-
-const isPresent = path =>
-  RegExp(
-    '(/reservation|/informations|/mot-de-passe|/mentions-legales|/activation/|/criteres-(.*)|/tri|/filtres(.*)|/bienvenue|/typeform|/beta|/connexion|/mot-de-passe-perdu|/activation/(.*)|/inscription)$'
-  ).test(path)
+import { isPathWithNavBar } from './domain/isPathWithNavBar'
+import { IcoNavBookings } from './Icons/IcoNavBookings'
+import { IcoNavDiscovery } from './Icons/IcoNavDiscovery'
+import { IcoNavFavorites } from './Icons/IcoNavFavorites'
+import { IcoNavProfile } from './Icons/IcoNavProfile'
+import { IcoNavSearch } from './Icons/IcoNavSearch'
 
 const NavBar = ({ path }) =>
-  !isPresent(path) ? (
+  isPathWithNavBar(path) ? (
     <nav className="navbar">
       <ul>
         <li>
-          <Link to="/decouverte">
-            {'Découverte'}
-          </Link>
+          <NavLink to="/decouverte">
+            <IcoNavDiscovery />
+          </NavLink>
         </li>
         <li>
-          <Link to="/recherche">
-            {'Recherche'}
-          </Link>
+          <NavLink to="/recherche">
+            <IcoNavSearch />
+          </NavLink>
         </li>
         <li>
-          <Link to="/reservations">
-            {'Reservations'}
-          </Link>
+          <NavLink to="/reservations">
+            <IcoNavBookings />
+          </NavLink>
         </li>
         <li>
-          <Link to="/favoris">
-            {'Favoris'}
-          </Link>
+          <NavLink to="/favoris">
+            <IcoNavFavorites />
+          </NavLink>
         </li>
         <li>
-          <Link to="/profil">
-            {'Profil'}
-          </Link>
+          <NavLink to="/profil">
+            <IcoNavProfile />
+          </NavLink>
         </li>
       </ul>
     </nav>

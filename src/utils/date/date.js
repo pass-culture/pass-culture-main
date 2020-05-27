@@ -1,5 +1,6 @@
 import moment from 'moment'
 import 'moment-timezone'
+import 'moment/locale/fr'
 
 import { MILLISECONDS_IN_A_SECOND } from '../../components/pages/search/utils/date/time'
 import { capitalize } from '../react-form-utils/functions'

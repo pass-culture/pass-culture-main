@@ -6,9 +6,9 @@
 
 .navbar {
   background: $white;
+  border-top: 1px solid $grey-even-more-light;
   bottom: 0;
-  color: red;
-  height: 60px;
+  height: rem(60px);
   position: absolute;
   width: 100%;
   z-index: $zindex-navbar;
@@ -24,8 +24,21 @@
   }
 
   a {
-    border: 1px solid $black;
-    display: block;
+    align-items: center;
+    display: flex;
     height: 100%;
+    justify-content: center;
+  }
+
+  svg {
+    fill: $grey;
+  }
+
+  .active {
+    background: top / rem(44px) rem(2px) no-repeat linear-gradient(to right, $primary -43%, $purple-blue 154%);
+
+    svg {
+      fill: url(#NavIco);
+    }
   }
 }
