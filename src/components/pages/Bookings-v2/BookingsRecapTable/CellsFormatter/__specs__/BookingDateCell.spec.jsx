@@ -19,6 +19,6 @@ describe('components | BookingsDateCell', () => {
     // Then
     expect(spans).toHaveLength(2)
     expect(bookingDateDaySpan.text()).toBe('03/04/2020')
-    expect(bookingDateHourSpan.text()).toBe('12:00')
+    expect(bookingDateHourSpan.text()).toBe('10:00')
   })
 })

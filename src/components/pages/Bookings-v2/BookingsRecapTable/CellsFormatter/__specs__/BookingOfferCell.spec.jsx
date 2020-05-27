@@ -2,7 +2,7 @@ import { mount } from 'enzyme/build'
 import React from 'react'
 import BookingOfferCell from '../BookingOfferCell'
 
-describe('components | pages | bookings-v2 | CellsFormatter | BookingOfferCell', () => {
+describe('components | BookingOfferCell', () => {
   describe('render a thing stock', () => {
     it('should render offer name', () => {
       // Given
@@ -30,7 +30,6 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingOfferCell',
           type: 'event',
           offer_name: 'La danse des poireaux',
           event_beginning_datetime: '2020-05-12T11:03:28.564687+02:00',
-          venue_department_code: '973',
         },
       }
 
@@ -43,7 +42,7 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingOfferCell',
 
       const eventDatetime = wrapper.find("[children^='12/05/2020']")
       expect(eventDatetime).toHaveLength(1)
-      expect(eventDatetime.text()).toContain('11:03')
+      expect(eventDatetime.text()).toContain('9:03')
     })
   })
 })
