@@ -5,7 +5,7 @@ from workers.logger import build_job_log_message, JobStatus
 
 
 class JobLoggerMessageBuilderTest():
-    def test_should_contain_the_log_type(self):
+    def test_should_have_job_as_log_type(self):
         # When
         message = build_job_log_message(job='', status='')
 
@@ -27,7 +27,7 @@ class JobLoggerMessageBuilderTest():
         assert 'status=started' in message
 
     @patch('workers.logger.traceback.format_tb')
-    def test_should_contain_stacktrace_attribute_if_needed(self, mock_format_traceback):
+    def test_should_contain_stacktrace_attribute_when_the_job_raises_and_exception(self, mock_format_traceback):
         # given
         mock_format_traceback.return_value = ['oups ! ']
 
@@ -37,7 +37,7 @@ class JobLoggerMessageBuilderTest():
         except Exception:
             message = build_job_log_message(job='generation_du_document_xml',
                                              status=JobStatus.FAILED,
-                                             error= 'my error',
+                                             error='my error',
                                              stack=traceback)
 
         # Then
