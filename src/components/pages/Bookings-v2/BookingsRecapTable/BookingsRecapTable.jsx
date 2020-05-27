@@ -68,7 +68,7 @@ class BookingsRecapTable extends Component {
         offerDate: null,
       },
     }
-    this.filtersForm = React.createRef()
+    this.filtersRef = React.createRef()
   }
 
   shouldComponentUpdate() {
@@ -92,22 +92,17 @@ class BookingsRecapTable extends Component {
     this.setState({ filters: filters }, () => this.applyFilters())
   }
 
-  resetFilters = () => {
-    this.setState({ filters: { offerName: '' } }, () => {
-      this.applyFilters()
-      this.filtersForm.current.reset()
-    })
-  }
-
   applyFilters = () => {
     const { bookingsRecap } = this.props
     const { filters } = this.state
-
-    let bookingsRecapFiltered = filterBookingsRecap(bookingsRecap, filters)
-
+    const bookingsRecapFiltered = filterBookingsRecap(bookingsRecap, filters)
     this.setState({
       bookingsRecapFiltered: bookingsRecapFiltered,
     })
+  }
+
+  resetFilters = () => {
+    this.filtersRef.current.resetAllFilters()
   }
 
   render() {
@@ -117,9 +112,10 @@ class BookingsRecapTable extends Component {
 
     return (
       <div>
-        <form ref={this.filtersForm}>
-          <Filters setFilters={this.setFilters} />
-        </form>
+        <Filters
+          ref={this.filtersRef}
+          setFilters={this.setFilters}
+        />
         <Header
           isLoading={isLoading}
           nbBookings={nbBookings}

@@ -10,16 +10,31 @@ class Filters extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      selectedOfferDate: null,
       filters: {
-        offerName: null,
         offerDate: null,
+        offerName: null,
       },
+      keywords: '',
+      selectedOfferDate: null,
     }
   }
 
   shouldComponentUpdate() {
     return true
+  }
+
+  resetAllFilters = () => {
+    this.setState({
+      filters: {
+        offerName: null,
+        offerDate: null,
+      },
+      keywords: '',
+      selectedOfferDate: null,
+    }, () => {
+      const { filters } = this.state
+      this.applyFilters(filters)
+    })
   }
 
   applyFilters = debounce(filterValues => {
@@ -31,12 +46,14 @@ class Filters extends Component {
   handleOfferNameChange = event => {
     const keywords = event.target.value
     const { filters } = this.state
+
     this.setState(
       {
         filters: {
           ...filters,
           offerName: keywords.length > 0 ? keywords : null,
         },
+        keywords: keywords
       },
       () => {
         const { filters } = this.state
@@ -64,7 +81,8 @@ class Filters extends Component {
   }
 
   render() {
-    const { selectedOfferDate } = this.state
+    const { keywords, selectedOfferDate } = this.state
+
     return (
       <div className="filters-wrapper">
         <div className="fw-offer-name">
@@ -80,6 +98,7 @@ class Filters extends Component {
             onChange={this.handleOfferNameChange}
             placeholder={"Rechercher par nom d'offre"}
             type="text"
+            value={keywords}
           />
         </div>
         <div className="fw-offer-date">
