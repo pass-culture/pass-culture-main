@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch
 
+from models.db import db
 from models.offer_type import EventType, ThingType
 from repository import repository, discovery_view_queries
+from repository.discovery_view_queries import _order_by_digital_offers
 from repository.offer_queries import get_offers_for_recommendation
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_booking, create_criterion, \
@@ -259,6 +261,7 @@ class GetOfferForRecommendationsTest:
             create_mediation(digital_offer)
             repository.save(user, stock_digital_offer, stock_physical_offer)
 
+            discovery_view_queries.create(db.session, _order_by_digital_offers)
             discovery_view_queries.refresh(concurrently=False)
 
             # When
@@ -289,6 +292,7 @@ class GetOfferForRecommendationsTest:
 
             repository.save(user, stock_digital_offer, stock_physical_offer)
 
+            discovery_view_queries.create(db.session, _order_by_digital_offers)
             discovery_view_queries.refresh(concurrently=False)
 
             # When
