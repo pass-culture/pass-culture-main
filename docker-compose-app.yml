@@ -31,13 +31,9 @@ services:
 
   flask:
     image: passcultureapp/api-flask:latest
+    working_dir: /opt/services/flaskapp/src
     container_name: pc-flask
-    command: >
-      bash -c "set -x;
-               cd /opt/services/flaskapp/src;
-               pip install -r ./requirements.txt;
-               python -m nltk.downloader punkt stopwords;
-               while true; do python app.py; done;"
+    command: ["./start-api-when-database-is-ready.sh"]
     volumes:
       - ./api:/opt/services/flaskapp/src
     env_file:
