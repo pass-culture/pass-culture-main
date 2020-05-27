@@ -91,7 +91,7 @@ On utilise la librairie [react-tracking](https://github.com/NYTimes/react-tracki
 
 ### Events
 Les Tracking Events sont une des méthodes proposées par Matomo pour mesurer les interactions utilisateurs avec le contenu de notre plateforme qui ne seraient ni des page view, ni des téléchargements.
-Typiquement, un event sera utilisé pour mesurer des clicks sur les éléments de nos pages (menus, boutons, envoi de formulaires, appels AJAX, etc).
+Typiquement, un event sera utilisé pour mesurer des clicks sur les éléments de nos pages (navbar, boutons, envoi de formulaires, appels AJAX, etc).
 
 Un évènement est constitué de 4 éléments :
 * Catégorie

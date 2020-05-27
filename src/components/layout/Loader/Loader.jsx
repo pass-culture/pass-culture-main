@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Transition } from 'react-transition-group'
 
-import AbsoluteFooterContainer from '../AbsoluteFooter/AbsoluteFooterContainer'
 import Icon from '../Icon/Icon'
 import LoadingAnimation from '../LoadingPage/LoadingAnimation/LoadingAnimation'
 
@@ -117,7 +116,6 @@ class Loader extends PureComponent {
     // on cache pas le loader
     // si il est en court de chargement et qu'on est à la fin du Deck
     // si il y a aucun produits à afficher pour l'utilisateur
-    const showFooter = hasNoMoreRecommendation || hasError
     const shouldHide =
       !(isLoading && (atDecksEnd || isFirstLoad)) && !hasNoMoreRecommendation && !hasError
 
@@ -141,14 +139,6 @@ class Loader extends PureComponent {
             </p>
 
             {this.renderRefreshButton()}
-
-            {showFooter && (
-              <AbsoluteFooterContainer
-                areDetailsVisible={false}
-                borderTop
-                colored={false}
-              />
-            )}
           </div>
         )}
       </Transition>

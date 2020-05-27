@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux'
 import data from './data'
 import geolocation from './geolocation'
-import menu from './menu'
 import overlay from './overlay'
 import pagination from './pagination'
 import share from './share'
@@ -15,7 +14,6 @@ const rootReducer = combineReducers({
   geolocation,
   lastRecommendationsRequestTimestamp,
   maintenance,
-  menu,
   overlay,
   pagination,
   share,

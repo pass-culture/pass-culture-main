@@ -1,7 +1,6 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 import QrCode from '../QrCode'
-import AbsoluteFooterContainer from '../../../../../../layout/AbsoluteFooter/AbsoluteFooterContainer'
 
 describe('src | components | pages | my-bookings | MyBookingsList | BookingList | QrCode', () => {
   let props
@@ -33,17 +32,5 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     expect(bookingQrCode.prop('src')).toBe(
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIYAAACGAQAAAAAwAs88AAAD'
     )
-  })
-
-  it('should render AbsoluteFooterContainer when component is mounted', () => {
-    // when
-    const wrapper = shallow(<QrCode {...props} />)
-
-    // then
-    const absoluteFooterContainer = wrapper.find(AbsoluteFooterContainer)
-    expect(absoluteFooterContainer.prop('areDetailsVisible')).toBe(false)
-    expect(absoluteFooterContainer.prop('borderTop')).toBe(true)
-    expect(absoluteFooterContainer.prop('colored')).toBe(true)
-    expect(absoluteFooterContainer.prop('id')).toBe('verso-footer')
   })
 })

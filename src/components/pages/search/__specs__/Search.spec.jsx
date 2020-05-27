@@ -124,31 +124,31 @@ describe('components | Search', () => {
 
         // then
         const routes = wrapper.find(Route)
-        expect(routes.at(0).prop('path')).toBe('/recherche(/menu)?')
+        expect(routes.at(0).prop('path')).toBe('/recherche')
         expect(routes.at(0).prop('exact')).toBe(true)
         const home = wrapper.find(Home)
         expect(home).toHaveLength(1)
         expect(home.prop('categoryCriterion')).toStrictEqual({
           facetFilter: '',
           icon: 'ico-all',
-          label: 'Toutes les catégories'
+          label: 'Toutes les catégories',
         })
         expect(home.prop('geolocationCriterion')).toStrictEqual({
           params: {
             icon: 'ico-everywhere',
             label: 'Partout',
-            requiresGeolocation: false
+            requiresGeolocation: false,
           },
           place: null,
           searchAround: {
-            'everywhere': true,
-            'place': false,
-            'user': false
+            everywhere: true,
+            place: false,
+            user: false,
           },
           userGeolocation: {
             latitude: 32,
-            longitude: 45
-          }
+            longitude: 45,
+          },
         })
         expect(home.prop('history')).toStrictEqual(props.history)
         expect(home.prop('sortCriterion')).toStrictEqual({
@@ -175,13 +175,15 @@ describe('components | Search', () => {
         const searchResultsComponent = resultatsRoute.find(Results)
         expect(searchResultsComponent.prop('criteria')).toStrictEqual({
           categories: [],
-          searchAround: { 'everywhere': true, 'place': false, 'user': false },
+          searchAround: { everywhere: true, place: false, user: false },
           sortBy: '',
         })
         expect(searchResultsComponent.prop('history')).toStrictEqual(props.history)
         expect(searchResultsComponent.prop('match')).toStrictEqual(props.match)
         expect(searchResultsComponent.prop('query')).toStrictEqual(props.query)
-        expect(searchResultsComponent.prop('redirectToSearchMainPage')).toStrictEqual(props.redirectToSearchMainPage)
+        expect(searchResultsComponent.prop('redirectToSearchMainPage')).toStrictEqual(
+          props.redirectToSearchMainPage
+        )
         expect(searchResultsComponent.prop('search')).toStrictEqual(props.history.location.search)
         expect(searchResultsComponent.prop('userGeolocation')).toStrictEqual(props.geolocation)
       })
@@ -201,7 +203,7 @@ describe('components | Search', () => {
         const searchResultsComponent = resultatsRoute.find(Results)
         expect(searchResultsComponent.prop('criteria')).toStrictEqual({
           categories: ['CINEMA'],
-          searchAround: { 'everywhere': true, 'place': false, 'user': false },
+          searchAround: { everywhere: true, place: false, user: false },
           sortBy: '',
         })
       })
@@ -226,7 +228,9 @@ describe('components | Search', () => {
         expect(searchCriteriaLocation.prop('geolocation')).toStrictEqual(props.geolocation)
         expect(searchCriteriaLocation.prop('history')).toStrictEqual(props.history)
         expect(searchCriteriaLocation.prop('match')).toStrictEqual(props.match)
-        expect(searchCriteriaLocation.prop('onCriterionSelection')).toStrictEqual(expect.any(Function))
+        expect(searchCriteriaLocation.prop('onCriterionSelection')).toStrictEqual(
+          expect.any(Function)
+        )
         expect(searchCriteriaLocation.prop('onPlaceSelection')).toStrictEqual(expect.any(Function))
         expect(searchCriteriaLocation.prop('place')).toBeNull()
         expect(searchCriteriaLocation.prop('title')).toStrictEqual('Localisation')

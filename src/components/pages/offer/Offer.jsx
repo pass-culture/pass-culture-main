@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import AbsoluteFooterContainer from '../../layout/AbsoluteFooter/AbsoluteFooterContainer'
 import DetailsContainer from '../../layout/Details/DetailsContainer'
 import HeaderContainer from '../../layout/Header/HeaderContainer'
 
@@ -13,10 +12,6 @@ const Offer = ({ getOfferById }) => (
       title="Offre"
     />
     <DetailsContainer getOfferById={getOfferById} />
-    <AbsoluteFooterContainer
-      areDetailsVisible
-      borderTop
-    />
   </main>
 )
 

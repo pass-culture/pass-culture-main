@@ -6,7 +6,6 @@ import MyFavoriteDetailsContainer from './MyFavoriteDetails/MyFavoriteDetailsCon
 import HeaderContainer from '../../layout/Header/HeaderContainer'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import NoItems from '../../layout/NoItems/NoItems'
-import RelativeFooterContainer from '../../layout/RelativeFooter/RelativeFooterContainer'
 import Teaser from '../../layout/Teaser/TeaserContainer'
 
 const showFailModal = () => {
@@ -160,10 +159,6 @@ class MyFavorites extends PureComponent {
           offerIds
         )}
         <MyFavoriteDetailsContainer bookingPath="/favoris/:details(details|transition)/:offerId([A-Z0-9]+)/:mediationId(vide|[A-Z0-9]+)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?" />
-        <RelativeFooterContainer
-          extraClassName="dotted-top-red"
-          theme="purple"
-        />
       </div>
     )
   }

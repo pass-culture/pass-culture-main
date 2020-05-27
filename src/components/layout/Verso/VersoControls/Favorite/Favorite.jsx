@@ -4,7 +4,7 @@ import { toast } from 'react-toastify'
 
 import Icon from '../../../Icon/Icon'
 
-const iconClass = isFavorite => `ico-like${isFavorite ? '-filled' : '-empty'}`
+const iconClass = isFavorite => `${isFavorite ? 'ico-like-filled' : 'ico-like-empty'}`
 
 const alternativeText = isFavorite => (isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris')
 

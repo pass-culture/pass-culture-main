@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { createRef, PureComponent } from 'react'
 
-import AbsoluteFooterContainer from '../AbsoluteFooter/AbsoluteFooterContainer'
 import VersoContentOfferContainer from './VersoContent/VersoContentOffer/VersoContentOfferContainer'
 import VersoControlsContainer from './VersoControls/VersoControlsContainer'
 import VersoHeaderContainer from './VersoHeader/VersoHeaderContainer'
@@ -45,12 +44,6 @@ class Verso extends PureComponent {
             <VersoContentOfferContainer />
           </div>
         </div>
-        <AbsoluteFooterContainer
-          areDetailsVisible={areDetailsVisible}
-          borderTop
-          colored
-          id="verso-footer"
-        />
       </div>
     )
   }

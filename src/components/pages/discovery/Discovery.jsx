@@ -5,9 +5,7 @@ import { Route } from 'react-router-dom'
 import DeckContainer from './Deck/DeckContainer'
 import BookingContainer from '../../layout/Booking/BookingContainer'
 import BookingCancellationContainer from '../../layout/BookingCancellation/BookingCancellationContainer'
-import AbsoluteFooterContainer from '../../layout/AbsoluteFooter/AbsoluteFooterContainer'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
-import isDetailsView from '../../../utils/isDetailsView'
 import isCancelView from '../../../utils/isCancelView'
 import { MINIMUM_DELAY_BEFORE_UPDATING_SEED_3_HOURS } from './utils/utils'
 
@@ -140,11 +138,6 @@ class Discovery extends PureComponent {
               path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
               render={cancelView ? this.renderBookingCancellation : this.renderBooking}
               sensitive
-            />
-            <AbsoluteFooterContainer
-              areDetailsVisible={isDetailsView(match)}
-              borderTop
-              id="deck-footer"
             />
           </main>
         )}

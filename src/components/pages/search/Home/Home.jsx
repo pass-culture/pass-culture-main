@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import Icon from '../../../layout/Icon/Icon'
-import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 import { CriterionItem } from './CriterionItem/CriterionItem'
 import { checkIfSearchAround } from '../utils/checkIfSearchAround'
 
@@ -132,10 +131,6 @@ export class Home extends PureComponent {
             {'Rechercher'}
           </button>
         </div>
-        <RelativeFooterContainer
-          extraClassName="dotted-top-red"
-          theme="white"
-        />
       </main>
     )
   }
@@ -162,7 +157,8 @@ Home.propTypes = {
       name: PropTypes.shape({
         long: PropTypes.string,
         short: PropTypes.string,
-      }),    }),
+      }),
+    }),
     searchAround: PropTypes.shape({
       everywhere: PropTypes.bool,
       place: PropTypes.bool,

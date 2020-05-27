@@ -1,6 +1,7 @@
 .search-home-page {
   @extend .page;
 
+  height: calc(100% - 60px);
   display: flex;
   flex-direction: column;
   position: static;

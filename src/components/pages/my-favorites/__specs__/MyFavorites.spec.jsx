@@ -11,7 +11,6 @@ import LoaderContainer from '../../../layout/Loader/LoaderContainer'
 import MyFavorites from '../MyFavorites'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import NoItems from '../../../layout/NoItems/NoItems'
-import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 import state from '../../../../mocks/state'
 import TeaserContainer from '../../../layout/Teaser/TeaserContainer'
 
@@ -93,12 +92,10 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
         const deleteButton = wrapper.find('.mf-delete-btn')
         const editMode = wrapper.find('.mf-edit')
         const ul = wrapper.find('ul')
-        const footer = wrapper.find(RelativeFooterContainer)
         expect(header).toHaveLength(1)
         expect(deleteButton).toHaveLength(1)
         expect(editMode).toHaveLength(1)
         expect(ul).toHaveLength(1)
-        expect(footer).toHaveLength(1)
       })
     })
 
@@ -113,12 +110,10 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
         const deleteButton = wrapper.find('.mf-delete-btn')
         const doneMode = wrapper.find('.mf-done')
         const ul = wrapper.find('ul')
-        const footer = wrapper.find(RelativeFooterContainer)
         expect(header).toHaveLength(1)
         expect(deleteButton).toHaveLength(0)
         expect(doneMode).toHaveLength(1)
         expect(ul).toHaveLength(1)
-        expect(footer).toHaveLength(1)
       })
     })
 

@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import { version } from '../../../../../package.json'
-import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 import Header from '../Header/Header'
 import RemainingCredit from '../RemainingCredit/RemainingCredit'
 import User from '../ValueObjects/User'
@@ -28,10 +27,6 @@ const MainView = ({ user, historyPush }) => (
         </section>
       </div>
     </main>
-    <RelativeFooterContainer
-      extraClassName="dotted-top-red"
-      theme="white"
-    />
   </div>
 )
 

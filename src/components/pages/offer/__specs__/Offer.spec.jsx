@@ -4,7 +4,6 @@ import { Provider } from 'react-redux'
 import React from 'react'
 import { Router } from 'react-router'
 
-import AbsoluteFooterContainer from '../../../layout/AbsoluteFooter/AbsoluteFooterContainer'
 import DetailsContainer from '../../../layout/Details/DetailsContainer'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import OfferContainer from '../OfferContainer'
@@ -69,10 +68,8 @@ describe('offerContainer', () => {
       // then
       const header = wrapper.find(HeaderContainer)
       const offerDetails = wrapper.find(DetailsContainer)
-      const footer = wrapper.find(AbsoluteFooterContainer)
       expect(header).toHaveLength(1)
       expect(offerDetails).toHaveLength(1)
-      expect(footer).toHaveLength(2)
     })
   })
 })

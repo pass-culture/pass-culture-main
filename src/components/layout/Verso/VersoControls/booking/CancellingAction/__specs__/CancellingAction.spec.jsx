@@ -105,7 +105,7 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
       const wrapper = mount(
         <Provider store={mockStore}>
           <Router history={mockHistory}>
-            <Route path="/reservations/:details(details|transition)?/:bookingId?/:booking(reservation)?/:cancellation(annulation)?/:confirmation(confirmation)?/:menu(menu)?">
+            <Route path="/reservations/:details(details|transition)?/:bookingId?/:booking(reservation)?/:cancellation(annulation)?/:confirmation(confirmation)?">
               <CancellingActionContainer />
             </Route>
           </Router>

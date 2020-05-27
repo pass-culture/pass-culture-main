@@ -10,18 +10,8 @@ const extendRoutesWithExact = routes =>
     return { ...obj, ...extend }
   })
 
-const addMenuViewToRoutesWithPath = routes =>
-  routes.map(route => {
-    const clone = { ...route }
-    if (clone.path) {
-      clone.path = `${clone.path}/:menu(menu)?`
-    }
-    return clone
-  })
-
 const getBrowserRoutes = routes =>
   pipe(
-    addMenuViewToRoutesWithPath,
     removeHrefRoutes,
     extendRoutesWithExact
   )(routes)

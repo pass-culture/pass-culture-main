@@ -76,8 +76,8 @@ const routes = [
   },
   /* ---------------------------------------------------
    *
-   * MENU ITEMS
-   * NOTE les elements ci-dessous sont les elements du main menu
+   * NAVBAR ITEMS
+   * NOTE les elements ci-dessous sont les elements de la navbar
    * Car ils contiennent une propriété `icon`
    *
    ---------------------------------------------------  */

@@ -1,8 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import AbsoluteFooterContainer from '../../../../../layout/AbsoluteFooter/AbsoluteFooterContainer'
-
 const QrCode = ({ humanizedBeginningDatetime, offerName, qrCode, token, venueName }) => (
   <div className="qr-code">
     <div className="qr-code-white-card">
@@ -28,12 +26,6 @@ const QrCode = ({ humanizedBeginningDatetime, offerName, qrCode, token, venueNam
         />
       </div>
     </div>
-    <AbsoluteFooterContainer
-      areDetailsVisible={false}
-      borderTop
-      colored
-      id="verso-footer"
-    />
   </div>
 )
 

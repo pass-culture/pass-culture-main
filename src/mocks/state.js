@@ -470,7 +470,6 @@ const state = {
     config: {},
     isActive: false,
   },
-  menu: false,
   modal: {
     config: {
       fromDirection: 'right',

@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 import Helmet from 'react-helmet'
-import { matchPath, Route } from 'react-router-dom'
+import { matchPath } from 'react-router-dom'
 
 import ErrorCatcherContainer from '../../components/layout/ErrorCatcher/ErrorCatcherContainer'
-import MenuContainer from '../../components/layout/Menu/MenuContainer'
+import NavBar from '../../components/layout/NavBar/NavBar'
 import Notifications from '../../components/layout/Notifications/Notifications'
 import OverlayContainer from '../../components/layout/Overlay/OverlayContainer'
 import SharePopinContainer from '../../components/layout/Share/SharePopinContainer'
@@ -23,7 +23,7 @@ const getBodyClass = obj => {
   return `page-${path || 'home'}`
 }
 
-export const App = ({ children, history, location, isMaintenanceActivated }) => {
+export const App = ({ children, location, isMaintenanceActivated }) => {
   if (isMaintenanceActivated) {
     return <RedirectToMaintenance />
   } else {
@@ -33,19 +33,15 @@ export const App = ({ children, history, location, isMaintenanceActivated }) => 
     return (
       <Fragment>
         <Helmet>
-          <body className={`web ${bodyClass}`} />
+          <body className={bodyClass} />
           <title>
             {`${pageTitle}${PROJECT_NAME}${(IS_DEV && ' | DEV') || ''}`}
           </title>
         </Helmet>
         <ErrorCatcherContainer>
+          <NavBar path={location.pathname} />
           {children}
           <OverlayContainer />
-          <Route
-            component={MenuContainer}
-            history={history}
-            path="*/menu"
-          />
           <SplashContainer />
           <SharePopinContainer />
           <Notifications />
@@ -57,7 +53,6 @@ export const App = ({ children, history, location, isMaintenanceActivated }) => 
 
 App.propTypes = {
   children: PropTypes.node.isRequired,
-  history: PropTypes.shape().isRequired,
   isMaintenanceActivated: PropTypes.bool.isRequired,
   location: PropTypes.shape().isRequired,
 }

@@ -23,7 +23,7 @@ const Profile = ({ user, history, location }) => {
           <Route
             exact
             key="route-profile-main-view"
-            path="/profil/:menu(menu)?"
+            path="/profil"
           >
             <MainView
               historyPush={history.push}
@@ -33,7 +33,7 @@ const Profile = ({ user, history, location }) => {
           <Route
             exact
             key="route-profile-edit-form"
-            path="/profil/:view(mot-de-passe)/:menu(menu)?"
+            path="/profil/:view(mot-de-passe)"
           >
             <EditPasswordContainer
               historyPush={history.push}
@@ -45,7 +45,7 @@ const Profile = ({ user, history, location }) => {
           <Route
             exact
             key="route-profile-edit-personal-informations"
-            path="/profil/:view(informations)/:menu(menu)?"
+            path="/profil/:view(informations)"
           >
             <PersonalInformationsContainer
               department={department}
@@ -58,7 +58,7 @@ const Profile = ({ user, history, location }) => {
           <Route
             exact
             key="route-legal-notice"
-            path="/profil/:view(mentions-legales)/:menu(menu)?"
+            path="/profil/:view(mentions-legales)"
           >
             <LegalNotice
               historyPush={history.push}

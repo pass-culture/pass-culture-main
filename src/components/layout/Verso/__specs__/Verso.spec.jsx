@@ -5,7 +5,6 @@ import Verso from '../Verso'
 import VersoContentOfferContainer from '../VersoContent/VersoContentOffer/VersoContentOfferContainer'
 import VersoControlsContainer from '../VersoControls/VersoControlsContainer'
 import VersoHeaderContainer from '../VersoHeader/VersoHeaderContainer'
-import AbsoluteFooterContainer from '../../AbsoluteFooter/AbsoluteFooterContainer'
 
 describe('src | components | layout | Verso', () => {
   let props
@@ -66,18 +65,6 @@ describe('src | components | layout | Verso', () => {
     expect(versoHeaderContainer.prop('subtitle')).toBe('Offer subtitle')
     expect(versoHeaderContainer.prop('title')).toBe('Offer title')
     expect(versoHeaderContainer.prop('type')).toBe('EventType.SPECTACLE_VIVANT')
-  })
-
-  it('should render a AbsoluteFooterContainer with the right props', () => {
-    // when
-    const wrapper = shallow(<Verso {...props} />)
-
-    // then
-    const absoluteFooterContainer = wrapper.find(AbsoluteFooterContainer)
-    expect(absoluteFooterContainer.prop('areDetailsVisible')).toBe(true)
-    expect(absoluteFooterContainer.prop('borderTop')).toBe(true)
-    expect(absoluteFooterContainer.prop('colored')).toBe(true)
-    expect(absoluteFooterContainer.prop('id')).toBe('verso-footer')
   })
 
   it('should scroll to initial position when Verso component props are updated', () => {

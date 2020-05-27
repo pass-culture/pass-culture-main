@@ -27,12 +27,193 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "function",
+    "nodeType": "host",
     "props": Object {
       "children": Array [
-        <main
-          className="teaser-main "
+        false,
+        <section
+          className="mb-section"
         >
+          <header
+            className="mb-header"
+          >
+            Cette semaine
+          </header>
+          <BookingsList
+            bookings={
+              Array [
+                Object {
+                  "id": "b1",
+                },
+              ]
+            }
+            shouldDisplayToken={true}
+          />
+        </section>,
+        <section
+          className="mb-section"
+        >
+          <div
+            className="mb-info-picto"
+          >
+            <Icon
+              alt="erreur"
+              className=""
+              svg="ico-info-white"
+            />
+          </div>
+          <p
+            className="mb-infos"
+          >
+            Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
+          </p>
+        </section>,
+        false,
+        false,
+      ],
+      "className": "teaser-main ",
+    },
+    "ref": null,
+    "rendered": Array [
+      false,
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <header
+              className="mb-header"
+            >
+              Cette semaine
+            </header>,
+            <BookingsList
+              bookings={
+                Array [
+                  Object {
+                    "id": "b1",
+                  },
+                ]
+              }
+              shouldDisplayToken={true}
+            />,
+          ],
+          "className": "mb-section",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Cette semaine",
+              "className": "mb-header",
+            },
+            "ref": null,
+            "rendered": "Cette semaine",
+            "type": "header",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "bookings": Array [
+                Object {
+                  "id": "b1",
+                },
+              ],
+              "shouldDisplayToken": true,
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+        ],
+        "type": "section",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <div
+              className="mb-info-picto"
+            >
+              <Icon
+                alt="erreur"
+                className=""
+                svg="ico-info-white"
+              />
+            </div>,
+            <p
+              className="mb-infos"
+            >
+              Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
+            </p>,
+          ],
+          "className": "mb-section",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <Icon
+                alt="erreur"
+                className=""
+                svg="ico-info-white"
+              />,
+              "className": "mb-info-picto",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "alt": "erreur",
+                "className": "",
+                "svg": "ico-info-white",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
+              "className": "mb-infos",
+            },
+            "ref": null,
+            "rendered": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
+            "type": "p",
+          },
+        ],
+        "type": "section",
+      },
+      false,
+      false,
+    ],
+    "type": "main",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          false,
           <section
             className="mb-section"
           >
@@ -51,7 +232,7 @@ ShallowWrapper {
               }
               shouldDisplayToken={true}
             />
-          </section>
+          </section>,
           <section
             className="mb-section"
           >
@@ -69,465 +250,144 @@ ShallowWrapper {
             >
               Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
             </p>
-          </section>
-        </main>,
-        <withRouter(withRouter(RelativeFooter))
-          extraClassName="dotted-top-white"
-          theme="purple"
-        />,
-      ],
-    },
-    "ref": null,
-    "rendered": Array [
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": Array [
-            false,
-            <section
-              className="mb-section"
-            >
-              <header
-                className="mb-header"
-              >
-                Cette semaine
-              </header>
-              <BookingsList
-                bookings={
-                  Array [
-                    Object {
-                      "id": "b1",
-                    },
-                  ]
-                }
-                shouldDisplayToken={true}
-              />
-            </section>,
-            <section
-              className="mb-section"
-            >
-              <div
-                className="mb-info-picto"
-              >
-                <Icon
-                  alt="erreur"
-                  className=""
-                  svg="ico-info-white"
-                />
-              </div>
-              <p
-                className="mb-infos"
-              >
-                Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-              </p>
-            </section>,
-            false,
-            false,
-          ],
-          "className": "teaser-main ",
-        },
-        "ref": null,
-        "rendered": Array [
-          false,
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": Array [
-                <header
-                  className="mb-header"
-                >
-                  Cette semaine
-                </header>,
-                <BookingsList
-                  bookings={
-                    Array [
-                      Object {
-                        "id": "b1",
-                      },
-                    ]
-                  }
-                  shouldDisplayToken={true}
-                />,
-              ],
-              "className": "mb-section",
-            },
-            "ref": null,
-            "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "Cette semaine",
-                  "className": "mb-header",
-                },
-                "ref": null,
-                "rendered": "Cette semaine",
-                "type": "header",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "function",
-                "props": Object {
-                  "bookings": Array [
-                    Object {
-                      "id": "b1",
-                    },
-                  ],
-                  "shouldDisplayToken": true,
-                },
-                "ref": null,
-                "rendered": null,
-                "type": [Function],
-              },
-            ],
-            "type": "section",
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": Array [
-                <div
-                  className="mb-info-picto"
-                >
-                  <Icon
-                    alt="erreur"
-                    className=""
-                    svg="ico-info-white"
-                  />
-                </div>,
-                <p
-                  className="mb-infos"
-                >
-                  Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-                </p>,
-              ],
-              "className": "mb-section",
-            },
-            "ref": null,
-            "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": <Icon
-                    alt="erreur"
-                    className=""
-                    svg="ico-info-white"
-                  />,
-                  "className": "mb-info-picto",
-                },
-                "ref": null,
-                "rendered": Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "function",
-                  "props": Object {
-                    "alt": "erreur",
-                    "className": "",
-                    "svg": "ico-info-white",
-                  },
-                  "ref": null,
-                  "rendered": null,
-                  "type": [Function],
-                },
-                "type": "div",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
-                  "className": "mb-infos",
-                },
-                "ref": null,
-                "rendered": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
-                "type": "p",
-              },
-            ],
-            "type": "section",
-          },
+          </section>,
           false,
           false,
         ],
-        "type": "main",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "function",
-        "props": Object {
-          "extraClassName": "dotted-top-white",
-          "theme": "purple",
-        },
-        "ref": null,
-        "rendered": null,
-        "type": [Function],
-      },
-    ],
-    "type": Symbol(react.fragment),
-  },
-  Symbol(enzyme.__nodes__): Array [
-    Object {
-      "instance": null,
-      "key": undefined,
-      "nodeType": "function",
-      "props": Object {
-        "children": Array [
-          <main
-            className="teaser-main "
-          >
-            <section
-              className="mb-section"
-            >
-              <header
-                className="mb-header"
-              >
-                Cette semaine
-              </header>
-              <BookingsList
-                bookings={
-                  Array [
-                    Object {
-                      "id": "b1",
-                    },
-                  ]
-                }
-                shouldDisplayToken={true}
-              />
-            </section>
-            <section
-              className="mb-section"
-            >
-              <div
-                className="mb-info-picto"
-              >
-                <Icon
-                  alt="erreur"
-                  className=""
-                  svg="ico-info-white"
-                />
-              </div>
-              <p
-                className="mb-infos"
-              >
-                Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-              </p>
-            </section>
-          </main>,
-          <withRouter(withRouter(RelativeFooter))
-            extraClassName="dotted-top-white"
-            theme="purple"
-          />,
-        ],
+        "className": "teaser-main ",
       },
       "ref": null,
       "rendered": Array [
+        false,
         Object {
           "instance": null,
           "key": undefined,
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              false,
-              <section
-                className="mb-section"
+              <header
+                className="mb-header"
               >
-                <header
-                  className="mb-header"
-                >
-                  Cette semaine
-                </header>
-                <BookingsList
-                  bookings={
-                    Array [
-                      Object {
-                        "id": "b1",
-                      },
-                    ]
-                  }
-                  shouldDisplayToken={true}
-                />
-              </section>,
-              <section
-                className="mb-section"
-              >
-                <div
-                  className="mb-info-picto"
-                >
-                  <Icon
-                    alt="erreur"
-                    className=""
-                    svg="ico-info-white"
-                  />
-                </div>
-                <p
-                  className="mb-infos"
-                >
-                  Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-                </p>
-              </section>,
-              false,
-              false,
+                Cette semaine
+              </header>,
+              <BookingsList
+                bookings={
+                  Array [
+                    Object {
+                      "id": "b1",
+                    },
+                  ]
+                }
+                shouldDisplayToken={true}
+              />,
             ],
-            "className": "teaser-main ",
+            "className": "mb-section",
           },
           "ref": null,
           "rendered": Array [
-            false,
             Object {
               "instance": null,
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": Array [
-                  <header
-                    className="mb-header"
-                  >
-                    Cette semaine
-                  </header>,
-                  <BookingsList
-                    bookings={
-                      Array [
-                        Object {
-                          "id": "b1",
-                        },
-                      ]
-                    }
-                    shouldDisplayToken={true}
-                  />,
-                ],
-                "className": "mb-section",
+                "children": "Cette semaine",
+                "className": "mb-header",
               },
               "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "Cette semaine",
-                    "className": "mb-header",
-                  },
-                  "ref": null,
-                  "rendered": "Cette semaine",
-                  "type": "header",
-                },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "function",
-                  "props": Object {
-                    "bookings": Array [
-                      Object {
-                        "id": "b1",
-                      },
-                    ],
-                    "shouldDisplayToken": true,
-                  },
-                  "ref": null,
-                  "rendered": null,
-                  "type": [Function],
-                },
-              ],
-              "type": "section",
+              "rendered": "Cette semaine",
+              "type": "header",
             },
             Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "host",
+              "nodeType": "function",
               "props": Object {
-                "children": Array [
-                  <div
-                    className="mb-info-picto"
-                  >
-                    <Icon
-                      alt="erreur"
-                      className=""
-                      svg="ico-info-white"
-                    />
-                  </div>,
-                  <p
-                    className="mb-infos"
-                  >
-                    Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-                  </p>,
+                "bookings": Array [
+                  Object {
+                    "id": "b1",
+                  },
                 ],
-                "className": "mb-section",
+                "shouldDisplayToken": true,
               },
               "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": <Icon
-                      alt="erreur"
-                      className=""
-                      svg="ico-info-white"
-                    />,
-                    "className": "mb-info-picto",
-                  },
-                  "ref": null,
-                  "rendered": Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "function",
-                    "props": Object {
-                      "alt": "erreur",
-                      "className": "",
-                      "svg": "ico-info-white",
-                    },
-                    "ref": null,
-                    "rendered": null,
-                    "type": [Function],
-                  },
-                  "type": "div",
-                },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
-                    "className": "mb-infos",
-                  },
-                  "ref": null,
-                  "rendered": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
-                  "type": "p",
-                },
-              ],
-              "type": "section",
+              "rendered": null,
+              "type": [Function],
             },
-            false,
-            false,
           ],
-          "type": "main",
+          "type": "section",
         },
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "function",
+          "nodeType": "host",
           "props": Object {
-            "extraClassName": "dotted-top-white",
-            "theme": "purple",
+            "children": Array [
+              <div
+                className="mb-info-picto"
+              >
+                <Icon
+                  alt="erreur"
+                  className=""
+                  svg="ico-info-white"
+                />
+              </div>,
+              <p
+                className="mb-infos"
+              >
+                Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
+              </p>,
+            ],
+            "className": "mb-section",
           },
           "ref": null,
-          "rendered": null,
-          "type": [Function],
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <Icon
+                  alt="erreur"
+                  className=""
+                  svg="ico-info-white"
+                />,
+                "className": "mb-info-picto",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "alt": "erreur",
+                  "className": "",
+                  "svg": "ico-info-white",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
+                "className": "mb-infos",
+              },
+              "ref": null,
+              "rendered": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
+              "type": "p",
+            },
+          ],
+          "type": "section",
         },
+        false,
+        false,
       ],
-      "type": Symbol(react.fragment),
+      "type": "main",
     },
   ],
   Symbol(enzyme.__options__): Object {
@@ -589,12 +449,203 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "function",
+    "nodeType": "host",
     "props": Object {
       "children": Array [
-        <main
-          className="teaser-main "
+        false,
+        false,
+        <section
+          className="mb-section"
         >
+          <div
+            className="mb-info-picto"
+          >
+            <Icon
+              alt="erreur"
+              className=""
+              svg="ico-info-white"
+            />
+          </div>
+          <p
+            className="mb-infos"
+          >
+            Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
+          </p>
+        </section>,
+        false,
+        <section
+          className="mb-section"
+        >
+          <header
+            className="mb-header"
+          >
+            Terminées
+          </header>
+          <BookingsList
+            bookings={
+              Array [
+                Object {
+                  "id": "b1",
+                },
+                Object {
+                  "id": "b2",
+                },
+              ]
+            }
+            shouldDisplayToken={false}
+          />
+        </section>,
+      ],
+      "className": "teaser-main ",
+    },
+    "ref": null,
+    "rendered": Array [
+      false,
+      false,
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <div
+              className="mb-info-picto"
+            >
+              <Icon
+                alt="erreur"
+                className=""
+                svg="ico-info-white"
+              />
+            </div>,
+            <p
+              className="mb-infos"
+            >
+              Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
+            </p>,
+          ],
+          "className": "mb-section",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <Icon
+                alt="erreur"
+                className=""
+                svg="ico-info-white"
+              />,
+              "className": "mb-info-picto",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "alt": "erreur",
+                "className": "",
+                "svg": "ico-info-white",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
+              "className": "mb-infos",
+            },
+            "ref": null,
+            "rendered": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
+            "type": "p",
+          },
+        ],
+        "type": "section",
+      },
+      false,
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <header
+              className="mb-header"
+            >
+              Terminées
+            </header>,
+            <BookingsList
+              bookings={
+                Array [
+                  Object {
+                    "id": "b1",
+                  },
+                  Object {
+                    "id": "b2",
+                  },
+                ]
+              }
+              shouldDisplayToken={false}
+            />,
+          ],
+          "className": "mb-section",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Terminées",
+              "className": "mb-header",
+            },
+            "ref": null,
+            "rendered": "Terminées",
+            "type": "header",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "bookings": Array [
+                Object {
+                  "id": "b1",
+                },
+                Object {
+                  "id": "b2",
+                },
+              ],
+              "shouldDisplayToken": false,
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+        ],
+        "type": "section",
+      },
+    ],
+    "type": "main",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          false,
+          false,
           <section
             className="mb-section"
           >
@@ -612,7 +663,8 @@ ShallowWrapper {
             >
               Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
             </p>
-          </section>
+          </section>,
+          false,
           <section
             className="mb-section"
           >
@@ -634,486 +686,148 @@ ShallowWrapper {
               }
               shouldDisplayToken={false}
             />
-          </section>
-        </main>,
-        <withRouter(withRouter(RelativeFooter))
-          extraClassName="dotted-top-white"
-          theme="purple"
-        />,
-      ],
-    },
-    "ref": null,
-    "rendered": Array [
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": Array [
-            false,
-            false,
-            <section
-              className="mb-section"
-            >
-              <div
-                className="mb-info-picto"
-              >
-                <Icon
-                  alt="erreur"
-                  className=""
-                  svg="ico-info-white"
-                />
-              </div>
-              <p
-                className="mb-infos"
-              >
-                Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-              </p>
-            </section>,
-            false,
-            <section
-              className="mb-section"
-            >
-              <header
-                className="mb-header"
-              >
-                Terminées
-              </header>
-              <BookingsList
-                bookings={
-                  Array [
-                    Object {
-                      "id": "b1",
-                    },
-                    Object {
-                      "id": "b2",
-                    },
-                  ]
-                }
-                shouldDisplayToken={false}
-              />
-            </section>,
-          ],
-          "className": "teaser-main ",
-        },
-        "ref": null,
-        "rendered": Array [
-          false,
-          false,
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": Array [
-                <div
-                  className="mb-info-picto"
-                >
-                  <Icon
-                    alt="erreur"
-                    className=""
-                    svg="ico-info-white"
-                  />
-                </div>,
-                <p
-                  className="mb-infos"
-                >
-                  Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-                </p>,
-              ],
-              "className": "mb-section",
-            },
-            "ref": null,
-            "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": <Icon
-                    alt="erreur"
-                    className=""
-                    svg="ico-info-white"
-                  />,
-                  "className": "mb-info-picto",
-                },
-                "ref": null,
-                "rendered": Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "function",
-                  "props": Object {
-                    "alt": "erreur",
-                    "className": "",
-                    "svg": "ico-info-white",
-                  },
-                  "ref": null,
-                  "rendered": null,
-                  "type": [Function],
-                },
-                "type": "div",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
-                  "className": "mb-infos",
-                },
-                "ref": null,
-                "rendered": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
-                "type": "p",
-              },
-            ],
-            "type": "section",
-          },
-          false,
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": Array [
-                <header
-                  className="mb-header"
-                >
-                  Terminées
-                </header>,
-                <BookingsList
-                  bookings={
-                    Array [
-                      Object {
-                        "id": "b1",
-                      },
-                      Object {
-                        "id": "b2",
-                      },
-                    ]
-                  }
-                  shouldDisplayToken={false}
-                />,
-              ],
-              "className": "mb-section",
-            },
-            "ref": null,
-            "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "Terminées",
-                  "className": "mb-header",
-                },
-                "ref": null,
-                "rendered": "Terminées",
-                "type": "header",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "function",
-                "props": Object {
-                  "bookings": Array [
-                    Object {
-                      "id": "b1",
-                    },
-                    Object {
-                      "id": "b2",
-                    },
-                  ],
-                  "shouldDisplayToken": false,
-                },
-                "ref": null,
-                "rendered": null,
-                "type": [Function],
-              },
-            ],
-            "type": "section",
-          },
+          </section>,
         ],
-        "type": "main",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "function",
-        "props": Object {
-          "extraClassName": "dotted-top-white",
-          "theme": "purple",
-        },
-        "ref": null,
-        "rendered": null,
-        "type": [Function],
-      },
-    ],
-    "type": Symbol(react.fragment),
-  },
-  Symbol(enzyme.__nodes__): Array [
-    Object {
-      "instance": null,
-      "key": undefined,
-      "nodeType": "function",
-      "props": Object {
-        "children": Array [
-          <main
-            className="teaser-main "
-          >
-            <section
-              className="mb-section"
-            >
-              <div
-                className="mb-info-picto"
-              >
-                <Icon
-                  alt="erreur"
-                  className=""
-                  svg="ico-info-white"
-                />
-              </div>
-              <p
-                className="mb-infos"
-              >
-                Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-              </p>
-            </section>
-            <section
-              className="mb-section"
-            >
-              <header
-                className="mb-header"
-              >
-                Terminées
-              </header>
-              <BookingsList
-                bookings={
-                  Array [
-                    Object {
-                      "id": "b1",
-                    },
-                    Object {
-                      "id": "b2",
-                    },
-                  ]
-                }
-                shouldDisplayToken={false}
-              />
-            </section>
-          </main>,
-          <withRouter(withRouter(RelativeFooter))
-            extraClassName="dotted-top-white"
-            theme="purple"
-          />,
-        ],
+        "className": "teaser-main ",
       },
       "ref": null,
       "rendered": Array [
+        false,
+        false,
         Object {
           "instance": null,
           "key": undefined,
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              false,
-              false,
-              <section
-                className="mb-section"
+              <div
+                className="mb-info-picto"
               >
-                <div
-                  className="mb-info-picto"
-                >
-                  <Icon
-                    alt="erreur"
-                    className=""
-                    svg="ico-info-white"
-                  />
-                </div>
-                <p
-                  className="mb-infos"
-                >
-                  Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-                </p>
-              </section>,
-              false,
-              <section
-                className="mb-section"
-              >
-                <header
-                  className="mb-header"
-                >
-                  Terminées
-                </header>
-                <BookingsList
-                  bookings={
-                    Array [
-                      Object {
-                        "id": "b1",
-                      },
-                      Object {
-                        "id": "b2",
-                      },
-                    ]
-                  }
-                  shouldDisplayToken={false}
+                <Icon
+                  alt="erreur"
+                  className=""
+                  svg="ico-info-white"
                 />
-              </section>,
+              </div>,
+              <p
+                className="mb-infos"
+              >
+                Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
+              </p>,
             ],
-            "className": "teaser-main ",
+            "className": "mb-section",
           },
           "ref": null,
           "rendered": Array [
-            false,
-            false,
             Object {
               "instance": null,
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": Array [
-                  <div
-                    className="mb-info-picto"
-                  >
-                    <Icon
-                      alt="erreur"
-                      className=""
-                      svg="ico-info-white"
-                    />
-                  </div>,
-                  <p
-                    className="mb-infos"
-                  >
-                    Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-                  </p>,
-                ],
-                "className": "mb-section",
+                "children": <Icon
+                  alt="erreur"
+                  className=""
+                  svg="ico-info-white"
+                />,
+                "className": "mb-info-picto",
               },
               "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": <Icon
-                      alt="erreur"
-                      className=""
-                      svg="ico-info-white"
-                    />,
-                    "className": "mb-info-picto",
-                  },
-                  "ref": null,
-                  "rendered": Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "function",
-                    "props": Object {
-                      "alt": "erreur",
-                      "className": "",
-                      "svg": "ico-info-white",
-                    },
-                    "ref": null,
-                    "rendered": null,
-                    "type": [Function],
-                  },
-                  "type": "div",
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "alt": "erreur",
+                  "className": "",
+                  "svg": "ico-info-white",
                 },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
-                    "className": "mb-infos",
-                  },
-                  "ref": null,
-                  "rendered": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
-                  "type": "p",
-                },
-              ],
-              "type": "section",
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              "type": "div",
             },
-            false,
             Object {
               "instance": null,
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": Array [
-                  <header
-                    className="mb-header"
-                  >
-                    Terminées
-                  </header>,
-                  <BookingsList
-                    bookings={
-                      Array [
-                        Object {
-                          "id": "b1",
-                        },
-                        Object {
-                          "id": "b2",
-                        },
-                      ]
-                    }
-                    shouldDisplayToken={false}
-                  />,
-                ],
-                "className": "mb-section",
+                "children": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
+                "className": "mb-infos",
               },
               "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "Terminées",
-                    "className": "mb-header",
-                  },
-                  "ref": null,
-                  "rendered": "Terminées",
-                  "type": "header",
-                },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "function",
-                  "props": Object {
-                    "bookings": Array [
-                      Object {
-                        "id": "b1",
-                      },
-                      Object {
-                        "id": "b2",
-                      },
-                    ],
-                    "shouldDisplayToken": false,
-                  },
-                  "ref": null,
-                  "rendered": null,
-                  "type": [Function],
-                },
-              ],
-              "type": "section",
+              "rendered": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
+              "type": "p",
             },
           ],
-          "type": "main",
+          "type": "section",
         },
+        false,
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "function",
+          "nodeType": "host",
           "props": Object {
-            "extraClassName": "dotted-top-white",
-            "theme": "purple",
+            "children": Array [
+              <header
+                className="mb-header"
+              >
+                Terminées
+              </header>,
+              <BookingsList
+                bookings={
+                  Array [
+                    Object {
+                      "id": "b1",
+                    },
+                    Object {
+                      "id": "b2",
+                    },
+                  ]
+                }
+                shouldDisplayToken={false}
+              />,
+            ],
+            "className": "mb-section",
           },
           "ref": null,
-          "rendered": null,
-          "type": [Function],
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Terminées",
+                "className": "mb-header",
+              },
+              "ref": null,
+              "rendered": "Terminées",
+              "type": "header",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "bookings": Array [
+                  Object {
+                    "id": "b1",
+                  },
+                  Object {
+                    "id": "b2",
+                  },
+                ],
+                "shouldDisplayToken": false,
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+          ],
+          "type": "section",
         },
       ],
-      "type": Symbol(react.fragment),
+      "type": "main",
     },
   ],
   Symbol(enzyme.__options__): Object {
@@ -1172,12 +886,194 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "function",
+    "nodeType": "host",
     "props": Object {
       "children": Array [
-        <main
-          className="teaser-main "
+        false,
+        false,
+        <section
+          className="mb-section"
         >
+          <div
+            className="mb-info-picto"
+          >
+            <Icon
+              alt="erreur"
+              className=""
+              svg="ico-info-white"
+            />
+          </div>
+          <p
+            className="mb-infos"
+          >
+            Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
+          </p>
+        </section>,
+        <section
+          className="mb-section"
+        >
+          <header
+            className="mb-header"
+          >
+            À venir
+          </header>
+          <BookingsList
+            bookings={
+              Array [
+                Object {
+                  "id": "b1",
+                },
+              ]
+            }
+            shouldDisplayToken={true}
+          />
+        </section>,
+        false,
+      ],
+      "className": "teaser-main ",
+    },
+    "ref": null,
+    "rendered": Array [
+      false,
+      false,
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <div
+              className="mb-info-picto"
+            >
+              <Icon
+                alt="erreur"
+                className=""
+                svg="ico-info-white"
+              />
+            </div>,
+            <p
+              className="mb-infos"
+            >
+              Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
+            </p>,
+          ],
+          "className": "mb-section",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <Icon
+                alt="erreur"
+                className=""
+                svg="ico-info-white"
+              />,
+              "className": "mb-info-picto",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "alt": "erreur",
+                "className": "",
+                "svg": "ico-info-white",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
+              "className": "mb-infos",
+            },
+            "ref": null,
+            "rendered": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
+            "type": "p",
+          },
+        ],
+        "type": "section",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <header
+              className="mb-header"
+            >
+              À venir
+            </header>,
+            <BookingsList
+              bookings={
+                Array [
+                  Object {
+                    "id": "b1",
+                  },
+                ]
+              }
+              shouldDisplayToken={true}
+            />,
+          ],
+          "className": "mb-section",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "À venir",
+              "className": "mb-header",
+            },
+            "ref": null,
+            "rendered": "À venir",
+            "type": "header",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "bookings": Array [
+                Object {
+                  "id": "b1",
+                },
+              ],
+              "shouldDisplayToken": true,
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+        ],
+        "type": "section",
+      },
+      false,
+    ],
+    "type": "main",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          false,
+          false,
           <section
             className="mb-section"
           >
@@ -1195,7 +1091,7 @@ ShallowWrapper {
             >
               Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
             </p>
-          </section>
+          </section>,
           <section
             className="mb-section"
           >
@@ -1214,465 +1110,143 @@ ShallowWrapper {
               }
               shouldDisplayToken={true}
             />
-          </section>
-        </main>,
-        <withRouter(withRouter(RelativeFooter))
-          extraClassName="dotted-top-white"
-          theme="purple"
-        />,
-      ],
-    },
-    "ref": null,
-    "rendered": Array [
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": Array [
-            false,
-            false,
-            <section
-              className="mb-section"
-            >
-              <div
-                className="mb-info-picto"
-              >
-                <Icon
-                  alt="erreur"
-                  className=""
-                  svg="ico-info-white"
-                />
-              </div>
-              <p
-                className="mb-infos"
-              >
-                Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-              </p>
-            </section>,
-            <section
-              className="mb-section"
-            >
-              <header
-                className="mb-header"
-              >
-                À venir
-              </header>
-              <BookingsList
-                bookings={
-                  Array [
-                    Object {
-                      "id": "b1",
-                    },
-                  ]
-                }
-                shouldDisplayToken={true}
-              />
-            </section>,
-            false,
-          ],
-          "className": "teaser-main ",
-        },
-        "ref": null,
-        "rendered": Array [
-          false,
-          false,
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": Array [
-                <div
-                  className="mb-info-picto"
-                >
-                  <Icon
-                    alt="erreur"
-                    className=""
-                    svg="ico-info-white"
-                  />
-                </div>,
-                <p
-                  className="mb-infos"
-                >
-                  Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-                </p>,
-              ],
-              "className": "mb-section",
-            },
-            "ref": null,
-            "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": <Icon
-                    alt="erreur"
-                    className=""
-                    svg="ico-info-white"
-                  />,
-                  "className": "mb-info-picto",
-                },
-                "ref": null,
-                "rendered": Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "function",
-                  "props": Object {
-                    "alt": "erreur",
-                    "className": "",
-                    "svg": "ico-info-white",
-                  },
-                  "ref": null,
-                  "rendered": null,
-                  "type": [Function],
-                },
-                "type": "div",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
-                  "className": "mb-infos",
-                },
-                "ref": null,
-                "rendered": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
-                "type": "p",
-              },
-            ],
-            "type": "section",
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": Array [
-                <header
-                  className="mb-header"
-                >
-                  À venir
-                </header>,
-                <BookingsList
-                  bookings={
-                    Array [
-                      Object {
-                        "id": "b1",
-                      },
-                    ]
-                  }
-                  shouldDisplayToken={true}
-                />,
-              ],
-              "className": "mb-section",
-            },
-            "ref": null,
-            "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "À venir",
-                  "className": "mb-header",
-                },
-                "ref": null,
-                "rendered": "À venir",
-                "type": "header",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "function",
-                "props": Object {
-                  "bookings": Array [
-                    Object {
-                      "id": "b1",
-                    },
-                  ],
-                  "shouldDisplayToken": true,
-                },
-                "ref": null,
-                "rendered": null,
-                "type": [Function],
-              },
-            ],
-            "type": "section",
-          },
+          </section>,
           false,
         ],
-        "type": "main",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "function",
-        "props": Object {
-          "extraClassName": "dotted-top-white",
-          "theme": "purple",
-        },
-        "ref": null,
-        "rendered": null,
-        "type": [Function],
-      },
-    ],
-    "type": Symbol(react.fragment),
-  },
-  Symbol(enzyme.__nodes__): Array [
-    Object {
-      "instance": null,
-      "key": undefined,
-      "nodeType": "function",
-      "props": Object {
-        "children": Array [
-          <main
-            className="teaser-main "
-          >
-            <section
-              className="mb-section"
-            >
-              <div
-                className="mb-info-picto"
-              >
-                <Icon
-                  alt="erreur"
-                  className=""
-                  svg="ico-info-white"
-                />
-              </div>
-              <p
-                className="mb-infos"
-              >
-                Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-              </p>
-            </section>
-            <section
-              className="mb-section"
-            >
-              <header
-                className="mb-header"
-              >
-                À venir
-              </header>
-              <BookingsList
-                bookings={
-                  Array [
-                    Object {
-                      "id": "b1",
-                    },
-                  ]
-                }
-                shouldDisplayToken={true}
-              />
-            </section>
-          </main>,
-          <withRouter(withRouter(RelativeFooter))
-            extraClassName="dotted-top-white"
-            theme="purple"
-          />,
-        ],
+        "className": "teaser-main ",
       },
       "ref": null,
       "rendered": Array [
+        false,
+        false,
         Object {
           "instance": null,
           "key": undefined,
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              false,
-              false,
-              <section
-                className="mb-section"
+              <div
+                className="mb-info-picto"
               >
-                <div
-                  className="mb-info-picto"
-                >
-                  <Icon
-                    alt="erreur"
-                    className=""
-                    svg="ico-info-white"
-                  />
-                </div>
-                <p
-                  className="mb-infos"
-                >
-                  Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-                </p>
-              </section>,
-              <section
-                className="mb-section"
-              >
-                <header
-                  className="mb-header"
-                >
-                  À venir
-                </header>
-                <BookingsList
-                  bookings={
-                    Array [
-                      Object {
-                        "id": "b1",
-                      },
-                    ]
-                  }
-                  shouldDisplayToken={true}
+                <Icon
+                  alt="erreur"
+                  className=""
+                  svg="ico-info-white"
                 />
-              </section>,
-              false,
+              </div>,
+              <p
+                className="mb-infos"
+              >
+                Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
+              </p>,
             ],
-            "className": "teaser-main ",
+            "className": "mb-section",
           },
           "ref": null,
           "rendered": Array [
-            false,
-            false,
             Object {
               "instance": null,
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": Array [
-                  <div
-                    className="mb-info-picto"
-                  >
-                    <Icon
-                      alt="erreur"
-                      className=""
-                      svg="ico-info-white"
-                    />
-                  </div>,
-                  <p
-                    className="mb-infos"
-                  >
-                    Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-                  </p>,
-                ],
-                "className": "mb-section",
+                "children": <Icon
+                  alt="erreur"
+                  className=""
+                  svg="ico-info-white"
+                />,
+                "className": "mb-info-picto",
               },
               "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": <Icon
-                      alt="erreur"
-                      className=""
-                      svg="ico-info-white"
-                    />,
-                    "className": "mb-info-picto",
-                  },
-                  "ref": null,
-                  "rendered": Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "function",
-                    "props": Object {
-                      "alt": "erreur",
-                      "className": "",
-                      "svg": "ico-info-white",
-                    },
-                    "ref": null,
-                    "rendered": null,
-                    "type": [Function],
-                  },
-                  "type": "div",
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "alt": "erreur",
+                  "className": "",
+                  "svg": "ico-info-white",
                 },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
-                    "className": "mb-infos",
-                  },
-                  "ref": null,
-                  "rendered": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
-                  "type": "p",
-                },
-              ],
-              "type": "section",
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              "type": "div",
             },
             Object {
               "instance": null,
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": Array [
-                  <header
-                    className="mb-header"
-                  >
-                    À venir
-                  </header>,
-                  <BookingsList
-                    bookings={
-                      Array [
-                        Object {
-                          "id": "b1",
-                        },
-                      ]
-                    }
-                    shouldDisplayToken={true}
-                  />,
-                ],
-                "className": "mb-section",
+                "children": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
+                "className": "mb-infos",
               },
               "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "À venir",
-                    "className": "mb-header",
-                  },
-                  "ref": null,
-                  "rendered": "À venir",
-                  "type": "header",
-                },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "function",
-                  "props": Object {
-                    "bookings": Array [
-                      Object {
-                        "id": "b1",
-                      },
-                    ],
-                    "shouldDisplayToken": true,
-                  },
-                  "ref": null,
-                  "rendered": null,
-                  "type": [Function],
-                },
-              ],
-              "type": "section",
+              "rendered": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
+              "type": "p",
             },
-            false,
           ],
-          "type": "main",
+          "type": "section",
         },
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "function",
+          "nodeType": "host",
           "props": Object {
-            "extraClassName": "dotted-top-white",
-            "theme": "purple",
+            "children": Array [
+              <header
+                className="mb-header"
+              >
+                À venir
+              </header>,
+              <BookingsList
+                bookings={
+                  Array [
+                    Object {
+                      "id": "b1",
+                    },
+                  ]
+                }
+                shouldDisplayToken={true}
+              />,
+            ],
+            "className": "mb-section",
           },
           "ref": null,
-          "rendered": null,
-          "type": [Function],
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "À venir",
+                "className": "mb-header",
+              },
+              "ref": null,
+              "rendered": "À venir",
+              "type": "header",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "bookings": Array [
+                  Object {
+                    "id": "b1",
+                  },
+                ],
+                "shouldDisplayToken": true,
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+          ],
+          "type": "section",
         },
+        false,
       ],
-      "type": Symbol(react.fragment),
+      "type": "main",
     },
   ],
   Symbol(enzyme.__options__): Object {
@@ -1725,147 +1299,75 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "function",
+    "nodeType": "host",
     "props": Object {
       "children": Array [
-        <main
-          className="teaser-main teaser-no-teasers"
-        >
-          <NoItems
-            sentence="Dès que vous aurez réservé une offre,"
-          />
-        </main>,
-        <withRouter(withRouter(RelativeFooter))
-          extraClassName="dotted-top-white"
-          theme="purple"
+        <NoItems
+          sentence="Dès que vous aurez réservé une offre,"
         />,
+        false,
+        false,
+        false,
+        false,
       ],
+      "className": "teaser-main teaser-no-teasers",
     },
     "ref": null,
     "rendered": Array [
       Object {
         "instance": null,
         "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": Array [
-            <NoItems
-              sentence="Dès que vous aurez réservé une offre,"
-            />,
-            false,
-            false,
-            false,
-            false,
-          ],
-          "className": "teaser-main teaser-no-teasers",
-        },
-        "ref": null,
-        "rendered": Array [
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "function",
-            "props": Object {
-              "sentence": "Dès que vous aurez réservé une offre,",
-            },
-            "ref": null,
-            "rendered": null,
-            "type": [Function],
-          },
-          false,
-          false,
-          false,
-          false,
-        ],
-        "type": "main",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "extraClassName": "dotted-top-white",
-          "theme": "purple",
+          "sentence": "Dès que vous aurez réservé une offre,",
         },
         "ref": null,
         "rendered": null,
         "type": [Function],
       },
+      false,
+      false,
+      false,
+      false,
     ],
-    "type": Symbol(react.fragment),
+    "type": "main",
   },
   Symbol(enzyme.__nodes__): Array [
     Object {
       "instance": null,
       "key": undefined,
-      "nodeType": "function",
+      "nodeType": "host",
       "props": Object {
         "children": Array [
-          <main
-            className="teaser-main teaser-no-teasers"
-          >
-            <NoItems
-              sentence="Dès que vous aurez réservé une offre,"
-            />
-          </main>,
-          <withRouter(withRouter(RelativeFooter))
-            extraClassName="dotted-top-white"
-            theme="purple"
+          <NoItems
+            sentence="Dès que vous aurez réservé une offre,"
           />,
+          false,
+          false,
+          false,
+          false,
         ],
+        "className": "teaser-main teaser-no-teasers",
       },
       "ref": null,
       "rendered": Array [
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "host",
-          "props": Object {
-            "children": Array [
-              <NoItems
-                sentence="Dès que vous aurez réservé une offre,"
-              />,
-              false,
-              false,
-              false,
-              false,
-            ],
-            "className": "teaser-main teaser-no-teasers",
-          },
-          "ref": null,
-          "rendered": Array [
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "function",
-              "props": Object {
-                "sentence": "Dès que vous aurez réservé une offre,",
-              },
-              "ref": null,
-              "rendered": null,
-              "type": [Function],
-            },
-            false,
-            false,
-            false,
-            false,
-          ],
-          "type": "main",
-        },
-        Object {
-          "instance": null,
-          "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "extraClassName": "dotted-top-white",
-            "theme": "purple",
+            "sentence": "Dès que vous aurez réservé une offre,",
           },
           "ref": null,
           "rendered": null,
           "type": [Function],
         },
+        false,
+        false,
+        false,
+        false,
       ],
-      "type": Symbol(react.fragment),
+      "type": "main",
     },
   ],
   Symbol(enzyme.__options__): Object {
@@ -1924,12 +1426,193 @@ ShallowWrapper {
   Symbol(enzyme.__node__): Object {
     "instance": null,
     "key": undefined,
-    "nodeType": "function",
+    "nodeType": "host",
     "props": Object {
       "children": Array [
-        <main
-          className="teaser-main "
+        false,
+        <section
+          className="mb-section"
         >
+          <header
+            className="mb-header"
+          >
+            Cette semaine
+          </header>
+          <BookingsList
+            bookings={
+              Array [
+                Object {
+                  "id": "b1",
+                },
+              ]
+            }
+            shouldDisplayToken={true}
+          />
+        </section>,
+        <section
+          className="mb-section"
+        >
+          <div
+            className="mb-info-picto"
+          >
+            <Icon
+              alt="erreur"
+              className=""
+              svg="ico-info-white"
+            />
+          </div>
+          <p
+            className="mb-infos"
+          >
+            Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
+          </p>
+        </section>,
+        false,
+        false,
+      ],
+      "className": "teaser-main ",
+    },
+    "ref": null,
+    "rendered": Array [
+      false,
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <header
+              className="mb-header"
+            >
+              Cette semaine
+            </header>,
+            <BookingsList
+              bookings={
+                Array [
+                  Object {
+                    "id": "b1",
+                  },
+                ]
+              }
+              shouldDisplayToken={true}
+            />,
+          ],
+          "className": "mb-section",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Cette semaine",
+              "className": "mb-header",
+            },
+            "ref": null,
+            "rendered": "Cette semaine",
+            "type": "header",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "function",
+            "props": Object {
+              "bookings": Array [
+                Object {
+                  "id": "b1",
+                },
+              ],
+              "shouldDisplayToken": true,
+            },
+            "ref": null,
+            "rendered": null,
+            "type": [Function],
+          },
+        ],
+        "type": "section",
+      },
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": Array [
+            <div
+              className="mb-info-picto"
+            >
+              <Icon
+                alt="erreur"
+                className=""
+                svg="ico-info-white"
+              />
+            </div>,
+            <p
+              className="mb-infos"
+            >
+              Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
+            </p>,
+          ],
+          "className": "mb-section",
+        },
+        "ref": null,
+        "rendered": Array [
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": <Icon
+                alt="erreur"
+                className=""
+                svg="ico-info-white"
+              />,
+              "className": "mb-info-picto",
+            },
+            "ref": null,
+            "rendered": Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "function",
+              "props": Object {
+                "alt": "erreur",
+                "className": "",
+                "svg": "ico-info-white",
+              },
+              "ref": null,
+              "rendered": null,
+              "type": [Function],
+            },
+            "type": "div",
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
+              "className": "mb-infos",
+            },
+            "ref": null,
+            "rendered": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
+            "type": "p",
+          },
+        ],
+        "type": "section",
+      },
+      false,
+      false,
+    ],
+    "type": "main",
+  },
+  Symbol(enzyme.__nodes__): Array [
+    Object {
+      "instance": null,
+      "key": undefined,
+      "nodeType": "host",
+      "props": Object {
+        "children": Array [
+          false,
           <section
             className="mb-section"
           >
@@ -1948,7 +1631,7 @@ ShallowWrapper {
               }
               shouldDisplayToken={true}
             />
-          </section>
+          </section>,
           <section
             className="mb-section"
           >
@@ -1966,465 +1649,144 @@ ShallowWrapper {
             >
               Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
             </p>
-          </section>
-        </main>,
-        <withRouter(withRouter(RelativeFooter))
-          extraClassName="dotted-top-white"
-          theme="purple"
-        />,
-      ],
-    },
-    "ref": null,
-    "rendered": Array [
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "host",
-        "props": Object {
-          "children": Array [
-            false,
-            <section
-              className="mb-section"
-            >
-              <header
-                className="mb-header"
-              >
-                Cette semaine
-              </header>
-              <BookingsList
-                bookings={
-                  Array [
-                    Object {
-                      "id": "b1",
-                    },
-                  ]
-                }
-                shouldDisplayToken={true}
-              />
-            </section>,
-            <section
-              className="mb-section"
-            >
-              <div
-                className="mb-info-picto"
-              >
-                <Icon
-                  alt="erreur"
-                  className=""
-                  svg="ico-info-white"
-                />
-              </div>
-              <p
-                className="mb-infos"
-              >
-                Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-              </p>
-            </section>,
-            false,
-            false,
-          ],
-          "className": "teaser-main ",
-        },
-        "ref": null,
-        "rendered": Array [
-          false,
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": Array [
-                <header
-                  className="mb-header"
-                >
-                  Cette semaine
-                </header>,
-                <BookingsList
-                  bookings={
-                    Array [
-                      Object {
-                        "id": "b1",
-                      },
-                    ]
-                  }
-                  shouldDisplayToken={true}
-                />,
-              ],
-              "className": "mb-section",
-            },
-            "ref": null,
-            "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "Cette semaine",
-                  "className": "mb-header",
-                },
-                "ref": null,
-                "rendered": "Cette semaine",
-                "type": "header",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "function",
-                "props": Object {
-                  "bookings": Array [
-                    Object {
-                      "id": "b1",
-                    },
-                  ],
-                  "shouldDisplayToken": true,
-                },
-                "ref": null,
-                "rendered": null,
-                "type": [Function],
-              },
-            ],
-            "type": "section",
-          },
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": Array [
-                <div
-                  className="mb-info-picto"
-                >
-                  <Icon
-                    alt="erreur"
-                    className=""
-                    svg="ico-info-white"
-                  />
-                </div>,
-                <p
-                  className="mb-infos"
-                >
-                  Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-                </p>,
-              ],
-              "className": "mb-section",
-            },
-            "ref": null,
-            "rendered": Array [
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": <Icon
-                    alt="erreur"
-                    className=""
-                    svg="ico-info-white"
-                  />,
-                  "className": "mb-info-picto",
-                },
-                "ref": null,
-                "rendered": Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "function",
-                  "props": Object {
-                    "alt": "erreur",
-                    "className": "",
-                    "svg": "ico-info-white",
-                  },
-                  "ref": null,
-                  "rendered": null,
-                  "type": [Function],
-                },
-                "type": "div",
-              },
-              Object {
-                "instance": null,
-                "key": undefined,
-                "nodeType": "host",
-                "props": Object {
-                  "children": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
-                  "className": "mb-infos",
-                },
-                "ref": null,
-                "rendered": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
-                "type": "p",
-              },
-            ],
-            "type": "section",
-          },
+          </section>,
           false,
           false,
         ],
-        "type": "main",
-      },
-      Object {
-        "instance": null,
-        "key": undefined,
-        "nodeType": "function",
-        "props": Object {
-          "extraClassName": "dotted-top-white",
-          "theme": "purple",
-        },
-        "ref": null,
-        "rendered": null,
-        "type": [Function],
-      },
-    ],
-    "type": Symbol(react.fragment),
-  },
-  Symbol(enzyme.__nodes__): Array [
-    Object {
-      "instance": null,
-      "key": undefined,
-      "nodeType": "function",
-      "props": Object {
-        "children": Array [
-          <main
-            className="teaser-main "
-          >
-            <section
-              className="mb-section"
-            >
-              <header
-                className="mb-header"
-              >
-                Cette semaine
-              </header>
-              <BookingsList
-                bookings={
-                  Array [
-                    Object {
-                      "id": "b1",
-                    },
-                  ]
-                }
-                shouldDisplayToken={true}
-              />
-            </section>
-            <section
-              className="mb-section"
-            >
-              <div
-                className="mb-info-picto"
-              >
-                <Icon
-                  alt="erreur"
-                  className=""
-                  svg="ico-info-white"
-                />
-              </div>
-              <p
-                className="mb-infos"
-              >
-                Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-              </p>
-            </section>
-          </main>,
-          <withRouter(withRouter(RelativeFooter))
-            extraClassName="dotted-top-white"
-            theme="purple"
-          />,
-        ],
+        "className": "teaser-main ",
       },
       "ref": null,
       "rendered": Array [
+        false,
         Object {
           "instance": null,
           "key": undefined,
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              false,
-              <section
-                className="mb-section"
+              <header
+                className="mb-header"
               >
-                <header
-                  className="mb-header"
-                >
-                  Cette semaine
-                </header>
-                <BookingsList
-                  bookings={
-                    Array [
-                      Object {
-                        "id": "b1",
-                      },
-                    ]
-                  }
-                  shouldDisplayToken={true}
-                />
-              </section>,
-              <section
-                className="mb-section"
-              >
-                <div
-                  className="mb-info-picto"
-                >
-                  <Icon
-                    alt="erreur"
-                    className=""
-                    svg="ico-info-white"
-                  />
-                </div>
-                <p
-                  className="mb-infos"
-                >
-                  Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-                </p>
-              </section>,
-              false,
-              false,
+                Cette semaine
+              </header>,
+              <BookingsList
+                bookings={
+                  Array [
+                    Object {
+                      "id": "b1",
+                    },
+                  ]
+                }
+                shouldDisplayToken={true}
+              />,
             ],
-            "className": "teaser-main ",
+            "className": "mb-section",
           },
           "ref": null,
           "rendered": Array [
-            false,
             Object {
               "instance": null,
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": Array [
-                  <header
-                    className="mb-header"
-                  >
-                    Cette semaine
-                  </header>,
-                  <BookingsList
-                    bookings={
-                      Array [
-                        Object {
-                          "id": "b1",
-                        },
-                      ]
-                    }
-                    shouldDisplayToken={true}
-                  />,
-                ],
-                "className": "mb-section",
+                "children": "Cette semaine",
+                "className": "mb-header",
               },
               "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "Cette semaine",
-                    "className": "mb-header",
-                  },
-                  "ref": null,
-                  "rendered": "Cette semaine",
-                  "type": "header",
-                },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "function",
-                  "props": Object {
-                    "bookings": Array [
-                      Object {
-                        "id": "b1",
-                      },
-                    ],
-                    "shouldDisplayToken": true,
-                  },
-                  "ref": null,
-                  "rendered": null,
-                  "type": [Function],
-                },
-              ],
-              "type": "section",
+              "rendered": "Cette semaine",
+              "type": "header",
             },
             Object {
               "instance": null,
               "key": undefined,
-              "nodeType": "host",
+              "nodeType": "function",
               "props": Object {
-                "children": Array [
-                  <div
-                    className="mb-info-picto"
-                  >
-                    <Icon
-                      alt="erreur"
-                      className=""
-                      svg="ico-info-white"
-                    />
-                  </div>,
-                  <p
-                    className="mb-infos"
-                  >
-                    Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
-                  </p>,
+                "bookings": Array [
+                  Object {
+                    "id": "b1",
+                  },
                 ],
-                "className": "mb-section",
+                "shouldDisplayToken": true,
               },
               "ref": null,
-              "rendered": Array [
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": <Icon
-                      alt="erreur"
-                      className=""
-                      svg="ico-info-white"
-                    />,
-                    "className": "mb-info-picto",
-                  },
-                  "ref": null,
-                  "rendered": Object {
-                    "instance": null,
-                    "key": undefined,
-                    "nodeType": "function",
-                    "props": Object {
-                      "alt": "erreur",
-                      "className": "",
-                      "svg": "ico-info-white",
-                    },
-                    "ref": null,
-                    "rendered": null,
-                    "type": [Function],
-                  },
-                  "type": "div",
-                },
-                Object {
-                  "instance": null,
-                  "key": undefined,
-                  "nodeType": "host",
-                  "props": Object {
-                    "children": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
-                    "className": "mb-infos",
-                  },
-                  "ref": null,
-                  "rendered": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
-                  "type": "p",
-                },
-              ],
-              "type": "section",
+              "rendered": null,
+              "type": [Function],
             },
-            false,
-            false,
           ],
-          "type": "main",
+          "type": "section",
         },
         Object {
           "instance": null,
           "key": undefined,
-          "nodeType": "function",
+          "nodeType": "host",
           "props": Object {
-            "extraClassName": "dotted-top-white",
-            "theme": "purple",
+            "children": Array [
+              <div
+                className="mb-info-picto"
+              >
+                <Icon
+                  alt="erreur"
+                  className=""
+                  svg="ico-info-white"
+                />
+              </div>,
+              <p
+                className="mb-infos"
+              >
+                Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.
+              </p>,
+            ],
+            "className": "mb-section",
           },
           "ref": null,
-          "rendered": null,
-          "type": [Function],
+          "rendered": Array [
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": <Icon
+                  alt="erreur"
+                  className=""
+                  svg="ico-info-white"
+                />,
+                "className": "mb-info-picto",
+              },
+              "ref": null,
+              "rendered": Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "function",
+                "props": Object {
+                  "alt": "erreur",
+                  "className": "",
+                  "svg": "ico-info-white",
+                },
+                "ref": null,
+                "rendered": null,
+                "type": [Function],
+              },
+              "type": "div",
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
+                "className": "mb-infos",
+              },
+              "ref": null,
+              "rendered": "Le code de réservation à 6 caractères est votre preuve d’achat. Ne communiquez ce code qu’au moment du retrait de votre commande.",
+              "type": "p",
+            },
+          ],
+          "type": "section",
         },
+        false,
+        false,
       ],
-      "type": Symbol(react.fragment),
+      "type": "main",
     },
   ],
   Symbol(enzyme.__options__): Object {

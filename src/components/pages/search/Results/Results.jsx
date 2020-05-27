@@ -8,7 +8,6 @@ import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import { DEFAULT_RADIUS_IN_KILOMETERS } from '../../../../vendor/algolia/filters'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import Icon from '../../../layout/Icon/Icon'
-import RelativeFooterContainer from '../../../layout/RelativeFooter/RelativeFooterContainer'
 import Spinner from '../../../layout/Spinner/Spinner'
 import { SORT_CRITERIA } from '../Criteria/criteriaEnums'
 import CriteriaSort from '../CriteriaSort/CriteriaSort'
@@ -457,7 +456,7 @@ class Results extends PureComponent {
         <Switch>
           <Route
             exact
-            path={`${SEARCH_RESULTS_URI}(/menu)?`}
+            path={SEARCH_RESULTS_URI}
           >
             <form
               action=""
@@ -554,13 +553,9 @@ class Results extends PureComponent {
                 </button>
               </div>
             )}
-            <RelativeFooterContainer
-              extraClassName="dotted-top-red"
-              theme="white"
-            />
           </Route>
           <Route
-            path={`${SEARCH_RESULTS_URI}/:details(details|transition)/:offerId([A-Z0-9]+)(/menu)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
+            path={`${SEARCH_RESULTS_URI}/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
           >
             <HeaderContainer
               backActionOnClick={this.retrieveScrollPosition}

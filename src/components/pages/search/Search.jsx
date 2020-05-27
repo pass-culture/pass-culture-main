@@ -23,9 +23,9 @@ class Search extends PureComponent {
         searchAround: {
           everywhere: true,
           place: false,
-          user: false
+          user: false,
         },
-        userGeolocation: props.geolocation
+        userGeolocation: props.geolocation,
       },
       sortCriterion: SORT_CRITERIA.RELEVANCE,
     }
@@ -56,7 +56,9 @@ class Search extends PureComponent {
   }
 
   handleGeolocationCriterionSelection = criterionKey => {
-    const { geolocationCriterion: { userGeolocation } } = this.state
+    const {
+      geolocationCriterion: { userGeolocation },
+    } = this.state
     const label = GEOLOCATION_CRITERIA[criterionKey].label
 
     this.setState({
@@ -66,9 +68,9 @@ class Search extends PureComponent {
         searchAround: {
           place: false,
           everywhere: label === GEOLOCATION_CRITERIA.EVERYWHERE.label,
-          user: label === GEOLOCATION_CRITERIA.AROUND_ME.label
+          user: label === GEOLOCATION_CRITERIA.AROUND_ME.label,
         },
-        userGeolocation
+        userGeolocation,
       },
     })
     const { redirectToSearchMainPage } = this.props
@@ -76,21 +78,21 @@ class Search extends PureComponent {
   }
 
   handleOnPlaceSelection = place => {
-    this.setState((prevState) => {
+    this.setState(prevState => {
       return {
         geolocationCriterion: {
           params: {
             label: buildPlaceLabel(place),
             icon: 'ico-there',
-            requiresGeolocation: false
+            requiresGeolocation: false,
           },
           place: place,
           searchAround: {
             everywhere: false,
             place: true,
-            user: false
+            user: false,
           },
-          userGeolocation: prevState.geolocationCriterion.userGeolocation
+          userGeolocation: prevState.geolocationCriterion.userGeolocation,
         },
       }
     })
@@ -121,7 +123,7 @@ class Search extends PureComponent {
       <Switch>
         <Route
           exact
-          path="/recherche(/menu)?"
+          path="/recherche"
         >
           <Home
             categoryCriterion={categoryCriterion}

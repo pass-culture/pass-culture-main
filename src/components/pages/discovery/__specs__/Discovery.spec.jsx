@@ -4,7 +4,6 @@ import { Route } from 'react-router'
 
 import Discovery from '../Discovery'
 import LoaderContainer from '../../../layout/Loader/LoaderContainer'
-import AbsoluteFooterContainer from '../../../layout/AbsoluteFooter/AbsoluteFooterContainer'
 
 describe('src | components | pages | discovery | Discovery', () => {
   let props
@@ -96,7 +95,6 @@ describe('src | components | pages | discovery | Discovery', () => {
 
       // then
       expect(wrapper.find(Route)).toHaveLength(2)
-      expect(wrapper.find(AbsoluteFooterContainer)).toHaveLength(1)
       expect(wrapper.find(LoaderContainer)).toHaveLength(1)
     })
 
@@ -113,7 +111,6 @@ describe('src | components | pages | discovery | Discovery', () => {
 
       // then
       expect(wrapper.find(Route)).toHaveLength(0)
-      expect(wrapper.find(AbsoluteFooterContainer)).toHaveLength(0)
       expect(wrapper.find(LoaderContainer)).toHaveLength(1)
     })
 
@@ -130,7 +127,6 @@ describe('src | components | pages | discovery | Discovery', () => {
 
       // then
       expect(wrapper.find(Route)).toHaveLength(0)
-      expect(wrapper.find(AbsoluteFooterContainer)).toHaveLength(0)
       expect(wrapper.find(LoaderContainer)).toHaveLength(1)
     })
 
@@ -147,7 +143,6 @@ describe('src | components | pages | discovery | Discovery', () => {
 
       // then
       expect(wrapper.find(Route)).toHaveLength(0)
-      expect(wrapper.find(AbsoluteFooterContainer)).toHaveLength(0)
       expect(wrapper.find(LoaderContainer)).toHaveLength(1)
     })
   })

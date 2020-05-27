@@ -2,6 +2,7 @@ import getBrowserRoutes from '../getBrowserRoutes'
 
 describe('filterRoutes', () => {
   it('filters routes pour react-router', () => {
+    // Given
     const routes = [
       { path: '/' },
       { path: '/toto' },
@@ -10,14 +11,17 @@ describe('filterRoutes', () => {
       { exact: false, path: '/toto/:vars?/:vars2?/:vars3?', sensitive: false },
       { href: 'maitlo:mail.cool' },
     ]
+
+    // When
     const browserRoutes = getBrowserRoutes(routes)
-    const expected = [
-      { exact: true, path: '//:menu(menu)?', sensitive: true },
-      { exact: true, path: '/toto/:menu(menu)?', sensitive: true },
-      { exact: true, path: '/toto/:vars?/:menu(menu)?', sensitive: true },
-      { exact: true, path: '/toto/:vars?/vars2?/:menu(menu)?', sensitive: true },
-      { exact: false, path: '/toto/:vars?/:vars2?/:vars3?/:menu(menu)?', sensitive: false },
-    ]
-    expect(browserRoutes).toStrictEqual(expected)
+
+    // Then
+    expect(browserRoutes).toStrictEqual([
+      { exact: true, path: '/', sensitive: true },
+      { exact: true, path: '/toto', sensitive: true },
+      { exact: true, path: '/toto/:vars?', sensitive: true },
+      { exact: true, path: '/toto/:vars?/vars2?', sensitive: true },
+      { exact: false, path: '/toto/:vars?/:vars2?/:vars3?', sensitive: false },
+    ])
   })
 })

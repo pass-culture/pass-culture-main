@@ -10,7 +10,6 @@ import state from '../../../../../mocks/state'
 import { isGeolocationEnabled } from '../../../../../utils/geolocation'
 import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
-import RelativeFooterContainer from '../../../../layout/RelativeFooter/RelativeFooterContainer'
 import Spinner from '../../../../layout/Spinner/Spinner'
 import { SORT_CRITERIA } from '../../Criteria/criteriaEnums'
 import CriteriaSort from '../../CriteriaSort/CriteriaSort'
@@ -213,17 +212,6 @@ describe('components | Results', () => {
 
       // then
       expect(numberOfActiveFilters.text()).toStrictEqual('3')
-    })
-
-    it('should display a footer', () => {
-      // when
-      const wrapper = shallow(<Results {...props} />)
-
-      // then
-      const footer = wrapper.find(RelativeFooterContainer)
-      expect(footer).toHaveLength(1)
-      expect(footer.prop('extraClassName')).toBe('dotted-top-red')
-      expect(footer.prop('theme')).toBe('white')
     })
 
     it('should display spinner while loading', () => {
