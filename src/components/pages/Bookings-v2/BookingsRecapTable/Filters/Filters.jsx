@@ -85,7 +85,7 @@ class Filters extends Component {
         <div className="bookings-recap-filters">
           <label
             className="select-filters"
-            htmlFor="text-filter-input"
+            htmlFor="select-filter-date"
           >
             {"Date de l'évènement"}
           </label>
@@ -93,6 +93,7 @@ class Filters extends Component {
             className="offerDate"
             customInput={<InputWithCalendar />}
             dropdownMode="select"
+            id="select-filter-date"
             onChange={this.handleOfferDateChange}
             placeholderText="JJ/MM/AAAA"
             selected={startDate}

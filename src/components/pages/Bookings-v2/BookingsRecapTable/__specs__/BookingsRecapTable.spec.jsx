@@ -20,23 +20,7 @@ jest.mock('../NB_BOOKINGS_PER_PAGE', () => ({
 }))
 jest.mock('lodash.debounce', () => jest.fn(callback => callback))
 
-jest.mock('../utils/filterBookingsRecap', () => {
-  return jest.fn().mockImplementation(() => [
-    {
-      stock: {
-        offer_name: 'Avez-vous déjà vu',
-      },
-      beneficiary: {
-        lastname: 'Klepi',
-        firstname: 'Sonia',
-        email: 'sonia.klepi@example.com',
-      },
-      booking_date: '2020-04-03T12:00:00Z',
-      booking_token: 'ZEHBGD',
-      booking_status: 'Validé',
-    },
-  ])
-})
+jest.mock('../utils/filterBookingsRecap', () => jest.fn())
 
 describe('components | BookingsRecapTable', () => {
   it('should render a TableContainer component with columns and data props', () => {
@@ -96,20 +80,22 @@ describe('components | BookingsRecapTable', () => {
   it('should render the expected table headers', () => {
     // Given
     const props = {
-      bookingsRecap: [{
-        stock: {
-          offer_name: 'Avez-vous déjà vu',
+      bookingsRecap: [
+        {
+          stock: {
+            offer_name: 'Avez-vous déjà vu',
+          },
+          beneficiary: {
+            lastname: 'Klepi',
+            firstname: 'Sonia',
+            email: 'sonia.klepi@example.com',
+          },
+          booking_date: '2020-04-03T12:00:00Z',
+          booking_token: 'ZEHBGD',
+          booking_status: 'Validé',
+          booking_is_duo: true,
         },
-        beneficiary: {
-          lastname: 'Klepi',
-          firstname: 'Sonia',
-          email: 'sonia.klepi@example.com',
-        },
-        booking_date: '2020-04-03T12:00:00Z',
-        booking_token: 'ZEHBGD',
-        booking_status: 'Validé',
-        booking_is_duo: true,
-      }],
+      ],
       isLoading: false,
     }
 
@@ -124,7 +110,7 @@ describe('components | BookingsRecapTable', () => {
 
     // Then
     expect(wrapper.find('th')).toHaveLength(6)
-    expect(firstHeader.text()).toBe('Nom de l\'offre')
+    expect(firstHeader.text()).toBe("Nom de l'offre")
     expect(secondHeader.text()).toBe('')
     expect(thirdHeader.text()).toBe('Bénéficiaire')
     expect(fourthHeader.text()).toBe('Réservation')
@@ -378,6 +364,22 @@ describe('components | BookingsRecapTable', () => {
 
   it('should apply filters when component received new data', () => {
     // given
+    filterBookingsRecap.mockReturnValue([
+      {
+        stock: {
+          offer_name: 'Avez-vous déjà vu',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Sonia',
+          email: 'sonia.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: 'ZEHBGD',
+        booking_status: 'Validé',
+      },
+    ])
+
     const booking = {
       stock: {
         offer_name: 'Avez-vous déjà vu',
@@ -436,10 +438,12 @@ describe('components | BookingsRecapTable', () => {
 
   it('should render a NoFilteredBookings when no bookings', () => {
     // given
+    filterBookingsRecap.mockReturnValue([])
+
     const booking = {
       stock: {
         offer_name: 'Avez-vous déjà vu',
-        type: 'thing'
+        type: 'thing',
       },
       beneficiary: {
         lastname: 'Klepi',
@@ -456,12 +460,10 @@ describe('components | BookingsRecapTable', () => {
       isLoading: false,
     }
     const wrapper = mount(<BookingsRecapTable {...props} />)
-    const input = wrapper
-      .find(Filters)
-      .find({ placeholder: "Rechercher par nom d'offre"})
+    const input = wrapper.find(Filters).find({ placeholder: "Rechercher par nom d'offre" })
 
     // When
-    input.simulate('change', { target: { value: 'not findable' }})
+    input.simulate('change', { target: { value: 'not findable' } })
 
     // Then
     const table = wrapper.find(TableFrame)
@@ -469,7 +471,7 @@ describe('components | BookingsRecapTable', () => {
     const noFilteredBookings = wrapper.find(NoFilteredBookings)
     expect(noFilteredBookings).toHaveLength(1)
     expect(noFilteredBookings.props()).toStrictEqual({
-      resetFilters: expect.any(Function)
+      resetFilters: expect.any(Function),
     })
   })
 
@@ -481,15 +483,15 @@ describe('components | BookingsRecapTable', () => {
     }
     const wrapper = mount(<BookingsRecapTable {...props} />)
     const noFilteredBookings = wrapper.find(NoFilteredBookings)
-    const displayAllBookingsButton = noFilteredBookings.find({ children: 'afficher toutes les réservations' })
+    const displayAllBookingsButton = noFilteredBookings.find({
+      children: 'afficher toutes les réservations',
+    })
 
     // When
     displayAllBookingsButton.simulate('click')
 
     // Then
-    const offerNameInput = wrapper
-      .find(Filters)
-      .find({ placeholder: "Rechercher par nom d'offre"})
+    const offerNameInput = wrapper.find(Filters).find({ placeholder: "Rechercher par nom d'offre" })
     expect(offerNameInput.text()).toBe('')
   })
 })

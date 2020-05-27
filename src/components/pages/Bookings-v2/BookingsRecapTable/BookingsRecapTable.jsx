@@ -21,7 +21,7 @@ class BookingsRecapTable extends Component {
       columns: [
         {
           id: 1,
-          headerTitle: 'Nom de l\'offre',
+          headerTitle: "Nom de l'offre",
           accessor: 'stock',
           Cell: ({ value }) => <BookingOfferCell offer={value} />,
           className: 'td-offer-name',
@@ -64,7 +64,7 @@ class BookingsRecapTable extends Component {
       ],
       currentPage: 0,
       filters: {
-        offerName: null,
+        offerName: '',
         offerDate: null,
       },
     }
@@ -93,11 +93,10 @@ class BookingsRecapTable extends Component {
   }
 
   resetFilters = () => {
-    this.setState({ filters: { offerName: '' } },
-      () => {
-        this.applyFilters()
-        this.filtersForm.current.reset()
-      })
+    this.setState({ filters: { offerName: '' } }, () => {
+      this.applyFilters()
+      this.filtersForm.current.reset()
+    })
   }
 
   applyFilters = () => {
@@ -119,15 +118,13 @@ class BookingsRecapTable extends Component {
     return (
       <div>
         <form ref={this.filtersForm}>
-          <Filters
-            setFilters={this.setFilters}
-          />
+          <Filters setFilters={this.setFilters} />
         </form>
         <Header
           isLoading={isLoading}
           nbBookings={nbBookings}
         />
-        {nbBookings > 0 ?
+        {nbBookings > 0 ? (
           <TableFrame
             columns={columns}
             currentPage={currentPage}
@@ -136,8 +133,9 @@ class BookingsRecapTable extends Component {
             nbBookingsPerPage={NB_BOOKINGS_PER_PAGE}
             updateCurrentPage={this.updateCurrentPage}
           />
-          :
-          <NoFilteredBookings resetFilters={this.resetFilters} />}
+        ) : (
+          <NoFilteredBookings resetFilters={this.resetFilters} />
+        )}
       </div>
     )
   }
