@@ -7,12 +7,12 @@ import { InputWithCalendar } from '../../../../layout/form/fields/DateField/Inpu
 const DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
 
 class Filters extends Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
-      startDate: null,
+      selectedOfferDate: null,
       filters: {
-        offerName: '',
+        offerName: null,
         offerDate: null,
       },
     }
@@ -46,7 +46,7 @@ class Filters extends Component {
   }
 
   handleOfferDateChange = offerDate => {
-    let dateToFilter = offerDate === null ? null : offerDate.format('YYYY-MM-DD')
+    const dateToFilter = offerDate === null ? null : offerDate.format('YYYY-MM-DD')
     const { filters } = this.state
     this.setState(
       {
@@ -54,7 +54,7 @@ class Filters extends Component {
           ...filters,
           offerDate: dateToFilter,
         },
-        startDate: offerDate,
+        selectedOfferDate: offerDate,
       },
       () => {
         const { filters } = this.state
@@ -64,39 +64,39 @@ class Filters extends Component {
   }
 
   render() {
-    const { startDate } = this.state
+    const { selectedOfferDate } = this.state
     return (
-      <div>
-        <div className="bookings-recap-filters">
+      <div className="filters-wrapper">
+        <div className="fw-offer-name">
           <label
-            className="select-filters"
+            className="fw-offer-name-label"
             htmlFor="text-filter-input"
           >
             {'Offre'}
           </label>
           <input
-            className="text-filter"
+            className="fw-offer-name-input"
             id="text-filter-input"
             onChange={this.handleOfferNameChange}
             placeholder={"Rechercher par nom d'offre"}
             type="text"
           />
         </div>
-        <div className="bookings-recap-filters">
+        <div className="fw-offer-date">
           <label
-            className="select-filters"
+            className="fw-offer-date-label"
             htmlFor="select-filter-date"
           >
             {"Date de l'évènement"}
           </label>
           <DatePicker
-            className="offerDate"
+            className="fw-offer-date-input"
             customInput={<InputWithCalendar />}
             dropdownMode="select"
             id="select-filter-date"
             onChange={this.handleOfferDateChange}
             placeholderText="JJ/MM/AAAA"
-            selected={startDate}
+            selected={selectedOfferDate}
           />
         </div>
       </div>

@@ -34,7 +34,7 @@ describe('components | Filters', () => {
     await offerDateInput.simulate('change', selectedDate)
 
     // Then
-    expect(props.setFilters).toHaveBeenCalledWith({ offerName: '', offerDate: '2020-05-20' })
+    expect(props.setFilters).toHaveBeenCalledWith({ offerName: null, offerDate: '2020-05-20' })
   })
 
   it('should add filter to previous filters when applying a new one', async () => {

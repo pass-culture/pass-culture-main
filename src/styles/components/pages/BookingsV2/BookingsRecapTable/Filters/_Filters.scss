@@ -1,18 +1,14 @@
-.bookings-recap-filters {
+.fw-offer-name {
   align-items: center;
   display: flex;
   margin-bottom: rem(30px);
 
-  input::placeholder {
-    color: $grey;
-  }
-
-  .select-filters {
+  .fw-offer-name-label {
     flex: 1;
     font-weight: $weight-bold;
   }
 
-  .text-filter {
+  .fw-offer-name-input {
     @extend .field-input;
     @extend .field-text;
 
@@ -20,6 +16,16 @@
     flex: 4;
     height: rem(40px);
     padding: rem(10px) rem(16px);
+  }
+}
+
+.fw-offer-date {
+  align-items: center;
+  display: flex;
+  margin-bottom: rem(30px);
+
+  .fw-offer-date-label {
+    flex: 1;
   }
 
   .date-filter {
@@ -31,10 +37,9 @@
   .field-date {
     height: rem(40px);
     padding: rem(10px) rem(16px);
+    box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
 
-    input.offerDate {
-      @extend .fs12;
-
+    .fw-offer-date-input {
       border: 0;
       cursor: pointer;
       font-size: rem(16px);
