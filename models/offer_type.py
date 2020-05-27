@@ -179,7 +179,7 @@ class ThingType(SearchableType):
     }
     JEUX_VIDEO = {
         'proLabel': "Jeux vidéo en ligne",
-        'appLabel': "Jeu vidéo en ligne",
+        'appLabel': "Jeu vidéo",
         'offlineOnly': False,
         'onlineOnly': True,
         'sublabel': "Jouer",
@@ -318,7 +318,7 @@ class Category(enum.Enum):
     JEUX_VIDEO = [
         'Jeux - événement, rencontre ou concours',
         'Jeux - abonnements',
-        'Jeu vidéo en ligne',
+        'Jeu vidéo',
         'Support physique',
     ]
     FILM = ['Film']
