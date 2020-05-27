@@ -143,9 +143,9 @@ class Get:
                 siren='123456781', name='offreur A', validation_token='F1TVYSGV')
             offerer2 = create_offerer(siren='123456782', name='offreur B')
             bank_information1 = create_bank_information(
-                id_at_providers='123456781', offerer=offerer1, application_id=1)
+                application_id=1, offerer=offerer1)
             bank_information2 = create_bank_information(
-                id_at_providers='123456782', offerer=offerer2, application_id=2)
+                application_id=2, offerer=offerer2)
 
             user = create_user(can_book_free_offers=False, is_admin=True)
             user.offerers = [offerer1, offerer2]
@@ -176,9 +176,9 @@ class Get:
             offerer2 = create_offerer(
                 siren='123456782', name='offreur A', validation_token='AFYDAA')
             bank_information1 = create_bank_information(
-                id_at_providers='123456781', offerer=offerer1, application_id=1)
+                application_id=1, offerer=offerer1)
             bank_information2 = create_bank_information(
-                id_at_providers='123456782', offerer=offerer2, application_id=2)
+                application_id=2, offerer=offerer2)
 
             user = create_user(can_book_free_offers=False, is_admin=True)
             user.offerers = [offerer1, offerer2]
@@ -259,11 +259,11 @@ class Get:
             user_offerer2 = create_user_offerer(user, offerer2)
             user_offerer3 = create_user_offerer(user, offerer3)
             bank_information1 = create_bank_information(
-                id_at_providers='123456781', offerer=offerer1, application_id=1)
+                application_id=1, offerer=offerer1)
             bank_information2 = create_bank_information(
-                id_at_providers='123456782', offerer=offerer2, application_id=2)
+                application_id=2, offerer=offerer2)
             bank_information3 = create_bank_information(
-                id_at_providers='123456783', offerer=offerer3, application_id=3)
+                application_id=3, offerer=offerer3)
             repository.save(bank_information1, bank_information2, bank_information3, user_offerer1,
                             user_offerer2, user_offerer3)
 

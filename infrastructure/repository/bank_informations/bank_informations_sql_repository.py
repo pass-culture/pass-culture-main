@@ -47,6 +47,7 @@ class BankInformationsSQLRepository(BankInformationsRepository):
             bank_informations_sql_entity.status = bank_informations.status
             bank_informations_sql_entity.offererId = bank_informations.offerer_id
             bank_informations_sql_entity.venueId = bank_informations.venue_id
+            bank_informations_sql_entity.dateModified = bank_informations.date_modified
 
             repository.save(bank_informations_sql_entity)
             return bank_informations
@@ -62,6 +63,7 @@ class BankInformationsSQLRepository(BankInformationsRepository):
             bank_informations_sql_entity.iban = bank_informations.iban
             bank_informations_sql_entity.status = bank_informations.status
             bank_informations_sql_entity.offererId = bank_informations.offerer_id
+            bank_informations_sql_entity.dateModified = bank_informations.date_modified
 
             repository.save(bank_informations_sql_entity)
             return bank_informations
@@ -77,6 +79,7 @@ class BankInformationsSQLRepository(BankInformationsRepository):
             bank_informations_sql_entity.iban = bank_informations.iban
             bank_informations_sql_entity.status = bank_informations.status
             bank_informations_sql_entity.venueId = bank_informations.venue_id
+            bank_informations_sql_entity.dateModified = bank_informations.date_modified
 
             repository.save(bank_informations_sql_entity)
             return bank_informations

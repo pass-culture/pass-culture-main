@@ -106,7 +106,7 @@ def create_industrial_offerers_with_pro_users():
         # create every OFFERERS_WITH_IBAN_REMOVE_MODULO an offerer with no iban
         if location_index % OFFERERS_WITH_IBAN_REMOVE_MODULO:
             create_bank_information(bic=bic_prefix + str(bic_suffix), iban=iban_prefix,
-                                    id_at_providers=offerer.siren, offerer=offerer, application_id=application_id_prefix + str(location_index))
+                                    offerer=offerer, application_id=application_id_prefix + str(location_index))
 
         offerers_by_name[offerer_name] = offerer
 

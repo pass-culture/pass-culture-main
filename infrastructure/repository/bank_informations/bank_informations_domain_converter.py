@@ -13,7 +13,7 @@ def to_domain(bank_informations_sql_entity: BankInformationsSQLEntity) -> BankIn
                             status=bank_informations_sql_entity.status,
                             iban=bank_informations_sql_entity.iban,
                             bic=bank_informations_sql_entity.bic,
-                            date_modified_at_last_provider=bank_informations_sql_entity.dateModifiedAtLastProvider)
+                            date_modified=bank_informations_sql_entity.dateModified)
 
 
 def to_model(bank_informations: BankInformations) -> BankInformationsSQLEntity:
@@ -24,5 +24,6 @@ def to_model(bank_informations: BankInformations) -> BankInformationsSQLEntity:
     bank_informations_sql_entity.bic = bank_informations.bic
     bank_informations_sql_entity.offererId = bank_informations.offerer_id
     bank_informations_sql_entity.venueId = bank_informations.venue_id
+    bank_informations_sql_entity.dateModified = bank_informations.date_modified
 
     return bank_informations_sql_entity

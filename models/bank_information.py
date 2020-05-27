@@ -1,6 +1,7 @@
-from sqlalchemy import Column, BigInteger, ForeignKey, String, Integer, Enum
-from sqlalchemy.orm import relationship, backref
+from datetime import datetime
 import enum
+from sqlalchemy import Column, BigInteger, DateTime, ForeignKey, String, Integer, Enum
+from sqlalchemy.orm import relationship, backref
 
 from models.db import Model
 from models.pc_object import PcObject
@@ -45,3 +46,7 @@ class BankInformation(PcObject, Model, VersionedMixin):
                            unique=True)
 
     status = Column(Enum(BankInformationStatus), nullable=False)
+
+    dateModified = Column(DateTime,
+                          nullable=True,
+                          default=datetime.utcnow)

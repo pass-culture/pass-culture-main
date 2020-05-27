@@ -189,7 +189,7 @@ class SaveOffererBankInformationsTest:
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
                 offerer=offerer,
-                date_modified_at_last_provider=datetime(2018, 1, 1)
+                date_modified=datetime(2018, 1, 1)
             )
             repository.save(offerer, new_offerer, bank_information)
             mock_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(
@@ -217,7 +217,7 @@ class SaveOffererBankInformationsTest:
                 iban="NL36INGB2682297498",
                 offerer=offerer,
                 status=BankInformationStatus.ACCEPTED,
-                date_modified_at_last_provider=datetime(2018, 1, 1)
+                date_modified=datetime(2018, 1, 1)
             )
             repository.save(offerer, bank_information)
             mock_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(
@@ -246,7 +246,7 @@ class SaveOffererBankInformationsTest:
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
                 offerer=offerer,
-                date_modified_at_last_provider=datetime(2018, 1, 1)
+                date_modified=datetime(2018, 1, 1)
             )
             other_bank_information = create_bank_information(
                 id_at_providers='2',
@@ -254,7 +254,7 @@ class SaveOffererBankInformationsTest:
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
                 offerer=other_offerer,
-                date_modified_at_last_provider=datetime(2018, 1, 1)
+                date_modified=datetime(2018, 1, 1)
             )
             repository.save(offerer, other_offerer,
                             bank_information, other_bank_information)
@@ -288,7 +288,7 @@ class SaveOffererBankInformationsTest:
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
                 offerer=offerer,
-                date_modified_at_last_provider=datetime(2018, 1, 1)
+                date_modified=datetime(2018, 1, 1)
             )
             repository.save(offerer, bank_information)
             mock_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(
@@ -317,7 +317,7 @@ class SaveOffererBankInformationsTest:
                 bic=None,
                 iban=None,
                 offerer=offerer,
-                date_modified_at_last_provider=datetime(2018, 1, 1),
+                date_modified=datetime(2018, 1, 1),
                 status=BankInformationStatus.REJECTED
             )
             repository.save(offerer, bank_information)
@@ -345,7 +345,7 @@ class SaveOffererBankInformationsTest:
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
                 offerer=offerer,
-                date_modified_at_last_provider=datetime(2018, 1, 1),
+                date_modified=datetime(2018, 1, 1),
                 status=BankInformationStatus.ACCEPTED
             )
             repository.save(offerer, bank_information)
@@ -377,7 +377,7 @@ class SaveOffererBankInformationsTest:
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
                 offerer=offerer,
-                date_modified_at_last_provider=datetime(2020, 2, 2)
+                date_modified=datetime(2020, 2, 2)
             )
             repository.save(offerer, bank_information)
             mock_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(

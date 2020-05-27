@@ -9,8 +9,7 @@ from repository.offerer_queries import find_first_by_user_offerer_id, \
 from repository.user_queries import find_all_emails_of_user_offerers_admins
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
-    create_user_offerer, \
-    create_bank_information
+    create_user_offerer
 from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_with_thing_offer, \
     create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
 

@@ -26,10 +26,8 @@ class Get:
             venue1 = create_venue(offerer1)
             venue2 = create_venue(offerer1, siret='12345678912346')
             venue3 = create_venue(offerer2, siret='12345678912347')
-            bank_information1 = create_bank_information(id_at_providers='79387501900056', venue=venue1,
-                                                        application_id=1)
-            bank_information2 = create_bank_information(id_at_providers='79387501900057', venue=venue2,
-                                                        application_id=2)
+            bank_information1 = create_bank_information(application_id=1, venue=venue1)
+            bank_information2 = create_bank_information(application_id=7, venue=venue2)
             stock1 = create_stock_with_thing_offer(offerer=offerer1, venue=venue1, price=10)
             stock2 = create_stock_with_thing_offer(offerer=offerer1, venue=venue2, price=11)
             stock3 = create_stock_with_thing_offer(offerer=offerer2, venue=venue3, price=12)

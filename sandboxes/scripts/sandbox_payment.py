@@ -38,7 +38,6 @@ def save_offerer_with_iban():
     bank_information = create_bank_information(
         offerer=offerer_with_iban, bic='TRPUFRP1',
         iban='FR7610071750000000100420866', application_id=1,
-        id_at_providers=offerer_with_iban.siren
     )
     repository.save(bank_information, venue_online, venue_with_siret, venue_without_siret)
     logger.info('created 1 offerer with iban and 1 virtual venue, 1 venue with siret and 1 venue without siret')
@@ -54,7 +53,6 @@ def save_offerer_without_iban():
     bank_information = create_bank_information(
         venue=venue_with_siret_with_iban, bic='BDFEFRPPCCT',
         iban='FR733000100206C343000000066', application_id=2,
-        id_at_providers=venue_with_siret_with_iban.siret
     )
     repository.save(bank_information, venue_online, venue_with_siret_with_iban, venue_with_siret_without_iban)
     logger.info('created 1 offerer without iban and 1 virtual venue, 1 venue with siret with iban and 1 venue with siret without iban')

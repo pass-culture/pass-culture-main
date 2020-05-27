@@ -2,8 +2,6 @@ import pytest
 from tests.model_creators.generic_creators import (create_offerer,
                                                    create_venue)
 from domain.bank_information import check_offerer_presence, check_venue_presence, check_venue_queried_by_name, CannotRegisterBankInformation
-from tests.model_creators.generic_creators import create_bank_information
-from models.bank_information import BankInformationStatus
 
 
 class CheckOffererPresenceTest:

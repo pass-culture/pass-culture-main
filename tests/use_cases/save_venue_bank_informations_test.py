@@ -315,7 +315,7 @@ class SaveVenueBankInformationsTest:
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
                 venue=venue,
-                date_modified_at_last_provider=datetime(2012,1,1)
+                date_modified=datetime(2012,1,1)
             )
             repository.save(new_venue, bank_information)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
@@ -345,7 +345,7 @@ class SaveVenueBankInformationsTest:
                 iban="NL36INGB2682297498",
                 venue=venue,
                 status=BankInformationStatus.ACCEPTED,
-                date_modified_at_last_provider=datetime(2012,1,1)
+                date_modified=datetime(2012,1,1)
             )
             repository.save(offerer, bank_information)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
@@ -376,7 +376,7 @@ class SaveVenueBankInformationsTest:
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
                 venue=venue,
-                date_modified_at_last_provider=datetime(2012,1,1)
+                date_modified=datetime(2012,1,1)
             )
             other_bank_information = create_bank_information(
                 id_at_providers='2',
@@ -384,7 +384,7 @@ class SaveVenueBankInformationsTest:
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
                 venue=other_venue,
-                date_modified_at_last_provider=datetime(2012,1,1)
+                date_modified=datetime(2012,1,1)
             )
             repository.save(bank_information, other_bank_information)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
@@ -420,7 +420,7 @@ class SaveVenueBankInformationsTest:
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
                 venue=venue,
-                date_modified_at_last_provider=datetime(2018, 1, 1)
+                date_modified=datetime(2018, 1, 1)
             )
             repository.save(bank_information)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
@@ -448,7 +448,7 @@ class SaveVenueBankInformationsTest:
                 bic=None,
                 iban=None,
                 venue=venue,
-                date_modified_at_last_provider=datetime(2018, 1, 1),
+                date_modified=datetime(2018, 1, 1),
                 status=BankInformationStatus.REJECTED
             )
             repository.save(bank_information)
@@ -477,7 +477,7 @@ class SaveVenueBankInformationsTest:
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
                 venue=venue,
-                date_modified_at_last_provider=datetime(2018, 1, 1),
+                date_modified=datetime(2018, 1, 1),
                 status=BankInformationStatus.ACCEPTED
             )
             repository.save(bank_information)
@@ -510,7 +510,7 @@ class SaveVenueBankInformationsTest:
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
                 venue=venue,
-                date_modified_at_last_provider=datetime(2021, 1, 1)
+                date_modified=datetime(2021, 1, 1)
             )
             repository.save(bank_information)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(

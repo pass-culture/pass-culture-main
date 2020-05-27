@@ -30,7 +30,7 @@ class Get:
             user = create_user()
             offerer = create_offerer()
             venue = create_venue(offerer)
-            create_bank_information(venue=venue, id_at_providers=venue.siret)
+            create_bank_information(venue=venue)
             user_offerer = create_user_offerer(user, offerer)
             repository.save(user_offerer, venue)
             # when

@@ -1,3 +1,6 @@
+import pytest
+from datetime import datetime
+
 from domain.bank_informations.bank_informations import BankInformations
 from models.bank_information import BankInformationStatus, BankInformation as BankInformationsSQLEntity
 from infrastructure.repository.bank_informations import bank_informations_domain_converter
@@ -6,7 +9,6 @@ from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_bank_information, create_venue
 from models import ApiErrors
-import pytest
 
 
 class BankInformationsSQLRepositoryTest:
@@ -32,7 +34,7 @@ class BankInformationsSQLRepositoryTest:
         assert bank_informations.status == expected_bank_informations.status
         assert bank_informations.iban == expected_bank_informations.iban
         assert bank_informations.bic == expected_bank_informations.bic
-        assert bank_informations.date_modified_at_last_provider == expected_bank_informations.date_modified_at_last_provider
+        assert bank_informations.date_modified == expected_bank_informations.date_modified
 
     @clean_database
     def test_returns_none_when_offerer_has_no_bank_informations(self, app):
@@ -101,6 +103,7 @@ class BankInformationsSQLRepositoryTest:
 
         # then
         assert bank_informations.application_id == expected_bank_informations.application_id
+        assert bank_informations.date_modified == expected_bank_informations.date_modified
         assert bank_informations.status == expected_bank_informations.status
         assert bank_informations.iban == expected_bank_informations.iban
         assert bank_informations.bic == expected_bank_informations.bic
@@ -119,6 +122,7 @@ class BankInformationsSQLRepositoryTest:
 
         # then
         assert bank_informations is None
+
 
     @clean_database
     def test_should_create_bank_informations_on_save_when_bank_informations_does_not_exist(self, app):
@@ -147,6 +151,7 @@ class BankInformationsSQLRepositoryTest:
         assert sql_bank_informations_saved.bic == bank_informations_to_save.bic
         assert sql_bank_informations_saved.applicationId == bank_informations_to_save.application_id
         assert sql_bank_informations_saved.status == bank_informations_to_save.status
+        assert sql_bank_informations_saved.dateModified is not None
 
         assert bank_informations_saved.iban == bank_informations_to_save.iban
         assert bank_informations_saved.bic == bank_informations_to_save.bic
@@ -196,7 +201,8 @@ class BankInformationsSQLRepositoryTest:
             application_id=9,
             iban='FR7630006000011234567890189',
             bic='QSDFGH8Z555',
-            offerer_id=offerer.id)
+            offerer_id=offerer.id,
+            date_modified=datetime(2018,2,3))
 
         # when
         bank_informations_saved = self.bank_informations_sql_repository.update_by_offerer_id(
@@ -212,6 +218,7 @@ class BankInformationsSQLRepositoryTest:
         assert sql_bank_informations_saved.bic == bank_informations_to_save.bic
         assert sql_bank_informations_saved.applicationId == bank_informations_to_save.application_id
         assert sql_bank_informations_saved.status == bank_informations_to_save.status
+        assert sql_bank_informations_saved.dateModified == bank_informations_to_save.date_modified
 
         assert bank_informations_saved.iban == bank_informations_to_save.iban
         assert bank_informations_saved.bic == bank_informations_to_save.bic
@@ -246,7 +253,8 @@ class BankInformationsSQLRepositoryTest:
             application_id=9,
             iban='FR7630006000011234567890189',
             bic='QSDFGH8Z555',
-            offerer_id=offerer.id)
+            offerer_id=offerer.id,
+            date_modified=datetime(2018,2,3))
 
         # when
         bank_informations_saved = self.bank_informations_sql_repository.update_by_application_id(
@@ -262,6 +270,7 @@ class BankInformationsSQLRepositoryTest:
         assert sql_bank_informations_saved.bic == bank_informations_to_save.bic
         assert sql_bank_informations_saved.applicationId == bank_informations_to_save.application_id
         assert sql_bank_informations_saved.status == bank_informations_to_save.status
+        assert sql_bank_informations_saved.dateModified == bank_informations_to_save.date_modified
 
         assert bank_informations_saved.iban == bank_informations_to_save.iban
         assert bank_informations_saved.bic == bank_informations_to_save.bic
@@ -297,7 +306,8 @@ class BankInformationsSQLRepositoryTest:
             application_id=9,
             iban='FR7630006000011234567890189',
             bic='QSDFGH8Z555',
-            venue_id=venue.id)
+            venue_id=venue.id,
+            date_modified=datetime(2018,2,3))
 
         # when
         bank_informations_saved = self.bank_informations_sql_repository.update_by_venue_id(
@@ -313,6 +323,7 @@ class BankInformationsSQLRepositoryTest:
         assert sql_bank_informations_saved.bic == bank_informations_to_save.bic
         assert sql_bank_informations_saved.applicationId == bank_informations_to_save.application_id
         assert sql_bank_informations_saved.status == bank_informations_to_save.status
+        assert sql_bank_informations_saved.dateModified == bank_informations_to_save.date_modified
 
         assert bank_informations_saved.iban == bank_informations_to_save.iban
         assert bank_informations_saved.bic == bank_informations_to_save.bic

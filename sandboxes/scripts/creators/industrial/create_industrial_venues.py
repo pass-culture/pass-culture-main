@@ -75,7 +75,6 @@ def create_industrial_venues(offerers_by_name: Dict, venue_types: List[VenueType
 
             if iban and venue_by_name[venue_name].siret:
                 create_bank_information(bic=bic, iban=iban,
-                                        id_at_providers=venue_by_name[venue_name].siret,
                                         venue=venue_by_name[venue_name], application_id=application_id_prefix + str(offerer_index))
         bic_suffix += 1
         mock_index += 1

@@ -47,7 +47,7 @@ class OffererBankInformationTest:
         # Given
         offerer = create_offerer(siren='123456789')
         bank_information = create_bank_information(
-            bic='BDFEFR2LCCB', id_at_providers='123456789', offerer=offerer)
+            bic='BDFEFR2LCCB', offerer=offerer)
         repository.save(bank_information)
 
         # When
@@ -72,7 +72,7 @@ class OffererBankInformationTest:
     def test_iban_property_returns_bank_information_iban_when_offerer_has_bank_information(self, app):
         # Given
         offerer = create_offerer(siren='123456789')
-        bank_information = create_bank_information(iban='FR7630007000111234567890144', id_at_providers='123456789',
+        bank_information = create_bank_information(iban='FR7630007000111234567890144',
                                                    offerer=offerer)
         repository.save(bank_information)
 
@@ -99,7 +99,7 @@ class OffererBankInformationTest:
         # Given
         offerer = create_offerer(siren='123456789')
         bank_information = create_bank_information(
-            id_at_providers='123456789', application_id=12345, offerer=offerer, status=BankInformationStatus.DRAFT, iban=None, bic=None)
+            application_id=12345, offerer=offerer, status=BankInformationStatus.DRAFT, iban=None, bic=None)
         repository.save(bank_information)
 
         # When
@@ -113,7 +113,7 @@ class OffererBankInformationTest:
         # Given
         offerer = create_offerer(siren='123456789')
         bank_information = create_bank_information(
-            id_at_providers='123456789', offerer=offerer, status=BankInformationStatus.REJECTED, iban=None, bic=None)
+            offerer=offerer, status=BankInformationStatus.REJECTED, iban=None, bic=None)
         repository.save(bank_information)
 
         # When

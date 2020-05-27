@@ -33,7 +33,7 @@ def check_venue_queried_by_name(venues: List[Venue]):
 
 
 def check_new_bank_information_older_than_saved_one(bank_information: BankInformations, application_details):
-    is_new_bank_information_older_than_saved_one = bank_information.date_modified_at_last_provider is not None and application_details.modification_date < bank_information.date_modified_at_last_provider
+    is_new_bank_information_older_than_saved_one = bank_information.date_modified is not None and application_details.modification_date < bank_information.date_modified
     if is_new_bank_information_older_than_saved_one:
         raise CannotRegisterBankInformation(
             'Received application details are older than saved one')
