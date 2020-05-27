@@ -9,13 +9,20 @@
   }
 
   .fw-offer-name-input {
-    @extend .field-input;
-    @extend .field-text;
+    border-radius: $control-radius;
+    border: $control-border-width solid $grey-light;
 
     box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
     flex: 4;
     height: rem(40px);
     padding: rem(10px) rem(16px);
+    font-size: rem(16px);
+    font-weight: $weight-medium;
+
+    &:focus {
+      outline: none;
+      border-color: $red;
+    }
   }
 }
 
@@ -28,7 +35,7 @@
     flex: 1;
   }
 
-  .date-filter {
+  .fw-offer-date-input {
     @extend .field-input;
 
     flex: 4;
@@ -39,6 +46,10 @@
     padding: rem(10px) rem(16px);
     box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
 
+    &:focus-within{
+      border-color: $red;
+    }
+
     .fw-offer-date-input {
       border: 0;
       cursor: pointer;
@@ -46,9 +57,6 @@
       font-weight: $weight-medium;
       min-width: rem(60px);
 
-      &:focus {
-        outline: none;
-      }
     }
 
     img {

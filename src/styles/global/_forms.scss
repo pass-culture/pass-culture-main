@@ -158,15 +158,15 @@
   border: $control-border-width solid $grey-light;
 
   &::-webkit-input-placeholder {
-    color: $grey-darker;
+    color: $grey;
   }
 
   &::-moz-placeholder {
-    color: $grey-darker;
+    color: $grey;
   }
 
   &:-moz-placeholder {
-    color: $grey-darker;
+    color: $grey;
   }
 
   &:focus {
