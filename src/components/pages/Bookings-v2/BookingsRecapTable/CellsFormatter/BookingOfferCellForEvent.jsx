@@ -1,14 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { formatLocalTimeDateString } from '../../../../../utils/timezone'
+import moment from 'moment'
+import { FORMAT_DD_MM_YYYY_HH_mm } from '../../../../../utils/date'
 
-const FRENCH_FORMAT_DATETIME = 'DD/MM/YYYY HH:mm'
-const BookingOfferCellForEvent = ({ offerName, eventDatetime, venueDepartmentCode }) => {
-  const eventDatetimeFormatted = formatLocalTimeDateString(
-    eventDatetime,
-    venueDepartmentCode,
-    FRENCH_FORMAT_DATETIME
-  )
+const BookingOfferCellForEvent = ({ eventDatetime, offerName }) => {
+  const eventDatetimeFormatted = moment(eventDatetime).format(FORMAT_DD_MM_YYYY_HH_mm)
+
   return (
     <span className="booking-offer-name">
       <p className="offer-name">
@@ -24,7 +21,6 @@ const BookingOfferCellForEvent = ({ offerName, eventDatetime, venueDepartmentCod
 BookingOfferCellForEvent.propTypes = {
   eventDatetime: PropTypes.string.isRequired,
   offerName: PropTypes.string.isRequired,
-  venueDepartmentCode: PropTypes.string.isRequired,
 }
 
 export default BookingOfferCellForEvent
