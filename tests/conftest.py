@@ -17,7 +17,7 @@ from requests.auth import _basic_auth_str
 from install_database_extensions import install_database_extensions
 from local_providers.install import install_local_providers
 from models.db import db
-from models.install import install_models, install_materialized_views
+from models.install import install_activity, install_materialized_views
 from repository.clean_database import clean_all_database
 from repository.user_queries import find_user_by_email
 from routes import install_routes
@@ -54,7 +54,7 @@ def app():
     alembic_cfg.attributes['sqlalchemy.url'] = os.environ.get('DATABASE_URL_TEST')
     command.upgrade(alembic_cfg, "head")
 
-    install_models()
+    install_activity()
     install_materialized_views()
     install_routes()
     install_local_providers()

@@ -12,7 +12,7 @@ from repository import repository, \
     discovery_view_v3_queries
 
 
-def install_models():
+def install_activity():
     orm.configure_mappers()
 
     create_versionning_tables()

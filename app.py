@@ -15,7 +15,7 @@ from documentation import install_documentation
 from flask_app import app
 from local_providers.install import install_local_providers
 from models.db import db
-from models.install import install_models, install_features, install_materialized_views
+from models.install import install_activity, install_features, install_materialized_views
 from repository.feature_queries import feature_request_profiling_enabled
 from routes import install_routes
 from utils.config import IS_DEV, REDIS_URL, ENV
@@ -44,7 +44,7 @@ if feature_request_profiling_enabled():
 
 with app.app_context():
     if IS_DEV:
-        install_models()
+        install_activity()
         install_materialized_views()
         install_local_providers()
         install_features()
