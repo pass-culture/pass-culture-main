@@ -21,7 +21,7 @@ describe('components | BeneficiaryCell', () => {
 
     // Then
     expect(spans).toHaveLength(2)
-    expect(nameSpan.text()).toBe('Laurent Durond')
+    expect(nameSpan.text()).toBe('Durond Laurent')
     expect(emailAddressSpan.text()).toBe('email@example.com')
   })
 })

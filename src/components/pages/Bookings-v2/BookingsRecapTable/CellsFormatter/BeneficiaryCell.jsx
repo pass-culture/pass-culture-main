@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-function BeneficiaryCell({ beneficiaryInfos }) {
-  const beneficiaryName = beneficiaryInfos.firstname.concat(' ', beneficiaryInfos.lastname)
+const BeneficiaryCell = ({ beneficiaryInfos }) => {
+  const beneficiaryName = beneficiaryInfos.lastname.concat(' ', beneficiaryInfos.firstname)
   return (
     <div>
       <span>
