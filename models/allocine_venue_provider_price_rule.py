@@ -22,6 +22,12 @@ class AllocineVenueProviderPriceRule(PcObject, Model):
                    CheckConstraint('price >= 0', name='check_price_is_not_negative'),
                    nullable=False)
 
+    UniqueConstraint(
+        'allocineVenueProviderId',
+        'priceRule',
+        name='unique_allocine_venue_provider_price_rule',
+    )
+
     @staticmethod
     def restize_integrity_error(internal_error):
         if 'unique_allocine_venue_provider_price_rule' in str(internal_error.orig):
