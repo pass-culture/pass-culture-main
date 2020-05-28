@@ -78,11 +78,11 @@ class DiscoveryViewTest:
 
         # Then
         assert len(offers) == 5
-        assert offers[0].name == physical_offer_with_super_bonus.name
-        assert offers[1].name == digital_offer_with_bonus.name
-        assert offers[2].name == digital_offer.name
-        assert offers[3].name == physical_offer.name
-        assert offers[4].name == digital_offer_with_malus.name
+        assert offers[0].offer == physical_offer_with_super_bonus
+        assert offers[1].offer == digital_offer_with_bonus
+        assert offers[2].offer == digital_offer
+        assert offers[3].offer == physical_offer
+        assert offers[4].offer == digital_offer_with_malus
 
     @clean_database
     @patch('repository.offer_queries.feature_queries.is_active', return_value=True)
