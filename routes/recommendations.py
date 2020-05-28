@@ -1,5 +1,8 @@
+from typing import Dict
+
 from flask import current_app as app, jsonify, request, redirect
 from flask_login import current_user, login_required
+from werkzeug.local import LocalProxy
 
 from domain.build_recommendations import move_requested_recommendation_first
 from models import Recommendation
@@ -7,12 +10,11 @@ from models.feature import FeatureToggle
 from recommendations_engine import create_recommendations_for_discovery, \
     give_requested_recommendation_to_user
 from recommendations_engine.recommendations import create_recommendations_for_discovery_v3
-from repository import repository
+from repository import repository, feature_queries
 from repository.iris_venues_queries import get_iris_containing_user_location
 from repository.recommendation_queries import update_read_recommendations
 from routes.serialization.recommendation_serialize import serialize_recommendations, serialize_recommendation
 from utils.config import BLOB_SIZE
-from utils.feature import feature_required
 from utils.human_ids import dehumanize, dehumanize_ids_list
 from utils.rest import expect_json_data
 
@@ -57,7 +59,12 @@ def put_read_recommendations():
 
 
 @app.route('/recommendations/v2', methods=['PUT'])
-def put_recommendations_old():
+def put_recommendations_old_v2():
+    return redirect("/recommendations", code=308)
+
+
+@app.route('/recommendations/v3', methods=['PUT'])
+def put_recommendations_old_v3():
     return redirect("/recommendations", code=308)
 
 
@@ -65,6 +72,31 @@ def put_recommendations_old():
 @login_required
 @expect_json_data
 def put_recommendations():
+    if feature_queries.is_active(FeatureToggle.RECOMMENDATIONS_WITH_GEOLOCATION):
+        return put_geolocated_recommendations(request)
+    else:
+        return put_non_geolocated_recommendations(request)
+
+
+def put_geolocated_recommendations(request: LocalProxy) -> (Dict, int):
+    latitude = request.args.get('latitude')
+    longitude = request.args.get('longitude')
+    user_is_geolocated = latitude is not None and longitude is not None
+    user_iris_id = get_iris_containing_user_location(latitude, longitude) if latitude and longitude else None
+
+    update_read_recommendations(request.json.get('readRecommendations'))
+    sent_offers_ids = dehumanize_ids_list(request.json.get('offersSentInLastCall'))
+
+    recommendations = create_recommendations_for_discovery_v3(user=current_user,
+                                                              user_iris_id=user_iris_id,
+                                                              user_is_geolocated=user_is_geolocated,
+                                                              sent_offers_ids=sent_offers_ids,
+                                                              limit=BLOB_SIZE)
+
+    return jsonify(serialize_recommendations(recommendations, current_user)), 200
+
+
+def put_non_geolocated_recommendations(request: LocalProxy) -> (Dict, int):
     update_read_recommendations(request.json.get('readRecommendations'))
     sent_offers_ids = dehumanize_ids_list(request.json.get('offersSentInLastCall'))
 
@@ -84,27 +116,5 @@ def put_recommendations():
     if requested_recommendation:
         recommendations = move_requested_recommendation_first(recommendations,
                                                               requested_recommendation)
-
-    return jsonify(serialize_recommendations(recommendations, current_user)), 200
-
-
-@app.route('/recommendations/v3', methods=['PUT'])
-@feature_required(feature_toggle=FeatureToggle.RECOMMENDATIONS_WITH_GEOLOCATION)
-@login_required
-@expect_json_data
-def put_recommendations_v3():
-    latitude = request.args.get('latitude')
-    longitude = request.args.get('longitude')
-    user_is_geolocated = latitude is not None and longitude is not None
-    user_iris_id = get_iris_containing_user_location(latitude, longitude) if latitude and longitude else None
-
-    update_read_recommendations(request.json.get('readRecommendations'))
-    sent_offers_ids = dehumanize_ids_list(request.json.get('offersSentInLastCall'))
-
-    recommendations = create_recommendations_for_discovery_v3(user=current_user,
-                                                              user_iris_id=user_iris_id,
-                                                              user_is_geolocated=user_is_geolocated,
-                                                              sent_offers_ids=sent_offers_ids,
-                                                              limit=BLOB_SIZE)
 
     return jsonify(serialize_recommendations(recommendations, current_user)), 200
