@@ -262,7 +262,7 @@ class SignupForm extends PureComponent {
 SignupForm.propTypes = {
   closeNotification: PropTypes.func.isRequired,
   createNewProUser: PropTypes.func.isRequired,
-  errors: PropTypes.arrayOf(PropTypes.string).isRequired,
+  errors: PropTypes.shape().isRequired,
   redirectToConfirmation: PropTypes.func.isRequired,
   showNotification: PropTypes.func.isRequired,
 }

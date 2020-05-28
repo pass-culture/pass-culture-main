@@ -13,7 +13,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
     props = {
       closeNotification: jest.fn(),
       createNewProUser: jest.fn(),
-      errors: [],
+      errors: {},
       redirectToConfirmation: jest.fn(),
       showNotification: jest.fn(),
     }
