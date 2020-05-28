@@ -16,7 +16,7 @@ from tests.model_creators.generic_creators import create_booking, create_user, c
     create_deposit, \
     create_payment, create_bank_information
 from tests.model_creators.specific_creators import create_stock_from_offer, create_offer_with_thing_product
-
+from models.bank_information import BankInformationStatus
 
 class ConcatenatePaymentsWithErrorsAndRetriesTest:
     @clean_database
@@ -506,6 +506,34 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
         assert queried_not_processable_payment.iban == 'FR7611808009101234567890147'
         assert queried_not_processable_payment.bic == 'CCBPFRPPVER'
         assert queried_not_processable_payment.currentStatus.status == TransactionStatus.RETRY
+        assert queried_sent_payment.currentStatus.status == TransactionStatus.SENT
+
+    @clean_database
+    def test_should_not_set_not_processable_payments_to_retry_when_bank_information_status_is_not_accepted(
+            self, app):
+        # Given
+        offerer = create_offerer(name='first offerer')
+        user = create_user()
+        venue = create_venue(offerer)
+        offer = create_offer_with_thing_product(venue)
+        stock = create_stock_from_offer(offer, price=0)
+        booking = create_booking(user=user, stock=stock)
+        bank_information = create_bank_information(offerer=offerer, iban=None,
+                                                   bic=None, status=BankInformationStatus.DRAFT)
+        not_processable_payment = create_payment(booking, offerer, 10,
+                                                 status=TransactionStatus.NOT_PROCESSABLE, iban=None, bic=None)
+        sent_payment = create_payment(booking, offerer, 10, status=TransactionStatus.SENT)
+        repository.save(bank_information, not_processable_payment, sent_payment)
+
+        # When
+        set_not_processable_payments_with_bank_information_to_retry()
+
+        # Then
+        queried_not_processable_payment = Payment.query.filter_by(id=not_processable_payment.id).one()
+        queried_sent_payment = Payment.query.filter_by(id=sent_payment.id).one()
+        assert queried_not_processable_payment.iban == None
+        assert queried_not_processable_payment.bic == None
+        assert queried_not_processable_payment.currentStatus.status == TransactionStatus.NOT_PROCESSABLE
         assert queried_sent_payment.currentStatus.status == TransactionStatus.SENT
 
     @clean_database

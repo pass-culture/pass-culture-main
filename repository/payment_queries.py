@@ -8,6 +8,7 @@ from models import BankInformation, BookingSQLEntity, Offer, Offerer, Payment, \
     PaymentMessage, PaymentStatus, StockSQLEntity, Venue
 from models.db import db
 from models.payment_status import TransactionStatus
+from models.bank_information import BankInformationStatus
 
 
 def find_message_checksum(message_name: str) -> Optional[str]:
@@ -66,8 +67,8 @@ def find_not_processable_with_bank_information() -> List[Payment]:
         .filter_by(status=TransactionStatus.NOT_PROCESSABLE) \
         .subquery()
 
-    predicate_matches_venue_or_offerer = (Venue.id == BankInformation.venueId) | (
-        Offerer.id == BankInformation.offererId)
+    predicate_matches_venue_or_offerer = ((Venue.id == BankInformation.venueId) | (
+        Offerer.id == BankInformation.offererId)) & (BankInformation.status == BankInformationStatus.ACCEPTED)
 
     not_processable_payments_with_bank_information = Payment.query \
         .filter(Payment.id.in_(not_processable_payment_ids)) \
