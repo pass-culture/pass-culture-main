@@ -107,6 +107,7 @@ static/object_store_data
 # Test
 .hypothesis/
 .pytest_cache/
+.mypy_cache/
 
 # env
 dev_env_file

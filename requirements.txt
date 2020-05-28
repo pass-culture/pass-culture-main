@@ -74,3 +74,4 @@ wetransferpy==0.2.3
 xlrd==1.2.0
 GeoAlchemy2==0.6.3
 geopandas==0.6.2
+mypy==0.770
