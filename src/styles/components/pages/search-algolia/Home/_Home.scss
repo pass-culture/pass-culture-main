@@ -127,9 +127,3 @@
     width: 90%;
   }
 }
-
-@media screen and (max-width: $iphone5-width) and (max-height: $iphone5-height) {
-  footer {
-    height: $footer-height / 2;
-  }
-}

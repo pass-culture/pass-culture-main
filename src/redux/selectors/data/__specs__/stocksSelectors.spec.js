@@ -267,7 +267,7 @@ describe('selectBookables', () => {
       {
         __modifiers__: ['selectBookables'],
         beginningDatetime: expect.any(Object),
-        humanBeginningDate: 'Saturday 01/01/2000 à 21:00',
+        humanBeginningDate: 'samedi 01/01/2000 à 21:00',
         id: 'AB',
         offerId: 'AA',
         userHasAlreadyBookedThisDate: true,
