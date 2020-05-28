@@ -15,6 +15,5 @@ def install_data():
 
 @app.manager.command
 def install_postgres_extension():
-    with app.app_context():
-        install_database_extensions()
+    install_database_extensions(app)
     logger.info("Database extensions installed")
