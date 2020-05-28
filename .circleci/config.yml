@@ -38,7 +38,7 @@ jobs:
           name: Running tests
           command: |
             . venv/bin/activate
-            RUN_ENV=tests pytest tests --cov --cov-report html
+            RUN_ENV=tests pytest tests --cov --cov-report html -x
             coveralls
       - store_artifacts:
           path: htmlcov
