@@ -24,6 +24,11 @@ from routes import install_routes
 from tests.model_creators.generic_creators import PLAIN_DEFAULT_TESTING_PASSWORD
 from utils.json_encoder import EnumJSONEncoder
 
+def run_migrations():
+    alembic_cfg = Config("alembic.ini")
+    alembic_cfg.attributes['sqlalchemy.url'] = os.environ.get('DATABASE_URL_TEST')
+    command.upgrade(alembic_cfg, "head")
+
 
 def pytest_configure(config):
     if config.getoption('capture') == 'no':
@@ -50,9 +55,7 @@ def app():
     app.app_context().push()
     install_database_extensions(app)
 
-    alembic_cfg = Config("alembic.ini")
-    alembic_cfg.attributes['sqlalchemy.url'] = os.environ.get('DATABASE_URL_TEST')
-    command.upgrade(alembic_cfg, "head")
+    run_migrations()
 
     install_activity()
     install_materialized_views()
