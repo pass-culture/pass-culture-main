@@ -8,7 +8,6 @@ import { IcoNavProfile } from '../layout/NavBar/Icons/IcoNavProfile'
 import { IcoNavSearch } from '../layout/NavBar/Icons/IcoNavSearch'
 import ActivationContainer from '../pages/activation/ActivationContainer'
 import BetaPageContainer from '../pages/beta-page/BetaPageContainer'
-import DiscoveryContainerV3 from '../pages/discovery-v3/DiscoveryContainer'
 import DiscoveryContainer from '../pages/discovery/DiscoveryContainer'
 import ForgotPassword from '../pages/forgot-password/ForgotPassword'
 import MyBookingsContainer from '../pages/my-bookings/MyBookingsContainer'
@@ -17,7 +16,6 @@ import OfferContainer from '../pages/offer/OfferContainer'
 import ProfileContainer from '../pages/profile/ProfileContainer'
 import SearchContainer from '../pages/search/SearchContainer'
 import SignInContainer from '../pages/signin/SignInContainer'
-import SignupContainer from '../pages/signup/SignupContainer'
 import TutorialsContainer from '../pages/tutorials/TutorialsContainer'
 import TypeFormContainer from '../pages/typeform/TypeformContainer'
 
@@ -155,21 +153,6 @@ const routes = [
     to: '/profil',
     path: '/profil/:view(mot-de-passe|informations|mentions-legales)?',
     title: 'Mon compte',
-  },
-  {
-    component: DiscoveryContainerV3,
-    featureName: 'RECOMMENDATIONS_WITH_GEOLOCATION',
-    icon: IcoNavDiscovery,
-    to: '/decouverte-v3',
-    path:
-      '/decouverte-v3' +
-      '/:offerId([A-Z0-9]+)?' +
-      '/:mediationId([A-Z0-9]+)?' +
-      '/:details(details|transition)?' +
-      '/:booking(reservation)?/:bookingId([A-Z0-9]+)?' +
-      '/:cancellation(annulation)?' +
-      '/:confirmation(confirmation)?',
-    title: 'Offres géolocalisées',
   },
 ]
 
