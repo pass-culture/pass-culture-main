@@ -56,7 +56,11 @@
       font-size: rem(16px);
       font-weight: $weight-medium;
       min-width: rem(60px);
+      padding-left: 0;
 
+      &::placeholder{
+        opacity: 1;
+      }
     }
 
     img {
