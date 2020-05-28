@@ -8,7 +8,7 @@ describe('src | components | pages | Venue | controls | CreateControl ', () => {
 
   beforeEach(() => {
     props = {
-      venueId: 1,
+      venueId: '1',
       offererId: 'RG',
     }
   })

@@ -154,6 +154,7 @@ UploadThumb.defaultProps = {
   borderRadius: 250,
   className: null,
   height: 250,
+  image: null,
   maxSize: IMAGE_MAX_SIZE,
   width: 250,
 }
@@ -164,7 +165,7 @@ UploadThumb.propTypes = {
   className: PropTypes.string,
   hasExistingImage: PropTypes.bool.isRequired,
   height: PropTypes.number,
-  image: PropTypes.oneOfType([PropTypes.string, PropTypes.shape()]).isRequired,
+  image: PropTypes.oneOfType([PropTypes.string, PropTypes.shape()]),
   maxSize: PropTypes.number,
   onImageChange: PropTypes.func.isRequired,
   width: PropTypes.number,

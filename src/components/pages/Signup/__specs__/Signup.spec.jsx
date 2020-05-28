@@ -7,7 +7,7 @@ describe('src | components | pages | Signup', () => {
   it('should match the snapshot', () => {
     // given
     const props = {
-      errors: {},
+      location: {},
     }
 
     // when

@@ -4,7 +4,7 @@ exports[`src | components | pages | Signup should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <Signup
-    errors={Object {}}
+    location={Object {}}
   />,
   Symbol(enzyme.__renderer__): Object {
     "batchedUpdates": [Function],
@@ -40,7 +40,9 @@ ShallowWrapper {
             <div
               className="column is-offset-6 is-two-fifths"
             >
-              <Switch>
+              <Switch
+                location={Object {}}
+              >
                 <Route
                   component={[Function]}
                   exact={true}
@@ -101,7 +103,9 @@ ShallowWrapper {
             <div
               className="column is-offset-6 is-two-fifths"
             >
-              <Switch>
+              <Switch
+                location={Object {}}
+              >
                 <Route
                   component={[Function]}
                   exact={true}
@@ -125,7 +129,9 @@ ShallowWrapper {
             "children": <div
               className="column is-offset-6 is-two-fifths"
             >
-              <Switch>
+              <Switch
+                location={Object {}}
+              >
                 <Route
                   component={[Function]}
                   exact={true}
@@ -145,7 +151,9 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": <Switch>
+              "children": <Switch
+                location={Object {}}
+              >
                 <Route
                   component={[Function]}
                   exact={true}
@@ -175,7 +183,7 @@ ShallowWrapper {
                     path="/inscription/confirmation"
                   />,
                 ],
-                "location": undefined,
+                "location": Object {},
               },
               "ref": null,
               "rendered": Array [
@@ -242,7 +250,9 @@ ShallowWrapper {
               <div
                 className="column is-offset-6 is-two-fifths"
               >
-                <Switch>
+                <Switch
+                  location={Object {}}
+                >
                   <Route
                     component={[Function]}
                     exact={true}
@@ -303,7 +313,9 @@ ShallowWrapper {
               <div
                 className="column is-offset-6 is-two-fifths"
               >
-                <Switch>
+                <Switch
+                  location={Object {}}
+                >
                   <Route
                     component={[Function]}
                     exact={true}
@@ -327,7 +339,9 @@ ShallowWrapper {
               "children": <div
                 className="column is-offset-6 is-two-fifths"
               >
-                <Switch>
+                <Switch
+                  location={Object {}}
+                >
                   <Route
                     component={[Function]}
                     exact={true}
@@ -347,7 +361,9 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": <Switch>
+                "children": <Switch
+                  location={Object {}}
+                >
                   <Route
                     component={[Function]}
                     exact={true}
@@ -377,7 +393,7 @@ ShallowWrapper {
                       path="/inscription/confirmation"
                     />,
                   ],
-                  "location": undefined,
+                  "location": Object {},
                 },
                 "ref": null,
                 "rendered": Array [

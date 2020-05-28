@@ -1,5 +1,4 @@
 import React from 'react'
-
 import { shallow } from 'enzyme'
 
 import UploadThumb, { computeNewZoom, isImageTooLarge } from '../UploadThumb'
@@ -13,16 +12,32 @@ const defaultParams = {
   direction: 1,
 }
 
+const createMockFile = ({
+  name = 'file.txt',
+  size = 1024,
+  type = 'image/jpeg',
+  lastModified = new Date(),
+}) => {
+  const blob = new Blob(['a'.repeat(size)], { type })
+
+  blob.lastModifiedDate = lastModified
+
+  return new File([blob], name)
+}
+
 describe('src | components | layout | UploadThumb |', () => {
   let props
-  let image = {
-    lastModified: 1565378546222,
-    lastModifiedDate: 'Fri Aug 09 2019 21:22:26 GMT+0200 (heure d’été d’Europe centrale)',
+
+  let imageOptions = {
     name: 'IMG_4366.jpg',
     size: 1503804,
     type: 'image/jpeg',
-    webkitRelativePath: '',
   }
+  const image = createMockFile({
+    name: imageOptions.name,
+    size: imageOptions.size,
+    type: imageOptions.type,
+  })
 
   beforeEach(() => {
     props = {
@@ -33,21 +48,6 @@ describe('src | components | layout | UploadThumb |', () => {
       onImageChange: jest.fn(),
       storeKey: 'image',
     }
-  })
-
-  it('should match the snapshot', () => {
-    // given
-    props.image = {
-      name: 'IMG_4366.jpg',
-      size: 1503804,
-      type: 'image/jpeg',
-    }
-
-    // when
-    const wrapper = shallow(<UploadThumb {...props} />)
-
-    // then
-    expect(wrapper).toMatchSnapshot()
   })
 
   describe('render', () => {
@@ -76,11 +76,6 @@ describe('src | components | layout | UploadThumb |', () => {
 
       it('should use editor-zone, has-image and no-drag class when hasExistingImage is true', () => {
         // given
-        props.image = {
-          name: 'editor-zoneExample.jpg',
-          size: 1503804,
-          type: 'image/jpeg',
-        }
         props.hasExistingImage = true
 
         // when
@@ -102,13 +97,12 @@ describe('src | components | layout | UploadThumb |', () => {
         expect(showAlertComponent).toHaveLength(0)
       })
 
-      it('should be displayed when image is larger than maximum size', () => {
+      it('should be displayed when image is larger than maximum size (10 Mo)', () => {
         // given
-        props.image = {
-          name: 'editor-zoneExample.jpg',
-          size: 150000000,
-          type: 'image/jpeg',
-        }
+        props.image = createMockFile({
+          type: 'image/png',
+          size: 10000001,
+        })
         props.hasExistingImage = true
 
         // when
@@ -116,6 +110,7 @@ describe('src | components | layout | UploadThumb |', () => {
 
         // then
         const showAlertComponent = wrapper.find('.has-text-danger')
+        expect(showAlertComponent.exists()).toBe(true)
         expect(showAlertComponent.text()).toStrictEqual(
           'Votre image trop volumineuse, elle doit faire moins de 10 Mo.'
         )
@@ -244,11 +239,6 @@ describe('src | components | layout | UploadThumb |', () => {
   describe('handleOnZoomChange', () => {
     it('should increase image size with value given by cursor change', () => {
       // given
-      props.image = {
-        name: 'IMG_4366.jpg',
-        size: 1503804,
-        type: 'image/jpeg',
-      }
       const wrapper = shallow(<UploadThumb {...props} />)
 
       // when
@@ -283,13 +273,8 @@ describe('src | components | layout | UploadThumb |', () => {
 
     it('should be called with ctx when onImageChange func is given and upload is disabled', () => {
       // given
-      props.image = {
-        name: 'IMG_4366.jpg',
-        size: 1503804,
-        type: 'image/jpeg',
-      }
       const wrapper = shallow(<UploadThumb {...props} />)
-      wrapper.setState({ image, isUploadDisabled: true, size: 15038040 })
+      wrapper.setState({ isUploadDisabled: true })
       wrapper.instance()['avatarEditor'] = {
         current: {
           getCroppingRect,
@@ -306,7 +291,7 @@ describe('src | components | layout | UploadThumb |', () => {
     it('should be called with image, ctx and new coordonnates', () => {
       // given
       const wrapper = shallow(<UploadThumb {...props} />)
-      wrapper.setState({ image, isUploadDisabled: false, size: 15038040 })
+      wrapper.setState({ isUploadDisabled: false })
       wrapper.instance()['avatarEditor'] = {
         current: {
           getCroppingRect,
