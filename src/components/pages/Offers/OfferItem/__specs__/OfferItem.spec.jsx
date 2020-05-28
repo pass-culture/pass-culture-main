@@ -44,16 +44,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
     }
   })
 
-  describe('snapshot', () => {
-    it('should match snapshot', () => {
-      // when
-      const wrapper = shallow(<OfferItem {...props} />)
-
-      // then
-      expect(wrapper).toMatchSnapshot()
-    })
-  })
-
   describe('render', () => {
     describe('thumb Component', () => {
       it('should render a Thumb Component with the given url when offer has an active mediation', () => {
@@ -165,7 +155,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
           // then
           expect(offerPreviewLink).toHaveLength(1)
-          expect(offerPreviewLink.prop('href')).toMatch('/offre/details/M4/HA')
+          expect(offerPreviewLink.prop('offerWebappUrl')).toMatch('/offre/details/M4/HA')
         })
 
         it('should open a new window with correct link', () => {

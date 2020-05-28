@@ -133,10 +133,9 @@ class OfferItem extends PureComponent {
             <li>
               {maxDate && `jusqu’au ${maxDate.format('DD/MM/YYYY')}`}
             </li>
-            {availabilityMessage &&
-            <li>
+            {availabilityMessage && <li>
               {availabilityMessage}
-            </li>}
+                                    </li>}
             <li>
               {priceMin === priceMax ? (
                 <Price value={priceMin || 0} />
@@ -169,7 +168,7 @@ class OfferItem extends PureComponent {
               <li>
                 <OfferPreviewLink
                   className="button is-tertiary is-small offer-preview-link"
-                  href={offerWebappUrl}
+                  offerWebappUrl={offerWebappUrl}
                   onClick={this.handleHrefClick}
                 />
               </li>
