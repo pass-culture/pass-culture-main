@@ -49,7 +49,7 @@ class Discovery extends PureComponent {
     } = this.props
     const { location: prevLocation, recommendations: prevRecommendations } = prevProps
 
-    if (prevLocation.pathname !== location.pathname && location.pathname === '/decouverte-v3') {
+    if (prevLocation.pathname !== location.pathname && location.pathname === '/decouverte') {
       redirectToFirstRecommendationIfNeeded(recommendations)
     }
 
@@ -62,7 +62,7 @@ class Discovery extends PureComponent {
       const { offerId } = params
       const isOfferInReco = recommendations.filter(reco => reco.offerId === offerId).length > 0
       if (recommendations.length > 0 && !isOfferInReco) {
-        history.push('/decouverte-v3')
+        history.push('/decouverte')
       }
     }
   }
@@ -146,13 +146,13 @@ class Discovery extends PureComponent {
           <main className="discovery-page no-padding page">
             <Route
               key="route-discovery-deck"
-              path="/decouverte-v3/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
+              path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
               render={this.renderDeck}
               sensitive
             />
             <Route
               key="route-discovery-booking"
-              path="/decouverte-v3/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+              path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)/:details(details)/:booking(reservation)/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
               render={cancelView ? this.renderBookingCancellation : this.renderBooking}
               sensitive
             />

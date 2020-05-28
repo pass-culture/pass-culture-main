@@ -76,7 +76,7 @@ class Deck extends PureComponent {
     }
 
     const { offerId, mediationId } = nextRecommendation
-    const nextUrl = `/decouverte-v3/${offerId}/${mediationId}`
+    const nextUrl = `/decouverte/${offerId}/${mediationId}`
     history.push(nextUrl)
     this.handleRefreshNext()
   }
@@ -88,7 +88,7 @@ class Deck extends PureComponent {
     }
 
     const { offerId, mediationId } = previousRecommendation
-    const previousUrl = `/decouverte-v3/${offerId}/${mediationId}`
+    const previousUrl = `/decouverte/${offerId}/${mediationId}`
     history.push(previousUrl)
   }
 

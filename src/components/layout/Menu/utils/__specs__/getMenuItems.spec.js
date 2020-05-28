@@ -42,8 +42,7 @@ describe('getMenuItemsFromRoutes', () => {
       {
         component: DiscoveryContainerV3,
         icon: 'ico-offres',
-        featureName: 'RECOMMENDATIONS_WITH_GEOLOCATION',
-        path: '/decouverte-v3',
+        path: '/decouverte',
         title: 'Offres géolocalisées',
       },
       {

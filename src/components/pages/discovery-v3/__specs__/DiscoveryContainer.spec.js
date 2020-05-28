@@ -106,7 +106,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         // then
         expect(dispatch.mock.calls[0][0]).toStrictEqual({
           config: {
-            apiPath: `/recommendations/v3?`,
+            apiPath: `/recommendations?`,
             body: {
               readRecommendations: null,
               offersSentInLastCall: [],
@@ -116,7 +116,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
             method: 'PUT',
             normalizer: recommendationNormalizer,
           },
-          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS/V3?',
+          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?',
         })
       })
 
@@ -148,7 +148,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         // then
         expect(dispatch.mock.calls[0][0]).toStrictEqual({
           config: {
-            apiPath: `/recommendations/v3?`,
+            apiPath: `/recommendations?`,
             body: {
               readRecommendations: null,
               offersSentInLastCall: ['AE5'],
@@ -158,7 +158,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
             method: 'PUT',
             normalizer: recommendationNormalizer,
           },
-          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS/V3?',
+          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?',
         })
       })
 
@@ -192,7 +192,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         // then
         expect(dispatch.mock.calls[0][0]).toStrictEqual({
           config: {
-            apiPath: `/recommendations/v3?longitude=1.291&latitude=48.192`,
+            apiPath: `/recommendations?longitude=1.291&latitude=48.192`,
             body: {
               readRecommendations: null,
               offersSentInLastCall: ['AE4'],
@@ -202,7 +202,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
             method: 'PUT',
             normalizer: recommendationNormalizer,
           },
-          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS/V3?LONGITUDE=1.291&LATITUDE=48.192',
+          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?LONGITUDE=1.291&LATITUDE=48.192',
         })
       })
 
@@ -240,7 +240,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         // then
         expect(dispatch.mock.calls[0][0]).toStrictEqual({
           config: {
-            apiPath: `/recommendations/v3?longitude=48.256756&latitude=2.8796567`,
+            apiPath: `/recommendations?longitude=48.256756&latitude=2.8796567`,
             body: {
               readRecommendations: null,
               offersSentInLastCall: ['AE4'],
@@ -250,7 +250,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
             method: 'PUT',
             normalizer: recommendationNormalizer,
           },
-          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS/V3?LONGITUDE=48.256756&LATITUDE=2.8796567',
+          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?LONGITUDE=48.256756&LATITUDE=2.8796567',
         })
       })
 
@@ -288,7 +288,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
         // then
         expect(dispatch.mock.calls[0][0]).toStrictEqual({
           config: {
-            apiPath: `/recommendations/v3?`,
+            apiPath: `/recommendations?`,
             body: {
               readRecommendations: null,
               offersSentInLastCall: ['AE4'],
@@ -298,7 +298,7 @@ describe('src | components | pages | discovery | DiscoveryContainer', () => {
             method: 'PUT',
             normalizer: recommendationNormalizer,
           },
-          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS/V3?',
+          type: 'REQUEST_DATA_PUT_/RECOMMENDATIONS?',
         })
       })
     })

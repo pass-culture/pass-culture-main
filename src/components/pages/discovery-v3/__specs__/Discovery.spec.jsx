@@ -306,7 +306,7 @@ describe('src | components | pages | discovery | Discovery', () => {
         wrapper.setProps(props)
 
         // then
-        expect(props.history.push).toHaveBeenCalledWith('/decouverte-v3')
+        expect(props.history.push).toHaveBeenCalledWith('/decouverte')
       })
 
       it('should not redirect to first recommendation when offerId is in recommendations', () => {

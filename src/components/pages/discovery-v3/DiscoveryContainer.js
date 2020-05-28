@@ -57,7 +57,7 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
 
     dispatch(
       requestData({
-        apiPath: `/recommendations/v3?${queryParams}`,
+        apiPath: `/recommendations?${queryParams}`,
         body: {
           readRecommendations,
           offersSentInLastCall,
@@ -84,7 +84,7 @@ export const mapDispatchToProps = (dispatch, prevProps) => ({
 
     const firstOfferId = loadedRecommendations[0].offerId
     const firstMediationId = loadedRecommendations[0].mediationId
-    history.replace(`/decouverte-v3/${firstOfferId}/${firstMediationId}`)
+    history.replace(`/decouverte/${firstOfferId}/${firstMediationId}`)
   },
   resetReadRecommendations: () => {
     dispatch(assignData({ readRecommendations: [] }))
