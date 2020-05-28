@@ -570,7 +570,8 @@ elif [[ "$CMD" == "install-private" ]]; then
 # Install local git hook for pre-push actions
 elif [[ "$CMD" == "install-hooks" ]]; then
   RUN='cd $ROOT_PATH;
-    ln -s -f ../../../../hooks/pre-push .git/modules/api/hooks/pre-push'
+    ln -s -f ../../../../hooks/pre-push .git/modules/api/hooks/pre-push;
+    ln -s -f ../../../../hooks/pre-commit .git/modules/api/hooks/pre-commit'
 
 # Create symlink to use "pc" command (admin rights may be needed)
 elif [[ "$CMD" == "symlink" ]]; then
