@@ -19,11 +19,11 @@ EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST = timedelta(hours=72)
 def test_booking_completed_url_gets_normalized():
     # Given
     product = Product()
-    product.url = 'javascript:alert("plop")'
 
     offer = Offer()
     offer.id = 1
     offer.product = product
+    offer.url = 'http://javascript:alert("plop")?token={token}&email={email}'
 
     stock = StockSQLEntity()
 
@@ -37,10 +37,10 @@ def test_booking_completed_url_gets_normalized():
     booking.user = user
 
     # When
-    completedUrl = booking.completedUrl
+    completed_url = booking.completedUrl
 
     # Then
-    assert completedUrl == 'http://javascript:alert("plop")'
+    assert completed_url == 'http://javascript:alert("plop")?token=ABCDEF&email=bob@bob.com'
 
 
 @clean_database

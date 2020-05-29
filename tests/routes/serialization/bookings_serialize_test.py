@@ -181,5 +181,6 @@ class SerializeBookingForBookAnOfferTest:
             'user': {
                 'id': 'B9',
                 'wallet_balance': None
-            }
+            },
+            'completedUrl': None
         }

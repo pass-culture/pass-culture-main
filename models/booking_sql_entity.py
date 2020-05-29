@@ -87,7 +87,7 @@ class BookingSQLEntity(PcObject, Model, VersionedMixin):
     @property
     def completedUrl(self):
         offer = self.stock.offer
-        url = offer.product.url
+        url = offer.url
         if url is None:
             return None
         if not url.startswith('http'):
