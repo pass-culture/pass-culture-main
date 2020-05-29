@@ -112,7 +112,7 @@ describe('components | BookingsRecapTable', () => {
 
     // Then
     expect(wrapper.find('th')).toHaveLength(6)
-    expect(firstHeader.text()).toBe('Nom de l\'offre')
+    expect(firstHeader.text()).toBe("Nom de l'offre")
     expect(secondHeader.text()).toBe('')
     expect(thirdHeader.text()).toBe('Bénéficiaire')
     expect(fourthHeader.text()).toBe('Réservation')
@@ -462,7 +462,7 @@ describe('components | BookingsRecapTable', () => {
       isLoading: false,
     }
     const wrapper = mount(<BookingsRecapTable {...props} />)
-    const input = wrapper.find(Filters).find({ placeholder: 'Rechercher par nom d\'offre' })
+    const input = wrapper.find(Filters).find({ placeholder: "Rechercher par nom d'offre" })
 
     // When
     input.simulate('change', { target: { value: 'not findable' } })
@@ -484,7 +484,7 @@ describe('components | BookingsRecapTable', () => {
         {
           stock: {
             offer_name: 'Avez-vous déjà vu',
-            type: 'thing'
+            type: 'thing',
           },
           beneficiary: {
             lastname: 'Klepi',
@@ -494,7 +494,7 @@ describe('components | BookingsRecapTable', () => {
           booking_date: '2020-04-03T12:00:00Z',
           booking_token: 'ZEHBGD',
           booking_status: 'Validé',
-          booking_is_duo: false
+          booking_is_duo: false,
         },
       ],
       isLoading: false,
@@ -506,7 +506,10 @@ describe('components | BookingsRecapTable', () => {
     await offerNameInput.simulate('change', { target: { value: 'not findable' } })
 
     const selectedDate = moment('2020-05-20')
-    const offerDatePicker = wrapper.find(Filters).find(DatePicker)
+    const offerDatePicker = wrapper
+      .find(Filters)
+      .find(DatePicker)
+      .at(0)
     await offerDatePicker.simulate('change', selectedDate)
 
     const noFilteredBookings = wrapper.find(NoFilteredBookings)
@@ -520,7 +523,10 @@ describe('components | BookingsRecapTable', () => {
     // Then
     const offerName = wrapper.find(Filters).find({ placeholder: "Rechercher par nom d'offre" })
     expect(offerName.text()).toBe('')
-    const offerDate = wrapper.find(Filters).find(DatePicker)
+    const offerDate = wrapper
+      .find(Filters)
+      .find(DatePicker)
+      .at(0)
     expect(offerDate.prop('selected')).toBeNull()
   })
 })

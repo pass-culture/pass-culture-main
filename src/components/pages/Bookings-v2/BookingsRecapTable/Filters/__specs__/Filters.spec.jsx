@@ -18,23 +18,33 @@ describe('components | Filters', () => {
     await offerNameInput.simulate('change', { target: { value: 'Jurassic Park' } })
 
     // Then
-    expect(props.setFilters).toHaveBeenCalledWith({ offerName: 'Jurassic Park', offerDate: null })
+    expect(props.setFilters).toHaveBeenCalledWith({
+      offerName: 'Jurassic Park',
+      offerDate: null,
+      bookingBeginDate: null,
+      bookingEndDate: null,
+    })
   })
 
-  it('should apply offerDate filter when choosing an offer Data', async () => {
+  it('should apply offerDate filter when choosing an offer date', async () => {
     // Given
     const props = {
       setFilters: jest.fn(),
     }
     const selectedDate = moment('2020-05-20')
     const wrapper = shallow(<Filters {...props} />)
-    const offerDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' })
+    const offerDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(0)
 
     // When
     await offerDateInput.simulate('change', selectedDate)
 
     // Then
-    expect(props.setFilters).toHaveBeenCalledWith({ offerName: null, offerDate: '2020-05-20' })
+    expect(props.setFilters).toHaveBeenCalledWith({
+      offerName: null,
+      offerDate: '2020-05-20',
+      bookingBeginDate: null,
+      bookingEndDate: null,
+    })
   })
 
   it('should add filter to previous filters when applying a new one', async () => {
@@ -44,7 +54,7 @@ describe('components | Filters', () => {
     }
     const selectedDate = moment('2020-05-20')
     const wrapper = shallow(<Filters {...props} />)
-    const offerDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' })
+    const offerDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(0)
     const offerNameInput = wrapper.find({ placeholder: "Rechercher par nom d'offre" })
     await offerDateInput.simulate('change', selectedDate)
 
@@ -56,6 +66,50 @@ describe('components | Filters', () => {
     expect(props.setFilters).toHaveBeenCalledWith({
       offerName: 'Jurassic Park',
       offerDate: '2020-05-20',
+      bookingBeginDate: null,
+      bookingEndDate: null,
+    })
+  })
+
+  it('should apply bookingBeginDate filter when choosing an booking begin date', async () => {
+    // Given
+    const props = {
+      setFilters: jest.fn(),
+    }
+    const selectedDate = moment('2020-05-20')
+    const wrapper = shallow(<Filters {...props} />)
+    const offerDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(1)
+
+    // When
+    await offerDateInput.simulate('change', selectedDate)
+
+    // Then
+    expect(props.setFilters).toHaveBeenCalledWith({
+      bookingBeginDate: '2020-05-20',
+      bookingEndDate: null,
+      offerDate: null,
+      offerName: null,
+    })
+  })
+
+  it('should apply bookingEndDate filter when choosing an booking end date', async () => {
+    // Given
+    const props = {
+      setFilters: jest.fn(),
+    }
+    const selectedDate = moment('2020-05-20')
+    const wrapper = shallow(<Filters {...props} />)
+    const offerDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(2)
+
+    // When
+    await offerDateInput.simulate('change', selectedDate)
+
+    // Then
+    expect(props.setFilters).toHaveBeenCalledWith({
+      bookingBeginDate: null,
+      bookingEndDate: '2020-05-20',
+      offerDate: null,
+      offerName: null,
     })
   })
 })

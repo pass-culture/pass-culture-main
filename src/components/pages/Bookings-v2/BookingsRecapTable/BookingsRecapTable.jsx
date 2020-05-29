@@ -66,6 +66,8 @@ class BookingsRecapTable extends Component {
       filters: {
         offerName: '',
         offerDate: null,
+        bookingBeginDate: null,
+        bookingEndDate: null,
       },
     }
     this.filtersRef = React.createRef()

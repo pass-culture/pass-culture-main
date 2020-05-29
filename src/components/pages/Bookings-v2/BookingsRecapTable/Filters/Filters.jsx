@@ -13,9 +13,13 @@ class Filters extends Component {
       filters: {
         offerDate: null,
         offerName: null,
+        bookingBeginDate: null,
+        bookingEndDate: null,
       },
       keywords: '',
       selectedOfferDate: null,
+      selectedBookingBeginDate: null,
+      selectedBookingEndDate: null,
     }
   }
 
@@ -24,23 +28,35 @@ class Filters extends Component {
   }
 
   resetAllFilters = () => {
-    this.setState({
-      filters: {
-        offerName: null,
-        offerDate: null,
+    this.setState(
+      {
+        filters: {
+          offerName: null,
+          offerDate: null,
+          bookingBeginDate: null,
+          bookingEndDate: null,
+        },
+        keywords: '',
+        selectedOfferDate: null,
+        selectedBookingBeginDate: null,
+        selectedBookingEndDate: null,
       },
-      keywords: '',
-      selectedOfferDate: null,
-    }, () => {
-      const { filters } = this.state
-      this.applyFilters(filters)
-    })
+      () => {
+        const { filters } = this.state
+        this.applyFilters(filters)
+      }
+    )
   }
 
   applyFilters = debounce(filterValues => {
-    const { offerName, offerDate } = filterValues
+    const { offerName, offerDate, bookingBeginDate, bookingEndDate } = filterValues
     const { setFilters } = this.props
-    setFilters({ offerName: offerName, offerDate: offerDate })
+    setFilters({
+      offerName: offerName,
+      offerDate: offerDate,
+      bookingBeginDate: bookingBeginDate,
+      bookingEndDate: bookingEndDate,
+    })
   }, DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS)
 
   handleOfferNameChange = event => {
@@ -53,7 +69,7 @@ class Filters extends Component {
           ...filters,
           offerName: keywords.length > 0 ? keywords : null,
         },
-        keywords: keywords
+        keywords: keywords,
       },
       () => {
         const { filters } = this.state
@@ -80,8 +96,51 @@ class Filters extends Component {
     )
   }
 
+  handleBookingBeginDateChange = bookingBeginDate => {
+    const dateToFilter = bookingBeginDate === null ? null : bookingBeginDate.format('YYYY-MM-DD')
+    const { filters } = this.state
+    console.log('filters1', filters)
+    this.setState(
+      {
+        filters: {
+          ...filters,
+          bookingBeginDate: dateToFilter,
+        },
+        selectedBookingBeginDate: bookingBeginDate,
+      },
+      () => {
+        const { filters } = this.state
+        console.log('filters2', filters)
+        this.applyFilters(filters)
+      }
+    )
+  }
+
+  handleBookingEndDateChange = bookingEndDate => {
+    const dateToFilter = bookingEndDate === null ? null : bookingEndDate.format('YYYY-MM-DD')
+    const { filters } = this.state
+    this.setState(
+      {
+        filters: {
+          ...filters,
+          bookingEndDate: dateToFilter,
+        },
+        selectedBookingEndDate: bookingEndDate,
+      },
+      () => {
+        const { filters } = this.state
+        this.applyFilters(filters)
+      }
+    )
+  }
+
   render() {
-    const { keywords, selectedOfferDate } = this.state
+    const {
+      keywords,
+      selectedOfferDate,
+      selectedBookingBeginDate,
+      selectedBookingEndDate,
+    } = this.state
 
     return (
       <div className="filters-wrapper">
@@ -117,6 +176,35 @@ class Filters extends Component {
             placeholderText="JJ/MM/AAAA"
             selected={selectedOfferDate}
           />
+        </div>
+        <div className="fw-booking-date">
+          <label
+            className="fw-booking-date-label"
+            htmlFor="select-filter-booking-date"
+          >
+            {'Période de réservation'}
+          </label>
+          <div
+            className="fw-booking-date-inputs"
+            id="select-filter-booking-date"
+          >
+            <DatePicker
+              className="fw-booking-date-input"
+              customInput={<InputWithCalendar />}
+              dropdownMode="select"
+              onChange={this.handleBookingBeginDateChange}
+              placeholderText="JJ/MM/AAAA"
+              selected={selectedBookingBeginDate}
+            />
+            <DatePicker
+              className="fw-booking-date-input"
+              customInput={<InputWithCalendar />}
+              dropdownMode="select"
+              onChange={this.handleBookingEndDateChange}
+              placeholderText="JJ/MM/AAAA"
+              selected={selectedBookingEndDate}
+            />
+          </div>
         </div>
       </div>
     )
