@@ -17,6 +17,7 @@ describe('when page matching URI does not contain nav bar', () => {
   it('should return false', () => {
     // Given
     const paths = [
+      '/',
       '/reservation',
       '/informations',
       '/mot-de-passe',
