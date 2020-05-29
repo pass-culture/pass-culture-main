@@ -8,7 +8,7 @@ from flask import current_app as app, render_template
 
 from connectors import api_entreprises
 from domain.postal_code.postal_code import PostalCode
-from models import BookingSQLEntity, Offer, Offerer, StockSQLEntity, UserSQLEntity, UserOfferer, Venue
+from models import BookingSQLEntity, Offer, Offerer, StockSQLEntity, UserSQLEntity, UserOfferer, VenueSQLEntity
 from models.email import EmailStatus
 from repository import booking_queries
 from repository import email_queries
@@ -302,7 +302,7 @@ def make_activation_users_email(csv: str) -> Dict:
     }
 
 
-def make_venue_validated_email(venue: Venue) -> Dict:
+def make_venue_validated_email(venue: VenueSQLEntity) -> Dict:
     html = render_template(
         'mails/venue_validation_confirmation_email.html', venue=venue)
     return {

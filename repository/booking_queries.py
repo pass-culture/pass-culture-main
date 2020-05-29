@@ -21,7 +21,7 @@ from models.payment_status import TransactionStatus
 from models.recommendation import Recommendation
 from models.stock_sql_entity import StockSQLEntity, EVENT_AUTOMATIC_REFUND_DELAY
 from models.user_sql_entity import UserSQLEntity
-from models.venue import Venue
+from models import VenueSQLEntity
 from repository import offer_queries
 from utils.date import get_department_timezone
 
@@ -96,11 +96,11 @@ def find_all_bookings_info(offerer_id: int,
             query = _filter_bookings_by_dates(query, date_from, date_to)
 
     if only_digital_venues:
-        query = query.filter(Venue.isVirtual == True)
+        query = query.filter(VenueSQLEntity.isVirtual == True)
         query = _filter_bookings_by_dates(query, date_from, date_to)
 
     if venue_id:
-        query = query.filter(Venue.id == venue_id)
+        query = query.filter(VenueSQLEntity.id == venue_id)
 
     query = _select_only_needed_fields_for_bookings_info(query)
     return query.all()
@@ -122,7 +122,7 @@ def _select_only_needed_fields_for_bookings_info(query: Query) -> Query:
                                BookingSQLEntity.amount.label('amount'),
                                BookingSQLEntity.isCancelled.label('isCancelled'),
                                BookingSQLEntity.isUsed.label('isUsed'),
-                               Venue.name.label('venue_name'),
+                               VenueSQLEntity.name.label('venue_name'),
                                Offer.name.label('offer_name'),
                                UserSQLEntity.lastName.label('user_lastname'),
                                UserSQLEntity.firstName.label('user_firstname'),
@@ -211,7 +211,7 @@ def _build_bookings_recap_query(user_id: int) -> Query:
         .join(UserSQLEntity) \
         .join(StockSQLEntity) \
         .join(Offer) \
-        .join(Venue) \
+        .join(VenueSQLEntity) \
         .join(Offerer) \
         .join(UserOfferer) \
         .filter(UserOfferer.userId == user_id) \
@@ -229,7 +229,7 @@ def _build_bookings_recap_query(user_id: int) -> Query:
             UserSQLEntity.lastName.label("beneficiaryLastname"),
             UserSQLEntity.email.label("beneficiaryEmail"),
             StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
-            Venue.departementCode.label('venueDepartementCode'),
+            VenueSQLEntity.departementCode.label('venueDepartementCode'),
         )
 
 
@@ -307,7 +307,7 @@ def find_eligible_bookings_for_offerer(offerer_id: int) -> List[BookingSQLEntity
 
 def find_eligible_bookings_for_venue(venue_id: int) -> List[BookingSQLEntity]:
     return _query_keep_only_used_or_finished_bookings_on_non_activation_offers() \
-        .filter(Venue.id == venue_id) \
+        .filter(VenueSQLEntity.id == venue_id) \
         .reset_joinpoint() \
         .outerjoin(Payment) \
         .order_by(Payment.id, BookingSQLEntity.dateCreated.asc()) \
@@ -339,9 +339,9 @@ def _filter_bookings_by_offerer_id(offerer_id: int) -> Query:
     return BookingSQLEntity.query \
         .join(StockSQLEntity) \
         .join(Offer) \
-        .join(Venue) \
+        .join(VenueSQLEntity) \
         .join(UserSQLEntity) \
-        .filter(Venue.managingOffererId == offerer_id) \
+        .filter(VenueSQLEntity.managingOffererId == offerer_id) \
         .reset_joinpoint()
 
 
@@ -352,7 +352,7 @@ def _query_non_cancelled_non_activation_bookings() -> Query:
 
 def _query_keep_only_used_or_finished_bookings_on_non_activation_offers() -> Query:
     return _query_keep_on_non_activation_offers() \
-        .join(Venue) \
+        .join(VenueSQLEntity) \
         .filter(BookingSQLEntity.isCancelled == False) \
         .filter(BookingSQLEntity.isUsed == True)
 

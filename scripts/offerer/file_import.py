@@ -5,7 +5,7 @@ from typing import List, Callable
 from domain.password import random_password, generate_reset_token
 from models import Offerer, UserSQLEntity, UserOfferer
 from models.user_offerer import RightsType
-from models.venue import create_digital_venue
+from models.venue_sql_entity import create_digital_venue
 from repository import repository
 from repository.offerer_queries import find_by_siren
 from repository.user_offerer_queries import find_one_or_none_by_user_id_and_offerer_id

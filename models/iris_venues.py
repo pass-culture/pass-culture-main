@@ -8,7 +8,7 @@ from models.db import Model
 class IrisVenues(PcObject, Model):
     irisId = Column(BigInteger, ForeignKey('iris_france.id'), nullable=False)
     venueId = Column(BigInteger, ForeignKey('venue.id'), nullable=False)
-    venue = relationship('Venue',
+    venue = relationship('VenueSQLEntity',
                          foreign_keys=[venueId],
                          backref='IrisVenues')
     iris = relationship('IrisFrance',

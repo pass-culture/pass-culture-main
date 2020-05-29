@@ -1,4 +1,3 @@
-from unittest import mock
 from unittest.mock import patch, MagicMock
 
 from sandboxes.scripts.save_sandbox import save_sandbox
@@ -37,7 +36,7 @@ def test_save_industrial_sandbox(mock_request, app):
         StockSQLEntity=102,
         UserSQLEntity=53,
         UserOfferer=125,
-        Venue=22,
+        VenueSQLEntity=22,
     )
 
     # teardown

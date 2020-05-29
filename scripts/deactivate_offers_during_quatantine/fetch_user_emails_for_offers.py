@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from models import Venue, Offerer, UserOfferer, UserSQLEntity
+from models import VenueSQLEntity, Offerer, UserOfferer, UserSQLEntity
 from scripts.deactivate_offers_during_quatantine.deactivate_offers import \
     build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine
 
@@ -10,7 +10,7 @@ def fetch_user_emails_for_offers_with_max_stock_date_between_today_and_end_of_qu
         today: datetime):
     offers_query = build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine(
         first_day_after_quarantine, today)
-    users_info = offers_query.join(Venue) \
+    users_info = offers_query.join(VenueSQLEntity) \
         .join(Offerer) \
         .join(UserOfferer) \
         .join(UserSQLEntity) \

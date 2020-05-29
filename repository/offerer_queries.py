@@ -5,13 +5,13 @@ from sqlalchemy import or_
 
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model
-from models import Offerer, Venue, Offer, UserOfferer, UserSQLEntity, StockSQLEntity, Recommendation, ThingType, EventType
+from models import Offerer, VenueSQLEntity, Offer, UserOfferer, UserSQLEntity, StockSQLEntity, Recommendation, ThingType, EventType
 from models import RightsType
 from models.db import db
 
 get_filter_matching_ts_query_for_offerer = create_get_filter_matching_ts_query_in_any_model(
     Offerer,
-    Venue
+    VenueSQLEntity
 )
 
 
@@ -21,8 +21,8 @@ def count_offerer() -> int:
 
 def count_offerer_by_departement(departement_code: str) -> int:
     return _query_offerers_with_user_offerer() \
-        .join(Venue, Venue.managingOffererId == Offerer.id) \
-        .filter(Venue.departementCode == departement_code) \
+        .join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id) \
+        .filter(VenueSQLEntity.departementCode == departement_code) \
         .count()
 
 
@@ -32,7 +32,7 @@ def count_offerer_with_stock() -> int:
 
 def count_offerer_with_stock_by_departement(departement_code: str) -> int:
     return _query_offerers_with_stock() \
-        .filter(Venue.departementCode == departement_code) \
+        .filter(VenueSQLEntity.departementCode == departement_code) \
         .count()
 
 
@@ -45,7 +45,7 @@ def find_by_siren(siren):
 
 
 def get_by_offer_id(offer_id):
-    return Offerer.query.join(Venue).join(Offer).filter_by(id=offer_id).first()
+    return Offerer.query.join(VenueSQLEntity).join(Offer).filter_by(id=offer_id).first()
 
 
 def find_new_offerer_user_email(offerer_id):
@@ -74,11 +74,11 @@ def check_if_siren_already_exists(siren):
 
 
 def keep_offerers_with_at_least_one_physical_venue(query):
-    return query.filter(Offerer.managedVenues.any(Venue.isVirtual == False))
+    return query.filter(Offerer.managedVenues.any(VenueSQLEntity.isVirtual == False))
 
 
 def keep_offerers_with_no_physical_venue(query):
-    is_not_virtual = Venue.isVirtual == False
+    is_not_virtual = VenueSQLEntity.isVirtual == False
     return query.filter(~Offerer.managedVenues.any(is_not_virtual))
 
 
@@ -97,7 +97,7 @@ def _query_offerers_with_user_offerer():
 
 def _query_offerers_with_stock():
     return _query_offerers_with_user_offerer() \
-        .join(Venue, Venue.managingOffererId == Offerer.id) \
+        .join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id) \
         .join(Offer) \
         .join(StockSQLEntity) \
         .filter(Offer.type != str(ThingType.ACTIVATION)) \

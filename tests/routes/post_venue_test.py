@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from models import Venue
+from models import VenueSQLEntity
 from repository import repository
 from tests.conftest import TestClient, clean_database
 from tests.model_creators.generic_creators import create_offerer, create_user, \
@@ -42,7 +42,7 @@ class Post:
             assert response.status_code == 201
             idx = response.json['id']
 
-            venue = Venue.query.filter_by(id=dehumanize(idx)).one()
+            venue = VenueSQLEntity.query.filter_by(id=dehumanize(idx)).one()
             assert venue.name == 'Ma venue'
             assert venue.publicName == 'Ma venue publique'
             assert venue.siret == '30255917810045'

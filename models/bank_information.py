@@ -31,7 +31,7 @@ class BankInformation(PcObject, Model, VersionedMixin):
                      nullable=True,
                      unique=True)
 
-    venue = relationship('Venue',
+    venue = relationship('VenueSQLEntity',
                          foreign_keys=[venueId],
                          backref=backref('bankInformation', uselist=False))
 

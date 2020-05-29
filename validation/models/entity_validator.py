@@ -1,4 +1,4 @@
-from models import ApiErrors, BankInformation, HasAddressMixin, Offer, Offerer, Product, StockSQLEntity, UserSQLEntity, Venue
+from models import ApiErrors, BankInformation, HasAddressMixin, Offer, Offerer, Product, StockSQLEntity, UserSQLEntity, VenueSQLEntity
 from models.db import Model
 from validation.models import offer, bank_information, offerer, product, stock, user, venue, has_address_mixin
 from validation.models.generic import validate_generic
@@ -25,7 +25,7 @@ def validate(model: Model) -> ApiErrors:
         api_errors = stock.validate(model, api_errors)
     elif isinstance(model, UserSQLEntity):
         api_errors = user.validate(model, api_errors)
-    elif isinstance(model, Venue):
+    elif isinstance(model, VenueSQLEntity):
         api_errors = venue.validate(model, api_errors)
 
     return api_errors

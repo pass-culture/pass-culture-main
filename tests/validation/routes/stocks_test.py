@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from models import ApiErrors, Venue, Provider
+from models import ApiErrors, VenueSQLEntity, Provider
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from routes.serialization import serialize
@@ -21,7 +21,7 @@ class CheckDatesAreAllowedOnNewStockTest:
     class OfferIsOnThingTest:
         def test_should_raise_error_with_beginning_datetime(self):
             # Given
-            offer = create_offer_with_thing_product(Venue())
+            offer = create_offer_with_thing_product(VenueSQLEntity())
             beginningDatetime = datetime(2019, 2, 14)
 
             data = {
@@ -42,7 +42,7 @@ class CheckDatesAreAllowedOnNewStockTest:
 
         def test_should_not_raise_error_with_missing_booking_limit_datetime(self):
             # Given
-            offer = create_offer_with_thing_product(Venue())
+            offer = create_offer_with_thing_product(VenueSQLEntity())
 
             data = {
                 'price': 0,
@@ -59,7 +59,7 @@ class CheckDatesAreAllowedOnNewStockTest:
 
         def test_should_not_raise_error_with_none_booking_limit_datetime(self):
             # Given
-            offer = create_offer_with_thing_product(Venue())
+            offer = create_offer_with_thing_product(VenueSQLEntity())
             data = {
                 'price': 0,
                 'offerId': humanize(offer.id),
@@ -158,7 +158,7 @@ class CheckDatesAreAllowedOnExistingStockTest:
     class OfferIsOnThingTest:
         def test_should_raise_error_with_beginning_datetime(self):
             # Given
-            offer = create_offer_with_thing_product(Venue())
+            offer = create_offer_with_thing_product(VenueSQLEntity())
             data = {'beginningDatetime': serialize(datetime(2019, 2, 14))}
 
             # When
@@ -173,7 +173,7 @@ class CheckDatesAreAllowedOnExistingStockTest:
 
         def test_should_not_raise_error_with_missing_booking_limit_datetime(self):
             # Given
-            offer = create_offer_with_thing_product(Venue())
+            offer = create_offer_with_thing_product(VenueSQLEntity())
             beginningDatetime = datetime(2019, 2, 14)
 
             data = {
@@ -190,7 +190,7 @@ class CheckDatesAreAllowedOnExistingStockTest:
 
         def test_should_not_raise_error_with_none_booking_limit_datetime(self):
             # Given
-            offer = create_offer_with_thing_product(Venue())
+            offer = create_offer_with_thing_product(VenueSQLEntity())
             data = {
                 'price': 0,
                 'offerId': humanize(offer.id),

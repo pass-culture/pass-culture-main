@@ -17,7 +17,7 @@ from models import EventType, \
     Offerer, \
     StockSQLEntity, \
     ThingType, \
-    Venue, \
+    VenueSQLEntity, \
     Product, Favorite, BookingSQLEntity, DiscoveryView, DiscoveryViewV3, UserSQLEntity, SeenOffer
 from models.db import Model
 from models.feature import FeatureToggle
@@ -35,16 +35,16 @@ ALL_DEPARTMENTS_CODE = '00'
 
 def build_offer_search_base_query():
     return Offer.query.outerjoin(Product) \
-        .join(Venue) \
+        .join(VenueSQLEntity) \
         .join(Offerer)
 
 
 def department_or_national_offers(query, departement_codes):
     if ALL_DEPARTMENTS_CODE in departement_codes:
-        return query.filter((Venue.departementCode != None) | (Offer.isNational == True))
+        return query.filter((VenueSQLEntity.departementCode != None) | (Offer.isNational == True))
 
     query = query.filter(
-        Venue.departementCode.in_(departement_codes) | (Offer.isNational == True)
+        VenueSQLEntity.departementCode.in_(departement_codes) | (Offer.isNational == True)
     )
 
     logger.debug(lambda: '(reco) departement .count ' + str(query.count()))
@@ -63,7 +63,7 @@ def _has_active_and_validated_offerer() -> BinaryExpression:
 
 
 def _with_active_and_validated_offerer(query):
-    query = query.join(Offerer, Offerer.id == Venue.managingOffererId) \
+    query = query.join(Offerer, Offerer.id == VenueSQLEntity.managingOffererId) \
         .filter(_has_active_and_validated_offerer())
     logger.debug(lambda: '(reco) from active and validated offerer .count' + str(query.count()))
     return query
@@ -231,8 +231,8 @@ def _with_image(offer_query):
 
 
 def _with_validated_venue(offer_query):
-    return offer_query.join(Venue, Offer.venueId == Venue.id) \
-        .filter(Venue.validationToken == None)
+    return offer_query.join(VenueSQLEntity, Offer.venueId == VenueSQLEntity.id) \
+        .filter(VenueSQLEntity.validationToken == None)
 
 
 def _build_occurs_soon_or_is_thing_predicate():
@@ -264,7 +264,7 @@ def filter_offers_with_keywords_string(query: BaseQuery, keywords_string: str) -
     query_on_offer_using_keywords = _order_by_offer_name_containing_keyword_string(keywords_string,
                                                                                    query_on_offer_using_keywords)
 
-    query_on_venue_using_keywords = _build_query_using_keywords_on_model(keywords_string, query, Venue)
+    query_on_venue_using_keywords = _build_query_using_keywords_on_model(keywords_string, query, VenueSQLEntity)
 
     query_on_offerer_using_keywords = _build_query_using_keywords_on_model(keywords_string, query, Offerer)
 
@@ -320,7 +320,7 @@ def find_offers_with_filter_parameters(
         query = query.filter(Offer.venueId == venue_id)
 
     if offerer_id is not None:
-        query = query.filter(Venue.managingOffererId == offerer_id)
+        query = query.filter(VenueSQLEntity.managingOffererId == offerer_id)
 
     if not user.isAdmin:
         query = filter_query_where_user_is_user_offerer_and_is_validated(
@@ -341,8 +341,8 @@ def find_offers_with_filter_parameters(
 
 def find_searchable_offer(offer_id):
     return Offer.query.filter_by(id=offer_id) \
-        .join(Venue) \
-        .filter(Venue.validationToken == None) \
+        .join(VenueSQLEntity) \
+        .filter(VenueSQLEntity.validationToken == None) \
         .first()
 
 
@@ -380,17 +380,17 @@ def _filter_recommendable_offers_for_search(offer_query):
     offer_query = offer_query.reset_joinpoint() \
         .filter(Offer.isActive == True) \
         .filter(_has_active_and_validated_offerer()) \
-        .filter(Venue.validationToken == None) \
+        .filter(VenueSQLEntity.validationToken == None) \
         .filter(_offer_has_bookable_stocks())
     return offer_query
 
 
 def find_activation_offers(departement_code: str) -> List[Offer]:
     departement_codes = ILE_DE_FRANCE_DEPT_CODES if departement_code == '93' else [departement_code]
-    match_department_or_is_national = or_(Venue.departementCode.in_(departement_codes), Offer.isNational == True)
+    match_department_or_is_national = or_(VenueSQLEntity.departementCode.in_(departement_codes), Offer.isNational == True)
 
     query = Offer.query \
-        .join(Venue) \
+        .join(VenueSQLEntity) \
         .join(StockSQLEntity, StockSQLEntity.offerId == Offer.id) \
         .filter(Offer.type == str(EventType.ACTIVATION)) \
         .filter(match_department_or_is_national)

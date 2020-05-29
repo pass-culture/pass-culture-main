@@ -2,7 +2,7 @@ from flask import current_app as app, jsonify
 from flask_login import login_required
 
 from local_providers import AllocineStocks
-from models import Venue
+from models import VenueSQLEntity
 from repository.allocine_pivot_queries import has_allocine_pivot_for_venue
 from repository.provider_queries import get_enabled_providers_for_pro, \
     get_providers_enabled_for_pro_excluding_specific_provider
@@ -26,7 +26,7 @@ def list_providers():
 @app.route('/providers/<venue_id>', methods=['GET'])
 @login_required
 def get_providers_by_venue(venue_id: str):
-    venue = load_or_404(Venue, venue_id)
+    venue = load_or_404(VenueSQLEntity, venue_id)
     has_allocine_pivot = has_allocine_pivot_for_venue(venue)
     if has_allocine_pivot:
         providers = get_enabled_providers_for_pro()

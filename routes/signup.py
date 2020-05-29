@@ -7,7 +7,7 @@ from domain.user_emails import send_user_validation_email
 from models import ApiErrors, Deposit, Offerer, UserSQLEntity
 from models.feature import FeatureToggle
 from models.user_offerer import RightsType
-from models.venue import create_digital_venue
+from models.venue_sql_entity import create_digital_venue
 from repository import repository
 from routes.serialization import as_dict
 from utils.config import IS_INTEGRATION

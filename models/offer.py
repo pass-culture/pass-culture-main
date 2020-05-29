@@ -48,7 +48,7 @@ class Offer(PcObject,
                      nullable=False,
                      index=True)
 
-    venue = relationship('Venue',
+    venue = relationship('VenueSQLEntity',
                          foreign_keys=[venueId],
                          backref='offers')
 

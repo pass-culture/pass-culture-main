@@ -1,4 +1,4 @@
-from models import StockSQLEntity, EventType, ThingType, Mediation, Offer, Venue, Offerer
+from models import StockSQLEntity, EventType, ThingType, Mediation, Offer, VenueSQLEntity, Offerer
 from models.user_sql_entity import UserSQLEntity
 from repository.offer_queries import _filter_bookable_stocks_for_discovery
 from repository.user_queries import keep_only_webapp_users
@@ -49,8 +49,8 @@ def get_non_free_thing_offer_with_active_mediation():
         .filter(Offer.url == None) \
         .filter(StockSQLEntity.beginningDatetime == None) \
         .filter(Offer.mediations.any(Mediation.isActive == True)) \
-        .join(Venue, Venue.id == Offer.venueId) \
-        .join(Offerer, Offerer.id == Venue.managingOffererId) \
+        .join(VenueSQLEntity, VenueSQLEntity.id == Offer.venueId) \
+        .join(Offerer, Offerer.id == VenueSQLEntity.managingOffererId) \
         .filter(Offerer.validationToken == None) \
         .first()
 
@@ -68,8 +68,8 @@ def get_non_free_event_offer():
     query = query \
         .filter(Offer.type.in_([str(event_type) for event_type in EventType])) \
         .filter(Offer.mediations.any(Mediation.isActive == True)) \
-        .join(Venue, Venue.id == Offer.venueId) \
-        .join(Offerer, Offerer.id == Venue.managingOffererId) \
+        .join(VenueSQLEntity, VenueSQLEntity.id == Offer.venueId) \
+        .join(Offerer, Offerer.id == VenueSQLEntity.managingOffererId) \
         .filter(Offerer.validationToken == None)
     offer = query.first()
 

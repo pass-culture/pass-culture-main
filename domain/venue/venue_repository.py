@@ -12,3 +12,7 @@ class VenueRepository(ABC):
     @abstractmethod
     def find_by_name(self, name: str, offerer_id: str) -> List[Venue]:
         pass
+
+    @abstractmethod
+    def get_all_by_pro_identifier(self, pro_identifier: int) -> List[Venue]:
+        pass

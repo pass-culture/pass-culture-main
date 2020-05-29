@@ -23,7 +23,7 @@ def install_scripts():
 
     from models.user_offerer import UserOfferer
     from models.user_sql_entity import UserSQLEntity
-    from models.venue import Venue
+    from models import VenueSQLEntity
 
     import scripts.clean_database
     import scripts.request

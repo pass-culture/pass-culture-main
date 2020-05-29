@@ -14,7 +14,7 @@ from models import ApiKey, \
     UserSQLEntity, \
     UserOfferer, \
     UserSession, \
-    Venue, \
+    VenueSQLEntity, \
     Provider, \
     PaymentMessage, \
     BankInformation, \
@@ -59,7 +59,7 @@ def clean_all_database(*args, **kwargs):
     BankInformation.query.delete()
     IrisVenues.query.delete()
     IrisFrance.query.delete()
-    Venue.query.delete()
+    VenueSQLEntity.query.delete()
     UserOfferer.query.delete()
     ApiKey.query.delete()
     Offerer.query.delete()

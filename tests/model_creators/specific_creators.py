@@ -3,7 +3,7 @@ import string
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 
-from models import BookingSQLEntity, EventType, Offer, Offerer, Product, StockSQLEntity, ThingType, UserSQLEntity, Venue, Provider
+from models import BookingSQLEntity, EventType, Offer, Offerer, Product, StockSQLEntity, ThingType, UserSQLEntity, VenueSQLEntity, Provider
 from utils.token import random_token
 
 
@@ -51,7 +51,7 @@ def create_booking_for_thing(amount: int = 50,
     return booking
 
 
-def create_offer_with_event_product(venue: Venue = None,
+def create_offer_with_event_product(venue: VenueSQLEntity = None,
                                     booking_email: str = 'booking@example.net',
                                     date_created: datetime = datetime.utcnow(),
                                     description: Optional[str] = None,
@@ -103,7 +103,7 @@ def create_event_occurrence(offer: Offer,
     return event_occurrence
 
 
-def create_offer_with_thing_product(venue: Venue,
+def create_offer_with_thing_product(venue: VenueSQLEntity,
                                     author_name: str = 'Test Author',
                                     booking_email: Optional[str] = 'booking@example.net',
                                     date_created: datetime = datetime.utcnow(),
@@ -276,7 +276,7 @@ def create_stock_from_offer(offer: Offer, price: float = 9.90, quantity: Optiona
     return stock
 
 
-def create_stock_with_event_offer(offerer: Offerer, venue: Venue, price: int = 10,
+def create_stock_with_event_offer(offerer: Offerer, venue: VenueSQLEntity, price: int = 10,
                                   booking_email: str = 'offer.booking.email@example.com', quantity: int = 10,
                                   is_soft_deleted: bool = False, event_type: EventType = EventType.JEUX,
                                   name: str = 'Mains, sorts et papiers', offer_id: int = None,
@@ -298,7 +298,7 @@ def create_stock_with_event_offer(offerer: Offerer, venue: Venue, price: int = 1
     return stock
 
 
-def create_stock_with_thing_offer(offerer: Offerer, venue: Venue, offer: Offer = None, price: int = 10,
+def create_stock_with_thing_offer(offerer: Offerer, venue: VenueSQLEntity, offer: Offer = None, price: int = 10,
                                   quantity: int = 50, name: str = 'Test Book',
                                   booking_email: str = 'offer.booking.email@example.com', soft_deleted: bool = False,
                                   url: str = None, booking_limit_datetime: datetime = None,

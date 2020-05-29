@@ -4,8 +4,8 @@ from flask_login import current_user, login_required
 from domain.admin_emails import maybe_send_offerer_validation_email
 from domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro, \
     send_pro_user_waiting_for_validation_by_admin_email
-from models import Offerer, RightsType, Venue, UserSQLEntity, UserOfferer
-from models.venue import create_digital_venue
+from models import Offerer, RightsType, VenueSQLEntity, UserSQLEntity, UserOfferer
+from models.venue_sql_entity import create_digital_venue
 from repository import repository
 from repository.offerer_queries import filter_offerers_with_keywords_string, \
     find_by_siren, query_filter_offerer_by_user, query_filter_offerer_is_validated, \
@@ -47,7 +47,7 @@ def list_offerers():
 
     keywords = request.args.get('keywords')
     if keywords is not None:
-        query = filter_offerers_with_keywords_string(query.join(Venue), keywords)
+        query = filter_offerers_with_keywords_string(query.join(VenueSQLEntity), keywords)
         should_distinct_offerers = True
     else:
         should_distinct_offerers = False

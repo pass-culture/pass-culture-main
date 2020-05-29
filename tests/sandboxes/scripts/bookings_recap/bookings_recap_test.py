@@ -1,6 +1,6 @@
 from typing import List
 
-from models import BookingSQLEntity, UserSQLEntity, StockSQLEntity, Venue, Offer
+from models import BookingSQLEntity, UserSQLEntity, StockSQLEntity, VenueSQLEntity, Offer
 from sandboxes.scripts.creators.bookings_recap.bookings_recap import save_bookings_recap_sandbox
 from tests.conftest import clean_database
 
@@ -15,7 +15,7 @@ class BookingsRecapTest:
         assert BookingSQLEntity.query.count() == 10
         assert UserSQLEntity.query.count() == 4
         assert StockSQLEntity.query.count() == 4
-        assert Venue.query.count() == 3
+        assert VenueSQLEntity.query.count() == 3
         assert Offer.query.count() == 4
 
         assert self._find_bookings_by_user_firstname("Riri") == 3

@@ -1,8 +1,10 @@
+from domain.venue.venue import Venue
 from infrastructure.repository.venue import venue_domain_converter
 from infrastructure.repository.venue.venue_sql_repository import VenueSQLRepository
 from repository import repository
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_offerer, create_venue
+from tests.model_creators.generic_creators import create_offerer, create_venue, create_user, create_user_offerer
+
 
 class VenueSQLRepositoryTest:
     def setup_method(self):
@@ -93,3 +95,44 @@ class VenueSQLRepositoryTest:
 
         # then
         assert found_venue == []
+
+class GetAllByProIdentifierTest:
+    def setup_method(self):
+        self.venue_sql_repository = VenueSQLRepository()
+
+    @clean_database
+    def test_returns_all_venues_of_pro_user(self, app):
+        # given
+        pro_user = create_user()
+        offerer = create_offerer()
+        create_user_offerer(user=pro_user, offerer=offerer)
+        venue_1 = create_venue(offerer=offerer, siret='12345678912345')
+        venue_2 = create_venue(offerer=offerer, siret='98765432198765')
+
+        repository.save(venue_1, venue_2)
+
+        expected_venue_1 = venue_domain_converter.to_domain(venue_1)
+        expected_venue_2 = venue_domain_converter.to_domain(venue_2)
+
+        # when
+        found_venues = self.venue_sql_repository.get_all_by_pro_identifier(pro_user.id)
+
+        # then
+        assert len(found_venues) == 2
+        assert isinstance(found_venues[0], Venue)
+        found_venues_id = [venue.id for venue in found_venues]
+        assert set(found_venues_id) == {expected_venue_1.id, expected_venue_2.id}
+
+    @clean_database
+    def test_returns_empty_list_when_no_venues_exist(self, app):
+        # given
+        pro_user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user=pro_user, offerer=offerer)
+        repository.save(user_offerer)
+
+        # when
+        found_venues = self.venue_sql_repository.get_all_by_pro_identifier(pro_user.id)
+
+        # then
+        assert found_venues == []

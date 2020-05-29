@@ -1,12 +1,12 @@
 from decimal import Decimal, InvalidOperation
 
-from models import ApiErrors, Venue
+from models import ApiErrors, VenueSQLEntity
 
 MAX_LONGITUDE = 180
 MAX_LATITUDE = 90
 
 
-def check_existing_venue(venue: Venue):
+def check_existing_venue(venue: VenueSQLEntity):
     if not venue:
         errors = ApiErrors()
         errors.status_code = 404

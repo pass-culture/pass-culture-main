@@ -13,7 +13,7 @@ from domain.user_emails import \
     send_pro_user_waiting_for_validation_by_admin_email, \
     send_validation_confirmation_email_to_pro, \
     send_venue_validation_confirmation_email
-from models import ApiErrors, Offerer, UserOfferer, Venue
+from models import ApiErrors, Offerer, UserOfferer, VenueSQLEntity
 from models.api_errors import ForbiddenError, ResourceNotFoundError
 from models.feature import FeatureToggle
 from repository import feature_queries, repository, user_offerer_queries, \
@@ -75,7 +75,7 @@ def validate_new_offerer(token):
 def validate_venue():
     token = request.args.get('token')
     check_validation_request(token)
-    venue = Venue.query.filter_by(validationToken=token).first()
+    venue = VenueSQLEntity.query.filter_by(validationToken=token).first()
     check_venue_found(venue)
     venue.validationToken = None
     link_valid_venue_to_irises(venue)

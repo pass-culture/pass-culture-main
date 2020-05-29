@@ -12,7 +12,7 @@ from local_providers.local_provider import LocalProvider
 from local_providers.price_rule import AllocineStocksPriceRule
 from local_providers.providable_info import ProvidableInfo
 from models import AllocineVenueProvider, EventType, Offer, Product, StockSQLEntity, \
-    Venue
+    VenueSQLEntity
 from models.db import Model, db
 from models.local_provider_event import LocalProviderEventType
 from utils.date import DEFAULT_STORED_TIMEZONE, get_department_timezone
@@ -296,15 +296,15 @@ def _is_original_version_offer(id_at_providers: str) -> bool:
     return id_at_providers[-3:] == f"-{ORIGINAL_VERSION_SUFFIX}"
 
 
-def _build_movie_uuid(movie_information: Dict, venue: Venue) -> str:
+def _build_movie_uuid(movie_information: Dict, venue: VenueSQLEntity) -> str:
     return f"{movie_information['id']}%{venue.siret}"
 
 
-def _build_french_movie_uuid(movie_information: Dict, venue: Venue) -> str:
+def _build_french_movie_uuid(movie_information: Dict, venue: VenueSQLEntity) -> str:
     return f"{_build_movie_uuid(movie_information, venue)}-{FRENCH_VERSION_SUFFIX}"
 
 
-def _build_original_movie_uuid(movie_information: Dict, venue: Venue) -> str:
+def _build_original_movie_uuid(movie_information: Dict, venue: VenueSQLEntity) -> str:
     return f"{_build_movie_uuid(movie_information, venue)}-{ORIGINAL_VERSION_SUFFIX}"
 
 
@@ -312,5 +312,5 @@ def _build_showtime_uuid(showtime_details: Dict) -> str:
     return f"{showtime_details['diffusionVersion']}/{showtime_details['startsAt']}"
 
 
-def _build_stock_uuid(movie_information: Dict, venue: Venue, showtime_details: Dict) -> str:
+def _build_stock_uuid(movie_information: Dict, venue: VenueSQLEntity, showtime_details: Dict) -> str:
     return f"{_build_movie_uuid(movie_information, venue)}#{_build_showtime_uuid(showtime_details)}"

@@ -1,7 +1,7 @@
 import secrets
 from datetime import datetime, timedelta
 
-from models import Offerer, Venue, ThingType
+from models import Offerer, VenueSQLEntity, ThingType
 from repository import repository
 from repository.offerer_queries import find_first_by_user_offerer_id, \
     filter_offerers_with_keywords_string, find_by_id, count_offerer, count_offerer_with_stock, \

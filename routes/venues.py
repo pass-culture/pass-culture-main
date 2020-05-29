@@ -10,7 +10,7 @@ from domain.offers import update_is_active_status
 from domain.venues import is_algolia_indexing
 from models.feature import FeatureToggle
 from models.user_offerer import RightsType
-from models.venue import Venue
+from models import VenueSQLEntity
 from repository import feature_queries, repository
 from repository.iris_venues_queries import delete_venue_from_iris_venues
 from repository.venue_queries import find_by_managing_user
@@ -26,7 +26,7 @@ from validation.routes.venues import check_valid_edition, validate_coordinates
 @app.route('/venues/<venue_id>', methods=['GET'])
 @login_required
 def get_venue(venue_id):
-    venue = load_or_404(Venue, venue_id)
+    venue = load_or_404(VenueSQLEntity, venue_id)
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 200
 
@@ -53,7 +53,7 @@ def post_create_venue():
 @login_required
 @expect_json_data
 def edit_venue(venue_id):
-    venue = load_or_404(Venue, venue_id)
+    venue = load_or_404(VenueSQLEntity, venue_id)
     previous_venue = copy.deepcopy(venue)
     check_valid_edition(request, venue)
     validate_coordinates(request.json.get('latitude', None), request.json.get('longitude', None))
@@ -76,7 +76,7 @@ def edit_venue(venue_id):
 @app.route('/venues/<venue_id>/offers/activate', methods=['PUT'])
 @login_required
 def activate_venue_offers(venue_id):
-    venue = load_or_404(Venue, venue_id)
+    venue = load_or_404(VenueSQLEntity, venue_id)
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     offers = venue.offers
     activated_offers = update_is_active_status(offers, True)
@@ -89,7 +89,7 @@ def activate_venue_offers(venue_id):
 @app.route('/venues/<venue_id>/offers/deactivate', methods=['PUT'])
 @login_required
 def deactivate_venue_offers(venue_id):
-    venue = load_or_404(Venue, venue_id)
+    venue = load_or_404(VenueSQLEntity, venue_id)
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     offers = venue.offers
     deactivated_offers = update_is_active_status(offers, False)

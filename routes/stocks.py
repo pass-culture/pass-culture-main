@@ -11,7 +11,7 @@ from models.feature import FeatureToggle
 from models.mediation import Mediation
 from models.stock_sql_entity import StockSQLEntity
 from models.user_offerer import RightsType
-from models.venue import Venue
+from models import VenueSQLEntity
 from repository import offerer_queries, repository, feature_queries
 from repository.booking_queries import find_not_cancelled_bookings_by_stock
 from repository.offer_queries import get_offer_by_id
@@ -34,7 +34,7 @@ from validation.routes.stocks import check_request_has_offer_id, \
 search_models = [
     # Order is important
     Product,
-    Venue,
+    VenueSQLEntity,
 ]
 
 

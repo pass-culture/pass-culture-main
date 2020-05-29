@@ -1,7 +1,7 @@
 import pytest
 from sqlalchemy import func
 
-from models import Offer, Venue, ApiErrors
+from models import Offer, VenueSQLEntity, ApiErrors
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue
@@ -17,7 +17,7 @@ class TestLoadOrRaiseErrorTest:
 
         # When
         with pytest.raises(ApiErrors) as error:
-            load_or_raise_error(Venue, id)
+            load_or_raise_error(VenueSQLEntity, id)
 
         assert error.value.errors['global'] == [
             'Aucun objet ne correspond à cet identifiant dans notre base de données']
@@ -31,7 +31,7 @@ class TestLoadOrRaiseErrorTest:
 
         # When
         try:
-            load_or_raise_error(Venue, humanize(venue.id))
+            load_or_raise_error(VenueSQLEntity, humanize(venue.id))
 
         except:
             assert False

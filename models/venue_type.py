@@ -8,4 +8,4 @@ from models.db import Model
 class VenueType(PcObject, Model):
     label = Column(String(100), nullable=False)
 
-    venue = relationship('Venue')
+    venue = relationship('VenueSQLEntity')

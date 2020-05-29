@@ -1,6 +1,6 @@
 from typing import List
 
-from models import BankInformation, Venue, Offerer
+from models import BankInformation, VenueSQLEntity, Offerer
 from domain.bank_informations.bank_informations import BankInformations
 from models.bank_information import BankInformationStatus
 
@@ -20,12 +20,12 @@ def check_offerer_presence(offerer: Offerer):
         raise CannotRegisterBankInformation("Offerer not found")
 
 
-def check_venue_presence(venue: Venue):
+def check_venue_presence(venue: VenueSQLEntity):
     if not venue:
         raise CannotRegisterBankInformation("Venue not found")
 
 
-def check_venue_queried_by_name(venues: List[Venue]):
+def check_venue_queried_by_name(venues: List[VenueSQLEntity]):
     if len(venues) == 0:
         raise CannotRegisterBankInformation("Venue name not found")
     if len(venues) > 1:

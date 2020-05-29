@@ -1,7 +1,7 @@
 import secrets
 from datetime import datetime, timedelta
 
-from models import Venue, EventType
+from models import VenueSQLEntity, EventType
 from models.offer_type import ProductType
 from repository import repository
 from tests.conftest import clean_database, TestClient
@@ -98,7 +98,7 @@ class Get:
             create_offers_for(user, 20, siren='123456789')
             create_offers_for(user, 20, siren='987654321')
             auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
-            venue_id = Venue.query.first().id
+            venue_id = VenueSQLEntity.query.first().id
 
             # when
             response = auth_request.get('/offers?venueId=' + humanize(venue_id))
@@ -115,7 +115,7 @@ class Get:
             user = create_user(email='user@test.com')
             create_offers_for(user, 20, siren='987654321')
             auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
-            venue_id = Venue.query.first().id
+            venue_id = VenueSQLEntity.query.first().id
 
             # when
             response = auth_request.get('/offers?venueId=' + humanize(venue_id) + '&page=2')
@@ -132,7 +132,7 @@ class Get:
             user = create_user(email='user@test.com')
             create_offers_for(user, 20, siren='987654321')
             auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
-            venue_id = Venue.query.first().id
+            venue_id = VenueSQLEntity.query.first().id
 
             # when
             response = auth_request.get('/offers?venueId=' + humanize(venue_id) + '&page=1&keywords=Event')
@@ -152,7 +152,7 @@ class Get:
             user = create_user(email='user@test.com')
             create_offers_for(user, 20, siren='987654321')
             auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
-            venue_id = Venue.query.first().id
+            venue_id = VenueSQLEntity.query.first().id
 
             # when
             response = auth_request.get(

@@ -13,7 +13,7 @@ from models import AllocinePivot, AllocineVenueProviderPriceRule, ApiKey, \
     Criterion, Deposit, Email, Favorite, ImportStatus, IrisFrance, IrisVenues, \
     Mediation, Offer, Offerer, Payment, PaymentMessage, PaymentStatus, \
     Provider, Recommendation, RightsType, StockSQLEntity, ThingType, UserSQLEntity, UserOfferer, \
-    Venue, VenueProvider, SeenOffer
+    VenueSQLEntity, VenueProvider, SeenOffer
 from models.allocine_venue_provider import AllocineVenueProvider
 from models.bank_information import BankInformationStatus
 from models.email import EmailStatus
@@ -52,7 +52,7 @@ def create_bank_information(application_id: int = 1,
                             iban: str = 'FR7630006000011234567890189',
                             idx: int = None,
                             offerer: Offerer = None,
-                            venue: Venue = None,
+                            venue: VenueSQLEntity = None,
                             status: str = BankInformationStatus.ACCEPTED) -> BankInformation:
     bank_information = BankInformation()
     bank_information.applicationId = application_id
@@ -111,7 +111,7 @@ def create_booking(user: UserSQLEntity,
                    recommendation: Recommendation = None,
                    stock: StockSQLEntity = None,
                    token: str = None,
-                   venue: Venue = None) -> BookingSQLEntity:
+                   venue: VenueSQLEntity = None) -> BookingSQLEntity:
     booking = BookingSQLEntity()
     offerer = create_offerer(siren='987654321', address='Test address', city='Test city', postal_code='93000',
                              name='Test name')
@@ -511,8 +511,8 @@ def create_venue(offerer: Offerer,
                  siret: Optional[str] = '12345678912345',
                  thumb_count: int = 0,
                  validation_token: Optional[str] = None,
-                 venue_type_id: int = None) -> Venue:
-    venue = Venue()
+                 venue_type_id: int = None) -> VenueSQLEntity:
+    venue = VenueSQLEntity()
     venue.bookingEmail = booking_email
     venue.comment = comment
     venue.dateModifiedAtLastModified = date_modified_at_last_provider
@@ -539,7 +539,7 @@ def create_venue(offerer: Offerer,
     return venue
 
 
-def create_venue_provider(venue: Venue,
+def create_venue_provider(venue: VenueSQLEntity,
                           provider: Provider,
                           date_modified_at_last_provider: datetime = None,
                           id_at_providers: str = None,
@@ -580,7 +580,7 @@ def create_venue_label(label: str, idx: Optional[int] = None) -> VenueLabelSQLEn
     return venue_label
 
 
-def create_allocine_venue_provider(venue: Provider, allocine_provider: Venue, is_duo: bool = False,
+def create_allocine_venue_provider(venue: Provider, allocine_provider: VenueSQLEntity, is_duo: bool = False,
                                    quantity: Optional[int] = None,
                                    venue_id_at_offer_provider: str = None) -> AllocineVenueProvider:
     allocine_venue_provider = AllocineVenueProvider()
@@ -631,7 +631,7 @@ def create_iris(polygon: Polygon, iris_code: str = '123456789') -> IrisFrance:
     return iris
 
 
-def create_iris_venue(iris: IrisFrance, venue: Venue) -> IrisVenues:
+def create_iris_venue(iris: IrisFrance, venue: VenueSQLEntity) -> IrisVenues:
     iris_venue = IrisVenues()
     iris_venue.venue = venue
     iris_venue.iris = iris

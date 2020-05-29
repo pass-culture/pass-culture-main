@@ -1,9 +1,9 @@
-from models import ApiErrors, Venue
+from models import ApiErrors, VenueSQLEntity
 from repository import offerer_queries
 from repository import venue_queries
 
 
-def validate(venue: Venue, api_errors: ApiErrors) -> ApiErrors:
+def validate(venue: VenueSQLEntity, api_errors: ApiErrors) -> ApiErrors:
     if venue.siret is not None and not len(venue.siret) == 14:
         api_errors.add_error('siret', f'Ce code SIRET est invalide : {venue.siret}')
 

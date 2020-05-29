@@ -17,7 +17,7 @@ class VenueProvider(PcObject,
                      ForeignKey('venue.id'),
                      nullable=False)
 
-    venue = relationship('Venue',
+    venue = relationship('VenueSQLEntity',
                          foreign_keys=[venueId])
 
     providerId = Column(BigInteger,

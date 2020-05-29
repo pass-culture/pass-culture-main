@@ -9,7 +9,7 @@ from models.booking_sql_entity import BookingSQLEntity
 from models.offer import Offer
 from models.payment import Payment
 from models.stock_sql_entity import StockSQLEntity
-from models.venue import Venue
+from models import VenueSQLEntity
 
 
 def find_all_offerer_payments(offerer_id: int) -> List[namedtuple]:
@@ -23,8 +23,8 @@ def find_all_offerer_payments(offerer_id: int) -> List[namedtuple]:
         .reset_joinpoint() \
         .join(StockSQLEntity) \
         .join(Offer) \
-        .join(Venue) \
-        .filter(Venue.managingOffererId == offerer_id) \
+        .join(VenueSQLEntity) \
+        .filter(VenueSQLEntity.managingOffererId == offerer_id) \
         .join(Offerer) \
         .distinct(payment_status_query.c.paymentId) \
         .order_by(payment_status_query.c.paymentId.desc(),
@@ -35,9 +35,9 @@ def find_all_offerer_payments(offerer_id: int) -> List[namedtuple]:
                        BookingSQLEntity.dateUsed.label('booking_dateUsed'),
                        Offer.name.label('offer_name'),
                        Offerer.address.label('offerer_address'),
-                       Venue.name.label('venue_name'),
-                       Venue.siret.label('venue_siret'),
-                       Venue.address.label('venue_address'),
+                       VenueSQLEntity.name.label('venue_name'),
+                       VenueSQLEntity.siret.label('venue_siret'),
+                       VenueSQLEntity.address.label('venue_address'),
                        Payment.amount.label('amount'),
                        Payment.iban.label('iban'),
                        Payment.transactionLabel.label('transactionLabel'),

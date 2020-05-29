@@ -1,6 +1,6 @@
 from typing import List
 
-from models import StockSQLEntity, Offerer, UserSQLEntity, Offer, ThingType, Venue, Product
+from models import StockSQLEntity, Offerer, UserSQLEntity, Offer, ThingType, VenueSQLEntity, Product
 from utils.human_ids import dehumanize
 
 
@@ -21,7 +21,7 @@ def find_stocks_with_possible_filters(filters, user):
 def find_online_activation_stock():
     return StockSQLEntity.query \
         .join(Offer) \
-        .join(Venue) \
+        .join(VenueSQLEntity) \
         .filter_by(isVirtual=True) \
         .join(Product, Offer.productId == Product.id) \
         .filter_by(type=str(ThingType.ACTIVATION)) \

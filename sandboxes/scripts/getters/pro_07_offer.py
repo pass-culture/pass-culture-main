@@ -3,7 +3,7 @@ from models import ThingType
 from models.offer import Offer
 from models.offer_type import EventType
 from models.user_sql_entity import UserSQLEntity
-from models.venue import Venue
+from models import VenueSQLEntity
 from repository.offerer_queries import keep_offerers_with_at_least_one_physical_venue
 from repository.user_queries import filter_users_with_at_least_one_validated_offerer_validated_user_offerer
 from sandboxes.scripts.utils.helpers import get_offer_helper, \
@@ -15,7 +15,7 @@ from sandboxes.scripts.utils.helpers import get_offer_helper, \
 def get_existing_pro_validated_user_with_at_least_one_visible_offer():
     query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
-    query = query.join(Venue, Venue.managingOffererId == Offerer.id).join(Offer)
+    query = query.join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id).join(Offer)
     user = query.first()
 
     for uo in user.UserOfferers:
@@ -65,7 +65,7 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
 def get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_thing_offer():
     query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
-    query = query.join(Venue).join(Offer).filter(Offer.type.in_([str(thing_type) for thing_type in ThingType]))
+    query = query.join(VenueSQLEntity).join(Offer).filter(Offer.type.in_([str(thing_type) for thing_type in ThingType]))
     user = query.first()
 
     for uo in user.UserOfferers:
@@ -83,7 +83,7 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
 def get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_event_offer():
     query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
-    query = query.join(Venue).join(Offer).filter(Offer.type.in_([str(event_type) for event_type in EventType]))
+    query = query.join(VenueSQLEntity).join(Offer).filter(Offer.type.in_([str(event_type) for event_type in EventType]))
     user = query.first()
 
     for uo in user.UserOfferers:

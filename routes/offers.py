@@ -5,7 +5,7 @@ from flask_login import current_user, login_required
 from domain.admin_emails import \
     send_offer_creation_notification_to_administration
 from domain.create_offer import fill_offer_with_new_data, initialize_offer_from_product_id
-from models import Offer, RightsType, Venue
+from models import Offer, RightsType, VenueSQLEntity
 from models.api_errors import ResourceNotFoundError
 from repository import offer_queries, repository, venue_queries
 from repository.offer_queries import find_activation_offers, find_offers_with_filter_parameters
@@ -72,7 +72,7 @@ def list_activation_offers() -> (str, int):
 def post_offer() -> (str, int):
     venue_id = request.json.get('venueId')
     check_has_venue_id(venue_id)
-    venue = load_or_raise_error(Venue, venue_id)
+    venue = load_or_raise_error(VenueSQLEntity, venue_id)
     ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
     product_id = dehumanize(request.json.get('productId'))
 

@@ -4,7 +4,7 @@ from typing import Dict
 from local_providers import AllocineStocks, LibrairesStocks, TiteLiveStocks
 from local_providers.local_provider import LocalProvider
 from local_providers.price_rule import PriceRule
-from models import AllocineVenueProvider, Venue, VenueProvider, AllocineVenueProviderPriceRule, ApiErrors
+from models import AllocineVenueProvider, VenueSQLEntity, VenueProvider, AllocineVenueProviderPriceRule, ApiErrors
 from repository import repository
 from repository.allocine_pivot_queries import get_allocine_theaterId_for_venue
 from repository.venue_queries import find_by_id
@@ -29,7 +29,7 @@ def connect_provider_to_venue(provider_class: LocalProvider, venue_provider_payl
     return new_venue_provider
 
 
-def _connect_allocine_to_venue(venue: Venue, payload: Dict) -> AllocineVenueProvider:
+def _connect_allocine_to_venue(venue: VenueSQLEntity, payload: Dict) -> AllocineVenueProvider:
     allocine_theater_id = get_allocine_theaterId_for_venue(venue)
     allocine_venue_provider = _create_allocine_venue_provider(allocine_theater_id, payload, venue)
     allocine_venue_provider_price_rule = _create_allocine_venue_provider_price_rule(allocine_venue_provider, payload.get('price'))
@@ -39,7 +39,7 @@ def _connect_allocine_to_venue(venue: Venue, payload: Dict) -> AllocineVenueProv
     return allocine_venue_provider
 
 
-def _connect_titelive_or_libraires_to_venue(venue: Venue, payload: Dict) -> VenueProvider:
+def _connect_titelive_or_libraires_to_venue(venue: VenueSQLEntity, payload: Dict) -> VenueProvider:
     venue_provider = VenueProvider()
     venue_provider.venue = venue
     venue_provider.providerId = dehumanize(payload['providerId'])
@@ -59,7 +59,7 @@ def _create_allocine_venue_provider_price_rule(allocine_venue_provider: VenuePro
     return venue_provider_price_rule
 
 
-def _create_allocine_venue_provider(allocine_theater_id: str, payload: Dict, venue: Venue) -> AllocineVenueProvider:
+def _create_allocine_venue_provider(allocine_theater_id: str, payload: Dict, venue: VenueSQLEntity) -> AllocineVenueProvider:
     allocine_venue_provider = AllocineVenueProvider()
     allocine_venue_provider.venue = venue
     allocine_venue_provider.providerId = dehumanize(payload['providerId'])

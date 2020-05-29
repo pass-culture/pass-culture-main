@@ -19,7 +19,7 @@ from emails.pro_reset_password import retrieve_data_for_reset_password_pro_email
 from emails.pro_waiting_validation import retrieve_data_for_pro_user_waiting_offerer_validation_email
 from emails.user_notification_after_stock_update import retrieve_data_to_warn_user_after_stock_update_affecting_booking
 from emails.user_reset_password import retrieve_data_for_reset_password_user_email
-from models import BookingSQLEntity, Offerer, UserSQLEntity, Venue, UserOfferer
+from models import BookingSQLEntity, Offerer, UserSQLEntity, VenueSQLEntity, UserOfferer
 from repository.user_queries import find_all_emails_of_user_offerers_admins
 from utils.mailing import ADMINISTRATION_EMAIL_ADDRESS, \
     compute_email_html_part_and_recipients, \
@@ -121,7 +121,7 @@ def send_booking_cancellation_emails_to_user_and_offerer(booking: BookingSQLEnti
         send_offerer_driven_cancellation_email_to_offerer(booking, send_email)
 
 
-def send_venue_validation_confirmation_email(venue: Venue, send_email: Callable[..., bool]) -> bool:
+def send_venue_validation_confirmation_email(venue: VenueSQLEntity, send_email: Callable[..., bool]) -> bool:
     recipients = find_all_emails_of_user_offerers_admins(venue.managingOffererId)
     email = make_venue_validated_email(venue)
     email['Html-part'], email['To'] = compute_email_html_part_and_recipients(email['Html-part'], recipients)

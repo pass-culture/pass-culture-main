@@ -1,4 +1,4 @@
-from models import BankInformation, Venue, Offerer
+from models import BankInformation, VenueSQLEntity, Offerer
 from models.bank_information import BankInformationStatus
 from repository import bank_information_queries, offerer_queries, repository, venue_queries
 from domain.bank_information import check_offerer_presence, check_venue_presence, check_venue_queried_by_name, \
@@ -52,7 +52,7 @@ class SaveVenueBankInformations:
                 return self.bank_informations_repository.save(new_bank_informations)
 
 
-    def get_referent_venue(self, application_details: ApplicationDetail, offerer: Offerer) -> Venue:
+    def get_referent_venue(self, application_details: ApplicationDetail, offerer: Offerer) -> VenueSQLEntity:
         siret = application_details.siret
 
         if siret:

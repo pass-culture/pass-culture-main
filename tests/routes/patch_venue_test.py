@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from models import Venue
+from models import VenueSQLEntity
 from repository import repository
 from tests.conftest import TestClient, clean_database
 from tests.model_creators.generic_creators import create_offerer, create_user, \
@@ -51,7 +51,7 @@ class Patch:
             # when
             response = auth_request.patch('/venues/%s' % humanize(venue.id), json=venue_coordinates)
             idx = response.json['id']
-            venue = Venue.query.filter_by(id=dehumanize(idx)).one()
+            venue = VenueSQLEntity.query.filter_by(id=dehumanize(idx)).one()
 
             # Then
             mock_delete_venue_from_iris_venues.assert_called_once_with(venue.id)
@@ -172,7 +172,7 @@ class Patch:
 
             # then
             assert response.status_code == 200
-            venue = Venue.query.get(venue_id)
+            venue = VenueSQLEntity.query.get(venue_id)
             assert venue.name == 'Ma librairie'
             assert venue.venueTypeId == venue_type.id
             json = response.json

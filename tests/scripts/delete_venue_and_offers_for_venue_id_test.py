@@ -1,6 +1,6 @@
 import pytest
 
-from models import Venue, Offer
+from models import VenueSQLEntity, Offer
 from repository import repository
 from scripts.delete_venue_and_offers_for_venue_id import delete_venue_and_offers_for_venue_id
 from tests.conftest import clean_database
@@ -46,7 +46,7 @@ class DeleteVenueAndOffersForVenueIdTest:
         # Then
         offers = Offer.query.all()
         assert all([o.venue == venue2 for o in offers])
-        assert Venue.query.get(venue1.id) is None
+        assert VenueSQLEntity.query.get(venue1.id) is None
 
     @clean_database
     def test_delete_venue_and_offers_should_raise_an_attribute_error_when_at_least_one_offer_has_stocks(self, app):

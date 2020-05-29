@@ -1,6 +1,6 @@
 from typing import List
 
-from models import Venue, Offerer
+from models import VenueSQLEntity, Offerer
 from repository.iris_venues_queries import find_ids_of_irises_located_near_venue, insert_venue_in_iris_venue
 
 
@@ -12,11 +12,11 @@ def link_irises_to_existing_physical_venues(search_radius: int):
 
 
 def _find_all_venue_ids_to_link() -> List[int]:
-    venues = Venue.query \
+    venues = VenueSQLEntity.query \
         .join(Offerer) \
-        .filter(Venue.isVirtual == False) \
-        .filter(Venue.validationToken == None) \
+        .filter(VenueSQLEntity.isVirtual == False) \
+        .filter(VenueSQLEntity.validationToken == None) \
         .filter(Offerer.validationToken == None) \
-        .with_entities(Venue.id) \
+        .with_entities(VenueSQLEntity.id) \
         .all()
     return [venue.id for venue in venues]

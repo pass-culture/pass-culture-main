@@ -38,7 +38,7 @@ from models.stock_sql_entity import StockSQLEntity
 from models.user_sql_entity import UserSQLEntity
 from models.user_offerer import RightsType, UserOfferer
 from models.user_session import UserSession
-from models.venue import Venue
+from models.venue_sql_entity import VenueSQLEntity
 from models.venue_label_sql_entity import VenueLabelSQLEntity
 from models.venue_provider import VenueProvider
 from models.venue_type import VenueType
@@ -95,7 +95,7 @@ __all__ = (
     'UserOfferer',
     'UserSQLEntity',
     'UserSession',
-    'Venue',
+    'VenueSQLEntity',
     'VenueType',
     'VenueLabelSQLEntity',
     'SeenOffer'
@@ -110,7 +110,7 @@ models = (
     UserOfferer,
     VenueLabelSQLEntity,
     VenueType,
-    Venue,
+    VenueSQLEntity,
     ApiKey,
     AllocinePivot,
     BankInformation,

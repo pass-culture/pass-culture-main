@@ -4,7 +4,7 @@ import pandas
 from sqlalchemy import text
 from sqlalchemy.sql import selectable
 
-from models import Offerer, UserOfferer, Venue, Offer, StockSQLEntity, BookingSQLEntity, EventType, ThingType, UserSQLEntity, DiscoveryView
+from models import Offerer, UserOfferer, VenueSQLEntity, Offer, StockSQLEntity, BookingSQLEntity, EventType, ThingType, UserSQLEntity, DiscoveryView
 from models.db import db
 from repository import booking_queries
 from repository.booking_queries import count_cancelled as query_count_all_cancelled_bookings
@@ -25,13 +25,13 @@ def get_offerer_with_stock_count(departement_code: str = None) -> int:
 def get_offerers_with_offer_available_on_discovery_count(departement_code: str = None) -> int:
     active_offers_ids = get_active_offers_ids_query(user=None)
     query = Offerer.query\
-        .join(Venue)\
+        .join(VenueSQLEntity)\
         .join(Offer)\
         .filter(Offer.id.in_(active_offers_ids))
 
     if departement_code:
         query = query \
-            .filter(Venue.departementCode == departement_code)
+            .filter(VenueSQLEntity.departementCode == departement_code)
 
     return query \
         .distinct(Offerer.id) \
@@ -51,42 +51,42 @@ def get_offerers_with_offer_available_on_discovery_count_v2(departement_code: st
         .subquery()
 
 
-    return Venue.query\
-        .filter(Venue.id.in_(discovery_view_query))\
-        .distinct(Venue.managingOffererId)\
+    return VenueSQLEntity.query\
+        .filter(VenueSQLEntity.id.in_(discovery_view_query))\
+        .distinct(VenueSQLEntity.managingOffererId)\
         .count()
 
 
 def _get_all_physical_venue_ids() -> selectable.Alias:
-    return Venue.query \
-        .filter(Venue.departementCode != None) \
-        .with_entities(Venue.id) \
+    return VenueSQLEntity.query \
+        .filter(VenueSQLEntity.departementCode != None) \
+        .with_entities(VenueSQLEntity.id) \
         .subquery()
 
 
 def _get_physical_venue_ids_for_departement(departement_code: str) -> selectable.Alias:
-    return Venue.query \
+    return VenueSQLEntity.query \
         .filter_by(departementCode=departement_code) \
-        .with_entities(Venue.id) \
+        .with_entities(VenueSQLEntity.id) \
         .subquery()
 
 
 def get_offerers_with_offers_available_on_search_count(departement_code: str = None) -> int:
-    base_query = Offerer.query.join(Venue).join(Offer)
+    base_query = Offerer.query.join(VenueSQLEntity).join(Offer)
     query = _filter_recommendable_offers_for_search(base_query)
     query = query.distinct(Offerer.id)
 
     if departement_code:
-        query = query.filter(Venue.departementCode == departement_code)
+        query = query.filter(VenueSQLEntity.departementCode == departement_code)
 
     return query.count()
 
 
 def get_offerers_with_non_cancelled_bookings_count(departement_code: str = None) -> int:
-    query = Offerer.query.join(Venue)
+    query = Offerer.query.join(VenueSQLEntity)
 
     if departement_code:
-        query = query.filter(Venue.departementCode == departement_code)
+        query = query.filter(VenueSQLEntity.departementCode == departement_code)
 
     return query \
         .join(Offer) \
@@ -100,10 +100,10 @@ def get_offerers_with_non_cancelled_bookings_count(departement_code: str = None)
 
 
 def get_offers_with_user_offerer_and_stock_count(departement_code: str = None) -> int:
-    query = Offer.query.join(Venue)
+    query = Offer.query.join(VenueSQLEntity)
 
     if departement_code:
-        query = query.filter(Venue.departementCode == departement_code)
+        query = query.filter(VenueSQLEntity.departementCode == departement_code)
 
     return query \
         .join(Offerer) \
@@ -120,8 +120,8 @@ def get_offers_available_on_discovery_count(departement_code: str = None) -> int
     query = Offer.query.filter(Offer.id.in_(offer_ids_subquery))
 
     if departement_code:
-        query = query.join(Venue).filter(
-            Venue.departementCode == departement_code)
+        query = query.join(VenueSQLEntity).filter(
+            VenueSQLEntity.departementCode == departement_code)
 
     return query.count()
 
@@ -140,11 +140,11 @@ def get_offers_available_on_discovery_count_v2(departement_code: str = None) -> 
 
 
 def get_offers_available_on_search_count(departement_code: str = None) -> int:
-    base_query = Offer.query.join(Venue).join(Offerer)
+    base_query = Offer.query.join(VenueSQLEntity).join(Offerer)
     query = _filter_recommendable_offers_for_search(base_query)
 
     if departement_code:
-        query = query.filter(Venue.departementCode == departement_code)
+        query = query.filter(VenueSQLEntity.departementCode == departement_code)
 
     return query.count()
 
@@ -155,8 +155,8 @@ def get_offers_with_non_cancelled_bookings_count(departement_code: str = None) -
         .join(BookingSQLEntity)
 
     if departement_code:
-        query = query.join(Venue).filter(
-            Venue.departementCode == departement_code)
+        query = query.join(VenueSQLEntity).filter(
+            VenueSQLEntity.departementCode == departement_code)
 
     return query \
         .filter(BookingSQLEntity.isCancelled == False) \

@@ -5,7 +5,7 @@ from sqlalchemy import text
 
 from domain.payments import keep_only_not_processable_payments
 from models import BankInformation, BookingSQLEntity, Offer, Offerer, Payment, \
-    PaymentMessage, PaymentStatus, StockSQLEntity, Venue
+    PaymentMessage, PaymentStatus, StockSQLEntity, VenueSQLEntity
 from models.db import db
 from models.payment_status import TransactionStatus
 from models.bank_information import BankInformationStatus
@@ -67,7 +67,7 @@ def find_not_processable_with_bank_information() -> List[Payment]:
         .filter_by(status=TransactionStatus.NOT_PROCESSABLE) \
         .subquery()
 
-    predicate_matches_venue_or_offerer = ((Venue.id == BankInformation.venueId) | (
+    predicate_matches_venue_or_offerer = ((VenueSQLEntity.id == BankInformation.venueId) | (
         Offerer.id == BankInformation.offererId)) & (BankInformation.status == BankInformationStatus.ACCEPTED)
 
     not_processable_payments_with_bank_information = Payment.query \
@@ -75,7 +75,7 @@ def find_not_processable_with_bank_information() -> List[Payment]:
         .join(BookingSQLEntity) \
         .join(StockSQLEntity) \
         .join(Offer) \
-        .join(Venue) \
+        .join(VenueSQLEntity) \
         .join(Offerer) \
         .join(BankInformation, predicate_matches_venue_or_offerer) \
         .all()

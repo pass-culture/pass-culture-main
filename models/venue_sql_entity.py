@@ -43,13 +43,15 @@ CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
 """
 
 
-class Venue(PcObject,
-            Model,
-            HasThumbMixin,
-            HasAddressMixin,
-            ProvidableMixin,
-            VersionedMixin,
-            NeedsValidationMixin):
+class VenueSQLEntity(PcObject,
+                     Model,
+                     HasThumbMixin,
+                     HasAddressMixin,
+                     ProvidableMixin,
+                     VersionedMixin,
+                     NeedsValidationMixin):
+    __tablename__ = 'venue'
+
     id = Column(BigInteger, primary_key=True)
 
     name = Column(String(140), nullable=False)
@@ -133,12 +135,12 @@ class Venue(PcObject,
         return Offer.query.filter(Offer.venueId == self.id).count()
 
 
-@listens_for(Venue, 'before_insert')
+@listens_for(VenueSQLEntity, 'before_insert')
 def before_insert(mapper, connect, self):
     _fill_departement_code_from_postal_code(self)
 
 
-@listens_for(Venue, 'before_update')
+@listens_for(VenueSQLEntity, 'before_update')
 def before_update(mapper, connect, self):
     _fill_departement_code_from_postal_code(self)
 
@@ -151,17 +153,17 @@ def _fill_departement_code_from_postal_code(self):
 
 
 def create_digital_venue(offerer):
-    digital_venue = Venue()
+    digital_venue = VenueSQLEntity()
     digital_venue.isVirtual = True
     digital_venue.name = "Offre numérique"
     digital_venue.managingOfferer = offerer
     return digital_venue
 
 
-ts_indexes = [('idx_venue_fts_name', Venue.name),
-              ('idx_venue_fts_publicName', Venue.publicName,),
-              ('idx_venue_fts_address', Venue.address),
-              ('idx_venue_fts_siret', Venue.siret),
-              ('idx_venue_fts_city', Venue.city)]
+ts_indexes = [('idx_venue_fts_name', VenueSQLEntity.name),
+              ('idx_venue_fts_publicName', VenueSQLEntity.publicName,),
+              ('idx_venue_fts_address', VenueSQLEntity.address),
+              ('idx_venue_fts_siret', VenueSQLEntity.siret),
+              ('idx_venue_fts_city', VenueSQLEntity.city)]
 
-(Venue.__ts_vectors__, Venue.__table_args__) = create_ts_vector_and_table_args(ts_indexes)
+(VenueSQLEntity.__ts_vectors__, VenueSQLEntity.__table_args__) = create_ts_vector_and_table_args(ts_indexes)
