@@ -90,7 +90,7 @@ def pc_update_recommendations_view(app):
 
 @log_cron
 @cron_context
-@cron_require_feature(FeatureToggle.RECOMMENDATIONS_WITH_GEOLOCATION)
+@cron_require_feature(FeatureToggle.UPDATE_DISCOVERY_VIEW)
 def pc_update_recommendations_view_with_geolocation(app):
     discovery_view_v3_queries.refresh()
 

@@ -933,10 +933,7 @@ class Put:
                 iris = create_iris(POLYGON_TEST)
                 iris_venue = create_iris_venue(iris, venue)
 
-                feature = Feature.query.filter_by(name=FeatureToggle.RECOMMENDATIONS_WITH_GEOLOCATION).first()
-                feature.isActive = True
-
-                repository.save(user, stock, mediation, feature, iris_venue)
+                repository.save(user, stock, mediation, iris_venue)
                 discovery_view_v3_queries.refresh(concurrently=False)
 
                 reads = [
@@ -1024,10 +1021,7 @@ class Put:
                 user_latitude = 0
                 user_longitude = 0
 
-                feature = Feature.query.filter_by(name=FeatureToggle.RECOMMENDATIONS_WITH_GEOLOCATION).first()
-                feature.isActive = True
-
-                repository.save(user, stock, stock_of_digital_offer, mediation, mediation_of_digital_offer, feature)
+                repository.save(user, stock, stock_of_digital_offer, mediation, mediation_of_digital_offer)
                 discovery_view_v3_queries.refresh(concurrently=False)
 
                 auth_request = TestClient(app.test_client()).with_auth(user.email)
