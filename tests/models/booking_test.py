@@ -28,7 +28,7 @@ def test_booking_completed_url_gets_normalized():
     stock = StockSQLEntity()
 
     user = UserSQLEntity()
-    user.email = 'bob@bob.com'
+    user.email = 'bob@example.com'
 
     booking = BookingSQLEntity()
     booking.token = 'ABCDEF'
@@ -40,7 +40,7 @@ def test_booking_completed_url_gets_normalized():
     completed_url = booking.completedUrl
 
     # Then
-    assert completed_url == 'http://javascript:alert("plop")?token=ABCDEF&email=bob@bob.com'
+    assert completed_url == 'http://javascript:alert("plop")?token=ABCDEF&email=bob@example.com'
 
 
 @clean_database

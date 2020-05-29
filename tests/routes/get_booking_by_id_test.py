@@ -16,7 +16,6 @@ class Get:
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue,
                                                     url='https://host/path/{token}?offerId={offerId}&email={email}')
-            print(offer.url)
             stock = create_stock(offer=offer, price=0)
             booking = create_booking(user=user, stock=stock, token='ABCDEF', venue=venue)
             repository.save(booking)
