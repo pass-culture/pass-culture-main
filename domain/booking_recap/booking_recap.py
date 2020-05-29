@@ -11,7 +11,6 @@ class BookingRecapStatus(Enum):
 
 class BookingRecap:
     def __init__(self,
-                 offer_name: str,
                  beneficiary_lastname: str,
                  beneficiary_firstname: str,
                  beneficiary_email: str,
@@ -21,8 +20,9 @@ class BookingRecap:
                  booking_is_used: bool,
                  booking_is_cancelled: bool,
                  booking_is_reimbursed: bool,
+                 offer_name: str,
+                 venue_identifier: str,
                  ):
-        self.offer_name = offer_name
         self.beneficiary_lastname = beneficiary_lastname
         self.beneficiary_firstname = beneficiary_firstname
         self.beneficiary_email = beneficiary_email
@@ -32,6 +32,8 @@ class BookingRecap:
         self.booking_is_used = booking_is_used
         self.booking_is_cancelled = booking_is_cancelled
         self.booking_is_reimbursed = booking_is_reimbursed
+        self.offer_name = offer_name
+        self.venue_identifier = venue_identifier
 
     def __new__(cls, *args, **kwargs):
         if cls is BookingRecap:

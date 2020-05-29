@@ -23,6 +23,7 @@ from tests.model_creators.specific_creators import \
     create_offer_with_event_product, create_offer_with_thing_product, \
     create_stock_from_offer, create_stock_with_event_offer, \
     create_stock_with_thing_offer
+from utils.human_ids import humanize
 
 NOW = datetime.utcnow()
 ONE_DAY_AGO = NOW - timedelta(days=1)
@@ -1684,7 +1685,7 @@ class FindByProUserIdTest:
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer)
+        venue = create_venue(offerer, idx=15)
         stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=0, name='Harry Potter')
         booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
         booking = create_booking(user=beneficiary, stock=stock, date_created=booking_date, token='ABCDEF', is_used=True)
@@ -1706,6 +1707,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_cancelled is False
         assert expected_booking_recap.booking_is_reimbursed is False
         assert expected_booking_recap.booking_is_duo is False
+        assert expected_booking_recap.venue_identifier == humanize(venue.id)
 
     @clean_database
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app):
@@ -1769,7 +1771,7 @@ class FindByProUserIdTest:
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer)
+        venue = create_venue(offerer, idx='15')
         stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=0)
         yesterday = datetime.utcnow() - timedelta(days=1)
         booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF')
@@ -1792,6 +1794,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_cancelled is False
         assert expected_booking_recap.booking_is_reimbursed is False
         assert expected_booking_recap.event_beginning_datetime == stock.beginningDatetime.astimezone(tz.gettz('Europe/Paris'))
+        assert expected_booking_recap.venue_identifier == humanize(venue.id)
 
     @clean_database
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app):

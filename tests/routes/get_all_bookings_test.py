@@ -57,7 +57,7 @@ class GetTest:
             user = create_user()
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
+            venue = create_venue(offerer, idx=15)
             offer = create_offer_with_thing_product(venue)
             stock = create_stock(offer=offer, price=0)
             date_created = datetime(2020, 4, 3, 12, 0, 0)
@@ -87,7 +87,8 @@ class GetTest:
                     ),
                     'booking_token': 'ABCD',
                     'booking_status': 'validated',
-                    'booking_is_duo': False
+                    'booking_is_duo': False,
+                    'venue_identifier': 'B4'
                 }
             ]
             assert response.status_code == 200

@@ -32,6 +32,7 @@ def __serialize_booking_recap(booking_recap: BookingRecap) -> Dict:
         "booking_date": format_into_ISO_8601_with_timezone(booking_recap.booking_date),
         "booking_status": booking_recap.booking_status.value,
         "booking_is_duo": booking_recap.booking_is_duo,
+        "venue_identifier": booking_recap.venue_identifier,
     }
 
     if isinstance(booking_recap, EventBookingRecap):

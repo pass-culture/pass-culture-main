@@ -56,6 +56,7 @@ class SerializeBookingRecapTest:
                 "booking_token": "FOND",
                 "booking_status": "validated",
                 "booking_is_duo": False,
+                "venue_identifier": "AE",
             },
             {
                 "stock": {
@@ -71,6 +72,7 @@ class SerializeBookingRecapTest:
                 "booking_token": None,
                 "booking_status": "booked",
                 "booking_is_duo": True,
+                "venue_identifier": "AE",
             }
         ]
         assert result['bookings_recap'] == bookings_recap
@@ -120,6 +122,7 @@ class SerializeBookingRecapTest:
                 "booking_token": "SOLEIL",
                 "booking_status": "booked",
                 "booking_is_duo": False,
+                "venue_identifier": "AE",
             },
         ]
         assert results['bookings_recap'] == expected_response

@@ -24,6 +24,7 @@ from models.user_sql_entity import UserSQLEntity
 from models import VenueSQLEntity
 from repository import offer_queries
 from utils.date import get_department_timezone
+from utils.human_ids import humanize
 
 DUO_QUANTITY = 2
 
@@ -230,6 +231,7 @@ def _build_bookings_recap_query(user_id: int) -> Query:
             UserSQLEntity.email.label("beneficiaryEmail"),
             StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
             VenueSQLEntity.departementCode.label('venueDepartementCode'),
+            VenueSQLEntity.id.label('venueId'),
         )
 
 
@@ -269,6 +271,7 @@ def _serialize_booking_recap(booking: object) -> BookingRecap:
             date=booking.stockBeginningDatetime,
             departement_code=booking.venueDepartementCode
         ),
+        venue_identifier=humanize(booking.venueId),
     ) if booking.stockBeginningDatetime is not None else ThingBookingRecap(
         offer_name=booking.offerName,
         beneficiary_email=booking.beneficiaryEmail,
@@ -280,6 +283,7 @@ def _serialize_booking_recap(booking: object) -> BookingRecap:
         booking_is_cancelled=booking.isCancelled,
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
+        venue_identifier=humanize(booking.venueId),
     )
 
 
