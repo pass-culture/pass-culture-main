@@ -10,16 +10,18 @@ from models import VenueSQLEntity, Offerer, UserOfferer, UserSQLEntity
 
 class VenueSQLRepository(VenueRepository):
     def find_by_siret(self, siret):
-        return VenueSQLEntity.query \
+        venue_sql_entity = VenueSQLEntity.query \
             .filter_by(siret=siret) \
             .one_or_none()
+        return venue_domain_converter.to_domain(venue_sql_entity) if venue_sql_entity else None
 
-    def find_by_name(self, name, offerer_id):
-        return VenueSQLEntity.query \
+    def find_by_name(self, name, offerer_id) -> List[Venue]:
+        venue_sql_entities = VenueSQLEntity.query \
             .filter_by(managingOffererId=offerer_id) \
             .filter(VenueSQLEntity.siret == None) \
             .filter(func.lower(VenueSQLEntity.name) == func.lower(name)) \
             .all()
+        return [venue_domain_converter.to_domain(venue_sql_entity) for venue_sql_entity in venue_sql_entities]
 
     def get_all_by_pro_identifier(self, pro_identifier: int) -> List[Venue]:
         venue_sql_entities = VenueSQLEntity.query \

@@ -1,5 +1,5 @@
 from domain.venue.venue import Venue
-from models import VenueSQLEntity as VenueSQLEntity
+from models import VenueSQLEntity
 
 
 def to_domain(venue_sql_entity: VenueSQLEntity) -> Venue:

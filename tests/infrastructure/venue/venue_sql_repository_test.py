@@ -25,6 +25,7 @@ class VenueSQLRepositoryTest:
         found_venue = self.venue_sql_repository.find_by_siret(siret)
 
         # then
+        assert isinstance(found_venue, Venue)
         assert found_venue.siret == expected_venue.siret
         assert found_venue.id == expected_venue.id
 
@@ -61,6 +62,7 @@ class VenueSQLRepositoryTest:
         # then
         assert len(found_venues) == 1
         found_venue = found_venues[0]
+        assert isinstance(found_venue, Venue)
         assert found_venue.name == expected_venue.name
         assert found_venue.id == expected_venue.id
         assert found_venue.siret is None
