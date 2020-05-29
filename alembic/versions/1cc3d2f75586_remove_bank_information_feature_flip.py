@@ -1,7 +1,7 @@
 """remove_bank_information_feature_flip
 
 Revision ID: 1cc3d2f75586
-Revises: 1126d1b72a1b
+Revises: 3a5629a53c17
 Create Date: 2020-05-26 15:06:20.076645
 
 """
@@ -11,7 +11,7 @@ import enum
 
 # revision identifiers, used by Alembic.
 revision = '1cc3d2f75586'
-down_revision = '1126d1b72a1b'
+down_revision = '3a5629a53c17'
 branch_labels = None
 depends_on = None
 

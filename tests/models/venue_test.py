@@ -319,7 +319,7 @@ class VenueBankInformationTest:
         offerer = create_offerer(siren='123456789')
         venue = create_venue(offerer, siret='12345678912345')
         bank_information = create_bank_information(
-            id_at_providers='123456789', application_id=12345, venue=venue, status=BankInformationStatus.DRAFT, iban=None, bic=None)
+            application_id=12345, venue=venue, status=BankInformationStatus.DRAFT, iban=None, bic=None)
         repository.save(bank_information)
 
         # When
@@ -334,7 +334,7 @@ class VenueBankInformationTest:
         offerer = create_offerer(siren='123456789')
         venue = create_venue(offerer, siret='12345678912345')
         bank_information = create_bank_information(
-            id_at_providers='123456789', venue=venue, status=BankInformationStatus.REJECTED, iban=None, bic=None)
+            venue=venue, status=BankInformationStatus.REJECTED, iban=None, bic=None)
         repository.save(bank_information)
 
         # When
