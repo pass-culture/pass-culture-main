@@ -41,6 +41,7 @@ describe('components | BookingsRecapTable', () => {
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
         booking_is_duo: false,
+        venue_identifier: 'AE'
       },
       {
         stock: {
@@ -55,6 +56,7 @@ describe('components | BookingsRecapTable', () => {
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
         booking_is_duo: true,
+        venue_identifier: 'AF'
       },
     ]
 
@@ -96,6 +98,7 @@ describe('components | BookingsRecapTable', () => {
           booking_token: 'ZEHBGD',
           booking_status: 'Validé',
           booking_is_duo: true,
+          venue_identifier: 'AE'
         },
       ],
       isLoading: false,
@@ -137,6 +140,7 @@ describe('components | BookingsRecapTable', () => {
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
         booking_is_duo: true,
+        venue_identifier: 'AE'
       },
     ]
 
@@ -192,6 +196,7 @@ describe('components | BookingsRecapTable', () => {
         booking_is_duo: false,
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
+        venue_identifier: 'AE'
       },
     ]
     const props = {
@@ -230,6 +235,8 @@ describe('components | BookingsRecapTable', () => {
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
+        booking_is_duo: false,
+        venue_identifier: 'AE'
       },
     ]
     const props = {
@@ -266,6 +273,7 @@ describe('components | BookingsRecapTable', () => {
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
         booking_is_duo: true,
+        venue_identifier: 'AE'
       },
       {
         stock: {
@@ -281,6 +289,7 @@ describe('components | BookingsRecapTable', () => {
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
         booking_is_duo: true,
+        venue_identifier: 'AE'
       },
     ]
 
@@ -340,6 +349,8 @@ describe('components | BookingsRecapTable', () => {
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
+        booking_is_duo: false,
+        venue_identifier: 'AE'
       },
     ]
     const props = {
@@ -379,9 +390,10 @@ describe('components | BookingsRecapTable', () => {
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
+        booking_is_duo: false,
+        venue_identifier: 'AE'
       },
     ])
-
     const booking = {
       stock: {
         offer_name: 'Avez-vous déjà vu',
@@ -394,6 +406,8 @@ describe('components | BookingsRecapTable', () => {
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ZEHBGD',
       booking_status: 'Validé',
+      booking_is_duo: false,
+      venue_identifier: 'AE'
     }
     const bookingsRecap = [booking]
     const newBooking = {
@@ -408,6 +422,8 @@ describe('components | BookingsRecapTable', () => {
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ZEHBGD',
       booking_status: 'Validé',
+      booking_is_duo: false,
+      venue_identifier: 'AE'
     }
     const props = {
       bookingsRecap: bookingsRecap,
@@ -416,7 +432,7 @@ describe('components | BookingsRecapTable', () => {
     const wrapper = shallow(<BookingsRecapTable {...props} />)
 
     // When
-    wrapper.setState({ filters: { offerName: 'Avez', offerDate: null } })
+    wrapper.setState({ filters: { offerName: 'Avez', offerDate: null, offerVenue: '' } })
     const expectedBookingsRecap = [...props.bookingsRecap].concat([newBooking])
     wrapper.setProps({
       bookingsRecap: expectedBookingsRecap,
@@ -435,13 +451,13 @@ describe('components | BookingsRecapTable', () => {
     expect(filterBookingsRecap).toHaveBeenCalledWith(expectedBookingsRecap, {
       offerName: 'Avez',
       offerDate: null,
+      offerVenue: ''
     })
   })
 
   it('should render a NoFilteredBookings when no bookings', () => {
     // given
     filterBookingsRecap.mockReturnValue([])
-
     const booking = {
       stock: {
         offer_name: 'Avez-vous déjà vu',
@@ -456,6 +472,7 @@ describe('components | BookingsRecapTable', () => {
       booking_token: 'ZEHBGD',
       booking_status: 'Validé',
       booking_is_duo: false,
+      venue_identifier: 'AE'
     }
     const props = {
       bookingsRecap: [booking],
@@ -495,6 +512,10 @@ describe('components | BookingsRecapTable', () => {
           booking_token: 'ZEHBGD',
           booking_status: 'Validé',
           booking_is_duo: false,
+<<<<<<< HEAD
+=======
+          venue_identifier: 'AE'
+>>>>>>> (PC-3294): added offer venue filter
         },
       ],
       isLoading: false,

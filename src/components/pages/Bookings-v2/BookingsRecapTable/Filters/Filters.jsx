@@ -4,6 +4,7 @@ import debounce from 'lodash.debounce'
 import DatePicker from 'react-datepicker'
 import moment from 'moment'
 import InputWithCalendar from './InputWithCalendar'
+import { fetchAllVenuesByProUser } from '../../../../../services/venuesService'
 
 const DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
 
@@ -12,16 +13,23 @@ class Filters extends Component {
     super(props)
     this.state = {
       filters: {
-        offerDate: null,
-        offerName: null,
         bookingBeginningDate: null,
         bookingEndingDate: null,
+        offerDate: null,
+        offerName: null,
+        offerVenue: null,
       },
       keywords: '',
       selectedOfferDate: null,
       selectedBookingBeginningDate: null,
       selectedBookingEndingDate: moment(),
+      selectedVenue: '',
+      venues: []
     }
+  }
+
+  componentDidMount() {
+    fetchAllVenuesByProUser().then((venues) => this.setState({ venues: venues }))
   }
 
   shouldComponentUpdate() {
@@ -34,6 +42,7 @@ class Filters extends Component {
         filters: {
           offerName: null,
           offerDate: null,
+          offerVenue: '',
           bookingBeginningDate: null,
           bookingEndingDate: null,
         },
@@ -41,6 +50,7 @@ class Filters extends Component {
         selectedOfferDate: null,
         selectedBookingBeginningDate: null,
         selectedBookingEndingDate: moment(),
+        selectedVenue: ''
       },
       () => {
         const { filters } = this.state
@@ -50,11 +60,12 @@ class Filters extends Component {
   }
 
   applyFilters = debounce(filterValues => {
-    const { offerName, offerDate, bookingBeginningDate, bookingEndingDate } = filterValues
+    const { offerName, offerDate, offerVenue, bookingBeginningDate, bookingEndingDate } = filterValues
     const { setFilters } = this.props
     setFilters({
-      offerName: offerName,
       offerDate: offerDate,
+      offerName: offerName,
+      offerVenue: offerVenue,
       bookingBeginningDate: bookingBeginningDate,
       bookingEndingDate: bookingEndingDate,
     })
@@ -126,6 +137,22 @@ class Filters extends Component {
           bookingEndingDate: dateToFilter,
         },
         selectedBookingEndingDate: bookingEndingDate,
+      }, () => {
+        const { filters } = this.state
+        this.applyFilters(filters)
+      })
+  }
+
+  handleVenueSelection = (event) => {
+    const venueId = event.target.value
+    const { filters } = this.state
+
+    this.setState({
+        filters: {
+          ...filters,
+          offerVenue: venueId
+        },
+        selectedVenue: venueId
       },
       () => {
         const { filters } = this.state
@@ -141,6 +168,8 @@ class Filters extends Component {
       selectedOfferDate,
       selectedBookingBeginningDate,
       selectedBookingEndingDate,
+      selectedVenue,
+      venues
     } = this.state
 
     return (
@@ -156,7 +185,7 @@ class Filters extends Component {
             className="fw-offer-name-input"
             id="text-filter-input"
             onChange={this.handleOfferNameChange}
-            placeholder={"Rechercher par nom d'offre"}
+            placeholder={'Rechercher par nom d\'offre'}
             type="text"
             value={keywords}
           />
@@ -167,7 +196,7 @@ class Filters extends Component {
               className="fw-offer-date-label"
               htmlFor="select-filter-date"
             >
-              {"Date de l'évènement"}
+              {'Date de l\'évènement'}
             </label>
             <DatePicker
               className="fw-offer-date-input"
@@ -181,18 +210,30 @@ class Filters extends Component {
           </div>
           <div className="fw-venues">
             <label
-              className="fw-offer-date-label"
-              htmlFor="select-filter-date"
+              className="fw-offer-venue-label"
+              htmlFor="text-filter-input"
             >
               {'Lieu'}
             </label>
-            <div>
-              <select>
-                <option>
-                  {'Tous les lieux'}
+            <select
+              onBlur={this.handleVenueSelection}
+              onChange={this.handleVenueSelection}
+              value={selectedVenue}
+            >
+              <option
+                value=""
+              >
+                {'Tous les lieux'}
+              </option>
+              {venues.map(venue => (
+                <option
+                  key={venue.id}
+                  value={venue.id}
+                >
+                  {venue.isVirtual ? `${venue.name} - Offre numérique` : venue.name}
                 </option>
-              </select>
-            </div>
+              ))}
+            </select>
           </div>
           <div className="fw-booking-date">
             <label

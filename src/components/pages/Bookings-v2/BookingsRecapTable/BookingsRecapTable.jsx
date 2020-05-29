@@ -11,8 +11,8 @@ import { NB_BOOKINGS_PER_PAGE } from './NB_BOOKINGS_PER_PAGE'
 import TableFrame from './Table/TableFrame'
 import Filters from './Filters/Filters'
 import NoFilteredBookings from './NoFilteredBookings/NoFilteredBookings'
-import filterBookingsRecap from './utils/filterBookingsRecap'
 import findOldestBookingDate from './utils/findOldestBookingDate'
+import filterBookingsRecap from './utils/filterBookingsRecap'
 
 class BookingsRecapTable extends Component {
   constructor(props) {

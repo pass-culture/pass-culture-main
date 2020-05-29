@@ -20,10 +20,14 @@ const InputWithCalendar = props => {
   )
 }
 
+InputWithCalendar.defaultProps = {
+  props: {}
+}
+
 InputWithCalendar.propTypes = {
   props: PropTypes.shape({
     customClass: PropTypes.string,
-  }).isRequired,
+  }),
 }
 
 export default InputWithCalendar

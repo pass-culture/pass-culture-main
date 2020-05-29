@@ -35,18 +35,26 @@ const filterByBookingEndDate = (bookingEndingDate, booking) => {
     const offerDateFromBookingRecap = extractDateFromDatetime(booking.booking_date)
     return offerDateFromBookingRecap <= bookingEndingDate
   }
+}
+
+const filterByOfferVenue = (offerVenue, booking) => {
+  if (offerVenue !== '') {
+    const venueIdentifier = booking.venue_identifier
+    return venueIdentifier === offerVenue
+  }
   return true
 }
 
 const filterBookingsRecap = (bookingsRecap, filters) => {
-  const { offerName, offerDate, bookingBeginningDate, bookingEndingDate } = filters
+  const { offerName, offerDate, offerVenue, bookingBeginningDate, bookingEndingDate } = filters
 
   return bookingsRecap.filter(booking => {
     return (
       filterByOfferName(offerName, booking) &&
       filterByOfferDate(offerDate, booking) &&
       filterBybookingBeginningDate(bookingBeginningDate, booking) &&
-      filterByBookingEndDate(bookingEndingDate, booking)
+      filterByBookingEndDate(bookingEndingDate, booking) &&
+      filterByOfferVenue(offerVenue, booking)
     )
   })
 }
