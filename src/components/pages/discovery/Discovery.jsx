@@ -1,4 +1,3 @@
-
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Route } from 'react-router-dom'
@@ -13,7 +12,6 @@ import { MINIMUM_DELAY_BEFORE_UPDATING_SEED_3_HOURS } from './utils/utils'
 class Discovery extends PureComponent {
   constructor(props) {
     super(props)
-
     this.state = {
       atWorldsEnd: false,
       hasError: false,
@@ -41,13 +39,15 @@ class Discovery extends PureComponent {
 
   componentDidUpdate(prevProps) {
     const {
+      history,
       location,
       recommendations,
       redirectToFirstRecommendationIfNeeded,
+      match,
       seedLastRequestTimestamp,
       updateLastRequestTimestamp,
     } = this.props
-    const { location: prevLocation } = prevProps
+    const { location: prevLocation, recommendations: prevRecommendations } = prevProps
 
     if (prevLocation.pathname !== location.pathname && location.pathname === '/decouverte') {
       redirectToFirstRecommendationIfNeeded(recommendations)
@@ -56,6 +56,20 @@ class Discovery extends PureComponent {
     if (Date.now() > seedLastRequestTimestamp + MINIMUM_DELAY_BEFORE_UPDATING_SEED_3_HOURS) {
       updateLastRequestTimestamp()
     }
+
+    if (prevRecommendations !== recommendations) {
+      const { params } = match
+      const { offerId } = params
+      const isOfferInReco = recommendations.filter(reco => reco.offerId === offerId).length > 0
+      if (recommendations.length > 0 && !isOfferInReco) {
+        history.push('/decouverte')
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    const { resetRecommendations } = this.props
+    resetRecommendations()
   }
 
   handleFail = (state, action) => {
@@ -86,6 +100,7 @@ class Discovery extends PureComponent {
 
   updateRecommendations = () => {
     const {
+      coordinates,
       currentRecommendation,
       loadRecommendations,
       readRecommendations,
@@ -105,7 +120,8 @@ class Discovery extends PureComponent {
         currentRecommendation,
         recommendations,
         readRecommendations,
-        shouldReloadRecommendations
+        shouldReloadRecommendations,
+        coordinates
       )
     })
   }
@@ -121,7 +137,7 @@ class Discovery extends PureComponent {
 
   render() {
     const { match } = this.props
-    const { hasError, hasError500, hasNoMoreRecommendations, isLoading } = this.state
+    const { hasError, hasNoMoreRecommendations, isLoading, hasError500 } = this.state
     const cancelView = isCancelView(match)
 
     return (
@@ -162,7 +178,9 @@ Discovery.defaultProps = {
 }
 
 Discovery.propTypes = {
+  coordinates: PropTypes.shape().isRequired,
   currentRecommendation: PropTypes.shape(),
+  history: PropTypes.shape().isRequired,
   loadRecommendations: PropTypes.func.isRequired,
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
@@ -170,12 +188,14 @@ Discovery.propTypes = {
   match: PropTypes.shape({
     params: PropTypes.shape({
       view: PropTypes.string,
+      offerId: PropTypes.string,
     }),
   }).isRequired,
   readRecommendations: PropTypes.arrayOf(PropTypes.shape()),
   recommendations: PropTypes.arrayOf(PropTypes.shape()),
   redirectToFirstRecommendationIfNeeded: PropTypes.func.isRequired,
   resetReadRecommendations: PropTypes.func.isRequired,
+  resetRecommendations: PropTypes.func.isRequired,
   saveLastRecommendationsRequestTimestamp: PropTypes.func.isRequired,
   seedLastRequestTimestamp: PropTypes.number.isRequired,
   shouldReloadRecommendations: PropTypes.bool.isRequired,
@@ -183,3 +203,5 @@ Discovery.propTypes = {
 }
 
 export default Discovery
+
+

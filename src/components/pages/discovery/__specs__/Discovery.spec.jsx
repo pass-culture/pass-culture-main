@@ -1,4 +1,3 @@
-
 import { shallow } from 'enzyme'
 import React from 'react'
 import { Route } from 'react-router'
@@ -11,7 +10,13 @@ describe('src | components | pages | discovery | Discovery', () => {
 
   beforeEach(() => {
     props = {
+      coordinates: {
+        longitude: 48.256756,
+        latitude: 2.8796567,
+        watchId: 1,
+      },
       currentRecommendation: {},
+      history: { push: jest.fn() },
       loadRecommendations: jest.fn(),
       location: {
         pathname: '',
@@ -24,6 +29,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       recommendations: [],
       redirectToFirstRecommendationIfNeeded: jest.fn(),
       resetReadRecommendations: jest.fn(),
+      resetRecommendations: jest.fn(),
       resetRecommendationsAndBookings: jest.fn(),
       saveLastRecommendationsRequestTimestamp: jest.fn(),
       seedLastRequestTimestamp: 1574236357670,
@@ -63,7 +69,8 @@ describe('src | components | pages | discovery | Discovery', () => {
         props.currentRecommendation,
         props.recommendations,
         props.readRecommendations,
-        props.shouldReloadRecommendations
+        props.shouldReloadRecommendations,
+        props.coordinates
       )
       expect(props.saveLastRecommendationsRequestTimestamp).toHaveBeenCalledWith()
     })
@@ -82,7 +89,9 @@ describe('src | components | pages | discovery | Discovery', () => {
         props.recommendations
       )
     })
+  })
 
+  describe('when unmount', () => {
     it('should display discovery when API is up and data are filled', () => {
       // given
       const wrapper = shallow(<Discovery {...props} />)
@@ -90,6 +99,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       // when
       wrapper.setState({
         hasError: false,
+        hasError500: false,
         hasNoMoreRecommendations: false,
         isLoading: false,
       })
@@ -272,6 +282,99 @@ describe('src | components | pages | discovery | Discovery', () => {
 
       // then
       expect(props.updateLastRequestTimestamp).not.toHaveBeenCalledWith()
+    })
+
+    describe('when user refresh discovery', () => {
+      it('should redirect to first recommendation when offerID is not in recommendations', () => {
+        // given
+        props.recommendations = [
+          {
+            offerId: 'A1',
+          },
+        ]
+        props.match.params = {
+          offerId: 'A1',
+        }
+        const wrapper = shallow(<Discovery {...props} />)
+        props.recommendations = [
+          {
+            offerId: 'A2',
+          },
+        ]
+
+        // when
+        wrapper.setProps(props)
+
+        // then
+        expect(props.history.push).toHaveBeenCalledWith('/decouverte')
+      })
+
+      it('should not redirect to first recommendation when offerId is in recommendations', () => {
+        // given
+        props.recommendations = [
+          {
+            offerId: 'A1',
+          },
+        ]
+        props.match.params = {
+          offerId: 'A1',
+        }
+        const wrapper = shallow(<Discovery {...props} />)
+
+        // when
+        wrapper.setProps(props)
+
+        // then
+        expect(props.history.push).not.toHaveBeenCalled()
+      })
+
+      it('should not redirect to first recommendation when reaching end of discovery', () => {
+        // given
+        props.recommendations = [
+          {
+            offerId: 'A1',
+          },
+        ]
+        props.match.params = {
+          offerId: 'A1',
+        }
+        const wrapper = shallow(<Discovery {...props} />)
+        props.recommendations = []
+
+        // when
+        wrapper.setProps(props)
+
+        // then
+        expect(props.history.push).not.toHaveBeenCalled()
+      })
+
+      it('should not redirect to first recommendation when swiping to next recommendation', () => {
+        // given
+        props.currentRecommendation = {
+          offerId: 'A1',
+        }
+        props.recommendations = [
+          {
+            offerId: 'A1',
+          },
+          {
+            offerId: 'A2',
+          },
+        ]
+        props.match.params = {
+          offerId: 'A1',
+        }
+        const wrapper = shallow(<Discovery {...props} />)
+        props.currentRecommendation = {
+          offerId: 'A2',
+        }
+
+        // when
+        wrapper.setProps(props)
+
+        // then
+        expect(props.history.push).not.toHaveBeenCalled()
+      })
     })
   })
 })
