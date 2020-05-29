@@ -1,7 +1,8 @@
 from repository import repository
 from tests.conftest import clean_database, TestClient
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue
-from tests.model_creators.specific_creators import create_stock_with_thing_offer, create_offer_with_thing_product
+from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
+    create_stock
+from tests.model_creators.specific_creators import create_offer_with_thing_product
 from utils.human_ids import humanize
 
 
@@ -10,14 +11,14 @@ class Get:
         @clean_database
         def expect_booking_to_have_completed_url(self, app):
             # Given
-            user = create_user(email='user+plus@email.fr')
+            user = create_user(email='user@example.com')
             offerer = create_offerer()
             venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue,
                                                     url='https://host/path/{token}?offerId={offerId}&email={email}')
-            stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, offer=offer, price=0)
+            print(offer.url)
+            stock = create_stock(offer=offer, price=0)
             booking = create_booking(user=user, stock=stock, token='ABCDEF', venue=venue)
-
             repository.save(booking)
 
             # When
@@ -28,7 +29,7 @@ class Get:
             assert response.status_code == 200
             response_json = response.json
             assert response_json[
-                       'completedUrl'] == 'https://host/path/ABCDEF?offerId=%s&email=user+plus@email.fr' % humanize(
+                       'completedUrl'] == 'https://host/path/ABCDEF?offerId=%s&email=user@example.com' % humanize(
                 offer.id)
             assert 'stock' in response_json
             assert 'offer' in response_json['stock']
