@@ -12,15 +12,15 @@ class BookingsRecapTest:
         save_bookings_recap_sandbox()
 
         # Then
-        assert BookingSQLEntity.query.count() == 10
+        assert BookingSQLEntity.query.count() == 11
         assert UserSQLEntity.query.count() == 4
-        assert StockSQLEntity.query.count() == 4
-        assert VenueSQLEntity.query.count() == 3
-        assert Offer.query.count() == 4
+        assert StockSQLEntity.query.count() == 5
+        assert VenueSQLEntity.query.count() == 4
+        assert Offer.query.count() == 5
 
         assert self._find_bookings_by_user_firstname("Riri") == 3
         assert self._find_bookings_by_user_firstname("Fifi") == 3
-        assert self._find_bookings_by_user_firstname("Loulou") == 4
+        assert self._find_bookings_by_user_firstname("Loulou") == 5
 
     def _find_bookings_by_user_firstname(self, name: str) -> List[BookingSQLEntity]:
         return BookingSQLEntity.query \
