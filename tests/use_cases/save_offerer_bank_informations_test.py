@@ -241,7 +241,6 @@ class SaveOffererBankInformationsTest:
             offerer = create_offerer(siren='793875030')
             other_offerer = create_offerer(siren='793875019')
             bank_information = create_bank_information(
-                id_at_providers='1',
                 application_id=8,
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
@@ -249,7 +248,6 @@ class SaveOffererBankInformationsTest:
                 date_modified=datetime(2018, 1, 1)
             )
             other_bank_information = create_bank_information(
-                id_at_providers='2',
                 application_id=79,
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
