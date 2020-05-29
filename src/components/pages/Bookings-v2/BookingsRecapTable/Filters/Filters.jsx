@@ -4,6 +4,8 @@ import debounce from 'lodash.debounce'
 import DatePicker from 'react-datepicker'
 import { InputWithCalendar } from '../../../../layout/form/fields/DateField/InputWithCalendar'
 import moment from 'moment'
+import { InputWithBeginCalendar } from './InputWithBeginCalendar'
+import { InputWithEndCalendar } from './InputWithEndCalendar'
 
 const DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
 
@@ -161,53 +163,70 @@ class Filters extends Component {
             value={keywords}
           />
         </div>
-        <div className="fw-offer-date">
-          <label
-            className="fw-offer-date-label"
-            htmlFor="select-filter-date"
-          >
-            {"Date de l'évènement"}
-          </label>
-          <DatePicker
-            className="fw-offer-date-input"
-            customInput={<InputWithCalendar />}
-            dropdownMode="select"
-            id="select-filter-date"
-            onChange={this.handleOfferDateChange}
-            placeholderText="JJ/MM/AAAA"
-            selected={selectedOfferDate}
-          />
-        </div>
-        <div className="fw-booking-date">
-          <label
-            className="fw-booking-date-label"
-            htmlFor="select-filter-booking-date"
-          >
-            {'Période de réservation'}
-          </label>
-          <div
-            className="fw-booking-date-inputs"
-            id="select-filter-booking-date"
-          >
+        <div className="fw-second-line">
+          <div className="fw-offer-date">
+            <label
+              className="fw-offer-date-label"
+              htmlFor="select-filter-date"
+            >
+              {"Date de l'évènement"}
+            </label>
             <DatePicker
-              className="fw-booking-date-input"
+              className="fw-offer-date-input"
               customInput={<InputWithCalendar />}
               dropdownMode="select"
-              minDate={oldestBookingDate}
-              onChange={this.handleBookingBeginDateChange}
+              id="select-filter-date"
+              onChange={this.handleOfferDateChange}
               placeholderText="JJ/MM/AAAA"
-              selected={selectedBookingBeginDate}
+              selected={selectedOfferDate}
             />
-            <DatePicker
-              className="fw-booking-date-input"
-              customInput={<InputWithCalendar />}
-              dropdownMode="select"
-              maxDate={moment()}
-              minDate={selectedBookingBeginDate}
-              onChange={this.handleBookingEndDateChange}
-              placeholderText="JJ/MM/AAAA"
-              selected={selectedBookingEndDate}
-            />
+          </div>
+          <div className="fw-venues">
+            <label
+              className="fw-offer-date-label"
+              htmlFor="select-filter-date"
+            >
+              {'Lieu'}
+            </label>
+            <div>
+              <select>
+                <option>
+                  {'Tous les lieux'}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div className="fw-booking-date">
+            <label
+              className="fw-booking-date-label"
+              htmlFor="select-filter-booking-date"
+            >
+              {'Période de réservation'}
+            </label>
+            <div
+              className="fw-booking-date-inputs"
+              id="select-filter-booking-date"
+            >
+              <DatePicker
+                className="fw-booking-date-input"
+                customInput={<InputWithBeginCalendar />}
+                dropdownMode="select"
+                minDate={oldestBookingDate}
+                onChange={this.handleBookingBeginDateChange}
+                placeholderText="JJ/MM/AAAA"
+                selected={selectedBookingBeginDate}
+              />
+              <DatePicker
+                className="fw-booking-date-input"
+                customInput={<InputWithEndCalendar />}
+                dropdownMode="select"
+                maxDate={moment()}
+                minDate={selectedBookingBeginDate}
+                onChange={this.handleBookingEndDateChange}
+                placeholderText="JJ/MM/AAAA"
+                selected={selectedBookingEndDate}
+              />
+            </div>
           </div>
         </div>
       </div>

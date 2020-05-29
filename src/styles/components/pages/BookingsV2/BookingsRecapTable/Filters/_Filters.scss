@@ -1,7 +1,7 @@
 .fw-offer-name {
   align-items: center;
   display: flex;
-  margin-bottom: rem(30px);
+  margin-bottom: rem(24px);
 
   .fw-offer-name-label {
     flex: 1;
@@ -9,7 +9,7 @@
   }
 
   .fw-offer-name-input {
-    border-radius: $control-radius;
+    border-radius: rem(20px);
     border: $control-border-width solid $grey-light;
 
     box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
@@ -26,14 +26,15 @@
   }
 }
 
-.fw-offer-date {
+.fw-second-line {
   align-items: center;
   display: flex;
   margin-bottom: rem(30px);
+}
 
-  .fw-offer-date-label {
-    flex: 1;
-  }
+.fw-offer-date {
+  flex: 1;
+  padding-right: rem(12px);
 
   .fw-offer-date-input {
     @extend .field-input;
@@ -43,8 +44,10 @@
 
   .field-date {
     height: rem(40px);
-    padding: rem(10px) rem(16px);
+    border-radius: rem(20px);
     box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
+    margin-top: rem(12px);
+    padding: rem(10px) rem(16px);
 
     &:focus-within{
       border-color: $red;
@@ -55,7 +58,7 @@
       cursor: pointer;
       font-size: rem(16px);
       font-weight: $weight-medium;
-      min-width: rem(60px);
+      width: rem(120px);
       padding-left: 0;
 
       &::placeholder{
@@ -67,5 +70,66 @@
       height: 15px;
       width: 15px;
     }
+  }
+}
+
+
+.fw-venues {
+  flex: 1;
+  padding: rem(12px);
+}
+
+.fw-booking-date {
+  flex: 1;
+  padding-left: rem(12px);
+
+  .fw-booking-date-inputs {
+    display: flex;
+    border-radius: rem(20px);
+    box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
+    margin-top: rem(12px);
+  }
+
+  .field-date {
+    height: rem(40px);
+    padding: rem(10px) rem(16px);
+    border-radius: rem(20px);
+    text-align: left;
+
+    &:focus-within{
+      border-width: $control-border-width;
+      border-color: $red;
+    }
+
+    .fw-booking-date-input {
+      @extend .field-input;
+      border: 0;
+      cursor: pointer;
+      font-size: rem(16px);
+      font-weight: $weight-medium;
+      width: rem(120px);
+      padding-left: 0;
+
+      &::placeholder{
+        opacity: 1;
+      }
+    }
+
+    img {
+      height: 15px;
+      margin-right: rem(10px);
+      width: 15px;
+    }
+  }
+
+  .field-date-begin {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+  }
+
+  .field-date-end {
+    border-left: 0 solid $white;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
   }
 }
