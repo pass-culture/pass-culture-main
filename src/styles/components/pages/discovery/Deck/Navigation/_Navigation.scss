@@ -2,7 +2,7 @@
   z-index: $zindex-decknavigation;
   top: inherit;
   width: 100%;
-  height: 240px;
+  height: 180px;
   bottom: 0;
   position: absolute;
   background-image: $linear-gradient-deck;
@@ -18,7 +18,7 @@
   .controls {
     height: 100%;
     padding: 0 12px;
-    padding-bottom: 90px;
+    padding-bottom: 30px;
     text-align: center;
   }
 

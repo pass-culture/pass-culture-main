@@ -33,8 +33,8 @@ export const App = ({ children, location, isMaintenanceActivated }) => {
           </title>
         </Helmet>
         <ErrorCatcherContainer>
-          <NavBar path={location.pathname} />
           {children}
+          <NavBar path={location.pathname} />
           <OverlayContainer />
           <SplashContainer />
           <SharePopinContainer />

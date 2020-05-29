@@ -127,7 +127,7 @@ class Loader extends PureComponent {
       >
         {status => (
           <div
-            className="loader"
+            className="page loader"
             style={{ ...defaultStyle, ...transitionStyles[status] }}
           >
             {this.renderIcon()}

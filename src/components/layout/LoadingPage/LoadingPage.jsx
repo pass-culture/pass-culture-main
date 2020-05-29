@@ -3,7 +3,7 @@ import React from 'react'
 import LoadingAnimation from './LoadingAnimation/LoadingAnimation'
 
 const LoadingPage = () => (
-  <div className="loading-page">
+  <div className="page loading-page">
     <LoadingAnimation />
     <p>
       {'Chargement en cours…'}

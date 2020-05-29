@@ -56,7 +56,7 @@ export class Home extends PureComponent {
     const { keywordsToSearch } = this.state
     const { categoryCriterion, geolocationCriterion, sortCriterion } = this.props
     return (
-      <main className="search-home-page">
+      <main className="page search-home-page">
         <div className="sh-header-wrapper">
           <HeaderContainer
             closeTitle="Retourner à la page découverte"

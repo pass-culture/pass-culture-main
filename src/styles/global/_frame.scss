@@ -184,10 +184,10 @@ img {
 
 #root {
   background-image: $linear-gradient-to-right;
+  display: flex;
+  flex-direction: column;
   height: 100%;
   overflow: hidden;
-  min-height: 100%;
-  max-height: 100%;
   position: relative;
 }
 

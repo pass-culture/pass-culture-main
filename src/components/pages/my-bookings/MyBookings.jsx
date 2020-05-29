@@ -49,7 +49,7 @@ class MyBookings extends PureComponent {
     }
 
     return (
-      <div className="bookings-page teaser-list">
+      <div className="page bookings-page teaser-list">
         <HeaderContainer
           shouldBackFromDetails
           title="Mes réservations"

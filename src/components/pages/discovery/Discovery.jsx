@@ -125,8 +125,8 @@ class Discovery extends PureComponent {
 
     return (
       <Fragment>
-        {!hasNoMoreRecommendations && (
-          <main className="discovery-page no-padding page with-footer">
+        {!hasNoMoreRecommendations && !isLoading && (
+          <main className="discovery-page no-padding page">
             <Route
               key="route-discovery-deck"
               path="/decouverte/:offerId([A-Z0-9]+)/:mediationId([A-Z0-9]+)/:details(details|transition)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?"
@@ -141,12 +141,14 @@ class Discovery extends PureComponent {
             />
           </main>
         )}
-        <LoaderContainer
-          hasError={hasError}
-          hasError500={hasError500}
-          hasNoMoreRecommendations={hasNoMoreRecommendations}
-          isLoading={isLoading}
-        />
+        {isLoading && (
+          <LoaderContainer
+            hasError={hasError}
+            hasError500={hasError500}
+            hasNoMoreRecommendations={hasNoMoreRecommendations}
+            isLoading={isLoading}
+          />
+        )}
       </Fragment>
     )
   }

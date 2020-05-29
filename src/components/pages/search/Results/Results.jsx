@@ -452,7 +452,7 @@ class Results extends PureComponent {
     const isSearchEmpty = !isLoading && results.length === 0
 
     return (
-      <main className="search-results-page">
+      <main className="page search-results-page">
         <Switch>
           <Route
             exact

@@ -1,8 +1,7 @@
 .page {
   width: 100%;
-  height: 100%;
-  max-height: 100%;
-  position: relative;
+  overflow-y: scroll;
+  flex: 1;
 
   .page-content {
     bottom: 0;
