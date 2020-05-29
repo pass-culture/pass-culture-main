@@ -3,10 +3,6 @@
   background-color: $primary;
   display: flex;
   padding: 6px;
-
-  .page-reservations & {
-    @include dotted($white, bottom);
-  }
 }
 
 .header-start {

@@ -146,7 +146,7 @@ class MyFavorites extends PureComponent {
     }
 
     return (
-      <div className="teaser-list">
+      <div className="favorites-page teaser-list">
         <HeaderContainer
           shouldBackFromDetails
           title="Mes favoris"

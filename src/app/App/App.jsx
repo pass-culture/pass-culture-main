@@ -18,22 +18,16 @@ const getPageTitle = obj => `${obj && obj.title ? `${obj.title} - ` : ''}`
 const getCurrentRouteObjectByPath = (entries, locpathname) =>
   (entries && entries.filter(obj => obj && matchPath(locpathname, obj))[0]) || null
 
-const getBodyClass = obj => {
-  const path = (obj && obj.path.split('/').filter(v => v)[0]) || ''
-  return `page-${path || 'home'}`
-}
-
 export const App = ({ children, location, isMaintenanceActivated }) => {
   if (isMaintenanceActivated) {
     return <RedirectToMaintenance />
   } else {
     const currentRouteObj = getCurrentRouteObjectByPath(browserRoutes, location.pathname)
-    const bodyClass = getBodyClass(currentRouteObj)
     const pageTitle = getPageTitle(currentRouteObj)
     return (
       <Fragment>
         <Helmet>
-          <body className={bodyClass} />
+          <body />
           <title>
             {`${pageTitle}${PROJECT_NAME}${(IS_DEV && ' | DEV') || ''}`}
           </title>
