@@ -32,6 +32,6 @@
   "display": "standalone",
   "orientation": "portrait",
   "theme_color": "#fff",
-  "background_color": "#320096",
+  "background_color": "#EB0055",
   "fullscreen": "true"
 }
