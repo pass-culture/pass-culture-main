@@ -82,7 +82,6 @@ class VenueSQLRepositoryTest:
         # then
         assert found_venue == []
 
-
     @clean_database
     def test_should_return_none_when_no_venue_with_name_was_found(self, app):
         # given
@@ -94,9 +93,9 @@ class VenueSQLRepositoryTest:
         # when
         found_venue = self.venue_sql_repository.find_by_name('some other name', offerer.id)
 
-
         # then
         assert found_venue == []
+
 
 class GetAllByProIdentifierTest:
     def setup_method(self):
@@ -138,3 +137,25 @@ class GetAllByProIdentifierTest:
 
         # then
         assert found_venues == []
+
+    @clean_database
+    def test_returns_all_venues_of_pro_user_ordered_by_name(self, app):
+        # given
+        pro_user = create_user()
+        offerer = create_offerer()
+        create_user_offerer(user=pro_user, offerer=offerer)
+        venue_1 = create_venue(offerer=offerer, siret='12345678912345', name='B')
+        venue_2 = create_venue(offerer=offerer, siret='98765432198765', name='A')
+
+        repository.save(venue_1, venue_2)
+
+        expected_venue_1 = venue_domain_converter.to_domain(venue_1)
+        expected_venue_2 = venue_domain_converter.to_domain(venue_2)
+
+        # when
+        found_venues = self.venue_sql_repository.get_all_by_pro_identifier(pro_user.id)
+
+        # then
+        assert len(found_venues) == 2
+        assert found_venues[0].name == expected_venue_2.name
+        assert found_venues[1].name == expected_venue_1.name

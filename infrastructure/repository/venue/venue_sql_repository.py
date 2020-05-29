@@ -29,6 +29,6 @@ class VenueSQLRepository(VenueRepository):
             .join(UserOfferer) \
             .join(UserSQLEntity) \
             .filter(UserSQLEntity.id == pro_identifier) \
+            .order_by(VenueSQLEntity.name) \
             .all()
-
         return [venue_domain_converter.to_domain(venue_sql_entity) for venue_sql_entity in venue_sql_entities]

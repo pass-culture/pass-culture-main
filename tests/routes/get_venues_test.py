@@ -24,12 +24,15 @@ class Get:
             # then
             assert response.status_code == 200
             assert len(response.json) == 1
-            first_returned_venue = response.json[0]
-            assert first_returned_venue['name'] == venue_name
-            assert 'validationToken' not in first_returned_venue
+            expected_venue = {
+                'id': humanize(venue.id),
+                'name': venue_name,
+                'isVirtual': venue.isVirtual
+            }
+            assert response.json[0] == expected_venue
 
         @clean_database
-        def when_connected_does_not_return_unrelated_venues(self, app):
+        def when_connected_user_does_not_return_unrelated_venues(self, app):
             # given
             theater_company = create_offerer(name='Shakespear company', siren='987654321')
             theater_administrator = create_user(email='user.pro@example.net')

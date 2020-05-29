@@ -11,7 +11,7 @@ class GetAllVenuesByProUserTest:
         self.venue_repository.get_all_by_pro_identifier = MagicMock()
         self.get_all_venues_by_pro_user = GetAllVenuesByProUser(venue_repository=self.venue_repository)
 
-    def test_user_can_book_an_offer(self, app):
+    def test_get_all_venue_by_pro_user(self):
         # Given
         venue = Venue(id=10, name='Librairie Kléber')
         self.venue_repository.get_all_by_pro_identifier.return_value = [venue]

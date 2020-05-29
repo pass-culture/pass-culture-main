@@ -8,13 +8,14 @@ from connectors import redis
 from domain.iris import link_valid_venue_to_irises
 from domain.offers import update_is_active_status
 from domain.venues import is_algolia_indexing
+from infrastructure.container import get_all_venues_by_pro_user
+from models import VenueSQLEntity
 from models.feature import FeatureToggle
 from models.user_offerer import RightsType
-from models import VenueSQLEntity
 from repository import feature_queries, repository
 from repository.iris_venues_queries import delete_venue_from_iris_venues
-from repository.venue_queries import find_by_managing_user
 from routes.serialization import as_dict
+from routes.serialization.venues_serialize import serialize_venues
 from use_cases.create_venue import create_venue
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES, VENUE_INCLUDES
@@ -34,8 +35,8 @@ def get_venue(venue_id):
 @app.route('/venues', methods=['GET'])
 @login_required
 def get_venues():
-    venues = find_by_managing_user(current_user)
-    return jsonify([as_dict(venue, includes=VENUE_INCLUDES) for venue in venues]), 200
+    venues = get_all_venues_by_pro_user.execute(pro_identifier=current_user.id)
+    return jsonify(serialize_venues(venues)), 200
 
 
 @app.route('/venues', methods=['POST'])
