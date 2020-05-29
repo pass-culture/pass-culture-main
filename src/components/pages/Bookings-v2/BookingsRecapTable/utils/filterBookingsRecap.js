@@ -21,7 +21,7 @@ const filterByOfferDate = (offerDate, booking) => {
 const filterByBookingBeginDate = (bookingBeginDate, booking) => {
   if (bookingBeginDate !== null) {
     const offerDateFromBookingRecap = booking.booking_date.substr(0, 10)
-    return offerDateFromBookingRecap > bookingBeginDate
+    return offerDateFromBookingRecap >= bookingBeginDate
   }
   return true
 }
@@ -29,7 +29,7 @@ const filterByBookingBeginDate = (bookingBeginDate, booking) => {
 const filterByBookingEndDate = (bookingEndDate, booking) => {
   if (bookingEndDate !== null) {
     const offerDateFromBookingRecap = booking.booking_date.substr(0, 10)
-    return offerDateFromBookingRecap < bookingEndDate
+    return offerDateFromBookingRecap <= bookingEndDate
   }
   return true
 }

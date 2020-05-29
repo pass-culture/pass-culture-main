@@ -195,6 +195,51 @@ describe('filterBookingsRecap', () => {
     expect(filteredBookingsRecap).toStrictEqual([bookingRecap2])
   })
 
+  it('should return list containing only BookingRecap matching given booking begin date started on same day', () => {
+    // given
+    const bookingRecap1 = {
+      stock: {
+        offer_name: 'Merlin enchanteur',
+        event_beginning_datetime: '2020-03-03T12:00:00Z',
+      },
+      beneficiary: {
+        lastname: 'Klepi',
+        firstname: 'Sonia',
+        email: 'sonia.klepi@example.com',
+      },
+      booking_date: '2020-01-03T12:00:00Z',
+      booking_token: 'ZEHBGD',
+      booking_status: 'Validé',
+    }
+    const bookingRecap2 = {
+      stock: {
+        offer_name: 'Jurrasic Perk',
+        event_beginning_datetime: '2020-01-14T12:00:00Z',
+      },
+      beneficiary: {
+        lastname: 'Klepi',
+        firstname: 'Sonia',
+        email: 'sonia.klepi@example.com',
+      },
+      booking_date: '2020-02-18T12:00:00Z',
+      booking_token: 'ZACBGD',
+      booking_status: 'Validé',
+    }
+    const bookingsRecap = [bookingRecap1, bookingRecap2]
+    const filters = {
+      offerName: '',
+      offerDate: null,
+      bookingBeginDate: '2020-02-18',
+      bookingEndDate: null,
+    }
+
+    // when
+    const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+
+    // then
+    expect(filteredBookingsRecap).toStrictEqual([bookingRecap2])
+  })
+
   it('should return list containing only BookingRecap matching given booking end date period', () => {
     // given
     const bookingRecap1 = {

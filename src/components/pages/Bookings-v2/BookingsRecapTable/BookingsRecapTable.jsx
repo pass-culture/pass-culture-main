@@ -12,6 +12,7 @@ import TableFrame from './Table/TableFrame'
 import Filters from './Filters/Filters'
 import NoFilteredBookings from './NoFilteredBookings/NoFilteredBookings'
 import filterBookingsRecap from './utils/filterBookingsRecap'
+import findOldestBookingDate from './utils/findOldestBookingDate'
 
 class BookingsRecapTable extends Component {
   constructor(props) {
@@ -108,13 +109,16 @@ class BookingsRecapTable extends Component {
   }
 
   render() {
-    const { isLoading } = this.props
+    const { isLoading, bookingsRecap } = this.props
     const { bookingsRecapFiltered, columns, currentPage } = this.state
     const nbBookings = bookingsRecapFiltered.length
+
+    const oldestBookingDate = findOldestBookingDate(bookingsRecap)
 
     return (
       <div>
         <Filters
+          oldestBookingDate={oldestBookingDate}
           ref={this.filtersRef}
           setFilters={this.setFilters}
         />

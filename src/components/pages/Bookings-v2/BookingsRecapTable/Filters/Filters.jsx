@@ -3,12 +3,14 @@ import PropTypes from 'prop-types'
 import debounce from 'lodash.debounce'
 import DatePicker from 'react-datepicker'
 import { InputWithCalendar } from '../../../../layout/form/fields/DateField/InputWithCalendar'
+import moment from 'moment'
 
 const DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
 
 class Filters extends Component {
   constructor(props) {
     super(props)
+    const { oldestBookingDate } = this.props
     this.state = {
       filters: {
         offerDate: null,
@@ -18,8 +20,8 @@ class Filters extends Component {
       },
       keywords: '',
       selectedOfferDate: null,
-      selectedBookingBeginDate: null,
-      selectedBookingEndDate: null,
+      selectedBookingBeginDate: moment(oldestBookingDate),
+      selectedBookingEndDate: moment(),
     }
   }
 
@@ -99,7 +101,6 @@ class Filters extends Component {
   handleBookingBeginDateChange = bookingBeginDate => {
     const dateToFilter = bookingBeginDate === null ? null : bookingBeginDate.format('YYYY-MM-DD')
     const { filters } = this.state
-    console.log('filters1', filters)
     this.setState(
       {
         filters: {
@@ -110,7 +111,6 @@ class Filters extends Component {
       },
       () => {
         const { filters } = this.state
-        console.log('filters2', filters)
         this.applyFilters(filters)
       }
     )
@@ -135,6 +135,7 @@ class Filters extends Component {
   }
 
   render() {
+    const { oldestBookingDate } = this.props
     const {
       keywords,
       selectedOfferDate,
@@ -192,6 +193,7 @@ class Filters extends Component {
               className="fw-booking-date-input"
               customInput={<InputWithCalendar />}
               dropdownMode="select"
+              minDate={oldestBookingDate}
               onChange={this.handleBookingBeginDateChange}
               placeholderText="JJ/MM/AAAA"
               selected={selectedBookingBeginDate}
@@ -200,6 +202,8 @@ class Filters extends Component {
               className="fw-booking-date-input"
               customInput={<InputWithCalendar />}
               dropdownMode="select"
+              maxDate={moment()}
+              minDate={selectedBookingBeginDate}
               onChange={this.handleBookingEndDateChange}
               placeholderText="JJ/MM/AAAA"
               selected={selectedBookingEndDate}
