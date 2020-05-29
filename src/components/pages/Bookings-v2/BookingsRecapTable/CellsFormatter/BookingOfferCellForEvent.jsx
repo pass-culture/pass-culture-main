@@ -4,7 +4,7 @@ import moment from 'moment'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '../../../../../utils/date'
 
 const BookingOfferCellForEvent = ({ eventDatetime, offerName }) => {
-  const eventDatetimeFormatted = moment(eventDatetime).format(FORMAT_DD_MM_YYYY_HH_mm)
+  const eventDatetimeFormatted = moment.parseZone(eventDatetime).format(FORMAT_DD_MM_YYYY_HH_mm)
 
   return (
     <span className="booking-offer-name">

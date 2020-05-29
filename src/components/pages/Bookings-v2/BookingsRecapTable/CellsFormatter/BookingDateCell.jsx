@@ -4,7 +4,7 @@ import moment from 'moment'
 import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from '../../../../../utils/date'
 
 const BookingDateCell = ({ bookingDate }) => {
-  const bookingDateMoment = moment(bookingDate)
+  const bookingDateMoment = moment.parseZone(bookingDate)
   const bookingDateDay = bookingDateMoment.format(FORMAT_DD_MM_YYYY)
   const bookingDateHour = bookingDateMoment.format(FORMAT_HH_mm)
 

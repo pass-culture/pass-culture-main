@@ -6,7 +6,7 @@ describe('components | BookingsDateCell', () => {
   it('should render a div with two span, one containing the date and the other one the time', () => {
     // Given
     const props = {
-      bookingDate: '2020-04-03T12:00:00+02:00',
+      bookingDate: '2020-04-03T12:00:00+04:00',
     }
 
     // When
@@ -19,6 +19,6 @@ describe('components | BookingsDateCell', () => {
     // Then
     expect(spans).toHaveLength(2)
     expect(bookingDateDaySpan.text()).toBe('03/04/2020')
-    expect(bookingDateHourSpan.text()).toBe('10:00')
+    expect(bookingDateHourSpan.text()).toBe('12:00')
   })
 })

@@ -29,7 +29,7 @@ describe('components | BookingOfferCell', () => {
         offer: {
           type: 'event',
           offer_name: 'La danse des poireaux',
-          event_beginning_datetime: '2020-05-12T11:03:28.564687+02:00',
+          event_beginning_datetime: '2020-05-12T11:03:28.564687+04:00',
         },
       }
 
@@ -42,7 +42,7 @@ describe('components | BookingOfferCell', () => {
 
       const eventDatetime = wrapper.find("[children^='12/05/2020']")
       expect(eventDatetime).toHaveLength(1)
-      expect(eventDatetime.text()).toContain('9:03')
+      expect(eventDatetime.text()).toContain('11:03')
     })
   })
 })
