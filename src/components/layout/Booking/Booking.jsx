@@ -147,7 +147,7 @@ class Booking extends PureComponent {
 
     const { canSubmitForm, errors, bookedPayload, isErrored, isSubmitting, mounted } = this.state
     const { id: recommendationId } = recommendation || {}
-    const { isEvent, id: offerId, url: offerUrl } = offer
+    const { isEvent, id: offerId } = offer
     const defaultBookable = bookables && bookables[0]
     const showForm = defaultBookable && !bookedPayload && !isErrored && !isSubmitting
 
@@ -160,6 +160,7 @@ class Booking extends PureComponent {
       price = priceIsDefined(defaultBookable.price) ? defaultBookable.price : null
       stockId = defaultBookable.id
     }
+    const offerAccessUrl = bookedPayload && bookedPayload.completedUrl
 
     const formInitialValues = {
       bookables,
@@ -189,7 +190,7 @@ class Booking extends PureComponent {
                     <BookingSuccess
                       bookedPayload={bookedPayload}
                       isEvent={isEvent}
-                      offerUrl={offerUrl}
+                      offerUrl={offerAccessUrl}
                       price={bookedPayload.stock.price}
                       quantity={bookedPayload.quantity}
                       token={bookedPayload.token}
@@ -247,7 +248,6 @@ Booking.propTypes = {
   offer: PropTypes.shape({
     isEvent: PropTypes.bool,
     id: PropTypes.string,
-    url: PropTypes.string,
   }).isRequired,
   recommendation: PropTypes.shape({
     id: PropTypes.string,

@@ -513,9 +513,8 @@ describe('components | VersoContentOffer', () => {
         isCancelled: false,
         distance: '1',
         handleRequestMusicAndShowTypes: jest.fn(),
-        offer: {
-          id: 'ID',
-          url: 'http://fake-url.com',
+        booking: {
+          completedUrl: 'http://myfakeurl',
         },
         userGeolocation: {
           latitude: null,
@@ -529,6 +528,7 @@ describe('components | VersoContentOffer', () => {
       // then
       const linkOffer = wrapper.find(VersoActionsBar)
       expect(linkOffer).toHaveLength(1)
+      expect(linkOffer.prop('url')).toBe('http://myfakeurl')
     })
   })
 

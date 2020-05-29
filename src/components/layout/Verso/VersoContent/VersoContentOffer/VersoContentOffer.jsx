@@ -225,11 +225,13 @@ class VersoContentOffer extends PureComponent {
   }
 
   render() {
-    const { isCancelled, offer } = this.props
+    const { isCancelled, booking } = this.props
 
     return (
       <div className="verso-info">
-        {isCancelled === false && offer.url && <VersoActionsBar url={offer.url} />}
+        {isCancelled === false && booking.completedUrl && (
+          <VersoActionsBar url={booking.completedUrl} />
+        )}
         {this.renderOfferWhat()}
         {this.renderOfferDetails()}
         {this.renderOfferWhen()}
@@ -241,6 +243,7 @@ class VersoContentOffer extends PureComponent {
 }
 
 VersoContentOffer.defaultProps = {
+  booking: {},
   distance: null,
   isBookable: true,
   isCancelled: true,
@@ -251,6 +254,9 @@ VersoContentOffer.defaultProps = {
 
 VersoContentOffer.propTypes = {
   bookables: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  booking: PropTypes.shape({
+    completedUrl: PropTypes.string,
+  }),
   distance: PropTypes.string,
   handleRequestMusicAndShowTypes: PropTypes.func.isRequired,
   isBookable: PropTypes.bool,
