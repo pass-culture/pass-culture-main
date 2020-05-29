@@ -73,12 +73,12 @@ def put_recommendations_old_v3():
 @expect_json_data
 def put_recommendations():
     if feature_queries.is_active(FeatureToggle.RECOMMENDATIONS_WITH_GEOLOCATION):
-        return put_geolocated_recommendations(request)
+        return _put_geolocated_recommendations(request)
     else:
-        return put_non_geolocated_recommendations(request)
+        return _put_non_geolocated_recommendations(request)
 
 
-def put_geolocated_recommendations(request: LocalProxy) -> (Dict, int):
+def _put_geolocated_recommendations(request: LocalProxy) -> (Dict, int):
     latitude = request.args.get('latitude')
     longitude = request.args.get('longitude')
     user_is_geolocated = latitude is not None and longitude is not None
@@ -96,7 +96,7 @@ def put_geolocated_recommendations(request: LocalProxy) -> (Dict, int):
     return jsonify(serialize_recommendations(recommendations, current_user)), 200
 
 
-def put_non_geolocated_recommendations(request: LocalProxy) -> (Dict, int):
+def _put_non_geolocated_recommendations(request: LocalProxy) -> (Dict, int):
     update_read_recommendations(request.json.get('readRecommendations'))
     sent_offers_ids = dehumanize_ids_list(request.json.get('offersSentInLastCall'))
 
