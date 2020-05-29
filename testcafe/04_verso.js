@@ -4,23 +4,21 @@ import { fetchSandbox } from './helpers/sandboxes'
 import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
 import getPageUrl from './helpers/getPageUrl'
 import { ROOT_PATH } from '../src/utils/config'
-import getMenuWalletValue from './helpers/getMenuWalletValue'
+import getUserWalletValue from './helpers/getUserWalletValue'
 
 const discoverURL = `${ROOT_PATH}decouverte`
 const bookingsDetailsURL = `${ROOT_PATH}reservations/details`
 const openVersoButton = Selector('#deck-open-verso-button')
-const openDeckMenu = Selector('#deck-footer a')
+const openProfilePage = Selector('nav ul li a[href="/profil"]')
 const sendBookingButton = Selector('#booking-validation-button')
 const alreadyBookedOfferButton = Selector('#verso-already-booked-button')
 const bookOfferButton = Selector('button').withText('J’y vais !')
 const bookingToken = Selector('#booking-booked-token')
 const bookingSuccessButton = Selector('#booking-success-ok-button')
 const checkReversedIcon = Selector('.ticket-price img')
-const closeMenu = Selector('#main-menu-fixed-container .close-link')
-const openMenuFromVerso = Selector('#verso-footer a')
 const bookingErrorReasons = Selector('#booking-error-reasons p')
 const dateSelectBox = Selector('#booking-form-date-picker-field')
-const myBookingsMenuButton = Selector('#main-menu-navigation a[href="/reservations"]')
+const myBookingsNavbarButton = Selector('nav ul li a[href="/reservations"]')
 const selectableDates = Selector(
   '.react-datepicker__day--selected, .react-datepicker__day:not(.react-datepicker__day--disabled)'
 )
@@ -73,12 +71,13 @@ test("parcours complet de réservation d'une offre thing", async t => {
 
   await t.useRole(userRole).navigateTo(offerPage)
 
-  await t.click(openDeckMenu).wait(500)
-  previousWalletValue = await getMenuWalletValue()
+  await t.click(openProfilePage).wait(500)
+  previousWalletValue = await getUserWalletValue() //TODO rename
   await t
     .expect(previousWalletValue)
     .gt(0)
-    .click(closeMenu)
+    .useRole(userRole)
+    .navigateTo(offerPage)
     .wait(500)
     .click(openVersoButton)
     .wait(500)
@@ -105,20 +104,19 @@ test("parcours complet de réservation d'une offre thing", async t => {
     .eql(offerPageDetails)
     .expect(checkReversedIcon.exists)
     .ok()
-    .click(openMenuFromVerso)
+    .click(openProfilePage)
 
-  const currentWalletValue = await getMenuWalletValue()
+  const currentWalletValue = await getUserWalletValue()
   await t
     .expect(currentWalletValue)
     .gte(0)
     .expect(currentWalletValue)
     .lt(previousWalletValue)
-  previousWalletValue = await getMenuWalletValue()
 
   const bookedOffer = Selector(`.mb-my-booking[data-token="${currentBookedToken}"]`)
 
   await t
-    .click(myBookingsMenuButton)
+    .click(myBookingsNavbarButton)
     .expect(bookedOffer.exists)
     .ok()
     .click(bookedOffer)
@@ -144,13 +142,15 @@ test("parcours complet de réservation d'une offre event à date unique", async 
     .click(openVersoButton)
 
   // when
-  await t.click(openMenuFromVerso).wait(500)
-  previousWalletValue = await getMenuWalletValue()
+  await t.click(openProfilePage).wait(500)
+  previousWalletValue = await getUserWalletValue()
 
   await t
     .expect(previousWalletValue)
     .gt(0)
-    .click(closeMenu)
+    .useRole(userRole)
+    .navigateTo(discoveryCardUrl)
+    .click(openVersoButton)
     .click(bookOfferButton)
     .click(dateSelectBox)
     .click(selectableDates.nth(0))
@@ -167,19 +167,18 @@ test("parcours complet de réservation d'une offre event à date unique", async 
     .eql(discoverDetailsUrl)
     .expect(checkReversedIcon.exists)
     .ok()
-    .click(openMenuFromVerso)
+    .click(openProfilePage)
 
-  const currentWalletValue = await getMenuWalletValue()
+  const currentWalletValue = await getUserWalletValue()
   await t
     .expect(currentWalletValue)
     .gte(0)
     .expect(currentWalletValue)
     .lt(previousWalletValue)
-  previousWalletValue = await getMenuWalletValue()
 
   const bookedOffer = Selector(`.mb-my-booking[data-token="${currentBookedToken}"]`)
   await t
-    .click(myBookingsMenuButton)
+    .click(myBookingsNavbarButton)
     .expect(bookedOffer.exists)
     .ok()
     .click(bookedOffer)
