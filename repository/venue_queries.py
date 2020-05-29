@@ -2,7 +2,7 @@ from typing import List
 
 from sqlalchemy.sql import selectable
 
-from models import VenueSQLEntity, Offer, Offerer, UserOfferer, UserSQLEntity
+from models import VenueSQLEntity, Offer
 
 
 def find_by_id(venue_id: int) -> VenueSQLEntity:
@@ -29,14 +29,6 @@ def find_by_managing_offerer_id_and_siret(offerer_id: int, siret: str) -> VenueS
         .filter_by(managingOffererId=offerer_id) \
         .filter_by(siret=siret) \
         .one_or_none()
-
-
-def find_by_managing_user(user: UserSQLEntity) -> List[VenueSQLEntity]:
-    return VenueSQLEntity.query \
-        .join(Offerer) \
-        .join(UserOfferer) \
-        .join(UserSQLEntity) \
-        .filter(UserSQLEntity.id == user.id).all()
 
 
 def get_only_venue_ids_for_department_codes(departement_codes: List[str]) -> selectable.Alias:
