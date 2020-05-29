@@ -32,6 +32,7 @@ class Filters extends Component {
   }
 
   resetAllFilters = () => {
+    const { oldestBookingDate } = this.props
     this.setState(
       {
         filters: {
@@ -42,8 +43,8 @@ class Filters extends Component {
         },
         keywords: '',
         selectedOfferDate: null,
-        selectedBookingBeginDate: null,
-        selectedBookingEndDate: null,
+        selectedBookingBeginDate: moment(oldestBookingDate),
+        selectedBookingEndDate: moment(),
       },
       () => {
         const { filters } = this.state
