@@ -81,7 +81,6 @@ class EditPassword extends PureComponent {
       <div className="password-container pf-container">
         <HeaderContainer
           backTo={pathToProfile}
-          closeTo={null}
           title="Mot de passe"
         />
         <form

@@ -27,7 +27,6 @@ describe('legal notice page', () => {
     // Then
     const header = wrapper.find(HeaderContainer)
     expect(header.prop('backTo')).toBe('path/to/profile')
-    expect(header.prop('closeTo')).toBeNull()
     expect(header.prop('title')).toBe('Mentions Légales')
   })
 

@@ -17,19 +17,6 @@
   text-align: center;
 }
 
-.header-end {
-  flex: 0;
-}
-
-.header-submit {
-  border: 2px solid $white;
-  border-radius: 2px;
-  color: $white;
-  font-weight: 600;
-  font-size: 0.8rem;
-  padding: 0.2rem 0.4rem;
-}
-
 $button-size: $header-height - 0.75rem;
 
 .back-link,

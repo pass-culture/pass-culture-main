@@ -1,10 +1,8 @@
-import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
+import React, { PureComponent } from 'react'
 
-import BackLink from './BackLink/BackLink'
-import CloseLink from './CloseLink/CloseLink'
-import SubmitButton from './SubmitButton/SubmitButton'
 import getIsTransitionDetailsUrl from '../../../utils/getIsTransitionDetailsUrl'
+import BackLink from './BackLink/BackLink'
 
 class Header extends PureComponent {
   componentDidMount() {
@@ -50,18 +48,7 @@ class Header extends PureComponent {
   }
 
   render() {
-    const {
-      backActionOnClick,
-      backTitle,
-      closeActionOnClick,
-      closeTitle,
-      closeTo,
-      extraClassName,
-      submitDisabled,
-      reset,
-      title,
-      useSubmit,
-    } = this.props
+    const { backActionOnClick, backTitle, extraClassName, reset, title } = this.props
     const backTo = this.getBackTo()
     return (
       <header className={`header ${extraClassName}`}>
@@ -77,20 +64,6 @@ class Header extends PureComponent {
         <h1 className="header-title">
           {title}
         </h1>
-        {closeTo && (
-          <div className="header-end">
-            <CloseLink
-              actionOnClick={closeActionOnClick}
-              closeTitle={closeTitle}
-              closeTo={closeTo}
-            />
-          </div>
-        )}
-        {useSubmit && (
-          <div className="header-end">
-            <SubmitButton disabled={!submitDisabled} />
-          </div>
-        )}
         {reset && (
           <button
             className="reset-button"
@@ -109,23 +82,15 @@ Header.defaultProps = {
   backActionOnClick: null,
   backTitle: 'Retour',
   backTo: null,
-  closeActionOnClick: null,
-  closeTitle: 'Retourner à la page découverte',
-  closeTo: '/decouverte',
   extraClassName: '',
   reset: null,
   shouldBackFromDetails: false,
-  submitDisabled: true,
-  useSubmit: false,
 }
 
 Header.propTypes = {
   backActionOnClick: PropTypes.func,
   backTitle: PropTypes.string,
   backTo: PropTypes.string,
-  closeActionOnClick: PropTypes.func,
-  closeTitle: PropTypes.string,
-  closeTo: PropTypes.string,
   extraClassName: PropTypes.string,
   history: PropTypes.shape({
     replace: PropTypes.func.isRequired,
@@ -142,9 +107,7 @@ Header.propTypes = {
   }).isRequired,
   reset: PropTypes.func,
   shouldBackFromDetails: PropTypes.bool,
-  submitDisabled: PropTypes.bool,
   title: PropTypes.string.isRequired,
-  useSubmit: PropTypes.bool,
 }
 
 export default Header

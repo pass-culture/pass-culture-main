@@ -6,11 +6,7 @@ import HeaderContainer from '../../layout/Header/HeaderContainer'
 
 const Offer = ({ getOfferById }) => (
   <main className="page teaser-list">
-    <HeaderContainer
-      closeTitle="Retourner à la page découverte"
-      closeTo="/decouverte"
-      title="Offre"
-    />
+    <HeaderContainer title="Offre" />
     <DetailsContainer getOfferById={getOfferById} />
   </main>
 )

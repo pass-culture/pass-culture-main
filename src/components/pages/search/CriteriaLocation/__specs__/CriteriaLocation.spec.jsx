@@ -17,7 +17,7 @@ describe('components | CriteriaLocation', () => {
       criteria: GEOLOCATION_CRITERIA,
       geolocation: {
         latitude: 40,
-        longitude: 2
+        longitude: 2,
       },
       history: createBrowserHistory(),
       match: {
@@ -39,7 +39,6 @@ describe('components | CriteriaLocation', () => {
       const header = wrapper.find(Header)
       expect(header).toHaveLength(1)
       expect(header.prop('backTo')).toStrictEqual('/recherche')
-      expect(header.prop('closeTo')).toBeNull()
       expect(header.prop('history')).toStrictEqual(props.history)
       expect(header.prop('location')).toStrictEqual(props.history.location)
       expect(header.prop('match')).toStrictEqual(props.match)
@@ -109,7 +108,7 @@ describe('components | CriteriaLocation', () => {
         name: {
           long: 'Paris',
           short: 'Paris',
-        }
+        },
       }
       props.history.push('/recherche/criteres-localisation')
 
@@ -139,7 +138,8 @@ describe('components | CriteriaLocation', () => {
   describe('when on place location page', () => {
     it('should render a Place component with the right props', () => {
       // given
-      props.history.location.pathname = '/recherche/resultats/filtres/localisation/place?mots-cles=livre'
+      props.history.location.pathname =
+        '/recherche/resultats/filtres/localisation/place?mots-cles=livre'
 
       // when
       const wrapper = shallow(<CriteriaLocation {...props} />)
@@ -147,7 +147,9 @@ describe('components | CriteriaLocation', () => {
       // then
       const place = wrapper.find(Place)
       expect(place).toHaveLength(1)
-      expect(place.prop('backTo')).toStrictEqual('/recherche/resultats/filtres/localisation?mots-cles=livre')
+      expect(place.prop('backTo')).toStrictEqual(
+        '/recherche/resultats/filtres/localisation?mots-cles=livre'
+      )
       expect(place.prop('history')).toStrictEqual(props.history)
       expect(place.prop('match')).toStrictEqual(props.match)
       expect(place.prop('title')).toStrictEqual('Choisir un lieu')

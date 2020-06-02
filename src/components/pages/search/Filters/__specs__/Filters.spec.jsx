@@ -310,7 +310,6 @@ describe('components | Filters', () => {
         const header = wrapper.find(HeaderContainer)
         expect(header).toHaveLength(1)
         expect(header.prop('backTo')).toStrictEqual('/recherche/resultats?mots-cles=librairie')
-        expect(header.prop('closeTo')).toBeNull()
         expect(header.prop('reset')).toStrictEqual(expect.any(Function))
         expect(header.prop('title')).toStrictEqual('Filtrer')
       })

@@ -26,7 +26,6 @@ export const CriteriaSort = props => {
     <div className="criteria-page">
       <Header
         backTo={backTo}
-        closeTo={null}
         extraClassName="criteria-header"
         history={history}
         location={history.location}

@@ -63,7 +63,6 @@ class PersonalInformations extends PureComponent {
       <div className="pf-container">
         <HeaderContainer
           backTo={pathToProfile}
-          closeTo={null}
           title="Informations personnelles"
         />
         <form

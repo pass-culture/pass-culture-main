@@ -4,13 +4,20 @@ import Header from '../../../layout/Header/Header'
 import { Criteria } from '../Criteria/Criteria'
 
 export const CriteriaCategory = props => {
-  const { activeCriterionLabel, backTo, criteria, history, match, onCriterionSelection, title } = props
+  const {
+    activeCriterionLabel,
+    backTo,
+    criteria,
+    history,
+    match,
+    onCriterionSelection,
+    title,
+  } = props
 
   return (
     <div className="criteria-category-page">
       <Header
         backTo={backTo}
-        closeTo={null}
         extraClassName="criteria-header"
         history={history}
         location={history.location}

@@ -22,7 +22,7 @@ describe('components | Home', () => {
         searchAround: {
           everywhere: false,
           place: false,
-          user: false
+          user: false,
         },
         params: {
           icon: 'ico-globe',
@@ -32,17 +32,17 @@ describe('components | Home', () => {
         place: {
           geolocation: {
             latitude: 59.2,
-            longitude: 4.3
+            longitude: 4.3,
           },
           name: {
-            long: '34 avenue de l\'opéra, Paris',
-            short: '34 avenue de l\'opéra',
-          }
+            long: "34 avenue de l'opéra, Paris",
+            short: "34 avenue de l'opéra",
+          },
         },
         userGeolocation: {
           latitude: 40,
-          longitude: 41
-        }
+          longitude: 41,
+        },
       },
       history: {
         push: jest.fn(),
@@ -52,7 +52,7 @@ describe('components | Home', () => {
         icon: 'ico-relevance',
         label: 'Pertinence',
         requiresGeolocation: false,
-      }
+      },
     }
   })
 
@@ -84,8 +84,6 @@ describe('components | Home', () => {
     // then
     const header = wrapper.find(HeaderContainer).first()
     expect(header.prop('title')).toBe('Recherche')
-    expect(header.prop('closeTo')).toBe('/decouverte')
-    expect(header.prop('closeTitle')).toBe('Retourner à la page découverte')
   })
 
   it('should clear text input when clicking on reset cross', async () => {
@@ -125,7 +123,7 @@ describe('components | Home', () => {
     props.geolocationCriterion.searchAround = {
       everywhere: true,
       place: false,
-      user: false
+      user: false,
     }
     props.categoryCriterion.facetFilter = 'CINEMA'
     props.sortCriterion.index = '_by_price'
@@ -147,7 +145,8 @@ describe('components | Home', () => {
     // then
     expect(props.history.push).toHaveBeenCalledWith({
       pathname: '/recherche/resultats',
-      search: '?mots-cles=search keyword&autour-de=non&tri=_by_price&categories=CINEMA&latitude=40&longitude=41',
+      search:
+        '?mots-cles=search keyword&autour-de=non&tri=_by_price&categories=CINEMA&latitude=40&longitude=41',
     })
   })
 
@@ -156,7 +155,7 @@ describe('components | Home', () => {
     props.geolocationCriterion.searchAround = {
       everywhere: false,
       place: false,
-      user: true
+      user: true,
     }
     const wrapper = shallow(<Home {...props} />)
     const form = wrapper.find('form')
@@ -185,7 +184,7 @@ describe('components | Home', () => {
     props.geolocationCriterion.searchAround = {
       everywhere: false,
       place: true,
-      user: false
+      user: false,
     }
     const wrapper = shallow(<Home {...props} />)
     const form = wrapper.find('form')
@@ -205,7 +204,8 @@ describe('components | Home', () => {
     // then
     expect(props.history.push).toHaveBeenCalledWith({
       pathname: '/recherche/resultats',
-      search: '?mots-cles=search keyword&autour-de=oui&tri=&categories=&latitude=59.2&longitude=4.3&place=34 avenue de l\'opéra, Paris',
+      search:
+        "?mots-cles=search keyword&autour-de=oui&tri=&categories=&latitude=59.2&longitude=4.3&place=34 avenue de l'opéra, Paris",
     })
   })
 

@@ -36,7 +36,6 @@ describe('components | CriteriaSort', () => {
     const header = wrapper.find(Header)
     expect(header).toHaveLength(1)
     expect(header.prop('backTo')).toStrictEqual('/recherche')
-    expect(header.prop('closeTo')).toBeNull()
     expect(header.prop('history')).toStrictEqual(props.history)
     expect(header.prop('location')).toStrictEqual(props.history.location)
     expect(header.prop('match')).toStrictEqual(props.match)

@@ -33,11 +33,10 @@ class Place extends Component {
     this.triggerFetchPlaces(searchedKeywords)
   }
 
-  triggerFetchPlaces = debounce((keywords) => {
-    fetchPlaces({ keywords })
-      .then(suggestedPlaces => {
-        this.setState({ suggestedPlaces })
-      })
+  triggerFetchPlaces = debounce(keywords => {
+    fetchPlaces({ keywords }).then(suggestedPlaces => {
+      this.setState({ suggestedPlaces })
+    })
   }, WAITING_TIME_BEFORE_FETCHING_DATA_IN_MILLISECONDS)
 
   handlePlaceSelection = event => {
@@ -60,14 +59,14 @@ class Place extends Component {
   handleReset = () => {
     this.setState({
       keywords: '',
-      suggestedPlaces: []
+      suggestedPlaces: [],
     })
     this.inputRef.current.focus()
   }
 
   blurInput = () => () => this.inputRef.current.blur()
 
-  handleOnSubmit = (event) => {
+  handleOnSubmit = event => {
     this.inputRef.current.blur()
     event.preventDefault()
   }
@@ -80,7 +79,6 @@ class Place extends Component {
       <div className="place-page">
         <Header
           backTo={backTo}
-          closeTo={null}
           extraClassName="criteria-header"
           history={history}
           location={history.location}
@@ -136,8 +134,8 @@ class Place extends Component {
                       {suggestedPlace.name.short}
                     </span>
                     <span className="place-extra-data">
-                      {REGEX_STARTING_WITH_NUMBERS.test(suggestedPlace.name.short) ?
-                        suggestedPlace.extraData.city
+                      {REGEX_STARTING_WITH_NUMBERS.test(suggestedPlace.name.short)
+                        ? suggestedPlace.extraData.city
                         : suggestedPlace.extraData.department}
                     </span>
                   </button>
@@ -151,8 +149,7 @@ class Place extends Component {
   }
 }
 
-Place
-  .propTypes = {
+Place.propTypes = {
   backTo: PropTypes.string.isRequired,
   history: PropTypes.shape({
     location: PropTypes.shape(),

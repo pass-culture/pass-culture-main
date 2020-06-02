@@ -59,8 +59,6 @@ export class Home extends PureComponent {
       <main className="search-home-page">
         <div className="sh-header-wrapper">
           <HeaderContainer
-            closeTitle="Retourner à la page découverte"
-            closeTo="/decouverte"
             extraClassName="home-header"
             title="Recherche"
           />

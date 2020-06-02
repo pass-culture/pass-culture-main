@@ -63,7 +63,6 @@ describe('personal informations', () => {
     // Then
     const header = wrapper.find(HeaderContainer)
     expect(header.prop('backTo')).toBe('/profil')
-    expect(header.prop('closeTo')).toBeNull()
     expect(header.prop('title')).toBe('Informations personnelles')
   })
 

@@ -620,7 +620,6 @@ export class Filters extends PureComponent {
             <div className="sf-header-wrapper">
               <HeaderContainer
                 backTo={`/recherche/resultats${search}`}
-                closeTo={null}
                 reset={this.resetFilters}
                 title="Filtrer"
               />

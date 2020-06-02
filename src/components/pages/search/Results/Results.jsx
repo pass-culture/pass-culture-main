@@ -559,8 +559,6 @@ class Results extends PureComponent {
           >
             <HeaderContainer
               backActionOnClick={this.retrieveScrollPosition}
-              closeTitle="Retourner à la page découverte"
-              closeTo="/decouverte"
               shouldBackFromDetails={this.shouldBackFromDetails()}
               title="Recherche"
             />

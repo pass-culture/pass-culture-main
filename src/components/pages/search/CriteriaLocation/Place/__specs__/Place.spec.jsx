@@ -45,7 +45,6 @@ describe('components | Place', () => {
     const header = wrapper.find(Header)
     expect(header).toHaveLength(1)
     expect(header.prop('backTo')).toBe('/recherche/criteres-localisation')
-    expect(header.prop('closeTo')).toBeNull()
     expect(header.prop('extraClassName')).toBe('criteria-header')
     expect(header.prop('history')).toBe(props.history)
     expect(header.prop('location')).toBe(props.history.location)
@@ -134,7 +133,7 @@ describe('components | Place', () => {
             name: {
               long: 'Nice',
               short: 'Nice',
-            }
+            },
           },
           {
             geolocation: {
@@ -148,7 +147,7 @@ describe('components | Place', () => {
             name: {
               long: 'Niort',
               short: 'Niort',
-            }
+            },
           },
         ])
       })
@@ -196,9 +195,9 @@ describe('components | Place', () => {
               department: 'Paris',
             },
             name: {
-              long: '34 avenue de l\'opéra, Paris',
-              short: '34 avenue de l\'opéra',
-            }
+              long: "34 avenue de l'opéra, Paris",
+              short: "34 avenue de l'opéra",
+            },
           },
           {
             geolocation: {
@@ -212,7 +211,7 @@ describe('components | Place', () => {
             name: {
               long: '34 avenue Angla, Toulouse',
               short: '34 avenue Angla',
-            }
+            },
           },
         ])
       })
@@ -237,7 +236,7 @@ describe('components | Place', () => {
     expect(suggestedPlaces).toHaveLength(2)
 
     const firstSuggestedPlace = suggestedPlaces.at(0).find('span')
-    expect(firstSuggestedPlace.at(0).text()).toBe('34 avenue de l\'opéra')
+    expect(firstSuggestedPlace.at(0).text()).toBe("34 avenue de l'opéra")
     expect(firstSuggestedPlace.at(1).text()).toBe('Paris')
 
     const secondSuggestedPlace = suggestedPlaces.at(1).find('span')
@@ -270,20 +269,22 @@ describe('components | Place', () => {
     // given
     fetchPlaces.mockReturnValue(
       new Promise(resolve => {
-        resolve([{
-          geolocation: {
-            latitude: 1,
-            longitude: 2,
+        resolve([
+          {
+            geolocation: {
+              latitude: 1,
+              longitude: 2,
+            },
+            extraData: {
+              city: 'Paris',
+              department: 'Paris',
+            },
+            name: {
+              long: 'Paris',
+              short: 'Paris',
+            },
           },
-          extraData: {
-            city: 'Paris',
-            department: 'Paris'
-          },
-          name: {
-            long: 'Paris',
-            short: 'Paris',
-          }
-        }])
+        ])
       })
     )
     const wrapper = mount(
@@ -318,20 +319,22 @@ describe('components | Place', () => {
     // given
     fetchPlaces.mockReturnValue(
       new Promise(resolve => {
-        resolve([{
-          geolocation: {
-            latitude: 1,
-            longitude: 2,
+        resolve([
+          {
+            geolocation: {
+              latitude: 1,
+              longitude: 2,
+            },
+            extraData: {
+              city: 'Paris',
+              department: 'Paris',
+            },
+            name: {
+              long: 'Paris',
+              short: 'Paris',
+            },
           },
-          extraData: {
-            city: 'Paris',
-            department: 'Paris'
-          },
-          name: {
-            long: 'Paris',
-            short: 'Paris',
-          }
-        }])
+        ])
       })
     )
     const wrapper = mount(
@@ -339,12 +342,8 @@ describe('components | Place', () => {
         <Place {...props} />
       </Router>
     )
-    await wrapper
-      .find('input')
-      .simulate('change', { target: { value: 'Par' } })
-    const input = wrapper
-      .find(Place)
-      .instance().inputRef.current
+    await wrapper.find('input').simulate('change', { target: { value: 'Par' } })
+    const input = wrapper.find(Place).instance().inputRef.current
     jest.spyOn(input, 'focus').mockImplementation(jest.fn())
 
     // When
@@ -377,12 +376,12 @@ describe('components | Place', () => {
             },
             extraData: {
               city: 'Paris',
-              department: 'Paris'
+              department: 'Paris',
             },
             name: {
               long: 'Paris',
               short: 'Paris',
-            }
+            },
           },
           {
             geolocation: {
@@ -391,12 +390,12 @@ describe('components | Place', () => {
             },
             extraData: {
               city: 'Pau',
-              department: 'Pyrénées-Atlantiques'
+              department: 'Pyrénées-Atlantiques',
             },
             name: {
               long: 'Pau',
               short: 'Pau',
-            }
+            },
           },
         ])
       })
@@ -429,12 +428,12 @@ describe('components | Place', () => {
       },
       extraData: {
         city: 'Paris',
-        department: 'Paris'
+        department: 'Paris',
       },
       name: {
         long: 'Paris',
         short: 'Paris',
-      }
+      },
     })
     expect(props.history.push).toHaveBeenCalledWith('/recherche')
   })
@@ -454,12 +453,12 @@ describe('components | Place', () => {
             },
             extraData: {
               city: 'Paris',
-              department: 'Paris'
+              department: 'Paris',
             },
             name: {
               long: 'Paris',
               short: 'Paris',
-            }
+            },
           },
           {
             geolocation: {
@@ -468,12 +467,12 @@ describe('components | Place', () => {
             },
             extraData: {
               city: 'Paris',
-              department: 'Paris'
+              department: 'Paris',
             },
             name: {
-              long: '34 avenue de l\'opéra, Paris',
-              short: '34 avenue de l\'opéra',
-            }
+              long: "34 avenue de l'opéra, Paris",
+              short: "34 avenue de l'opéra",
+            },
           },
         ])
       })
@@ -506,12 +505,12 @@ describe('components | Place', () => {
       },
       extraData: {
         city: 'Paris',
-        department: 'Paris'
+        department: 'Paris',
       },
       name: {
         long: 'Paris',
         short: 'Paris',
-      }
+      },
     })
     expect(props.history.push).toHaveBeenCalledWith(
       '/recherche/resultats/filtres?mots-cles=&autour-de=non&tri=&categories='
@@ -522,20 +521,22 @@ describe('components | Place', () => {
     // given
     fetchPlaces.mockReturnValue(
       new Promise(resolve => {
-        resolve([{
-          geolocation: {
-            latitude: 1,
-            longitude: 2,
+        resolve([
+          {
+            geolocation: {
+              latitude: 1,
+              longitude: 2,
+            },
+            extraData: {
+              city: 'Paris',
+              department: 'Paris',
+            },
+            name: {
+              long: 'Paris',
+              short: 'Paris',
+            },
           },
-          extraData: {
-            city: 'Paris',
-            department: 'Paris'
-          },
-          name: {
-            long: 'Paris',
-            short: 'Paris',
-          }
-        }])
+        ])
       })
     )
     const wrapper = mount(
@@ -543,12 +544,8 @@ describe('components | Place', () => {
         <Place {...props} />
       </Router>
     )
-    await wrapper
-      .find('input')
-      .simulate('change', { target: { value: 'Par' } })
-    const input = wrapper
-      .find(Place)
-      .instance().inputRef.current
+    await wrapper.find('input').simulate('change', { target: { value: 'Par' } })
+    const input = wrapper.find(Place).instance().inputRef.current
     jest.spyOn(input, 'blur').mockImplementation(jest.fn())
 
     // When
@@ -566,20 +563,22 @@ describe('components | Place', () => {
     // given
     fetchPlaces.mockReturnValue(
       new Promise(resolve => {
-        resolve([{
-          geolocation: {
-            latitude: 1,
-            longitude: 2,
+        resolve([
+          {
+            geolocation: {
+              latitude: 1,
+              longitude: 2,
+            },
+            extraData: {
+              city: 'Paris',
+              department: 'Paris',
+            },
+            name: {
+              long: 'Paris',
+              short: 'Paris',
+            },
           },
-          extraData: {
-            city: 'Paris',
-            department: 'Paris'
-          },
-          name: {
-            long: 'Paris',
-            short: 'Paris',
-          }
-        }])
+        ])
       })
     )
     const wrapper = mount(
@@ -591,9 +590,7 @@ describe('components | Place', () => {
     jest.spyOn(input, 'blur').mockImplementation(jest.fn())
 
     // when
-    await wrapper
-      .find('form')
-      .simulate('submit', { preventDefault: jest.fn() })
+    await wrapper.find('form').simulate('submit', { preventDefault: jest.fn() })
 
     // then
     expect(input.blur).toHaveBeenCalledTimes(1)

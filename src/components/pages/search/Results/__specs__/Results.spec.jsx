@@ -132,8 +132,6 @@ describe('components | Results', () => {
       expect(header.prop('backActionOnClick')).toStrictEqual(
         wrapper.instance().retrieveScrollPosition
       )
-      expect(header.prop('closeTitle')).toBe('Retourner à la page découverte')
-      expect(header.prop('closeTo')).toBe('/decouverte')
       expect(header.prop('shouldBackFromDetails')).toBe(false)
       expect(header.prop('title')).toBe('Recherche')
     })

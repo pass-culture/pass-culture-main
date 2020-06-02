@@ -16,7 +16,6 @@ const LegalNotice = ({ pathToProfile, userEmail }) => {
     <Fragment>
       <HeaderContainer
         backTo={pathToProfile}
-        closeTo={null}
         title="Mentions Légales"
       />
       <section className="list-links profile-section">

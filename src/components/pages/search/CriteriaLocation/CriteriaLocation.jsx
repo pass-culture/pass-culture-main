@@ -31,7 +31,7 @@ class CriteriaLocation extends Component {
     history.push(`${pathname}/place${search}`)
   }
 
-  handleUpdatePlaceInformation = (place) => {
+  handleUpdatePlaceInformation = place => {
     const { onPlaceSelection } = this.props
     onPlaceSelection(place)
   }
@@ -54,31 +54,22 @@ class CriteriaLocation extends Component {
   }
 
   render() {
-    const {
-      activeCriterionLabel,
-      backTo,
-      criteria,
-      history,
-      match,
-      place,
-      title,
-    } = this.props
+    const { activeCriterionLabel, backTo, criteria, history, match, place, title } = this.props
 
     return (
       <div className="criteria-location-page">
-        {this.checkIfIsPlacePage() ?
+        {this.checkIfIsPlacePage() ? (
           <Place
             backTo={this.buildBackToUrl()}
             history={history}
             match={match}
             onPlaceSelection={this.handleUpdatePlaceInformation}
-            title='Choisir un lieu'
+            title="Choisir un lieu"
           />
-          :
+        ) : (
           <div>
             <Header
               backTo={backTo}
-              closeTo={null}
               extraClassName="criteria-header"
               history={history}
               location={history.location}
@@ -116,7 +107,8 @@ class CriteriaLocation extends Component {
               onCriterionSelection={this.checkUserCanSelectCriterion()}
               title={title}
             />
-          </div>}
+          </div>
+        )}
       </div>
     )
   }
@@ -126,7 +118,7 @@ CriteriaLocation.defaultProps = {
   geolocation: {},
   place: {
     geolocation: { latitude: null, longitude: null },
-    name: null
+    name: null,
   },
 }
 
@@ -163,8 +155,8 @@ CriteriaLocation.propTypes = {
     }),
     name: PropTypes.shape({
       long: PropTypes.string,
-      short: PropTypes.string
-    })
+      short: PropTypes.string,
+    }),
   }),
   title: PropTypes.string.isRequired,
 }
