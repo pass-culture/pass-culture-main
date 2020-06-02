@@ -1,8 +1,11 @@
 import { Selector } from 'testcafe'
 
-import { fetchSandbox } from './helpers/sandboxes'
-import { createUserRole } from './helpers/roles'
 import { ROOT_PATH } from '../src/utils/config'
+import getPageUrl from './helpers/getPageUrl'
+import { createUserRole } from './helpers/roles'
+import { fetchSandbox } from './helpers/sandboxes'
+
+const navBar = Selector('nav ul li a')
 
 fixture('En navigant sur la navbar').beforeEach(async t => {
   const { user } = await fetchSandbox(
@@ -13,56 +16,51 @@ fixture('En navigant sur la navbar').beforeEach(async t => {
 })
 
 test('je peux naviguer vers mes offres', async t => {
-  const navBarOfferLink = Selector('nav ul li a').nth(0)
+  const navBarOfferLink = navBar.nth(0)
   await t
     .expect(navBarOfferLink.exists)
     .ok()
     .click(navBarOfferLink)
-    .wait(100)
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).contains('decouverte')
+    .expect(getPageUrl())
+    .contains(`${ROOT_PATH}decouverte/`)
 })
 
 test('je peux naviguer vers la recherche', async t => {
-  const navBarSearchLink = Selector('nav ul li a').nth(1)
+  const navBarSearchLink = navBar.nth(1)
   await t
     .expect(navBarSearchLink.exists)
     .ok()
     .click(navBarSearchLink)
-    .wait(100)
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).contains('recherche')
+    .expect(getPageUrl())
+    .eql(`${ROOT_PATH}recherche`)
 })
 
 test('je peux naviguer vers mes réservations', async t => {
-  const navBarBookingsLink = Selector('nav ul li a').nth(2)
+  const navBarBookingsLink = navBar.nth(2)
   await t
     .expect(navBarBookingsLink.exists)
     .ok()
     .click(navBarBookingsLink)
-    .wait(2100)
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/reservations')
+    .expect(getPageUrl())
+    .eql(`${ROOT_PATH}reservations`)
 })
 
 test('je peux naviguer vers les favoris', async t => {
-  const navBarFavoritesLink = Selector('nav ul li a').nth(3)
+  const navBarFavoritesLink = navBar.nth(3)
   await t
     .expect(navBarFavoritesLink.exists)
     .ok()
     .click(navBarFavoritesLink)
-    .wait(2100)
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/favoris')
+    .expect(getPageUrl())
+    .eql(`${ROOT_PATH}favoris`)
 })
 
 test('je peux naviguer vers mon profil', async t => {
-  const navBarProfileLink = Selector('nav ul li a').nth(4)
+  const navBarProfileLink = navBar.nth(4)
   await t
     .expect(navBarProfileLink.exists)
     .ok()
     .click(navBarProfileLink)
-    .wait(100)
-  const location = await t.eval(() => window.location)
-  await t.expect(location.pathname).contains('profil')
+    .expect(getPageUrl())
+    .eql(`${ROOT_PATH}profil`)
 })

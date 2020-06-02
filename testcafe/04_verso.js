@@ -72,7 +72,7 @@ test("parcours complet de réservation d'une offre thing", async t => {
   await t.useRole(userRole).navigateTo(offerPage)
 
   await t.click(openProfilePage).wait(500)
-  previousWalletValue = await getUserWalletValue() //TODO rename
+  previousWalletValue = await getUserWalletValue()
   await t
     .expect(previousWalletValue)
     .gt(0)

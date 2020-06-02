@@ -27,7 +27,6 @@ export const App = ({ children, location, isMaintenanceActivated }) => {
     return (
       <Fragment>
         <Helmet>
-          <body />
           <title>
             {`${pageTitle}${PROJECT_NAME}${(IS_DEV && ' | DEV') || ''}`}
           </title>
