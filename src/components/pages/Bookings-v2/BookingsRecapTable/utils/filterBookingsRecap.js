@@ -35,6 +35,7 @@ const filterByBookingEndDate = (bookingEndingDate, booking) => {
     const offerDateFromBookingRecap = extractDateFromDatetime(booking.booking_date)
     return offerDateFromBookingRecap <= bookingEndingDate
   }
+  return true
 }
 
 const filterByOfferVenue = (offerVenue, booking) => {

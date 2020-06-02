@@ -411,8 +411,8 @@ describe('filterBookingsRecap', () => {
     const filters = {
       bookingBeginningDate: null,
       bookingEndingDate: null,
-      offerName: 'Jurrasic',
-      offerDate: '2020-01-14',
+      offerName: null,
+      offerDate: null,
       offerVenue: 'AE',
     }
 

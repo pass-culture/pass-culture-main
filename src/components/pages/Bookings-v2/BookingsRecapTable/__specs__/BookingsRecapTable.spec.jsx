@@ -512,10 +512,7 @@ describe('components | BookingsRecapTable', () => {
           booking_token: 'ZEHBGD',
           booking_status: 'Validé',
           booking_is_duo: false,
-<<<<<<< HEAD
-=======
           venue_identifier: 'AE'
->>>>>>> (PC-3294): added offer venue filter
         },
       ],
       isLoading: false,

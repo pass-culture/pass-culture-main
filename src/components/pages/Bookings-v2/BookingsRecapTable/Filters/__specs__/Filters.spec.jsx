@@ -102,6 +102,7 @@ describe('components | Filters', () => {
       bookingEndingDate: null,
       offerDate: null,
       offerName: null,
+      offerVenue: '',
     })
   })
 

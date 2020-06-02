@@ -17,7 +17,7 @@ class Filters extends Component {
         bookingEndingDate: null,
         offerDate: null,
         offerName: null,
-        offerVenue: null,
+        offerVenue: '',
       },
       keywords: '',
       selectedOfferDate: null,
