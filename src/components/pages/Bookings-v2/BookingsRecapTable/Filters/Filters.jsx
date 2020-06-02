@@ -10,7 +10,6 @@ const DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
 class Filters extends Component {
   constructor(props) {
     super(props)
-    const { oldestBookingDate } = this.props
     this.state = {
       filters: {
         offerDate: null,
@@ -20,7 +19,7 @@ class Filters extends Component {
       },
       keywords: '',
       selectedOfferDate: null,
-      selectedBookingBeginningDate: moment(oldestBookingDate),
+      selectedBookingBeginningDate: null,
       selectedBookingEndingDate: moment(),
     }
   }
@@ -30,7 +29,6 @@ class Filters extends Component {
   }
 
   resetAllFilters = () => {
-    const { oldestBookingDate } = this.props
     this.setState(
       {
         filters: {
@@ -41,7 +39,7 @@ class Filters extends Component {
         },
         keywords: '',
         selectedOfferDate: null,
-        selectedBookingBeginningDate: moment(oldestBookingDate),
+        selectedBookingBeginningDate: null,
         selectedBookingEndingDate: moment(),
       },
       () => {
@@ -211,6 +209,7 @@ class Filters extends Component {
                 className="fw-booking-date-input"
                 customInput={<InputWithCalendar customClass="field-date-only field-date-begin" />}
                 dropdownMode="select"
+                maxDate={moment()}
                 minDate={oldestBookingDate}
                 onChange={this.handleBookingBeginningDateChange}
                 placeholderText="JJ/MM/AAAA"
