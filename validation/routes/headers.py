@@ -55,8 +55,12 @@ def _get_origin_header_whitelist():
 
 def _get_endpoint_exceptions():
     return ['patch_booking_by_token', 'get_booking_by_token', 'send_storage_file',
-            'validate_offerer_attachment', 'validate_venue', 'validate_new_offerer',
-            'get_bookings_csv',
+            'list_export_urls', 'export_table', 'validate_offerer_attachment', 'validate_venue', 'validate_new_offerer',
+            'get_all_offerers_with_managing_user_information',
+            'get_all_offerers_with_managing_user_information_and_venue',
+            'get_all_offerers_with_managing_user_information_and_not_virtual_venue',
+            'get_all_offerers_with_venue', 'get_pending_validation',
+            'get_export_venues', 'get_export_offerers', 'get_bookings_csv',
             'list_features', 'show_dashboard_page', 'get_users_stats', ''
             'patch_booking_use_by_token',
             'get_booking_by_token_v2',
