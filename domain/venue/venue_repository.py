@@ -14,5 +14,5 @@ class VenueRepository(ABC):
         pass
 
     @abstractmethod
-    def get_all_by_pro_identifier(self, pro_identifier: int) -> List[Venue]:
+    def get_by_pro_identifier(self, pro_identifier: int) -> List[Venue]:
         pass

@@ -8,13 +8,13 @@ from use_cases.get_all_venues_by_pro_user import GetAllVenuesByProUser
 class GetAllVenuesByProUserTest:
     def setup_method(self):
         self.venue_repository = VenueSQLRepository()
-        self.venue_repository.get_all_by_pro_identifier = MagicMock()
+        self.venue_repository.get_by_pro_identifier = MagicMock()
         self.get_all_venues_by_pro_user = GetAllVenuesByProUser(venue_repository=self.venue_repository)
 
     def test_get_all_venue_by_pro_user(self):
         # Given
         venue = Venue(id=10, name='Librairie Kléber')
-        self.venue_repository.get_all_by_pro_identifier.return_value = [venue]
+        self.venue_repository.get_by_pro_identifier.return_value = [venue]
 
         # When
         pro_venues = self.get_all_venues_by_pro_user.execute(pro_identifier=24)

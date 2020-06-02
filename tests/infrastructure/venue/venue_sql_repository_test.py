@@ -116,7 +116,7 @@ class GetAllByProIdentifierTest:
         expected_venue_2 = venue_domain_converter.to_domain(venue_2)
 
         # when
-        found_venues = self.venue_sql_repository.get_all_by_pro_identifier(pro_user.id)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id)
 
         # then
         assert len(found_venues) == 2
@@ -133,7 +133,7 @@ class GetAllByProIdentifierTest:
         repository.save(user_offerer)
 
         # when
-        found_venues = self.venue_sql_repository.get_all_by_pro_identifier(pro_user.id)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id)
 
         # then
         assert found_venues == []
@@ -153,7 +153,7 @@ class GetAllByProIdentifierTest:
         expected_venue_2 = venue_domain_converter.to_domain(venue_2)
 
         # when
-        found_venues = self.venue_sql_repository.get_all_by_pro_identifier(pro_user.id)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id)
 
         # then
         assert len(found_venues) == 2

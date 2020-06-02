@@ -23,7 +23,7 @@ class VenueSQLRepository(VenueRepository):
             .all()
         return [venue_domain_converter.to_domain(venue_sql_entity) for venue_sql_entity in venue_sql_entities]
 
-    def get_all_by_pro_identifier(self, pro_identifier: int) -> List[Venue]:
+    def get_by_pro_identifier(self, pro_identifier: int) -> List[Venue]:
         venue_sql_entities = VenueSQLEntity.query \
             .join(Offerer) \
             .join(UserOfferer) \

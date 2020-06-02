@@ -6,4 +6,4 @@ class GetAllVenuesByProUser:
         self.venue_repository = venue_repository
 
     def execute(self, pro_identifier: int):
-        return self.venue_repository.get_all_by_pro_identifier(pro_identifier)
+        return self.venue_repository.get_by_pro_identifier(pro_identifier)
