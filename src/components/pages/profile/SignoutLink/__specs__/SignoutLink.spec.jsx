@@ -1,5 +1,5 @@
 import { mount, shallow } from 'enzyme'
-import { createBrowserHistory } from 'history'
+import { createMemoryHistory } from 'history'
 import React from 'react'
 import { Router } from 'react-router'
 import { Link } from 'react-router-dom'
@@ -42,7 +42,7 @@ describe('signout link', () => {
         // given
         jest.spyOn(Date, 'now').mockImplementation(() => 1590428424078)
         const wrapper = mount(
-          <Router history={createBrowserHistory()}>
+          <Router history={createMemoryHistory()}>
             <SignoutLink {...props} />
           </Router>
         )
@@ -69,7 +69,7 @@ describe('signout link', () => {
           },
         ]
         const wrapper = mount(
-          <Router history={createBrowserHistory()}>
+          <Router history={createMemoryHistory()}>
             <SignoutLink {...props} />
           </Router>
         )

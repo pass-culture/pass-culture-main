@@ -1,5 +1,5 @@
 import { mount, shallow } from 'enzyme'
-import { createBrowserHistory } from 'history'
+import { createMemoryHistory } from 'history'
 import React from 'react'
 import { Router } from 'react-router'
 
@@ -35,7 +35,7 @@ describe('edit password', () => {
   it('should display password form', () => {
     // When
     const wrapper = mount(
-      <Router history={createBrowserHistory()}>
+      <Router history={createMemoryHistory()}>
         <EditPassword {...props} />
       </Router>
     )
@@ -77,7 +77,7 @@ describe('edit password', () => {
   it('should not be able to change password while all fields are not completed', () => {
     // given
     const wrapper = mount(
-      <Router history={createBrowserHistory()}>
+      <Router history={createMemoryHistory()}>
         <EditPassword {...props} />
       </Router>
     )
@@ -102,7 +102,7 @@ describe('edit password', () => {
         jest.spyOn(props, 'handleSubmit').mockImplementation((values, fail, success) => success())
 
         const wrapper = mount(
-          <Router history={createBrowserHistory()}>
+          <Router history={createMemoryHistory()}>
             <EditPassword {...props} />
           </Router>
         )
@@ -157,7 +157,7 @@ describe('edit password', () => {
         jest.spyOn(props, 'handleSubmit').mockImplementation((values, fail) => fail({}, action))
 
         const wrapper = mount(
-          <Router history={createBrowserHistory()}>
+          <Router history={createMemoryHistory()}>
             <EditPassword {...props} />
           </Router>
         )

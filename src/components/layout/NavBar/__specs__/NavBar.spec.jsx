@@ -8,6 +8,8 @@ import { isPathWithNavBar } from '../domain/isPathWithNavBar'
 
 jest.mock('../domain/isPathWithNavBar')
 
+const icon = () => <svg />
+
 describe('nav bar', () => {
   let props
 
@@ -19,6 +21,16 @@ describe('nav bar', () => {
     beforeEach(() => {
       props = {
         path: '/path/with/navbar',
+        routes: [
+          {
+            icon,
+            to: '/first-path',
+          },
+          {
+            icon,
+            to: '/second-path',
+          },
+        ],
       }
       isPathWithNavBar.mockReturnValue(true)
     })
@@ -33,7 +45,7 @@ describe('nav bar', () => {
       expect(isPathWithNavBar).toHaveBeenCalledWith(props.path)
     })
 
-    it('should display a link to discovery page', () => {
+    it('should display the first link', () => {
       // When
       const wrapper = mount(
         <Router history={createMemoryHistory()}>
@@ -43,16 +55,11 @@ describe('nav bar', () => {
 
       // Then
       const discoveryPageLink = wrapper.find('nav ul li a')
-      expect(discoveryPageLink.at(0).prop('href')).toBe('/decouverte')
-      expect(
-        discoveryPageLink
-          .at(0)
-          .find('svg title')
-          .text()
-      ).toBe('Les offres')
+      expect(discoveryPageLink.at(0).prop('href')).toBe('/first-path')
+      expect(discoveryPageLink.at(1).find('svg')).toHaveLength(1)
     })
 
-    it('should display a link to search page', () => {
+    it('should display the second link', () => {
       // When
       const wrapper = mount(
         <Router history={createMemoryHistory()}>
@@ -62,70 +69,8 @@ describe('nav bar', () => {
 
       // Then
       const searchPageLink = wrapper.find('nav ul li a')
-      expect(searchPageLink.at(1).prop('href')).toBe('/recherche')
-      expect(
-        searchPageLink
-          .at(1)
-          .find('svg title')
-          .text()
-      ).toBe('Recherche')
-    })
-
-    it('should display a link to bookings page', () => {
-      // When
-      const wrapper = mount(
-        <Router history={createMemoryHistory()}>
-          <NavBar {...props} />
-        </Router>
-      )
-
-      // Then
-      const bookingsPageLink = wrapper.find('nav ul li a')
-      expect(bookingsPageLink.at(2).prop('href')).toBe('/reservations')
-      expect(
-        bookingsPageLink
-          .at(2)
-          .find('svg title')
-          .text()
-      ).toBe('Mes réservations')
-    })
-
-    it('should display a link to favorites page', () => {
-      // When
-      const wrapper = mount(
-        <Router history={createMemoryHistory()}>
-          <NavBar {...props} />
-        </Router>
-      )
-
-      // Then
-      const favoritesPageLink = wrapper.find('nav ul li a')
-      expect(favoritesPageLink.at(3).prop('href')).toBe('/favoris')
-      expect(
-        favoritesPageLink
-          .at(3)
-          .find('svg title')
-          .text()
-      ).toBe('Mes favoris')
-    })
-
-    it('should display a link to my profile page', () => {
-      // When
-      const wrapper = mount(
-        <Router history={createMemoryHistory()}>
-          <NavBar {...props} />
-        </Router>
-      )
-
-      // Then
-      const profilePageLink = wrapper.find('nav ul li a')
-      expect(profilePageLink.at(4).prop('href')).toBe('/profil')
-      expect(
-        profilePageLink
-          .at(4)
-          .find('svg title')
-          .text()
-      ).toBe('Mon compte')
+      expect(searchPageLink.at(1).prop('href')).toBe('/second-path')
+      expect(searchPageLink.at(1).find('svg')).toHaveLength(1)
     })
   })
 

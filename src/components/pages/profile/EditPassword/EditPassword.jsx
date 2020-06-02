@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import React, { createRef, PureComponent } from 'react'
 import PropTypes from 'prop-types'
 
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
@@ -16,9 +16,9 @@ class EditPassword extends PureComponent {
       newPassword: '',
     }
 
-    this.currentPasswordInputRef = React.createRef()
-    this.newPasswordInputRef = React.createRef()
-    this.newConfirmationPasswordInputRef = React.createRef()
+    this.currentPasswordInputRef = createRef()
+    this.newPasswordInputRef = createRef()
+    this.newConfirmationPasswordInputRef = createRef()
   }
 
   handleInputChange = event => {

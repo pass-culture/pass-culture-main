@@ -111,7 +111,7 @@ describe('src | components | pages | discovery | Discovery', () => {
 
       // then
       expect(wrapper.find(Route)).toHaveLength(0)
-      expect(wrapper.find(LoaderContainer)).toHaveLength(0)
+      expect(wrapper.find(LoaderContainer)).toHaveLength(1)
     })
 
     it('should display loading message when API is slow', () => {
@@ -143,7 +143,7 @@ describe('src | components | pages | discovery | Discovery', () => {
 
       // then
       expect(wrapper.find(Route)).toHaveLength(0)
-      expect(wrapper.find(LoaderContainer)).toHaveLength(0)
+      expect(wrapper.find(LoaderContainer)).toHaveLength(1)
     })
   })
 

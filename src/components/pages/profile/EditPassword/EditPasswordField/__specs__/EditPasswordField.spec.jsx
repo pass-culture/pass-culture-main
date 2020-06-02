@@ -1,5 +1,5 @@
 import { mount } from 'enzyme'
-import React from 'react'
+import React, { createRef } from 'react'
 
 import EditPasswordField from '../EditPasswordField'
 
@@ -8,8 +8,9 @@ describe('edit password field', () => {
 
   beforeEach(() => {
     props = {
-      inputRef: React.createRef(),
+      inputRef: createRef(),
       label: 'fake label',
+      name: 'fake name',
       onChange: jest.fn(),
       placeholder: 'fake placeholder',
       value: '',

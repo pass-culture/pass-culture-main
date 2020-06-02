@@ -1,20 +1,25 @@
 import React from 'react'
 import { Redirect } from 'react-router-dom'
 
+import { IcoNavBookings } from '../layout/NavBar/Icons/IcoNavBookings'
+import { IcoNavDiscovery } from '../layout/NavBar/Icons/IcoNavDiscovery'
+import { IcoNavFavorites } from '../layout/NavBar/Icons/IcoNavFavorites'
+import { IcoNavProfile } from '../layout/NavBar/Icons/IcoNavProfile'
+import { IcoNavSearch } from '../layout/NavBar/Icons/IcoNavSearch'
 import ActivationContainer from '../pages/activation/ActivationContainer'
 import BetaPageContainer from '../pages/beta-page/BetaPageContainer'
-import MyBookingsContainer from '../pages/my-bookings/MyBookingsContainer'
-import DiscoveryContainer from '../pages/discovery/DiscoveryContainer'
 import DiscoveryContainerV3 from '../pages/discovery-v3/DiscoveryContainer'
-import MyFavoritesContainer from '../pages/my-favorites/MyFavoritesContainer'
-import TutorialsContainer from '../pages/tutorials/TutorialsContainer'
+import DiscoveryContainer from '../pages/discovery/DiscoveryContainer'
 import ForgotPassword from '../pages/forgot-password/ForgotPassword'
+import MyBookingsContainer from '../pages/my-bookings/MyBookingsContainer'
+import MyFavoritesContainer from '../pages/my-favorites/MyFavoritesContainer'
 import OfferContainer from '../pages/offer/OfferContainer'
 import ProfileContainer from '../pages/profile/ProfileContainer'
-import TypeFormContainer from '../pages/typeform/TypeformContainer'
+import SearchContainer from '../pages/search/SearchContainer'
 import SignInContainer from '../pages/signin/SignInContainer'
 import SignupContainer from '../pages/signup/SignupContainer'
-import SearchContainer from '../pages/search/SearchContainer'
+import TutorialsContainer from '../pages/tutorials/TutorialsContainer'
+import TypeFormContainer from '../pages/typeform/TypeformContainer'
 
 function redirectToBeta() {
   return <Redirect to="/beta" />
@@ -83,7 +88,8 @@ const routes = [
    ---------------------------------------------------  */
   {
     component: DiscoveryContainer,
-    icon: 'ico-offres',
+    icon: IcoNavDiscovery,
+    to: '/decouverte',
     path:
       '/decouverte' +
       '/:offerId([A-Z0-9]+)?' +
@@ -96,23 +102,10 @@ const routes = [
     title: 'Les offres',
   },
   {
-    component: DiscoveryContainerV3,
-    featureName: 'RECOMMENDATIONS_WITH_GEOLOCATION',
-    icon: 'ico-offres',
-    path:
-      '/decouverte-v3' +
-      '/:offerId([A-Z0-9]+)?' +
-      '/:mediationId([A-Z0-9]+)?' +
-      '/:details(details|transition)?' +
-      '/:booking(reservation)?/:bookingId([A-Z0-9]+)?' +
-      '/:cancellation(annulation)?' +
-      '/:confirmation(confirmation)?',
-    title: 'Offres géolocalisées',
-  },
-  {
     component: SearchContainer,
     featureName: 'SEARCH_ALGOLIA',
-    icon: 'ico-search',
+    icon: IcoNavSearch,
+    to: '/recherche',
     path:
       '/recherche' +
       '/(resultats|criteres-localisation/place|criteres-localisation|criteres-categorie|criteres-tri)?' +
@@ -129,7 +122,8 @@ const routes = [
   },
   {
     component: MyBookingsContainer,
-    icon: 'ico-calendar-white',
+    icon: IcoNavBookings,
+    to: '/reservations',
     path:
       '/reservations' +
       '/:details(details|transition)?' +
@@ -142,7 +136,8 @@ const routes = [
   },
   {
     component: MyFavoritesContainer,
-    icon: 'ico-like-empty',
+    icon: IcoNavFavorites,
+    to: '/favoris',
     path:
       '/favoris' +
       '/:details(details|transition)?' +
@@ -156,9 +151,25 @@ const routes = [
   },
   {
     component: ProfileContainer,
-    icon: 'ico-user',
+    icon: IcoNavProfile,
+    to: '/profil',
     path: '/profil/:view(mot-de-passe|informations|mentions-legales)?',
     title: 'Mon compte',
+  },
+  {
+    component: DiscoveryContainerV3,
+    featureName: 'RECOMMENDATIONS_WITH_GEOLOCATION',
+    icon: IcoNavDiscovery,
+    to: '/decouverte-v3',
+    path:
+      '/decouverte-v3' +
+      '/:offerId([A-Z0-9]+)?' +
+      '/:mediationId([A-Z0-9]+)?' +
+      '/:details(details|transition)?' +
+      '/:booking(reservation)?/:bookingId([A-Z0-9]+)?' +
+      '/:cancellation(annulation)?' +
+      '/:confirmation(confirmation)?',
+    title: 'Offres géolocalisées',
   },
 ]
 

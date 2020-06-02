@@ -23,22 +23,14 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": Array [
-        <h3
-          className="title"
-        >
+        <h3>
           404 Not found undefined
         </h3>,
-        <p
-          className="content"
-        >
-          <span
-            className="is-block"
-          >
-            Vous allez être automatiquement redirigé dans 1 secondes
-          </span>
+        <p>
+          Vous allez être automatiquement redirigé dans 1 secondes.
         </p>,
       ],
-      "id": "page-redirect",
+      "className": "page",
     },
     "ref": null,
     "rendered": Array [
@@ -48,7 +40,6 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": "404 Not found undefined",
-          "className": "title",
         },
         "ref": null,
         "rendered": "404 Not found undefined",
@@ -59,32 +50,10 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": Array [
-            <span
-              className="is-block"
-            >
-              Vous allez être automatiquement redirigé dans 1 secondes
-            </span>,
-            false,
-          ],
-          "className": "content",
+          "children": "Vous allez être automatiquement redirigé dans 1 secondes.",
         },
         "ref": null,
-        "rendered": Array [
-          Object {
-            "instance": null,
-            "key": undefined,
-            "nodeType": "host",
-            "props": Object {
-              "children": "Vous allez être automatiquement redirigé dans 1 secondes",
-              "className": "is-block",
-            },
-            "ref": null,
-            "rendered": "Vous allez être automatiquement redirigé dans 1 secondes",
-            "type": "span",
-          },
-          false,
-        ],
+        "rendered": "Vous allez être automatiquement redirigé dans 1 secondes.",
         "type": "p",
       },
     ],
@@ -97,22 +66,14 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
-          <h3
-            className="title"
-          >
+          <h3>
             404 Not found undefined
           </h3>,
-          <p
-            className="content"
-          >
-            <span
-              className="is-block"
-            >
-              Vous allez être automatiquement redirigé dans 1 secondes
-            </span>
+          <p>
+            Vous allez être automatiquement redirigé dans 1 secondes.
           </p>,
         ],
-        "id": "page-redirect",
+        "className": "page",
       },
       "ref": null,
       "rendered": Array [
@@ -122,7 +83,6 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "404 Not found undefined",
-            "className": "title",
           },
           "ref": null,
           "rendered": "404 Not found undefined",
@@ -133,32 +93,10 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": Array [
-              <span
-                className="is-block"
-              >
-                Vous allez être automatiquement redirigé dans 1 secondes
-              </span>,
-              false,
-            ],
-            "className": "content",
+            "children": "Vous allez être automatiquement redirigé dans 1 secondes.",
           },
           "ref": null,
-          "rendered": Array [
-            Object {
-              "instance": null,
-              "key": undefined,
-              "nodeType": "host",
-              "props": Object {
-                "children": "Vous allez être automatiquement redirigé dans 1 secondes",
-                "className": "is-block",
-              },
-              "ref": null,
-              "rendered": "Vous allez être automatiquement redirigé dans 1 secondes",
-              "type": "span",
-            },
-            false,
-          ],
+          "rendered": "Vous allez être automatiquement redirigé dans 1 secondes.",
           "type": "p",
         },
       ],

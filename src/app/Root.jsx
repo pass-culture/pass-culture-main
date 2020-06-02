@@ -1,15 +1,16 @@
 import React, { StrictMode } from 'react'
 import { Provider } from 'react-redux'
-import { PersistGate } from 'redux-persist/integration/react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { PersistGate } from 'redux-persist/integration/react'
 
-import AppContainer from './/App/AppContainer'
-import FeaturedRouteContainer from '../components/router/FeaturedRouteContainer'
 import MatomoContainer from '../components/matomo/MatomoContainer'
 import NotMatch from '../components/pages/not-match/NotMatch'
-import browserRoutes from '../components/router/browserRoutes'
-import { configureStore } from '../utils/store'
+import FeaturedRouteContainer from '../components/router/FeaturedRouteContainer'
+import { getBrowserRoutes } from '../components/router/getBrowserRoutes'
+import routes from '../components/router/routes'
 import Tracking from '../components/tracking/Tracking'
+import { configureStore } from '../utils/store'
+import AppContainer from './/App/AppContainer'
 
 const { store, persistor } = configureStore()
 
@@ -23,7 +24,7 @@ const Root = () => (
         <BrowserRouter>
           <AppContainer>
             <Switch>
-              {browserRoutes.map(route => (
+              {getBrowserRoutes(routes).map(route => (
                 <FeaturedRouteContainer
                   {...route}
                   key={route.path}

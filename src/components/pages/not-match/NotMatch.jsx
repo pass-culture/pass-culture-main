@@ -29,21 +29,18 @@ class NotMatch extends PureComponent {
   render() {
     const { timing } = this.state
     const { location } = this.props
+
     if (timing < 0) return this.redirectTo()
+
     return (
-      <div id="page-redirect">
-        <h3 className="title">
+      <div className="page">
+        <h3>
           {`404 Not found ${location.pathname}`}
         </h3>
-        <p className="content">
-          {timing > 0 && (
-            <span className="is-block">
-              {`Vous allez être automatiquement redirigé dans ${timing} secondes`}
-            </span>
-          )}
-          {timing === 0 && <span className="is-block">
-            {'Redirecting...'}
-          </span>}
+        <p>
+          {timing > 0
+            ? `Vous allez être automatiquement redirigé dans ${timing} secondes.`
+            : 'Redirection...'}
         </p>
       </div>
     )

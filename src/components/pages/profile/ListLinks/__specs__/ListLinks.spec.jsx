@@ -2,7 +2,7 @@ import { shallow, mount } from 'enzyme'
 import React from 'react'
 import { Router } from 'react-router'
 import { Provider } from 'react-redux'
-import { createBrowserHistory } from 'history'
+import { createMemoryHistory } from 'history'
 
 import ListLinks from '../ListLinks'
 import SignoutLinkContainer from '../../SignoutLink/SignoutLinkContainer'
@@ -31,7 +31,7 @@ describe('my informations', () => {
     // When
     const wrapper = mount(
       <Provider store={mockStore}>
-        <Router history={createBrowserHistory()}>
+        <Router history={createMemoryHistory()}>
           <ListLinks {...props} />
         </Router>
       </Provider>
@@ -59,7 +59,7 @@ describe('my informations', () => {
     // When
     const wrapper = mount(
       <Provider store={mockStore}>
-        <Router history={createBrowserHistory()}>
+        <Router history={createMemoryHistory()}>
           <ListLinks {...props} />
         </Router>
       </Provider>
@@ -87,7 +87,7 @@ describe('my informations', () => {
     // When
     const wrapper = mount(
       <Provider store={mockStore}>
-        <Router history={createBrowserHistory()}>
+        <Router history={createMemoryHistory()}>
           <ListLinks {...props} />
         </Router>
       </Provider>
@@ -117,7 +117,7 @@ describe('my informations', () => {
     // When
     const wrapper = mount(
       <Provider store={mockStore}>
-        <Router history={createBrowserHistory()}>
+        <Router history={createMemoryHistory()}>
           <ListLinks {...props} />
         </Router>
       </Provider>

@@ -1,5 +1,5 @@
 import { mount, shallow } from 'enzyme'
-import { createBrowserHistory } from 'history'
+import { createMemoryHistory } from 'history'
 import React from 'react'
 import { Router } from 'react-router'
 
@@ -30,7 +30,7 @@ describe('personal informations', () => {
   it("should display beneficiary's profile informations", () => {
     // When
     const wrapper = mount(
-      <Router history={createBrowserHistory()}>
+      <Router history={createMemoryHistory()}>
         <PersonalInformations {...props} />
       </Router>
     )
@@ -70,7 +70,7 @@ describe('personal informations', () => {
   it('should prevent name, email and department code modifications', () => {
     // When
     const wrapper = mount(
-      <Router history={createBrowserHistory()}>
+      <Router history={createMemoryHistory()}>
         <PersonalInformations {...props} />
       </Router>
     )
@@ -91,7 +91,7 @@ describe('personal informations', () => {
       it('should redirect to profile without submitting information', () => {
         // Given
         const wrapper = mount(
-          <Router history={createBrowserHistory()}>
+          <Router history={createMemoryHistory()}>
             <PersonalInformations {...props} />
           </Router>
         )
@@ -112,7 +112,7 @@ describe('personal informations', () => {
         jest.spyOn(props, 'handleSubmit').mockImplementation((values, fail, success) => success())
 
         const wrapper = mount(
-          <Router history={createBrowserHistory()}>
+          <Router history={createMemoryHistory()}>
             <PersonalInformations {...props} />
           </Router>
         )
@@ -148,7 +148,7 @@ describe('personal informations', () => {
           )
         })
         const wrapper = mount(
-          <Router history={createBrowserHistory()}>
+          <Router history={createMemoryHistory()}>
             <PersonalInformations {...props} />
           </Router>
         )

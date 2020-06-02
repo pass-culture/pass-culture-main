@@ -1,5 +1,5 @@
 import { mount, shallow } from 'enzyme'
-import { createBrowserHistory } from 'history'
+import { createMemoryHistory } from 'history'
 import React from 'react'
 import { Router } from 'react-router'
 
@@ -34,7 +34,7 @@ describe('legal notice page', () => {
   it('should display a link to terms and conditions page', () => {
     // When
     const wrapper = mount(
-      <Router history={createBrowserHistory()}>
+      <Router history={createMemoryHistory()}>
         <LegalNotice {...props} />
       </Router>
     )
@@ -57,7 +57,7 @@ describe('legal notice page', () => {
   it('should display a link to GDPR page', () => {
     // When
     const wrapper = mount(
-      <Router history={createBrowserHistory()}>
+      <Router history={createMemoryHistory()}>
         <LegalNotice {...props} />
       </Router>
     )
@@ -80,7 +80,7 @@ describe('legal notice page', () => {
   it('should display a link to delete my account', () => {
     // Given
     const wrapper = mount(
-      <Router history={createBrowserHistory()}>
+      <Router history={createMemoryHistory()}>
         <LegalNotice {...props} />
       </Router>
     )

@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import React, { createRef, PureComponent } from 'react'
 import PropTypes from 'prop-types'
 
 import PersonalInformationsField from './PersonalInformationsField/PersonalInformationsField'
@@ -15,7 +15,7 @@ class PersonalInformations extends PureComponent {
       nickname: props.user.publicName,
     }
 
-    this.nicknameInputRef = React.createRef()
+    this.nicknameInputRef = createRef()
   }
 
   handleNicknameChange = event => {
