@@ -1,3 +1,5 @@
+import time
+
 import redis
 from rq import Worker, Queue, Connection
 from rq.job import Job
@@ -21,6 +23,13 @@ def log_worker_error(job: Job, exception_type: Type, exception_value: Exception,
 
 
 if __name__ == '__main__':
-    with Connection(conn):
-        worker = Worker(list(map(Queue, listen)), exception_handlers=[log_worker_error])
-        worker.work()
+    while True:
+        try:
+            with Connection(conn):
+                worker = Worker(list(map(Queue, listen)), exception_handlers=[log_worker_error])
+                worker.work()
+
+        except redis.ConnectionError:
+            logger.warning('Catched connection error. Restarting in 5 seconds')
+            time.sleep(5)
+
