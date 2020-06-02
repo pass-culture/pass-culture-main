@@ -56,6 +56,7 @@
         font-size: rem(16px);
         font-weight: $weight-medium;
         padding-left: rem(10px);
+        outline: none;
         width: rem(150px);
 
         &::placeholder {
@@ -70,7 +71,8 @@
   }
 
   .fw-venues {
-    flex: 1;
+    display: flex;
+    flex-direction: column;
     padding-left: rem(24px);
 
     .fw-offer-venue-label {
@@ -92,11 +94,18 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       max-width: rem(200px);
+      outline: none;
+      overflow-y: scroll;
 
       -moz-appearance: none;
       -webkit-appearance: none;
       appearance: none;
       background: url("/icons/dropdown-disclosure-down-b.svg") no-repeat 92% 56%;
+
+      &:focus {
+        border-width: $control-border-width;
+        border-color: $red;
+      }
     }
   }
 
@@ -115,18 +124,14 @@
         border-radius: rem(20px);
         text-align: left;
 
-        &:focus-within {
-          border-width: $control-border-width;
-          border-color: $red;
-        }
-
         .fw-booking-date-input {
           border: 0;
           cursor: pointer;
           font-size: rem(16px);
           font-weight: $weight-medium;
-          width: rem(135px);
+          outline: none;
           padding-left: rem(10px);
+          width: rem(135px);
 
           &::placeholder {
             opacity: 1;
@@ -138,13 +143,22 @@
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
         height: rem(40px);
+
+        &:focus-within {
+          border-width: $control-border-width;
+          border-color: $red;
+        }
       }
 
       .field-date-end {
-        border-left: none;
+        border-left: 2px solid $white;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
         height: rem(40px);
+
+        &:focus-within {
+          border-color: $red;
+        }
       }
 
       img {

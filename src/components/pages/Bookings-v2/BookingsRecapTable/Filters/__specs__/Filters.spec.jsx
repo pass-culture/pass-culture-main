@@ -1,6 +1,6 @@
 import React from 'react'
 import Filters from '../Filters'
-import { shallow } from 'enzyme'
+import { mount, shallow } from 'enzyme'
 import moment from 'moment'
 import { fetchAllVenuesByProUser } from '../../../../../../services/venuesService'
 
@@ -166,7 +166,7 @@ describe('components | Filters', () => {
 
   it('should apply offerVenue filter when selecting a venue', async () => {
     // given
-    const wrapper = await shallow(<Filters {...props} />)
+    const wrapper = await mount(<Filters {...props} />)
     const venuesSelect = wrapper.find('select')
 
     // when

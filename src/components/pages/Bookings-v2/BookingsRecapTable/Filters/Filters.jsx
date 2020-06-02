@@ -26,6 +26,7 @@ class Filters extends Component {
       selectedVenue: '',
       venues: []
     }
+    this.venueSelect = React.createRef()
   }
 
   componentDidMount() {
@@ -154,6 +155,7 @@ class Filters extends Component {
         selectedVenue: venueId
       },
       () => {
+        this.venueSelect.current.blur()
         const { filters } = this.state
         this.applyFilters(filters)
       }
@@ -218,7 +220,7 @@ class Filters extends Component {
               id="select-filter-input"
               onBlur={this.handleVenueSelection}
               onChange={this.handleVenueSelection}
-              size={1}
+              ref={this.venueSelect}
               value={selectedVenue}
             >
               <option
