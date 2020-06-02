@@ -1,0 +1,6 @@
+.field-date-only {
+  @extend .flex-columns;
+  @extend .items-center;
+  @extend .field-input;
+  @extend .field-date;
+}

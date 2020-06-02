@@ -67,9 +67,10 @@ class BookingsRecapTable extends Component {
       filters: {
         offerName: '',
         offerDate: null,
-        bookingBeginDate: null,
-        bookingEndDate: null,
+        bookingBeginningDate: null,
+        bookingEndingDate: null,
       },
+      oldestBookingDate: findOldestBookingDate(props.bookingsRecap),
     }
     this.filtersRef = React.createRef()
   }
@@ -82,7 +83,14 @@ class BookingsRecapTable extends Component {
     const { bookingsRecap } = this.props
     if (prevProps.bookingsRecap.length !== bookingsRecap.length) {
       this.applyFilters()
+      this.setOldestBookingDate(bookingsRecap)
     }
+  }
+
+  setOldestBookingDate = bookingsRecap => {
+    this.setState({
+      oldestBookingDate: findOldestBookingDate(bookingsRecap),
+    })
   }
 
   updateCurrentPage = currentPage => {
@@ -109,11 +117,9 @@ class BookingsRecapTable extends Component {
   }
 
   render() {
-    const { isLoading, bookingsRecap } = this.props
-    const { bookingsRecapFiltered, columns, currentPage } = this.state
+    const { isLoading } = this.props
+    const { bookingsRecapFiltered, columns, currentPage, oldestBookingDate } = this.state
     const nbBookings = bookingsRecapFiltered.length
-
-    const oldestBookingDate = findOldestBookingDate(bookingsRecap)
 
     return (
       <div>

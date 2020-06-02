@@ -21,8 +21,8 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: null,
       offerDate: null,
-      bookingBeginDate: null,
-      bookingEndDate: null,
+      bookingBeginningDate: null,
+      bookingEndingDate: null,
     }
 
     // when
@@ -64,8 +64,8 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: 'Merlin',
       offerDate: null,
-      bookingBeginDate: null,
-      bookingEndDate: null,
+      bookingBeginningDate: null,
+      bookingEndingDate: null,
     }
 
     // when
@@ -94,8 +94,8 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: null,
       offerDate: '2020-02-18',
-      bookingBeginDate: null,
-      bookingEndDate: null,
+      bookingBeginningDate: null,
+      bookingEndingDate: null,
     }
 
     // when
@@ -139,8 +139,8 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: null,
       offerDate: '2020-01-14',
-      bookingBeginDate: null,
-      bookingEndDate: null,
+      bookingBeginningDate: null,
+      bookingEndingDate: null,
     }
 
     // when
@@ -150,7 +150,7 @@ describe('filterBookingsRecap', () => {
     expect(filteredBookingsRecap).toStrictEqual([bookingRecap2])
   })
 
-  it('should return list containing only BookingRecap matching given booking begin date period', () => {
+  it('should return list containing only BookingRecap matching given booking beginning date period', () => {
     // given
     const bookingRecap1 = {
       stock: {
@@ -184,8 +184,8 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: '',
       offerDate: null,
-      bookingBeginDate: '2020-01-14',
-      bookingEndDate: null,
+      bookingBeginningDate: '2020-01-14',
+      bookingEndingDate: null,
     }
 
     // when
@@ -195,7 +195,7 @@ describe('filterBookingsRecap', () => {
     expect(filteredBookingsRecap).toStrictEqual([bookingRecap2])
   })
 
-  it('should return list containing only BookingRecap matching given booking begin date started on same day', () => {
+  it('should return list containing only BookingRecap matching given booking beginning date started on same day', () => {
     // given
     const bookingRecap1 = {
       stock: {
@@ -229,8 +229,8 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: '',
       offerDate: null,
-      bookingBeginDate: '2020-02-18',
-      bookingEndDate: null,
+      bookingBeginningDate: '2020-02-18',
+      bookingEndingDate: null,
     }
 
     // when
@@ -274,8 +274,8 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: '',
       offerDate: null,
-      bookingBeginDate: null,
-      bookingEndDate: '2020-01-14',
+      bookingBeginningDate: null,
+      bookingEndingDate: '2020-01-14',
     }
 
     // when
@@ -319,8 +319,8 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: '',
       offerDate: null,
-      bookingBeginDate: '2020-01-01',
-      bookingEndDate: '2020-01-14',
+      bookingBeginningDate: '2020-01-01',
+      bookingEndingDate: '2020-01-14',
     }
 
     // when
@@ -364,8 +364,8 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: 'Jurrasic',
       offerDate: '2020-01-14',
-      bookingBeginDate: null,
-      bookingEndDate: null,
+      bookingBeginningDate: null,
+      bookingEndingDate: null,
     }
 
     // when
@@ -409,8 +409,8 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: 'Jurrasic',
       offerDate: '2020-01-14',
-      bookingBeginDate: null,
-      bookingEndDate: null,
+      bookingBeginningDate: null,
+      bookingEndingDate: null,
     }
 
     // when

@@ -6,11 +6,15 @@ const filterByOfferName = (offerName, booking) => {
   return true
 }
 
+const extractDateFromDatetime = datetimeToExtract => {
+  return datetimeToExtract.substr(0, 10)
+}
+
 const filterByOfferDate = (offerDate, booking) => {
   if (offerDate !== null) {
     const eventOfferDate = booking.stock.event_beginning_datetime
     if (eventOfferDate) {
-      const offerDateFromBookingRecap = eventOfferDate.substr(0, 10)
+      const offerDateFromBookingRecap = extractDateFromDatetime(eventOfferDate)
       return offerDateFromBookingRecap === offerDate
     }
     return false
@@ -18,31 +22,31 @@ const filterByOfferDate = (offerDate, booking) => {
   return true
 }
 
-const filterByBookingBeginDate = (bookingBeginDate, booking) => {
-  if (bookingBeginDate !== null) {
-    const offerDateFromBookingRecap = booking.booking_date.substr(0, 10)
-    return offerDateFromBookingRecap >= bookingBeginDate
+const filterBybookingBeginningDate = (bookingBeginningDate, booking) => {
+  if (bookingBeginningDate !== null) {
+    const offerDateFromBookingRecap = extractDateFromDatetime(booking.booking_date)
+    return offerDateFromBookingRecap >= bookingBeginningDate
   }
   return true
 }
 
-const filterByBookingEndDate = (bookingEndDate, booking) => {
-  if (bookingEndDate !== null) {
-    const offerDateFromBookingRecap = booking.booking_date.substr(0, 10)
-    return offerDateFromBookingRecap <= bookingEndDate
+const filterByBookingEndDate = (bookingEndingDate, booking) => {
+  if (bookingEndingDate !== null) {
+    const offerDateFromBookingRecap = extractDateFromDatetime(booking.booking_date)
+    return offerDateFromBookingRecap <= bookingEndingDate
   }
   return true
 }
 
 const filterBookingsRecap = (bookingsRecap, filters) => {
-  const { offerName, offerDate, bookingBeginDate, bookingEndDate } = filters
+  const { offerName, offerDate, bookingBeginningDate, bookingEndingDate } = filters
 
   return bookingsRecap.filter(booking => {
     return (
       filterByOfferName(offerName, booking) &&
       filterByOfferDate(offerDate, booking) &&
-      filterByBookingBeginDate(bookingBeginDate, booking) &&
-      filterByBookingEndDate(bookingEndDate, booking)
+      filterBybookingBeginningDate(bookingBeginningDate, booking) &&
+      filterByBookingEndDate(bookingEndingDate, booking)
     )
   })
 }

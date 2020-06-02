@@ -2,10 +2,8 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import debounce from 'lodash.debounce'
 import DatePicker from 'react-datepicker'
-import { InputWithCalendar } from '../../../../layout/form/fields/DateField/InputWithCalendar'
 import moment from 'moment'
-import { InputWithBeginCalendar } from './InputWithBeginCalendar'
-import { InputWithEndCalendar } from './InputWithEndCalendar'
+import InputWithCalendar from './InputWithCalendar'
 
 const DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
 
@@ -17,13 +15,13 @@ class Filters extends Component {
       filters: {
         offerDate: null,
         offerName: null,
-        bookingBeginDate: null,
-        bookingEndDate: null,
+        bookingBeginningDate: null,
+        bookingEndingDate: null,
       },
       keywords: '',
       selectedOfferDate: null,
-      selectedBookingBeginDate: moment(oldestBookingDate),
-      selectedBookingEndDate: moment(),
+      selectedBookingBeginningDate: moment(oldestBookingDate),
+      selectedBookingEndingDate: moment(),
     }
   }
 
@@ -38,13 +36,13 @@ class Filters extends Component {
         filters: {
           offerName: null,
           offerDate: null,
-          bookingBeginDate: null,
-          bookingEndDate: null,
+          bookingBeginningDate: null,
+          bookingEndingDate: null,
         },
         keywords: '',
         selectedOfferDate: null,
-        selectedBookingBeginDate: moment(oldestBookingDate),
-        selectedBookingEndDate: moment(),
+        selectedBookingBeginningDate: moment(oldestBookingDate),
+        selectedBookingEndingDate: moment(),
       },
       () => {
         const { filters } = this.state
@@ -54,13 +52,13 @@ class Filters extends Component {
   }
 
   applyFilters = debounce(filterValues => {
-    const { offerName, offerDate, bookingBeginDate, bookingEndDate } = filterValues
+    const { offerName, offerDate, bookingBeginningDate, bookingEndingDate } = filterValues
     const { setFilters } = this.props
     setFilters({
       offerName: offerName,
       offerDate: offerDate,
-      bookingBeginDate: bookingBeginDate,
-      bookingEndDate: bookingEndDate,
+      bookingBeginningDate: bookingBeginningDate,
+      bookingEndingDate: bookingEndingDate,
     })
   }, DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS)
 
@@ -101,16 +99,17 @@ class Filters extends Component {
     )
   }
 
-  handleBookingBeginDateChange = bookingBeginDate => {
-    const dateToFilter = bookingBeginDate === null ? null : bookingBeginDate.format('YYYY-MM-DD')
+  handleBookingBeginningDateChange = bookingBeginningDate => {
+    const dateToFilter =
+      bookingBeginningDate === null ? null : bookingBeginningDate.format('YYYY-MM-DD')
     const { filters } = this.state
     this.setState(
       {
         filters: {
           ...filters,
-          bookingBeginDate: dateToFilter,
+          bookingBeginningDate: dateToFilter,
         },
-        selectedBookingBeginDate: bookingBeginDate,
+        selectedBookingBeginningDate: bookingBeginningDate,
       },
       () => {
         const { filters } = this.state
@@ -119,16 +118,16 @@ class Filters extends Component {
     )
   }
 
-  handleBookingEndDateChange = bookingEndDate => {
-    const dateToFilter = bookingEndDate === null ? null : bookingEndDate.format('YYYY-MM-DD')
+  handleBookingEndingDateChange = bookingEndingDate => {
+    const dateToFilter = bookingEndingDate === null ? null : bookingEndingDate.format('YYYY-MM-DD')
     const { filters } = this.state
     this.setState(
       {
         filters: {
           ...filters,
-          bookingEndDate: dateToFilter,
+          bookingEndingDate: dateToFilter,
         },
-        selectedBookingEndDate: bookingEndDate,
+        selectedBookingEndingDate: bookingEndingDate,
       },
       () => {
         const { filters } = this.state
@@ -142,8 +141,8 @@ class Filters extends Component {
     const {
       keywords,
       selectedOfferDate,
-      selectedBookingBeginDate,
-      selectedBookingEndDate,
+      selectedBookingBeginningDate,
+      selectedBookingEndingDate,
     } = this.state
 
     return (
@@ -174,7 +173,7 @@ class Filters extends Component {
             </label>
             <DatePicker
               className="fw-offer-date-input"
-              customInput={<InputWithCalendar />}
+              customInput={<InputWithCalendar customClass="field-date-only" />}
               dropdownMode="select"
               id="select-filter-date"
               onChange={this.handleOfferDateChange}
@@ -210,22 +209,22 @@ class Filters extends Component {
             >
               <DatePicker
                 className="fw-booking-date-input"
-                customInput={<InputWithBeginCalendar />}
+                customInput={<InputWithCalendar customClass="field-date-only field-date-begin" />}
                 dropdownMode="select"
                 minDate={oldestBookingDate}
-                onChange={this.handleBookingBeginDateChange}
+                onChange={this.handleBookingBeginningDateChange}
                 placeholderText="JJ/MM/AAAA"
-                selected={selectedBookingBeginDate}
+                selected={selectedBookingBeginningDate}
               />
               <DatePicker
                 className="fw-booking-date-input"
-                customInput={<InputWithEndCalendar />}
+                customInput={<InputWithCalendar customClass="field-date-only field-date-end" />}
                 dropdownMode="select"
                 maxDate={moment()}
-                minDate={selectedBookingBeginDate}
-                onChange={this.handleBookingEndDateChange}
+                minDate={selectedBookingBeginningDate}
+                onChange={this.handleBookingEndingDateChange}
                 placeholderText="JJ/MM/AAAA"
-                selected={selectedBookingEndDate}
+                selected={selectedBookingEndingDate}
               />
             </div>
           </div>

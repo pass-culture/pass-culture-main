@@ -21,8 +21,8 @@ describe('components | Filters', () => {
     expect(props.setFilters).toHaveBeenCalledWith({
       offerName: 'Jurassic Park',
       offerDate: null,
-      bookingBeginDate: null,
-      bookingEndDate: null,
+      bookingBeginningDate: null,
+      bookingEndingDate: null,
     })
   })
 
@@ -42,8 +42,8 @@ describe('components | Filters', () => {
     expect(props.setFilters).toHaveBeenCalledWith({
       offerName: null,
       offerDate: '2020-05-20',
-      bookingBeginDate: null,
-      bookingEndDate: null,
+      bookingBeginningDate: null,
+      bookingEndingDate: null,
     })
   })
 
@@ -66,12 +66,12 @@ describe('components | Filters', () => {
     expect(props.setFilters).toHaveBeenCalledWith({
       offerName: 'Jurassic Park',
       offerDate: '2020-05-20',
-      bookingBeginDate: null,
-      bookingEndDate: null,
+      bookingBeginningDate: null,
+      bookingEndingDate: null,
     })
   })
 
-  it('should apply bookingBeginDate filter when choosing an booking begin date', async () => {
+  it('should apply bookingBeginningDate filter when choosing an booking beginning date', async () => {
     // Given
     const props = {
       setFilters: jest.fn(),
@@ -85,14 +85,14 @@ describe('components | Filters', () => {
 
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeginDate: '2020-05-20',
-      bookingEndDate: null,
+      bookingBeginningDate: '2020-05-20',
+      bookingEndingDate: null,
       offerDate: null,
       offerName: null,
     })
   })
 
-  it('should apply bookingEndDate filter when choosing an booking end date', async () => {
+  it('should apply bookingEndingDate filter when choosing an booking end date', async () => {
     // Given
     const props = {
       setFilters: jest.fn(),
@@ -106,8 +106,8 @@ describe('components | Filters', () => {
 
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeginDate: null,
-      bookingEndDate: '2020-05-20',
+      bookingBeginningDate: null,
+      bookingEndingDate: '2020-05-20',
       offerDate: null,
       offerName: null,
     })
