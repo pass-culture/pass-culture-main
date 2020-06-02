@@ -27,154 +27,131 @@
 }
 
 .fw-second-line {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 40px;
+  grid-auto-flow: column;
+  column-gap: rem(24px);
+  row-gap: rem(12px);
   margin-bottom: rem(30px);
 
-  .fw-offer-date {
-    flex: 1;
+  .field-date {
+    border-radius: rem(20px);
+    box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
+    height: rem(40px);
 
-    .fw-offer-date-label {
-      margin-bottom: rem(12px);
+    &:focus-within {
+      border-color: $red;
     }
 
-    .field-date {
-      border-radius: rem(20px);
-      box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
-      height: rem(40px);
-      margin-top: rem(12px);
-
-      &:focus-within {
-        border-color: $red;
-      }
-
-      .fw-offer-date-input {
-        border: 0;
-        background: none;
-        cursor: pointer;
-        font-size: rem(16px);
-        font-weight: $weight-medium;
-        padding-left: rem(10px);
-        outline: none;
-        width: rem(150px);
-
-        &::placeholder {
-          opacity: 1;
-        }
-      }
-
-      img {
-        margin-right: rem(25px);
-      }
-    }
-  }
-
-  .fw-venues {
-    display: flex;
-    flex-direction: column;
-    padding-left: rem(24px);
-
-    .fw-offer-venue-label {
-      font-size: rem(16px);
-    }
-
-    select {
-      border: $control-border-width solid $grey-light;
+    .fw-offer-date-input {
+      border: 0;
+      background: none;
       cursor: pointer;
-      font-weight: $weight-normal;
       font-size: rem(16px);
-      border-radius: rem(20px);
-      box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
-      height: rem(40px);
-      margin-top: rem(12px);
+      font-weight: $weight-medium;
       padding-left: rem(10px);
-      padding-right: rem(30px);
-      word-wrap: break-word;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      max-width: rem(200px);
       outline: none;
-      overflow-y: scroll;
+      width: rem(150px);
 
-      -moz-appearance: none;
-      -webkit-appearance: none;
-      appearance: none;
-      background: url("/icons/dropdown-disclosure-down-b.svg") no-repeat 92% 56%;
-
-      &:focus {
-        border-color: $red;
+      &::placeholder {
+        opacity: 1;
       }
+    }
+
+    img {
+      margin-right: rem(25px);
     }
   }
 
-  .fw-booking-date {
-    flex: 2;
-    padding-left: rem(24px);
+  .fw-offer-venue-label {
+    font-size: rem(16px);
+  }
+
+  select {
+    border: $control-border-width solid $grey-light;
+    cursor: pointer;
+    font-weight: $weight-normal;
+    font-size: rem(16px);
+    border-radius: rem(20px);
+    box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
+    padding-left: rem(10px);
+    padding-right: rem(30px);
+    word-wrap: break-word;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: rem(200px);
+    outline: none;
+    overflow-y: scroll;
+
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    background: url("/icons/dropdown-disclosure-down-b.svg") no-repeat 92% 56%;
+
+    &:focus {
+      border-color: $red;
+    }
+  }
+
+  .fw-booking-date-inputs {
+    display: flex;
+    border-radius: rem(20px);
+    box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
 
     .vertical-bar {
       background-color: $grey-light;
       width: $control-border-width;
     }
 
-    .fw-booking-date-inputs {
-      display: flex;
+    .field-date {
       border-radius: rem(20px);
-      box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
-      height: rem(40px);
-      margin-top: rem(12px);
+      text-align: left;
+      box-shadow: none;
 
-      .field-date {
-        border-radius: rem(20px);
-        text-align: left;
+      .fw-booking-date-input {
+        border: 0;
+        cursor: pointer;
+        font-size: rem(16px);
+        font-weight: $weight-medium;
+        outline: none;
+        padding-left: rem(10px);
+        width: rem(135px);
 
-        .fw-booking-date-input {
-          border: 0;
-          cursor: pointer;
-          font-size: rem(16px);
-          font-weight: $weight-medium;
-          outline: none;
-          padding-left: rem(10px);
-          width: rem(135px);
-
-          &::placeholder {
-            opacity: 1;
-          }
+        &::placeholder {
+          opacity: 1;
         }
       }
+    }
 
-      .field-date-begin {
-        border-right: none;
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-        height: rem(40px);
+    .field-date-begin {
+      border-right: none;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
 
-        &:focus-within {
-          border-color: $red;
-        }
+      &:focus-within {
+        border-color: $red;
       }
+    }
 
-      .field-date-end {
-        border-left: none;
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
-        height: rem(40px);
+    .field-date-end {
+      border-left: none;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
 
-        &:focus-within {
-          border-color: $red;
-        }
+      &:focus-within {
+        border-color: $red;
       }
+    }
 
-      img {
-        margin-right: rem(20px);
-      }
+    img {
+      margin-right: rem(20px);
     }
   }
 
-  .fw-booking-date:focus-within {
+  .fw-booking-date-inputs:focus-within {
     .vertical-bar {
       background-color: $red;
-      width: $control-border-width;
     }
   }
 }

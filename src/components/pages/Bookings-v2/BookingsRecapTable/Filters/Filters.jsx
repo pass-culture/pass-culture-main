@@ -202,83 +202,68 @@ class Filters extends Component {
           />
         </div>
         <div className="fw-second-line">
-          <div className="fw-offer-date">
-            <label
-              className="fw-offer-date-label"
-              htmlFor="select-filter-date"
-            >
-              {"Date de l'évènement"}
-            </label>
-            <DatePicker
-              className="fw-offer-date-input"
-              customInput={<InputWithCalendar customClass="field-date-only" />}
-              dropdownMode="select"
-              id="select-filter-date"
-              onChange={this.handleOfferDateChange}
-              placeholderText="JJ/MM/AAAA"
-              selected={selectedOfferDate}
-            />
-          </div>
-          <div className="fw-venues">
-            <label
-              className="fw-offer-venue-label"
-              htmlFor="select-filter-input"
-            >
-              {'Lieu'}
-            </label>
-            <select
-              id="select-filter-input"
-              onBlur={this.handleVenueSelection}
-              onChange={this.handleVenueSelection}
-              ref={this.venueSelect}
-              value={selectedVenue}
-            >
-              <option value="">
-                {'Tous les lieux'}
+          <label htmlFor="select-filter-date">
+            {"Date de l'évènement"}
+          </label>
+          <DatePicker
+            className="fw-offer-date-input"
+            customInput={<InputWithCalendar customClass="field-date-only" />}
+            dropdownMode="select"
+            id="select-filter-date"
+            onChange={this.handleOfferDateChange}
+            placeholderText="JJ/MM/AAAA"
+            selected={selectedOfferDate}
+          />
+          <label htmlFor="select-filter-input">
+            {'Lieu'}
+          </label>
+          <select
+            id="select-filter-input"
+            onBlur={this.handleVenueSelection}
+            onChange={this.handleVenueSelection}
+            ref={this.venueSelect}
+            value={selectedVenue}
+          >
+            <option value="">
+              {'Tous les lieux'}
+            </option>
+            {venues.map(venue => (
+              <option
+                key={venue.id}
+                value={venue.id}
+              >
+                {venue.isVirtual ? `${venue.name} - Offre numérique` : venue.name}
               </option>
-              {venues.map(venue => (
-                <option
-                  key={venue.id}
-                  value={venue.id}
-                >
-                  {venue.isVirtual ? `${venue.name} - Offre numérique` : venue.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="fw-booking-date">
-            <label
-              className="fw-booking-date-label"
-              htmlFor="select-filter-booking-date"
-            >
-              {'Période de réservation'}
-            </label>
-            <div
-              className="fw-booking-date-inputs"
-              id="select-filter-booking-date"
-            >
-              <DatePicker
-                className="fw-booking-date-input"
-                customInput={<InputWithCalendar customClass="field-date-only field-date-begin" />}
-                dropdownMode="select"
-                maxDate={moment()}
-                minDate={oldestBookingDate}
-                onChange={this.handleBookingBeginningDateChange}
-                placeholderText="JJ/MM/AAAA"
-                selected={selectedBookingBeginningDate}
-              />
-              <span className="vertical-bar" />
-              <DatePicker
-                className="fw-booking-date-input"
-                customInput={<InputWithCalendar customClass="field-date-only field-date-end" />}
-                dropdownMode="select"
-                maxDate={moment()}
-                minDate={selectedBookingBeginningDate}
-                onChange={this.handleBookingEndingDateChange}
-                placeholderText="JJ/MM/AAAA"
-                selected={selectedBookingEndingDate}
-              />
-            </div>
+            ))}
+          </select>
+          <label htmlFor="select-filter-booking-date">
+            {'Période de réservation'}
+          </label>
+          <div
+            className="fw-booking-date-inputs"
+            id="select-filter-booking-date"
+          >
+            <DatePicker
+              className="fw-booking-date-input"
+              customInput={<InputWithCalendar customClass="field-date-only field-date-begin" />}
+              dropdownMode="select"
+              maxDate={moment()}
+              minDate={oldestBookingDate}
+              onChange={this.handleBookingBeginningDateChange}
+              placeholderText="JJ/MM/AAAA"
+              selected={selectedBookingBeginningDate}
+            />
+            <span className="vertical-bar" />
+            <DatePicker
+              className="fw-booking-date-input"
+              customInput={<InputWithCalendar customClass="field-date-only field-date-end" />}
+              dropdownMode="select"
+              maxDate={moment()}
+              minDate={selectedBookingBeginningDate}
+              onChange={this.handleBookingEndingDateChange}
+              placeholderText="JJ/MM/AAAA"
+              selected={selectedBookingEndingDate}
+            />
           </div>
         </div>
       </div>
