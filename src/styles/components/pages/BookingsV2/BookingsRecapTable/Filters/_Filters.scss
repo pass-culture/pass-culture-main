@@ -80,7 +80,7 @@
     }
 
     select {
-      border: 2px solid $grey-light;
+      border: $control-border-width solid $grey-light;
       cursor: pointer;
       font-weight: $weight-normal;
       font-size: rem(16px);
@@ -103,7 +103,6 @@
       background: url("/icons/dropdown-disclosure-down-b.svg") no-repeat 92% 56%;
 
       &:focus {
-        border-width: $control-border-width;
         border-color: $red;
       }
     }
@@ -112,6 +111,11 @@
   .fw-booking-date {
     flex: 2;
     padding-left: rem(24px);
+
+    .vertical-bar {
+      background-color: $grey-light;
+      width: $control-border-width;
+    }
 
     .fw-booking-date-inputs {
       display: flex;
@@ -140,18 +144,18 @@
       }
 
       .field-date-begin {
+        border-right: none;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
         height: rem(40px);
 
         &:focus-within {
-          border-width: $control-border-width;
           border-color: $red;
         }
       }
 
       .field-date-end {
-        border-left: 2px solid $white;
+        border-left: none;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
         height: rem(40px);
@@ -164,6 +168,13 @@
       img {
         margin-right: rem(20px);
       }
+    }
+  }
+
+  .fw-booking-date:focus-within {
+    .vertical-bar {
+      background-color: $red;
+      width: $control-border-width;
     }
   }
 }

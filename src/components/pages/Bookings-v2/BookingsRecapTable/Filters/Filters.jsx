@@ -24,13 +24,13 @@ class Filters extends Component {
       selectedBookingEndingDate: moment(),
       selectedOfferDate: null,
       selectedVenue: '',
-      venues: []
+      venues: [],
     }
     this.venueSelect = React.createRef()
   }
 
   componentDidMount() {
-    fetchAllVenuesByProUser().then((venues) => this.setState({ venues: venues }))
+    fetchAllVenuesByProUser().then(venues => this.setState({ venues: venues }))
   }
 
   shouldComponentUpdate() {
@@ -51,7 +51,7 @@ class Filters extends Component {
         selectedBookingBeginningDate: null,
         selectedBookingEndingDate: moment(),
         selectedOfferDate: null,
-        selectedVenue: ''
+        selectedVenue: '',
       },
       () => {
         const { filters } = this.state
@@ -61,7 +61,13 @@ class Filters extends Component {
   }
 
   applyFilters = debounce(filterValues => {
-    const { offerName, offerDate, offerVenue, bookingBeginningDate, bookingEndingDate } = filterValues
+    const {
+      offerName,
+      offerDate,
+      offerVenue,
+      bookingBeginningDate,
+      bookingEndingDate,
+    } = filterValues
     const { setFilters } = this.props
     setFilters({
       bookingBeginningDate: bookingBeginningDate,
@@ -110,7 +116,8 @@ class Filters extends Component {
   }
 
   handleBookingBeginningDateChange = bookingBeginningDate => {
-    const dateToFilter = bookingBeginningDate === null ? null : bookingBeginningDate.format('YYYY-MM-DD')
+    const dateToFilter =
+      bookingBeginningDate === null ? null : bookingBeginningDate.format('YYYY-MM-DD')
     const { filters } = this.state
     this.setState(
       {
@@ -137,22 +144,25 @@ class Filters extends Component {
           bookingEndingDate: dateToFilter,
         },
         selectedBookingEndingDate: bookingEndingDate,
-      }, () => {
+      },
+      () => {
         const { filters } = this.state
         this.applyFilters(filters)
-      })
+      }
+    )
   }
 
-  handleVenueSelection = (event) => {
+  handleVenueSelection = event => {
     const venueId = event.target.value
     const { filters } = this.state
 
-    this.setState({
+    this.setState(
+      {
         filters: {
           ...filters,
-          offerVenue: venueId
+          offerVenue: venueId,
         },
-        selectedVenue: venueId
+        selectedVenue: venueId,
       },
       () => {
         this.venueSelect.current.blur()
@@ -170,7 +180,7 @@ class Filters extends Component {
       selectedBookingBeginningDate,
       selectedBookingEndingDate,
       selectedVenue,
-      venues
+      venues,
     } = this.state
 
     return (
@@ -186,7 +196,7 @@ class Filters extends Component {
             className="fw-offer-name-input"
             id="text-filter-input"
             onChange={this.handleOfferNameChange}
-            placeholder={'Rechercher par nom d\'offre'}
+            placeholder={"Rechercher par nom d'offre"}
             type="text"
             value={keywords}
           />
@@ -197,7 +207,7 @@ class Filters extends Component {
               className="fw-offer-date-label"
               htmlFor="select-filter-date"
             >
-              {'Date de l\'évènement'}
+              {"Date de l'évènement"}
             </label>
             <DatePicker
               className="fw-offer-date-input"
@@ -223,9 +233,7 @@ class Filters extends Component {
               ref={this.venueSelect}
               value={selectedVenue}
             >
-              <option
-                value=""
-              >
+              <option value="">
                 {'Tous les lieux'}
               </option>
               {venues.map(venue => (
@@ -259,6 +267,7 @@ class Filters extends Component {
                 placeholderText="JJ/MM/AAAA"
                 selected={selectedBookingBeginningDate}
               />
+              <span className="vertical-bar" />
               <DatePicker
                 className="fw-booking-date-input"
                 customInput={<InputWithCalendar customClass="field-date-only field-date-end" />}
