@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from models import Venue, Offerer
+from models import VenueSQLEntity, Offerer
 from repository import repository
 from routes.serialization import serialize
 from tests.conftest import clean_database, TestClient
@@ -23,7 +23,7 @@ def test_export_model_returns_200_when_given_model_is_known(app):
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
-    response = auth_request.get('/exports/models/%s?token=%s' % ('Venue', TOKEN))
+    response = auth_request.get('/exports/models/%s?token=%s' % ('VenueSQLEntity', TOKEN))
 
     # then
     assert response.status_code == 200
@@ -408,8 +408,8 @@ def test_get_venues_return_200_and_filtered_venues(app):
 
     assert response.status_code == 200
     assert len(venue_names) == 2
-    assert Venue.query.get(venue67_with_offer_in_date_range_id).name in venue_names
-    assert Venue.query.get(venue93_with_offer_in_date_range_id).name in venue_names
+    assert VenueSQLEntity.query.get(venue67_with_offer_in_date_range_id).name in venue_names
+    assert VenueSQLEntity.query.get(venue93_with_offer_in_date_range_id).name in venue_names
 
 
 @clean_database
@@ -486,7 +486,7 @@ def test_get_venues_with_params_for_pc_reporting_return_200_and_filtered_venues(
 
     assert response.status_code == 200
     assert len(venue_names) == 1
-    assert Venue.query.get(expected_venue_id).name in venue_names
+    assert VenueSQLEntity.query.get(expected_venue_id).name in venue_names
 
 
 @clean_database
@@ -525,9 +525,9 @@ def test_get_venues_with_sirens_params_return_200_and_filtered_venues(app):
 
     assert response.status_code == 200
     assert len(venue_names) == 3
-    assert Venue.query.get(venue_123456781_id).name in venue_names
-    assert Venue.query.get(venue_123456782_id).name in venue_names
-    assert Venue.query.get(venue_123456783_id).name in venue_names
+    assert VenueSQLEntity.query.get(venue_123456781_id).name in venue_names
+    assert VenueSQLEntity.query.get(venue_123456782_id).name in venue_names
+    assert VenueSQLEntity.query.get(venue_123456783_id).name in venue_names
 
 
 @clean_database
@@ -757,7 +757,6 @@ def test_get_offerers_with_params_for_pc_reporting_return_200_and_filtered_offer
                   user_offerer_not_active, user_offerer_ok)
 
     bank_information = create_bank_information(bic="AGRIFRPP", iban='DE89370400440532013000',
-                                               id_at_providers=offerer_bank_information.siren,
                                                offerer=offerer_bank_information)
 
     repository.save(bank_information)

@@ -11,8 +11,7 @@ from repository.offerer_queries import find_all_offerers_with_managing_user_info
     count_offerer_by_departement, count_offerer_with_stock_by_departement, find_new_offerer_user_email
 from repository.user_queries import find_all_emails_of_user_offerers_admins
 from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_user, create_stock, create_offerer, create_venue, \
-    create_user_offerer
+from tests.model_creators.generic_creators import create_bank_information, create_offerer, create_stock, create_user, create_user_offerer, create_venue
 from tests.model_creators.specific_creators import create_stock_from_event_occurrence, create_stock_with_thing_offer, \
     create_offer_with_thing_product, create_offer_with_event_product, create_event_occurrence
 
@@ -845,7 +844,6 @@ def test_find_filtered_offerers_with_has_bank_information_param_return_filtered_
     offerer_with_bank_information = create_offerer()
 
     bank_information = create_bank_information(bic="AGRIFRPP", iban='DE89370400440532013000',
-                                               id_at_providers=offerer_with_bank_information.siren,
                                                offerer=offerer_with_bank_information)
 
     repository.save(offerer_with_bank_information, offerer_without_bank_information, bank_information)
@@ -1565,7 +1563,6 @@ def test_find_filtered_offerers_with_default_param_return_all_offerers(app):
     offerer_with_bank_information = create_offerer(siren="123456771")
 
     bank_information = create_bank_information(bic="AGRIFRPP", iban='DE89370400440532013000',
-                                               id_at_providers=offerer_with_bank_information.siren,
                                                offerer=offerer_with_bank_information)
 
     repository.save(bank_information)
@@ -1636,7 +1633,7 @@ def test_find_filtered_offerers_with_one_keyword_at_venue_public_name_level(app)
                   venue_without_offer_2, venue_without_offer_4)
 
     # when
-    offerers = filter_offerers_with_keywords_string(Offerer.query.join(Venue), 'chouette')
+    offerers = filter_offerers_with_keywords_string(Offerer.query.join(VenueSQLEntity), 'chouette')
 
     # then
     assert offerer_with_only_virtual_venue_with_offer not in offerers
@@ -1686,7 +1683,7 @@ def test_find_filtered_offerers_with_one_partial_keyword_at_venue_public_name_le
                   venue_without_offer_2, venue_without_offer_4)
 
     # when
-    offerers = filter_offerers_with_keywords_string(Offerer.query.join(Venue), 'chou')
+    offerers = filter_offerers_with_keywords_string(Offerer.query.join(VenueSQLEntity), 'chou')
 
     # then
     assert offerer_with_only_virtual_venue_with_offer not in offerers
@@ -1736,7 +1733,7 @@ def test_find_filtered_offerers_with_several_keywords_at_venue_public_name_level
                   venue_without_offer_2, venue_without_offer_4)
 
     # when
-    offerers = filter_offerers_with_keywords_string(Offerer.query.join(Venue), 'chouette ouf')
+    offerers = filter_offerers_with_keywords_string(Offerer.query.join(VenueSQLEntity), 'chouette ouf')
 
     # then
     assert offerer_with_only_virtual_venue_with_offer not in offerers
@@ -1786,7 +1783,7 @@ def test_find_filtered_offerers_with_several_partial_keywords_at_venue_public_na
                   venue_without_offer_2, venue_without_offer_4)
 
     # when
-    offerers = filter_offerers_with_keywords_string(Offerer.query.join(Venue), 'chou ou')
+    offerers = filter_offerers_with_keywords_string(Offerer.query.join(VenueSQLEntity), 'chou ou')
 
     # then
     assert offerer_with_only_virtual_venue_with_offer not in offerers

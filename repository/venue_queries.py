@@ -6,7 +6,7 @@ from models import VenueSQLEntity, Offer, StockSQLEntity, Offerer, UserOfferer, 
 from models.activity import load_activity
 from models.db import db
 from repository.offerer_queries import _filter_by_sirens
-from sqlalchemy import func
+from sqlalchemy import and_
 from datetime import datetime
 
 
@@ -100,7 +100,7 @@ def find_filtered_venues(sirens=None,
     return result
 
 
-def find_by_managing_user(user: UserSQLEntity) -> List[Venue]:
+def find_by_managing_user(user: UserSQLEntity) -> List[VenueSQLEntity]:
     return VenueSQLEntity.query \
         .join(Offerer) \
         .join(UserOfferer) \
