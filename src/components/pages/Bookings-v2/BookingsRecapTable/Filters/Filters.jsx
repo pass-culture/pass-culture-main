@@ -20,9 +20,9 @@ class Filters extends Component {
         offerVenue: '',
       },
       keywords: '',
-      selectedOfferDate: null,
       selectedBookingBeginningDate: null,
       selectedBookingEndingDate: moment(),
+      selectedOfferDate: null,
       selectedVenue: '',
       venues: []
     }
@@ -47,9 +47,9 @@ class Filters extends Component {
           bookingEndingDate: null,
         },
         keywords: '',
-        selectedOfferDate: null,
         selectedBookingBeginningDate: null,
         selectedBookingEndingDate: moment(),
+        selectedOfferDate: null,
         selectedVenue: ''
       },
       () => {
@@ -63,11 +63,11 @@ class Filters extends Component {
     const { offerName, offerDate, offerVenue, bookingBeginningDate, bookingEndingDate } = filterValues
     const { setFilters } = this.props
     setFilters({
+      bookingBeginningDate: bookingBeginningDate,
+      bookingEndingDate: bookingEndingDate,
       offerDate: offerDate,
       offerName: offerName,
       offerVenue: offerVenue,
-      bookingBeginningDate: bookingBeginningDate,
-      bookingEndingDate: bookingEndingDate,
     })
   }, DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS)
 
@@ -109,8 +109,7 @@ class Filters extends Component {
   }
 
   handleBookingBeginningDateChange = bookingBeginningDate => {
-    const dateToFilter =
-      bookingBeginningDate === null ? null : bookingBeginningDate.format('YYYY-MM-DD')
+    const dateToFilter = bookingBeginningDate === null ? null : bookingBeginningDate.format('YYYY-MM-DD')
     const { filters } = this.state
     this.setState(
       {
@@ -211,13 +210,15 @@ class Filters extends Component {
           <div className="fw-venues">
             <label
               className="fw-offer-venue-label"
-              htmlFor="text-filter-input"
+              htmlFor="select-filter-input"
             >
               {'Lieu'}
             </label>
             <select
+              id="select-filter-input"
               onBlur={this.handleVenueSelection}
               onChange={this.handleVenueSelection}
+              size={1}
               value={selectedVenue}
             >
               <option
