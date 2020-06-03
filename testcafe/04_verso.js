@@ -66,6 +66,7 @@ test.only("parcours complet de réservation d'une offre thing", async t => {
     'webapp_08_booking',
     'get_non_free_thing_offer_with_active_mediation'
   )
+
   offerPage = `${discoverURL}/${offer.id}/${mediationId}`
   offerPageDetails = `${offerPage}/details`
 
