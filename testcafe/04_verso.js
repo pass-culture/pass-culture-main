@@ -6,7 +6,7 @@ import getPageUrl from './helpers/getPageUrl'
 import { ROOT_PATH } from '../src/utils/config'
 import getUserWalletValue from './helpers/getUserWalletValue'
 
-const discoverURL = `${ROOT_PATH}decouverte`
+const offerDetailsURL = `${ROOT_PATH}offre/details`
 const bookingsDetailsURL = `${ROOT_PATH}reservations/details`
 const openVersoButton = Selector('#deck-open-verso-button')
 const openProfilePage = Selector('nav ul li a[href="/profil"]')
@@ -24,10 +24,8 @@ const selectableDates = Selector(
 )
 
 let offerPage = null
-let offerPageDetails = null
 let userRole = null
 let discoveryCardUrl = null
-let discoverDetailsUrl = null
 let previousWalletValue = null
 let currentBookedToken = null
 
@@ -39,16 +37,14 @@ test("je peux réserver l'offre", async t => {
     'webapp_08_booking',
     'get_existing_webapp_user_can_book_digital_offer'
   )
-  const { mediationId, offer } = await fetchSandbox(
+  const { offer } = await fetchSandbox(
     'webapp_08_booking',
     'get_non_free_thing_offer_with_active_mediation'
   )
-  offerPage = `${discoverURL}/${offer.id}/${mediationId}`
+  offerPage = `${offerDetailsURL}/${offer.id}`
   await t.useRole(userRole).navigateTo(offerPage)
 
   // when
-  await t.click(openVersoButton).wait(500)
-
   await t
     .expect(alreadyBookedOfferButton.exists)
     .notOk()
@@ -62,18 +58,19 @@ test.only("parcours complet de réservation d'une offre thing", async t => {
     'webapp_08_booking',
     'get_existing_webapp_user_can_book_thing_offer'
   )
-  const { mediationId, offer } = await fetchSandbox(
+  const { offer } = await fetchSandbox(
     'webapp_08_booking',
     'get_non_free_thing_offer_with_active_mediation'
   )
 
-  offerPage = `${discoverURL}/${offer.id}/${mediationId}`
-  offerPageDetails = `${offerPage}/details`
+  offerPage = `${offerDetailsURL}/${offer.id}`
 
   await t.useRole(userRole).navigateTo(offerPage)
 
   await t.click(openProfilePage).wait(500)
   previousWalletValue = await getUserWalletValue()
+  await t.click(openMenuFromVerso).wait(500)
+  previousWalletValue = await getMenuWalletValue()
   await t
     .expect(previousWalletValue)
     .gt(0)
@@ -81,6 +78,8 @@ test.only("parcours complet de réservation d'une offre thing", async t => {
     .navigateTo(offerPage)
     .wait(500)
     .click(openVersoButton)
+    .wait(500)
+    .click(closeMenu)
     .wait(500)
 
   await t
@@ -101,8 +100,6 @@ test.only("parcours complet de réservation d'une offre thing", async t => {
   currentBookedToken = currentBookedToken.toLowerCase()
   await t
     .click(bookingSuccessButton)
-    .expect(getPageUrl())
-    .eql(offerPageDetails)
     .expect(checkReversedIcon.exists)
     .ok()
     .click(openProfilePage)
@@ -133,14 +130,12 @@ test("parcours complet de réservation d'une offre event à date unique", async 
     'webapp_08_booking',
     'get_existing_webapp_user_can_book_multidates'
   )
-  const { mediationId, offer } = await fetchSandbox('webapp_08_booking', 'get_non_free_event_offer')
-  discoveryCardUrl = `${discoverURL}/${offer.id}/${mediationId}`
-  discoverDetailsUrl = `${discoveryCardUrl}/details`
+  const { offer } = await fetchSandbox('webapp_08_booking', 'get_non_free_event_offer')
+  discoveryCardUrl = `${offerDetailsURL}/${offer.id}`
 
   await t
     .useRole(userRole)
     .navigateTo(discoveryCardUrl)
-    .click(openVersoButton)
 
   // when
   await t.click(openProfilePage).wait(500)
@@ -164,8 +159,6 @@ test("parcours complet de réservation d'une offre event à date unique", async 
   currentBookedToken = await bookingToken.textContent
   await t
     .click(bookingSuccessButton)
-    .expect(getPageUrl())
-    .eql(discoverDetailsUrl)
     .expect(checkReversedIcon.exists)
     .ok()
     .click(openProfilePage)
