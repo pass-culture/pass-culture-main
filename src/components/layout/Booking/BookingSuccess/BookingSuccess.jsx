@@ -76,7 +76,7 @@ const BookingSuccess = ({ quantity, price, token, isEvent, offerUrl }) => {
               {'la rubrique '}
               <Link to="/reservations">
                 <b className="is-primary-text">
-                  {'Mes Réservations'}
+                  {'Réservations'}
                 </b>
               </Link>
               {' de votre compte'}
@@ -92,7 +92,7 @@ const BookingSuccess = ({ quantity, price, token, isEvent, offerUrl }) => {
               {'l’offre dans la rubrique '}
               <Link to="/reservations">
                 <b className="is-primary-text">
-                  {'Mes Réservations'}
+                  {'Réservations'}
                 </b>
               </Link>
             </span>

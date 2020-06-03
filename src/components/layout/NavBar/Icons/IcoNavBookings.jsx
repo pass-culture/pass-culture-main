@@ -9,7 +9,7 @@ export const IcoNavBookings = () => (
     xmlns="http://www.w3.org/2000/svg"
   >
     <title>
-      {'Mes réservations'}
+      {'Réservations'}
     </title>
     <defs>
       <linearGradient id="NavIco">

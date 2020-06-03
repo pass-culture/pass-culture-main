@@ -14,6 +14,15 @@ describe('src | components | pages | my-bookings | MyBookingsLists', () => {
     }
   })
 
+  it('should display the title "Réservations"', () => {
+    // When
+    const wrapper = shallow(<MyBookingsLists {...props} />)
+
+    // Then
+    const title = wrapper.find('h1').find({ children: 'Réservations' })
+    expect(title).toHaveLength(1)
+  })
+
   describe('when I have no bookings', () => {
     it('should render NoItems', () => {
       // when

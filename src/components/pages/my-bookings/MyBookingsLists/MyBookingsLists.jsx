@@ -12,13 +12,17 @@ const MyBookingsLists = ({
   upComingBookings,
 }) => (
   <main className={`teaser-main ${isEmpty ? 'teaser-no-teasers' : ''}`}>
+    <h1 className="mb-title">
+      {'Réservations'}
+    </h1>
+
     {isEmpty && <NoItems sentence="Dès que vous aurez réservé une offre," />}
 
     {!isEmpty && bookingsOfTheWeek.length > 0 && (
       <section className="mb-section">
-        <header className="mb-header">
+        <h2 className="mb-subtitle">
           {'Cette semaine'}
-        </header>
+        </h2>
         <BookingsList bookings={bookingsOfTheWeek} />
       </section>
     )}
@@ -41,18 +45,18 @@ const MyBookingsLists = ({
 
     {!isEmpty && upComingBookings.length > 0 && (
       <section className="mb-section">
-        <header className="mb-header">
+        <h2 className="mb-subtitle">
           {'À venir'}
-        </header>
+        </h2>
         <BookingsList bookings={upComingBookings} />
       </section>
     )}
 
     {!isEmpty && finishedAndUsedAndCancelledBookings.length > 0 && (
       <section className="mb-section">
-        <header className="mb-header">
+        <h2 className="mb-subtitle">
           {'Terminées'}
-        </header>
+        </h2>
         <BookingsList
           bookings={finishedAndUsedAndCancelledBookings}
           shouldDisplayToken={false}

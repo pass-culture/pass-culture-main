@@ -132,7 +132,7 @@ const routes = [
       '/:cancellation(annulation)?' +
       '/:confirmation(confirmation)?' +
       '/:qrcode(qrcode)?',
-    title: 'Mes réservations',
+    title: 'Réservations',
   },
   {
     component: MyFavoritesContainer,

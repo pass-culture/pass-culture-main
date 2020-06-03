@@ -88,7 +88,7 @@ ShallowWrapper {
                 <b
                   className="is-primary-text"
                 >
-                  Mes Réservations
+                  Réservations
                 </b>
               </ForwardRef>
             </span>
@@ -317,7 +317,7 @@ ShallowWrapper {
                   <b
                     className="is-primary-text"
                   >
-                    Mes Réservations
+                    Réservations
                   </b>
                 </ForwardRef>
               </span>
@@ -353,7 +353,7 @@ ShallowWrapper {
                     <b
                       className="is-primary-text"
                     >
-                      Mes Réservations
+                      Réservations
                     </b>
                   </ForwardRef>
                 </span>,
@@ -391,7 +391,7 @@ ShallowWrapper {
                       <b
                         className="is-primary-text"
                       >
-                        Mes Réservations
+                        Réservations
                       </b>
                     </ForwardRef>,
                   ],
@@ -408,7 +408,7 @@ ShallowWrapper {
                       "children": <b
                         className="is-primary-text"
                       >
-                        Mes Réservations
+                        Réservations
                       </b>,
                       "to": "/reservations",
                     },
@@ -418,11 +418,11 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
-                        "children": "Mes Réservations",
+                        "children": "Réservations",
                         "className": "is-primary-text",
                       },
                       "ref": null,
-                      "rendered": "Mes Réservations",
+                      "rendered": "Réservations",
                       "type": "b",
                     },
                     "type": Object {
@@ -532,7 +532,7 @@ ShallowWrapper {
                   <b
                     className="is-primary-text"
                   >
-                    Mes Réservations
+                    Réservations
                   </b>
                 </ForwardRef>
               </span>
@@ -761,7 +761,7 @@ ShallowWrapper {
                     <b
                       className="is-primary-text"
                     >
-                      Mes Réservations
+                      Réservations
                     </b>
                   </ForwardRef>
                 </span>
@@ -797,7 +797,7 @@ ShallowWrapper {
                       <b
                         className="is-primary-text"
                       >
-                        Mes Réservations
+                        Réservations
                       </b>
                     </ForwardRef>
                   </span>,
@@ -835,7 +835,7 @@ ShallowWrapper {
                         <b
                           className="is-primary-text"
                         >
-                          Mes Réservations
+                          Réservations
                         </b>
                       </ForwardRef>,
                     ],
@@ -852,7 +852,7 @@ ShallowWrapper {
                         "children": <b
                           className="is-primary-text"
                         >
-                          Mes Réservations
+                          Réservations
                         </b>,
                         "to": "/reservations",
                       },
@@ -862,11 +862,11 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": "Mes Réservations",
+                          "children": "Réservations",
                           "className": "is-primary-text",
                         },
                         "ref": null,
-                        "rendered": "Mes Réservations",
+                        "rendered": "Réservations",
                         "type": "b",
                       },
                       "type": Object {
@@ -1031,7 +1031,7 @@ ShallowWrapper {
                 <b
                   className="is-primary-text"
                 >
-                  Mes Réservations
+                  Réservations
                 </b>
               </ForwardRef>
             </span>
@@ -1312,7 +1312,7 @@ ShallowWrapper {
                   <b
                     className="is-primary-text"
                   >
-                    Mes Réservations
+                    Réservations
                   </b>
                 </ForwardRef>
               </span>
@@ -1348,7 +1348,7 @@ ShallowWrapper {
                     <b
                       className="is-primary-text"
                     >
-                      Mes Réservations
+                      Réservations
                     </b>
                   </ForwardRef>
                 </span>,
@@ -1386,7 +1386,7 @@ ShallowWrapper {
                       <b
                         className="is-primary-text"
                       >
-                        Mes Réservations
+                        Réservations
                       </b>
                     </ForwardRef>,
                   ],
@@ -1403,7 +1403,7 @@ ShallowWrapper {
                       "children": <b
                         className="is-primary-text"
                       >
-                        Mes Réservations
+                        Réservations
                       </b>,
                       "to": "/reservations",
                     },
@@ -1413,11 +1413,11 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
-                        "children": "Mes Réservations",
+                        "children": "Réservations",
                         "className": "is-primary-text",
                       },
                       "ref": null,
-                      "rendered": "Mes Réservations",
+                      "rendered": "Réservations",
                       "type": "b",
                     },
                     "type": Object {
@@ -1534,7 +1534,7 @@ ShallowWrapper {
                   <b
                     className="is-primary-text"
                   >
-                    Mes Réservations
+                    Réservations
                   </b>
                 </ForwardRef>
               </span>
@@ -1815,7 +1815,7 @@ ShallowWrapper {
                     <b
                       className="is-primary-text"
                     >
-                      Mes Réservations
+                      Réservations
                     </b>
                   </ForwardRef>
                 </span>
@@ -1851,7 +1851,7 @@ ShallowWrapper {
                       <b
                         className="is-primary-text"
                       >
-                        Mes Réservations
+                        Réservations
                       </b>
                     </ForwardRef>
                   </span>,
@@ -1889,7 +1889,7 @@ ShallowWrapper {
                         <b
                           className="is-primary-text"
                         >
-                          Mes Réservations
+                          Réservations
                         </b>
                       </ForwardRef>,
                     ],
@@ -1906,7 +1906,7 @@ ShallowWrapper {
                         "children": <b
                           className="is-primary-text"
                         >
-                          Mes Réservations
+                          Réservations
                         </b>,
                         "to": "/reservations",
                       },
@@ -1916,11 +1916,11 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": "Mes Réservations",
+                          "children": "Réservations",
                           "className": "is-primary-text",
                         },
                         "ref": null,
-                        "rendered": "Mes Réservations",
+                        "rendered": "Réservations",
                         "type": "b",
                       },
                       "type": Object {
@@ -2075,7 +2075,7 @@ ShallowWrapper {
                 <b
                   className="is-primary-text"
                 >
-                  Mes Réservations
+                  Réservations
                 </b>
               </ForwardRef>
             </span>
@@ -2289,7 +2289,7 @@ ShallowWrapper {
                   <b
                     className="is-primary-text"
                   >
-                    Mes Réservations
+                    Réservations
                   </b>
                 </ForwardRef>
               </span>
@@ -2325,7 +2325,7 @@ ShallowWrapper {
                     <b
                       className="is-primary-text"
                     >
-                      Mes Réservations
+                      Réservations
                     </b>
                   </ForwardRef>
                 </span>,
@@ -2363,7 +2363,7 @@ ShallowWrapper {
                       <b
                         className="is-primary-text"
                       >
-                        Mes Réservations
+                        Réservations
                       </b>
                     </ForwardRef>,
                   ],
@@ -2380,7 +2380,7 @@ ShallowWrapper {
                       "children": <b
                         className="is-primary-text"
                       >
-                        Mes Réservations
+                        Réservations
                       </b>,
                       "to": "/reservations",
                     },
@@ -2390,11 +2390,11 @@ ShallowWrapper {
                       "key": undefined,
                       "nodeType": "host",
                       "props": Object {
-                        "children": "Mes Réservations",
+                        "children": "Réservations",
                         "className": "is-primary-text",
                       },
                       "ref": null,
-                      "rendered": "Mes Réservations",
+                      "rendered": "Réservations",
                       "type": "b",
                     },
                     "type": Object {
@@ -2501,7 +2501,7 @@ ShallowWrapper {
                   <b
                     className="is-primary-text"
                   >
-                    Mes Réservations
+                    Réservations
                   </b>
                 </ForwardRef>
               </span>
@@ -2715,7 +2715,7 @@ ShallowWrapper {
                     <b
                       className="is-primary-text"
                     >
-                      Mes Réservations
+                      Réservations
                     </b>
                   </ForwardRef>
                 </span>
@@ -2751,7 +2751,7 @@ ShallowWrapper {
                       <b
                         className="is-primary-text"
                       >
-                        Mes Réservations
+                        Réservations
                       </b>
                     </ForwardRef>
                   </span>,
@@ -2789,7 +2789,7 @@ ShallowWrapper {
                         <b
                           className="is-primary-text"
                         >
-                          Mes Réservations
+                          Réservations
                         </b>
                       </ForwardRef>,
                     ],
@@ -2806,7 +2806,7 @@ ShallowWrapper {
                         "children": <b
                           className="is-primary-text"
                         >
-                          Mes Réservations
+                          Réservations
                         </b>,
                         "to": "/reservations",
                       },
@@ -2816,11 +2816,11 @@ ShallowWrapper {
                         "key": undefined,
                         "nodeType": "host",
                         "props": Object {
-                          "children": "Mes Réservations",
+                          "children": "Réservations",
                           "className": "is-primary-text",
                         },
                         "ref": null,
-                        "rendered": "Mes Réservations",
+                        "rendered": "Réservations",
                         "type": "b",
                       },
                       "type": Object {

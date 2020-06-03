@@ -30,15 +30,20 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": Array [
+        <h1
+          className="mb-title"
+        >
+          Réservations
+        </h1>,
         false,
         <section
           className="mb-section"
         >
-          <header
-            className="mb-header"
+          <h2
+            className="mb-subtitle"
           >
             Cette semaine
-          </header>
+          </h2>
           <BookingsList
             bookings={
               Array [
@@ -75,6 +80,18 @@ ShallowWrapper {
     },
     "ref": null,
     "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Réservations",
+          "className": "mb-title",
+        },
+        "ref": null,
+        "rendered": "Réservations",
+        "type": "h1",
+      },
       false,
       Object {
         "instance": null,
@@ -82,11 +99,11 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <header
-              className="mb-header"
+            <h2
+              className="mb-subtitle"
             >
               Cette semaine
-            </header>,
+            </h2>,
             <BookingsList
               bookings={
                 Array [
@@ -108,11 +125,11 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": "Cette semaine",
-              "className": "mb-header",
+              "className": "mb-subtitle",
             },
             "ref": null,
             "rendered": "Cette semaine",
-            "type": "header",
+            "type": "h2",
           },
           Object {
             "instance": null,
@@ -213,15 +230,20 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
+          <h1
+            className="mb-title"
+          >
+            Réservations
+          </h1>,
           false,
           <section
             className="mb-section"
           >
-            <header
-              className="mb-header"
+            <h2
+              className="mb-subtitle"
             >
               Cette semaine
-            </header>
+            </h2>
             <BookingsList
               bookings={
                 Array [
@@ -258,6 +280,18 @@ ShallowWrapper {
       },
       "ref": null,
       "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Réservations",
+            "className": "mb-title",
+          },
+          "ref": null,
+          "rendered": "Réservations",
+          "type": "h1",
+        },
         false,
         Object {
           "instance": null,
@@ -265,11 +299,11 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              <header
-                className="mb-header"
+              <h2
+                className="mb-subtitle"
               >
                 Cette semaine
-              </header>,
+              </h2>,
               <BookingsList
                 bookings={
                   Array [
@@ -291,11 +325,11 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": "Cette semaine",
-                "className": "mb-header",
+                "className": "mb-subtitle",
               },
               "ref": null,
               "rendered": "Cette semaine",
-              "type": "header",
+              "type": "h2",
             },
             Object {
               "instance": null,
@@ -452,6 +486,11 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": Array [
+        <h1
+          className="mb-title"
+        >
+          Réservations
+        </h1>,
         false,
         false,
         <section
@@ -476,11 +515,11 @@ ShallowWrapper {
         <section
           className="mb-section"
         >
-          <header
-            className="mb-header"
+          <h2
+            className="mb-subtitle"
           >
             Terminées
-          </header>
+          </h2>
           <BookingsList
             bookings={
               Array [
@@ -500,6 +539,18 @@ ShallowWrapper {
     },
     "ref": null,
     "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Réservations",
+          "className": "mb-title",
+        },
+        "ref": null,
+        "rendered": "Réservations",
+        "type": "h1",
+      },
       false,
       false,
       Object {
@@ -577,11 +628,11 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <header
-              className="mb-header"
+            <h2
+              className="mb-subtitle"
             >
               Terminées
-            </header>,
+            </h2>,
             <BookingsList
               bookings={
                 Array [
@@ -606,11 +657,11 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": "Terminées",
-              "className": "mb-header",
+              "className": "mb-subtitle",
             },
             "ref": null,
             "rendered": "Terminées",
-            "type": "header",
+            "type": "h2",
           },
           Object {
             "instance": null,
@@ -644,6 +695,11 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
+          <h1
+            className="mb-title"
+          >
+            Réservations
+          </h1>,
           false,
           false,
           <section
@@ -668,11 +724,11 @@ ShallowWrapper {
           <section
             className="mb-section"
           >
-            <header
-              className="mb-header"
+            <h2
+              className="mb-subtitle"
             >
               Terminées
-            </header>
+            </h2>
             <BookingsList
               bookings={
                 Array [
@@ -692,6 +748,18 @@ ShallowWrapper {
       },
       "ref": null,
       "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Réservations",
+            "className": "mb-title",
+          },
+          "ref": null,
+          "rendered": "Réservations",
+          "type": "h1",
+        },
         false,
         false,
         Object {
@@ -769,11 +837,11 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              <header
-                className="mb-header"
+              <h2
+                className="mb-subtitle"
               >
                 Terminées
-              </header>,
+              </h2>,
               <BookingsList
                 bookings={
                   Array [
@@ -798,11 +866,11 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": "Terminées",
-                "className": "mb-header",
+                "className": "mb-subtitle",
               },
               "ref": null,
               "rendered": "Terminées",
-              "type": "header",
+              "type": "h2",
             },
             Object {
               "instance": null,
@@ -889,6 +957,11 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": Array [
+        <h1
+          className="mb-title"
+        >
+          Réservations
+        </h1>,
         false,
         false,
         <section
@@ -912,11 +985,11 @@ ShallowWrapper {
         <section
           className="mb-section"
         >
-          <header
-            className="mb-header"
+          <h2
+            className="mb-subtitle"
           >
             À venir
-          </header>
+          </h2>
           <BookingsList
             bookings={
               Array [
@@ -934,6 +1007,18 @@ ShallowWrapper {
     },
     "ref": null,
     "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Réservations",
+          "className": "mb-title",
+        },
+        "ref": null,
+        "rendered": "Réservations",
+        "type": "h1",
+      },
       false,
       false,
       Object {
@@ -1010,11 +1095,11 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <header
-              className="mb-header"
+            <h2
+              className="mb-subtitle"
             >
               À venir
-            </header>,
+            </h2>,
             <BookingsList
               bookings={
                 Array [
@@ -1036,11 +1121,11 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": "À venir",
-              "className": "mb-header",
+              "className": "mb-subtitle",
             },
             "ref": null,
             "rendered": "À venir",
-            "type": "header",
+            "type": "h2",
           },
           Object {
             "instance": null,
@@ -1072,6 +1157,11 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
+          <h1
+            className="mb-title"
+          >
+            Réservations
+          </h1>,
           false,
           false,
           <section
@@ -1095,11 +1185,11 @@ ShallowWrapper {
           <section
             className="mb-section"
           >
-            <header
-              className="mb-header"
+            <h2
+              className="mb-subtitle"
             >
               À venir
-            </header>
+            </h2>
             <BookingsList
               bookings={
                 Array [
@@ -1117,6 +1207,18 @@ ShallowWrapper {
       },
       "ref": null,
       "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Réservations",
+            "className": "mb-title",
+          },
+          "ref": null,
+          "rendered": "Réservations",
+          "type": "h1",
+        },
         false,
         false,
         Object {
@@ -1193,11 +1295,11 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              <header
-                className="mb-header"
+              <h2
+                className="mb-subtitle"
               >
                 À venir
-              </header>,
+              </h2>,
               <BookingsList
                 bookings={
                   Array [
@@ -1219,11 +1321,11 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": "À venir",
-                "className": "mb-header",
+                "className": "mb-subtitle",
               },
               "ref": null,
               "rendered": "À venir",
-              "type": "header",
+              "type": "h2",
             },
             Object {
               "instance": null,
@@ -1302,6 +1404,11 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": Array [
+        <h1
+          className="mb-title"
+        >
+          Réservations
+        </h1>,
         <NoItems
           sentence="Dès que vous aurez réservé une offre,"
         />,
@@ -1314,6 +1421,18 @@ ShallowWrapper {
     },
     "ref": null,
     "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Réservations",
+          "className": "mb-title",
+        },
+        "ref": null,
+        "rendered": "Réservations",
+        "type": "h1",
+      },
       Object {
         "instance": null,
         "key": undefined,
@@ -1339,6 +1458,11 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
+          <h1
+            className="mb-title"
+          >
+            Réservations
+          </h1>,
           <NoItems
             sentence="Dès que vous aurez réservé une offre,"
           />,
@@ -1351,6 +1475,18 @@ ShallowWrapper {
       },
       "ref": null,
       "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Réservations",
+            "className": "mb-title",
+          },
+          "ref": null,
+          "rendered": "Réservations",
+          "type": "h1",
+        },
         Object {
           "instance": null,
           "key": undefined,
@@ -1429,15 +1565,20 @@ ShallowWrapper {
     "nodeType": "host",
     "props": Object {
       "children": Array [
+        <h1
+          className="mb-title"
+        >
+          Réservations
+        </h1>,
         false,
         <section
           className="mb-section"
         >
-          <header
-            className="mb-header"
+          <h2
+            className="mb-subtitle"
           >
             Cette semaine
-          </header>
+          </h2>
           <BookingsList
             bookings={
               Array [
@@ -1474,6 +1615,18 @@ ShallowWrapper {
     },
     "ref": null,
     "rendered": Array [
+      Object {
+        "instance": null,
+        "key": undefined,
+        "nodeType": "host",
+        "props": Object {
+          "children": "Réservations",
+          "className": "mb-title",
+        },
+        "ref": null,
+        "rendered": "Réservations",
+        "type": "h1",
+      },
       false,
       Object {
         "instance": null,
@@ -1481,11 +1634,11 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": Array [
-            <header
-              className="mb-header"
+            <h2
+              className="mb-subtitle"
             >
               Cette semaine
-            </header>,
+            </h2>,
             <BookingsList
               bookings={
                 Array [
@@ -1507,11 +1660,11 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": "Cette semaine",
-              "className": "mb-header",
+              "className": "mb-subtitle",
             },
             "ref": null,
             "rendered": "Cette semaine",
-            "type": "header",
+            "type": "h2",
           },
           Object {
             "instance": null,
@@ -1612,15 +1765,20 @@ ShallowWrapper {
       "nodeType": "host",
       "props": Object {
         "children": Array [
+          <h1
+            className="mb-title"
+          >
+            Réservations
+          </h1>,
           false,
           <section
             className="mb-section"
           >
-            <header
-              className="mb-header"
+            <h2
+              className="mb-subtitle"
             >
               Cette semaine
-            </header>
+            </h2>
             <BookingsList
               bookings={
                 Array [
@@ -1657,6 +1815,18 @@ ShallowWrapper {
       },
       "ref": null,
       "rendered": Array [
+        Object {
+          "instance": null,
+          "key": undefined,
+          "nodeType": "host",
+          "props": Object {
+            "children": "Réservations",
+            "className": "mb-title",
+          },
+          "ref": null,
+          "rendered": "Réservations",
+          "type": "h1",
+        },
         false,
         Object {
           "instance": null,
@@ -1664,11 +1834,11 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": Array [
-              <header
-                className="mb-header"
+              <h2
+                className="mb-subtitle"
               >
                 Cette semaine
-              </header>,
+              </h2>,
               <BookingsList
                 bookings={
                   Array [
@@ -1690,11 +1860,11 @@ ShallowWrapper {
               "nodeType": "host",
               "props": Object {
                 "children": "Cette semaine",
-                "className": "mb-header",
+                "className": "mb-subtitle",
               },
               "ref": null,
               "rendered": "Cette semaine",
-              "type": "header",
+              "type": "h2",
             },
             Object {
               "instance": null,

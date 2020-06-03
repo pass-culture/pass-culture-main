@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { Fragment, PureComponent } from 'react'
 
 import MyBookingsListsContainer from './MyBookingsLists/MyBookingsListsContainer'
 import MyBookingDetailsContainer from './MyBookingDetails/MyBookingDetailsContainer'
@@ -50,10 +50,6 @@ class MyBookings extends PureComponent {
 
     return (
       <div className="bookings-page teaser-list">
-        <HeaderContainer
-          shouldBackFromDetails
-          title="Mes réservations"
-        />
         <Switch>
           <Route
             exact
@@ -66,6 +62,10 @@ class MyBookings extends PureComponent {
             path="/reservations/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)?/:cancellation(annulation)?/:confirmation(confirmation)?"
             sensitive
           >
+            <HeaderContainer
+              shouldBackFromDetails
+              title="Réservations"
+            />
             <MyBookingDetailsContainer bookingPath="/reservations/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)/:cancellation(annulation)?/:confirmation(confirmation)?" />
           </Route>
           <Route
@@ -73,7 +73,15 @@ class MyBookings extends PureComponent {
             path="/reservations/:details(details)/:bookingId([A-Z0-9]+)/:qrcode(qrcode)"
             sensitive
           >
-            {!isQrCodeFeatureDisabled && <QrCodeContainer />}
+            {!isQrCodeFeatureDisabled && (
+              <Fragment>
+                <HeaderContainer
+                  backTo="/reservations"
+                  title="Réservations"
+                />
+                <QrCodeContainer />
+              </Fragment>
+            )}
           </Route>
         </Switch>
       </div>
