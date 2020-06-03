@@ -9,7 +9,9 @@ from sqlalchemy.orm import Query
 
 from domain.booking_recap.booking_recap import BookingRecap, EventBookingRecap, ThingBookingRecap
 from domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
+from domain.postal_code.postal_code import PostalCode
 from models import UserOfferer
+from models import VenueSQLEntity
 from models.api_errors import ResourceNotFoundError
 from models.booking_sql_entity import BookingSQLEntity
 from models.db import db
@@ -21,7 +23,6 @@ from models.payment_status import TransactionStatus
 from models.recommendation import Recommendation
 from models.stock_sql_entity import StockSQLEntity, EVENT_AUTOMATIC_REFUND_DELAY
 from models.user_sql_entity import UserSQLEntity
-from models import VenueSQLEntity
 from repository import offer_queries
 from utils.date import get_department_timezone
 from utils.human_ids import humanize
@@ -231,6 +232,7 @@ def _build_bookings_recap_query(user_id: int) -> Query:
             UserSQLEntity.email.label("beneficiaryEmail"),
             StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
             VenueSQLEntity.departementCode.label('venueDepartementCode'),
+            Offerer.postalCode.label('offererPostalCode'),
             VenueSQLEntity.id.label('venueId'),
         )
 
@@ -251,10 +253,17 @@ def _apply_departement_timezone(date: datetime, departement_code: str) -> dateti
     return date.astimezone(tz.gettz(get_department_timezone(departement_code)))
 
 
+def _serialize_booking_date_with_timezone(booking: object) -> datetime:
+    if booking.venueDepartementCode:
+        return _apply_departement_timezone(date=booking.bookingDate,
+                                           departement_code=booking.venueDepartementCode)
+    offerer_department_code = PostalCode(booking.offererPostalCode).get_departement_code()
+    return _apply_departement_timezone(date=booking.bookingDate,
+                                       departement_code=offerer_department_code)
+
+
 def _serialize_booking_recap(booking: object) -> BookingRecap:
-    booking_date_timezoned = _apply_departement_timezone(date=booking.bookingDate,
-                                                         departement_code=booking.venueDepartementCode) \
-        if booking.venueDepartementCode else booking.bookingDate
+    booking_date_timezoned = _serialize_booking_date_with_timezone(booking)
 
     return EventBookingRecap(
         offer_name=booking.offerName,

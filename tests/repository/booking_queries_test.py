@@ -1944,6 +1944,28 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.pages == 1
         assert bookings_recap_paginated.total == 2
 
+    @clean_database
+    def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app):
+        # Given
+        beneficiary = create_user(email='beneficiary@example.com',
+                                  first_name='Ron', last_name='Weasley')
+        user = create_user()
+        offerer = create_offerer(postal_code='97300')
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer, idx=15, is_virtual=True, siret=None)
+        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=0, name='Harry Potter')
+        booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
+        booking = create_booking(user=beneficiary, stock=stock, date_created=booking_date, token='ABCDEF', is_used=True)
+        repository.save(user_offerer, booking)
+
+        # When
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.booking_date == booking_date.astimezone(tz.gettz('America/Cayenne'))
+
 
 class FindFirstMatchingFromOfferByUserTest:
     @clean_database
