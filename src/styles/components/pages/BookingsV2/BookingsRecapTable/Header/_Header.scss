@@ -1,9 +1,26 @@
 .bookings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: rem(30px);
 
-  span {
-    color: $black;
-    font-size: rem(16px);
+  .bookings-header-loading
+  .bookings-header-number {
     font-weight: $weight-normal;
+  }
+
+  .bookings-header-csv-download a {
+    display: flex;
+    align-items: center;
+    font-weight: $weight-bold;
+
+    &:hover {
+      color: $black;
+      text-decoration: none;
+    }
+
+    img {
+      margin-right: 8px;
+    }
   }
 }

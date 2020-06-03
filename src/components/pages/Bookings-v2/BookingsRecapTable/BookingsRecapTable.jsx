@@ -128,10 +128,12 @@ class BookingsRecapTable extends Component {
           ref={this.filtersRef}
           setFilters={this.setFilters}
         />
-        <Header
-          isLoading={isLoading}
-          nbBookings={nbBookings}
-        />
+        {nbBookings > 0 && (
+          <Header
+            bookingsRecapFiltered={bookingsRecapFiltered}
+            isLoading={isLoading}
+          />
+        )}
         {nbBookings > 0 ? (
           <TableFrame
             columns={columns}

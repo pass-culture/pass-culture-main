@@ -31,6 +31,7 @@ describe('components | BookingsRecapTable', () => {
       {
         stock: {
           offer_name: 'Avez-vous déjà vu',
+          type: 'thing',
         },
         beneficiary: {
           lastname: 'Klepi',
@@ -41,11 +42,12 @@ describe('components | BookingsRecapTable', () => {
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
         booking_is_duo: false,
-        venue_identifier: 'AE'
+        venue_identifier: 'AE',
       },
       {
         stock: {
           offer_name: 'Avez-vous déjà vu',
+          type: 'thing',
         },
         beneficiary: {
           lastname: 'Klepi',
@@ -56,7 +58,7 @@ describe('components | BookingsRecapTable', () => {
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
         booking_is_duo: true,
-        venue_identifier: 'AF'
+        venue_identifier: 'AF',
       },
     ]
 
@@ -88,6 +90,7 @@ describe('components | BookingsRecapTable', () => {
         {
           stock: {
             offer_name: 'Avez-vous déjà vu',
+            type: 'thing',
           },
           beneficiary: {
             lastname: 'Klepi',
@@ -98,7 +101,7 @@ describe('components | BookingsRecapTable', () => {
           booking_token: 'ZEHBGD',
           booking_status: 'Validé',
           booking_is_duo: true,
-          venue_identifier: 'AE'
+          venue_identifier: 'AE',
         },
       ],
       isLoading: false,
@@ -140,7 +143,7 @@ describe('components | BookingsRecapTable', () => {
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
         booking_is_duo: true,
-        venue_identifier: 'AE'
+        venue_identifier: 'AE',
       },
     ]
 
@@ -196,7 +199,7 @@ describe('components | BookingsRecapTable', () => {
         booking_is_duo: false,
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
-        venue_identifier: 'AE'
+        venue_identifier: 'AE',
       },
     ]
     const props = {
@@ -220,12 +223,13 @@ describe('components | BookingsRecapTable', () => {
     })
   })
 
-  it('should render a Header component', () => {
+  it('should render a Header component when there is at least one filtered booking', () => {
     // given
     const bookingsRecap = [
       {
         stock: {
           offer_name: 'Avez-vous déjà vu',
+          type: 'thing',
         },
         beneficiary: {
           lastname: 'Klepi',
@@ -236,7 +240,7 @@ describe('components | BookingsRecapTable', () => {
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
         booking_is_duo: false,
-        venue_identifier: 'AE'
+        venue_identifier: 'AE',
       },
     ]
     const props = {
@@ -251,9 +255,25 @@ describe('components | BookingsRecapTable', () => {
     const header = wrapper.find(Header)
     expect(header).toHaveLength(1)
     expect(header.props()).toStrictEqual({
+      bookingsRecapFiltered: bookingsRecap,
       isLoading: false,
-      nbBookings: 1,
     })
+  })
+
+  it('should not render a Header component when there is no filtered booking', () => {
+    // given
+    const bookingsRecap = []
+    const props = {
+      bookingsRecap: bookingsRecap,
+      isLoading: false,
+    }
+
+    // When
+    const wrapper = shallow(<BookingsRecapTable {...props} />)
+
+    // Then
+    const header = wrapper.find(Header)
+    expect(header).toHaveLength(0)
   })
 
   it('should update currentPage when clicking on next page button', () => {
@@ -273,7 +293,7 @@ describe('components | BookingsRecapTable', () => {
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
         booking_is_duo: true,
-        venue_identifier: 'AE'
+        venue_identifier: 'AE',
       },
       {
         stock: {
@@ -289,7 +309,7 @@ describe('components | BookingsRecapTable', () => {
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
         booking_is_duo: true,
-        venue_identifier: 'AE'
+        venue_identifier: 'AE',
       },
     ]
 
@@ -340,6 +360,7 @@ describe('components | BookingsRecapTable', () => {
       {
         stock: {
           offer_name: 'Avez-vous déjà vu',
+          type: 'thing',
         },
         beneficiary: {
           lastname: 'Klepi',
@@ -350,7 +371,7 @@ describe('components | BookingsRecapTable', () => {
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
         booking_is_duo: false,
-        venue_identifier: 'AE'
+        venue_identifier: 'AE',
       },
     ]
     const props = {
@@ -381,6 +402,7 @@ describe('components | BookingsRecapTable', () => {
       {
         stock: {
           offer_name: 'Avez-vous déjà vu',
+          type: 'thing',
         },
         beneficiary: {
           lastname: 'Klepi',
@@ -391,12 +413,13 @@ describe('components | BookingsRecapTable', () => {
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
         booking_is_duo: false,
-        venue_identifier: 'AE'
+        venue_identifier: 'AE',
       },
     ])
     const booking = {
       stock: {
         offer_name: 'Avez-vous déjà vu',
+        type: 'thing',
       },
       beneficiary: {
         lastname: 'Klepi',
@@ -407,12 +430,13 @@ describe('components | BookingsRecapTable', () => {
       booking_token: 'ZEHBGD',
       booking_status: 'Validé',
       booking_is_duo: false,
-      venue_identifier: 'AE'
+      venue_identifier: 'AE',
     }
     const bookingsRecap = [booking]
     const newBooking = {
       stock: {
         offer_name: 'Merlin enchanteur',
+        type: 'thing',
       },
       beneficiary: {
         lastname: 'Klepi',
@@ -423,7 +447,7 @@ describe('components | BookingsRecapTable', () => {
       booking_token: 'ZEHBGD',
       booking_status: 'Validé',
       booking_is_duo: false,
-      venue_identifier: 'AE'
+      venue_identifier: 'AE',
     }
     const props = {
       bookingsRecap: bookingsRecap,
@@ -451,7 +475,7 @@ describe('components | BookingsRecapTable', () => {
     expect(filterBookingsRecap).toHaveBeenCalledWith(expectedBookingsRecap, {
       offerName: 'Avez',
       offerDate: null,
-      offerVenue: ''
+      offerVenue: '',
     })
   })
 
@@ -472,7 +496,7 @@ describe('components | BookingsRecapTable', () => {
       booking_token: 'ZEHBGD',
       booking_status: 'Validé',
       booking_is_duo: false,
-      venue_identifier: 'AE'
+      venue_identifier: 'AE',
     }
     const props = {
       bookingsRecap: [booking],
@@ -512,7 +536,7 @@ describe('components | BookingsRecapTable', () => {
           booking_token: 'ZEHBGD',
           booking_status: 'Validé',
           booking_is_duo: false,
-          venue_identifier: 'AE'
+          venue_identifier: 'AE',
         },
       ],
       isLoading: false,
