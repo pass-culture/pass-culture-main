@@ -4,12 +4,12 @@ import { NavLink } from 'react-router-dom'
 
 import { isPathWithNavBar } from './domain/isPathWithNavBar'
 
-const NavBar = ({ path, routes }) =>
+const NavBar = ({ isFeatureEnabled, path, routes }) =>
   isPathWithNavBar(path) ? (
     <nav className="navbar">
       <ul>
         {routes.map(route => {
-          if (route.to) {
+          if (route.to && isFeatureEnabled(route.featureName)) {
             return (
               <li key={route.to}>
                 <NavLink to={route.to}>
@@ -24,6 +24,7 @@ const NavBar = ({ path, routes }) =>
   ) : null
 
 NavBar.propTypes = {
+  isFeatureEnabled: PropTypes.func.isRequired,
   path: PropTypes.string.isRequired,
   routes: PropTypes.arrayOf(PropTypes.shape().isRequired).isRequired,
 }

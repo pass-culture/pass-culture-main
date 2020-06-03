@@ -4,7 +4,7 @@ import Helmet from 'react-helmet'
 import { matchPath } from 'react-router-dom'
 
 import ErrorCatcherContainer from '../../components/layout/ErrorCatcher/ErrorCatcherContainer'
-import NavBar from '../../components/layout/NavBar/NavBar'
+import NavBarContainer from '../../components/layout/NavBar/NavBarContainer'
 import Notifications from '../../components/layout/Notifications/Notifications'
 import OverlayContainer from '../../components/layout/Overlay/OverlayContainer'
 import SharePopinContainer from '../../components/layout/Share/SharePopinContainer'
@@ -33,7 +33,7 @@ export const App = ({ children, location, isMaintenanceActivated }) => {
           </title>
         </Helmet>
         <ErrorCatcherContainer>
-          <NavBar
+          <NavBarContainer
             path={location.pathname}
             routes={routes}
           />

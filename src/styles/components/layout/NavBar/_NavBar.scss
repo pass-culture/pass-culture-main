@@ -55,8 +55,8 @@
 @supports (-webkit-touch-callout: none) {
   @media screen and (min-height: $iphoneX-height) {
     .navbar {
-      padding-bottom: rem(15px);
-      height: $navbar-height + rem(15px);
+      padding-bottom: $ios-navbar-safe-zone;
+      height: $navbar-height + $ios-navbar-safe-zone;
     }
 
     .bookings-page main,
@@ -64,34 +64,42 @@
     .search-home-page,
     .loader,
     .loading-page {
-      padding-bottom: $navbar-height + rem(15px);
+      padding-bottom: $navbar-height + $ios-navbar-safe-zone;
     }
 
     .profile-page,
     .search-results-page {
-      margin-bottom: $navbar-height + rem(15px);
+      margin-bottom: $navbar-height + $ios-navbar-safe-zone;
     }
 
     .search-results-page {
       .sr-items-wrapper {
         a:last-child .result-wrapper {
-          margin-bottom: $navbar-height + rem(66px);
+          margin-bottom: $navbar-height + $ios-navbar-safe-zone + rem(51px);
         }
       }
 
       .sr-filter-wrapper {
-        bottom: $footer-height + rem(35px)
+        bottom: $footer-height + $ios-navbar-safe-zone + rem(20px);
       }
     }
 
     .discovery-page {
       #deck-navigation {
-        height: rem(255px);
+        height: rem(240px) + $ios-navbar-safe-zone;
 
         .controls {
-          padding-bottom: rem(105px);
+          padding-bottom: rem(90px) + $ios-navbar-safe-zone;
         }
       }
+    }
+
+    .verso-wrapper .verso-info {
+      padding-bottom: rem(32px) + $ios-navbar-safe-zone;
+    }
+
+    .mv-wrapper .profile-section .mv-ministry-of-culture {
+      margin-bottom: rem(84px) + $ios-navbar-safe-zone;
     }
   }
 }
