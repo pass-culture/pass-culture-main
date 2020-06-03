@@ -46,8 +46,8 @@ def get_non_free_digital_offer():
 def get_non_free_thing_offer_with_active_mediation():
     query = get_non_free_offers_query_by_type()
     offer = query \
+        .filter(Offer.type.in_([str(thing_type) for thing_type in ThingType])) \
         .filter(Offer.url == None) \
-        .filter(StockSQLEntity.beginningDatetime == None) \
         .filter(Offer.mediations.any(Mediation.isActive == True)) \
         .join(VenueSQLEntity, VenueSQLEntity.id == Offer.venueId) \
         .join(Offerer, Offerer.id == VenueSQLEntity.managingOffererId) \
@@ -65,13 +65,13 @@ def get_non_free_thing_offer_with_active_mediation():
 
 def get_non_free_event_offer():
     query = get_non_free_offers_query_by_type()
-    query = query \
+    offer = query \
         .filter(Offer.type.in_([str(event_type) for event_type in EventType])) \
         .filter(Offer.mediations.any(Mediation.isActive == True)) \
         .join(VenueSQLEntity, VenueSQLEntity.id == Offer.venueId) \
         .join(Offerer, Offerer.id == VenueSQLEntity.managingOffererId) \
-        .filter(Offerer.validationToken == None)
-    offer = query.first()
+        .filter(Offerer.validationToken == None) \
+        .first()
 
     if offer:
         return {
