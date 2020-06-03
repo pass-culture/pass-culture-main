@@ -56,7 +56,7 @@ test("je peux réserver l'offre", async t => {
     .ok()
 })
 
-test("parcours complet de réservation d'une offre thing", async t => {
+test.only("parcours complet de réservation d'une offre thing", async t => {
   // given
   userRole = await createUserRoleFromUserSandbox(
     'webapp_08_booking',
