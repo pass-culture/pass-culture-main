@@ -3,15 +3,14 @@ import Icon from '../../../../layout/Icon'
 import PropTypes from 'prop-types'
 
 const InputWithCalendar = props => {
-  const { className, customClass, placeholder, value } = props
+  const { customClass, ...inputProperties } = props
+  delete inputProperties.props
 
   return (
     <label className={customClass}>
       <input
-        className={className}
-        placeholder={placeholder}
+        {...inputProperties}
         type="text"
-        value={value}
       />
       <div className="flex-auto" />
       <Icon
