@@ -1,42 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-
-const BOOKING_STATUS = [
-  {
-    id: 'validated',
-    status: 'validé',
-    className: 'validated',
-  },
-  {
-    id: 'cancelled',
-    status: 'annulé',
-    className: 'cancelled',
-  },
-  {
-    id: 'booked',
-    status: 'réservé',
-    className: 'booked',
-  },
-  {
-    id: 'reimbursed',
-    status: 'remboursé',
-    className: 'reimbursed',
-  },
-]
-
-const BOOKING_STATUS_DEFAULT = {
-  id: 'default',
-  className: 'default',
-}
-
-const getBookingStatusDisplayInformationsOrDefault = bookingStatusInfos => {
-  const bookingStatusFound = BOOKING_STATUS.find(({ id }) => bookingStatusInfos === id)
-  return bookingStatusFound ? bookingStatusFound : BOOKING_STATUS_DEFAULT
-}
-
-const computeStatusClassName = bookingStatusDisplayInformations => {
-  return `booking-status-${bookingStatusDisplayInformations.className}`
-}
+import { computeStatusClassName, getBookingStatusDisplayInformationsOrDefault } from './utils/bookingStatusConverter'
 
 const BookingStatusCell = ({ bookingStatus }) => {
   bookingStatus = bookingStatus.toLowerCase()
