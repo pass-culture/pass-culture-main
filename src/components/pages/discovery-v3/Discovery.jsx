@@ -158,7 +158,7 @@ class Discovery extends PureComponent {
             />
           </main>
         )}
-        {(isLoading || hasError500 || hasError500 || hasNoMoreRecommendations) && (
+        {(isLoading || hasError500 || hasError || hasNoMoreRecommendations) && (
           <LoaderContainer
             hasError={hasError}
             hasError500={hasError500}

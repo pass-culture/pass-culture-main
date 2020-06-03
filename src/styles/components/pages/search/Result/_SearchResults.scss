@@ -1,6 +1,7 @@
 .search-results-page {
   @extend .page;
 
+  background: $white;
   display: flex;
   flex-direction: column;
 }
@@ -13,7 +14,7 @@
   overflow-y: auto;
 
   a:last-child .result-wrapper {
-    margin-bottom: rem(70px);
+    margin-bottom: rem(51px);
   }
 
   .sr-items-header {
@@ -150,8 +151,10 @@
     }
   }
 
-  footer {
-    height: $footer-height / 2;
+  .sr-items-wrapper {
+    a:last-child .result-wrapper {
+      margin-bottom: rem(111px);
+    }
   }
 }
 

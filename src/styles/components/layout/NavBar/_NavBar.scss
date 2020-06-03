@@ -1,14 +1,21 @@
-.profile-page main,
 .bookings-page main,
-.favorites-page main {
-  margin-bottom: 60px;
+.favorites-page main,
+.search-home-page,
+.loader,
+.loading-page {
+  padding-bottom: $navbar-height;
+}
+
+.profile-page,
+.search-results-page {
+  margin-bottom: $navbar-height;
 }
 
 .navbar {
-  background: $white;
+  background: rgba(255,255,255, 0.97);
   border-top: 1px solid $grey-even-more-light;
   bottom: 0;
-  height: rem(60px);
+  height: $navbar-height;
   position: absolute;
   width: 100%;
   z-index: $zindex-navbar;

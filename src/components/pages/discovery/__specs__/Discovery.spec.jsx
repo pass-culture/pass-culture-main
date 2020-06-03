@@ -95,7 +95,7 @@ describe('src | components | pages | discovery | Discovery', () => {
 
       // then
       expect(wrapper.find(Route)).toHaveLength(2)
-      expect(wrapper.find(LoaderContainer)).toHaveLength(1)
+      expect(wrapper.find(LoaderContainer)).toHaveLength(0)
     })
 
     it('should display error message when API is down', () => {
