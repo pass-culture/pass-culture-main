@@ -1,5 +1,4 @@
 import React from 'react'
-import Icon from '../../../../layout/Icon'
 import PropTypes from 'prop-types'
 
 const InputWithCalendar = props => {
@@ -11,11 +10,6 @@ const InputWithCalendar = props => {
       <input
         {...inputProperties}
         type="text"
-      />
-      <div className="flex-auto" />
-      <Icon
-        alt="Horaires"
-        svg="ico-calendar"
       />
     </label>
   )
