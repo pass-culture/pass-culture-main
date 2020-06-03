@@ -51,3 +51,47 @@
     }
   }
 }
+
+@supports (-webkit-touch-callout: none) {
+  @media screen and (min-height: $iphoneX-height) {
+    .navbar {
+      padding-bottom: rem(15px);
+      height: $navbar-height + rem(15px);
+    }
+
+    .bookings-page main,
+    .favorites-page main,
+    .search-home-page,
+    .loader,
+    .loading-page {
+      padding-bottom: $navbar-height + rem(15px);
+    }
+
+    .profile-page,
+    .search-results-page {
+      margin-bottom: $navbar-height + rem(15px);
+    }
+
+    .search-results-page {
+      .sr-items-wrapper {
+        a:last-child .result-wrapper {
+          margin-bottom: $navbar-height + rem(66px);
+        }
+      }
+
+      .sr-filter-wrapper {
+        bottom: $footer-height + rem(35px)
+      }
+    }
+
+    .discovery-page {
+      #deck-navigation {
+        height: rem(255px);
+
+        .controls {
+          padding-bottom: rem(105px);
+        }
+      }
+    }
+  }
+}

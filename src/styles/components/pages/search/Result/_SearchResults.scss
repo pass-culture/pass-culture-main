@@ -14,7 +14,7 @@
   overflow-y: auto;
 
   a:last-child .result-wrapper {
-    margin-bottom: rem(51px);
+    margin-bottom: $navbar-height + rem(51px);
   }
 
   .sr-items-header {
