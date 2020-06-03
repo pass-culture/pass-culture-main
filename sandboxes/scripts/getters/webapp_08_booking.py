@@ -46,7 +46,7 @@ def get_non_free_digital_offer():
 def get_non_free_thing_offer_with_active_mediation():
     query = get_non_free_offers_query_by_type()
     offer = query \
-        .filter(Offer.type.in_([str(thing_type) for thing_type in ThingType])) \
+        .filter(Offer.type == str(ThingType.LIVRE_EDITION)) \
         .filter(Offer.url == None) \
         .filter(Offer.mediations.any(Mediation.isActive == True)) \
         .join(VenueSQLEntity, VenueSQLEntity.id == Offer.venueId) \
