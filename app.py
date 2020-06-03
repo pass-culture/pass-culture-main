@@ -5,16 +5,13 @@ import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.rq import RqIntegration
 import redis
-from flask_admin import Admin
-from flask_login import LoginManager
 from mailjet_rest import Client
 from werkzeug.middleware.profiler import ProfilerMiddleware
 
 from admin.install import install_admin_views
 from documentation import install_documentation
-from flask_app import app
+from flask_app import app, db, admin
 from local_providers.install import install_local_providers
-from models.db import db
 from models.install import install_activity, install_features, install_materialized_views
 from repository.feature_queries import feature_request_profiling_enabled
 from routes import install_routes
@@ -32,9 +29,6 @@ if IS_DEV is False:
         release=read_version_from_file(),
         environment=ENV
     )
-
-login_manager = LoginManager()
-admin = Admin(name='pc Back Office', url='/pc/back-office', template_mode='bootstrap3')
 
 if feature_request_profiling_enabled():
     profiling_restrictions = [int(os.environ.get('PROFILE_REQUESTS_LINES_LIMIT', 100))]
