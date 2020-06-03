@@ -32,41 +32,42 @@
   flex-direction: row;
   margin-bottom: rem(30px);
 
+  .field-date {
+    display: flex;
+    align-items: center;
+    border-radius: rem(20px);
+    height: rem(40px);
+
+    &:focus-within {
+      border-color: $red;
+    }
+  }
+
   .fw-offer-date {
     flex: 1;
+
+    .field-date {
+      box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
+      margin-top: rem(12px);
+
+      img {
+        margin-right: rem(25px);
+      }
+    }
 
     .fw-offer-date-label {
       margin-bottom: rem(12px);
     }
 
-    .field-date {
-      border-radius: rem(20px);
-      box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
-      height: rem(40px);
-      margin-top: rem(12px);
-
-      &:focus-within {
-        border-color: $red;
-      }
-
-      .fw-offer-date-input {
-        border: 0;
-        background: none;
-        cursor: pointer;
-        font-size: rem(16px);
-        font-weight: $weight-medium;
-        padding-left: rem(10px);
-        outline: none;
-        width: rem(150px);
-
-        &::placeholder {
-          opacity: 1;
-        }
-      }
-
-      img {
-        margin-right: rem(25px);
-      }
+    .fw-offer-date-input {
+      border: 0;
+      background: none;
+      cursor: pointer;
+      font-size: rem(16px);
+      font-weight: $weight-medium;
+      padding-left: rem(10px);
+      outline: none;
+      width: rem(150px);
     }
   }
 
@@ -125,22 +126,21 @@
       margin-top: rem(12px);
 
       .field-date {
-        border-radius: rem(20px);
-        text-align: left;
+        box-shadow: none;
 
-        .fw-booking-date-input {
-          border: 0;
-          cursor: pointer;
-          font-size: rem(16px);
-          font-weight: $weight-medium;
-          outline: none;
-          padding-left: rem(10px);
-          width: rem(135px);
-
-          &::placeholder {
-            opacity: 1;
-          }
+        img {
+          margin-right: rem(20px);
         }
+      }
+
+      .fw-booking-date-input {
+        border: 0;
+        cursor: pointer;
+        font-size: rem(16px);
+        font-weight: $weight-medium;
+        outline: none;
+        padding-left: rem(10px);
+        width: rem(135px);
       }
 
       .field-date-begin {
@@ -163,10 +163,6 @@
         &:focus-within {
           border-color: $red;
         }
-      }
-
-      img {
-        margin-right: rem(20px);
       }
     }
   }
