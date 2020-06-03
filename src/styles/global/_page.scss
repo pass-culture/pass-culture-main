@@ -1,7 +1,8 @@
 .page {
   width: 100%;
   overflow-y: auto;
-  flex: 1;
+  position: relative;
+  height: 100%;
 }
 
 .mosaic-background {

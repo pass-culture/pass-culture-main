@@ -184,8 +184,6 @@ img {
 
 #root {
   background-image: $linear-gradient-to-right;
-  display: flex;
-  flex-direction: column-reverse;
   height: 100%;
   overflow: hidden;
   position: relative;

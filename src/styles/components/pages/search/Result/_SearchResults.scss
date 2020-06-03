@@ -1,4 +1,6 @@
 .search-results-page {
+  @extend .page;
+
   display: flex;
   flex-direction: column;
 }
@@ -7,7 +9,7 @@
   background: $white;
   flex-grow: 1;
   height: 100%;
-  padding: rem(21px) rem(21px) 0;
+  padding: rem(21px);
   overflow-y: auto;
 
   a:last-child .result-wrapper {

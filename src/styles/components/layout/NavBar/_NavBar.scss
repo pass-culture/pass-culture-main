@@ -1,8 +1,17 @@
+.profile-page main,
+.bookings-page main,
+.favorites-page main {
+  margin-bottom: 60px;
+}
+
 .navbar {
   background: $white;
   border-top: 1px solid $grey-even-more-light;
+  bottom: 0;
   height: rem(60px);
+  position: absolute;
   width: 100%;
+  z-index: $zindex-navbar;
 
   ul {
     display: flex;
