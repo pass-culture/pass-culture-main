@@ -3,7 +3,7 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
-const OffererItem = ({ offerer, physicalVenues, venues }) => {
+const OffererItem = ({ offerer, physicalVenues, venues, isVenueCreationAvailable }) => {
   const { id, name, nOffers, isValidated } = offerer || {}
   const showPath = `/structures/${id}`
 
@@ -13,6 +13,10 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
   if (venues.length < 2) {
     createOfferLink = `/offres/creation?structure=${id}&lieu=${venues[0].id}`
   }
+
+  const venueCreationUrl = isVenueCreationAvailable
+    ? `/structures/${id}/lieux/creation`
+    : '/erreur/indisponible'
 
   return (
     <li className="offerer-item">
@@ -72,7 +76,7 @@ const OffererItem = ({ offerer, physicalVenues, venues }) => {
           <li id="create-venue-action">
             <NavLink
               className="has-text-primary"
-              to={`/structures/${id}/lieux/creation`}
+              to={venueCreationUrl}
             >
               <Icon svg="ico-venue-r" />
               {'Nouveau lieu'}

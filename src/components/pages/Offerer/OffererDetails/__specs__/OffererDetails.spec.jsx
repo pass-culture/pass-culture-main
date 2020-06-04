@@ -3,6 +3,7 @@ import { shallow } from 'enzyme'
 import OffererDetails from '../OffererDetails'
 import { Offerer } from '../Offerer'
 import BankInformation from '../BankInformation/BankInformation'
+import VenuesContainer from '../Venues/VenuesContainer'
 
 describe('src | components | pages | Offerer | OffererDetails', () => {
   let props
@@ -32,13 +33,13 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
 
       // then
       const bankInstructions = wrapper.find(BankInformation)
-      expect(bankInstructions).toHaveLength(1) 
+      expect(bankInstructions).toHaveLength(1)
     })
 
     it('should render Venues', () => {
       // when
       const wrapper = shallow(<OffererDetails {...props} />)
-      const venuesComponent = wrapper.find('Venues')
+      const venuesComponent = wrapper.find(VenuesContainer)
 
       // then
       expect(venuesComponent).toHaveLength(1)

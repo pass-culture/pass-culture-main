@@ -1,6 +1,7 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 import Signin from '../Signin'
+import { NavLink } from 'react-router-dom'
 
 describe('src | components | pages | Signin | Signin ', () => {
   let dispatch
@@ -20,6 +21,7 @@ describe('src | components | pages | Signin | Signin ', () => {
         parse,
       },
       history: {},
+      isAccountCreationAvailable: true,
     }
   })
 
@@ -29,6 +31,35 @@ describe('src | components | pages | Signin | Signin ', () => {
 
     // then
     expect(wrapper).toMatchSnapshot()
+  })
+
+  describe('render', () => {
+    describe('when the create a new account', () => {
+      describe('when the API sirene is available', () => {
+        it('should redirect to the creation page', () => {
+          // when
+          const wrapper = shallow(<Signin {...props} />)
+          const createAccountLink = wrapper.find(NavLink)
+
+          // then
+          expect(createAccountLink.prop('to')).toStrictEqual('/inscription')
+        })
+      })
+
+      describe('when the API sirene feature is disabled', () => {
+        it('should redirect to the unavailable error page', () => {
+          // given
+          props.isAccountCreationAvailable = false
+
+          // when
+          const wrapper = shallow(<Signin {...props} />)
+          const createAccountLink = wrapper.find(NavLink)
+
+          // then
+          expect(createAccountLink.prop('to')).toStrictEqual('/erreur/indisponible')
+        })
+      })
+    })
   })
 
   describe('handleSuccessRedirect()', () => {

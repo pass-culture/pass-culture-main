@@ -9,6 +9,7 @@ describe('src | components | pages | OffererCreation | Venues', () => {
     props = {
       offererId: '5767Fdtre',
       venues: [],
+      isVenueCreationAvailable: true,
     }
   })
 
@@ -32,16 +33,35 @@ describe('src | components | pages | OffererCreation | Venues', () => {
       // then
       expect(title.text()).toBe('Lieux')
     })
-    it('should render a create venue link', () => {
-      // given
-      props.adminUserOfferer = true
-      const wrapper = shallow(<Venues {...props} />)
 
-      // when
-      const navLink = wrapper.find('NavLink')
+    describe('create new venue link', () => {
+      describe('when the venue creation is available', () => {
+        it('should render a create venue link', () => {
+          // given
+          props.adminUserOfferer = true
+          const wrapper = shallow(<Venues {...props} />)
 
-      // then
-      expect(navLink.props().to).toBe('/structures/5767Fdtre/lieux/creation')
+          // when
+          const navLink = wrapper.find('NavLink')
+
+          // then
+          expect(navLink.props().to).toBe('/structures/5767Fdtre/lieux/creation')
+        })
+      })
+      describe('when the venue creation is disabled', () => {
+        it('should render a create venue link', () => {
+          // given
+          props.adminUserOfferer = true
+          props.isVenueCreationAvailable = false
+          const wrapper = shallow(<Venues {...props} />)
+
+          // when
+          const navLink = wrapper.find('NavLink')
+
+          // then
+          expect(navLink.props().to).toBe('/erreur/indisponible')
+        })
+      })
     })
   })
 })

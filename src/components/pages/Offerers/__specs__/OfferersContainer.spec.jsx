@@ -12,6 +12,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
 
       // then
       const expected = {
+        isOffererCreationAvailable: false,
         notification: null,
         offerers: [
           {

@@ -17,6 +17,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItemContain
 
       // then
       const expected = {
+        isVenueCreationAvailable: false,
         physicalVenues: [],
         venues: [
           {

@@ -16,6 +16,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
   beforeEach(() => {
     props = {
       currentUser: {},
+      isVenueCreationAvailable: true,
       dispatch: dispatchMock,
       offerer: {
         id: 'AE',
@@ -290,6 +291,43 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
         // then
         expect(navLink.text()).toBe('0 lieu')
         expect(navLink.at(0).prop('to')).toBe('/structures/AE/')
+      })
+    })
+
+    describe('add new venue link', () => {
+      it('should display a link to create a new venue', () => {
+        // given
+        props.offerer = {
+          id: 'AE',
+          name: 'Fake Name',
+          nOffers: 0,
+          isValidated: false,
+        }
+
+        // when
+        const wrapper = shallow(<OffererItem {...props} />)
+        const createVenueLink = wrapper.find('#create-venue-action').find(NavLink)
+
+        // then
+        expect(createVenueLink.prop('to')).toBe('/structures/AE/lieux/creation')
+      })
+
+      it('should redirect to unavailable page when venue creation is not available', () => {
+        // given
+        props.isVenueCreationAvailable = false
+        props.offerer = {
+          id: 'AE',
+          name: 'Fake Name',
+          nOffers: 0,
+          isValidated: false,
+        }
+
+        // when
+        const wrapper = shallow(<OffererItem {...props} />)
+        const createVenueLink = wrapper.find('#create-venue-action').find(NavLink)
+
+        // then
+        expect(createVenueLink.prop('to')).toBe('/erreur/indisponible')
       })
     })
   })

@@ -3,9 +3,9 @@ import React, { PureComponent } from 'react'
 
 import { Offerer } from './Offerer'
 import Main from '../../../layout/Main'
-import Venues from './Venues/Venues'
 import Titles from '../../../layout/Titles/Titles'
 import BankInformation from './BankInformation/BankInformation'
+import VenuesContainer from './Venues/VenuesContainer'
 
 class OffererDetails extends PureComponent {
   componentDidMount() {
@@ -57,7 +57,7 @@ class OffererDetails extends PureComponent {
           </div>
         </div>
         <BankInformation offerer={offerer} />
-        <Venues
+        <VenuesContainer
           offererId={offerer.id}
           venues={venues}
         />

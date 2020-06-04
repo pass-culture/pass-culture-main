@@ -26,7 +26,9 @@ class Signin extends PureComponent {
   handleOnEnterKey = event => event.form.onSubmit()
 
   render() {
-    const { errors } = this.props
+    const { errors, isAccountCreationAvailable } = this.props
+
+    const accountCreationUrl = isAccountCreationAvailable ? '/inscription' : '/erreur/indisponible'
 
     return (
       <Main
@@ -104,7 +106,7 @@ class Signin extends PureComponent {
                     <div className="field buttons-field">
                       <NavLink
                         className="button is-secondary"
-                        to="/inscription"
+                        to={accountCreationUrl}
                       >
                         {'Créer un compte'}
                       </NavLink>

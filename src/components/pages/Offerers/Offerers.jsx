@@ -16,6 +16,8 @@ import PendingOffererItem from './OffererItem/PendingOffererItem'
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 import userHasNoOffersInAPhysicalVenueYet from './utils/userHasNoOffersInAPhysicalVenueYet'
 
+const UNAVAILABLE_ERROR_PAGE = '/erreur/indisponible'
+
 class Offerers extends PureComponent {
   constructor(props) {
     super(props)
@@ -27,10 +29,19 @@ class Offerers extends PureComponent {
   }
 
   componentDidMount() {
-    const { currentUser, offerers, query, showNotification } = this.props
+    const {
+      currentUser,
+      offerers,
+      query,
+      showNotification,
+      isOffererCreationAvailable,
+    } = this.props
 
-    const url = createVenueForOffererUrl(offerers)
     if (userHasNoOffersInAPhysicalVenueYet(currentUser)) {
+      const url = isOffererCreationAvailable
+        ? createVenueForOffererUrl(offerers)
+        : UNAVAILABLE_ERROR_PAGE
+
       showNotification(url)
     }
 
@@ -154,11 +165,11 @@ class Offerers extends PureComponent {
 
     const url = isOffererCreationAvailable
       ? createVenueForOffererUrl(offerers)
-      : '/erreur/indisponible'
+      : UNAVAILABLE_ERROR_PAGE
 
     const offererCreationPageURL = isOffererCreationAvailable
       ? '/structures/creation'
-      : '/erreur/indisponible'
+      : UNAVAILABLE_ERROR_PAGE
 
     const actionLink = (
       <NavLink

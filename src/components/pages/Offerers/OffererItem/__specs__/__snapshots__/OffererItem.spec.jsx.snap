@@ -6,6 +6,7 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <OffererItem
     currentUser={Object {}}
     dispatch={[MockFunction]}
+    isVenueCreationAvailable={true}
     location={
       Object {
         "search": "",

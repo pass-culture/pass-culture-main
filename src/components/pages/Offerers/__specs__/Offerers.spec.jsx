@@ -205,7 +205,7 @@ describe('src | components | pages | Offerers | Offerers', () => {
     })
 
     describe('the link to offerer creation page', () => {
-      describe('when api sirene is available', () => {
+      describe('when api sirene feature is available', () => {
         it('should display a link to create an offer', () => {
           // when
           const wrapper = shallow(<Offerers {...props} />)
@@ -221,7 +221,7 @@ describe('src | components | pages | Offerers | Offerers', () => {
         })
       })
 
-      describe('when api sirene is not available', () => {
+      describe('when api sirene feature is not available', () => {
         it('should display a link to unavailable page', () => {
           // given
           props.isOffererCreationAvailable = false
@@ -237,6 +237,31 @@ describe('src | components | pages | Offerers | Offerers', () => {
 
           // then
           expect(link.prop('to')).toBe('/erreur/indisponible')
+        })
+      })
+    })
+
+    describe('when user has no physical venue', () => {
+      describe('when the api sirene feature is available', () => {
+        it('should display a notification', () => {
+          // when
+          shallow(<Offerers {...props} />)
+
+          // then
+          expect(props.showNotification).toHaveBeenCalledWith('/structures/AE/lieux/creation')
+        })
+      })
+
+      describe('when the api sirene feature is disabled', () => {
+        it('should display a notification', () => {
+          // given
+          props.isOffererCreationAvailable = false
+
+          // when
+          shallow(<Offerers {...props} />)
+
+          // then
+          expect(props.showNotification).toHaveBeenCalledWith('/erreur/indisponible')
         })
       })
     })
