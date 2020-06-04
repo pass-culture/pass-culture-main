@@ -1,5 +1,3 @@
-.bookings-page main,
-.favorites-page main,
 .search-home-page,
 .loader,
 .loading-page {
@@ -52,6 +50,12 @@
   }
 }
 
+.teaser-main {
+  section:last-child {
+    padding-bottom: $navbar-height;
+  }
+}
+
 @supports (-webkit-touch-callout: none) {
   @media screen and (min-height: $iphoneX-height) {
     .navbar {
@@ -59,8 +63,6 @@
       height: $navbar-height + $ios-navbar-safe-zone;
     }
 
-    .bookings-page main,
-    .favorites-page main,
     .search-home-page,
     .loader,
     .loading-page {
@@ -100,6 +102,12 @@
 
     .mv-wrapper .profile-section .mv-ministry-of-culture {
       margin-bottom: rem(84px) + $ios-navbar-safe-zone;
+    }
+
+    .teaser-main {
+      section:last-child {
+        padding-bottom: $navbar-height + $ios-navbar-safe-zone;
+      }
     }
   }
 }
