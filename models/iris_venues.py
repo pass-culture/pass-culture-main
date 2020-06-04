@@ -6,7 +6,7 @@ from models.db import Model
 
 
 class IrisVenues(PcObject, Model):
-    irisId = Column(BigInteger, ForeignKey('iris_france.id'), nullable=False)
+    irisId = Column(BigInteger, ForeignKey('iris_france.id'), nullable=False, index=True)
     venueId = Column(BigInteger, ForeignKey('venue.id'), nullable=False)
     venue = relationship('VenueSQLEntity',
                          foreign_keys=[venueId],
