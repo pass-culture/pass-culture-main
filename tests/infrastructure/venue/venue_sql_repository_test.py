@@ -7,11 +7,11 @@ from tests.model_creators.generic_creators import create_offerer, create_venue, 
 
 
 class VenueSQLRepositoryTest:
-    def setup_method(self):
+    def setup_method(self) -> None:
         self.venue_sql_repository = VenueSQLRepository()
 
     @clean_database
-    def test_returns_a_venue_when_venue_with_siret_is_found(self, app):
+    def test_returns_a_venue_when_venue_with_siret_is_found(self, app: object) -> None:
         # given
         siret = "12345678912345"
         offerer = create_offerer()
@@ -30,7 +30,7 @@ class VenueSQLRepositoryTest:
         assert found_venue.id == expected_venue.id
 
     @clean_database
-    def test_should_return_none_when_no_venue_with_siret_was_found(self, app):
+    def test_should_return_none_when_no_venue_with_siret_was_found(self, app: object) -> None:
         # given
         siret = "12345678912345"
         offerer = create_offerer()
@@ -46,7 +46,7 @@ class VenueSQLRepositoryTest:
         assert found_venue is None
 
     @clean_database
-    def test_returns_a_venue_when_venue_with_name_is_found(self, app):
+    def test_returns_a_venue_when_venue_with_name_is_found(self, app: object) -> None:
         # given
         name = 'VENUE NAME'
         offerer = create_offerer()
@@ -68,7 +68,7 @@ class VenueSQLRepositoryTest:
         assert found_venue.siret is None
 
     @clean_database
-    def test_should_return_none_when_venue_with_name_was_found_but_in_another_offerer(self, app):
+    def test_should_return_none_when_venue_with_name_was_found_but_in_another_offerer(self, app: object) -> None:
         # given
         name = 'Venue name'
         offerer = create_offerer()
@@ -83,7 +83,7 @@ class VenueSQLRepositoryTest:
         assert found_venue == []
 
     @clean_database
-    def test_should_return_none_when_no_venue_with_name_was_found(self, app):
+    def test_should_return_none_when_no_venue_with_name_was_found(self, app: object) -> None:
         # given
         name = 'Venue name'
         offerer = create_offerer()
@@ -98,11 +98,11 @@ class VenueSQLRepositoryTest:
 
 
 class GetAllByProIdentifierTest:
-    def setup_method(self):
+    def setup_method(self) -> None:
         self.venue_sql_repository = VenueSQLRepository()
 
     @clean_database
-    def test_returns_all_venues_of_pro_user(self, app):
+    def test_returns_all_venues_of_pro_user(self, app: object) -> None:
         # given
         pro_user = create_user()
         offerer = create_offerer()
@@ -125,7 +125,7 @@ class GetAllByProIdentifierTest:
         assert set(found_venues_id) == {expected_venue_1.id, expected_venue_2.id}
 
     @clean_database
-    def test_returns_empty_list_when_no_venues_exist(self, app):
+    def test_returns_empty_list_when_no_venues_exist(self, app: object) -> None:
         # given
         pro_user = create_user()
         offerer = create_offerer()
@@ -139,7 +139,7 @@ class GetAllByProIdentifierTest:
         assert found_venues == []
 
     @clean_database
-    def test_returns_all_venues_of_pro_user_ordered_by_name(self, app):
+    def test_returns_all_venues_of_pro_user_ordered_by_name(self, app: object) -> None:
         # given
         pro_user = create_user()
         offerer = create_offerer()
@@ -159,3 +159,25 @@ class GetAllByProIdentifierTest:
         assert len(found_venues) == 2
         assert found_venues[0].name == expected_venue_2.name
         assert found_venues[1].name == expected_venue_1.name
+
+    @clean_database
+    def test_does_not_return_venues_of_non_validated_offerer(self, app: object) -> None:
+        # given
+        pro_user = create_user()
+        offerer_validated = create_offerer(siren='123456789')
+        offerer_not_validated = create_offerer(siren='987654321', validation_token='TOKEN')
+        create_user_offerer(user=pro_user, offerer=offerer_validated)
+        create_user_offerer(user=pro_user, offerer=offerer_not_validated)
+        venue_of_validated_offerer = create_venue(offerer=offerer_validated, siret='12345678912345', name='B')
+        venue_of_unvalidated_offerer = create_venue(offerer=offerer_not_validated, siret='98765432198765', name='A')
+
+        repository.save(venue_of_validated_offerer, venue_of_unvalidated_offerer)
+
+        expected_venue = venue_domain_converter.to_domain(venue_of_validated_offerer)
+
+        # when
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id)
+
+        # then
+        assert len(found_venues) == 1
+        assert found_venues[0].name == expected_venue.name

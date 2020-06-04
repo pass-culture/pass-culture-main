@@ -10,7 +10,7 @@ class VenueRepository(ABC):
         pass
 
     @abstractmethod
-    def find_by_name(self, name: str, offerer_id: str) -> List[Venue]:
+    def find_by_name(self, name: str, offerer_id: int) -> List[Venue]:
         pass
 
     @abstractmethod

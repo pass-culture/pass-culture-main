@@ -9,13 +9,13 @@ from models import VenueSQLEntity, Offerer, UserOfferer, UserSQLEntity
 
 
 class VenueSQLRepository(VenueRepository):
-    def find_by_siret(self, siret):
+    def find_by_siret(self, siret: str) -> Venue:
         venue_sql_entity = VenueSQLEntity.query \
             .filter_by(siret=siret) \
             .one_or_none()
         return venue_domain_converter.to_domain(venue_sql_entity) if venue_sql_entity else None
 
-    def find_by_name(self, name, offerer_id) -> List[Venue]:
+    def find_by_name(self, name: str, offerer_id: int) -> List[Venue]:
         venue_sql_entities = VenueSQLEntity.query \
             .filter_by(managingOffererId=offerer_id) \
             .filter(VenueSQLEntity.siret == None) \
@@ -29,6 +29,7 @@ class VenueSQLRepository(VenueRepository):
             .join(UserOfferer) \
             .join(UserSQLEntity) \
             .filter(UserSQLEntity.id == pro_identifier) \
+            .filter(Offerer.validationToken == None) \
             .order_by(VenueSQLEntity.name) \
             .all()
         return [venue_domain_converter.to_domain(venue_sql_entity) for venue_sql_entity in venue_sql_entities]
