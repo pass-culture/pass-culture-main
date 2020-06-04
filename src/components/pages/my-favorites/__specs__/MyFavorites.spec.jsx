@@ -14,7 +14,7 @@ import NoItems from '../../../layout/NoItems/NoItems'
 import state from '../../../../mocks/state'
 import TeaserContainer from '../../../layout/Teaser/TeaserContainer'
 
-describe('src | components | pages | my-favorites | MyFavorites', () => {
+describe('my favorites', () => {
   let props
 
   beforeEach(() => {
@@ -52,12 +52,33 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
     }
   })
 
-  it('should match the snapshot', () => {
+  it('should display the title "Favoris"', () => {
+    // given
+    const buildStore = configureStore([thunk])
+    const store = buildStore(state)
+    const history = createMemoryHistory()
+    const props = {
+      deleteFavorites: jest.fn(),
+      loadMyFavorites: jest.fn(),
+      myFavorites: [],
+    }
+
+    history.push('/favoris')
+
+    jest.spyOn(props, 'loadMyFavorites').mockImplementation((fail, success) => success())
+
     // when
-    const wrapper = shallow(<MyFavorites {...props} />)
+    const wrapper = mount(
+      <Router history={history}>
+        <Provider store={store}>
+          <MyFavorites {...props} />
+        </Provider>
+      </Router>
+    )
 
     // then
-    expect(wrapper).toMatchSnapshot()
+    const title = wrapper.find('h1').find({ children: 'Favoris' })
+    expect(title).toHaveLength(1)
   })
 
   describe('render()', () => {

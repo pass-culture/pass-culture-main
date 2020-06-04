@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
+import { Route, Switch } from 'react-router'
 import { toast } from 'react-toastify'
 
 import MyFavoriteDetailsContainer from './MyFavoriteDetails/MyFavoriteDetailsContainer'
@@ -84,6 +85,9 @@ class MyFavorites extends PureComponent {
 
   renderMyFavorites = (hasNoFavoriteSelected, isEditMode, hasNoFavorite, myFavorites, offerIds) => (
     <main className={hasNoFavorite ? 'teaser-main teaser-no-teasers' : 'teaser-main'}>
+      <h1 className="mf-title">
+        {'Favoris'}
+      </h1>
       {hasNoFavorite ? (
         <NoItems sentence="Dès que vous aurez ajouté une offre en favori," />
       ) : (
@@ -147,18 +151,31 @@ class MyFavorites extends PureComponent {
 
     return (
       <div className="favorites-page teaser-list">
-        <HeaderContainer
-          shouldBackFromDetails
-          title="Mes favoris"
-        />
-        {this.renderMyFavorites(
-          hasNoFavoriteSelected,
-          isEditMode,
-          hasNoFavorite,
-          myFavorites,
-          offerIds
-        )}
-        <MyFavoriteDetailsContainer bookingPath="/favoris/:details(details|transition)/:offerId([A-Z0-9]+)/:mediationId(vide|[A-Z0-9]+)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?" />
+        <Switch>
+          <Route
+            exact
+            path="/favoris"
+          >
+            {this.renderMyFavorites(
+              hasNoFavoriteSelected,
+              isEditMode,
+              hasNoFavorite,
+              myFavorites,
+              offerIds
+            )}
+          </Route>
+          <Route
+            exact
+            path="/favoris/:details(details|transition)/:offerId([A-Z0-9]+)/:mediationId(vide|[A-Z0-9]+)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+            sensitive
+          >
+            <HeaderContainer
+              shouldBackFromDetails
+              title="Favoris"
+            />
+            <MyFavoriteDetailsContainer bookingPath="/favoris/:details(details|transition)/:offerId([A-Z0-9]+)/:mediationId(vide|[A-Z0-9]+)?/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?" />
+          </Route>
+        </Switch>
       </div>
     )
   }

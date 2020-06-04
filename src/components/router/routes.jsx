@@ -146,7 +146,7 @@ const routes = [
       '/:bookingId([A-Z0-9]+)?' +
       '/:cancellation(annulation)?' +
       '/:confirmation(confirmation)?',
-    title: 'Mes favoris',
+    title: 'Favoris',
   },
   {
     component: ProfileContainer,

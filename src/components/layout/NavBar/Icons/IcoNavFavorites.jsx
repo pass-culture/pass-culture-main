@@ -9,7 +9,7 @@ export const IcoNavFavorites = () => (
     xmlns="http://www.w3.org/2000/svg"
   >
     <title>
-      {'Mes favoris'}
+      {'Favoris'}
     </title>
     <defs>
       <linearGradient id="NavIco">
