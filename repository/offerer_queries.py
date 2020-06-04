@@ -1,8 +1,12 @@
+from datetime import datetime
+
 from flask_login import current_user
+from sqlalchemy import or_
 
 from domain.keywords import create_filter_matching_all_keywords_in_any_model, \
     create_get_filter_matching_ts_query_in_any_model
 from models import Offerer, VenueSQLEntity, Offer, UserOfferer, UserSQLEntity, StockSQLEntity, ThingType, EventType
+from models.db import db
 
 get_filter_matching_ts_query_for_offerer = create_get_filter_matching_ts_query_in_any_model(
     Offerer,
