@@ -51,6 +51,12 @@
   }
 
   .fw-offer-date {
+    .fw-offer-date-picker:focus-within {
+      .field-date {
+        border-color: $red;
+      }
+    }
+
     button {
       outline: none;
     }

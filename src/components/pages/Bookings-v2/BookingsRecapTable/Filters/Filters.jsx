@@ -209,15 +209,17 @@ class Filters extends Component {
             >
               {"Date de l'évènement"}
             </label>
-            <DatePicker
-              className="fw-offer-date-input"
-              customInput={<InputWithCalendar customClass="field-date-only" />}
-              dropdownMode="select"
-              id="select-filter-date"
-              onChange={this.handleOfferDateChange}
-              placeholderText="JJ/MM/AAAA"
-              selected={selectedOfferDate}
-            />
+            <div className="fw-offer-date-picker">
+              <DatePicker
+                className="fw-offer-date-input"
+                customInput={<InputWithCalendar customClass="field-date-only" />}
+                dropdownMode="select"
+                id="select-filter-date"
+                onChange={this.handleOfferDateChange}
+                placeholderText="JJ/MM/AAAA"
+                selected={selectedOfferDate}
+              />
+            </div>
           </div>
           <div className="fw-venues">
             <label
