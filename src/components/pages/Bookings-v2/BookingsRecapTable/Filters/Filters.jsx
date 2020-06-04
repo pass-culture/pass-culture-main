@@ -261,7 +261,7 @@ class Filters extends Component {
                 className="fw-booking-date-input"
                 customInput={<InputWithCalendar customClass="field-date-only field-date-begin" />}
                 dropdownMode="select"
-                maxDate={moment()}
+                maxDate={selectedBookingEndingDate}
                 minDate={oldestBookingDate}
                 onChange={this.handleBookingBeginningDateChange}
                 placeholderText="JJ/MM/AAAA"

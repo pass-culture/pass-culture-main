@@ -191,4 +191,38 @@ describe('components | Filters', () => {
       offerVenue: 'AE',
     })
   })
+
+  it('should not allow to select booking beginning date superior to booking ending date value', async () => {
+    // Given
+    const props = {
+      setFilters: jest.fn(),
+    }
+    const selectedDate = moment('2020-05-20')
+    const wrapper = shallow(<Filters {...props} />)
+    const bookingEndingDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(2)
+    await bookingEndingDateInput.simulate('change', selectedDate)
+
+    // When
+    const bookingBeginningDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(1)
+
+    // Then
+    expect(bookingBeginningDateInput.prop('maxDate')).toStrictEqual(selectedDate)
+  })
+
+  it('should not allow to select booking ending date inferior to booking beginning date value', async () => {
+    // Given
+    const props = {
+      setFilters: jest.fn(),
+    }
+    const selectedDate = moment('2020-05-20')
+    const wrapper = shallow(<Filters {...props} />)
+    const bookingBeginningDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(1)
+    await bookingBeginningDateInput.simulate('change', selectedDate)
+
+    // When
+    const bookingEndingDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(2)
+
+    // Then
+    expect(bookingEndingDateInput.prop('minDate')).toStrictEqual(selectedDate)
+  })
 })
