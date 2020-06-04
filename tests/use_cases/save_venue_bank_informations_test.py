@@ -6,8 +6,8 @@ import pytest
 from domain.bank_information import CannotRegisterBankInformation
 from infrastructure.repository.bank_informations.bank_informations_sql_repository import BankInformationsSQLRepository
 from infrastructure.repository.offerer.offerer_sql_repository import OffererSQLRepository
-from infrastructure.repository.venue.venue_identifier.venue_identifier_sql_repository import \
-    VenueIdentifierSQLRepository
+from infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import \
+    VenueWithBasicInformationSQLRepository
 from models import ApiErrors
 from models import BankInformation
 from models.bank_information import BankInformationStatus
@@ -27,7 +27,7 @@ class SaveVenueBankInformationsTest:
             def setup_method(self):
                 self.save_venue_bank_informations = SaveVenueBankInformations(
                     offerer_repository=OffererSQLRepository(),
-                    venue_repository=VenueIdentifierSQLRepository(),
+                    venue_repository=VenueWithBasicInformationSQLRepository(),
                     bank_informations_repository=BankInformationsSQLRepository()
                 )
 
@@ -171,7 +171,7 @@ class SaveVenueBankInformationsTest:
             def setup_method(self):
                 self.save_venue_bank_informations = SaveVenueBankInformations(
                     offerer_repository=OffererSQLRepository(),
-                    venue_repository=VenueIdentifierSQLRepository(),
+                    venue_repository=VenueWithBasicInformationSQLRepository(),
                     bank_informations_repository=BankInformationsSQLRepository()
                 )
 
@@ -322,7 +322,7 @@ class SaveVenueBankInformationsTest:
         def setup_method(self):
             self.save_venue_bank_informations = SaveVenueBankInformations(
                 offerer_repository=OffererSQLRepository(),
-                venue_repository=VenueIdentifierSQLRepository(),
+                venue_repository=VenueWithBasicInformationSQLRepository(),
                 bank_informations_repository=BankInformationsSQLRepository()
             )
 
@@ -427,7 +427,7 @@ class SaveVenueBankInformationsTest:
         def setup_method(self):
             self.save_venue_bank_informations = SaveVenueBankInformations(
                 offerer_repository=OffererSQLRepository(),
-                venue_repository=VenueIdentifierSQLRepository(),
+                venue_repository=VenueWithBasicInformationSQLRepository(),
                 bank_informations_repository=BankInformationsSQLRepository()
             )
 

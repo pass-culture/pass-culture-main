@@ -5,8 +5,8 @@ from domain.bank_informations.bank_informations_repository import BankInformatio
 from domain.demarches_simplifiees import get_venue_bank_information_application_details_by_application_id, \
     ApplicationDetail
 from domain.offerer.offerer_repository import OffererRepository
-from domain.venue.venue_identifier.venue_identifier_repository import VenueIdentifier
-from domain.venue.venue_identifier.venue_identifier_repository import VenueIdentifierRepository
+from domain.venue.venue_with_basic_information.venue_with_basic_information import VenueWithBasicInformation
+from domain.venue.venue_with_basic_information.venue_with_basic_information_repository import VenueWithBasicInformationRepository
 from models import Offerer
 from models.bank_information import BankInformationStatus
 
@@ -14,7 +14,7 @@ from models.bank_information import BankInformationStatus
 class SaveVenueBankInformations:
     def __init__(self,
                  offerer_repository: OffererRepository,
-                 venue_repository: VenueIdentifierRepository,
+                 venue_repository: VenueWithBasicInformationRepository,
                  bank_informations_repository: BankInformationsRepository
                  ):
         self.offerer_repository = offerer_repository
@@ -35,24 +35,24 @@ class SaveVenueBankInformations:
 
         if bank_information_by_application_id:
             check_new_bank_information_older_than_saved_one(bank_information_by_application_id, application_details)
-            new_bank_informations = self.create_new_bank_informations(application_details, venue.id)
+            new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
             return self.bank_informations_repository.update_by_application_id(new_bank_informations)
 
         else:
-            bank_information_by_venue_id = self.bank_informations_repository.find_by_venue(venue.id)
+            bank_information_by_venue_id = self.bank_informations_repository.find_by_venue(venue.identifier)
 
             if bank_information_by_venue_id:
                 check_new_bank_information_older_than_saved_one(bank_information_by_venue_id, application_details)
                 check_new_bank_information_has_a_more_advanced_status(bank_information_by_venue_id, application_details)
 
-                new_bank_informations = self.create_new_bank_informations(application_details, venue.id)
+                new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
                 return self.bank_informations_repository.update_by_venue_id(new_bank_informations)
 
             else:
-                new_bank_informations = self.create_new_bank_informations(application_details, venue.id)
+                new_bank_informations = self.create_new_bank_informations(application_details, venue.identifier)
                 return self.bank_informations_repository.save(new_bank_informations)
 
-    def get_referent_venue(self, application_details: ApplicationDetail, offerer: Offerer) -> VenueIdentifier:
+    def get_referent_venue(self, application_details: ApplicationDetail, offerer: Offerer) -> VenueWithBasicInformation:
         siret = application_details.siret
 
         if siret:

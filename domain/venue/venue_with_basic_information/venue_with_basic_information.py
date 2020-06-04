@@ -1,8 +1,8 @@
-class VenueIdentifier(object):
+class VenueWithBasicInformation(object):
     def __init__(self,
-                 id: int,
+                 identifier: int,
                  name: str,
                  siret: str):
-        self.id = id
+        self.identifier = identifier
         self.name = name
         self.siret = siret

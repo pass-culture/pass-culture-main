@@ -1,15 +1,15 @@
-from domain.venue.venue_identifier.venue_identifier import VenueIdentifier
-from infrastructure.repository.venue.venue_identifier import venue_identifier_domain_converter
-from infrastructure.repository.venue.venue_identifier.venue_identifier_sql_repository import \
-    VenueIdentifierSQLRepository
+from domain.venue.venue_with_basic_information.venue_with_basic_information import VenueWithBasicInformation
+from infrastructure.repository.venue.venue_with_basic_information import venue_with_basic_information_domain_converter
+from infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import \
+    VenueWithBasicInformationSQLRepository
 from repository import repository
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue
 
 
-class VenueIdentifierSQLRepositoryTest:
+class VenueWithBasicInformationSQLRepositoryTest:
     def setup_method(self) -> None:
-        self.venue_sql_repository = VenueIdentifierSQLRepository()
+        self.venue_sql_repository = VenueWithBasicInformationSQLRepository()
 
     @clean_database
     def test_returns_a_venue_when_venue_with_siret_is_found(self, app: object) -> None:
@@ -20,15 +20,15 @@ class VenueIdentifierSQLRepositoryTest:
 
         repository.save(venue)
 
-        expected_venue = venue_identifier_domain_converter.to_domain(venue)
+        expected_venue = venue_with_basic_information_domain_converter.to_domain(venue)
 
         # when
         found_venue = self.venue_sql_repository.find_by_siret(siret)
 
         # then
-        assert isinstance(found_venue, VenueIdentifier)
+        assert isinstance(found_venue, VenueWithBasicInformation)
         assert found_venue.siret == expected_venue.siret
-        assert found_venue.id == expected_venue.id
+        assert found_venue.identifier == expected_venue.identifier
 
     @clean_database
     def test_should_return_none_when_no_venue_with_siret_was_found(self, app: object) -> None:
@@ -53,7 +53,7 @@ class VenueIdentifierSQLRepositoryTest:
 
         repository.save(venue)
 
-        expected_venue = venue_identifier_domain_converter.to_domain(venue)
+        expected_venue = venue_with_basic_information_domain_converter.to_domain(venue)
 
         # when
         found_venues = self.venue_sql_repository.find_by_name(name, offerer.id)
@@ -61,9 +61,9 @@ class VenueIdentifierSQLRepositoryTest:
         # then
         assert len(found_venues) == 1
         found_venue = found_venues[0]
-        assert isinstance(found_venue, VenueIdentifier)
+        assert isinstance(found_venue, VenueWithBasicInformation)
         assert found_venue.name == expected_venue.name
-        assert found_venue.id == expected_venue.id
+        assert found_venue.identifier == expected_venue.identifier
         assert found_venue.siret is None
 
     @clean_database
