@@ -152,7 +152,9 @@ class Offerers extends PureComponent {
       keywords: queryParams[mapApiToBrowser.keywords],
     }
 
-    const url = createVenueForOffererUrl(offerers)
+    const url = isOffererCreationAvailable
+      ? createVenueForOffererUrl(offerers)
+      : '/erreur/indisponible'
 
     const offererCreationPageURL = isOffererCreationAvailable
       ? '/structures/creation'

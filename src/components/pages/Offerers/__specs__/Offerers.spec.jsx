@@ -38,14 +38,31 @@ describe('src | components | pages | Offerers | Offerers', () => {
 
   describe('render', () => {
     describe('subtitle message', () => {
-      it('should display a link to create an offer', () => {
-        // when
-        const wrapper = shallow(<Offerers {...props} />)
-        const links = wrapper.find('a')
+      describe('when the isOffererCreationAvailable feature is activated', () => {
+        it('should display a link to create an offer', () => {
+          // when
+          const wrapper = shallow(<Offerers {...props} />)
+          const links = wrapper.find('a')
 
-        // then
-        expect(links.at(0).text()).toBe('créer un nouveau lieu ')
-        expect(links.at(0).prop('href')).toBe('/structures/AE/lieux/creation')
+          // then
+          expect(links.at(0).text()).toBe('créer un nouveau lieu ')
+          expect(links.at(0).prop('href')).toBe('/structures/AE/lieux/creation')
+        })
+      })
+
+      describe('when the isOffererCreationAvailable feature is disabled', () => {
+        it('should display a link to create an offer', () => {
+          // given
+          props.isOffererCreationAvailable = false
+
+          // when
+          const wrapper = shallow(<Offerers {...props} />)
+          const links = wrapper.find('a')
+
+          // then
+          expect(links.at(0).text()).toBe('créer un nouveau lieu ')
+          expect(links.at(0).prop('href')).toBe('/erreur/indisponible')
+        })
       })
 
       it('should display a link to create a venue', () => {
