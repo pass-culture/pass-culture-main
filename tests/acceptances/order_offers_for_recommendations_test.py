@@ -4,7 +4,7 @@ from unittest.mock import patch
 from models.db import db
 from models.offer_type import ThingType
 from repository import repository, discovery_view_queries
-from repository.discovery_view_queries import _order_by_digital_offers
+from repository.discovery_view_queries import order_by_digital_offers
 from repository.offer_queries import get_offers_for_recommendation
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_criterion, \
@@ -65,7 +65,7 @@ class DiscoveryViewTest:
         repository.save(user, stock_digital_offer_with_bonus, stock_digital_offer, stock_digital_offer_with_malus,
                         stock_physical_offer, stock_physical_offer_with_super_bonus)
 
-        discovery_view_queries.create(db.session, _order_by_digital_offers)
+        discovery_view_queries.create(db.session, order_by_digital_offers)
         discovery_view_queries.refresh(concurrently=False)
 
         # When
@@ -127,7 +127,7 @@ class DiscoveryViewTest:
                         stock_physical_offer, stock_physical_offer_with_super_bonus,
                         seen_digital_offer, seen_digital_offer_with_malus)
 
-        discovery_view_queries.create(db.session, _order_by_digital_offers)
+        discovery_view_queries.create(db.session, order_by_digital_offers)
         discovery_view_queries.refresh(concurrently=False)
 
         # When

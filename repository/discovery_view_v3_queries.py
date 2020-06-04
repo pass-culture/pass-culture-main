@@ -6,7 +6,7 @@ from models import DiscoveryViewV3
 from models.db import db
 
 
-def _order_by_digital_offers() -> str:
+def order_by_digital_offers_v3() -> str:
     return f"""
         ROW_NUMBER() OVER (
             ORDER BY
@@ -21,7 +21,7 @@ def _order_by_digital_offers() -> str:
     """
 
 
-def create(session: Session, order: Callable = _order_by_digital_offers) -> None:
+def create(session: Session, order: Callable = order_by_digital_offers_v3) -> None:
     _create_discovery_view(session, order, DiscoveryViewV3.__tablename__)
     session.commit()
 
