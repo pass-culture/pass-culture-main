@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { pluralizeWord } from './utils/pluralizeWord'
 import { CSVLink } from 'react-csv'
 import generateBookingsCsvFile from '../utils/generateBookingsCsvFile'
-import { Icon } from 'pass-culture-shared'
+import Icon from '../../../../layout/Icon'
 
 const Header = ({ bookingsRecapFiltered, isLoading }) => {
   if (isLoading) {
@@ -24,7 +24,10 @@ const Header = ({ bookingsRecapFiltered, isLoading }) => {
             data={generateBookingsCsvFile(bookingsRecapFiltered)}
             filename="Réservations Pass Culture.csv"
           >
-            <Icon svg="ico-download" />
+            <Icon
+              alt="Télécharger le CSV"
+              svg="ico-download"
+            />
             {'Télécharger le CSV'}
           </CSVLink>
         </span>

@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 import BeneficiaryCell from './CellsFormatter/BeneficiaryCell'
 import BookingDateCell from './CellsFormatter/BookingDateCell'
@@ -128,21 +128,21 @@ class BookingsRecapTable extends Component {
           ref={this.filtersRef}
           setFilters={this.setFilters}
         />
-        {nbBookings > 0 && (
-          <Header
-            bookingsRecapFiltered={bookingsRecapFiltered}
-            isLoading={isLoading}
-          />
-        )}
         {nbBookings > 0 ? (
-          <TableFrame
-            columns={columns}
-            currentPage={currentPage}
-            data={bookingsRecapFiltered}
-            nbBookings={nbBookings}
-            nbBookingsPerPage={NB_BOOKINGS_PER_PAGE}
-            updateCurrentPage={this.updateCurrentPage}
-          />
+          <Fragment>
+            <Header
+              bookingsRecapFiltered={bookingsRecapFiltered}
+              isLoading={isLoading}
+            />
+            <TableFrame
+              columns={columns}
+              currentPage={currentPage}
+              data={bookingsRecapFiltered}
+              nbBookings={nbBookings}
+              nbBookingsPerPage={NB_BOOKINGS_PER_PAGE}
+              updateCurrentPage={this.updateCurrentPage}
+            />
+          </Fragment>
         ) : (
           <NoFilteredBookings resetFilters={this.resetFilters} />
         )}

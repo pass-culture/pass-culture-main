@@ -4,13 +4,21 @@ import { getBookingStatusDisplayInformationsOrDefault } from '../CellsFormatter/
 
 export const CSV_HEADERS = [
   'Nom de l’offre',
-  'Date de l\'évènement',
+  "Date de l'évènement",
   'Nom et prénom du bénéficiaire',
   'Email du bénéficiaire',
   'Date et heure de réservation',
   'Contremarque',
   'Statut de la contremarque',
 ]
+
+function formatEventDatetimeIfEventType(booking) {
+  if (booking.stock.type === 'event') {
+    return moment.parseZone(booking.stock.event_beginning_datetime).format(FORMAT_DD_MM_YYYY_HH_mm)
+  } else {
+    return ''
+  }
+}
 
 const generateBookingsCsvFile = bookings => {
   let csv_data = [CSV_HEADERS]
@@ -20,16 +28,13 @@ const generateBookingsCsvFile = bookings => {
 
     bookingArray.push(booking.stock.offer_name)
 
-    if (booking.stock.type === 'event') {
-      const eventDatetimeFormatted = moment.parseZone(booking.stock.event_beginning_datetime).format(FORMAT_DD_MM_YYYY_HH_mm)
-      bookingArray.push(eventDatetimeFormatted)
-    } else {
-      bookingArray.push('')
-    }
+    bookingArray.push(formatEventDatetimeIfEventType(booking))
 
     bookingArray.push(booking.beneficiary.lastname.concat(' ', booking.beneficiary.firstname))
     bookingArray.push(booking.beneficiary.email)
-    const bookingDatetimeFormatted = moment.parseZone(booking.booking_date).format(FORMAT_DD_MM_YYYY_HH_mm)
+    const bookingDatetimeFormatted = moment
+      .parseZone(booking.booking_date)
+      .format(FORMAT_DD_MM_YYYY_HH_mm)
     bookingArray.push(bookingDatetimeFormatted)
     bookingArray.push(booking.booking_token)
     const bookingStatus = getBookingStatusDisplayInformationsOrDefault(booking.booking_status)
