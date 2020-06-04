@@ -1,21 +1,24 @@
-from unittest.mock import patch
 from datetime import datetime
+from unittest.mock import patch
 
 import pytest
-from use_cases.save_venue_bank_informations import SaveVenueBankInformations
-from models import ApiErrors
 
+from domain.bank_information import CannotRegisterBankInformation
+from infrastructure.repository.bank_informations.bank_informations_sql_repository import BankInformationsSQLRepository
+from infrastructure.repository.offerer.offerer_sql_repository import OffererSQLRepository
+from infrastructure.repository.venue.venue_identifier.venue_identifier_sql_repository import \
+    VenueIdentifierSQLRepository
+from models import ApiErrors
+from models import BankInformation
 from models.bank_information import BankInformationStatus
-from tests.model_creators.generic_creators import create_bank_information, create_offerer, create_venue
-from tests.connector_creators.demarches_simplifiees_creators import venue_demarche_simplifiee_application_detail_response_with_siret,\
-    venue_demarche_simplifiee_application_detail_response_without_siret
 from repository import repository
 from tests.conftest import clean_database
-from models import BankInformation
-from domain.bank_information import CannotRegisterBankInformation
-from infrastructure.repository.venue.venue_sql_repository import VenueSQLRepository
-from infrastructure.repository.offerer.offerer_sql_repository import OffererSQLRepository
-from infrastructure.repository.bank_informations.bank_informations_sql_repository import BankInformationsSQLRepository
+from tests.connector_creators.demarches_simplifiees_creators import \
+    venue_demarche_simplifiee_application_detail_response_with_siret, \
+    venue_demarche_simplifiee_application_detail_response_without_siret
+from tests.model_creators.generic_creators import create_bank_information, create_offerer, create_venue
+from use_cases.save_venue_bank_informations import SaveVenueBankInformations
+
 
 class SaveVenueBankInformationsTest:
     class SaveBankInformationTest:
@@ -24,12 +27,14 @@ class SaveVenueBankInformationsTest:
             def setup_method(self):
                 self.save_venue_bank_informations = SaveVenueBankInformations(
                     offerer_repository=OffererSQLRepository(),
-                    venue_repository=VenueSQLRepository(),
+                    venue_repository=VenueIdentifierSQLRepository(),
                     bank_informations_repository=BankInformationsSQLRepository()
                 )
 
             @clean_database
-            def test_when_dms_state_is_refused_should_create_the_correct_bank_information(self, mock_application_details, app):
+            def test_when_dms_state_is_refused_should_create_the_correct_bank_information(self,
+                                                                                          mock_application_details,
+                                                                                          app):
                 # Given
                 application_id = '8'
                 offerer = create_offerer(siren='793875030')
@@ -50,14 +55,17 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.REJECTED
 
             @clean_database
-            def test_when_dms_state_is_without_continuation_should_create_the_correct_bank_information(self, mock_application_details, app):
+            def test_when_dms_state_is_without_continuation_should_create_the_correct_bank_information(self,
+                                                                                                       mock_application_details,
+                                                                                                       app):
                 # Given
                 application_id = '8'
                 offerer = create_offerer(siren='793875030')
                 venue = create_venue(offerer, siret='79387503012345')
                 repository.save(venue)
                 mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                    siret='79387503012345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state='without_continuation')
+                    siret='79387503012345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8,
+                    state='without_continuation')
 
                 # When
                 self.save_venue_bank_informations.execute(application_id)
@@ -71,7 +79,8 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.REJECTED
 
             @clean_database
-            def test_when_dms_state_is_closed_should_create_the_correct_bank_information(self, mock_application_details, app):
+            def test_when_dms_state_is_closed_should_create_the_correct_bank_information(self, mock_application_details,
+                                                                                         app):
                 # Given
                 application_id = '8'
                 offerer = create_offerer(siren='793875030')
@@ -92,7 +101,8 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.ACCEPTED
 
             @clean_database
-            def test_when_dms_state_is_received_should_create_the_correct_bank_information(self, mock_application_details,
+            def test_when_dms_state_is_received_should_create_the_correct_bank_information(self,
+                                                                                           mock_application_details,
                                                                                            app):
                 # Given
                 application_id = '8'
@@ -114,7 +124,8 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.DRAFT
 
             @clean_database
-            def test_when_dms_state_is_initiated_should_create_the_correct_bank_information(self, mock_application_details,
+            def test_when_dms_state_is_initiated_should_create_the_correct_bank_information(self,
+                                                                                            mock_application_details,
                                                                                             app):
                 # Given
                 application_id = '8'
@@ -122,7 +133,8 @@ class SaveVenueBankInformationsTest:
                 venue = create_venue(offerer, siret='79387503012345')
                 repository.save(venue)
                 mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                    siret='79387503012345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state='initiated')
+                    siret='79387503012345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8,
+                    state='initiated')
 
                 # When
                 self.save_venue_bank_informations.execute(application_id)
@@ -136,7 +148,8 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.DRAFT
 
             @clean_database
-            def test_when_no_venue_siret_specified_should_not_create_bank_information(self, mock_application_details, app):
+            def test_when_no_venue_siret_specified_should_not_create_bank_information(self, mock_application_details,
+                                                                                      app):
                 # Given
                 application_id = '8'
                 offerer = create_offerer(siren='793875030')
@@ -158,12 +171,14 @@ class SaveVenueBankInformationsTest:
             def setup_method(self):
                 self.save_venue_bank_informations = SaveVenueBankInformations(
                     offerer_repository=OffererSQLRepository(),
-                    venue_repository=VenueSQLRepository(),
+                    venue_repository=VenueIdentifierSQLRepository(),
                     bank_informations_repository=BankInformationsSQLRepository()
                 )
 
             @clean_database
-            def test_when_dms_state_is_refused_should_create_the_correct_bank_information(self, mock_application_details, app):
+            def test_when_dms_state_is_refused_should_create_the_correct_bank_information(self,
+                                                                                          mock_application_details,
+                                                                                          app):
                 # Given
                 application_id = '8'
                 offerer = create_offerer(siren='793875030')
@@ -185,7 +200,9 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.REJECTED
 
             @clean_database
-            def test_when_dms_state_is_without_continuation_should_create_the_correct_bank_information(self, mock_application_details, app):
+            def test_when_dms_state_is_without_continuation_should_create_the_correct_bank_information(self,
+                                                                                                       mock_application_details,
+                                                                                                       app):
                 # Given
                 application_id = '8'
                 offerer = create_offerer(siren='793875030')
@@ -193,7 +210,8 @@ class SaveVenueBankInformationsTest:
                                      comment='comment', name='VENUE_NAME')
                 repository.save(venue)
                 mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_without_siret(
-                    siret='79387503012345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state='without_continuation')
+                    siret='79387503012345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8,
+                    state='without_continuation')
 
                 # When
                 self.save_venue_bank_informations.execute(application_id)
@@ -207,7 +225,8 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.REJECTED
 
             @clean_database
-            def test_when_dms_state_is_closed_should_create_the_correct_bank_information(self, mock_application_details, app):
+            def test_when_dms_state_is_closed_should_create_the_correct_bank_information(self, mock_application_details,
+                                                                                         app):
                 # Given
                 application_id = '8'
                 offerer = create_offerer(siren='793875030')
@@ -229,7 +248,8 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.ACCEPTED
 
             @clean_database
-            def test_when_dms_state_is_received_should_create_the_correct_bank_information(self, mock_application_details,
+            def test_when_dms_state_is_received_should_create_the_correct_bank_information(self,
+                                                                                           mock_application_details,
                                                                                            app):
                 # Given
                 application_id = '8'
@@ -252,7 +272,8 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.DRAFT
 
             @clean_database
-            def test_when_dms_state_is_initiated_should_create_the_correct_bank_information(self, mock_application_details,
+            def test_when_dms_state_is_initiated_should_create_the_correct_bank_information(self,
+                                                                                            mock_application_details,
                                                                                             app):
                 # Given
                 application_id = '8'
@@ -261,7 +282,8 @@ class SaveVenueBankInformationsTest:
                                      comment='comment', name='VENUE_NAME')
                 repository.save(venue)
                 mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_without_siret(
-                    siret='79387503012345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state='initiated')
+                    siret='79387503012345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8,
+                    state='initiated')
 
                 # When
                 self.save_venue_bank_informations.execute(application_id)
@@ -275,7 +297,9 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.DRAFT
 
             @clean_database
-            def test_when_no_venue_without_siret_specified_should_not_create_bank_information(self, mock_application_details, app):
+            def test_when_no_venue_without_siret_specified_should_not_create_bank_information(self,
+                                                                                              mock_application_details,
+                                                                                              app):
                 # Given
                 application_id = '8'
                 offerer = create_offerer(siren='793875030')
@@ -298,7 +322,7 @@ class SaveVenueBankInformationsTest:
         def setup_method(self):
             self.save_venue_bank_informations = SaveVenueBankInformations(
                 offerer_repository=OffererSQLRepository(),
-                venue_repository=VenueSQLRepository(),
+                venue_repository=VenueIdentifierSQLRepository(),
                 bank_informations_repository=BankInformationsSQLRepository()
             )
 
@@ -315,7 +339,7 @@ class SaveVenueBankInformationsTest:
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
                 venue=venue,
-                date_modified=datetime(2012,1,1)
+                date_modified=datetime(2012, 1, 1)
             )
             repository.save(new_venue, bank_information)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
@@ -345,7 +369,7 @@ class SaveVenueBankInformationsTest:
                 iban="NL36INGB2682297498",
                 venue=venue,
                 status=BankInformationStatus.ACCEPTED,
-                date_modified=datetime(2012,1,1)
+                date_modified=datetime(2012, 1, 1)
             )
             repository.save(offerer, bank_information)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
@@ -375,14 +399,14 @@ class SaveVenueBankInformationsTest:
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
                 venue=venue,
-                date_modified=datetime(2012,1,1)
+                date_modified=datetime(2012, 1, 1)
             )
             other_bank_information = create_bank_information(
                 application_id=79,
                 bic='QSDFGH8Z555',
                 iban="NL36INGB2682297498",
                 venue=other_venue,
-                date_modified=datetime(2012,1,1)
+                date_modified=datetime(2012, 1, 1)
             )
             repository.save(bank_information, other_bank_information)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
@@ -403,7 +427,7 @@ class SaveVenueBankInformationsTest:
         def setup_method(self):
             self.save_venue_bank_informations = SaveVenueBankInformations(
                 offerer_repository=OffererSQLRepository(),
-                venue_repository=VenueSQLRepository(),
+                venue_repository=VenueIdentifierSQLRepository(),
                 bank_informations_repository=BankInformationsSQLRepository()
             )
 
@@ -436,7 +460,9 @@ class SaveVenueBankInformationsTest:
             assert bank_information.applicationId == 8
 
         @clean_database
-        def test_when_receive_new_application_with_draft_state_should_update_previously_rejected_bank_information(self, mock_application_details, app):
+        def test_when_receive_new_application_with_draft_state_should_update_previously_rejected_bank_information(self,
+                                                                                                                  mock_application_details,
+                                                                                                                  app):
             # Given
             application_id = '8'
             offerer = create_offerer(siren='793875030')

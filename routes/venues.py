@@ -15,7 +15,7 @@ from models.user_offerer import RightsType
 from repository import feature_queries, repository
 from repository.iris_venues_queries import delete_venue_from_iris_venues
 from routes.serialization import as_dict
-from routes.serialization.venues_serialize import serialize_venues
+from routes.serialization.venues_serialize import serialize_venues_with_offerer_informations
 from use_cases.create_venue import create_venue
 from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES, VENUE_INCLUDES
@@ -36,7 +36,7 @@ def get_venue(venue_id):
 @login_required
 def get_venues():
     venues = get_all_venues_by_pro_user.execute(pro_identifier=current_user.id)
-    return jsonify(serialize_venues(venues)), 200
+    return jsonify(serialize_venues_with_offerer_informations(venues)), 200
 
 
 @app.route('/venues', methods=['POST'])

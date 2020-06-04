@@ -1,19 +1,20 @@
-from models import BankInformation, VenueSQLEntity, Offerer
-from models.bank_information import BankInformationStatus
-from repository import bank_information_queries, offerer_queries, repository, venue_queries
 from domain.bank_information import check_offerer_presence, check_venue_presence, check_venue_queried_by_name, \
     check_new_bank_information_older_than_saved_one, check_new_bank_information_has_a_more_advanced_status
-from domain.demarches_simplifiees import get_venue_bank_information_application_details_by_application_id, ApplicationDetail
-from domain.offerer.offerer_repository import OffererRepository
-from domain.bank_informations.bank_informations_repository import BankInformationsRepository
-from domain.venue.venue_repository import VenueRepository
 from domain.bank_informations.bank_informations import BankInformations
+from domain.bank_informations.bank_informations_repository import BankInformationsRepository
+from domain.demarches_simplifiees import get_venue_bank_information_application_details_by_application_id, \
+    ApplicationDetail
+from domain.offerer.offerer_repository import OffererRepository
+from domain.venue.venue_identifier.venue_identifier_repository import VenueIdentifier
+from domain.venue.venue_identifier.venue_identifier_repository import VenueIdentifierRepository
+from models import Offerer
+from models.bank_information import BankInformationStatus
 
 
 class SaveVenueBankInformations:
     def __init__(self,
                  offerer_repository: OffererRepository,
-                 venue_repository: VenueRepository,
+                 venue_repository: VenueIdentifierRepository,
                  bank_informations_repository: BankInformationsRepository
                  ):
         self.offerer_repository = offerer_repository
@@ -51,8 +52,7 @@ class SaveVenueBankInformations:
                 new_bank_informations = self.create_new_bank_informations(application_details, venue.id)
                 return self.bank_informations_repository.save(new_bank_informations)
 
-
-    def get_referent_venue(self, application_details: ApplicationDetail, offerer: Offerer) -> VenueSQLEntity:
+    def get_referent_venue(self, application_details: ApplicationDetail, offerer: Offerer) -> VenueIdentifier:
         siret = application_details.siret
 
         if siret:
@@ -65,8 +65,7 @@ class SaveVenueBankInformations:
             venue = venues[0]
         return venue
 
-
-    def create_new_bank_informations(self, application_details: ApplicationDetail, venue_id: str) -> BankInformation:
+    def create_new_bank_informations(self, application_details: ApplicationDetail, venue_id: int) -> BankInformations:
         new_bank_informations = BankInformations()
         new_bank_informations.application_id = application_details.application_id
         new_bank_informations.venue_id = venue_id

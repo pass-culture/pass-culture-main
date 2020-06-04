@@ -2,10 +2,11 @@ from infrastructure.repository.beneficiary.beneficiary_sql_repository import Ben
 from infrastructure.repository.booking.booking_sql_repository import BookingSQLRepository
 from infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
 from infrastructure.repository.venue.venue_label.venue_label_sql_repository import VenueLabelSQLRepository
-from infrastructure.repository.venue.venue_sql_repository import VenueSQLRepository
+from infrastructure.repository.venue.venue_with_offerer_informations.venue_with_offerer_informations_sql_repository import VenueWithOffererInformationsSQLRepository
+from infrastructure.repository.venue.venue_identifier.venue_identifier_sql_repository import VenueIdentifierSQLRepository
 from infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
 from use_cases.book_an_offer import BookAnOffer
-from use_cases.get_all_venues_by_pro_user import GetAllVenuesByProUser
+from use_cases.get_venues_by_pro_user import GetVenuesByProUser
 from use_cases.get_venue_labels import GetVenueLabels
 
 # Repositories
@@ -14,7 +15,8 @@ user_repository = BeneficiarySQLRepository()
 stock_repository = StockSQLRepository()
 notification_service = MailjetNotificationService()
 venue_label_repository = VenueLabelSQLRepository()
-venue_repository = VenueSQLRepository()
+venue_identifier_repository = VenueIdentifierSQLRepository()
+venue_with_offerer_informations_repository = VenueWithOffererInformationsSQLRepository()
 
 # Usecases
 book_an_offer = BookAnOffer(booking_repository=booking_repository,
@@ -24,4 +26,4 @@ book_an_offer = BookAnOffer(booking_repository=booking_repository,
 
 get_venue_labels = GetVenueLabels(venue_label_repository=venue_label_repository)
 
-get_all_venues_by_pro_user = GetAllVenuesByProUser(venue_repository=venue_repository)
+get_all_venues_by_pro_user = GetVenuesByProUser(venue_repository=venue_with_offerer_informations_repository)
