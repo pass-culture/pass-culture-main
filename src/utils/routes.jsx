@@ -20,6 +20,7 @@ import VenueEditionContainer from '../components/pages/Venue/VenueEdition/VenueE
 import OffererCreationContainer from '../components/pages/Offerer/OffererCreation/OffererCreationContainer'
 import OffererDetailsContainer from '../components/pages/Offerer/OffererDetails/OffererDetailsContainer'
 import BookingsRouterContainer from '../components/hocs/bookings-router/BookingsRouterContainer'
+import Unavailable from '../components/pages/Errors/Unavailable/Unavailable'
 
 const RedirectToConnexionComponent = () => <Redirect to="/connexion" />
 
@@ -153,6 +154,11 @@ const routes = [
     component: CsvDetailViewContainer,
     path: '/remboursements/detail',
     title: 'Remboursements',
+  },
+  {
+    component: Unavailable,
+    path: '/erreur/indisponible',
+    title: 'Page indisponible',
   },
 ]
 
