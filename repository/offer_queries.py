@@ -120,7 +120,7 @@ def get_offers_for_recommendation(user: UserSQLEntity, departement_codes: List[s
     if limit:
         discovery_view_query = discovery_view_query.limit(limit)
 
-    return discovery_view_query.all()
+    return order_offers_by_diversified_types(discovery_view_query.all())
 
 
 def get_offers_for_recommendation_v3(user: UserSQLEntity, user_iris_id: Optional[int] = None,

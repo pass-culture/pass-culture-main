@@ -245,32 +245,6 @@ class GetOfferForRecommendationsTest:
 
     class OrderTest:
         @clean_database
-        def test_should_return_digital_offers_first_when_offers_have_same_criterion_score(self, app):
-            # Given
-            offerer = create_offerer()
-            user = create_user()
-            venue = create_venue(offerer, postal_code='34000',
-                                 departement_code='34')
-            digital_offer = create_offer_with_thing_product(venue=venue, is_national=True,
-                                                            thing_type=ThingType.LIVRE_EDITION, url='https://url.com')
-            physical_offer = create_offer_with_thing_product(venue=venue, is_national=True,
-                                                             thing_type=ThingType.LIVRE_EDITION, url=None)
-            stock_digital_offer = create_stock_from_offer(digital_offer, quantity=2)
-            stock_physical_offer = create_stock_from_offer(physical_offer, quantity=2)
-            create_mediation(physical_offer)
-            create_mediation(digital_offer)
-            repository.save(user, stock_digital_offer, stock_physical_offer)
-
-            discovery_view_queries.create(db.session, order_by_digital_offers)
-            discovery_view_queries.refresh(concurrently=False)
-
-            # When
-            offers = get_offers_for_recommendation(user=user, departement_codes=['00'])
-
-            # Then
-            assert offers == [digital_offer, physical_offer]
-
-        @clean_database
         def test_should_order_offers_by_criterion_score_first(self, app):
             # Given
             offerer = create_offerer()
