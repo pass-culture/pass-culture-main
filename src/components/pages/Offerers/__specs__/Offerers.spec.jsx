@@ -4,6 +4,8 @@ import { shallow } from 'enzyme'
 import Offerers from '../Offerers'
 import OffererItemContainer from '../OffererItem/OffererItemContainer'
 import PendingOffererItem from '../OffererItem/PendingOffererItem'
+import { NavLink } from 'react-router-dom'
+import Titles from '../../../layout/Titles/Titles'
 
 describe('src | components | pages | Offerers | Offerers', () => {
   let props
@@ -12,6 +14,7 @@ describe('src | components | pages | Offerers | Offerers', () => {
     props = {
       closeNotification: jest.fn(),
       currentUser: {},
+      isOffererCreationAvailable: true,
       loadOfferers: jest.fn(),
       location: {
         search: '',
@@ -180,6 +183,43 @@ describe('src | components | pages | Offerers | Offerers', () => {
             expect(offererItem).toHaveLength(1)
             expect(offererItem.at(0).prop('offerer')).toStrictEqual(offerer)
           })
+        })
+      })
+    })
+
+    describe('the link to offerer creation page', () => {
+      describe('when api sirene is available', () => {
+        it('should display a link to create an offer', () => {
+          // when
+          const wrapper = shallow(<Offerers {...props} />)
+          const pageHeading = wrapper
+            .find(Titles)
+            .first()
+            .dive()
+
+          const link = pageHeading.find(NavLink)
+
+          // then
+          expect(link.prop('to')).toBe('/structures/creation')
+        })
+      })
+
+      describe('when api sirene is not available', () => {
+        it('should display a link to unavailable page', () => {
+          // given
+          props.isOffererCreationAvailable = false
+
+          // when
+          const wrapper = shallow(<Offerers {...props} />)
+          const pageHeading = wrapper
+            .find(Titles)
+            .first()
+            .dive()
+
+          const link = pageHeading.find(NavLink)
+
+          // then
+          expect(link.prop('to')).toBe('/erreur/indisponible')
         })
       })
     })

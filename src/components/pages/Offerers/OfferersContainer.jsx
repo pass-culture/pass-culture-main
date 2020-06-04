@@ -10,6 +10,7 @@ import { offererNormalizer } from '../../../utils/normalizers'
 import { selectOfferers } from '../../../selectors/data/offerersSelectors'
 
 import { OFFERERS_API_PATH } from '../../../config/apiPaths'
+import selectIsFeatureActive from '../../router/selectors/selectIsFeatureActive'
 
 export const createApiPath = searchKeyWords => {
   let apiPath = OFFERERS_API_PATH
@@ -27,8 +28,9 @@ export const createApiPath = searchKeyWords => {
 
 export const mapStateToProps = state => {
   return {
-    offerers: selectOfferers(state),
+    isOffererCreationAvailable: selectIsFeatureActive(state, 'API_SIRENE_AVAILABLE'),
     notification: state.notification,
+    offerers: selectOfferers(state),
   }
 }
 

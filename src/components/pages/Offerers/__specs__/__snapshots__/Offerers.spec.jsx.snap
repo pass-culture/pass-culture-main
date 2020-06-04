@@ -6,6 +6,7 @@ ShallowWrapper {
   Symbol(enzyme.__unrendered__): <Offerers
     closeNotification={[MockFunction]}
     currentUser={Object {}}
+    isOffererCreationAvailable={true}
     loadOfferers={
       [MockFunction] {
         "calls": Array [

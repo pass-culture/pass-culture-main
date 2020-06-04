@@ -141,7 +141,7 @@ class Offerers extends PureComponent {
   }
 
   render() {
-    const { offerers, query } = this.props
+    const { offerers, query, isOffererCreationAvailable } = this.props
     const queryParams = query.parse()
     const { hasMore, isLoading } = this.state
 
@@ -154,10 +154,14 @@ class Offerers extends PureComponent {
 
     const url = createVenueForOffererUrl(offerers)
 
+    const offererCreationPageURL = isOffererCreationAvailable
+      ? '/structures/creation'
+      : '/erreur/indisponible'
+
     const actionLink = (
       <NavLink
         className="link is-primary is-outlined"
-        to="/structures/creation"
+        to={offererCreationPageURL}
       >
         {'+ Ajouter une structure'}
         <span
@@ -232,6 +236,7 @@ class Offerers extends PureComponent {
 Offerers.propTypes = {
   closeNotification: PropTypes.func.isRequired,
   currentUser: PropTypes.shape().isRequired,
+  isOffererCreationAvailable: PropTypes.bool.isRequired,
   loadOfferers: PropTypes.func.isRequired,
   location: PropTypes.shape().isRequired,
   offerers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
