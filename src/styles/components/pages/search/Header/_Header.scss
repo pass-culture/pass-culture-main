@@ -1,0 +1,56 @@
+.sh-form {
+  background-image: $linear-gradient-to-right;
+  height: rem(96px);
+  padding: rem(12px) 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .sh-input-wrapper {
+    display: flex;
+    height: rem(48px);
+    margin: 0 auto;
+    width: 90%;
+  }
+
+  .sh-input-left {
+    background: $white;
+    border-bottom-left-radius: 2rem;
+    border-top-left-radius: 2rem;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    display: flex;
+    justify-content: flex-end;
+
+    img {
+      margin-left: rem(16px);
+    }
+  }
+
+  .sh-text-input {
+    border: 0;
+    font-size: rem(20px);
+    font-weight: 700;
+    padding: rem(9px);
+    width: 75%;
+
+    &::placeholder {
+      font-size: rem(18px);
+      font-style: italic;
+      font-weight: 400;
+    }
+  }
+
+  .sh-reset-wrapper {
+    align-items: center;
+    background: $white;
+    border-radius: 0 2rem 2rem 0;
+    display: flex;
+    justify-content: center;
+    width: 15%;
+
+    .sh-reset-button img {
+      max-width: rem(18px);
+    }
+  }
+}

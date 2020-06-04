@@ -16,6 +16,7 @@ import { DATE_FILTER, PRICE_FILTER, TIME_FILTER } from '../Filters/filtersEnums'
 import { EmptyResult } from './EmptyResult/EmptyResult'
 import ResultDetailContainer from './ResultsList/ResultDetail/ResultDetailContainer'
 import { ResultsList } from './ResultsList/ResultsList'
+import Header from '../Header/Header'
 
 const SEARCH_RESULTS_URI = '/recherche/resultats'
 
@@ -206,6 +207,7 @@ class Results extends PureComponent {
       `&latitude=${latitude}` +
       `&longitude=${longitude}` +
       `${place ? `&place=${place}` : ''}`
+
     history.replace({
       search: search,
     })
@@ -458,47 +460,14 @@ class Results extends PureComponent {
             exact
             path={SEARCH_RESULTS_URI}
           >
-            <form
-              action=""
-              className="sr-form"
+            <Header
+              onBackButtonClick={this.handleBackButtonClick}
+              onResetClick={this.handleResetButtonClick}
+              onSearchChange={this.handleOnTextInputChange}
               onSubmit={this.handleOnSubmit}
-            >
-              <div className="sr-input-wrapper">
-                <button
-                  className="sr-input-back"
-                  onClick={this.handleBackButtonClick}
-                  type="button"
-                >
-                  <Icon
-                    alt="Réinitialiser la recherche"
-                    svg="picto-back-grey"
-                  />
-                </button>
-                <input
-                  className="sr-text-input"
-                  name="keywords"
-                  onChange={this.handleOnTextInputChange}
-                  placeholder="Titre, artiste..."
-                  ref={this.inputRef}
-                  type="search"
-                  value={keywordsToSearch}
-                />
-                <div className="sr-reset-wrapper">
-                  {keywordsToSearch && (
-                    <button
-                      className="sr-reset"
-                      onClick={this.handleResetButtonClick}
-                      type="reset"
-                    >
-                      <Icon
-                        alt="Supprimer la saisie"
-                        svg="picto-reset"
-                      />
-                    </button>
-                  )}
-                </div>
-              </div>
-            </form>
+              ref={this.inputRef}
+              value={keywordsToSearch}
+            />
             <div
               className="sr-items-wrapper"
               onScroll={this.handleOnScroll}

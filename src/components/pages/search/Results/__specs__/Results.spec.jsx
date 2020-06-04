@@ -19,6 +19,7 @@ import Result from '../ResultsList/Result/Result'
 import SearchAlgoliaDetailsContainer from '../ResultsList/ResultDetail/ResultDetailContainer'
 import Results from '../Results'
 import { ResultsList } from '../ResultsList/ResultsList'
+import Header from '../../Header/Header'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
@@ -122,7 +123,7 @@ describe('components | Results', () => {
   })
 
   describe('when render', () => {
-    it('should display a header with the right properties', () => {
+    it('should display a header with the right properties on details', () => {
       // when
       const wrapper = shallow(<Results {...props} />)
 
@@ -136,9 +137,15 @@ describe('components | Results', () => {
       expect(header.prop('title')).toBe('Recherche')
     })
 
-    it('should display a form element with an input text', () => {
-      // when
-      const wrapper = shallow(<Results {...props} />)
+    it('should display a form element with an input text', async () => {
+      props.history = createMemoryHistory()
+      props.history.push('/recherche/resultats?mots-cles=recherche')
+
+      const wrapper = await mount(
+        <Router history={props.history}>
+          <Results {...props} />
+        </Router>
+      )
 
       // then
       const form = wrapper.find('form')
@@ -350,7 +357,15 @@ describe('components | Results', () => {
 
       it('should display EmptyResult component when 0 result', async () => {
         // given
-        const wrapper = shallow(<Results {...props} />)
+        props.history = createMemoryHistory()
+        props.history.push('/recherche/resultats')
+
+        const wrapper = await mount(
+          <Router history={props.history}>
+            <Results {...props} />
+          </Router>
+        )
+
         stubRef(wrapper)
         const form = wrapper.find('form')
 
@@ -364,6 +379,8 @@ describe('components | Results', () => {
           preventDefault: jest.fn(),
         })
 
+        wrapper.update()
+
         // then
         const emptySearchResult = wrapper.find(EmptyResult)
         const filterButton = wrapper.find({ children: 'Filtrer' })
@@ -374,7 +391,7 @@ describe('components | Results', () => {
 
       it('should fetch offers in all categories, without keyword, around user and sorted by relevance when clicking on "autour de chez toi"', async () => {
         // given
-        const history = createBrowserHistory()
+        const history = createMemoryHistory()
         props.history = history
         props.history.push(
           '/recherche/resultats?mots-cles=recherche%20sans%20résultat&autour-de=oui&tri=_by_price&categories=INSTRUMENT'
@@ -442,9 +459,19 @@ describe('components | Results', () => {
           'autour-de': 'non',
           'mots-cles': 'une librairie',
         })
+        props.history = createMemoryHistory()
+        props.history.push(
+          '/recherche/resultats?mots-cles=une%20librairie&autour-de=non&tri=_by_price&categories=INSTRUMENT'
+        )
 
         // when
-        const wrapper = await shallow(<Results {...props} />)
+        const wrapper = await mount(
+          <Router history={props.history}>
+            <Results {...props} />
+          </Router>
+        )
+
+        wrapper.update()
 
         // then
         const searchResultsListComponent = wrapper.find(ResultsList)
@@ -481,20 +508,33 @@ describe('components | Results', () => {
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
             resolve({
-              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              hits: [
+                { objectID: 'AA', offer: { dates: [] } },
+                { objectID: 'BB', offer: { dates: [] } },
+              ],
               nbHits: 2,
               nbPages: 0,
               page: 0,
             })
           })
         )
+
+        props.history = createMemoryHistory()
+        props.history.push('/recherche/resultats?mots-cles=une%librairie&autour-de=oui')
+
         parse.mockReturnValue({
           'autour-de': 'oui',
           'mots-cles': 'une librairie',
         })
 
         // when
-        const wrapper = await shallow(<Results {...props} />)
+        const wrapper = await mount(
+          <Router history={props.history}>
+            <Results {...props} />
+          </Router>
+        )
+
+        wrapper.update()
 
         // then
         const searchResultsListComponent = wrapper.find(ResultsList)
@@ -504,8 +544,8 @@ describe('components | Results', () => {
         expect(searchResultsListComponent.prop('resultsCount')).toBe(2)
         expect(searchResultsListComponent.prop('geolocation')).toStrictEqual(props.userGeolocation)
         expect(searchResultsListComponent.prop('results')).toStrictEqual([
-          { objectID: 'AA' },
-          { objectID: 'BB' },
+          { objectID: 'AA', offer: { dates: [] } },
+          { objectID: 'BB', offer: { dates: [] } },
         ])
         expect(searchResultsListComponent.prop('search')).toBe(props.history.location.search)
         expect(searchInput.prop('value')).toBe('une librairie')
@@ -942,7 +982,16 @@ describe('components | Results', () => {
   describe('when searching', () => {
     it('should trigger search request when keywords have been provided', () => {
       // given
-      const wrapper = shallow(<Results {...props} />)
+      props.history = createMemoryHistory()
+      props.history.push('/recherche/resultats?mots-cles=une%librairie&autour-de=oui')
+
+      // when
+      const wrapper = mount(
+        <Router history={props.history}>
+          <Results {...props} />
+        </Router>
+      )
+
       stubRef(wrapper)
       const form = wrapper.find('form')
       // when
@@ -978,9 +1027,18 @@ describe('components | Results', () => {
 
     it('should trigger search request when keywords contains only spaces', () => {
       // given
-      const wrapper = shallow(<Results {...props} />)
+      props.history = createMemoryHistory()
+      props.history.push('/recherche/resultats?mots-cles=une%librairie&autour-de=oui')
+
+      // when
+      const wrapper = mount(
+        <Router history={props.history}>
+          <Results {...props} />
+        </Router>
+      )
+
       stubRef(wrapper)
-      wrapper.setState({ searchedKeywords: 'different previous search' })
+      wrapper.find(Results).setState({ searchedKeywords: 'une librairie' })
       const form = wrapper.find('form')
 
       // when
@@ -1016,9 +1074,18 @@ describe('components | Results', () => {
 
     it('should trigger search request when no keywords', () => {
       // given
-      const wrapper = shallow(<Results {...props} />)
+      props.history = createMemoryHistory()
+      props.history.push('/recherche/resultats?mots-cles=une%librairie&autour-de=oui')
+
+      // when
+      const wrapper = mount(
+        <Router history={props.history}>
+          <Results {...props} />
+        </Router>
+      )
+
       stubRef(wrapper)
-      wrapper.setState({ searchedKeywords: 'different previous search' })
+      wrapper.find(Results).setState({ searchedKeywords: 'une librairie' })
       const form = wrapper.find('form')
 
       // when
@@ -1054,7 +1121,16 @@ describe('components | Results', () => {
 
     it('should not display results when no results', () => {
       // given
-      const wrapper = shallow(<Results {...props} />)
+      props.history = createMemoryHistory()
+      props.history.push('/recherche/resultats?mots-cles=une%librairie&autour-de=oui')
+
+      // when
+      const wrapper = mount(
+        <Router history={props.history}>
+          <Results {...props} />
+        </Router>
+      )
+
       stubRef(wrapper)
       const form = wrapper.find('form')
       fetchAlgolia.mockReturnValue({
@@ -1096,7 +1172,7 @@ describe('components | Results', () => {
               nbPages: 0,
               hitsPerPage: 2,
               processingTimeMS: 1,
-              query: 'librairie',
+              query: 'une librairie',
               params: "query='librairie'&hitsPerPage=2",
             })
           })
@@ -1115,7 +1191,23 @@ describe('components | Results', () => {
             })
           })
         )
-      const wrapper = shallow(<Results {...props} />)
+
+      props.history = createMemoryHistory()
+      props.history.push('/recherche/resultats?mots-cles=une%20librairie')
+
+      parse.mockReturnValue({
+        'mots-cles': 'une librairie',
+        'autour-de': 'oui',
+        latitude: 40.1,
+        longitude: 41.1,
+      })
+
+      const wrapper = await mount(
+        <Router history={props.history}>
+          <Results {...props} />
+        </Router>
+      )
+
       stubRef(wrapper)
       const form = wrapper.find('form')
 
@@ -1129,6 +1221,8 @@ describe('components | Results', () => {
         preventDefault: jest.fn(),
       })
 
+      wrapper.update()
+
       // then
       const results = wrapper.find(ResultsList)
       expect(results).toHaveLength(1)
@@ -1139,16 +1233,50 @@ describe('components | Results', () => {
       expect(results.at(0).prop('onSortClick')).toStrictEqual(expect.any(Function))
       expect(results.at(0).prop('results')).toStrictEqual([offer])
       expect(results.at(0).prop('resultsCount')).toStrictEqual(1)
-      expect(results.at(0).prop('search')).toStrictEqual('?mots-cles=librairie')
+      expect(results.at(0).prop('search')).toStrictEqual(
+        '?mots-cles=librairie&autour-de=oui&tri=&categories=&latitude=40.1&longitude=41.1'
+      )
       expect(results.at(0).prop('sortCriterionLabel')).toStrictEqual('Pertinence')
       expect(results.at(0).prop('totalPagesNumber')).toStrictEqual(1)
     })
 
     it('should clear previous results and page number when searching with new keywords', async () => {
       // given
+      isGeolocationEnabled.mockReturnValue(false)
+
       const offer1 = { objectID: 'AE', offer: { name: 'Livre de folie' } }
       const offer2 = { objectID: 'AF', offer: { name: 'Livre bien' } }
       const offer3 = { objectID: 'AG', offer: { name: 'Livre nul' } }
+
+      fetchAlgolia.mockReturnValueOnce(
+        new Promise(resolve => {
+          resolve({
+            hits: [],
+          })
+        })
+      )
+
+      props.history = createMemoryHistory()
+      props.history.push('/recherche/resultats?mots-cles=une%20librairie')
+
+      parse.mockReturnValue({
+        'mots-cles': 'une librairie',
+        'autour-de': 'oui',
+        latitude: 40.1,
+        longitude: 41.1,
+      })
+
+      const wrapper = await mount(
+        <Router history={props.history}>
+          <Results {...props} />
+        </Router>
+      )
+
+      wrapper.update()
+
+      stubRef(wrapper)
+      const form = wrapper.find('form')
+
       fetchAlgolia.mockReturnValueOnce(
         new Promise(resolve => {
           resolve({
@@ -1163,9 +1291,6 @@ describe('components | Results', () => {
           })
         })
       )
-      const wrapper = shallow(<Results {...props} />)
-      stubRef(wrapper)
-      const form = wrapper.find('form')
 
       // when
       await form.simulate('submit', {
@@ -1176,6 +1301,8 @@ describe('components | Results', () => {
         },
         preventDefault: jest.fn(),
       })
+
+      wrapper.update()
 
       // then
       const resultsFirstFetch = wrapper.find(ResultsList).prop('results')
@@ -1205,10 +1332,12 @@ describe('components | Results', () => {
         preventDefault: jest.fn(),
       })
 
+      wrapper.update()
+
       // then
       const resultSecondFetch = wrapper.find(ResultsList)
       expect(resultSecondFetch.prop('results')).toHaveLength(1)
-      expect(wrapper.state()).toStrictEqual({
+      expect(wrapper.find(Results).state()).toStrictEqual({
         currentPage: 0,
         filters: {
           aroundRadius: 100,
@@ -1274,19 +1403,27 @@ describe('components | Results', () => {
           })
         })
       )
-      const wrapper = shallow(<Results {...props} />)
+
+      props.history = createMemoryHistory()
+      props.history.push('/recherche/resultats?mots-cles=librairie')
+
+      parse.mockReturnValue({
+        'mots-cles': 'librairie',
+        'autour-de': 'oui',
+        latitude: 40.1,
+        longitude: 41.1,
+      })
+
+      const wrapper = await mount(
+        <Router history={props.history}>
+          <Results {...props} />
+        </Router>
+      )
+
       stubRef(wrapper)
       const form = wrapper.find('form')
 
       // when
-      await form.simulate('submit', {
-        target: {
-          keywords: {
-            value: '',
-          },
-        },
-        preventDefault: jest.fn(),
-      })
       await form.simulate('submit', {
         target: {
           keywords: {
@@ -1297,26 +1434,8 @@ describe('components | Results', () => {
       })
 
       // then
-      expect(fetchAlgolia).toHaveBeenCalledTimes(2)
+      expect(fetchAlgolia).toHaveBeenCalledTimes(1)
       expect(fetchAlgolia).toHaveBeenNthCalledWith(1, {
-        aroundRadius: 100,
-        geolocation: { latitude: 40.1, longitude: 41.1 },
-        keywords: '',
-        offerCategories: [],
-        offerIsDuo: false,
-        offerIsFree: false,
-        offerIsNew: false,
-        offerTypes: {
-          isDigital: false,
-          isEvent: false,
-          isThing: false,
-        },
-        page: 0,
-        priceRange: [0, 500],
-        searchAround: false,
-        sortBy: '',
-      })
-      expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
         aroundRadius: 100,
         geolocation: { latitude: 40.1, longitude: 41.1 },
         keywords: 'librairie',
@@ -1331,7 +1450,7 @@ describe('components | Results', () => {
         },
         page: 0,
         priceRange: [0, 500],
-        searchAround: false,
+        searchAround: true,
         sortBy: '',
       })
     })
@@ -1343,19 +1462,23 @@ describe('components | Results', () => {
           reject()
         })
       )
-      const wrapper = await shallow(<Results {...props} />)
-      stubRef(wrapper)
-      const form = wrapper.find('form')
 
-      // when
-      await form.simulate('submit', {
-        target: {
-          keywords: {
-            value: 'librairie',
-          },
-        },
-        preventDefault: jest.fn(),
+      props.history = createMemoryHistory()
+      props.history.push('/recherche/resultats?mots-cles=librairie')
+
+      parse.mockReturnValue({
+        'mots-cles': 'librairie',
       })
+
+      const wrapper = await mount(
+        <Router history={props.history}>
+          <Results {...props} />
+        </Router>
+      )
+
+      stubRef(wrapper)
+
+      await wrapper.update()
 
       // then
       expect(toast.error).toHaveBeenCalledWith(
@@ -1365,17 +1488,6 @@ describe('components | Results', () => {
 
     it('should call replace to display search keywords in url when fetch succeeded', () => {
       // given
-      props.query.parse.mockReturnValue({
-        'autour-de': 'oui',
-        categories: 'VISITE',
-        latitude: 40,
-        longitude: 2,
-        place: 'Paris',
-        tri: '_by_price',
-      })
-      const wrapper = shallow(<Results {...props} />)
-      stubRef(wrapper)
-      const form = wrapper.find('form')
       fetchAlgolia.mockReturnValue(
         new Promise(resolve => {
           resolve({
@@ -1390,6 +1502,32 @@ describe('components | Results', () => {
         })
       )
 
+      props.query.parse.mockReturnValue({
+        'autour-de': 'oui',
+        categories: 'VISITE',
+        latitude: 40,
+        longitude: 2,
+        place: 'Paris',
+        tri: '_by_price',
+      })
+
+      props.history = createMemoryHistory()
+      props.history.push('/recherche/resultats?mots-cles=tortue')
+      props.history = {
+        ...props.history,
+        replace: jest.fn(),
+      }
+
+      const wrapper = mount(
+        <Router history={props.history}>
+          <Results {...props} />
+        </Router>
+      )
+
+      stubRef(wrapper)
+
+      const form = wrapper.find('form')
+
       // when
       form.simulate('submit', {
         target: {
@@ -1401,7 +1539,7 @@ describe('components | Results', () => {
       })
 
       // then
-      expect(replace).toHaveBeenCalledWith({
+      expect(props.history.replace).toHaveBeenCalledWith({
         search:
           '?mots-cles=librairie&autour-de=oui&tri=_by_price&categories=VISITE&latitude=40&longitude=2&place=Paris',
       })
@@ -1409,20 +1547,33 @@ describe('components | Results', () => {
 
     it('should remove focus from input when the form is submitted', () => {
       // given
-      const wrapper = shallow(<Results {...props} />)
-      const instance = wrapper.instance()
-      stubRef(wrapper)
+      fetchAlgolia.mockReturnValue(
+        new Promise(resolve => {
+          resolve({
+            hits: [],
+            page: 0,
+            nbHits: 0,
+            nbPages: 0,
+            hitsPerPage: 2,
+            processingTimeMS: 1,
+            query: 'tortue',
+          })
+        })
+      )
+
+      props.history = createMemoryHistory()
+      props.history.push('/recherche/resultats?mots-cles=tortue')
+
+      const wrapper = mount(
+        <Router history={props.history}>
+          <Results {...props} />
+        </Router>
+      )
+
+      const resultsWrapper = wrapper.find(Results)
+      const instance = resultsWrapper.instance()
+      stubRef(resultsWrapper)
       const form = wrapper.find('form')
-      fetchAlgolia.mockReturnValue({
-        hits: [],
-        page: 0,
-        nbHits: 0,
-        nbPages: 0,
-        hitsPerPage: 2,
-        processingTimeMS: 1,
-        query: '',
-        params: 'hitsPerPage=2',
-      })
 
       // when
       form.simulate('submit', {
@@ -1463,12 +1614,19 @@ describe('components | Results', () => {
 
     it('should fetch algolia with date filter when enabled', async () => {
       // given
-      const wrapper = shallow(<Results {...props} />)
+      const history = createBrowserHistory()
+      history.push('/recherche/resultats')
+      const wrapper = mount(
+        <Router history={history}>
+          <Results {...props} />
+        </Router>
+      )
+
       stubRef(wrapper)
       const selectedDate = new Date(2020, 3, 21)
-      wrapper.setState({
+      wrapper.find(Results).setState({
         filters: {
-          ...wrapper.state('filters'),
+          ...wrapper.find(Results).state('filters'),
           date: {
             option: 'today',
             selectedDate,
@@ -1513,64 +1671,60 @@ describe('components | Results', () => {
       })
     })
 
-    describe('reset cross', () => {
-      it('should not display reset cross when nothing is typed in text input', () => {
-        // when
-        const wrapper = shallow(<Results {...props} />)
+    it('should pass input value to Header when something is typed in text input', () => {
+      // given
+      const history = createBrowserHistory()
+      history.push('/recherche/resultats')
+      const wrapper = mount(
+        <Router history={history}>
+          <Results {...props} />
+        </Router>
+      )
 
-        // then
-        const resetButton = wrapper.find('button[type="reset"]')
-        expect(resetButton).toHaveLength(0)
+      const form = wrapper.find('form')
+      const input = form.find('input')
+
+      // when
+      input.simulate('change', {
+        target: {
+          name: 'keywords',
+          value: 'tortue',
+        },
+        preventDefault: jest.fn(),
       })
 
-      it('should display reset cross when something is typed in text input', () => {
-        // given
-        const wrapper = shallow(<Results {...props} />)
-        const form = wrapper.find('form')
-        const input = form.find('input')
+      // then
+      const headerWrapper = wrapper.find(Header)
+      expect(headerWrapper.prop('value')).toBe('tortue')
+    })
 
-        // when
-        input.simulate('change', {
-          target: {
-            name: 'keywords',
-            value: 'typed search',
-          },
-          preventDefault: jest.fn(),
-        })
-
-        // then
-        const resetButton = wrapper.find('button[type="reset"]')
-        expect(resetButton).toHaveLength(1)
+    it('should clear text input when clicking on reset cross', () => {
+      // given
+      const history = createMemoryHistory()
+      history.push('/recherche/resultats?mots-cles=librairie&page=2')
+      const wrapper = mount(
+        <Router history={history}>
+          <Results {...props} />
+        </Router>
+      )
+      const form = wrapper.find('form')
+      const input = form.find('input').first()
+      input.simulate('change', {
+        target: {
+          name: 'keywords',
+          value: 'typed search',
+        },
       })
+      const resetButton = wrapper.find('button[type="reset"]')
 
-      it('should clear text input when clicking on reset cross', () => {
-        // given
-        const history = createMemoryHistory()
-        history.push('/recherche/resultats?mots-cles=librairie&page=2')
-        const wrapper = mount(
-          <Router history={history}>
-            <Results {...props} />
-          </Router>
-        )
-        const form = wrapper.find('form')
-        const input = form.find('input').first()
-        input.simulate('change', {
-          target: {
-            name: 'keywords',
-            value: 'typed search',
-          },
-        })
-        const resetButton = wrapper.find('button[type="reset"]')
+      // when
+      resetButton.simulate('click')
 
-        // when
-        resetButton.simulate('click')
-
-        // then
-        const expectedMissingResetButton = wrapper.find('button[type="reset"]')
-        const resetInput = form.find('input').first()
-        expect(expectedMissingResetButton).toHaveLength(0)
-        expect(resetInput.prop('value')).toBe('')
-      })
+      // then
+      const expectedMissingResetButton = wrapper.find('button[type="reset"]')
+      const resetInput = form.find('input').first()
+      expect(expectedMissingResetButton).toHaveLength(0)
+      expect(resetInput.prop('value')).toBe('')
     })
   })
 
@@ -1729,9 +1883,15 @@ describe('components | Results', () => {
         parse.mockReturnValue({
           'mots-cles': 'une librairie',
         })
+        const history = createMemoryHistory()
+        history.push('/recherche/resultats?mots-cles=une%20libriairie')
 
         // when
-        const wrapper = shallow(<Results {...props} />)
+        const wrapper = mount(
+          <Router history={history}>
+            <Results {...props} />
+          </Router>
+        )
 
         // then
         const form = wrapper.find('form')
@@ -1754,23 +1914,27 @@ describe('components | Results', () => {
           'mots-cles': 'une librairie',
         })
         const redirectToSearchMainPage = jest.fn()
+        props.history = createMemoryHistory()
+        props.history.push('/recherche/resultats?mots-cles=une%20librairie')
 
         // when
-        const wrapper = await shallow(
-          <Results
-            {...props}
-            redirectToSearchMainPage={redirectToSearchMainPage}
-          />
+        const wrapper = await mount(
+          <Router history={props.history}>
+            <Results
+              {...props}
+              redirectToSearchMainPage={redirectToSearchMainPage}
+            />
+          </Router>
         )
-
-        const form = wrapper.find('form')
+        const resultsWrapper = wrapper.find(Results)
+        const form = resultsWrapper.find('form')
         const backButton = form.findWhere(node => node.prop('type') === 'button').first()
-        expect(wrapper.state('keywordsToSearch')).toBe('une librairie')
+        expect(resultsWrapper.state('keywordsToSearch')).toBe('une librairie')
         backButton.simulate('click')
 
         // then
         expect(redirectToSearchMainPage).toHaveBeenCalledTimes(1)
-        expect(wrapper.state('keywordsToSearch')).toBe('')
+        expect(resultsWrapper.state('keywordsToSearch')).toBe('')
       })
     })
 

@@ -1,11 +1,9 @@
 import { mount, shallow } from 'enzyme'
-import { createBrowserHistory, createMemoryHistory } from 'history'
+import { createMemoryHistory } from 'history'
 import React from 'react'
 import { Router } from 'react-router-dom'
-
-import HeaderContainer from '../../../../layout/Header/HeaderContainer'
-import { Home } from '../Home'
 import { CriterionItem } from '../CriterionItem/CriterionItem'
+import { Home } from '../Home'
 
 describe('components | Home', () => {
   let props
@@ -56,36 +54,6 @@ describe('components | Home', () => {
     }
   })
 
-  it('should display magnifying glass icon when current route is /recherche', () => {
-    // When
-    const wrapper = shallow(<Home {...props} />)
-
-    // then
-    const form = wrapper.find('form')
-    const magnifyingGlassIcon = form.findWhere(node => node.prop('svg') === 'picto-search').first()
-    expect(magnifyingGlassIcon).toHaveLength(1)
-  })
-
-  it('should display a close button redirecting to discovery when arriving on search page', () => {
-    // Given
-    const history = createBrowserHistory()
-    history.push('/recherche')
-    props.match = {
-      params: {},
-    }
-
-    // when
-    const wrapper = mount(
-      <Router history={history}>
-        <Home {...props} />
-      </Router>
-    )
-
-    // then
-    const header = wrapper.find(HeaderContainer).first()
-    expect(header.prop('title')).toBe('Recherche')
-  })
-
   it('should clear text input when clicking on reset cross', async () => {
     // given
     const history = createMemoryHistory()
@@ -127,7 +95,11 @@ describe('components | Home', () => {
     }
     props.categoryCriterion.facetFilter = 'CINEMA'
     props.sortCriterion.index = '_by_price'
-    const wrapper = shallow(<Home {...props} />)
+    const wrapper = mount(
+      <Router history={createMemoryHistory()}>
+        <Home {...props} />
+      </Router>
+    )
     const form = wrapper.find('form')
     const input = form.find('input')
 
@@ -157,7 +129,11 @@ describe('components | Home', () => {
       place: false,
       user: true,
     }
-    const wrapper = shallow(<Home {...props} />)
+    const wrapper = mount(
+      <Router history={createMemoryHistory()}>
+        <Home {...props} />
+      </Router>
+    )
     const form = wrapper.find('form')
     const input = form.find('input')
 
@@ -186,7 +162,11 @@ describe('components | Home', () => {
       place: true,
       user: false,
     }
-    const wrapper = shallow(<Home {...props} />)
+    const wrapper = mount(
+      <Router history={createMemoryHistory()}>
+        <Home {...props} />
+      </Router>
+    )
     const form = wrapper.find('form')
     const input = form.find('input')
 

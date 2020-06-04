@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import HeaderContainer from '../../../layout/Header/HeaderContainer'
-import Icon from '../../../layout/Icon/Icon'
 import { CriterionItem } from './CriterionItem/CriterionItem'
 import { checkIfSearchAround } from '../utils/checkIfSearchAround'
+import Header from '../Header/Header'
 
 export class Home extends PureComponent {
   constructor(props) {
@@ -57,47 +56,13 @@ export class Home extends PureComponent {
     const { categoryCriterion, geolocationCriterion, sortCriterion } = this.props
     return (
       <main className="search-home-page">
-        <div className="sh-header-wrapper">
-          <HeaderContainer
-            extraClassName="home-header"
-            title="Recherche"
-          />
-          <form
-            action=""
-            className="sh-form"
-            id="home-form"
-            onSubmit={this.handleOnSubmit}
-          >
-            <div className="sh-input-wrapper">
-              <div className="sh-input-back">
-                <Icon svg="picto-search" />
-              </div>
-              <input
-                className="sh-text-input"
-                name="keywords"
-                onChange={this.handleOnTextInputChange}
-                placeholder="Titre, artiste..."
-                ref={this.inputRef}
-                type="search"
-                value={keywordsToSearch}
-              />
-              <div className="sh-reset-wrapper">
-                {keywordsToSearch && (
-                  <button
-                    className="sh-reset-button"
-                    onClick={this.handleResetButtonClick}
-                    type="reset"
-                  >
-                    <Icon
-                      alt="Supprimer la saisie"
-                      svg="picto-reset"
-                    />
-                  </button>
-                )}
-              </div>
-            </div>
-          </form>
-        </div>
+        <Header
+          onResetClick={this.handleResetButtonClick}
+          onSearchChange={this.handleOnTextInputChange}
+          onSubmit={this.handleOnSubmit}
+          ref={this.inputRef}
+          value={keywordsToSearch}
+        />
         <ul className="sh-criteria-list">
           <CriterionItem
             icon={categoryCriterion.icon}
