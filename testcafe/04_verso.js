@@ -8,7 +8,6 @@ import getUserWalletValue from './helpers/getUserWalletValue'
 
 const offerDetailsURL = `${ROOT_PATH}offre/details`
 const bookingsDetailsURL = `${ROOT_PATH}reservations/details`
-const openVersoButton = Selector('#deck-open-verso-button')
 const openProfilePage = Selector('nav ul li a[href="/profil"]')
 const sendBookingButton = Selector('#booking-validation-button')
 const alreadyBookedOfferButton = Selector('#verso-already-booked-button')
@@ -23,9 +22,8 @@ const selectableDates = Selector(
   '.react-datepicker__day--selected, .react-datepicker__day:not(.react-datepicker__day--disabled)'
 )
 
-let offerPage = null
 let userRole = null
-let discoveryCardUrl = null
+let offerPage = null
 let previousWalletValue = null
 let currentBookedToken = null
 
@@ -52,7 +50,7 @@ test("je peux réserver l'offre", async t => {
     .ok()
 })
 
-test.only("parcours complet de réservation d'une offre thing", async t => {
+test("parcours complet de réservation d'une offre thing", async t => {
   // given
   userRole = await createUserRoleFromUserSandbox(
     'webapp_08_booking',
@@ -69,17 +67,11 @@ test.only("parcours complet de réservation d'une offre thing", async t => {
 
   await t.click(openProfilePage).wait(500)
   previousWalletValue = await getUserWalletValue()
-  await t.click(openMenuFromVerso).wait(500)
-  previousWalletValue = await getMenuWalletValue()
   await t
     .expect(previousWalletValue)
     .gt(0)
     .useRole(userRole)
     .navigateTo(offerPage)
-    .wait(500)
-    .click(openVersoButton)
-    .wait(500)
-    .click(closeMenu)
     .wait(500)
 
   await t
@@ -131,11 +123,9 @@ test("parcours complet de réservation d'une offre event à date unique", async 
     'get_existing_webapp_user_can_book_multidates'
   )
   const { offer } = await fetchSandbox('webapp_08_booking', 'get_non_free_event_offer')
-  discoveryCardUrl = `${offerDetailsURL}/${offer.id}`
+  offerPage = `${offerDetailsURL}/${offer.id}`
 
-  await t
-    .useRole(userRole)
-    .navigateTo(discoveryCardUrl)
+  await t.useRole(userRole).navigateTo(offerPage)
 
   // when
   await t.click(openProfilePage).wait(500)
@@ -145,8 +135,7 @@ test("parcours complet de réservation d'une offre event à date unique", async 
     .expect(previousWalletValue)
     .gt(0)
     .useRole(userRole)
-    .navigateTo(discoveryCardUrl)
-    .click(openVersoButton)
+    .navigateTo(offerPage)
     .click(bookOfferButton)
     .click(dateSelectBox)
     .click(selectableDates.nth(0))
