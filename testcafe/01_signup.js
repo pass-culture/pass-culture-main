@@ -1,4 +1,4 @@
-import { Selector } from 'testcafe'
+import { Selector, RequestMock } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
 import { fetchSandbox } from './helpers/sandboxes'
@@ -15,9 +15,36 @@ const cguOkInput = Selector('input[name="cgu_ok"]')
 const signUpButton = Selector('button.button.is-primary')
 const acceptCookieButton = Selector('#hs-eu-confirmation-button')
 
-fixture("Création d'un compte utilisateur·trice").page(`${ROOT_PATH + 'inscription'}`)
+const mockedResponse = {
+  'unite_legale': {
+    'id': 11654265,
+    'siren': '501106520',
+    'denomination': 'WEBEDIA',
+    'etablissement_siege': {
+      'code_postal': '92300',
+      'libelle_commune': 'LEVALLOIS-PERRET',
+      'enseigne_1': null,
+      'longitude': '2.276981',
+      'latitude': '48.893131',
+      'geo_l4': '2 RUE PAUL VAILLANT COUTURIER',
+    },
+  }
+}
 
-test("Je peux créer un compte avec un SIREN non existant en base de données, et je suis redirigé·e vers la page de confirmation de l'inscription", async t => {
+const mock = response => {
+  return RequestMock()
+    .onRequestTo(/\/entreprise.data.gouv.fr\/api\/sirene\/v3\/unites_legales\/.*/)
+    .respond(response, 200, {
+      'content-type': 'application/json; charset=utf-8',
+      'access-control-allow-origin': '*'
+    })
+}
+
+fixture("Création d'un compte utilisateur·trice")
+  .page(`${ROOT_PATH + 'inscription'}`)
+
+test.requestHooks(mock(mockedResponse))("Je peux créer un compte avec un SIREN non existant en base de données," +
+  " et je suis redirigé·e vers la page de confirmation de l'inscription", async t => {
   // given
   const email = 'pctest0.pro93.cafe0@btmx.fr'
   const firstName = 'PC Test 0 Pro'
@@ -51,7 +78,8 @@ test("Je peux créer un compte avec un SIREN non existant en base de données, e
   await t.expect(location.pathname).eql('/inscription/confirmation')
 })
 
-test("Je peux créer un compte avec un SIREN déjà existant en base de données, et je suis redirigé·e vers la page de confirmation de l'inscription", async t => {
+test.requestHooks(mock(mockedResponse))("Je peux créer un compte avec un SIREN déjà existant en base de données," +
+  " et je suis redirigé·e vers la page de confirmation de l'inscription", async t => {
   // given
   const { offerer } = await fetchSandbox('pro_01_signup', 'get_existing_pro_user_with_offerer')
   const email = 'pctest0.pro93.cafe1@btmx.fr'
