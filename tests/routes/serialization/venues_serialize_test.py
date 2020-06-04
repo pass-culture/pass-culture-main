@@ -19,11 +19,13 @@ class SerializeVenuesWithOffererInformationsTest:
             {
                 'id': f'{humanize(venue_1.id)}',
                 'name': venue_1.name,
+                'offererName': venue_1.offerer_name,
                 'isVirtual': venue_1.is_virtual,
             },
             {
                 'id': f'{humanize(venue_2.id)}',
                 'name': venue_2.name,
+                'offererName': venue_2.offerer_name,
                 'isVirtual': venue_2.is_virtual,
             }
         ]

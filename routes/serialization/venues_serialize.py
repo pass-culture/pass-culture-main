@@ -14,5 +14,6 @@ def serialize_venue_with_offerer_informations(venue: VenueWithOffererInformation
     return {
         'id': humanize(venue.id),
         'name': venue.name,
+        'offererName': venue.offerer_name,
         'isVirtual': venue.is_virtual,
     }
