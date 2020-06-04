@@ -155,7 +155,7 @@ describe('src | components | pages | Venue', () => {
           siret: null,
         }
 
-        jest.spyOn(usersSelectors, 'selectCurrentUser').mockReturnValue({ currentUser: 'fakeUser' })
+        jest.spyOn(usersSelectors, 'selectCurrentUser').mockReturnValue({ currentUser: 'fakeUser', publicName: 'fakeName' })
 
         props.venue = {
           publicName: 'fake public name',

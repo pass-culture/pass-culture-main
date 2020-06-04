@@ -88,9 +88,10 @@ class TextField extends PureComponent {
               <span>
                 {label}
               </span>
-              {required && !readOnly && <span className="field-asterisk">
-                {'*'}
-                                        </span>}
+              {required && !readOnly &&
+                <span className="field-asterisk">
+                  {'*'}
+                </span>}
             </span>
           </label>
         )}
@@ -161,7 +162,7 @@ TextField.defaultProps = {
 }
 
 TextField.propTypes = {
-  autoComplete: PropTypes.func,
+  autoComplete: PropTypes.string,
   className: PropTypes.string,
   disabled: PropTypes.bool,
   format: PropTypes.func,

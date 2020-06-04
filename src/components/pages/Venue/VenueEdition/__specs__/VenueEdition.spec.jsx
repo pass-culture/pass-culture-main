@@ -66,9 +66,7 @@ describe('src | components | pages | VenueEdition', () => {
 
     it('should not render a Form when venue is virtual', () => {
       // given
-      props.venue = {
-        isVirtual: true,
-      }
+      props.venue.isVirtual = true
 
       // when
       const wrapper = shallow(<VenueEdition {...props} />)
@@ -102,14 +100,19 @@ describe('src | components | pages | VenueEdition', () => {
         expect(wrapper.state('isRequestPending')).toBe(false)
       })
 
-      it('should be able to edit address field when venue has no SIRET', () => {
+      it('should be able to edit address field when venue has no SIRET', async () => {
         // given
-        jest.spyOn(usersSelectors, 'selectCurrentUser').mockReturnValue({ currentUser: 'fakeUser' })
+        jest
+          .spyOn(usersSelectors, 'selectCurrentUser')
+          .mockReturnValue({ currentUser: 'fakeUser', publicName: 'fakeName' })
 
-        props.venue = {
-          publicName: 'fake public name',
-          id: 'TR',
-          siret: null,
+        props = {
+          ...props,
+          venue: {
+            publicName: 'fake public name',
+            id: 'TR',
+            siret: null,
+          },
         }
 
         const { store } = configureStore()
@@ -130,7 +133,7 @@ describe('src | components | pages | VenueEdition', () => {
           .find('input.field-address')
           .first()
 
-        addressField.simulate('change', { target: { value: 'Addresse de test' } })
+        await addressField.simulate('change', { target: { value: 'Addresse de test' } })
 
         wrapper = wrapper.update()
 
