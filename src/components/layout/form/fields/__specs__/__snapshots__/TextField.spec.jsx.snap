@@ -29,6 +29,7 @@ ShallowWrapper {
     "props": Object {
       "children": <form>
         <TextField
+          autoComplete={null}
           className=""
           disabled={false}
           format={null}
@@ -37,16 +38,19 @@ ShallowWrapper {
           isDecimal={true}
           label=""
           name="title"
+          onBlur={null}
           parse={null}
           placeholder=""
           readOnly={false}
           renderInner={[Function]}
           renderValue={[Function]}
           required={false}
+          title=""
           type="text"
           validate={null}
         />
         <TextField
+          autoComplete={null}
           className=""
           disabled={false}
           format={null}
@@ -55,12 +59,14 @@ ShallowWrapper {
           isDecimal={true}
           label=""
           name="text"
+          onBlur={null}
           parse={null}
           placeholder=""
           readOnly={false}
           renderInner={[Function]}
           renderValue={[Function]}
           required={false}
+          title=""
           type="text"
           validate={null}
         />
@@ -101,6 +107,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <TextField
+            autoComplete={null}
             className=""
             disabled={false}
             format={null}
@@ -109,16 +116,19 @@ ShallowWrapper {
             isDecimal={true}
             label=""
             name="title"
+            onBlur={null}
             parse={null}
             placeholder=""
             readOnly={false}
             renderInner={[Function]}
             renderValue={[Function]}
             required={false}
+            title=""
             type="text"
             validate={null}
           />,
           <TextField
+            autoComplete={null}
             className=""
             disabled={false}
             format={null}
@@ -127,12 +137,14 @@ ShallowWrapper {
             isDecimal={true}
             label=""
             name="text"
+            onBlur={null}
             parse={null}
             placeholder=""
             readOnly={false}
             renderInner={[Function]}
             renderValue={[Function]}
             required={false}
+            title=""
             type="text"
             validate={null}
           />,
@@ -151,6 +163,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "class",
           "props": Object {
+            "autoComplete": null,
             "className": "",
             "disabled": false,
             "format": null,
@@ -159,12 +172,14 @@ ShallowWrapper {
             "isDecimal": true,
             "label": "",
             "name": "title",
+            "onBlur": null,
             "parse": null,
             "placeholder": "",
             "readOnly": false,
             "renderInner": [Function],
             "renderValue": [Function],
             "required": false,
+            "title": "",
             "type": "text",
             "validate": null,
           },
@@ -177,6 +192,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "class",
           "props": Object {
+            "autoComplete": null,
             "className": "",
             "disabled": false,
             "format": null,
@@ -185,12 +201,14 @@ ShallowWrapper {
             "isDecimal": true,
             "label": "",
             "name": "text",
+            "onBlur": null,
             "parse": null,
             "placeholder": "",
             "readOnly": false,
             "renderInner": [Function],
             "renderValue": [Function],
             "required": false,
+            "title": "",
             "type": "text",
             "validate": null,
           },
@@ -241,6 +259,7 @@ ShallowWrapper {
       "props": Object {
         "children": <form>
           <TextField
+            autoComplete={null}
             className=""
             disabled={false}
             format={null}
@@ -249,16 +268,19 @@ ShallowWrapper {
             isDecimal={true}
             label=""
             name="title"
+            onBlur={null}
             parse={null}
             placeholder=""
             readOnly={false}
             renderInner={[Function]}
             renderValue={[Function]}
             required={false}
+            title=""
             type="text"
             validate={null}
           />
           <TextField
+            autoComplete={null}
             className=""
             disabled={false}
             format={null}
@@ -267,12 +289,14 @@ ShallowWrapper {
             isDecimal={true}
             label=""
             name="text"
+            onBlur={null}
             parse={null}
             placeholder=""
             readOnly={false}
             renderInner={[Function]}
             renderValue={[Function]}
             required={false}
+            title=""
             type="text"
             validate={null}
           />
@@ -313,6 +337,7 @@ ShallowWrapper {
         "props": Object {
           "children": Array [
             <TextField
+              autoComplete={null}
               className=""
               disabled={false}
               format={null}
@@ -321,16 +346,19 @@ ShallowWrapper {
               isDecimal={true}
               label=""
               name="title"
+              onBlur={null}
               parse={null}
               placeholder=""
               readOnly={false}
               renderInner={[Function]}
               renderValue={[Function]}
               required={false}
+              title=""
               type="text"
               validate={null}
             />,
             <TextField
+              autoComplete={null}
               className=""
               disabled={false}
               format={null}
@@ -339,12 +367,14 @@ ShallowWrapper {
               isDecimal={true}
               label=""
               name="text"
+              onBlur={null}
               parse={null}
               placeholder=""
               readOnly={false}
               renderInner={[Function]}
               renderValue={[Function]}
               required={false}
+              title=""
               type="text"
               validate={null}
             />,
@@ -363,6 +393,7 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "class",
             "props": Object {
+              "autoComplete": null,
               "className": "",
               "disabled": false,
               "format": null,
@@ -371,12 +402,14 @@ ShallowWrapper {
               "isDecimal": true,
               "label": "",
               "name": "title",
+              "onBlur": null,
               "parse": null,
               "placeholder": "",
               "readOnly": false,
               "renderInner": [Function],
               "renderValue": [Function],
               "required": false,
+              "title": "",
               "type": "text",
               "validate": null,
             },
@@ -389,6 +422,7 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "class",
             "props": Object {
+              "autoComplete": null,
               "className": "",
               "disabled": false,
               "format": null,
@@ -397,12 +431,14 @@ ShallowWrapper {
               "isDecimal": true,
               "label": "",
               "name": "text",
+              "onBlur": null,
               "parse": null,
               "placeholder": "",
               "readOnly": false,
               "renderInner": [Function],
               "renderValue": [Function],
               "required": false,
+              "title": "",
               "type": "text",
               "validate": null,
             },

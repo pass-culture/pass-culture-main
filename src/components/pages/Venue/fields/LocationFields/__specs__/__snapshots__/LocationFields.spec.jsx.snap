@@ -65,12 +65,14 @@ ShallowWrapper {
             isDecimal={true}
             label="Code postal : "
             name="postalCode"
+            onBlur={null}
             parse={null}
             placeholder=""
             readOnly={true}
             renderInner={[Function]}
             renderValue={[Function]}
             required={true}
+            title=""
             type="text"
             validate={null}
           />
@@ -84,12 +86,14 @@ ShallowWrapper {
             isDecimal={true}
             label="Ville : "
             name="city"
+            onBlur={null}
             parse={null}
             placeholder=""
             readOnly={true}
             renderInner={[Function]}
             renderValue={[Function]}
             required={true}
+            title=""
             type="text"
             validate={null}
           />
@@ -164,12 +168,14 @@ ShallowWrapper {
               isDecimal={true}
               label="Code postal : "
               name="postalCode"
+              onBlur={null}
               parse={null}
               placeholder=""
               readOnly={true}
               renderInner={[Function]}
               renderValue={[Function]}
               required={true}
+              title=""
               type="text"
               validate={null}
             />,
@@ -183,12 +189,14 @@ ShallowWrapper {
               isDecimal={true}
               label="Ville : "
               name="city"
+              onBlur={null}
               parse={null}
               placeholder=""
               readOnly={true}
               renderInner={[Function]}
               renderValue={[Function]}
               required={true}
+              title=""
               type="text"
               validate={null}
             />,
@@ -264,12 +272,14 @@ ShallowWrapper {
               "isDecimal": true,
               "label": "Code postal : ",
               "name": "postalCode",
+              "onBlur": null,
               "parse": null,
               "placeholder": "",
               "readOnly": true,
               "renderInner": [Function],
               "renderValue": [Function],
               "required": true,
+              "title": "",
               "type": "text",
               "validate": null,
             },
@@ -291,12 +301,14 @@ ShallowWrapper {
               "isDecimal": true,
               "label": "Ville : ",
               "name": "city",
+              "onBlur": null,
               "parse": null,
               "placeholder": "",
               "readOnly": true,
               "renderInner": [Function],
               "renderValue": [Function],
               "required": true,
+              "title": "",
               "type": "text",
               "validate": null,
             },
@@ -388,12 +400,14 @@ ShallowWrapper {
               isDecimal={true}
               label="Code postal : "
               name="postalCode"
+              onBlur={null}
               parse={null}
               placeholder=""
               readOnly={true}
               renderInner={[Function]}
               renderValue={[Function]}
               required={true}
+              title=""
               type="text"
               validate={null}
             />
@@ -407,12 +421,14 @@ ShallowWrapper {
               isDecimal={true}
               label="Ville : "
               name="city"
+              onBlur={null}
               parse={null}
               placeholder=""
               readOnly={true}
               renderInner={[Function]}
               renderValue={[Function]}
               required={true}
+              title=""
               type="text"
               validate={null}
             />
@@ -487,12 +503,14 @@ ShallowWrapper {
                 isDecimal={true}
                 label="Code postal : "
                 name="postalCode"
+                onBlur={null}
                 parse={null}
                 placeholder=""
                 readOnly={true}
                 renderInner={[Function]}
                 renderValue={[Function]}
                 required={true}
+                title=""
                 type="text"
                 validate={null}
               />,
@@ -506,12 +524,14 @@ ShallowWrapper {
                 isDecimal={true}
                 label="Ville : "
                 name="city"
+                onBlur={null}
                 parse={null}
                 placeholder=""
                 readOnly={true}
                 renderInner={[Function]}
                 renderValue={[Function]}
                 required={true}
+                title=""
                 type="text"
                 validate={null}
               />,
@@ -587,12 +607,14 @@ ShallowWrapper {
                 "isDecimal": true,
                 "label": "Code postal : ",
                 "name": "postalCode",
+                "onBlur": null,
                 "parse": null,
                 "placeholder": "",
                 "readOnly": true,
                 "renderInner": [Function],
                 "renderValue": [Function],
                 "required": true,
+                "title": "",
                 "type": "text",
                 "validate": null,
               },
@@ -614,12 +636,14 @@ ShallowWrapper {
                 "isDecimal": true,
                 "label": "Ville : ",
                 "name": "city",
+                "onBlur": null,
                 "parse": null,
                 "placeholder": "",
                 "readOnly": true,
                 "renderInner": [Function],
                 "renderValue": [Function],
                 "required": true,
+                "title": "",
                 "type": "text",
                 "validate": null,
               },

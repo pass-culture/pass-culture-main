@@ -51,6 +51,7 @@ class TextField extends PureComponent {
 
   renderField = ({ input, meta }) => {
     const {
+      autoComplete,
       className,
       disabled,
       id,
@@ -58,13 +59,14 @@ class TextField extends PureComponent {
       label,
       min,
       name,
+      onBlur,
       placeholder,
       readOnly,
       renderInner,
       renderValue,
       required,
+      title,
       type,
-      ...inputProps
     } = this.props
     const inputType = readOnly ? 'text' : type
     const inputValue = getInputValue(inputType, input.value)
@@ -86,10 +88,9 @@ class TextField extends PureComponent {
               <span>
                 {label}
               </span>
-              {required && !readOnly &&
-              <span className="field-asterisk">
+              {required && !readOnly && <span className="field-asterisk">
                 {'*'}
-              </span>}
+                                        </span>}
             </span>
           </label>
         )}
@@ -99,14 +100,16 @@ class TextField extends PureComponent {
               <input
                 id={name}
                 {...input}
-                {...inputProps}
+                autoComplete={autoComplete}
                 className={`field-input field-${type}`}
                 disabled={disabled || readOnly}
                 min={min}
+                onBlur={onBlur}
                 placeholder={readOnly ? '' : placeholder}
                 readOnly={readOnly}
                 ref={this.handleRef}
                 required={!!required}
+                title={title}
                 type={inputType}
                 value={inputValue}
               />
@@ -137,6 +140,7 @@ class TextField extends PureComponent {
 }
 
 TextField.defaultProps = {
+  autoComplete: null,
   className: '',
   disabled: false,
   format: null,
@@ -144,17 +148,20 @@ TextField.defaultProps = {
   innerClassName: null,
   isDecimal: true,
   label: '',
+  onBlur: null,
   parse: null,
   placeholder: '',
   readOnly: false,
   renderInner: () => null,
   renderValue: () => null,
   required: false,
+  title: '',
   type: 'text',
   validate: null,
 }
 
 TextField.propTypes = {
+  autoComplete: PropTypes.func,
   className: PropTypes.string,
   disabled: PropTypes.bool,
   format: PropTypes.func,
@@ -163,12 +170,14 @@ TextField.propTypes = {
   isDecimal: PropTypes.bool,
   label: PropTypes.string,
   name: PropTypes.string.isRequired,
+  onBlur: PropTypes.func,
   parse: PropTypes.func,
   placeholder: PropTypes.string,
   readOnly: PropTypes.bool,
   renderInner: PropTypes.func,
   renderValue: PropTypes.func,
   required: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
+  title: PropTypes.string,
   type: PropTypes.string,
   validate: PropTypes.func,
 }
