@@ -46,8 +46,8 @@ def get_non_free_digital_offer():
 def get_non_free_thing_offer_with_active_mediation():
     query = get_non_free_offers_query_by_type()
     offer = query \
-        .filter(Offer.type == 'ThingType.CINEMA_ABO') \
         .filter(Offer.url == None) \
+        .filter(StockSQLEntity.beginningDatetime == None) \
         .filter(Offer.mediations.any(Mediation.isActive == True)) \
         .join(VenueSQLEntity, VenueSQLEntity.id == Offer.venueId) \
         .join(Offerer, Offerer.id == VenueSQLEntity.managingOffererId) \

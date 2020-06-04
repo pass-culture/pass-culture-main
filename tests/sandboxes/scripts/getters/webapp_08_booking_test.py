@@ -1,4 +1,3 @@
-from models import ThingType
 from repository import repository
 from sandboxes.scripts.getters.webapp_08_booking import get_non_free_thing_offer_with_active_mediation, \
     get_non_free_event_offer
@@ -16,8 +15,8 @@ class GetNonFreeThingOfferWithActiveMediationTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        product = create_product_with_thing_type(thing_type=ThingType.CINEMA_ABO)
-        offer = create_offer_with_thing_product(venue, thing_type=ThingType.CINEMA_ABO, product=product)
+        product = create_product_with_thing_type()
+        offer = create_offer_with_thing_product(venue, product=product)
         stock = create_stock(offer=offer)
         mediation = create_mediation(offer)
         repository.save(mediation, stock)
@@ -51,7 +50,7 @@ class GetNonFreeThingOfferWithActiveMediationTest:
                 'name': 'Test Book',
                 'productId': humanize(product.id),
                 'thingName': 'Test Book',
-                'type': 'ThingType.CINEMA_ABO',
+                'type': 'ThingType.LIVRE_EDITION',
                 'url': None,
                 'venueCity': 'Montreuil',
                 'venueId': humanize(venue.id),
