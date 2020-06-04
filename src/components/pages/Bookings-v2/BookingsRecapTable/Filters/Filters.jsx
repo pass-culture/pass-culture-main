@@ -241,7 +241,7 @@ class Filters extends Component {
                   key={venue.id}
                   value={venue.id}
                 >
-                  {venue.isVirtual ? `${venue.name} - Offre numérique` : venue.name}
+                  {venue.isVirtual ? `${venue.offererName} - Offre numérique` : venue.name}
                 </option>
               ))}
             </select>

@@ -5,7 +5,7 @@ import moment from 'moment'
 import { fetchAllVenuesByProUser } from '../../../../../../services/venuesService'
 
 jest.mock('../../../../../../services/venuesService', () => ({
-  fetchAllVenuesByProUser: jest.fn()
+  fetchAllVenuesByProUser: jest.fn(),
 }))
 jest.mock('lodash.debounce', () => jest.fn(callback => callback))
 describe('components | Filters', () => {
@@ -16,8 +16,8 @@ describe('components | Filters', () => {
       setFilters: jest.fn(),
     }
     fetchAllVenuesByProUser.mockResolvedValue([
-      { id: 'AE', name: 'Librairie Kléber', isVirtual: true },
-      { id: 'AF', name: 'Librairie Fnac', isVirtual: false }
+      { id: 'AE', name: 'Offre numérique', offererName: 'Gilbert Joseph', isVirtual: true },
+      { id: 'AF', name: 'Librairie Fnac', offererName: 'Gilbert Joseph', isVirtual: false },
     ])
   })
 
@@ -28,7 +28,7 @@ describe('components | Filters', () => {
   it('should apply offerName filter when typing keywords', async () => {
     // Given
     const wrapper = shallow(<Filters {...props} />)
-    const offerNameInput = wrapper.find({ placeholder: 'Rechercher par nom d\'offre' })
+    const offerNameInput = wrapper.find({ placeholder: "Rechercher par nom d'offre" })
 
     // When
     await offerNameInput.simulate('change', { target: { value: 'Jurassic Park' } })
@@ -39,7 +39,7 @@ describe('components | Filters', () => {
       bookingEndingDate: null,
       offerName: 'Jurassic Park',
       offerDate: null,
-      offerVenue: ''
+      offerVenue: '',
     })
   })
 
@@ -58,7 +58,7 @@ describe('components | Filters', () => {
       bookingEndingDate: null,
       offerDate: '2020-05-20',
       offerName: null,
-      offerVenue: ''
+      offerVenue: '',
     })
   })
 
@@ -124,7 +124,7 @@ describe('components | Filters', () => {
       bookingEndingDate: '2020-05-20',
       offerDate: null,
       offerName: null,
-      offerVenue: ''
+      offerVenue: '',
     })
   })
 
@@ -158,10 +158,20 @@ describe('components | Filters', () => {
     const venuesSelect = wrapper.find('select')
     const venuesOptions = venuesSelect.find('option')
     expect(venuesOptions).toHaveLength(3)
-    const venueOne = venuesOptions.find({ children: 'Librairie Kléber - Offre numérique' })
     const venueTwo = venuesOptions.find({ children: 'Librairie Fnac' })
-    expect(venueOne).toHaveLength(1)
     expect(venueTwo).toHaveLength(1)
+  })
+
+  it('should show venue option with "offerer name - offre numérique" when venue is virtual', async () => {
+    // when
+    const wrapper = await shallow(<Filters {...props} />)
+
+    // then
+    const venuesSelect = wrapper.find('select')
+    const venuesOptions = venuesSelect.find('option')
+    expect(venuesOptions).toHaveLength(3)
+    const venueOne = venuesOptions.find({ children: 'Gilbert Joseph - Offre numérique' })
+    expect(venueOne).toHaveLength(1)
   })
 
   it('should apply offerVenue filter when selecting a venue', async () => {
