@@ -1,8 +1,8 @@
-import { ClientFunction, RequestMock, Selector } from 'testcafe'
+import { ClientFunction, Selector } from 'testcafe'
 
 import { fetchSandbox } from './helpers/sandboxes'
 import { navigateToNewOffererAs } from './helpers/navigations'
-import { getSirenRequestMockAs } from './helpers/sirenes'
+import { getSirenRequestMockWithNoResult, getSirenRequestMockAs } from './helpers/sirenes'
 import { createUserRole } from './helpers/roles'
 
 const sirenInput = Selector('input[name=siren]')
@@ -58,13 +58,7 @@ test("Je peux créer une nouvelle structure avec un nouveau SIREN n'existant pas
 
 test('Je ne peux pas créer une nouvelle structure avec un SIREN invalide', async t => {
   // given
-  const mock = RequestMock()
-    .onRequestTo(/\/entreprise.data.gouv.fr\/api\/sirene\/v3\/unites_legales\/.*/)
-    .respond({}, 404, {
-      'content-type': 'application/json; charset=utf-8',
-      'access-control-allow-origin': '*'
-    })
-  await t.addRequestHooks(mock)
+  await t.addRequestHooks(getSirenRequestMockWithNoResult())
 
   // when
   await t.typeText(sirenInput, '000000000').click(submitButton)

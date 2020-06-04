@@ -43,3 +43,36 @@ export const getSiretRequestMockAs = venue => {
       { 'access-control-allow-origin': '*' }
     )
 }
+
+
+export const getSirenRequestMockWithDefaultValues = () =>
+  RequestMock()
+    .onRequestTo(/\/entreprise.data.gouv.fr\/api\/sirene\/v3\/unites_legales\/.*/)
+    .respond(
+      {
+        unite_legale: {
+          id: 11654265,
+          siren: '501106520',
+          denomination: 'WEBEDIA',
+          etablissement_siege: {
+            code_postal: '92300',
+            libelle_commune: 'LEVALLOIS-PERRET',
+            enseigne_1: null,
+            longitude: '2.276981',
+            latitude: '48.893131',
+            geo_l4: '2 RUE PAUL VAILLANT COUTURIER',
+          },
+        }
+      },
+      200, {
+        'content-type': 'application/json; charset=utf-8',
+        'access-control-allow-origin': '*'
+      })
+
+export const getSirenRequestMockWithNoResult = () =>
+  RequestMock()
+    .onRequestTo(/\/entreprise.data.gouv.fr\/api\/sirene\/v3\/unites_legales\/.*/)
+    .respond({}, 404, {
+      'content-type': 'application/json; charset=utf-8',
+      'access-control-allow-origin': '*'
+    })
