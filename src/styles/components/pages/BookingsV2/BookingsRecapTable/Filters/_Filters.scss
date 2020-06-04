@@ -51,6 +51,10 @@
   }
 
   .fw-offer-date {
+    button {
+      outline: none;
+    }
+
     .field-date {
       box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
       margin-top: rem(12px);
@@ -124,6 +128,22 @@
       box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
       height: rem(40px);
       margin-top: rem(12px);
+
+      .fw-booking-date-begin-picker:focus-within {
+        .field-date-begin {
+          border-color: $red;
+        }
+      }
+
+      .fw-booking-date-end-picker:focus-within {
+        .field-date-end {
+          border-color: $red;
+        }
+      }
+
+      button {
+        outline: none;
+      }
 
       .field-date {
         box-shadow: none;

@@ -257,27 +257,31 @@ class Filters extends Component {
               className="fw-booking-date-inputs"
               id="select-filter-booking-date"
             >
-              <DatePicker
-                className="fw-booking-date-input"
-                customInput={<InputWithCalendar customClass="field-date-only field-date-begin" />}
-                dropdownMode="select"
-                maxDate={selectedBookingEndingDate}
-                minDate={oldestBookingDate}
-                onChange={this.handleBookingBeginningDateChange}
-                placeholderText="JJ/MM/AAAA"
-                selected={selectedBookingBeginningDate}
-              />
+              <div className="fw-booking-date-begin-picker">
+                <DatePicker
+                  className="fw-booking-date-input"
+                  customInput={<InputWithCalendar customClass="field-date-only field-date-begin" />}
+                  dropdownMode="select"
+                  maxDate={selectedBookingEndingDate}
+                  minDate={oldestBookingDate}
+                  onChange={this.handleBookingBeginningDateChange}
+                  placeholderText="JJ/MM/AAAA"
+                  selected={selectedBookingBeginningDate}
+                />
+              </div>
               <span className="vertical-bar" />
-              <DatePicker
-                className="fw-booking-date-input"
-                customInput={<InputWithCalendar customClass="field-date-only field-date-end" />}
-                dropdownMode="select"
-                maxDate={moment()}
-                minDate={selectedBookingBeginningDate}
-                onChange={this.handleBookingEndingDateChange}
-                placeholderText="JJ/MM/AAAA"
-                selected={selectedBookingEndingDate}
-              />
+              <div className="fw-booking-date-end-picker">
+                <DatePicker
+                  className="fw-booking-date-input"
+                  customInput={<InputWithCalendar customClass="field-date-only field-date-end" />}
+                  dropdownMode="select"
+                  maxDate={moment()}
+                  minDate={selectedBookingBeginningDate}
+                  onChange={this.handleBookingEndingDateChange}
+                  placeholderText="JJ/MM/AAAA"
+                  selected={selectedBookingEndingDate}
+                />
+              </div>
             </div>
           </div>
         </div>
