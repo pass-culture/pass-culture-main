@@ -1,0 +1,36 @@
+.unavailable-page {
+  background: linear-gradient(125deg, #EB0055, #320096);
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  justify-content: center;
+  color: $white;
+
+  line-height: initial;
+  font-weight: $weight-medium;
+
+  .error-message {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+
+    h1 {
+      font-size: rem(40px);
+    }
+
+    p {
+      font-size: rem(23px);
+    }
+  }
+
+  .passculture-logo {
+    opacity: 0.5;
+    padding: rem(16px);
+
+    img {
+      height: rem(84px);
+    }
+  }
+}
