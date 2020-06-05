@@ -21,6 +21,7 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: null,
       offerDate: null,
+      bookingBeneficiary: null,
       bookingBeginningDate: null,
       bookingEndingDate: null,
     }
@@ -64,6 +65,7 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: 'Merlin',
       offerDate: null,
+      bookingBeneficiary: null,
       bookingBeginningDate: null,
       bookingEndingDate: null,
     }
@@ -94,6 +96,7 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: null,
       offerDate: '2020-02-18',
+      bookingBeneficiary: null,
       bookingBeginningDate: null,
       bookingEndingDate: null,
     }
@@ -139,6 +142,7 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: null,
       offerDate: '2020-01-14',
+      bookingBeneficiary: null,
       bookingBeginningDate: null,
       bookingEndingDate: null,
     }
@@ -184,6 +188,7 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: '',
       offerDate: null,
+      bookingBeneficiary: null,
       bookingBeginningDate: '2020-01-14',
       bookingEndingDate: null,
     }
@@ -229,6 +234,7 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: '',
       offerDate: null,
+      bookingBeneficiary: null,
       bookingBeginningDate: '2020-02-18',
       bookingEndingDate: null,
     }
@@ -274,6 +280,7 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: '',
       offerDate: null,
+      bookingBeneficiary: null,
       bookingBeginningDate: null,
       bookingEndingDate: '2020-01-14',
     }
@@ -319,6 +326,7 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: '',
       offerDate: null,
+      bookingBeneficiary: null,
       bookingBeginningDate: '2020-01-01',
       bookingEndingDate: '2020-01-14',
     }
@@ -364,6 +372,7 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: 'Jurrasic',
       offerDate: '2020-01-14',
+      bookingBeneficiary: null,
       bookingBeginningDate: null,
       bookingEndingDate: null,
     }
@@ -390,7 +399,7 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ZEHBGD',
       booking_status: 'Validé',
-      venue_identifier: 'AE'
+      venue_identifier: 'AE',
     }
     const bookingRecap2 = {
       stock: {
@@ -405,12 +414,13 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-02-18T12:00:00Z',
       booking_token: 'ZACBGD',
       booking_status: 'Validé',
-      venue_identifier: 'AF'
+      venue_identifier: 'AF',
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
       bookingBeginningDate: null,
       bookingEndingDate: null,
+      bookingBeneficiary: null,
       offerName: null,
       offerDate: null,
       offerVenue: 'AE',
@@ -421,5 +431,49 @@ describe('filterBookingsRecap', () => {
 
     // then
     expect(filteredBookingsRecap).toStrictEqual([bookingRecap1])
+  })
+
+  it('should return list containing only BookingRecap matching beneficiary name or email keywords', () => {
+    // given
+    const bookingRecap1 = {
+      stock: {
+        offer_name: 'Merlin enchanteur',
+      },
+      beneficiary: {
+        lastname: 'Klepi',
+        firstname: 'Sonia',
+        email: 'sonia.klepi@example.com',
+      },
+      booking_date: '2020-04-03T12:00:00Z',
+      booking_token: 'ZEHBGD',
+      booking_status: 'Validé',
+    }
+    const bookingRecap2 = {
+      stock: {
+        offer_name: 'Jurrasic Perk',
+      },
+      beneficiary: {
+        lastname: 'Klepi',
+        firstname: 'Ludovic',
+        email: 'ludovic.klepi@example.com',
+      },
+      booking_date: '2020-04-03T12:00:00Z',
+      booking_token: 'ZACBGD',
+      booking_status: 'Validé',
+    }
+    const bookingsRecap = [bookingRecap1, bookingRecap2]
+    const filters = {
+      offerName: null,
+      offerDate: null,
+      bookingBeneficiary: 'Ludovic',
+      bookingBeginningDate: null,
+      bookingEndingDate: null,
+    }
+
+    // when
+    const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+
+    // then
+    expect(filteredBookingsRecap).toStrictEqual([bookingRecap2])
   })
 })

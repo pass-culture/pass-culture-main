@@ -16,11 +16,13 @@ class Filters extends Component {
       filters: {
         bookingBeginningDate: null,
         bookingEndingDate: null,
+        bookingBeneficiary: null,
         offerDate: null,
         offerName: null,
         offerVenue: ALL_VENUES,
       },
       keywords: '',
+      keywordsForBeneficiary: '',
       selectedBookingBeginningDate: null,
       selectedBookingEndingDate: moment(),
       selectedOfferDate: null,
@@ -42,6 +44,7 @@ class Filters extends Component {
     this.setState(
       {
         filters: {
+          bookingBeneficiary: null,
           offerName: null,
           offerDate: null,
           offerVenue: ALL_VENUES,
@@ -49,6 +52,7 @@ class Filters extends Component {
           bookingEndingDate: null,
         },
         keywords: '',
+        keywordsForBeneficiary: '',
         selectedBookingBeginningDate: null,
         selectedBookingEndingDate: moment(),
         selectedOfferDate: null,
@@ -67,12 +71,14 @@ class Filters extends Component {
       offerDate,
       offerVenue,
       bookingBeginningDate,
+      bookingBeneficiary,
       bookingEndingDate,
     } = filterValues
     const { setFilters } = this.props
     setFilters({
       bookingBeginningDate: bookingBeginningDate,
       bookingEndingDate: bookingEndingDate,
+      bookingBeneficiary: bookingBeneficiary,
       offerDate: offerDate,
       offerName: offerName,
       offerVenue: offerVenue,
@@ -108,6 +114,25 @@ class Filters extends Component {
           offerDate: dateToFilter,
         },
         selectedOfferDate: offerDate,
+      },
+      () => {
+        const { filters } = this.state
+        this.applyFilters(filters)
+      }
+    )
+  }
+
+  handleBeneficiaryChange = event => {
+    const keywordsForBeneficiary = event.target.value
+    const { filters } = this.state
+
+    this.setState(
+      {
+        filters: {
+          ...filters,
+          bookingBeneficiary: keywordsForBeneficiary.length > 0 ? keywordsForBeneficiary : null,
+        },
+        keywordsForBeneficiary: keywordsForBeneficiary,
       },
       () => {
         const { filters } = this.state
@@ -192,6 +217,7 @@ class Filters extends Component {
     const { oldestBookingDate } = this.props
     const {
       keywords,
+      keywordsForBeneficiary,
       selectedOfferDate,
       selectedBookingBeginningDate,
       selectedBookingEndingDate,
@@ -217,6 +243,22 @@ class Filters extends Component {
             placeholder={"Rechercher par nom d'offre"}
             type="text"
             value={keywords}
+          />
+        </div>
+        <div className="fw-offer-name">
+          <label
+            className="fw-offer-name-label"
+            htmlFor="text-filter-input"
+          >
+            {'Beneficiaire / to merge'}
+          </label>
+          <input
+            className="fw-beneficiary-input"
+            id="text-filter-input"
+            onChange={this.handleBeneficiaryChange}
+            placeholder="Rechercher par nom ou email"
+            type="text"
+            value={keywordsForBeneficiary}
           />
         </div>
         <div className="fw-second-line">

@@ -8,7 +8,7 @@
     font-weight: $weight-bold;
   }
 
-  .fw-offer-name-input {
+  .fw-offer-name-input, .fw-beneficiary-input {
     border-radius: rem(20px);
     border: $control-border-width solid $grey-light;
 

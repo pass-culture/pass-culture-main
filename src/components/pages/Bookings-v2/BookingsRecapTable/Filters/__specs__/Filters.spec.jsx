@@ -35,7 +35,9 @@ describe('components | Filters', () => {
     await offerNameInput.simulate('change', { target: { value: 'Jurassic Park' } })
 
     // Then
+    expect(props.setFilters).toHaveBeenCalledTimes(2)
     expect(props.setFilters).toHaveBeenCalledWith({
+      bookingBeneficiary: null,
       bookingBeginningDate: null,
       bookingEndingDate: null,
       offerName: 'Jurassic Park',
@@ -56,6 +58,7 @@ describe('components | Filters', () => {
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
       bookingBeginningDate: null,
+      bookingBeneficiary: null,
       bookingEndingDate: null,
       offerDate: '2020-05-20',
       offerName: null,
@@ -77,6 +80,7 @@ describe('components | Filters', () => {
     // Then
     expect(props.setFilters).toHaveBeenCalledTimes(2)
     expect(props.setFilters).toHaveBeenCalledWith({
+      bookingBeneficiary: null,
       bookingBeginningDate: null,
       bookingEndingDate: null,
       offerDate: '2020-05-20',
@@ -99,6 +103,7 @@ describe('components | Filters', () => {
 
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
+      bookingBeneficiary: null,
       bookingBeginningDate: '2020-05-20',
       bookingEndingDate: null,
       offerDate: null,
@@ -121,11 +126,50 @@ describe('components | Filters', () => {
 
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
+      bookingBeneficiary: null,
       bookingBeginningDate: null,
       bookingEndingDate: '2020-05-20',
       offerDate: null,
       offerName: null,
       offerVenue: ALL_VENUES,
+    })
+  })
+
+  it('should apply offerVenue filter when selecting a venue', async () => {
+    // given
+    const wrapper = await mount(<Filters {...props} />)
+    const venuesSelect = wrapper.find('select')
+
+    // when
+    await venuesSelect.simulate('change', { target: { value: 'AE' } })
+
+    // then
+    expect(props.setFilters).toHaveBeenCalledWith({
+      bookingBeneficiary: null,
+      bookingBeginningDate: null,
+      bookingEndingDate: null,
+      offerDate: null,
+      offerName: null,
+      offerVenue: 'AE',
+    })
+  })
+
+  it('should apply bookingBeneficiary filter when typing keywords for beneficiary name or email', async () => {
+    // Given
+    const wrapper = shallow(<Filters {...props} />)
+    const beneficiaryInput = wrapper.find({ placeholder: 'Rechercher par nom ou email' })
+
+    // When
+    await beneficiaryInput.simulate('change', { target: { value: 'Firost' } })
+
+    // Then
+    expect(props.setFilters).toHaveBeenCalledWith({
+      bookingBeneficiary: 'Firost',
+      bookingBeginningDate: null,
+      bookingEndingDate: null,
+      offerName: null,
+      offerDate: null,
+      offerVenue: '',
     })
   })
 

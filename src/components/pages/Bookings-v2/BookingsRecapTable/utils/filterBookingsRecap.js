@@ -8,6 +8,22 @@ const filterByOfferName = (offerName, booking) => {
   return true
 }
 
+const filterByBookingBeneficiary = (bookingBeneficiary, booking) => {
+  if (bookingBeneficiary !== null) {
+    const beneficiaryLowercase = bookingBeneficiary.toLowerCase()
+    const beneficiaryLastNameFromBooking = booking.beneficiary.lastname.toLowerCase()
+    const beneficiaryFirstNameFromBooking = booking.beneficiary.firstname.toLowerCase()
+    const beneficiaryEmailFromBooking = booking.beneficiary.email.toLowerCase()
+
+    return (
+      beneficiaryLastNameFromBooking.includes(beneficiaryLowercase) ||
+      beneficiaryFirstNameFromBooking.includes(beneficiaryLowercase) ||
+      beneficiaryEmailFromBooking.includes(beneficiaryLowercase)
+    )
+  }
+  return true
+}
+
 const extractDateFromDatetime = datetimeToExtract => {
   return datetimeToExtract.substr(0, 10)
 }
@@ -48,14 +64,21 @@ const filterByOfferVenue = (offerVenue, booking) => {
 }
 
 const filterBookingsRecap = (bookingsRecap, filters) => {
-  const { offerName, offerDate, offerVenue, bookingBeginningDate, bookingEndingDate } = filters
-
+  const {
+    offerName,
+    offerDate,
+    offerVenue,
+    bookingBeneficiary,
+    bookingBeginningDate,
+    bookingEndingDate,
+  } = filters
   return bookingsRecap.filter(booking => {
     return (
       filterByOfferName(offerName, booking) &&
       filterByOfferDate(offerDate, booking) &&
       filterBybookingBeginningDate(bookingBeginningDate, booking) &&
       filterByBookingEndDate(bookingEndingDate, booking) &&
+      filterByBookingBeneficiary(bookingBeneficiary, booking) &&
       filterByOfferVenue(offerVenue, booking)
     )
   })
