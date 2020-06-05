@@ -34,7 +34,7 @@ describe('src | components | pages | Signin | Signin ', () => {
   })
 
   describe('render', () => {
-    describe('when the create a new account', () => {
+    describe('when creating a new account', () => {
       describe('when the API sirene is available', () => {
         it('should redirect to the creation page', () => {
           // when

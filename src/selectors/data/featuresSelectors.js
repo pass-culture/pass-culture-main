@@ -2,7 +2,7 @@ import createCachedSelector from 're-reselect'
 
 const mapArgsToCacheKey = (state, featureName) => featureName || ''
 
-const selectIsFeatureActive = createCachedSelector(
+export const selectIsFeatureActive = createCachedSelector(
   state => state.data.features,
   (state, featureName) => featureName,
   (features, featureName) => {
@@ -17,4 +17,4 @@ const selectIsFeatureActive = createCachedSelector(
   }
 )(mapArgsToCacheKey)
 
-export default selectIsFeatureActive
+export const isAPISireneAvailable = (state) => selectIsFeatureActive(state, 'API_SIRENE_AVAILABLE')

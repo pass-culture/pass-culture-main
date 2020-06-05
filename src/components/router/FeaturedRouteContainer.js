@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { requestData } from 'redux-saga-data'
 
 import FeaturedRoute from './FeaturedRoute'
-import selectIsFeatureActive from '../../selectors/data/selectIsFeatureActive'
+import { selectIsFeatureActive } from '../../selectors/data/featuresSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { features } = state.data

@@ -10,7 +10,8 @@ import { offererNormalizer } from '../../../utils/normalizers'
 import { selectOfferers } from '../../../selectors/data/offerersSelectors'
 
 import { OFFERERS_API_PATH } from '../../../config/apiPaths'
-import selectIsFeatureActive from '../../../selectors/data/selectIsFeatureActive'
+import {} from '../../../selectors/data/featuresSelectors'
+import { isAPISireneAvailable } from '../../../selectors/data/featuresSelectors'
 
 export const createApiPath = searchKeyWords => {
   let apiPath = OFFERERS_API_PATH
@@ -28,7 +29,7 @@ export const createApiPath = searchKeyWords => {
 
 export const mapStateToProps = state => {
   return {
-    isOffererCreationAvailable: selectIsFeatureActive(state, 'API_SIRENE_AVAILABLE'),
+    isOffererCreationAvailable: isAPISireneAvailable(state),
     notification: state.notification,
     offerers: selectOfferers(state),
   }

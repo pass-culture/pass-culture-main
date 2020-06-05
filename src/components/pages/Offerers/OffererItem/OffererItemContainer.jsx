@@ -6,14 +6,14 @@ import {
   selectVenuesByOffererId,
 } from '../../../../selectors/data/venuesSelectors'
 
-import selectIsFeatureActive from '../../../../selectors/data/selectIsFeatureActive'
+import { isAPISireneAvailable } from '../../../../selectors/data/featuresSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const {
     offerer: { id: offererId },
   } = ownProps
   return {
-    isVenueCreationAvailable: selectIsFeatureActive(state, 'API_SIRENE_AVAILABLE'),
+    isVenueCreationAvailable: isAPISireneAvailable(state),
     physicalVenues: selectPhysicalVenuesByOffererId(state, offererId),
     venues: selectVenuesByOffererId(state, offererId),
   }

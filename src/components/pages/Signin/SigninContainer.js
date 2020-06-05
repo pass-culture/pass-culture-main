@@ -1,11 +1,11 @@
 import { connect } from 'react-redux'
 import { withNotRequiredLogin } from '../../hocs'
 import Signin from './Signin'
-import selectIsFeatureActive from '../../../selectors/data/selectIsFeatureActive'
+import { isAPISireneAvailable } from '../../../selectors/data/featuresSelectors'
 
 export const mapStateToProps = state => {
   return {
-    isAccountCreationAvailable: selectIsFeatureActive(state, 'API_SIRENE_AVAILABLE'),
+    isAccountCreationAvailable: isAPISireneAvailable(state),
   }
 }
 
