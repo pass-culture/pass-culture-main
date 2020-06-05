@@ -13,6 +13,7 @@ class Booking(object):
                  quantity: int,
                  recommendation_id: int = None,
                  is_cancelled: bool = False,
+                 is_used: bool = False,
                  identifier: int = None,
                  token: str = None,
                  date_booked: datetime = datetime.utcnow()):
@@ -22,6 +23,7 @@ class Booking(object):
         self.amount = amount
         self.quantity = quantity
         self.isCancelled = is_cancelled
+        self.is_used = is_used
         self.recommendation_id = recommendation_id
         self.token = token
         self.dateCreated = date_booked

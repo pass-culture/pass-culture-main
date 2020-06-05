@@ -1,0 +1,73 @@
+from typing import List
+
+from domain.booking.booking import Booking
+from domain.client_exceptions import ClientError
+from domain.expenses import get_expenses
+from domain.stock.stock_validator import check_stock_is_bookable, check_expenses_limits
+from infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
+from infrastructure.repository.booking.booking_sql_repository import BookingSQLRepository
+from infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
+from models import BookingSQLEntity, StockSQLEntity, Offer, UserSQLEntity, ApiErrors
+from utils.logger import logger
+
+
+def create_bookings_for_astropolis(offer_one_id: int, offer_two_id: int, offer_three_id: int):
+    stock_offer_three = StockSQLEntity.query.filter(StockSQLEntity.offerId == offer_three_id).first()
+
+    beneficiaries_who_have_booked_offer_one = UserSQLEntity.query \
+        .join(BookingSQLEntity) \
+        .join(StockSQLEntity) \
+        .join(Offer) \
+        .filter(Offer.id == offer_one_id) \
+        .filter(BookingSQLEntity.isCancelled == False) \
+        .filter(StockSQLEntity.price == 0) \
+        .with_entities(UserSQLEntity.id) \
+        .all()
+    beneficiaries_who_have_booked_offer_two = _find_beneficiaries_for_offer(offer_id=offer_two_id)
+    beneficiaries_who_have_booked_offer_three = _find_beneficiaries_for_offer(offer_id=offer_three_id)
+
+    beneficiary_ids_for_booking_creation = []
+    for beneficiary_id in beneficiaries_who_have_booked_offer_one:
+        if not (beneficiary_id in beneficiaries_who_have_booked_offer_two or beneficiaries_who_have_booked_offer_three):
+            beneficiary_ids_for_booking_creation.append(beneficiary_id)
+
+    if len(beneficiary_ids_for_booking_creation) > 0:
+        beneficiary_sql_repository = BeneficiarySQLRepository()
+        booking_sql_repository = BookingSQLRepository()
+        stock_sql_repository = StockSQLRepository()
+
+        number_of_created_bookings = 0
+        beneficiary_id_in_errors = []
+        for beneficiary_id in beneficiary_ids_for_booking_creation:
+            beneficiary = beneficiary_sql_repository.find_beneficiary_by_user_id(user_id=beneficiary_id)
+            stock = stock_sql_repository.find_stock_by_id(stock_id=stock_offer_three.id)
+            bookings = booking_sql_repository.find_active_bookings_by_user_id(user_id=beneficiary_id)
+            expenses = get_expenses(bookings)
+
+            try:
+                check_stock_is_bookable(stock)
+                booking = Booking(beneficiary=beneficiary, stock=stock, amount=stock.price, quantity=1, is_used=True)
+                check_expenses_limits(expenses, booking)
+
+                booking_sql_repository.save(booking)
+                logger.info(f'Created booking for user {beneficiary.identifier}')
+                number_of_created_bookings += 1
+            except ClientError:
+                logger.error(f'ClientError when trying to create booking for user {beneficiary_id}')
+                beneficiary_id_in_errors.append(beneficiary_id)
+            except ApiErrors:
+                logger.error(f'APIErrors, when trying to create booking for user {beneficiary_id}')
+                logger.error(f'Expenses {expenses}')
+                beneficiary_id_in_errors.append(beneficiary_id)
+        logger.info(f'Created {number_of_created_bookings} bookings')
+        logger.info(f'Beneficiaries in error {beneficiary_id_in_errors}')
+
+
+def _find_beneficiaries_for_offer(offer_id: int) -> List[int]:
+    return UserSQLEntity.query \
+        .join(BookingSQLEntity) \
+        .join(StockSQLEntity) \
+        .join(Offer) \
+        .filter(Offer.id == offer_id) \
+        .with_entities(UserSQLEntity.id) \
+        .all()

@@ -16,7 +16,9 @@ def to_domain(booking_sql_entity: BookingSQLEntity) -> Booking:
                    recommendation_id=booking_sql_entity.recommendationId,
                    identifier=booking_sql_entity.id,
                    token=booking_sql_entity.token,
-                   date_booked=booking_sql_entity.dateCreated)
+                   date_booked=booking_sql_entity.dateCreated,
+                   is_cancelled=booking_sql_entity.isCancelled,
+                   is_used=booking_sql_entity.isUsed)
 
 
 def to_model(booking: Booking) -> BookingSQLEntity:
@@ -27,5 +29,7 @@ def to_model(booking: Booking) -> BookingSQLEntity:
     booking_sql_entity.quantity = booking.quantity
     booking_sql_entity.token = random_token()
     booking_sql_entity.id = booking.identifier
+    booking_sql_entity.isCancelled = booking.isCancelled
+    booking_sql_entity.isUsed = booking.is_used
 
     return booking_sql_entity

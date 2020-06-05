@@ -1,3 +1,5 @@
+from domain.beneficiary.beneficiary import Beneficiary
+from domain.beneficiary.beneficiary_repository import BeneficiaryRepository
 from domain.booking.booking import Booking
 from domain.booking.booking_repository import BookingRepository
 from domain.booking.booking_validator import check_offer_already_booked, check_quantity_is_valid
@@ -6,8 +8,6 @@ from domain.services.notification.notification_service import NotificationServic
 from domain.stock.stock import Stock
 from domain.stock.stock_repository import StockRepository
 from domain.stock.stock_validator import check_stock_is_bookable, check_expenses_limits, check_can_book_free_offer
-from domain.beneficiary.beneficiary import Beneficiary
-from domain.beneficiary.beneficiary_repository import BeneficiaryRepository
 
 
 class BookingInformation(object):
@@ -59,5 +59,6 @@ class BookAnOffer:
         quantity = booking_information.quantity
         recommendation_id = booking_information.recommendation_id
         amount = stock.price
-        booking = Booking(beneficiary=user, stock=stock, amount=amount, quantity=quantity, recommendation_id=recommendation_id)
+        booking = Booking(beneficiary=user, stock=stock, amount=amount, quantity=quantity,
+                          recommendation_id=recommendation_id)
         return booking
