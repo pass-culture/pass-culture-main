@@ -1,3 +1,5 @@
+export const ALL_VENUES = 'all'
+
 const filterByOfferName = (offerName, booking) => {
   if (offerName !== null) {
     const offerNameFromBooking = booking.stock.offer_name.toLowerCase()
@@ -39,9 +41,8 @@ const filterByBookingEndDate = (bookingEndingDate, booking) => {
 }
 
 const filterByOfferVenue = (offerVenue, booking) => {
-  if (offerVenue !== '') {
-    const venueIdentifier = booking.venue_identifier
-    return venueIdentifier === offerVenue
+  if (offerVenue !== ALL_VENUES) {
+    return booking.venue_identifier === offerVenue
   }
   return true
 }

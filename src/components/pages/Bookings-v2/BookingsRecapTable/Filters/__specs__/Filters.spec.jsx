@@ -3,6 +3,7 @@ import Filters from '../Filters'
 import { mount, shallow } from 'enzyme'
 import moment from 'moment'
 import { fetchAllVenuesByProUser } from '../../../../../../services/venuesService'
+import { ALL_VENUES } from '../../utils/filterBookingsRecap'
 
 jest.mock('../../../../../../services/venuesService', () => ({
   fetchAllVenuesByProUser: jest.fn(),
@@ -39,7 +40,7 @@ describe('components | Filters', () => {
       bookingEndingDate: null,
       offerName: 'Jurassic Park',
       offerDate: null,
-      offerVenue: '',
+      offerVenue: ALL_VENUES,
     })
   })
 
@@ -58,7 +59,7 @@ describe('components | Filters', () => {
       bookingEndingDate: null,
       offerDate: '2020-05-20',
       offerName: null,
-      offerVenue: '',
+      offerVenue: ALL_VENUES,
     })
   })
 
@@ -80,7 +81,7 @@ describe('components | Filters', () => {
       bookingEndingDate: null,
       offerDate: '2020-05-20',
       offerName: 'Jurassic Park',
-      offerVenue: '',
+      offerVenue: ALL_VENUES,
     })
   })
 
@@ -102,7 +103,7 @@ describe('components | Filters', () => {
       bookingEndingDate: null,
       offerDate: null,
       offerName: null,
-      offerVenue: '',
+      offerVenue: ALL_VENUES,
     })
   })
 
@@ -124,7 +125,7 @@ describe('components | Filters', () => {
       bookingEndingDate: '2020-05-20',
       offerDate: null,
       offerName: null,
-      offerVenue: '',
+      offerVenue: ALL_VENUES,
     })
   })
 

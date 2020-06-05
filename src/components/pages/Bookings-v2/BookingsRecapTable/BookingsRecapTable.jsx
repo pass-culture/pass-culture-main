@@ -12,7 +12,7 @@ import TableFrame from './Table/TableFrame'
 import Filters from './Filters/Filters'
 import NoFilteredBookings from './NoFilteredBookings/NoFilteredBookings'
 import findOldestBookingDate from './utils/findOldestBookingDate'
-import filterBookingsRecap from './utils/filterBookingsRecap'
+import filterBookingsRecap, { ALL_VENUES } from './utils/filterBookingsRecap'
 
 class BookingsRecapTable extends Component {
   constructor(props) {
@@ -67,6 +67,7 @@ class BookingsRecapTable extends Component {
       filters: {
         offerName: '',
         offerDate: null,
+        offerVenue: ALL_VENUES,
         bookingBeginningDate: null,
         bookingEndingDate: null,
       },

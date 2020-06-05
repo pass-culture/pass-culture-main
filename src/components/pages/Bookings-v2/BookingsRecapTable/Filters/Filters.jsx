@@ -5,6 +5,7 @@ import DatePicker from 'react-datepicker'
 import moment from 'moment'
 import InputWithCalendar from './InputWithCalendar'
 import { fetchAllVenuesByProUser } from '../../../../../services/venuesService'
+import { ALL_VENUES } from '../utils/filterBookingsRecap'
 
 const DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
 
@@ -17,7 +18,7 @@ class Filters extends Component {
         bookingEndingDate: null,
         offerDate: null,
         offerName: null,
-        offerVenue: '',
+        offerVenue: ALL_VENUES,
       },
       keywords: '',
       selectedBookingBeginningDate: null,
@@ -43,7 +44,7 @@ class Filters extends Component {
         filters: {
           offerName: null,
           offerDate: null,
-          offerVenue: '',
+          offerVenue: ALL_VENUES,
           bookingBeginningDate: null,
           bookingEndingDate: null,
         },
@@ -153,6 +154,7 @@ class Filters extends Component {
   }
 
   handleVenueSelection = event => {
+    console.log('venue selection', event.target.value)
     const venueId = event.target.value
     const { filters } = this.state
 
@@ -250,7 +252,7 @@ class Filters extends Component {
               ref={this.venueSelect}
               value={selectedVenue}
             >
-              <option value="">
+              <option value="all">
                 {'Tous les lieux'}
               </option>
               {venuesFormattedAndOrdered.map(venue => (
