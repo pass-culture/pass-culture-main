@@ -17,8 +17,8 @@ describe('components | Filters', () => {
       setFilters: jest.fn(),
     }
     fetchAllVenuesByProUser.mockResolvedValue([
-      { id: 'AF', name: 'Librairie Fnac', offererName: 'Gilbert Joseph', isVirtual: false },
-      { id: 'AE', name: 'Offre numérique', offererName: 'Gilbert Joseph', isVirtual: true },
+      { id: 'AF', name: 'Librairie Fnac', offererName: 'gilbert Joseph', isVirtual: false },
+      { id: 'AE', name: 'Offre numérique', offererName: 'gilbert Joseph', isVirtual: true },
     ])
   })
 
@@ -171,7 +171,7 @@ describe('components | Filters', () => {
     const venuesSelect = wrapper.find('select')
     const venuesOptions = venuesSelect.find('option')
     expect(venuesOptions).toHaveLength(3)
-    const venueOne = venuesOptions.find({ children: 'Gilbert Joseph - Offre numérique' })
+    const venueOne = venuesOptions.find({ children: 'gilbert Joseph - Offre numérique' })
     expect(venueOne).toHaveLength(1)
   })
 
@@ -182,7 +182,7 @@ describe('components | Filters', () => {
     // then
     const venuesSelect = wrapper.find('select')
     const venuesOptions = venuesSelect.find('option')
-    expect(venuesOptions.at(1).text()).toBe('Gilbert Joseph - Offre numérique')
+    expect(venuesOptions.at(1).text()).toBe('gilbert Joseph - Offre numérique')
     expect(venuesOptions.at(2).text()).toBe('Librairie Fnac')
   })
 

@@ -175,7 +175,9 @@ class Filters extends Component {
 
   formatAndOrderVenues = venues => {
     const sortAlphabeticallyByDisplayName = (a, b) => {
-      return a.displayName < b.displayName ? -1 : a.displayName > b.displayName ? 1 : 0
+      let aDisplayName = a.displayName.toLowerCase()
+      let bDisplayName = b.displayName.toLowerCase()
+      return aDisplayName < bDisplayName ? -1 : aDisplayName > bDisplayName ? 1 : 0
     }
 
     return venues
