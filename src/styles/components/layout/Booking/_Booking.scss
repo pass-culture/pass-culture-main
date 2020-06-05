@@ -3,10 +3,13 @@
   color: $black;
   z-index: $zindex-booking-card;
 
+  .main {
+    overflow-y: auto;
+  }
+
   &.entered {
     top: 0;
     transition: top 250ms ease-in-out;
-    overflow: scroll;
   }
 
   &.entering {

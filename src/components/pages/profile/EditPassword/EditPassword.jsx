@@ -78,7 +78,7 @@ class EditPassword extends PureComponent {
     const isMissingField = this.checkIfFieldIsMissing()
 
     return (
-      <div className="password-container pf-container">
+      <main className="pf-container">
         <HeaderContainer
           backTo={pathToProfile}
           title="Mot de passe"
@@ -125,7 +125,7 @@ class EditPassword extends PureComponent {
             />
           </div>
         </form>
-      </div>
+      </main>
     )
   }
 }

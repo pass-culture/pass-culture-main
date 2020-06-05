@@ -60,7 +60,7 @@ class PersonalInformations extends PureComponent {
     const { errors, isSubmitButtonDisabled, nickname } = this.state
 
     return (
-      <div className="pf-container">
+      <main className="pf-container">
         <HeaderContainer
           backTo={pathToProfile}
           title="Informations personnelles"
@@ -110,7 +110,7 @@ class PersonalInformations extends PureComponent {
             />
           </div>
         </form>
-      </div>
+      </main>
     )
   }
 }

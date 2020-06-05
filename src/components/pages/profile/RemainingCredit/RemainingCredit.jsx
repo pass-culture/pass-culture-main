@@ -30,7 +30,7 @@ class RemainingCredit extends PureComponent {
     const physicalRemainingCredit = getRemainingCreditForGivenCreditLimit(walletBalance)(physical)
 
     return (
-      <section className="profile-section">
+      <section className="pf-section">
         <div className="rc-informations-container">
           <div className="rc-gauges-container">
             <div className="rc-gauges-title">

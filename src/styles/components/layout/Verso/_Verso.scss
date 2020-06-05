@@ -22,7 +22,6 @@
   }
 
   .verso-wrapper {
-    @extend .scroll-y;
     @extend .flex-rows;
     @extend .is-relative;
 
@@ -31,6 +30,7 @@
     min-height: 100%;
     padding-top: 56.25%;
     -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
 
     .verso-header {
       flex-shrink: 0;

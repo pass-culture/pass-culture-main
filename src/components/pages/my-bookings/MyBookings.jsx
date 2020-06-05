@@ -49,42 +49,40 @@ class MyBookings extends PureComponent {
     }
 
     return (
-      <div className="bookings-page teaser-list">
-        <Switch>
-          <Route
-            exact
-            path="/reservations"
-          >
-            <MyBookingsListsContainer isEmpty={hasNoBookings} />
-          </Route>
-          <Route
-            exact
-            path="/reservations/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)?/:cancellation(annulation)?/:confirmation(confirmation)?"
-            sensitive
-          >
-            <HeaderContainer
-              shouldBackFromDetails
-              title="Réservations"
-            />
-            <MyBookingDetailsContainer bookingPath="/reservations/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)/:cancellation(annulation)?/:confirmation(confirmation)?" />
-          </Route>
-          <Route
-            exact
-            path="/reservations/:details(details)/:bookingId([A-Z0-9]+)/:qrcode(qrcode)"
-            sensitive
-          >
-            {!isQrCodeFeatureDisabled && (
-              <Fragment>
-                <HeaderContainer
-                  backTo="/reservations"
-                  title="Réservations"
-                />
-                <QrCodeContainer />
-              </Fragment>
-            )}
-          </Route>
-        </Switch>
-      </div>
+      <Switch>
+        <Route
+          exact
+          path="/reservations"
+        >
+          <MyBookingsListsContainer isEmpty={hasNoBookings} />
+        </Route>
+        <Route
+          exact
+          path="/reservations/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)?/:cancellation(annulation)?/:confirmation(confirmation)?"
+          sensitive
+        >
+          <HeaderContainer
+            shouldBackFromDetails
+            title="Réservations"
+          />
+          <MyBookingDetailsContainer bookingPath="/reservations/:details(details|transition)/:bookingId([A-Z0-9]+)/:booking(reservation)/:cancellation(annulation)?/:confirmation(confirmation)?" />
+        </Route>
+        <Route
+          exact
+          path="/reservations/:details(details)/:bookingId([A-Z0-9]+)/:qrcode(qrcode)"
+          sensitive
+        >
+          {!isQrCodeFeatureDisabled && (
+            <Fragment>
+              <HeaderContainer
+                backTo="/reservations"
+                title="Réservations"
+              />
+              <QrCodeContainer />
+            </Fragment>
+          )}
+        </Route>
+      </Switch>
     )
   }
 }

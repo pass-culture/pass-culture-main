@@ -51,7 +51,7 @@
   }
 }
 
-.teaser-main {
+.teaser-page {
   section:last-child {
     padding-bottom: $navbar-height;
   }
@@ -101,11 +101,11 @@
       padding-bottom: rem(32px) + $ios-navbar-safe-zone;
     }
 
-    .mv-wrapper .profile-section .mv-ministry-of-culture {
+    .pf-section .mv-ministry-of-culture {
       margin-bottom: rem(84px) + $ios-navbar-safe-zone;
     }
 
-    .teaser-main {
+    .teaser-page {
       section:last-child {
         padding-bottom: $navbar-height + $ios-navbar-safe-zone;
       }

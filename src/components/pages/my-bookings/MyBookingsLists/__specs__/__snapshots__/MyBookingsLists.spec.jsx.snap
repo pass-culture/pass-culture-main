@@ -31,7 +31,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <h1
-          className="mb-title"
+          className="teaser-main-title"
         >
           Réservations
         </h1>,
@@ -76,7 +76,7 @@ ShallowWrapper {
         false,
         false,
       ],
-      "className": "teaser-main ",
+      "className": "teaser-page ",
     },
     "ref": null,
     "rendered": Array [
@@ -86,7 +86,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": "Réservations",
-          "className": "mb-title",
+          "className": "teaser-main-title",
         },
         "ref": null,
         "rendered": "Réservations",
@@ -231,7 +231,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <h1
-            className="mb-title"
+            className="teaser-main-title"
           >
             Réservations
           </h1>,
@@ -276,7 +276,7 @@ ShallowWrapper {
           false,
           false,
         ],
-        "className": "teaser-main ",
+        "className": "teaser-page ",
       },
       "ref": null,
       "rendered": Array [
@@ -286,7 +286,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "Réservations",
-            "className": "mb-title",
+            "className": "teaser-main-title",
           },
           "ref": null,
           "rendered": "Réservations",
@@ -487,7 +487,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <h1
-          className="mb-title"
+          className="teaser-main-title"
         >
           Réservations
         </h1>,
@@ -535,7 +535,7 @@ ShallowWrapper {
           />
         </section>,
       ],
-      "className": "teaser-main ",
+      "className": "teaser-page ",
     },
     "ref": null,
     "rendered": Array [
@@ -545,7 +545,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": "Réservations",
-          "className": "mb-title",
+          "className": "teaser-main-title",
         },
         "ref": null,
         "rendered": "Réservations",
@@ -696,7 +696,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <h1
-            className="mb-title"
+            className="teaser-main-title"
           >
             Réservations
           </h1>,
@@ -744,7 +744,7 @@ ShallowWrapper {
             />
           </section>,
         ],
-        "className": "teaser-main ",
+        "className": "teaser-page ",
       },
       "ref": null,
       "rendered": Array [
@@ -754,7 +754,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "Réservations",
-            "className": "mb-title",
+            "className": "teaser-main-title",
           },
           "ref": null,
           "rendered": "Réservations",
@@ -958,7 +958,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <h1
-          className="mb-title"
+          className="teaser-main-title"
         >
           Réservations
         </h1>,
@@ -1003,7 +1003,7 @@ ShallowWrapper {
         </section>,
         false,
       ],
-      "className": "teaser-main ",
+      "className": "teaser-page ",
     },
     "ref": null,
     "rendered": Array [
@@ -1013,7 +1013,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": "Réservations",
-          "className": "mb-title",
+          "className": "teaser-main-title",
         },
         "ref": null,
         "rendered": "Réservations",
@@ -1158,7 +1158,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <h1
-            className="mb-title"
+            className="teaser-main-title"
           >
             Réservations
           </h1>,
@@ -1203,7 +1203,7 @@ ShallowWrapper {
           </section>,
           false,
         ],
-        "className": "teaser-main ",
+        "className": "teaser-page ",
       },
       "ref": null,
       "rendered": Array [
@@ -1213,7 +1213,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "Réservations",
-            "className": "mb-title",
+            "className": "teaser-main-title",
           },
           "ref": null,
           "rendered": "Réservations",
@@ -1405,7 +1405,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <h1
-          className="mb-title"
+          className="teaser-main-title"
         >
           Réservations
         </h1>,
@@ -1417,7 +1417,7 @@ ShallowWrapper {
         false,
         false,
       ],
-      "className": "teaser-main teaser-no-teasers",
+      "className": "teaser-page teaser-no-teasers",
     },
     "ref": null,
     "rendered": Array [
@@ -1427,7 +1427,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": "Réservations",
-          "className": "mb-title",
+          "className": "teaser-main-title",
         },
         "ref": null,
         "rendered": "Réservations",
@@ -1459,7 +1459,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <h1
-            className="mb-title"
+            className="teaser-main-title"
           >
             Réservations
           </h1>,
@@ -1471,7 +1471,7 @@ ShallowWrapper {
           false,
           false,
         ],
-        "className": "teaser-main teaser-no-teasers",
+        "className": "teaser-page teaser-no-teasers",
       },
       "ref": null,
       "rendered": Array [
@@ -1481,7 +1481,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "Réservations",
-            "className": "mb-title",
+            "className": "teaser-main-title",
           },
           "ref": null,
           "rendered": "Réservations",
@@ -1566,7 +1566,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <h1
-          className="mb-title"
+          className="teaser-main-title"
         >
           Réservations
         </h1>,
@@ -1611,7 +1611,7 @@ ShallowWrapper {
         false,
         false,
       ],
-      "className": "teaser-main ",
+      "className": "teaser-page ",
     },
     "ref": null,
     "rendered": Array [
@@ -1621,7 +1621,7 @@ ShallowWrapper {
         "nodeType": "host",
         "props": Object {
           "children": "Réservations",
-          "className": "mb-title",
+          "className": "teaser-main-title",
         },
         "ref": null,
         "rendered": "Réservations",
@@ -1766,7 +1766,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <h1
-            className="mb-title"
+            className="teaser-main-title"
           >
             Réservations
           </h1>,
@@ -1811,7 +1811,7 @@ ShallowWrapper {
           false,
           false,
         ],
-        "className": "teaser-main ",
+        "className": "teaser-page ",
       },
       "ref": null,
       "rendered": Array [
@@ -1821,7 +1821,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": "Réservations",
-            "className": "mb-title",
+            "className": "teaser-main-title",
           },
           "ref": null,
           "rendered": "Réservations",

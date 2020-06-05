@@ -8,7 +8,7 @@ import InternalLink from '../InternalLink/InternalLink'
 const contactUrl = 'https://aide.passculture.app/fr/category/18-ans-1dnil5r/'
 
 const ListLinks = ({ historyPush, readRecommendations }) => (
-  <section className="list-links profile-section">
+  <section className="list-links pf-section">
     <ul>
       <li>
         <InternalLink

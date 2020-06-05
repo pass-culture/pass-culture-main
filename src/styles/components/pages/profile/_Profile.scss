@@ -1,5 +1,9 @@
-.profile-page {
-  background: $white;
+.pf-container {
+  background-color: $white;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
 
   .header {
     padding: rem(10px);
@@ -12,16 +16,9 @@
     left: 0;
   }
 
-  .profile-section {
+  .pf-section {
     margin: 0 rem(22px);
   }
-}
-
-.pf-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  justify-content: space-between;
 
   .pf-form {
     display: flex;
@@ -113,7 +110,7 @@
   }
 
   .pf-form-submit {
-    color: white;
+    color: $white;
     display: flex;
     justify-content: center;
     padding-bottom: rem(24px);

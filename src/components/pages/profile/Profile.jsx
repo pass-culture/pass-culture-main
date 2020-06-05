@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { Fragment } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
@@ -17,7 +17,7 @@ const Profile = ({ user, history, location }) => {
   const department = getDepartment(departmentCode)
 
   return (
-    <div className="page profile-page">
+    <Fragment>
       {user && (
         <Switch location={location}>
           <Route
@@ -69,7 +69,7 @@ const Profile = ({ user, history, location }) => {
         </Switch>
       )}
       {!user && <LoaderContainer isLoading />}
-    </div>
+    </Fragment>
   )
 }
 

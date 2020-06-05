@@ -11,8 +11,8 @@ const MyBookingsLists = ({
   isEmpty,
   upComingBookings,
 }) => (
-  <main className={`teaser-main ${isEmpty ? 'teaser-no-teasers' : ''}`}>
-    <h1 className="mb-title">
+  <main className={`teaser-page ${isEmpty ? 'teaser-no-teasers' : ''}`}>
+    <h1 className="teaser-main-title">
       {'Réservations'}
     </h1>
 

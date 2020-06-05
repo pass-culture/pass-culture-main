@@ -5,10 +5,8 @@
   position: relative;
 }
 
-.teaser-main {
+.teaser-page {
   background-image: $linear-gradient-to-right;
-  display: flex;
-  flex-direction: column;
   height: 100%;
   overflow: auto;
 }
@@ -16,6 +14,14 @@
 .teaser-link {
   display: flex;
   height: rem(150px);
+}
+
+.teaser-main-title {
+  color: $white;
+  margin: rem(31px) auto 0;
+  font-size: rem(18px);
+  font-weight: normal;
+  text-align: center;
 }
 
 .teaser-thumb {
@@ -87,7 +93,13 @@
 
 .teaser-no-teasers {
   align-items: center;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
+
+  .teaser-main-title {
+    margin-bottom: rem(20px);
+  }
 }
 
 .teaser-link-offers {

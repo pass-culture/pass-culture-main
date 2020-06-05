@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Fragment } from 'react'
+import React from 'react'
 
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import ExternalLink from '../ExternalLink/ExternalLink'
@@ -13,12 +13,12 @@ const LegalNotice = ({ pathToProfile, userEmail }) => {
   const gdprUrl = 'https://docs.passculture.app/textes-normatifs/charte-des-donnees-personnelles'
 
   return (
-    <Fragment>
+    <main className="pf-container">
       <HeaderContainer
         backTo={pathToProfile}
         title="Mentions Légales"
       />
-      <section className="list-links profile-section">
+      <section className="list-links pf-section">
         <ul>
           <li>
             <ExternalLink
@@ -46,7 +46,7 @@ const LegalNotice = ({ pathToProfile, userEmail }) => {
           </li>
         </ul>
       </section>
-    </Fragment>
+    </main>
   )
 }
 

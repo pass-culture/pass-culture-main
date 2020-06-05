@@ -8,7 +8,7 @@
 .criteria-item-list {
   background-color: $white;
   height: 100%;
-  overflow: scroll;
+  overflow-y: auto;
   padding-bottom: rem(15px);
 
   li {

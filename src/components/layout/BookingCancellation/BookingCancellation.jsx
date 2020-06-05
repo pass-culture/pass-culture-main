@@ -47,7 +47,7 @@ class BookingCancellation extends PureComponent {
             className={`is-overlay is-clipped flex-rows ${extraClassName} ${state}`}
             id="booking-card"
           >
-            <div className="main flex-rows flex-1 scroll-y">
+            <div className="main flex-rows flex-1">
               <BookingHeader offer={offer} />
               <div className="mosaic-background content flex-1 flex-center">
                 <div className="flex-rows">
