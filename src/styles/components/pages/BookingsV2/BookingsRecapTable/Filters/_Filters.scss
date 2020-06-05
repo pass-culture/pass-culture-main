@@ -1,3 +1,9 @@
+.vertical-bar {
+  background-color: $grey-light;
+  width: $control-border-width;
+  height: rem(40px)
+}
+
 .fw-first-line {
   display: flex;
   justify-content: flex-start;
@@ -5,32 +11,31 @@
   border-radius: rem(20px);
   box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
 
+  &:focus-within {
+    .vertical-bar {
+      background-color: $red;
+    }
+  }
+
   select {
     border: $control-border-width solid $grey-light;
+    border-radius: rem(20px);
     cursor: pointer;
     font-weight: $weight-bold;
     font-size: rem(16px);
-    border-radius: rem(20px);
     height: rem(40px);
+    outline: none;
     padding-left: rem(10px);
     padding-right: rem(30px);
-    word-wrap: break-word;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    width: auto;
-    outline: none;
-    overflow-y: scroll;
 
     -moz-appearance: none;
     -webkit-appearance: none;
     appearance: none;
     background: url("/icons/dropdown-disclosure-down-b.svg") no-repeat 92% 56%;
-  }
 
-  .vertical-bar {
-    background-color: $grey-light;
-    width: $control-border-width;
-    height: rem(40px)
+    &:focus {
+      border-color: $red;
+    }
   }
 
   .fw-booking-text-filters-select {
@@ -52,6 +57,7 @@
 
     &:focus {
       outline: none;
+      border-color: $red;
     }
   }
 }
@@ -151,11 +157,6 @@
   .fw-booking-date {
     padding-left: rem(24px);
 
-    .vertical-bar {
-      background-color: $grey-light;
-      width: $control-border-width;
-    }
-
     .fw-booking-date-inputs {
       display: flex;
       border-radius: rem(20px);
@@ -220,7 +221,6 @@
   .fw-booking-date:focus-within {
     .vertical-bar {
       background-color: $red;
-      width: $control-border-width;
     }
   }
 }

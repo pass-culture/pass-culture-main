@@ -65,11 +65,12 @@ class BookingsRecapTable extends Component {
       ],
       currentPage: 0,
       filters: {
-        offerName: '',
-        offerDate: null,
-        offerVenue: ALL_VENUES,
+        beneficiary: '',
         bookingBeginningDate: null,
         bookingEndingDate: null,
+        offerDate: null,
+        offerName: '',
+        offerVenue: ALL_VENUES,
       },
       oldestBookingDate: findOldestBookingDate(props.bookingsRecap),
     }

@@ -86,17 +86,21 @@ class Filters extends Component {
   }
 
   handleOmniSearchCriteriaChange = event => {
-    this.setState({ selectedOmniSearchCriteria: event.target.value.toLowerCase() })
+    const { selectedOmniSearchCriteria } = this.state
+    const currentFilterKeywords = this.state.filters[this.OMNISEARCH_FILTERS[selectedOmniSearchCriteria].stateKey]
+    const newOmniSearchCriteria = event.target.value.toLowerCase()
+    this.setState({ selectedOmniSearchCriteria: newOmniSearchCriteria })
+    this.OMNISEARCH_FILTERS[newOmniSearchCriteria].handleChange(currentFilterKeywords)
   }
 
   handleOmniSearchChange = event => {
     const { selectedOmniSearchCriteria } = this.state
-    this.OMNISEARCH_FILTERS[selectedOmniSearchCriteria].handleChange(event)
+    this.OMNISEARCH_FILTERS[selectedOmniSearchCriteria].handleChange(event.target.value)
   }
 
-  handleOfferNameChange = event => {
-    const keywords = event.target.value
+  handleOfferNameChange = keywords => {
     const { filters } = this.state
+    keywords = keywords || ''
 
     this.setState(
       {
@@ -114,9 +118,9 @@ class Filters extends Component {
     )
   }
 
-  handleBeneficiaryChange = event => {
-    const keywords = event.target.value
+  handleBeneficiaryChange = keywords  => {
     const { filters } = this.state
+    keywords = keywords || ''
 
     this.setState(
       {
@@ -138,10 +142,12 @@ class Filters extends Component {
     offre: {
       handleChange: this.handleOfferNameChange,
       placeholderText: "Rechercher par nom d'offre",
+      stateKey: "offerName"
     },
     bénéficiaire: {
       handleChange: this.handleBeneficiaryChange,
       placeholderText: 'Rechercher par nom ou email',
+      stateKey: "bookingBeneficiary"
     },
   }
 
@@ -248,6 +254,7 @@ class Filters extends Component {
     } = this.state
 
     const venuesFormattedAndOrdered = this.formatAndOrderVenues(venues)
+    const placeholderText = this.OMNISEARCH_FILTERS[selectedOmniSearchCriteria].placeholderText
 
     return (
       <div className="filters-wrapper">

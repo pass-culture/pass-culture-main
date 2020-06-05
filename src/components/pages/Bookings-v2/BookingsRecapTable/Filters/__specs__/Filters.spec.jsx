@@ -35,7 +35,6 @@ describe('components | Filters', () => {
     await offerNameInput.simulate('change', { target: { value: 'Jurassic Park' } })
 
     // Then
-    expect(props.setFilters).toHaveBeenCalledTimes(2)
     expect(props.setFilters).toHaveBeenCalledWith({
       bookingBeneficiary: null,
       bookingBeginningDate: null,
@@ -171,7 +170,7 @@ describe('components | Filters', () => {
       bookingEndingDate: null,
       offerName: null,
       offerDate: null,
-      offerVenue: '',
+      offerVenue: "all",
     })
   })
 
@@ -243,28 +242,10 @@ describe('components | Filters', () => {
     const wrapper = await shallow(<Filters {...props} />)
 
     // then
-    const venuesSelect = wrapper.find('select')
+    const venuesSelect = wrapper.find('select').at(1)
     const venuesOptions = venuesSelect.find('option')
     expect(venuesOptions.at(1).text()).toBe('gilbert Joseph - Offre numérique')
     expect(venuesOptions.at(2).text()).toBe('Librairie Fnac')
-  })
-
-  it('should apply offerVenue filter when selecting a venue', async () => {
-    // given
-    const wrapper = await mount(<Filters {...props} />)
-    const venuesSelect = wrapper.find('select')
-
-    // when
-    await venuesSelect.simulate('change', { target: { value: 'AE' } })
-
-    // then
-    expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeginningDate: null,
-      bookingEndingDate: null,
-      offerDate: null,
-      offerName: null,
-      offerVenue: 'AE',
-    })
   })
 
   it('should not allow to select booking beginning date superior to booking ending date value', async () => {
