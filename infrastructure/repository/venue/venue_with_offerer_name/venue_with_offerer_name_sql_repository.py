@@ -15,7 +15,7 @@ class VenueWithOffererNameSQLRepository(VenueWithOffererNameRepository):
             .join(UserOfferer) \
             .join(UserSQLEntity) \
             .filter(UserSQLEntity.id == pro_identifier) \
-            .filter(Offerer.validationToken == None) \
+            .filter(UserOfferer.validationToken == None) \
             .order_by(VenueSQLEntity.name) \
             .all()
         return [venue_with_offerer_name_domain_converter.to_domain(venue_sql_entity) for venue_sql_entity in venue_sql_entities]

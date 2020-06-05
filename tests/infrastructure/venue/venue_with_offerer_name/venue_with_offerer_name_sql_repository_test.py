@@ -78,7 +78,7 @@ class GetByProIdentifierTest:
         offerer_validated = create_offerer(siren='123456789')
         offerer_not_validated = create_offerer(siren='987654321', validation_token='TOKEN')
         create_user_offerer(user=pro_user, offerer=offerer_validated)
-        create_user_offerer(user=pro_user, offerer=offerer_not_validated)
+        create_user_offerer(user=pro_user, offerer=offerer_not_validated, validation_token='NEKOT')
         venue_of_validated_offerer = create_venue(offerer=offerer_validated, siret='12345678912345', name='B')
         venue_of_unvalidated_offerer = create_venue(offerer=offerer_not_validated, siret='98765432198765', name='A')
 
@@ -92,3 +92,19 @@ class GetByProIdentifierTest:
         # then
         assert len(found_venues) == 1
         assert found_venues[0].name == expected_venue.name
+
+    @clean_database
+    def test_does_not_return_venues_of_non_validated_user_offerer(self, app: object) -> None:
+        # given
+        pro_user = create_user(email='john.doe@example.com')
+        offerer = create_offerer(siren='123456789')
+        create_user_offerer(user=pro_user, offerer=offerer, validation_token='NEKOT')
+        venue = create_venue(offerer=offerer, siret='98765432198765', name='A')
+
+        repository.save(venue)
+
+        # when
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id)
+
+        # then
+        assert len(found_venues) == 0
