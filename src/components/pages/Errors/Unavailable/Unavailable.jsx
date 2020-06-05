@@ -1,13 +1,13 @@
 import React from 'react'
 import { ROOT_PATH } from '../../../../utils/config'
 
-function Unavailable() {
+const Unavailable = () => {
   return (
     <div className="page fullscreen unavailable-page">
       <div className="error-message">
         <img
           alt=""
-          src={`${ROOT_PATH}/icons/erreur.svg`}
+          src={`${ROOT_PATH}/icons/ico-unavailable-page.svg`}
         />
         <h1>
           {'Page indisponible'}
