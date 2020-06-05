@@ -5,7 +5,7 @@ import { PersistGate } from 'redux-persist/integration/react'
 
 import AppContainer from './app/AppContainer'
 import NoMatchPage from './components/pages/NoMatch/NoMatch'
-import routes from './utils/routes'
+import routes from './utils/routes_map'
 import configureStore from './utils/store'
 import MatomoContainer from './components/matomo/MatomoContainer'
 import FeaturedRouteContainer from './components/router/FeaturedRouteContainer'

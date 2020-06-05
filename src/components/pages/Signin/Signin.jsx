@@ -6,6 +6,7 @@ import { NavLink, Link } from 'react-router-dom'
 import Logo from '../../layout/Logo'
 import Main from '../../layout/Main'
 import { mapApiToBrowser } from '../../../utils/translate'
+import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 
 class Signin extends PureComponent {
   onHandleSuccessRedirect = (state, action) => {
@@ -28,7 +29,7 @@ class Signin extends PureComponent {
   render() {
     const { errors, isAccountCreationAvailable } = this.props
 
-    const accountCreationUrl = isAccountCreationAvailable ? '/inscription' : '/erreur/indisponible'
+    const accountCreationUrl = isAccountCreationAvailable ? '/inscription' : UNAVAILABLE_ERROR_PAGE
 
     return (
       <Main

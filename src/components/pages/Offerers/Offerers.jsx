@@ -15,8 +15,7 @@ import OffererItemContainer from './OffererItem/OffererItemContainer'
 import PendingOffererItem from './OffererItem/PendingOffererItem'
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 import userHasNoOffersInAPhysicalVenueYet from './utils/userHasNoOffersInAPhysicalVenueYet'
-
-const UNAVAILABLE_ERROR_PAGE = '/erreur/indisponible'
+import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 
 class Offerers extends PureComponent {
   constructor(props) {

@@ -21,6 +21,7 @@ import OffererCreationContainer from '../components/pages/Offerer/OffererCreatio
 import OffererDetailsContainer from '../components/pages/Offerer/OffererDetails/OffererDetailsContainer'
 import BookingsRouterContainer from '../components/hocs/bookings-router/BookingsRouterContainer'
 import Unavailable from '../components/pages/Errors/Unavailable/Unavailable'
+import { UNAVAILABLE_ERROR_PAGE } from './routes'
 
 const RedirectToConnexionComponent = () => <Redirect to="/connexion" />
 
@@ -157,7 +158,7 @@ const routes = [
   },
   {
     component: Unavailable,
-    path: '/erreur/indisponible',
+    path: UNAVAILABLE_ERROR_PAGE,
     title: 'Page indisponible',
   },
 ]

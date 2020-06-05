@@ -2,6 +2,7 @@ import { Icon, pluralize } from 'pass-culture-shared'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import PropTypes from 'prop-types'
+import { UNAVAILABLE_ERROR_PAGE } from '../../../../utils/routes'
 
 const OffererItem = ({ offerer, physicalVenues, venues, isVenueCreationAvailable }) => {
   const { id, name, nOffers, isValidated } = offerer || {}
@@ -16,7 +17,7 @@ const OffererItem = ({ offerer, physicalVenues, venues, isVenueCreationAvailable
 
   const venueCreationUrl = isVenueCreationAvailable
     ? `/structures/${id}/lieux/creation`
-    : '/erreur/indisponible'
+    : UNAVAILABLE_ERROR_PAGE
 
   return (
     <li className="offerer-item">

@@ -2,11 +2,12 @@ import { NavLink } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import React from 'react'
 import VenueItem from './VenueItem/VenueItem'
+import { UNAVAILABLE_ERROR_PAGE } from '../../../../../utils/routes'
 
 const Venues = ({ venues, offererId, isVenueCreationAvailable }) => {
   const venueCreationUrl = isVenueCreationAvailable
     ? `/structures/${offererId}/lieux/creation`
-    : '/erreur/indisponible'
+    : UNAVAILABLE_ERROR_PAGE
 
   return (
     <div className="section op-content-section">
