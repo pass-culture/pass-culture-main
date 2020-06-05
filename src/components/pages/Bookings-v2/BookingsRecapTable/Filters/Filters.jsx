@@ -26,6 +26,7 @@ class Filters extends Component {
       selectedBookingBeginningDate: null,
       selectedBookingEndingDate: moment(),
       selectedOfferDate: null,
+      selectedOmniSearchCriteria: 'offre',
       selectedVenue: '',
       venues: [],
     }
@@ -38,31 +39,6 @@ class Filters extends Component {
 
   shouldComponentUpdate() {
     return true
-  }
-
-  resetAllFilters = () => {
-    this.setState(
-      {
-        filters: {
-          bookingBeneficiary: null,
-          offerName: null,
-          offerDate: null,
-          offerVenue: ALL_VENUES,
-          bookingBeginningDate: null,
-          bookingEndingDate: null,
-        },
-        keywords: '',
-        keywordsForBeneficiary: '',
-        selectedBookingBeginningDate: null,
-        selectedBookingEndingDate: moment(),
-        selectedOfferDate: null,
-        selectedVenue: '',
-      },
-      () => {
-        const { filters } = this.state
-        this.applyFilters(filters)
-      }
-    )
   }
 
   applyFilters = debounce(filterValues => {
@@ -85,6 +61,39 @@ class Filters extends Component {
     })
   }, DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS)
 
+  resetAllFilters = () => {
+    this.setState(
+      {
+        filters: {
+          bookingBeneficiary: null,
+          offerName: null,
+          offerDate: null,
+          offerVenue: ALL_VENUES,
+          bookingBeginningDate: null,
+          bookingEndingDate: null,
+        },
+        keywords: '',
+        selectedBookingBeginningDate: null,
+        selectedBookingEndingDate: moment(),
+        selectedOfferDate: null,
+        selectedVenue: '',
+      },
+      () => {
+        const { filters } = this.state
+        this.applyFilters(filters)
+      }
+    )
+  }
+
+  handleOmniSearchCriteriaChange = event => {
+    this.setState({ selectedOmniSearchCriteria: event.target.value.toLowerCase() })
+  }
+
+  handleOmniSearchChange = event => {
+    const { selectedOmniSearchCriteria } = this.state
+    this.OMNISEARCH_FILTERS[selectedOmniSearchCriteria].handleChange(event)
+  }
+
   handleOfferNameChange = event => {
     const keywords = event.target.value
     const { filters } = this.state
@@ -93,6 +102,7 @@ class Filters extends Component {
       {
         filters: {
           ...filters,
+          beneficiary: null,
           offerName: keywords.length > 0 ? keywords : null,
         },
         keywords: keywords,
@@ -102,6 +112,37 @@ class Filters extends Component {
         this.applyFilters(filters)
       }
     )
+  }
+
+  handleBeneficiaryChange = event => {
+    const keywords = event.target.value
+    const { filters } = this.state
+
+    this.setState(
+      {
+        filters: {
+          ...filters,
+          bookingBeneficiary: keywords.length > 0 ? keywords : null,
+          offerName: null,
+        },
+        keywords: keywords,
+      },
+      () => {
+        const { filters } = this.state
+        this.applyFilters(filters)
+      }
+    )
+  }
+
+  OMNISEARCH_FILTERS = {
+    offre: {
+      handleChange: this.handleOfferNameChange,
+      placeholderText: "Rechercher par nom d'offre",
+    },
+    bénéficiaire: {
+      handleChange: this.handleBeneficiaryChange,
+      placeholderText: 'Rechercher par nom ou email',
+    },
   }
 
   handleOfferDateChange = offerDate => {
@@ -114,25 +155,6 @@ class Filters extends Component {
           offerDate: dateToFilter,
         },
         selectedOfferDate: offerDate,
-      },
-      () => {
-        const { filters } = this.state
-        this.applyFilters(filters)
-      }
-    )
-  }
-
-  handleBeneficiaryChange = event => {
-    const keywordsForBeneficiary = event.target.value
-    const { filters } = this.state
-
-    this.setState(
-      {
-        filters: {
-          ...filters,
-          bookingBeneficiary: keywordsForBeneficiary.length > 0 ? keywordsForBeneficiary : null,
-        },
-        keywordsForBeneficiary: keywordsForBeneficiary,
       },
       () => {
         const { filters } = this.state
@@ -217,10 +239,10 @@ class Filters extends Component {
     const { oldestBookingDate } = this.props
     const {
       keywords,
-      keywordsForBeneficiary,
       selectedOfferDate,
       selectedBookingBeginningDate,
       selectedBookingEndingDate,
+      selectedOmniSearchCriteria,
       selectedVenue,
       venues,
     } = this.state
@@ -229,36 +251,27 @@ class Filters extends Component {
 
     return (
       <div className="filters-wrapper">
-        <div className="fw-offer-name">
-          <label
-            className="fw-offer-name-label"
-            htmlFor="text-filter-input"
+        <div className="fw-first-line">
+          <select
+            className="fw-booking-text-filters-select"
+            onBlur={this.handleOmniSearchCriteriaChange}
+            onChange={this.handleOmniSearchCriteriaChange}
           >
-            {'Offre'}
-          </label>
+            <option>
+              {'Offre'}
+            </option>
+            <option>
+              {'Bénéficiaire'}
+            </option>
+          </select>
+          <span className="vertical-bar" />
           <input
-            className="fw-offer-name-input"
+            className="fw-booking-text-filters-input"
             id="text-filter-input"
-            onChange={this.handleOfferNameChange}
-            placeholder={"Rechercher par nom d'offre"}
+            onChange={this.handleOmniSearchChange}
+            placeholder={placeholderText}
             type="text"
             value={keywords}
-          />
-        </div>
-        <div className="fw-offer-name">
-          <label
-            className="fw-offer-name-label"
-            htmlFor="text-filter-input"
-          >
-            {'Beneficiaire / to merge'}
-          </label>
-          <input
-            className="fw-beneficiary-input"
-            id="text-filter-input"
-            onChange={this.handleBeneficiaryChange}
-            placeholder="Rechercher par nom ou email"
-            type="text"
-            value={keywordsForBeneficiary}
           />
         </div>
         <div className="fw-second-line">

@@ -1,26 +1,57 @@
-.fw-offer-name {
-  align-items: center;
+.fw-first-line {
   display: flex;
-  margin-bottom: rem(24px);
+  justify-content: flex-start;
+  margin-bottom: rem(30px);
+  border-radius: rem(20px);
+  box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
 
-  .fw-offer-name-label {
-    flex: 1;
+  select {
+    border: $control-border-width solid $grey-light;
+    cursor: pointer;
     font-weight: $weight-bold;
+    font-size: rem(16px);
+    border-radius: rem(20px);
+    height: rem(40px);
+    padding-left: rem(10px);
+    padding-right: rem(30px);
+    word-wrap: break-word;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: auto;
+    outline: none;
+    overflow-y: scroll;
+
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    background: url("/icons/dropdown-disclosure-down-b.svg") no-repeat 92% 56%;
   }
 
-  .fw-offer-name-input, .fw-beneficiary-input {
-    border-radius: rem(20px);
-    border: $control-border-width solid $grey-light;
+  .vertical-bar {
+    background-color: $grey-light;
+    width: $control-border-width;
+    height: rem(40px)
+  }
 
-    box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
-    flex: 4;
-    height: rem(40px);
+  .fw-booking-text-filters-select {
+    border-right: none;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    height: 2.5rem;
+    width: rem(135px);
+  }
+
+  .fw-booking-text-filters-input {
+    flex-grow: 1;
+    border-radius: 0 rem(20px) rem(20px) 0;
+    border: $control-border-width solid $grey-light;
     padding: rem(10px) rem(16px);
     font-size: rem(16px);
+    border-left: none;
+    height: rem(40px);
 
     &:focus {
       outline: none;
-      border-color: $red;
     }
   }
 }

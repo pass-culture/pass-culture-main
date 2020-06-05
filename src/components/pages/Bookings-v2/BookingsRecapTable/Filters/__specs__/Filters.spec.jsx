@@ -138,7 +138,7 @@ describe('components | Filters', () => {
   it('should apply offerVenue filter when selecting a venue', async () => {
     // given
     const wrapper = await mount(<Filters {...props} />)
-    const venuesSelect = wrapper.find('select')
+    const venuesSelect = wrapper.find('select').at(1)
 
     // when
     await venuesSelect.simulate('change', { target: { value: 'AE' } })
@@ -157,6 +157,8 @@ describe('components | Filters', () => {
   it('should apply bookingBeneficiary filter when typing keywords for beneficiary name or email', async () => {
     // Given
     const wrapper = shallow(<Filters {...props} />)
+    const omniSearchSelect = wrapper.find('select').at(0)
+    await omniSearchSelect.simulate('change', { target: { value: 'bénéficiaire' } })
     const beneficiaryInput = wrapper.find({ placeholder: 'Rechercher par nom ou email' })
 
     // When
@@ -189,7 +191,7 @@ describe('components | Filters', () => {
     const wrapper = await shallow(<Filters {...props} />)
 
     // then
-    const venuesSelect = wrapper.find('select')
+    const venuesSelect = wrapper.find('select').at(1)
     const venuesOptions = venuesSelect.find('option')
     expect(venuesOptions).toHaveLength(1)
     expect(venuesOptions.at(0).text()).toBe('Tous les lieux')
@@ -200,11 +202,28 @@ describe('components | Filters', () => {
     const wrapper = await shallow(<Filters {...props} />)
 
     // then
-    const venuesSelect = wrapper.find('select')
+    const venuesSelect = wrapper.find('select').at(1)
     const venuesOptions = venuesSelect.find('option')
     expect(venuesOptions).toHaveLength(3)
     const venueTwo = venuesOptions.find({ children: 'Librairie Fnac' })
     expect(venueTwo).toHaveLength(1)
+  })
+
+  it('should update the placeholder for omniSearchInput when selecting an omniSearchCriteria', async () => {
+    // When
+    let wrapper = await shallow(<Filters {...props} />)
+    const omniSearchSelect = wrapper.find('select').at(0)
+    await omniSearchSelect.simulate('change', { target: { value: 'bénéficiaire' } })
+
+    // Then
+    expect(wrapper.find({ placeholder: 'Rechercher par nom ou email' })).toHaveLength(1)
+
+    // When
+    await omniSearchSelect.simulate('change', { target: { value: 'offre' } })
+    wrapper = wrapper.update()
+
+    // Then
+    expect(wrapper.find({ placeholder: "Rechercher par nom d'offre" })).toHaveLength(1)
   })
 
   it('should show venue option with "offerer name - offre numérique" when venue is virtual', async () => {
@@ -212,7 +231,7 @@ describe('components | Filters', () => {
     const wrapper = await shallow(<Filters {...props} />)
 
     // then
-    const venuesSelect = wrapper.find('select')
+    const venuesSelect = wrapper.find('select').at(1)
     const venuesOptions = venuesSelect.find('option')
     expect(venuesOptions).toHaveLength(3)
     const venueOne = venuesOptions.find({ children: 'gilbert Joseph - Offre numérique' })
