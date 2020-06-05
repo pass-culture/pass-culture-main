@@ -49,7 +49,7 @@ def save_bookings_recap_sandbox():
     venue1 = create_venue(offerer, name='Cinéma Le Monde Perdu', siret='64538901265877')
     venue2 = create_venue(offerer, name='Librairie Atlantis', siret='64538901201379')
     venue3 = create_venue(offerer, name='Théatre Mordor', siret='64538954601379')
-    venue4 = create_venue(offerer, name='Un lieu virtuel', siret=None, is_virtual=True)
+    venue4_virtual = create_venue(offerer, name='Un lieu virtuel', siret=None, is_virtual=True)
 
     offer1_venue1 = create_offer_with_event_product(
         venue=venue1,
@@ -84,6 +84,16 @@ def save_bookings_recap_sandbox():
         offer=offer1_venue2,
         quantity=42
     )
+    offer2_venue2 = create_offer_with_thing_product(
+        venue=venue2,
+        thing_name='Martine à la playa',
+        thing_type=ThingType.LIVRE_EDITION,
+        extra_data={'ISBN': '9787605639121'}
+    )
+    stock_1_offer2_venue2 = create_stock(
+        offer=offer2_venue2,
+        quantity=12
+    )
 
     offer1_venue3 = create_offer_with_event_product(
         venue=venue3,
@@ -95,10 +105,10 @@ def save_bookings_recap_sandbox():
         quantity=44
     )
 
-    offer1_venue4 = create_offer_with_event_product(
-        venue=venue4,
-        event_name='Danse des haricots',
-        event_type=EventType.SPECTACLE_VIVANT,
+    offer1_venue4 = create_offer_with_thing_product(
+        venue=venue4_virtual,
+        thing_name='Le livre des haricots',
+        thing_type=ThingType.LIVRE_EDITION,
     )
     stock_1_offer1_venue4 = create_stock(
         offer=offer1_venue4,
@@ -181,6 +191,32 @@ def save_bookings_recap_sandbox():
         is_cancelled=True,
     )
 
+    booking6_beneficiary3 = create_booking(
+        user=beneficiary3,
+        stock=stock_1_offer2_venue2,
+        date_created=datetime(2020, 3, 21, 22, 9, 12, 0),
+    )
+    payment_booking6_beneficiary3 = create_payment(booking=booking6_beneficiary3, offerer=offerer,
+                                                   status=TransactionStatus.SENT)
+
+    booking7_beneficiary2 = create_booking(
+        user=beneficiary2,
+        stock=stock_1_offer2_venue2,
+        date_created=datetime(2020, 4, 21, 22, 6, 12, 0),
+    )
+
+    payment_booking7_beneficiary2 = create_payment(booking=booking7_beneficiary2, offerer=offerer,
+                                                   status=TransactionStatus.RETRY)
+
+    booking8_beneficiary1 = create_booking(
+        user=beneficiary1,
+        stock=stock_1_offer2_venue2,
+        date_created=datetime(2020, 2, 21, 22, 6, 12, 0),
+    )
+
+    payment_booking8_beneficiary1 = create_payment(booking=booking8_beneficiary1, offerer=offerer,
+                                                   status=TransactionStatus.PENDING)
+
     repository.save(
         pro,
         booking1_beneficiary1, booking2_beneficiary1,
@@ -188,6 +224,7 @@ def save_bookings_recap_sandbox():
         booking1_beneficiary3, booking2_beneficiary3,
         booking5_beneficiary3,
         payment_booking3_beneficiary1, payment_booking3_beneficiary2,
-        payment_booking3_beneficiary3, user_offerer,
+        payment_booking3_beneficiary3, user_offerer, payment_booking6_beneficiary3,
+        payment_booking7_beneficiary2, payment_booking8_beneficiary1,
         booking4_beneficiary3
     )
