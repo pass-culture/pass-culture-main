@@ -16,8 +16,8 @@ describe('components | Filters', () => {
       setFilters: jest.fn(),
     }
     fetchAllVenuesByProUser.mockResolvedValue([
-      { id: 'AE', name: 'Offre numérique', offererName: 'Gilbert Joseph', isVirtual: true },
       { id: 'AF', name: 'Librairie Fnac', offererName: 'Gilbert Joseph', isVirtual: false },
+      { id: 'AE', name: 'Offre numérique', offererName: 'Gilbert Joseph', isVirtual: true },
     ])
   })
 
@@ -172,6 +172,17 @@ describe('components | Filters', () => {
     expect(venuesOptions).toHaveLength(3)
     const venueOne = venuesOptions.find({ children: 'Gilbert Joseph - Offre numérique' })
     expect(venueOne).toHaveLength(1)
+  })
+
+  it('should show order venue option alphabetically', async () => {
+    // when
+    const wrapper = await shallow(<Filters {...props} />)
+
+    // then
+    const venuesSelect = wrapper.find('select')
+    const venuesOptions = venuesSelect.find('option')
+    expect(venuesOptions.at(1).text()).toBe('Gilbert Joseph - Offre numérique')
+    expect(venuesOptions.at(2).text()).toBe('Librairie Fnac')
   })
 
   it('should apply offerVenue filter when selecting a venue', async () => {

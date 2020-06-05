@@ -172,6 +172,19 @@ class Filters extends Component {
     )
   }
 
+  formatAndOrderVenues = venues => {
+    const sortAlphabeticallyByOptionName = (a, b) => {
+      return a.optionName < b.optionName ? -1 : a.optionName > b.optionName ? 1 : 0
+    }
+
+    return venues
+      .map(venue => {
+        const optionName = venue.isVirtual ? `${venue.offererName} - Offre numérique` : venue.name
+        return { id: venue.id, optionName }
+      })
+      .sort(sortAlphabeticallyByOptionName)
+  }
+
   render() {
     const { oldestBookingDate } = this.props
     const {
@@ -182,6 +195,8 @@ class Filters extends Component {
       selectedVenue,
       venues,
     } = this.state
+
+    const venuesFormattedAndOrdered = this.formatAndOrderVenues(venues)
 
     return (
       <div className="filters-wrapper">
@@ -238,12 +253,12 @@ class Filters extends Component {
               <option value="">
                 {'Tous les lieux'}
               </option>
-              {venues.map(venue => (
+              {venuesFormattedAndOrdered.map(venue => (
                 <option
                   key={venue.id}
                   value={venue.id}
                 >
-                  {venue.isVirtual ? `${venue.offererName} - Offre numérique` : venue.name}
+                  {venue.optionName}
                 </option>
               ))}
             </select>
