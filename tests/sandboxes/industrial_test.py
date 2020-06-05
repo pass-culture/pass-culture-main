@@ -40,7 +40,7 @@ def test_save_industrial_sandbox(mock_request: mocker, app: fixture) -> None:
         UserSQLEntity=53,
         UserOfferer=125,
         VenueSQLEntity=22,
-        VenueLabels=27,
+        VenueLabelSQLEntity=28,
     )
 
     # teardown
