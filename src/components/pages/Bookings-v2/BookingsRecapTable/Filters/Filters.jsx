@@ -173,16 +173,16 @@ class Filters extends Component {
   }
 
   formatAndOrderVenues = venues => {
-    const sortAlphabeticallyByOptionName = (a, b) => {
-      return a.optionName < b.optionName ? -1 : a.optionName > b.optionName ? 1 : 0
+    const sortAlphabeticallyByDisplayName = (a, b) => {
+      return a.displayName < b.displayName ? -1 : a.displayName > b.displayName ? 1 : 0
     }
 
     return venues
       .map(venue => {
-        const optionName = venue.isVirtual ? `${venue.offererName} - Offre numérique` : venue.name
-        return { id: venue.id, optionName }
+        const displayName = venue.isVirtual ? `${venue.offererName} - Offre numérique` : venue.name
+        return { id: venue.id, displayName }
       })
-      .sort(sortAlphabeticallyByOptionName)
+      .sort(sortAlphabeticallyByDisplayName)
   }
 
   render() {
@@ -258,7 +258,7 @@ class Filters extends Component {
                   key={venue.id}
                   value={venue.id}
                 >
-                  {venue.optionName}
+                  {venue.displayName}
                 </option>
               ))}
             </select>

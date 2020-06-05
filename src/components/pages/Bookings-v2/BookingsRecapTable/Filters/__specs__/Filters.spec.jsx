@@ -128,7 +128,7 @@ describe('components | Filters', () => {
     })
   })
 
-  it('should fetch venues of pro user when mounting component', () => {
+  it('should fetch venues of pro user when mounting component', async () => {
     // when
     shallow(<Filters {...props} />)
 
