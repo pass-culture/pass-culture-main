@@ -27,6 +27,7 @@ from sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import
 from sandboxes.scripts.creators.industrial.create_industrial_venue_types import *
 from sandboxes.scripts.creators.industrial.create_industrial_venues import *
 from sandboxes.scripts.creators.industrial.create_industrial_webapp_users import *
+from scripts.venue.venue_label.create_venue_labels import create_venue_labels
 
 
 def save_industrial_sandbox():
@@ -100,3 +101,5 @@ def save_industrial_sandbox():
     create_industrial_iris(FILE_PATH)
 
     create_industrial_iris_venues()
+
+    create_venue_labels()

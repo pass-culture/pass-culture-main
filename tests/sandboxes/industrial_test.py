@@ -1,5 +1,8 @@
 from unittest.mock import patch, MagicMock
 
+from pytest import fixture
+from pytest_mock import mocker
+
 from sandboxes.scripts.save_sandbox import save_sandbox
 from sandboxes.scripts.testcafe_helpers import get_all_getters
 from tests.conftest import clean_database
@@ -10,7 +13,7 @@ from utils.logger import logger
 
 @patch('sandboxes.scripts.utils.ban.requests.get')
 @clean_database
-def test_save_industrial_sandbox(mock_request, app):
+def test_save_industrial_sandbox(mock_request: mocker, app: fixture) -> None:
     # given
     response_return_value = MagicMock(status_code=200, text='')
     response_return_value.json = MagicMock(side_effect=MOCK_ADRESSE_API_RESPONSE)
@@ -37,6 +40,7 @@ def test_save_industrial_sandbox(mock_request, app):
         UserSQLEntity=53,
         UserOfferer=125,
         VenueSQLEntity=22,
+        VenueLabels=27,
     )
 
     # teardown
@@ -45,7 +49,7 @@ def test_save_industrial_sandbox(mock_request, app):
 
 @patch('sandboxes.scripts.utils.ban.requests.get')
 @clean_database
-def test_all_helpers_are_returning_actual_sandbox_data(mock_request, app):
+def test_all_helpers_are_returning_actual_sandbox_data(mock_request: mocker, app: fixture) -> None:
     # given
     response_return_value = MagicMock(status_code=200, text='')
     response_return_value.json = MagicMock(side_effect=MOCK_ADRESSE_API_RESPONSE)
@@ -68,11 +72,11 @@ class AlgoliaIndexingTest:
     @patch('sandboxes.scripts.utils.ban.requests.get')
     @clean_database
     def test_should_not_index_offers_to_algolia_when_indexation_is_disabled(self,
-                                                                            mock_request,
-                                                                            mock_process_eligible_offers,
-                                                                            mock_delete_all_indexed_offers,
-                                                                            mock_clear_index,
-                                                                            app):
+                                                                            mock_request: mocker,
+                                                                            mock_process_eligible_offers: mocker,
+                                                                            mock_delete_all_indexed_offers: mocker,
+                                                                            mock_clear_index: mocker,
+                                                                            app: fixture) -> None:
         # Given
         response_return_value = MagicMock(status_code=200, text='')
         response_return_value.json = MagicMock(side_effect=MOCK_ADRESSE_API_RESPONSE)
@@ -93,11 +97,11 @@ class AlgoliaIndexingTest:
     @patch('sandboxes.scripts.utils.ban.requests.get')
     @clean_database
     def test_should_index_offers_to_algolia_when_indexation_is_enabled(self,
-                                                                       mock_request,
-                                                                       mock_process_eligible_offers,
-                                                                       mock_delete_all_indexed_offers,
-                                                                       mock_clear_index,
-                                                                       app):
+                                                                       mock_request: mocker,
+                                                                       mock_process_eligible_offers: mocker,
+                                                                       mock_delete_all_indexed_offers: mocker,
+                                                                       mock_clear_index: mocker,
+                                                                       app: fixture) -> None:
         # Given
         response_return_value = MagicMock(status_code=200, text='')
         response_return_value.json = MagicMock(side_effect=MOCK_ADRESSE_API_RESPONSE)
