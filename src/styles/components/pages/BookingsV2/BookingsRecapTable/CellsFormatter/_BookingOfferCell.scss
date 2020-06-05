@@ -1,4 +1,4 @@
-.booking-offer-name {
+.booking-offer-info {
   .offer-name {
     font-weight: $weight-bold;
     text-overflow: ellipsis;
@@ -7,7 +7,7 @@
     white-space: nowrap;
   }
 
-  .event-date {
+  .offer-additional-info {
     color: $grey;
   }
 }

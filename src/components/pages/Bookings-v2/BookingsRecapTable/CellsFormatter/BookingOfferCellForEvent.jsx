@@ -7,11 +7,11 @@ const BookingOfferCellForEvent = ({ eventDatetime, offerName }) => {
   const eventDatetimeFormatted = moment.parseZone(eventDatetime).format(FORMAT_DD_MM_YYYY_HH_mm)
 
   return (
-    <span className="booking-offer-name">
+    <span className="booking-offer-info">
       <p className="offer-name">
         {offerName}
       </p>
-      <p className="event-date">
+      <p className="offer-additional-info">
         {eventDatetimeFormatted}
       </p>
     </span>

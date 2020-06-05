@@ -1,10 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const BookingOfferCellForThing = ({ offerName }) => (
-  <span className="booking-offer-name">
+const BookingOfferCellForThing = ({ offerIsbn, offerName }) => (
+  <span className="booking-offer-info">
     <p className="offer-name">
       {offerName}
+    </p>
+    <p className="offer-additional-info">
+      {offerIsbn}
     </p>
   </span>
 )
