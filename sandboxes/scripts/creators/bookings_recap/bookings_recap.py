@@ -3,9 +3,9 @@ from datetime import timedelta, datetime
 from models import EventType, ThingType
 from models.payment_status import TransactionStatus
 from repository import repository
-from tests.model_creators.generic_creators import create_user, create_deposit, create_offerer, create_venue, \
-    create_stock, create_booking, create_user_offerer, create_payment
-from tests.model_creators.specific_creators import create_offer_with_event_product, create_offer_with_thing_product
+from sandboxes.scripts.creators.helpers.sql_creators import create_user, create_deposit, create_offerer, \
+    create_user_offerer, create_venue, create_offer_with_event_product, create_stock, create_offer_with_thing_product, \
+    create_booking, create_payment
 
 
 def save_bookings_recap_sandbox():
