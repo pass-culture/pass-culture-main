@@ -154,7 +154,6 @@ class Filters extends Component {
   }
 
   handleVenueSelection = event => {
-    console.log('venue selection', event.target.value)
     const venueId = event.target.value
     const { filters } = this.state
 
@@ -252,7 +251,7 @@ class Filters extends Component {
               ref={this.venueSelect}
               value={selectedVenue}
             >
-              <option value="all">
+              <option value={ALL_VENUES}>
                 {'Tous les lieux'}
               </option>
               {venuesFormattedAndOrdered.map(venue => (
