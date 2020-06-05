@@ -10,7 +10,6 @@ from models import VenueProvider, Offer, StockSQLEntity
 from models.db import Model, db
 from repository import product_queries
 from repository.booking_queries import count_not_cancelled_bookings_quantity_by_stock_id
-from tests.model_creators.provider_creators import create_providable_info
 
 
 class LibrairesStocks(LocalProvider):
@@ -41,10 +40,11 @@ class LibrairesStocks(LocalProvider):
         if not self.product:
             return []
 
-        providable_info_offer = create_providable_info(Offer, f"{self.libraires_stock['ref']}@{self.siret}",
-                                                       datetime.utcnow())
-        providable_info_stock = create_providable_info(StockSQLEntity, f"{self.libraires_stock['ref']}@{self.siret}",
-                                                       datetime.utcnow())
+        providable_info_offer = self.create_providable_info(Offer, f"{self.libraires_stock['ref']}@{self.siret}",
+                                                            datetime.utcnow())
+        providable_info_stock = self.create_providable_info(StockSQLEntity,
+                                                            f"{self.libraires_stock['ref']}@{self.siret}",
+                                                            datetime.utcnow())
 
         return [providable_info_offer, providable_info_stock]
 
