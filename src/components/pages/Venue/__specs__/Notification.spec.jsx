@@ -28,6 +28,6 @@ describe('src | components | pages | Venue | Notification', () => {
     expect(textMessage.text()).toBe(
       'Lieu créé. Vous pouvez maintenant y créer une offre, ou en importer automatiquement. '
     )
-    expect(navLink.props().to).toBe('/offres/creation?lieu=TY&structure=FT')
+    expect(navLink.prop('to')).toBe('/offres/creation?lieu=TY&structure=FT')
   })
 })

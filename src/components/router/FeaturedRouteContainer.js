@@ -2,13 +2,13 @@ import { connect } from 'react-redux'
 import { requestData } from 'redux-saga-data'
 
 import FeaturedRoute from './FeaturedRoute'
-import selectIsFeatureActive from './selectors/selectIsFeatureActive'
+import selectIsFeatureActive from '../../selectors/data/selectIsFeatureActive'
 
 export const mapStateToProps = (state, ownProps) => {
   const { features } = state.data
   const { featureName } = ownProps
 
-  const isFeatureFlipped = (featureName !== undefined)
+  const isFeatureFlipped = featureName !== undefined
 
   let isRouteDisabled
   if (!isFeatureFlipped) {

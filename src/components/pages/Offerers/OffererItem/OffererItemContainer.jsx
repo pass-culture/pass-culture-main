@@ -6,7 +6,7 @@ import {
   selectVenuesByOffererId,
 } from '../../../../selectors/data/venuesSelectors'
 
-import selectIsFeatureActive from '../../../router/selectors/selectIsFeatureActive'
+import selectIsFeatureActive from '../../../../selectors/data/selectIsFeatureActive'
 
 export const mapStateToProps = (state, ownProps) => {
   const {

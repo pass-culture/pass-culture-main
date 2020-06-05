@@ -45,7 +45,7 @@ describe('src | components | pages | OffererCreation | Venues', () => {
           const navLink = wrapper.find('NavLink')
 
           // then
-          expect(navLink.props().to).toBe('/structures/5767Fdtre/lieux/creation')
+          expect(navLink.prop('to')).toBe('/structures/5767Fdtre/lieux/creation')
         })
       })
       describe('when the venue creation is disabled', () => {
@@ -59,7 +59,7 @@ describe('src | components | pages | OffererCreation | Venues', () => {
           const navLink = wrapper.find('NavLink')
 
           // then
-          expect(navLink.props().to).toBe('/erreur/indisponible')
+          expect(navLink.prop('to')).toBe('/erreur/indisponible')
         })
       })
     })

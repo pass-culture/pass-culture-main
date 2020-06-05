@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import BookingsRouter from './BookingsRouter'
-import selectIsFeatureActive from '../../router/selectors/selectIsFeatureActive'
+import selectIsFeatureActive from '../../../selectors/data/selectIsFeatureActive'
 import withRequiredLogin from '../../hocs/with-login/withRequiredLogin'
 
 export const mapStateToProps = state => {

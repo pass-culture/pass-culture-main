@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import Venues from './Venues'
-import selectIsFeatureActive from '../../../../router/selectors/selectIsFeatureActive'
+import selectIsFeatureActive from '../../../../../selectors/data/selectIsFeatureActive'
 
 export const mapStateToProps = state => {
   return {

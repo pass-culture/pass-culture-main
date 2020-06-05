@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { withNotRequiredLogin } from '../../hocs'
 import Signin from './Signin'
-import selectIsFeatureActive from '../../router/selectors/selectIsFeatureActive'
+import selectIsFeatureActive from '../../../selectors/data/selectIsFeatureActive'
 
 export const mapStateToProps = state => {
   return {

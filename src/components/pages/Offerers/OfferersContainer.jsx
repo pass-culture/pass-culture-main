@@ -10,7 +10,7 @@ import { offererNormalizer } from '../../../utils/normalizers'
 import { selectOfferers } from '../../../selectors/data/offerersSelectors'
 
 import { OFFERERS_API_PATH } from '../../../config/apiPaths'
-import selectIsFeatureActive from '../../router/selectors/selectIsFeatureActive'
+import selectIsFeatureActive from '../../../selectors/data/selectIsFeatureActive'
 
 export const createApiPath = searchKeyWords => {
   let apiPath = OFFERERS_API_PATH
