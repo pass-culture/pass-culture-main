@@ -5,6 +5,7 @@ import pytest
 import pytz
 from dateutil import tz
 from freezegun import freeze_time
+from pytest import fixture
 
 from domain.booking_recap.booking_recap import EventBookingRecap
 from models import BookingSQLEntity, EventType, ThingType
@@ -1965,6 +1966,29 @@ class FindByProUserIdTest:
         assert len(bookings_recap_paginated.bookings_recap) == 1
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.booking_date == booking_date.astimezone(tz.gettz('America/Cayenne'))
+
+    @clean_database
+    def test_should_return_booking_isbn_when_offer_is_a_book(self, app: fixture) -> None:
+        # Given
+        beneficiary = create_user(email='beneficiary@example.com',
+                                  first_name='Ron', last_name='Weasley')
+        user = create_user()
+        offerer = create_offerer(postal_code='97300')
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer, idx=15, is_virtual=True, siret=None)
+        offer = create_offer_with_thing_product(thing_name='Harry Potter', venue=venue,
+                                                extra_data=dict({'isbn': '9876543234'}))
+        stock = create_stock(offer=offer, price=0)
+        booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
+        booking = create_booking(user=beneficiary, stock=stock, date_created=booking_date, token='ABCDEF', is_used=True)
+        repository.save(user_offerer, booking)
+
+        # When
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+
+        # Then
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.offer_isbn == '9876543234'
 
 
 class FindFirstMatchingFromOfferByUserTest:

@@ -78,7 +78,7 @@ def save_bookings_recap_sandbox():
         venue=venue2,
         thing_name='Fondation',
         thing_type=ThingType.LIVRE_EDITION,
-        extra_data={'ISBN': '9788804119135'}
+        extra_data={'isbn': '9788804119135'}
     )
     stock_1_offer1_venue2 = create_stock(
         offer=offer1_venue2,
@@ -88,7 +88,7 @@ def save_bookings_recap_sandbox():
         venue=venue2,
         thing_name='Martine à la playa',
         thing_type=ThingType.LIVRE_EDITION,
-        extra_data={'ISBN': '9787605639121'}
+        extra_data={'isbn': '9787605639121'}
     )
     stock_1_offer2_venue2 = create_stock(
         offer=offer2_venue2,

@@ -23,6 +23,7 @@ def create_domain_beneficiary(identifier: int = None,
 
 
 def create_domain_thing_booking_recap(offer_name: str = "Le livre de la jungle",
+                                      offer_isbn: str = None,
                                       beneficiary_lastname: str = "Sans Nom",
                                       beneficiary_firstname: str = "Mowgli",
                                       beneficiary_email: str = "mowgli@example.com",
@@ -35,6 +36,7 @@ def create_domain_thing_booking_recap(offer_name: str = "Le livre de la jungle",
                                       venue_identifier: str = 'AE') -> ThingBookingRecap:
     return ThingBookingRecap(
         offer_name=offer_name,
+        offer_isbn=offer_isbn,
         beneficiary_lastname=beneficiary_lastname,
         beneficiary_firstname=beneficiary_firstname,
         beneficiary_email=beneficiary_email,
