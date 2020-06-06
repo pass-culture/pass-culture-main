@@ -38,7 +38,7 @@ Dans le cas des livres, si aucun prix n’est rentré, le prix unique est automa
 - "validUntil" (optionnel) : date au format aaa-mm-ddThh:mm:ss.mmmZ de fin de validité du stock en question. Passé cette date, on considère le stock est remis à zéro pour cette entrée. Si aucune date n’est indiquée, la proposition est considérée comme étant à durée illimitée.
 
 
-+ Request
+### Request
 
 + Response 200 (application/json)
 
