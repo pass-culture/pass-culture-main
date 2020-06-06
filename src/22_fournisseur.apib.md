@@ -30,7 +30,7 @@ Par exemple, pour lister les stocks disponible pour un établissement : GET /sto
 
 L'ordre des paramètres est au choix du fournisseur mais ne doit pas varier entre deux requêtes.
 
-Un paramètre "stocks" dit ainsi comporter : 
+Un paramètre "stocks" doit ainsi comporter : 
 - "ref" : EAN13 (correspondant à l’ISBN pour les livres)
 - "available" : stock disponible
 - "price" : prix auquel sont vendus l’ensemble des éléments du stock. Il est ainsi possible d’avoir plusieurs entrées pour une même référence, si plusieurs tarifs sont appliqués (par exemple, dans le cas d’un prix d'appel, 10€ pour les 10 premiers, 12€ ensuite). 
