@@ -234,9 +234,6 @@ SET
  old_data = pg_temp.anonymize_activity_data_field(old_data),
  changed_data = pg_temp.anonymize_activity_data_field(changed_data);
 
-TRUNCATE TABLE email;
-TRUNCATE TABLE user_session;
-
 SELECT pg_temp.enable_activity_trigger('offerer');
 SELECT pg_temp.enable_activity_trigger('venue');
 SELECT pg_temp.enable_activity_trigger('booking');
