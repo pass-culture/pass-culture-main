@@ -177,7 +177,7 @@ class Booking extends PureComponent {
       >
         {state => (
           <div
-            className={`is-overlay is-clipped flex-rows ${extraClassName} ${state}`}
+            className={`is-overlay flex-rows ${extraClassName} ${state}`}
             id="booking-card"
           >
             <div className="main flex-rows flex-1">
