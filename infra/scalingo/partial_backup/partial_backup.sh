@@ -33,7 +33,8 @@ time pg_dump $tunnel_database_url --no-privileges --no-owner --section=post-data
 echo "- Backup raw data:"
 recommendation_seq_id=$(psql -qtAX $tunnel_database_url -c 'select last_value from public.recommendation_id_seq;')
 activity_seq_id=$(psql -qtAX $tunnel_database_url -c 'select last_value from public.activity_id_seq;')
-time pg_dump $tunnel_database_url --exclude-table=spatial_ref_sys --exclude-table=recommendation --exclude-table=activity -a -F c  > "$BACKUP_PATH"/data.pgdump
+time pg_dump $tunnel_database_url --exclude-table=spatial_ref_sys --exclude-table=recommendation \
+--exclude-table=activity --exclude-table=email --exclude-table=user_session -a -F c  > "$BACKUP_PATH"/data.pgdump
 
 echo "- Backup selected activity rows:"
 time psql -Atx $tunnel_database_url -c "COPY (select * from activity where activity.id < $activity_seq_id \
