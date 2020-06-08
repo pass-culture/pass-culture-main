@@ -1,9 +1,8 @@
 .search-results-page {
-  @extend .page;
-
   background: $white;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .sr-items-wrapper {

@@ -83,7 +83,7 @@ describe('src | components | layout | Booking | Booking', () => {
       const wrapper = mount(<Booking {...props} />)
 
       // then
-      const mainWrapper = wrapper.find('.main.flex-rows.flex-1.scroll-y')
+      const mainWrapper = wrapper.find('.main.flex-rows.flex-1')
       expect(mainWrapper.find('.py36.px12.flex-rows')).toHaveLength(1)
     })
   })
