@@ -88,15 +88,21 @@ class Filters extends Component {
   handleOmniSearchCriteriaChange = event => {
     const { selectedOmniSearchCriteria, filters } = this.state
     const newOmniSearchCriteria = event.target.value.toLowerCase()
-    const currentOmniSearchStateKey = this.OMNISEARCH_FILTERS[selectedOmniSearchCriteria].stateKey
+    const currentOmniSearchStateKey = this.OMNISEARCH_FILTERS.find(
+      criteria => criteria.id === selectedOmniSearchCriteria
+    ).stateKey
     const currentFilterKeywords = filters[currentOmniSearchStateKey]
     this.setState({ selectedOmniSearchCriteria: newOmniSearchCriteria })
-    this.OMNISEARCH_FILTERS[newOmniSearchCriteria].handleChange(currentFilterKeywords)
+    this.OMNISEARCH_FILTERS.find(criteria => criteria.id === newOmniSearchCriteria).handleChange(
+      currentFilterKeywords
+    )
   }
 
   handleOmniSearchChange = event => {
     const { selectedOmniSearchCriteria } = this.state
-    this.OMNISEARCH_FILTERS[selectedOmniSearchCriteria].handleChange(event.target.value)
+    this.OMNISEARCH_FILTERS.find(
+      criteria => criteria.id === selectedOmniSearchCriteria
+    ).handleChange(event.target.value)
   }
 
   handleOfferNameChange = keywords => {
@@ -139,18 +145,22 @@ class Filters extends Component {
     )
   }
 
-  OMNISEARCH_FILTERS = {
-    offre: {
+  OMNISEARCH_FILTERS = [
+    {
+      id: 'offre',
       handleChange: this.handleOfferNameChange,
       placeholderText: "Rechercher par nom d'offre",
       stateKey: 'offerName',
+      selectOptionText: 'Offre',
     },
-    bénéficiaire: {
+    {
+      id: 'bénéficiaire',
       handleChange: this.handleBeneficiaryChange,
       placeholderText: 'Rechercher par nom ou email',
       stateKey: 'bookingBeneficiary',
+      selectOptionText: 'Bénéficiaire',
     },
-  }
+  ]
 
   handleOfferDateChange = offerDate => {
     const dateToFilter = offerDate === null ? null : offerDate.format('YYYY-MM-DD')
@@ -255,7 +265,9 @@ class Filters extends Component {
     } = this.state
 
     const venuesFormattedAndOrdered = this.formatAndOrderVenues(venues)
-    const placeholderText = this.OMNISEARCH_FILTERS[selectedOmniSearchCriteria].placeholderText
+    const placeholderText = this.OMNISEARCH_FILTERS.find(
+      criteria => criteria.id === selectedOmniSearchCriteria
+    ).placeholderText
 
     return (
       <div className="filters-wrapper">
@@ -265,12 +277,14 @@ class Filters extends Component {
             onBlur={this.handleOmniSearchCriteriaChange}
             onChange={this.handleOmniSearchCriteriaChange}
           >
-            <option>
-              {'Offre'}
-            </option>
-            <option>
-              {'Bénéficiaire'}
-            </option>
+            {this.OMNISEARCH_FILTERS.map(selectOption => (
+              <option
+                key={selectOption.id}
+                value={selectOption.id}
+              >
+                {selectOption.selectOptionText}
+              </option>
+            ))}
           </select>
           <span className="vertical-bar" />
           <input
