@@ -28,11 +28,12 @@ describe('components | Filters', () => {
 
   it('should apply offerName filter when typing keywords', async () => {
     // Given
-    const wrapper = mount(<Filters {...props} />)
-    const offerNameInput = wrapper.find({ placeholder: "Rechercher par nom d'offre" })
+    const wrapper = shallow(<Filters {...props} />)
+    const instance = wrapper.instance()
+    instance.handleOmniSearchCriteriaChange({ target: { value: 'offre' } })
 
     // When
-    await offerNameInput.simulate('change', { target: { value: 'Jurassic Park' } })
+    instance.handleOmniSearchChange({ target: { value: 'Jurassic Park' } })
 
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
@@ -45,14 +46,13 @@ describe('components | Filters', () => {
     })
   })
 
-  it('should apply offerDate filter when choosing an offer date', async () => {
+  it('should apply offerDate filter when choosing an offer date', () => {
     // Given
     const selectedDate = moment('2020-05-20')
     const wrapper = shallow(<Filters {...props} />)
-    const offerDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(0)
 
     // When
-    await offerDateInput.simulate('change', selectedDate)
+    wrapper.instance().handleOfferDateChange(selectedDate)
 
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
@@ -67,13 +67,13 @@ describe('components | Filters', () => {
 
   it('should add filter to previous filters when applying a new one', async () => {
     // Given
-    const wrapper = mount(<Filters {...props} />)
-    const offerNameInput = wrapper.find({ placeholder: "Rechercher par nom d'offre" })
-    const venueNameInput = wrapper.find('select').at(1)
-    await venueNameInput.simulate('change', { target: { value: 'Ma Venue' } })
+    const wrapper = shallow(<Filters {...props} />)
+    const selectedDate = moment('2020-05-20')
+    const wrapperInstance = wrapper.instance()
+    wrapperInstance.handleOfferDateChange(selectedDate)
 
     // When
-    await offerNameInput.simulate('change', { target: { value: 'Jurassic Park' } })
+    wrapperInstance.handleOfferNameChange('Jurassic Park')
 
     // Then
     expect(props.setFilters).toHaveBeenCalledTimes(2)
@@ -81,9 +81,9 @@ describe('components | Filters', () => {
       bookingBeneficiary: '',
       bookingBeginningDate: null,
       bookingEndingDate: null,
-      offerDate: null,
+      offerDate: '2020-05-20',
       offerName: 'Jurassic Park',
-      offerVenue: 'Ma Venue',
+      offerVenue: ALL_VENUES,
     })
   })
 
@@ -94,7 +94,7 @@ describe('components | Filters', () => {
     }
     const selectedDate = moment('2020-05-20')
     const wrapper = shallow(<Filters {...props} />)
-    const offerDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(1)
+    const offerDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(0)
 
     // When
     await offerDateInput.simulate('change', selectedDate)
@@ -117,7 +117,7 @@ describe('components | Filters', () => {
     }
     const selectedDate = moment('2020-05-20')
     const wrapper = shallow(<Filters {...props} />)
-    const offerDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(2)
+    const offerDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(1)
 
     // When
     await offerDateInput.simulate('change', selectedDate)
@@ -154,13 +154,12 @@ describe('components | Filters', () => {
 
   it('should apply bookingBeneficiary filter when typing keywords for beneficiary name or email', async () => {
     // Given
-    const wrapper = mount(<Filters {...props} />)
-    const omniSearchSelect = wrapper.find('select').at(0)
-    await omniSearchSelect.simulate('change', { target: { value: 'bénéficiaire' } })
-    const beneficiaryInput = wrapper.find({ placeholder: 'Rechercher par nom ou email' })
+    const wrapper = shallow(<Filters {...props} />)
+    const instance = wrapper.instance()
+    instance.handleOmniSearchCriteriaChange({ target: { value: 'bénéficiaire' } })
 
     // When
-    await beneficiaryInput.simulate('change', { target: { value: 'Firost' } })
+    instance.handleOmniSearchChange({ target: { value: 'Firost' } })
 
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
@@ -207,23 +206,6 @@ describe('components | Filters', () => {
     expect(venueTwo).toHaveLength(1)
   })
 
-  it('should update the placeholder for omniSearchInput when selecting an omniSearchCriteria', async () => {
-    // When
-    let wrapper = await mount(<Filters {...props} />)
-    const omniSearchSelect = wrapper.find('select').at(0)
-    await omniSearchSelect.simulate('change', { target: { value: 'bénéficiaire' } })
-
-    // Then
-    expect(wrapper.find({ placeholder: 'Rechercher par nom ou email' })).toHaveLength(1)
-
-    // When
-    await omniSearchSelect.simulate('change', { target: { value: 'offre' } })
-    wrapper = wrapper.update()
-
-    // Then
-    expect(wrapper.find({ placeholder: "Rechercher par nom d'offre" })).toHaveLength(1)
-  })
-
   it('should show venue option with "offerer name - offre numérique" when venue is virtual', async () => {
     // when
     const wrapper = await shallow(<Filters {...props} />)
@@ -254,11 +236,11 @@ describe('components | Filters', () => {
     }
     const selectedDate = moment('2020-05-20')
     const wrapper = shallow(<Filters {...props} />)
-    const bookingEndingDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(2)
+    const bookingEndingDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(1)
     await bookingEndingDateInput.simulate('change', selectedDate)
 
     // When
-    const bookingBeginningDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(1)
+    const bookingBeginningDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(0)
 
     // Then
     expect(bookingBeginningDateInput.prop('maxDate')).toStrictEqual(selectedDate)
@@ -271,11 +253,11 @@ describe('components | Filters', () => {
     }
     const selectedDate = moment('2020-05-20')
     const wrapper = shallow(<Filters {...props} />)
-    const bookingBeginningDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(1)
+    const bookingBeginningDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(0)
     await bookingBeginningDateInput.simulate('change', selectedDate)
 
     // When
-    const bookingEndingDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(2)
+    const bookingEndingDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(1)
 
     // Then
     expect(bookingEndingDateInput.prop('minDate')).toStrictEqual(selectedDate)

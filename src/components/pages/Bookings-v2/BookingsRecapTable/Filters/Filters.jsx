@@ -8,6 +8,7 @@ import { fetchAllVenuesByProUser } from '../../../../../services/venuesService'
 import { ALL_VENUES } from '../utils/filterBookingsRecap'
 import formatAndOrderVenues from '../utils/formatAndOrderVenues'
 import FilterByOmniSearch from './FilterByOmniSearch'
+import FilterByEventDate from './FilterByEventDate.jsx'
 
 export const TEXT_FILTER_DEFAULT_VALUE = ''
 const DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
@@ -266,25 +267,10 @@ class Filters extends Component {
           placeholderText={placeholderText}
         />
         <div className="fw-second-line">
-          <div className="fw-offer-date">
-            <label
-              className="fw-offer-date-label"
-              htmlFor="select-filter-date"
-            >
-              {"Date de l'évènement"}
-            </label>
-            <div className="fw-offer-date-picker">
-              <DatePicker
-                className="fw-offer-date-input"
-                customInput={<InputWithCalendar customClass="field-date-only" />}
-                dropdownMode="select"
-                id="select-filter-date"
-                onChange={this.handleOfferDateChange}
-                placeholderText="JJ/MM/AAAA"
-                selected={selectedOfferDate}
-              />
-            </div>
-          </div>
+          <FilterByEventDate
+            onHandleOfferDateChange={this.handleOfferDateChange}
+            selectedOfferDate={selectedOfferDate}
+          />
           <div className="fw-venues">
             <label
               className="fw-offer-venue-label"

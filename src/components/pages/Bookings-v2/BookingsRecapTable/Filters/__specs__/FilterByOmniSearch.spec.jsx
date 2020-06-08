@@ -6,6 +6,7 @@ describe('components | FilterByOmniSearch', () => {
   let props
   beforeEach(() => {
     props = {
+      keywords: 'mesKeywords',
       omniSearchSelectOptions: [
         {
           id: 'AA',
@@ -16,10 +17,9 @@ describe('components | FilterByOmniSearch', () => {
           selectOptionText: 'Second Select',
         },
       ],
-      handleOmniSearchCriteriaChange: jest.fn(),
-      handleOmniSearchChange: jest.fn(),
+      onHandleOmniSearchChange: jest.fn(),
+      onHandleOmniSearchCriteriaChange: jest.fn(),
       placeholderText: 'Mon petit placeholder',
-      keywords: 'mesKeywords',
     }
   })
 
@@ -46,5 +46,29 @@ describe('components | FilterByOmniSearch', () => {
     // Then
     expect(input.prop('placeholder')).toStrictEqual('Mon petit placeholder')
     expect(input.prop('value')).toStrictEqual('mesKeywords')
+  })
+
+  it('should apply bookingBeneficiary filter when typing keywords for beneficiary name or email', async () => {
+    // Given
+    const wrapper = shallow(<FilterByOmniSearch {...props} />)
+    const omniSearchSelect = wrapper.find('select').at(0)
+    await omniSearchSelect.simulate('change', { target: { value: 'bénéficiaire' } })
+    const beneficiaryInput = wrapper.find({ placeholder: 'Mon petit placeholder' })
+
+    // When
+    await beneficiaryInput.simulate('change', { target: { value: 'Firost' } })
+
+    // Then
+    expect(props.onHandleOmniSearchChange).toHaveBeenCalledWith({ target: { value: 'Firost' } })
+  })
+
+  it('should update the placeholder for omniSearchInput when selecting an omniSearchCriteria', async () => {
+    // When
+    let wrapper = await shallow(<FilterByOmniSearch {...props} />)
+    const omniSearchSelect = wrapper.find('select').at(0)
+    await omniSearchSelect.simulate('change', { target: { value: 'bénéficiaire' } })
+
+    // Then
+    expect(wrapper.find({ placeholder: 'Mon petit placeholder' })).toHaveLength(1)
   })
 })
