@@ -7,7 +7,7 @@ from dateutil import tz
 from freezegun import freeze_time
 from pytest import fixture
 
-from domain.booking_recap.booking_recap import EventBookingRecap
+from domain.booking_recap.booking_recap import EventBookingRecap, BookBookingRecap
 from models import BookingSQLEntity, EventType, ThingType
 from models.api_errors import ApiErrors, ResourceNotFoundError
 from models.payment_status import TransactionStatus
@@ -1968,7 +1968,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_date == booking_date.astimezone(tz.gettz('America/Cayenne'))
 
     @clean_database
-    def test_should_return_booking_isbn_when_offer_is_a_book(self, app: fixture) -> None:
+    def test_should_return_booking_isbn_when_information_is_available(self, app: fixture) -> None:
         # Given
         beneficiary = create_user(email='beneficiary@example.com',
                                   first_name='Ron', last_name='Weasley')
@@ -1988,6 +1988,7 @@ class FindByProUserIdTest:
 
         # Then
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert isinstance(expected_booking_recap, BookBookingRecap)
         assert expected_booking_recap.offer_isbn == '9876543234'
 
 

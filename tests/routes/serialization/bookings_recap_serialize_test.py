@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 
+from pytest import fixture
+
 from domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from routes.serialization.bookings_recap_serialize import serialize_bookings_recap_paginated
 from tests.domain_creators.generic_creators import create_domain_thing_booking_recap, create_domain_event_booking_recap
@@ -7,7 +9,7 @@ from utils.date import format_into_ISO_8601_with_timezone
 
 
 class SerializeBookingRecapTest:
-    def test_should_return_json_with_all_parameters_for_thing_stock(self, app):
+    def test_should_return_json_with_all_parameters_for_thing_stock(self, app: fixture) -> None:
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         bookings_recap = [
@@ -46,7 +48,6 @@ class SerializeBookingRecapTest:
                 "stock": {
                     "type": "thing",
                     "offer_name": "Fondation",
-                    "offer_isbn": None,
                 },
                 "beneficiary": {
                     "lastname": "Seldon",
@@ -63,7 +64,6 @@ class SerializeBookingRecapTest:
                 "stock": {
                     "type": "thing",
                     "offer_name": "Fondation",
-                    "offer_isbn": None,
                 },
                 "beneficiary": {
                     "lastname": "Trevize",
@@ -82,7 +82,7 @@ class SerializeBookingRecapTest:
         assert result['pages'] == 1
         assert result['total'] == 2
 
-    def test_should_return_json_with_event_date_additional_parameter_for_event_stock(self, app):
+    def test_should_return_json_with_event_date_additional_parameter_for_event_stock(self, app: fixture) -> None:
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         day_after_booking_date = booking_date + timedelta(days=1)
@@ -132,7 +132,7 @@ class SerializeBookingRecapTest:
         assert results['pages'] == 1
         assert results['total'] == 2
 
-    def test_should_return_json_with_offer_isbn_additional_parameter_for_thing_stock(self, app):
+    def test_should_return_json_with_offer_isbn_additional_parameter_for_thing_stock(self, app: fixture) -> None:
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         bookings_recap = [
@@ -160,7 +160,7 @@ class SerializeBookingRecapTest:
         expected_response = [
             {
                 "stock": {
-                    "type": "thing",
+                    "type": "book",
                     "offer_name": "Martine a la playa",
                     "offer_isbn": '987654345678',
                 },

@@ -76,7 +76,6 @@ class GetTest:
                     'stock': {
                         'type': 'thing',
                         'offer_name': 'Test Book',
-                        'offer_isbn': None,
                     },
                     'beneficiary': {
                         'email': 'beneficiary@example.com',

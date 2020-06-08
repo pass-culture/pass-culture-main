@@ -61,9 +61,8 @@ class BookingRecap:
 
 
 class ThingBookingRecap(BookingRecap):
-    def __init__(self, offer_isbn: str, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.offer_isbn = offer_isbn
 
     @BookingRecap.booking_token.getter
     def booking_token(self):
@@ -77,3 +76,9 @@ class EventBookingRecap(BookingRecap):
     def __init__(self, event_beginning_datetime: datetime, **kwargs):
         super().__init__(**kwargs)
         self.event_beginning_datetime = event_beginning_datetime
+
+
+class BookBookingRecap(ThingBookingRecap):
+    def __init__(self, offer_isbn: str, **kwargs):
+        super().__init__(**kwargs)
+        self.offer_isbn = offer_isbn

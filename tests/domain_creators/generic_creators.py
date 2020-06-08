@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from domain.beneficiary.beneficiary import Beneficiary
-from domain.booking_recap.booking_recap import BookingRecap, ThingBookingRecap, EventBookingRecap
+from domain.booking_recap.booking_recap import BookingRecap, ThingBookingRecap, EventBookingRecap, BookBookingRecap
 
 
 def create_domain_beneficiary(identifier: int = None,
@@ -34,9 +34,23 @@ def create_domain_thing_booking_recap(offer_name: str = "Le livre de la jungle",
                                       booking_is_cancelled: bool = False,
                                       booking_is_reimbursed: bool = False,
                                       venue_identifier: str = 'AE') -> ThingBookingRecap:
+    if offer_isbn:
+        return BookBookingRecap(
+            offer_name=offer_name,
+            offer_isbn=offer_isbn,
+            beneficiary_lastname=beneficiary_lastname,
+            beneficiary_firstname=beneficiary_firstname,
+            beneficiary_email=beneficiary_email,
+            booking_token=booking_token,
+            booking_date=booking_date,
+            booking_is_duo=booking_is_duo,
+            booking_is_used=booking_is_used,
+            booking_is_cancelled=booking_is_cancelled,
+            booking_is_reimbursed=booking_is_reimbursed,
+            venue_identifier=venue_identifier,
+        )
     return ThingBookingRecap(
         offer_name=offer_name,
-        offer_isbn=offer_isbn,
         beneficiary_lastname=beneficiary_lastname,
         beneficiary_firstname=beneficiary_firstname,
         beneficiary_email=beneficiary_email,
