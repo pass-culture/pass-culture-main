@@ -2,20 +2,26 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import BookingOfferCellForThing from './BookingOfferCellForThing'
 import BookingOfferCellForEvent from './BookingOfferCellForEvent'
+import BookingOfferCellForBook from './BookingOfferCellForBook'
 
 const BookingOfferCell = ({ offer }) => {
-  return offer.type === 'event' ? (
-    <BookingOfferCellForEvent
-      eventDatetime={offer.event_beginning_datetime}
-      offerName={offer.offer_name}
-      venueDepartmentCode={offer.venue_department_code}
-    />
-  ) : (
-    <BookingOfferCellForThing
-      offerIsbn={offer.offer_isbn}
-      offerName={offer.offer_name}
-    />
-  )
+  switch (offer.type) {
+    case 'event':
+      return (
+        <BookingOfferCellForEvent
+          eventDatetime={offer.event_beginning_datetime}
+          offerName={offer.offer_name}
+          venueDepartmentCode={offer.venue_department_code}
+        />
+      )
+    case 'book':
+      return (<BookingOfferCellForBook
+        offerIsbn={offer.offer_isbn}
+        offerName={offer.offer_name}
+              />)
+    default:
+      return <BookingOfferCellForThing offerName={offer.offer_name} />
+  }
 }
 
 BookingOfferCell.defaultValues = {

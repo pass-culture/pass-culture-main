@@ -25,7 +25,7 @@ describe('components | BookingOfferCell', () => {
       // Given
       const props = {
         offer: {
-          type: 'thing',
+          type: 'book',
           offer_name: 'Guitare acoustique',
           offer_isbn: '97834567654',
         },
