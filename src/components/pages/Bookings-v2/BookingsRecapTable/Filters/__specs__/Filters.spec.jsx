@@ -28,7 +28,7 @@ describe('components | Filters', () => {
 
   it('should apply offerName filter when typing keywords', async () => {
     // Given
-    const wrapper = shallow(<Filters {...props} />)
+    const wrapper = mount(<Filters {...props} />)
     const offerNameInput = wrapper.find({ placeholder: "Rechercher par nom d'offre" })
 
     // When
@@ -67,11 +67,10 @@ describe('components | Filters', () => {
 
   it('should add filter to previous filters when applying a new one', async () => {
     // Given
-    const selectedDate = moment('2020-05-20')
-    const wrapper = shallow(<Filters {...props} />)
-    const offerDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(0)
+    const wrapper = mount(<Filters {...props} />)
     const offerNameInput = wrapper.find({ placeholder: "Rechercher par nom d'offre" })
-    await offerDateInput.simulate('change', selectedDate)
+    const venueNameInput = wrapper.find('select').at(1)
+    await venueNameInput.simulate('change', { target: { value: 'Ma Venue' } })
 
     // When
     await offerNameInput.simulate('change', { target: { value: 'Jurassic Park' } })
@@ -82,9 +81,9 @@ describe('components | Filters', () => {
       bookingBeneficiary: '',
       bookingBeginningDate: null,
       bookingEndingDate: null,
-      offerDate: '2020-05-20',
+      offerDate: null,
       offerName: 'Jurassic Park',
-      offerVenue: ALL_VENUES,
+      offerVenue: 'Ma Venue',
     })
   })
 
@@ -155,7 +154,7 @@ describe('components | Filters', () => {
 
   it('should apply bookingBeneficiary filter when typing keywords for beneficiary name or email', async () => {
     // Given
-    const wrapper = shallow(<Filters {...props} />)
+    const wrapper = mount(<Filters {...props} />)
     const omniSearchSelect = wrapper.find('select').at(0)
     await omniSearchSelect.simulate('change', { target: { value: 'bénéficiaire' } })
     const beneficiaryInput = wrapper.find({ placeholder: 'Rechercher par nom ou email' })
@@ -190,7 +189,7 @@ describe('components | Filters', () => {
     const wrapper = await shallow(<Filters {...props} />)
 
     // then
-    const venuesSelect = wrapper.find('select').at(1)
+    const venuesSelect = wrapper.find('select').at(0)
     const venuesOptions = venuesSelect.find('option')
     expect(venuesOptions).toHaveLength(1)
     expect(venuesOptions.at(0).text()).toBe('Tous les lieux')
@@ -201,7 +200,7 @@ describe('components | Filters', () => {
     const wrapper = await shallow(<Filters {...props} />)
 
     // then
-    const venuesSelect = wrapper.find('select').at(1)
+    const venuesSelect = wrapper.find('select').at(0)
     const venuesOptions = venuesSelect.find('option')
     expect(venuesOptions).toHaveLength(3)
     const venueTwo = venuesOptions.find({ children: 'Librairie Fnac' })
@@ -210,7 +209,7 @@ describe('components | Filters', () => {
 
   it('should update the placeholder for omniSearchInput when selecting an omniSearchCriteria', async () => {
     // When
-    let wrapper = await shallow(<Filters {...props} />)
+    let wrapper = await mount(<Filters {...props} />)
     const omniSearchSelect = wrapper.find('select').at(0)
     await omniSearchSelect.simulate('change', { target: { value: 'bénéficiaire' } })
 
@@ -230,7 +229,7 @@ describe('components | Filters', () => {
     const wrapper = await shallow(<Filters {...props} />)
 
     // then
-    const venuesSelect = wrapper.find('select').at(1)
+    const venuesSelect = wrapper.find('select').at(0)
     const venuesOptions = venuesSelect.find('option')
     expect(venuesOptions).toHaveLength(3)
     const venueOne = venuesOptions.find({ children: 'gilbert Joseph - Offre numérique' })
@@ -242,7 +241,7 @@ describe('components | Filters', () => {
     const wrapper = await shallow(<Filters {...props} />)
 
     // then
-    const venuesSelect = wrapper.find('select').at(1)
+    const venuesSelect = wrapper.find('select').at(0)
     const venuesOptions = venuesSelect.find('option')
     expect(venuesOptions.at(1).text()).toBe('gilbert Joseph - Offre numérique')
     expect(venuesOptions.at(2).text()).toBe('Librairie Fnac')

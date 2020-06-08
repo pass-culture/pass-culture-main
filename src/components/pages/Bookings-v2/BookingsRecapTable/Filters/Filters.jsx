@@ -7,6 +7,7 @@ import InputWithCalendar from './InputWithCalendar'
 import { fetchAllVenuesByProUser } from '../../../../../services/venuesService'
 import { ALL_VENUES } from '../utils/filterBookingsRecap'
 import formatAndOrderVenues from '../utils/formatAndOrderVenues'
+import FilterByOmniSearch from './FilterByOmniSearch'
 
 export const TEXT_FILTER_DEFAULT_VALUE = ''
 const DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
@@ -257,31 +258,13 @@ class Filters extends Component {
 
     return (
       <div className="filters-wrapper">
-        <div className="fw-first-line">
-          <select
-            className="fw-booking-text-filters-select"
-            onBlur={this.handleOmniSearchCriteriaChange}
-            onChange={this.handleOmniSearchCriteriaChange}
-          >
-            {this.OMNISEARCH_FILTERS.map(selectOption => (
-              <option
-                key={selectOption.id}
-                value={selectOption.id}
-              >
-                {selectOption.selectOptionText}
-              </option>
-            ))}
-          </select>
-          <span className="vertical-bar" />
-          <input
-            className="fw-booking-text-filters-input"
-            id="text-filter-input"
-            onChange={this.handleOmniSearchChange}
-            placeholder={placeholderText}
-            type="text"
-            value={keywords}
-          />
-        </div>
+        <FilterByOmniSearch
+          keywords={keywords}
+          omniSearchSelectOptions={this.OMNISEARCH_FILTERS}
+          onHandleOmniSearchChange={this.handleOmniSearchChange}
+          onHandleOmniSearchCriteriaChange={this.handleOmniSearchCriteriaChange}
+          placeholderText={placeholderText}
+        />
         <div className="fw-second-line">
           <div className="fw-offer-date">
             <label
