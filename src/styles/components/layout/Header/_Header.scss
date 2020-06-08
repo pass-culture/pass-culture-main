@@ -1,8 +1,9 @@
 .header {
-  align-items: baseline;
+  align-items: center;
   background-color: $primary;
   display: flex;
-  padding: 6px;
+  height: rem(45px);
+  padding: rem(6px);
 }
 
 .header-start {
@@ -24,7 +25,7 @@ $button-size: $header-height - 0.75rem;
   border-radius: $button-size;
   display: block;
   height: $button-size;
-  padding: 5px;
+  padding: rem(5px);
   text-align: center;
   width: $button-size;
 
@@ -37,8 +38,8 @@ $button-size: $header-height - 0.75rem;
 }
 
 .close-link-img {
-  height: 21px;
-  width: 21px;
+  height: rem(21px);
+  width: rem(21px);
 }
 
 .back-link {
