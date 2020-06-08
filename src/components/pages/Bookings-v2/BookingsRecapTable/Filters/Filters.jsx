@@ -6,6 +6,7 @@ import moment from 'moment'
 import InputWithCalendar from './InputWithCalendar'
 import { fetchAllVenuesByProUser } from '../../../../../services/venuesService'
 import { ALL_VENUES } from '../utils/filterBookingsRecap'
+import formatAndOrderVenues from '../utils/formatAndOrderVenues'
 
 export const TEXT_FILTER_DEFAULT_VALUE = ''
 const DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
@@ -237,21 +238,6 @@ class Filters extends Component {
     )
   }
 
-  formatAndOrderVenues = venues => {
-    const sortAlphabeticallyByDisplayName = (a, b) => {
-      let aDisplayName = a.displayName.toLowerCase()
-      let bDisplayName = b.displayName.toLowerCase()
-      return aDisplayName < bDisplayName ? -1 : aDisplayName > bDisplayName ? 1 : 0
-    }
-
-    return venues
-      .map(venue => {
-        const displayName = venue.isVirtual ? `${venue.offererName} - Offre numérique` : venue.name
-        return { id: venue.id, displayName }
-      })
-      .sort(sortAlphabeticallyByDisplayName)
-  }
-
   render() {
     const { oldestBookingDate } = this.props
     const {
@@ -264,7 +250,7 @@ class Filters extends Component {
       venues,
     } = this.state
 
-    const venuesFormattedAndOrdered = this.formatAndOrderVenues(venues)
+    const venuesFormattedAndOrdered = formatAndOrderVenues(venues)
     const placeholderText = this.OMNISEARCH_FILTERS.find(
       criteria => criteria.id === selectedOmniSearchCriteria
     ).placeholderText
