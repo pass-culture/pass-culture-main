@@ -7,6 +7,7 @@ import InputWithCalendar from './InputWithCalendar'
 import { fetchAllVenuesByProUser } from '../../../../../services/venuesService'
 import { ALL_VENUES } from '../utils/filterBookingsRecap'
 
+export const TEXT_FILTER_DEFAULT_VALUE = ''
 const DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
 
 class Filters extends Component {
@@ -16,13 +17,12 @@ class Filters extends Component {
       filters: {
         bookingBeginningDate: null,
         bookingEndingDate: null,
-        bookingBeneficiary: null,
+        bookingBeneficiary: TEXT_FILTER_DEFAULT_VALUE,
         offerDate: null,
-        offerName: null,
+        offerName: TEXT_FILTER_DEFAULT_VALUE,
         offerVenue: ALL_VENUES,
       },
       keywords: '',
-      keywordsForBeneficiary: '',
       selectedBookingBeginningDate: null,
       selectedBookingEndingDate: moment(),
       selectedOfferDate: null,
@@ -65,8 +65,8 @@ class Filters extends Component {
     this.setState(
       {
         filters: {
-          bookingBeneficiary: null,
-          offerName: null,
+          bookingBeneficiary: TEXT_FILTER_DEFAULT_VALUE,
+          offerName: TEXT_FILTER_DEFAULT_VALUE,
           offerDate: null,
           offerVenue: ALL_VENUES,
           bookingBeginningDate: null,
@@ -86,9 +86,10 @@ class Filters extends Component {
   }
 
   handleOmniSearchCriteriaChange = event => {
-    const { selectedOmniSearchCriteria } = this.state
-    const currentFilterKeywords = this.state.filters[this.OMNISEARCH_FILTERS[selectedOmniSearchCriteria].stateKey]
+    const { selectedOmniSearchCriteria, filters } = this.state
     const newOmniSearchCriteria = event.target.value.toLowerCase()
+    const currentOmniSearchStateKey = this.OMNISEARCH_FILTERS[selectedOmniSearchCriteria].stateKey
+    const currentFilterKeywords = filters[currentOmniSearchStateKey]
     this.setState({ selectedOmniSearchCriteria: newOmniSearchCriteria })
     this.OMNISEARCH_FILTERS[newOmniSearchCriteria].handleChange(currentFilterKeywords)
   }
@@ -106,7 +107,7 @@ class Filters extends Component {
       {
         filters: {
           ...filters,
-          beneficiary: null,
+          bookingBeneficiary: TEXT_FILTER_DEFAULT_VALUE,
           offerName: keywords.length > 0 ? keywords : null,
         },
         keywords: keywords,
@@ -118,7 +119,7 @@ class Filters extends Component {
     )
   }
 
-  handleBeneficiaryChange = keywords  => {
+  handleBeneficiaryChange = keywords => {
     const { filters } = this.state
     keywords = keywords || ''
 
@@ -127,7 +128,7 @@ class Filters extends Component {
         filters: {
           ...filters,
           bookingBeneficiary: keywords.length > 0 ? keywords : null,
-          offerName: null,
+          offerName: TEXT_FILTER_DEFAULT_VALUE,
         },
         keywords: keywords,
       },
@@ -142,12 +143,12 @@ class Filters extends Component {
     offre: {
       handleChange: this.handleOfferNameChange,
       placeholderText: "Rechercher par nom d'offre",
-      stateKey: "offerName"
+      stateKey: 'offerName',
     },
     bénéficiaire: {
       handleChange: this.handleBeneficiaryChange,
       placeholderText: 'Rechercher par nom ou email',
-      stateKey: "bookingBeneficiary"
+      stateKey: 'bookingBeneficiary',
     },
   }
 

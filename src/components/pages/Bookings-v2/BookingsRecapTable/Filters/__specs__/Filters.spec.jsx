@@ -36,7 +36,7 @@ describe('components | Filters', () => {
 
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeneficiary: null,
+      bookingBeneficiary: '',
       bookingBeginningDate: null,
       bookingEndingDate: null,
       offerName: 'Jurassic Park',
@@ -57,10 +57,10 @@ describe('components | Filters', () => {
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
       bookingBeginningDate: null,
-      bookingBeneficiary: null,
+      bookingBeneficiary: '',
       bookingEndingDate: null,
       offerDate: '2020-05-20',
-      offerName: null,
+      offerName: '',
       offerVenue: ALL_VENUES,
     })
   })
@@ -79,7 +79,7 @@ describe('components | Filters', () => {
     // Then
     expect(props.setFilters).toHaveBeenCalledTimes(2)
     expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeneficiary: null,
+      bookingBeneficiary: '',
       bookingBeginningDate: null,
       bookingEndingDate: null,
       offerDate: '2020-05-20',
@@ -102,11 +102,11 @@ describe('components | Filters', () => {
 
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeneficiary: null,
+      bookingBeneficiary: '',
       bookingBeginningDate: '2020-05-20',
       bookingEndingDate: null,
       offerDate: null,
-      offerName: null,
+      offerName: '',
       offerVenue: ALL_VENUES,
     })
   })
@@ -125,11 +125,11 @@ describe('components | Filters', () => {
 
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeneficiary: null,
+      bookingBeneficiary: '',
       bookingBeginningDate: null,
       bookingEndingDate: '2020-05-20',
       offerDate: null,
-      offerName: null,
+      offerName: '',
       offerVenue: ALL_VENUES,
     })
   })
@@ -144,11 +144,11 @@ describe('components | Filters', () => {
 
     // then
     expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeneficiary: null,
+      bookingBeneficiary: '',
       bookingBeginningDate: null,
       bookingEndingDate: null,
       offerDate: null,
-      offerName: null,
+      offerName: '',
       offerVenue: 'AE',
     })
   })
@@ -168,9 +168,9 @@ describe('components | Filters', () => {
       bookingBeneficiary: 'Firost',
       bookingBeginningDate: null,
       bookingEndingDate: null,
-      offerName: null,
+      offerName: '',
       offerDate: null,
-      offerVenue: "all",
+      offerVenue: 'all',
     })
   })
 

@@ -19,9 +19,9 @@ describe('filterBookingsRecap', () => {
       },
     ]
     const filters = {
-      offerName: null,
+      offerName: '',
       offerDate: null,
-      bookingBeneficiary: null,
+      bookingBeneficiary: '',
       bookingBeginningDate: null,
       bookingEndingDate: null,
     }
@@ -65,7 +65,7 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: 'Merlin',
       offerDate: null,
-      bookingBeneficiary: null,
+      bookingBeneficiary: '',
       bookingBeginningDate: null,
       bookingEndingDate: null,
     }
@@ -94,9 +94,9 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap]
     const filters = {
-      offerName: null,
+      offerName: '',
       offerDate: '2020-02-18',
-      bookingBeneficiary: null,
+      bookingBeneficiary: '',
       bookingBeginningDate: null,
       bookingEndingDate: null,
     }
@@ -140,9 +140,9 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      offerName: null,
+      offerName: '',
       offerDate: '2020-01-14',
-      bookingBeneficiary: null,
+      bookingBeneficiary: '',
       bookingBeginningDate: null,
       bookingEndingDate: null,
     }
@@ -188,7 +188,7 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: '',
       offerDate: null,
-      bookingBeneficiary: null,
+      bookingBeneficiary: '',
       bookingBeginningDate: '2020-01-14',
       bookingEndingDate: null,
     }
@@ -234,7 +234,7 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: '',
       offerDate: null,
-      bookingBeneficiary: null,
+      bookingBeneficiary: '',
       bookingBeginningDate: '2020-02-18',
       bookingEndingDate: null,
     }
@@ -280,7 +280,7 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: '',
       offerDate: null,
-      bookingBeneficiary: null,
+      bookingBeneficiary: '',
       bookingBeginningDate: null,
       bookingEndingDate: '2020-01-14',
     }
@@ -326,7 +326,7 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: '',
       offerDate: null,
-      bookingBeneficiary: null,
+      bookingBeneficiary: '',
       bookingBeginningDate: '2020-01-01',
       bookingEndingDate: '2020-01-14',
     }
@@ -372,7 +372,7 @@ describe('filterBookingsRecap', () => {
     const filters = {
       offerName: 'Jurrasic',
       offerDate: '2020-01-14',
-      bookingBeneficiary: null,
+      bookingBeneficiary: '',
       bookingBeginningDate: null,
       bookingEndingDate: null,
     }
@@ -420,8 +420,8 @@ describe('filterBookingsRecap', () => {
     const filters = {
       bookingBeginningDate: null,
       bookingEndingDate: null,
-      bookingBeneficiary: null,
-      offerName: null,
+      bookingBeneficiary: '',
+      offerName: '',
       offerDate: null,
       offerVenue: 'AE',
     }
@@ -463,7 +463,7 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      offerName: null,
+      offerName: '',
       offerDate: null,
       bookingBeneficiary: 'Ludovic',
       bookingBeginningDate: null,

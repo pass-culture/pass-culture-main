@@ -9,7 +9,7 @@ import Header from './Header/Header'
 import BookingIsDuoCell from './CellsFormatter/BookingIsDuoCell'
 import { NB_BOOKINGS_PER_PAGE } from './NB_BOOKINGS_PER_PAGE'
 import TableFrame from './Table/TableFrame'
-import Filters from './Filters/Filters'
+import Filters, { TEXT_FILTER_DEFAULT_VALUE } from './Filters/Filters'
 import NoFilteredBookings from './NoFilteredBookings/NoFilteredBookings'
 import findOldestBookingDate from './utils/findOldestBookingDate'
 import filterBookingsRecap, { ALL_VENUES } from './utils/filterBookingsRecap'
@@ -65,11 +65,11 @@ class BookingsRecapTable extends Component {
       ],
       currentPage: 0,
       filters: {
-        beneficiary: '',
+        bookingBeneficiary: TEXT_FILTER_DEFAULT_VALUE,
         bookingBeginningDate: null,
         bookingEndingDate: null,
         offerDate: null,
-        offerName: '',
+        offerName: TEXT_FILTER_DEFAULT_VALUE,
         offerVenue: ALL_VENUES,
       },
       oldestBookingDate: findOldestBookingDate(props.bookingsRecap),
