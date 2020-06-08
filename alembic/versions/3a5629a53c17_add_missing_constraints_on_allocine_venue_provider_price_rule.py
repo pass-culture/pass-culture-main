@@ -26,5 +26,5 @@ def upgrade():
 def downgrade():
     op.drop_constraint('unique_allocine_venue_provider_price_rule', 'allocine_venue_provider_price_rule')
     op.create_unique_constraint(
-        'unique_venue_provider_price_rule', 'allocine_venue_provider_price_rule', ['venueProviderId', 'priceRule']
+        'unique_venue_provider_price_rule', 'allocine_venue_provider_price_rule', ['allocineVenueProviderId', 'priceRule']
     )
