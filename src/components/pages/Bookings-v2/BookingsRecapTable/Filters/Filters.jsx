@@ -242,12 +242,12 @@ class Filters extends Component {
           <div className="fw-venues">
             <label
               className="fw-offer-venue-label"
-              htmlFor="select-filter-input"
+              htmlFor="offer-venue-input"
             >
               {'Lieu'}
             </label>
             <select
-              id="select-filter-input"
+              id="offer-venue-input"
               onBlur={this.handleVenueSelection}
               onChange={this.handleVenueSelection}
               ref={this.venueSelect}
