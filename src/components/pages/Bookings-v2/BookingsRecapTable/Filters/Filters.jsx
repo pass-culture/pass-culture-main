@@ -54,7 +54,7 @@ class Filters extends Component {
       offerName,
       offerDate,
       offerVenue,
-      offerISBN
+      offerISBN,
     } = filterValues
     const { setFilters } = this.props
     setFilters({
@@ -64,7 +64,7 @@ class Filters extends Component {
       offerDate: offerDate,
       offerName: offerName,
       offerVenue: offerVenue,
-      offerISBN: offerISBN
+      offerISBN: offerISBN,
     })
   }, DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS)
 
@@ -161,14 +161,13 @@ class Filters extends Component {
 
   handleISBNChange = keywords => {
     const { filters } = this.state
-    keywords = keywords || ''
 
     this.setState(
       {
         filters: {
           ...filters,
           bookingBeneficiary: TEXT_FILTER_DEFAULT_VALUE,
-          offerISBN: keywords.length > 0 ? keywords : null,
+          offerISBN: keywords && keywords.length > 0 ? keywords : null,
           offerName: TEXT_FILTER_DEFAULT_VALUE,
         },
         keywords: keywords,
