@@ -2,9 +2,9 @@ from typing import List
 
 from domain.booking.booking import Booking
 from domain.booking.booking_repository import BookingRepository
-from models import BookingSQLEntity
-from repository import repository
 from infrastructure.repository.booking import booking_domain_converter
+from models import BookingSQLEntity, StockSQLEntity
+from repository import repository
 
 
 class BookingSQLRepository(BookingRepository):
@@ -15,6 +15,15 @@ class BookingSQLRepository(BookingRepository):
             .all()
 
         return [booking_domain_converter.to_domain(booking_sql_entity) for booking_sql_entity in booking_sql_entities]
+
+    def find_not_cancelled_booking_by(self, offer_id: int, user_id: int) -> Booking:
+        booking_sql_entity = BookingSQLEntity.query \
+            .join(StockSQLEntity) \
+            .filter(StockSQLEntity.offerId == offer_id) \
+            .filter(BookingSQLEntity.userId == user_id) \
+            .filter(BookingSQLEntity.isCancelled == False) \
+            .first()
+        return booking_domain_converter.to_domain(booking_sql_entity)
 
     def save(self, booking: Booking) -> Booking:
         booking_sql_entity = booking_domain_converter.to_model(booking)

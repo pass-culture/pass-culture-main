@@ -95,3 +95,24 @@ class BookingSQLRepositoryTest:
 
         # then
         assert booking_saved.beneficiary.wallet_balance == deposit.amount - stock.price
+
+    @clean_database
+    def test_returns_booking_by_offer_id_and_user_id_when_not_cancelled(self, app):
+        # given
+        user = create_user()
+        offerer = create_offerer()
+        venue_online = create_venue(offerer, siret=None, is_virtual=True)
+        book_offer = create_offer_with_thing_product(venue_online, thing_type=ThingType.LIVRE_EDITION)
+        book_stock = create_stock_from_offer(book_offer, price=0, quantity=200)
+        booking_sql_entity1 = create_booking(user=user, is_cancelled=True, stock=book_stock, venue=venue_online)
+        booking_sql_entity2 = create_booking(user=user, is_cancelled=False, stock=book_stock, venue=venue_online)
+        repository.save(booking_sql_entity1, booking_sql_entity2)
+
+        # when
+        found_booking = self.booking_sql_repository.find_not_cancelled_booking_by(
+            offer_id=book_offer.id,
+            user_id=user.id
+        )
+
+        # then
+        assert found_booking.identifier == booking_sql_entity2.id

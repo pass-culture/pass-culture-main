@@ -52,6 +52,48 @@ def test_should_create_bookings_when_offer_one_with_price_0_was_booked_but_not_o
 
 
 @clean_database
+def test_should_cancel_booking_when_offer_one_with_price_0_was_booked_but_not_offer_two_nor_three(app):
+    # Given
+    beneficiary = create_user(first_name='John', last_name='Wick', email='john.wick@example.com')
+    create_deposit(user=beneficiary)
+    offerer = create_offerer()
+    venue = create_venue(offerer)
+
+    offer_one = create_offer_with_thing_product(venue)
+    offer_two = create_offer_with_thing_product(venue)
+    offer_three = create_offer_with_thing_product(venue)
+
+    stock_for_offer_one_with_price_0 = create_stock(offer=offer_one, price=0)
+    stock_for_offer_two = create_stock(offer=offer_two, price=2)
+    stock_for_offer_three = create_stock(offer=offer_three, price=5)
+
+    booking = create_booking(user=beneficiary, stock=stock_for_offer_one_with_price_0)
+
+    repository.save(
+        booking,
+        stock_for_offer_two,
+        stock_for_offer_three,
+    )
+
+    # When
+    create_bookings_for_astropolis(
+        offer_one_id=offer_one.id,
+        offer_two_id=offer_two.id,
+        offer_three_id=offer_three.id
+    )
+
+    # Then
+    expected_cancelled_booking_for_beneficiary = BookingSQLEntity.query \
+        .filter(BookingSQLEntity.userId == beneficiary.id) \
+        .filter(BookingSQLEntity.stockId == stock_for_offer_one_with_price_0.id) \
+        .all()
+    assert len(expected_cancelled_booking_for_beneficiary) == 1
+    assert expected_cancelled_booking_for_beneficiary[0].isCancelled is True
+    assert expected_cancelled_booking_for_beneficiary[0].isUsed is False
+    assert expected_cancelled_booking_for_beneficiary[0].userId == beneficiary.id
+
+
+@clean_database
 def test_should_not_create_bookings_when_offer_one_with_price_5_was_booked_but_not_offer_two_nor_three(app):
     # Given
     beneficiary = create_user(first_name='John', last_name='Wick', email='john.wick@example.com')

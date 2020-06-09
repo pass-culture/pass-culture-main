@@ -10,5 +10,9 @@ class BookingRepository(ABC):
         pass
 
     @abstractmethod
+    def find_not_cancelled_booking_by(self, offer_id: int, user_id: int) -> Booking:
+        pass
+
+    @abstractmethod
     def save(self, booking: Booking) -> Booking:
         pass

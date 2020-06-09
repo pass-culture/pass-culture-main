@@ -46,18 +46,30 @@ def create_bookings_for_astropolis(offer_one_id: int, offer_two_id: int, offer_t
 
             try:
                 check_stock_is_bookable(stock)
-                booking = Booking(beneficiary=beneficiary, stock=stock, amount=stock.price, quantity=1, is_used=True)
-                check_expenses_limits(expenses, booking)
+                new_booking = Booking(beneficiary=beneficiary, stock=stock, amount=stock.price, quantity=1,
+                                      is_used=True)
+                check_expenses_limits(expenses, new_booking)
+                booking_sql_repository.save(new_booking)
+                logger.info(f'[FIX-BOOKINGS] Created booking for user {beneficiary.identifier}')
 
-                booking_sql_repository.save(booking)
-                logger.info(f'Created booking for user {beneficiary.identifier}')
+                booking_on_offer_one = booking_sql_repository.find_not_cancelled_booking_by(
+                    offer_id=offer_one_id,
+                    user_id=beneficiary_id
+                )
+                booking_on_offer_one.isCancelled = True
+                booking_sql_repository.save(booking_on_offer_one)
+                logger.info(
+                    f'[FIX-BOOKINGS] Cancelled booking {booking_on_offer_one.identifier} '
+                    f'for user {beneficiary.identifier}'
+                )
                 number_of_created_bookings += 1
             except ClientError:
-                logger.error(f'ClientError when trying to create booking for user {beneficiary_id}')
+                logger.error(f'[FIX-BOOKINGS] ClientError when trying to create booking for user {beneficiary_id}')
+                logger.error(f'[FIX-BOOKINGS] Expenses {expenses}')
                 beneficiary_id_in_errors.append(beneficiary_id)
             except ApiErrors:
-                logger.error(f'APIErrors, when trying to create booking for user {beneficiary_id}')
-                logger.error(f'Expenses {expenses}')
+                logger.error(f'[FIX-BOOKINGS] APIErrors, when trying to create booking for user {beneficiary_id}')
+                logger.error(f'[FIX-BOOKINGS] Expenses {expenses}')
                 beneficiary_id_in_errors.append(beneficiary_id)
         logger.info(f'Created {number_of_created_bookings} bookings')
         logger.info(f'Beneficiaries in error {beneficiary_id_in_errors}')
