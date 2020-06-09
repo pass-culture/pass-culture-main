@@ -17,7 +17,6 @@
     height: rem(40px);
     padding: rem(10px) rem(16px);
     font-size: rem(16px);
-    font-weight: $weight-medium;
 
     &:focus {
       outline: none;
@@ -75,7 +74,6 @@
       background: none;
       cursor: pointer;
       font-size: rem(16px);
-      font-weight: $weight-medium;
       padding-left: rem(10px);
       outline: none;
       width: rem(150px);
@@ -94,7 +92,6 @@
     select {
       border: $control-border-width solid $grey-light;
       cursor: pointer;
-      font-weight: $weight-normal;
       font-size: rem(16px);
       border-radius: rem(20px);
       box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
@@ -160,7 +157,6 @@
         border: 0;
         cursor: pointer;
         font-size: rem(16px);
-        font-weight: $weight-medium;
         outline: none;
         padding-left: rem(10px);
         width: rem(135px);
