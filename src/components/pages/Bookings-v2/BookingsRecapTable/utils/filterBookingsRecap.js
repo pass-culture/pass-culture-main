@@ -64,21 +64,21 @@ const filterByOfferVenue = (offerVenue, booking) => {
 }
 
 const filterByISBN = (isbn, booking) => {
-  if (booking.stock.type === 'book') {
-    return booking.stock.isbn.includes(isbn)
+  if (isbn !== '') {
+    return booking.stock.type === 'book' && booking.stock.offer_isbn.includes(isbn)
   }
-  return false
+  return true
 }
 
 const filterBookingsRecap = (bookingsRecap, filters) => {
   const {
-    offerName,
-    offerDate,
-    offerVenue,
     bookingBeneficiary,
     bookingBeginningDate,
     bookingEndingDate,
-    isbn,
+    offerDate,
+    offerISBN,
+    offerName,
+    offerVenue,
   } = filters
   return bookingsRecap.filter(booking => {
     return (
@@ -88,7 +88,7 @@ const filterBookingsRecap = (bookingsRecap, filters) => {
       filterByBookingEndDate(bookingEndingDate, booking) &&
       filterByBookingBeneficiary(bookingBeneficiary, booking) &&
       filterByOfferVenue(offerVenue, booking) &&
-      filterByISBN(isbn, booking)
+      filterByISBN(offerISBN, booking)
     )
   })
 }

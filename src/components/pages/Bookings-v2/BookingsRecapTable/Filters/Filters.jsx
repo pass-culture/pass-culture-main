@@ -24,6 +24,7 @@ class Filters extends Component {
         bookingBeneficiary: TEXT_FILTER_DEFAULT_VALUE,
         offerDate: null,
         offerName: TEXT_FILTER_DEFAULT_VALUE,
+        offerISBN: TEXT_FILTER_DEFAULT_VALUE,
         offerVenue: ALL_VENUES,
       },
       keywords: '',
@@ -47,12 +48,13 @@ class Filters extends Component {
 
   applyFilters = debounce(filterValues => {
     const {
-      offerName,
-      offerDate,
-      offerVenue,
       bookingBeginningDate,
       bookingBeneficiary,
       bookingEndingDate,
+      offerName,
+      offerDate,
+      offerVenue,
+      offerISBN
     } = filterValues
     const { setFilters } = this.props
     setFilters({
@@ -62,6 +64,7 @@ class Filters extends Component {
       offerDate: offerDate,
       offerName: offerName,
       offerVenue: offerVenue,
+      offerISBN: offerISBN
     })
   }, DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS)
 
@@ -70,11 +73,12 @@ class Filters extends Component {
       {
         filters: {
           bookingBeneficiary: TEXT_FILTER_DEFAULT_VALUE,
-          offerName: TEXT_FILTER_DEFAULT_VALUE,
-          offerDate: null,
-          offerVenue: ALL_VENUES,
           bookingBeginningDate: null,
           bookingEndingDate: null,
+          offerDate: null,
+          offerName: TEXT_FILTER_DEFAULT_VALUE,
+          offerISBN: TEXT_FILTER_DEFAULT_VALUE,
+          offerVenue: ALL_VENUES,
         },
         keywords: '',
         selectedBookingBeginningDate: null,
@@ -123,6 +127,7 @@ class Filters extends Component {
         filters: {
           ...filters,
           bookingBeneficiary: TEXT_FILTER_DEFAULT_VALUE,
+          offerISBN: TEXT_FILTER_DEFAULT_VALUE,
           offerName: keywords && keywords.length > 0 ? keywords : null,
         },
         keywords: keywords,
@@ -142,6 +147,28 @@ class Filters extends Component {
         filters: {
           ...filters,
           bookingBeneficiary: keywords && keywords.length > 0 ? keywords : null,
+          offerISBN: TEXT_FILTER_DEFAULT_VALUE,
+          offerName: TEXT_FILTER_DEFAULT_VALUE,
+        },
+        keywords: keywords,
+      },
+      () => {
+        const { filters } = this.state
+        this.applyFilters(filters)
+      }
+    )
+  }
+
+  handleISBNChange = keywords => {
+    const { filters } = this.state
+    keywords = keywords || ''
+
+    this.setState(
+      {
+        filters: {
+          ...filters,
+          bookingBeneficiary: TEXT_FILTER_DEFAULT_VALUE,
+          offerISBN: keywords.length > 0 ? keywords : null,
           offerName: TEXT_FILTER_DEFAULT_VALUE,
         },
         keywords: keywords,
@@ -167,6 +194,13 @@ class Filters extends Component {
       placeholderText: 'Rechercher par nom ou email',
       stateKey: 'bookingBeneficiary',
       selectOptionText: 'Bénéficiaire',
+    },
+    {
+      id: 'isbn',
+      handleChange: this.handleISBNChange,
+      placeholderText: 'Rechercher par ISBN',
+      stateKey: 'offerISBN',
+      selectOptionText: 'ISBN',
     },
   ]
 

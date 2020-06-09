@@ -39,8 +39,9 @@ describe('components | Filters', () => {
       bookingBeneficiary: '',
       bookingBeginningDate: null,
       bookingEndingDate: null,
-      offerName: 'Jurassic Park',
       offerDate: null,
+      offerName: 'Jurassic Park',
+      offerISBN: '',
       offerVenue: ALL_VENUES,
     })
   })
@@ -59,6 +60,7 @@ describe('components | Filters', () => {
       bookingBeneficiary: '',
       bookingEndingDate: null,
       offerDate: '2020-05-20',
+      offerISBN: '',
       offerName: '',
       offerVenue: ALL_VENUES,
     })
@@ -81,6 +83,7 @@ describe('components | Filters', () => {
       bookingBeginningDate: null,
       bookingEndingDate: null,
       offerDate: '2020-05-20',
+      offerISBN: '',
       offerName: 'Jurassic Park',
       offerVenue: ALL_VENUES,
     })
@@ -88,9 +91,6 @@ describe('components | Filters', () => {
 
   it('should apply bookingBeginningDate filter when choosing an booking beginning date', () => {
     // Given
-    const props = {
-      setFilters: jest.fn(),
-    }
     const selectedDate = moment('2020-05-20')
     const wrapper = shallow(<Filters {...props} />)
 
@@ -103,6 +103,7 @@ describe('components | Filters', () => {
       bookingBeginningDate: '2020-05-20',
       bookingEndingDate: null,
       offerDate: null,
+      offerISBN: '',
       offerName: '',
       offerVenue: ALL_VENUES,
     })
@@ -110,9 +111,6 @@ describe('components | Filters', () => {
 
   it('should apply bookingEndingDate filter when choosing an booking end date', () => {
     // Given
-    const props = {
-      setFilters: jest.fn(),
-    }
     const selectedDate = moment('2020-05-20')
     const wrapper = shallow(<Filters {...props} />)
 
@@ -125,6 +123,7 @@ describe('components | Filters', () => {
       bookingBeginningDate: null,
       bookingEndingDate: '2020-05-20',
       offerDate: null,
+      offerISBN: '',
       offerName: '',
       offerVenue: ALL_VENUES,
     })
@@ -148,6 +147,7 @@ describe('components | Filters', () => {
       bookingBeginningDate: null,
       bookingEndingDate: null,
       offerDate: null,
+      offerISBN: '',
       offerName: '',
       offerVenue: 'AE',
     })
@@ -167,9 +167,31 @@ describe('components | Filters', () => {
       bookingBeneficiary: 'Firost',
       bookingBeginningDate: null,
       bookingEndingDate: null,
-      offerName: '',
       offerDate: null,
+      offerISBN: '',
+      offerName: '',
       offerVenue: 'all',
+    })
+  })
+
+  it('should apply ISBN filter when typing keywords for an ISBN', () => {
+    // Given
+    const wrapper = shallow(<Filters {...props} />)
+    const instance = wrapper.instance()
+    instance.handleOmniSearchCriteriaChange({ target: { value: 'isbn' } })
+
+    // When
+    instance.handleOmniSearchChange({ target: { value: '87465373654' } })
+
+    // Then
+    expect(props.setFilters).toHaveBeenCalledWith({
+      bookingBeneficiary: '',
+      bookingBeginningDate: null,
+      bookingEndingDate: null,
+      offerDate: null,
+      offerISBN: '87465373654',
+      offerName: '',
+      offerVenue: ALL_VENUES,
     })
   })
 

@@ -19,11 +19,12 @@ describe('filterBookingsRecap', () => {
       },
     ]
     const filters = {
-      offerName: '',
-      offerDate: null,
       bookingBeneficiary: '',
       bookingBeginningDate: null,
       bookingEndingDate: null,
+      offerDate: null,
+      offerISBN: '',
+      offerName: '',
     }
 
     // when
@@ -63,11 +64,12 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      offerName: 'Merlin',
-      offerDate: null,
       bookingBeneficiary: '',
       bookingBeginningDate: null,
       bookingEndingDate: null,
+      offerDate: null,
+      offerISBN: '',
+      offerName: 'Merlin',
     }
 
     // when
@@ -140,11 +142,12 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      offerName: '',
-      offerDate: '2020-01-14',
       bookingBeneficiary: '',
       bookingBeginningDate: null,
       bookingEndingDate: null,
+      offerDate: '2020-01-14',
+      offerISBN: '',
+      offerName: '',
     }
 
     // when
@@ -186,11 +189,12 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      offerName: '',
-      offerDate: null,
       bookingBeneficiary: '',
       bookingBeginningDate: '2020-01-14',
       bookingEndingDate: null,
+      offerDate: null,
+      offerISBN: '',
+      offerName: '',
     }
 
     // when
@@ -232,11 +236,12 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      offerName: '',
-      offerDate: null,
       bookingBeneficiary: '',
       bookingBeginningDate: '2020-02-18',
       bookingEndingDate: null,
+      offerDate: null,
+      offerISBN: '',
+      offerName: '',
     }
 
     // when
@@ -278,11 +283,12 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      offerName: '',
-      offerDate: null,
       bookingBeneficiary: '',
       bookingBeginningDate: null,
       bookingEndingDate: '2020-01-14',
+      offerDate: null,
+      offerISBN: '',
+      offerName: '',
     }
 
     // when
@@ -324,11 +330,12 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      offerName: '',
-      offerDate: null,
       bookingBeneficiary: '',
       bookingBeginningDate: '2020-01-01',
       bookingEndingDate: '2020-01-14',
+      offerDate: null,
+      offerISBN: '',
+      offerName: '',
     }
 
     // when
@@ -370,11 +377,12 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      offerName: 'Jurrasic',
-      offerDate: '2020-01-14',
       bookingBeneficiary: '',
       bookingBeginningDate: null,
       bookingEndingDate: null,
+      offerDate: '2020-01-14',
+      offerISBN: '',
+      offerName: 'Jurrasic',
     }
 
     // when
@@ -421,8 +429,9 @@ describe('filterBookingsRecap', () => {
       bookingBeginningDate: null,
       bookingEndingDate: null,
       bookingBeneficiary: '',
-      offerName: '',
       offerDate: null,
+      offerISBN: '',
+      offerName: '',
       offerVenue: 'AE',
     }
 
@@ -463,11 +472,12 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      offerName: '',
-      offerDate: null,
       bookingBeneficiary: 'Ludovic',
       bookingBeginningDate: null,
       bookingEndingDate: null,
+      offerDate: null,
+      offerISBN: '',
+      offerName: '',
     }
 
     // when
@@ -482,7 +492,7 @@ describe('filterBookingsRecap', () => {
     const bookingRecap1 = {
       stock: {
         offer_name: 'Merlin enchanteur',
-        isbn: 'NFBFHF',
+        offer_isbn: '9787605639121',
         type: 'book',
       },
       beneficiary: {
@@ -491,13 +501,13 @@ describe('filterBookingsRecap', () => {
         email: 'sonia.klepi@example.com',
       },
       booking_date: '2020-04-03T12:00:00Z',
-      booking_token: 'ZEHBGD',
+      booking_token: '98454627263',
       booking_status: 'Validé',
     }
     const bookingRecap2 = {
       stock: {
         offer_name: 'Jurrasic Perk',
-        isbn: 'IUKOLI',
+        offer_isbn: 'IUKOLI',
         type: 'book',
       },
       beneficiary: {
@@ -511,12 +521,12 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      isbn: 'NFBFHF',
-      offerName: '',
-      offerDate: null,
       bookingBeneficiary: '',
       bookingBeginningDate: null,
       bookingEndingDate: null,
+      offerISBN: '9787605',
+      offerName: '',
+      offerDate: null,
     }
 
     // when
