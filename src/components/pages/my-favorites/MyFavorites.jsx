@@ -89,7 +89,7 @@ class MyFavorites extends PureComponent {
         {'Favoris'}
       </h1>
       {hasNoFavorite ? (
-        <NoItems sentence="Dès que tu auras ajouté une offre en favori, tu la retrouveras ici." />
+        <NoItems sentence="Dès que tu auras ajouté une offre à tes favoris, tu la retrouveras ici." />
       ) : (
         <section>
           {isEditMode ? (
