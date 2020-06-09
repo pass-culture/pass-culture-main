@@ -5,7 +5,7 @@ import DetailsContainer from '../../layout/Details/DetailsContainer'
 import HeaderContainer from '../../layout/Header/HeaderContainer'
 
 const Offer = ({ getOfferById }) => (
-  <main className="page teaser-list">
+  <main className="teaser-list">
     <HeaderContainer title="Offre" />
     <DetailsContainer getOfferById={getOfferById} />
   </main>
