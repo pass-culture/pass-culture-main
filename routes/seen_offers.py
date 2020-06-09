@@ -1,5 +1,5 @@
 from flask import current_app as app, request
-from flask_login import login_required
+from flask_login import current_user, login_required
 
 from models.feature import FeatureToggle
 from use_cases.save_offer_seen_by_beneficiary import save_seen_offer
@@ -16,7 +16,6 @@ from validation.routes.seen_offers import check_payload_is_valid
 def put_seen_offers():
     payload = request.json
     check_payload_is_valid(payload)
-    user_id = dehumanize(payload['userId'])
     offer_id = dehumanize(payload['offerId'])
-    save_seen_offer(user_id, offer_id)
+    save_seen_offer(current_user.id, offer_id)
     return '', 200

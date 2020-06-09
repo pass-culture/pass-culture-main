@@ -27,7 +27,6 @@ class Put:
             auth_request = TestClient(app.test_client()).with_auth(beneficiary.email)
 
             data = {"offerId": humanize(offer.id),
-                    "userId": humanize(beneficiary.id),
                     "dateSeen": "2018-12-17T15:59:11.689000Z"}
 
             # When
