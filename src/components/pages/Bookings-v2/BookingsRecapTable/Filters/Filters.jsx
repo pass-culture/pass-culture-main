@@ -9,6 +9,7 @@ import { ALL_VENUES } from '../utils/filterBookingsRecap'
 import formatAndOrderVenues from '../utils/formatAndOrderVenues'
 import FilterByOmniSearch from './FilterByOmniSearch'
 import FilterByEventDate from './FilterByEventDate.jsx'
+import FilterByVenue from './FilterByVenue'
 
 export const TEXT_FILTER_DEFAULT_VALUE = ''
 const DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
@@ -271,33 +272,12 @@ class Filters extends Component {
             onHandleOfferDateChange={this.handleOfferDateChange}
             selectedOfferDate={selectedOfferDate}
           />
-          <div className="fw-venues">
-            <label
-              className="fw-offer-venue-label"
-              htmlFor="offer-venue-input"
-            >
-              {'Lieu'}
-            </label>
-            <select
-              id="offer-venue-input"
-              onBlur={this.handleVenueSelection}
-              onChange={this.handleVenueSelection}
-              ref={this.venueSelect}
-              value={selectedVenue}
-            >
-              <option value={ALL_VENUES}>
-                {'Tous les lieux'}
-              </option>
-              {venuesFormattedAndOrdered.map(venue => (
-                <option
-                  key={venue.id}
-                  value={venue.id}
-                >
-                  {venue.displayName}
-                </option>
-              ))}
-            </select>
-          </div>
+          <FilterByVenue
+            onHandleVenueSelection={this.handleVenueSelection}
+            selectedVenue={selectedVenue}
+            venueSelect={this.venueSelect}
+            venuesFormattedAndOrdered={venuesFormattedAndOrdered}
+          />
           <div className="fw-booking-date">
             <label
               className="fw-booking-date-label"

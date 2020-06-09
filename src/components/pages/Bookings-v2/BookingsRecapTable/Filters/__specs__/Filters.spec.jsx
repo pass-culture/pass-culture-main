@@ -1,6 +1,6 @@
 import React from 'react'
 import Filters from '../Filters'
-import { mount, shallow } from 'enzyme'
+import { shallow } from 'enzyme'
 import moment from 'moment'
 import { fetchAllVenuesByProUser } from '../../../../../../services/venuesService'
 import { ALL_VENUES } from '../../utils/filterBookingsRecap'
@@ -133,13 +133,17 @@ describe('components | Filters', () => {
     })
   })
 
-  it('should apply offerVenue filter when selecting a venue', async () => {
+  it('should apply offerVenue filter when selecting a venue', () => {
     // given
-    const wrapper = await mount(<Filters {...props} />)
-    const venuesSelect = wrapper.find('select').at(1)
+    const wrapper = shallow(<Filters {...props} />)
+    wrapper.instance()['venueSelect'] = {
+      current: {
+        blur: jest.fn(),
+      },
+    }
 
     // when
-    await venuesSelect.simulate('change', { target: { value: 'AE' } })
+    wrapper.instance().handleVenueSelection({ target: { value: 'AE' } })
 
     // then
     expect(props.setFilters).toHaveBeenCalledWith({
@@ -178,55 +182,6 @@ describe('components | Filters', () => {
 
     // then
     expect(fetchAllVenuesByProUser).toHaveBeenCalledTimes(1)
-  })
-
-  it('should render a select input with a default value "Tous les lieux" selected', async () => {
-    // given
-    fetchAllVenuesByProUser.mockResolvedValue([])
-
-    // when
-    const wrapper = await shallow(<Filters {...props} />)
-
-    // then
-    const venuesSelect = wrapper.find('select').at(0)
-    const venuesOptions = venuesSelect.find('option')
-    expect(venuesOptions).toHaveLength(1)
-    expect(venuesOptions.at(0).text()).toBe('Tous les lieux')
-  })
-
-  it('should render a select input containing venues options', async () => {
-    // when
-    const wrapper = await shallow(<Filters {...props} />)
-
-    // then
-    const venuesSelect = wrapper.find('select').at(0)
-    const venuesOptions = venuesSelect.find('option')
-    expect(venuesOptions).toHaveLength(3)
-    const venueTwo = venuesOptions.find({ children: 'Librairie Fnac' })
-    expect(venueTwo).toHaveLength(1)
-  })
-
-  it('should show venue option with "offerer name - offre numérique" when venue is virtual', async () => {
-    // when
-    const wrapper = await shallow(<Filters {...props} />)
-
-    // then
-    const venuesSelect = wrapper.find('select').at(0)
-    const venuesOptions = venuesSelect.find('option')
-    expect(venuesOptions).toHaveLength(3)
-    const venueOne = venuesOptions.find({ children: 'gilbert Joseph - Offre numérique' })
-    expect(venueOne).toHaveLength(1)
-  })
-
-  it('should show order venue option alphabetically', async () => {
-    // when
-    const wrapper = await shallow(<Filters {...props} />)
-
-    // then
-    const venuesSelect = wrapper.find('select').at(0)
-    const venuesOptions = venuesSelect.find('option')
-    expect(venuesOptions.at(1).text()).toBe('gilbert Joseph - Offre numérique')
-    expect(venuesOptions.at(2).text()).toBe('Librairie Fnac')
   })
 
   it('should not allow to select booking beginning date superior to booking ending date value', async () => {

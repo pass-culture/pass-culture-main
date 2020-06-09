@@ -23,4 +23,22 @@ describe('formatAndOrderVenues', () => {
       },
     ])
   })
+
+  it('should format venue option with "offerer name - offre numérique" when venue is virtual', () => {
+    // given
+    const venues = [
+      { id: 'AE', name: 'Offre numérique', offererName: 'gilbert Joseph', isVirtual: true },
+    ]
+
+    // when
+    const formattedValues = formatAndOrderVenues(venues)
+
+    // then
+    expect(formattedValues).toStrictEqual([
+      {
+        displayName: 'gilbert Joseph - Offre numérique',
+        id: 'AE',
+      },
+    ])
+  })
 })
