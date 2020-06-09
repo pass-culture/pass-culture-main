@@ -128,7 +128,7 @@ class Filters extends Component {
           ...filters,
           bookingBeneficiary: TEXT_FILTER_DEFAULT_VALUE,
           offerISBN: TEXT_FILTER_DEFAULT_VALUE,
-          offerName: keywords && keywords.length > 0 ? keywords : null,
+          offerName: keywords && keywords.length > 0 ? keywords : TEXT_FILTER_DEFAULT_VALUE,
         },
         keywords: keywords,
       },
@@ -146,7 +146,8 @@ class Filters extends Component {
       {
         filters: {
           ...filters,
-          bookingBeneficiary: keywords && keywords.length > 0 ? keywords : null,
+          bookingBeneficiary:
+            keywords && keywords.length > 0 ? keywords : TEXT_FILTER_DEFAULT_VALUE,
           offerISBN: TEXT_FILTER_DEFAULT_VALUE,
           offerName: TEXT_FILTER_DEFAULT_VALUE,
         },
@@ -167,7 +168,7 @@ class Filters extends Component {
         filters: {
           ...filters,
           bookingBeneficiary: TEXT_FILTER_DEFAULT_VALUE,
-          offerISBN: keywords && keywords.length > 0 ? keywords : null,
+          offerISBN: keywords && keywords.length > 0 ? keywords : TEXT_FILTER_DEFAULT_VALUE,
           offerName: TEXT_FILTER_DEFAULT_VALUE,
         },
         keywords: keywords,
