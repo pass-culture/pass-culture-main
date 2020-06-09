@@ -63,6 +63,13 @@ const filterByOfferVenue = (offerVenue, booking) => {
   return true
 }
 
+const filterByISBN = (isbn, booking) => {
+  if (booking.stock.type === 'book') {
+    return booking.stock.isbn.includes(isbn)
+  }
+  return false
+}
+
 const filterBookingsRecap = (bookingsRecap, filters) => {
   const {
     offerName,
@@ -71,6 +78,7 @@ const filterBookingsRecap = (bookingsRecap, filters) => {
     bookingBeneficiary,
     bookingBeginningDate,
     bookingEndingDate,
+    isbn,
   } = filters
   return bookingsRecap.filter(booking => {
     return (
@@ -79,7 +87,8 @@ const filterBookingsRecap = (bookingsRecap, filters) => {
       filterBybookingBeginningDate(bookingBeginningDate, booking) &&
       filterByBookingEndDate(bookingEndingDate, booking) &&
       filterByBookingBeneficiary(bookingBeneficiary, booking) &&
-      filterByOfferVenue(offerVenue, booking)
+      filterByOfferVenue(offerVenue, booking) &&
+      filterByISBN(isbn, booking)
     )
   })
 }

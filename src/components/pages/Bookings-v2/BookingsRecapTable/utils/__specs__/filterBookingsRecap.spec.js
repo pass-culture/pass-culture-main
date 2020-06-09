@@ -476,4 +476,53 @@ describe('filterBookingsRecap', () => {
     // then
     expect(filteredBookingsRecap).toStrictEqual([bookingRecap2])
   })
+
+  it('should return list containing only BookingRecap matching ISBN keywords', () => {
+    // given
+    const bookingRecap1 = {
+      stock: {
+        offer_name: 'Merlin enchanteur',
+        isbn: 'NFBFHF',
+        type: 'book',
+      },
+      beneficiary: {
+        lastname: 'Klepi',
+        firstname: 'Sonia',
+        email: 'sonia.klepi@example.com',
+      },
+      booking_date: '2020-04-03T12:00:00Z',
+      booking_token: 'ZEHBGD',
+      booking_status: 'Validé',
+    }
+    const bookingRecap2 = {
+      stock: {
+        offer_name: 'Jurrasic Perk',
+        isbn: 'IUKOLI',
+        type: 'book',
+      },
+      beneficiary: {
+        lastname: 'Klepi',
+        firstname: 'Ludovic',
+        email: 'ludovic.klepi@example.com',
+      },
+      booking_date: '2020-04-03T12:00:00Z',
+      booking_token: 'ZACBGD',
+      booking_status: 'Validé',
+    }
+    const bookingsRecap = [bookingRecap1, bookingRecap2]
+    const filters = {
+      isbn: 'NFBFHF',
+      offerName: '',
+      offerDate: null,
+      bookingBeneficiary: '',
+      bookingBeginningDate: null,
+      bookingEndingDate: null,
+    }
+
+    // when
+    const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+
+    // then
+    expect(filteredBookingsRecap).toStrictEqual([bookingRecap1])
+  })
 })
