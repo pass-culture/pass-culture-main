@@ -84,12 +84,12 @@ class MyFavorites extends PureComponent {
   }
 
   renderMyFavorites = (hasNoFavoriteSelected, isEditMode, hasNoFavorite, myFavorites, offerIds) => (
-    <main className={hasNoFavorite ? 'teaser-page teaser-no-teasers' : 'teaser-page'}>
+    <main className={hasNoFavorite ? 'teaser-page' : 'teaser-page'}>
       <h1 className="teaser-main-title">
         {'Favoris'}
       </h1>
       {hasNoFavorite ? (
-        <NoItems sentence="Dès que vous aurez ajouté une offre en favori," />
+        <NoItems sentence="Dès que tu auras ajouté une offre en favori, tu la retrouveras ici." />
       ) : (
         <section>
           {isEditMode ? (

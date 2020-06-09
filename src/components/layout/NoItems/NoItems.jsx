@@ -1,21 +1,19 @@
 import PropTypes from 'prop-types'
-import React, { Fragment } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 
 const NoItems = ({ sentence }) => (
-  <Fragment>
+  <div className="teaser-container">
     <Link
       className="teaser-link-offers"
       to="/decouverte"
     >
-      {'Lancez-vous'}
+      {'Lance-toi !'}
     </Link>
     <p className="teaser-text">
       {sentence}
-      <br />
-      {'vous la retrouverez ici.'}
     </p>
-  </Fragment>
+  </div>
 )
 
 NoItems.propTypes = {

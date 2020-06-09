@@ -1,3 +1,14 @@
+.teaser-container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 60px - 53px);
+  justify-content: center;
+  background-image: url('/big-sun.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
 .teaser-list {
   display: flex;
   flex-direction: column;
@@ -103,14 +114,15 @@
 }
 
 .teaser-link-offers {
-  border: 2px solid $white;
-  border-radius: 2px;
-  color: $white;
+  background-color: $white;
+  border: 1px solid $white;
+  border-radius: 24px;
+  color: $primary;
   display: block;
-  font-weight: 500;
-  font-size: 1.4rem;
-  margin-bottom: 0.75rem;
-  padding: 0.4rem 1.5rem;
+  font-size: rem(16px);
+  font-weight: bold;
+  margin-bottom: rem(27px);
+  padding: rem(13px) rem(38px);
 
   &:hover {
     color: $white;
@@ -120,6 +132,8 @@
 .teaser-text {
   color: $white;
   text-align: center;
+  padding: 0 rem(70px);
+  font-weight: 400;
 }
 
 .teaser-item{
