@@ -1,15 +1,14 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import debounce from 'lodash.debounce'
-import DatePicker from 'react-datepicker'
 import moment from 'moment'
-import InputWithCalendar from './InputWithCalendar'
 import { fetchAllVenuesByProUser } from '../../../../../services/venuesService'
 import { ALL_VENUES } from '../utils/filterBookingsRecap'
 import formatAndOrderVenues from '../utils/formatAndOrderVenues'
 import FilterByOmniSearch from './FilterByOmniSearch'
 import FilterByEventDate from './FilterByEventDate.jsx'
 import FilterByVenue from './FilterByVenue'
+import FilterByBookingPeriod from './FilterByBookingPeriod'
 
 export const TEXT_FILTER_DEFAULT_VALUE = ''
 const DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
@@ -278,44 +277,13 @@ class Filters extends Component {
             venueSelect={this.venueSelect}
             venuesFormattedAndOrdered={venuesFormattedAndOrdered}
           />
-          <div className="fw-booking-date">
-            <label
-              className="fw-booking-date-label"
-              htmlFor="select-filter-booking-date"
-            >
-              {'Période de réservation'}
-            </label>
-            <div
-              className="fw-booking-date-inputs"
-              id="select-filter-booking-date"
-            >
-              <div className="fw-booking-date-begin-picker">
-                <DatePicker
-                  className="fw-booking-date-input"
-                  customInput={<InputWithCalendar customClass="field-date-only field-date-begin" />}
-                  dropdownMode="select"
-                  maxDate={selectedBookingEndingDate}
-                  minDate={oldestBookingDate}
-                  onChange={this.handleBookingBeginningDateChange}
-                  placeholderText="JJ/MM/AAAA"
-                  selected={selectedBookingBeginningDate}
-                />
-              </div>
-              <span className="vertical-bar" />
-              <div className="fw-booking-date-end-picker">
-                <DatePicker
-                  className="fw-booking-date-input"
-                  customInput={<InputWithCalendar customClass="field-date-only field-date-end" />}
-                  dropdownMode="select"
-                  maxDate={moment()}
-                  minDate={selectedBookingBeginningDate}
-                  onChange={this.handleBookingEndingDateChange}
-                  placeholderText="JJ/MM/AAAA"
-                  selected={selectedBookingEndingDate}
-                />
-              </div>
-            </div>
-          </div>
+          <FilterByBookingPeriod
+            oldestBookingDate={oldestBookingDate}
+            onHandleBookingBeginningDateChange={this.handleBookingBeginningDateChange}
+            onHandleBookingEndingDateChange={this.handleBookingEndingDateChange}
+            selectedBookingBeginningDate={selectedBookingBeginningDate}
+            selectedBookingEndingDate={selectedBookingEndingDate}
+          />
         </div>
       </div>
     )

@@ -26,7 +26,7 @@ describe('components | Filters', () => {
     fetchAllVenuesByProUser.mockReset()
   })
 
-  it('should apply offerName filter when typing keywords', async () => {
+  it('should apply offerName filter when typing keywords', () => {
     // Given
     const wrapper = shallow(<Filters {...props} />)
     const instance = wrapper.instance()
@@ -65,7 +65,7 @@ describe('components | Filters', () => {
     })
   })
 
-  it('should add filter to previous filters when applying a new one', async () => {
+  it('should add filter to previous filters when applying a new one', () => {
     // Given
     const wrapper = shallow(<Filters {...props} />)
     const selectedDate = moment('2020-05-20')
@@ -87,17 +87,16 @@ describe('components | Filters', () => {
     })
   })
 
-  it('should apply bookingBeginningDate filter when choosing an booking beginning date', async () => {
+  it('should apply bookingBeginningDate filter when choosing an booking beginning date', () => {
     // Given
     const props = {
       setFilters: jest.fn(),
     }
     const selectedDate = moment('2020-05-20')
     const wrapper = shallow(<Filters {...props} />)
-    const offerDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(0)
 
     // When
-    await offerDateInput.simulate('change', selectedDate)
+    wrapper.instance().handleBookingBeginningDateChange(selectedDate)
 
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
@@ -110,17 +109,16 @@ describe('components | Filters', () => {
     })
   })
 
-  it('should apply bookingEndingDate filter when choosing an booking end date', async () => {
+  it('should apply bookingEndingDate filter when choosing an booking end date', () => {
     // Given
     const props = {
       setFilters: jest.fn(),
     }
     const selectedDate = moment('2020-05-20')
     const wrapper = shallow(<Filters {...props} />)
-    const offerDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(1)
 
     // When
-    await offerDateInput.simulate('change', selectedDate)
+    wrapper.instance().handleBookingEndingDateChange(selectedDate)
 
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
@@ -156,7 +154,7 @@ describe('components | Filters', () => {
     })
   })
 
-  it('should apply bookingBeneficiary filter when typing keywords for beneficiary name or email', async () => {
+  it('should apply bookingBeneficiary filter when typing keywords for beneficiary name or email', () => {
     // Given
     const wrapper = shallow(<Filters {...props} />)
     const instance = wrapper.instance()
@@ -176,45 +174,11 @@ describe('components | Filters', () => {
     })
   })
 
-  it('should fetch venues of pro user when mounting component', async () => {
+  it('should fetch venues of pro user when mounting component', () => {
     // when
     shallow(<Filters {...props} />)
 
     // then
     expect(fetchAllVenuesByProUser).toHaveBeenCalledTimes(1)
-  })
-
-  it('should not allow to select booking beginning date superior to booking ending date value', async () => {
-    // Given
-    const props = {
-      setFilters: jest.fn(),
-    }
-    const selectedDate = moment('2020-05-20')
-    const wrapper = shallow(<Filters {...props} />)
-    const bookingEndingDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(1)
-    await bookingEndingDateInput.simulate('change', selectedDate)
-
-    // When
-    const bookingBeginningDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(0)
-
-    // Then
-    expect(bookingBeginningDateInput.prop('maxDate')).toStrictEqual(selectedDate)
-  })
-
-  it('should not allow to select booking ending date inferior to booking beginning date value', async () => {
-    // Given
-    const props = {
-      setFilters: jest.fn(),
-    }
-    const selectedDate = moment('2020-05-20')
-    const wrapper = shallow(<Filters {...props} />)
-    const bookingBeginningDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(0)
-    await bookingBeginningDateInput.simulate('change', selectedDate)
-
-    // When
-    const bookingEndingDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(1)
-
-    // Then
-    expect(bookingEndingDateInput.prop('minDate')).toStrictEqual(selectedDate)
   })
 })
