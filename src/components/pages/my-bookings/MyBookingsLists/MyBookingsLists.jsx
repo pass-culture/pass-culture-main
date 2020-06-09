@@ -17,7 +17,7 @@ const MyBookingsLists = ({
     </h1>
 
     {isEmpty && (
-      <NoItems sentence="Dès que vous aurez réservé une offre, vous la retrouverez ici." />
+      <NoItems sentence="Dès que tu auras réservé une offre, tu la retrouveras ici." />
     )}
 
     {!isEmpty && bookingsOfTheWeek.length > 0 && (

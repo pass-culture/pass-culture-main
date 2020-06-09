@@ -1410,7 +1410,7 @@ ShallowWrapper {
           Réservations
         </h1>,
         <NoItems
-          sentence="Dès que vous aurez réservé une offre, vous la retrouverez ici."
+          sentence="Dès que tu auras réservé une offre, tu la retrouveras ici."
         />,
         false,
         false,
@@ -1438,7 +1438,7 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "sentence": "Dès que vous aurez réservé une offre, vous la retrouverez ici.",
+          "sentence": "Dès que tu auras réservé une offre, tu la retrouveras ici.",
         },
         "ref": null,
         "rendered": null,
@@ -1464,7 +1464,7 @@ ShallowWrapper {
             Réservations
           </h1>,
           <NoItems
-            sentence="Dès que vous aurez réservé une offre, vous la retrouverez ici."
+            sentence="Dès que tu auras réservé une offre, tu la retrouveras ici."
           />,
           false,
           false,
@@ -1492,7 +1492,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "sentence": "Dès que vous aurez réservé une offre, vous la retrouverez ici.",
+            "sentence": "Dès que tu auras réservé une offre, tu la retrouveras ici.",
           },
           "ref": null,
           "rendered": null,
