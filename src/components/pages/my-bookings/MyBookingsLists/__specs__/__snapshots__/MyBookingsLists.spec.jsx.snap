@@ -76,7 +76,7 @@ ShallowWrapper {
         false,
         false,
       ],
-      "className": "teaser-page ",
+      "className": "teaser-page",
     },
     "ref": null,
     "rendered": Array [
@@ -276,7 +276,7 @@ ShallowWrapper {
           false,
           false,
         ],
-        "className": "teaser-page ",
+        "className": "teaser-page",
       },
       "ref": null,
       "rendered": Array [
@@ -535,7 +535,7 @@ ShallowWrapper {
           />
         </section>,
       ],
-      "className": "teaser-page ",
+      "className": "teaser-page",
     },
     "ref": null,
     "rendered": Array [
@@ -744,7 +744,7 @@ ShallowWrapper {
             />
           </section>,
         ],
-        "className": "teaser-page ",
+        "className": "teaser-page",
       },
       "ref": null,
       "rendered": Array [
@@ -1003,7 +1003,7 @@ ShallowWrapper {
         </section>,
         false,
       ],
-      "className": "teaser-page ",
+      "className": "teaser-page",
     },
     "ref": null,
     "rendered": Array [
@@ -1203,7 +1203,7 @@ ShallowWrapper {
           </section>,
           false,
         ],
-        "className": "teaser-page ",
+        "className": "teaser-page",
       },
       "ref": null,
       "rendered": Array [
@@ -1410,14 +1410,14 @@ ShallowWrapper {
           Réservations
         </h1>,
         <NoItems
-          sentence="Dès que vous aurez réservé une offre,"
+          sentence="Dès que vous aurez réservé une offre, vous la retrouverez ici."
         />,
         false,
         false,
         false,
         false,
       ],
-      "className": "teaser-page teaser-no-teasers",
+      "className": "teaser-page",
     },
     "ref": null,
     "rendered": Array [
@@ -1438,7 +1438,7 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "function",
         "props": Object {
-          "sentence": "Dès que vous aurez réservé une offre,",
+          "sentence": "Dès que vous aurez réservé une offre, vous la retrouverez ici.",
         },
         "ref": null,
         "rendered": null,
@@ -1464,14 +1464,14 @@ ShallowWrapper {
             Réservations
           </h1>,
           <NoItems
-            sentence="Dès que vous aurez réservé une offre,"
+            sentence="Dès que vous aurez réservé une offre, vous la retrouverez ici."
           />,
           false,
           false,
           false,
           false,
         ],
-        "className": "teaser-page teaser-no-teasers",
+        "className": "teaser-page",
       },
       "ref": null,
       "rendered": Array [
@@ -1492,7 +1492,7 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "function",
           "props": Object {
-            "sentence": "Dès que vous aurez réservé une offre,",
+            "sentence": "Dès que vous aurez réservé une offre, vous la retrouverez ici.",
           },
           "ref": null,
           "rendered": null,
@@ -1611,7 +1611,7 @@ ShallowWrapper {
         false,
         false,
       ],
-      "className": "teaser-page ",
+      "className": "teaser-page",
     },
     "ref": null,
     "rendered": Array [
@@ -1811,7 +1811,7 @@ ShallowWrapper {
           false,
           false,
         ],
-        "className": "teaser-page ",
+        "className": "teaser-page",
       },
       "ref": null,
       "rendered": Array [
