@@ -1,6 +1,6 @@
 import React from 'react'
 import Filters from '../Filters'
-import { shallow } from 'enzyme'
+import { mount, shallow } from 'enzyme'
 import moment from 'moment'
 import { fetchAllVenuesByProUser } from '../../../../../../services/venuesService'
 import { ALL_VENUES } from '../../utils/filterBookingsRecap'
@@ -26,14 +26,13 @@ describe('components | Filters', () => {
     fetchAllVenuesByProUser.mockReset()
   })
 
-  it('should apply offerName filter when typing keywords', () => {
+  it('should apply offerName filter when typing keywords', async () => {
     // Given
-    const wrapper = shallow(<Filters {...props} />)
-    const instance = wrapper.instance()
-    instance.handleOmniSearchCriteriaChange({ target: { value: 'offre' } })
+    const wrapper = mount(<Filters {...props} />)
+    const offerNameInput = wrapper.find({ placeholder: "Rechercher par nom d'offre" })
 
     // When
-    instance.handleOmniSearchChange({ target: { value: 'Jurassic Park' } })
+    await offerNameInput.simulate('change', { target: { value: 'Jurassic Park' } })
 
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({

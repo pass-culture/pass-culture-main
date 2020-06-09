@@ -12,6 +12,7 @@ import FilterByBookingPeriod from './FilterByBookingPeriod'
 
 export const TEXT_FILTER_DEFAULT_VALUE = ''
 const DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
+const DEFAULT_OMNISEARCH_CRITERIA = 'offre'
 
 class Filters extends Component {
   constructor(props) {
@@ -29,7 +30,7 @@ class Filters extends Component {
       selectedBookingBeginningDate: null,
       selectedBookingEndingDate: moment(),
       selectedOfferDate: null,
-      selectedOmniSearchCriteria: 'offre',
+      selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
       selectedVenue: '',
       venues: [],
     }
@@ -95,9 +96,15 @@ class Filters extends Component {
       criteria => criteria.id === selectedOmniSearchCriteria
     ).stateKey
     const currentFilterKeywords = filters[currentOmniSearchStateKey]
-    this.setState({ selectedOmniSearchCriteria: newOmniSearchCriteria })
-    this.OMNISEARCH_FILTERS.find(criteria => criteria.id === newOmniSearchCriteria).handleChange(
-      currentFilterKeywords
+    this.setState(
+      {
+        selectedOmniSearchCriteria: newOmniSearchCriteria,
+      },
+      () => {
+        this.OMNISEARCH_FILTERS.find(
+          criteria => criteria.id === newOmniSearchCriteria
+        ).handleChange(currentFilterKeywords)
+      }
     )
   }
 
@@ -110,14 +117,13 @@ class Filters extends Component {
 
   handleOfferNameChange = keywords => {
     const { filters } = this.state
-    keywords = keywords || ''
 
     this.setState(
       {
         filters: {
           ...filters,
           bookingBeneficiary: TEXT_FILTER_DEFAULT_VALUE,
-          offerName: keywords.length > 0 ? keywords : null,
+          offerName: keywords && keywords.length > 0 ? keywords : null,
         },
         keywords: keywords,
       },
@@ -130,13 +136,12 @@ class Filters extends Component {
 
   handleBeneficiaryChange = keywords => {
     const { filters } = this.state
-    keywords = keywords || ''
 
     this.setState(
       {
         filters: {
           ...filters,
-          bookingBeneficiary: keywords.length > 0 ? keywords : null,
+          bookingBeneficiary: keywords && keywords.length > 0 ? keywords : null,
           offerName: TEXT_FILTER_DEFAULT_VALUE,
         },
         keywords: keywords,
