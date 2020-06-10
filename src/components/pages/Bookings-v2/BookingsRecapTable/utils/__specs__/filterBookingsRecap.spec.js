@@ -1,4 +1,5 @@
 import filterBookingsRecap from '../filterBookingsRecap'
+import { EMPTY_FILTER_VALUE } from '../../Filters/Filters'
 
 describe('filterBookingsRecap', () => {
   it('should return list when no filters provided', () => {
@@ -19,12 +20,12 @@ describe('filterBookingsRecap', () => {
       },
     ]
     const filters = {
-      bookingBeneficiary: '',
-      bookingBeginningDate: null,
-      bookingEndingDate: null,
-      offerDate: null,
-      offerISBN: '',
-      offerName: '',
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
+      bookingEndingDate: EMPTY_FILTER_VALUE,
+      offerDate: EMPTY_FILTER_VALUE,
+      offerISBN: EMPTY_FILTER_VALUE,
+      offerName: EMPTY_FILTER_VALUE,
     }
 
     // when
@@ -64,11 +65,11 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      bookingBeneficiary: '',
-      bookingBeginningDate: null,
-      bookingEndingDate: null,
-      offerDate: null,
-      offerISBN: '',
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
+      bookingEndingDate: EMPTY_FILTER_VALUE,
+      offerDate: EMPTY_FILTER_VALUE,
+      offerISBN: EMPTY_FILTER_VALUE,
       offerName: 'Merlin',
     }
 
@@ -96,11 +97,11 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap]
     const filters = {
-      offerName: '',
+      offerName: EMPTY_FILTER_VALUE,
       offerDate: '2020-02-18',
-      bookingBeneficiary: '',
-      bookingBeginningDate: null,
-      bookingEndingDate: null,
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
+      bookingEndingDate: EMPTY_FILTER_VALUE,
     }
 
     // when
@@ -142,12 +143,12 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      bookingBeneficiary: '',
-      bookingBeginningDate: null,
-      bookingEndingDate: null,
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
+      bookingEndingDate: EMPTY_FILTER_VALUE,
       offerDate: '2020-01-14',
-      offerISBN: '',
-      offerName: '',
+      offerISBN: EMPTY_FILTER_VALUE,
+      offerName: EMPTY_FILTER_VALUE,
     }
 
     // when
@@ -189,12 +190,12 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      bookingBeneficiary: '',
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingBeginningDate: '2020-01-14',
-      bookingEndingDate: null,
-      offerDate: null,
-      offerISBN: '',
-      offerName: '',
+      bookingEndingDate: EMPTY_FILTER_VALUE,
+      offerDate: EMPTY_FILTER_VALUE,
+      offerISBN: EMPTY_FILTER_VALUE,
+      offerName: EMPTY_FILTER_VALUE,
     }
 
     // when
@@ -236,12 +237,12 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      bookingBeneficiary: '',
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingBeginningDate: '2020-02-18',
-      bookingEndingDate: null,
-      offerDate: null,
-      offerISBN: '',
-      offerName: '',
+      bookingEndingDate: EMPTY_FILTER_VALUE,
+      offerDate: EMPTY_FILTER_VALUE,
+      offerISBN: EMPTY_FILTER_VALUE,
+      offerName: EMPTY_FILTER_VALUE,
     }
 
     // when
@@ -283,12 +284,12 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      bookingBeneficiary: '',
-      bookingBeginningDate: null,
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: '2020-01-14',
-      offerDate: null,
-      offerISBN: '',
-      offerName: '',
+      offerDate: EMPTY_FILTER_VALUE,
+      offerISBN: EMPTY_FILTER_VALUE,
+      offerName: EMPTY_FILTER_VALUE,
     }
 
     // when
@@ -330,12 +331,12 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      bookingBeneficiary: '',
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingBeginningDate: '2020-01-01',
       bookingEndingDate: '2020-01-14',
-      offerDate: null,
-      offerISBN: '',
-      offerName: '',
+      offerDate: EMPTY_FILTER_VALUE,
+      offerISBN: EMPTY_FILTER_VALUE,
+      offerName: EMPTY_FILTER_VALUE,
     }
 
     // when
@@ -377,11 +378,11 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      bookingBeneficiary: '',
-      bookingBeginningDate: null,
-      bookingEndingDate: null,
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
+      bookingEndingDate: EMPTY_FILTER_VALUE,
       offerDate: '2020-01-14',
-      offerISBN: '',
+      offerISBN: EMPTY_FILTER_VALUE,
       offerName: 'Jurrasic',
     }
 
@@ -426,12 +427,12 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      bookingBeginningDate: null,
-      bookingEndingDate: null,
-      bookingBeneficiary: '',
-      offerDate: null,
-      offerISBN: '',
-      offerName: '',
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
+      bookingEndingDate: EMPTY_FILTER_VALUE,
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      offerDate: EMPTY_FILTER_VALUE,
+      offerISBN: EMPTY_FILTER_VALUE,
+      offerName: EMPTY_FILTER_VALUE,
       offerVenue: 'AE',
     }
 
@@ -473,11 +474,11 @@ describe('filterBookingsRecap', () => {
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
       bookingBeneficiary: 'Ludovic',
-      bookingBeginningDate: null,
-      bookingEndingDate: null,
-      offerDate: null,
-      offerISBN: '',
-      offerName: '',
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
+      bookingEndingDate: EMPTY_FILTER_VALUE,
+      offerDate: EMPTY_FILTER_VALUE,
+      offerISBN: EMPTY_FILTER_VALUE,
+      offerName: EMPTY_FILTER_VALUE,
     }
 
     // when
@@ -521,12 +522,12 @@ describe('filterBookingsRecap', () => {
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
-      bookingBeneficiary: '',
-      bookingBeginningDate: null,
-      bookingEndingDate: null,
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
+      bookingEndingDate: EMPTY_FILTER_VALUE,
       offerISBN: '9787605',
-      offerName: '',
-      offerDate: null,
+      offerName: EMPTY_FILTER_VALUE,
+      offerDate: EMPTY_FILTER_VALUE,
     }
 
     // when

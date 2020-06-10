@@ -57,8 +57,9 @@ FilterByBookingPeriod.propTypes = {
   oldestBookingDate: PropTypes.string.isRequired,
   onHandleBookingBeginningDateChange: PropTypes.func.isRequired,
   onHandleBookingEndingDateChange: PropTypes.func.isRequired,
-  selectedBookingBeginningDate: PropTypes.string.isRequired,
-  selectedBookingEndingDate: PropTypes.string.isRequired,
+  selectedBookingBeginningDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string])
+    .isRequired,
+  selectedBookingEndingDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string]).isRequired,
 }
 
 export default FilterByBookingPeriod

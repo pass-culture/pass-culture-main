@@ -1,4 +1,5 @@
 import findOldestBookingDate from '../findOldestBookingDate'
+import { EMPTY_FILTER_VALUE } from '../../Filters/Filters'
 
 describe('findOldestBookingDate', () => {
   it('should return null when bookings list is empty', () => {
@@ -9,7 +10,7 @@ describe('findOldestBookingDate', () => {
     const result = findOldestBookingDate(bookingsRecap)
 
     // then
-    expect(result).toBeNull()
+    expect(result).toBe(EMPTY_FILTER_VALUE)
   })
 
   it('should return the oldest date', () => {

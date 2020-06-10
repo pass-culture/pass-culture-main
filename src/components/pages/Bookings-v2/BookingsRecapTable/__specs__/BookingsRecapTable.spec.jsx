@@ -12,7 +12,7 @@ import Header from '../Header/Header'
 import Paginate from '../Table/Paginate/Paginate'
 import { NB_BOOKINGS_PER_PAGE } from '../NB_BOOKINGS_PER_PAGE'
 import NoFilteredBookings from '../NoFilteredBookings/NoFilteredBookings'
-import Filters from '../Filters/Filters'
+import Filters, { EMPTY_FILTER_VALUE } from '../Filters/Filters'
 import filterBookingsRecap, { ALL_VENUES } from '../utils/filterBookingsRecap'
 import DatePicker from 'react-datepicker'
 import moment from 'moment'
@@ -569,6 +569,6 @@ describe('components | BookingsRecapTable', () => {
       .find(Filters)
       .find(DatePicker)
       .at(0)
-    expect(offerDate.prop('selected')).toBeNull()
+    expect(offerDate.prop('selected')).toBe(EMPTY_FILTER_VALUE)
   })
 })

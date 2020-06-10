@@ -10,7 +10,7 @@ import FilterByEventDate from './FilterByEventDate.jsx'
 import FilterByVenue from './FilterByVenue'
 import FilterByBookingPeriod from './FilterByBookingPeriod'
 
-export const TEXT_FILTER_DEFAULT_VALUE = ''
+export const EMPTY_FILTER_VALUE = ''
 const DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
 const DEFAULT_OMNISEARCH_CRITERIA = 'offre'
 
@@ -19,23 +19,22 @@ class Filters extends Component {
     super(props)
     this.state = {
       filters: {
-        bookingBeginningDate: null,
-        bookingEndingDate: null,
-        bookingBeneficiary: TEXT_FILTER_DEFAULT_VALUE,
-        offerDate: null,
-        offerName: TEXT_FILTER_DEFAULT_VALUE,
-        offerISBN: TEXT_FILTER_DEFAULT_VALUE,
+        bookingBeginningDate: EMPTY_FILTER_VALUE,
+        bookingEndingDate: EMPTY_FILTER_VALUE,
+        bookingBeneficiary: EMPTY_FILTER_VALUE,
+        offerDate: EMPTY_FILTER_VALUE,
+        offerName: EMPTY_FILTER_VALUE,
+        offerISBN: EMPTY_FILTER_VALUE,
         offerVenue: ALL_VENUES,
       },
       keywords: '',
-      selectedBookingBeginningDate: null,
+      selectedBookingBeginningDate: EMPTY_FILTER_VALUE,
       selectedBookingEndingDate: moment(),
-      selectedOfferDate: null,
+      selectedOfferDate: EMPTY_FILTER_VALUE,
       selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
       selectedVenue: '',
       venues: [],
     }
-    this.venueSelect = React.createRef()
   }
 
   componentDidMount() {
@@ -72,18 +71,18 @@ class Filters extends Component {
     this.setState(
       {
         filters: {
-          bookingBeneficiary: TEXT_FILTER_DEFAULT_VALUE,
-          bookingBeginningDate: null,
-          bookingEndingDate: null,
-          offerDate: null,
-          offerName: TEXT_FILTER_DEFAULT_VALUE,
-          offerISBN: TEXT_FILTER_DEFAULT_VALUE,
+          bookingBeneficiary: EMPTY_FILTER_VALUE,
+          bookingBeginningDate: EMPTY_FILTER_VALUE,
+          bookingEndingDate: EMPTY_FILTER_VALUE,
+          offerDate: EMPTY_FILTER_VALUE,
+          offerName: EMPTY_FILTER_VALUE,
+          offerISBN: EMPTY_FILTER_VALUE,
           offerVenue: ALL_VENUES,
         },
         keywords: '',
-        selectedBookingBeginningDate: null,
+        selectedBookingBeginningDate: EMPTY_FILTER_VALUE,
         selectedBookingEndingDate: moment(),
-        selectedOfferDate: null,
+        selectedOfferDate: EMPTY_FILTER_VALUE,
         selectedVenue: '',
       },
       () => {
@@ -126,9 +125,9 @@ class Filters extends Component {
       {
         filters: {
           ...filters,
-          bookingBeneficiary: TEXT_FILTER_DEFAULT_VALUE,
-          offerISBN: TEXT_FILTER_DEFAULT_VALUE,
-          offerName: keywords && keywords.length > 0 ? keywords : TEXT_FILTER_DEFAULT_VALUE,
+          bookingBeneficiary: EMPTY_FILTER_VALUE,
+          offerISBN: EMPTY_FILTER_VALUE,
+          offerName: keywords && keywords.length > 0 ? keywords : EMPTY_FILTER_VALUE,
         },
         keywords: keywords,
       },
@@ -146,10 +145,9 @@ class Filters extends Component {
       {
         filters: {
           ...filters,
-          bookingBeneficiary:
-            keywords && keywords.length > 0 ? keywords : TEXT_FILTER_DEFAULT_VALUE,
-          offerISBN: TEXT_FILTER_DEFAULT_VALUE,
-          offerName: TEXT_FILTER_DEFAULT_VALUE,
+          bookingBeneficiary: keywords && keywords.length > 0 ? keywords : EMPTY_FILTER_VALUE,
+          offerISBN: EMPTY_FILTER_VALUE,
+          offerName: EMPTY_FILTER_VALUE,
         },
         keywords: keywords,
       },
@@ -167,9 +165,9 @@ class Filters extends Component {
       {
         filters: {
           ...filters,
-          bookingBeneficiary: TEXT_FILTER_DEFAULT_VALUE,
-          offerISBN: keywords && keywords.length > 0 ? keywords : TEXT_FILTER_DEFAULT_VALUE,
-          offerName: TEXT_FILTER_DEFAULT_VALUE,
+          bookingBeneficiary: EMPTY_FILTER_VALUE,
+          offerISBN: keywords && keywords.length > 0 ? keywords : EMPTY_FILTER_VALUE,
+          offerName: EMPTY_FILTER_VALUE,
         },
         keywords: keywords,
       },
@@ -205,7 +203,7 @@ class Filters extends Component {
   ]
 
   handleOfferDateChange = offerDate => {
-    const dateToFilter = offerDate === null ? null : offerDate.format('YYYY-MM-DD')
+    const dateToFilter = offerDate === null ? EMPTY_FILTER_VALUE : offerDate.format('YYYY-MM-DD')
     const { filters } = this.state
     this.setState(
       {
@@ -224,7 +222,7 @@ class Filters extends Component {
 
   handleBookingBeginningDateChange = bookingBeginningDate => {
     const dateToFilter =
-      bookingBeginningDate === null ? null : bookingBeginningDate.format('YYYY-MM-DD')
+      bookingBeginningDate === null ? EMPTY_FILTER_VALUE : bookingBeginningDate.format('YYYY-MM-DD')
     const { filters } = this.state
     this.setState(
       {
@@ -242,7 +240,8 @@ class Filters extends Component {
   }
 
   handleBookingEndingDateChange = bookingEndingDate => {
-    const dateToFilter = bookingEndingDate === null ? null : bookingEndingDate.format('YYYY-MM-DD')
+    const dateToFilter =
+      bookingEndingDate === null ? EMPTY_FILTER_VALUE : bookingEndingDate.format('YYYY-MM-DD')
     const { filters } = this.state
     this.setState(
       {
@@ -272,7 +271,6 @@ class Filters extends Component {
         selectedVenue: venueId,
       },
       () => {
-        this.venueSelect.current.blur()
         const { filters } = this.state
         this.applyFilters(filters)
       }
@@ -313,7 +311,6 @@ class Filters extends Component {
           <FilterByVenue
             onHandleVenueSelection={this.handleVenueSelection}
             selectedVenue={selectedVenue}
-            venueSelect={this.venueSelect}
             venuesFormattedAndOrdered={venuesFormattedAndOrdered}
           />
           <FilterByBookingPeriod

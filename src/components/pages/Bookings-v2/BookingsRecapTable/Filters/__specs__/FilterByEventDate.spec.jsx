@@ -2,13 +2,14 @@ import FilterByEventDate from '../FilterByEventDate.jsx'
 import React from 'react'
 import { shallow } from 'enzyme'
 import moment from 'moment/moment'
+import { EMPTY_FILTER_VALUE } from '../Filters'
 
 describe('components | FilterByEventDate', () => {
   let props
   beforeEach(() => {
     props = {
       onHandleOfferDateChange: jest.fn(),
-      selectedOfferDate: null,
+      selectedOfferDate: EMPTY_FILTER_VALUE,
     }
   })
 

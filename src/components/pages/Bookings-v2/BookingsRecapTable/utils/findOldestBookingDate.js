@@ -1,8 +1,10 @@
+import { EMPTY_FILTER_VALUE } from '../Filters/Filters'
+
 const findOldestBookingDate = bookingsRecap => {
   if (bookingsRecap.length > 0) {
     return bookingsRecap[bookingsRecap.length - 1].booking_date
   }
-  return null
+  return EMPTY_FILTER_VALUE
 }
 
 export default findOldestBookingDate

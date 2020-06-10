@@ -1,7 +1,9 @@
+import { EMPTY_FILTER_VALUE } from '../Filters/Filters'
+
 export const ALL_VENUES = 'all'
 
 const filterByOfferName = (offerName, booking) => {
-  if (offerName !== null) {
+  if (offerName !== EMPTY_FILTER_VALUE) {
     const offerNameFromBooking = booking.stock.offer_name.toLowerCase()
     return offerNameFromBooking.includes(offerName.toLowerCase())
   }
@@ -9,7 +11,7 @@ const filterByOfferName = (offerName, booking) => {
 }
 
 const filterByBookingBeneficiary = (bookingBeneficiary, booking) => {
-  if (bookingBeneficiary !== null) {
+  if (bookingBeneficiary !== EMPTY_FILTER_VALUE) {
     const beneficiaryLowercase = bookingBeneficiary.toLowerCase()
     const beneficiaryLastNameFromBooking = booking.beneficiary.lastname.toLowerCase()
     const beneficiaryFirstNameFromBooking = booking.beneficiary.firstname.toLowerCase()
@@ -29,7 +31,7 @@ const extractDateFromDatetime = datetimeToExtract => {
 }
 
 const filterByOfferDate = (offerDate, booking) => {
-  if (offerDate !== null) {
+  if (offerDate !== EMPTY_FILTER_VALUE) {
     const eventOfferDate = booking.stock.event_beginning_datetime
     if (eventOfferDate) {
       const offerDateFromBookingRecap = extractDateFromDatetime(eventOfferDate)
@@ -41,7 +43,7 @@ const filterByOfferDate = (offerDate, booking) => {
 }
 
 const filterBybookingBeginningDate = (bookingBeginningDate, booking) => {
-  if (bookingBeginningDate !== null) {
+  if (bookingBeginningDate !== EMPTY_FILTER_VALUE) {
     const offerDateFromBookingRecap = extractDateFromDatetime(booking.booking_date)
     return offerDateFromBookingRecap >= bookingBeginningDate
   }
@@ -49,7 +51,7 @@ const filterBybookingBeginningDate = (bookingBeginningDate, booking) => {
 }
 
 const filterByBookingEndDate = (bookingEndingDate, booking) => {
-  if (bookingEndingDate !== null) {
+  if (bookingEndingDate !== EMPTY_FILTER_VALUE) {
     const offerDateFromBookingRecap = extractDateFromDatetime(booking.booking_date)
     return offerDateFromBookingRecap <= bookingEndingDate
   }
@@ -64,7 +66,7 @@ const filterByOfferVenue = (offerVenue, booking) => {
 }
 
 const filterByISBN = (isbn, booking) => {
-  if (isbn !== '') {
+  if (isbn !== EMPTY_FILTER_VALUE) {
     return booking.stock.type === 'book' && booking.stock.offer_isbn.includes(isbn)
   }
   return true

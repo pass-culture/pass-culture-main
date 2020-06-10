@@ -2,12 +2,7 @@ import React from 'react'
 import { ALL_VENUES } from '../utils/filterBookingsRecap'
 import PropTypes from 'prop-types'
 
-const FilterByVenue = ({
-  onHandleVenueSelection,
-  selectedVenue,
-  venueSelect,
-  venuesFormattedAndOrdered,
-}) => {
+const FilterByVenue = ({ onHandleVenueSelection, selectedVenue, venuesFormattedAndOrdered }) => {
   return (
     <div className="fw-venues">
       <label
@@ -20,7 +15,6 @@ const FilterByVenue = ({
         id="offer-venue-input"
         onBlur={onHandleVenueSelection}
         onChange={onHandleVenueSelection}
-        ref={venueSelect}
         value={selectedVenue}
       >
         <option value={ALL_VENUES}>
@@ -42,7 +36,6 @@ const FilterByVenue = ({
 FilterByVenue.propTypes = {
   onHandleVenueSelection: PropTypes.func.isRequired,
   selectedVenue: PropTypes.string.isRequired,
-  venueSelect: PropTypes.string.isRequired,
   venuesFormattedAndOrdered: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,

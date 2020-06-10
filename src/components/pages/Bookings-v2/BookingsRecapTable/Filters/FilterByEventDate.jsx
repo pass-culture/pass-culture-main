@@ -29,7 +29,7 @@ const FilterByEventDate = ({ onHandleOfferDateChange, selectedOfferDate }) => {
 
 FilterByEventDate.propTypes = {
   onHandleOfferDateChange: PropTypes.func.isRequired,
-  selectedOfferDate: PropTypes.string.isRequired,
+  selectedOfferDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string]).isRequired,
 }
 
 export default FilterByEventDate

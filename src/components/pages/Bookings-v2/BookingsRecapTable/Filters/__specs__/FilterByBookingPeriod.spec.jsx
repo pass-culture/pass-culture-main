@@ -2,6 +2,7 @@ import moment from 'moment/moment'
 import { shallow } from 'enzyme/build/index'
 import FilterByBookingPeriod from '../FilterByBookingPeriod'
 import React from 'react'
+import { EMPTY_FILTER_VALUE } from '../Filters'
 
 describe('components | FilterByBookingPeriod', () => {
   let props
@@ -10,8 +11,8 @@ describe('components | FilterByBookingPeriod', () => {
       oldestBookingDate: '2020-02-05',
       onHandleBookingBeginningDateChange: jest.fn(),
       onHandleBookingEndingDateChange: jest.fn(),
-      selectedBookingBeginningDate: null,
-      selectedBookingEndingDate: null,
+      selectedBookingBeginningDate: EMPTY_FILTER_VALUE,
+      selectedBookingEndingDate: EMPTY_FILTER_VALUE,
     }
   })
 

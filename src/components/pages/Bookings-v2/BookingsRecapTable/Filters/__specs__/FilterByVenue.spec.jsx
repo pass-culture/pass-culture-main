@@ -12,7 +12,6 @@ describe('components | FilterByVenue', () => {
         { id: 'AE', displayName: 'Ma premiere venue' },
         { id: 'BG', displayName: 'Ma seconde venue' },
       ],
-      venueSelect: 'BG',
     }
   })
 

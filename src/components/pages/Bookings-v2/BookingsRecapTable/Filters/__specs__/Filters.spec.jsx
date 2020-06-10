@@ -1,5 +1,5 @@
 import React from 'react'
-import Filters from '../Filters'
+import Filters, { EMPTY_FILTER_VALUE } from '../Filters'
 import { mount, shallow } from 'enzyme'
 import moment from 'moment'
 import { fetchAllVenuesByProUser } from '../../../../../../services/venuesService'
@@ -14,6 +14,7 @@ describe('components | Filters', () => {
 
   beforeEach(() => {
     props = {
+      oldestBookingDate: EMPTY_FILTER_VALUE,
       setFilters: jest.fn(),
     }
     fetchAllVenuesByProUser.mockResolvedValue([
@@ -36,12 +37,12 @@ describe('components | Filters', () => {
 
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeneficiary: '',
-      bookingBeginningDate: null,
-      bookingEndingDate: null,
-      offerDate: null,
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
+      bookingEndingDate: EMPTY_FILTER_VALUE,
+      offerDate: EMPTY_FILTER_VALUE,
       offerName: 'Jurassic Park',
-      offerISBN: '',
+      offerISBN: EMPTY_FILTER_VALUE,
       offerVenue: ALL_VENUES,
     })
   })
@@ -56,12 +57,12 @@ describe('components | Filters', () => {
 
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeginningDate: null,
-      bookingBeneficiary: '',
-      bookingEndingDate: null,
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingEndingDate: EMPTY_FILTER_VALUE,
       offerDate: '2020-05-20',
-      offerISBN: '',
-      offerName: '',
+      offerISBN: EMPTY_FILTER_VALUE,
+      offerName: EMPTY_FILTER_VALUE,
       offerVenue: ALL_VENUES,
     })
   })
@@ -79,11 +80,11 @@ describe('components | Filters', () => {
     // Then
     expect(props.setFilters).toHaveBeenCalledTimes(2)
     expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeneficiary: '',
-      bookingBeginningDate: null,
-      bookingEndingDate: null,
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
+      bookingEndingDate: EMPTY_FILTER_VALUE,
       offerDate: '2020-05-20',
-      offerISBN: '',
+      offerISBN: EMPTY_FILTER_VALUE,
       offerName: 'Jurassic Park',
       offerVenue: ALL_VENUES,
     })
@@ -99,12 +100,12 @@ describe('components | Filters', () => {
 
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeneficiary: '',
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingBeginningDate: '2020-05-20',
-      bookingEndingDate: null,
-      offerDate: null,
-      offerISBN: '',
-      offerName: '',
+      bookingEndingDate: EMPTY_FILTER_VALUE,
+      offerDate: EMPTY_FILTER_VALUE,
+      offerISBN: EMPTY_FILTER_VALUE,
+      offerName: EMPTY_FILTER_VALUE,
       offerVenue: ALL_VENUES,
     })
   })
@@ -119,12 +120,12 @@ describe('components | Filters', () => {
 
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeneficiary: '',
-      bookingBeginningDate: null,
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: '2020-05-20',
-      offerDate: null,
-      offerISBN: '',
-      offerName: '',
+      offerDate: EMPTY_FILTER_VALUE,
+      offerISBN: EMPTY_FILTER_VALUE,
+      offerName: EMPTY_FILTER_VALUE,
       offerVenue: ALL_VENUES,
     })
   })
@@ -132,23 +133,18 @@ describe('components | Filters', () => {
   it('should apply offerVenue filter when selecting a venue', () => {
     // given
     const wrapper = shallow(<Filters {...props} />)
-    wrapper.instance()['venueSelect'] = {
-      current: {
-        blur: jest.fn(),
-      },
-    }
 
     // when
     wrapper.instance().handleVenueSelection({ target: { value: 'AE' } })
 
     // then
     expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeneficiary: '',
-      bookingBeginningDate: null,
-      bookingEndingDate: null,
-      offerDate: null,
-      offerISBN: '',
-      offerName: '',
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
+      bookingEndingDate: EMPTY_FILTER_VALUE,
+      offerDate: EMPTY_FILTER_VALUE,
+      offerISBN: EMPTY_FILTER_VALUE,
+      offerName: EMPTY_FILTER_VALUE,
       offerVenue: 'AE',
     })
   })
@@ -165,11 +161,11 @@ describe('components | Filters', () => {
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
       bookingBeneficiary: 'Firost',
-      bookingBeginningDate: null,
-      bookingEndingDate: null,
-      offerDate: null,
-      offerISBN: '',
-      offerName: '',
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
+      bookingEndingDate: EMPTY_FILTER_VALUE,
+      offerDate: EMPTY_FILTER_VALUE,
+      offerISBN: EMPTY_FILTER_VALUE,
+      offerName: EMPTY_FILTER_VALUE,
       offerVenue: 'all',
     })
   })
@@ -185,12 +181,12 @@ describe('components | Filters', () => {
 
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeneficiary: '',
-      bookingBeginningDate: null,
-      bookingEndingDate: null,
-      offerDate: null,
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
+      bookingEndingDate: EMPTY_FILTER_VALUE,
+      offerDate: EMPTY_FILTER_VALUE,
       offerISBN: '87465373654',
-      offerName: '',
+      offerName: EMPTY_FILTER_VALUE,
       offerVenue: ALL_VENUES,
     })
   })
