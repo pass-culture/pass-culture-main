@@ -1,5 +1,6 @@
-import { shallow } from 'enzyme'
+import { shallow, mount } from 'enzyme'
 import React from 'react'
+import { MemoryRouter } from 'react-router'
 
 import MyBookingsLists from '../MyBookingsLists'
 
@@ -24,12 +25,33 @@ describe('src | components | pages | my-bookings | MyBookingsLists', () => {
   })
 
   describe('when I have no bookings', () => {
-    it('should render NoItems', () => {
+    it('should display a button that redirects to discovery page', () => {
       // when
-      const wrapper = shallow(<MyBookingsLists {...props} />)
+      const wrapper = mount(
+        <MemoryRouter initialEntries={['/reservations']}>
+          <MyBookingsLists {...props} />
+        </MemoryRouter>
+      )
 
       // then
-      expect(wrapper).toMatchSnapshot()
+      const redirectButton = wrapper.find('a')
+      expect(redirectButton.text()).toBe('Lance-toi !')
+      expect(redirectButton.prop('href')).toBe('/decouverte')
+    })
+
+    it('should display a description text', () => {
+      // when
+      const wrapper = mount(
+        <MemoryRouter initialEntries={['/favoris']}>
+          <MyBookingsLists {...props} />
+        </MemoryRouter>
+      )
+
+      // then
+      const descriptionText = wrapper.find({
+        children: 'Dès que tu auras réservé une offre, tu la retrouveras ici.',
+      })
+      expect(descriptionText).toHaveLength(1)
     })
   })
 
