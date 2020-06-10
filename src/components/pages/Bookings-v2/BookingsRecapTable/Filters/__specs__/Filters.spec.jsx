@@ -1,7 +1,6 @@
 import React from 'react'
 import Filters, { EMPTY_FILTER_VALUE } from '../Filters'
 import { mount, shallow } from 'enzyme'
-import moment from 'moment'
 import { fetchAllVenuesByProUser } from '../../../../../../services/venuesService'
 import { ALL_VENUES } from '../../utils/filterBookingsRecap'
 
@@ -60,13 +59,13 @@ describe('components | Filters', () => {
     })
   })
 
-  it('should apply offerDate filter when choosing an offer date', () => {
+  it('should apply given filter', () => {
     // Given
-    const selectedDate = moment('2020-05-20')
     const wrapper = shallow(<Filters {...props} />)
+    const updatedFilter = { offerDate: '2020-05-20' }
 
     // When
-    wrapper.instance().handleOfferDateChange(selectedDate)
+    wrapper.instance().updateFilters(updatedFilter)
 
     // Then
     expect(props.setFilters).toHaveBeenCalledWith({
@@ -84,12 +83,13 @@ describe('components | Filters', () => {
   it('should add filter to previous filters when applying a new one', () => {
     // Given
     const wrapper = shallow(<Filters {...props} />)
-    const selectedDate = moment('2020-05-20')
     const wrapperInstance = wrapper.instance()
-    wrapperInstance.handleOfferDateChange(selectedDate)
+    const firstUpdatedFilter = { offerDate: '2020-05-20' }
+    wrapperInstance.updateFilters(firstUpdatedFilter)
+    const secondUpdatedFilter = { offerVenue: 'AE' }
 
     // When
-    wrapperInstance.updateOmniSearchKeywords('offre', 'Jurassic Park')
+    wrapperInstance.updateFilters(secondUpdatedFilter)
 
     // Then
     expect(props.setFilters).toHaveBeenCalledTimes(2)
@@ -99,68 +99,6 @@ describe('components | Filters', () => {
       bookingEndingDate: EMPTY_FILTER_VALUE,
       bookingToken: EMPTY_FILTER_VALUE,
       offerDate: '2020-05-20',
-      offerISBN: EMPTY_FILTER_VALUE,
-      offerName: 'Jurassic Park',
-      offerVenue: ALL_VENUES,
-    })
-  })
-
-  it('should apply bookingBeginningDate filter when choosing an booking beginning date', () => {
-    // Given
-    const selectedDate = moment('2020-05-20')
-    const wrapper = shallow(<Filters {...props} />)
-
-    // When
-    wrapper.instance().handleBookingBeginningDateChange(selectedDate)
-
-    // Then
-    expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeneficiary: EMPTY_FILTER_VALUE,
-      bookingBeginningDate: '2020-05-20',
-      bookingEndingDate: EMPTY_FILTER_VALUE,
-      bookingToken: EMPTY_FILTER_VALUE,
-      offerDate: EMPTY_FILTER_VALUE,
-      offerISBN: EMPTY_FILTER_VALUE,
-      offerName: EMPTY_FILTER_VALUE,
-      offerVenue: ALL_VENUES,
-    })
-  })
-
-  it('should apply bookingEndingDate filter when choosing an booking end date', () => {
-    // Given
-    const selectedDate = moment('2020-05-20')
-    const wrapper = shallow(<Filters {...props} />)
-
-    // When
-    wrapper.instance().handleBookingEndingDateChange(selectedDate)
-
-    // Then
-    expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeneficiary: EMPTY_FILTER_VALUE,
-      bookingBeginningDate: EMPTY_FILTER_VALUE,
-      bookingEndingDate: '2020-05-20',
-      bookingToken: EMPTY_FILTER_VALUE,
-      offerDate: EMPTY_FILTER_VALUE,
-      offerISBN: EMPTY_FILTER_VALUE,
-      offerName: EMPTY_FILTER_VALUE,
-      offerVenue: ALL_VENUES,
-    })
-  })
-
-  it('should apply offerVenue filter when selecting a venue', () => {
-    // given
-    const wrapper = shallow(<Filters {...props} />)
-
-    // when
-    wrapper.instance().handleVenueSelection({ target: { value: 'AE' } })
-
-    // then
-    expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeneficiary: EMPTY_FILTER_VALUE,
-      bookingBeginningDate: EMPTY_FILTER_VALUE,
-      bookingEndingDate: EMPTY_FILTER_VALUE,
-      bookingToken: EMPTY_FILTER_VALUE,
-      offerDate: EMPTY_FILTER_VALUE,
       offerISBN: EMPTY_FILTER_VALUE,
       offerName: EMPTY_FILTER_VALUE,
       offerVenue: 'AE',

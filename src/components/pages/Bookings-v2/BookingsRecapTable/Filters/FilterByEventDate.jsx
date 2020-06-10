@@ -2,8 +2,16 @@ import React from 'react'
 import InputWithCalendar from './InputWithCalendar'
 import PropTypes from 'prop-types'
 import DatePicker from 'react-datepicker'
+import { EMPTY_FILTER_VALUE } from './Filters'
 
-const FilterByEventDate = ({ onHandleOfferDateChange, selectedOfferDate }) => {
+const FilterByEventDate = ({ updateFilters, selectedOfferDate }) => {
+  function handleOfferDateChange(offerDate) {
+    const dateToFilter = offerDate === null ? EMPTY_FILTER_VALUE : offerDate.format('YYYY-MM-DD')
+    const updatedFilter = { offerDate: dateToFilter }
+    const updatedSelectedContent = { selectedOfferDate: offerDate }
+    updateFilters(updatedFilter, updatedSelectedContent)
+  }
+
   return (
     <div className="fw-offer-date">
       <label
@@ -18,7 +26,7 @@ const FilterByEventDate = ({ onHandleOfferDateChange, selectedOfferDate }) => {
           customInput={<InputWithCalendar customClass="field-date-only" />}
           dropdownMode="select"
           id="select-filter-date"
-          onChange={onHandleOfferDateChange}
+          onChange={handleOfferDateChange}
           placeholderText="JJ/MM/AAAA"
           selected={selectedOfferDate}
         />
@@ -28,8 +36,8 @@ const FilterByEventDate = ({ onHandleOfferDateChange, selectedOfferDate }) => {
 }
 
 FilterByEventDate.propTypes = {
-  onHandleOfferDateChange: PropTypes.func.isRequired,
   selectedOfferDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string]).isRequired,
+  updateFilters: PropTypes.func.isRequired,
 }
 
 export default FilterByEventDate

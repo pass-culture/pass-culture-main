@@ -6,7 +6,7 @@ describe('components | FilterByVenue', () => {
   let props
   beforeEach(() => {
     props = {
-      onHandleVenueSelection: jest.fn(),
+      updateFilters: jest.fn(),
       selectedVenue: 'BG',
       venuesFormattedAndOrdered: [
         { id: 'AE', displayName: 'Ma premiere venue' },
@@ -37,7 +37,7 @@ describe('components | FilterByVenue', () => {
     await venuesSelect.simulate('change', selectedVenue)
 
     // then
-    expect(props.onHandleVenueSelection).toHaveBeenCalledWith(selectedVenue)
+    expect(props.updateFilters).toHaveBeenCalledWith({ offerVenue: 'BG' }, { selectedVenue: 'BG' })
   })
 
   it('should render a select input with a default value "Tous les lieux" selected', async () => {

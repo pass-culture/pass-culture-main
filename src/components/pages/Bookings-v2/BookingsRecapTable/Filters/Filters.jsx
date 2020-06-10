@@ -28,12 +28,12 @@ class Filters extends Component {
         offerName: EMPTY_FILTER_VALUE,
         offerVenue: ALL_VENUES,
       },
-      keywords: '',
+      keywords: EMPTY_FILTER_VALUE,
       selectedBookingBeginningDate: EMPTY_FILTER_VALUE,
       selectedBookingEndingDate: moment(),
       selectedOfferDate: EMPTY_FILTER_VALUE,
       selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
-      selectedVenue: '',
+      selectedVenue: EMPTY_FILTER_VALUE,
       venues: [],
     }
   }
@@ -146,37 +146,7 @@ class Filters extends Component {
     },
   ]
 
-  handleOfferDateChange = offerDate => {
-    const dateToFilter = offerDate === null ? EMPTY_FILTER_VALUE : offerDate.format('YYYY-MM-DD')
-    const updatedFilter = { offerDate: dateToFilter }
-    const updatedSelectedContent = { selectedOfferDate: offerDate }
-    this.updateFilters(updatedFilter, updatedSelectedContent)
-  }
-
-  handleBookingBeginningDateChange = bookingBeginningDate => {
-    const dateToFilter =
-      bookingBeginningDate === null ? EMPTY_FILTER_VALUE : bookingBeginningDate.format('YYYY-MM-DD')
-    const updatedFilter = { bookingBeginningDate: dateToFilter }
-    const updatedSelectedContent = { selectedBookingBeginningDate: bookingBeginningDate }
-    this.updateFilters(updatedFilter, updatedSelectedContent)
-  }
-
-  handleBookingEndingDateChange = bookingEndingDate => {
-    const dateToFilter =
-      bookingEndingDate === null ? EMPTY_FILTER_VALUE : bookingEndingDate.format('YYYY-MM-DD')
-    const updatedFilter = { bookingEndingDate: dateToFilter }
-    const updatedSelectedContent = { selectedBookingEndingDate: bookingEndingDate }
-    this.updateFilters(updatedFilter, updatedSelectedContent)
-  }
-
-  handleVenueSelection = event => {
-    const venueId = event.target.value
-    const updatedFilter = { offerVenue: venueId }
-    const updatedSelectedContent = { selectedVenue: venueId }
-    this.updateFilters(updatedFilter, updatedSelectedContent)
-  }
-
-  updateFilters(updatedFilter, updatedSelectedContent) {
+  updateFilters = (updatedFilter, updatedSelectedContent) => {
     const { filters } = this.state
     this.setState(
       {
@@ -221,20 +191,19 @@ class Filters extends Component {
         />
         <div className="fw-second-line">
           <FilterByEventDate
-            onHandleOfferDateChange={this.handleOfferDateChange}
             selectedOfferDate={selectedOfferDate}
+            updateFilters={this.updateFilters}
           />
           <FilterByVenue
-            onHandleVenueSelection={this.handleVenueSelection}
             selectedVenue={selectedVenue}
+            updateFilters={this.updateFilters}
             venuesFormattedAndOrdered={venuesFormattedAndOrdered}
           />
           <FilterByBookingPeriod
             oldestBookingDate={oldestBookingDate}
-            onHandleBookingBeginningDateChange={this.handleBookingBeginningDateChange}
-            onHandleBookingEndingDateChange={this.handleBookingEndingDateChange}
             selectedBookingBeginningDate={selectedBookingBeginningDate}
             selectedBookingEndingDate={selectedBookingEndingDate}
+            updateFilters={this.updateFilters}
           />
         </div>
       </div>

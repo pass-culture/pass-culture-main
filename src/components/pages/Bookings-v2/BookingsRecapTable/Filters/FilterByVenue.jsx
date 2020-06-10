@@ -2,7 +2,14 @@ import React from 'react'
 import { ALL_VENUES } from '../utils/filterBookingsRecap'
 import PropTypes from 'prop-types'
 
-const FilterByVenue = ({ onHandleVenueSelection, selectedVenue, venuesFormattedAndOrdered }) => {
+const FilterByVenue = ({ updateFilters, selectedVenue, venuesFormattedAndOrdered }) => {
+  function handleVenueSelection(event) {
+    const venueId = event.target.value
+    const updatedFilter = { offerVenue: venueId }
+    const updatedSelectedContent = { selectedVenue: venueId }
+    updateFilters(updatedFilter, updatedSelectedContent)
+  }
+
   return (
     <div className="fw-venues">
       <label
@@ -13,8 +20,8 @@ const FilterByVenue = ({ onHandleVenueSelection, selectedVenue, venuesFormattedA
       </label>
       <select
         id="offer-venue-input"
-        onBlur={onHandleVenueSelection}
-        onChange={onHandleVenueSelection}
+        onBlur={handleVenueSelection}
+        onChange={handleVenueSelection}
         value={selectedVenue}
       >
         <option value={ALL_VENUES}>
@@ -34,8 +41,8 @@ const FilterByVenue = ({ onHandleVenueSelection, selectedVenue, venuesFormattedA
 }
 
 FilterByVenue.propTypes = {
-  onHandleVenueSelection: PropTypes.func.isRequired,
   selectedVenue: PropTypes.string.isRequired,
+  updateFilters: PropTypes.func.isRequired,
   venuesFormattedAndOrdered: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,

@@ -9,8 +9,7 @@ describe('components | FilterByBookingPeriod', () => {
   beforeEach(() => {
     props = {
       oldestBookingDate: '2020-02-05',
-      onHandleBookingBeginningDateChange: jest.fn(),
-      onHandleBookingEndingDateChange: jest.fn(),
+      updateFilters: jest.fn(),
       selectedBookingBeginningDate: EMPTY_FILTER_VALUE,
       selectedBookingEndingDate: EMPTY_FILTER_VALUE,
     }
@@ -26,7 +25,10 @@ describe('components | FilterByBookingPeriod', () => {
     bookingBeginningDateInput.simulate('change', selectedDate)
 
     // Then
-    expect(props.onHandleBookingBeginningDateChange).toHaveBeenCalledWith(selectedDate)
+    expect(props.updateFilters).toHaveBeenCalledWith(
+      { bookingBeginningDate: '2020-05-20' },
+      { selectedBookingBeginningDate: selectedDate }
+    )
   })
 
   it('should call on handleBookingEndingDateChange', () => {
@@ -39,7 +41,10 @@ describe('components | FilterByBookingPeriod', () => {
     bookingEndingDateInput.simulate('change', selectedDate)
 
     // Then
-    expect(props.onHandleBookingEndingDateChange).toHaveBeenCalledWith(selectedDate)
+    expect(props.updateFilters).toHaveBeenCalledWith(
+      { bookingEndingDate: '2020-05-20' },
+      { selectedBookingEndingDate: selectedDate }
+    )
   })
 
   it('should not allow to select booking beginning date superior to booking ending date value', async () => {

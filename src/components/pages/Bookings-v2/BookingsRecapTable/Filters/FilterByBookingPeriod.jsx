@@ -3,14 +3,30 @@ import moment from 'moment/moment'
 import InputWithCalendar from './InputWithCalendar'
 import DatePicker from 'react-datepicker'
 import PropTypes from 'prop-types'
+import { EMPTY_FILTER_VALUE } from './Filters'
 
 const FilterByBookingPeriod = ({
   oldestBookingDate,
-  onHandleBookingBeginningDateChange,
-  onHandleBookingEndingDateChange,
+  updateFilters,
   selectedBookingBeginningDate,
   selectedBookingEndingDate,
 }) => {
+  function handleBookingBeginningDateChange(bookingBeginningDate) {
+    const dateToFilter =
+      bookingBeginningDate === null ? EMPTY_FILTER_VALUE : bookingBeginningDate.format('YYYY-MM-DD')
+    const updatedFilter = { bookingBeginningDate: dateToFilter }
+    const updatedSelectedContent = { selectedBookingBeginningDate: bookingBeginningDate }
+    updateFilters(updatedFilter, updatedSelectedContent)
+  }
+
+  function handleBookingEndingDateChange(bookingEndingDate) {
+    const dateToFilter =
+      bookingEndingDate === null ? EMPTY_FILTER_VALUE : bookingEndingDate.format('YYYY-MM-DD')
+    const updatedFilter = { bookingEndingDate: dateToFilter }
+    const updatedSelectedContent = { selectedBookingEndingDate: bookingEndingDate }
+    updateFilters(updatedFilter, updatedSelectedContent)
+  }
+
   return (
     <div className="fw-booking-date">
       <label
@@ -30,7 +46,7 @@ const FilterByBookingPeriod = ({
             dropdownMode="select"
             maxDate={selectedBookingEndingDate}
             minDate={oldestBookingDate}
-            onChange={onHandleBookingBeginningDateChange}
+            onChange={handleBookingBeginningDateChange}
             placeholderText="JJ/MM/AAAA"
             selected={selectedBookingBeginningDate}
           />
@@ -43,7 +59,7 @@ const FilterByBookingPeriod = ({
             dropdownMode="select"
             maxDate={moment()}
             minDate={selectedBookingBeginningDate}
-            onChange={onHandleBookingEndingDateChange}
+            onChange={handleBookingEndingDateChange}
             placeholderText="JJ/MM/AAAA"
             selected={selectedBookingEndingDate}
           />
@@ -55,11 +71,10 @@ const FilterByBookingPeriod = ({
 
 FilterByBookingPeriod.propTypes = {
   oldestBookingDate: PropTypes.string.isRequired,
-  onHandleBookingBeginningDateChange: PropTypes.func.isRequired,
-  onHandleBookingEndingDateChange: PropTypes.func.isRequired,
   selectedBookingBeginningDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string])
     .isRequired,
   selectedBookingEndingDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string]).isRequired,
+  updateFilters: PropTypes.func.isRequired,
 }
 
 export default FilterByBookingPeriod

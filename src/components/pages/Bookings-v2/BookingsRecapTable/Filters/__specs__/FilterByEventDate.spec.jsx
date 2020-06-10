@@ -8,7 +8,7 @@ describe('components | FilterByEventDate', () => {
   let props
   beforeEach(() => {
     props = {
-      onHandleOfferDateChange: jest.fn(),
+      updateFilters: jest.fn(),
       selectedOfferDate: EMPTY_FILTER_VALUE,
     }
   })
@@ -32,6 +32,9 @@ describe('components | FilterByEventDate', () => {
     await offerDateInput.simulate('change', selectedDate)
 
     // Then
-    expect(props.onHandleOfferDateChange).toHaveBeenCalledWith(selectedDate)
+    expect(props.updateFilters).toHaveBeenCalledWith(
+      { offerDate: '2020-05-20' },
+      { selectedOfferDate: selectedDate }
+    )
   })
 })
