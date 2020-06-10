@@ -26,6 +26,17 @@ const filterByBookingBeneficiary = (bookingBeneficiary, booking) => {
   return true
 }
 
+const filterByBookingToken = (bookingToken, booking) => {
+  if (bookingToken === EMPTY_FILTER_VALUE) {
+    return true
+  } else if (booking.booking_token === null) {
+    return false
+  } else {
+    const bookingTokenFromBooking = booking.booking_token.toLowerCase()
+    return bookingTokenFromBooking.includes(bookingToken.toLowerCase())
+  }
+}
+
 const extractDateFromDatetime = datetimeToExtract => {
   return datetimeToExtract.substr(0, 10)
 }
@@ -42,7 +53,7 @@ const filterByOfferDate = (offerDate, booking) => {
   return true
 }
 
-const filterBybookingBeginningDate = (bookingBeginningDate, booking) => {
+const filterByBookingBeginningDate = (bookingBeginningDate, booking) => {
   if (bookingBeginningDate !== EMPTY_FILTER_VALUE) {
     const offerDateFromBookingRecap = extractDateFromDatetime(booking.booking_date)
     return offerDateFromBookingRecap >= bookingBeginningDate
@@ -75,6 +86,7 @@ const filterByISBN = (isbn, booking) => {
 const filterBookingsRecap = (bookingsRecap, filters) => {
   const {
     bookingBeneficiary,
+    bookingToken,
     bookingBeginningDate,
     bookingEndingDate,
     offerDate,
@@ -86,9 +98,10 @@ const filterBookingsRecap = (bookingsRecap, filters) => {
     return (
       filterByOfferName(offerName, booking) &&
       filterByOfferDate(offerDate, booking) &&
-      filterBybookingBeginningDate(bookingBeginningDate, booking) &&
+      filterByBookingBeginningDate(bookingBeginningDate, booking) &&
       filterByBookingEndDate(bookingEndingDate, booking) &&
       filterByBookingBeneficiary(bookingBeneficiary, booking) &&
+      filterByBookingToken(bookingToken, booking) &&
       filterByOfferVenue(offerVenue, booking) &&
       filterByISBN(offerISBN, booking)
     )

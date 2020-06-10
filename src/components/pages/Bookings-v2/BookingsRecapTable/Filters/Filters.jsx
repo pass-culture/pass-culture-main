@@ -22,9 +22,10 @@ class Filters extends Component {
         bookingBeginningDate: EMPTY_FILTER_VALUE,
         bookingEndingDate: EMPTY_FILTER_VALUE,
         bookingBeneficiary: EMPTY_FILTER_VALUE,
+        bookingToken: EMPTY_FILTER_VALUE,
         offerDate: EMPTY_FILTER_VALUE,
-        offerName: EMPTY_FILTER_VALUE,
         offerISBN: EMPTY_FILTER_VALUE,
+        offerName: EMPTY_FILTER_VALUE,
         offerVenue: ALL_VENUES,
       },
       keywords: '',
@@ -46,24 +47,9 @@ class Filters extends Component {
   }
 
   applyFilters = debounce(filterValues => {
-    const {
-      bookingBeginningDate,
-      bookingBeneficiary,
-      bookingEndingDate,
-      offerName,
-      offerDate,
-      offerVenue,
-      offerISBN,
-    } = filterValues
     const { setFilters } = this.props
     setFilters({
-      bookingBeginningDate: bookingBeginningDate,
-      bookingEndingDate: bookingEndingDate,
-      bookingBeneficiary: bookingBeneficiary,
-      offerDate: offerDate,
-      offerName: offerName,
-      offerVenue: offerVenue,
-      offerISBN: offerISBN,
+      ...filterValues,
     })
   }, DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS)
 
@@ -74,16 +60,17 @@ class Filters extends Component {
           bookingBeneficiary: EMPTY_FILTER_VALUE,
           bookingBeginningDate: EMPTY_FILTER_VALUE,
           bookingEndingDate: EMPTY_FILTER_VALUE,
+          bookingToken: EMPTY_FILTER_VALUE,
           offerDate: EMPTY_FILTER_VALUE,
-          offerName: EMPTY_FILTER_VALUE,
           offerISBN: EMPTY_FILTER_VALUE,
+          offerName: EMPTY_FILTER_VALUE,
           offerVenue: ALL_VENUES,
         },
-        keywords: '',
+        keywords: EMPTY_FILTER_VALUE,
         selectedBookingBeginningDate: EMPTY_FILTER_VALUE,
         selectedBookingEndingDate: moment(),
         selectedOfferDate: EMPTY_FILTER_VALUE,
-        selectedVenue: '',
+        selectedVenue: EMPTY_FILTER_VALUE,
       },
       () => {
         const { filters } = this.state
@@ -104,171 +91,100 @@ class Filters extends Component {
         selectedOmniSearchCriteria: newOmniSearchCriteria,
       },
       () => {
-        this.OMNISEARCH_FILTERS.find(
-          criteria => criteria.id === newOmniSearchCriteria
-        ).handleChange(currentFilterKeywords)
+        this.updateOmniSearchKeywords(newOmniSearchCriteria, currentFilterKeywords)
       }
     )
   }
 
   handleOmniSearchChange = event => {
     const { selectedOmniSearchCriteria } = this.state
-    this.OMNISEARCH_FILTERS.find(
-      criteria => criteria.id === selectedOmniSearchCriteria
-    ).handleChange(event.target.value)
+    this.updateOmniSearchKeywords(selectedOmniSearchCriteria, event.target.value)
   }
 
-  handleOfferNameChange = keywords => {
-    const { filters } = this.state
+  updateOmniSearchKeywords(omniSearchCriteria, keywords) {
+    const cleanedOmnisearchFilters = {
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
+      offerISBN: EMPTY_FILTER_VALUE,
+      offerName: EMPTY_FILTER_VALUE,
+    }
 
-    this.setState(
-      {
-        filters: {
-          ...filters,
-          bookingBeneficiary: EMPTY_FILTER_VALUE,
-          offerISBN: EMPTY_FILTER_VALUE,
-          offerName: keywords && keywords.length > 0 ? keywords : EMPTY_FILTER_VALUE,
-        },
-        keywords: keywords,
-      },
-      () => {
-        const { filters } = this.state
-        this.applyFilters(filters)
-      }
-    )
-  }
+    const omniSearchStateKey = this.OMNISEARCH_FILTERS.find(
+      criteria => criteria.id === omniSearchCriteria
+    ).stateKey
+    cleanedOmnisearchFilters[omniSearchStateKey] =
+      keywords && keywords.length > 0 ? keywords : EMPTY_FILTER_VALUE
 
-  handleBeneficiaryChange = keywords => {
-    const { filters } = this.state
-
-    this.setState(
-      {
-        filters: {
-          ...filters,
-          bookingBeneficiary: keywords && keywords.length > 0 ? keywords : EMPTY_FILTER_VALUE,
-          offerISBN: EMPTY_FILTER_VALUE,
-          offerName: EMPTY_FILTER_VALUE,
-        },
-        keywords: keywords,
-      },
-      () => {
-        const { filters } = this.state
-        this.applyFilters(filters)
-      }
-    )
-  }
-
-  handleISBNChange = keywords => {
-    const { filters } = this.state
-
-    this.setState(
-      {
-        filters: {
-          ...filters,
-          bookingBeneficiary: EMPTY_FILTER_VALUE,
-          offerISBN: keywords && keywords.length > 0 ? keywords : EMPTY_FILTER_VALUE,
-          offerName: EMPTY_FILTER_VALUE,
-        },
-        keywords: keywords,
-      },
-      () => {
-        const { filters } = this.state
-        this.applyFilters(filters)
-      }
-    )
+    const updatedSelectedContent = { keywords: keywords }
+    this.updateFilters(cleanedOmnisearchFilters, updatedSelectedContent)
   }
 
   OMNISEARCH_FILTERS = [
     {
       id: 'offre',
-      handleChange: this.handleOfferNameChange,
       placeholderText: "Rechercher par nom d'offre",
       stateKey: 'offerName',
       selectOptionText: 'Offre',
     },
     {
       id: 'bénéficiaire',
-      handleChange: this.handleBeneficiaryChange,
       placeholderText: 'Rechercher par nom ou email',
       stateKey: 'bookingBeneficiary',
       selectOptionText: 'Bénéficiaire',
     },
     {
       id: 'isbn',
-      handleChange: this.handleISBNChange,
       placeholderText: 'Rechercher par ISBN',
       stateKey: 'offerISBN',
       selectOptionText: 'ISBN',
+    },
+    {
+      id: 'token',
+      placeholderText: 'Rechercher par contremarque',
+      stateKey: 'bookingToken',
+      selectOptionText: 'Contremarque',
     },
   ]
 
   handleOfferDateChange = offerDate => {
     const dateToFilter = offerDate === null ? EMPTY_FILTER_VALUE : offerDate.format('YYYY-MM-DD')
-    const { filters } = this.state
-    this.setState(
-      {
-        filters: {
-          ...filters,
-          offerDate: dateToFilter,
-        },
-        selectedOfferDate: offerDate,
-      },
-      () => {
-        const { filters } = this.state
-        this.applyFilters(filters)
-      }
-    )
+    const updatedFilter = { offerDate: dateToFilter }
+    const updatedSelectedContent = { selectedOfferDate: offerDate }
+    this.updateFilters(updatedFilter, updatedSelectedContent)
   }
 
   handleBookingBeginningDateChange = bookingBeginningDate => {
     const dateToFilter =
       bookingBeginningDate === null ? EMPTY_FILTER_VALUE : bookingBeginningDate.format('YYYY-MM-DD')
-    const { filters } = this.state
-    this.setState(
-      {
-        filters: {
-          ...filters,
-          bookingBeginningDate: dateToFilter,
-        },
-        selectedBookingBeginningDate: bookingBeginningDate,
-      },
-      () => {
-        const { filters } = this.state
-        this.applyFilters(filters)
-      }
-    )
+    const updatedFilter = { bookingBeginningDate: dateToFilter }
+    const updatedSelectedContent = { selectedBookingBeginningDate: bookingBeginningDate }
+    this.updateFilters(updatedFilter, updatedSelectedContent)
   }
 
   handleBookingEndingDateChange = bookingEndingDate => {
     const dateToFilter =
       bookingEndingDate === null ? EMPTY_FILTER_VALUE : bookingEndingDate.format('YYYY-MM-DD')
-    const { filters } = this.state
-    this.setState(
-      {
-        filters: {
-          ...filters,
-          bookingEndingDate: dateToFilter,
-        },
-        selectedBookingEndingDate: bookingEndingDate,
-      },
-      () => {
-        const { filters } = this.state
-        this.applyFilters(filters)
-      }
-    )
+    const updatedFilter = { bookingEndingDate: dateToFilter }
+    const updatedSelectedContent = { selectedBookingEndingDate: bookingEndingDate }
+    this.updateFilters(updatedFilter, updatedSelectedContent)
   }
 
   handleVenueSelection = event => {
     const venueId = event.target.value
-    const { filters } = this.state
+    const updatedFilter = { offerVenue: venueId }
+    const updatedSelectedContent = { selectedVenue: venueId }
+    this.updateFilters(updatedFilter, updatedSelectedContent)
+  }
 
+  updateFilters(updatedFilter, updatedSelectedContent) {
+    const { filters } = this.state
     this.setState(
       {
         filters: {
           ...filters,
-          offerVenue: venueId,
+          ...updatedFilter,
         },
-        selectedVenue: venueId,
+        ...updatedSelectedContent,
       },
       () => {
         const { filters } = this.state

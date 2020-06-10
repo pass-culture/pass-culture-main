@@ -18,8 +18,20 @@ describe('components | Filters', () => {
       setFilters: jest.fn(),
     }
     fetchAllVenuesByProUser.mockResolvedValue([
-      { id: 'AF', name: 'Librairie Fnac', offererName: 'gilbert Joseph', isVirtual: false },
-      { id: 'AE', name: 'Offre numérique', offererName: 'gilbert Joseph', isVirtual: true },
+      {
+        id: 'AF',
+        booking_token: 'TOLKIEN',
+        name: 'Librairie Fnac',
+        offererName: 'gilbert Joseph',
+        isVirtual: false,
+      },
+      {
+        id: 'AE',
+        booking_token: 'NEIKLOT',
+        name: 'Offre numérique',
+        offererName: 'gilbert Joseph',
+        isVirtual: true,
+      },
     ])
   })
 
@@ -40,6 +52,7 @@ describe('components | Filters', () => {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
       offerName: 'Jurassic Park',
       offerISBN: EMPTY_FILTER_VALUE,
@@ -60,6 +73,7 @@ describe('components | Filters', () => {
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
       offerDate: '2020-05-20',
       offerISBN: EMPTY_FILTER_VALUE,
       offerName: EMPTY_FILTER_VALUE,
@@ -75,7 +89,7 @@ describe('components | Filters', () => {
     wrapperInstance.handleOfferDateChange(selectedDate)
 
     // When
-    wrapperInstance.handleOfferNameChange('Jurassic Park')
+    wrapperInstance.updateOmniSearchKeywords('offre', 'Jurassic Park')
 
     // Then
     expect(props.setFilters).toHaveBeenCalledTimes(2)
@@ -83,6 +97,7 @@ describe('components | Filters', () => {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
       offerDate: '2020-05-20',
       offerISBN: EMPTY_FILTER_VALUE,
       offerName: 'Jurassic Park',
@@ -103,6 +118,7 @@ describe('components | Filters', () => {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingBeginningDate: '2020-05-20',
       bookingEndingDate: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
       offerISBN: EMPTY_FILTER_VALUE,
       offerName: EMPTY_FILTER_VALUE,
@@ -123,6 +139,7 @@ describe('components | Filters', () => {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: '2020-05-20',
+      bookingToken: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
       offerISBN: EMPTY_FILTER_VALUE,
       offerName: EMPTY_FILTER_VALUE,
@@ -142,6 +159,7 @@ describe('components | Filters', () => {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
       offerISBN: EMPTY_FILTER_VALUE,
       offerName: EMPTY_FILTER_VALUE,
@@ -163,6 +181,7 @@ describe('components | Filters', () => {
       bookingBeneficiary: 'Firost',
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
       offerISBN: EMPTY_FILTER_VALUE,
       offerName: EMPTY_FILTER_VALUE,
@@ -184,8 +203,31 @@ describe('components | Filters', () => {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
       offerISBN: '87465373654',
+      offerName: EMPTY_FILTER_VALUE,
+      offerVenue: ALL_VENUES,
+    })
+  })
+
+  it('should apply token filter when typing keywords for a token', () => {
+    // Given
+    const wrapper = shallow(<Filters {...props} />)
+    const instance = wrapper.instance()
+    instance.handleOmniSearchCriteriaChange({ target: { value: 'token' } })
+
+    // When
+    instance.handleOmniSearchChange({ target: { value: 'TOLkien' } })
+
+    // Then
+    expect(props.setFilters).toHaveBeenCalledWith({
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingToken: 'TOLkien',
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
+      bookingEndingDate: EMPTY_FILTER_VALUE,
+      offerDate: EMPTY_FILTER_VALUE,
+      offerISBN: EMPTY_FILTER_VALUE,
       offerName: EMPTY_FILTER_VALUE,
       offerVenue: ALL_VENUES,
     })

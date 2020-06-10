@@ -21,6 +21,7 @@ describe('filterBookingsRecap', () => {
     ]
     const filters = {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
@@ -66,6 +67,7 @@ describe('filterBookingsRecap', () => {
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
@@ -100,6 +102,7 @@ describe('filterBookingsRecap', () => {
       offerName: EMPTY_FILTER_VALUE,
       offerDate: '2020-02-18',
       bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
     }
@@ -144,6 +147,7 @@ describe('filterBookingsRecap', () => {
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
       offerDate: '2020-01-14',
@@ -191,6 +195,7 @@ describe('filterBookingsRecap', () => {
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
       bookingBeginningDate: '2020-01-14',
       bookingEndingDate: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
@@ -238,6 +243,7 @@ describe('filterBookingsRecap', () => {
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
       bookingBeginningDate: '2020-02-18',
       bookingEndingDate: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
@@ -285,6 +291,7 @@ describe('filterBookingsRecap', () => {
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: '2020-01-14',
       offerDate: EMPTY_FILTER_VALUE,
@@ -332,6 +339,7 @@ describe('filterBookingsRecap', () => {
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
       bookingBeginningDate: '2020-01-01',
       bookingEndingDate: '2020-01-14',
       offerDate: EMPTY_FILTER_VALUE,
@@ -379,6 +387,7 @@ describe('filterBookingsRecap', () => {
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
       offerDate: '2020-01-14',
@@ -430,6 +439,7 @@ describe('filterBookingsRecap', () => {
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
       bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
       offerISBN: EMPTY_FILTER_VALUE,
       offerName: EMPTY_FILTER_VALUE,
@@ -474,6 +484,7 @@ describe('filterBookingsRecap', () => {
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
       bookingBeneficiary: 'Ludovic',
+      bookingToken: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
@@ -508,7 +519,7 @@ describe('filterBookingsRecap', () => {
     const bookingRecap2 = {
       stock: {
         offer_name: 'Jurrasic Perk',
-        offer_isbn: 'IUKOLI',
+        offer_isbn: '1234567890',
         type: 'book',
       },
       beneficiary: {
@@ -523,9 +534,73 @@ describe('filterBookingsRecap', () => {
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
       offerISBN: '9787605',
+      offerName: EMPTY_FILTER_VALUE,
+      offerDate: EMPTY_FILTER_VALUE,
+    }
+
+    // when
+    const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+
+    // then
+    expect(filteredBookingsRecap).toStrictEqual([bookingRecap1])
+  })
+
+  it('should return list containing only BookingRecap matching token keywords', () => {
+    // given
+    const bookingRecap1 = {
+      stock: {
+        offer_name: 'Merlin enchanteur',
+        offer_isbn: '9787605639121',
+        type: 'book',
+      },
+      beneficiary: {
+        lastname: 'Klepi',
+        firstname: 'Sonia',
+        email: 'sonia.klepi@example.com',
+      },
+      booking_date: '2020-04-03T12:00:00Z',
+      booking_token: 'TOLKIEN',
+      booking_status: 'Validé',
+    }
+    const bookingRecap2 = {
+      stock: {
+        offer_name: 'Jurrasic Perk',
+        type: 'thing',
+      },
+      beneficiary: {
+        lastname: 'Klepi',
+        firstname: 'Ludovic',
+        email: 'ludovic.klepi@example.com',
+      },
+      booking_date: '2020-04-03T12:00:00Z',
+      booking_token: 'ZACBGD',
+      booking_status: 'Remboursé',
+    }
+    const bookingRecapWithNoToken = {
+      stock: {
+        offer_name: 'Jurrasic Perk',
+        type: 'thing',
+      },
+      beneficiary: {
+        lastname: 'Klepi',
+        firstname: 'Ludovic',
+        email: 'ludovic.klepi@example.com',
+      },
+      booking_date: '2020-04-03T12:00:00Z',
+      booking_token: null,
+      booking_status: 'Validé',
+    }
+    const bookingsRecap = [bookingRecap1, bookingRecap2, bookingRecapWithNoToken]
+    const filters = {
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingToken: 'tolk',
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
+      bookingEndingDate: EMPTY_FILTER_VALUE,
+      offerISBN: EMPTY_FILTER_VALUE,
       offerName: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
     }
