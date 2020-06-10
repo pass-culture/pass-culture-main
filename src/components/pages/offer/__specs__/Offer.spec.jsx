@@ -1,13 +1,13 @@
-import { createMemoryHistory } from 'history'
 import { mount } from 'enzyme'
-import { Provider } from 'react-redux'
+import { createMemoryHistory } from 'history'
 import React from 'react'
+import { Provider } from 'react-redux'
 import { Router } from 'react-router'
+import getMockStore from '../../../../utils/mockStore'
 
 import DetailsContainer from '../../../layout/Details/DetailsContainer'
-import HeaderContainer from '../../../layout/Header/HeaderContainer'
+import CloseLink from '../../../layout/Header/CloseLink/CloseLink'
 import OfferContainer from '../OfferContainer'
-import getMockStore from '../../../../utils/mockStore'
 
 jest.mock('../../../hocs/with-login/withRequiredLogin', () => WrappedComponent => props => (
   <WrappedComponent {...props} />
@@ -28,7 +28,7 @@ describe('offerContainer', () => {
   })
 
   describe('when I am logged in', () => {
-    it('should display header, details and footer for a given offer', () => {
+    it('should display a close link, details and footer for a given offer', () => {
       // given
       const mockHistory = createMemoryHistory()
       const mockStore = getMockStore({
@@ -66,9 +66,9 @@ describe('offerContainer', () => {
       )
 
       // then
-      const header = wrapper.find(HeaderContainer)
+      const closeLink = wrapper.find(CloseLink)
       const offerDetails = wrapper.find(DetailsContainer)
-      expect(header).toHaveLength(1)
+      expect(closeLink).toHaveLength(1)
       expect(offerDetails).toHaveLength(1)
     })
   })

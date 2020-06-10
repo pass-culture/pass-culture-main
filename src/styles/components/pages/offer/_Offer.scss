@@ -1,0 +1,17 @@
+.offer-page {
+  .verso {
+    margin-top: 0;
+  }
+
+  .recto {
+    top: 0;
+  }
+
+  .close-link {
+    background-color: $black;
+    position: absolute;
+    top: 1rem;
+    z-index: $zindex-navbar;
+    right: 1rem;
+  }
+}
