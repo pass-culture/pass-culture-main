@@ -41,59 +41,6 @@
   }
 }
 
-.sr-form {
-  align-items: center;
-  background-image: $linear-gradient-search;
-  padding: 0.75rem 0;
-
-  .sr-input-wrapper {
-    display: flex;
-    height: rem(48px);
-    margin: 0 auto;
-    width: 90%;
-
-    .sr-input-back {
-      background: $white;
-      border-radius: 2rem 0 0 2rem;
-      display: flex;
-      justify-content: flex-end;
-
-      img {
-        margin-left: rem(16px);
-      }
-    }
-
-    .sr-text-input {
-      border: 0;
-      font-size: rem(20px);
-      font-weight: 700;
-      padding: rem(9px);
-      width: 75%;
-
-      &::placeholder {
-        font-size: rem(18px);
-        font-style: italic;
-        font-weight: 400;
-      }
-    }
-
-    .sr-reset-wrapper {
-      align-items: center;
-      background: $white;
-      border-radius: 0 2rem 2rem 0;
-      display: flex;
-      justify-content: center;
-      width: 15%;
-
-      .sr-reset {
-        img {
-          max-width: rem(18px);
-        }
-      }
-    }
-  }
-}
-
 .sr-spinner {
   left: 50%;
   position: absolute;
@@ -138,19 +85,7 @@
 
 
 @media screen and (max-width: $iphone5-width) and (max-height: $iphone5-height) {
-  .sr-form {
-    .sr-input-wrapper {
-      .sr-text-input {
-        width: 70%;
-      }
-
-      .sr-reset-wrapper {
-        width: 25%;
-      }
-    }
-  }
-
-  .sr-items-wrapper {
+    .sr-items-wrapper {
     a:last-child .result-wrapper {
       margin-bottom: rem(111px);
     }

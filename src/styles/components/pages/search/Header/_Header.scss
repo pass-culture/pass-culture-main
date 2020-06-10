@@ -12,26 +12,35 @@
     height: rem(48px);
     margin: 0 auto;
     width: 90%;
+    border: 2px solid rgba(255, 255, 255, 0);
+    border-radius: 2rem;
+    justify-content: space-between;
+
+    &:focus-within {
+      border: 2px solid $primary;
+      border-radius: 2rem;
+    }
   }
 
   .sh-input-left {
     background: $white;
-    border-bottom-left-radius: 2rem;
-    border-top-left-radius: 2rem;
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
+    border-radius: 2rem 0 0 2rem;
     display: flex;
-    justify-content: flex-end;
+    flex: 1;
+    justify-content: center;
+  }
 
-    img {
-      margin-left: rem(16px);
-    }
+  .sr-input-back {
+    outline: none;
+    width: 100%;
   }
 
   .sh-text-input {
     border: 0;
+    flex: 4;
     font-size: rem(20px);
     font-weight: 700;
+    outline: none;
     padding: rem(9px);
     width: 75%;
 
@@ -47,8 +56,16 @@
     background: $white;
     border-radius: 0 2rem 2rem 0;
     display: flex;
+    flex: 1;
     justify-content: center;
+    outline: none;
     width: 15%;
+
+    .sh-reset-button {
+      height: 100%;
+      outline: none;
+      width: 100%;
+    }
 
     .sh-reset-button img {
       max-width: rem(18px);
