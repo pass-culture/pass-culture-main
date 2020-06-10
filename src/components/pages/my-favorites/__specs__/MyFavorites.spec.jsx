@@ -3,6 +3,7 @@ import { createMemoryHistory } from 'history'
 import { mount, shallow } from 'enzyme'
 import { Provider } from 'react-redux'
 import React from 'react'
+import { MemoryRouter } from 'react-router'
 import { Router } from 'react-router-dom'
 import thunk from 'redux-thunk'
 
@@ -83,6 +84,45 @@ describe('my favorites', () => {
 
   describe('render()', () => {
     describe('when there are no favorites', () => {
+      it('should display a button that redirects to discovery page', () => {
+        // given
+        props.myFavorites = []
+        props.hasNoFavorite = true
+
+        // when
+        const wrapper = mount(
+          <MemoryRouter initialEntries={['/favoris']}>
+            <MyFavorites {...props} />
+          </MemoryRouter>
+        )
+        wrapper.find(MyFavorites).setState({ isLoading: false })
+
+        // then
+        const redirectButton = wrapper.find('a')
+        expect(redirectButton.text()).toBe('Lance-toi !')
+        expect(redirectButton.prop('href')).toBe('/decouverte')
+      })
+
+      it('should display a description text', () => {
+        // given
+        props.myFavorites = []
+        props.hasNoFavorite = true
+
+        // when
+        const wrapper = mount(
+          <MemoryRouter initialEntries={['/favoris']}>
+            <MyFavorites {...props} />
+          </MemoryRouter>
+        )
+        wrapper.find(MyFavorites).setState({ isLoading: false })
+
+        // then
+        const descriptionText = wrapper.find({
+          children: 'Dès que tu auras ajouté une offre à tes favoris, tu la retrouveras ici.',
+        })
+        expect(descriptionText).toHaveLength(1)
+      })
+
       it('should not render favorites', () => {
         // given
         props.myFavorites = []
