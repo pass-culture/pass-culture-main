@@ -3,7 +3,7 @@
   height: 84%;
   overflow: hidden;
   position: absolute;
-  top: 44px;
+  top: $header-height;
   z-index: 4;
 
   .card & {
