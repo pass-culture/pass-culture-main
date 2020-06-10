@@ -5,6 +5,7 @@ import { getBookingStatusDisplayInformationsOrDefault } from '../CellsFormatter/
 export const CSV_HEADERS = [
   'Nom de l’offre',
   "Date de l'évènement",
+  'ISBN',
   'Nom et prénom du bénéficiaire',
   'Email du bénéficiaire',
   'Date et heure de réservation',
@@ -29,6 +30,7 @@ const generateBookingsCsvFile = bookings => {
     bookingArray.push(booking.stock.offer_name)
 
     bookingArray.push(formatEventDatetimeIfEventType(booking))
+    bookingArray.push(booking.stock.offer_isbn || '')
 
     bookingArray.push(booking.beneficiary.lastname.concat(' ', booking.beneficiary.firstname))
     bookingArray.push(booking.beneficiary.email)
