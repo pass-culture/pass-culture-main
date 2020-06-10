@@ -1,21 +1,77 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { EMPTY_FILTER_VALUE } from './Filters'
 
-const FilterByOmniSearch = ({
-  keywords,
-  omniSearchSelectOptions,
-  onHandleOmniSearchChange,
-  onHandleOmniSearchCriteriaChange,
-  placeholderText,
-}) => {
+const OMNISEARCH_FILTERS = [
+  {
+    id: 'offre',
+    placeholderText: "Rechercher par nom d'offre",
+    stateKey: 'offerName',
+    selectOptionText: 'Offre',
+  },
+  {
+    id: 'bénéficiaire',
+    placeholderText: 'Rechercher par nom ou email',
+    stateKey: 'bookingBeneficiary',
+    selectOptionText: 'Bénéficiaire',
+  },
+  {
+    id: 'isbn',
+    placeholderText: 'Rechercher par ISBN',
+    stateKey: 'offerISBN',
+    selectOptionText: 'ISBN',
+  },
+  {
+    id: 'contremarque',
+    placeholderText: 'Rechercher par contremarque',
+    stateKey: 'bookingToken',
+    selectOptionText: 'Contremarque',
+  },
+]
+
+const FilterByOmniSearch = ({ keywords, selectedOmniSearchCriteria, updateFilters }) => {
+  function updateOmniSearchKeywords(omniSearchCriteria, keywords) {
+    const cleanedOmnisearchFilters = {
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
+      offerISBN: EMPTY_FILTER_VALUE,
+      offerName: EMPTY_FILTER_VALUE,
+    }
+
+    const omniSearchStateKey = OMNISEARCH_FILTERS.find(
+      criteria => criteria.id === omniSearchCriteria
+    ).stateKey
+    cleanedOmnisearchFilters[omniSearchStateKey] =
+      keywords && keywords.length > 0 ? keywords : EMPTY_FILTER_VALUE
+
+    const updatedSelectedContent = {
+      keywords: keywords,
+      selectedOmniSearchCriteria: omniSearchCriteria,
+    }
+    updateFilters(cleanedOmnisearchFilters, updatedSelectedContent)
+  }
+
+  function handleOmniSearchChange(event) {
+    updateOmniSearchKeywords(selectedOmniSearchCriteria, event.target.value)
+  }
+
+  function handleOmniSearchCriteriaChange(event) {
+    const newOmniSearchCriteria = event.target.value.toLowerCase()
+    updateOmniSearchKeywords(newOmniSearchCriteria, keywords)
+  }
+
+  const placeholderText = OMNISEARCH_FILTERS.find(
+    criteria => criteria.id === selectedOmniSearchCriteria
+  ).placeholderText
+
   return (
     <div className="fw-first-line">
       <select
         className="fw-booking-text-filters-select"
-        onBlur={onHandleOmniSearchCriteriaChange}
-        onChange={onHandleOmniSearchCriteriaChange}
+        onBlur={handleOmniSearchCriteriaChange}
+        onChange={handleOmniSearchCriteriaChange}
       >
-        {omniSearchSelectOptions.map(selectOption => (
+        {OMNISEARCH_FILTERS.map(selectOption => (
           <option
             key={selectOption.id}
             value={selectOption.id}
@@ -30,7 +86,7 @@ const FilterByOmniSearch = ({
       <input
         className="fw-booking-text-filters-input"
         id="text-filter-input"
-        onChange={onHandleOmniSearchChange}
+        onChange={handleOmniSearchChange}
         placeholder={placeholderText}
         type="text"
         value={keywords}
@@ -41,15 +97,8 @@ const FilterByOmniSearch = ({
 
 FilterByOmniSearch.propTypes = {
   keywords: PropTypes.string.isRequired,
-  omniSearchSelectOptions: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      selectOptionText: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  onHandleOmniSearchChange: PropTypes.func.isRequired,
-  onHandleOmniSearchCriteriaChange: PropTypes.func.isRequired,
-  placeholderText: PropTypes.string.isRequired,
+  selectedOmniSearchCriteria: PropTypes.string.isRequired,
+  updateFilters: PropTypes.func.isRequired,
 }
 
 export default FilterByOmniSearch

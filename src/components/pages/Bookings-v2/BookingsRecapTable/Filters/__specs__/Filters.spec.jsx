@@ -105,67 +105,31 @@ describe('components | Filters', () => {
     })
   })
 
-  it('should apply bookingBeneficiary filter when typing keywords for beneficiary name or email', () => {
+  it('should add all filters when applying new ones', () => {
     // Given
     const wrapper = shallow(<Filters {...props} />)
-    const instance = wrapper.instance()
-    instance.handleOmniSearchCriteriaChange({ target: { value: 'bénéficiaire' } })
-
-    // When
-    instance.handleOmniSearchChange({ target: { value: 'Firost' } })
-
-    // Then
-    expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeneficiary: 'Firost',
-      bookingBeginningDate: EMPTY_FILTER_VALUE,
-      bookingEndingDate: EMPTY_FILTER_VALUE,
+    const wrapperInstance = wrapper.instance()
+    const firstUpdatedFilter = { bookingBeneficiary: 'riri' }
+    wrapperInstance.updateFilters(firstUpdatedFilter)
+    const someUpdatedFilters = {
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingToken: EMPTY_FILTER_VALUE,
-      offerDate: EMPTY_FILTER_VALUE,
-      offerISBN: EMPTY_FILTER_VALUE,
+      offerISBN: '12457',
       offerName: EMPTY_FILTER_VALUE,
-      offerVenue: 'all',
-    })
-  })
-
-  it('should apply ISBN filter when typing keywords for an ISBN', () => {
-    // Given
-    const wrapper = shallow(<Filters {...props} />)
-    const instance = wrapper.instance()
-    instance.handleOmniSearchCriteriaChange({ target: { value: 'isbn' } })
+    }
 
     // When
-    instance.handleOmniSearchChange({ target: { value: '87465373654' } })
+    wrapperInstance.updateFilters(someUpdatedFilters)
 
     // Then
+    expect(props.setFilters).toHaveBeenCalledTimes(2)
     expect(props.setFilters).toHaveBeenCalledWith({
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
       bookingToken: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
-      offerISBN: '87465373654',
-      offerName: EMPTY_FILTER_VALUE,
-      offerVenue: ALL_VENUES,
-    })
-  })
-
-  it('should apply token filter when typing keywords for a token', () => {
-    // Given
-    const wrapper = shallow(<Filters {...props} />)
-    const instance = wrapper.instance()
-    instance.handleOmniSearchCriteriaChange({ target: { value: 'token' } })
-
-    // When
-    instance.handleOmniSearchChange({ target: { value: 'TOLkien' } })
-
-    // Then
-    expect(props.setFilters).toHaveBeenCalledWith({
-      bookingBeneficiary: EMPTY_FILTER_VALUE,
-      bookingToken: 'TOLkien',
-      bookingBeginningDate: EMPTY_FILTER_VALUE,
-      bookingEndingDate: EMPTY_FILTER_VALUE,
-      offerDate: EMPTY_FILTER_VALUE,
-      offerISBN: EMPTY_FILTER_VALUE,
+      offerISBN: '12457',
       offerName: EMPTY_FILTER_VALUE,
       offerVenue: ALL_VENUES,
     })

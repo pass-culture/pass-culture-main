@@ -79,73 +79,6 @@ class Filters extends Component {
     )
   }
 
-  handleOmniSearchCriteriaChange = event => {
-    const { selectedOmniSearchCriteria, filters } = this.state
-    const newOmniSearchCriteria = event.target.value.toLowerCase()
-    const currentOmniSearchStateKey = this.OMNISEARCH_FILTERS.find(
-      criteria => criteria.id === selectedOmniSearchCriteria
-    ).stateKey
-    const currentFilterKeywords = filters[currentOmniSearchStateKey]
-    this.setState(
-      {
-        selectedOmniSearchCriteria: newOmniSearchCriteria,
-      },
-      () => {
-        this.updateOmniSearchKeywords(newOmniSearchCriteria, currentFilterKeywords)
-      }
-    )
-  }
-
-  handleOmniSearchChange = event => {
-    const { selectedOmniSearchCriteria } = this.state
-    this.updateOmniSearchKeywords(selectedOmniSearchCriteria, event.target.value)
-  }
-
-  updateOmniSearchKeywords(omniSearchCriteria, keywords) {
-    const cleanedOmnisearchFilters = {
-      bookingBeneficiary: EMPTY_FILTER_VALUE,
-      bookingToken: EMPTY_FILTER_VALUE,
-      offerISBN: EMPTY_FILTER_VALUE,
-      offerName: EMPTY_FILTER_VALUE,
-    }
-
-    const omniSearchStateKey = this.OMNISEARCH_FILTERS.find(
-      criteria => criteria.id === omniSearchCriteria
-    ).stateKey
-    cleanedOmnisearchFilters[omniSearchStateKey] =
-      keywords && keywords.length > 0 ? keywords : EMPTY_FILTER_VALUE
-
-    const updatedSelectedContent = { keywords: keywords }
-    this.updateFilters(cleanedOmnisearchFilters, updatedSelectedContent)
-  }
-
-  OMNISEARCH_FILTERS = [
-    {
-      id: 'offre',
-      placeholderText: "Rechercher par nom d'offre",
-      stateKey: 'offerName',
-      selectOptionText: 'Offre',
-    },
-    {
-      id: 'bénéficiaire',
-      placeholderText: 'Rechercher par nom ou email',
-      stateKey: 'bookingBeneficiary',
-      selectOptionText: 'Bénéficiaire',
-    },
-    {
-      id: 'isbn',
-      placeholderText: 'Rechercher par ISBN',
-      stateKey: 'offerISBN',
-      selectOptionText: 'ISBN',
-    },
-    {
-      id: 'token',
-      placeholderText: 'Rechercher par contremarque',
-      stateKey: 'bookingToken',
-      selectOptionText: 'Contremarque',
-    },
-  ]
-
   updateFilters = (updatedFilter, updatedSelectedContent) => {
     const { filters } = this.state
     this.setState(
@@ -176,18 +109,13 @@ class Filters extends Component {
     } = this.state
 
     const venuesFormattedAndOrdered = formatAndOrderVenues(venues)
-    const placeholderText = this.OMNISEARCH_FILTERS.find(
-      criteria => criteria.id === selectedOmniSearchCriteria
-    ).placeholderText
 
     return (
       <div className="filters-wrapper">
         <FilterByOmniSearch
           keywords={keywords}
-          omniSearchSelectOptions={this.OMNISEARCH_FILTERS}
-          onHandleOmniSearchChange={this.handleOmniSearchChange}
-          onHandleOmniSearchCriteriaChange={this.handleOmniSearchCriteriaChange}
-          placeholderText={placeholderText}
+          selectedOmniSearchCriteria={selectedOmniSearchCriteria}
+          updateFilters={this.updateFilters}
         />
         <div className="fw-second-line">
           <FilterByEventDate
