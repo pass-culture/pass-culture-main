@@ -21,11 +21,11 @@ class SuccessView extends PureComponent {
   renderRequestSuccessMessage = () => (
     <Fragment>
       <p className="is-medium">
-        {'Vous allez recevoir un e-mail avec les instructions de réinitialisation.'}
+        {'Tu vas recevoir un e-mail avec les instructions de réinitialisation.'}
       </p>
       <p className="is-medium mt28">
         {
-          'Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.'
+          'Si tu n’as rien reçu d’ici une heure, merci de vérifier ton e-mail et de le saisir à nouveau.'
         }
       </p>
     </Fragment>
@@ -33,7 +33,7 @@ class SuccessView extends PureComponent {
 
   renderResetSuccessMessage = () => (
     <p className="is-medium">
-      {'Votre mot de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter'}
+      {'Ton mot de passe a bien été enregistré, tu peux l’utiliser pour te connecter'}
     </p>
   )
 

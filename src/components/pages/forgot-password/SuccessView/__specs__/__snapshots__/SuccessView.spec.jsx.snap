@@ -27,7 +27,7 @@ ShallowWrapper {
           <p
             className="is-medium"
           >
-            Votre mot de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
+            Ton mot de passe a bien été enregistré, tu peux l’utiliser pour te connecter
           </p>
         </div>,
         <FormFooter
@@ -55,7 +55,7 @@ ShallowWrapper {
           "children": <p
             className="is-medium"
           >
-            Votre mot de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
+            Ton mot de passe a bien été enregistré, tu peux l’utiliser pour te connecter
           </p>,
           "className": "is-italic fs22",
         },
@@ -65,11 +65,11 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "Votre mot de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter",
+            "children": "Ton mot de passe a bien été enregistré, tu peux l’utiliser pour te connecter",
             "className": "is-medium",
           },
           "ref": null,
-          "rendered": "Votre mot de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter",
+          "rendered": "Ton mot de passe a bien été enregistré, tu peux l’utiliser pour te connecter",
           "type": "p",
         },
         "type": "div",
@@ -108,7 +108,7 @@ ShallowWrapper {
             <p
               className="is-medium"
             >
-              Votre mot de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
+              Ton mot de passe a bien été enregistré, tu peux l’utiliser pour te connecter
             </p>
           </div>,
           <FormFooter
@@ -136,7 +136,7 @@ ShallowWrapper {
             "children": <p
               className="is-medium"
             >
-              Votre mot de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter
+              Ton mot de passe a bien été enregistré, tu peux l’utiliser pour te connecter
             </p>,
             "className": "is-italic fs22",
           },
@@ -146,11 +146,11 @@ ShallowWrapper {
             "key": undefined,
             "nodeType": "host",
             "props": Object {
-              "children": "Votre mot de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter",
+              "children": "Ton mot de passe a bien été enregistré, tu peux l’utiliser pour te connecter",
               "className": "is-medium",
             },
             "ref": null,
-            "rendered": "Votre mot de passe a bien été enregistré, vous pouvez l’utiliser pour vous connecter",
+            "rendered": "Ton mot de passe a bien été enregistré, tu peux l’utiliser pour te connecter",
             "type": "p",
           },
           "type": "div",
@@ -235,12 +235,12 @@ ShallowWrapper {
             <p
               className="is-medium"
             >
-              Vous allez recevoir un e-mail avec les instructions de réinitialisation.
+              Tu vas recevoir un e-mail avec les instructions de réinitialisation.
             </p>
             <p
               className="is-medium mt28"
             >
-              Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+              Si tu n’as rien reçu d’ici une heure, merci de vérifier ton e-mail et de le saisir à nouveau.
             </p>
           </React.Fragment>
         </div>,
@@ -277,12 +277,12 @@ ShallowWrapper {
             <p
               className="is-medium"
             >
-              Vous allez recevoir un e-mail avec les instructions de réinitialisation.
+              Tu vas recevoir un e-mail avec les instructions de réinitialisation.
             </p>
             <p
               className="is-medium mt28"
             >
-              Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+              Si tu n’as rien reçu d’ici une heure, merci de vérifier ton e-mail et de le saisir à nouveau.
             </p>
           </React.Fragment>,
           "className": "is-italic fs22",
@@ -297,12 +297,12 @@ ShallowWrapper {
               <p
                 className="is-medium"
               >
-                Vous allez recevoir un e-mail avec les instructions de réinitialisation.
+                Tu vas recevoir un e-mail avec les instructions de réinitialisation.
               </p>,
               <p
                 className="is-medium mt28"
               >
-                Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+                Si tu n’as rien reçu d’ici une heure, merci de vérifier ton e-mail et de le saisir à nouveau.
               </p>,
             ],
           },
@@ -313,11 +313,11 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "Vous allez recevoir un e-mail avec les instructions de réinitialisation.",
+                "children": "Tu vas recevoir un e-mail avec les instructions de réinitialisation.",
                 "className": "is-medium",
               },
               "ref": null,
-              "rendered": "Vous allez recevoir un e-mail avec les instructions de réinitialisation.",
+              "rendered": "Tu vas recevoir un e-mail avec les instructions de réinitialisation.",
               "type": "p",
             },
             Object {
@@ -325,11 +325,11 @@ ShallowWrapper {
               "key": undefined,
               "nodeType": "host",
               "props": Object {
-                "children": "Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
+                "children": "Si tu n’as rien reçu d’ici une heure, merci de vérifier ton e-mail et de le saisir à nouveau.",
                 "className": "is-medium mt28",
               },
               "ref": null,
-              "rendered": "Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
+              "rendered": "Si tu n’as rien reçu d’ici une heure, merci de vérifier ton e-mail et de le saisir à nouveau.",
               "type": "p",
             },
           ],
@@ -377,12 +377,12 @@ ShallowWrapper {
               <p
                 className="is-medium"
               >
-                Vous allez recevoir un e-mail avec les instructions de réinitialisation.
+                Tu vas recevoir un e-mail avec les instructions de réinitialisation.
               </p>
               <p
                 className="is-medium mt28"
               >
-                Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+                Si tu n’as rien reçu d’ici une heure, merci de vérifier ton e-mail et de le saisir à nouveau.
               </p>
             </React.Fragment>
           </div>,
@@ -419,12 +419,12 @@ ShallowWrapper {
               <p
                 className="is-medium"
               >
-                Vous allez recevoir un e-mail avec les instructions de réinitialisation.
+                Tu vas recevoir un e-mail avec les instructions de réinitialisation.
               </p>
               <p
                 className="is-medium mt28"
               >
-                Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+                Si tu n’as rien reçu d’ici une heure, merci de vérifier ton e-mail et de le saisir à nouveau.
               </p>
             </React.Fragment>,
             "className": "is-italic fs22",
@@ -439,12 +439,12 @@ ShallowWrapper {
                 <p
                   className="is-medium"
                 >
-                  Vous allez recevoir un e-mail avec les instructions de réinitialisation.
+                  Tu vas recevoir un e-mail avec les instructions de réinitialisation.
                 </p>,
                 <p
                   className="is-medium mt28"
                 >
-                  Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.
+                  Si tu n’as rien reçu d’ici une heure, merci de vérifier ton e-mail et de le saisir à nouveau.
                 </p>,
               ],
             },
@@ -455,11 +455,11 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": "Vous allez recevoir un e-mail avec les instructions de réinitialisation.",
+                  "children": "Tu vas recevoir un e-mail avec les instructions de réinitialisation.",
                   "className": "is-medium",
                 },
                 "ref": null,
-                "rendered": "Vous allez recevoir un e-mail avec les instructions de réinitialisation.",
+                "rendered": "Tu vas recevoir un e-mail avec les instructions de réinitialisation.",
                 "type": "p",
               },
               Object {
@@ -467,11 +467,11 @@ ShallowWrapper {
                 "key": undefined,
                 "nodeType": "host",
                 "props": Object {
-                  "children": "Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
+                  "children": "Si tu n’as rien reçu d’ici une heure, merci de vérifier ton e-mail et de le saisir à nouveau.",
                   "className": "is-medium mt28",
                 },
                 "ref": null,
-                "rendered": "Si vous n’avez rien reçu d’ici une heure, merci de vérifier votre e-mail et de le saisir à nouveau.",
+                "rendered": "Si tu n’as rien reçu d’ici une heure, merci de vérifier ton e-mail et de le saisir à nouveau.",
                 "type": "p",
               },
             ],

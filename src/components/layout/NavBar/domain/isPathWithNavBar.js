@@ -12,7 +12,7 @@ export const isPathWithNavBar = path => {
     '/typeform',
     '/beta',
     '/connexion',
-    '/mot-de-passe-perdu',
+    '/mot-de-passe-perdu(.*)',
     '/activation/(.*)',
     '/inscription',
   ]

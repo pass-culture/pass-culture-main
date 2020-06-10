@@ -32,6 +32,7 @@ describe('when page matching URI does not contain nav bar', () => {
       '/beta',
       '/connexion',
       '/mot-de-passe-perdu',
+      '/mot-de-passe-perdu/success?token=ABCDEF',
       '/activation/error',
       '/activation/lien-invalide',
       '/activation/MEFA',
