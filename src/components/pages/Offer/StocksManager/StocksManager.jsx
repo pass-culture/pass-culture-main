@@ -286,6 +286,7 @@ class StocksManager extends PureComponent {
 }
 
 StocksManager.defaultProps = {
+  provider: null,
   stocks: [],
 }
 
@@ -295,7 +296,7 @@ StocksManager.propTypes = {
   isStockCreationAllowed: PropTypes.bool.isRequired,
   offer: PropTypes.shape().isRequired,
   product: PropTypes.shape().isRequired,
-  provider: PropTypes.shape().isRequired,
+  provider: PropTypes.shape(),
   query: PropTypes.shape().isRequired,
   stocks: PropTypes.arrayOf(PropTypes.shape()),
 }

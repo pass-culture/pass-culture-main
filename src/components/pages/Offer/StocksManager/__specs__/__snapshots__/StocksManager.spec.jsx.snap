@@ -26,6 +26,7 @@ ShallowWrapper {
         "id": "ABDD",
       }
     }
+    provider={null}
     query={
       Object {
         "changeToCreation": [MockFunction],
@@ -1599,6 +1600,7 @@ ShallowWrapper {
         "id": "ABDD",
       }
     }
+    provider={null}
     query={
       Object {
         "changeToCreation": [MockFunction],
