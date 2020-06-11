@@ -454,12 +454,12 @@ class Results extends PureComponent {
     const isSearchEmpty = !isLoading && results.length === 0
 
     return (
-      <main className="search-results-page">
-        <Switch>
-          <Route
-            exact
-            path={SEARCH_RESULTS_URI}
-          >
+      <Switch>
+        <Route
+          exact
+          path={SEARCH_RESULTS_URI}
+        >
+          <main className="search-results-page">
             <Header
               onBackButtonClick={this.handleBackButtonClick}
               onResetClick={this.handleResetButtonClick}
@@ -522,51 +522,51 @@ class Results extends PureComponent {
                 </button>
               </div>
             )}
-          </Route>
-          <Route
-            path={`${SEARCH_RESULTS_URI}/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
-          >
-            <HeaderContainer
-              backActionOnClick={this.retrieveScrollPosition}
-              shouldBackFromDetails={this.shouldBackFromDetails()}
-              title="Recherche"
-            />
-            <ResultDetailContainer />
-          </Route>
-          <Route path={`${SEARCH_RESULTS_URI}/filtres`}>
-            <Filters
-              history={history}
-              initialFilters={filters}
-              match={match}
-              offers={{
-                hits: results,
-                nbHits: resultsCount,
-                nbPages: totalPagesNumber,
-              }}
-              place={place}
-              query={query}
-              showFailModal={this.showFailModal}
-              updateFilteredOffers={this.updateFilteredOffers}
-              updateFilters={this.updateFilters}
-              updateNumberOfActiveFilters={this.updateNumberOfActiveFilters}
-              updatePlace={this.updatePlace}
-              userGeolocation={userGeolocation}
-            />
-          </Route>
-          <Route path={`${SEARCH_RESULTS_URI}/tri`}>
-            <CriteriaSort
-              activeCriterionLabel={sortCriterionLabel}
-              backTo={`${SEARCH_RESULTS_URI}${search}`}
-              criteria={SORT_CRITERIA}
-              geolocation={searchAround.place ? placeGeolocation : userGeolocation}
-              history={history}
-              match={match}
-              onCriterionSelection={this.handleSortCriterionSelection}
-              title="Trier par"
-            />
-          </Route>
-        </Switch>
-      </main>
+          </main>
+        </Route>
+        <Route
+          path={`${SEARCH_RESULTS_URI}/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
+        >
+          <HeaderContainer
+            backActionOnClick={this.retrieveScrollPosition}
+            shouldBackFromDetails={this.shouldBackFromDetails()}
+            title="Recherche"
+          />
+          <ResultDetailContainer />
+        </Route>
+        <Route path={`${SEARCH_RESULTS_URI}/filtres`}>
+          <Filters
+            history={history}
+            initialFilters={filters}
+            match={match}
+            offers={{
+              hits: results,
+              nbHits: resultsCount,
+              nbPages: totalPagesNumber,
+            }}
+            place={place}
+            query={query}
+            showFailModal={this.showFailModal}
+            updateFilteredOffers={this.updateFilteredOffers}
+            updateFilters={this.updateFilters}
+            updateNumberOfActiveFilters={this.updateNumberOfActiveFilters}
+            updatePlace={this.updatePlace}
+            userGeolocation={userGeolocation}
+          />
+        </Route>
+        <Route path={`${SEARCH_RESULTS_URI}/tri`}>
+          <CriteriaSort
+            activeCriterionLabel={sortCriterionLabel}
+            backTo={`${SEARCH_RESULTS_URI}${search}`}
+            criteria={SORT_CRITERIA}
+            geolocation={searchAround.place ? placeGeolocation : userGeolocation}
+            history={history}
+            match={match}
+            onCriterionSelection={this.handleSortCriterionSelection}
+            title="Trier par"
+          />
+        </Route>
+      </Switch>
     )
   }
 }
