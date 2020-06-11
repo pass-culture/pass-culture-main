@@ -33,20 +33,27 @@ describe('src | components | pages | Offer | StocksManagerContainer | StockItem 
       const renderField = ({ input }) => (<input
         name="foo"
         {...input}
-      />);
+                                          />)
+
       const renderForm = ({ form, handleSubmit }) => (
         <Fragment>
           <Field
             name="foo"
             render={renderField}
           />
-          <SubmitAndCancelControl
-            form={form}
-            handleSubmit={handleSubmit}
-            isRequestPending={false}
-            query={query}
-            stockId={stockId}
-          />
+          <table>
+            <tbody>
+              <tr>
+                <SubmitAndCancelControl
+                  form={form}
+                  handleSubmit={handleSubmit}
+                  isRequestPending={false}
+                  query={query}
+                  stockId={stockId}
+                />
+              </tr>
+            </tbody>
+          </table>
         </Fragment>
       )
       const wrapper = mount(
