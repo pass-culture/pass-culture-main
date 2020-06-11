@@ -32,7 +32,7 @@ get_tunnel_database_url() {
   if [ -z "$DB_TUNNEL_PID" ]
   then
     echo "Opening new tunnel to database"
-    /usr/local/bin/scalingo --region $SCALINGO_REGION -a "$app_name" db-tunnel postgres://"$POSTGRESQL_URL" &
+    /usr/local/bin/scalingo --region $SCALINGO_REGION -a "$app_name" db-tunnel -i ~/.ssh/id_rsa postgres://"$POSTGRESQL_URL" &
     sleep 3
     DB_TUNNEL_PID=$!
   fi
