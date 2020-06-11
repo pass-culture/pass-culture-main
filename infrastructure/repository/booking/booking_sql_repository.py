@@ -2,7 +2,7 @@ from typing import List
 
 from domain.booking.booking import Booking
 from domain.booking.booking_repository import BookingRepository
-from infrastructure.repository.booking import booking_domain_converter
+from infrastructure.repository.booking import booking_domain_converter, booking_with_offerer_domain_converter
 from models import BookingSQLEntity, StockSQLEntity
 from repository import repository
 
@@ -29,3 +29,9 @@ class BookingSQLRepository(BookingRepository):
         booking_sql_entity = booking_domain_converter.to_model(booking)
         repository.save(booking_sql_entity)
         return booking_domain_converter.to_domain(booking_sql_entity)
+
+    def find_booking_with_offerer(self, booking_id) -> Booking:
+        booking_sql_entity = BookingSQLEntity.query \
+            .filter_by(id=booking_id) \
+            .first()
+        return booking_with_offerer_domain_converter.to_domain(booking_sql_entity)

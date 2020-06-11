@@ -19,6 +19,7 @@ from routes.serialization import as_dict, serialize, serialize_booking
 from routes.serialization.bookings_recap_serialize import serialize_bookings_recap_paginated
 from routes.serialization.bookings_serialize import serialize_booking_for_book_an_offer
 from use_cases.book_an_offer import BookingInformation
+from use_cases.cancel_a_booking import CancelABooking
 from use_cases.get_all_bookings_by_pro_user import get_all_bookings_by_pro_user
 from utils.human_ids import dehumanize, humanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, \
@@ -101,33 +102,16 @@ def create_booking():
 
 @app.route('/bookings/<booking_id>/cancel', methods=['PUT'])
 @login_required
-def cancel_booking(booking_id: int):
-    booking = booking_queries.find_by_id(dehumanize(booking_id))
-    booking_offerer = booking.stock.offer.venue.managingOffererId
-
-    is_offerer_cancellation = current_user.hasRights(
-        RightsType.editor, booking_offerer)
-    is_user_cancellation = booking.user == current_user
-
-    check_user_can_cancel_booking_by_id(is_user_cancellation, is_offerer_cancellation)
-
-    if is_user_cancellation:
-        check_booking_is_cancellable_by_user(booking, is_user_cancellation)
+def cancel_booking(booking_id: str):
+    dehumanized_booking_id = dehumanize(booking_id)
+    cancel_a_booking = CancelABooking()
+    booking = cancel_a_booking.execute(booking_id=dehumanized_booking_id, current_user=current_user)
 
     if booking.isCancelled:
         return '', 204
 
-    booking.isCancelled = True
-    repository.save(booking)
-
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
-
-    try:
-        send_booking_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,
-                                                             send_raw_email)
-    except MailServiceException:
-        app.logger.error('Mail service failure')
 
     return jsonify(as_dict(booking, includes=WEBAPP_PATCH_POST_BOOKING_INCLUDES)), 200
 
