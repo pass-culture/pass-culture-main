@@ -124,7 +124,7 @@ describe('src | MediationsManager', () => {
         props.offer = {
           id: 'ABC',
         }
-        props.mediations = [{ id: 'A' }, { id: 'B' }]
+        props.mediations = [{ id: 'A', isActive: true }, { id: 'B', isActive: true }]
 
         // when
         const wrapper = shallow(<MediationsManager {...props} />)
