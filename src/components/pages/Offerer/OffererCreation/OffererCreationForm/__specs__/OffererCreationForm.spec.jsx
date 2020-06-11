@@ -8,6 +8,7 @@ describe('src | components | pages | OffererCreationForm', () => {
     const props = {
       pristine: false,
       invalid: false,
+      handleSubmit: () => {},
     }
 
     // When
@@ -22,6 +23,7 @@ describe('src | components | pages | OffererCreationForm', () => {
     const props = {
       pristine: false,
       invalid: true,
+      handleSubmit: () => {},
     }
 
     // When
@@ -36,6 +38,7 @@ describe('src | components | pages | OffererCreationForm', () => {
     const props = {
       pristine: true,
       invalid: false,
+      handleSubmit: () => {},
     }
 
     // When
