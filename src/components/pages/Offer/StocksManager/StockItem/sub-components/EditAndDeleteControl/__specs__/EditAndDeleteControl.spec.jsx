@@ -1,4 +1,4 @@
-import { mount, render, shallow } from 'enzyme'
+import { render, shallow } from 'enzyme'
 import React from 'react'
 import { requestData } from 'redux-saga-data'
 import { Provider } from 'react-redux'
@@ -37,20 +37,6 @@ describe('src | components | pages | Offer | StockManager | StockItem | sub-comp
 
     history = createBrowserHistory()
     store = mockStore()
-  })
-
-  it('should match the snapshot', () => {
-    // when
-    const wrapper = mount(
-      <Router history={history}>
-        <Provider store={store}>
-          <EditAndDeleteControl {...props} />
-        </Provider>
-      </Router>
-    )
-
-    // then
-    expect(wrapper.html()).toMatchSnapshot()
   })
 
   describe('handleOnConfirmDeleteClick()', () => {
