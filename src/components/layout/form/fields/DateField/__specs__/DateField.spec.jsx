@@ -1,4 +1,4 @@
-import { mount, shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import moment from 'moment'
 import React from 'react'
 import { Form } from 'react-final-form'
@@ -6,35 +6,6 @@ import { Form } from 'react-final-form'
 import DateField from '../DateField'
 
 describe('src | components | layout | form | DateField', () => {
-  it('should match the snapchot', () => {
-    // given
-    const initialValues = {
-      myDate: '2019-04-27T20:00:00Z',
-    }
-
-    // when
-    const wrapper = shallow(
-      <Form
-        initialValues={initialValues}
-        onSubmit={() => ({})}
-        render={({ handleSubmit }) => (
-          <form>
-            <DateField name="myDate" />
-            <button
-              onClick={handleSubmit}
-              type="submit"
-            >
-              {'Submit'}
-            </button>
-          </form>
-        )}
-      />
-    )
-
-    // then
-    expect(wrapper).toMatchSnapshot()
-  })
-
   it('should submit a form with a date', () => {
     return new Promise(done => {
       // given
