@@ -169,7 +169,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       }
     })
 
-    it('should display the allocine form when the user choose Allocine', () => {
+    it('should display the allocine form when the user choose Allocine onChange', () => {
       // given
       props.providers = [{ id: 'EM', name: 'Allociné' }]
       const chooseAllocineEvent = {
@@ -182,6 +182,25 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
       // when
       wrapper.find('#add-venue-provider-btn').simulate('click')
       wrapper.find('#provider-options').simulate('change', chooseAllocineEvent)
+
+      // then
+      const allocineProviderForm = wrapper.find(AllocineProviderFormContainer)
+      expect(allocineProviderForm).toHaveLength(1)
+    })
+
+    it('should display the allocine form when the user choose Allocine onBlur', () => {
+      // given
+      props.providers = [{ id: 'EM', name: 'Allociné' }]
+      const chooseAllocineEvent = {
+        target: {
+          value: '{"id":"EM","name":"Allociné"}',
+        },
+      }
+      const wrapper = shallow(<VenueProvidersManager {...props} />)
+
+      // when
+      wrapper.find('#add-venue-provider-btn').simulate('click')
+      wrapper.find('#provider-options').simulate('blur', chooseAllocineEvent)
 
       // then
       const allocineProviderForm = wrapper.find(AllocineProviderFormContainer)
