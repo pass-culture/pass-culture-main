@@ -3,7 +3,7 @@ import { shallow, mount } from 'enzyme'
 
 import RemainingCredit from '../RemainingCredit'
 import { NON_BREAKING_SPACE } from '../../../../../utils/specialCharacters'
-import User from '../../../../pages/profile/ValueObjects/User'
+import User from '../../ValueObjects/User'
 
 describe('remainingCredit', () => {
   let props

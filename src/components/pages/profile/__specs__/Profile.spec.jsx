@@ -13,9 +13,8 @@ describe('profile page', () => {
       history: {
         push: jest.fn(),
       },
-      location: {},
       user: new User({
-        email: 'toto@example.com',
+        email: 'beneficiary@example.com',
       }),
     }
   })
@@ -27,9 +26,10 @@ describe('profile page', () => {
 
       // then
       const routes = wrapper.find(Route)
-      expect(routes.at(0).prop('path')).toBe('/profil')
-      expect(routes.at(1).prop('path')).toBe('/profil/:view(mot-de-passe)')
-      expect(routes.at(2).prop('path')).toBe('/profil/:view(informations)')
+      expect(routes.at(0).prop('path')).toBe('/profil/mot-de-passe')
+      expect(routes.at(1).prop('path')).toBe('/profil/informations')
+      expect(routes.at(2).prop('path')).toBe('/profil/mentions-legales')
+      expect(routes.at(3).prop('path')).toBe('/profil')
     })
   })
 })

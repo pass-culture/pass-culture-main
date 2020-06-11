@@ -1,26 +1,17 @@
-import { shallow, mount } from 'enzyme'
+import { mount } from 'enzyme'
 import React from 'react'
-import { Router } from 'react-router'
 import { Provider } from 'react-redux'
-import { createMemoryHistory } from 'history'
+import { MemoryRouter } from 'react-router'
 
-import ListLinks from '../ListLinks'
-import SignoutLinkContainer from '../../SignoutLink/SignoutLinkContainer'
 import getMockStore from '../../../../../utils/mockStore'
+import ListLinks from '../ListLinks'
 
 describe('my informations', () => {
+  let mockStore
   let props
 
   beforeEach(() => {
-    props = {
-      historyPush: jest.fn(),
-      readRecommendations: [],
-    }
-  })
-
-  it('should display a link to personal informations page', () => {
-    // Given
-    const mockStore = getMockStore({
+    mockStore = getMockStore({
       data: (
         state = {
           readRecommendations: [],
@@ -28,12 +19,18 @@ describe('my informations', () => {
       ) => state,
     })
 
+    props = {
+      historyPush: jest.fn(),
+    }
+  })
+
+  it('should display a link to personal informations page', () => {
     // When
     const wrapper = mount(
       <Provider store={mockStore}>
-        <Router history={createMemoryHistory()}>
+        <MemoryRouter>
           <ListLinks {...props} />
-        </Router>
+        </MemoryRouter>
       </Provider>
     )
 
@@ -47,21 +44,12 @@ describe('my informations', () => {
   })
 
   it('should display a link to password modification page', () => {
-    // Given
-    const mockStore = getMockStore({
-      data: (
-        state = {
-          readRecommendations: [],
-        }
-      ) => state,
-    })
-
     // When
     const wrapper = mount(
       <Provider store={mockStore}>
-        <Router history={createMemoryHistory()}>
+        <MemoryRouter>
           <ListLinks {...props} />
-        </Router>
+        </MemoryRouter>
       </Provider>
     )
 
@@ -75,21 +63,12 @@ describe('my informations', () => {
   })
 
   it('should display a link to help page', () => {
-    // Given
-    const mockStore = getMockStore({
-      data: (
-        state = {
-          readRecommendations: [],
-        }
-      ) => state,
-    })
-
     // When
     const wrapper = mount(
       <Provider store={mockStore}>
-        <Router history={createMemoryHistory()}>
+        <MemoryRouter>
           <ListLinks {...props} />
-        </Router>
+        </MemoryRouter>
       </Provider>
     )
 
@@ -105,21 +84,12 @@ describe('my informations', () => {
   })
 
   it('should display a link to legal notice page', () => {
-    // Given
-    const mockStore = getMockStore({
-      data: (
-        state = {
-          readRecommendations: [],
-        }
-      ) => state,
-    })
-
     // When
     const wrapper = mount(
       <Provider store={mockStore}>
-        <Router history={createMemoryHistory()}>
+        <MemoryRouter>
           <ListLinks {...props} />
-        </Router>
+        </MemoryRouter>
       </Provider>
     )
 
@@ -132,12 +102,21 @@ describe('my informations', () => {
     expect(legalNoticePage).toBe('/profil/mentions-legales')
   })
 
-  it('should display a signout link', () => {
+  it('should display a sign out link', () => {
     // When
-    const wrapper = shallow(<ListLinks {...props} />)
+    const wrapper = mount(
+      <Provider store={mockStore}>
+        <MemoryRouter>
+          <ListLinks {...props} />
+        </MemoryRouter>
+      </Provider>
+    )
 
     // Then
-    const SignoutLink = wrapper.find(SignoutLinkContainer)
-    expect(SignoutLink).toHaveLength(1)
+    const signOutLink = wrapper
+      .find({ children: 'Déconnexion' })
+      .parent()
+      .prop('href')
+    expect(signOutLink).toBe('')
   })
 })

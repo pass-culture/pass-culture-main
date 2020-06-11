@@ -1,13 +1,15 @@
-import React from 'react'
 import PropTypes from 'prop-types'
+import React from 'react'
 
-import SignoutLinkContainer from '../SignoutLink/SignoutLinkContainer'
 import ExternalLink from '../ExternalLink/ExternalLink'
 import InternalLink from '../InternalLink/InternalLink'
+import { signOut } from '../repository/signOut'
+import { updateReadRecommendations } from '../repository/updateReadRecommendations'
+import SignOutLinkContainer from '../SignOutLink/SignOutLinkContainer'
 
 const contactUrl = 'https://aide.passculture.app/fr/category/18-ans-1dnil5r/'
 
-const ListLinks = ({ historyPush, readRecommendations }) => (
+const ListLinks = ({ historyPush }) => (
   <section className="list-links pf-section">
     <ul>
       <li>
@@ -40,9 +42,10 @@ const ListLinks = ({ historyPush, readRecommendations }) => (
         />
       </li>
       <li>
-        <SignoutLinkContainer
+        <SignOutLinkContainer
           historyPush={historyPush}
-          readRecommendations={readRecommendations}
+          signOut={signOut}
+          updateReadRecommendations={updateReadRecommendations}
         />
       </li>
     </ul>
@@ -51,7 +54,6 @@ const ListLinks = ({ historyPush, readRecommendations }) => (
 
 ListLinks.propTypes = {
   historyPush: PropTypes.func.isRequired,
-  readRecommendations: PropTypes.arrayOf(PropTypes.object).isRequired,
 }
 
 export default ListLinks

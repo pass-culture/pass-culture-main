@@ -27,7 +27,7 @@ class EditPassword extends PureComponent {
     this.setState({ [inputName]: newValue })
   }
 
-  checkIfFieldIsMissing = () => {
+  isMissingField = () => {
     const { currentPassword, newConfirmationPassword, newPassword } = this.state
 
     return currentPassword === '' || newConfirmationPassword === '' || newPassword === ''
@@ -39,18 +39,18 @@ class EditPassword extends PureComponent {
     triggerSuccessSnackbar('Ton mot de passe a bien été modifié.')
   }
 
-  handleSubmitFail = (state, action) => {
+  handleSubmitFail = errors => {
     this.setState({
-      errors: { ...action.payload.errors },
+      errors,
       isLoading: false,
     })
 
-    if (action.payload.errors.oldPassword) {
+    if (errors.oldPassword) {
       this.currentPasswordInputRef.current.focus()
-    } else if (action.payload.errors.newPassword) {
+    } else if (errors.newPassword) {
       this.newPasswordInputRef.current.focus()
       this.newPasswordInputRef.current.select()
-    } else if (action.payload.errors.newConfirmationPassword) {
+    } else if (errors.newConfirmationPassword) {
       this.newConfirmationPasswordInputRef.current.focus()
       this.newConfirmationPasswordInputRef.current.select()
     }
@@ -59,6 +59,7 @@ class EditPassword extends PureComponent {
   handleSubmitPassword = event => {
     event.preventDefault()
     const { handleSubmit } = this.props
+    const { isLoading } = this.state
     const currentPasswordInputValue = this.currentPasswordInputRef.current.value
     const newPasswordInputValue = this.newPasswordInputRef.current.value
     const newConfirmationPasswordInputValue = this.newConfirmationPasswordInputRef.current.value
@@ -68,14 +69,16 @@ class EditPassword extends PureComponent {
       newConfirmationPassword: newConfirmationPasswordInputValue,
       oldPassword: currentPasswordInputValue,
     }
-    handleSubmit(passwordToSubmit, this.handleSubmitFail, this.handleSubmitSuccess)
-    this.setState({ isLoading: true })
+
+    if (!(isLoading || this.isMissingField())) {
+      this.setState({ isLoading: true })
+      handleSubmit(passwordToSubmit, this.handleSubmitFail, this.handleSubmitSuccess)
+    }
   }
 
   render() {
     const { pathToProfile } = this.props
     const { currentPassword, errors, isLoading, newConfirmationPassword, newPassword } = this.state
-    const isMissingField = this.checkIfFieldIsMissing()
 
     return (
       <main className="pf-container">
@@ -118,7 +121,7 @@ class EditPassword extends PureComponent {
           <div className="pf-form-submit">
             <input
               className="pf-button-submit"
-              disabled={isLoading || isMissingField}
+              disabled={isLoading || this.isMissingField()}
               onClick={this.handleSubmitPassword}
               type="submit"
               value="Enregistrer"

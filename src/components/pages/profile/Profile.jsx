@@ -5,13 +5,14 @@ import { toast } from 'react-toastify'
 
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import { getDepartment } from './domain/getDepartment'
-import EditPasswordContainer from './EditPassword/EditPasswordContainer'
+import { handleEditPasswordSubmit } from './repository/handleEditPasswordSubmit'
+import EditPassword from './EditPassword/EditPassword'
 import LegalNotice from './LegalNotice/LegalNotice'
 import MainView from './MainView/MainView'
 import PersonalInformationsContainer from './PersonalInformations/PersonalInformationsContainer'
 import User from './ValueObjects/User'
 
-const Profile = ({ user, history, location }) => {
+const Profile = ({ user, history }) => {
   const pathToProfile = '/profil'
   const { email, departmentCode } = user
   const department = getDepartment(departmentCode)
@@ -19,34 +20,17 @@ const Profile = ({ user, history, location }) => {
   return (
     <Fragment>
       {user && (
-        <Switch location={location}>
-          <Route
-            exact
-            key="route-profile-main-view"
-            path="/profil"
-          >
-            <MainView
-              historyPush={history.push}
-              user={user}
-            />
-          </Route>
-          <Route
-            exact
-            key="route-profile-edit-form"
-            path="/profil/:view(mot-de-passe)"
-          >
-            <EditPasswordContainer
+        <Switch>
+          <Route path="/profil/mot-de-passe">
+            <EditPassword
+              handleSubmit={handleEditPasswordSubmit}
               historyPush={history.push}
               pathToProfile={pathToProfile}
               triggerSuccessSnackbar={toast.success}
               user={user}
             />
           </Route>
-          <Route
-            exact
-            key="route-profile-edit-personal-informations"
-            path="/profil/:view(informations)"
-          >
+          <Route path="/profil/informations">
             <PersonalInformationsContainer
               department={department}
               historyPush={history.push}
@@ -55,15 +39,17 @@ const Profile = ({ user, history, location }) => {
               user={user}
             />
           </Route>
-          <Route
-            exact
-            key="route-legal-notice"
-            path="/profil/:view(mentions-legales)"
-          >
+          <Route path="/profil/mentions-legales">
             <LegalNotice
               historyPush={history.push}
               pathToProfile={pathToProfile}
               userEmail={email}
+            />
+          </Route>
+          <Route path="/profil">
+            <MainView
+              historyPush={history.push}
+              user={user}
             />
           </Route>
         </Switch>
@@ -75,7 +61,6 @@ const Profile = ({ user, history, location }) => {
 
 Profile.propTypes = {
   history: PropTypes.shape().isRequired,
-  location: PropTypes.shape().isRequired,
   user: PropTypes.instanceOf(User).isRequired,
 }
 

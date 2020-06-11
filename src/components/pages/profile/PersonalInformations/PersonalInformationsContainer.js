@@ -1,22 +1,11 @@
 import { connect } from 'react-redux'
-import { requestData } from 'redux-thunk-data'
 
-import { resolveCurrentUser } from '../../../hocs/with-login/withLogin'
+import { updateUser } from '../repository/updateUser'
 import PersonalInformations from './PersonalInformations'
 
 const mapDispatchToProps = dispatch => ({
   handleSubmit: (formValues, handleSubmitFail, handleSubmitSuccess) => {
-    dispatch(
-      requestData({
-        apiPath: 'users/current',
-        body: formValues,
-        handleFail: handleSubmitFail,
-        handleSuccess: handleSubmitSuccess,
-        key: 'user',
-        method: 'PATCH',
-        resolve: resolveCurrentUser,
-      })
-    )
+    dispatch(updateUser(formValues, handleSubmitFail, handleSubmitSuccess))
   },
 })
 

@@ -1,14 +1,14 @@
 import { mount, shallow } from 'enzyme'
-import { createMemoryHistory } from 'history'
 import React from 'react'
-import { Router } from 'react-router'
+import { MemoryRouter } from 'react-router'
 
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
+import User from '../../ValueObjects/User'
 import PersonalInformations from '../PersonalInformations'
-import User from '../../../../pages/profile/ValueObjects/User'
 
 describe('personal informations', () => {
-  let props, event
+  let event
+  let props
 
   beforeEach(() => {
     event = { preventDefault: jest.fn() }
@@ -30,9 +30,9 @@ describe('personal informations', () => {
   it("should display beneficiary's profile informations", () => {
     // When
     const wrapper = mount(
-      <Router history={createMemoryHistory()}>
+      <MemoryRouter>
         <PersonalInformations {...props} />
-      </Router>
+      </MemoryRouter>
     )
 
     // Then
@@ -69,9 +69,9 @@ describe('personal informations', () => {
   it('should prevent name, email and department code modifications', () => {
     // When
     const wrapper = mount(
-      <Router history={createMemoryHistory()}>
+      <MemoryRouter>
         <PersonalInformations {...props} />
-      </Router>
+      </MemoryRouter>
     )
 
     // Then
@@ -90,9 +90,9 @@ describe('personal informations', () => {
       it('should redirect to profile without submitting information', () => {
         // Given
         const wrapper = mount(
-          <Router history={createMemoryHistory()}>
+          <MemoryRouter>
             <PersonalInformations {...props} />
-          </Router>
+          </MemoryRouter>
         )
         const submitButton = wrapper.find('input[value="Enregistrer"]')
 
@@ -111,9 +111,9 @@ describe('personal informations', () => {
         jest.spyOn(props, 'handleSubmit').mockImplementation((values, fail, success) => success())
 
         const wrapper = mount(
-          <Router history={createMemoryHistory()}>
+          <MemoryRouter>
             <PersonalInformations {...props} />
-          </Router>
+          </MemoryRouter>
         )
 
         const nickname = wrapper.find('input[value="Martino"]')
@@ -147,9 +147,9 @@ describe('personal informations', () => {
           )
         })
         const wrapper = mount(
-          <Router history={createMemoryHistory()}>
+          <MemoryRouter>
             <PersonalInformations {...props} />
-          </Router>
+          </MemoryRouter>
         )
         const nickname = wrapper.find("input[value='Martino']")
         const submitButton = wrapper.find('input[value="Enregistrer"]')

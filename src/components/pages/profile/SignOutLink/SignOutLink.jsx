@@ -6,29 +6,29 @@ import Icon from '../../../layout/Icon/Icon'
 
 const noOp = () => false
 
-const SignoutLink = ({
+const SignOutLink = ({
   historyPush,
   readRecommendations,
-  signOut,
-  resetSeedLastRequestTimestamp,
-  updateReadRecommendations,
   reinitializeDataExceptFeatures,
+  resetSeedLastRequestTimestamp,
+  signOut,
+  updateReadRecommendations,
 }) => {
-  const handleSignOut = () => {
-    signOut(reinitializeDataExceptFeatures)
-    resetSeedLastRequestTimestamp(Date.now())
-    historyPush('/connexion')
-  }
+  const handleSignOutClick = () => async () => {
+    if (readRecommendations && readRecommendations.length > 0) {
+      await updateReadRecommendations(readRecommendations)
+    }
 
-  const handleSignoutClick = () => () => {
-    readRecommendations && readRecommendations.length > 0
-      ? updateReadRecommendations(readRecommendations, handleSignOut)
-      : handleSignOut()
+    await signOut()
+
+    historyPush('/connexion')
+    resetSeedLastRequestTimestamp(Date.now())
+    reinitializeDataExceptFeatures()
   }
 
   return (
     <Link
-      onClick={handleSignoutClick()}
+      onClick={handleSignOutClick()}
       to={noOp}
     >
       <Icon svg="ico-signout" />
@@ -39,7 +39,7 @@ const SignoutLink = ({
   )
 }
 
-SignoutLink.propTypes = {
+SignOutLink.propTypes = {
   historyPush: PropTypes.func.isRequired,
   readRecommendations: PropTypes.PropTypes.arrayOf(PropTypes.shape()).isRequired,
   reinitializeDataExceptFeatures: PropTypes.func.isRequired,
@@ -48,4 +48,4 @@ SignoutLink.propTypes = {
   updateReadRecommendations: PropTypes.func.isRequired,
 }
 
-export default SignoutLink
+export default SignOutLink

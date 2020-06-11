@@ -1,7 +1,6 @@
 import { mount, shallow } from 'enzyme'
-import { createMemoryHistory } from 'history'
 import React from 'react'
-import { Router } from 'react-router'
+import { MemoryRouter } from 'react-router'
 
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import LegalNotice from '../LegalNotice'
@@ -12,6 +11,7 @@ jest.mock('../../domain/getAccountDeletionEmail', () => ({
 
 describe('legal notice page', () => {
   let props
+
   beforeEach(() => {
     props = {
       historyPush: jest.fn(),
@@ -33,9 +33,9 @@ describe('legal notice page', () => {
   it('should display a link to terms and conditions page', () => {
     // When
     const wrapper = mount(
-      <Router history={createMemoryHistory()}>
+      <MemoryRouter>
         <LegalNotice {...props} />
-      </Router>
+      </MemoryRouter>
     )
 
     // Then
@@ -56,9 +56,9 @@ describe('legal notice page', () => {
   it('should display a link to GDPR page', () => {
     // When
     const wrapper = mount(
-      <Router history={createMemoryHistory()}>
+      <MemoryRouter>
         <LegalNotice {...props} />
-      </Router>
+      </MemoryRouter>
     )
 
     // Then
@@ -79,9 +79,9 @@ describe('legal notice page', () => {
   it('should display a link to delete my account', () => {
     // Given
     const wrapper = mount(
-      <Router history={createMemoryHistory()}>
+      <MemoryRouter>
         <LegalNotice {...props} />
-      </Router>
+      </MemoryRouter>
     )
 
     // When

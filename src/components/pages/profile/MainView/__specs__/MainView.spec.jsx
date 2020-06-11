@@ -1,11 +1,11 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import ListLinksContainer from '../../ListLinks/ListLinksContainer'
+import ListLinks from '../../ListLinks/ListLinks'
 import Header from '../../Header/Header'
 import RemainingCredit from '../../RemainingCredit/RemainingCredit'
 import MainView from '../MainView'
-import User from '../../../../pages/profile/ValueObjects/User'
+import User from '../../ValueObjects/User'
 
 jest.mock('../../../../../../package.json', () => ({
   version: '78.0.0',
@@ -26,7 +26,7 @@ describe('profile main view', () => {
     const wrapper = shallow(<MainView {...props} />)
     const HeaderWrapper = wrapper.find(Header)
     const RemainingCreditWrapper = wrapper.find(RemainingCredit)
-    const PersonalInformationsWrapper = wrapper.find(ListLinksContainer)
+    const PersonalInformationsWrapper = wrapper.find(ListLinks)
 
     // Then
     expect(HeaderWrapper).toHaveLength(1)

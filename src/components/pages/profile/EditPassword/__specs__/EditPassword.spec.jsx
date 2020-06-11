@@ -1,15 +1,16 @@
 import { mount, shallow } from 'enzyme'
-import { createMemoryHistory } from 'history'
 import React from 'react'
-import { Router } from 'react-router'
+import { MemoryRouter } from 'react-router'
 
-import EditPassword from '../EditPassword'
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
+import EditPassword from '../EditPassword'
 
 describe('edit password', () => {
+  let event
   let props
 
   beforeEach(() => {
+    event = { preventDefault: jest.fn() }
     props = {
       historyPush: jest.fn(),
       handleSubmit: jest.fn(),
@@ -34,9 +35,9 @@ describe('edit password', () => {
   it('should display password form', () => {
     // When
     const wrapper = mount(
-      <Router history={createMemoryHistory()}>
+      <MemoryRouter>
         <EditPassword {...props} />
-      </Router>
+      </MemoryRouter>
     )
 
     // Then
@@ -73,43 +74,46 @@ describe('edit password', () => {
     expect(submitButton.prop('value')).toBe('Enregistrer')
   })
 
-  it('should not be able to change password while all fields are not completed', () => {
-    // given
-    const wrapper = mount(
-      <Router history={createMemoryHistory()}>
-        <EditPassword {...props} />
-      </Router>
-    )
-
-    const inputs = wrapper.find('input')
-    const currentPassword = inputs.at(0)
-    const newPassword = inputs.at(1)
-    const submitButton = wrapper.find('input[type="submit"]')
-
-    // when
-    currentPassword.invoke('onChange')({ target: { value: 'current password' } })
-    newPassword.invoke('onChange')({ target: { value: 'new password' } })
-
-    // then
-    expect(submitButton.prop('disabled')).toBe(true)
-  })
-
   describe('when click on submit button', () => {
+    describe('while all fields are not completed', () => {
+      it('should not be able to change password', () => {
+        // given
+        const wrapper = mount(
+          <MemoryRouter>
+            <EditPassword {...props} />
+          </MemoryRouter>
+        )
+
+        const inputs = wrapper.find('input')
+        const currentPassword = inputs.at(0)
+        const newPassword = inputs.at(1)
+        const form = wrapper.find('form')
+
+        // when
+        currentPassword.invoke('onChange')({ target: { value: 'current password' } })
+        newPassword.invoke('onChange')({ target: { value: 'new password' } })
+        form.invoke('onSubmit')(event)
+
+        // then
+        expect(props.handleSubmit).toHaveBeenCalledTimes(0)
+      })
+    })
+
     describe('when user has completed all fields properly', () => {
       it('should redirect to profile and call snackbar + API with proper informations', () => {
         // Given
         jest.spyOn(props, 'handleSubmit').mockImplementation((values, fail, success) => success())
 
         const wrapper = mount(
-          <Router history={createMemoryHistory()}>
+          <MemoryRouter>
             <EditPassword {...props} />
-          </Router>
+          </MemoryRouter>
         )
         const inputs = wrapper.find('input')
         const currentPassword = inputs.at(0)
         const newPassword = inputs.at(1)
         const newConfirmationPassword = inputs.at(2)
-        const submitButton = wrapper.find('input[value="Enregistrer"]')
+        const form = wrapper.find('form')
 
         // When
         currentPassword.invoke('onChange')({
@@ -119,8 +123,8 @@ describe('edit password', () => {
         newConfirmationPassword.invoke('onChange')({
           target: { value: 'new password', name: 'newConfirmationPassword' },
         })
-        submitButton.simulate('click')
-        submitButton.simulate('click')
+        form.invoke('onSubmit')(event)
+        form.invoke('onSubmit')(event)
 
         // Then
         expect(props.historyPush).toHaveBeenCalledWith('/profil')
@@ -143,35 +147,35 @@ describe('edit password', () => {
     describe('when fields are not valid', () => {
       it('should display error messages', () => {
         // Given
-        const action = {
-          payload: {
-            errors: {
-              newPassword: ['Nouveau mot de passe invalide.'],
-              newConfirmationPassword: ['Les deux mots de passe ne sont pas identiques.'],
-              oldPassword: ['Ancien mot de passe incorrect.'],
-            },
-          },
+        const errors = {
+          newPassword: ['Nouveau mot de passe invalide.'],
+          newConfirmationPassword: ['Les deux mots de passe ne sont pas identiques.'],
+          oldPassword: ['Ancien mot de passe incorrect.'],
         }
 
-        jest.spyOn(props, 'handleSubmit').mockImplementation((values, fail) => fail({}, action))
+        jest.spyOn(props, 'handleSubmit').mockImplementation((values, fail) => fail(errors))
 
         const wrapper = mount(
-          <Router history={createMemoryHistory()}>
+          <MemoryRouter>
             <EditPassword {...props} />
-          </Router>
+          </MemoryRouter>
         )
 
         const inputs = wrapper.find('input')
         const oldPassword = inputs.at(0)
         const newPassword = inputs.at(1)
         const newConfirmationPassword = inputs.at(2)
-        const submitButton = wrapper.find('input[value="Enregistrer"]')
+        const form = wrapper.find('form')
 
         // When
-        oldPassword.invoke('onChange')({ target: { value: 'old password' } })
-        newPassword.invoke('onChange')({ target: { value: 'new password' } })
-        newConfirmationPassword.invoke('onChange')({ target: { value: 'wrong new password' } })
-        submitButton.invoke('onClick')({ preventDefault: jest.fn() })
+        oldPassword.invoke('onChange')({
+          target: { value: 'old password', name: 'currentPassword' },
+        })
+        newPassword.invoke('onChange')({ target: { value: 'new password', name: 'newPassword' } })
+        newConfirmationPassword.invoke('onChange')({
+          target: { value: 'wrong new password', name: 'newConfirmationPassword' },
+        })
+        form.invoke('onSubmit')(event)
 
         // Then
         const invalidNewPassword = wrapper.find({

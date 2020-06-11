@@ -3,7 +3,7 @@ import React from 'react'
 
 import { NON_BREAKING_SPACE } from '../../../../../utils/specialCharacters'
 import Header from '../Header'
-import User from '../../../../pages/profile/ValueObjects/User'
+import User from '../../ValueObjects/User'
 
 describe('profileHeader', () => {
   let props

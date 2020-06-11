@@ -1,13 +1,13 @@
-import React from 'react'
-import { Router } from 'react-router-dom'
 import { mount } from 'enzyme'
-import { createMemoryHistory } from 'history'
+import React from 'react'
+import { MemoryRouter } from 'react-router-dom'
 
 import Icon from '../../../../layout/Icon/Icon'
 import InternalLink from '../InternalLink'
 
 describe('internal link component', () => {
   let props
+
   beforeEach(() => {
     props = {
       to: '/page',
@@ -19,9 +19,9 @@ describe('internal link component', () => {
   it('should display an internal link', () => {
     // When
     const wrapper = mount(
-      <Router history={createMemoryHistory()}>
+      <MemoryRouter>
         <InternalLink {...props} />
-      </Router>
+      </MemoryRouter>
     )
 
     // Then
