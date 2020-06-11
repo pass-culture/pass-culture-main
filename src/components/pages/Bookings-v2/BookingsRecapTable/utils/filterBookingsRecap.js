@@ -2,7 +2,7 @@ import { EMPTY_FILTER_VALUE } from '../Filters/Filters'
 
 export const ALL_VENUES = 'all'
 
-const matchOfferNameFilter = (offerName, booking) => {
+const doesOfferNameMatchFilter = (offerName, booking) => {
   if (offerName !== EMPTY_FILTER_VALUE) {
     const offerNameFromBooking = booking.stock.offer_name.toLowerCase()
     return offerNameFromBooking.includes(offerName.toLowerCase())
@@ -10,7 +10,7 @@ const matchOfferNameFilter = (offerName, booking) => {
   return true
 }
 
-const matchBookingBeneficiaryFilter = (bookingBeneficiary, booking) => {
+const doesBookingBeneficiaryMatchFilter = (bookingBeneficiary, booking) => {
   if (bookingBeneficiary !== EMPTY_FILTER_VALUE) {
     const beneficiaryLowercase = bookingBeneficiary.toLowerCase()
     const beneficiaryLastNameFromBooking = booking.beneficiary.lastname.toLowerCase()
@@ -26,7 +26,7 @@ const matchBookingBeneficiaryFilter = (bookingBeneficiary, booking) => {
   return true
 }
 
-const matchBookingTokenFilter = (bookingToken, booking) => {
+const doesBookingTokenMatchFilter = (bookingToken, booking) => {
   if (bookingToken === EMPTY_FILTER_VALUE) {
     return true
   } else if (booking.booking_token === null) {
@@ -41,7 +41,7 @@ const extractDateFromDatetime = datetimeToExtract => {
   return datetimeToExtract.substr(0, 10)
 }
 
-const matchOfferDateFilter = (offerDate, booking) => {
+const doesOfferDateMatchFilter = (offerDate, booking) => {
   if (offerDate !== EMPTY_FILTER_VALUE) {
     const eventOfferDate = booking.stock.event_beginning_datetime
     if (eventOfferDate) {
@@ -53,7 +53,7 @@ const matchOfferDateFilter = (offerDate, booking) => {
   return true
 }
 
-const matchBookingBeginningDateFilter = (bookingBeginningDate, booking) => {
+const doesBookingBeginningDateMatchFilter = (bookingBeginningDate, booking) => {
   if (bookingBeginningDate !== EMPTY_FILTER_VALUE) {
     const offerDateFromBookingRecap = extractDateFromDatetime(booking.booking_date)
     return offerDateFromBookingRecap >= bookingBeginningDate
@@ -61,7 +61,7 @@ const matchBookingBeginningDateFilter = (bookingBeginningDate, booking) => {
   return true
 }
 
-const matchBookingEndDateFilter = (bookingEndingDate, booking) => {
+const doesBookingEndDateMatchFilter = (bookingEndingDate, booking) => {
   if (bookingEndingDate !== EMPTY_FILTER_VALUE) {
     const offerDateFromBookingRecap = extractDateFromDatetime(booking.booking_date)
     return offerDateFromBookingRecap <= bookingEndingDate
@@ -69,14 +69,14 @@ const matchBookingEndDateFilter = (bookingEndingDate, booking) => {
   return true
 }
 
-const matchOfferVenueFilter = (offerVenue, booking) => {
+const doesOfferVenueMatchFilter = (offerVenue, booking) => {
   if (offerVenue !== ALL_VENUES) {
     return booking.venue_identifier === offerVenue
   }
   return true
 }
 
-const matchISBNFilter = (isbn, booking) => {
+const doesISBNMatchFilter = (isbn, booking) => {
   if (isbn !== EMPTY_FILTER_VALUE) {
     return booking.stock.type === 'book' && booking.stock.offer_isbn.includes(isbn)
   }
@@ -96,14 +96,14 @@ const filterBookingsRecap = (bookingsRecap, filters) => {
   } = filters
   return bookingsRecap.filter(booking => {
     return (
-      matchOfferNameFilter(offerName, booking) &&
-      matchOfferDateFilter(offerDate, booking) &&
-      matchBookingBeginningDateFilter(bookingBeginningDate, booking) &&
-      matchBookingEndDateFilter(bookingEndingDate, booking) &&
-      matchBookingBeneficiaryFilter(bookingBeneficiary, booking) &&
-      matchBookingTokenFilter(bookingToken, booking) &&
-      matchOfferVenueFilter(offerVenue, booking) &&
-      matchISBNFilter(offerISBN, booking)
+      doesOfferNameMatchFilter(offerName, booking) &&
+      doesOfferDateMatchFilter(offerDate, booking) &&
+      doesBookingBeginningDateMatchFilter(bookingBeginningDate, booking) &&
+      doesBookingEndDateMatchFilter(bookingEndingDate, booking) &&
+      doesBookingBeneficiaryMatchFilter(bookingBeneficiary, booking) &&
+      doesBookingTokenMatchFilter(bookingToken, booking) &&
+      doesOfferVenueMatchFilter(offerVenue, booking) &&
+      doesISBNMatchFilter(offerISBN, booking)
     )
   })
 }
