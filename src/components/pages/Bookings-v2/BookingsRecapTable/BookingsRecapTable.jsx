@@ -127,6 +127,7 @@ class BookingsRecapTable extends Component {
     return (
       <div>
         <Filters
+          isLoading={isLoading}
           oldestBookingDate={oldestBookingDate}
           ref={this.filtersRef}
           setFilters={this.setFilters}

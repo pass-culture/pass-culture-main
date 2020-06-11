@@ -3,6 +3,10 @@ import Filters, { EMPTY_FILTER_VALUE } from '../Filters'
 import { mount, shallow } from 'enzyme'
 import { fetchAllVenuesByProUser } from '../../../../../../services/venuesService'
 import { ALL_VENUES } from '../../utils/filterBookingsRecap'
+import FilterByOmniSearch from '../FilterByOmniSearch'
+import FilterByEventDate from '../FilterByEventDate'
+import FilterByVenue from '../FilterByVenue'
+import FilterByBookingPeriod from '../FilterByBookingPeriod'
 
 jest.mock('../../../../../../services/venuesService', () => ({
   fetchAllVenuesByProUser: jest.fn(),
@@ -13,6 +17,7 @@ describe('components | Filters', () => {
 
   beforeEach(() => {
     props = {
+      isLoading: false,
       oldestBookingDate: EMPTY_FILTER_VALUE,
       setFilters: jest.fn(),
     }
@@ -36,6 +41,43 @@ describe('components | Filters', () => {
 
   afterEach(() => {
     fetchAllVenuesByProUser.mockReset()
+  })
+
+  it('should render all filters component with expected props', () => {
+    // given
+
+    // when
+    const wrapper = shallow(<Filters {...props} />)
+
+    // then
+    const filterByOmniSearch = wrapper.find(FilterByOmniSearch)
+    expect(filterByOmniSearch.props()).toStrictEqual({
+      isDisabled: false,
+      keywords: '',
+      selectedOmniSearchCriteria: 'offre',
+      updateFilters: expect.any(Function),
+    })
+    const filterByEventDate = wrapper.find(FilterByEventDate)
+    expect(filterByEventDate.props()).toStrictEqual({
+      isDisabled: false,
+      selectedOfferDate: '',
+      updateFilters: expect.any(Function),
+    })
+    const filterByVenue = wrapper.find(FilterByVenue)
+    expect(filterByVenue.props()).toStrictEqual({
+      isDisabled: false,
+      selectedVenue: '',
+      updateFilters: expect.any(Function),
+      venuesFormattedAndOrdered: [],
+    })
+    const filterByBookingPeriod = wrapper.find(FilterByBookingPeriod)
+    expect(filterByBookingPeriod.props()).toStrictEqual({
+      isDisabled: false,
+      oldestBookingDate: '',
+      selectedBookingBeginningDate: '',
+      selectedBookingEndingDate: expect.any(Object),
+      updateFilters: expect.any(Function),
+    })
   })
 
   it('should apply offerName filter when typing keywords', async () => {

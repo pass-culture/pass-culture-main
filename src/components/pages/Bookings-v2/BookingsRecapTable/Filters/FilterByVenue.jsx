@@ -2,7 +2,7 @@ import React from 'react'
 import { ALL_VENUES } from '../utils/filterBookingsRecap'
 import PropTypes from 'prop-types'
 
-const FilterByVenue = ({ updateFilters, selectedVenue, venuesFormattedAndOrdered }) => {
+const FilterByVenue = ({ isDisabled, updateFilters, selectedVenue, venuesFormattedAndOrdered }) => {
   function handleVenueSelection(event) {
     const venueId = event.target.value
     const updatedFilter = { offerVenue: venueId }
@@ -19,6 +19,7 @@ const FilterByVenue = ({ updateFilters, selectedVenue, venuesFormattedAndOrdered
         {'Lieu'}
       </label>
       <select
+        disabled={isDisabled}
         id="offer-venue-input"
         onBlur={handleVenueSelection}
         onChange={handleVenueSelection}
@@ -41,12 +42,13 @@ const FilterByVenue = ({ updateFilters, selectedVenue, venuesFormattedAndOrdered
 }
 
 FilterByVenue.propTypes = {
+  isDisabled: PropTypes.bool.isRequired,
   selectedVenue: PropTypes.string.isRequired,
   updateFilters: PropTypes.func.isRequired,
   venuesFormattedAndOrdered: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.string.isRequired,
       displayName: PropTypes.string.isRequired,
+      id: PropTypes.string.isRequired,
     })
   ).isRequired,
 }

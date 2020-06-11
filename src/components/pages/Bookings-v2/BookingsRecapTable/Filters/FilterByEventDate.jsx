@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import DatePicker from 'react-datepicker'
 import { EMPTY_FILTER_VALUE } from './Filters'
 
-const FilterByEventDate = ({ updateFilters, selectedOfferDate }) => {
+const FilterByEventDate = ({ isDisabled, updateFilters, selectedOfferDate }) => {
   function handleOfferDateChange(offerDate) {
     const dateToFilter = offerDate === null ? EMPTY_FILTER_VALUE : offerDate.format('YYYY-MM-DD')
     const updatedFilter = { offerDate: dateToFilter }
@@ -23,7 +23,10 @@ const FilterByEventDate = ({ updateFilters, selectedOfferDate }) => {
       <div className="fw-offer-date-picker">
         <DatePicker
           className="fw-offer-date-input"
-          customInput={<InputWithCalendar customClass="field-date-only" />}
+          customInput={
+            <InputWithCalendar customClass={`field-date-only ${isDisabled ? 'disabled' : ''}`} />
+          }
+          disabled={isDisabled}
           dropdownMode="select"
           id="select-filter-date"
           onChange={handleOfferDateChange}
@@ -36,6 +39,7 @@ const FilterByEventDate = ({ updateFilters, selectedOfferDate }) => {
 }
 
 FilterByEventDate.propTypes = {
+  isDisabled: PropTypes.bool.isRequired,
   selectedOfferDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string]).isRequired,
   updateFilters: PropTypes.func.isRequired,
 }

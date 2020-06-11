@@ -6,6 +6,7 @@ import PropTypes from 'prop-types'
 import { EMPTY_FILTER_VALUE } from './Filters'
 
 const FilterByBookingPeriod = ({
+  isDisabled,
   oldestBookingDate,
   updateFilters,
   selectedBookingBeginningDate,
@@ -36,13 +37,18 @@ const FilterByBookingPeriod = ({
         {'Période de réservation'}
       </label>
       <div
-        className="fw-booking-date-inputs"
+        className={`fw-booking-date-inputs ${isDisabled ? 'disabled' : ''}`}
         id="select-filter-booking-date"
       >
         <div className="fw-booking-date-begin-picker">
           <DatePicker
             className="fw-booking-date-input"
-            customInput={<InputWithCalendar customClass="field-date-only field-date-begin" />}
+            customInput={
+              <InputWithCalendar
+                customClass={`field-date-only field-date-begin ${isDisabled ? 'disabled' : ''}`}
+              />
+            }
+            disabled={isDisabled}
             dropdownMode="select"
             maxDate={selectedBookingEndingDate}
             minDate={oldestBookingDate}
@@ -55,7 +61,12 @@ const FilterByBookingPeriod = ({
         <div className="fw-booking-date-end-picker">
           <DatePicker
             className="fw-booking-date-input"
-            customInput={<InputWithCalendar customClass="field-date-only field-date-end" />}
+            customInput={
+              <InputWithCalendar
+                customClass={`field-date-only field-date-end ${isDisabled ? 'disabled' : ''}`}
+              />
+            }
+            disabled={isDisabled}
             dropdownMode="select"
             maxDate={moment()}
             minDate={selectedBookingBeginningDate}
@@ -70,6 +81,7 @@ const FilterByBookingPeriod = ({
 }
 
 FilterByBookingPeriod.propTypes = {
+  isDisabled: PropTypes.bool.isRequired,
   oldestBookingDate: PropTypes.string.isRequired,
   selectedBookingBeginningDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string])
     .isRequired,

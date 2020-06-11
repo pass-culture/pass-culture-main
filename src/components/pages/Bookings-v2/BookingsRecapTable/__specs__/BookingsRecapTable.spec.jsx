@@ -354,6 +354,26 @@ describe('components | BookingsRecapTable', () => {
     expect(bookingStatusCell.props()).toStrictEqual({ bookingStatus: 'Validé' })
   })
 
+  it('should render filters component with expected props', () => {
+    // given
+    const bookingsRecap = []
+    const props = {
+      bookingsRecap: bookingsRecap,
+      isLoading: true,
+    }
+
+    // When
+    const wrapper = shallow(<BookingsRecapTable {...props} />)
+
+    // Then
+    const filters = wrapper.find(Filters)
+    expect(filters.props()).toStrictEqual({
+      isLoading: true,
+      oldestBookingDate: '',
+      setFilters: expect.any(Function),
+    })
+  })
+
   it('should not apply filters when component didnt receive new data', () => {
     // given
     const bookingsRecap = [

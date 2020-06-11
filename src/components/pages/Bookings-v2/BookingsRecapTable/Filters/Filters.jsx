@@ -97,7 +97,7 @@ class Filters extends Component {
   }
 
   render() {
-    const { oldestBookingDate } = this.props
+    const { isLoading, oldestBookingDate } = this.props
     const {
       keywords,
       selectedOfferDate,
@@ -113,21 +113,25 @@ class Filters extends Component {
     return (
       <div className="filters-wrapper">
         <FilterByOmniSearch
+          isDisabled={isLoading}
           keywords={keywords}
           selectedOmniSearchCriteria={selectedOmniSearchCriteria}
           updateFilters={this.updateFilters}
         />
         <div className="fw-second-line">
           <FilterByEventDate
+            isDisabled={isLoading}
             selectedOfferDate={selectedOfferDate}
             updateFilters={this.updateFilters}
           />
           <FilterByVenue
+            isDisabled={isLoading}
             selectedVenue={selectedVenue}
             updateFilters={this.updateFilters}
             venuesFormattedAndOrdered={venuesFormattedAndOrdered}
           />
           <FilterByBookingPeriod
+            isDisabled={isLoading}
             oldestBookingDate={oldestBookingDate}
             selectedBookingBeginningDate={selectedBookingBeginningDate}
             selectedBookingEndingDate={selectedBookingEndingDate}
@@ -140,6 +144,7 @@ class Filters extends Component {
 }
 
 Filters.propTypes = {
+  isLoading: PropTypes.bool.isRequired,
   setFilters: PropTypes.func.isRequired,
 }
 

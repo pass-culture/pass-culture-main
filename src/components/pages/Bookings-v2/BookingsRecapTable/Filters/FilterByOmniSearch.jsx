@@ -29,7 +29,12 @@ const OMNISEARCH_FILTERS = [
   },
 ]
 
-const FilterByOmniSearch = ({ keywords, selectedOmniSearchCriteria, updateFilters }) => {
+const FilterByOmniSearch = ({
+  isDisabled,
+  keywords,
+  selectedOmniSearchCriteria,
+  updateFilters,
+}) => {
   function updateOmniSearchKeywords(omniSearchCriteria, keywords) {
     const cleanedOmnisearchFilters = {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
@@ -65,9 +70,10 @@ const FilterByOmniSearch = ({ keywords, selectedOmniSearchCriteria, updateFilter
   ).placeholderText
 
   return (
-    <div className="fw-first-line">
+    <div className={`fw-first-line ${isDisabled ? 'disabled' : ''}`}>
       <select
         className="fw-booking-text-filters-select"
+        disabled={isDisabled}
         onBlur={handleOmniSearchCriteriaChange}
         onChange={handleOmniSearchCriteriaChange}
       >
@@ -85,6 +91,7 @@ const FilterByOmniSearch = ({ keywords, selectedOmniSearchCriteria, updateFilter
 
       <input
         className="fw-booking-text-filters-input"
+        disabled={isDisabled}
         id="text-filter-input"
         onChange={handleOmniSearchChange}
         placeholder={placeholderText}
@@ -96,6 +103,7 @@ const FilterByOmniSearch = ({ keywords, selectedOmniSearchCriteria, updateFilter
 }
 
 FilterByOmniSearch.propTypes = {
+  isDisabled: PropTypes.bool.isRequired,
   keywords: PropTypes.string.isRequired,
   selectedOmniSearchCriteria: PropTypes.string.isRequired,
   updateFilters: PropTypes.func.isRequired,

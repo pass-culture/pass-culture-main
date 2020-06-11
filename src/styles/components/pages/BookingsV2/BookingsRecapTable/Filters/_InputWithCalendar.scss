@@ -1,4 +1,10 @@
 .field-date-only {
   @extend .field-input;
   @extend .field-date;
+
+  &.disabled {
+    background-color: #F5F5F5;
+    border-color: #F5F5F5;
+    opacity: 1;
+  }
 }

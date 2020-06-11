@@ -11,6 +11,10 @@
   border-radius: rem(20px);
   box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
 
+  &.disabled {
+    box-shadow: none;
+  }
+
   &:focus-within {
     .vertical-bar {
       background-color: $red;
@@ -36,6 +40,16 @@
     &:focus {
       border-color: $red;
     }
+
+    &:disabled {
+      background-color: #F5F5F5;
+      background-image: url("/icons/dropdown-disclosure-down-b-disabled.svg");
+      border-color: #F5F5F5;
+      color: #626262;
+      cursor: initial;
+      opacity: 1;
+      font-weight: normal;
+    }
   }
 
   .fw-booking-text-filters-select {
@@ -60,6 +74,17 @@
       outline: none;
       border-color: $red;
     }
+
+    &:disabled {
+      background-color: #F5F5F5;
+      border-color: #F5F5F5;
+      color: #626262;
+      opacity: 1;
+
+      &::placeholder {
+        color: #626262;
+      }
+    }
   }
 }
 
@@ -81,6 +106,10 @@
     &:focus-within {
       border-color: $red;
     }
+
+    &.disabled {
+      background-image: url(/icons/ico-calendar-disabled.svg);
+    }
   }
 
   .react-datepicker-wrapper {
@@ -101,6 +130,10 @@
     .field-date {
       box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
       margin-top: rem(12px);
+
+      &.disabled {
+        box-shadow: none;
+      }
     }
 
     .fw-offer-date-label {
@@ -115,6 +148,16 @@
       padding-left: rem(10px);
       outline: none;
       width: rem(150px);
+
+      &:disabled {
+        color: #626262;
+        cursor: initial;
+        opacity: 1;
+
+        &::placeholder {
+          color: #626262;
+        }
+      }
     }
   }
 
@@ -151,6 +194,16 @@
 
       &:focus {
         border-color: $red;
+      }
+
+      &:disabled {
+        background-color: #F5F5F5;
+        background-image: url("/icons/dropdown-disclosure-down-b-disabled.svg");
+        border-color: #F5F5F5;
+        box-shadow: none;
+        color: #626262;
+        cursor: initial;
+        opacity: 1;
       }
     }
   }
@@ -193,6 +246,16 @@
         outline: none;
         padding-left: rem(10px);
         width: rem(135px);
+
+        &:disabled {
+          color: #626262;
+          cursor: initial;
+          opacity: 1;
+
+          &::placeholder {
+            color: #626262;
+          }
+        }
       }
 
       .field-date-begin {
@@ -215,6 +278,10 @@
         &:focus-within {
           border-color: $red;
         }
+      }
+
+      &.disabled {
+        box-shadow: none;
       }
     }
   }
