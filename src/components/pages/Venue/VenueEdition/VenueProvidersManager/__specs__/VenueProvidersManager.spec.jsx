@@ -181,7 +181,7 @@ describe('src | components | pages | Venue | VenueProvidersManager', () => {
 
       // when
       wrapper.find('#add-venue-provider-btn').simulate('click')
-      wrapper.find('#provider-options').simulate('blur', chooseAllocineEvent)
+      wrapper.find('#provider-options').simulate('change', chooseAllocineEvent)
 
       // then
       const allocineProviderForm = wrapper.find(AllocineProviderFormContainer)
