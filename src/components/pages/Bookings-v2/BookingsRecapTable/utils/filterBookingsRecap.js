@@ -2,7 +2,7 @@ import { EMPTY_FILTER_VALUE } from '../Filters/Filters'
 
 export const ALL_VENUES = 'all'
 
-const filterByOfferName = (offerName, booking) => {
+const matchOfferNameFilter = (offerName, booking) => {
   if (offerName !== EMPTY_FILTER_VALUE) {
     const offerNameFromBooking = booking.stock.offer_name.toLowerCase()
     return offerNameFromBooking.includes(offerName.toLowerCase())
@@ -10,7 +10,7 @@ const filterByOfferName = (offerName, booking) => {
   return true
 }
 
-const filterByBookingBeneficiary = (bookingBeneficiary, booking) => {
+const matchBookingBeneficiaryFilter = (bookingBeneficiary, booking) => {
   if (bookingBeneficiary !== EMPTY_FILTER_VALUE) {
     const beneficiaryLowercase = bookingBeneficiary.toLowerCase()
     const beneficiaryLastNameFromBooking = booking.beneficiary.lastname.toLowerCase()
@@ -26,7 +26,7 @@ const filterByBookingBeneficiary = (bookingBeneficiary, booking) => {
   return true
 }
 
-const filterByBookingToken = (bookingToken, booking) => {
+const matchBookingTokenFilter = (bookingToken, booking) => {
   if (bookingToken === EMPTY_FILTER_VALUE) {
     return true
   } else if (booking.booking_token === null) {
@@ -41,7 +41,7 @@ const extractDateFromDatetime = datetimeToExtract => {
   return datetimeToExtract.substr(0, 10)
 }
 
-const filterByOfferDate = (offerDate, booking) => {
+const matchOfferDateFilter = (offerDate, booking) => {
   if (offerDate !== EMPTY_FILTER_VALUE) {
     const eventOfferDate = booking.stock.event_beginning_datetime
     if (eventOfferDate) {
@@ -53,7 +53,7 @@ const filterByOfferDate = (offerDate, booking) => {
   return true
 }
 
-const filterByBookingBeginningDate = (bookingBeginningDate, booking) => {
+const matchBookingBeginningDateFilter = (bookingBeginningDate, booking) => {
   if (bookingBeginningDate !== EMPTY_FILTER_VALUE) {
     const offerDateFromBookingRecap = extractDateFromDatetime(booking.booking_date)
     return offerDateFromBookingRecap >= bookingBeginningDate
@@ -61,7 +61,7 @@ const filterByBookingBeginningDate = (bookingBeginningDate, booking) => {
   return true
 }
 
-const filterByBookingEndDate = (bookingEndingDate, booking) => {
+const matchBookingEndDateFilter = (bookingEndingDate, booking) => {
   if (bookingEndingDate !== EMPTY_FILTER_VALUE) {
     const offerDateFromBookingRecap = extractDateFromDatetime(booking.booking_date)
     return offerDateFromBookingRecap <= bookingEndingDate
@@ -69,14 +69,14 @@ const filterByBookingEndDate = (bookingEndingDate, booking) => {
   return true
 }
 
-const filterByOfferVenue = (offerVenue, booking) => {
+const matchOfferVenueFilter = (offerVenue, booking) => {
   if (offerVenue !== ALL_VENUES) {
     return booking.venue_identifier === offerVenue
   }
   return true
 }
 
-const filterByISBN = (isbn, booking) => {
+const matchISBNFilter = (isbn, booking) => {
   if (isbn !== EMPTY_FILTER_VALUE) {
     return booking.stock.type === 'book' && booking.stock.offer_isbn.includes(isbn)
   }
@@ -96,14 +96,14 @@ const filterBookingsRecap = (bookingsRecap, filters) => {
   } = filters
   return bookingsRecap.filter(booking => {
     return (
-      filterByOfferName(offerName, booking) &&
-      filterByOfferDate(offerDate, booking) &&
-      filterByBookingBeginningDate(bookingBeginningDate, booking) &&
-      filterByBookingEndDate(bookingEndingDate, booking) &&
-      filterByBookingBeneficiary(bookingBeneficiary, booking) &&
-      filterByBookingToken(bookingToken, booking) &&
-      filterByOfferVenue(offerVenue, booking) &&
-      filterByISBN(offerISBN, booking)
+      matchOfferNameFilter(offerName, booking) &&
+      matchOfferDateFilter(offerDate, booking) &&
+      matchBookingBeginningDateFilter(bookingBeginningDate, booking) &&
+      matchBookingEndDateFilter(bookingEndingDate, booking) &&
+      matchBookingBeneficiaryFilter(bookingBeneficiary, booking) &&
+      matchBookingTokenFilter(bookingToken, booking) &&
+      matchOfferVenueFilter(offerVenue, booking) &&
+      matchISBNFilter(offerISBN, booking)
     )
   })
 }

@@ -563,7 +563,7 @@ describe('filterBookingsRecap', () => {
         email: 'sonia.klepi@example.com',
       },
       booking_date: '2020-04-03T12:00:00Z',
-      booking_token: 'TOLKIEN',
+      booking_token: 'ABCDEF',
       booking_status: 'Validé',
     }
     const bookingRecap2 = {
@@ -597,7 +597,7 @@ describe('filterBookingsRecap', () => {
     const bookingsRecap = [bookingRecap1, bookingRecap2, bookingRecapWithNoToken]
     const filters = {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
-      bookingToken: 'tolk',
+      bookingToken: 'abc',
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
       offerISBN: EMPTY_FILTER_VALUE,

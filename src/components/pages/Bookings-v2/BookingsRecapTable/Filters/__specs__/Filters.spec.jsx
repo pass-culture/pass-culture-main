@@ -19,14 +19,14 @@ describe('components | Filters', () => {
     fetchAllVenuesByProUser.mockResolvedValue([
       {
         id: 'AF',
-        booking_token: 'TOLKIEN',
+        booking_token: 'ABCDEF',
         name: 'Librairie Fnac',
         offererName: 'gilbert Joseph',
         isVirtual: false,
       },
       {
         id: 'AE',
-        booking_token: 'NEIKLOT',
+        booking_token: 'FEDCBA',
         name: 'Offre numérique',
         offererName: 'gilbert Joseph',
         isVirtual: true,
