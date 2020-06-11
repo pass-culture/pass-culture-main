@@ -39,28 +39,6 @@
 .apf-is-duo-section {
   display: flex;
   margin-top: .8rem;
-
-  input {
-    @extend .input;
-    background-image: url(/icons/checkbox.svg);
-    background-repeat: no-repeat;
-    background-size: 1.1875em;
-    border: none;
-    border-radius: 0;
-    height: 1.1875em;
-    margin-right: 0.5rem;
-    padding: 0;
-    width: 1.1875em;
-
-    &:checked {
-      &::after {
-        background: url(/icons/checkbox-check.svg) center no-repeat;
-        content: '';
-        height: 100%;
-        width: 100%;
-      }
-    }
-  }
 }
 
 .apf-provider-import-button-section {

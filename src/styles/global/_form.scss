@@ -17,6 +17,48 @@ textarea.textarea {
   }
 }
 
+input[type=checkbox] {
+  @extend .input;
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -o-appearance: none;
+  border: 2px solid $grey;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+  width: $body-line-height;
+  height: $body-line-height;
+  padding: 0;
+  outline: none;
+
+  &:focus {
+    border-color: $thumb-color;
+  }
+
+  &:active,
+  &:checked {
+    background-color: $grey;
+
+    &:focus {
+      background-color: $thumb-color;
+    }
+
+    &::after {
+      content: "";
+      background-repeat: no-repeat;
+      background-image: url(/icons/checkbox-check.svg);
+      background-position: center;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &:disabled {
+    border: 2px solid $grey;
+  }
+}
+
 :not(output):-moz-ui-invalid {
   box-shadow: none;
 }
@@ -44,42 +86,6 @@ textarea.textarea {
   &.field-checkbox {
     align-items: flex-start;
     display: flex;
-
-    input {
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      -o-appearance: none;
-      border: 2px solid $grey;
-      border-radius: 4px;
-      margin-right: 0.5rem;
-      width: $body-line-height;
-      height: $body-line-height;
-      padding: 0;
-      outline: none;
-
-      &:focus {
-        border-color: $thumb-color;
-      }
-
-      &:active,
-      &:checked {
-        background-color: $grey;
-
-        &:focus {
-          background-color: $thumb-color;
-        }
-
-        &::after {
-          content: "";
-          background-repeat: no-repeat;
-          background-image: url(/icons/checkbox-check.svg);
-          background-position: center;
-          position: absolute;
-          width: 100%;
-          height: 100%;
-        }
-      }
-    }
   }
 
   &.has-addons {

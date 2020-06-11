@@ -166,43 +166,6 @@
     border-color: $input-focus-border-color;
   }
 
-  input[type='checkbox'] {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    -o-appearance: none;
-    border: rem(2px) solid $grey;
-    border-radius: rem(4px);
-    font-size: 1rem;
-    margin-right: 0.5rem;
-    padding: 0;
-    position: relative;
-    outline: none;
-    height: $body-line-height;
-    width: $body-line-height;
-
-    &:focus {
-      border-color: $thumb-color;
-    }
-
-    &:checked {
-      background-color: $grey;
-
-      &:focus {
-        background-color: $thumb-color;
-      }
-
-      &::after {
-        content: '';
-        background-repeat: no-repeat;
-        background-image: url(/icons/checkbox-check.svg);
-        background-position: center;
-        position: absolute;
-        width: 100%;
-        height: 100%;
-      }
-    }
-  }
-
   .field-siren-control {
     margin-top: rem(8px);
   }
