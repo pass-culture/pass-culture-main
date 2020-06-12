@@ -7,7 +7,7 @@ jobs:
         environment:
           DATABASE_URL_TEST: postgresql://pytest:pytest@localhost:5432/pass_culture
           REDIS_URL: redis://localhost:6379
-      - image: circleci/postgres:11.6-postgis
+      - image: circleci/postgres:12.2-postgis
         environment:
           POSTGRES_USER: pytest
           POSTGRES_PASSWORD: pytest
@@ -83,7 +83,7 @@ jobs:
       - image: circleci/python:3.6.11
         environment:
           DATABASE_URL: postgresql://pass_culture:passq@postgres-product:5432/pass_culture
-      - image: circleci/postgres:11.6-postgis
+      - image: circleci/postgres:12.2-postgis
         name: postgres-product
         environment:
           POSTGRES_USER: pass_culture
