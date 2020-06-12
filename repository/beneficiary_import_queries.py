@@ -2,7 +2,7 @@ from typing import List
 
 from sqlalchemy import asc
 
-from models import BeneficiaryImport, ImportStatus, UserSQLEntity
+from models import BeneficiaryImport, ImportStatus, UserSQLEntity, BeneficiaryImportSources
 from models.db import db
 from repository import repository
 
@@ -19,20 +19,24 @@ def is_already_imported(application_id: int) -> bool:
 
 
 def save_beneficiary_import_with_status(status: ImportStatus,
-                                        demarche_simplifiee_application_id: int,
-                                        demarche_simplifiee_procedure_id: int,
-                                        user: UserSQLEntity = None,
-                                        detail: str = None):
+                                        application_id: int,
+                                        source_id: int,
+                                        detail: str = None,
+                                        source: BeneficiaryImportSources = BeneficiaryImportSources.demarches_simplifiees,
+                                        user: UserSQLEntity = None):
     existing_beneficiary_import = BeneficiaryImport.query \
-        .filter_by(demarcheSimplifieeApplicationId=demarche_simplifiee_application_id) \
+        .filter_by(demarcheSimplifieeApplicationId=application_id) \
         .first()
 
     beneficiary_import = existing_beneficiary_import or BeneficiaryImport()
     if not beneficiary_import.beneficiary:
         beneficiary_import.beneficiary = user
 
-    beneficiary_import.demarcheSimplifieeApplicationId = demarche_simplifiee_application_id
-    beneficiary_import.demarcheSimplifieeProcedureId = demarche_simplifiee_procedure_id
+    beneficiary_import.applicationId = application_id
+    beneficiary_import.demarcheSimplifieeApplicationId = application_id
+    beneficiary_import.demarcheSimplifieeProcedureId = source_id
+    beneficiary_import.sourceId = source_id
+    beneficiary_import.source = source.value
     beneficiary_import.setStatus(status=status, detail=detail, author=None)
 
     repository.save(beneficiary_import)

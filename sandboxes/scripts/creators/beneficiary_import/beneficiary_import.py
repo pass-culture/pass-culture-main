@@ -1,6 +1,6 @@
 from typing import List
 
-from models import ImportStatus, UserSQLEntity, BeneficiaryImport
+from models import ImportStatus, UserSQLEntity, BeneficiaryImport, BeneficiaryImportSources
 from repository import repository
 from tests.model_creators.generic_creators import create_user, create_beneficiary_import
 from utils.logger import logger
@@ -33,9 +33,9 @@ def create_beneficiary_imports(beneficiary_user: UserSQLEntity) -> List[Benefici
         user = beneficiary_user if status == ImportStatus.CREATED else None
         beneficiary_imports.append(
             create_beneficiary_import(
-                demarche_simplifiee_application_id=index_of_beneficiary_imports,
+                application_id=index_of_beneficiary_imports,
                 status=status,
-                user=user
+                user=user,
             )
         )
         index_of_beneficiary_imports += 1

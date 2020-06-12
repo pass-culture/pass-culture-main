@@ -2,7 +2,7 @@ from models.allocine_pivot import AllocinePivot
 from models.api_errors import ApiErrors
 from models.api_key import ApiKey
 from models.bank_information import BankInformation
-from models.beneficiary_import import BeneficiaryImport
+from models.beneficiary_import import BeneficiaryImport, BeneficiaryImportSources
 from models.beneficiary_import_status import BeneficiaryImportStatus, \
     ImportStatus
 from models.booking_sql_entity import BookingSQLEntity

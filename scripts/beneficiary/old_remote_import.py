@@ -138,7 +138,7 @@ def _process_creation(error_messages: List[str], information: Dict, new_benefici
         save_beneficiary_import_with_status(
             ImportStatus.CREATED,
             information['application_id'],
-            demarche_simplifiee_procedure_id=procedure_id,
+            source_id=procedure_id,
             user=new_beneficiary)
         new_beneficiaries.append(new_beneficiary)
         try:
@@ -156,12 +156,12 @@ def _process_duplication(duplicate_users: List[UserSQLEntity], error_messages: L
     logger.warning(
         f'[BATCH][REMOTE IMPORT BENEFICIARIES] Duplicate beneficiaries found : {message} - Procedure {procedure_id}')
     error_messages.append(message)
-    save_beneficiary_import_with_status(ImportStatus.DUPLICATE, information['application_id'], procedure_id,
+    save_beneficiary_import_with_status(ImportStatus.DUPLICATE, information['application_id'], source_id=procedure_id,
                                         detail=f"Utilisateur en doublon : {duplicate_ids}")
 
 
 def _process_rejection(information: Dict, procedure_id: int) -> None:
-    save_beneficiary_import_with_status(ImportStatus.REJECTED, information['application_id'], procedure_id,
+    save_beneficiary_import_with_status(ImportStatus.REJECTED, information['application_id'], source_id=procedure_id,
                                         detail='Compte existant avec cet email')
     logger.warning(
         f"[BATCH][REMOTE IMPORT BENEFICIARIES] Rejected application {information['application_id']} because of already existing email - Procedure {procedure_id}")
@@ -172,7 +172,7 @@ def _process_error(error_messages: List[str], application_id: int, procedure_id:
     logger.error(f'[BATCH][REMOTE IMPORT BENEFICIARIES] {error}')
     error_messages.append(error)
     save_beneficiary_import_with_status(
-        ImportStatus.ERROR, application_id, procedure_id, detail=error)
+        ImportStatus.ERROR, application_id, source_id=procedure_id, detail=error)
 
 
 def _find_application_ids_to_process(applications: Dict, process_applications_updated_after: datetime) -> Set:

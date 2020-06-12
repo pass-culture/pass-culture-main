@@ -67,11 +67,12 @@ def create_bank_information(application_id: int = 1,
     return bank_information
 
 
-def create_beneficiary_import(date: datetime = datetime.utcnow(),
-                              demarche_simplifiee_application_id: int = 99,
-                              demarche_simplifiee_procedure_id: int = DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID,
+def create_beneficiary_import(application_id: int = 99,
+                              date: datetime = datetime.utcnow(),
                               detail: str = None,
                               idx: int = None,
+                              source_id: int = DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID,
+                              source: str = 'dms',
                               status: ImportStatus = ImportStatus.CREATED,
                               user: UserSQLEntity = None) -> BeneficiaryImport:
     import_status = BeneficiaryImportStatus()
@@ -82,8 +83,11 @@ def create_beneficiary_import(date: datetime = datetime.utcnow(),
     beneficiary_import = BeneficiaryImport()
     beneficiary_import.id = idx
     beneficiary_import.beneficiary = user
-    beneficiary_import.demarcheSimplifieeApplicationId = demarche_simplifiee_application_id
-    beneficiary_import.demarcheSimplifieeProcedureId = demarche_simplifiee_procedure_id
+    beneficiary_import.applicationId = application_id
+    beneficiary_import.demarcheSimplifieeApplicationId = application_id
+    beneficiary_import.demarcheSimplifieeProcedureId = source_id
+    beneficiary_import.sourceId = source_id
+    beneficiary_import.source = source
     beneficiary_import.statuses = [import_status]
 
     return beneficiary_import

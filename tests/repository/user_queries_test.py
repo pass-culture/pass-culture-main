@@ -205,7 +205,7 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
     def test_returns_created_at_date_of_most_recent_beneficiary_import_with_created_status_for_one_procedure(
             self, app):
         # given
-        demarche_simplifiee_procedure_id = 1
+        source_id = 1
         now = datetime.utcnow()
         yesterday = now - timedelta(days=1)
         two_days_ago = now - timedelta(days=2)
@@ -216,38 +216,38 @@ class FindMostRecentBeneficiaryCreationDateByProcedureIdTest:
         user3 = create_user(date_created=three_days_ago, email='user3@example.com')
         beneficiary_import = [
             create_beneficiary_import(user=user2, status=ImportStatus.ERROR, date=two_days_ago,
-                                      demarche_simplifiee_application_id=1,
-                                      demarche_simplifiee_procedure_id=demarche_simplifiee_procedure_id),
+                                      application_id=1,
+                                      source_id=source_id),
             create_beneficiary_import(user=user3, status=ImportStatus.CREATED, date=three_days_ago,
-                                      demarche_simplifiee_application_id=3,
-                                      demarche_simplifiee_procedure_id=demarche_simplifiee_procedure_id)
+                                      application_id=3,
+                                      source_id=source_id)
         ]
 
         repository.save(user1, *beneficiary_import)
 
         # when
-        most_recent_creation_date = find_most_recent_beneficiary_creation_date_for_procedure_id(demarche_simplifiee_procedure_id)
+        most_recent_creation_date = find_most_recent_beneficiary_creation_date_for_procedure_id(source_id)
 
         # then
         assert most_recent_creation_date == three_days_ago
 
     @clean_database
-    def test_returns_min_year_if_no_beneficiary_import_exist_for_given_procedure_id(self, app):
+    def test_returns_min_year_if_no_beneficiary_import_exist_for_given_source_id(self, app):
         # given
-        old_demarche_simplifiee_procedure_id = 1
-        new_demarche_simplifiee_procedure_id = 2
+        old_source_id = 1
+        new_source_id = 2
         now = datetime.utcnow()
         yesterday = now - timedelta(days=1)
 
         user = create_user(date_created=yesterday, email='user@example.com')
         beneficiary_import = create_beneficiary_import(user=user, status=ImportStatus.CREATED, date=yesterday,
-                                                       demarche_simplifiee_application_id=3,
-                                                       demarche_simplifiee_procedure_id=old_demarche_simplifiee_procedure_id)
+                                                       application_id=3,
+                                                       source_id=old_source_id)
 
         repository.save(beneficiary_import)
 
         # when
-        most_recent_creation_date = find_most_recent_beneficiary_creation_date_for_procedure_id(new_demarche_simplifiee_procedure_id)
+        most_recent_creation_date = find_most_recent_beneficiary_creation_date_for_procedure_id(new_source_id)
 
         # then
         assert most_recent_creation_date == datetime(MINYEAR, 1, 1)

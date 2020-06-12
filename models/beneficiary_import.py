@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import BigInteger, Column, ForeignKey, desc, Integer
+from sqlalchemy import BigInteger, Column, ForeignKey, desc, Integer, String
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
@@ -9,19 +9,29 @@ from models.beneficiary_import_status import BeneficiaryImportStatus, \
 from models.db import Model, db
 from models.pc_object import PcObject
 from models.user_sql_entity import UserSQLEntity
+from enum import Enum
+
+
+class BeneficiaryImportSources(Enum):
+    demarches_simplifiees = 'demarches_simplifiees'
 
 
 class BeneficiaryImport(PcObject, Model):
     demarcheSimplifieeApplicationId = Column(BigInteger,
                                              unique=True,
                                              nullable=False)
+    applicationId = Column(BigInteger,
+                           nullable=False)
 
     beneficiaryId = Column(BigInteger,
-                           ForeignKey("user.id"),
+                           ForeignKey('user.id'),
                            index=True,
                            nullable=True)
 
     demarcheSimplifieeProcedureId = Column(Integer, nullable=True)
+    sourceId = Column(Integer, nullable=True)
+
+    source = Column(String(255), nullable=False)
 
     beneficiary = relationship('UserSQLEntity',
                                foreign_keys=[beneficiaryId],

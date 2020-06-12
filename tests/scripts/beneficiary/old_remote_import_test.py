@@ -112,14 +112,14 @@ class OldRemoteImportRunTest:
         # then
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.currentStatus == ImportStatus.ERROR
-        assert beneficiary_import.demarcheSimplifieeApplicationId == 123
+        assert beneficiary_import.applicationId == 123
         assert beneficiary_import.detail == 'Le dossier 123 contient des erreurs et a été ignoré - Procedure 2567158'
 
     @patch('scripts.beneficiary.old_remote_import.process_beneficiary_application')
     @patch.dict('os.environ', {'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID': '2567158'})
-    def test_application_with_known_demarche_simplifiee_application_id_are_not_processed(self,
-                                                                                         process_beneficiary_application
-                                                                                         ):
+    def test_application_with_known_application_id_are_not_processed(self,
+                                                                     process_beneficiary_application
+                                                                     ):
         # given
         get_all_application_ids = Mock(return_value=[123, 456])
         find_applications_ids_to_retry = Mock(return_value=[])
@@ -172,7 +172,7 @@ class OldRemoteImportRunTest:
         # then
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
-        assert beneficiary_import.demarcheSimplifieeApplicationId == 123
+        assert beneficiary_import.applicationId == 123
         assert beneficiary_import.detail == 'Compte existant avec cet email'
         process_beneficiary_application.assert_not_called()
 
@@ -279,7 +279,7 @@ class ProcessBeneficiaryApplicationTest:
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.beneficiary.email == 'jane.doe@example.com'
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
-        assert beneficiary_import.demarcheSimplifieeApplicationId == 123
+        assert beneficiary_import.applicationId == 123
 
     @patch('scripts.beneficiary.old_remote_import.create_beneficiary_from_application')
     @patch('scripts.beneficiary.old_remote_import.repository')
@@ -373,7 +373,7 @@ class ProcessBeneficiaryApplicationTest:
         # then
         send_activation_email.assert_not_called()
         mock_repository.save.assert_not_called()
-        beneficiary_import = BeneficiaryImport.query.filter_by(demarcheSimplifieeApplicationId=123).first()
+        beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
         assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
 
     @patch('scripts.beneficiary.old_remote_import.send_activation_email')
@@ -404,7 +404,7 @@ class ProcessBeneficiaryApplicationTest:
 
         # then
         send_activation_email.assert_called()
-        beneficiary_import = BeneficiaryImport.query.filter_by(demarcheSimplifieeApplicationId=123).first()
+        beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
 
     @clean_database
@@ -432,7 +432,7 @@ class ProcessBeneficiaryApplicationTest:
         # then
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
-        assert beneficiary_import.demarcheSimplifieeApplicationId == 123
+        assert beneficiary_import.applicationId == 123
         assert beneficiary_import.detail == "Utilisateur en doublon : 11, 22"
 
 
