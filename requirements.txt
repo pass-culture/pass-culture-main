@@ -57,6 +57,7 @@ pytest-flask==0.15.0
 pytest-mock==1.11.2
 python-keystoneclient==3.22.0
 python-swiftclient==3.8.1
+python-dotenv==0.13.0
 qrcode==6.1
 redis==3.3.11
 requests==2.22.0

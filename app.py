@@ -7,6 +7,8 @@ from sentry_sdk.integrations.rq import RqIntegration
 import redis
 from mailjet_rest import Client
 from werkzeug.middleware.profiler import ProfilerMiddleware
+from dotenv import load_dotenv
+from pathlib import Path
 
 from admin.install import install_admin_views
 from documentation import install_documentation
@@ -21,6 +23,12 @@ from utils.mailing import get_contact, \
     MAILJET_API_KEY, \
     MAILJET_API_SECRET, \
     subscribe_newsletter
+
+
+env_file = '.env.' + os.getenv('ENV')
+env_path = Path('.') / env_file
+load_dotenv(dotenv_path=env_path)
+
 
 if IS_DEV is False:
     sentry_sdk.init(
@@ -42,8 +50,6 @@ with app.app_context():
         install_materialized_views()
         install_local_providers()
         install_features()
-
-    import utils.login_manager
 
     install_routes()
     install_documentation()
