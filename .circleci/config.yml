@@ -358,11 +358,6 @@ workflows:
               only:
                 - master
                 - /hotfix-v.*/
-      - tests-perf:
-          filters:
-            branches:
-              only:
-                - staging
       - deploy-api:
           filters:
             branches:
