@@ -13,6 +13,7 @@ import { getBrowserRoutes } from '../../components/router/getBrowserRoutes'
 import routes from '../../components/router/routes'
 import { IS_DEV, PROJECT_NAME } from '../../utils/config'
 import RedirectToMaintenance from './RedirectToMaintenance/RedirectToMaintenance'
+import { StatusBarHelmet } from './StatusBar/StatusBarHelmet'
 
 const getPageTitle = obj => `${obj && obj.title ? `${obj.title} - ` : ''}`
 
@@ -25,6 +26,7 @@ export const App = ({ children, location, isMaintenanceActivated }) => {
   } else {
     const currentRouteObj = getCurrentRouteObjectByPath(getBrowserRoutes(routes), location.pathname)
     const pageTitle = getPageTitle(currentRouteObj)
+
     return (
       <Fragment>
         <Helmet>
@@ -32,6 +34,7 @@ export const App = ({ children, location, isMaintenanceActivated }) => {
             {`${pageTitle}${PROJECT_NAME}${(IS_DEV && ' | DEV') || ''}`}
           </title>
         </Helmet>
+        <StatusBarHelmet pathname={location.pathname} />
         <ErrorCatcherContainer>
           <NavBarContainer
             path={location.pathname}
