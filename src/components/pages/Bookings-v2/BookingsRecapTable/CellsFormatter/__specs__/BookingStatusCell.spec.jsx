@@ -6,7 +6,24 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell
   it('should render a div with the corresponding tag value and tag classnames for the given status', () => {
     // Given
     const props = {
-      bookingStatus: 'validated',
+      bookingRecapInfo: {
+        original: {
+          stock: {
+            event_beginning_datetime: '2020-06-05T16:31:59.102163+02:00',
+            offer_name: 'Matrix',
+            type: 'event',
+          },
+          booking_is_duo: true,
+          beneficiary: {
+            email: 'loulou.duck@example.com',
+            firstname: 'Loulou',
+            lastname: 'Duck',
+          },
+          booking_date: '2020-01-04T20:31:12+01:00',
+          booking_token: '5U7M6U',
+          booking_status: 'validated',
+        },
+      },
     }
 
     // When
@@ -21,7 +38,24 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell
   it('should render a div with the default tag classname for an unknown status', () => {
     // Given
     const props = {
-      bookingStatus: 'Unknown',
+      bookingRecapInfo: {
+        original: {
+          stock: {
+            event_beginning_datetime: '2020-06-05T16:31:59.102163+02:00',
+            offer_name: 'Matrix',
+            type: 'event',
+          },
+          booking_is_duo: true,
+          beneficiary: {
+            email: 'loulou.duck@example.com',
+            firstname: 'Loulou',
+            lastname: 'Duck',
+          },
+          booking_date: '2020-01-04T20:31:12+01:00',
+          booking_token: '5U7M6U',
+          booking_status: 'unknown',
+        },
+      },
     }
 
     // When

@@ -1,23 +1,53 @@
-.booking-status-label {
-  border-radius: rem(5px);
-  color: $white;
-  font-weight: $weight-medium;
-  font-size: rem(14px);
-  padding: rem(2px) rem(5px);
-}
+.bookings-table {
+  .booking-status-label {
+    border-radius: rem(5px);
+    color: $white;
+    font-weight: $weight-medium;
+    font-size: rem(14px);
+    padding: rem(2px) rem(5px);
+  }
 
-.booking-status-booked {
-  background-color: $purple-dark;
-}
+  .booking-status-booked {
+    background-color: $purple-dark;
+  }
 
-.booking-status-validated {
-  background-color: $blue-dark;
-}
+  .booking-status-validated {
+    background-color: $blue-dark;
+  }
 
-.booking-status-cancelled {
-  background-color: $grey;
-}
+  .booking-status-cancelled {
+    background-color: $grey;
+  }
 
-.booking-status-reimbursed {
-  background-color: $green-dark;
+  .booking-status-reimbursed {
+    background-color: $green-dark;
+  }
+
+  .tooltip {
+    position: relative;
+  }
+
+  .tooltip .history {
+    display: none;
+  }
+
+  .tooltip:hover .history {
+    display: block;
+    position: absolute;
+    z-index: 1;
+    top: rem(30px);
+    right: 0;
+    width: rem(284px);
+    height: rem(179px);
+    border-radius: 4px;
+    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.3);
+    background-color: $white;
+    color: $black;
+    padding: rem(16px) rem(24px) rem(16px) rem(24px);
+  }
+
+  .bs-offer-title {
+    font-size: 16px;
+    font-weight: bold;
+  }
 }

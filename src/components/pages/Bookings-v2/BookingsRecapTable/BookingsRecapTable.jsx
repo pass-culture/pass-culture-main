@@ -58,8 +58,7 @@ class BookingsRecapTable extends Component {
         {
           id: 6,
           headerTitle: 'Statut',
-          accessor: 'booking_status',
-          Cell: ({ value }) => <BookingStatusCell bookingStatus={value} />,
+          Cell: ({ row }) => <BookingStatusCell bookingRecapInfo={row} />,
           className: 'td-booking-status',
         },
       ],

@@ -1,8 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { computeStatusClassName, getBookingStatusDisplayInformationsOrDefault } from './utils/bookingStatusConverter'
+import {
+  computeStatusClassName,
+  getBookingStatusDisplayInformationsOrDefault,
+} from './utils/bookingStatusConverter'
 
-const BookingStatusCell = ({ bookingStatus }) => {
+const BookingStatusCell = ({ bookingRecapInfo }) => {
+  let bookingStatus = bookingRecapInfo.original.booking_status
+  const offerName = bookingRecapInfo.original.stock.offer_name
   bookingStatus = bookingStatus.toLowerCase()
 
   const bookingStatusDisplayInformations = getBookingStatusDisplayInformationsOrDefault(
@@ -14,14 +19,21 @@ const BookingStatusCell = ({ bookingStatus }) => {
     : bookingStatus
 
   return (
-    <span className={`booking-status-label ${statusClassName}`}>
-      {statusName}
-    </span>
+    <div className="tooltip">
+      <span className={`booking-status-label ${statusClassName}`}>
+        {statusName}
+      </span>
+      <div className="history">
+        <span className="bs-offer-title">
+          {offerName}
+        </span>
+      </div>
+    </div>
   )
 }
 
 BookingStatusCell.propTypes = {
-  bookingStatus: PropTypes.string.isRequired,
+  bookingRecapInfo: PropTypes.shape().isRequired,
 }
 
 export default BookingStatusCell
