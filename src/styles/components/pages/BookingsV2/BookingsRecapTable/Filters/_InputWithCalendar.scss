@@ -3,8 +3,8 @@
   @extend .field-date;
 
   &.disabled {
-    background-color: #F5F5F5;
-    border-color: #F5F5F5;
+    background-color: $grey-disabled-input-background;
+    border-color: $grey-disabled-input-background;
     opacity: 1;
   }
 }
