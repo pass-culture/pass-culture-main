@@ -3,6 +3,10 @@
 apt install -y postgresql-client
 
 >&2 echo -e "\n\033[0;32mInstalling requirements\n"
+
+apt-get install -y postgresql-client
+apt-get install -y libpq-dev
+
 pip install -r ./requirements.txt;
 python -m nltk.downloader punkt stopwords;
 
