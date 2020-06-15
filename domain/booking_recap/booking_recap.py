@@ -2,6 +2,9 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
+from domain.booking_recap.booking_recap_history import BookingRecapHistory, BookingRecapHistoryWithCancellation, \
+    BookingRecapHistoryWithPayment, BookingRecapHistoryWithValidation
+
 
 class BookingRecapStatus(Enum):
     booked = 'booked'
@@ -45,6 +48,11 @@ class BookingRecap:
         self.cancellation_date = cancellation_date
         self.payment_date = payment_date
         self.date_used = date_used
+        self.booking_recap_history = self.build_booking_recap_history(
+            booking_date,
+            cancellation_date,
+            payment_date,
+            date_used)
 
     def __new__(cls, *args, **kwargs):
         if cls is BookingRecap:
@@ -69,6 +77,32 @@ class BookingRecap:
             return BookingRecapStatus.validated
         else:
             return BookingRecapStatus.booked
+
+    def build_booking_recap_history(self,
+                                    booking_date: datetime,
+                                    cancellation_date: datetime,
+                                    payment_date: datetime,
+                                    date_used: datetime):
+
+        if payment_date is not None and date_used is not None:
+            return BookingRecapHistoryWithPayment(
+                booking_date=booking_date,
+                payment_date=payment_date,
+                date_used=date_used
+            )
+        elif cancellation_date is not None:
+            return BookingRecapHistoryWithCancellation(
+                booking_date=booking_date,
+                cancellation_date=cancellation_date
+            )
+        elif date_used is not None:
+            return BookingRecapHistoryWithValidation(
+                booking_date=booking_date,
+                date_used=date_used
+            )
+        return BookingRecapHistory(
+            booking_date
+        )
 
 
 class ThingBookingRecap(BookingRecap):

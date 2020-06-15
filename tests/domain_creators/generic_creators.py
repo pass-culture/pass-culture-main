@@ -1,7 +1,8 @@
 from datetime import datetime
+from typing import Optional
 
 from domain.beneficiary.beneficiary import Beneficiary
-from domain.booking_recap.booking_recap import BookingRecap, ThingBookingRecap, EventBookingRecap, BookBookingRecap
+from domain.booking_recap.booking_recap import ThingBookingRecap, EventBookingRecap, BookBookingRecap
 
 
 def create_domain_beneficiary(identifier: int = None,
@@ -28,12 +29,16 @@ def create_domain_thing_booking_recap(offer_identifier: int = 1,
                                       beneficiary_lastname: str = "Sans Nom",
                                       beneficiary_firstname: str = "Mowgli",
                                       beneficiary_email: str = "mowgli@example.com",
+                                      booking_amount: float = 0,
                                       booking_token: str = "JUNGLE",
                                       booking_date: datetime = datetime(2020, 3, 14, 19, 5, 3, 0),
                                       booking_is_duo: bool = False,
                                       booking_is_used: bool = False,
                                       booking_is_cancelled: bool = False,
                                       booking_is_reimbursed: bool = False,
+                                      payment_date: Optional[datetime] = None,
+                                      cancellation_date: Optional[datetime] = None,
+                                      date_used: Optional[datetime] = None,
                                       venue_identifier: int = 1) -> ThingBookingRecap:
     if offer_isbn:
         return BookBookingRecap(
@@ -43,12 +48,16 @@ def create_domain_thing_booking_recap(offer_identifier: int = 1,
             beneficiary_lastname=beneficiary_lastname,
             beneficiary_firstname=beneficiary_firstname,
             beneficiary_email=beneficiary_email,
+            booking_amount=booking_amount,
             booking_token=booking_token,
             booking_date=booking_date,
             booking_is_duo=booking_is_duo,
             booking_is_used=booking_is_used,
             booking_is_cancelled=booking_is_cancelled,
             booking_is_reimbursed=booking_is_reimbursed,
+            payment_date=payment_date,
+            cancellation_date=cancellation_date,
+            date_used=date_used,
             venue_identifier=venue_identifier,
         )
     return ThingBookingRecap(
@@ -57,12 +66,16 @@ def create_domain_thing_booking_recap(offer_identifier: int = 1,
         beneficiary_lastname=beneficiary_lastname,
         beneficiary_firstname=beneficiary_firstname,
         beneficiary_email=beneficiary_email,
+        booking_amount=booking_amount,
         booking_token=booking_token,
         booking_date=booking_date,
         booking_is_duo=booking_is_duo,
         booking_is_used=booking_is_used,
         booking_is_cancelled=booking_is_cancelled,
         booking_is_reimbursed=booking_is_reimbursed,
+        payment_date=payment_date,
+        cancellation_date=cancellation_date,
+        date_used=date_used,
         venue_identifier=venue_identifier,
     )
 
@@ -72,6 +85,7 @@ def create_domain_event_booking_recap(offer_identifier: int = 1,
                                       beneficiary_lastname: str = "Doe",
                                       beneficiary_firstname: str = "Jane",
                                       beneficiary_email: str = "jane.doe@example.com",
+                                      booking_amount: float = 0,
                                       booking_token: str = "CIRQUE",
                                       booking_date: datetime = datetime(2020, 3, 14, 19, 5, 3, 0),
                                       booking_is_duo: bool = False,
@@ -86,6 +100,7 @@ def create_domain_event_booking_recap(offer_identifier: int = 1,
         beneficiary_lastname=beneficiary_lastname,
         beneficiary_firstname=beneficiary_firstname,
         beneficiary_email=beneficiary_email,
+        booking_amount=booking_amount,
         booking_token=booking_token,
         booking_date=booking_date,
         booking_is_duo=booking_is_duo,

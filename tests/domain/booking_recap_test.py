@@ -1,4 +1,8 @@
+from datetime import datetime
+
 from domain.booking_recap.booking_recap import BookingRecapStatus
+from domain.booking_recap.booking_recap_history import BookingRecapHistory, BookingRecapHistoryWithCancellation, \
+    BookingRecapHistoryWithPayment, BookingRecapHistoryWithValidation
 from tests.domain_creators.generic_creators import create_domain_thing_booking_recap, create_domain_event_booking_recap
 
 
@@ -152,3 +156,82 @@ class BookingRecapTest:
 
             # Then
             assert booking_recap_token == 'ABCDE'
+
+    class BuildHistoryTest:
+        def test_should_return_booking_recap_history(self):
+            # Given
+            booking_recap = create_domain_thing_booking_recap(booking_token='ABCDE', booking_is_used=True,
+                                                              booking_is_cancelled=False, booking_amount=12,
+                                                              booking_date=datetime(2020, 1, 4))
+
+            # When
+            booking_recap_history = booking_recap.booking_recap_history
+
+            # Then
+            assert isinstance(booking_recap_history, BookingRecapHistory)
+            assert booking_recap_history.booking_date == datetime(2020, 1, 4)
+
+        def test_should_return_booking_recap_history_with_cancellation(self):
+            # Given
+            booking_recap = create_domain_thing_booking_recap(booking_token='ABCDE', booking_is_used=True,
+                                                              booking_is_cancelled=True, booking_amount=12,
+                                                              booking_date=datetime(2020, 1, 4),
+                                                              cancellation_date=datetime(2020, 1, 5))
+
+            # When
+            booking_recap_history = booking_recap.booking_recap_history
+
+            # Then
+            assert isinstance(booking_recap_history, BookingRecapHistoryWithCancellation)
+            assert booking_recap_history.booking_date == datetime(2020, 1, 4)
+            assert booking_recap_history.cancellation_date == datetime(2020, 1, 5)
+
+        def test_should_return_booking_recap_history_with_validation(self):
+            # Given
+            booking_recap = create_domain_thing_booking_recap(booking_token='ABCDE', booking_is_used=True,
+                                                              booking_is_cancelled=False, booking_amount=12,
+                                                              booking_date=datetime(2020, 1, 4),
+                                                              date_used=datetime(2020, 1, 5))
+
+            # When
+            booking_recap_history = booking_recap.booking_recap_history
+
+            # Then
+            assert isinstance(booking_recap_history, BookingRecapHistoryWithValidation)
+            assert booking_recap_history.booking_date == datetime(2020, 1, 4)
+            assert booking_recap_history.date_used == datetime(2020, 1, 5)
+
+        def test_should_return_booking_recap_history_with_payment(self):
+            # Given
+            booking_recap = create_domain_thing_booking_recap(booking_token='ABCDE', booking_is_used=True,
+                                                              booking_is_cancelled=False, booking_amount=12,
+                                                              booking_date=datetime(2020, 1, 4),
+                                                              payment_date=datetime(2020, 1, 6),
+                                                              date_used=datetime(2020, 1, 5))
+
+            # When
+            booking_recap_history = booking_recap.booking_recap_history
+
+            # Then
+            assert isinstance(booking_recap_history, BookingRecapHistoryWithPayment)
+            assert booking_recap_history.booking_date == datetime(2020, 1, 4)
+            assert booking_recap_history.payment_date == datetime(2020, 1, 6)
+            assert booking_recap_history.date_used == datetime(2020, 1, 5)
+
+        def test_should_return_booking_recap_history_with_payment_even_if_cancelled(self):
+            # Given
+            booking_recap = create_domain_thing_booking_recap(booking_token='ABCDE', booking_is_used=True,
+                                                              booking_is_cancelled=True, booking_amount=12,
+                                                              cancellation_date=datetime(2020, 1, 4),
+                                                              booking_date=datetime(2020, 1, 4),
+                                                              payment_date=datetime(2020, 1, 6),
+                                                              date_used=datetime(2020, 1, 5))
+
+            # When
+            booking_recap_history = booking_recap.booking_recap_history
+
+            # Then
+            assert isinstance(booking_recap_history, BookingRecapHistoryWithPayment)
+            assert booking_recap_history.booking_date == datetime(2020, 1, 4)
+            assert booking_recap_history.payment_date == datetime(2020, 1, 6)
+            assert booking_recap_history.date_used == datetime(2020, 1, 5)
