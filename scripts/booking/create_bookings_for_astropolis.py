@@ -28,7 +28,7 @@ def create_bookings_for_astropolis(offer_one_id: int, offer_two_id: int, offer_t
 
     beneficiary_ids_for_booking_creation = []
     for beneficiary_id in beneficiaries_who_have_booked_offer_one:
-        if not (beneficiary_id in beneficiaries_who_have_booked_offer_two or beneficiaries_who_have_booked_offer_three):
+        if not (beneficiary_id in beneficiaries_who_have_booked_offer_two or beneficiary_id in beneficiaries_who_have_booked_offer_three):
             beneficiary_ids_for_booking_creation.append(beneficiary_id)
 
     if len(beneficiary_ids_for_booking_creation) > 0:
