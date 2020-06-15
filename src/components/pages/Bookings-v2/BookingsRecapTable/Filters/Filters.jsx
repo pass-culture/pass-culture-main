@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import debounce from 'lodash.debounce'
 import moment from 'moment'
 import { fetchAllVenuesByProUser } from '../../../../../services/venuesService'
-import { ALL_VENUES } from '../utils/filterBookingsRecap'
 import formatAndOrderVenues from '../utils/formatAndOrderVenues'
 import FilterByOmniSearch from './FilterByOmniSearch'
 import FilterByEventDate from './FilterByEventDate.jsx'
@@ -11,6 +10,7 @@ import FilterByVenue from './FilterByVenue'
 import FilterByBookingPeriod from './FilterByBookingPeriod'
 
 export const EMPTY_FILTER_VALUE = ''
+export const ALL_VENUES = 'all'
 const DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
 const DEFAULT_OMNISEARCH_CRITERIA = 'offre'
 

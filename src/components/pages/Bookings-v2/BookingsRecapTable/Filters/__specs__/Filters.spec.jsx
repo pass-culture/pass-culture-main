@@ -1,8 +1,7 @@
 import React from 'react'
-import Filters, { EMPTY_FILTER_VALUE } from '../Filters'
+import Filters, { ALL_VENUES, EMPTY_FILTER_VALUE } from '../Filters'
 import { mount, shallow } from 'enzyme'
 import { fetchAllVenuesByProUser } from '../../../../../../services/venuesService'
-import { ALL_VENUES } from '../../utils/filterBookingsRecap'
 import FilterByOmniSearch from '../FilterByOmniSearch'
 import FilterByEventDate from '../FilterByEventDate'
 import FilterByVenue from '../FilterByVenue'
@@ -44,8 +43,6 @@ describe('components | Filters', () => {
   })
 
   it('should render all filters component with expected props', () => {
-    // given
-
     // when
     const wrapper = shallow(<Filters {...props} />)
 
@@ -116,6 +113,26 @@ describe('components | Filters', () => {
       bookingEndingDate: EMPTY_FILTER_VALUE,
       bookingToken: EMPTY_FILTER_VALUE,
       offerDate: '2020-05-20',
+      offerISBN: EMPTY_FILTER_VALUE,
+      offerName: EMPTY_FILTER_VALUE,
+      offerVenue: ALL_VENUES,
+    })
+  })
+
+  it('should apply default filters when mounting component', () => {
+    // Given
+    const wrapper = shallow(<Filters {...props} />)
+    // When
+    wrapper.instance().updateFilters()
+
+
+    // Then
+    expect(props.setFilters).toHaveBeenCalledWith({
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingEndingDate: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
+      offerDate: EMPTY_FILTER_VALUE,
       offerISBN: EMPTY_FILTER_VALUE,
       offerName: EMPTY_FILTER_VALUE,
       offerVenue: ALL_VENUES,

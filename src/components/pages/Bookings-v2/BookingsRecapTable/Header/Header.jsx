@@ -7,9 +7,11 @@ import Icon from '../../../../layout/Icon'
 
 const Header = ({ bookingsRecapFiltered, isLoading }) => {
   if (isLoading) {
-    return (<div className="bookings-header-loading">
-      {'Chargement des réservations...'}
-    </div>)
+    return (
+      <div className="bookings-header-loading">
+        {'Chargement des réservations...'}
+      </div>
+    )
   } else {
     return (
       <div className="bookings-header">

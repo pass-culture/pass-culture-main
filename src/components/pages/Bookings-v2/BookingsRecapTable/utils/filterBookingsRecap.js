@@ -1,6 +1,4 @@
-import { EMPTY_FILTER_VALUE } from '../Filters/Filters'
-
-export const ALL_VENUES = 'all'
+import { ALL_VENUES, EMPTY_FILTER_VALUE } from '../Filters/Filters'
 
 const doesOfferNameMatchFilter = (offerName, booking) => {
   if (offerName !== EMPTY_FILTER_VALUE) {
