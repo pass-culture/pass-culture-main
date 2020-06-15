@@ -84,8 +84,8 @@
   .sign-up-title {
     font-size: rem(32px);
     font-style: italic;
-    font-weight: 500;
-    margin-bottom: rem(24px);
+    font-weight: 800;
+    margin-bottom: rem(16px);
     line-height: rem(38px);
   }
 
@@ -94,12 +94,28 @@
     font-style: italic;
     font-weight: 500;
     line-height: rem(24px);
-    margin-bottom: rem(24px);
+    margin-bottom: rem(16px);
     word-break: break-word;
   }
 
+  .sign-up-operating-procedures {
+    background-color: $notification-background-is-info;
+    padding: rem(16px);
+    margin-bottom: rem(32px);
+  }
+
   .sign-up-requirements {
-    color: $red;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+
+    &:hover {
+      color: $black;
+    }
+
+    &.pc-description-link {
+      margin: rem(10px) 0 rem(12px);
+    }
   }
 
   .sign-up-tips {
@@ -219,6 +235,18 @@
   .field-password > img {
     padding-left: rem(15px);
     padding-right: rem(15px);
+  }
+
+  .sign-up-infos-before-signup {
+    line-height: 25px;
+
+    img {
+      vertical-align: bottom;
+    }
+
+    a {
+      color: $red;
+    }
   }
 
   .buttons-field {

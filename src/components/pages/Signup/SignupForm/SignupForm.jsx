@@ -8,6 +8,7 @@ import bindAddressAndDesignationFromSiren from '../../Offerer/OffererCreation/de
 import PasswordField from '../../../layout/form/fields/PasswordField'
 import SirenField from '../../../layout/form/fields/SirenField/SirenField'
 import FieldErrors from '../../../layout/form/FieldErrors'
+import Icon from "../../../layout/Icon";
 
 const addressAndDesignationFromSirenDecorator = createDecorator({
   field: 'siren',
@@ -75,20 +76,36 @@ class SignupForm extends PureComponent {
       <section>
         <div className="sign-up-wrapper">
           <h1 className="sign-up-title">
-            {'Créez votre compte'}
+            {'Créer votre compte professionnel'}
           </h1>
-          <h2 className="sign-up-sub-title">
-            {'Nous vous invitons à prendre connaissance des '}
+          <h2 className="sign-up-sub-title">{'Merci de compléter les champs suivants pour créer votre compte.'}</h2>
+          <div className="sign-up-operating-procedures">
+            <div>
+              {'Nous vous invitons à prendre connaissance des modalités de fonctionnement avant de renseigner les champs suivants.'}
+            </div>
             <a
-              className="sign-up-requirements"
-              href="https://pass.culture.fr/ressources"
+              className="sign-up-requirements pc-description-link"
+              href="https://docs.passculture.app/le-pass-culture-en-quelques-mots#quels-acteurs-culturels-peuvent-sinscrire"
               rel="noopener noreferrer"
               target="_blank"
             >
-              {'modalités de fonctionnement en cliquant ici '}
+              <Icon svg="ico-external-site" />
+              <span>
+                {'Fonctionnement du Pass culture Pro'}
+              </span>
             </a>
-            {'avant de renseigner les champs suivants.'}
-          </h2>
+            <a
+              className="sign-up-requirements"
+              href="https://aide.passculture.app/fr/article/acteurs-creer-un-compte-professionnel-t0m1hj/"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <Icon svg="ico-external-site" />
+              <span>
+                {'Consulter notre centre d’aide'}
+              </span>
+            </a>
+          </div>
           <div className="sign-up-tips">
             <span className="field-asterisk">
               {'*'}
@@ -197,16 +214,6 @@ class SignupForm extends PureComponent {
                 <label className="sign-up-checkbox">
                   <Field
                     component="input"
-                    name="newsletter_ok"
-                    type="checkbox"
-                  />
-                  {'Je souhaite recevoir les actualités du pass Culture'}
-                  <FieldErrors customMessage={errors ? errors.newsletter_ok : null} />
-                </label>
-
-                <label className="sign-up-checkbox">
-                  <Field
-                    component="input"
                     name="contact_ok"
                     required
                     type="checkbox"
@@ -219,20 +226,47 @@ class SignupForm extends PureComponent {
                   <FieldErrors customMessage={errors ? errors.contact_ok : null} />
                 </label>
 
-                <label className="sign-up-cgu">
-                  <Field
-                    component="input"
-                    name="cgu_ok"
-                    required
-                    type="checkbox"
-                    validate={required}
-                  />
-                  {this.renderCguContent()}
-                  <span className="field-asterisk">
-                    {'*'}
+                <div className="sign-up-infos-before-signup">
+                  <span>
+                    {'En cliquant sur Créer mon compte, vous acceptez nos '}
                   </span>
-                  <FieldErrors customMessage={errors ? errors.cgu_ok : null} />
-                </label>
+                  <a className="sign-up-info-link"
+                     href="https://docs.passculture.app/le-pass-culture-en-quelques-mots#quels-acteurs-culturels-peuvent-sinscrire"
+                     rel="noopener noreferrer"
+                     target="_blank"
+                  >
+                    <Icon svg="ico-external-site-red" />
+                    <span>
+                      {'Conditions Générales d’Utilisation'}
+                    </span>
+                  </a>
+                  <span>
+                    {' ainsi que notre '}
+                  </span>
+                  <a className="sign-up-info-link"
+                     href="https://docs.passculture.app/le-pass-culture-en-quelques-mots#quels-acteurs-culturels-peuvent-sinscrire"
+                     rel="noopener noreferrer"
+                     target="_blank"
+                  >
+                    <Icon svg="ico-external-site-red" />
+                    <span>
+                      {'Charte des Données Personnelles'}
+                    </span>
+                  </a>
+                  <span>
+                    {'. Pour en savoir plus sur la gestion de vos données personnelles et pour exercer vos droits, ou répondre à toute autre question, '}
+                  </span>
+                  <a className="sign-up-info-link"
+                     href="https://docs.passculture.app/le-pass-culture-en-quelques-mots#quels-acteurs-culturels-peuvent-sinscrire"
+                     rel="noopener noreferrer"
+                     target="_blank"
+                  >
+                    <Icon svg="ico-email-red" />
+                    <span>
+                      {'contactez notre support'}
+                    </span>
+                  </a>
+                </div>
 
                 <div className="buttons-field">
                   <NavLink

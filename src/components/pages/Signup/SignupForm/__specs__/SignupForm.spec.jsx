@@ -22,6 +22,103 @@ describe('src | components | pages | Signup | SignupForm', () => {
   })
 
   describe('render', () => {
+    it('should display the title "Créer votre compte professionnel"', () => {
+      // when
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
+
+      // then
+      const signUpFormTitle = wrapper.find({ children: 'Créer votre compte professionnel' })
+      expect(signUpFormTitle).toHaveLength(1)
+    })
+
+    it('should display a subtitle', () => {
+      // when
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
+
+      // then
+      const signUpFormTitle = wrapper.find({ children: 'Merci de compléter les champs suivants pour créer votre compte.' })
+      expect(signUpFormTitle).toHaveLength(1)
+    })
+
+    it('should display an external link to the presentation of Pass Culture Pro', () => {
+      // when
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
+
+      // then
+      const pcPresentationLink = wrapper.find({ children: 'Fonctionnement du Pass culture Pro' }).parent('a')
+      expect(pcPresentationLink).toHaveLength(1)
+      expect(pcPresentationLink.prop('href')).toBe('https://docs.passculture.app/le-pass-culture-en-quelques-mots#quels-acteurs-culturels-peuvent-sinscrire')
+    })
+
+
+    it('should display an external link to the help center', () => {
+      // when
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
+
+      // then
+      const pcPresentationLink = wrapper.find({ children: 'Consulter notre centre d’aide' }).parent('a')
+      expect(pcPresentationLink).toHaveLength(1)
+      expect(pcPresentationLink.prop('href')).toBe('https://aide.passculture.app/fr/article/acteurs-creer-un-compte-professionnel-t0m1hj/')
+    })
+
+    it('should display an external link to CGU', () => {
+      // when
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
+
+      // then
+      const pcPresentationLink = wrapper.find({ children: 'Consulter notre centre d’aide' }).parent('a')
+      expect(pcPresentationLink).toHaveLength(1)
+      expect(pcPresentationLink.prop('href')).toBe('https://aide.passculture.app/fr/article/acteurs-creer-un-compte-professionnel-t0m1hj/')
+    })
+
+    it('should display an external link to GDPR chart', () => {
+      // when
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
+
+      // then
+      const pcPresentationLink = wrapper.find({ children: 'Conditions Générales d’Utilisation' }).parent('a')
+      expect(pcPresentationLink).toHaveLength(1)
+      expect(pcPresentationLink.prop('href')).toBe('https://aide.passculture.app/fr/article/acteurs-creer-un-compte-professionnel-t0m1hj/')
+    })
+
+    it('should display a mail to support', () => {
+      // when
+      const wrapper = mount(
+        <Router history={history}>
+          <SignupForm {...props} />
+        </Router>
+      )
+
+      // then
+      const pcPresentationLink = wrapper.find({ children: 'Charte des Données Personnelles' }).parent('a')
+      expect(pcPresentationLink).toHaveLength(1)
+      expect(pcPresentationLink.prop('href')).toBe('https://aide.passculture.app/fr/article/acteurs-creer-un-compte-professionnel-t0m1hj/')
+    })
+
     it('should render a disabled submit button when required inputs are not filled', () => {
       // when
       const wrapper = mount(
@@ -35,7 +132,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       expect(submitButton.prop('disabled')).toBe(true)
     })
 
-    it('should render nine Field components', () => {
+    it('should render seven Field components', () => {
       // when
       const wrapper = mount(
         <Router history={history}>
@@ -45,7 +142,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
       // then
       const fields = wrapper.find('label')
-      expect(fields).toHaveLength(9)
+      expect(fields).toHaveLength(7)
     })
 
     it('should render a Field component for email with the right props', () => {
@@ -149,22 +246,6 @@ describe('src | components | pages | Signup | SignupForm', () => {
       expect(input.prop('type')).toBe('text')
     })
 
-    it('should render a Field component for newsletter agreement with the right props', () => {
-      // when
-      const wrapper = mount(
-        <Router history={history}>
-          <SignupForm {...props} />
-        </Router>
-      )
-
-      // then
-      const field = wrapper.find('label').at(6)
-      expect(field.text()).toBe('Je souhaite recevoir les actualités du pass Culture')
-      const input = field.find('input')
-      expect(input.prop('name')).toBe('newsletter_ok')
-      expect(input.prop('type')).toBe('checkbox')
-    })
-
     it('should render a Field component for contact agreement with the right props', () => {
       // when
       const wrapper = mount(
@@ -174,30 +255,12 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const field = wrapper.find('label').at(7)
+      const field = wrapper.find('label').at(6)
       expect(field.text()).toBe(
         'J’accepte d’être contacté par e-mail pour donner mon avis sur le pass Culture*'
       )
       const input = field.find('input')
       expect(input.prop('name')).toBe('contact_ok')
-      expect(input.prop('type')).toBe('checkbox')
-    })
-
-    it('should render a Field component for cgu agreement with the right props', () => {
-      // when
-      const wrapper = mount(
-        <Router history={history}>
-          <SignupForm {...props} />
-        </Router>
-      )
-
-      // then
-      const field = wrapper.find('label').at(8)
-      expect(field.text()).toStrictEqual(
-        'J’ai lu et j’accepte les Conditions Générales d’Utilisation*'
-      )
-      const input = field.find('input')
-      expect(input.prop('name')).toBe('cgu_ok')
       expect(input.prop('type')).toBe('checkbox')
     })
 
