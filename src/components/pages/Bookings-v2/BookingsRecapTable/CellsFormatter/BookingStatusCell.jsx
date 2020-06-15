@@ -19,11 +19,11 @@ const BookingStatusCell = ({ bookingRecapInfo }) => {
     : bookingStatus
 
   return (
-    <div className="tooltip">
+    <div className="booking-status-wrapper">
       <span className={`booking-status-label ${statusClassName}`}>
         {statusName}
       </span>
-      <div className="history">
+      <div className="bs-tooltip">
         <span className="bs-offer-title">
           {offerName}
         </span>
