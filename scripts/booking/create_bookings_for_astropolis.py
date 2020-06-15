@@ -45,7 +45,6 @@ def create_bookings_for_astropolis(offer_one_id: int, offer_two_id: int, offer_t
             expenses = get_expenses(bookings)
 
             try:
-                check_stock_is_bookable(stock)
                 new_booking = Booking(beneficiary=beneficiary, stock=stock, amount=stock.price, quantity=1,
                                       is_used=True)
                 check_expenses_limits(expenses, new_booking)
