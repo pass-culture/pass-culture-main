@@ -86,6 +86,15 @@ class Payment(PcObject, Model):
             .limit(1) \
             .as_scalar()
 
+    @currentStatus.expression
+    def lastProcessedDate(cls):
+        return db.session \
+            .query(PaymentStatus.date) \
+            .filter(PaymentStatus.paymentId == cls.id) \
+            .order_by(desc(PaymentStatus.date)) \
+            .limit(1) \
+            .as_scalar()
+
     def setStatus(self, status: TransactionStatus, detail: str = None):
         payment_status = PaymentStatus()
         payment_status.status = status

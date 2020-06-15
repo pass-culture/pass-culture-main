@@ -1,5 +1,6 @@
 import datetime
 from enum import Enum
+from typing import Optional
 
 
 class BookingRecapStatus(Enum):
@@ -20,10 +21,15 @@ class BookingRecap:
                  booking_is_used: bool,
                  booking_is_cancelled: bool,
                  booking_is_reimbursed: bool,
+                 booking_amount: float,
+                 cancellation_date: Optional[datetime],
+                 payment_date: Optional[datetime],
+                 date_used: Optional[datetime],
                  offer_identifier: int,
                  offer_name: str,
                  venue_identifier: int,
                  ):
+        self.booking_amount = booking_amount
         self.beneficiary_lastname = beneficiary_lastname
         self.beneficiary_firstname = beneficiary_firstname
         self.beneficiary_email = beneficiary_email
