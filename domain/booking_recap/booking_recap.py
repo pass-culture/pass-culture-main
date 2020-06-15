@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from enum import Enum
 from typing import Optional
 
@@ -42,6 +42,9 @@ class BookingRecap:
         self.offer_identifier = offer_identifier
         self.offer_name = offer_name
         self.venue_identifier = venue_identifier
+        self.cancellation_date = cancellation_date
+        self.payment_date = payment_date
+        self.date_used = date_used
 
     def __new__(cls, *args, **kwargs):
         if cls is BookingRecap:

@@ -1681,8 +1681,8 @@ class FindByProUserIdTest:
     @clean_database
     def test_should_return_only_expected_booking_attributes(self, app):
         # Given
-        beneficiary = create_user(email='beneficiary@example.com',
-                                  first_name='Ron', last_name='Weasley')
+        beneficiary = create_user(email='beneficiary@example.com', first_name='Ron', last_name='Weasley')
+        create_deposit(beneficiary, 500)
         user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)

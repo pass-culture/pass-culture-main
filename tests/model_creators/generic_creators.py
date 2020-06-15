@@ -135,7 +135,7 @@ def create_booking(user: UserSQLEntity,
         booking.recommendation = create_recommendation(offer=offer, user=user)
 
     booking.user = user
-    booking.amount = stock.price
+    booking.amount = amount if amount is not None else stock.price
     booking.dateCreated = date_created
     booking.dateUsed = date_used
     booking.id = idx
