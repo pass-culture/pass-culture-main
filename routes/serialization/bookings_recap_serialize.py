@@ -2,7 +2,7 @@ from typing import Dict
 
 from flask import json
 
-from domain.booking_recap.booking_recap import BookingRecap, EventBookingRecap, ThingBookingRecap, BookBookingRecap
+from domain.booking_recap.booking_recap import BookingRecap, EventBookingRecap, BookBookingRecap
 from domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from utils.date import format_into_ISO_8601_with_timezone
 from utils.human_ids import humanize
@@ -35,6 +35,8 @@ def __serialize_booking_recap(booking_recap: BookingRecap) -> Dict:
         "booking_status": booking_recap.booking_status.value,
         "booking_is_duo": booking_recap.booking_is_duo,
         "venue_identifier": humanize(booking_recap.venue_identifier),
+        "booking_amount": booking_recap.booking_amount,
+        "booking_recap_history": booking_recap.booking_recap_history.__dict__
     }
 
     if isinstance(booking_recap, EventBookingRecap):

@@ -207,7 +207,8 @@ class BookingRecapTest:
                                                               booking_is_cancelled=False, booking_amount=12,
                                                               booking_date=datetime(2020, 1, 4),
                                                               payment_date=datetime(2020, 1, 6),
-                                                              date_used=datetime(2020, 1, 5))
+                                                              date_used=datetime(2020, 1, 5),
+                                                              booking_is_reimbursed=True)
 
             # When
             booking_recap_history = booking_recap.booking_recap_history
@@ -222,10 +223,11 @@ class BookingRecapTest:
             # Given
             booking_recap = create_domain_thing_booking_recap(booking_token='ABCDE', booking_is_used=True,
                                                               booking_is_cancelled=True, booking_amount=12,
+                                                              booking_is_reimbursed=True,
                                                               cancellation_date=datetime(2020, 1, 4),
                                                               booking_date=datetime(2020, 1, 4),
-                                                              payment_date=datetime(2020, 1, 6),
-                                                              date_used=datetime(2020, 1, 5))
+                                                              date_used=datetime(2020, 1, 7),
+                                                              payment_date=datetime(2020, 1, 6))
 
             # When
             booking_recap_history = booking_recap.booking_recap_history
@@ -234,4 +236,4 @@ class BookingRecapTest:
             assert isinstance(booking_recap_history, BookingRecapReimbursedHistory)
             assert booking_recap_history.booking_date == datetime(2020, 1, 4)
             assert booking_recap_history.payment_date == datetime(2020, 1, 6)
-            assert booking_recap_history.date_used == datetime(2020, 1, 5)
+            assert booking_recap_history.date_used == datetime(2020, 1, 7)

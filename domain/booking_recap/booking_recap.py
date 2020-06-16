@@ -45,7 +45,7 @@ class BookingRecap:
         self.offer_identifier = offer_identifier
         self.offer_name = offer_name
         self.venue_identifier = venue_identifier
-        self.booking_recap_history = self.build_booking_recap_history(
+        self.booking_recap_history = self.build_recap_history_from_status(
             booking_date=booking_date,
             cancellation_date=cancellation_date,
             payment_date=payment_date,
@@ -75,31 +75,31 @@ class BookingRecap:
         else:
             return BookingRecapStatus.booked
 
-    def build_booking_recap_history(self,
-                                    booking_date: datetime,
-                                    cancellation_date: datetime,
-                                    payment_date: datetime,
-                                    date_used: datetime):
-
-        if payment_date is not None and date_used is not None:
+    def build_recap_history_from_status(self,
+                                        booking_date: datetime,
+                                        cancellation_date: datetime,
+                                        payment_date: datetime,
+                                        date_used: datetime):
+        if self.booking_is_reimbursed:
             return BookingRecapReimbursedHistory(
                 booking_date=booking_date,
                 payment_date=payment_date,
                 date_used=date_used
             )
-        elif cancellation_date is not None:
+        if self.booking_is_cancelled:
             return BookingRecapCancelledHistory(
                 booking_date=booking_date,
                 cancellation_date=cancellation_date
             )
-        elif date_used is not None:
+        if self.booking_is_used:
             return BookingRecapValidatedHistory(
                 booking_date=booking_date,
                 date_used=date_used
             )
-        return BookingRecapHistory(
-            booking_date
-        )
+        else:
+            return BookingRecapHistory(
+                booking_date
+            )
 
 
 class ThingBookingRecap(BookingRecap):

@@ -13,20 +13,27 @@ class SerializeBookingRecapTest:
     def test_should_return_json_with_all_parameters_for_thing_stock(self, app: fixture) -> None:
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
-        thing_booking_recap = create_domain_thing_booking_recap(offer_identifier=1,
-                                                                offer_name="Fondation",
-                                                                beneficiary_firstname="Hari",
-                                                                beneficiary_lastname="Seldon",
-                                                                beneficiary_email="hari.seldon@example.com",
-                                                                booking_date=booking_date, booking_token="FOND",
-                                                                booking_is_used=True, )
-        thing_booking_recap_2 = create_domain_thing_booking_recap(offer_identifier=2,
-                                                                  offer_name="Fondation",
-                                                                  beneficiary_firstname="Golan",
-                                                                  beneficiary_lastname="Trevize",
-                                                                  beneficiary_email="golan.trevize@example.com",
-                                                                  booking_date=booking_date, booking_token="FOND",
-                                                                  booking_is_duo=True, )
+        thing_booking_recap = create_domain_thing_booking_recap(
+                offer_identifier=1,
+                offer_name="Fondation",
+                beneficiary_firstname="Hari",
+                beneficiary_lastname="Seldon",
+                beneficiary_email="hari.seldon@example.com",
+                booking_date=booking_date,
+                booking_token="FOND",
+                booking_is_used=True,
+                booking_amount=18
+            )
+        thing_booking_recap_2 = create_domain_thing_booking_recap(
+                offer_identifier=2,
+                offer_name="Fondation",
+                beneficiary_firstname="Golan",
+                beneficiary_lastname="Trevize",
+                beneficiary_email="golan.trevize@example.com",
+                booking_date=booking_date,
+                booking_token="FOND",
+                booking_is_duo=True,
+            )
         bookings_recap = [
             thing_booking_recap,
             thing_booking_recap_2
@@ -59,6 +66,10 @@ class SerializeBookingRecapTest:
                 "booking_status": "validated",
                 "booking_is_duo": False,
                 "venue_identifier": "AE",
+                'booking_recap_history': {
+                    'booking_date': datetime(2020, 1, 1, 10, 0)
+                },
+                'booking_amount': 18
             },
             {
                 "stock": {
@@ -76,6 +87,10 @@ class SerializeBookingRecapTest:
                 "booking_status": "booked",
                 "booking_is_duo": True,
                 "venue_identifier": "AE",
+                'booking_recap_history': {
+                    'booking_date': datetime(2020, 1, 1, 10, 0)
+                },
+                'booking_amount': 0,
             }
         ]
         assert result['bookings_recap'] == bookings_recap
@@ -122,6 +137,8 @@ class SerializeBookingRecapTest:
                 "booking_status": "booked",
                 "booking_is_duo": False,
                 "venue_identifier": "AE",
+                'booking_recap_history': {'booking_date': datetime(2020, 1, 1, 10, 0)},
+                'booking_amount': 0
             },
         ]
         assert results['bookings_recap'] == expected_response
@@ -167,9 +184,145 @@ class SerializeBookingRecapTest:
                 "booking_status": "booked",
                 "booking_is_duo": False,
                 "venue_identifier": "AE",
+                'booking_amount': 0,
+                'booking_recap_history': {'booking_date': datetime(2020, 1, 1, 10, 0)}
             },
         ]
         assert results['bookings_recap'] == expected_response
         assert results['page'] == 0
         assert results['pages'] == 1
         assert results['total'] == 2
+
+
+class SerializeBookingRecapHistoryTest:
+    def test_should_return_booking_recap_history_with_cancellation_date_when_cancelled(self, app: fixture) -> None:
+        # Given
+        booking_date = datetime(2020, 1, 1, 10, 0, 0)
+        bookings_recap = [
+            create_domain_thing_booking_recap(
+                offer_name="Martine a la playa",
+                offer_isbn='987654345678',
+                beneficiary_firstname="Hari",
+                beneficiary_lastname="Seldon",
+                beneficiary_email="hari.seldon@example.com",
+                booking_date=booking_date,
+                booking_token="LUNE",
+                booking_is_cancelled=True,
+                cancellation_date=datetime(2020, 4, 3, 10, 0, 0)
+            )
+        ]
+        bookings_recap_paginated_response = BookingsRecapPaginated(
+            bookings_recap=bookings_recap,
+            page=0,
+            pages=1,
+            total=2
+        )
+
+        # When
+        results = serialize_bookings_recap_paginated(bookings_recap_paginated_response)
+
+        # Then
+        expected_booking_recap_history = {
+            'booking_date': datetime(2020, 1, 1, 10, 0),
+            'cancellation_date': datetime(2020, 4, 3, 10, 0)
+        }
+        assert results['bookings_recap'][0]['booking_recap_history'] == expected_booking_recap_history
+
+    def test_should_return_booking_recap_history_with_reimbursed_and_used_dated_when_reimbursed(self, app: fixture) -> None:
+        # Given
+        booking_date = datetime(2020, 1, 1, 10, 0, 0)
+        bookings_recap = [
+            create_domain_thing_booking_recap(
+                offer_name="Martine a la playa",
+                offer_isbn='987654345678',
+                beneficiary_firstname="Hari",
+                beneficiary_lastname="Seldon",
+                beneficiary_email="hari.seldon@example.com",
+                booking_date=booking_date,
+                booking_token="LUNE",
+                booking_is_used=True,
+                booking_is_reimbursed=True,
+                payment_date=datetime(2020, 5, 3, 10, 0),
+                date_used=datetime(2020, 4, 3, 10, 0)
+            )
+        ]
+        bookings_recap_paginated_response = BookingsRecapPaginated(
+            bookings_recap=bookings_recap,
+            page=0,
+            pages=1,
+            total=2
+        )
+
+        # When
+        results = serialize_bookings_recap_paginated(bookings_recap_paginated_response)
+
+        # Then
+        expected_booking_recap_history = {
+            'booking_date': datetime(2020, 1, 1, 10, 0),
+            'payment_date': datetime(2020, 5, 3, 10, 0),
+            'date_used': datetime(2020, 4, 3, 10, 0),
+        }
+        assert results['bookings_recap'][0]['booking_recap_history'] == expected_booking_recap_history
+
+    def test_should_return_booking_recap_history_with_date_used_when_used(self, app: fixture) -> None:
+        # Given
+        booking_date = datetime(2020, 1, 1, 10, 0, 0)
+        bookings_recap = [
+            create_domain_thing_booking_recap(
+                offer_name="Martine a la playa",
+                offer_isbn='987654345678',
+                beneficiary_firstname="Hari",
+                beneficiary_lastname="Seldon",
+                beneficiary_email="hari.seldon@example.com",
+                booking_date=booking_date,
+                booking_token="LUNE",
+                booking_is_used=True,
+                date_used=datetime(2020, 4, 3, 10, 0)
+            )
+        ]
+        bookings_recap_paginated_response = BookingsRecapPaginated(
+            bookings_recap=bookings_recap,
+            page=0,
+            pages=1,
+            total=2
+        )
+
+        # When
+        results = serialize_bookings_recap_paginated(bookings_recap_paginated_response)
+
+        # Then
+        expected_booking_recap_history = {
+            'booking_date': datetime(2020, 1, 1, 10, 0),
+            'date_used': datetime(2020, 4, 3, 10, 0)
+        }
+        assert results['bookings_recap'][0]['booking_recap_history'] == expected_booking_recap_history
+
+    def test_should_return_booking_recap_history_with_only_booking_date_when_just_booked(self, app: fixture) -> None:
+        # Given
+        booking_date = datetime(2020, 1, 1, 10, 0, 0)
+        bookings_recap = [
+            create_domain_thing_booking_recap(
+                offer_name="Martine a la playa",
+                offer_isbn='987654345678',
+                beneficiary_firstname="Hari",
+                beneficiary_lastname="Seldon",
+                beneficiary_email="hari.seldon@example.com",
+                booking_date=booking_date,
+                booking_token="LUNE"
+            )
+        ]
+        bookings_recap_paginated_response = BookingsRecapPaginated(
+            bookings_recap=bookings_recap,
+            page=0,
+            pages=1,
+            total=2
+        )
+
+        # When
+        results = serialize_bookings_recap_paginated(bookings_recap_paginated_response)
+
+        # Then
+        expected_booking_recap_history = {
+            'booking_date': datetime(2020, 1, 1, 10, 0)
+        }
+        assert results['bookings_recap'][0]['booking_recap_history'] == expected_booking_recap_history
