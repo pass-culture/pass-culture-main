@@ -70,7 +70,8 @@ def _get_endpoint_exceptions():
             'health_api',
             'health_database',
             'update_offerer_demarches_simplifiees_application',
-            'update_venue_demarches_simplifiees_application'
+            'update_venue_demarches_simplifiees_application',
+            'verify_id_check_licence_token'
             ]
 
 
