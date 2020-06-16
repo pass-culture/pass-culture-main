@@ -44,6 +44,9 @@ if feature_request_profiling_enabled():
     app.wsgi_app = ProfilerMiddleware(app.wsgi_app,
                                       restrictions=profiling_restrictions)
 
+def install_login_manager():
+    import utils.login_manager
+
 with app.app_context():
     if IS_DEV:
         install_activity()
@@ -51,8 +54,7 @@ with app.app_context():
         install_local_providers()
         install_features()
 
-    import utils.login_manager
-
+    install_login_manager()
     install_routes()
     install_documentation()
     install_admin_views(admin, db.session)
