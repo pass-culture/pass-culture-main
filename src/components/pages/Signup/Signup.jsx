@@ -21,7 +21,7 @@ const Signup = ({ location }) => {
       </div>
       <div className="container">
         <div className="columns">
-          <div className="column is-offset-6 is-two-fifths">
+          <div className="column is-offset-6 is-two-fifths sign-page-form">
             <Switch location={location}>
               <Route
                 component={SignupFormContainer}

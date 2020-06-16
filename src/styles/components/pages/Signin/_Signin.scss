@@ -11,22 +11,9 @@
     top: 0;
     bottom: 0;
     left: 0;
-    right: 50%;
+    right: 60%;
     z-index: 1;
     box-shadow: inset -10px 0 20px 0 rgba(0, 0, 0, 0.1);
-
-    img {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      right: 0;
-      margin: auto;
-      padding: 0 2rem;
-      width: 456px;
-      height: auto;
-      max-height: 100%;
-      max-width: 100%;
-    }
 
     @media (max-width: $tablet) {
       position: relative;
@@ -37,6 +24,10 @@
         padding: 1rem 0;
       }
     }
+  }
+
+  .sign-page-form {
+    margin-left: 36%;
   }
 
   .page-content {

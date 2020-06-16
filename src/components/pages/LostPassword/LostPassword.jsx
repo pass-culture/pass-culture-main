@@ -29,7 +29,7 @@ class LostPassword extends PureComponent {
         </div>
         <div className="container">
           <div className="columns">
-            <div className="column is-offset-6 is-two-fifths">
+            <div className="column is-offset-6 is-two-fifths sign-page-form">
               {change && (
                 <section className="hero has-text-grey">
                   <div className="hero-body">
@@ -57,7 +57,9 @@ class LostPassword extends PureComponent {
                       </span>
                     </h1>
                     <h2 className="subtitle is-2">
-                      {'Vous allez recevoir par e-mail les instructions pour définir un nouveau mot de passe.'}
+                      {
+                        'Vous allez recevoir par e-mail les instructions pour définir un nouveau mot de passe.'
+                      }
                     </h2>
 
                     <Link to="/accueil">
@@ -135,7 +137,9 @@ class LostPassword extends PureComponent {
                       </span>
                     </h1>
                     <h2 className="subtitle is-2">
-                      {'Indiquez ci-dessous l’adresse e-mail avec laquelle vous avez créé votre compte.'}
+                      {
+                        'Indiquez ci-dessous l’adresse e-mail avec laquelle vous avez créé votre compte.'
+                      }
                     </h2>
                     <span className="has-text-grey">
                       <span className="required-legend">

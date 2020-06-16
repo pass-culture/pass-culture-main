@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types'
-import React, { Fragment, PureComponent } from 'react'
+import React, { PureComponent } from 'react'
 import createDecorator from 'final-form-calculate'
 import { NavLink } from 'react-router-dom'
 import { Field, Form } from 'react-final-form'
-import { CGU_URL } from '../../../../utils/config'
+
 import bindAddressAndDesignationFromSiren from '../../Offerer/OffererCreation/decorators/bindSirenFieldToDesignation'
 import PasswordField from '../../../layout/form/fields/PasswordField'
 import SirenField from '../../../layout/form/fields/SirenField/SirenField'
 import FieldErrors from '../../../layout/form/FieldErrors'
-import Icon from "../../../layout/Icon";
+import Icon from '../../../layout/Icon'
 
 const addressAndDesignationFromSirenDecorator = createDecorator({
   field: 'siren',
@@ -37,20 +37,6 @@ class SignupForm extends PureComponent {
     document.body.removeChild(script)
   }
 
-  renderCguContent = () => (
-    <Fragment>
-      {'J’ai lu et j’accepte les '}
-      <a
-        href={CGU_URL}
-        id="accept-cgu-link"
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        {'Conditions Générales d’Utilisation'}
-      </a>
-    </Fragment>
-  )
-
   onHandleSuccess = () => {
     const { redirectToConfirmation } = this.props
 
@@ -78,10 +64,14 @@ class SignupForm extends PureComponent {
           <h1 className="sign-up-title">
             {'Créer votre compte professionnel'}
           </h1>
-          <h2 className="sign-up-sub-title">{'Merci de compléter les champs suivants pour créer votre compte.'}</h2>
+          <h2 className="sign-up-sub-title">
+            {'Merci de compléter les champs suivants pour créer votre compte.'}
+          </h2>
           <div className="sign-up-operating-procedures">
             <div>
-              {'Nous vous invitons à prendre connaissance des modalités de fonctionnement avant de renseigner les champs suivants.'}
+              {
+                'Nous vous invitons à prendre connaissance des modalités de fonctionnement avant de renseigner les champs suivants.'
+              }
             </div>
             <a
               className="sign-up-requirements pc-description-link"
@@ -219,9 +209,13 @@ class SignupForm extends PureComponent {
                     type="checkbox"
                     validate={required}
                   />
-                  {'J’accepte d’être contacté par e-mail pour donner mon avis sur le pass Culture'}
-                  <span className="field-asterisk">
-                    {'*'}
+                  <span>
+                    {
+                      'J’accepte d’être contacté par e-mail pour donner mon avis sur le pass Culture'
+                    }
+                    <span className="field-asterisk">
+                      {'*'}
+                    </span>
                   </span>
                   <FieldErrors customMessage={errors ? errors.contact_ok : null} />
                 </label>
@@ -230,10 +224,11 @@ class SignupForm extends PureComponent {
                   <span>
                     {'En cliquant sur Créer mon compte, vous acceptez nos '}
                   </span>
-                  <a className="sign-up-info-link"
-                     href="https://docs.passculture.app/le-pass-culture-en-quelques-mots#quels-acteurs-culturels-peuvent-sinscrire"
-                     rel="noopener noreferrer"
-                     target="_blank"
+                  <a
+                    className="sign-up-info-link"
+                    href="https://docs.passculture.app/le-pass-culture-en-quelques-mots#quels-acteurs-culturels-peuvent-sinscrire"
+                    rel="noopener noreferrer"
+                    target="_blank"
                   >
                     <Icon svg="ico-external-site-red" />
                     <span>
@@ -243,10 +238,11 @@ class SignupForm extends PureComponent {
                   <span>
                     {' ainsi que notre '}
                   </span>
-                  <a className="sign-up-info-link"
-                     href="https://docs.passculture.app/le-pass-culture-en-quelques-mots#quels-acteurs-culturels-peuvent-sinscrire"
-                     rel="noopener noreferrer"
-                     target="_blank"
+                  <a
+                    className="sign-up-info-link"
+                    href="https://docs.passculture.app/le-pass-culture-en-quelques-mots#quels-acteurs-culturels-peuvent-sinscrire"
+                    rel="noopener noreferrer"
+                    target="_blank"
                   >
                     <Icon svg="ico-external-site-red" />
                     <span>
@@ -254,12 +250,15 @@ class SignupForm extends PureComponent {
                     </span>
                   </a>
                   <span>
-                    {'. Pour en savoir plus sur la gestion de vos données personnelles et pour exercer vos droits, ou répondre à toute autre question, '}
+                    {
+                      '. Pour en savoir plus sur la gestion de vos données personnelles et pour exercer vos droits, ou répondre à toute autre question, '
+                    }
                   </span>
-                  <a className="sign-up-info-link"
-                     href="https://docs.passculture.app/le-pass-culture-en-quelques-mots#quels-acteurs-culturels-peuvent-sinscrire"
-                     rel="noopener noreferrer"
-                     target="_blank"
+                  <a
+                    className="sign-up-info-link"
+                    href="mailto:support@passculture.app"
+                    rel="noopener noreferrer"
+                    target="_blank"
                   >
                     <Icon svg="ico-email-red" />
                     <span>
@@ -267,7 +266,6 @@ class SignupForm extends PureComponent {
                     </span>
                   </a>
                 </div>
-
                 <div className="buttons-field">
                   <NavLink
                     className="button is-secondary"
@@ -281,7 +279,7 @@ class SignupForm extends PureComponent {
                     disabled={!valid}
                     type="submit"
                   >
-                    {'Créer'}
+                    {'Créer mon compte'}
                   </button>
                 </div>
               </form>

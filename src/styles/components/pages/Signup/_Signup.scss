@@ -5,21 +5,27 @@
     top: 0;
     bottom: 0;
     left: 0;
-    right: 50%;
+    right: 60%;
     z-index: 1;
     box-shadow: inset -10px 0 20px 0 rgba(0, 0, 0, 0.1);
 
-    img {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      right: 0;
-      margin: auto;
-      padding: 0 2rem;
-      width: 456px;
-      height: auto;
-      max-height: 100%;
-      max-width: 100%;
+    .logo {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+      align-items: center;
+
+      img {
+        width: 456px;
+        height: 239px;
+        max-height: none;
+        padding: 0 2rem;
+      }
+
+      .logo-subtitle {
+        color: $white;
+      }
     }
 
     @media (max-width: $tablet) {
@@ -31,6 +37,11 @@
         padding: 1rem 0;
       }
     }
+  }
+
+  .sign-page-form {
+    width: 59%;
+    margin-left: 36%;
   }
 
   .column {
@@ -90,7 +101,7 @@
   }
 
   .sign-up-sub-title {
-    font-size: rem(20px);
+    font-size: rem(24px);
     font-style: italic;
     font-weight: 500;
     line-height: rem(24px);
@@ -114,7 +125,11 @@
     }
 
     &.pc-description-link {
-      margin: rem(10px) 0 rem(12px);
+      margin: rem(10px) 0 rem(4px);
+    }
+
+    span {
+      margin-left: rem(4px);
     }
   }
 
@@ -131,6 +146,7 @@
   }
 
   label.sign-up-checkbox {
+    display: flex;
     color: $black;
     font-size: rem($font-size);
     margin-bottom: rem(16px);
@@ -238,7 +254,10 @@
   }
 
   .sign-up-infos-before-signup {
-    line-height: 25px;
+    line-height: 22px;
+    color: $grey;
+    font-size: rem(14px);
+    font-weight: 500;
 
     img {
       vertical-align: bottom;
@@ -252,6 +271,10 @@
   .buttons-field {
     display: flex;
     justify-content: space-between;
-    margin-top: 4rem;
+    margin-top: 1rem;
+
+    .button {
+      padding: 0 2.8rem;
+    }
   }
 }

@@ -29,6 +29,16 @@ const Logo = ({ className, noLink, whiteHeader, signPage }) => {
         alt="Logo"
         src={src}
       />
+      {signPage && (
+        <div className="logo-subtitle">
+          <span>
+            {'L’espace pass Culture des '}
+          </span>
+          <span className="logo-subtitle-highlighted">
+            {'acteurs culturels'}
+          </span>
+        </div>
+      )}
     </NavLink>
   )
 }

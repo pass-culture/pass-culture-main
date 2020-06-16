@@ -44,8 +44,10 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const signUpFormTitle = wrapper.find({ children: 'Merci de compléter les champs suivants pour créer votre compte.' })
-      expect(signUpFormTitle).toHaveLength(1)
+      const signUpFormSubTitle = wrapper.find({
+        children: 'Merci de compléter les champs suivants pour créer votre compte.',
+      })
+      expect(signUpFormSubTitle).toHaveLength(1)
     })
 
     it('should display an external link to the presentation of Pass Culture Pro', () => {
@@ -57,11 +59,14 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const pcPresentationLink = wrapper.find({ children: 'Fonctionnement du Pass culture Pro' }).parent('a')
-      expect(pcPresentationLink).toHaveLength(1)
-      expect(pcPresentationLink.prop('href')).toBe('https://docs.passculture.app/le-pass-culture-en-quelques-mots#quels-acteurs-culturels-peuvent-sinscrire')
+      const presentationLink = wrapper
+        .find({ children: 'Fonctionnement du Pass culture Pro' })
+        .parent('a')
+      expect(presentationLink).toHaveLength(1)
+      expect(presentationLink.prop('href')).toBe(
+        'https://docs.passculture.app/le-pass-culture-en-quelques-mots#quels-acteurs-culturels-peuvent-sinscrire'
+      )
     })
-
 
     it('should display an external link to the help center', () => {
       // when
@@ -72,9 +77,11 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const pcPresentationLink = wrapper.find({ children: 'Consulter notre centre d’aide' }).parent('a')
-      expect(pcPresentationLink).toHaveLength(1)
-      expect(pcPresentationLink.prop('href')).toBe('https://aide.passculture.app/fr/article/acteurs-creer-un-compte-professionnel-t0m1hj/')
+      const helpCenterLink = wrapper.find({ children: 'Consulter notre centre d’aide' }).parent('a')
+      expect(helpCenterLink).toHaveLength(1)
+      expect(helpCenterLink.prop('href')).toBe(
+        'https://aide.passculture.app/fr/article/acteurs-creer-un-compte-professionnel-t0m1hj/'
+      )
     })
 
     it('should display an external link to CGU', () => {
@@ -86,9 +93,11 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const pcPresentationLink = wrapper.find({ children: 'Consulter notre centre d’aide' }).parent('a')
-      expect(pcPresentationLink).toHaveLength(1)
-      expect(pcPresentationLink.prop('href')).toBe('https://aide.passculture.app/fr/article/acteurs-creer-un-compte-professionnel-t0m1hj/')
+      const cguLink = wrapper.find({ children: 'Consulter notre centre d’aide' }).parent('a')
+      expect(cguLink).toHaveLength(1)
+      expect(cguLink.prop('href')).toBe(
+        'https://aide.passculture.app/fr/article/acteurs-creer-un-compte-professionnel-t0m1hj/'
+      )
     })
 
     it('should display an external link to GDPR chart', () => {
@@ -100,9 +109,11 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const pcPresentationLink = wrapper.find({ children: 'Conditions Générales d’Utilisation' }).parent('a')
-      expect(pcPresentationLink).toHaveLength(1)
-      expect(pcPresentationLink.prop('href')).toBe('https://aide.passculture.app/fr/article/acteurs-creer-un-compte-professionnel-t0m1hj/')
+      const gdprLink = wrapper.find({ children: 'Conditions Générales d’Utilisation' }).parent('a')
+      expect(gdprLink).toHaveLength(1)
+      expect(gdprLink.prop('href')).toBe(
+        'https://aide.passculture.app/fr/article/acteurs-creer-un-compte-professionnel-t0m1hj/'
+      )
     })
 
     it('should display a mail to support', () => {
@@ -114,9 +125,9 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const pcPresentationLink = wrapper.find({ children: 'Charte des Données Personnelles' }).parent('a')
-      expect(pcPresentationLink).toHaveLength(1)
-      expect(pcPresentationLink.prop('href')).toBe('https://aide.passculture.app/fr/article/acteurs-creer-un-compte-professionnel-t0m1hj/')
+      const mailToSupportLink = wrapper.find({ children: 'contactez notre support' }).parent('a')
+      expect(mailToSupportLink).toHaveLength(1)
+      expect(mailToSupportLink.prop('href')).toBe('mailto:support@passculture.app')
     })
 
     it('should render a disabled submit button when required inputs are not filled', () => {

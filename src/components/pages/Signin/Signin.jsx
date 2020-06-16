@@ -44,7 +44,7 @@ class Signin extends PureComponent {
         </div>
         <div className="container">
           <div className="columns">
-            <div className="column is-offset-6 is-two-fifths">
+            <div className="column is-offset-6 is-two-fifths sign-page-form">
               <section className="has-text-grey">
                 <div className="hero-body">
                   <h1 className="title is-spaced is-1">
