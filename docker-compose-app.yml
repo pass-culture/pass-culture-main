@@ -33,7 +33,12 @@ services:
     image: passcultureapp/api-flask:latest
     working_dir: /opt/services/flaskapp/src
     container_name: pc-flask
-    command: ["./start-api-when-database-is-ready.sh"]
+    command: >
+      bash -c "
+        apt-get install -y postgresql-client;
+        sh ./prepare-database.sh;
+        while true; do python app.py; done;
+      "
     volumes:
       - ./api:/opt/services/flaskapp/src
     env_file:
