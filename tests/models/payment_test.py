@@ -38,3 +38,35 @@ class SetStatusTest:
         assert payment.statuses[1].status == TransactionStatus.SENT
         assert payment.statuses[1].detail is None
         assert now - one_second < payment.statuses[1].date < now + one_second
+
+
+class PaymentDateTest:
+    def test_payment_date_should_return_payment_date_for_status_sent(self):
+        # Given
+        payment_date = datetime.utcnow()
+        payment = Payment()
+        payment_status = PaymentStatus()
+        payment_status.status = TransactionStatus.SENT
+        payment_status.date = payment_date
+        payment.statuses = [payment_status]
+
+        # When
+        payment_sent_date = payment.lastProcessedDate
+
+        # Then
+        assert payment_sent_date == payment_date
+
+    def test_payment_date_should_return_no_payment_date_for_status_pending(self):
+        # Given
+        payment_date = datetime.utcnow()
+        payment = Payment()
+        payment_status = PaymentStatus()
+        payment_status.status = TransactionStatus.PENDING
+        payment_status.date = payment_date
+        payment.statuses = [payment_status]
+
+        # When
+        payment_sent_date = payment.lastProcessedDate
+
+        # Then
+        assert payment_sent_date == None

@@ -86,13 +86,17 @@ class Payment(PcObject, Model):
             .limit(1) \
             .as_scalar()
 
-    @currentStatus.expression
+    @hybrid_property
+    def lastProcessedDate(self):
+        sent_date = [status.date for status in self.statuses if status.status == TransactionStatus.SENT]
+        return None if len(sent_date) == 0 else sent_date[0]
+
+    @lastProcessedDate.expression
     def lastProcessedDate(cls):
         return db.session \
             .query(PaymentStatus.date) \
             .filter(PaymentStatus.paymentId == cls.id) \
-            .order_by(desc(PaymentStatus.date)) \
-            .limit(1) \
+            .filter(PaymentStatus.status == TransactionStatus.SENT) \
             .as_scalar()
 
     def setStatus(self, status: TransactionStatus, detail: str = None):

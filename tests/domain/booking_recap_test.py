@@ -1,8 +1,8 @@
 from datetime import datetime
 
 from domain.booking_recap.booking_recap import BookingRecapStatus
-from domain.booking_recap.booking_recap_history import BookingRecapHistory, BookingRecapHistoryWithCancellation, \
-    BookingRecapHistoryWithPayment, BookingRecapHistoryWithValidation
+from domain.booking_recap.booking_recap_history import BookingRecapHistory, BookingRecapValidatedHistory, \
+    BookingRecapReimbursedHistory, BookingRecapCancelledHistory
 from tests.domain_creators.generic_creators import create_domain_thing_booking_recap, create_domain_event_booking_recap
 
 
@@ -182,7 +182,7 @@ class BookingRecapTest:
             booking_recap_history = booking_recap.booking_recap_history
 
             # Then
-            assert isinstance(booking_recap_history, BookingRecapHistoryWithCancellation)
+            assert isinstance(booking_recap_history, BookingRecapCancelledHistory)
             assert booking_recap_history.booking_date == datetime(2020, 1, 4)
             assert booking_recap_history.cancellation_date == datetime(2020, 1, 5)
 
@@ -197,7 +197,7 @@ class BookingRecapTest:
             booking_recap_history = booking_recap.booking_recap_history
 
             # Then
-            assert isinstance(booking_recap_history, BookingRecapHistoryWithValidation)
+            assert isinstance(booking_recap_history, BookingRecapValidatedHistory)
             assert booking_recap_history.booking_date == datetime(2020, 1, 4)
             assert booking_recap_history.date_used == datetime(2020, 1, 5)
 
@@ -213,7 +213,7 @@ class BookingRecapTest:
             booking_recap_history = booking_recap.booking_recap_history
 
             # Then
-            assert isinstance(booking_recap_history, BookingRecapHistoryWithPayment)
+            assert isinstance(booking_recap_history, BookingRecapReimbursedHistory)
             assert booking_recap_history.booking_date == datetime(2020, 1, 4)
             assert booking_recap_history.payment_date == datetime(2020, 1, 6)
             assert booking_recap_history.date_used == datetime(2020, 1, 5)
@@ -231,7 +231,7 @@ class BookingRecapTest:
             booking_recap_history = booking_recap.booking_recap_history
 
             # Then
-            assert isinstance(booking_recap_history, BookingRecapHistoryWithPayment)
+            assert isinstance(booking_recap_history, BookingRecapReimbursedHistory)
             assert booking_recap_history.booking_date == datetime(2020, 1, 4)
             assert booking_recap_history.payment_date == datetime(2020, 1, 6)
             assert booking_recap_history.date_used == datetime(2020, 1, 5)

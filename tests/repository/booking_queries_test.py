@@ -14,6 +14,7 @@ from models.payment_status import TransactionStatus
 from models.stock_sql_entity import EVENT_AUTOMATIC_REFUND_DELAY
 from repository import booking_queries, repository
 from repository.booking_queries import find_by_pro_user_id, find_first_matching_from_offer_by_user
+from scripts.payment.batch_steps import generate_new_payments
 from tests.conftest import clean_database
 from tests.model_creators.activity_creators import create_booking_activity, \
     save_all_activities
@@ -1712,9 +1713,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_duo is False
         assert expected_booking_recap.venue_identifier == humanize(venue.id)
         assert expected_booking_recap.booking_amount == 12
-        assert expected_booking_recap.cancellation_date is None
-        assert expected_booking_recap.date_used is None
-        assert expected_booking_recap.payment_date is None
+        assert expected_booking_recap.booking_recap_history.booking_date == booking_date.astimezone(tz.gettz('Europe/Paris'))
 
     @clean_database
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app):
@@ -1804,6 +1803,85 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_reimbursed is False
         assert expected_booking_recap.event_beginning_datetime == stock.beginningDatetime.astimezone(tz.gettz('Europe/Paris'))
         assert expected_booking_recap.venue_identifier == humanize(venue.id)
+
+    @clean_database
+    def test_should_return_payment_date_when_booking_has_been_reimbursed(self, app):
+        # Given
+        beneficiary = create_user(email='beneficiary@example.com',
+                                  first_name='Ron', last_name='Weasley')
+        create_deposit(beneficiary)
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer, idx='15')
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=5)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF', amount=5,
+                                 is_used=True, date_used=yesterday)
+        payment = create_payment(booking=booking, offerer=offerer, amount=5, status=TransactionStatus.SENT,
+                                 status_date=yesterday)
+        repository.save(user_offerer, payment)
+
+        # When
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.booking_is_reimbursed is True
+        assert expected_booking_recap.booking_recap_history.payment_date == yesterday.astimezone(tz.gettz('Europe/Paris'))
+
+    @clean_database
+    def test_should_return_cancellation_date_when_booking_has_been_cancelled(self, app):
+        # Given
+        beneficiary = create_user(email='beneficiary@example.com',
+                                  first_name='Ron', last_name='Weasley')
+        create_deposit(beneficiary)
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer, idx='15')
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=5)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF', amount=5,
+                                 is_used=True, date_used=yesterday, is_cancelled=True)
+        repository.save(user_offerer, booking)
+
+        # When
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.booking_is_cancelled is True
+        assert expected_booking_recap.booking_recap_history.cancellation_date is not None
+
+    @clean_database
+    def test_should_return_validation_date_when_booking_has_been_used_and_not_cancelled_not_reimbursed(self, app):
+        # Given
+        beneficiary = create_user(email='beneficiary@example.com',
+                                  first_name='Ron', last_name='Weasley')
+        create_deposit(beneficiary)
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+        venue = create_venue(offerer, idx='15')
+        stock = create_stock_with_event_offer(offerer=offerer, venue=venue, price=5)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        booking = create_booking(user=beneficiary, stock=stock, date_created=yesterday, token='ABCDEF', amount=5,
+                                 is_used=True, date_used=yesterday, is_cancelled=False)
+        repository.save(user_offerer, booking)
+
+        # When
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.booking_is_used is True
+        assert expected_booking_recap.booking_is_cancelled is False
+        assert expected_booking_recap.booking_is_reimbursed is False
+        assert expected_booking_recap.booking_recap_history.date_used is not None
 
     @clean_database
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app):

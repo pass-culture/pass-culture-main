@@ -255,31 +255,29 @@ def _paginated_bookings_sql_entities_to_bookings_recap(paginated_bookings: List[
 
 
 def _apply_departement_timezone(date: datetime, departement_code: str) -> datetime:
-    return date.astimezone(tz.gettz(get_department_timezone(departement_code)))
+    return date.astimezone(tz.gettz(get_department_timezone(departement_code))) if date is not None else None
 
 
-def _serialize_booking_date_with_timezone(booking: object) -> datetime:
+def _serialize_date_with_timezone(date_without_timezone: datetime, booking: object) -> datetime:
     if booking.venueDepartementCode:
-        return _apply_departement_timezone(date=booking.bookingDate,
+        return _apply_departement_timezone(date=date_without_timezone,
                                            departement_code=booking.venueDepartementCode)
     offerer_department_code = PostalCode(booking.offererPostalCode).get_departement_code()
-    return _apply_departement_timezone(date=booking.bookingDate,
+    return _apply_departement_timezone(date=date_without_timezone,
                                        departement_code=offerer_department_code)
 
 
 def _serialize_booking_recap(booking: object) -> BookingRecap:
-    booking_date_timezoned = _serialize_booking_date_with_timezone(booking)
-
     if booking.stockBeginningDatetime:
-        return _serialize_event_booking_recap(booking, booking_date_timezoned)
+        return _serialize_event_booking_recap(booking)
 
     if booking.offerExtraData and 'isbn' in booking.offerExtraData:
-        return _serialize_book_booking_recap(booking, booking_date_timezoned)
+        return _serialize_book_booking_recap(booking)
 
-    return _serialize_thing_booking_recap(booking, booking_date_timezoned)
+    return _serialize_thing_booking_recap(booking)
 
 
-def _serialize_thing_booking_recap(booking: object, booking_date_timezoned: datetime) -> ThingBookingRecap:
+def _serialize_thing_booking_recap(booking: object) -> ThingBookingRecap:
     return ThingBookingRecap(
         offer_identifier=booking.offerId,
         offer_name=booking.offerName,
@@ -288,16 +286,19 @@ def _serialize_thing_booking_recap(booking: object, booking_date_timezoned: date
         beneficiary_lastname=booking.beneficiaryLastname,
         booking_amount=booking.bookingAmount,
         booking_token=booking.bookingToken,
-        booking_date=booking_date_timezoned,
+        booking_date=_serialize_date_with_timezone(date_without_timezone=booking.bookingDate, booking=booking),
         booking_is_used=booking.isUsed,
         booking_is_cancelled=booking.isCancelled,
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
         venue_identifier=booking.venueId,
+        date_used=_serialize_date_with_timezone(date_without_timezone=booking.dateUsed, booking=booking),
+        payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
+        cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate, booking=booking)
     )
 
 
-def _serialize_book_booking_recap(booking: object, booking_date_timezoned: datetime) -> BookBookingRecap:
+def _serialize_book_booking_recap(booking: object) -> BookBookingRecap:
     return BookBookingRecap(
         offer_identifier=booking.offerId,
         offer_name=booking.offerName,
@@ -307,16 +308,19 @@ def _serialize_book_booking_recap(booking: object, booking_date_timezoned: datet
         beneficiary_lastname=booking.beneficiaryLastname,
         booking_amount=booking.bookingAmount,
         booking_token=booking.bookingToken,
-        booking_date=booking_date_timezoned,
+        booking_date=_serialize_date_with_timezone(date_without_timezone=booking.bookingDate, booking=booking),
         booking_is_used=booking.isUsed,
         booking_is_cancelled=booking.isCancelled,
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
-        venue_identifier=booking.venueId
+        venue_identifier=booking.venueId,
+        date_used=_serialize_date_with_timezone(date_without_timezone=booking.dateUsed, booking=booking),
+        payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
+        cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate, booking=booking)
     )
 
 
-def _serialize_event_booking_recap(booking: object, booking_date_timezoned: datetime) -> EventBookingRecap:
+def _serialize_event_booking_recap(booking: object) -> EventBookingRecap:
     return EventBookingRecap(
         offer_identifier=booking.offerId,
         offer_name=booking.offerName,
@@ -325,7 +329,7 @@ def _serialize_event_booking_recap(booking: object, booking_date_timezoned: date
         beneficiary_lastname=booking.beneficiaryLastname,
         booking_amount=booking.bookingAmount,
         booking_token=booking.bookingToken,
-        booking_date=booking_date_timezoned,
+        booking_date=_serialize_date_with_timezone(date_without_timezone=booking.bookingDate, booking=booking),
         booking_is_used=booking.isUsed,
         booking_is_cancelled=booking.isCancelled,
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
@@ -334,6 +338,9 @@ def _serialize_event_booking_recap(booking: object, booking_date_timezoned: date
             date=booking.stockBeginningDatetime,
             departement_code=booking.venueDepartementCode
         ),
+        date_used=_serialize_date_with_timezone(date_without_timezone=booking.dateUsed, booking=booking),
+        payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
+        cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate, booking=booking),
         venue_identifier=booking.venueId,
     )
 

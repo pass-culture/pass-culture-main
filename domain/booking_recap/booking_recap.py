@@ -2,8 +2,8 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
-from domain.booking_recap.booking_recap_history import BookingRecapHistory, BookingRecapHistoryWithCancellation, \
-    BookingRecapHistoryWithPayment, BookingRecapHistoryWithValidation
+from domain.booking_recap.booking_recap_history import BookingRecapHistory, BookingRecapValidatedHistory, \
+    BookingRecapCancelledHistory, BookingRecapReimbursedHistory
 
 
 class BookingRecapStatus(Enum):
@@ -45,14 +45,11 @@ class BookingRecap:
         self.offer_identifier = offer_identifier
         self.offer_name = offer_name
         self.venue_identifier = venue_identifier
-        self.cancellation_date = cancellation_date
-        self.payment_date = payment_date
-        self.date_used = date_used
         self.booking_recap_history = self.build_booking_recap_history(
-            booking_date,
-            cancellation_date,
-            payment_date,
-            date_used)
+            booking_date=booking_date,
+            cancellation_date=cancellation_date,
+            payment_date=payment_date,
+            date_used=date_used)
 
     def __new__(cls, *args, **kwargs):
         if cls is BookingRecap:
@@ -85,18 +82,18 @@ class BookingRecap:
                                     date_used: datetime):
 
         if payment_date is not None and date_used is not None:
-            return BookingRecapHistoryWithPayment(
+            return BookingRecapReimbursedHistory(
                 booking_date=booking_date,
                 payment_date=payment_date,
                 date_used=date_used
             )
         elif cancellation_date is not None:
-            return BookingRecapHistoryWithCancellation(
+            return BookingRecapCancelledHistory(
                 booking_date=booking_date,
                 cancellation_date=cancellation_date
             )
         elif date_used is not None:
-            return BookingRecapHistoryWithValidation(
+            return BookingRecapValidatedHistory(
                 booking_date=booking_date,
                 date_used=date_used
             )

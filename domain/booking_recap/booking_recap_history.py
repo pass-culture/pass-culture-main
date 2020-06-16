@@ -7,19 +7,19 @@ class BookingRecapHistory:
         self.booking_date = booking_date
 
 
-class BookingRecapHistoryWithValidation(BookingRecapHistory):
+class BookingRecapValidatedHistory(BookingRecapHistory):
     def __init__(self, date_used: datetime, **kwargs):
         super().__init__(**kwargs)
         self.date_used = date_used
 
 
-class BookingRecapHistoryWithPayment(BookingRecapHistoryWithValidation):
+class BookingRecapReimbursedHistory(BookingRecapValidatedHistory):
     def __init__(self, payment_date: datetime, **kwargs):
         super().__init__(**kwargs)
         self.payment_date = payment_date
 
 
-class BookingRecapHistoryWithCancellation(BookingRecapHistory):
+class BookingRecapCancelledHistory(BookingRecapHistory):
     def __init__(self, cancellation_date: datetime, **kwargs):
         super().__init__(**kwargs)
         self.cancellation_date = cancellation_date
