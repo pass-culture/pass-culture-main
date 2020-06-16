@@ -51,6 +51,8 @@ with app.app_context():
         install_local_providers()
         install_features()
 
+    import utils.login_manager
+
     install_routes()
     install_documentation()
     install_admin_views(admin, db.session)
