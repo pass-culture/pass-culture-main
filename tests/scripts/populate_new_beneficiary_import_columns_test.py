@@ -49,7 +49,7 @@ class PopulateNewBeneficiaryImportColumnsTest:
         assert beneficiary_imports[1].sourceId == 42
 
     @clean_database
-    def test_should_fill_renamed_attribues_for_former_records(self, app):
+    def test_should_fill_renamed_attributes_for_former_records(self, app):
         # Given
         beneficiary = create_user(email="first@example.com")
         former_beneficiary_import = create_former_beneficiary_import(user=beneficiary, status=ImportStatus.CREATED,
