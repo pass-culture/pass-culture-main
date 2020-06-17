@@ -1,12 +1,11 @@
-from flask import request
 from typing import Dict
 
 from models.api_errors import ApiErrors
 
 
-def check_licence_token_webhook_payload(payload: Dict):
+def check_verify_licence_token_payload(payload: Dict):
     try:
-        request.get_json()['token']
+        payload.get_json()['token']
     except:
         errors = ApiErrors()
         errors.add_error('token', "Missing token")
