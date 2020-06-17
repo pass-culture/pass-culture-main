@@ -17,9 +17,6 @@ class BeneficiaryImportSources(Enum):
 
 
 class BeneficiaryImport(PcObject, Model):
-    demarcheSimplifieeApplicationId = Column(BigInteger,
-                                             unique=True,
-                                             nullable=False)
     applicationId = Column(BigInteger,
                            nullable=False)
 
@@ -28,7 +25,6 @@ class BeneficiaryImport(PcObject, Model):
                            index=True,
                            nullable=True)
 
-    demarcheSimplifieeProcedureId = Column(Integer, nullable=True)
     sourceId = Column(Integer, nullable=True)
 
     source = Column(String(255), nullable=False)

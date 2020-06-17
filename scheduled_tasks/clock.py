@@ -8,12 +8,13 @@ from sqlalchemy import orm
 from local_providers.provider_manager import \
     synchronize_data_for_provider, synchronize_venue_providers_for_provider
 from models.db import db
+from models.beneficiary_import import BeneficiaryImportSources
 from models.feature import FeatureToggle
 from repository import discovery_view_queries, discovery_view_v3_queries
 from repository.feature_queries import feature_write_dashboard_enabled, feature_clean_seen_offers_enabled
 from repository.provider_queries import get_provider_by_local_class
 from repository.seen_offer_queries import remove_old_seen_offers
-from repository.user_queries import find_most_recent_beneficiary_creation_date_for_procedure_id
+from repository.user_queries import find_most_recent_beneficiary_creation_date_for_source
 from scheduled_tasks.decorators import cron_context, cron_require_feature, \
     log_cron
 from scripts.beneficiary import old_remote_import, remote_import
@@ -59,7 +60,7 @@ def synchronize_libraires_stocks(app):
 @cron_require_feature(FeatureToggle.BENEFICIARIES_IMPORT)
 def pc_old_remote_import_beneficiaries(app):
     procedure_id = int(DEMARCHES_SIMPLIFIEES_OLD_ENROLLMENT_PROCEDURE_ID)
-    import_from_date = find_most_recent_beneficiary_creation_date_for_procedure_id(procedure_id)
+    import_from_date = find_most_recent_beneficiary_creation_date_for_source(BeneficiaryImportSources.demarches_simplifiees, procedure_id)
     old_remote_import.run(import_from_date)
 
 
@@ -67,7 +68,7 @@ def pc_old_remote_import_beneficiaries(app):
 @cron_context
 def pc_remote_import_beneficiaries(app):
     procedure_id = int(DEMARCHES_SIMPLIFIEES_NEW_ENROLLMENT_PROCEDURE_ID)
-    import_from_date = find_most_recent_beneficiary_creation_date_for_procedure_id(procedure_id)
+    import_from_date = find_most_recent_beneficiary_creation_date_for_source(BeneficiaryImportSources.demarches_simplifiees, procedure_id)
     remote_import.run(import_from_date)
 
 

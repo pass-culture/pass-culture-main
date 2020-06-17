@@ -10,7 +10,7 @@ from shapely.geometry import Polygon
 from domain.payments import PaymentDetails
 from local_providers.price_rule import PriceRule
 from models import AllocinePivot, AllocineVenueProviderPriceRule, ApiKey, \
-    BankInformation, BeneficiaryImport, BeneficiaryImportStatus, BookingSQLEntity, \
+    BankInformation, BeneficiaryImport, BeneficiaryImportSources, BeneficiaryImportStatus, BookingSQLEntity, \
     Criterion, Deposit, Email, Favorite, ImportStatus, IrisFrance, IrisVenues, \
     Mediation, Offer, Offerer, Payment, PaymentMessage, PaymentStatus, \
     Provider, Recommendation, RightsType, StockSQLEntity, ThingType, UserSQLEntity, UserOfferer, \
@@ -73,7 +73,7 @@ def create_beneficiary_import(application_id: int = 99,
                               detail: str = None,
                               idx: int = None,
                               source_id: int = DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID,
-                              source: str = 'dms',
+                              source: str = BeneficiaryImportSources.demarches_simplifiees.value,
                               status: ImportStatus = ImportStatus.CREATED,
                               user: UserSQLEntity = None) -> BeneficiaryImport:
     import_status = BeneficiaryImportStatus()
@@ -85,8 +85,6 @@ def create_beneficiary_import(application_id: int = 99,
     beneficiary_import.id = idx
     beneficiary_import.beneficiary = user
     beneficiary_import.applicationId = application_id
-    beneficiary_import.demarcheSimplifieeApplicationId = application_id
-    beneficiary_import.demarcheSimplifieeProcedureId = source_id
     beneficiary_import.sourceId = source_id
     beneficiary_import.source = source
     beneficiary_import.statuses = [import_status]

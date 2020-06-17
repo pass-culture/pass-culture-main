@@ -8,7 +8,7 @@ from sqlalchemy.sql.functions import Function
 
 from models import BeneficiaryImport, BeneficiaryImportStatus, BookingSQLEntity, \
     EventType, ImportStatus, Offer, Offerer, RightsType, StockSQLEntity, \
-    ThingType, UserSQLEntity, UserOfferer
+    ThingType, UserSQLEntity, UserOfferer, BeneficiaryImportSources
 from models.db import db
 from models.user_sql_entity import WalletBalance
 
@@ -142,10 +142,11 @@ def keep_only_webapp_users(query: Query) -> Query:
     )
 
 
-def find_most_recent_beneficiary_creation_date_for_procedure_id(demarche_simplifiee_procedure_id: int) -> datetime:
+def find_most_recent_beneficiary_creation_date_for_source(source: BeneficiaryImportSources, source_id: int) -> datetime:
     most_recent_creation = BeneficiaryImportStatus.query \
         .join(BeneficiaryImport) \
-        .filter(BeneficiaryImport.demarcheSimplifieeProcedureId == demarche_simplifiee_procedure_id) \
+        .filter(BeneficiaryImport.source == source.value) \
+        .filter(BeneficiaryImport.sourceId == source_id) \
         .filter(BeneficiaryImportStatus.status == ImportStatus.CREATED) \
         .order_by(BeneficiaryImportStatus.date.desc()) \
         .first()

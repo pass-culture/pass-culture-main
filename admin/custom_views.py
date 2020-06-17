@@ -83,30 +83,33 @@ class FeatureAdminView(BaseAdminView):
 class BeneficiaryImportView(BaseAdminView):
     can_edit = True
     column_list = ['beneficiary.firstName', 'beneficiary.lastName', 'beneficiary.email', 'beneficiary.postalCode',
-                   'demarcheSimplifieeApplicationId', 'currentStatus', 'updatedAt', 'detail', 'authorEmail']
+                   'source', 'sourceId', 'applicationId',
+                   'currentStatus', 'updatedAt', 'detail', 'authorEmail']
     column_labels = {
-        'demarcheSimplifieeApplicationId': 'Dossier DMS',
+        'applicationId': 'Id de dossier',
+        'authorEmail': 'Statut modifié par',
         'beneficiary.lastName': 'Nom',
         'beneficiary.firstName': 'Prénom',
         'beneficiary.postalCode': 'Code postal',
         'beneficiary.email': 'Adresse e-mail',
-        'currentStatus': "Statut",
-        'updatedAt': "Date",
-        'detail': "Détail",
-        'authorEmail': 'Statut modifié par'
+        'currentStatus': 'Statut',
+        'detail': 'Détail',
+        'source_id': 'Id de la procédure',
+        'source': 'Source du dossier',
+        'updatedAt': 'Date'
     }
     column_searchable_list = ['beneficiary.email',
-                              'demarcheSimplifieeApplicationId']
+                              'applicationId']
     column_filters = ['currentStatus']
     column_sortable_list = ['beneficiary.email', 'beneficiary.firstName', 'beneficiary.lastName', 'beneficiary.postalCode',
-                            'demarcheSimplifieeApplicationId', 'currentStatus', 'updatedAt', 'detail', 'authorEmail']
+                            'applicationId', 'source', 'sourceId', 'currentStatus', 'updatedAt', 'detail', 'authorEmail']
 
     def edit_form(self, obj=None):
         class _NewStatusForm(Form):
             beneficiary = StringField('Bénéficiaire', default=obj.beneficiary.email if obj.beneficiary else 'N/A',
                                       render_kw={'readonly': True})
-            demarche_simplifiee_application_id = StringField(
-                'Dossier DMS', default=obj.demarcheSimplifieeApplicationId, render_kw={'readonly': True}
+            applicationId = StringField(
+                'Dossier DMS', default=obj.applicationId, render_kw={'readonly': True}
             )
             statuses = TextAreaField('Status précédents', default=obj.history,
                                      render_kw={'readonly': True, 'rows': len(obj.statuses)})

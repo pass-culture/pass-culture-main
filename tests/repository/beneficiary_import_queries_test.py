@@ -139,16 +139,6 @@ class SaveBeneficiaryImportWithStatusTest:
         assert beneficiary_import.source == "demarches_simplifiees"
 
     @clean_database
-    def test_a_beneficiary_import_is_saved_with_dupplicated_fields(self, app):
-        # when
-        save_beneficiary_import_with_status(ImportStatus.DUPLICATE, 123, source_id=145236, user=None)
-
-        # then
-        beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
-        assert beneficiary_import.demarcheSimplifieeApplicationId == 123
-        assert beneficiary_import.demarcheSimplifieeProcedureId == 145236
-
-    @clean_database
     def test_a_status_is_set_on_an_existing_import(self, app):
         # given
         two_days_ago = datetime.utcnow() - timedelta(days=2)
