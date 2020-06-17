@@ -11,3 +11,7 @@ def check_licence_token_webhook_payload(payload: Dict):
         errors = ApiErrors()
         errors.add_error('token', "Missing token")
         raise errors
+
+
+def check_licence_token_is_valid(token):
+    return token == 'authorized-token'
