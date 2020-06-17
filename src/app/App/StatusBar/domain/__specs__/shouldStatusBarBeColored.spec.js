@@ -23,6 +23,7 @@ describe('should status bar be colored', () => {
         '/recherche/criteres-localisation/place',
         '/recherche/criteres-tri',
         '/recherche/resultats/tri',
+        '/recherche/resultats/details/N9?mots-cles=&autour-de=non&tri=&categories=&latitude=null&longitude=null',
         '/recherche/resultats/filtres',
         '/recherche/resultats/filtres/localisation',
         '/recherche/resultats/filtres/localisation/place',

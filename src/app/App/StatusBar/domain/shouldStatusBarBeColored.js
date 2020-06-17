@@ -5,6 +5,7 @@ export const shouldStatusBarBeColored = pathname => {
     '/recherche/criteres-localisation/place',
     '/recherche/criteres-tri',
     '/recherche/resultats/tri',
+    '/recherche/resultats/details/(.+)',
     '/recherche/resultats/filtres',
     '/recherche/resultats/filtres/localisation',
     '/recherche/resultats/filtres/localisation/place',
