@@ -47,7 +47,30 @@
   }
 
   .bs-offer-title {
+    display: block;
     font-size: rem(16px);
-    font-weight: bold;
+    font-weight: $weight-bold;
+  }
+
+  .bs-offer-amount{
+    display: block;
+    font-size: rem(14px);
+    font-weight: $weight-medium;
+  }
+
+  .bs-history-title{
+    display: block;
+    font-size: rem(16px);
+    margin-top: rem(12px);
+  }
+
+  .bs-history-label{
+    display: block;
+    font-size: rem(16px);
+    margin-top: rem(12px);
+  }
+
+  .bs-history-datetime-* {
+    color: $red;
   }
 }
