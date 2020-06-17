@@ -1,6 +1,6 @@
 export const isAppInFullscreen = () => {
-  const isiOSAppInFullscreen = window.navigator.standalone
+  const isIosAppInFullscreen = window.navigator.standalone
   const isAndroidAppInFullscreen = window.matchMedia('(display-mode: standalone)').matches
 
-  return isAndroidAppInFullscreen || isiOSAppInFullscreen
+  return isAndroidAppInFullscreen || isIosAppInFullscreen
 }

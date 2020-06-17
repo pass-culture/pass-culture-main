@@ -1,6 +1,5 @@
-export const shouldStatusBarBeColored = (pathname) => {
-
-  const pathWithPinkHeader = [
+export const shouldStatusBarBeColored = pathname => {
+  const pathWithColoredHeader = [
     '/recherche/criteres-categorie',
     '/recherche/criteres-localisation',
     '/recherche/criteres-localisation/place',
@@ -20,7 +19,5 @@ export const shouldStatusBarBeColored = (pathname) => {
     '/profil/mentions-legales',
   ]
 
-  const isPathWithPinkHeader =  RegExp(`(${pathWithPinkHeader.join('|')})$`).test(pathname)
-
-  return isPathWithPinkHeader
+  return RegExp(`(${pathWithColoredHeader.join('|')})$`).test(pathname)
 }

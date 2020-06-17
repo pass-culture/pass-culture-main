@@ -11,34 +11,25 @@ import { shouldStatusBarBeColored } from './domain/shouldStatusBarBeColored'
 
 export const StatusBarHelmet = ({ pathname }) => {
   const appIsInFullscreen = isAppInFullscreen()
-  const statusBarShouldBeColored = shouldStatusBarBeColored(pathname)
-  const requirediOSMetaTag = (
+  const statusBarIsColored = shouldStatusBarBeColored(pathname)
+  const requiredIosMetaTag = (
     <meta
       content="black-translucent"
       name="apple-mobile-web-app-status-bar-style"
     />
   )
-  const iOSColoredStatusBar = statusBarShouldBeColored ? (
-    <body style={`background-color:${primaryColor};`} />
-  ) : (
-    <body style={`background-color:${defaultColor};`} />
-  )
-  const androidColoredStatusBar = statusBarShouldBeColored ? (
+  const iosColoredStatusBar = <body style={`background-color:${statusBarIsColored ? primaryColor : defaultColor};`} />
+  const androidColoredStatusBar = (
     <meta
-      content={primaryColor}
-      name="theme-color"
-    />
-  ) : (
-    <meta
-      content={defaultColor}
+      content={statusBarIsColored ? primaryColor : defaultColor}
       name="theme-color"
     />
   )
 
   return (
     <Helmet>
-      {requirediOSMetaTag}
-      {appIsInFullscreen && iOSColoredStatusBar}
+      {requiredIosMetaTag}
+      {appIsInFullscreen && iosColoredStatusBar}
       {appIsInFullscreen && androidColoredStatusBar}
     </Helmet>
   )

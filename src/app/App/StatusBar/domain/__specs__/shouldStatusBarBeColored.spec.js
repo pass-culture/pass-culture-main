@@ -1,22 +1,23 @@
 import { shouldStatusBarBeColored } from '../shouldStatusBarBeColored'
 
-describe('when user is on a page without a pink header', () => {
-  it('should return false', () => {
-    // given
+describe('should status bar be colored', () => {
+  describe('when user is on a page without a pink header', () => {
+    it('should return false', () => {
+      // given
       const discoveryPath = '/decouverte/YTRE/FD'
 
-    // when
+      // when
       const isStatusBarPink = shouldStatusBarBeColored(discoveryPath)
 
-    // then
+      // then
       expect(isStatusBarPink).toBe(false)
+    })
   })
-})
 
-describe('when user is on a page with a pink header', () =>  {
-  it('should return true', () => {
-    // given
-    const pathsWithPinkHeader = [
+  describe('when user is on a page with a pink header', () => {
+    it('should return true', () => {
+      // given
+      const pathsWithPinkHeader = [
         '/recherche/criteres-categorie',
         '/recherche/criteres-localisation',
         '/recherche/criteres-localisation/place',
@@ -34,15 +35,14 @@ describe('when user is on a page with a pink header', () =>  {
         '/profil/informations',
         '/profil/mot-de-passe',
         '/profil/mentions-legales',
-    ]
+      ]
 
-    pathsWithPinkHeader.forEach(path => {
-      // when
-      const isStatusBarPink = shouldStatusBarBeColored(path)
-      // then
-      expect(isStatusBarPink).toBe(true)
+      pathsWithPinkHeader.forEach(path => {
+        // when
+        const isStatusBarPink = shouldStatusBarBeColored(path)
+        // then
+        expect(isStatusBarPink).toBe(true)
+      })
     })
   })
 })
-
-
