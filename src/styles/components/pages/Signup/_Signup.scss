@@ -1,26 +1,26 @@
 .sign-up-page {
   .logo-side {
     background-image: linear-gradient(to bottom right, $red, $purple-dark);
-    position: fixed;
-    top: 0;
     bottom: 0;
-    left: 0;
-    right: 60%;
-    z-index: 1;
     box-shadow: inset -10px 0 20px 0 rgba(0, 0, 0, 0.1);
+    left: 0;
+    position: fixed;
+    right: 60%;
+    top: 0;
+    z-index: 1;
 
     .logo {
+      align-items: center;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       height: 100%;
-      align-items: center;
+      justify-content: center;
 
       img {
-        width: 456px;
         height: 239px;
         max-height: none;
         padding: 0 2rem;
+        width: 456px;
       }
 
       .logo-subtitle {
@@ -40,8 +40,8 @@
   }
 
   .sign-page-form {
-    width: 59%;
     margin-left: 36%;
+    width: 59%;
   }
 
   .column {
@@ -96,8 +96,8 @@
     font-size: rem(32px);
     font-style: italic;
     font-weight: 800;
-    margin-bottom: rem(16px);
     line-height: rem(38px);
+    margin-bottom: rem(16px);
   }
 
   .sign-up-sub-title {
@@ -254,10 +254,10 @@
   }
 
   .sign-up-infos-before-signup {
-    line-height: 22px;
     color: $grey;
     font-size: rem(14px);
     font-weight: 500;
+    line-height: 22px;
 
     img {
       vertical-align: bottom;
@@ -275,6 +275,11 @@
 
     .button {
       padding: 0 2.8rem;
+
+      &:focus {
+        border: none;
+        padding: 0 2.8rem;
+      }
     }
   }
 }
