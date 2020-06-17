@@ -9,10 +9,10 @@ a.logo {
   justify-content: center;
 
   img {
-    height: 239px;
-    max-height: none;
-    padding: 0 2rem;
-    width: 456px;
+    margin: -0.5em 0;
+    max-height: 2.25em;
+    height: 2.25em;
+    vertical-align: middle;
   }
 
   .logo-subtitle {
@@ -21,6 +21,13 @@ a.logo {
 
   &.no-link {
     cursor: inherit;
+
+    img {
+      height: 239px;
+      max-height: none;
+      padding: 0 2rem;
+      width: 456px;
+    }
   }
 
   .logo-subtitle {
