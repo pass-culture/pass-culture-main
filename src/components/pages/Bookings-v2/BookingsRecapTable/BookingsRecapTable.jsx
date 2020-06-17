@@ -14,6 +14,8 @@ import NoFilteredBookings from './NoFilteredBookings/NoFilteredBookings'
 import findOldestBookingDate from './utils/findOldestBookingDate'
 import filterBookingsRecap from './utils/filterBookingsRecap'
 
+const FIRST_PAGE_INDEX = 0
+
 class BookingsRecapTable extends Component {
   constructor(props) {
     super(props)
@@ -62,7 +64,7 @@ class BookingsRecapTable extends Component {
           className: 'td-booking-status',
         },
       ],
-      currentPage: 0,
+      currentPage: FIRST_PAGE_INDEX,
       filters: {
         bookingBeneficiary: EMPTY_FILTER_VALUE,
         bookingBeginningDate: EMPTY_FILTER_VALUE,
@@ -110,8 +112,10 @@ class BookingsRecapTable extends Component {
     const { bookingsRecap } = this.props
     const { filters } = this.state
     const bookingsRecapFiltered = filterBookingsRecap(bookingsRecap, filters)
+
     this.setState({
       bookingsRecapFiltered: bookingsRecapFiltered,
+      currentPage: FIRST_PAGE_INDEX
     })
   }
 

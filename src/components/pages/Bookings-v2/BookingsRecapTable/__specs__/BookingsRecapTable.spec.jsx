@@ -595,7 +595,24 @@ describe('components | BookingsRecapTable', () => {
       bookingsRecap: [],
       isLoading: true,
     }
-    filterBookingsRecap.mockReturnValue([])
+    filterBookingsRecap.mockReturnValue([
+      {
+        stock: {
+          offer_name: 'Avez-vous déjà vu',
+          type: 'thing',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Sonia',
+          email: 'sonia.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: 'ZEHBGD',
+        booking_status: 'Validé',
+        booking_is_duo: false,
+        venue_identifier: 'AE',
+      },
+    ])
     const wrapper = shallow(<BookingsRecapTable {...props} />)
     const updatedProps = {
       bookingsRecap: [{
@@ -630,5 +647,60 @@ describe('components | BookingsRecapTable', () => {
       offerName: EMPTY_FILTER_VALUE,
       offerVenue: ALL_VENUES
     })
+  })
+
+  it('should redirect to first page when applying filters', async() => {
+    // given
+    filterBookingsRecap.mockReturnValue([])
+    const booking = {
+      stock: {
+        offer_name: 'Avez-vous déjà vu',
+        type: 'thing',
+      },
+      beneficiary: {
+        lastname: 'Klepi',
+        firstname: 'Sonia',
+        email: 'sonia.klepi@example.com',
+      },
+      booking_date: '2020-04-03T12:00:00Z',
+      booking_token: 'ZEHBGD',
+      booking_status: 'Validé',
+      booking_is_duo: true,
+      venue_identifier: 'AE',
+    }
+    const bookingsRecap = [booking]
+    const props = {
+      bookingsRecap: bookingsRecap,
+      isLoading: false,
+    }
+    const wrapper = mount(<BookingsRecapTable {...props} />)
+    const newBooking = {
+      stock: {
+        offer_name: 'Jurassic Park',
+        type: 'thing',
+      },
+      beneficiary: {
+        lastname: 'Klepi',
+        firstname: 'Sonia',
+        email: 'sonia.klepi@example.com',
+      },
+      booking_date: '2020-04-03T12:00:00Z',
+      booking_token: 'ZEHBGD',
+      booking_status: 'Validé',
+      booking_is_duo: true,
+      venue_identifier: 'AE',
+    }
+    const paginate = wrapper.find(Paginate)
+    const nextPageButton = paginate.find('button').at(1)
+    nextPageButton.simulate('click')
+
+    // when
+    await wrapper.setProps({
+      bookingsRecap: bookingsRecap.concat([newBooking])
+    })
+
+    // then
+    const table = wrapper.find(TableFrame)
+    expect(table.prop('currentPage')).toStrictEqual(0)
   })
 })
