@@ -38,7 +38,7 @@ ShallowWrapper {
             className="columns"
           >
             <div
-              className="column is-offset-6 is-two-fifths"
+              className="column is-offset-6 is-two-fifths sign-page-form"
             >
               <Switch
                 location={Object {}}
@@ -101,7 +101,7 @@ ShallowWrapper {
             className="columns"
           >
             <div
-              className="column is-offset-6 is-two-fifths"
+              className="column is-offset-6 is-two-fifths sign-page-form"
             >
               <Switch
                 location={Object {}}
@@ -127,7 +127,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": <div
-              className="column is-offset-6 is-two-fifths"
+              className="column is-offset-6 is-two-fifths sign-page-form"
             >
               <Switch
                 location={Object {}}
@@ -164,7 +164,7 @@ ShallowWrapper {
                   path="/inscription/confirmation"
                 />
               </Switch>,
-              "className": "column is-offset-6 is-two-fifths",
+              "className": "column is-offset-6 is-two-fifths sign-page-form",
             },
             "ref": null,
             "rendered": Object {
@@ -248,7 +248,7 @@ ShallowWrapper {
               className="columns"
             >
               <div
-                className="column is-offset-6 is-two-fifths"
+                className="column is-offset-6 is-two-fifths sign-page-form"
               >
                 <Switch
                   location={Object {}}
@@ -311,7 +311,7 @@ ShallowWrapper {
               className="columns"
             >
               <div
-                className="column is-offset-6 is-two-fifths"
+                className="column is-offset-6 is-two-fifths sign-page-form"
               >
                 <Switch
                   location={Object {}}
@@ -337,7 +337,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": <div
-                className="column is-offset-6 is-two-fifths"
+                className="column is-offset-6 is-two-fifths sign-page-form"
               >
                 <Switch
                   location={Object {}}
@@ -374,7 +374,7 @@ ShallowWrapper {
                     path="/inscription/confirmation"
                   />
                 </Switch>,
-                "className": "column is-offset-6 is-two-fifths",
+                "className": "column is-offset-6 is-two-fifths sign-page-form",
               },
               "ref": null,
               "rendered": Object {

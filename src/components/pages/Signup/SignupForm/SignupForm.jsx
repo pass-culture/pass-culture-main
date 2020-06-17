@@ -226,7 +226,7 @@ class SignupForm extends PureComponent {
                   </span>
                   <a
                     className="sign-up-info-link"
-                    href="https://docs.passculture.app/le-pass-culture-en-quelques-mots#quels-acteurs-culturels-peuvent-sinscrire"
+                    href="https://docs.passculture.app/textes-normatifs"
                     rel="noopener noreferrer"
                     target="_blank"
                   >
@@ -240,7 +240,7 @@ class SignupForm extends PureComponent {
                   </span>
                   <a
                     className="sign-up-info-link"
-                    href="https://docs.passculture.app/le-pass-culture-en-quelques-mots#quels-acteurs-culturels-peuvent-sinscrire"
+                    href="https://docs.passculture.app/textes-normatifs/charte-des-donnees-personnelles"
                     rel="noopener noreferrer"
                     target="_blank"
                   >

@@ -93,11 +93,9 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const cguLink = wrapper.find({ children: 'Consulter notre centre d’aide' }).parent('a')
+      const cguLink = wrapper.find({ children: 'Conditions Générales d’Utilisation' }).parent('a')
       expect(cguLink).toHaveLength(1)
-      expect(cguLink.prop('href')).toBe(
-        'https://aide.passculture.app/fr/article/acteurs-creer-un-compte-professionnel-t0m1hj/'
-      )
+      expect(cguLink.prop('href')).toBe('https://docs.passculture.app/textes-normatifs')
     })
 
     it('should display an external link to GDPR chart', () => {
@@ -109,10 +107,10 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const gdprLink = wrapper.find({ children: 'Conditions Générales d’Utilisation' }).parent('a')
+      const gdprLink = wrapper.find({ children: 'Charte des Données Personnelles' }).parent('a')
       expect(gdprLink).toHaveLength(1)
       expect(gdprLink.prop('href')).toBe(
-        'https://aide.passculture.app/fr/article/acteurs-creer-un-compte-professionnel-t0m1hj/'
+        'https://docs.passculture.app/textes-normatifs/charte-des-donnees-personnelles'
       )
     })
 
@@ -319,7 +317,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       expect(submitButton).toHaveLength(1)
       expect(submitButton.prop('className')).toBe('button is-primary')
       expect(submitButton.prop('type')).toBe('submit')
-      expect(submitButton.text()).toBe('Créer')
+      expect(submitButton.text()).toBe('Créer mon compte')
     })
   })
 })

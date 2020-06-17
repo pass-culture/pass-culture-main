@@ -46,7 +46,7 @@ ShallowWrapper {
             className="columns"
           >
             <div
-              className="column is-offset-6 is-two-fifths"
+              className="column is-offset-6 is-two-fifths sign-page-form"
             >
               <section
                 className="has-text-grey"
@@ -228,7 +228,7 @@ ShallowWrapper {
             className="columns"
           >
             <div
-              className="column is-offset-6 is-two-fifths"
+              className="column is-offset-6 is-two-fifths sign-page-form"
             >
               <section
                 className="has-text-grey"
@@ -373,7 +373,7 @@ ShallowWrapper {
           "nodeType": "host",
           "props": Object {
             "children": <div
-              className="column is-offset-6 is-two-fifths"
+              className="column is-offset-6 is-two-fifths sign-page-form"
             >
               <section
                 className="has-text-grey"
@@ -648,7 +648,7 @@ ShallowWrapper {
                   </withRouter(Connect(_Form))>
                 </div>
               </section>,
-              "className": "column is-offset-6 is-two-fifths",
+              "className": "column is-offset-6 is-two-fifths sign-page-form",
             },
             "ref": null,
             "rendered": Object {
@@ -1365,7 +1365,7 @@ ShallowWrapper {
               className="columns"
             >
               <div
-                className="column is-offset-6 is-two-fifths"
+                className="column is-offset-6 is-two-fifths sign-page-form"
               >
                 <section
                   className="has-text-grey"
@@ -1547,7 +1547,7 @@ ShallowWrapper {
               className="columns"
             >
               <div
-                className="column is-offset-6 is-two-fifths"
+                className="column is-offset-6 is-two-fifths sign-page-form"
               >
                 <section
                   className="has-text-grey"
@@ -1692,7 +1692,7 @@ ShallowWrapper {
             "nodeType": "host",
             "props": Object {
               "children": <div
-                className="column is-offset-6 is-two-fifths"
+                className="column is-offset-6 is-two-fifths sign-page-form"
               >
                 <section
                   className="has-text-grey"
@@ -1967,7 +1967,7 @@ ShallowWrapper {
                     </withRouter(Connect(_Form))>
                   </div>
                 </section>,
-                "className": "column is-offset-6 is-two-fifths",
+                "className": "column is-offset-6 is-two-fifths sign-page-form",
               },
               "ref": null,
               "rendered": Object {
