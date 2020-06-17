@@ -1,18 +1,18 @@
 a.logo {
-  font-weight: $weight-light;
-  font-style: italic;
+  align-items: center;
   color: $white;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  font-weight: $weight-light;
+  font-style: italic;
   height: 100%;
-  align-items: center;
+  justify-content: center;
 
   img {
-    width: 456px;
     height: 239px;
     max-height: none;
     padding: 0 2rem;
+    width: 456px;
   }
 
   .logo-subtitle {
