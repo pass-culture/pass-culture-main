@@ -45,7 +45,7 @@ class BookingRecap:
         self.offer_identifier = offer_identifier
         self.offer_name = offer_name
         self.venue_identifier = venue_identifier
-        self.booking_recap_history = self.build_recap_history_from_status(
+        self.booking_status_history = self.build_status_history(
             booking_date=booking_date,
             cancellation_date=cancellation_date,
             payment_date=payment_date,
@@ -57,15 +57,15 @@ class BookingRecap:
         return object.__new__(cls)
 
     @property
-    def booking_token(self):
+    def booking_token(self) -> str:
         return self._booking_token
 
     @booking_token.setter
-    def booking_token(self, booking_token):
+    def booking_token(self, booking_token) -> str:
         self._booking_token = booking_token
 
     @property
-    def booking_status(self):
+    def booking_status(self) -> BookingRecapStatus:
         if self.booking_is_reimbursed:
             return BookingRecapStatus.reimbursed
         if self.booking_is_cancelled:
@@ -75,11 +75,11 @@ class BookingRecap:
         else:
             return BookingRecapStatus.booked
 
-    def build_recap_history_from_status(self,
-                                        booking_date: datetime,
-                                        cancellation_date: datetime,
-                                        payment_date: datetime,
-                                        date_used: datetime):
+    def build_status_history(self,
+                             booking_date: datetime,
+                             cancellation_date: datetime,
+                             payment_date: datetime,
+                             date_used: datetime) -> BookingRecapHistory:
         if self.booking_is_reimbursed:
             return BookingRecapReimbursedHistory(
                 booking_date=booking_date,
@@ -107,7 +107,7 @@ class ThingBookingRecap(BookingRecap):
         super().__init__(**kwargs)
 
     @BookingRecap.booking_token.getter
-    def booking_token(self):
+    def booking_token(self) -> Optional[str]:
         if not self.booking_is_used and not self.booking_is_cancelled:
             return None
         else:

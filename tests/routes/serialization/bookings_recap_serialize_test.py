@@ -21,7 +21,7 @@ class SerializeBookingRecapTest:
                 beneficiary_email="hari.seldon@example.com",
                 booking_date=booking_date,
                 booking_token="FOND",
-                booking_is_used=True,
+                booking_is_used=False,
                 booking_amount=18
             )
         thing_booking_recap_2 = create_domain_thing_booking_recap(
@@ -39,7 +39,7 @@ class SerializeBookingRecapTest:
             thing_booking_recap_2
         ]
         bookings_recap_paginated_response = BookingsRecapPaginated(
-            bookings_recap=bookings_recap,
+            bookings_recap=list(bookings_recap),
             page=0,
             pages=1,
             total=2
@@ -49,7 +49,7 @@ class SerializeBookingRecapTest:
         result = serialize_bookings_recap_paginated(bookings_recap_paginated_response)
 
         # Then
-        bookings_recap = [
+        expected_bookings_recap = [
             {
                 "stock": {
                     "type": "thing",
@@ -62,13 +62,16 @@ class SerializeBookingRecapTest:
                     "email": "hari.seldon@example.com",
                 },
                 "booking_date": format_into_ISO_8601_with_timezone(booking_date),
-                "booking_token": "FOND",
-                "booking_status": "validated",
+                "booking_token": None,
+                "booking_status": "booked",
                 "booking_is_duo": False,
                 "venue_identifier": "AE",
-                'booking_recap_history': {
-                    'booking_date': datetime(2020, 1, 1, 10, 0)
-                },
+                'booking_status_history': [
+                    {
+                        'status': 'booked',
+                        'date': '2020-01-01T10:00:00',
+                    },
+                ],
                 'booking_amount': 18
             },
             {
@@ -87,13 +90,16 @@ class SerializeBookingRecapTest:
                 "booking_status": "booked",
                 "booking_is_duo": True,
                 "venue_identifier": "AE",
-                'booking_recap_history': {
-                    'booking_date': datetime(2020, 1, 1, 10, 0)
-                },
+                'booking_status_history': [
+                    {
+                        'status': 'booked',
+                        'date': '2020-01-01T10:00:00',
+                    },
+                ],
                 'booking_amount': 0,
             }
         ]
-        assert result['bookings_recap'] == bookings_recap
+        assert result['bookings_recap'] == expected_bookings_recap
         assert result['page'] == 0
         assert result['pages'] == 1
         assert result['total'] == 2
@@ -109,7 +115,7 @@ class SerializeBookingRecapTest:
                                                   event_beginning_datetime=day_after_booking_date, )
         bookings_recap = [event_booking_recap]
         bookings_recap_paginated_response = BookingsRecapPaginated(
-            bookings_recap=bookings_recap,
+            bookings_recap=list(bookings_recap),
             page=0,
             pages=1,
             total=2
@@ -137,7 +143,12 @@ class SerializeBookingRecapTest:
                 "booking_status": "booked",
                 "booking_is_duo": False,
                 "venue_identifier": "AE",
-                'booking_recap_history': {'booking_date': datetime(2020, 1, 1, 10, 0)},
+                'booking_status_history': [
+                    {
+                        'status': 'booked',
+                        'date': '2020-01-01T10:00:00',
+                    },
+                ],
                 'booking_amount': 0
             },
         ]
@@ -156,7 +167,7 @@ class SerializeBookingRecapTest:
                                                   booking_date=booking_date, booking_token="LUNE", )
         bookings_recap = [thing_booking_recap]
         bookings_recap_paginated_response = BookingsRecapPaginated(
-            bookings_recap=bookings_recap,
+            bookings_recap=list(bookings_recap),
             page=0,
             pages=1,
             total=2
@@ -185,7 +196,12 @@ class SerializeBookingRecapTest:
                 "booking_is_duo": False,
                 "venue_identifier": "AE",
                 'booking_amount': 0,
-                'booking_recap_history': {'booking_date': datetime(2020, 1, 1, 10, 0)}
+                'booking_status_history': [
+                    {
+                        'status': 'booked',
+                        'date': '2020-01-01T10:00:00',
+                    },
+                ]
             },
         ]
         assert results['bookings_recap'] == expected_response
@@ -212,7 +228,7 @@ class SerializeBookingRecapHistoryTest:
             )
         ]
         bookings_recap_paginated_response = BookingsRecapPaginated(
-            bookings_recap=bookings_recap,
+            bookings_recap=list(bookings_recap),
             page=0,
             pages=1,
             total=2
@@ -222,13 +238,20 @@ class SerializeBookingRecapHistoryTest:
         results = serialize_bookings_recap_paginated(bookings_recap_paginated_response)
 
         # Then
-        expected_booking_recap_history = {
-            'booking_date': datetime(2020, 1, 1, 10, 0),
-            'cancellation_date': datetime(2020, 4, 3, 10, 0)
-        }
-        assert results['bookings_recap'][0]['booking_recap_history'] == expected_booking_recap_history
+        expected_booking_recap_history = [
+            {
+                'status': 'booked',
+                'date': '2020-01-01T10:00:00',
+            },
+            {
+                'status': 'cancelled',
+                'date': '2020-04-03T10:00:00',
+            }
+        ]
+        assert results['bookings_recap'][0]['booking_status_history'] == expected_booking_recap_history
 
-    def test_should_return_booking_recap_history_with_reimbursed_and_used_dated_when_reimbursed(self, app: fixture) -> None:
+    def test_should_return_booking_recap_history_with_reimbursed_and_used_dated_when_reimbursed(self,
+                                                                                                app: fixture) -> None:
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         bookings_recap = [
@@ -247,7 +270,7 @@ class SerializeBookingRecapHistoryTest:
             )
         ]
         bookings_recap_paginated_response = BookingsRecapPaginated(
-            bookings_recap=bookings_recap,
+            bookings_recap=list(bookings_recap),
             page=0,
             pages=1,
             total=2
@@ -257,12 +280,21 @@ class SerializeBookingRecapHistoryTest:
         results = serialize_bookings_recap_paginated(bookings_recap_paginated_response)
 
         # Then
-        expected_booking_recap_history = {
-            'booking_date': datetime(2020, 1, 1, 10, 0),
-            'payment_date': datetime(2020, 5, 3, 10, 0),
-            'date_used': datetime(2020, 4, 3, 10, 0),
-        }
-        assert results['bookings_recap'][0]['booking_recap_history'] == expected_booking_recap_history
+        expected_booking_recap_history = [
+            {
+                'status': 'booked',
+                'date': '2020-01-01T10:00:00',
+            },
+            {
+                'status': 'validated',
+                'date': '2020-04-03T10:00:00',
+            },
+            {
+                'status': 'reimbursed',
+                'date': '2020-05-03T10:00:00',
+            }
+        ]
+        assert results['bookings_recap'][0]['booking_status_history'] == expected_booking_recap_history
 
     def test_should_return_booking_recap_history_with_date_used_when_used(self, app: fixture) -> None:
         # Given
@@ -281,7 +313,7 @@ class SerializeBookingRecapHistoryTest:
             )
         ]
         bookings_recap_paginated_response = BookingsRecapPaginated(
-            bookings_recap=bookings_recap,
+            bookings_recap=list(bookings_recap),
             page=0,
             pages=1,
             total=2
@@ -291,11 +323,17 @@ class SerializeBookingRecapHistoryTest:
         results = serialize_bookings_recap_paginated(bookings_recap_paginated_response)
 
         # Then
-        expected_booking_recap_history = {
-            'booking_date': datetime(2020, 1, 1, 10, 0),
-            'date_used': datetime(2020, 4, 3, 10, 0)
-        }
-        assert results['bookings_recap'][0]['booking_recap_history'] == expected_booking_recap_history
+        expected_booking_recap_history = [
+            {
+                'status': 'booked',
+                'date': '2020-01-01T10:00:00',
+            },
+            {
+                'status': 'validated',
+                'date': '2020-04-03T10:00:00',
+            }
+        ]
+        assert results['bookings_recap'][0]['booking_status_history'] == expected_booking_recap_history
 
     def test_should_return_booking_recap_history_with_only_booking_date_when_just_booked(self, app: fixture) -> None:
         # Given
@@ -312,7 +350,7 @@ class SerializeBookingRecapHistoryTest:
             )
         ]
         bookings_recap_paginated_response = BookingsRecapPaginated(
-            bookings_recap=bookings_recap,
+            bookings_recap=list(bookings_recap),
             page=0,
             pages=1,
             total=2
@@ -322,7 +360,10 @@ class SerializeBookingRecapHistoryTest:
         results = serialize_bookings_recap_paginated(bookings_recap_paginated_response)
 
         # Then
-        expected_booking_recap_history = {
-            'booking_date': datetime(2020, 1, 1, 10, 0)
-        }
-        assert results['bookings_recap'][0]['booking_recap_history'] == expected_booking_recap_history
+        expected_booking_recap_history = [
+            {
+                'status': 'booked',
+                'date': '2020-01-01T10:00:00',
+            },
+        ]
+        assert results['bookings_recap'][0]['booking_status_history'] == expected_booking_recap_history

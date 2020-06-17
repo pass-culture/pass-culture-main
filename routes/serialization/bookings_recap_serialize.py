@@ -1,16 +1,17 @@
-from typing import Dict
+from datetime import datetime
+from typing import Dict, List, Any
 
-from flask import json
-
-from domain.booking_recap.booking_recap import BookingRecap, EventBookingRecap, BookBookingRecap
+from domain.booking_recap.booking_recap import BookingRecap, EventBookingRecap, BookBookingRecap, BookingRecapStatus
+from domain.booking_recap.booking_recap_history import BookingRecapHistory, BookingRecapValidatedHistory, \
+    BookingRecapCancelledHistory, BookingRecapReimbursedHistory
 from domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from utils.date import format_into_ISO_8601_with_timezone
 from utils.human_ids import humanize
 
 
-def serialize_bookings_recap_paginated(bookings_recap_paginated: BookingsRecapPaginated) -> json:
+def serialize_bookings_recap_paginated(bookings_recap_paginated: BookingsRecapPaginated) -> Dict[str, Any]:
     return {
-        'bookings_recap': [__serialize_booking_recap(booking_recap) for booking_recap in
+        'bookings_recap': [_serialize_booking_recap(booking_recap) for booking_recap in
                            bookings_recap_paginated.bookings_recap],
         'page': bookings_recap_paginated.page,
         'pages': bookings_recap_paginated.pages,
@@ -18,7 +19,44 @@ def serialize_bookings_recap_paginated(bookings_recap_paginated: BookingsRecapPa
     }
 
 
-def __serialize_booking_recap(booking_recap: BookingRecap) -> Dict:
+def _serialize_booking_history(booking_status: BookingRecapStatus,
+                               booking_status_date: datetime) -> Dict[str, str]:
+    return {
+        'status': booking_status.value,
+        'date': format_into_ISO_8601_with_timezone(booking_status_date),
+    }
+
+
+def _serialize_booking_status_history(booking_status_history: BookingRecapHistory) -> List[Dict[str, str]]:
+    serialized_booking_status_history = [_serialize_booking_history(
+        BookingRecapStatus.booked,
+        booking_status_history.booking_date
+    )]
+    if isinstance(booking_status_history, BookingRecapValidatedHistory):
+        serialized_booking_status_history.append(
+            _serialize_booking_history(
+                BookingRecapStatus.validated,
+                booking_status_history.date_used
+            )
+        )
+    if isinstance(booking_status_history, BookingRecapCancelledHistory):
+        serialized_booking_status_history.append(
+            _serialize_booking_history(
+                BookingRecapStatus.cancelled,
+                booking_status_history.cancellation_date
+            )
+        )
+    if isinstance(booking_status_history, BookingRecapReimbursedHistory):
+        serialized_booking_status_history.append(
+            _serialize_booking_history(
+                BookingRecapStatus.reimbursed,
+                booking_status_history.payment_date
+            )
+        )
+    return serialized_booking_status_history
+
+
+def _serialize_booking_recap(booking_recap: BookingRecap) -> Dict[str, Any]:
     serialized_booking_recap = {
         "stock": {
             "type": "thing",
@@ -36,7 +74,7 @@ def __serialize_booking_recap(booking_recap: BookingRecap) -> Dict:
         "booking_is_duo": booking_recap.booking_is_duo,
         "venue_identifier": humanize(booking_recap.venue_identifier),
         "booking_amount": booking_recap.booking_amount,
-        "booking_recap_history": booking_recap.booking_recap_history.__dict__
+        "booking_status_history": _serialize_booking_status_history(booking_recap.booking_status_history)
     }
 
     if isinstance(booking_recap, EventBookingRecap):
