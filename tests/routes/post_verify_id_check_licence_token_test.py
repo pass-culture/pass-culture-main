@@ -1,6 +1,4 @@
-from tests.conftest import clean_database, TestClient
-from unittest.mock import call, patch
-from workers.bank_information_job import bank_information_job
+from tests.conftest import TestClient
 
 
 class Post:
