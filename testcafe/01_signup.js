@@ -10,9 +10,7 @@ const lastNameInput = Selector('input[name="lastName"]')
 const firstNameInput = Selector('input[name="firstName"]')
 const phoneNumberInput = Selector('input[name="phoneNumber"]')
 const sirenInput = Selector('input[name="siren"]')
-const newsletterOkInput = Selector('input[name="newsletter_ok"]')
 const contactOkInput = Selector('input[name="contact_ok"]')
-const cguOkInput = Selector('input[name="cgu_ok"]')
 const signUpButton = Selector('button.button.is-primary')
 const acceptCookieButton = Selector('#hs-eu-confirmation-button')
 
@@ -46,9 +44,7 @@ test("Je peux créer un compte avec un SIREN non existant en base de données," 
 
   // when
   await t
-    .click(newsletterOkInput)
     .click(contactOkInput)
-    .click(cguOkInput)
     .click(signUpButton)
 
   // then
@@ -79,8 +75,6 @@ test("Je peux créer un compte avec un SIREN déjà existant en base de données
     .typeText(phoneNumberInput, phoneNumber)
     .typeText(sirenInput, siren)
     .click(contactOkInput)
-    .click(newsletterOkInput)
-    .click(cguOkInput)
     .click(signUpButton)
 
   // then
