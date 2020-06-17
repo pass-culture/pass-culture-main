@@ -1,35 +1,33 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import moment from 'moment'
+import * as PropTypes from "prop-types"
 import { FORMAT_DD_MM_YYYY_HH_mm } from "../../../../../utils/date"
-import {
-  computeBookingHistoryClassName,
-  computeHistoryDatetypeToStatus,
-  computeHistoryTitleFromStatus,
-} from "./utils/bookingStatusConverter"
+import * as moment from "moment"
+import { computeHistoryClassName, computeHistoryTitle } from "./utils/bookingStatusConverter"
 
-const BookingStatusCellHistory = (historyDate, historyDateType) => {
-  const historyDatetypeInfos = computeHistoryDatetypeToStatus(historyDateType)
-  const historyDateClassName = computeBookingHistoryClassName(historyDatetypeInfos.status)
-
-  const parsedHistoryDatetypeInfos = moment.parseZone(historyDate)
-  const dateToDisplay = parsedHistoryDatetypeInfos.format(FORMAT_DD_MM_YYYY_HH_mm)
-
-  //const historyTitle = computeHistoryTitleFromStatus(historyDatetypeInfos.status)
-  const historyTitle = 'Title'
+const BookingStatusCellHistory = ({bookingStatusHistory}) => {
+  const bookingsStatusHistoryItems = bookingStatusHistory.map((item) => (
+    <li>
+        <span className={computeHistoryClassName(item.status)}>
+          {computeHistoryTitle(item.status)} : {parseDate(item.date)}
+         </span>
+    </li>
+  ))
 
   return (
     <div className="booking-status-history">
-      <span className={`booking-status-history ${historyDateClassName}`}>
-        {historyTitle} : {dateToDisplay}
-      </span>
+      <ul>
+        {bookingsStatusHistoryItems}
+      </ul>
     </div>
   )
+
+  function parseDate(dateToParse) {
+    return moment.parseZone(dateToParse).format(FORMAT_DD_MM_YYYY_HH_mm)
+  }
 }
 
 BookingStatusCellHistory.propTypes = {
-  historyDate: PropTypes.string.isRequired,
-  historyDateType: PropTypes.string.isRequired,
+  bookingRecapHistory: PropTypes.shape({}).isRequired,
 }
 
 export default BookingStatusCellHistory

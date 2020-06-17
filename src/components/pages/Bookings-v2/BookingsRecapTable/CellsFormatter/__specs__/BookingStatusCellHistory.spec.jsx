@@ -22,16 +22,17 @@ describe('CellsFormatter | BookingsStatusCellHistory', () => {
           booking_date: '2020-01-04T20:31:12+01:00',
           booking_token: '5U7M6U',
           booking_status: 'validated',
-          booking_recap_history: {
-            booking_date: '2020-01-04T20:31:12+01:00',
-          }
+          booking_status_history: [{
+            status: 'booked',
+            date: '2020-01-04T20:31:12+01:00',
+          }],
         },
       },
     }
 
     // When
     const wrapper = shallow(<BookingStatusCell {...props} />)
-    const status = wrapper.find({ children: 'validé' })
+    const status = wrapper.find({children: 'validé'})
 
     // Then
     expect(status.hasClass('booking-status-label')).toBe(true)

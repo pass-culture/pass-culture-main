@@ -20,17 +20,6 @@ const BookingStatusCell = ({ bookingRecapInfo }) => {
     ? `Prix: ${bookingRecapInfo.original.booking_amount}€`
     : 'Prix: Gratuit'
 
-  const bookedDate = bookingRecapInfo.original.booking_date
-  const reimbursedDate = bookingRecapInfo.original.booking_recap_history.reimbursed_date
-    ? bookingRecapInfo.original.booking_recap_history.reimbursed_date
-    : null
-  const cancellationDate = bookingRecapInfo.original.booking_recap_history.cancellation_date
-    ? bookingRecapInfo.original.booking_recap_history.cancellation_date
-    : null
-  const validatedDate = bookingRecapInfo.original.booking_recap_history.date_used
-    ? bookingRecapInfo.original.booking_recap_history.date_used
-    : null
-
   return (
     <div className="booking-status-wrapper">
       <span className={`booking-status-label ${statusClassName}`}>
@@ -46,10 +35,7 @@ const BookingStatusCell = ({ bookingRecapInfo }) => {
         <span className="bs-history-title">
           Historique
         </span>
-        {bookedDate && <BookingStatusCellHistory historyDate={bookedDate} historyDateType='booking_date'/>}
-        {cancellationDate && <BookingStatusCellHistory historyDate={cancellationDate} historyDateType='cancellation_date'/>}
-        {validatedDate && <BookingStatusCellHistory historyDate={validatedDate} historyDateType='date_used'/>}
-        {reimbursedDate && <BookingStatusCellHistory historyDate={reimbursedDate} historyDateType='payment_date'/>}
+        <BookingStatusCellHistory bookingRecapHistory={bookingRecapInfo.original.booking_status_history}/>
       </div>
     </div>
   )

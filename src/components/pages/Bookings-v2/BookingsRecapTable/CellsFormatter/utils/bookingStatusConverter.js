@@ -3,21 +3,25 @@ const BOOKING_STATUS = [
     id: 'validated',
     status: 'validé',
     className: 'validated',
+    title: 'Validé',
   },
   {
     id: 'cancelled',
     status: 'annulé',
     className: 'cancelled',
+    title: 'Annulé',
   },
   {
     id: 'booked',
     status: 'réservé',
     className: 'booked',
+    title: 'Réservé',
   },
   {
     id: 'reimbursed',
     status: 'remboursé',
     className: 'reimbursed',
+    title: 'Remboursé',
   },
 ]
 
@@ -35,35 +39,11 @@ export const computeStatusClassName = bookingStatusDisplayInformations => {
   return `booking-status-${bookingStatusDisplayInformations.className}`
 }
 
-const BOOKING_HISTORY_DATETYPE = [
-  {
-    status: 'validated',
-    historyDatetype: 'date_used',
-  },
-  {
-    status: 'cancelled',
-    historyDatetype: 'cancellation_date',
-  },
-  {
-    status: 'booked',
-    historyDatetype: 'booking_date',
-  },
-  {
-    status: 'reimbursed',
-    historyDatetype: 'payment_date',
-  },
-]
-
-export const computeHistoryDatetypeToStatus = bookingHistoryDatetype => {
-  const bookingStatusFound = BOOKING_HISTORY_DATETYPE.find(({ historyDatetype }) => bookingHistoryDatetype === historyDatetype)
-  return bookingStatusFound ? bookingStatusFound : BOOKING_STATUS_DEFAULT
+export const computeHistoryTitle = bookingStatusDisplayInformations => {
+  const bookingStatus = getBookingStatusDisplayInformationsOrDefault(bookingStatusDisplayInformations)
+  return bookingStatus.title
 }
 
-export const computeHistoryTitleFromStatus = bookingHistoryStatus => {
-  const bookingStatusFound = BOOKING_STATUS.find(({ id }) => bookingHistoryStatus === id)
-  return bookingStatusFound.status.charAt(0).toUpperCase()
-}
-
-export const computeBookingHistoryClassName = bookingHistoryDatetype => {
-  return `bs-history-datetime-${computeHistoryDatetypeToStatus(bookingHistoryDatetype)}`
+export const computeHistoryClassName = bookingStatusDisplayInformations => {
+  return `bs-history-datetime-${bookingStatusDisplayInformations.className}`
 }

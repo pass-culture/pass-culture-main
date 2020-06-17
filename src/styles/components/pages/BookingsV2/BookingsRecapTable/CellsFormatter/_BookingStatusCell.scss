@@ -70,7 +70,8 @@
     margin-top: rem(12px);
   }
 
-  .bs-history-datetime-* {
-    color: $red;
+  .bs-history-datetime {
+    display: block;
+    margin: rem(6px);
   }
 }
