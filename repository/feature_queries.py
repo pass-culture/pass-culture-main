@@ -36,4 +36,4 @@ def feature_write_dashboard_enabled():
 
 
 def feature_clean_seen_offers_enabled():
-    return os.environ.get('CLEAN_SEEN_OFFERS', False)
+    return os.environ.get('CLEAN_SEEN_OFFERS') == 'true'
