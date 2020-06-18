@@ -313,7 +313,9 @@ class GetOfferForRecommendationsTest:
         def test_should_return_unseen_offers_first_when_feature_is_active(self, app):
             # Given
             offerer = create_offerer()
-            user = create_user()
+            user_1 = create_user(email='beneficiary1@example.com')
+            user_2 = create_user(email='beneficiary2@example.com')
+
             venue = create_venue(offerer, postal_code='34000',
                                  departement_code='34')
             offer_1 = create_offer_with_thing_product(venue=venue, is_national=True,
@@ -327,17 +329,18 @@ class GetOfferForRecommendationsTest:
             create_mediation(offer_1)
             create_mediation(offer_2)
 
-            seen_offer = create_seen_offer(offer_2, user, date_seen=datetime.utcnow())
+            seen_offer_1 = create_seen_offer(offer_1, user_1, date_seen=datetime(2020, 1, 1))
+            seen_offer_2 = create_seen_offer(offer_2, user_2, date_seen=datetime(2020, 2, 2))
 
-            repository.save(user, stock_digital_offer_1, stock_physical_offer_2, seen_offer)
+            repository.save(user_1, user_2, stock_digital_offer_1, stock_physical_offer_2, seen_offer_1, seen_offer_2)
 
             discovery_view_queries.refresh(concurrently=False)
 
             # When
-            offers = get_offers_for_recommendation(user=user, departement_codes=['00'])
+            offers = get_offers_for_recommendation(user=user_1, departement_codes=['00'], limit=1)
 
             # Then
-            assert offers == [offer_1, offer_2]
+            assert offers == [offer_2]
 
         @clean_database
         @patch('repository.offer_queries.feature_queries.is_active', return_value=False)

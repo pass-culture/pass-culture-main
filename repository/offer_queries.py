@@ -113,7 +113,7 @@ def get_offers_for_recommendation(user: UserSQLEntity, departement_codes: List[s
         discovery_view_query = keep_only_offers_in_venues_or_national(discovery_view_query, venue_ids)
 
     if feature_queries.is_active(FeatureToggle.SAVE_SEEN_OFFERS):
-        discovery_view_query = order_offers_by_unseen_offers_first(discovery_view_query, DiscoveryView)
+        discovery_view_query = order_offers_by_unseen_offers_first(discovery_view_query, DiscoveryView, user)
 
     discovery_view_query = discovery_view_query.order_by(DiscoveryView.offerDiscoveryOrder)
 
@@ -141,7 +141,7 @@ def get_offers_for_recommendation_v3(user: UserSQLEntity, user_iris_id: Optional
                                                                                              venue_ids)
 
     if feature_queries.is_active(FeatureToggle.SAVE_SEEN_OFFERS):
-        discovery_view_query = order_offers_by_unseen_offers_first(discovery_view_query, DiscoveryViewV3)
+        discovery_view_query = order_offers_by_unseen_offers_first(discovery_view_query, DiscoveryViewV3, user)
 
     discovery_view_query = discovery_view_query.order_by(DiscoveryViewV3.offerDiscoveryOrder)
 
@@ -151,12 +151,14 @@ def get_offers_for_recommendation_v3(user: UserSQLEntity, user_iris_id: Optional
     return order_offers_by_diversified_types(discovery_view_query.all())
 
 
-def order_offers_by_unseen_offers_first(query: BaseQuery, discovery_view_model: Model):
+def order_offers_by_unseen_offers_first(query: BaseQuery, discovery_view_model: Model, user: UserSQLEntity):
     offers_subquery = query.outerjoin(SeenOffer, SeenOffer.offerId == discovery_view_model.id)\
-        .with_entities(SeenOffer.dateSeen.label('dateSeen'), discovery_view_model.id.label('offerId'))\
+        .with_entities(SeenOffer.dateSeen.label('dateSeen'), SeenOffer.userId.label('userId'),
+                       discovery_view_model.id.label('offerId'))\
         .subquery()
 
-    return query.outerjoin(offers_subquery, offers_subquery.c.offerId == discovery_view_model.id)\
+    return query.outerjoin(offers_subquery, (offers_subquery.c.offerId == discovery_view_model.id) &
+                           (offers_subquery.c.userId == user.id))\
         .order_by(nullsfirst(offers_subquery.c.dateSeen))
 
 
