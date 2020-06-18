@@ -225,6 +225,7 @@ def _build_bookings_recap_query(user_id: int) -> Query:
             BookingSQLEntity.isUsed.label("isUsed"),
             BookingSQLEntity.quantity.label("quantity"),
             Offer.name.label("offerName"),
+            Offer.id.label("offerId"),
             Offer.extraData.label("offerExtraData"),
             Payment.currentStatus.label("paymentStatus"),
             UserSQLEntity.firstName.label("beneficiaryFirstname"),
@@ -276,6 +277,7 @@ def _serialize_booking_recap(booking: object) -> BookingRecap:
 
 def _serialize_thing_booking_recap(booking: object, booking_date_timezoned: datetime) -> ThingBookingRecap:
     return ThingBookingRecap(
+        offer_identifier=booking.offerId,
         offer_name=booking.offerName,
         beneficiary_email=booking.beneficiaryEmail,
         beneficiary_firstname=booking.beneficiaryFirstname,
@@ -292,6 +294,7 @@ def _serialize_thing_booking_recap(booking: object, booking_date_timezoned: date
 
 def _serialize_book_booking_recap(booking: object, booking_date_timezoned: datetime) -> BookBookingRecap:
     return BookBookingRecap(
+        offer_identifier=booking.offerId,
         offer_name=booking.offerName,
         offer_isbn=booking.offerExtraData['isbn'],
         beneficiary_email=booking.beneficiaryEmail,
@@ -309,6 +312,7 @@ def _serialize_book_booking_recap(booking: object, booking_date_timezoned: datet
 
 def _serialize_event_booking_recap(booking: object, booking_date_timezoned: datetime) -> EventBookingRecap:
     return EventBookingRecap(
+        offer_identifier=booking.offerId,
         offer_name=booking.offerName,
         beneficiary_email=booking.beneficiaryEmail,
         beneficiary_firstname=booking.beneficiaryFirstname,

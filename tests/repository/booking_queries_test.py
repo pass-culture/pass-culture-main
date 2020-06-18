@@ -1698,6 +1698,7 @@ class FindByProUserIdTest:
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 1
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.offer_identifier == stock.offer.id
         assert expected_booking_recap.offer_name == 'Harry Potter'
         assert expected_booking_recap.beneficiary_firstname == 'Ron'
         assert expected_booking_recap.beneficiary_lastname == 'Weasley'
@@ -1754,6 +1755,7 @@ class FindByProUserIdTest:
         assert len(bookings_recap_paginated.bookings_recap) == 1
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert not isinstance(expected_booking_recap, EventBookingRecap)
+        assert expected_booking_recap.offer_identifier == stock.offer.id
         assert expected_booking_recap.offer_name == 'Harry Potter'
         assert expected_booking_recap.beneficiary_firstname == 'Ron'
         assert expected_booking_recap.beneficiary_lastname == 'Weasley'
@@ -1785,6 +1787,7 @@ class FindByProUserIdTest:
         assert len(bookings_recap_paginated.bookings_recap) == 1
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert isinstance(expected_booking_recap, EventBookingRecap)
+        assert expected_booking_recap.offer_identifier == stock.offer.id
         assert expected_booking_recap.offer_name == stock.offer.name
         assert expected_booking_recap.beneficiary_firstname == 'Ron'
         assert expected_booking_recap.beneficiary_lastname == 'Weasley'

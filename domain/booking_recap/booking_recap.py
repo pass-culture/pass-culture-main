@@ -20,6 +20,7 @@ class BookingRecap:
                  booking_is_used: bool,
                  booking_is_cancelled: bool,
                  booking_is_reimbursed: bool,
+                 offer_identifier: str,
                  offer_name: str,
                  venue_identifier: str,
                  ):
@@ -32,6 +33,7 @@ class BookingRecap:
         self.booking_is_used = booking_is_used
         self.booking_is_cancelled = booking_is_cancelled
         self.booking_is_reimbursed = booking_is_reimbursed
+        self.offer_identifier = offer_identifier
         self.offer_name = offer_name
         self.venue_identifier = venue_identifier
 
