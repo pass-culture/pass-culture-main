@@ -32,8 +32,8 @@
       justify-content: space-between;
       width: 100%;
       padding: rem(7px);
-      border-top: rem(1px) solid $grey-even-more-light;
-      border-bottom: rem(1px) solid $grey-even-more-light;
+      border-top: rem(1px) solid $grey-light;
+      border-bottom: rem(1px) solid $grey-light;
     }
 
     .react-datepicker__day-name {
@@ -72,7 +72,7 @@
   }
 
   .rl-day-next-month {
-    color: $grey;
+    color: $grey-dark;
   }
 }
 

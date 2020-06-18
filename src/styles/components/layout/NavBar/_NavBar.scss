@@ -12,7 +12,7 @@
 
 .navbar {
   background: rgba(255,255,255, 0.97);
-  border-top: 1px solid $grey-even-more-light;
+  border-top: 1px solid $grey-light;
   bottom: 0;
   height: $navbar-height;
   position: absolute;
@@ -38,7 +38,7 @@
   }
 
   svg {
-    fill: $grey;
+    fill: $grey-dark;
   }
 
   .active {

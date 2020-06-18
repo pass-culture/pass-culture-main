@@ -1,37 +1,16 @@
-$background-tuto-blue: #001126;
-$background-tuto-purple: #ec0055;
-$black: #000000;
-$black-light: #151515;
-$green: #27AE60;
-$green-valid: #15884F;
-$grey-border-mb: #D8D8D8;
-$grey-border-cg: #e9e9e9;
-$grey-shadow-cg: #c1bebe;
-$grey-even-more-light: #ecf0f1;
-$grey-lighter: #EDF1F2;
-$grey-light: #DAE1E3;
-$grey: #757575;
-$grey-medium: #C7C7CC;
-$grey-dark: #404040;
-$grey-darker: #4A4A4A;
-$grey-transition: #222222;
-$grey-finished: #333333;
-$left-mb-corner: #BE0066;
-$purple-blue: #320096;
-$right-mb-corner: #690083;
-$violet: #BD10E0;
 $white: #FFFFFF;
-$white-bis: #F4F4F6;
-$white-ter: #F5F5F5;
-$error: #D0021B;
-$transparent: rgba(0, 0, 0, 0);
+$grey-light: #F5F5F5;
+$grey-medium: #C7C7CC;
+$grey-dark: #626262;
+$grey: $grey-dark; // Uniquement utile pour lassasvy
+$black: #151515;
 
 $primary: #EB0055;
+$secondary: #320096;
+$accent: #0066FF;
 $primary-disabled: #FF99BE;
-$primary-error: #E60039;
-
-$jauge-green: rgba(176, 222, 0, 1);
-$jauge-orange: rgba(255, 151, 0, 1);
+$green-valid: #15884F;
+$error: #E60039;
 
 $ribbon-blue: #0066FF;
 $ribbon-green: #78FB59;
@@ -40,7 +19,7 @@ $ribbon-yellow: #FFF46D;
 
 $teaser-gradient-start: #C00065;
 $teaser-gradient-end: #650084;
-
+$transparent: rgba(0, 0, 0, 0);
 $linear-gradient-to-right: linear-gradient(to right, $teaser-gradient-start, $teaser-gradient-end);
 $linear-gradient-deck: linear-gradient(to bottom, $transparent 0%, $black 30%);
 $linear-gradient-search: linear-gradient(108deg, $primary -6%, #D0005F 103%);

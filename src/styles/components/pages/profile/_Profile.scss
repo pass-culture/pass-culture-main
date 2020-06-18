@@ -34,7 +34,7 @@
   }
 
   .pf-field-label {
-    color: $black-light;
+    color: $black;
     display: flex;
     flex-direction: column;
   }
@@ -63,11 +63,11 @@
   }
 
   .pf-input-error {
-    border: 2px solid $primary-error;
+    border: 2px solid $error;
   }
 
   .pf-input-disabled {
-    background-color: $grey-even-more-light;
+    background-color: $grey-light;
     box-shadow: none;
   }
 
@@ -82,7 +82,7 @@
     }
 
     &:disabled {
-      background-color: $grey-even-more-light;
+      background-color: $grey-light;
     }
 
     &[aria-invalid="true"] {

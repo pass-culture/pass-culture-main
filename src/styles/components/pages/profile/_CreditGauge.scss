@@ -31,10 +31,10 @@
 }
 
 .cg-limit {
-  background: $grey-even-more-light;
-  border: 2px solid $grey-border-cg;
+  background: $grey-light;
+  border: 2px solid $grey-light;
   border-radius: rem(10px);
-  box-shadow: 2px 2px 3px $grey-shadow-cg;
+  box-shadow: 2px 2px 3px $grey-medium;
   height: rem(20px);
   margin-left: rem(-9px);
   width: 70%;
@@ -57,39 +57,39 @@
 
 .gauge-physical {
   .cg-circle {
-    background: $purple-blue;
+    background: $secondary;
   }
 
   .cg-remaining {
-    background: $purple-blue;
+    background: $secondary;
   }
 
   .cg-written-remaining {
-    color: $purple-blue;
+    color: $secondary;
   }
 }
 
 .gauge-total {
   .cg-circle {
-    background: $ribbon-blue;
+    background: $accent;
   }
 
   .cg-remaining {
-    background: $ribbon-blue;
+    background: $accent;
   }
 
   .cg-written-remaining {
-    color: $ribbon-blue;
+    color: $accent;
   }
 }
 
 .cg-container-empty-gauge {
   .cg-circle {
-    background: $grey;
+    background: $grey-dark;
   }
 
   .cg-written-remaining {
-    color: $grey;
+    color: $grey-dark;
   }
 }
 

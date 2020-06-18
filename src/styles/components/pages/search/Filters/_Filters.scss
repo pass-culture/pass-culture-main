@@ -52,7 +52,7 @@
 
   .sf-toggle-wrapper {
     align-items: center;
-    border-top: rem(1px) solid $grey-even-more-light;
+    border-top: rem(1px) solid $grey-light;
     display: flex;
     justify-content: space-between;
     padding-top: rem(20px);
@@ -66,7 +66,7 @@
     }
 
     .sf-toggle-information {
-      color: $grey;
+      color: $grey-dark;
       font-size: 14px;
       margin-top: rem(8px);
     }
@@ -78,7 +78,7 @@
   }
 
   .sf-selected-filter-counter {
-    color: $primary-error;
+    color: $error;
     font-size: rem(18px);
     font-weight: 500;
     margin-left: rem(5px);
@@ -136,7 +136,7 @@
 }
 
 .sf-filter-separator {
-  border-top: rem(1px) solid $grey-even-more-light;
+  border-top: rem(1px) solid $grey-light;
   display: block;
   margin-top: rem(20px);
   margin-bottom: rem(20px);
@@ -156,7 +156,7 @@
 
 .sf-price-slider-wrapper {
   padding: rem(20px) 0;
-  border-top: rem(1px) solid $grey-even-more-light;
+  border-top: rem(1px) solid $grey-light;
 }
 
 .sf-space-wrapper {
@@ -168,7 +168,7 @@
 }
 
 .sf-warning-message {
-  color: $grey;
+  color: $grey-dark;
   font-size: rem(14px);
   font-weight: 500;
 }

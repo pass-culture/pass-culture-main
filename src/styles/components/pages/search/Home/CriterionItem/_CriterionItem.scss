@@ -8,20 +8,20 @@
   }
 
   .ci-link-label {
-    color: $grey;
+    color: $grey-dark;
     font-size: 16px;
     margin-bottom: rem(13px);
   }
 
   .ci-page-link {
     align-items: center;
-    color: $black-light;
+    color: $black;
     font-size: rem(22px);
     font-weight: bold;
     line-height: 1.18;
 
     &:visited {
-      color: $black-light;
+      color: $black;
     }
 
     .ci-page-icon {
@@ -58,7 +58,7 @@
       font-size: rem(14px);
     }
   }
-  
+
   .sh-search-wrapper {
     padding-bottom: 0.5rem;
   }

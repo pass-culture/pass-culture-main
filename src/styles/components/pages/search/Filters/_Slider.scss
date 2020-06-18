@@ -31,7 +31,7 @@
 .rc-slider-handle {
   background-color: $white;
   border-radius: 50%;
-  border: rem(1px) solid $grey-even-more-light;
+  border: rem(1px) solid $grey-light;
   box-shadow: 0 rem(2px) rem(6px) 0 rgba(0, 0, 0, 0.2);
   height: rem(26px);
   margin-top: rem(-5px);
@@ -46,7 +46,7 @@
 
 .rc-slider-handle-dragging.rc-slider-handle-dragging.rc-slider-handle-dragging {
   border-color: $grey-light;
-  box-shadow: 0 rem(2px) rem(6px) 0 $grey-even-more-light;
+  box-shadow: 0 rem(2px) rem(6px) 0 $grey-light;
 }
 
 .rc-slider-handle:focus {

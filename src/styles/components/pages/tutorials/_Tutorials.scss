@@ -1,5 +1,5 @@
 .tutorials {
-  background-color: $background-tuto-purple;
+  background-color: $primary;
   color: $white;
   font-size: rem(18px);
   height: 100%;
@@ -26,7 +26,7 @@
   }
 
   .text-highlight {
-    color: $purple-blue;
+    color: $secondary;
     font-weight: 500;
     margin: 0 rem(1px);
     padding: rem(1px) rem(4px);

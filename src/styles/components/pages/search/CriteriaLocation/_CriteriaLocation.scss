@@ -9,7 +9,7 @@
 .cl-wrapper {
   align-items: center;
   display: flex;
-  border-bottom: rem(1px) solid $grey-even-more-light;
+  border-bottom: rem(1px) solid $grey-light;
   justify-content: center;
   padding-bottom: rem(20px);
   padding-top: rem(20px);
@@ -22,7 +22,7 @@
   }
 
   .cl-warning-message {
-    color: $grey;
+    color: $grey-dark;
     flex: 1;
     font-size: rem(14px);
     font-weight: 500;

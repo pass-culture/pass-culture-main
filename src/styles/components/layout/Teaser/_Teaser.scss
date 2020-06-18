@@ -43,7 +43,7 @@ $teaser-title-height-with-margin: rem(53px);
 }
 
 .teaser-thumb {
-  background: $grey;
+  background: $grey-dark;
   display: flex;
   width: 30%;
 
@@ -81,7 +81,7 @@ $teaser-title-height-with-margin: rem(53px);
 }
 
 .teaser-sub-title {
-  color: $grey;
+  color: $grey-dark;
   font-size: 0.8rem;
   font-weight: 600;
   @include multiLineEllipsis(1);
@@ -89,7 +89,7 @@ $teaser-title-height-with-margin: rem(53px);
 
 .teaser-date,
 .teaser-distance {
-  color: $grey;
+  color: $grey-dark;
   font-size: 0.8rem;
   padding-top: 0.3rem;
 }
@@ -157,7 +157,7 @@ $teaser-title-height-with-margin: rem(53px);
 }
 
 .teaser-finished {
-  background-color: $grey-finished;
+  background-color: $black;
   color: $white;
 }
 
@@ -172,6 +172,6 @@ $teaser-title-height-with-margin: rem(53px);
 }
 
 .teaser-fully-booked {
-  background-color: $grey;
+  background-color: $grey-dark;
   color: $white;
 }

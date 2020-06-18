@@ -1,32 +1,3 @@
-.page-inscription {
-  main {
-    background-image: none;
-    color: $black;
-  }
-
-  .asterisk {
-    color: $violet;
-  }
-
-  .form-error-message {
-    color: $error;
-  }
-
-  .logout-form-mandatory-label,
-  .form-sublabel {
-    color: $grey-dark;
-  }
-
-  footer {
-    align-items: center;
-    background-color: $primary;
-    display: flex;
-    height: 3.5rem;
-    justify-content: space-between;
-    padding: 1rem 0.75rem;
-  }
-}
-
 .signup-footer-link {
   color: $white;
   font-weight: 700;

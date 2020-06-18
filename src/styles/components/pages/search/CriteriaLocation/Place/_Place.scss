@@ -20,7 +20,7 @@
 }
 
 .place-extra-data {
-  color: $grey;
+  color: $grey-dark;
   font-size: rem(16px);
   font-weight: 400;
   text-align: left;
@@ -65,7 +65,7 @@
 
   .place-reset-button {
     img {
-      color: $grey;
+      color: $grey-dark;
       max-width: rem(20px);
     }
   }

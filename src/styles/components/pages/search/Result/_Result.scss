@@ -3,7 +3,7 @@
   flex: 3;
   flex-direction: row;
   align-items: center;
-  border-bottom: rem(1px) solid $grey-even-more-light;
+  border-bottom: rem(1px) solid $grey-light;
   padding: rem(15px) 0;
   max-width: 100%;
 
@@ -25,14 +25,14 @@
     word-break: break-word;
 
     .result-type {
-      color: $grey;
+      color: $grey-dark;
       font-size: rem(16px);
       font-weight: 400;
       margin-top: rem(6px);
     }
 
     .result-date {
-      color: $grey;
+      color: $grey-dark;
       font-size: rem(16px);
       font-weight: 400;
     }
@@ -61,7 +61,7 @@
   .result-distance {
     flex: 2;
     text-align: right;
-    color: $grey;
+    color: $grey-dark;
     font-size: rem(16px);
     font-weight: 400;
     margin-left: rem(4px);

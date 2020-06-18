@@ -30,7 +30,7 @@
   }
 
   .teaser-sub-title {
-    color: $black-light;
+    color: $black;
   }
 
   .teaser-thumb {
@@ -65,7 +65,7 @@
   position: relative;
 
   hr {
-    border: 1px solid $grey-border-mb;
+    border: 1px solid $grey-medium;
     display: inline-block;
     height: rem(33px);
     margin-top: rem(6px);
@@ -84,7 +84,7 @@
   }
 
   &.left {
-    background-color: $left-mb-corner;
+    background-color: $teaser-gradient-start;
     left: rem(-10px);
   }
 
@@ -93,7 +93,7 @@
   }
 
   &.right {
-    background-color: $right-mb-corner;
+    background-color: $teaser-gradient-end;
     right: rem(-10px);
   }
 }
@@ -166,5 +166,5 @@
   font-size: rem(13px);
   padding-top: rem(12px);
   text-align: center;
-  color: $grey;
+  color: $grey-dark;
 }

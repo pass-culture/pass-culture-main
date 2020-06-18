@@ -73,7 +73,7 @@
 }
 
 .form-error-message {
-  color: $primary-error;
+  color: $error;
   font-size: rem(14px);
   font-weight: 400;
   margin-top: rem(2px);
@@ -219,7 +219,7 @@
 
     &.read-only {
       .pc-final-form-datepicker-input {
-        background-color: $white-ter;
+        background-color: $grey-light;
       }
     }
 
