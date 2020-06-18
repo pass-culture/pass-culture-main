@@ -30,7 +30,7 @@
 
 .ft-button {
   border-radius: rem(16.5px);
-  box-shadow: 0 0 rem(6px) 0 rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 rem(6px) 0 rgba($black, 0.25);
   background: $white;
   height: rem(32px);
   position: absolute;

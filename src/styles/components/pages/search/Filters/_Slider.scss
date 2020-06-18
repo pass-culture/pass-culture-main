@@ -32,7 +32,7 @@
   background-color: $white;
   border-radius: 50%;
   border: rem(1px) solid $grey-light;
-  box-shadow: 0 rem(2px) rem(6px) 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 rem(2px) rem(6px) 0 rgba($black, 0.2);
   height: rem(26px);
   margin-top: rem(-5px);
   position: absolute;
