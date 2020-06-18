@@ -31,9 +31,7 @@ const Logo = ({ className, noLink, whiteHeader, signPage }) => {
       />
       {signPage && (
         <div className="logo-subtitle">
-          <span>
-            {'L’espace pass Culture des '}
-          </span>
+          {'L’espace pass Culture des '}
           <span className="logo-subtitle-highlighted">
             {'acteurs culturels'}
           </span>

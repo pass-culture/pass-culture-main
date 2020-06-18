@@ -9,9 +9,9 @@ a.logo {
   justify-content: center;
 
   img {
-    margin: -0.5em 0;
-    max-height: 2.25em;
-    height: 2.25em;
+    margin: rem(-10px) 0;
+    max-height: rem(45px);
+    height: rem(45px);
     vertical-align: middle;
   }
 
@@ -23,10 +23,10 @@ a.logo {
     cursor: inherit;
 
     img {
-      height: 239px;
+      height: rem(239px);
       max-height: none;
-      padding: 0 2rem;
-      width: 456px;
+      padding: 0 rem(32px);
+      width: rem(456px);
     }
   }
 

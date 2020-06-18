@@ -60,7 +60,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
       // then
       const presentationLink = wrapper
-        .find({ children: 'Fonctionnement du Pass culture Pro' })
+        .find({ children: 'Fonctionnement du pass Culture pro' })
         .parent('a')
       expect(presentationLink).toHaveLength(1)
       expect(presentationLink.prop('href')).toBe(
@@ -123,7 +123,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const mailToSupportLink = wrapper.find({ children: 'contactez notre support' }).parent('a')
+      const mailToSupportLink = wrapper.find({ children: 'contactez notre support.' }).parent('a')
       expect(mailToSupportLink).toHaveLength(1)
       expect(mailToSupportLink.prop('href')).toBe('mailto:support@passculture.app')
     })

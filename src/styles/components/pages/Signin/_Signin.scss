@@ -17,11 +17,11 @@
 
     @media (max-width: $tablet) {
       position: relative;
-      height: 100px;
+      height: rem(100px);
 
       img {
         left: 0;
-        padding: 1rem 0;
+        padding: rem(16px) 0;
       }
     }
   }
@@ -65,24 +65,24 @@
   }
 
   h2 {
-    margin-bottom: 12px;
+    margin-bottom: rem(12px);
     font-weight: $weight-medium;
-    font-size: 20px;
-    line-height: 24px;
+    font-size: rem(20px);
+    line-height: rem(24px);
   }
 
   form {
-    margin-top: 2rem;
+    margin-top: rem(32px);
 
     p {
       text-align: left !important;
       color: #7A7A7A;
-      margin-left: 0.5rem;
+      margin-left: rem(8px);
     }
   }
 
   label {
-    margin-bottom: 0.5rem;
+    margin-bottom: rem(8px);
 
     h3 {
       position: relative;
@@ -111,7 +111,7 @@
   .buttons-field {
     display: flex;
     justify-content: space-between;
-    margin-top: 2rem;
+    margin-top: rem(32px);
   }
 
   h4 {
@@ -123,13 +123,13 @@
     color: $primary;
     font-size: 0.9rem;
     font-weight: 500;
-    line-height: 2em;
+    line-height: rem(32px);
     list-style-type: none;
     text-align: left;
     transition: transform 0.2s ease-in-out;
 
     li {
-      margin-bottom: 1rem;
+      margin-bottom: rem(16px);
     }
 
     &.pop {
@@ -139,7 +139,7 @@
 
     img {
       vertical-align: middle;
-      padding-right: 5px;
+      padding-right: rem(5px);
     }
 
     &:empty {
@@ -165,18 +165,18 @@
     display: flex;
     align-items: flex-start;
     flex-direction: row;
-    margin-top: 24px;
+    margin-top: rem(24px);
 
     img {
-      height: 21px;
-      margin-right: 6px;
-      margin-top: 3px;
+      height: rem(21px);
+      margin-right: rem(6px);
+      margin-top: rem(3px);
     }
 
     p {
       color: $grey-darkest;
-      font-size: 13px;
-      line-height: 16px;
+      font-size: rem(13px);
+      line-height: rem(16px);
       text-align: justify;
 
       a {

@@ -81,7 +81,7 @@ class SignupForm extends PureComponent {
             >
               <Icon svg="ico-external-site" />
               <span>
-                {'Fonctionnement du Pass culture Pro'}
+                {'Fonctionnement du pass Culture pro'}
               </span>
             </a>
             <a
@@ -262,7 +262,7 @@ class SignupForm extends PureComponent {
                   >
                     <Icon svg="ico-email-red" />
                     <span>
-                      {'contactez notre support'}
+                      {'contactez notre support.'}
                     </span>
                   </a>
                 </div>
