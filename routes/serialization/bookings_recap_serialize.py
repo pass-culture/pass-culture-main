@@ -5,6 +5,7 @@ from flask import json
 from domain.booking_recap.booking_recap import BookingRecap, EventBookingRecap, ThingBookingRecap, BookBookingRecap
 from domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from utils.date import format_into_ISO_8601_with_timezone
+from utils.human_ids import humanize
 
 
 def serialize_bookings_recap_paginated(bookings_recap_paginated: BookingsRecapPaginated) -> json:
@@ -22,6 +23,7 @@ def __serialize_booking_recap(booking_recap: BookingRecap) -> Dict:
         "stock": {
             "type": "thing",
             "offer_name": booking_recap.offer_name,
+            "offer_identifier": humanize(booking_recap.offer_identifier),
         },
         "beneficiary": {
             "lastname": booking_recap.beneficiary_lastname,

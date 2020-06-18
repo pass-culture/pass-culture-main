@@ -6,31 +6,30 @@ from domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from routes.serialization.bookings_recap_serialize import serialize_bookings_recap_paginated
 from tests.domain_creators.generic_creators import create_domain_thing_booking_recap, create_domain_event_booking_recap
 from utils.date import format_into_ISO_8601_with_timezone
+from utils.human_ids import humanize
 
 
 class SerializeBookingRecapTest:
     def test_should_return_json_with_all_parameters_for_thing_stock(self, app: fixture) -> None:
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
+        thing_booking_recap = create_domain_thing_booking_recap(offer_identifier=1,
+                                                                offer_name="Fondation",
+                                                                beneficiary_firstname="Hari",
+                                                                beneficiary_lastname="Seldon",
+                                                                beneficiary_email="hari.seldon@example.com",
+                                                                booking_date=booking_date, booking_token="FOND",
+                                                                booking_is_used=True, )
+        thing_booking_recap_2 = create_domain_thing_booking_recap(offer_identifier=2,
+                                                                  offer_name="Fondation",
+                                                                  beneficiary_firstname="Golan",
+                                                                  beneficiary_lastname="Trevize",
+                                                                  beneficiary_email="golan.trevize@example.com",
+                                                                  booking_date=booking_date, booking_token="FOND",
+                                                                  booking_is_duo=True, )
         bookings_recap = [
-            create_domain_thing_booking_recap(
-                offer_name="Fondation",
-                beneficiary_firstname="Hari",
-                beneficiary_lastname="Seldon",
-                beneficiary_email="hari.seldon@example.com",
-                booking_date=booking_date,
-                booking_token="FOND",
-                booking_is_used=True,
-            ),
-            create_domain_thing_booking_recap(
-                offer_name="Fondation",
-                beneficiary_firstname="Golan",
-                beneficiary_lastname="Trevize",
-                beneficiary_email="golan.trevize@example.com",
-                booking_date=booking_date,
-                booking_token="FOND",
-                booking_is_duo=True,
-            )
+            thing_booking_recap,
+            thing_booking_recap_2
         ]
         bookings_recap_paginated_response = BookingsRecapPaginated(
             bookings_recap=bookings_recap,
@@ -48,6 +47,7 @@ class SerializeBookingRecapTest:
                 "stock": {
                     "type": "thing",
                     "offer_name": "Fondation",
+                    "offer_identifier": humanize(thing_booking_recap.offer_identifier),
                 },
                 "beneficiary": {
                     "lastname": "Seldon",
@@ -64,6 +64,7 @@ class SerializeBookingRecapTest:
                 "stock": {
                     "type": "thing",
                     "offer_name": "Fondation",
+                    "offer_identifier": humanize(thing_booking_recap_2.offer_identifier),
                 },
                 "beneficiary": {
                     "lastname": "Trevize",
@@ -86,17 +87,12 @@ class SerializeBookingRecapTest:
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         day_after_booking_date = booking_date + timedelta(days=1)
-        bookings_recap = [
-            create_domain_event_booking_recap(
-                offer_name="Cirque du soleil",
-                beneficiary_firstname="Hari",
-                beneficiary_lastname="Seldon",
-                beneficiary_email="hari.seldon@example.com",
-                booking_date=booking_date,
-                booking_token="SOLEIL",
-                event_beginning_datetime=day_after_booking_date,
-            )
-        ]
+        event_booking_recap = create_domain_event_booking_recap(offer_name="Cirque du soleil", beneficiary_firstname="Hari",
+                                                  beneficiary_lastname="Seldon",
+                                                  beneficiary_email="hari.seldon@example.com",
+                                                  booking_date=booking_date, booking_token="SOLEIL",
+                                                  event_beginning_datetime=day_after_booking_date, )
+        bookings_recap = [event_booking_recap]
         bookings_recap_paginated_response = BookingsRecapPaginated(
             bookings_recap=bookings_recap,
             page=0,
@@ -113,6 +109,7 @@ class SerializeBookingRecapTest:
                 "stock": {
                     "type": "event",
                     "offer_name": "Cirque du soleil",
+                    "offer_identifier": humanize(event_booking_recap.offer_identifier),
                     "event_beginning_datetime": format_into_ISO_8601_with_timezone(day_after_booking_date),
                 },
                 "beneficiary": {
@@ -135,17 +132,12 @@ class SerializeBookingRecapTest:
     def test_should_return_json_with_offer_isbn_additional_parameter_for_thing_stock(self, app: fixture) -> None:
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
-        bookings_recap = [
-            create_domain_thing_booking_recap(
-                offer_name="Martine a la playa",
-                offer_isbn='987654345678',
-                beneficiary_firstname="Hari",
-                beneficiary_lastname="Seldon",
-                beneficiary_email="hari.seldon@example.com",
-                booking_date=booking_date,
-                booking_token="LUNE",
-            )
-        ]
+        thing_booking_recap = create_domain_thing_booking_recap(offer_identifier=1, offer_name="Martine a la playa",
+                                                  offer_isbn='987654345678', beneficiary_firstname="Hari",
+                                                  beneficiary_lastname="Seldon",
+                                                  beneficiary_email="hari.seldon@example.com",
+                                                  booking_date=booking_date, booking_token="LUNE", )
+        bookings_recap = [thing_booking_recap]
         bookings_recap_paginated_response = BookingsRecapPaginated(
             bookings_recap=bookings_recap,
             page=0,
@@ -162,6 +154,7 @@ class SerializeBookingRecapTest:
                 "stock": {
                     "type": "book",
                     "offer_name": "Martine a la playa",
+                    "offer_identifier": humanize(thing_booking_recap.offer_identifier),
                     "offer_isbn": '987654345678',
                 },
                 "beneficiary": {

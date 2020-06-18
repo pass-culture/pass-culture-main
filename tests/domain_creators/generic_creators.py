@@ -22,7 +22,8 @@ def create_domain_beneficiary(identifier: int = None,
     return user
 
 
-def create_domain_thing_booking_recap(offer_name: str = "Le livre de la jungle",
+def create_domain_thing_booking_recap(offer_identifier: int = 1,
+                                      offer_name: str = "Le livre de la jungle",
                                       offer_isbn: str = None,
                                       beneficiary_lastname: str = "Sans Nom",
                                       beneficiary_firstname: str = "Mowgli",
@@ -36,6 +37,7 @@ def create_domain_thing_booking_recap(offer_name: str = "Le livre de la jungle",
                                       venue_identifier: str = 'AE') -> ThingBookingRecap:
     if offer_isbn:
         return BookBookingRecap(
+            offer_identifier=offer_identifier,
             offer_name=offer_name,
             offer_isbn=offer_isbn,
             beneficiary_lastname=beneficiary_lastname,
@@ -50,6 +52,7 @@ def create_domain_thing_booking_recap(offer_name: str = "Le livre de la jungle",
             venue_identifier=venue_identifier,
         )
     return ThingBookingRecap(
+        offer_identifier=offer_identifier,
         offer_name=offer_name,
         beneficiary_lastname=beneficiary_lastname,
         beneficiary_firstname=beneficiary_firstname,
@@ -64,7 +67,8 @@ def create_domain_thing_booking_recap(offer_name: str = "Le livre de la jungle",
     )
 
 
-def create_domain_event_booking_recap(offer_name: str = "Le cirque du Soleil",
+def create_domain_event_booking_recap(offer_identifier: int = 1,
+                                      offer_name: str = "Le cirque du Soleil",
                                       beneficiary_lastname: str = "Doe",
                                       beneficiary_firstname: str = "Jane",
                                       beneficiary_email: str = "jane.doe@example.com",
@@ -77,6 +81,7 @@ def create_domain_event_booking_recap(offer_name: str = "Le cirque du Soleil",
                                       event_beginning_datetime: datetime = datetime(2020, 5, 26, 20, 30, 0, 0),
                                       venue_identifier: str = 'AE') -> EventBookingRecap:
     return EventBookingRecap(
+        offer_identifier=offer_identifier,
         offer_name=offer_name,
         beneficiary_lastname=beneficiary_lastname,
         beneficiary_firstname=beneficiary_firstname,

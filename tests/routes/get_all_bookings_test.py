@@ -9,6 +9,7 @@ from tests.model_creators.generic_creators import create_user, create_offerer, c
     create_stock, create_booking
 from tests.model_creators.specific_creators import create_offer_with_thing_product
 from utils.date import format_into_ISO_8601_with_timezone
+from utils.human_ids import humanize
 
 
 class GetAllBookingsTest:
@@ -76,6 +77,7 @@ class GetTest:
                     'stock': {
                         'type': 'thing',
                         'offer_name': 'Test Book',
+                        'offer_identifier': humanize(offer.id),
                     },
                     'beneficiary': {
                         'email': 'beneficiary@example.com',
