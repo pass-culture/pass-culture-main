@@ -18,5 +18,5 @@ class BookingRepository(ABC):
         pass
 
     @abstractmethod
-    def find_booking_with_offerer(self, booking_id):
+    def find_booking_by_id_and_beneficiary_id(self, booking_id: int, beneficiary_id: int) -> Booking:
         pass

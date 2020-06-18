@@ -7,9 +7,8 @@ from flask_login import current_user, login_required
 
 from connectors import redis
 from domain.user_activation import create_initial_deposit, is_activation_booking
-from domain.user_emails import send_activation_email, \
-    send_booking_cancellation_emails_to_user_and_offerer
-from infrastructure.container import book_an_offer
+from domain.user_emails import send_activation_email
+from infrastructure.container import book_an_offer, cancel_a_booking
 from models import BookingSQLEntity, EventType, RightsType, ApiKey, UserSQLEntity
 from models.feature import FeatureToggle
 from models.offer_type import ProductType
@@ -19,16 +18,14 @@ from routes.serialization import as_dict, serialize, serialize_booking
 from routes.serialization.bookings_recap_serialize import serialize_bookings_recap_paginated
 from routes.serialization.bookings_serialize import serialize_booking_for_book_an_offer
 from use_cases.book_an_offer import BookingInformation
-from use_cases.cancel_a_booking import CancelABooking
 from use_cases.get_all_bookings_by_pro_user import get_all_bookings_by_pro_user
 from utils.human_ids import dehumanize, humanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, \
     WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES, \
     WEBAPP_PATCH_POST_BOOKING_INCLUDES
-from utils.mailing import MailServiceException, send_raw_email
+from utils.mailing import send_raw_email
 from utils.rest import ensure_current_user_has_rights, expect_json_data
-from validation.routes.bookings import check_booking_is_cancellable_by_user, \
-    check_booking_is_not_already_cancelled, \
+from validation.routes.bookings import check_booking_is_not_already_cancelled, \
     check_booking_is_not_used, \
     check_booking_token_is_keepable, \
     check_booking_token_is_usable, \
@@ -42,7 +39,7 @@ from validation.routes.users_authorizations import \
     check_api_key_allows_to_cancel_booking, \
     check_api_key_allows_to_validate_booking, check_user_can_validate_activation_offer, \
     check_user_can_validate_bookings, \
-    check_user_can_validate_bookings_v2, check_user_can_cancel_booking_by_id
+    check_user_can_validate_bookings_v2
 
 
 @app.route('/bookings/pro', methods=['GET'])
@@ -104,14 +101,13 @@ def create_booking():
 @login_required
 def cancel_booking(booking_id: str):
     dehumanized_booking_id = dehumanize(booking_id)
-    cancel_a_booking = CancelABooking()
-    booking = cancel_a_booking.execute(booking_id=dehumanized_booking_id, current_user=current_user)
-
-    if booking.isCancelled:
-        return '', 204
+    booking = cancel_a_booking.execute(
+        booking_id=dehumanized_booking_id,
+        beneficary_id=current_user.id
+    )
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
+        redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offer.id)
 
     return jsonify(as_dict(booking, includes=WEBAPP_PATCH_POST_BOOKING_INCLUDES)), 200
 

@@ -1,8 +1,9 @@
 from typing import List
 
 from domain.booking.booking import Booking
+from domain.booking.booking_exceptions import BookingDoesntExist
 from domain.booking.booking_repository import BookingRepository
-from infrastructure.repository.booking import booking_domain_converter, booking_with_offerer_domain_converter
+from infrastructure.repository.booking import booking_domain_converter
 from models import BookingSQLEntity, StockSQLEntity
 from repository import repository
 
@@ -30,8 +31,13 @@ class BookingSQLRepository(BookingRepository):
         repository.save(booking_sql_entity)
         return booking_domain_converter.to_domain(booking_sql_entity)
 
-    def find_booking_with_offerer(self, booking_id) -> Booking:
+    def find_booking_by_id_and_beneficiary_id(self, booking_id: int, beneficiary_id: int) -> Booking:
         booking_sql_entity = BookingSQLEntity.query \
-            .filter_by(id=booking_id) \
+            .filter(BookingSQLEntity.id == booking_id) \
+            .filter(BookingSQLEntity.userId == beneficiary_id) \
             .first()
-        return booking_with_offerer_domain_converter.to_domain(booking_sql_entity)
+
+        if booking_sql_entity is None:
+            raise BookingDoesntExist()
+
+        return booking_domain_converter.to_domain(booking_sql_entity)

@@ -7,6 +7,7 @@ from infrastructure.repository.venue.venue_with_offerer_name.venue_with_offerer_
 from infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import VenueWithBasicInformationSQLRepository
 from infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
 from use_cases.book_an_offer import BookAnOffer
+from use_cases.cancel_a_booking import CancelABooking
 from use_cases.get_venues_by_pro_user import GetVenuesByProUser
 from use_cases.get_venue_labels import GetVenueLabels
 from use_cases.create_beneficiary_from_application import CreateBeneficiaryFromApplication
@@ -35,3 +36,9 @@ create_beneficiary_from_application = CreateBeneficiaryFromApplication(
 get_venue_labels = GetVenueLabels(venue_label_repository=venue_label_repository)
 
 get_all_venues_by_pro_user = GetVenuesByProUser(venue_repository=venue_with_offerer_informations_repository)
+
+cancel_a_booking = CancelABooking(
+    booking_repository=booking_repository,
+    beneficiary_repository=user_repository,
+    notification_service=notification_service
+)

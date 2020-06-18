@@ -47,13 +47,3 @@ def check_user_can_validate_activation_offer(user):
             "Vous n'avez pas les droits suffisants pour valider cette contremarque."
         )
         raise forbidden_error
-
-
-def check_user_can_cancel_booking_by_id(is_user_cancellation, is_offerer_cancellation):
-    forbidden_error = ForbiddenError()
-    if not is_user_cancellation and not is_offerer_cancellation:
-        forbidden_error.add_error(
-            'user',
-            "Vous n'avez pas les droits suffisants pour annuler cette réservation."
-        )
-        raise forbidden_error

@@ -2,9 +2,9 @@ from flask import current_app as app, jsonify
 
 from domain.booking.booking_exceptions import OfferIsAlreadyBooked, QuantityIsInvalid, StockIsNotBookable, \
     CannotBookFreeOffers, PhysicalExpenseLimitHasBeenReached, UserHasInsufficientFunds, \
-    DigitalExpenseLimitHasBeenReached
-from domain.users import UnauthorizedForAdminUser
+    DigitalExpenseLimitHasBeenReached, BookingIsAlreadyUsed, EventHappensInLessThan72Hours, BookingDoesntExist
 from domain.stock.stock_exceptions import StockDoesntExist
+from domain.users import UnauthorizedForAdminUser
 
 
 @app.errorhandler(OfferIsAlreadyBooked)
@@ -22,3 +22,14 @@ def handle_book_an_offer(exception):
 @app.errorhandler(UnauthorizedForAdminUser)
 def handle_get_all_bookings_exceptions(exception):
     return jsonify(exception.errors), 401
+
+
+@app.errorhandler(BookingIsAlreadyUsed)
+@app.errorhandler(EventHappensInLessThan72Hours)
+def handle_cancel_a_booking(exception):
+    return jsonify(exception.errors), 400
+
+
+@app.errorhandler(BookingDoesntExist)
+def handle_cancel_a_booking_not_found(exception):
+    return jsonify(exception.errors), 404

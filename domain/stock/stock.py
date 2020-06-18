@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, List
 
-from models.booking_sql_entity import BookingSQLEntity
+from models import BookingSQLEntity
 from models.offer import Offer
 
 

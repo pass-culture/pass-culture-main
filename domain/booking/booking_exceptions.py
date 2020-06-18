@@ -39,3 +39,19 @@ class CannotBookFreeOffers(ClientError):
 class UserHasInsufficientFunds(ClientError):
     def __init__(self):
         super().__init__('insufficientFunds', 'Le solde de votre pass est insuffisant pour réserver cette offre.')
+
+
+class BookingIsAlreadyUsed(ClientError):
+    def __init__(self):
+        super().__init__('booking', 'Impossible d\'annuler une réservation consommée')
+
+
+class EventHappensInLessThan72Hours(ClientError):
+    def __init__(self):
+        super().__init__('booking',
+                         "Impossible d'annuler une réservation moins de 72h avant le début de l'évènement")
+
+
+class BookingDoesntExist(ClientError):
+    def __init__(self):
+        super().__init__('bookingId', 'bookingId ne correspond à aucune réservation')

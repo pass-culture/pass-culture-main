@@ -1,10 +1,13 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from domain.beneficiary.beneficiary import Beneficiary
 from domain.beneficiary.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
+from domain.booking.booking import Booking
 from domain.booking_recap.booking_recap import ThingBookingRecap, EventBookingRecap, BookBookingRecap
+from domain.stock.stock import Stock
+from models import Offer
 
 
 def create_domain_beneficiary(identifier: int = None,
@@ -164,4 +167,24 @@ def create_domain_event_booking_recap(payment_date: Optional[datetime] = None,
         date_used=date_used,
         venue_name=venue_name,
         venue_is_virtual=venue_is_virtual,
+    )
+
+
+def create_domain_stock(identifier: int,
+                        quantity: Optional[int],
+                        offer: Offer,
+                        price: float,
+                        beginning_datetime: Optional[datetime],
+                        booking_limit_datetime: Optional[datetime],
+                        is_soft_deleted: bool,
+                        bookings: List[Booking] = []):
+    return Stock(
+        identifier=identifier,
+        quantity=quantity,
+        offer=offer,
+        price=price,
+        beginning_datetime=beginning_datetime,
+        booking_limit_datetime=booking_limit_datetime,
+        is_soft_deleted=is_soft_deleted,
+        bookings=bookings,
     )
