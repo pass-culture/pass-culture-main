@@ -125,7 +125,7 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell
 
     it('should display the booking amount when it is not free', () => {
       // Given
-      const expectedAmount = 'Prix: 10€'
+      const expectedAmount = 'Prix : 10\u00a0€'
       const props = {
         bookingRecapInfo: {
           original: {
@@ -164,7 +164,7 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell
 
     it('should display Prix: Gratuit when the offer is free', () => {
       // Given
-      const expectedAmount = 'Prix: Gratuit'
+      const expectedAmount = 'Prix : Gratuit'
       const props = {
         bookingRecapInfo: {
           original: {

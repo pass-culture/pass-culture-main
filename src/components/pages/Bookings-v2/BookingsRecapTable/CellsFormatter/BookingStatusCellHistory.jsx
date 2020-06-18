@@ -1,29 +1,28 @@
 import React from 'react'
 import * as PropTypes from 'prop-types'
-import { FORMAT_DD_MM_YYYY_HH_mm } from '../../../../../utils/date'
 import moment from 'moment'
-import { computeHistoryClassName, computeHistoryTitle } from './utils/bookingStatusConverter'
+import {
+  computeHistoryClassName,
+  computeHistoryDateFormat,
+  computeHistoryTitle,
+} from './utils/bookingStatusConverter'
 
 const BookingStatusCellHistory = ({ bookingStatusHistory }) => {
   const bookingsStatusHistoryItems = bookingStatusHistory.map(item => (
     <li key={item.status}>
-      <span className={computeHistoryClassName(item.status)}>
-        {`${computeHistoryTitle(item.status)} : ${parseDate(item.date)}`}
-      </span>
+      <span className={`colored-disc ${computeHistoryClassName(item.status)}`} />
+      {`${computeHistoryTitle(item.status)} : ${computeDateForStatus(item)}`}
     </li>
   ))
 
-  function parseDate(dateToParse) {
-    return moment.parseZone(dateToParse).format(FORMAT_DD_MM_YYYY_HH_mm)
+  function computeDateForStatus(item) {
+    const dateFormat = computeHistoryDateFormat(item.status)
+    return moment.parseZone(item.date).format(dateFormat)
   }
 
-  return (
-    <div className="booking-status-history">
-      <ul>
-        {bookingsStatusHistoryItems}
-      </ul>
-    </div>
-  )
+  return (<div className="booking-status-history">
+    {bookingsStatusHistoryItems}
+  </div>)
 }
 
 BookingStatusCellHistory.propTypes = {

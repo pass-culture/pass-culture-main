@@ -19,7 +19,7 @@ const BookingStatusCell = ({ bookingRecapInfo }) => {
     ? bookingStatusDisplayInformations.status
     : bookingStatus
   const amount = bookingRecapInfo.original.booking_amount
-    ? `${bookingRecapInfo.original.booking_amount}€`
+    ? `${bookingRecapInfo.original.booking_amount}\u00a0€`
     : 'Gratuit'
 
   return (
@@ -28,15 +28,15 @@ const BookingStatusCell = ({ bookingRecapInfo }) => {
         {statusName}
       </span>
       <div className="bs-tooltip">
-        <span className="bs-offer-title">
+        <div className="bs-offer-title">
           {offerName}
-        </span>
-        <span className="bs-offer-amount">
-          {`Prix: ${amount}`}
-        </span>
-        <span className="bs-history-title">
+        </div>
+        <div className="bs-offer-amount">
+          {`Prix : ${amount.replace('.', ',')}`}
+        </div>
+        <div className="bs-history-title">
           {'Historique'}
-        </span>
+        </div>
         <BookingStatusCellHistory
           bookingStatusHistory={bookingRecapInfo.original.booking_status_history}
         />

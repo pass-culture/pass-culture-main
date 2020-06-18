@@ -37,7 +37,6 @@
     box-shadow: 0 rem(2px) rem(10px) 0 rgba(0, 0, 0, 0.3);
     color: $black;
     display: block;
-    height: rem(179px);
     position: absolute;
     padding: rem(16px) rem(24px) rem(16px) rem(24px);
     right: 0;
@@ -52,26 +51,54 @@
     font-weight: $weight-bold;
   }
 
-  .bs-offer-amount{
+  .bs-offer-amount {
     display: block;
     font-size: rem(14px);
     font-weight: $weight-medium;
+    margin-top: rem(7px);
   }
 
-  .bs-history-title{
-    display: block;
+  .bs-history-title {
     font-size: rem(16px);
-    margin-top: rem(12px);
+    margin-top: rem(16px);
   }
 
-  .bs-history-label{
-    display: block;
+  .bs-history-label {
     font-size: rem(16px);
     margin-top: rem(12px);
   }
 
   .bs-history-datetime {
-    display: block;
     margin: rem(6px);
+  }
+
+  .booking-status-history li {
+    margin-top: rem(16px);
+    list-style-type: none;
+    display: flex;
+    align-items: center;
+  }
+
+  .colored-disc {
+    border-radius: rem(9px);
+    height: rem(14px);
+    margin-right: rem(16px);
+    width: rem(14px);
+
+    &.bs-history-booked {
+      background-color: $purple-dark;
+    }
+
+    &.bs-history-cancelled {
+      background-color: $grey;
+    }
+
+    &.bs-history-reimbursed {
+      background-color: $green-dark;
+    }
+
+    &.bs-history-validated {
+      background-color: $blue-dark;
+    }
   }
 }

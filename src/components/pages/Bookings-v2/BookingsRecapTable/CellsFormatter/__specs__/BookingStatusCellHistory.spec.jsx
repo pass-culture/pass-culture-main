@@ -16,10 +16,11 @@ describe('cellsFormatter | BookingsStatusCellHistory', () => {
 
     // When
     const wrapper = shallow(<BookingStatusCellHistory {...props} />)
-    const status = wrapper.find('span')
 
     // Then
-    expect(status.hasClass('bs-history-datetime-booked')).toBe(true)
+    const status = wrapper.find('li')
+    const disc = status.find('span')
+    expect(disc.hasClass('bs-history-booked')).toBe(true)
     expect(status.text()).toBe('Réservé : 04/01/2020 20:31')
   })
 
@@ -44,9 +45,30 @@ describe('cellsFormatter | BookingsStatusCellHistory', () => {
 
     // When
     const wrapper = shallow(<BookingStatusCellHistory {...props} />)
-    const bookingStatusesElements = wrapper.find('li')
 
     // Then
+    const bookingStatusesElements = wrapper.find('li')
     expect(bookingStatusesElements).toHaveLength(3)
+  })
+
+  it('should render only date and not time for reimbursed status history', () => {
+    // Given
+    const props = {
+      bookingStatusHistory: [
+        {
+          status: 'reimbursed',
+          date: '2020-01-06T20:31:12+01:00',
+        },
+      ],
+    }
+
+    // When
+    const wrapper = shallow(<BookingStatusCellHistory {...props} />)
+
+    // Then
+    const status = wrapper.find('li')
+    const disc = status.find('span')
+    expect(disc.hasClass('bs-history-reimbursed')).toBe(true)
+    expect(status.text()).toBe('Remboursé : 06/01/2020')
   })
 })
