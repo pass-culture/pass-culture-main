@@ -42,6 +42,16 @@ describe('components | BookingsRecapTable', () => {
         booking_status: 'Validé',
         booking_is_duo: false,
         venue_identifier: 'AE',
+        booking_status_history: [
+          {
+            status: 'booked',
+            date: '2020-04-03T12:00:00Z',
+          },
+          {
+            status: 'validated',
+            date: '2020-05-03T12:00:00Z',
+          },
+        ],
       },
       {
         stock: {
@@ -58,6 +68,16 @@ describe('components | BookingsRecapTable', () => {
         booking_status: 'Validé',
         booking_is_duo: true,
         venue_identifier: 'AF',
+        booking_status_history: [
+          {
+            status: 'booked',
+            date: '2020-04-03T12:00:00Z',
+          },
+          {
+            status: 'validated',
+            date: '2020-05-03T12:00:00Z',
+          },
+        ],
       },
     ]
 
@@ -101,6 +121,16 @@ describe('components | BookingsRecapTable', () => {
           booking_status: 'Validé',
           booking_is_duo: true,
           venue_identifier: 'AE',
+          booking_status_history: [
+            {
+              status: 'booked',
+              date: '2020-04-03T12:00:00Z',
+            },
+            {
+              status: 'validated',
+              date: '2020-05-12T12:00:00Z',
+            },
+          ],
         },
       ],
       isLoading: false,
@@ -117,7 +147,7 @@ describe('components | BookingsRecapTable', () => {
 
     // Then
     expect(wrapper.find('th')).toHaveLength(6)
-    expect(firstHeader.text()).toBe('Nom de l\'offre')
+    expect(firstHeader.text()).toBe("Nom de l'offre")
     expect(secondHeader.text()).toBe('')
     expect(thirdHeader.text()).toBe('Bénéficiaire')
     expect(fourthHeader.text()).toBe('Réservation')
@@ -143,6 +173,16 @@ describe('components | BookingsRecapTable', () => {
         booking_status: 'Validé',
         booking_is_duo: true,
         venue_identifier: 'AE',
+        booking_status_history: [
+          {
+            status: 'booked',
+            date: '2020-04-03T12:00:00Z',
+          },
+          {
+            status: 'validated',
+            date: '2020-04-13T12:00:00Z',
+          },
+        ],
       },
     ]
 
@@ -198,6 +238,16 @@ describe('components | BookingsRecapTable', () => {
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
         venue_identifier: 'AE',
+        booking_status_history: [
+          {
+            status: 'booked',
+            date: '2020-04-03T12:00:00Z',
+          },
+          {
+            status: 'validated',
+            date: '2020-05-01T12:00:00Z',
+          },
+        ],
       },
     ]
     const props = {
@@ -239,6 +289,16 @@ describe('components | BookingsRecapTable', () => {
         booking_status: 'Validé',
         booking_is_duo: false,
         venue_identifier: 'AE',
+        booking_status_history: [
+          {
+            status: 'booked',
+            date: '2020-04-03T12:00:00Z',
+          },
+          {
+            status: 'validated',
+            date: '2020-06-01T12:00:00Z',
+          },
+        ],
       },
     ]
     const props = {
@@ -292,6 +352,16 @@ describe('components | BookingsRecapTable', () => {
         booking_status: 'Validé',
         booking_is_duo: true,
         venue_identifier: 'AE',
+        booking_status_history: [
+          {
+            status: 'booked',
+            date: '2020-04-03T12:00:00Z',
+          },
+          {
+            status: 'validated',
+            date: '2020-04-23T12:00:00Z',
+          },
+        ],
       },
       {
         stock: {
@@ -308,6 +378,16 @@ describe('components | BookingsRecapTable', () => {
         booking_status: 'Validé',
         booking_is_duo: true,
         venue_identifier: 'AE',
+        booking_status_history: [
+          {
+            status: 'booked',
+            date: '2020-04-03T12:00:00Z',
+          },
+          {
+            status: 'validated',
+            date: '2020-05-06T12:00:00Z',
+          },
+        ],
       },
     ]
 
@@ -514,13 +594,23 @@ describe('components | BookingsRecapTable', () => {
       booking_status: 'Validé',
       booking_is_duo: false,
       venue_identifier: 'AE',
+      booking_status_history: [
+        {
+          status: 'booked',
+          date: '2020-04-03T12:00:00Z',
+        },
+        {
+          status: 'validated',
+          date: '2020-04-14T12:00:00Z',
+        },
+      ],
     }
     const props = {
       bookingsRecap: [booking],
       isLoading: false,
     }
     const wrapper = mount(<BookingsRecapTable {...props} />)
-    const input = wrapper.find(Filters).find({ placeholder: 'Rechercher par nom d\'offre' })
+    const input = wrapper.find(Filters).find({ placeholder: "Rechercher par nom d'offre" })
 
     // When
     input.simulate('change', { target: { value: 'not findable' } })
@@ -554,6 +644,16 @@ describe('components | BookingsRecapTable', () => {
           booking_status: 'Validé',
           booking_is_duo: false,
           venue_identifier: 'AE',
+          booking_status_history: [
+            {
+              status: 'booked',
+              date: '2020-04-03T12:00:00Z',
+            },
+            {
+              status: 'validated',
+              date: '2020-04-16T12:00:00Z',
+            },
+          ],
         },
       ],
       isLoading: false,
@@ -561,7 +661,7 @@ describe('components | BookingsRecapTable', () => {
     filterBookingsRecap.mockReturnValue([])
     const wrapper = mount(<BookingsRecapTable {...props} />)
 
-    const offerNameInput = wrapper.find(Filters).find({ placeholder: 'Rechercher par nom d\'offre' })
+    const offerNameInput = wrapper.find(Filters).find({ placeholder: "Rechercher par nom d'offre" })
     await offerNameInput.simulate('change', { target: { value: 'not findable' } })
 
     const selectedDate = moment('2020-05-20')
@@ -580,7 +680,7 @@ describe('components | BookingsRecapTable', () => {
     await displayAllBookingsButton.simulate('click')
 
     // Then
-    const offerName = wrapper.find(Filters).find({ placeholder: 'Rechercher par nom d\'offre' })
+    const offerName = wrapper.find(Filters).find({ placeholder: "Rechercher par nom d'offre" })
     expect(offerName.text()).toBe('')
     const offerDate = wrapper
       .find(Filters)
@@ -615,22 +715,24 @@ describe('components | BookingsRecapTable', () => {
     ])
     const wrapper = shallow(<BookingsRecapTable {...props} />)
     const updatedProps = {
-      bookingsRecap: [{
-        stock: {
-          offer_name: 'Avez-vous déjà vu',
-          type: 'thing',
+      bookingsRecap: [
+        {
+          stock: {
+            offer_name: 'Avez-vous déjà vu',
+            type: 'thing',
+          },
+          beneficiary: {
+            lastname: 'Klepi',
+            firstname: 'Sonia',
+            email: 'sonia.klepi@example.com',
+          },
+          booking_date: '2020-04-03T12:00:00Z',
+          booking_token: 'ZEHBGD',
+          booking_status: 'Validé',
+          booking_is_duo: false,
+          venue_identifier: 'AE',
         },
-        beneficiary: {
-          lastname: 'Klepi',
-          firstname: 'Sonia',
-          email: 'sonia.klepi@example.com',
-        },
-        booking_date: '2020-04-03T12:00:00Z',
-        booking_token: 'ZEHBGD',
-        booking_status: 'Validé',
-        booking_is_duo: false,
-        venue_identifier: 'AE',
-      }],
+      ],
     }
 
     // When
@@ -645,7 +747,7 @@ describe('components | BookingsRecapTable', () => {
       offerDate: EMPTY_FILTER_VALUE,
       offerISBN: EMPTY_FILTER_VALUE,
       offerName: EMPTY_FILTER_VALUE,
-      offerVenue: ALL_VENUES
+      offerVenue: ALL_VENUES,
     })
   })
 

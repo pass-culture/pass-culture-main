@@ -40,10 +40,15 @@ export const computeStatusClassName = bookingStatusDisplayInformations => {
 }
 
 export const computeHistoryTitle = bookingStatusDisplayInformations => {
-  const bookingStatus = getBookingStatusDisplayInformationsOrDefault(bookingStatusDisplayInformations)
+  const bookingStatus = getBookingStatusDisplayInformationsOrDefault(
+    bookingStatusDisplayInformations
+  )
   return bookingStatus.title
 }
 
 export const computeHistoryClassName = bookingStatusDisplayInformations => {
-  return `bs-history-datetime-${bookingStatusDisplayInformations.className}`
+  const bookingStatus = getBookingStatusDisplayInformationsOrDefault(
+    bookingStatusDisplayInformations
+  )
+  return `bs-history-datetime-${bookingStatus.className}`
 }
