@@ -11,3 +11,9 @@
     color: $grey;
   }
 }
+
+.booking-offer-detail-link {
+  &:hover {
+    color: inherit;
+  }
+}

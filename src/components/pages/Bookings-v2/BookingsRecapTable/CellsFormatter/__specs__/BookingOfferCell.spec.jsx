@@ -10,6 +10,7 @@ describe('components | BookingOfferCell', () => {
         offer: {
           type: 'thing',
           offer_name: 'Guitare acoustique',
+          offer_identifier: 'A1',
         },
       }
 
@@ -37,6 +38,26 @@ describe('components | BookingOfferCell', () => {
       // Then
       const offerIsbn = wrapper.find({ children: props.offer.offer_isbn })
       expect(offerIsbn).toHaveLength(1)
+    })
+
+    it('should render a link to offer detail', () => {
+      // Given
+      const props = {
+        offer: {
+          offer_identifier: 'A1',
+          offer_isbn: '97834567654',
+          offer_name: 'Guitare acoustique',
+          type: 'book',
+        },
+      }
+
+      // When
+      const wrapper = mount(<BookingOfferCell {...props} />)
+
+      // Then
+      const link = wrapper.find('a')
+      expect(link).toHaveLength(1)
+      expect(link.prop('href')).toBe('/offres/A1')
     })
   })
 
