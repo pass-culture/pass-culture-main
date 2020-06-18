@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from hashlib import sha256
 from typing import Optional
 
+from decimal import Decimal
 from geoalchemy2.shape import from_shape
 from shapely.geometry import Polygon
 
@@ -53,7 +54,7 @@ def create_bank_information(application_id: int = 1,
                             idx: int = None,
                             offerer: Offerer = None,
                             venue: VenueSQLEntity = None,
-                            status: str = BankInformationStatus.ACCEPTED) -> BankInformation:
+                            status: BankInformationStatus = BankInformationStatus.ACCEPTED) -> BankInformation:
     bank_information = BankInformation()
     bank_information.applicationId = application_id
     bank_information.bic = bic
@@ -105,7 +106,7 @@ def create_criterion(description: str = None,
 
 
 def create_booking(user: UserSQLEntity,
-                   amount: int = None,
+                   amount: Optional[Decimal] = None,
                    date_created: datetime = datetime.utcnow(),
                    date_used: datetime = None,
                    idx: int = None,
@@ -126,7 +127,7 @@ def create_booking(user: UserSQLEntity,
         price = amount if amount is not None else 10
         product_with_thing_type = create_offer_with_thing_product(venue)
         stock = create_stock_with_thing_offer(
-            offerer, venue, product_with_thing_type, price=price)
+            offerer=offerer, venue=venue, offer=product_with_thing_type, price=price)
 
     if recommendation:
         booking.recommendation = recommendation

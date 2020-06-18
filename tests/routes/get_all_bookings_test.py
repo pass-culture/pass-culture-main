@@ -2,6 +2,8 @@ from datetime import datetime
 from unittest.mock import patch
 
 from dateutil.tz import tz
+from pytest import fixture
+from pytest_mock import mocker
 
 from repository import repository
 from tests.conftest import clean_database, TestClient
@@ -16,8 +18,8 @@ class GetAllBookingsTest:
     @patch('routes.bookings.get_all_bookings_by_pro_user')
     @clean_database
     def test_should_call_the_usecase_with_user_id_and_page(self,
-                                                           get_all_bookings_by_pro_user,
-                                                           app):
+                                                           get_all_bookings_by_pro_user: mocker,
+                                                           app: fixture) -> None:
         # Given
         user = create_user(is_admin=True, can_book_free_offers=False)
         repository.save(user)
@@ -34,8 +36,8 @@ class GetAllBookingsTest:
     @patch('routes.bookings.get_all_bookings_by_pro_user')
     @clean_database
     def test_should_call_the_usecase_with_1_when_no_page_provided(self,
-                                                                  get_all_bookings_by_pro_user,
-                                                                  app):
+                                                                  get_all_bookings_by_pro_user: mocker,
+                                                                  app: fixture) -> None:
         # Given
         user = create_user(is_admin=True, can_book_free_offers=False)
         repository.save(user)
@@ -52,7 +54,7 @@ class GetAllBookingsTest:
 class GetTest:
     class Returns200Test:
         @clean_database
-        def when_user_is_linked_to_a_valid_offerer(self, app):
+        def when_user_is_linked_to_a_valid_offerer(self, app: fixture) -> None:
             # Given
             beneficiary = create_user(email='beneficiary@example.com', first_name="Hermione", last_name="Granger")
             user = create_user()
@@ -62,8 +64,9 @@ class GetTest:
             offer = create_offer_with_thing_product(venue)
             stock = create_stock(offer=offer, price=0)
             date_created = datetime(2020, 4, 3, 12, 0, 0)
+            date_used = datetime(2020, 5, 3, 12, 0, 0)
             booking = create_booking(user=beneficiary, stock=stock, token="ABCD", date_created=date_created,
-                                     is_used=True)
+                                     is_used=True, date_used=date_used)
             repository.save(user_offerer, booking)
 
             # When
@@ -87,10 +90,25 @@ class GetTest:
                     'booking_date': format_into_ISO_8601_with_timezone(
                         date_created.astimezone(tz.gettz('Europe/Paris'))
                     ),
+                    'booking_amount': 0.0,
                     'booking_token': 'ABCD',
                     'booking_status': 'validated',
                     'booking_is_duo': False,
-                    'venue_identifier': 'B4'
+                    'venue_identifier': 'B4',
+                    'booking_status_history': [
+                        {
+                            'status': 'booked',
+                            'date': format_into_ISO_8601_with_timezone(
+                                date_created.astimezone(tz.gettz('Europe/Paris'))
+                            ),
+                        },
+                        {
+                            'status': 'validated',
+                            'date': format_into_ISO_8601_with_timezone(
+                                date_used.astimezone(tz.gettz('Europe/Paris'))
+                            ),
+                        },
+                    ]
                 }
             ]
             assert response.status_code == 200
@@ -101,7 +119,7 @@ class GetTest:
 
     class Returns400Test:
         @clean_database
-        def when_page_number_is_not_a_number(self, app):
+        def when_page_number_is_not_a_number(self, app: fixture) -> None:
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)
             repository.save(user)
@@ -120,7 +138,7 @@ class GetTest:
 
     class Returns401Test:
         @clean_database
-        def when_user_is_admin(self, app):
+        def when_user_is_admin(self, app: fixture) -> None:
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)
             repository.save(user)

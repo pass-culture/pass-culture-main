@@ -1,9 +1,11 @@
 import random
 import string
 from datetime import datetime, timedelta
+from decimal import Decimal
 from typing import Dict, List, Optional
 
-from models import BookingSQLEntity, EventType, Offer, Offerer, Product, StockSQLEntity, ThingType, UserSQLEntity, VenueSQLEntity, Provider
+from models import BookingSQLEntity, EventType, Offer, Offerer, Product, StockSQLEntity, ThingType, UserSQLEntity, \
+    VenueSQLEntity, Provider
 from utils.token import random_token
 
 
@@ -282,7 +284,8 @@ def create_stock_with_event_offer(offerer: Offerer, venue: VenueSQLEntity, price
                                   name: str = 'Mains, sorts et papiers', offer_id: int = None,
                                   beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=72),
                                   thumb_count: int = 0,
-                                  booking_limit_datetime: datetime = datetime.utcnow() + timedelta(hours=71)) -> StockSQLEntity:
+                                  booking_limit_datetime: datetime = datetime.utcnow() + timedelta(
+                                      hours=71)) -> StockSQLEntity:
     stock = StockSQLEntity()
     stock.offerer = offerer
     stock.price = price
@@ -298,7 +301,8 @@ def create_stock_with_event_offer(offerer: Offerer, venue: VenueSQLEntity, price
     return stock
 
 
-def create_stock_with_thing_offer(offerer: Offerer, venue: VenueSQLEntity, offer: Offer = None, price: int = 10,
+def create_stock_with_thing_offer(offerer: Offerer, venue: VenueSQLEntity, offer: Offer = None,
+                                  price: Optional[Decimal] = 10,
                                   quantity: int = 50, name: str = 'Test Book',
                                   booking_email: str = 'offer.booking.email@example.com', soft_deleted: bool = False,
                                   url: str = None, booking_limit_datetime: datetime = None,

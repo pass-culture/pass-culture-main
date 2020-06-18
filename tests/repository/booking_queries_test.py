@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 
 import pytest
-import pytz
 from dateutil import tz
 from freezegun import freeze_time
 from pytest import fixture
@@ -14,7 +13,6 @@ from models.payment_status import TransactionStatus
 from models.stock_sql_entity import EVENT_AUTOMATIC_REFUND_DELAY
 from repository import booking_queries, repository
 from repository.booking_queries import find_by_pro_user_id, find_first_matching_from_offer_by_user
-from scripts.payment.batch_steps import generate_new_payments
 from tests.conftest import clean_database
 from tests.model_creators.activity_creators import create_booking_activity, \
     save_all_activities
@@ -37,7 +35,7 @@ FIVE_DAYS_AGO = NOW - timedelta(days=5)
 
 class FindAllOffererBookingsByVenueIdTest:
     @clean_database
-    def test_in_a_not_search_context_returns_all_results(self, app):
+    def test_in_a_not_search_context_returns_all_results(self, app: fixture) -> None:
         # given
         user = create_user()
         offerer1 = create_offerer(siren='123456789')
@@ -60,7 +58,7 @@ class FindAllOffererBookingsByVenueIdTest:
         assert len(bookings) == 2
 
     @clean_database
-    def test_returns_expected_bookings_on_given_venue(self, app):
+    def test_returns_expected_bookings_on_given_venue(self, app: fixture) -> None:
         # given
         user = create_user()
         create_deposit(user)
@@ -88,7 +86,7 @@ class FindAllOffererBookingsByVenueIdTest:
         assert booking2 in bookings
 
     @clean_database
-    def test_returns_bookings_on_given_venue_and_thing_offer_and_date(self, app):
+    def test_returns_bookings_on_given_venue_and_thing_offer_and_date(self, app: fixture) -> None:
         # given
         user = create_user()
         create_deposit(user=user)
@@ -140,7 +138,7 @@ class FindAllOffererBookingsByVenueIdTest:
         assert target_booking_2 in bookings
 
     @clean_database
-    def test_returns_bookings_on_given_venue_and_event_offer_and_date(self, app):
+    def test_returns_bookings_on_given_venue_and_event_offer_and_date(self, app: fixture) -> None:
         # given
         user = create_user()
         create_deposit(user)
@@ -176,7 +174,7 @@ class FindAllOffererBookingsByVenueIdTest:
         assert [target_booking] == bookings
 
     @clean_database
-    def test_should_return_only_expected_attributes(self, app):
+    def test_should_return_only_expected_attributes(self, app: fixture) -> None:
         # Given
         user = create_user(last_name='Doe', first_name='John', email='john.doe@example.com')
         create_deposit(user)
@@ -208,7 +206,7 @@ class FindAllOffererBookingsByVenueIdTest:
 
 class FindAllDigitalBookingsForOffererTest:
     @clean_database
-    def test_returns_bookings_linked_to_digital_venue(self, app):
+    def test_returns_bookings_linked_to_digital_venue(self, app: fixture) -> None:
         # given
         user = create_user()
         create_deposit(user)
@@ -230,7 +228,7 @@ class FindAllDigitalBookingsForOffererTest:
         assert [booking_for_digital] == bookings
 
     @clean_database
-    def test_returns_only_bookings_for_specified_offerer(self, app):
+    def test_returns_only_bookings_for_specified_offerer(self, app: fixture) -> None:
         # given
         user = create_user()
         create_deposit(user)
@@ -253,7 +251,7 @@ class FindAllDigitalBookingsForOffererTest:
         assert [target_booking] == bookings
 
     @clean_database
-    def test_returns_only_bookings_for_specified_offerer_and_offer(self, app):
+    def test_returns_only_bookings_for_specified_offerer_and_offer(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -274,7 +272,7 @@ class FindAllDigitalBookingsForOffererTest:
         assert [booking2] == bookings
 
     @clean_database
-    def test_returns_only_bookings_for_specified_offerer_and_thing_offer_and_booking_date(self, app):
+    def test_returns_only_bookings_for_specified_offerer_and_thing_offer_and_booking_date(self, app: fixture) -> None:
         # given
         user = create_user()
         create_deposit(user)
@@ -350,7 +348,7 @@ def test_find_not_cancelled_bookings_by_stock(app):
 
 class FindFinalOffererBookingsTest:
     @clean_database
-    def test_returns_bookings_for_given_offerer(self, app):
+    def test_returns_bookings_for_given_offerer(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -376,7 +374,7 @@ class FindFinalOffererBookingsTest:
         assert booking2 in bookings
 
     @clean_database
-    def test_returns_bookings_with_payment_first_ordered_by_date_created(self, app):
+    def test_returns_bookings_with_payment_first_ordered_by_date_created(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -402,7 +400,7 @@ class FindFinalOffererBookingsTest:
         assert bookings[3] == booking2
 
     @clean_database
-    def test_returns_not_cancelled_bookings_for_offerer(self, app):
+    def test_returns_not_cancelled_bookings_for_offerer(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -422,7 +420,7 @@ class FindFinalOffererBookingsTest:
         assert booking1 in bookings
 
     @clean_database
-    def test_returns_only_used_bookings(self, app):
+    def test_returns_only_used_bookings(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -442,7 +440,7 @@ class FindFinalOffererBookingsTest:
         assert thing_booking1 in bookings
 
     @clean_database
-    def test_does_not_return_finished_for_more_than_the_automatic_refund_delay_bookings(self, app):
+    def test_does_not_return_finished_for_more_than_the_automatic_refund_delay_bookings(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -477,7 +475,7 @@ class FindFinalOffererBookingsTest:
 
 class FindFinalVenueBookingsTest:
     @clean_database
-    def test_returns_bookings_for_given_venue_ordered_by_date_created(self, app):
+    def test_returns_bookings_for_given_venue_ordered_by_date_created(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -506,7 +504,7 @@ class FindFinalVenueBookingsTest:
 
 class FindDateUsedTest:
     @clean_database
-    def test_returns_date_used_if_not_none(self, app):
+    def test_returns_date_used_if_not_none(self, app: fixture) -> None:
         # given
         user = create_user()
         create_deposit(user)
@@ -520,7 +518,7 @@ class FindDateUsedTest:
         assert date_used == datetime(2018, 2, 12)
 
     @clean_database
-    def test_returns_none_when_date_used_is_none(self, app):
+    def test_returns_none_when_date_used_is_none(self, app: fixture) -> None:
         # given
         user = create_user()
         create_deposit(user)
@@ -534,7 +532,7 @@ class FindDateUsedTest:
         assert date_used is None
 
     @clean_database
-    def test_find_date_used_on_booking_returns_none_if_no_update_recorded_in_activity_table(self, app):
+    def test_find_date_used_on_booking_returns_none_if_no_update_recorded_in_activity_table(self, app: fixture) -> None:
         # given
         user = create_user()
         create_deposit(user)
@@ -552,7 +550,7 @@ class FindDateUsedTest:
 
 class FindUserActivationBookingTest:
     @clean_database
-    def test_returns_activation_thing_booking_linked_to_user(self, app):
+    def test_returns_activation_thing_booking_linked_to_user(self, app: fixture) -> None:
         # given
         user = create_user()
         offerer = create_offerer()
@@ -570,7 +568,7 @@ class FindUserActivationBookingTest:
         assert booking == activation_booking
 
     @clean_database
-    def test_returns_activation_event_booking_linked_to_user(self, app):
+    def test_returns_activation_event_booking_linked_to_user(self, app: fixture) -> None:
         # given
         user = create_user()
         offerer = create_offerer()
@@ -588,7 +586,7 @@ class FindUserActivationBookingTest:
         assert booking == activation_booking
 
     @clean_database
-    def test_returns_false_is_no_booking_exists_on_such_stock(self, app):
+    def test_returns_false_is_no_booking_exists_on_such_stock(self, app: fixture) -> None:
         # given
         user = create_user()
         offerer = create_offerer()
@@ -608,7 +606,7 @@ class FindUserActivationBookingTest:
 
 class GetExistingTokensTest:
     @clean_database
-    def test_returns_a_set_of_tokens(self, app):
+    def test_returns_a_set_of_tokens(self, app: fixture) -> None:
         # given
         user = create_user()
         offerer = create_offerer()
@@ -628,7 +626,7 @@ class GetExistingTokensTest:
         assert tokens == {booking1.token, booking2.token, booking3.token}
 
     @clean_database
-    def test_returns_an_empty_set_if_no_bookings(self, app):
+    def test_returns_an_empty_set_if_no_bookings(self, app: fixture) -> None:
         # when
         tokens = booking_queries.find_existing_tokens()
 
@@ -639,7 +637,7 @@ class GetExistingTokensTest:
 class FindByTest:
     class ByTokenTest:
         @clean_database
-        def test_returns_booking_if_token_is_known(self, app):
+        def test_returns_booking_if_token_is_known(self, app: fixture) -> None:
             # given
             user = create_user()
             offerer = create_offerer()
@@ -655,7 +653,7 @@ class FindByTest:
             assert result.id == booking.id
 
         @clean_database
-        def test_raises_an_exception_if_token_is_unknown(self, app):
+        def test_raises_an_exception_if_token_is_unknown(self, app: fixture) -> None:
             # given
             user = create_user()
             offerer = create_offerer()
@@ -674,7 +672,7 @@ class FindByTest:
 
     class ByTokenAndEmailTest:
         @clean_database
-        def test_returns_booking_if_token_and_email_are_known(self, app):
+        def test_returns_booking_if_token_and_email_are_known(self, app: fixture) -> None:
             # given
             user = create_user(email='user@example.com')
             offerer = create_offerer()
@@ -690,7 +688,7 @@ class FindByTest:
             assert result.id == booking.id
 
         @clean_database
-        def test_returns_booking_if_token_is_known_and_email_is_known_case_insensitively(self, app):
+        def test_returns_booking_if_token_is_known_and_email_is_known_case_insensitively(self, app: fixture) -> None:
             # given
             user = create_user(email='USer@eXAMple.COm')
             offerer = create_offerer()
@@ -706,7 +704,7 @@ class FindByTest:
             assert result.id == booking.id
 
         @clean_database
-        def test_returns_booking_if_token_is_known_and_email_is_known_with_trailing_spaces(self, app):
+        def test_returns_booking_if_token_is_known_and_email_is_known_with_trailing_spaces(self, app: fixture) -> None:
             # given
             user = create_user(email='user@example.com')
             offerer = create_offerer()
@@ -722,7 +720,7 @@ class FindByTest:
             assert result.id == booking.id
 
         @clean_database
-        def test_raises_an_exception_if_token_is_known_but_email_is_unknown(self, app):
+        def test_raises_an_exception_if_token_is_known_but_email_is_unknown(self, app: fixture) -> None:
             # given
             user = create_user(email='user@example.com')
             offerer = create_offerer()
@@ -741,7 +739,7 @@ class FindByTest:
 
     class ByTokenAndEmailAndOfferIdTest:
         @clean_database
-        def test_returns_booking_if_token_and_email_and_offer_id_for_thing_are_known(self, app):
+        def test_returns_booking_if_token_and_email_and_offer_id_for_thing_are_known(self, app: fixture) -> None:
             # given
             user = create_user(email='user@example.com')
             offerer = create_offerer()
@@ -758,7 +756,7 @@ class FindByTest:
             assert result.id == booking.id
 
         @clean_database
-        def test_returns_booking_if_token_and_email_and_offer_id_for_event_are_known(self, app):
+        def test_returns_booking_if_token_and_email_and_offer_id_for_event_are_known(self, app: fixture) -> None:
             # given
             user = create_user(email='user@example.com')
             offerer = create_offerer()
@@ -775,7 +773,7 @@ class FindByTest:
             assert result.id == booking.id
 
         @clean_database
-        def test_returns_booking_if_token_and_email_are_known_but_offer_id_is_unknown(self, app):
+        def test_returns_booking_if_token_and_email_are_known_but_offer_id_is_unknown(self, app: fixture) -> None:
             # given
             user = create_user(email='user@example.com')
             offerer = create_offerer()
@@ -796,7 +794,7 @@ class FindByTest:
 
 class SaveBookingTest:
     @clean_database
-    def test_saves_booking_when_enough_stocks_after_cancellation(self, app):
+    def test_saves_booking_when_enough_stocks_after_cancellation(self, app: fixture) -> None:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -816,7 +814,7 @@ class SaveBookingTest:
         assert BookingSQLEntity.query.filter_by(isCancelled=True).count() == 1
 
     @clean_database
-    def test_raises_too_many_bookings_error_when_not_enough_stocks(self, app):
+    def test_raises_too_many_bookings_error_when_not_enough_stocks(self, app: fixture) -> None:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -839,7 +837,7 @@ class SaveBookingTest:
 
 class CountNonCancelledBookingsTest:
     @clean_database
-    def test_returns_1_if_one_user_has_one_non_cancelled_booking(self, app):
+    def test_returns_1_if_one_user_has_one_non_cancelled_booking(self, app: fixture) -> None:
         # Given
         user_having_booked = create_user()
         offerer = create_offerer()
@@ -856,7 +854,7 @@ class CountNonCancelledBookingsTest:
         assert count == 1
 
     @clean_database
-    def test_returns_0_if_one_user_has_one_cancelled_booking(self, app):
+    def test_returns_0_if_one_user_has_one_cancelled_booking(self, app: fixture) -> None:
         # Given
         user_having_booked = create_user()
         offerer = create_offerer()
@@ -873,7 +871,7 @@ class CountNonCancelledBookingsTest:
         assert count == 0
 
     @clean_database
-    def test_returns_zero_if_two_users_have_activation_booking(self, app):
+    def test_returns_zero_if_two_users_have_activation_booking(self, app: fixture) -> None:
         # Given
         user1 = create_user()
         user2 = create_user(email='user2@example.com')
@@ -898,7 +896,7 @@ class CountNonCancelledBookingsTest:
 
 class CountNonCancelledBookingsByDepartementTest:
     @clean_database
-    def test_returns_1_if_one_user_has_one_non_cancelled_booking(self, app):
+    def test_returns_1_if_one_user_has_one_non_cancelled_booking(self, app: fixture) -> None:
         # Given
         user_having_booked = create_user(departement_code='76')
         offerer = create_offerer()
@@ -915,7 +913,7 @@ class CountNonCancelledBookingsByDepartementTest:
         assert count == 1
 
     @clean_database
-    def test_returns_0_if_one_user_has_one_cancelled_booking(self, app):
+    def test_returns_0_if_one_user_has_one_cancelled_booking(self, app: fixture) -> None:
         # Given
         user_having_booked = create_user(departement_code='76')
         offerer = create_offerer()
@@ -932,7 +930,7 @@ class CountNonCancelledBookingsByDepartementTest:
         assert count == 0
 
     @clean_database
-    def test_returns_0_if_user_comes_from_wrong_departement(self, app):
+    def test_returns_0_if_user_comes_from_wrong_departement(self, app: fixture) -> None:
         # Given
         user_having_booked = create_user(departement_code='76')
         offerer = create_offerer()
@@ -949,7 +947,7 @@ class CountNonCancelledBookingsByDepartementTest:
         assert count == 0
 
     @clean_database
-    def test_returns_zero_if_users_only_have_activation_bookings(self, app):
+    def test_returns_zero_if_users_only_have_activation_bookings(self, app: fixture) -> None:
         # Given
         user1 = create_user(departement_code='76')
         user2 = create_user(departement_code='76', email='user2@example.com')
@@ -974,7 +972,7 @@ class CountNonCancelledBookingsByDepartementTest:
 
 class GetAllCancelledBookingsCountTest:
     @clean_database
-    def test_returns_0_if_no_cancelled_bookings(self, app):
+    def test_returns_0_if_no_cancelled_bookings(self, app: fixture) -> None:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -991,7 +989,7 @@ class GetAllCancelledBookingsCountTest:
         assert number_of_bookings == 0
 
     @clean_database
-    def test_returns_1_if_one_cancelled_bookings(self, app):
+    def test_returns_1_if_one_cancelled_bookings(self, app: fixture) -> None:
         # Given
         beginning_datetime = datetime.utcnow() + timedelta(hours=4)
         offerer = create_offerer()
@@ -1009,7 +1007,7 @@ class GetAllCancelledBookingsCountTest:
         assert number_of_bookings == 1
 
     @clean_database
-    def test_returns_zero_if_only_activation_offers(self, app):
+    def test_returns_zero_if_only_activation_offers(self, app: fixture) -> None:
         # Given
         beginning_datetime = datetime.utcnow() + timedelta(hours=47)
         offerer = create_offerer()
@@ -1034,7 +1032,7 @@ class GetAllCancelledBookingsCountTest:
 
 class GetAllCancelledBookingsByDepartementCountTest:
     @clean_database
-    def test_returns_0_if_no_cancelled_bookings(self, app):
+    def test_returns_0_if_no_cancelled_bookings(self, app: fixture) -> None:
         # Given
         beginning_datetime = datetime.utcnow() + timedelta(hours=47)
         offerer = create_offerer()
@@ -1052,7 +1050,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
         assert number_of_bookings == 0
 
     @clean_database
-    def test_returns_1_if_one_cancelled_bookings(self, app):
+    def test_returns_1_if_one_cancelled_bookings(self, app: fixture) -> None:
         # Given
         beginning_datetime = datetime.utcnow() + timedelta(hours=47)
         offerer = create_offerer()
@@ -1070,7 +1068,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
         assert number_of_bookings == 1
 
     @clean_database
-    def test_returns_1_when_filtered_on_user_departement(self, app):
+    def test_returns_1_when_filtered_on_user_departement(self, app: fixture) -> None:
         # Given
         user_in_76 = create_user(departement_code='76', email='user-76@example.net')
         user_in_41 = create_user(departement_code='41', email='user-41@example.net')
@@ -1090,7 +1088,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
         assert number_of_bookings == 1
 
     @clean_database
-    def test_returns_zero_if_only_activation_bookings(self, app):
+    def test_returns_zero_if_only_activation_bookings(self, app: fixture) -> None:
         # Given
         user = create_user(departement_code='41')
         offerer = create_offerer()
@@ -1114,7 +1112,7 @@ class GetAllCancelledBookingsByDepartementCountTest:
 
 class CountAllBookingsTest:
     @clean_database
-    def test_returns_0_when_no_bookings(self, app):
+    def test_returns_0_when_no_bookings(self, app: fixture) -> None:
         # When
         number_of_bookings = booking_queries.count()
 
@@ -1122,7 +1120,7 @@ class CountAllBookingsTest:
         assert number_of_bookings == 0
 
     @clean_database
-    def test_returns_2_when_bookings_cancelled_or_not(self, app):
+    def test_returns_2_when_bookings_cancelled_or_not(self, app: fixture) -> None:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -1140,7 +1138,7 @@ class CountAllBookingsTest:
         assert number_of_bookings == 2
 
     @clean_database
-    def test_returns_2_when_bookings_cancelled_or_not(self, app):
+    def test_returns_2_when_bookings_cancelled_or_not(self, app: fixture) -> None:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -1158,7 +1156,7 @@ class CountAllBookingsTest:
         assert number_of_bookings == 2
 
     @clean_database
-    def test_returns_0_when_bookings_are_on_activation_offer(self, app):
+    def test_returns_0_when_bookings_are_on_activation_offer(self, app: fixture) -> None:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -1182,7 +1180,7 @@ class CountAllBookingsTest:
 
 class CountBookingsByDepartementTest:
     @clean_database
-    def test_returns_0_when_no_bookings(self, app):
+    def test_returns_0_when_no_bookings(self, app: fixture) -> None:
         # When
         number_of_bookings = booking_queries.count_by_departement('74')
 
@@ -1190,7 +1188,7 @@ class CountBookingsByDepartementTest:
         assert number_of_bookings == 0
 
     @clean_database
-    def test_returns_2_when_bookings_cancelled_or_not(self, app):
+    def test_returns_2_when_bookings_cancelled_or_not(self, app: fixture) -> None:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -1208,7 +1206,7 @@ class CountBookingsByDepartementTest:
         assert number_of_bookings == 2
 
     @clean_database
-    def test_returns_1_when_bookings_are_filtered_by_departement(self, app):
+    def test_returns_1_when_bookings_are_filtered_by_departement(self, app: fixture) -> None:
         # Given
         user_in_76 = create_user(departement_code='76', email='user-76@example.net')
         user_in_41 = create_user(departement_code='41', email='user-41@example.net')
@@ -1227,7 +1225,7 @@ class CountBookingsByDepartementTest:
         assert number_of_bookings == 1
 
     @clean_database
-    def test_returns_0_when_bookings_are_on_activation_offers(self, app):
+    def test_returns_0_when_bookings_are_on_activation_offers(self, app: fixture) -> None:
         # Given
         user = create_user(departement_code='76')
         offerer = create_offerer()
@@ -1251,7 +1249,7 @@ class CountBookingsByDepartementTest:
 
 class FindAllNotUsedAndNotCancelledTest:
     @clean_database
-    def test_return_no_booking_if_only_used(self, app):
+    def test_return_no_booking_if_only_used(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -1269,7 +1267,7 @@ class FindAllNotUsedAndNotCancelledTest:
         assert len(bookings) == 0
 
     @clean_database
-    def test_return_no_booking_if_only_cancelled(self, app):
+    def test_return_no_booking_if_only_cancelled(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -1287,7 +1285,7 @@ class FindAllNotUsedAndNotCancelledTest:
         assert len(bookings) == 0
 
     @clean_database
-    def test_return_no_booking_if_used_but_cancelled(self, app):
+    def test_return_no_booking_if_used_but_cancelled(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -1305,7 +1303,7 @@ class FindAllNotUsedAndNotCancelledTest:
         assert len(bookings) == 0
 
     @clean_database
-    def test_return_1_booking_if_not_used_and_not_cancelled(self, app):
+    def test_return_1_booking_if_not_used_and_not_cancelled(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -1327,7 +1325,7 @@ class FindAllNotUsedAndNotCancelledTest:
 
 class GetValidBookingsByUserId:
     @clean_database
-    def test_should_return_bookings_by_user_id(self, app):
+    def test_should_return_bookings_by_user_id(self, app: fixture) -> None:
         # Given
         user1 = create_user(email='me@example.net')
         deposit1 = create_deposit(user1)
@@ -1348,7 +1346,7 @@ class GetValidBookingsByUserId:
         assert bookings == [booking1]
 
     @clean_database
-    def test_should_return_bookings_by_type_other_than_ACTIVATION(self, app):
+    def test_should_return_bookings_by_type_other_than_ACTIVATION(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -1375,7 +1373,7 @@ class GetValidBookingsByUserId:
         assert bookings == [booking3]
 
     @clean_database
-    def test_should_return_bookings_when_there_is_one_cancelled_booking(self, app):
+    def test_should_return_bookings_when_there_is_one_cancelled_booking(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -1397,7 +1395,7 @@ class GetValidBookingsByUserId:
         assert booking1 not in bookings
 
     @clean_database
-    def test_should_return_most_recent_booking_when_two_cancelled_on_same_stock(self, app):
+    def test_should_return_most_recent_booking_when_two_cancelled_on_same_stock(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -1416,7 +1414,7 @@ class GetValidBookingsByUserId:
         assert bookings == [booking1]
 
     @clean_database
-    def test_should_return_bookings_ordered_by_beginning_date_time_ascendant(self, app):
+    def test_should_return_bookings_ordered_by_beginning_date_time_ascendant(self, app: fixture) -> None:
         # Given
         two_days = NOW + timedelta(days=2, hours=10)
         two_days_bis = NOW + timedelta(days=2, hours=20)
@@ -1449,7 +1447,7 @@ class GetValidBookingsByUserId:
 class FindNotUsedAndNotCancelledBookingsAssociatedToOutdatedStocksTest:
     @clean_database
     @freeze_time('2020-01-10')
-    def test_should_return_bookings_which_are_not_cancelled(self, app):
+    def test_should_return_bookings_which_are_not_cancelled(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -1470,7 +1468,7 @@ class FindNotUsedAndNotCancelledBookingsAssociatedToOutdatedStocksTest:
 
     @clean_database
     @freeze_time('2020-01-10')
-    def test_should_return_bookings_which_are_not_used(self, app):
+    def test_should_return_bookings_which_are_not_used(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -1491,7 +1489,7 @@ class FindNotUsedAndNotCancelledBookingsAssociatedToOutdatedStocksTest:
 
     @clean_database
     @freeze_time('2020-01-10')
-    def test_should_return_bookings_associated_to_outdated_stock(self, app):
+    def test_should_return_bookings_associated_to_outdated_stock(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -1516,7 +1514,7 @@ class FindNotUsedAndNotCancelledBookingsAssociatedToOutdatedStocksTest:
 
 class FindByTokenTest:
     @clean_database
-    def test_should_return_a_booking_when_valid_token_is_given(self, app):
+    def test_should_return_a_booking_when_valid_token_is_given(self, app: fixture) -> None:
         # Given
         beneficiary = create_user()
         create_deposit(beneficiary)
@@ -1530,7 +1528,7 @@ class FindByTokenTest:
         assert booking == valid_booking
 
     @clean_database
-    def test_should_return_nothing_when_invalid_token_is_given(self, app):
+    def test_should_return_nothing_when_invalid_token_is_given(self, app: fixture) -> None:
         # Given
         invalid_token = 'fake_token'
         beneficiary = create_user()
@@ -1545,7 +1543,7 @@ class FindByTokenTest:
         assert booking is None
 
     @clean_database
-    def test_should_return_nothing_when_valid_token_is_given_but_its_not_used(self, app):
+    def test_should_return_nothing_when_valid_token_is_given_but_its_not_used(self, app: fixture) -> None:
         # Given
         beneficiary = create_user()
         create_deposit(beneficiary)
@@ -1561,7 +1559,7 @@ class FindByTokenTest:
 
 class IsOfferAlreadyBookedByUserTest:
     @clean_database
-    def test_should_return_true_when_booking_exists_for_user_and_offer(self, app):
+    def test_should_return_true_when_booking_exists_for_user_and_offer(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -1579,7 +1577,7 @@ class IsOfferAlreadyBookedByUserTest:
         assert is_offer_already_booked
 
     @clean_database
-    def test_should_return_false_when_no_booking_exists_for_same_user_and_offer(self, app):
+    def test_should_return_false_when_no_booking_exists_for_same_user_and_offer(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -1595,7 +1593,7 @@ class IsOfferAlreadyBookedByUserTest:
         assert not is_offer_already_booked
 
     @clean_database
-    def test_should_return_false_when_there_is_a_booking_on_offer_but_from_different_user(self, app):
+    def test_should_return_false_when_there_is_a_booking_on_offer_but_from_different_user(self, app: fixture) -> None:
         # Given
         user = create_user()
         user2 = create_user()
@@ -1612,7 +1610,7 @@ class IsOfferAlreadyBookedByUserTest:
         assert not is_offer_already_booked
 
     @clean_database
-    def test_should_return_false_when_a_booking_exists_for_same_user_and_offer_but_is_cancelled(self, app):
+    def test_should_return_false_when_a_booking_exists_for_same_user_and_offer_but_is_cancelled(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -1632,7 +1630,7 @@ class IsOfferAlreadyBookedByUserTest:
 
 class CountNotCancelledBookingsQuantityByStocksTest:
     @clean_database
-    def test_should_return_sum_of_bookings_quantity_that_are_not_cancelled_for_given_stock(self, app):
+    def test_should_return_sum_of_bookings_quantity_that_are_not_cancelled_for_given_stock(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -1653,7 +1651,7 @@ class CountNotCancelledBookingsQuantityByStocksTest:
         assert result == 15
 
     @clean_database
-    def test_should_return_0_when_no_bookings_found(self, app):
+    def test_should_return_0_when_no_bookings_found(self, app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -1670,7 +1668,7 @@ class CountNotCancelledBookingsQuantityByStocksTest:
         # Then
         assert result == 0
 
-    def test_should_return_0_when_no_stock_id_given(self, app):
+    def test_should_return_0_when_no_stock_id_given(self, app: fixture) -> None:
         # When
         result = booking_queries.count_not_cancelled_bookings_quantity_by_stock_id(None)
 
@@ -1680,7 +1678,7 @@ class CountNotCancelledBookingsQuantityByStocksTest:
 
 class FindByProUserIdTest:
     @clean_database
-    def test_should_return_only_expected_booking_attributes(self, app):
+    def test_should_return_only_expected_booking_attributes(self, app: fixture) -> None:
         # Given
         beneficiary = create_user(email='beneficiary@example.com', first_name='Ron', last_name='Weasley')
         create_deposit(beneficiary, 500)
@@ -1713,10 +1711,10 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_duo is False
         assert expected_booking_recap.venue_identifier == humanize(venue.id)
         assert expected_booking_recap.booking_amount == 12
-        assert expected_booking_recap.booking_recap_history.booking_date == booking_date.astimezone(tz.gettz('Europe/Paris'))
+        assert expected_booking_recap.booking_status_history.booking_date == booking_date.astimezone(tz.gettz('Europe/Paris'))
 
     @clean_database
-    def test_should_return_booking_as_duo_when_quantity_is_two(self, app):
+    def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture) -> None:
         # Given
         beneficiary = create_user(email='beneficiary@example.com')
         user = create_user()
@@ -1737,7 +1735,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_duo is True
 
     @clean_database
-    def test_should_return_booking_with_reimbursed_when_a_payment_was_sent(self, app):
+    def test_should_return_booking_with_reimbursed_when_a_payment_was_sent(self, app: fixture) -> None:
         # Given
         beneficiary = create_user(email='beneficiary@example.com',
                                   first_name='Ron', last_name='Weasley')
@@ -1771,7 +1769,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_reimbursed is True
 
     @clean_database
-    def test_should_return_event_booking_when_booking_is_on_an_event(self, app):
+    def test_should_return_event_booking_when_booking_is_on_an_event(self, app: fixture) -> None:
         # Given
         beneficiary = create_user(email='beneficiary@example.com',
                                   first_name='Ron', last_name='Weasley')
@@ -1805,7 +1803,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.venue_identifier == humanize(venue.id)
 
     @clean_database
-    def test_should_return_payment_date_when_booking_has_been_reimbursed(self, app):
+    def test_should_return_payment_date_when_booking_has_been_reimbursed(self, app: fixture) -> None:
         # Given
         beneficiary = create_user(email='beneficiary@example.com',
                                   first_name='Ron', last_name='Weasley')
@@ -1829,10 +1827,10 @@ class FindByProUserIdTest:
         assert len(bookings_recap_paginated.bookings_recap) == 1
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.booking_is_reimbursed is True
-        assert expected_booking_recap.booking_recap_history.payment_date == yesterday.astimezone(tz.gettz('Europe/Paris'))
+        assert expected_booking_recap.booking_status_history.payment_date == yesterday.astimezone(tz.gettz('Europe/Paris'))
 
     @clean_database
-    def test_should_return_cancellation_date_when_booking_has_been_cancelled(self, app):
+    def test_should_return_cancellation_date_when_booking_has_been_cancelled(self, app: fixture) -> None:
         # Given
         beneficiary = create_user(email='beneficiary@example.com',
                                   first_name='Ron', last_name='Weasley')
@@ -1854,10 +1852,10 @@ class FindByProUserIdTest:
         assert len(bookings_recap_paginated.bookings_recap) == 1
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.booking_is_cancelled is True
-        assert expected_booking_recap.booking_recap_history.cancellation_date is not None
+        assert expected_booking_recap.booking_status_history.cancellation_date is not None
 
     @clean_database
-    def test_should_return_validation_date_when_booking_has_been_used_and_not_cancelled_not_reimbursed(self, app):
+    def test_should_return_validation_date_when_booking_has_been_used_and_not_cancelled_not_reimbursed(self, app: fixture) -> None:
         # Given
         beneficiary = create_user(email='beneficiary@example.com',
                                   first_name='Ron', last_name='Weasley')
@@ -1881,10 +1879,10 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_used is True
         assert expected_booking_recap.booking_is_cancelled is False
         assert expected_booking_recap.booking_is_reimbursed is False
-        assert expected_booking_recap.booking_recap_history.date_used is not None
+        assert expected_booking_recap.booking_status_history.date_used is not None
 
     @clean_database
-    def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app):
+    def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app: fixture) -> None:
         # Given
         beneficiary = create_user(email='beneficiary@example.com')
         user = create_user()
@@ -1910,7 +1908,7 @@ class FindByProUserIdTest:
         assert len(bookings_recap_paginated.bookings_recap) == 2
 
     @clean_database
-    def test_should_return_bookings_from_first_page(self, app):
+    def test_should_return_bookings_from_first_page(self, app: fixture) -> None:
         # Given
         beneficiary = create_user(email='beneficiary@example.com')
         user = create_user()
@@ -1936,7 +1934,7 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.total == 2
 
     @clean_database
-    def test_should_return_bookings_from_second_page(self, app):
+    def test_should_return_bookings_from_second_page(self, app: fixture) -> None:
         # Given
         beneficiary = create_user(email='beneficiary@example.com')
         user = create_user()
@@ -1962,7 +1960,7 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.total == 2
 
     @clean_database
-    def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app):
+    def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app: fixture) -> None:
         # Given
         beneficiary = create_user(email='beneficiary@example.com')
         user = create_user()
@@ -1981,7 +1979,7 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.bookings_recap == []
 
     @clean_database
-    def test_should_return_one_booking_recap_item_when_quantity_booked_is_one(self, app):
+    def test_should_return_one_booking_recap_item_when_quantity_booked_is_one(self, app: fixture) -> None:
         # Given
         beneficiary = create_user(email='beneficiary@example.com')
         user = create_user()
@@ -2006,7 +2004,7 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.total == 1
 
     @clean_database
-    def test_should_return_two_booking_recap_items_when_quantity_booked_is_two(self, app):
+    def test_should_return_two_booking_recap_items_when_quantity_booked_is_two(self, app: fixture) -> None:
         # Given
         beneficiary = create_user(email='beneficiary@example.com')
         user = create_user()
@@ -2032,7 +2030,7 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.total == 2
 
     @clean_database
-    def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app):
+    def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app: fixture) -> None:
         # Given
         beneficiary = create_user(email='beneficiary@example.com',
                                   first_name='Ron', last_name='Weasley')
@@ -2080,7 +2078,7 @@ class FindByProUserIdTest:
 
 class FindFirstMatchingFromOfferByUserTest:
     @clean_database
-    def test_should_return_nothing_when_no_bookings(self, app):
+    def test_should_return_nothing_when_no_bookings(self, app: fixture) -> None:
         # Given
         beneficiary = create_user()
         offerer = create_offerer()
@@ -2095,7 +2093,7 @@ class FindFirstMatchingFromOfferByUserTest:
         assert booking is None
 
     @clean_database
-    def test_should_return_nothing_when_beneficiary_has_no_bookings(self, app):
+    def test_should_return_nothing_when_beneficiary_has_no_bookings(self, app: fixture) -> None:
         # Given
         beneficiary = create_user(idx=1)
         other_beneficiary = create_user(email='other_beneficiary@example.com', idx=2)
@@ -2114,7 +2112,7 @@ class FindFirstMatchingFromOfferByUserTest:
         assert booking is None
 
     @clean_database
-    def test_should_return_first_booking_for_user(self, app):
+    def test_should_return_first_booking_for_user(self, app: fixture) -> None:
         # Given
         beneficiary = create_user(idx=1)
         create_deposit(user=beneficiary)

@@ -60,7 +60,8 @@ def save_bookings_recap_sandbox():
     stock_1_offer1_venue1 = create_stock(
         offer=offer1_venue1,
         beginning_datetime=yesterday,
-        quantity=None
+        quantity=None,
+        price=12.99,
     )
     offer2_venue1 = create_offer_with_event_product(
         venue=venue1,
@@ -71,7 +72,8 @@ def save_bookings_recap_sandbox():
     stock_2_offer2_venue1 = create_stock(
         offer=offer2_venue1,
         beginning_datetime=today,
-        quantity=None
+        quantity=None,
+        price=0,
     )
 
     offer1_venue2 = create_offer_with_thing_product(
@@ -82,7 +84,8 @@ def save_bookings_recap_sandbox():
     )
     stock_1_offer1_venue2 = create_stock(
         offer=offer1_venue2,
-        quantity=42
+        quantity=42,
+        price=9.99,
     )
     offer2_venue2 = create_offer_with_thing_product(
         venue=venue2,
@@ -92,7 +95,8 @@ def save_bookings_recap_sandbox():
     )
     stock_1_offer2_venue2 = create_stock(
         offer=offer2_venue2,
-        quantity=12
+        quantity=12,
+        price=49.99,
     )
 
     offer1_venue3 = create_offer_with_event_product(
@@ -102,7 +106,8 @@ def save_bookings_recap_sandbox():
     )
     stock_1_offer1_venue3 = create_stock(
         offer=offer1_venue3,
-        quantity=44
+        quantity=44,
+        price=18.50,
     )
 
     offer1_venue4 = create_offer_with_thing_product(
@@ -112,7 +117,8 @@ def save_bookings_recap_sandbox():
     )
     stock_1_offer1_venue4 = create_stock(
         offer=offer1_venue4,
-        quantity=70
+        quantity=70,
+        price=10.99,
     )
 
     booking1_beneficiary1 = create_booking(
@@ -120,6 +126,7 @@ def save_bookings_recap_sandbox():
         stock=stock_1_offer1_venue1,
         date_created=datetime(2020, 3, 18, 14, 56, 12, 0),
         is_used=True,
+        date_used=datetime(2020, 3, 22, 17, 00, 10, 0),
         quantity=2,
     )
     booking2_beneficiary1 = create_booking(
@@ -132,6 +139,7 @@ def save_bookings_recap_sandbox():
         stock=stock_1_offer1_venue1,
         date_created=datetime(2020, 3, 18, 12, 18, 12, 0),
         is_used=True,
+        date_used=datetime(2020, 5, 2),
         quantity=2,
     )
     booking2_beneficiary2 = create_booking(
@@ -139,13 +147,16 @@ def save_bookings_recap_sandbox():
         stock=stock_1_offer1_venue2,
         date_created=datetime(2020, 4, 12, 14, 31, 12, 0),
         is_cancelled=True,
+        cancellation_date=datetime(2020, 4, 15, 14, 31, 12, 0),
     )
     booking1_beneficiary3 = create_booking(
         user=beneficiary3,
         stock=stock_2_offer2_venue1,
         date_created=datetime(2020, 1, 4, 19, 31, 12, 0),
         is_cancelled=True,
+        cancellation_date=datetime(2020, 4, 15, 14, 31, 12, 0),
         is_used=True,
+        date_used=datetime(2020, 1, 4, 23, 00, 10, 0),
         quantity=2,
     )
     booking2_beneficiary3 = create_booking(
@@ -153,6 +164,7 @@ def save_bookings_recap_sandbox():
         stock=stock_1_offer1_venue2,
         date_created=datetime(2020, 3, 21, 22, 9, 12, 0),
         is_cancelled=True,
+        cancellation_date=datetime(2020, 3, 17, 0, 31, 12, 0),
     )
     booking3_beneficiary1 = create_booking(
         user=beneficiary1,
@@ -166,7 +178,9 @@ def save_bookings_recap_sandbox():
         stock=stock_1_offer1_venue3,
         date_created=datetime(2020, 4, 12, 19, 31, 12, 0),
         is_used=True,
+        date_used=datetime(2020, 4, 22, 17, 00, 10, 0),
         is_cancelled=True,
+        cancellation_date=datetime(2020, 5, 15, 1, 1, 1, 0),
     )
     payment_booking3_beneficiary2 = create_payment(booking=booking3_beneficiary2, offerer=offerer,
                                                    status=TransactionStatus.SENT)
@@ -182,19 +196,22 @@ def save_bookings_recap_sandbox():
         stock=stock_1_offer1_venue2,
         date_created=datetime(2020, 3, 21, 22, 9, 12, 0),
         is_cancelled=False,
-        is_used=False
+        is_used=False,
     )
     booking5_beneficiary3 = create_booking(
         user=beneficiary3,
         stock=stock_1_offer1_venue4,
         date_created=datetime(2020, 3, 21, 22, 9, 12, 0),
         is_cancelled=True,
+        cancellation_date=datetime(2020, 4, 23, 17, 31, 12, 0),
     )
 
     booking6_beneficiary3 = create_booking(
         user=beneficiary3,
         stock=stock_1_offer2_venue2,
         date_created=datetime(2020, 3, 21, 22, 9, 12, 0),
+        is_used=True,
+        date_used=datetime(2020, 4, 22, 21, 9, 12, 0),
     )
     payment_booking6_beneficiary3 = create_payment(booking=booking6_beneficiary3, offerer=offerer,
                                                    status=TransactionStatus.SENT)
@@ -203,6 +220,8 @@ def save_bookings_recap_sandbox():
         user=beneficiary2,
         stock=stock_1_offer2_venue2,
         date_created=datetime(2020, 4, 21, 22, 6, 12, 0),
+        is_used=True,
+        date_used=datetime(2020, 4, 22, 22, 9, 12, 0),
     )
 
     payment_booking7_beneficiary2 = create_payment(booking=booking7_beneficiary2, offerer=offerer,
@@ -212,6 +231,8 @@ def save_bookings_recap_sandbox():
         user=beneficiary1,
         stock=stock_1_offer2_venue2,
         date_created=datetime(2020, 2, 21, 22, 6, 12, 0),
+        is_used=True,
+        date_used=datetime(2020, 4, 22, 23, 9, 12, 0),
     )
 
     payment_booking8_beneficiary1 = create_payment(booking=booking8_beneficiary1, offerer=offerer,
