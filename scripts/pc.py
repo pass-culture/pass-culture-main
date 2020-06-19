@@ -9,6 +9,9 @@ from models.db import db
 from scripts.install import install_scripts
 from utils.config import REDIS_URL
 from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
+from load_environment_configuration_variables import load_environment_configuration_variables
+
+load_environment_configuration_variables()
 
 app = Flask(__name__, template_folder='../templates')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
