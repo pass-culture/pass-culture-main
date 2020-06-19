@@ -310,7 +310,7 @@ class GetOfferForRecommendationsTest:
 
         @clean_database
         @patch('repository.offer_queries.feature_queries.is_active', return_value=True)
-        def test_should_return_unseen_offers_first_when_feature_is_active(self, app):
+        def test_should_return_unseen_offers_first_for_specific_beneficiary_when_feature_is_active(self, app):
             # Given
             offerer = create_offerer()
             user_1 = create_user(email='beneficiary1@example.com')

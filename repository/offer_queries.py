@@ -152,14 +152,8 @@ def get_offers_for_recommendation_v3(user: UserSQLEntity, user_iris_id: Optional
 
 
 def order_offers_by_unseen_offers_first(query: BaseQuery, discovery_view_model: Model, user: UserSQLEntity):
-    offers_subquery = query.outerjoin(SeenOffer, SeenOffer.offerId == discovery_view_model.id)\
-        .with_entities(SeenOffer.dateSeen.label('dateSeen'), SeenOffer.userId.label('userId'),
-                       discovery_view_model.id.label('offerId'))\
-        .subquery()
-
-    return query.outerjoin(offers_subquery, (offers_subquery.c.offerId == discovery_view_model.id) &
-                           (offers_subquery.c.userId == user.id))\
-        .order_by(nullsfirst(offers_subquery.c.dateSeen))
+    return query.outerjoin(SeenOffer, (SeenOffer.offerId == discovery_view_model.id) & (SeenOffer.userId == user.id)) \
+        .order_by(nullsfirst(SeenOffer.dateSeen))
 
 
 def keep_only_offers_from_venues_located_near_to_user_or_national(query: BaseQuery,
