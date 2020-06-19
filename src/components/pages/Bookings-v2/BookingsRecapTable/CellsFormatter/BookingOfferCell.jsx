@@ -6,25 +6,26 @@ import BookingOfferCellForBook from './BookingOfferCellForBook'
 
 const BookingOfferCell = ({ offer }) => {
   let component
-  if (offer.type === 'event') {
-    component = (
-      <BookingOfferCellForEvent
-        eventDatetime={offer.event_beginning_datetime}
-        offerName={offer.offer_name}
-        venueDepartmentCode={offer.venue_department_code}
-      />
-    )
-  } else {
-    if (offer.type === 'book') {
+  switch (offer.type) {
+    case 'book':
       component = (
         <BookingOfferCellForBook
           offerIsbn={offer.offer_isbn}
           offerName={offer.offer_name}
         />
       )
-    } else {
+      break
+    case 'event':
+      component = (
+        <BookingOfferCellForEvent
+          eventDatetime={offer.event_beginning_datetime}
+          offerName={offer.offer_name}
+          venueDepartmentCode={offer.venue_department_code}
+        />
+      )
+      break
+    default:
       component = <BookingOfferCellForThing offerName={offer.offer_name} />
-    }
   }
 
   return (
@@ -46,8 +47,10 @@ BookingOfferCell.defaultValues = {
 BookingOfferCell.propTypes = {
   offer: PropTypes.shape({
     offer_isbn: PropTypes.string,
+    offer_identifier: PropTypes.string,
     offer_name: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
+    venue_department_code: PropTypes.string.isRequired,
   }).isRequired,
 }
 
