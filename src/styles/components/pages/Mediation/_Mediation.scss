@@ -5,7 +5,7 @@
 .crop-explain .column {
   display: flex;
   flex-flow: column nowrap;
-  color: #003818;
+  color: $mediation-green-dark;
 
   &.explain-text {
     padding-left: 0;
@@ -16,7 +16,7 @@
   }
 
   &.explain-bad {
-    color: #B30041;
+    color: $mediation-red;
   }
 }
 
@@ -31,7 +31,7 @@
 }
 
 .thumbnailManager {
-  background-color: #ECF0F1;
+  background-color: $grey-light-bis;
   padding: 18px;
   margin-bottom: 10px;
 
@@ -41,7 +41,7 @@
 
   canvas {
     background: url(/pattern-checker.png) repeat white;
-    border: 1px solid #C7C7CC;
+    border: 1px solid $grey-medium;
   }
 
   .section {
@@ -63,7 +63,7 @@
     height: 20px;
     width: 20px;
     color: black;
-    background-color: #4CD964;
+    background-color: $mediation-green;
     text-align: center;
     font-weight: bold;
     margin-right: 10px;
@@ -71,7 +71,7 @@
 
   ul li:first-child span.li-number {
     color: white;
-    background-color: #BD10E0;
+    background-color: $violet;
   }
 
   h6 {

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | Offer | StocksManager | StocksManager should match the snapshot when managing a thing 1`] = `
+exports[`src | components | pages | Offer | StocksManager | StocksManager when managing a thing should match the snapshot when managing a thing 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <StocksManager
@@ -300,6 +300,7 @@ ShallowWrapper {
               subtitle="OfferName"
               title="Prix"
             />,
+            false,
             <table
               className="stocks-table"
             >
@@ -410,6 +411,7 @@ ShallowWrapper {
             "rendered": null,
             "type": [Function],
           },
+          false,
           Object {
             "instance": null,
             "key": undefined,
@@ -1029,6 +1031,7 @@ ShallowWrapper {
                 subtitle="OfferName"
                 title="Prix"
               />,
+              false,
               <table
                 className="stocks-table"
               >
@@ -1139,6 +1142,7 @@ ShallowWrapper {
               "rendered": null,
               "type": [Function],
             },
+            false,
             Object {
               "instance": null,
               "key": undefined,
@@ -1574,7 +1578,7 @@ ShallowWrapper {
 }
 `;
 
-exports[`src | components | pages | Offer | StocksManager | StocksManager should match the snapshot when managing an event 1`] = `
+exports[`src | components | pages | Offer | StocksManager | StocksManager when managing an event should match the snapshot when managing an event 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <StocksManager
@@ -1691,6 +1695,16 @@ ShallowWrapper {
             subtitle="OfferName"
             title="Dates, horaires et prix"
           />
+          <div
+            className="stocks-event-legal-warning"
+          >
+            <span>
+              Les réservations peuvent être annulées par les utilisateurs jusque 72h avant le début de l'événement.
+            </span>
+            <span>
+              Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente.
+            </span>
+          </div>
           <table
             className="stocks-table"
           >
@@ -1884,6 +1898,16 @@ ShallowWrapper {
               subtitle="OfferName"
               title="Dates, horaires et prix"
             />,
+            <div
+              className="stocks-event-legal-warning"
+            >
+              <span>
+                Les réservations peuvent être annulées par les utilisateurs jusque 72h avant le début de l'événement.
+              </span>
+              <span>
+                Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente.
+              </span>
+            </div>,
             <table
               className="stocks-table"
             >
@@ -2003,6 +2027,48 @@ ShallowWrapper {
             "ref": null,
             "rendered": null,
             "type": [Function],
+          },
+          Object {
+            "instance": null,
+            "key": undefined,
+            "nodeType": "host",
+            "props": Object {
+              "children": Array [
+                <span>
+                  Les réservations peuvent être annulées par les utilisateurs jusque 72h avant le début de l'événement.
+                </span>,
+                <span>
+                  Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente.
+                </span>,
+              ],
+              "className": "stocks-event-legal-warning",
+            },
+            "ref": null,
+            "rendered": Array [
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Les réservations peuvent être annulées par les utilisateurs jusque 72h avant le début de l'événement.",
+                },
+                "ref": null,
+                "rendered": "Les réservations peuvent être annulées par les utilisateurs jusque 72h avant le début de l'événement.",
+                "type": "span",
+              },
+              Object {
+                "instance": null,
+                "key": undefined,
+                "nodeType": "host",
+                "props": Object {
+                  "children": "Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente.",
+                },
+                "ref": null,
+                "rendered": "Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente.",
+                "type": "span",
+              },
+            ],
+            "type": "div",
           },
           Object {
             "instance": null,
@@ -2527,6 +2593,16 @@ ShallowWrapper {
               subtitle="OfferName"
               title="Dates, horaires et prix"
             />
+            <div
+              className="stocks-event-legal-warning"
+            >
+              <span>
+                Les réservations peuvent être annulées par les utilisateurs jusque 72h avant le début de l'événement.
+              </span>
+              <span>
+                Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente.
+              </span>
+            </div>
             <table
               className="stocks-table"
             >
@@ -2720,6 +2796,16 @@ ShallowWrapper {
                 subtitle="OfferName"
                 title="Dates, horaires et prix"
               />,
+              <div
+                className="stocks-event-legal-warning"
+              >
+                <span>
+                  Les réservations peuvent être annulées par les utilisateurs jusque 72h avant le début de l'événement.
+                </span>
+                <span>
+                  Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente.
+                </span>
+              </div>,
               <table
                 className="stocks-table"
               >
@@ -2839,6 +2925,48 @@ ShallowWrapper {
               "ref": null,
               "rendered": null,
               "type": [Function],
+            },
+            Object {
+              "instance": null,
+              "key": undefined,
+              "nodeType": "host",
+              "props": Object {
+                "children": Array [
+                  <span>
+                    Les réservations peuvent être annulées par les utilisateurs jusque 72h avant le début de l'événement.
+                  </span>,
+                  <span>
+                    Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente.
+                  </span>,
+                ],
+                "className": "stocks-event-legal-warning",
+              },
+              "ref": null,
+              "rendered": Array [
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Les réservations peuvent être annulées par les utilisateurs jusque 72h avant le début de l'événement.",
+                  },
+                  "ref": null,
+                  "rendered": "Les réservations peuvent être annulées par les utilisateurs jusque 72h avant le début de l'événement.",
+                  "type": "span",
+                },
+                Object {
+                  "instance": null,
+                  "key": undefined,
+                  "nodeType": "host",
+                  "props": Object {
+                    "children": "Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente.",
+                  },
+                  "ref": null,
+                  "rendered": "Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente.",
+                  "type": "span",
+                },
+              ],
+              "type": "div",
             },
             Object {
               "instance": null,

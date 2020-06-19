@@ -50,23 +50,77 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
     }
   })
 
-  it('should match the snapshot when managing an event', () => {
-    // when
-    const wrapper = shallow(<StocksManager {...props} />)
+  describe('when managing an event', () => {
+    it('should match the snapshot when managing an event', () => {
+      // when
+      const wrapper = shallow(<StocksManager {...props} />)
 
-    // then
-    expect(wrapper).toMatchSnapshot()
+      // then
+      expect(wrapper).toMatchSnapshot()
+    })
+
+    it('should contain the event cancellation legal text', () => {
+      // when
+      const wrapper = shallow(<StocksManager {...props} />)
+
+      // then
+      const legalTextFirstSentence = wrapper
+        .findWhere(
+          node =>
+            node.text() ===
+            "Les réservations peuvent être annulées par les utilisateurs jusque 72h avant le début de l'événement."
+        )
+        .first()
+      const legalTextSecondSentence = wrapper
+        .findWhere(
+          node =>
+            node.text() ===
+            "Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente."
+        )
+        .first()
+      expect(legalTextFirstSentence).toHaveLength(1)
+      expect(legalTextSecondSentence).toHaveLength(1)
+    })
   })
 
-  it('should match the snapshot when managing a thing', () => {
-    // given
-    props.isEvent = false
+  describe('when managing a thing', () => {
+    it('should match the snapshot when managing a thing', () => {
+      // given
+      props.isEvent = false
 
-    // when
-    const wrapper = shallow(<StocksManager {...props} />)
+      // when
+      const wrapper = shallow(<StocksManager {...props} />)
 
-    // then
-    expect(wrapper).toMatchSnapshot()
+      // then
+      expect(wrapper).toMatchSnapshot()
+    })
+
+    it('should not contain the event cancellation legal text', () => {
+      // given
+      props.isEvent = false
+
+      // when
+      const wrapper = shallow(<StocksManager {...props} />)
+
+      // then
+      // then
+      const legalTextFirstSentence = wrapper
+        .findWhere(
+          node =>
+            node.text() ===
+            "Les réservations peuvent être annulées par les utilisateurs jusque 72h avant le début de l'événement."
+        )
+        .first()
+      const legalTextSecondSentence = wrapper
+        .findWhere(
+          node =>
+            node.text() ===
+            "Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente."
+        )
+        .first()
+      expect(legalTextFirstSentence).toHaveLength(0)
+      expect(legalTextSecondSentence).toHaveLength(0)
+    })
   })
 
   describe('onClickCreateStockItem', () => {

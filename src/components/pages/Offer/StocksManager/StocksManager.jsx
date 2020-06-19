@@ -213,6 +213,20 @@ class StocksManager extends PureComponent {
             subtitle={get(offer, 'name')}
             title={isEvent ? 'Dates, horaires et prix' : get(product, 'id') && 'Prix'}
           />
+          {isEvent && (
+            <div className="stocks-event-legal-warning">
+              <span>
+                {
+                  "Les réservations peuvent être annulées par les utilisateurs jusque 72h avant le début de l'événement."
+                }
+              </span>
+              <span>
+                {
+                  "Si la date limite de réservation n'est pas encore passée, la place est alors automatiquement remise en vente."
+                }
+              </span>
+            </div>
+          )}
           <table className="stocks-table">
             {this.renderTableHead()}
             {provider ? (

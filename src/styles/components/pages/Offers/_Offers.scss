@@ -32,7 +32,7 @@
   }
 
   .offers-list-actions {
-    border-bottom: 1px solid #404040;
+    border-bottom: 1px solid $grey-darkest;
     font-size: 0.8rem;
     @extend .pb8;
     @extend .mb16;
@@ -42,7 +42,7 @@
       height: auto;
     }
     button:first-child {
-      border-right: 1px solid #757575;
+      border-right: 1px solid $grey;
       @extend .pr8;
     }
   }

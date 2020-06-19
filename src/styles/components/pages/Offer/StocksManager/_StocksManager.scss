@@ -4,6 +4,10 @@
     text-transform: uppercase;
   }
 
+  .hero-section {
+    margin-bottom: 1rem;
+  }
+
   .info {
     @extend .is-absolute;
     @extend .level;
@@ -35,6 +39,21 @@
       max-height: 0;
       padding: 0;
       transition: all 1s ease-in;
+    }
+  }
+
+  .stocks-event-legal-warning {
+    background-color: $grey-light-bis;
+    border-radius: rem(4px);
+    color: $grey-darkest;
+    font-size: rem(12px);
+    line-height: normal;
+    margin-bottom: rem(8px);
+    padding: rem(8px) rem(60px);
+    text-align: center;
+
+    span {
+      display: block;
     }
   }
 
