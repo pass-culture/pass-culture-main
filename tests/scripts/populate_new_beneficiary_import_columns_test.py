@@ -1,11 +1,14 @@
+from typing import List
+
 from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_beneficiary_import, \
     create_user
-from scripts.populate_new_beneficiary_import_columns import populate_new_beneficiary_import_columns
+
 from models import BeneficiaryImport, ImportStatus
-from repository import repository
 from models.db import Model, db
-from typing import List
+from repository import repository
+from scripts.populate_new_beneficiary_import_columns import \
+    populate_new_beneficiary_import_columns
 
 
 def create_former_beneficiary_import(*args, **kargs):
