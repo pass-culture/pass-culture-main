@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
+import Icon from '../../../../layout/Icon'
 
 const getAvailableStatusValues = bookingsRecap => {
   const bookingStatusValues = new Set()
@@ -43,22 +44,28 @@ class FilterByBookingStatus extends Component {
     }
 
     return (
-      <div>
-        {bookingStatusValues.map(row => (
-          <Fragment key={row}>
-            <input
-              defaultChecked
-              id={`bs-${row}`}
-              name={row}
-              onChange={handleCheckboxChange}
-              type="checkbox"
-            />
-            <label htmlFor={`bs-${row}`}>
-              {row}
-            </label>
-          </Fragment>
-        ))}
-      </div>
+      <span className="bs-filter">
+        <Icon svg="ico-filter-status" />
+        <div className="bs-filter-tooltip">
+          <div className="bs-filter-label">
+            {'Afficher les statuts'}
+          </div>
+          {bookingStatusValues.map(row => (
+            <Fragment key={row}>
+              <label>
+                <input
+                  defaultChecked
+                  id={`bs-${row}`}
+                  name={row}
+                  onChange={handleCheckboxChange}
+                  type="checkbox"
+                />
+                {row}
+              </label>
+            </Fragment>
+          ))}
+        </div>
+      </span>
     )
   }
 }
