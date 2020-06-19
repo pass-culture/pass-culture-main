@@ -21,9 +21,9 @@ def is_already_imported(application_id: int) -> bool:
 def save_beneficiary_import_with_status(status: ImportStatus,
                                         application_id: int,
                                         source_id: int,
+                                        source: BeneficiaryImportSources,
                                         detail: str = None,
-                                        source: BeneficiaryImportSources = BeneficiaryImportSources.demarches_simplifiees,
-                                        user: UserSQLEntity = None):
+                                        user: UserSQLEntity = None) -> None:
     existing_beneficiary_import = BeneficiaryImport.query \
         .filter_by(applicationId=application_id) \
         .first()

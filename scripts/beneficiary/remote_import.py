@@ -9,10 +9,11 @@ from domain.demarches_simplifiees import \
 from domain.user_activation import create_beneficiary_from_application
 from domain.user_emails import send_activation_email
 from models import ApiErrors, ImportStatus, UserSQLEntity
+from models.beneficiary_import import BeneficiaryImportSources
 from repository import repository
-from repository.beneficiary_import_queries import \
-    find_applications_ids_to_retry, is_already_imported, \
-    save_beneficiary_import_with_status
+from repository.beneficiary_import_queries import (
+    find_applications_ids_to_retry, is_already_imported,
+    save_beneficiary_import_with_status)
 from repository.user_queries import find_by_civility, find_user_by_email
 from utils.logger import logger
 from utils.mailing import MailServiceException, send_raw_email
@@ -33,8 +34,8 @@ def run(
         'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2', None))
     logger.info(
         f'[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées for procedure = {procedure_id} - Procedure {procedure_id}')
-    error_messages = []
-    new_beneficiaries = []
+    error_messages: List[str] = []
+    new_beneficiaries: List[UserSQLEntity] = []
     applications_ids = get_all_applications_ids(
         procedure_id, TOKEN, process_applications_updated_after)
     retry_ids = get_applications_ids_to_retry()
@@ -138,6 +139,7 @@ def _process_creation(error_messages: List[str], information: Dict, new_benefici
         save_beneficiary_import_with_status(
             ImportStatus.CREATED,
             information['application_id'],
+            source=BeneficiaryImportSources.demarches_simplifiees,
             source_id=procedure_id,
             user=new_beneficiary)
         new_beneficiaries.append(new_beneficiary)
@@ -155,12 +157,12 @@ def _process_duplication(duplicate_users: List[UserSQLEntity], error_messages: L
     logger.warning(
         f'[BATCH][REMOTE IMPORT BENEFICIARIES] Duplicate beneficiaries found : {message}')
     error_messages.append(message)
-    save_beneficiary_import_with_status(ImportStatus.DUPLICATE, information['application_id'], source_id=procedure_id,
+    save_beneficiary_import_with_status(ImportStatus.DUPLICATE, information['application_id'], source=BeneficiaryImportSources.demarches_simplifiees, source_id=procedure_id,
                                         detail=f"Utilisateur en doublon : {duplicate_ids}")
 
 
 def _process_rejection(information: Dict, procedure_id: int) -> None:
-    save_beneficiary_import_with_status(ImportStatus.REJECTED, information['application_id'], source_id=procedure_id,
+    save_beneficiary_import_with_status(ImportStatus.REJECTED, information['application_id'], source=BeneficiaryImportSources.demarches_simplifiees, source_id=procedure_id,
                                         detail='Compte existant avec cet email')
     logger.warning(
         f"[BATCH][REMOTE IMPORT BENEFICIARIES] Rejected application {information['application_id']} because of already existing email - Procedure {procedure_id}")
@@ -171,7 +173,7 @@ def _process_error(error_messages: List[str], application_id: int, procedure_id:
     logger.error(f'[BATCH][REMOTE IMPORT BENEFICIARIES] {error}')
     error_messages.append(error)
     save_beneficiary_import_with_status(
-        ImportStatus.ERROR, application_id, source_id=procedure_id, detail=error)
+        ImportStatus.ERROR, application_id, source=BeneficiaryImportSources.demarches_simplifiees, source_id=procedure_id, detail=error)
 
 
 def _find_application_ids_to_process(applications: Dict, process_applications_updated_after: datetime) -> Set:

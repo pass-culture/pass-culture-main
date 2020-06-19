@@ -1,23 +1,32 @@
+from datetime import datetime
+
+from domain.postal_code.postal_code import PostalCode
+
+
 class BeneficiaryPreSubscription(object):
     def __init__(self,
-                 address: str,
-                 birth_date: str,
-                 city: str,
-                 department_code: str,
+                 activity: str,
+                 civility: str,
+                 date_of_birth: datetime,
                  email: str,
                  first_name: str,
-                 gender: str,
                  last_name: str,
                  phone_number: str,
-                 status: str
+                 postal_code: str
                  ):
-        self.address = address
-        self.birth_date = birth_date
-        self.city = city
-        self.department_code = department_code
+        self.activity = activity
+        self.civility = civility
+        self.date_of_birth = date_of_birth
         self.email = email
         self.first_name = first_name
-        self.gender = gender
         self.last_name = last_name
         self.phone_number = phone_number
-        self.status = status
+        self.postal_code = postal_code
+
+    @property
+    def public_name(self) -> str:
+        return f'{self.first_name} {self.last_name}'
+
+    @property
+    def department_code(self) -> str:
+        return PostalCode(self.postal_code).get_departement_code()

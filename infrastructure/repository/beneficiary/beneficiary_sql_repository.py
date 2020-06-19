@@ -3,7 +3,7 @@ from domain.beneficiary.beneficiary_exceptions import BeneficiaryDoesntExist
 from domain.beneficiary.beneficiary_repository import BeneficiaryRepository
 from models import UserSQLEntity
 from models.db import db
-from infrastructure.repository.beneficiary import beneficiary_domain_converter
+from infrastructure.repository.beneficiary import beneficiary_sql_converter
 
 
 class BeneficiarySQLRepository(BeneficiaryRepository):
@@ -14,4 +14,4 @@ class BeneficiarySQLRepository(BeneficiaryRepository):
         if user_sql_entity is None:
             raise BeneficiaryDoesntExist()
 
-        return beneficiary_domain_converter.to_domain(user_sql_entity)
+        return beneficiary_sql_converter.to_domain(user_sql_entity)

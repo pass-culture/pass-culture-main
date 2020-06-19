@@ -119,7 +119,7 @@ class SaveBeneficiaryImportWithStatusTest:
     @clean_database
     def test_a_status_is_set_on_a_new_import(self, app):
         # when
-        save_beneficiary_import_with_status(ImportStatus.DUPLICATE, 123, source_id=14562,
+        save_beneficiary_import_with_status(ImportStatus.DUPLICATE, 123, source=BeneficiaryImportSources.demarches_simplifiees, source_id=14562,
                                             user=None)
 
         # then
@@ -129,8 +129,8 @@ class SaveBeneficiaryImportWithStatusTest:
     @clean_database
     def test_a_beneficiary_import_is_saved_with_all_fields(self, app):
         # when
-        save_beneficiary_import_with_status(ImportStatus.DUPLICATE, 123, source_id=145236,
-                                            user=None, source=BeneficiaryImportSources.demarches_simplifiees)
+        save_beneficiary_import_with_status(ImportStatus.DUPLICATE, 123, source=BeneficiaryImportSources.demarches_simplifiees, source_id=145236,
+                                            user=None)
 
         # then
         beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
@@ -143,12 +143,12 @@ class SaveBeneficiaryImportWithStatusTest:
         # given
         two_days_ago = datetime.utcnow() - timedelta(days=2)
         with freeze_time(two_days_ago):
-            save_beneficiary_import_with_status(ImportStatus.DUPLICATE, 123, source_id=14562,
+            save_beneficiary_import_with_status(ImportStatus.DUPLICATE, 123, source=BeneficiaryImportSources.demarches_simplifiees, source_id=14562,
                                                 user=None)
         beneficiary = create_user()
 
         # when
-        save_beneficiary_import_with_status(ImportStatus.CREATED, 123, source_id=14562,
+        save_beneficiary_import_with_status(ImportStatus.CREATED, 123, source=BeneficiaryImportSources.demarches_simplifiees, source_id=14562,
                                             user=beneficiary)
 
         # then
@@ -163,11 +163,11 @@ class SaveBeneficiaryImportWithStatusTest:
         two_days_ago = datetime.utcnow() - timedelta(days=2)
         beneficiary = create_user()
         with freeze_time(two_days_ago):
-            save_beneficiary_import_with_status(ImportStatus.CREATED, 123, source_id=14562,
+            save_beneficiary_import_with_status(ImportStatus.CREATED, 123, source=BeneficiaryImportSources.demarches_simplifiees, source_id=14562,
                                                 user=beneficiary)
 
         # When
-        save_beneficiary_import_with_status(ImportStatus.REJECTED, 123, source_id=14562,
+        save_beneficiary_import_with_status(ImportStatus.REJECTED, 123, source=BeneficiaryImportSources.demarches_simplifiees, source_id=14562,
                                             user=None)
 
         # Then

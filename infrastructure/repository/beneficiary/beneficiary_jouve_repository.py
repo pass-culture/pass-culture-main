@@ -20,7 +20,8 @@ class ApiJouveException(Exception):
 
 
 class BeneficiaryJouveRepository(BeneficiaryRepository):
-    def _get_authentication_token(self) -> str:
+    @classmethod
+    def _get_authentication_token(cls) -> str:
         expiration = datetime.datetime.now() + datetime.timedelta(hours=1)
         response = requests.post(
             f'{JOUVE_API_DOMAIN}/REST/server/authenticationtokens',
@@ -40,8 +41,9 @@ class BeneficiaryJouveRepository(BeneficiaryRepository):
         response_json = response.json()
         return response_json['Value']
 
-    def get_application_by(self, application_id: str) -> BeneficiaryPreSubscription:
-        token = self._get_authentication_token()
+    @classmethod
+    def get_application_by(cls, application_id: int) -> BeneficiaryPreSubscription:
+        token = cls._get_authentication_token()
 
         response = requests.post(
             f'{JOUVE_API_DOMAIN}/REST/vault/extensionmethod/VEM_GetJeuneByID',

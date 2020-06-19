@@ -16,7 +16,6 @@ class UpdateUserInformationsTest:
             has_seen_tutorials=True,
             cultural_survey_id=None,
             cultural_survey_filled_date=datetime(2020, 4, 22),
-            department_code='27',
             email='han@solo.sw',
             needs_to_fill_cultural_survey=False,
             phone_number='05 55 55 55 55',
@@ -31,7 +30,6 @@ class UpdateUserInformationsTest:
         assert user.hasSeenTutorials == True
         assert user.culturalSurveyId == None
         assert user.culturalSurveyFilledDate == datetime(2020, 4, 22)
-        assert user.departementCode == '27'
         assert user.email == 'han@solo.sw'
         assert user.needsToFillCulturalSurvey == False
         assert user.phoneNumber == '05 55 55 55 55'

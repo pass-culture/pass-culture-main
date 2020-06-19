@@ -14,6 +14,7 @@ from enum import Enum
 
 class BeneficiaryImportSources(Enum):
     demarches_simplifiees = 'demarches_simplifiees'
+    jouve = 'jouve'
 
 
 class BeneficiaryImport(PcObject, Model):
