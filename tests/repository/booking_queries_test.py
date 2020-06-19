@@ -1709,7 +1709,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_cancelled is False
         assert expected_booking_recap.booking_is_reimbursed is False
         assert expected_booking_recap.booking_is_duo is False
-        assert expected_booking_recap.venue_identifier == humanize(venue.id)
+        assert expected_booking_recap.venue_identifier == venue.id
 
     @clean_database
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app):
@@ -1798,7 +1798,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_cancelled is False
         assert expected_booking_recap.booking_is_reimbursed is False
         assert expected_booking_recap.event_beginning_datetime == stock.beginningDatetime.astimezone(tz.gettz('Europe/Paris'))
-        assert expected_booking_recap.venue_identifier == humanize(venue.id)
+        assert expected_booking_recap.venue_identifier == venue.id
 
     @clean_database
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app):

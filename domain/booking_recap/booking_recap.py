@@ -20,9 +20,9 @@ class BookingRecap:
                  booking_is_used: bool,
                  booking_is_cancelled: bool,
                  booking_is_reimbursed: bool,
-                 offer_identifier: str,
+                 offer_identifier: int,
                  offer_name: str,
-                 venue_identifier: str,
+                 venue_identifier: int,
                  ):
         self.beneficiary_lastname = beneficiary_lastname
         self.beneficiary_firstname = beneficiary_firstname

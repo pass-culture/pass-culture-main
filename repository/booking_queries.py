@@ -288,7 +288,7 @@ def _serialize_thing_booking_recap(booking: object, booking_date_timezoned: date
         booking_is_cancelled=booking.isCancelled,
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
-        venue_identifier=humanize(booking.venueId),
+        venue_identifier=booking.venueId,
     )
 
 
@@ -306,7 +306,7 @@ def _serialize_book_booking_recap(booking: object, booking_date_timezoned: datet
         booking_is_cancelled=booking.isCancelled,
         booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
         booking_is_duo=booking.quantity == DUO_QUANTITY,
-        venue_identifier=humanize(booking.venueId)
+        venue_identifier=booking.venueId
     )
 
 
@@ -327,7 +327,7 @@ def _serialize_event_booking_recap(booking: object, booking_date_timezoned: date
             date=booking.stockBeginningDatetime,
             departement_code=booking.venueDepartementCode
         ),
-        venue_identifier=humanize(booking.venueId),
+        venue_identifier=booking.venueId,
     )
 
 

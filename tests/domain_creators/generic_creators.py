@@ -34,7 +34,7 @@ def create_domain_thing_booking_recap(offer_identifier: int = 1,
                                       booking_is_used: bool = False,
                                       booking_is_cancelled: bool = False,
                                       booking_is_reimbursed: bool = False,
-                                      venue_identifier: str = 'AE') -> ThingBookingRecap:
+                                      venue_identifier: int = 1) -> ThingBookingRecap:
     if offer_isbn:
         return BookBookingRecap(
             offer_identifier=offer_identifier,
@@ -79,7 +79,7 @@ def create_domain_event_booking_recap(offer_identifier: int = 1,
                                       booking_is_cancelled: bool = False,
                                       booking_is_reimbursed: bool = False,
                                       event_beginning_datetime: datetime = datetime(2020, 5, 26, 20, 30, 0, 0),
-                                      venue_identifier: str = 'AE') -> EventBookingRecap:
+                                      venue_identifier: int = 1) -> EventBookingRecap:
     return EventBookingRecap(
         offer_identifier=offer_identifier,
         offer_name=offer_name,
