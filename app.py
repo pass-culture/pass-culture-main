@@ -7,13 +7,12 @@ from sentry_sdk.integrations.rq import RqIntegration
 import redis
 from mailjet_rest import Client
 from werkzeug.middleware.profiler import ProfilerMiddleware
-from dotenv import load_dotenv
-from pathlib import Path
 
 from admin.install import install_admin_views
 from documentation import install_documentation
 from flask_app import app, db, admin
 from local_providers.install import install_local_providers
+from load_environment_configuration_variables import load_environment_configuration_variables
 from models.install import install_activity, install_features, install_materialized_views
 from repository.feature_queries import feature_request_profiling_enabled
 from routes import install_routes
@@ -24,11 +23,7 @@ from utils.mailing import get_contact, \
     MAILJET_API_SECRET, \
     subscribe_newsletter
 
-
-env_file = '.env.' + os.getenv('ENV')
-env_path = Path('.') / env_file
-load_dotenv(dotenv_path=env_path)
-
+load_environment_configuration_variables()
 
 if IS_DEV is False:
     sentry_sdk.init(
