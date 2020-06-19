@@ -9,10 +9,11 @@ import Header from './Header/Header'
 import BookingIsDuoCell from './CellsFormatter/BookingIsDuoCell'
 import { NB_BOOKINGS_PER_PAGE } from './NB_BOOKINGS_PER_PAGE'
 import TableFrame from './Table/TableFrame'
-import Filters, { ALL_VENUES, EMPTY_FILTER_VALUE } from './Filters/Filters'
+import Filters, { ALL_BOOKING_STATUS, ALL_VENUES, EMPTY_FILTER_VALUE } from './Filters/Filters'
 import NoFilteredBookings from './NoFilteredBookings/NoFilteredBookings'
 import findOldestBookingDate from './utils/findOldestBookingDate'
 import filterBookingsRecap from './utils/filterBookingsRecap'
+import FilterByBookingStatus from './Filters/FilterByBookingStatus'
 import { sortByOfferName } from './utils/sortingFunctions'
 
 const FIRST_PAGE_INDEX = 0
@@ -30,7 +31,7 @@ class BookingsRecapTable extends Component {
           Cell: ({ value }) => <BookingOfferCell offer={value} />,
           className: 'td-offer-name',
           defaultCanSort: true,
-          sortType: sortByOfferName
+          sortType: sortByOfferName,
         },
         {
           id: 2,
@@ -38,7 +39,7 @@ class BookingsRecapTable extends Component {
           accessor: 'booking_is_duo',
           Cell: ({ value }) => <BookingIsDuoCell isDuo={value} />,
           className: 'td-booking-duo',
-          disableSortBy: true
+          disableSortBy: true,
         },
         {
           id: 3,
@@ -46,7 +47,7 @@ class BookingsRecapTable extends Component {
           accessor: 'beneficiary',
           Cell: ({ value }) => <BeneficiaryCell beneficiaryInfos={value} />,
           className: 'td-beneficiary',
-          disableSortBy: true
+          disableSortBy: true,
         },
         {
           id: 4,
@@ -54,7 +55,7 @@ class BookingsRecapTable extends Component {
           accessor: 'booking_date',
           Cell: ({ value }) => <BookingDateCell bookingDate={value} />,
           className: 'td-booking-date',
-          disableSortBy: true
+          disableSortBy: true,
         },
         {
           id: 5,
@@ -62,14 +63,21 @@ class BookingsRecapTable extends Component {
           accessor: 'booking_token',
           Cell: ({ value }) => <BookingTokenCell bookingToken={value} />,
           className: 'td-booking-token',
-          disableSortBy: true
+          disableSortBy: true,
         },
         {
           id: 6,
+          accessor: 'booking_status',
           headerTitle: 'Statut',
           Cell: ({ row }) => <BookingStatusCell bookingRecapInfo={row} />,
           className: 'td-booking-status',
-          disableSortBy: true
+          disableSortBy: true,
+          Filter: () => (
+            <FilterByBookingStatus
+              bookingsRecap={props.bookingsRecap}
+              updateGlobalFilters={this.updateGlobalFilters}
+            />
+          ),
         },
       ],
       currentPage: FIRST_PAGE_INDEX,
@@ -82,6 +90,7 @@ class BookingsRecapTable extends Component {
         offerISBN: EMPTY_FILTER_VALUE,
         offerName: EMPTY_FILTER_VALUE,
         offerVenue: ALL_VENUES,
+        bookingStatus: ALL_BOOKING_STATUS,
       },
       oldestBookingDate: findOldestBookingDate(props.bookingsRecap),
     }
@@ -112,8 +121,18 @@ class BookingsRecapTable extends Component {
     })
   }
 
-  setFilters = filters => {
-    this.setState({ filters: filters }, () => this.applyFilters())
+  updateGlobalFilters = updatedFilters => {
+    const { filters } = this.state
+
+    this.setState(
+      {
+        filters: {
+          ...filters,
+          ...updatedFilters,
+        },
+      },
+      () => this.applyFilters()
+    )
   }
 
   applyFilters = () => {
@@ -123,7 +142,7 @@ class BookingsRecapTable extends Component {
 
     this.setState({
       bookingsRecapFiltered: bookingsRecapFiltered,
-      currentPage: FIRST_PAGE_INDEX
+      currentPage: FIRST_PAGE_INDEX,
     })
   }
 
@@ -142,7 +161,7 @@ class BookingsRecapTable extends Component {
           isLoading={isLoading}
           oldestBookingDate={oldestBookingDate}
           ref={this.filtersRef}
-          setFilters={this.setFilters}
+          updateGlobalFilters={this.updateGlobalFilters}
         />
         {nbBookings > 0 ? (
           <Fragment>

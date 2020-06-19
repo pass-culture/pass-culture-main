@@ -12,7 +12,7 @@ import Header from '../Header/Header'
 import Paginate from '../Table/Paginate/Paginate'
 import { NB_BOOKINGS_PER_PAGE } from '../NB_BOOKINGS_PER_PAGE'
 import NoFilteredBookings from '../NoFilteredBookings/NoFilteredBookings'
-import Filters, { ALL_VENUES, EMPTY_FILTER_VALUE } from '../Filters/Filters'
+import Filters, { ALL_BOOKING_STATUS, ALL_VENUES, EMPTY_FILTER_VALUE } from '../Filters/Filters'
 import filterBookingsRecap from '../utils/filterBookingsRecap'
 import DatePicker from 'react-datepicker'
 import moment from 'moment'
@@ -152,7 +152,7 @@ describe('components | BookingsRecapTable', () => {
     expect(thirdHeader.text()).toBe('Bénéficiaire')
     expect(fourthHeader.text()).toBe('Réservation')
     expect(fifthHeader.text()).toBe('Contremarque')
-    expect(sixthHeader.text()).toBe('Statut')
+    expect(sixthHeader.text()).toContain('Statut')
   })
 
   it('should render the expected table rows', () => {
@@ -447,7 +447,7 @@ describe('components | BookingsRecapTable', () => {
     expect(filters.props()).toStrictEqual({
       isLoading: true,
       oldestBookingDate: '',
-      setFilters: expect.any(Function),
+      updateGlobalFilters: expect.any(Function),
     })
   })
 
@@ -763,6 +763,7 @@ describe('components | BookingsRecapTable', () => {
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
+      bookingStatus: ALL_BOOKING_STATUS,
       bookingToken: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
       offerISBN: EMPTY_FILTER_VALUE,

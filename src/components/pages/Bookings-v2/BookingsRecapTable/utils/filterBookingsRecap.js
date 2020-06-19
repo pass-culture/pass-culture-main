@@ -81,6 +81,13 @@ const doesISBNMatchFilter = (isbn, booking) => {
   return true
 }
 
+const doesBookingStatusMatchFilter = (statuses, booking) => {
+  if (statuses && statuses !== EMPTY_FILTER_VALUE) {
+    return !statuses.includes(booking.booking_status)
+  }
+  return true
+}
+
 const filterBookingsRecap = (bookingsRecap, filters) => {
   const {
     bookingBeneficiary,
@@ -91,6 +98,7 @@ const filterBookingsRecap = (bookingsRecap, filters) => {
     offerISBN,
     offerName,
     offerVenue,
+    bookingStatus,
   } = filters
   return bookingsRecap.filter(booking => {
     return (
@@ -99,6 +107,7 @@ const filterBookingsRecap = (bookingsRecap, filters) => {
       doesBookingBeginningDateMatchFilter(bookingBeginningDate, booking) &&
       doesBookingEndDateMatchFilter(bookingEndingDate, booking) &&
       doesBookingBeneficiaryMatchFilter(bookingBeneficiary, booking) &&
+      doesBookingStatusMatchFilter(bookingStatus, booking) &&
       doesBookingTokenMatchFilter(bookingToken, booking) &&
       doesOfferVenueMatchFilter(offerVenue, booking) &&
       doesISBNMatchFilter(offerISBN, booking)

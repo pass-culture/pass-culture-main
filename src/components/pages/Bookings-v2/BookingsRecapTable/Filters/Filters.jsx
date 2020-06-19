@@ -13,6 +13,7 @@ export const EMPTY_FILTER_VALUE = ''
 export const ALL_VENUES = 'all'
 const DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
 const DEFAULT_OMNISEARCH_CRITERIA = 'offre'
+export const ALL_BOOKING_STATUS = []
 
 class Filters extends Component {
   constructor(props) {
@@ -27,6 +28,7 @@ class Filters extends Component {
         offerISBN: EMPTY_FILTER_VALUE,
         offerName: EMPTY_FILTER_VALUE,
         offerVenue: ALL_VENUES,
+        bookingStatus: ALL_BOOKING_STATUS,
       },
       keywords: EMPTY_FILTER_VALUE,
       selectedBookingBeginningDate: EMPTY_FILTER_VALUE,
@@ -47,8 +49,8 @@ class Filters extends Component {
   }
 
   applyFilters = debounce(filterValues => {
-    const { setFilters } = this.props
-    setFilters({
+    const { updateGlobalFilters } = this.props
+    updateGlobalFilters({
       ...filterValues,
     })
   }, DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS)
@@ -65,6 +67,7 @@ class Filters extends Component {
           offerISBN: EMPTY_FILTER_VALUE,
           offerName: EMPTY_FILTER_VALUE,
           offerVenue: ALL_VENUES,
+          bookingStatus: ALL_BOOKING_STATUS,
         },
         keywords: EMPTY_FILTER_VALUE,
         selectedBookingBeginningDate: EMPTY_FILTER_VALUE,
@@ -145,7 +148,7 @@ class Filters extends Component {
 
 Filters.propTypes = {
   isLoading: PropTypes.bool.isRequired,
-  setFilters: PropTypes.func.isRequired,
+  updateGlobalFilters: PropTypes.func.isRequired,
 }
 
 export default Filters

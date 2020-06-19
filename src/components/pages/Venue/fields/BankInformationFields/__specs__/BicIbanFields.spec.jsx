@@ -37,7 +37,6 @@ describe('src | Venue | BicIbanFields ', () => {
     // then
     const modificationLink = wrapper.find('a')
     expect(modificationLink.exists()).toBe(true)
-    console.log(modificationLink.debug())
     expect(modificationLink.prop('href')).toBe('link/to/venue/demarchesSimplifiees/procedure')
   })
 })

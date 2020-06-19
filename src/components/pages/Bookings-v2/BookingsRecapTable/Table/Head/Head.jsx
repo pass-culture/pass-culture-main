@@ -12,6 +12,7 @@ const Head = ({ headerGroups }) => (
             key={column.id}
           >
             {column.render('headerTitle')}
+            {column.Filter ? column.render('Filter') : null}
             {
               column.canSort ?
                 <span>

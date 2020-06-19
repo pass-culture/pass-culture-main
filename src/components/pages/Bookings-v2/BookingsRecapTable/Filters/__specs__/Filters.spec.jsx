@@ -1,5 +1,5 @@
 import React from 'react'
-import Filters, { ALL_VENUES, EMPTY_FILTER_VALUE } from '../Filters'
+import Filters, { ALL_BOOKING_STATUS, ALL_VENUES, EMPTY_FILTER_VALUE } from '../Filters'
 import { mount, shallow } from 'enzyme'
 import { fetchAllVenuesByProUser } from '../../../../../../services/venuesService'
 import FilterByOmniSearch from '../FilterByOmniSearch'
@@ -18,7 +18,7 @@ describe('components | Filters', () => {
     props = {
       isLoading: false,
       oldestBookingDate: EMPTY_FILTER_VALUE,
-      setFilters: jest.fn(),
+      updateGlobalFilters: jest.fn(),
     }
     fetchAllVenuesByProUser.mockResolvedValue([
       {
@@ -86,10 +86,11 @@ describe('components | Filters', () => {
     await offerNameInput.simulate('change', { target: { value: 'Jurassic Park' } })
 
     // Then
-    expect(props.setFilters).toHaveBeenCalledWith({
+    expect(props.updateGlobalFilters).toHaveBeenCalledWith({
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
+      bookingStatus: ALL_BOOKING_STATUS,
       bookingToken: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
       offerName: 'Jurassic Park',
@@ -107,10 +108,11 @@ describe('components | Filters', () => {
     wrapper.instance().updateFilters(updatedFilter)
 
     // Then
-    expect(props.setFilters).toHaveBeenCalledWith({
+    expect(props.updateGlobalFilters).toHaveBeenCalledWith({
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
+      bookingStatus: ALL_BOOKING_STATUS,
       bookingToken: EMPTY_FILTER_VALUE,
       offerDate: '2020-05-20',
       offerISBN: EMPTY_FILTER_VALUE,
@@ -125,12 +127,12 @@ describe('components | Filters', () => {
     // When
     wrapper.instance().updateFilters()
 
-
     // Then
-    expect(props.setFilters).toHaveBeenCalledWith({
+    expect(props.updateGlobalFilters).toHaveBeenCalledWith({
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
+      bookingStatus: ALL_BOOKING_STATUS,
       bookingToken: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
       offerISBN: EMPTY_FILTER_VALUE,
@@ -151,11 +153,12 @@ describe('components | Filters', () => {
     wrapperInstance.updateFilters(secondUpdatedFilter)
 
     // Then
-    expect(props.setFilters).toHaveBeenCalledTimes(2)
-    expect(props.setFilters).toHaveBeenCalledWith({
+    expect(props.updateGlobalFilters).toHaveBeenCalledTimes(2)
+    expect(props.updateGlobalFilters).toHaveBeenCalledWith({
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
+      bookingStatus: ALL_BOOKING_STATUS,
       bookingToken: EMPTY_FILTER_VALUE,
       offerDate: '2020-05-20',
       offerISBN: EMPTY_FILTER_VALUE,
@@ -181,11 +184,12 @@ describe('components | Filters', () => {
     wrapperInstance.updateFilters(someUpdatedFilters)
 
     // Then
-    expect(props.setFilters).toHaveBeenCalledTimes(2)
-    expect(props.setFilters).toHaveBeenCalledWith({
+    expect(props.updateGlobalFilters).toHaveBeenCalledTimes(2)
+    expect(props.updateGlobalFilters).toHaveBeenCalledWith({
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
+      bookingStatus: ALL_BOOKING_STATUS,
       bookingToken: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
       offerISBN: '12457',
