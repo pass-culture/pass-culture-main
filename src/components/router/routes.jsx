@@ -17,6 +17,7 @@ import ProfileContainer from '../pages/profile/ProfileContainer'
 import SignupContainer from '../pages/signup/SignupContainer'
 import SearchContainer from '../pages/search/SearchContainer'
 import SignInContainer from '../pages/signin/SignInContainer'
+import CreateAccount from '../pages/create-account/CreateAccount'
 import TutorialsContainer from '../pages/tutorials/TutorialsContainer'
 import TypeFormContainer from '../pages/typeform/TypeformContainer'
 
@@ -49,6 +50,13 @@ const routes = [
     featureName: 'WEBAPP_SIGNUP',
     path: '/inscription',
     title: 'Inscription',
+  },
+  {
+    component: CreateAccount,
+    path:
+      '/verification-eligibilite' +
+      '/(eligible|departement-non-eligible|pas-eligible|bientot|trop-tot|gardons-contact)?',
+    title: 'Eligibilité',
   },
   {
     component: TutorialsContainer,
