@@ -103,7 +103,6 @@ describe('src | components | pages | Offer | StocksManager | StocksManager', () 
       const wrapper = shallow(<StocksManager {...props} />)
 
       // then
-      // then
       const legalTextFirstSentence = wrapper
         .findWhere(
           node =>
