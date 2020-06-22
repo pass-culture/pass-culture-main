@@ -13,16 +13,24 @@ describe('components | pages | Table | Head', () => {
             {
               id: 1,
               headerTitle: 'Offres',
-              render: jest.fn(() => (<span>
-                {'Offres'}
-              </span>)),
+              render: jest.fn(() => (
+                <span>
+                  {'Offres'}
+                </span>
+              )),
+              getHeaderProps: jest.fn(),
+              getSortByToggleProps: jest.fn(),
             },
             {
               id: 2,
               headerTitle: 'Beneficiaires',
-              render: jest.fn(() => (<span>
-                {'Beneficiaires'}
-              </span>)),
+              render: jest.fn(() => (
+                <span>
+                  {'Beneficiaires'}
+                </span>
+              )),
+              getHeaderProps: jest.fn(),
+              getSortByToggleProps: jest.fn(),
             },
           ],
         },

@@ -20,11 +20,15 @@ describe('components | TableFrame', () => {
           id: 1,
           headerTitle: 'Stock',
           accessor: 'stock',
+          getHeaderProps: jest.fn(),
+          getSortByToggleProps: jest.fn(),
         },
         {
           id: 2,
           headerTitle: 'Beneficiaire',
           accessor: 'beneficiary',
+          getHeaderProps: jest.fn(),
+          getSortByToggleProps: jest.fn(),
         },
       ],
       data: [{}],
@@ -48,6 +52,8 @@ describe('components | TableFrame', () => {
                 <span>
                   {'Offres'}
                 </span>)),
+              getHeaderProps: jest.fn(),
+              getSortByToggleProps: jest.fn(),
             },
             {
               id: 2,
@@ -56,6 +62,8 @@ describe('components | TableFrame', () => {
                 <span>
                   {'Beneficiaires'}
                 </span>)),
+              getHeaderProps: jest.fn(),
+              getSortByToggleProps: jest.fn(),
             },
           ],
         },
@@ -93,6 +101,8 @@ describe('components | TableFrame', () => {
           accessor: 'stock',
           // eslint-disable-next-line react/display-name, react/no-multi-comp
           Cell: ({ value }) => <CellMock offer={value} />,
+          getHeaderProps: jest.fn(),
+          getSortByToggleProps: jest.fn(),
         },
         {
           id: 2,
@@ -100,6 +110,8 @@ describe('components | TableFrame', () => {
           accessor: 'beneficiary',
           // eslint-disable-next-line react/display-name, react/no-multi-comp
           Cell: ({ value }) => <CellMock offer={value} />,
+          getHeaderProps: jest.fn(),
+          getSortByToggleProps: jest.fn(),
         },
       ],
       data: [
@@ -153,6 +165,8 @@ describe('components | TableFrame', () => {
             accessor: 'stock',
             // eslint-disable-next-line react/display-name, react/no-multi-comp
             Cell: ({ value }) => <CellMock offer={value} />,
+            getHeaderProps: jest.fn(),
+            getSortByToggleProps: jest.fn(),
           },
         ],
         data: [
@@ -195,6 +209,8 @@ describe('components | TableFrame', () => {
             accessor: 'stock',
             // eslint-disable-next-line react/display-name, react/no-multi-comp
             Cell: ({ value }) => <CellMock offer={value} />,
+            getHeaderProps: jest.fn(),
+            getSortByToggleProps: jest.fn(),
           },
         ],
         data: [
@@ -234,6 +250,8 @@ describe('components | TableFrame', () => {
             accessor: 'stock',
             // eslint-disable-next-line react/display-name, react/no-multi-comp
             Cell: ({ value }) => <CellMock offer={value} />,
+            getHeaderProps: jest.fn(),
+            getSortByToggleProps: jest.fn(),
           },
         ],
         data: [
@@ -274,6 +292,8 @@ describe('components | TableFrame', () => {
             accessor: 'stock',
             // eslint-disable-next-line react/display-name, react/no-multi-comp
             Cell: ({ value }) => <CellMock offer={value} />,
+            getHeaderProps: jest.fn(),
+            getSortByToggleProps: jest.fn(),
           },
         ],
         data: [

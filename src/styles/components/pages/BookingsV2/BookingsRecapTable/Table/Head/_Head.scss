@@ -5,10 +5,17 @@
       font-size: rem(14px);
       padding: rem(14px);
       font-weight: $weight-medium;
+
+      img {
+        height: rem(20px);
+        margin-left: rem(10px);
+        vertical-align: bottom;
+        width: rem(20px);
+      }
     }
 
     th:nth-child(1){
-      width: rem(200px);
+      width: rem(199px);
     }
 
     th:nth-child(2){
@@ -20,7 +27,7 @@
     }
 
     th:nth-child(4){
-      width: rem(110px);
+      width: rem(112px);
     }
 
     th:nth-child(5){

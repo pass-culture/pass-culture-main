@@ -1,13 +1,24 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import Icon from '../../../../../layout/Icon'
 
 const Head = ({ headerGroups }) => (
   <thead className="bookings-head">
     {headerGroups.map((headerGroup) => (
       <tr key='header-group'>
         {headerGroup.headers.map(column => (
-          <th key={column.id}>
+          <th
+            {...column.getHeaderProps(column.getSortByToggleProps())}
+            key={column.id}
+          >
             {column.render('headerTitle')}
+            {
+              column.canSort ?
+                <span>
+                  {column.isSorted ? column.isSortedDesc ? <Icon svg="ico-arrow-up-r" /> : <Icon svg="ico-arrow-down-r" /> : <Icon svg="ico-unfold" />}
+                </span> :
+                ''
+            }
           </th>
         ))}
       </tr>

@@ -28,6 +28,12 @@ class BookingsRecapTable extends Component {
           accessor: 'stock',
           Cell: ({ value }) => <BookingOfferCell offer={value} />,
           className: 'td-offer-name',
+          defaultCanSort: true,
+          sortType: (firstRow, secondRow) => {
+            const offerNameOne = firstRow.original.stock.offer_name
+            const offerNameTwo = secondRow.original.stock.offer_name
+            return offerNameOne < offerNameTwo ? -1 : 1
+          }
         },
         {
           id: 2,
@@ -35,6 +41,7 @@ class BookingsRecapTable extends Component {
           accessor: 'booking_is_duo',
           Cell: ({ value }) => <BookingIsDuoCell isDuo={value} />,
           className: 'td-booking-duo',
+          disableSortBy: true
         },
         {
           id: 3,
@@ -42,6 +49,7 @@ class BookingsRecapTable extends Component {
           accessor: 'beneficiary',
           Cell: ({ value }) => <BeneficiaryCell beneficiaryInfos={value} />,
           className: 'td-beneficiary',
+          disableSortBy: true
         },
         {
           id: 4,
@@ -49,6 +57,7 @@ class BookingsRecapTable extends Component {
           accessor: 'booking_date',
           Cell: ({ value }) => <BookingDateCell bookingDate={value} />,
           className: 'td-booking-date',
+          disableSortBy: true
         },
         {
           id: 5,
@@ -56,12 +65,14 @@ class BookingsRecapTable extends Component {
           accessor: 'booking_token',
           Cell: ({ value }) => <BookingTokenCell bookingToken={value} />,
           className: 'td-booking-token',
+          disableSortBy: true
         },
         {
           id: 6,
           headerTitle: 'Statut',
           Cell: ({ row }) => <BookingStatusCell bookingRecapInfo={row} />,
           className: 'td-booking-status',
+          disableSortBy: true
         },
       ],
       currentPage: FIRST_PAGE_INDEX,
