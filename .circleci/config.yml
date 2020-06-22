@@ -75,22 +75,16 @@ jobs:
       - run:
           name: Initialize api environment
           command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r requirements.txt
-            python -m nltk.downloader punkt stopwords
+            python3 -m venv venv;
+            . venv/bin/activate;
+            pip install -r requirements.txt;
+            python -m nltk.downloader punkt stopwords;
+            python install_database_extensions.py;
+            PYTHONPATH=. alembic upgrade head;
       - run:
-          name: Initialize data
+          name: Run data-analytics tests
           command: |
             git clone https://github.com/betagouv/pass-culture-data-analytics.git
-            cd pass-culture-data-analytics
-            cp install_models.py ../install_models.py;
-            cd ..
-            . venv/bin/activate
-            PYTHONPATH=. python install_models.py;
-      - run:
-          name: Run tests
-          command: |
             cd pass-culture-data-analytics
             python3 -m venv venv
             . venv/bin/activate
@@ -102,7 +96,6 @@ jobs:
           command: |
             export BOT_MESSAGE="'Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL'"
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
-
 
   functional-tests-webapp:
     machine:
@@ -228,7 +221,7 @@ jobs:
             dockerize -wait http://localhost:3001 -timeout 5m -wait-retry-interval 5s
             yarn test:cafe
       - store_artifacts:
-         path: ~/pass-culture-main/pro/testcafe_screenshots
+          path: ~/pass-culture-main/pro/testcafe_screenshots
       - run:
           name: Notify PC Ops Bot
           when: on_fail
@@ -250,6 +243,7 @@ workflows:
             branches:
               only:
                 - master
+
   nightly:
     triggers:
       - schedule:
