@@ -2,23 +2,23 @@
 
 counter=0
 
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E ".py$")
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM -- '*.py' ':!tests')
 if [[ "$STAGED_FILES" = "" ]]; then
   exit 0
 fi
 
 for FILE in $STAGED_FILES
 do
-  docker exec pc-flask mypy /opt/services/flaskapp/src/"$FILE" --config-file=/opt/services/flaskapp/src/mypy.ini --disallow-untyped-defs
+  docker exec pc-flask mypy /opt/services/flaskapp/src/$FILE
   if [[ "$?" == 0 ]]; then
-    echo -e "\t\033[0;32mType checking Passed: $FILE\033[0m"
+    echo -e "\033[0;32mType checking Passed: $FILE\033[0m\n"
   else
-    echo -e "\t\033[0;31mType checking Failed: $FILE\033[0m"
+    echo -e "\033[0;31mType checking Failed: $FILE\033[0m\n"
     counter=$((counter+1))
   fi
 done
 
 if [[ $counter > 0 ]]; then
-  echo -e "\033[0;34mIf you want to bypass it, add --no-verify option when committing.\033[0m"
+  echo -e "\033[0;34mIf you want to bypass it, add --no-verify option when committing.\033[0m\n"
   exit 1
 fi
