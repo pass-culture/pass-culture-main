@@ -138,14 +138,14 @@ describe('components | BookingsRecapTable', () => {
 
     // When
     const wrapper = mount(<BookingsRecapTable {...props} />)
+
+    // Then
     const firstHeader = wrapper.find('th').at(0)
     const secondHeader = wrapper.find('th').at(1)
     const thirdHeader = wrapper.find('th').at(2)
     const fourthHeader = wrapper.find('th').at(3)
     const fifthHeader = wrapper.find('th').at(4)
     const sixthHeader = wrapper.find('th').at(5)
-
-    // Then
     expect(wrapper.find('th')).toHaveLength(6)
     expect(firstHeader.text()).toBe("Nom de l'offre")
     expect(secondHeader.text()).toBe('')
@@ -153,6 +153,48 @@ describe('components | BookingsRecapTable', () => {
     expect(fourthHeader.text()).toBe('Réservation')
     expect(fifthHeader.text()).toBe('Contremarque')
     expect(sixthHeader.text()).toContain('Statut')
+  })
+
+  it('should render a filter icon in "statut" header', () => {
+    // Given
+    const props = {
+      bookingsRecap: [
+        {
+          stock: {
+            offer_name: 'Avez-vous déjà vu',
+            type: 'thing',
+          },
+          beneficiary: {
+            lastname: 'Klepi',
+            firstname: 'Sonia',
+            email: 'sonia.klepi@example.com',
+          },
+          booking_date: '2020-04-03T12:00:00Z',
+          booking_token: 'ZEHBGD',
+          booking_status: 'Validé',
+          booking_is_duo: true,
+          venue_identifier: 'AE',
+          booking_status_history: [
+            {
+              status: 'booked',
+              date: '2020-04-03T12:00:00Z',
+            },
+            {
+              status: 'validated',
+              date: '2020-05-12T12:00:00Z',
+            },
+          ],
+        },
+      ],
+      isLoading: false,
+    }
+
+    // When
+    const wrapper = mount(<BookingsRecapTable {...props} />)
+
+    // Then
+    const sixthHeader = wrapper.find('th').at(5)
+    expect(sixthHeader.find('img').prop('src')).toContain('ico-filter-status.svg')
   })
 
   it('should render the expected table rows', () => {

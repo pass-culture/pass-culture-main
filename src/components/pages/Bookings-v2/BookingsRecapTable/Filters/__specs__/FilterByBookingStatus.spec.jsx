@@ -1,6 +1,6 @@
 import React from 'react'
 import FilterByBookingStatus from '../FilterByBookingStatus'
-import { shallow } from 'enzyme'
+import { mount } from 'enzyme'
 
 describe('components | FilterByBookingStatus', () => {
   let props
@@ -44,74 +44,161 @@ describe('components | FilterByBookingStatus', () => {
     }
   })
 
-  it('should return filters with all available status in data', () => {
+  it('should display a filter icon', () => {
     // when
-    const wrapper = shallow(<FilterByBookingStatus {...props} />)
+    const wrapper = mount(<FilterByBookingStatus {...props} />)
+
+    // then
+    const filterIcon = wrapper.find('img')
+    expect(filterIcon.prop('src')).toContain('ico-filter-status.svg')
+    expect(filterIcon.prop('alt')).toBe('Filtrer par statut')
+  })
+
+  it('should not display status filters', () => {
+    // when
+    const wrapper = mount(<FilterByBookingStatus {...props} />)
 
     // then
     const checkbox = wrapper.find('input')
     const label = wrapper.find('label')
-    expect(checkbox).toHaveLength(2)
-    expect(checkbox.at(0).props()).toStrictEqual({
-      defaultChecked: true,
-      id: 'bs-booked',
-      name: 'booked',
-      onChange: expect.any(Function),
-      type: 'checkbox',
-    })
-    expect(checkbox.at(1).props()).toStrictEqual({
-      defaultChecked: true,
-      id: 'bs-validated',
-      name: 'validated',
-      onChange: expect.any(Function),
-      type: 'checkbox',
-    })
-    expect(label).toHaveLength(2)
-    expect(label.at(0).text()).toBe('booked')
-    expect(label.at(1).text()).toBe('validated')
+    expect(checkbox).toHaveLength(0)
+    expect(label).toHaveLength(0)
   })
 
-  it('should add value to filters when unchecking on a checkbox', () => {
-    // given
-    const wrapper = shallow(<FilterByBookingStatus {...props} />)
-    const checkbox = wrapper.find('input').at(0)
+  describe('on focus on the filter icon', () => {
+    it('should show filters with all available status in data', () => {
+      // given
+      const wrapper = mount(<FilterByBookingStatus {...props} />)
+      const filterIcon = wrapper.find('img')
 
-    // when
-    checkbox.simulate('change', { target: { name: 'validated', checked: false } })
+      // when
+      filterIcon.simulate('focus')
 
-    // then
-    expect(props.updateGlobalFilters).toHaveBeenCalledWith({
-      bookingStatus: ['validated'],
+      // then
+      const checkbox = wrapper.find('input')
+      const label = wrapper.find('label')
+      expect(checkbox).toHaveLength(2)
+      expect(checkbox.at(0).props()).toStrictEqual({
+        defaultChecked: true,
+        id: 'bs-booked',
+        name: 'booked',
+        onChange: expect.any(Function),
+        type: 'checkbox',
+      })
+      expect(checkbox.at(1).props()).toStrictEqual({
+        defaultChecked: true,
+        id: 'bs-validated',
+        name: 'validated',
+        onChange: expect.any(Function),
+        type: 'checkbox',
+      })
+      expect(label).toHaveLength(2)
+      expect(label.at(0).text()).toBe('booked')
+      expect(label.at(1).text()).toBe('validated')
     })
-  })
 
-  it('should remove value from filters when checking the checkbox', () => {
-    // given
-    const wrapper = shallow(<FilterByBookingStatus {...props} />)
-    const checkbox = wrapper.find('input').at(0)
+    it('should hide filters on blur', () => {
+      // given
+      const wrapper = mount(<FilterByBookingStatus {...props} />)
+      const filterIcon = wrapper.find('img')
+      filterIcon.simulate('focus')
 
-    // when
-    checkbox.simulate('change', { target: { name: 'validated', checked: true } })
+      // when
+      filterIcon.simulate('blur')
 
-    // then
-    expect(props.updateGlobalFilters).toHaveBeenCalledWith({
-      bookingStatus: [],
+      // then
+      const checkbox = wrapper.find('input')
+      const label = wrapper.find('label')
+      expect(checkbox).toHaveLength(0)
+      expect(label).toHaveLength(0)
     })
-  })
 
-  it('should add value to already filtered booking status when clicking on a checkbox', () => {
-    // given
-    const wrapper = shallow(<FilterByBookingStatus {...props} />)
-    const validatedStatusCheckbox = wrapper.find('input').at(0)
-    validatedStatusCheckbox.simulate('change', { target: { name: 'validated', checked: false } })
-    const bookedStatusCheckbox = wrapper.find('input').at(1)
+    it('should not hide filters on click on a checkbox', () => {
+      // given
+      const wrapper = mount(<FilterByBookingStatus {...props} />)
+      const filterIcon = wrapper.find('img')
+      filterIcon.simulate('focus')
 
-    // when
-    bookedStatusCheckbox.simulate('change', { target: { name: 'booked', checked: false } })
+      const checkbox = wrapper.find('input').at(0)
 
-    // then
-    expect(props.updateGlobalFilters).toHaveBeenCalledWith({
-      bookingStatus: ['validated', 'booked'],
+      // when
+      checkbox.simulate('mouseDown')
+      filterIcon.simulate('blur')
+      checkbox.simulate('mouseUp')
+
+      // then
+      const label = wrapper.find('label')
+      expect(label).toHaveLength(2)
+    })
+
+    it('should hide filters on blur after a click on a checkbox', () => {
+      // given
+      const wrapper = mount(<FilterByBookingStatus {...props} />)
+      const filterIcon = wrapper.find('img')
+      filterIcon.simulate('focus')
+
+      const checkbox = wrapper.find('input').at(0)
+      checkbox.simulate('mouseDown')
+      checkbox.simulate('mouseUp')
+
+      // when
+      filterIcon.simulate('blur')
+
+      // then
+      const checkboxes = wrapper.find('input')
+      const label = wrapper.find('label')
+      expect(checkboxes).toHaveLength(0)
+      expect(label).toHaveLength(0)
+    })
+
+    it('should add value to filters when unchecking on a checkbox', () => {
+      // given
+      const wrapper = mount(<FilterByBookingStatus {...props} />)
+      wrapper.find('img').simulate('focus')
+
+      const checkbox = wrapper.find('input').at(0)
+
+      // when
+      checkbox.simulate('change', { target: { name: 'validated', checked: false } })
+
+      // then
+      expect(props.updateGlobalFilters).toHaveBeenCalledWith({
+        bookingStatus: ['validated'],
+      })
+    })
+
+    it('should remove value from filters when checking the checkbox', () => {
+      // given
+      const wrapper = mount(<FilterByBookingStatus {...props} />)
+      wrapper.find('img').simulate('focus')
+
+      const checkbox = wrapper.find('input').at(0)
+
+      // when
+      checkbox.simulate('change', { target: { name: 'validated', checked: true } })
+
+      // then
+      expect(props.updateGlobalFilters).toHaveBeenCalledWith({
+        bookingStatus: [],
+      })
+    })
+
+    it('should add value to already filtered booking status when clicking on a checkbox', () => {
+      // given
+      const wrapper = mount(<FilterByBookingStatus {...props} />)
+      wrapper.find('img').simulate('focus')
+
+      const validatedStatusCheckbox = wrapper.find('input').at(0)
+      validatedStatusCheckbox.simulate('change', { target: { name: 'validated', checked: false } })
+      const bookedStatusCheckbox = wrapper.find('input').at(1)
+
+      // when
+      bookedStatusCheckbox.simulate('change', { target: { name: 'booked', checked: false } })
+
+      // then
+      expect(props.updateGlobalFilters).toHaveBeenCalledWith({
+        bookingStatus: ['validated', 'booked'],
+      })
     })
   })
 })

@@ -15,6 +15,7 @@ class FilterByBookingStatus extends Component {
     super(props)
     this.state = {
       bookingStatusFilter: [],
+      showFilterStatusTooltip: false,
     }
   }
 
@@ -22,49 +23,99 @@ class FilterByBookingStatus extends Component {
     return true
   }
 
-  render() {
-    const { updateGlobalFilters, bookingsRecap } = this.props
+  canHideFilter = true
+
+  showFilters = () => {
+    this.setState({
+      showFilterStatusTooltip: true,
+    })
+  }
+
+  hideFilters = () => {
+    this.setState({
+      showFilterStatusTooltip: false,
+    })
+  }
+
+  preventHidingFilter = () => {
+    this.canHideFilter = false
+  }
+
+  authorizeHidingFilter = () => {
+    this.canHideFilter = true
+  }
+
+  handleBlur = () => {
+    if (this.canHideFilter) {
+      this.hideFilters()
+    }
+  }
+
+  handleCheckboxChange = event => {
+    const { updateGlobalFilters } = this.props
     const { bookingStatusFilter } = this.state
-    const bookingStatusValues = getAvailableStatusValues(bookingsRecap).sort()
 
-    function handleCheckboxChange(event) {
-      const statusId = event.target.name
-      const isSelected = event.target.checked
+    const statusId = event.target.name
+    const isSelected = event.target.checked
 
-      if (!isSelected) {
-        bookingStatusFilter.push(statusId)
-      } else {
-        const index = bookingStatusFilter.indexOf(statusId)
-        if (index !== -1) bookingStatusFilter.splice(index, 1)
-      }
-
-      updateGlobalFilters({
-        bookingStatus: bookingStatusFilter,
-      })
+    if (!isSelected) {
+      bookingStatusFilter.push(statusId)
+    } else {
+      const index = bookingStatusFilter.indexOf(statusId)
+      if (index !== -1) bookingStatusFilter.splice(index, 1)
     }
 
+    updateGlobalFilters({
+      bookingStatus: bookingStatusFilter,
+    })
+  }
+
+  render() {
+    const { bookingsRecap } = this.props
+    const { showFilterStatusTooltip } = this.state
+    const bookingStatusValues = getAvailableStatusValues(bookingsRecap).sort()
+
     return (
-      <span className="bs-filter">
-        <Icon svg="ico-filter-status" />
-        <div className="bs-filter-tooltip">
-          <div className="bs-filter-label">
-            {'Afficher les statuts'}
+      <span
+        className="bs-filter"
+        onBlur={this.handleBlur}
+        /* eslint-disable-next-line react/jsx-handler-names */
+        onFocus={this.showFilters}
+        role="button"
+      >
+        <button type="button">
+          <Icon
+            alt="Filtrer par statut"
+            svg="ico-filter-status"
+          />
+        </button>
+
+        {showFilterStatusTooltip && (
+          <div className="bs-filter-tooltip">
+            <div className="bs-filter-label">
+              {'Afficher les statuts'}
+            </div>
+            {bookingStatusValues.map(row => (
+              <Fragment key={row}>
+                <label
+                  /* eslint-disable-next-line react/jsx-handler-names */
+                  onMouseDown={this.preventHidingFilter}
+                  /* eslint-disable-next-line react/jsx-handler-names */
+                  onMouseUp={this.authorizeHidingFilter}
+                >
+                  <input
+                    defaultChecked
+                    id={`bs-${row}`}
+                    name={row}
+                    onChange={this.handleCheckboxChange}
+                    type="checkbox"
+                  />
+                  {row}
+                </label>
+              </Fragment>
+            ))}
           </div>
-          {bookingStatusValues.map(row => (
-            <Fragment key={row}>
-              <label>
-                <input
-                  defaultChecked
-                  id={`bs-${row}`}
-                  name={row}
-                  onChange={handleCheckboxChange}
-                  type="checkbox"
-                />
-                {row}
-              </label>
-            </Fragment>
-          ))}
-        </div>
+        )}
       </span>
     )
   }

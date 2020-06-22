@@ -296,10 +296,16 @@
 .bs-filter {
   position: relative;
 
+  button {
+    background-color: transparent;
+    border: none;
+    outline: none;
+  }
+
   img {
-    vertical-align: text-bottom;
     height: rem(16px);
     margin-left: rem(10px);
+    vertical-align: text-bottom;
     width: rem(16px);
   }
 
@@ -307,28 +313,24 @@
     color: $grey;
     font-size: rem(14px);
     font-weight: $weight-medium;
+    padding-bottom: rem(8px);
     white-space: nowrap;
   }
 
   .bs-filter-tooltip {
-    display: none;
-  }
-
-  &:hover .bs-filter-tooltip,
-  .bs-filter-tooltip:hover {
     background-color: $white;
     border-radius: rem(4px);
     box-shadow: 0 rem(2px) rem(10px) 0 rgba(0, 0, 0, 0.3);
-    display: flex;
-    flex-direction: column;
+    margin-top: rem(8px);
     position: absolute;
     padding: rem(16px);
-    left: rem(-60px);
+    left: rem(-90px);
     z-index: 1;
   }
 
   label {
     display: flex;
-    margin-top: rem(16px)
+    padding-top: rem(8px);
+    padding-bottom: rem(8px);
   }
 }
