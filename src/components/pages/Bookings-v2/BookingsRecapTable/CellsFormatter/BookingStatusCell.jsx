@@ -18,9 +18,13 @@ const BookingStatusCell = ({ bookingRecapInfo }) => {
   const statusName = bookingStatusDisplayInformations.status
     ? bookingStatusDisplayInformations.status
     : bookingStatus
-  const amount = bookingRecapInfo.original.booking_amount
-    ? `${bookingRecapInfo.original.booking_amount}\u00a0€`
-    : 'Gratuit'
+  const amount = computeBookingAmount(bookingRecapInfo.original.booking_amount)
+
+  function computeBookingAmount(amount) {
+    const FREE_AMOUNT = 'Gratuit'
+    const AMOUNT_SUFFIX = '\u00a0€'
+    return amount ? `${amount}${AMOUNT_SUFFIX}` : FREE_AMOUNT
+  }
 
   return (
     <div className="booking-status-wrapper">

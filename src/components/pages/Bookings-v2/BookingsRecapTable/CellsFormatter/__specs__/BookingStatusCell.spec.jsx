@@ -115,12 +115,14 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell
       // When
       const wrapper = shallow(<BookingStatusCell {...props} />)
       const offer = wrapper.find('.bs-offer-title')
-      const historique = wrapper.find({ children: expectedHistoryTitle })
+      const historyTitle = wrapper.find({ children: expectedHistoryTitle })
+      const amount = wrapper.find('.bs-offer-amount')
 
       // Then
       expect(offer).toHaveLength(1)
       expect(offer.text()).toBe('Matrix')
-      expect(historique).toHaveLength(1)
+      expect(historyTitle).toHaveLength(1)
+      expect(amount).toHaveLength(1)
     })
 
     it('should display the booking amount when it is not free', () => {

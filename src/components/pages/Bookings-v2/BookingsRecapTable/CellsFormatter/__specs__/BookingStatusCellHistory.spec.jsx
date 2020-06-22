@@ -3,7 +3,7 @@ import React from 'react'
 import BookingStatusCellHistory from '../BookingStatusCellHistory'
 
 describe('cellsFormatter | BookingsStatusCellHistory', () => {
-  it('should render a div with the corresponding tag value and tag classnames for the given status', () => {
+  it('should render a div with the corresponding status and date for the given status', () => {
     // Given
     const props = {
       bookingStatusHistory: [
