@@ -5,7 +5,7 @@ from domain.booking_recap.booking_recap import BookingRecap, EventBookingRecap, 
 from domain.booking_recap.booking_recap_history import BookingRecapHistory, BookingRecapValidatedHistory, \
     BookingRecapCancelledHistory, BookingRecapReimbursedHistory
 from domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
-from utils.date import format_into_ISO_8601_with_timezone
+from utils.date import format_into_timezoned_date
 from utils.human_ids import humanize
 
 
@@ -19,36 +19,36 @@ def serialize_bookings_recap_paginated(bookings_recap_paginated: BookingsRecapPa
     }
 
 
-def _serialize_booking_history(booking_status: BookingRecapStatus,
-                               booking_status_date: datetime) -> Dict[str, str]:
+def _serialize_booking_status_info(booking_status: BookingRecapStatus,
+                                   booking_status_date: datetime) -> Dict[str, str]:
     return {
         'status': booking_status.value,
-        'date': format_into_ISO_8601_with_timezone(booking_status_date),
+        'date': format_into_timezoned_date(booking_status_date),
     }
 
 
 def _serialize_booking_status_history(booking_status_history: BookingRecapHistory) -> List[Dict[str, str]]:
-    serialized_booking_status_history = [_serialize_booking_history(
+    serialized_booking_status_history = [_serialize_booking_status_info(
         BookingRecapStatus.booked,
         booking_status_history.booking_date
     )]
     if isinstance(booking_status_history, BookingRecapValidatedHistory):
         serialized_booking_status_history.append(
-            _serialize_booking_history(
+            _serialize_booking_status_info(
                 BookingRecapStatus.validated,
                 booking_status_history.date_used
             )
         )
     if isinstance(booking_status_history, BookingRecapCancelledHistory):
         serialized_booking_status_history.append(
-            _serialize_booking_history(
+            _serialize_booking_status_info(
                 BookingRecapStatus.cancelled,
                 booking_status_history.cancellation_date
             )
         )
     if isinstance(booking_status_history, BookingRecapReimbursedHistory):
         serialized_booking_status_history.append(
-            _serialize_booking_history(
+            _serialize_booking_status_info(
                 BookingRecapStatus.reimbursed,
                 booking_status_history.payment_date
             )
@@ -69,7 +69,7 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> Dict[str, Any]:
             "email": booking_recap.beneficiary_email,
         },
         "booking_token": booking_recap.booking_token,
-        "booking_date": format_into_ISO_8601_with_timezone(booking_recap.booking_date),
+        "booking_date": format_into_timezoned_date(booking_recap.booking_date),
         "booking_status": booking_recap.booking_status.value,
         "booking_is_duo": booking_recap.booking_is_duo,
         "venue_identifier": humanize(booking_recap.venue_identifier),
@@ -79,7 +79,7 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> Dict[str, Any]:
 
     if isinstance(booking_recap, EventBookingRecap):
         serialized_booking_recap['stock']['type'] = "event"
-        serialized_booking_recap['stock']['event_beginning_datetime'] = format_into_ISO_8601_with_timezone(
+        serialized_booking_recap['stock']['event_beginning_datetime'] = format_into_timezoned_date(
             booking_recap.event_beginning_datetime)
 
     if isinstance(booking_recap, BookBookingRecap):

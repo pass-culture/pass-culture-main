@@ -5,7 +5,7 @@ from pytest import fixture
 from domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from routes.serialization.bookings_recap_serialize import serialize_bookings_recap_paginated
 from tests.domain_creators.generic_creators import create_domain_thing_booking_recap, create_domain_event_booking_recap
-from utils.date import format_into_ISO_8601_with_timezone
+from utils.date import format_into_timezoned_date
 from utils.human_ids import humanize
 
 
@@ -61,7 +61,7 @@ class SerializeBookingRecapTest:
                     "firstname": "Hari",
                     "email": "hari.seldon@example.com",
                 },
-                "booking_date": format_into_ISO_8601_with_timezone(booking_date),
+                "booking_date": format_into_timezoned_date(booking_date),
                 "booking_token": None,
                 "booking_status": "booked",
                 "booking_is_duo": False,
@@ -85,7 +85,7 @@ class SerializeBookingRecapTest:
                     "firstname": "Golan",
                     "email": "golan.trevize@example.com",
                 },
-                "booking_date": format_into_ISO_8601_with_timezone(booking_date),
+                "booking_date": format_into_timezoned_date(booking_date),
                 "booking_token": None,
                 "booking_status": "booked",
                 "booking_is_duo": True,
@@ -131,14 +131,14 @@ class SerializeBookingRecapTest:
                     "type": "event",
                     "offer_name": "Cirque du soleil",
                     "offer_identifier": humanize(event_booking_recap.offer_identifier),
-                    "event_beginning_datetime": format_into_ISO_8601_with_timezone(day_after_booking_date),
+                    "event_beginning_datetime": format_into_timezoned_date(day_after_booking_date),
                 },
                 "beneficiary": {
                     "lastname": "Seldon",
                     "firstname": "Hari",
                     "email": "hari.seldon@example.com",
                 },
-                "booking_date": format_into_ISO_8601_with_timezone(booking_date),
+                "booking_date": format_into_timezoned_date(booking_date),
                 "booking_token": "SOLEIL",
                 "booking_status": "booked",
                 "booking_is_duo": False,
@@ -190,7 +190,7 @@ class SerializeBookingRecapTest:
                     "firstname": "Hari",
                     "email": "hari.seldon@example.com",
                 },
-                "booking_date": format_into_ISO_8601_with_timezone(booking_date),
+                "booking_date": format_into_timezoned_date(booking_date),
                 "booking_token": None,
                 "booking_status": "booked",
                 "booking_is_duo": False,

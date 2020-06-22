@@ -73,11 +73,11 @@ def utc_datetime_to_department_timezone(date_time: datetime, departement_code: s
     return utc_datetime.astimezone(to_zone)
 
 
-def format_into_ISO_8601(date_to_format: datetime) -> str:
+def format_into_utc_date(date_to_format: datetime) -> str:
     return date_to_format.isoformat() + "Z"
 
 
-def format_into_ISO_8601_with_timezone(date_to_format: datetime) -> str:
+def format_into_timezoned_date(date_to_format: datetime) -> str:
     return date_to_format.isoformat()
 
 

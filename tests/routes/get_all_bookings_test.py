@@ -10,7 +10,7 @@ from tests.conftest import clean_database, TestClient
 from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer, create_venue, \
     create_stock, create_booking
 from tests.model_creators.specific_creators import create_offer_with_thing_product
-from utils.date import format_into_ISO_8601_with_timezone
+from utils.date import format_into_timezoned_date
 from utils.human_ids import humanize
 
 
@@ -87,7 +87,7 @@ class GetTest:
                         'firstname': 'Hermione',
                         'lastname': 'Granger',
                     },
-                    'booking_date': format_into_ISO_8601_with_timezone(
+                    'booking_date': format_into_timezoned_date(
                         date_created.astimezone(tz.gettz('Europe/Paris'))
                     ),
                     'booking_amount': 0.0,
@@ -98,13 +98,13 @@ class GetTest:
                     'booking_status_history': [
                         {
                             'status': 'booked',
-                            'date': format_into_ISO_8601_with_timezone(
+                            'date': format_into_timezoned_date(
                                 date_created.astimezone(tz.gettz('Europe/Paris'))
                             ),
                         },
                         {
                             'status': 'validated',
-                            'date': format_into_ISO_8601_with_timezone(
+                            'date': format_into_timezoned_date(
                                 date_used.astimezone(tz.gettz('Europe/Paris'))
                             ),
                         },

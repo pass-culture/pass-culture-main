@@ -5,7 +5,7 @@ from tests.conftest import clean_database
 from tests.model_creators.generic_creators import create_offerer, create_venue, create_stock, create_mediation
 from tests.model_creators.specific_creators import create_offer_with_thing_product, create_product_with_thing_type, \
     create_product_with_event_type, create_offer_with_event_product
-from utils.date import format_into_ISO_8601
+from utils.date import format_into_utc_date
 from utils.human_ids import humanize
 
 
@@ -33,8 +33,8 @@ class GetNonFreeThingOfferWithActiveMediationTest:
                 'baseScore': 0,
                 'bookingEmail': 'booking@example.net',
                 'conditions': None,
-                'dateCreated': format_into_ISO_8601(offer.dateCreated),
-                'dateModifiedAtLastProvider': format_into_ISO_8601(offer.dateModifiedAtLastProvider),
+                'dateCreated': format_into_utc_date(offer.dateCreated),
+                'dateModifiedAtLastProvider': format_into_utc_date(offer.dateModifiedAtLastProvider),
                 'description': None,
                 'durationMinutes': None,
                 'extraData': {'author': 'Test Author'},
@@ -101,8 +101,8 @@ class GetNonFreeEventOfferTest:
                 'baseScore': 0,
                 'bookingEmail': 'booking@example.net',
                 'conditions': None,
-                'dateCreated': format_into_ISO_8601(offer.dateCreated),
-                'dateModifiedAtLastProvider': format_into_ISO_8601(offer.dateModifiedAtLastProvider),
+                'dateCreated': format_into_utc_date(offer.dateCreated),
+                'dateModifiedAtLastProvider': format_into_utc_date(offer.dateModifiedAtLastProvider),
                 'description': None,
                 'durationMinutes': 60,
                 'extraData': None,
