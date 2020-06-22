@@ -1,0 +1,88 @@
+.eligibility-check-page {
+  background-image: url('/id-check-bg.jpg');
+  background-size: contain;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .elgbt-header {
+    align-items: center;
+    color: $white;
+    display: flex;
+    font-size: rem(18px);
+    min-height: rem(80px);
+    max-height: rem(80px);
+    justify-content: center;
+    text-align: center;
+    flex: 1;
+
+    a {
+      left: rem(20px);
+      padding: 0;
+      position: absolute;
+      top: rem(26px);
+    }
+  }
+
+  .elgbt-form {
+    align-items: center;
+    background-color: $white;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    flex: 7;
+    flex-direction: column;
+    height: 100%;
+    padding-top: rem(24px);
+    position: relative;
+
+    label {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+
+      input {
+        border: 1px solid $grey-medium;
+        border-radius: 24px;
+        font-size: rem(22px);
+        font-weight: 500;
+        margin: rem(16px) 0;
+        outline: none;
+        padding: rem(11px) 0;
+        text-align: center;
+
+        &::placeholder {
+          font-size: 30px;
+        }
+
+        &:focus {
+          border: 2px solid $primary;
+          caret-color: $primary;
+        }
+      }
+    }
+  }
+
+  .elgbt-submit {
+    background-image: linear-gradient(101deg, $primary -42%, $secondary 128%);
+    border: none;
+    border-radius: 24px;
+    bottom: rem(24px);
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.25);
+    color: $white;
+    font-size: rem(16px);
+    font-weight: bold;
+    padding: rem(15px) 0;
+    position: fixed;
+    width: 300px;
+
+    &:disabled {
+      opacity: .5;
+      -webkit-text-fill-color: $white;
+    }
+
+    &.moved-up {
+      margin-top: rem(25px);
+      position: relative;
+    }
+  }
+}
