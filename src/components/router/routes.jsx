@@ -37,7 +37,7 @@ const routes = [
   },
   {
     component: ActivationContainer,
-    path: '/activation/:token?',
+    path: '/activation/:token([A-Z0-9]+|error|lien-invalide)',
     title: 'Activation',
   },
   {
@@ -65,7 +65,7 @@ const routes = [
   },
   {
     component: ForgotPassword,
-    path: '/mot-de-passe-perdu/:view?',
+    path: '/mot-de-passe-perdu/(succes)?',
     title: 'Mot de passe perdu',
   },
   {

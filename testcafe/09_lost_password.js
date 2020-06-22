@@ -39,7 +39,7 @@ test('je clique sur "mot de passe oublié", je remplis le formulaire avec une ad
 
   // then
   location = await t.eval(() => window.location)
-  await t.expect(location.pathname).eql('/mot-de-passe-perdu/success')
+  await t.expect(location.pathname).eql('/mot-de-passe-perdu/succes')
 })
 
 test('je clique sur le lien reçu par email, je saisis mon nouveau mot de passe, et je suis redirigé·e vers la page de confirmation', async t => {
@@ -62,7 +62,7 @@ test('je clique sur le lien reçu par email, je saisis mon nouveau mot de passe,
   const location = await t.eval(() => window.location)
   await t
     .expect(location.pathname)
-    .eql('/mot-de-passe-perdu/success')
+    .eql('/mot-de-passe-perdu/succes')
     .expect(location.search)
     .eql(`?token=${resetPasswordToken}`)
 })

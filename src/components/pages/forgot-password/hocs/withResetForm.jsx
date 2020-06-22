@@ -33,7 +33,7 @@ const withPasswordForm = (WrappedComponent, validator, routePath, routeMethod) =
       this.setState(nextstate, () => {
         formResolver()
         const baseurl = location.pathname
-        const nexturl = `${baseurl}/success${location.search}`
+        const nexturl = `${baseurl}/succes${location.search}`
         history.replace(nexturl)
       })
     }

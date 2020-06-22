@@ -41,7 +41,7 @@ class ForgotPassword extends PureComponent {
           <Route
             exact
             key="forgot-password-success-view"
-            path="/mot-de-passe-perdu/success"
+            path="/mot-de-passe-perdu/succes"
             render={this.renderForgotPasswordSuccessViewRoute(token)}
           />
           <Route
