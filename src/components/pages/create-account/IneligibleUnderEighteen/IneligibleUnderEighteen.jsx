@@ -1,9 +1,9 @@
 import React from 'react'
 
-const IneligibleUnderEighteen = () => {
-  return (<main>
+const IneligibleUnderEighteen = () => (
+  <main>
     {' IneligibleUnderEighteen '}
-  </main>)
-}
+  </main>
+)
 
 export default IneligibleUnderEighteen

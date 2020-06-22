@@ -1,9 +1,9 @@
 import React from 'react'
 
-const EligibilityCheck = () => {
-  return (<main>
+const EligibilityCheck = () => (
+  <main>
     {' EligibilityCheck '}
-  </main>)
-}
+  </main>
+)
 
 export default EligibilityCheck

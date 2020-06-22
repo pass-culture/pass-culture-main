@@ -1,9 +1,9 @@
 import React from 'react'
 
-const ContactSaved = () => {
-  return (<main>
+const ContactSaved = () => (
+  <main>
     {' ContactSaved '}
-  </main>)
-}
+  </main>
+)
 
 export default ContactSaved

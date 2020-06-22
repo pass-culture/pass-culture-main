@@ -37,7 +37,7 @@ describe('when page matching URI does not contain nav bar', () => {
       '/activation/lien-invalide',
       '/activation/MEFA',
       '/inscription',
-      '/verification-eligibilite/',
+      '/verification-eligibilite',
       '/verification-eligibilite/eligible',
       '/verification-eligibilite/departement-non-eligible',
       '/verification-eligibilite/pas-eligible',

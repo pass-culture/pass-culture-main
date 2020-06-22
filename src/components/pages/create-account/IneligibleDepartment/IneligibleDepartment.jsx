@@ -1,9 +1,9 @@
 import React from 'react'
 
-const IneligibleDepartment = () => {
-  return (<main>
+const IneligibleDepartment = () => (
+  <main>
     {' IneligibleDepartment '}
-  </main>)
-}
+  </main>
+)
 
 export default IneligibleDepartment

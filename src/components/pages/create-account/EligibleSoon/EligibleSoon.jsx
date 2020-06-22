@@ -1,9 +1,9 @@
 import React from 'react'
 
-const EligibleSoon = () => {
-  return (<main>
+const EligibleSoon = () => (
+  <main>
     {' EligibleSoon '}
-  </main>)
-}
+  </main>
+)
 
 export default EligibleSoon
