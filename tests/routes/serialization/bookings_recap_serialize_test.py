@@ -14,26 +14,26 @@ class SerializeBookingRecapTest:
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         thing_booking_recap = create_domain_thing_booking_recap(
-                offer_identifier=1,
-                offer_name="Fondation",
-                beneficiary_firstname="Hari",
-                beneficiary_lastname="Seldon",
-                beneficiary_email="hari.seldon@example.com",
-                booking_date=booking_date,
-                booking_token="FOND",
-                booking_is_used=False,
-                booking_amount=18
-            )
+            offer_identifier=1,
+            offer_name="Fondation",
+            beneficiary_firstname="Hari",
+            beneficiary_lastname="Seldon",
+            beneficiary_email="hari.seldon@example.com",
+            booking_date=booking_date,
+            booking_token="FOND",
+            booking_is_used=False,
+            booking_amount=18
+        )
         thing_booking_recap_2 = create_domain_thing_booking_recap(
-                offer_identifier=2,
-                offer_name="Fondation",
-                beneficiary_firstname="Golan",
-                beneficiary_lastname="Trevize",
-                beneficiary_email="golan.trevize@example.com",
-                booking_date=booking_date,
-                booking_token="FOND",
-                booking_is_duo=True,
-            )
+            offer_identifier=2,
+            offer_name="Fondation",
+            beneficiary_firstname="Golan",
+            beneficiary_lastname="Trevize",
+            beneficiary_email="golan.trevize@example.com",
+            booking_date=booking_date,
+            booking_token="FOND",
+            booking_is_duo=True,
+        )
         bookings_recap = [
             thing_booking_recap,
             thing_booking_recap_2
@@ -108,11 +108,13 @@ class SerializeBookingRecapTest:
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         day_after_booking_date = booking_date + timedelta(days=1)
-        event_booking_recap = create_domain_event_booking_recap(offer_name="Cirque du soleil", beneficiary_firstname="Hari",
-                                                  beneficiary_lastname="Seldon",
-                                                  beneficiary_email="hari.seldon@example.com",
-                                                  booking_date=booking_date, booking_token="SOLEIL",
-                                                  event_beginning_datetime=day_after_booking_date, )
+        event_booking_recap = create_domain_event_booking_recap(offer_name="Cirque du soleil",
+                                                                beneficiary_firstname="Hari",
+                                                                beneficiary_lastname="Seldon",
+                                                                beneficiary_email="hari.seldon@example.com",
+                                                                booking_date=booking_date, booking_token="SOLEIL",
+                                                                event_beginning_datetime=day_after_booking_date,
+                                                                )
         bookings_recap = [event_booking_recap]
         bookings_recap_paginated_response = BookingsRecapPaginated(
             bookings_recap=list(bookings_recap),
@@ -161,10 +163,10 @@ class SerializeBookingRecapTest:
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         thing_booking_recap = create_domain_thing_booking_recap(offer_identifier=1, offer_name="Martine a la playa",
-                                                  offer_isbn='987654345678', beneficiary_firstname="Hari",
-                                                  beneficiary_lastname="Seldon",
-                                                  beneficiary_email="hari.seldon@example.com",
-                                                  booking_date=booking_date, booking_token="LUNE", )
+                                                                offer_isbn='987654345678', beneficiary_firstname="Hari",
+                                                                beneficiary_lastname="Seldon",
+                                                                beneficiary_email="hari.seldon@example.com",
+                                                                booking_date=booking_date, booking_token="LUNE")
         bookings_recap = [thing_booking_recap]
         bookings_recap_paginated_response = BookingsRecapPaginated(
             bookings_recap=list(bookings_recap),

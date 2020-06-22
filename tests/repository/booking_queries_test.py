@@ -1709,7 +1709,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_cancelled is False
         assert expected_booking_recap.booking_is_reimbursed is False
         assert expected_booking_recap.booking_is_duo is False
-        assert expected_booking_recap.venue_identifier == humanize(venue.id)
+        assert expected_booking_recap.venue_identifier == venue.id
         assert expected_booking_recap.booking_amount == 12
         assert expected_booking_recap.booking_status_history.booking_date == booking_date.astimezone(tz.gettz('Europe/Paris'))
 
@@ -1800,7 +1800,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_cancelled is False
         assert expected_booking_recap.booking_is_reimbursed is False
         assert expected_booking_recap.event_beginning_datetime == stock.beginningDatetime.astimezone(tz.gettz('Europe/Paris'))
-        assert expected_booking_recap.venue_identifier == humanize(venue.id)
+        assert expected_booking_recap.venue_identifier == venue.id
 
     @clean_database
     def test_should_return_payment_date_when_booking_has_been_reimbursed(self, app: fixture) -> None:
