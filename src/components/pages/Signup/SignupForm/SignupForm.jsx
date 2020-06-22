@@ -75,7 +75,7 @@ class SignupForm extends PureComponent {
             </div>
             <a
               className="sign-up-requirements pc-description-link"
-              href="https://docs.passculture.app/le-pass-culture-en-quelques-mots#quels-acteurs-culturels-peuvent-sinscrire"
+              href="https://docs.passculture.app/le-pass-culture-en-quelques-mots"
               rel="noopener noreferrer"
               target="_blank"
             >

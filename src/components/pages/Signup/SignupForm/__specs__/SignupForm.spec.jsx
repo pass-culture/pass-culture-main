@@ -64,7 +64,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
         .parent('a')
       expect(presentationLink).toHaveLength(1)
       expect(presentationLink.prop('href')).toBe(
-        'https://docs.passculture.app/le-pass-culture-en-quelques-mots#quels-acteurs-culturels-peuvent-sinscrire'
+        'https://docs.passculture.app/le-pass-culture-en-quelques-mots'
       )
     })
 
