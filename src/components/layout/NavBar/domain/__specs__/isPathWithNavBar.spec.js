@@ -32,11 +32,18 @@ describe('when page matching URI does not contain nav bar', () => {
       '/beta',
       '/connexion',
       '/mot-de-passe-perdu',
-      '/mot-de-passe-perdu/success?token=ABCDEF',
+      '/mot-de-passe-perdu/succes?token=ABCDEF',
       '/activation/error',
       '/activation/lien-invalide',
       '/activation/MEFA',
       '/inscription',
+      '/verification-eligibilite/',
+      '/verification-eligibilite/eligible',
+      '/verification-eligibilite/departement-non-eligible',
+      '/verification-eligibilite/pas-eligible',
+      '/verification-eligibilite/bientot',
+      '/verification-eligibilite/trop-tot',
+      '/verification-eligibilite/gardons-contact',
     ]
 
     paths.forEach(path => {

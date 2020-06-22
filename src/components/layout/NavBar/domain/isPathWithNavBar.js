@@ -15,6 +15,7 @@ export const isPathWithNavBar = path => {
     '/mot-de-passe-perdu(.*)',
     '/activation/(.*)',
     '/inscription',
+    '/verification-eligibilite/(.*)',
   ]
 
   return !RegExp(`(${pathsWithoutNavBar.join('|')})$`).test(path)
