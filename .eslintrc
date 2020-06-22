@@ -32,6 +32,7 @@
     "react/jsx-max-depth": "off",
     "react/jsx-props-no-spreading": "off",
     "react/no-set-state": "off",
+    "react/require-optimization": "off",
     "react/static-property-placement": "off",
     "semi": ["error", "never"]
   },
