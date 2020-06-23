@@ -711,6 +711,16 @@ describe('components | BookingsRecapTable', () => {
         booking_status: 'Validé',
         booking_is_duo: false,
         venue_identifier: 'AE',
+        booking_status_history: [
+          {
+            status: 'booked',
+            date: '2020-04-03T12:00:00Z',
+          },
+          {
+            status: 'validated',
+            date: '2020-04-16T12:00:00Z',
+          },
+        ],
       },
     ])
     const wrapper = shallow(<BookingsRecapTable {...props} />)
@@ -731,6 +741,16 @@ describe('components | BookingsRecapTable', () => {
           booking_status: 'Validé',
           booking_is_duo: false,
           venue_identifier: 'AE',
+          booking_status_history: [
+            {
+              status: 'booked',
+              date: '2020-04-03T12:00:00Z',
+            },
+            {
+              status: 'validated',
+              date: '2020-04-16T12:00:00Z',
+            },
+          ],
         },
       ],
     }
@@ -751,7 +771,7 @@ describe('components | BookingsRecapTable', () => {
     })
   })
 
-  it('should redirect to first page when applying filters', async() => {
+  it('should redirect to first page when applying filters', async () => {
     // given
     filterBookingsRecap.mockReturnValue([])
     const booking = {
@@ -769,6 +789,16 @@ describe('components | BookingsRecapTable', () => {
       booking_status: 'Validé',
       booking_is_duo: true,
       venue_identifier: 'AE',
+      booking_status_history: [
+        {
+          status: 'booked',
+          date: '2020-04-03T12:00:00Z',
+        },
+        {
+          status: 'validated',
+          date: '2020-04-16T12:00:00Z',
+        },
+      ],
     }
     const bookingsRecap = [booking]
     const props = {
@@ -791,6 +821,16 @@ describe('components | BookingsRecapTable', () => {
       booking_status: 'Validé',
       booking_is_duo: true,
       venue_identifier: 'AE',
+      booking_status_history: [
+        {
+          status: 'booked',
+          date: '2020-04-03T12:00:00Z',
+        },
+        {
+          status: 'validated',
+          date: '2020-04-16T12:00:00Z',
+        },
+      ],
     }
     const paginate = wrapper.find(Paginate)
     const nextPageButton = paginate.find('button').at(1)
@@ -798,7 +838,7 @@ describe('components | BookingsRecapTable', () => {
 
     // when
     await wrapper.setProps({
-      bookingsRecap: bookingsRecap.concat([newBooking])
+      bookingsRecap: bookingsRecap.concat([newBooking]),
     })
 
     // then
