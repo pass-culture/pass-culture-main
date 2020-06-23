@@ -36,22 +36,6 @@ const BOOKING_STATUS_DEFAULT = {
   className: 'default',
 }
 
-export const getBookingStatusDisplayInformationsOrDefault = bookingStatusInfos => {
-  const bookingStatusFound = BOOKING_STATUS.find(({ id }) => bookingStatusInfos === id)
-  return bookingStatusFound ? bookingStatusFound : BOOKING_STATUS_DEFAULT
-}
-
-export const computeStatusClassName = bookingStatusDisplayInformations => {
-  return `booking-status-${bookingStatusDisplayInformations.className}`
-}
-
-export const computeHistoryTitle = bookingStatusDisplayInformations => {
-  const bookingStatus = getBookingStatusDisplayInformationsOrDefault(
-    bookingStatusDisplayInformations
-  )
-  return bookingStatus.title
-}
-
 export const computeHistoryClassName = bookingStatusDisplayInformations => {
   const bookingStatus = getBookingStatusDisplayInformationsOrDefault(
     bookingStatusDisplayInformations
@@ -59,7 +43,23 @@ export const computeHistoryClassName = bookingStatusDisplayInformations => {
   return `bs-history-${bookingStatus.className}`
 }
 
-export const computeHistoryDateFormat = bookingStatusDisplayInformations => {
+export const computeStatusClassName = bookingStatusDisplayInformations => {
+  return `booking-status-${bookingStatusDisplayInformations.className}`
+}
+
+export const getBookingStatusDisplayInformationsOrDefault = bookingStatusInfos => {
+  const bookingStatusFound = BOOKING_STATUS.find(({ id }) => bookingStatusInfos === id)
+  return bookingStatusFound ? bookingStatusFound : BOOKING_STATUS_DEFAULT
+}
+
+export const getStatusTitle = bookingStatusDisplayInformations => {
+  const bookingStatus = getBookingStatusDisplayInformationsOrDefault(
+    bookingStatusDisplayInformations
+  )
+  return bookingStatus.title
+}
+
+export const getStatusDateFormat = bookingStatusDisplayInformations => {
   const bookingStatus = getBookingStatusDisplayInformationsOrDefault(
     bookingStatusDisplayInformations
   )

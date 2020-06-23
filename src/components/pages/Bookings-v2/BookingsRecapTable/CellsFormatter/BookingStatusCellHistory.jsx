@@ -3,20 +3,20 @@ import * as PropTypes from 'prop-types'
 import moment from 'moment'
 import {
   computeHistoryClassName,
-  computeHistoryDateFormat,
-  computeHistoryTitle,
+  getStatusDateFormat,
+  getStatusTitle,
 } from './utils/bookingStatusConverter'
 
 const BookingStatusCellHistory = ({ bookingStatusHistory }) => {
   const bookingsStatusHistoryItems = bookingStatusHistory.map(item => (
     <li key={item.status}>
       <span className={`colored-disc ${computeHistoryClassName(item.status)}`} />
-      {`${computeHistoryTitle(item.status)} : ${computeDateForStatus(item)}`}
+      {`${getStatusTitle(item.status)} : ${computeDateForStatus(item)}`}
     </li>
   ))
 
   function computeDateForStatus(item) {
-    const dateFormat = computeHistoryDateFormat(item.status)
+    const dateFormat = getStatusDateFormat(item.status)
     return moment.parseZone(item.date).format(dateFormat)
   }
 

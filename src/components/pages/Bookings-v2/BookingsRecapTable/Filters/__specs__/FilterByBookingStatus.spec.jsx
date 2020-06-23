@@ -93,8 +93,8 @@ describe('components | FilterByBookingStatus', () => {
         type: 'checkbox',
       })
       expect(label).toHaveLength(2)
-      expect(label.at(0).text()).toBe('booked')
-      expect(label.at(1).text()).toBe('validated')
+      expect(label.at(0).text()).toBe('Réservé')
+      expect(label.at(1).text()).toBe('Validé')
     })
 
     it('should hide filters on blur', () => {

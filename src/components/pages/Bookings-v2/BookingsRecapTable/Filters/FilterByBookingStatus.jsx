@@ -1,14 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 import Icon from '../../../../layout/Icon'
-
-const getAvailableStatusValues = bookingsRecap => {
-  const bookingStatusValues = new Set()
-  bookingsRecap.forEach(row => {
-    bookingStatusValues.add(row.booking_status)
-  })
-  return [...bookingStatusValues]
-}
+import { getStatusTitle } from '../CellsFormatter/utils/bookingStatusConverter'
 
 class FilterByBookingStatus extends Component {
   constructor(props) {
@@ -70,10 +63,26 @@ class FilterByBookingStatus extends Component {
     })
   }
 
+  getAvailableStatuses(bookingsRecap) {
+    const presentBookingStatues = new Set(
+      bookingsRecap.map(bookingRecap => bookingRecap.booking_status)
+    )
+    return Array.from(presentBookingStatues).map(bookingStatus => ({
+      title: getStatusTitle(bookingStatus),
+      value: bookingStatus,
+    }))
+  }
+
+  byStatusTitle(a, b) {
+    const titleA = a.title
+    const titleB = b.title
+    return titleA < titleB ? -1 : titleA > titleB ? 1 : 0
+  }
+
   render() {
     const { bookingsRecap } = this.props
     const { bookingStatusFilter, showFilterStatusTooltip } = this.state
-    const bookingStatusValues = getAvailableStatusValues(bookingsRecap).sort()
+    const bookingStatuses = this.getAvailableStatuses(bookingsRecap).sort(this.byStatusTitle)
 
     return (
       <span
@@ -96,8 +105,8 @@ class FilterByBookingStatus extends Component {
             <div className="bs-filter-label">
               {'Afficher les statuts'}
             </div>
-            {bookingStatusValues.map(row => (
-              <Fragment key={row}>
+            {bookingStatuses.map(bookingStatus => (
+              <Fragment key={bookingStatus.value}>
                 <label
                   /* eslint-disable-next-line react/jsx-handler-names */
                   onMouseDown={this.preventHidingFilter}
@@ -106,12 +115,12 @@ class FilterByBookingStatus extends Component {
                 >
                   <input
                     defaultChecked
-                    id={`bs-${row}`}
-                    name={row}
+                    id={`bs-${bookingStatus.value}`}
+                    name={bookingStatus.value}
                     onChange={this.handleCheckboxChange}
                     type="checkbox"
                   />
-                  {row}
+                  {bookingStatus.title}
                 </label>
               </Fragment>
             ))}
