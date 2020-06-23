@@ -194,7 +194,7 @@ describe('components | BookingsRecapTable', () => {
 
     // Then
     const sixthHeader = wrapper.find('th').at(5)
-    expect(sixthHeader.find('img').prop('src')).toContain('ico-filter-status.svg')
+    expect(sixthHeader.find('img').prop('src')).toContain('ico-filter-status-black.svg')
   })
 
   it('should render the expected table rows', () => {

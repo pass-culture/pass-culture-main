@@ -79,6 +79,18 @@ class FilterByBookingStatus extends Component {
     return titleA < titleB ? -1 : titleA > titleB ? 1 : 0
   }
 
+  computeIconSrc() {
+    const { bookingStatusFilter, showFilterStatusTooltip } = this.state
+
+    if (bookingStatusFilter.length > 0) {
+      return 'ico-filter-status-active'
+    } else if (showFilterStatusTooltip) {
+      return 'ico-filter-status-red'
+    } else {
+      return 'ico-filter-status-black'
+    }
+  }
+
   render() {
     const { bookingsRecap } = this.props
     const { bookingStatusFilter, showFilterStatusTooltip } = this.state
@@ -95,7 +107,7 @@ class FilterByBookingStatus extends Component {
         <button type="button">
           <Icon
             alt="Filtrer par statut"
-            svg={bookingStatusFilter.length > 0 ? 'ico-filter-status-active' : 'ico-filter-status'}
+            svg={this.computeIconSrc()}
           />
         </button>
 

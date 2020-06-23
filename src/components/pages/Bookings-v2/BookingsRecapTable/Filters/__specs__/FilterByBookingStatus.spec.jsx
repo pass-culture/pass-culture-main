@@ -44,13 +44,13 @@ describe('components | FilterByBookingStatus', () => {
     }
   })
 
-  it('should display a filter icon', () => {
+  it('should display a black filter icon', () => {
     // when
     const wrapper = mount(<FilterByBookingStatus {...props} />)
 
     // then
     const filterIcon = wrapper.find('img')
-    expect(filterIcon.prop('src')).toContain('ico-filter-status.svg')
+    expect(filterIcon.prop('src')).toContain('ico-filter-status-black.svg')
     expect(filterIcon.prop('alt')).toBe('Filtrer par statut')
   })
 
@@ -66,6 +66,19 @@ describe('components | FilterByBookingStatus', () => {
   })
 
   describe('on focus on the filter icon', () => {
+    it('should display a red filter icon', () => {
+      // given
+      const wrapper = mount(<FilterByBookingStatus {...props} />)
+
+      // when
+      wrapper.find('img').simulate('focus')
+
+      // then
+      const filterIcon = wrapper.find('img')
+      expect(filterIcon.prop('src')).toContain('ico-filter-status-red.svg')
+      expect(filterIcon.prop('alt')).toBe('Filtrer par statut')
+    })
+
     it('should show filters with all available status in data', () => {
       // given
       const wrapper = mount(<FilterByBookingStatus {...props} />)
