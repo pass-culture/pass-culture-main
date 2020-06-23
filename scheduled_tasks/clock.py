@@ -21,9 +21,9 @@ from scripts.dashboard.write_dashboard import write_dashboard
 from scripts.update_booking_used import \
     update_booking_used_after_stock_occurrence
 from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
-from load_environment_configuration_variables import load_environment_configuration_variables
+from load_environment_variables import load_environment_variables
 
-load_environment_configuration_variables()
+load_environment_variables()
 
 DEMARCHES_SIMPLIFIEES_OLD_ENROLLMENT_PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID',
                                                                    None)

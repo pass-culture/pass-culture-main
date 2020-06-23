@@ -12,7 +12,7 @@ from admin.install import install_admin_views
 from documentation import install_documentation
 from flask_app import app, db, admin
 from local_providers.install import install_local_providers
-from load_environment_configuration_variables import load_environment_configuration_variables
+from load_environment_variables import load_environment_variables
 from models.install import install_activity, install_features, install_materialized_views
 from repository.feature_queries import feature_request_profiling_enabled
 from routes import install_routes

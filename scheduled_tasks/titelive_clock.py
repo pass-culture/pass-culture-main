@@ -10,9 +10,9 @@ from models.db import db
 from models.feature import FeatureToggle
 from repository.provider_queries import get_provider_by_local_class
 from scheduled_tasks.decorators import log_cron, cron_context, cron_require_feature
-from load_environment_configuration_variables import load_environment_configuration_variables
+from load_environment_variables import load_environment_variables
 
-load_environment_configuration_variables()
+load_environment_variables()
 
 @log_cron
 @cron_context

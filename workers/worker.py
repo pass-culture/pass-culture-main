@@ -9,9 +9,9 @@ from workers.logger import build_job_log_message, JobStatus
 import logging
 from utils.logger import logger
 from typing import Type
-from load_environment_configuration_variables import load_environment_configuration_variables
+from load_environment_variables import load_environment_variables
 
-load_environment_configuration_variables()
+load_environment_variables()
 
 listen = ['default']
 conn = redis.from_url(REDIS_URL)
