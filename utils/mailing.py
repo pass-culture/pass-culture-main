@@ -24,22 +24,6 @@ SUPPORT_EMAIL_ADDRESS = os.environ.get('SUPPORT_EMAIL_ADDRESS')
 ADMINISTRATION_EMAIL_ADDRESS = os.environ.get('ADMINISTRATION_EMAIL_ADDRESS')
 DEV_EMAIL_ADDRESS = os.environ.get('DEV_EMAIL_ADDRESS')
 
-if MAILJET_API_KEY is None or MAILJET_API_KEY == '':
-    raise ValueError("Missing environment variable MAILJET_API_KEY")
-
-if MAILJET_API_SECRET is None or MAILJET_API_SECRET == '':
-    raise ValueError("Missing environment variable MAILJET_API_SECRET")
-
-if SUPPORT_EMAIL_ADDRESS is None or SUPPORT_EMAIL_ADDRESS == '':
-    raise ValueError("Missing environment variable SUPPORT_EMAIL_ADDRESS")
-
-if ADMINISTRATION_EMAIL_ADDRESS is None or ADMINISTRATION_EMAIL_ADDRESS == '':
-    raise ValueError(
-        "Missing environment variable ADMINISTRATION_EMAIL_ADDRESS")
-
-if DEV_EMAIL_ADDRESS is None or DEV_EMAIL_ADDRESS == '':
-    raise ValueError("Missing environment variable DEV_EMAIL_ADDRESS")
-
 
 class MailServiceException(Exception):
     pass

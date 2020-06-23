@@ -19,11 +19,9 @@ from routes import install_routes
 from utils.config import IS_DEV, REDIS_URL, ENV
 from utils.health_checker import read_version_from_file
 from utils.mailing import get_contact, \
-    MAILJET_API_KEY, \
-    MAILJET_API_SECRET, \
+    MAILJET_API_KEY, MAILJET_API_SECRET, \
     subscribe_newsletter
 
-load_environment_configuration_variables()
 
 if IS_DEV is False:
     sentry_sdk.init(
@@ -43,6 +41,8 @@ def install_login_manager():
     import utils.login_manager
 
 with app.app_context():
+    load_environment_variables()
+
     if IS_DEV:
         install_activity()
         install_materialized_views()
