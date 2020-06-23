@@ -29,12 +29,11 @@ class UpdateVenueTypeTest:
 
         # Then
         venue = VenueSQLEntity.query.one()
-        print(venue.id)
         assert venue.venueTypeId == 2
 
     @patch('scripts.update_venue_type._read_venue_type_from_file')
     @clean_database
-    def test_should_not_update_venue_type_whith_type_from_read_file_when_id_does_not_match(self, stub_read_venue_type_from_file, app):
+    def test_should_not_update_venue_type_whith_type_from_read_file_when_venue_id_does_not_match(self, stub_read_venue_type_from_file, app):
         # Given
         offerer = create_offerer()
         old_venue_type = create_venue_type('old_type', 1)
