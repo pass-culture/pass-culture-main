@@ -1,5 +1,5 @@
 import React from 'react'
-import Filters, { ALL_BOOKING_STATUS, ALL_VENUES, EMPTY_FILTER_VALUE } from '../Filters'
+import Filters, { ALL_VENUES, EMPTY_FILTER_VALUE } from '../Filters'
 import { mount, shallow } from 'enzyme'
 import { fetchAllVenuesByProUser } from '../../../../../../services/venuesService'
 import FilterByOmniSearch from '../FilterByOmniSearch'
@@ -90,7 +90,6 @@ describe('components | Filters', () => {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
-      bookingStatus: ALL_BOOKING_STATUS,
       bookingToken: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
       offerName: 'Jurassic Park',
@@ -112,7 +111,6 @@ describe('components | Filters', () => {
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
-      bookingStatus: ALL_BOOKING_STATUS,
       bookingToken: EMPTY_FILTER_VALUE,
       offerDate: '2020-05-20',
       offerISBN: EMPTY_FILTER_VALUE,
@@ -132,7 +130,6 @@ describe('components | Filters', () => {
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
-      bookingStatus: ALL_BOOKING_STATUS,
       bookingToken: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
       offerISBN: EMPTY_FILTER_VALUE,
@@ -158,7 +155,6 @@ describe('components | Filters', () => {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
-      bookingStatus: ALL_BOOKING_STATUS,
       bookingToken: EMPTY_FILTER_VALUE,
       offerDate: '2020-05-20',
       offerISBN: EMPTY_FILTER_VALUE,
@@ -189,7 +185,6 @@ describe('components | Filters', () => {
       bookingBeneficiary: EMPTY_FILTER_VALUE,
       bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingEndingDate: EMPTY_FILTER_VALUE,
-      bookingStatus: ALL_BOOKING_STATUS,
       bookingToken: EMPTY_FILTER_VALUE,
       offerDate: EMPTY_FILTER_VALUE,
       offerISBN: '12457',
