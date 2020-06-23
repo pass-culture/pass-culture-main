@@ -13,6 +13,7 @@ import Filters, { ALL_VENUES, EMPTY_FILTER_VALUE } from './Filters/Filters'
 import NoFilteredBookings from './NoFilteredBookings/NoFilteredBookings'
 import findOldestBookingDate from './utils/findOldestBookingDate'
 import filterBookingsRecap from './utils/filterBookingsRecap'
+import { sortByOfferName } from './utils/sortingFunctions'
 
 const FIRST_PAGE_INDEX = 0
 
@@ -29,11 +30,7 @@ class BookingsRecapTable extends Component {
           Cell: ({ value }) => <BookingOfferCell offer={value} />,
           className: 'td-offer-name',
           defaultCanSort: true,
-          sortType: (firstRow, secondRow) => {
-            const offerNameOne = firstRow.original.stock.offer_name
-            const offerNameTwo = secondRow.original.stock.offer_name
-            return offerNameOne < offerNameTwo ? -1 : 1
-          }
+          sortType: sortByOfferName
         },
         {
           id: 2,

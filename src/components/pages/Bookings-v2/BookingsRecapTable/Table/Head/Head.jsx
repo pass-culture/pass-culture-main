@@ -15,7 +15,9 @@ const Head = ({ headerGroups }) => (
             {
               column.canSort ?
                 <span>
-                  {column.isSorted ? column.isSortedDesc ? <Icon svg="ico-arrow-up-r" /> : <Icon svg="ico-arrow-down-r" /> : <Icon svg="ico-unfold" />}
+                  {column.isSorted ?
+                    column.isSortedDesc ? <Icon svg="ico-arrow-up-r" /> : <Icon svg="ico-arrow-down-r" />
+                    : <Icon svg="ico-unfold" />}
                 </span> :
                 ''
             }

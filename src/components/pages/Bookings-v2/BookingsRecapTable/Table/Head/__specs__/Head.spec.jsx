@@ -1,6 +1,7 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 import Head from '../Head'
+import Icon from '../../../../../../layout/Icon'
 
 describe('components | pages | Table | Head', () => {
   it('should render one line with all columns', () => {
@@ -67,5 +68,151 @@ describe('components | pages | Table | Head', () => {
 
     // Then
     expect(wrapper.find('tr')).toHaveLength(0)
+  })
+
+  it('should render one line with default sorting icon when column is sortable', () => {
+    // Given
+    const props = {
+      headerGroups: [
+        {
+          id: 1,
+          headers: [
+            {
+              id: 1,
+              headerTitle: 'Offres',
+              render: jest.fn(() => (
+                <span>
+                  {'Offres'}
+                </span>
+              )),
+              getHeaderProps: jest.fn(),
+              getSortByToggleProps: jest.fn(),
+              canSort: true
+            },
+          ],
+        },
+      ],
+    }
+
+    // When
+    const wrapper = shallow(<Head {...props} />)
+
+    // Then
+    const firstColumn = wrapper.find('th')
+    expect(firstColumn).toHaveLength(1)
+    expect(firstColumn.find({ children: 'Offres' })).toHaveLength(1)
+    const defaultSortingIcon = firstColumn.find(Icon)
+    expect(defaultSortingIcon).toHaveLength(1)
+    expect(defaultSortingIcon.prop('svg')).toBe('ico-unfold')
+  })
+
+  it('should render one line with no default sorting icon when column is not sortable', () => {
+    // Given
+    const props = {
+      headerGroups: [
+        {
+          id: 1,
+          headers: [
+            {
+              id: 1,
+              headerTitle: 'Offres',
+              render: jest.fn(() => (
+                <span>
+                  {'Offres'}
+                </span>
+              )),
+              getHeaderProps: jest.fn(),
+              getSortByToggleProps: jest.fn(),
+              canSort: false
+            },
+          ],
+        },
+      ],
+    }
+
+    // When
+    const wrapper = shallow(<Head {...props} />)
+
+    // Then
+    const firstColumn = wrapper.find('th')
+    expect(firstColumn).toHaveLength(1)
+    expect(firstColumn.find({ children: 'Offres' })).toHaveLength(1)
+    const defaultSortingIcon = firstColumn.find(Icon)
+    expect(defaultSortingIcon).toHaveLength(0)
+  })
+
+  it('should render one line with icon sorted ASC when column is sorted by ASC', () => {
+    // Given
+    const props = {
+      headerGroups: [
+        {
+          id: 1,
+          headers: [
+            {
+              id: 1,
+              headerTitle: 'Offres',
+              render: jest.fn(() => (
+                <span>
+                  {'Offres'}
+                </span>
+              )),
+              getHeaderProps: jest.fn(),
+              getSortByToggleProps: jest.fn(),
+              canSort: true,
+              isSorted: true
+            },
+          ],
+        },
+      ],
+    }
+
+    // When
+    const wrapper = shallow(<Head {...props} />)
+
+    // Then
+    const firstColumn = wrapper.find('th')
+    expect(firstColumn).toHaveLength(1)
+    expect(firstColumn.find({ children: 'Offres' })).toHaveLength(1)
+    const defaultSortingIcon = firstColumn.find(Icon)
+    expect(defaultSortingIcon).toHaveLength(1)
+    expect(defaultSortingIcon.prop('svg')).toBe('ico-arrow-down-r')
+  })
+
+  it('should render one line with icon sorted DESC when column is sorted by DESC', () => {
+    // Given
+    const props = {
+      headerGroups: [
+        {
+          id: 1,
+          headers: [
+            {
+              id: 1,
+              headerTitle: 'Offres',
+              render: jest.fn(() => (
+                <span>
+                  {'Offres'}
+                </span>
+              )),
+              getHeaderProps: jest.fn(),
+              getSortByToggleProps: jest.fn(),
+              canSort: true,
+              isSorted: true,
+              isSortedDesc: true
+            },
+          ],
+        },
+      ],
+    }
+
+    // When
+    const wrapper = shallow(<Head {...props} />)
+
+    // Then
+    const firstColumn = wrapper.find('th')
+    expect(firstColumn).toHaveLength(1)
+    expect(firstColumn.find({ children: 'Offres' })).toHaveLength(1)
+    const defaultSortingIcon = firstColumn.find(Icon)
+    expect(defaultSortingIcon).toHaveLength(1)
+    expect(defaultSortingIcon.prop('svg')).toBe('ico-arrow-up-r')
   })
 })
