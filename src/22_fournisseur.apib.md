@@ -18,17 +18,19 @@ Règles de mise à jour des données dans le pass Culture
 ### Paramètres d’appel
  
 - “SIRET” (string) : identifiant SIRET du lieu dans lequel sont localisées les propositions 
-- “modifiedSince” (string) - date au format aaa-mm-ddThh:mm:ss.mmmZ. L'API ne renvoie que les événements ou objets modifiés depuis cette date
+- “modifiedSince” (string) - date au format aaaa-mm-ddThh:mm:ss.mmmZ. L'API ne renvoie que les événements ou objets modifiés depuis cette date. Techniquement, ce champ n'est pas obligatoire, mais pour des raisons de performances nous invitons fortement à son utilisation.
 - “after” (optional, string) - pagination : référence (ex : EAN13) de la dernière entrée traitée (le dernier de la page précédente)
-- “limit” (optional, integer) - pagination : nombre maximum d'entrées (nombre de couples (référence; prix)) à renvoyer pour cette requête
-- "total" (optional, integer) : nombre total d'entrées (nombre de couples (référence; prix)) dans la requête 
-- "offset" (optional, integer) : nombre d'entrées précédent celles qui sont présentées
+- “limit” (optional, integer) - pagination : nombre maximum d'entrées (nombre de couples (référence; prix)) à renvoyer pour cette requête. Nous fixons généralement une valeur arbitraire lors de l'appel à 1000 résultats. Tel que notre système fonctionne, nous effectuons des requêtes paginées jusqu'à recevoir aucun résultat.
 
 Par exemple, pour lister les stocks disponible pour un établissement : GET /stocks/12345678901234?after=1978212345681&limit=2
 
 ### Paramètres de réponse
 
 L'ordre des paramètres est au choix du fournisseur mais ne doit pas varier entre deux requêtes.
+
+Les paramètres "Total" et "offset" sont des informations retournées en sortie par l'API. Ils sont présents à titre informatifs et pas utilisés lors du traitement des données :
+- "total" (optional, integer) : nombre total d'entrées (nombre de couples (référence; prix)) dans la requête 
+- "offset" (optional, integer) : nombre d'entrées précédent celles qui sont présentées
 
 Un paramètre "stocks" doit ainsi comporter : 
 - "ref" : EAN13 (correspondant à l’ISBN pour les livres)
@@ -63,7 +65,7 @@ Dans le cas des livres, si aucun prix n’est rentré, le prix unique est automa
               ]
             }
 
-+ Response 400 (application/json)
++ Response 400 (application/json) : vous pouvez retourner cette erreur lorsque les paramètres d'appels sont erronés ou manquants (Par exemple, mauvais format de date)
 
     + Body
 
@@ -72,7 +74,7 @@ Dans le cas des livres, si aucun prix n’est rentré, le prix unique est automa
             }
 
 
-+ Response 404 (application/json)
++ Response 404 (application/json) : ce code doit être retourné lorsque l'identifiant du lieu est inconnu dans votre système
 
     + Body
 
