@@ -1,5 +1,6 @@
 """ transfer model """
 from datetime import datetime
+from typing import List
 
 from sqlalchemy import BigInteger, \
     Column, \
@@ -88,8 +89,9 @@ class Payment(PcObject, Model):
 
     @hybrid_property
     def lastProcessedDate(self):
-        sent_date = [status.date for status in self.statuses if status.status == TransactionStatus.SENT]
-        return None if len(sent_date) == 0 else sent_date[0]
+        payment_sent_date = [status.date for status in self.statuses if status.status == TransactionStatus.SENT]
+        sorted_sent_dates = sorted(payment_sent_date, key=lambda x: x.date)
+        return sorted_sent_dates[0] if len(sorted_sent_dates) > 0 else None
 
     @lastProcessedDate.expression
     def lastProcessedDate(cls):
@@ -97,6 +99,8 @@ class Payment(PcObject, Model):
             .query(PaymentStatus.date) \
             .filter(PaymentStatus.paymentId == cls.id) \
             .filter(PaymentStatus.status == TransactionStatus.SENT) \
+            .order_by(PaymentStatus.date.asc()) \
+            .limit(1) \
             .as_scalar()
 
     def setStatus(self, status: TransactionStatus, detail: str = None):

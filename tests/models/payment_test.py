@@ -59,6 +59,23 @@ class PaymentDateTest:
             payment_sent_date = payment.lastProcessedDate
             assert payment_sent_date == payment_date
 
+        def test_payment_date_should_return_oldest_payment_date_for_status_sent_if_several(self, app):
+            # Given
+            payment_date = datetime.utcnow()
+            payment = Payment()
+            payment_status = PaymentStatus()
+            payment_status.status = TransactionStatus.SENT
+            payment_status.date = payment_date
+            payment.statuses = [payment_status]
+            older_payment_date = datetime.utcnow() - timedelta(days=1)
+            payment_status.status = TransactionStatus.SENT
+            payment_status.date = older_payment_date
+            payment.statuses = [payment_status]
+
+            # When/Then
+            payment_sent_date = payment.lastProcessedDate
+            assert payment_sent_date == older_payment_date
+
         def test_payment_date_should_return_no_payment_date_for_status_pending(self):
             # Given
             payment_date = datetime.utcnow()
@@ -94,6 +111,30 @@ class PaymentDateTest:
 
             # Then
             assert payment_from_query.payment_date == today
+
+        @clean_database
+        def test_payment_date_should_return_oldest_payment_date_for_status_sent_if_several(self, app):
+            # Given
+            user = create_user()
+            booking = create_booking(user=user)
+            today = datetime.utcnow()
+            yesterday = datetime.utcnow() - timedelta(days=1)
+            create_deposit(user)
+            offerer = booking.stock.offer.venue.managingOfferer
+            payment_message = create_payment_message(name='mon message')
+            payment = create_payment(booking, offerer, 5,  payment_message=payment_message)
+            payment_status = create_payment_status(payment, status=TransactionStatus.SENT, date=today)
+            create_payment_status(payment, status=TransactionStatus.SENT, date=yesterday)
+
+            repository.save(payment_status)
+
+            # When
+            payment_from_query = Payment.query.with_entities(
+                Payment.lastProcessedDate.label("payment_date")
+            ).first()
+
+            # Then
+            assert payment_from_query.payment_date == yesterday
 
         @clean_database
         def test_payment_date_should_return_no_payment_date_for_status_pending(self, app):
