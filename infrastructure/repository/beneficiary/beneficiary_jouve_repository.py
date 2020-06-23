@@ -6,7 +6,7 @@ from jsonschema.validators import requests
 from domain.beneficiary.beneficiary import Beneficiary
 from domain.beneficiary.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
-from domain.beneficiary.beneficiary_repository import BeneficiaryRepository
+from domain.beneficiary.beneficiary_pre_subscription_repository import BeneficiaryPreSubscriptionRepository
 from infrastructure.repository.beneficiary import beneficiary_jouve_converter
 
 JOUVE_API_DOMAIN = os.environ.get('JOUVE_API_DOMAIN')
@@ -19,7 +19,7 @@ class ApiJouveException(Exception):
     pass
 
 
-class BeneficiaryJouveRepository(BeneficiaryRepository):
+class BeneficiaryJouveRepository(BeneficiaryPreSubscriptionRepository):
     @classmethod
     def _get_authentication_token(cls) -> str:
         expiration = datetime.datetime.now() + datetime.timedelta(hours=1)
@@ -36,7 +36,8 @@ class BeneficiaryJouveRepository(BeneficiaryRepository):
             })
 
         if response.status_code != 200:
-            raise ApiJouveException('Error getting API jouve authentication token')
+            raise ApiJouveException(
+                'Error getting API jouve authentication token')
 
         response_json = response.json()
         return response_json['Value']
@@ -50,10 +51,11 @@ class BeneficiaryJouveRepository(BeneficiaryRepository):
             headers={
                 'X-Authentication': token,
             },
-            data=application_id)
+            data=str(application_id))
 
         if response.status_code != 200:
-            raise ApiJouveException(f'Error getting API jouve GetJouveByID with id: {application_id}')
+            raise ApiJouveException(
+                f'Error getting API jouve GetJouveByID with id: {application_id}')
 
         return beneficiary_jouve_converter.to_domain(response.json())
 

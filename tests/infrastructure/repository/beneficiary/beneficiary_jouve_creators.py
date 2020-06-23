@@ -1,8 +1,9 @@
-from pyparsing import Dict
+from typing import Dict
 
 
 def get_application_by_detail_response(
         address: str = '18 avenue des fleurs',
+        application_id: int = 2,
         birth_date: str = '09/08/1995',
         city: str = 'RENNES',
         email: str = 'rennes@example.org',
@@ -15,7 +16,7 @@ def get_application_by_detail_response(
 ) -> Dict:
     return {
         'mtd_datEnreg': '04/06/2020 06:00',
-        'mtd_jeuneID': 2,
+        'mtd_jeuneID': application_id,
         'mtd_adrResid': address,
         'mtd_datNaiss': birth_date,
         'mtd_comResid': city,

@@ -1,35 +1,37 @@
 from datetime import datetime
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from freezegun import freeze_time
 from tests.conftest import clean_database
 
 from domain.beneficiary.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
+from infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 from models import BeneficiaryImport, UserSQLEntity
 from models.beneficiary_import_status import ImportStatus
 from models.deposit import Deposit
 from use_cases.create_beneficiary_from_application import \
-    create_beneficiary_from_application
+    CreateBeneficiaryFromApplication
 
 
 @patch('use_cases.create_beneficiary_from_application.send_raw_email')
 @patch('use_cases.create_beneficiary_from_application.send_activation_email')
 @patch('domain.password.random_token')
 @patch('infrastructure.repository.beneficiary.beneficiary_pre_subscription_sql_converter.random_password')
-@patch('use_cases.create_beneficiary_from_application.BeneficiaryJouveRepository.get_application_by')
 @freeze_time('2020-10-15 09:00:00')
 @clean_database
-def test_saved_a_beneficiary_from_application(stubed_get_application_by,
-                                              stubed_random_password,
+def test_saved_a_beneficiary_from_application(stubed_random_password,
                                               stubed_random_token,
                                               mocked_send_activation_email,
                                               stubed_send_raw_email,
                                               app):
     # Given
     application_id = 7
-    stubed_get_application_by.return_value = BeneficiaryPreSubscription(
+    stubed_random_password.return_value = b'random-password'
+    stubed_random_token.return_value = 'token'
+    beneficiary_pre_subscription = BeneficiaryPreSubscription(
         date_of_birth=datetime(1995, 2, 5),
+        application_id=application_id,
         postal_code='35123',
         email='rennes@example.org',
         first_name='Thomas',
@@ -38,11 +40,16 @@ def test_saved_a_beneficiary_from_application(stubed_get_application_by,
         phone_number='0123456789',
         activity='Apprenti',
     )
-    stubed_random_password.return_value = b'random-password'
-    stubed_random_token.return_value = 'token'
+
+    beneficiary_jouve_repository = MagicMock()
+    beneficiary_jouve_repository.get_application_by.return_value = beneficiary_pre_subscription
+    create_beneficiary_from_application = CreateBeneficiaryFromApplication(
+        beneficiary_jouve_repository=beneficiary_jouve_repository,
+        beneficiary_sql_repository=BeneficiarySQLRepository()
+    )
 
     # When
-    create_beneficiary_from_application(application_id)
+    create_beneficiary_from_application.execute(application_id)
 
     # Then
     beneficiary = UserSQLEntity.query.one()
@@ -71,5 +78,6 @@ def test_saved_a_beneficiary_from_application(stubed_get_application_by,
     beneficiary_import = BeneficiaryImport.query.one()
     assert beneficiary_import.currentStatus == ImportStatus.CREATED
     assert beneficiary_import.applicationId == application_id
+    assert beneficiary_import.beneficiary == beneficiary
 
     mocked_send_activation_email.assert_called_once_with(user=beneficiary, send_email=stubed_send_raw_email)

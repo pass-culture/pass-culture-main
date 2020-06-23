@@ -3,8 +3,10 @@ from domain.beneficiary.beneficiary_exceptions import BeneficiaryDoesntExist
 from domain.beneficiary.beneficiary_repository import BeneficiaryRepository
 from models import UserSQLEntity
 from models.db import db
-from infrastructure.repository.beneficiary import beneficiary_sql_converter
-
+from infrastructure.repository.beneficiary import beneficiary_sql_converter, beneficiary_pre_subscription_sql_converter
+from infrastructure.repository.beneficiary import \
+    beneficiary_pre_subscription_sql_converter
+from repository import repository
 
 class BeneficiarySQLRepository(BeneficiaryRepository):
     def find_beneficiary_by_user_id(self, user_id: int) -> Beneficiary:
@@ -15,3 +17,11 @@ class BeneficiarySQLRepository(BeneficiaryRepository):
             raise BeneficiaryDoesntExist()
 
         return beneficiary_sql_converter.to_domain(user_sql_entity)
+
+    @classmethod
+    def save(cls, beneficiary_pre_subscription):
+        beneficiary = beneficiary_pre_subscription_sql_converter.to_model(beneficiary_pre_subscription)
+
+        repository.save(beneficiary)
+
+        return beneficiary

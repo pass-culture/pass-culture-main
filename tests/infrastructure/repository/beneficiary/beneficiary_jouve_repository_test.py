@@ -21,13 +21,14 @@ from infrastructure.repository.beneficiary.beneficiary_jouve_repository import A
 def test_calls_jouve_api_with_previously_fetched_token(mocked_requests_post):
     # Given
     token = 'token-for-tests'
-    application_id = '5'
+    application_id = 5
 
     get_token_response = MagicMock(status_code=200)
     get_token_response.json = MagicMock(return_value=beneficiary_jouve_creators.get_token_detail_response(token))
 
     get_application_by_json = beneficiary_jouve_creators.get_application_by_detail_response(
         address='18 avenue des fleurs',
+        application_id=application_id,
         birth_date='09/08/1995',
         city='RENNES',
         email='rennes@example.org',
@@ -61,10 +62,11 @@ def test_calls_jouve_api_with_previously_fetched_token(mocked_requests_post):
         })
     assert mocked_requests_post.call_args_list[1] == call(
         'https://jouve.com/REST/vault/extensionmethod/VEM_GetJeuneByID',
-        data=application_id,
+        data=str(application_id),
         headers={'X-Authentication': token})
     assert isinstance(beneficiary_pre_subscription, BeneficiaryPreSubscription)
     assert beneficiary_pre_subscription.activity == 'Apprenti'
+    assert beneficiary_pre_subscription.application_id == 5
     assert beneficiary_pre_subscription.civility == 'Mme'
     assert beneficiary_pre_subscription.date_of_birth == datetime(1995, 8, 9)
     assert beneficiary_pre_subscription.department_code == '35'

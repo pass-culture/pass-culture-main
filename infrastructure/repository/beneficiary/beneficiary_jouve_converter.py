@@ -8,6 +8,7 @@ from domain.beneficiary.beneficiary_pre_subscription import \
 def to_domain(user_jouve_entity: Dict) -> BeneficiaryPreSubscription:
     return BeneficiaryPreSubscription(
         activity=user_jouve_entity['mtd_statut'],
+        application_id=user_jouve_entity['mtd_jeuneID'],
         civility=_convert_civility(user_jouve_entity['mtd_sexe']),
         date_of_birth=_convert_date_of_birth(user_jouve_entity['mtd_datNaiss']),
         email=user_jouve_entity['mtd_mail'],

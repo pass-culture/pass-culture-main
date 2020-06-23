@@ -1,10 +1,5 @@
-from datetime import datetime
-
 from domain.bank_informations.bank_informations import BankInformations
 from models import BankInformation as BankInformationsSQLEntity
-from infrastructure.repository.stock import stock_domain_converter
-from infrastructure.repository.beneficiary import beneficiary_sql_converter
-from utils.token import random_token
 
 
 def to_domain(bank_informations_sql_entity: BankInformationsSQLEntity) -> BankInformations:
