@@ -17,6 +17,7 @@ class FilterByBookingStatus extends Component {
   }
 
   canHideFilter = true
+  keyHideFilterTimeout
 
   showFilters = () => {
     this.setState({
@@ -42,6 +43,21 @@ class FilterByBookingStatus extends Component {
     if (this.canHideFilter) {
       this.hideFilters()
     }
+  }
+
+  handleKeyDown = event => {
+    if (event.key === 'Tab') {
+      this.preventHidingFilter()
+      this.keyHideFilterTimeout = setTimeout(() => {
+        this.authorizeHidingFilter()
+        this.hideFilters()
+      }, 150)
+    }
+  }
+
+  handleKeyUp = () => {
+    this.authorizeHidingFilter()
+    clearTimeout(this.keyHideFilterTimeout)
   }
 
   handleCheckboxChange = event => {
@@ -97,11 +113,14 @@ class FilterByBookingStatus extends Component {
     const bookingStatuses = this.getAvailableStatuses(bookingsRecap).sort(this.byStatusTitle)
 
     return (
+      // eslint-disable-next-line jsx-a11y/interactive-supports-focus
       <span
         className="bs-filter"
         onBlur={this.handleBlur}
-        /* eslint-disable-next-line react/jsx-handler-names */
+        // eslint-disable-next-line react/jsx-handler-names
         onFocus={this.showFilters}
+        onKeyDown={this.handleKeyDown}
+        onKeyUp={this.handleKeyUp}
         role="button"
       >
         <button type="button">
@@ -119,9 +138,9 @@ class FilterByBookingStatus extends Component {
             {bookingStatuses.map(bookingStatus => (
               <Fragment key={bookingStatus.value}>
                 <label
-                  /* eslint-disable-next-line react/jsx-handler-names */
+                  // eslint-disable-next-line react/jsx-handler-names
                   onMouseDown={this.preventHidingFilter}
-                  /* eslint-disable-next-line react/jsx-handler-names */
+                  // eslint-disable-next-line react/jsx-handler-names
                   onMouseUp={this.authorizeHidingFilter}
                 >
                   <input
