@@ -412,8 +412,7 @@ def create_booking(user: UserSQLEntity,
                    recommendation: Recommendation = None,
                    stock: StockSQLEntity = None,
                    token: str = None,
-                   venue: VenueSQLEntity = None,
-                   cancellation_date: Optional[datetime] = None) -> BookingSQLEntity:
+                   venue: VenueSQLEntity = None) -> BookingSQLEntity:
     booking = BookingSQLEntity()
     offerer = create_offerer(siren='987654321', address='Test address', city='Test city', postal_code='93000',
                              name='Test name')
@@ -442,7 +441,6 @@ def create_booking(user: UserSQLEntity,
     booking.stock = stock
     booking.token = token if token is not None else random_token()
     booking.userId = user.id
-    booking.cancellationDate = cancellation_date
 
     return booking
 

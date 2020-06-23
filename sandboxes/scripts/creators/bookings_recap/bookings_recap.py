@@ -146,15 +146,13 @@ def save_bookings_recap_sandbox():
         user=beneficiary2,
         stock=stock_1_offer1_venue2,
         date_created=datetime(2020, 4, 12, 14, 31, 12, 0),
-        is_cancelled=True,
-        cancellation_date=datetime(2020, 4, 15, 14, 31, 12, 0),
+        is_cancelled=False,
     )
     booking1_beneficiary3 = create_booking(
         user=beneficiary3,
         stock=stock_2_offer2_venue1,
         date_created=datetime(2020, 1, 4, 19, 31, 12, 0),
-        is_cancelled=True,
-        cancellation_date=datetime(2020, 4, 15, 14, 31, 12, 0),
+        is_cancelled=False,
         is_used=True,
         date_used=datetime(2020, 1, 4, 23, 00, 10, 0),
         quantity=2,
@@ -163,8 +161,7 @@ def save_bookings_recap_sandbox():
         user=beneficiary3,
         stock=stock_1_offer1_venue2,
         date_created=datetime(2020, 3, 21, 22, 9, 12, 0),
-        is_cancelled=True,
-        cancellation_date=datetime(2020, 3, 17, 0, 31, 12, 0),
+        is_cancelled=False,
     )
     booking3_beneficiary1 = create_booking(
         user=beneficiary1,
@@ -179,8 +176,7 @@ def save_bookings_recap_sandbox():
         date_created=datetime(2020, 4, 12, 19, 31, 12, 0),
         is_used=True,
         date_used=datetime(2020, 4, 22, 17, 00, 10, 0),
-        is_cancelled=True,
-        cancellation_date=datetime(2020, 5, 15, 1, 1, 1, 0),
+        is_cancelled=False,
     )
     payment_booking3_beneficiary2 = create_payment(booking=booking3_beneficiary2, offerer=offerer,
                                                    status=TransactionStatus.SENT)
@@ -202,8 +198,7 @@ def save_bookings_recap_sandbox():
         user=beneficiary3,
         stock=stock_1_offer1_venue4,
         date_created=datetime(2020, 3, 21, 22, 9, 12, 0),
-        is_cancelled=True,
-        cancellation_date=datetime(2020, 4, 23, 17, 31, 12, 0),
+        is_cancelled=False,
     )
 
     booking6_beneficiary3 = create_booking(
@@ -249,3 +244,15 @@ def save_bookings_recap_sandbox():
         payment_booking7_beneficiary2, payment_booking8_beneficiary1,
         booking4_beneficiary3
     )
+
+    bookings_to_cancel = [
+        booking2_beneficiary2,
+        booking1_beneficiary3,
+        booking2_beneficiary3,
+        booking3_beneficiary2,
+        booking5_beneficiary3
+    ]
+
+    for booking in bookings_to_cancel:
+        booking.isCancelled = True
+    repository.save(*bookings_to_cancel)
