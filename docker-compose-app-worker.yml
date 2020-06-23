@@ -13,8 +13,12 @@ services:
     volumes:
       - ./api:/opt/services/flaskapp/src
     env_file:
-      - ./api/.env.local.secret
       - env_file
+      - ${ENV:-development}_env_file
+    environment:
+      - DEMARCHES_SIMPLIFIEES_RIB_OFFERER_PROCEDURE_ID=$DEMARCHES_SIMPLIFIEES_RIB_OFFERER_PROCEDURE_ID
+      - DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID=$DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID
+      - DEMARCHES_SIMPLIFIEES_TOKEN=$DEMARCHES_SIMPLIFIEES_TOKEN
     networks:
       - db_nw
       - web_nw
