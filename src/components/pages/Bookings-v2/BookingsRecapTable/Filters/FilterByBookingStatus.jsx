@@ -96,7 +96,6 @@ class FilterByBookingStatus extends Component {
           <Icon
             alt="Filtrer par statut"
             svg={bookingStatusFilter.length > 0 ? 'ico-filter-status-active' : 'ico-filter-status'}
-            // svg={'ico-filter-status'}
           />
         </button>
 
@@ -114,7 +113,7 @@ class FilterByBookingStatus extends Component {
                   onMouseUp={this.authorizeHidingFilter}
                 >
                   <input
-                    defaultChecked
+                    checked={!bookingStatusFilter.includes(bookingStatus.value)}
                     id={`bs-${bookingStatus.value}`}
                     name={bookingStatus.value}
                     onChange={this.handleCheckboxChange}

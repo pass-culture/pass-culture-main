@@ -79,14 +79,14 @@ describe('components | FilterByBookingStatus', () => {
       const label = wrapper.find('label')
       expect(checkbox).toHaveLength(2)
       expect(checkbox.at(0).props()).toStrictEqual({
-        defaultChecked: true,
+        checked: true,
         id: 'bs-booked',
         name: 'booked',
         onChange: expect.any(Function),
         type: 'checkbox',
       })
       expect(checkbox.at(1).props()).toStrictEqual({
-        defaultChecked: true,
+        checked: true,
         id: 'bs-validated',
         name: 'validated',
         onChange: expect.any(Function),
