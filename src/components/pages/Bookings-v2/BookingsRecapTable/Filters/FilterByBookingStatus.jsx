@@ -72,7 +72,7 @@ class FilterByBookingStatus extends Component {
 
   render() {
     const { bookingsRecap } = this.props
-    const { showFilterStatusTooltip } = this.state
+    const { bookingStatusFilter, showFilterStatusTooltip } = this.state
     const bookingStatusValues = getAvailableStatusValues(bookingsRecap).sort()
 
     return (
@@ -86,7 +86,8 @@ class FilterByBookingStatus extends Component {
         <button type="button">
           <Icon
             alt="Filtrer par statut"
-            svg="ico-filter-status"
+            svg={bookingStatusFilter.length > 0 ? 'ico-filter-status-active' : 'ico-filter-status'}
+            // svg={'ico-filter-status'}
           />
         </button>
 
