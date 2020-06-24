@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import Icon from '../../../../layout/Icon'
 import { getStatusTitle } from '../CellsFormatter/utils/bookingStatusConverter'
 
+const TIME_NEEDED_TO_TAB_IN_FILTER = 150
+
 class FilterByBookingStatus extends Component {
   constructor(props) {
     super(props)
@@ -51,7 +53,7 @@ class FilterByBookingStatus extends Component {
       this.keyHideFilterTimeout = setTimeout(() => {
         this.authorizeHidingFilter()
         this.hideFilters()
-      }, 150)
+      }, TIME_NEEDED_TO_TAB_IN_FILTER)
     }
   }
 
