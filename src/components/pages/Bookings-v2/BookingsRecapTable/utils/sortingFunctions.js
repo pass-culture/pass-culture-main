@@ -3,3 +3,13 @@ export const sortByOfferName = (firstRow, secondRow) => {
   const offerNameTwo = secondRow.original.stock.offer_name
   return offerNameOne.localeCompare(offerNameTwo)
 }
+
+export const sortByBeneficiaryName = (firstRow, secondRow) => {
+  let beneficiaryOne = firstRow.original.beneficiary.lastname
+  let beneficiaryTwo = secondRow.original.beneficiary.lastname
+  if (beneficiaryOne.localeCompare(beneficiaryTwo) === 0) {
+    beneficiaryOne = firstRow.original.beneficiary.firstname
+    beneficiaryTwo = secondRow.original.beneficiary.firstname
+  }
+  return beneficiaryOne.localeCompare(beneficiaryTwo)
+}

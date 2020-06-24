@@ -15,7 +15,7 @@ import NoFilteredBookings from './NoFilteredBookings/NoFilteredBookings'
 import findOldestBookingDate from './utils/findOldestBookingDate'
 import filterBookingsRecap from './utils/filterBookingsRecap'
 import FilterByBookingStatus from './Filters/FilterByBookingStatus'
-import { sortByOfferName } from './utils/sortingFunctions'
+import { sortByBeneficiaryName, sortByOfferName } from './utils/sortingFunctions'
 
 const FIRST_PAGE_INDEX = 0
 
@@ -48,7 +48,8 @@ class BookingsRecapTable extends Component {
           accessor: 'beneficiary',
           Cell: ({ value }) => <BeneficiaryCell beneficiaryInfos={value} />,
           className: 'td-beneficiary',
-          disableSortBy: true,
+          defaultCanSort: true,
+          sortType: sortByBeneficiaryName,
         },
         {
           id: 4,
