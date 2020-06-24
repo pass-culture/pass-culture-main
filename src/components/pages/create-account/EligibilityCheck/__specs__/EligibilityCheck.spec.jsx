@@ -32,7 +32,7 @@ describe('eligibility check page', () => {
     expect(backLink).toHaveLength(1)
   })
 
-  it('should display a postal code input', () => {
+  it('should display a postal code input label', () => {
     // when
     const wrapper = mount(
       <MemoryRouter>
@@ -41,10 +41,11 @@ describe('eligibility check page', () => {
     )
 
     // then
-    const elgbtPostalCodeInput = wrapper.find({
-      children: 'Quel est ton code postal de résidence ?',
-    })
-    expect(elgbtPostalCodeInput).toHaveLength(1)
+    const elgbtPostalCodeInputLabel = wrapper
+      .find('label')
+      .at(0)
+      .text()
+    expect(elgbtPostalCodeInputLabel).toBe('Quel est ton code postal de résidence ?')
   })
 
   it('should add a space in input when user enters the first two numbers of his postal code', () => {
@@ -67,7 +68,7 @@ describe('eligibility check page', () => {
     expect(elgbtPostalCodeInputUpdated.prop('value')).toBe('76 530')
   })
 
-  it('should display a date of birth input', () => {
+  it('should display a date of birth input label', () => {
     // when
     const wrapper = mount(
       <MemoryRouter>
@@ -76,8 +77,11 @@ describe('eligibility check page', () => {
     )
 
     // then
-    const elgbtDobInput = wrapper.find({ children: 'Quelle est ta date de naissance ?' })
-    expect(elgbtDobInput).toHaveLength(1)
+    const elgbtDobInputLabel = wrapper
+      .find('label')
+      .at(1)
+      .text()
+    expect(elgbtDobInputLabel).toBe('Quelle est ta date de naissance ?')
   })
 
   it('should add slashes in date of birth input', () => {

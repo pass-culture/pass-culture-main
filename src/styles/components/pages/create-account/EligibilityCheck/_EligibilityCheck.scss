@@ -8,8 +8,10 @@
   .elgbt-header {
     align-items: center;
     color: $white;
-    display: flex;
+    display: grid;
     font-size: rem(18px);
+    grid-auto-flow: column;
+    grid-template-columns: 0 90%;
     min-height: rem(80px);
     max-height: rem(80px);
     justify-content: center;
@@ -17,10 +19,7 @@
     flex: 1;
 
     a {
-      left: rem(20px);
-      padding: 0;
-      position: absolute;
-      top: rem(26px);
+      padding-top: rem(2px);
     }
   }
 

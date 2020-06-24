@@ -17,7 +17,7 @@ const EligibilityCheck = () => {
     setDateOfBirthInputValue(newValue)
   }, [])
 
-  const isMissingField = () => postalCodeInputValue.length < 6 || dateOfBirthInputValue.length < 10
+  const isMissingField = postalCodeInputValue.length < 6 || dateOfBirthInputValue.length < 10
 
   return (
     <main className="eligibility-check-page">
@@ -29,9 +29,7 @@ const EligibilityCheck = () => {
       </div>
       <form className="elgbt-form">
         <label>
-          <span>
-            {'Quel est ton code postal de résidence ?'}
-          </span>
+          {'Quel est ton code postal de résidence ?'}
           <InputMask
             inputMode="numeric"
             mask="99 999"
@@ -42,9 +40,7 @@ const EligibilityCheck = () => {
           />
         </label>
         <label>
-          <span>
-            {'Quelle est ta date de naissance ?'}
-          </span>
+          {'Quelle est ta date de naissance ?'}
           <InputMask
             inputMode="numeric"
             mask="99/99/9999"
@@ -56,7 +52,7 @@ const EligibilityCheck = () => {
         </label>
         <input
           className="elgbt-submit"
-          disabled={isMissingField()}
+          disabled={isMissingField}
           type="submit"
           value="Vérifier mon éligibilité"
         />
