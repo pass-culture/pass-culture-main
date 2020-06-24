@@ -117,7 +117,7 @@ describe('eligibility check page', () => {
     )
 
     // then
-    const elgbtSubmitBtn = wrapper.find({ children: 'Créer un compte' })
+    const elgbtSubmitBtn = wrapper.find('input[value="Vérifier mon éligibilité"]')
     expect(elgbtSubmitBtn).toHaveLength(1)
   })
 })
