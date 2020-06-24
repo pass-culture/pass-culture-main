@@ -17,7 +17,12 @@ export const sortByBeneficiaryName = (firstRow, secondRow) => {
 }
 
 export const sortByBookingDate = (firstRow, secondRow) => {
-  const bookingDateOne = firstRow.original.booking_date
-  const bookingDateTwo = secondRow.original.booking_date
-  return bookingDateOne.localeCompare(bookingDateTwo)
+  const bookingDateOne = new Date(firstRow.original.booking_date)
+  const bookingDateTwo = new Date(secondRow.original.booking_date)
+  if (bookingDateOne > bookingDateTwo) {
+    return 1
+  } else if (bookingDateOne < bookingDateTwo) {
+    return -1
+  }
+  return 0
 }

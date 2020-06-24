@@ -85,7 +85,7 @@ describe('utils | sortingFunctions', () => {
       }
       const secondRow = {
         original: {
-          booking_date: '2020-04-23T11:17:12+02:00',
+          booking_date: '2020-04-23T13:17:12+02:00',
         },
       }
 
@@ -105,7 +105,7 @@ describe('utils | sortingFunctions', () => {
       }
       const secondRow = {
         original: {
-          booking_date: '2020-04-21T11:17:12+02:00',
+          booking_date: '2020-04-22T12:16:12+03:00',
         },
       }
 
