@@ -4,14 +4,14 @@ import moment from 'moment'
 import {
   computeHistoryClassName,
   getStatusDateFormat,
-  getStatusTitle,
+  getStatusName,
 } from './utils/bookingStatusConverter'
 
 const BookingStatusCellHistory = ({ bookingStatusHistory }) => {
   const bookingsStatusHistoryItems = bookingStatusHistory.map(item => (
     <li key={item.status}>
       <span className={`colored-disc ${computeHistoryClassName(item.status)}`} />
-      {`${getStatusTitle(item.status)} : ${computeDateForStatus(item)}`}
+      {`${getStatusName(item.status)} : ${computeDateForStatus(item)}`}
     </li>
   ))
 

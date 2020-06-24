@@ -21,7 +21,7 @@ describe('cellsFormatter | BookingsStatusCellHistory', () => {
     const status = wrapper.find('li')
     const disc = status.find('span')
     expect(disc.hasClass('bs-history-booked')).toBe(true)
-    expect(status.text()).toBe('Réservé : 04/01/2020 20:31')
+    expect(status.text()).toBe('réservé : 04/01/2020 20:31')
   })
 
   it('should render a list with as many elements as statuses', () => {
@@ -69,6 +69,6 @@ describe('cellsFormatter | BookingsStatusCellHistory', () => {
     const status = wrapper.find('li')
     const disc = status.find('span')
     expect(disc.hasClass('bs-history-reimbursed')).toBe(true)
-    expect(status.text()).toBe('Remboursé : 06/01/2020')
+    expect(status.text()).toBe('remboursé : 06/01/2020')
   })
 })

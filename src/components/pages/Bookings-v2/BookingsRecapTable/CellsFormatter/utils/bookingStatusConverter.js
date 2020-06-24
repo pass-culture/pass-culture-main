@@ -1,67 +1,60 @@
 import { FORMAT_DD_MM_YYYY, FORMAT_DD_MM_YYYY_HH_mm } from '../../../../../../utils/date'
 
-const BOOKING_STATUS = [
+const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   {
     id: 'validated',
     status: 'validé',
     className: 'validated',
-    title: 'Validé',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
   },
   {
     id: 'cancelled',
     status: 'annulé',
     className: 'cancelled',
-    title: 'Annulé',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
   },
   {
     id: 'booked',
     status: 'réservé',
     className: 'booked',
-    title: 'Réservé',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
   },
   {
     id: 'reimbursed',
     status: 'remboursé',
     className: 'reimbursed',
-    title: 'Remboursé',
     dateFormat: FORMAT_DD_MM_YYYY,
   },
 ]
 
-const BOOKING_STATUS_DEFAULT = {
-  id: 'default',
-  className: 'default',
+function getBookingStatusDisplayInformationsOrDefault(bookingStatus) {
+  return BOOKING_STATUS_DISPLAY_INFORMATIONS.find(({ id }) => bookingStatus.toLowerCase() === id)
 }
 
-export const computeHistoryClassName = bookingStatusDisplayInformations => {
-  const bookingStatus = getBookingStatusDisplayInformationsOrDefault(
-    bookingStatusDisplayInformations
+export const computeHistoryClassName = bookingStatus => {
+  const bookingStatusDisplayInformations = getBookingStatusDisplayInformationsOrDefault(
+    bookingStatus
   )
-  return `bs-history-${bookingStatus.className}`
+  return `bs-history-${bookingStatusDisplayInformations.className}`
 }
 
-export const computeStatusClassName = bookingStatusDisplayInformations => {
+export const computeStatusClassName = bookingStatus => {
+  const bookingStatusDisplayInformations = getBookingStatusDisplayInformationsOrDefault(
+    bookingStatus
+  )
   return `booking-status-${bookingStatusDisplayInformations.className}`
 }
 
-export const getBookingStatusDisplayInformationsOrDefault = bookingStatusInfos => {
-  const bookingStatusFound = BOOKING_STATUS.find(({ id }) => bookingStatusInfos === id)
-  return bookingStatusFound ? bookingStatusFound : BOOKING_STATUS_DEFAULT
+export const getStatusName = bookingStatus => {
+  const bookingStatusDisplayInformations = getBookingStatusDisplayInformationsOrDefault(
+    bookingStatus
+  )
+  return bookingStatusDisplayInformations.status
 }
 
-export const getStatusTitle = bookingStatusDisplayInformations => {
-  const bookingStatus = getBookingStatusDisplayInformationsOrDefault(
-    bookingStatusDisplayInformations
+export const getStatusDateFormat = bookingStatus => {
+  const bookingStatusDisplayInformations = getBookingStatusDisplayInformationsOrDefault(
+    bookingStatus
   )
-  return bookingStatus.title
-}
-
-export const getStatusDateFormat = bookingStatusDisplayInformations => {
-  const bookingStatus = getBookingStatusDisplayInformationsOrDefault(
-    bookingStatusDisplayInformations
-  )
-  return bookingStatus.dateFormat
+  return bookingStatusDisplayInformations.dateFormat
 }

@@ -15,7 +15,7 @@ describe('components | Header', () => {
     },
     booking_date: '2020-04-03T12:00:00Z',
     booking_token: 'ZEHBGD',
-    booking_status: 'Validé',
+    booking_status: 'validated',
     booking_is_duo: false,
     venue_identifier: 'AE',
   }

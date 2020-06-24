@@ -1,23 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {
-  computeStatusClassName,
-  getBookingStatusDisplayInformationsOrDefault,
-} from './utils/bookingStatusConverter'
+import { computeStatusClassName, getStatusName } from './utils/bookingStatusConverter'
 import BookingStatusCellHistory from './BookingStatusCellHistory'
 
 const BookingStatusCell = ({ bookingRecapInfo }) => {
   let bookingStatus = bookingRecapInfo.original.booking_status
   const offerName = bookingRecapInfo.original.stock.offer_name
-  bookingStatus = bookingStatus.toLowerCase()
 
-  const bookingStatusDisplayInformations = getBookingStatusDisplayInformationsOrDefault(
-    bookingStatus
-  )
-  const statusClassName = computeStatusClassName(bookingStatusDisplayInformations)
-  const statusName = bookingStatusDisplayInformations.status
-    ? bookingStatusDisplayInformations.status
-    : bookingStatus
+  const statusClassName = computeStatusClassName(bookingStatus)
+  const statusName = getStatusName(bookingStatus)
   const amount = computeBookingAmount(bookingRecapInfo.original.booking_amount)
 
   function computeBookingAmount(amount) {

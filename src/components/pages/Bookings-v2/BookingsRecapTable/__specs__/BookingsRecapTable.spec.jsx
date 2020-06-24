@@ -40,7 +40,7 @@ describe('components | BookingsRecapTable', () => {
         },
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
-        booking_status: 'Validé',
+        booking_status: 'validated',
         booking_is_duo: false,
         venue_identifier: 'AE',
         booking_status_history: [
@@ -66,7 +66,7 @@ describe('components | BookingsRecapTable', () => {
         },
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
-        booking_status: 'Validé',
+        booking_status: 'validated',
         booking_is_duo: true,
         venue_identifier: 'AF',
         booking_status_history: [
@@ -119,7 +119,7 @@ describe('components | BookingsRecapTable', () => {
           },
           booking_date: '2020-04-03T12:00:00Z',
           booking_token: 'ZEHBGD',
-          booking_status: 'Validé',
+          booking_status: 'validated',
           booking_is_duo: true,
           venue_identifier: 'AE',
           booking_status_history: [
@@ -172,7 +172,7 @@ describe('components | BookingsRecapTable', () => {
           },
           booking_date: '2020-04-03T12:00:00Z',
           booking_token: 'ZEHBGD',
-          booking_status: 'Validé',
+          booking_status: 'validated',
           booking_is_duo: true,
           venue_identifier: 'AE',
           booking_status_history: [
@@ -213,7 +213,7 @@ describe('components | BookingsRecapTable', () => {
         },
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
-        booking_status: 'Validé',
+        booking_status: 'validated',
         booking_is_duo: true,
         venue_identifier: 'AE',
         booking_status_history: [
@@ -279,7 +279,7 @@ describe('components | BookingsRecapTable', () => {
         booking_date: '2020-04-03T12:00:00Z',
         booking_is_duo: false,
         booking_token: 'ZEHBGD',
-        booking_status: 'Validé',
+        booking_status: 'validated',
         venue_identifier: 'AE',
         booking_status_history: [
           {
@@ -329,7 +329,7 @@ describe('components | BookingsRecapTable', () => {
         },
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
-        booking_status: 'Validé',
+        booking_status: 'validated',
         booking_is_duo: false,
         venue_identifier: 'AE',
         booking_status_history: [
@@ -392,7 +392,7 @@ describe('components | BookingsRecapTable', () => {
         },
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
-        booking_status: 'Validé',
+        booking_status: 'validated',
         booking_is_duo: true,
         venue_identifier: 'AE',
         booking_status_history: [
@@ -418,7 +418,7 @@ describe('components | BookingsRecapTable', () => {
         },
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
-        booking_status: 'Validé',
+        booking_status: 'validated',
         booking_is_duo: true,
         venue_identifier: 'AE',
         booking_status_history: [
@@ -509,7 +509,7 @@ describe('components | BookingsRecapTable', () => {
         },
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
-        booking_status: 'Validé',
+        booking_status: 'validated',
         booking_is_duo: false,
         venue_identifier: 'AE',
       },
@@ -551,7 +551,7 @@ describe('components | BookingsRecapTable', () => {
         },
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
-        booking_status: 'Validé',
+        booking_status: 'validated',
         booking_is_duo: false,
         venue_identifier: 'AE',
       },
@@ -568,7 +568,7 @@ describe('components | BookingsRecapTable', () => {
       },
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ZEHBGD',
-      booking_status: 'Validé',
+      booking_status: 'validated',
       booking_is_duo: false,
       venue_identifier: 'AE',
     }
@@ -585,7 +585,7 @@ describe('components | BookingsRecapTable', () => {
       },
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ZEHBGD',
-      booking_status: 'Validé',
+      booking_status: 'validated',
       booking_is_duo: false,
       venue_identifier: 'AE',
     }
@@ -634,7 +634,7 @@ describe('components | BookingsRecapTable', () => {
       },
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ZEHBGD',
-      booking_status: 'Validé',
+      booking_status: 'validated',
       booking_is_duo: false,
       venue_identifier: 'AE',
       booking_status_history: [
@@ -684,7 +684,7 @@ describe('components | BookingsRecapTable', () => {
           },
           booking_date: '2020-04-03T12:00:00Z',
           booking_token: 'ZEHBGD',
-          booking_status: 'Validé',
+          booking_status: 'validated',
           booking_is_duo: false,
           venue_identifier: 'AE',
           booking_status_history: [
@@ -751,7 +751,7 @@ describe('components | BookingsRecapTable', () => {
         },
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
-        booking_status: 'Validé',
+        booking_status: 'validated',
         booking_is_duo: false,
         venue_identifier: 'AE',
         booking_status_history: [
@@ -781,7 +781,7 @@ describe('components | BookingsRecapTable', () => {
           },
           booking_date: '2020-04-03T12:00:00Z',
           booking_token: 'ZEHBGD',
-          booking_status: 'Validé',
+          booking_status: 'validated',
           booking_is_duo: false,
           venue_identifier: 'AE',
           booking_status_history: [
@@ -830,7 +830,7 @@ describe('components | BookingsRecapTable', () => {
       },
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ZEHBGD',
-      booking_status: 'Validé',
+      booking_status: 'validated',
       booking_is_duo: true,
       venue_identifier: 'AE',
       booking_status_history: [
@@ -862,7 +862,7 @@ describe('components | BookingsRecapTable', () => {
       },
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ZEHBGD',
-      booking_status: 'Validé',
+      booking_status: 'validated',
       booking_is_duo: true,
       venue_identifier: 'AE',
       booking_status_history: [
