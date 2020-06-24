@@ -4,11 +4,12 @@ import Icon from '../../../../../layout/Icon'
 
 const Head = ({ headerGroups }) => (
   <thead className="bookings-head">
-    {headerGroups.map((headerGroup) => (
-      <tr key='header-group'>
+    {headerGroups.map(headerGroup => (
+      <tr key="header-group">
         {headerGroup.headers.map(column => (
           <th
             {...column.getHeaderProps(column.getSortByToggleProps())}
+            className={column.className}
             key={column.id}
           >
             {column.render('headerTitle')}

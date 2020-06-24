@@ -7,30 +7,34 @@
     flex-direction: column;
     margin-bottom: rem(10px);
 
-    .td-offer-name {
-      flex: 1 rem(90px);
+    .column-offer-name {
+      width: rem(165px);
     }
 
-    .td-booking-duo {
-      flex: 0.5;
+    .column-booking-duo {
+      align-items: center;
+      display: flex;
+      padding: rem(10px) 0;
+      width: rem(40px);
     }
 
-    .td-beneficiary {
-      flex: 1 rem(150px);
+    .column-beneficiary {
+      width: rem(225px);
       word-break: break-word;
     }
 
-    .td-booking-date {
-      flex: 0.5;
+    .column-booking-date {
+      width: rem(135px);
     }
 
-    .td-booking-token {
-      flex: 1;
+    .column-booking-token {
+      width: rem(120px);
       word-break: break-word;
     }
 
-    .td-booking-status {
-      flex: 1;
+    .column-booking-status {
+      padding-left: 0;
+      vertical-align:middle;
     }
   }
 }

@@ -30,7 +30,7 @@ class BookingsRecapTable extends Component {
           headerTitle: "Nom de l'offre",
           accessor: 'stock',
           Cell: ({ value }) => <BookingOfferCell offer={value} />,
-          className: 'td-offer-name',
+          className: 'column-offer-name',
           defaultCanSort: true,
           sortType: sortByOfferName,
         },
@@ -39,7 +39,7 @@ class BookingsRecapTable extends Component {
           headerTitle: '',
           accessor: 'booking_is_duo',
           Cell: ({ value }) => <BookingIsDuoCell isDuo={value} />,
-          className: 'td-booking-duo',
+          className: 'column-booking-duo',
           disableSortBy: true,
         },
         {
@@ -47,7 +47,7 @@ class BookingsRecapTable extends Component {
           headerTitle: 'Bénéficiaire',
           accessor: 'beneficiary',
           Cell: ({ value }) => <BeneficiaryCell beneficiaryInfos={value} />,
-          className: 'td-beneficiary',
+          className: 'column-beneficiary',
           defaultCanSort: true,
           sortType: sortByBeneficiaryName,
         },
@@ -56,7 +56,7 @@ class BookingsRecapTable extends Component {
           headerTitle: 'Réservation',
           accessor: 'booking_date',
           Cell: ({ value }) => <BookingDateCell bookingDate={value} />,
-          className: 'td-booking-date',
+          className: 'column-booking-date',
           defaultCanSort: true,
           sortType: sortByBookingDate,
         },
@@ -65,7 +65,7 @@ class BookingsRecapTable extends Component {
           headerTitle: 'Contremarque',
           accessor: 'booking_token',
           Cell: ({ value }) => <BookingTokenCell bookingToken={value} />,
-          className: 'td-booking-token',
+          className: 'column-booking-token',
           disableSortBy: true,
         },
         {
@@ -73,7 +73,7 @@ class BookingsRecapTable extends Component {
           accessor: 'booking_status',
           headerTitle: 'Statut',
           Cell: ({ row }) => <BookingStatusCell bookingRecapInfo={row} />,
-          className: 'td-booking-status',
+          className: 'column-booking-status',
           disableSortBy: true,
           Filter: () => (
             <FilterByBookingStatus
