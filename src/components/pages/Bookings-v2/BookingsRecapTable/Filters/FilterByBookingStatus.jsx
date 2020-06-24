@@ -14,10 +14,6 @@ class FilterByBookingStatus extends Component {
     }
   }
 
-  shouldComponentUpdate() {
-    return true
-  }
-
   canHideFilter = true
   keyHideFilterTimeout
 

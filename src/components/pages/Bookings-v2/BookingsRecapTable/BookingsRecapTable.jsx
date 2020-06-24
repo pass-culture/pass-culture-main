@@ -97,10 +97,6 @@ class BookingsRecapTable extends Component {
     this.filtersRef = React.createRef()
   }
 
-  shouldComponentUpdate() {
-    return true
-  }
-
   componentDidUpdate(prevProps) {
     const { bookingsRecap } = this.props
     if (prevProps.bookingsRecap.length !== bookingsRecap.length) {

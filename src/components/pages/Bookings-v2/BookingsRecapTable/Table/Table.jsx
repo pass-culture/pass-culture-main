@@ -5,10 +5,6 @@ import Head from './Head/Head'
 import Body from './Body/Body'
 
 class Table extends React.Component {
-  shouldComponentUpdate() {
-    return true
-  }
-
   goToNextPage = () => {
     const { pageIndex, nextPage, updateCurrentPage } = this.props
     nextPage()

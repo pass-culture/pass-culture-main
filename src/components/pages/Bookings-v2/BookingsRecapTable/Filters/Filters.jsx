@@ -43,10 +43,6 @@ class Filters extends Component {
     fetchAllVenuesByProUser().then(venues => this.setState({ venues: venues }))
   }
 
-  shouldComponentUpdate() {
-    return true
-  }
-
   applyFilters = debounce(filterValues => {
     const { updateGlobalFilters } = this.props
     updateGlobalFilters({
