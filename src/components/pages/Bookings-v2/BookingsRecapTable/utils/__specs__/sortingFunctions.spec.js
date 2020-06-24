@@ -1,4 +1,4 @@
-import { sortByBeneficiaryName, sortByOfferName } from '../sortingFunctions'
+import { sortByBeneficiaryName, sortByBookingDate, sortByOfferName } from '../sortingFunctions'
 
 describe('utils | sortingFunctions', () => {
   describe('sortByOfferName', () => {
@@ -69,6 +69,68 @@ describe('utils | sortingFunctions', () => {
 
       // when
       const result = sortByOfferName(firstRow, secondRow)
+
+      // then
+      expect(result).toBe(0)
+    })
+  })
+
+  describe('sortByBookingDate', () => {
+    it('should return -1 when first row bookingDate comes before second row bookingDate', () => {
+      // given
+      const firstRow = {
+        original: {
+          booking_date: '2020-04-22T11:17:12+02:00',
+        },
+      }
+      const secondRow = {
+        original: {
+          booking_date: '2020-04-23T11:17:12+02:00',
+        },
+      }
+
+      // when
+      const result = sortByBookingDate(firstRow, secondRow)
+
+      // then
+      expect(result).toBe(-1)
+    })
+
+    it('should return 1 when first row bookingDate comes after second row bookingDate', () => {
+      // given
+      const firstRow = {
+        original: {
+          booking_date: '2020-04-22T11:17:12+02:00',
+        },
+      }
+      const secondRow = {
+        original: {
+          booking_date: '2020-04-21T11:17:12+02:00',
+        },
+      }
+
+      // when
+      const result = sortByBookingDate(firstRow, secondRow)
+
+      // then
+      expect(result).toBe(1)
+    })
+
+    it('should return 0 when first row bookingDate is the same as second row bookingDate', () => {
+      const firstRow = {
+        original: {
+          booking_date: '2020-04-22T11:17:12+02:00',
+        },
+      }
+      // given
+      const secondRow = {
+        original: {
+          booking_date: '2020-04-22T11:17:12+02:00',
+        },
+      }
+
+      // when
+      const result = sortByBookingDate(firstRow, secondRow)
 
       // then
       expect(result).toBe(0)

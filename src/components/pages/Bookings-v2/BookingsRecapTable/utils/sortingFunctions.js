@@ -15,3 +15,9 @@ export const sortByBeneficiaryName = (firstRow, secondRow) => {
   }
   return beneficiaryOne.localeCompare(beneficiaryTwo, 'fr', { sensitivity: 'base' })
 }
+
+export const sortByBookingDate = (firstRow, secondRow) => {
+  const bookingDateOne = firstRow.original.booking_date
+  const bookingDateTwo = secondRow.original.booking_date
+  return bookingDateOne.localeCompare(bookingDateTwo)
+}
