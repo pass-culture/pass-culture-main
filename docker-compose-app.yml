@@ -39,6 +39,10 @@ services:
     env_file:
       - env_file
       - ${ENV:-development}_env_file
+    environment:
+      - SUPPORT_EMAIL_ADDRESS=$SUPPORT_EMAIL_ADDRESS
+      - ADMINISTRATION_EMAIL_ADDRESS=$ADMINISTRATION_EMAIL_ADDRESS
+      - DEV_EMAIL_ADDRESS=$DEV_EMAIL_ADDRESS
     networks:
       - db_nw
       - web_nw
