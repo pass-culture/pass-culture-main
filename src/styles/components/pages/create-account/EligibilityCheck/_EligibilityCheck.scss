@@ -51,7 +51,7 @@
         text-align: center;
 
         &::placeholder {
-          font-size: 30px;
+          font-size: rem(30px);
         }
 
         &:focus {
@@ -73,7 +73,7 @@
     font-weight: bold;
     padding: rem(15px) 0;
     position: fixed;
-    width: 300px;
+    width: rem(300px);
 
     &:disabled {
       opacity: .5;
