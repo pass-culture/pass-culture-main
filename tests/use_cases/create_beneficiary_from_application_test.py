@@ -12,6 +12,9 @@ from models.beneficiary_import_status import ImportStatus
 from models.deposit import Deposit
 from use_cases.create_beneficiary_from_application import \
     CreateBeneficiaryFromApplication
+from repository import repository
+from tests.model_creators.generic_creators import create_user
+from tests.domain_creators.generic_creators import create_domain_beneficiary_pre_subcription
 
 
 @patch('use_cases.create_beneficiary_from_application.send_raw_email')
@@ -29,7 +32,7 @@ def test_saved_a_beneficiary_from_application(stubed_random_password,
     application_id = 7
     stubed_random_password.return_value = b'random-password'
     stubed_random_token.return_value = 'token'
-    beneficiary_pre_subscription = BeneficiaryPreSubscription(
+    beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription(
         activity='Apprenti',
         address='3 rue de Valois',
         application_id=application_id,
@@ -87,3 +90,77 @@ def test_saved_a_beneficiary_from_application(stubed_random_password,
     assert beneficiary_import.beneficiary == beneficiary
 
     mocked_send_activation_email.assert_called_once_with(user=beneficiary, send_email=stubed_send_raw_email)
+
+
+@clean_database
+def test_cannot_save_beneficiary_if_email_is_already_taken(app):
+    # Given
+    email = 'rennes@example.org'
+
+    user = create_user(email=email, idx=4)
+    repository.save(user)
+
+    application_id = 7
+    beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription(
+        date_of_birth=datetime(1995, 2, 5),
+        application_id=application_id,
+        email=email,
+    )
+    beneficiary_jouve_repository = MagicMock()
+    beneficiary_jouve_repository.get_application_by.return_value = beneficiary_pre_subscription
+    create_beneficiary_from_application = CreateBeneficiaryFromApplication(
+        beneficiary_jouve_repository=beneficiary_jouve_repository,
+        beneficiary_sql_repository=BeneficiarySQLRepository()
+    )
+
+    # When
+    create_beneficiary_from_application.execute(application_id)
+
+    # Then
+    user = UserSQLEntity.query.one()
+    assert user.id == 4
+
+    beneficiary_import = BeneficiaryImport.query.one()
+    assert beneficiary_import.currentStatus == ImportStatus.REJECTED
+    assert beneficiary_import.applicationId == application_id
+    assert beneficiary_import.beneficiary == None
+    assert beneficiary_import.detail == f"Email {email} is already taken"
+
+
+@clean_database
+def test_cannot_save_beneficiary_if_dupplicate(app):
+    # Given
+    first_name = 'Thomas'
+    last_name = 'DURAND'
+    date_of_birth = datetime(1995, 2, 5)
+    existing_user_id = 4
+
+    user = create_user(first_name=first_name, last_name=last_name, date_of_birth=date_of_birth, idx=existing_user_id)
+    repository.save(user)
+
+    application_id = 7
+    beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription(
+        date_of_birth=date_of_birth,
+        application_id=application_id,
+        first_name=first_name,
+        last_name=last_name,
+    )
+    beneficiary_jouve_repository = MagicMock()
+    beneficiary_jouve_repository.get_application_by.return_value = beneficiary_pre_subscription
+    create_beneficiary_from_application = CreateBeneficiaryFromApplication(
+        beneficiary_jouve_repository=beneficiary_jouve_repository,
+        beneficiary_sql_repository=BeneficiarySQLRepository()
+    )
+
+    # When
+    create_beneficiary_from_application.execute(application_id)
+
+    # Then
+    user = UserSQLEntity.query.one()
+    assert user.id == existing_user_id
+
+    beneficiary_import = BeneficiaryImport.query.one()
+    assert beneficiary_import.currentStatus == ImportStatus.REJECTED
+    assert beneficiary_import.applicationId == application_id
+    assert beneficiary_import.beneficiary == None
+    assert beneficiary_import.detail == f"User with id {existing_user_id} is a dupplicate"
