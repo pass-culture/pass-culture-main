@@ -27,6 +27,7 @@
     "react/jsx-fragments": "off",
     "react/jsx-indent": [2, 2],
     "react/jsx-indent-props": [2, 2],
+    "react/jsx-handler-names": "off",
     "react/jsx-max-depth": "off",
     "react/jsx-props-no-spreading": "off",
     "react/no-set-state": "off",

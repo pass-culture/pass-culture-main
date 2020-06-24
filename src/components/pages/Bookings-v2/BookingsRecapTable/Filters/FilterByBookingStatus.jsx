@@ -117,7 +117,6 @@ class FilterByBookingStatus extends Component {
       <span
         className="bs-filter"
         onBlur={this.handleBlur}
-        // eslint-disable-next-line react/jsx-handler-names
         onFocus={this.showFilters}
         onKeyDown={this.handleKeyDown}
         onKeyUp={this.handleKeyUp}
@@ -138,9 +137,7 @@ class FilterByBookingStatus extends Component {
             {bookingStatuses.map(bookingStatus => (
               <Fragment key={bookingStatus.value}>
                 <label
-                  // eslint-disable-next-line react/jsx-handler-names
                   onMouseDown={this.preventHidingFilter}
-                  // eslint-disable-next-line react/jsx-handler-names
                   onMouseUp={this.authorizeHidingFilter}
                 >
                   <input
