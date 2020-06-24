@@ -20,9 +20,11 @@ const BookingStatusCellHistory = ({ bookingStatusHistory }) => {
     return moment.parseZone(item.date).format(dateFormat)
   }
 
-  return (<div className="booking-status-history">
-    {bookingsStatusHistoryItems}
-  </div>)
+  return (
+    <div className="booking-status-history">
+      {bookingsStatusHistoryItems}
+    </div>
+  )
 }
 
 BookingStatusCellHistory.propTypes = {

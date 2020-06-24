@@ -68,8 +68,8 @@ const doesBookingEndDateMatchFilter = (bookingEndingDate, booking) => {
 }
 
 const doesOfferVenueMatchFilter = (offerVenue, booking) => {
-  if (offerVenue !== ALL_VENUES) {
-    return booking.venue_identifier === offerVenue
+  if (offerVenue && offerVenue !== ALL_VENUES) {
+    return booking.venue.identifier === offerVenue
   }
   return true
 }

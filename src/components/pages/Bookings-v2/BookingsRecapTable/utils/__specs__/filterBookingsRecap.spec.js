@@ -17,6 +17,10 @@ describe('filterBookingsRecap', () => {
         booking_date: '2020-04-03T12:00:00Z',
         booking_token: 'ZEHBGD',
         booking_status: 'Validé',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber'
+        }
       },
     ]
     const filters = {
@@ -50,6 +54,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ZEHBGD',
       booking_status: 'Validé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingRecap2 = {
       stock: {
@@ -63,6 +71,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ZACBGD',
       booking_status: 'Validé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
@@ -96,6 +108,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ZEHBGD',
       booking_status: 'Validé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingsRecap = [bookingRecap]
     const filters = {
@@ -129,6 +145,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ZEHBGD',
       booking_status: 'Validé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingRecap2 = {
       stock: {
@@ -143,6 +163,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-02-18T12:00:00Z',
       booking_token: 'ZACBGD',
       booking_status: 'Validé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
@@ -177,6 +201,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-01-03T12:00:00Z',
       booking_token: 'ZEHBGD',
       booking_status: 'Validé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingRecap2 = {
       stock: {
@@ -191,6 +219,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-02-18T12:00:00Z',
       booking_token: 'ZACBGD',
       booking_status: 'Validé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
@@ -225,6 +257,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-01-03T12:00:00Z',
       booking_token: 'ZEHBGD',
       booking_status: 'Validé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingRecap2 = {
       stock: {
@@ -273,6 +309,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-01-03T12:00:00Z',
       booking_token: 'ZEHBGD',
       booking_status: 'Validé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingRecap2 = {
       stock: {
@@ -287,6 +327,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-02-18T12:00:00Z',
       booking_token: 'ZACBGD',
       booking_status: 'Validé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
@@ -321,6 +365,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-01-03T12:00:00Z',
       booking_token: 'ZEHBGD',
       booking_status: 'Validé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingRecap2 = {
       stock: {
@@ -369,6 +417,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ZEHBGD',
       booking_status: 'Validé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingRecap2 = {
       stock: {
@@ -383,6 +435,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-02-18T12:00:00Z',
       booking_token: 'ZACBGD',
       booking_status: 'Validé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
@@ -417,7 +473,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ZEHBGD',
       booking_status: 'Validé',
-      venue_identifier: 'AE',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingRecap2 = {
       stock: {
@@ -432,7 +491,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-02-18T12:00:00Z',
       booking_token: 'ZACBGD',
       booking_status: 'Validé',
-      venue_identifier: 'AF',
+      venue: {
+        identifier: 'AF',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
@@ -467,6 +529,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ZEHBGD',
       booking_status: 'Validé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingRecap2 = {
       stock: {
@@ -480,6 +546,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ZACBGD',
       booking_status: 'Validé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
@@ -515,6 +585,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: '98454627263',
       booking_status: 'Validé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingRecap2 = {
       stock: {
@@ -530,6 +604,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ZACBGD',
       booking_status: 'Validé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2]
     const filters = {
@@ -565,6 +643,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ABCDEF',
       booking_status: 'Validé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingRecap2 = {
       stock: {
@@ -579,6 +661,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: 'ZACBGD',
       booking_status: 'Remboursé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingRecapWithNoToken = {
       stock: {
@@ -593,6 +679,10 @@ describe('filterBookingsRecap', () => {
       booking_date: '2020-04-03T12:00:00Z',
       booking_token: null,
       booking_status: 'Validé',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      }
     }
     const bookingsRecap = [bookingRecap1, bookingRecap2, bookingRecapWithNoToken]
     const filters = {
