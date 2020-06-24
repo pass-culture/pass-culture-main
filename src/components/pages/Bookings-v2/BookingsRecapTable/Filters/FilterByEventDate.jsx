@@ -2,7 +2,7 @@ import React from 'react'
 import InputWithCalendar from './InputWithCalendar'
 import PropTypes from 'prop-types'
 import DatePicker from 'react-datepicker'
-import { EMPTY_FILTER_VALUE } from './Filters'
+import { EMPTY_FILTER_VALUE } from './_constants'
 
 const FilterByEventDate = ({ isDisabled, updateFilters, selectedOfferDate }) => {
   function handleOfferDateChange(offerDate) {

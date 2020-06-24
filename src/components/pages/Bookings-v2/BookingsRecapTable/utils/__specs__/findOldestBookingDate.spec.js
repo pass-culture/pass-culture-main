@@ -1,5 +1,5 @@
 import findOldestBookingDate from '../findOldestBookingDate'
-import { EMPTY_FILTER_VALUE } from '../../Filters/Filters'
+import { EMPTY_FILTER_VALUE } from '../../Filters/_constants'
 
 describe('findOldestBookingDate', () => {
   it('should return null when bookings list is empty', () => {

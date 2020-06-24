@@ -1,4 +1,4 @@
-import { EMPTY_FILTER_VALUE } from '../Filters/Filters'
+import { EMPTY_FILTER_VALUE } from '../Filters/_constants'
 
 const findOldestBookingDate = bookingsRecap => {
   if (bookingsRecap.length > 0) {

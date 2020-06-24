@@ -8,12 +8,12 @@ import FilterByOmniSearch from './FilterByOmniSearch'
 import FilterByEventDate from './FilterByEventDate.jsx'
 import FilterByVenue from './FilterByVenue'
 import FilterByBookingPeriod from './FilterByBookingPeriod'
-
-export const EMPTY_FILTER_VALUE = ''
-export const ALL_VENUES = 'all'
-const DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
-const DEFAULT_OMNISEARCH_CRITERIA = 'offre'
-export const ALL_BOOKING_STATUS = []
+import {
+  ALL_BOOKING_STATUS,
+  ALL_VENUES,
+  DEFAULT_OMNISEARCH_CRITERIA,
+  EMPTY_FILTER_VALUE,
+} from './_constants'
 
 class Filters extends Component {
   constructor(props) {
@@ -43,12 +43,14 @@ class Filters extends Component {
     fetchAllVenuesByProUser().then(venues => this.setState({ venues: venues }))
   }
 
+  DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS = 300
+
   applyFilters = debounce(filterValues => {
     const { updateGlobalFilters } = this.props
     updateGlobalFilters({
       ...filterValues,
     })
-  }, DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS)
+  }, this.DELAY_BEFORE_APPLYING_FILTERS_IN_MILLISECONDS)
 
   resetAllFilters = () => {
     this.setState(

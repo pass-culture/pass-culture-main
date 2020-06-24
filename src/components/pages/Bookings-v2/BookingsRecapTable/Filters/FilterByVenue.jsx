@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { ALL_VENUES } from './Filters'
+import { ALL_VENUES } from './_constants'
 
 const FilterByVenue = ({ isDisabled, updateFilters, selectedVenue, venuesFormattedAndOrdered }) => {
   function handleVenueSelection(event) {

@@ -1,5 +1,6 @@
 import React from 'react'
-import Filters, { ALL_VENUES, EMPTY_FILTER_VALUE } from '../Filters'
+import Filters from '../Filters'
+import { ALL_VENUES, EMPTY_FILTER_VALUE } from '../_constants'
 import { mount, shallow } from 'enzyme'
 import { fetchAllVenuesByProUser } from '../../../../../../services/venuesService'
 import FilterByOmniSearch from '../FilterByOmniSearch'

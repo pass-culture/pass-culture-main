@@ -3,8 +3,6 @@ import PropTypes from 'prop-types'
 import Icon from '../../../../layout/Icon'
 import { getStatusTitle } from '../CellsFormatter/utils/bookingStatusConverter'
 
-const TIME_NEEDED_TO_TAB_IN_FILTER = 150
-
 class FilterByBookingStatus extends Component {
   constructor(props) {
     super(props)
@@ -14,10 +12,11 @@ class FilterByBookingStatus extends Component {
     }
   }
 
+  TIME_NEEDED_TO_TAB_IN_FILTER = 150
   canHideFilter = true
   keyHideFilterTimeout
 
-  showFilters = () => {
+  showFilter = () => {
     this.setState({
       showFilterStatusTooltip: true,
     })
@@ -37,23 +36,23 @@ class FilterByBookingStatus extends Component {
     this.canHideFilter = true
   }
 
-  handleBlur = () => {
+  hideFiltersIfAllowed = () => {
     if (this.canHideFilter) {
       this.hideFilters()
     }
   }
 
-  handleKeyDown = event => {
+  handleHidingFilterForKeyDown = event => {
     if (event.key === 'Tab') {
       this.preventHidingFilter()
       this.keyHideFilterTimeout = setTimeout(() => {
         this.authorizeHidingFilter()
         this.hideFilters()
-      }, TIME_NEEDED_TO_TAB_IN_FILTER)
+      }, this.TIME_NEEDED_TO_TAB_IN_FILTER)
     }
   }
 
-  handleKeyUp = () => {
+  preventHidingFilterOfKeyDown = () => {
     this.authorizeHidingFilter()
     clearTimeout(this.keyHideFilterTimeout)
   }
@@ -114,10 +113,10 @@ class FilterByBookingStatus extends Component {
       // eslint-disable-next-line jsx-a11y/interactive-supports-focus
       <span
         className="bs-filter"
-        onBlur={this.handleBlur}
-        onFocus={this.showFilters}
-        onKeyDown={this.handleKeyDown}
-        onKeyUp={this.handleKeyUp}
+        onBlur={this.hideFiltersIfAllowed}
+        onFocus={this.showFilter}
+        onKeyDown={this.handleHidingFilterForKeyDown}
+        onKeyUp={this.preventHidingFilterOfKeyDown}
         role="button"
       >
         <button type="button">

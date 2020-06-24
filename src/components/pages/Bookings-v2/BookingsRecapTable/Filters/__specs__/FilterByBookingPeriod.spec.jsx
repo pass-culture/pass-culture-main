@@ -2,7 +2,7 @@ import moment from 'moment/moment'
 import { shallow } from 'enzyme/build/index'
 import FilterByBookingPeriod from '../FilterByBookingPeriod'
 import React from 'react'
-import { EMPTY_FILTER_VALUE } from '../Filters'
+import { EMPTY_FILTER_VALUE } from '../_constants'
 
 describe('components | FilterByBookingPeriod', () => {
   let props

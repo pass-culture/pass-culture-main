@@ -3,7 +3,7 @@ import moment from 'moment/moment'
 import InputWithCalendar from './InputWithCalendar'
 import DatePicker from 'react-datepicker'
 import PropTypes from 'prop-types'
-import { EMPTY_FILTER_VALUE } from './Filters'
+import { EMPTY_FILTER_VALUE } from './_constants'
 
 const FilterByBookingPeriod = ({
   isDisabled,

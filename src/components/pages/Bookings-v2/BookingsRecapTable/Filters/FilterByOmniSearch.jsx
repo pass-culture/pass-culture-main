@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { EMPTY_FILTER_VALUE } from './Filters'
+import { EMPTY_FILTER_VALUE } from './_constants'
 
 const OMNISEARCH_FILTERS = [
   {

@@ -2,7 +2,7 @@ import FilterByEventDate from '../FilterByEventDate.jsx'
 import React from 'react'
 import { shallow } from 'enzyme'
 import moment from 'moment/moment'
-import { EMPTY_FILTER_VALUE } from '../Filters'
+import { EMPTY_FILTER_VALUE } from '../_constants'
 
 describe('components | FilterByEventDate', () => {
   let props
