@@ -72,9 +72,12 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> Dict[str, Any]:
         "booking_date": format_into_timezoned_date(booking_recap.booking_date),
         "booking_status": booking_recap.booking_status.value,
         "booking_is_duo": booking_recap.booking_is_duo,
-        "venue_identifier": humanize(booking_recap.venue_identifier),
         "booking_amount": booking_recap.booking_amount,
-        "booking_status_history": _serialize_booking_status_history(booking_recap.booking_status_history)
+        "booking_status_history": _serialize_booking_status_history(booking_recap.booking_status_history),
+        "venue": {
+            "identifier": humanize(booking_recap.venue_identifier),
+            "name": booking_recap.venue_name
+        }
     }
 
     if isinstance(booking_recap, EventBookingRecap):

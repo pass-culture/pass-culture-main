@@ -39,7 +39,8 @@ def create_domain_thing_booking_recap(offer_identifier: int = 1,
                                       payment_date: Optional[datetime] = None,
                                       cancellation_date: Optional[datetime] = None,
                                       date_used: Optional[datetime] = None,
-                                      venue_identifier: int = 1) -> ThingBookingRecap:
+                                      venue_identifier: int = 1,
+                                      venue_name="Librairie Kléber") -> ThingBookingRecap:
     if offer_isbn:
         return BookBookingRecap(
             offer_identifier=offer_identifier,
@@ -59,6 +60,7 @@ def create_domain_thing_booking_recap(offer_identifier: int = 1,
             cancellation_date=cancellation_date,
             date_used=date_used,
             venue_identifier=venue_identifier,
+            venue_name=venue_name,
         )
     return ThingBookingRecap(
         offer_identifier=offer_identifier,
@@ -77,6 +79,7 @@ def create_domain_thing_booking_recap(offer_identifier: int = 1,
         cancellation_date=cancellation_date,
         date_used=date_used,
         venue_identifier=venue_identifier,
+        venue_name=venue_name,
     )
 
 
@@ -97,7 +100,7 @@ def create_domain_event_booking_recap(payment_date: Optional[datetime] = None,
                                       booking_is_reimbursed: bool = False,
                                       event_beginning_datetime: datetime = datetime(2020, 5, 26, 20, 30, 0, 0),
                                       venue_identifier: int = 1,
-                                      ) -> EventBookingRecap:
+                                      venue_name="Librairie Kléber") -> EventBookingRecap:
     return EventBookingRecap(
         offer_identifier=offer_identifier,
         offer_name=offer_name,
@@ -116,4 +119,5 @@ def create_domain_event_booking_recap(payment_date: Optional[datetime] = None,
         cancellation_date=cancellation_date,
         payment_date=payment_date,
         date_used=date_used,
+        venue_name=venue_name,
     )

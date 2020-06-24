@@ -25,7 +25,6 @@ from models.stock_sql_entity import StockSQLEntity, EVENT_AUTOMATIC_REFUND_DELAY
 from models.user_sql_entity import UserSQLEntity
 from repository import offer_queries
 from utils.date import get_department_timezone
-from utils.human_ids import humanize
 
 DUO_QUANTITY = 2
 
@@ -239,6 +238,8 @@ def _build_bookings_recap_query(user_id: int) -> Query:
             VenueSQLEntity.departementCode.label('venueDepartementCode'),
             Offerer.postalCode.label('offererPostalCode'),
             VenueSQLEntity.id.label('venueId'),
+            VenueSQLEntity.name.label('venueName'),
+            VenueSQLEntity.publicName.label('venuePublicName'),
         )
 
 
@@ -294,7 +295,8 @@ def _serialize_thing_booking_recap(booking: object) -> ThingBookingRecap:
         venue_identifier=booking.venueId,
         date_used=_serialize_date_with_timezone(date_without_timezone=booking.dateUsed, booking=booking),
         payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
-        cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate, booking=booking)
+        cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate, booking=booking),
+        venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName
     )
 
 
@@ -316,7 +318,8 @@ def _serialize_book_booking_recap(booking: object) -> BookBookingRecap:
         venue_identifier=booking.venueId,
         date_used=_serialize_date_with_timezone(date_without_timezone=booking.dateUsed, booking=booking),
         payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
-        cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate, booking=booking)
+        cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate, booking=booking),
+        venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName
     )
 
 
@@ -342,6 +345,7 @@ def _serialize_event_booking_recap(booking: object) -> EventBookingRecap:
         payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
         cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate, booking=booking),
         venue_identifier=booking.venueId,
+        venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName
     )
 
 

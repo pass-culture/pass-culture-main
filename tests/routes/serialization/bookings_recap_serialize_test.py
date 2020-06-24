@@ -65,14 +65,17 @@ class SerializeBookingRecapTest:
                 "booking_token": None,
                 "booking_status": "booked",
                 "booking_is_duo": False,
-                "venue_identifier": "AE",
                 'booking_status_history': [
                     {
                         'status': 'booked',
                         'date': '2020-01-01T10:00:00',
                     },
                 ],
-                'booking_amount': 18
+                'booking_amount': 18,
+                "venue": {
+                    "identifier": "AE",
+                    "name": "Librairie Kléber"
+                }
             },
             {
                 "stock": {
@@ -89,7 +92,6 @@ class SerializeBookingRecapTest:
                 "booking_token": None,
                 "booking_status": "booked",
                 "booking_is_duo": True,
-                "venue_identifier": "AE",
                 'booking_status_history': [
                     {
                         'status': 'booked',
@@ -97,6 +99,10 @@ class SerializeBookingRecapTest:
                     },
                 ],
                 'booking_amount': 0,
+                "venue": {
+                    "identifier": "AE",
+                    "name": "Librairie Kléber"
+                }
             }
         ]
         assert result['bookings_recap'] == expected_bookings_recap
@@ -144,14 +150,17 @@ class SerializeBookingRecapTest:
                 "booking_token": "SOLEIL",
                 "booking_status": "booked",
                 "booking_is_duo": False,
-                "venue_identifier": "AE",
                 'booking_status_history': [
                     {
                         'status': 'booked',
                         'date': '2020-01-01T10:00:00',
                     },
                 ],
-                'booking_amount': 0
+                'booking_amount': 0,
+                "venue": {
+                    "identifier": "AE",
+                    "name": "Librairie Kléber"
+                }
             },
         ]
         assert results['bookings_recap'] == expected_response
@@ -196,14 +205,17 @@ class SerializeBookingRecapTest:
                 "booking_token": None,
                 "booking_status": "booked",
                 "booking_is_duo": False,
-                "venue_identifier": "AE",
                 'booking_amount': 0,
                 'booking_status_history': [
                     {
                         'status': 'booked',
                         'date': '2020-01-01T10:00:00',
                     },
-                ]
+                ],
+                "venue": {
+                    "identifier": "AE",
+                    "name": "Librairie Kléber"
+                }
             },
         ]
         assert results['bookings_recap'] == expected_response

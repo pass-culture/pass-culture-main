@@ -23,7 +23,6 @@ from tests.model_creators.specific_creators import \
     create_offer_with_event_product, create_offer_with_thing_product, \
     create_stock_from_offer, create_stock_with_event_offer, \
     create_stock_with_thing_offer
-from utils.human_ids import humanize
 
 NOW = datetime.utcnow()
 ONE_DAY_AGO = NOW - timedelta(days=1)
@@ -1799,7 +1798,8 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_used is False
         assert expected_booking_recap.booking_is_cancelled is False
         assert expected_booking_recap.booking_is_reimbursed is False
-        assert expected_booking_recap.event_beginning_datetime == stock.beginningDatetime.astimezone(tz.gettz('Europe/Paris'))
+        assert expected_booking_recap.event_beginning_datetime == stock.beginningDatetime.astimezone(
+            tz.gettz('Europe/Paris'))
         assert expected_booking_recap.venue_identifier == venue.id
 
     @clean_database
@@ -2074,6 +2074,119 @@ class FindByProUserIdTest:
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert isinstance(expected_booking_recap, BookBookingRecap)
         assert expected_booking_recap.offer_isbn == '9876543234'
+
+    @clean_database
+    def test_should_return_booking_with_venue_name_when_public_name_is_not_provided(self, app):
+        # Given
+        beneficiary = create_user(email='beneficiary@example.com', first_name='Ron', last_name='Weasley')
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+
+        venue_for_event = create_venue(offerer, idx=17, name="Lieu pour un événement", siret="11816909600069")
+        offer_for_event = create_offer_with_event_product(
+            event_name='Shutter Island',
+            venue=venue_for_event,
+        )
+        stock_for_event = create_stock(offer=offer_for_event, price=0)
+        booking_for_event = create_booking(user=beneficiary,
+                                           stock=stock_for_event,
+                                           date_created=datetime(2020, 1, 3),
+                                           token='BBBBBB',
+                                           is_used=True)
+        venue_for_book = create_venue(offerer, idx=15, name="Lieu pour un livre", siret="41816609600069")
+        offer_for_book = create_offer_with_thing_product(
+            thing_name='Harry Potter',
+            venue=venue_for_book,
+            extra_data=dict({'isbn': '9876543234'})
+        )
+        stock_for_book = create_stock(offer=offer_for_book, price=0)
+        booking_for_book = create_booking(user=beneficiary,
+                                          stock=stock_for_book,
+                                          date_created=datetime(2020, 1, 2),
+                                          token='AAAAAA',
+                                          is_used=True)
+
+        venue_for_thing = create_venue(offerer, idx=16, name="Lieu pour un bien qui n'est pas un livre",
+                                       siret="83994784300018")
+        stock_for_thing = create_stock_with_thing_offer(
+            offerer=offerer,
+            venue=venue_for_thing,
+            price=0,
+            name='Harry Potter'
+        )
+        booking_for_thing = create_booking(user=beneficiary,
+                                           stock=stock_for_thing,
+                                           date_created=(datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)),
+                                           token='ABCDEF',
+                                           is_used=True)
+        repository.save(user_offerer, booking_for_thing, booking_for_book, booking_for_event)
+
+        # When
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+
+        # Then
+        assert bookings_recap_paginated.bookings_recap[0].venue_name == venue_for_event.name
+        assert bookings_recap_paginated.bookings_recap[1].venue_name == venue_for_book.name
+        assert bookings_recap_paginated.bookings_recap[2].venue_name == venue_for_thing.name
+
+    @clean_database
+    def test_should_return_booking_with_venue_public_name_when_public_name_is_provided(self, app):
+        # Given
+        beneficiary = create_user(email='beneficiary@example.com', first_name='Ron', last_name='Weasley')
+        user = create_user()
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user, offerer)
+
+        venue_for_event = create_venue(offerer, idx=17, name="Opéra paris", public_name="Super Opéra de Paris",
+                                       siret="11816909600069")
+        offer_for_event = create_offer_with_event_product(
+            event_name='Shutter Island',
+            venue=venue_for_event,
+        )
+        stock_for_event = create_stock(offer=offer_for_event, price=0)
+        booking_for_event = create_booking(user=beneficiary,
+                                           stock=stock_for_event,
+                                           date_created=datetime(2020, 1, 3),
+                                           token='BBBBBB',
+                                           is_used=True)
+        venue_for_book = create_venue(offerer, idx=15, name="Lieu pour un livre", public_name="Librairie Châtelet",
+                                      siret="41816609600069")
+        offer_for_book = create_offer_with_thing_product(
+            thing_name='Harry Potter',
+            venue=venue_for_book,
+            extra_data=dict({'isbn': '9876543234'})
+        )
+        stock_for_book = create_stock(offer=offer_for_book, price=0)
+        booking_for_book = create_booking(user=beneficiary,
+                                          stock=stock_for_book,
+                                          date_created=datetime(2020, 1, 2),
+                                          token='AAAAAA',
+                                          is_used=True)
+
+        venue_for_thing = create_venue(offerer, idx=16, name="Lieu pour un bien qui n'est pas un livre",
+                                       public_name="Guitar Center",
+                                       siret="83994784300018")
+        stock_for_thing = create_stock_with_thing_offer(
+            offerer=offerer,
+            venue=venue_for_thing,
+            price=0,
+            name='Harry Potter'
+        )
+        booking_for_thing = create_booking(user=beneficiary,
+                                           stock=stock_for_thing,
+                                           date_created=(datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)),
+                                           token='ABCDEF',
+                                           is_used=True)
+        repository.save(user_offerer, booking_for_thing, booking_for_book, booking_for_event)
+
+        # When
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+
+        # Then
+        assert bookings_recap_paginated.bookings_recap[0].venue_name == venue_for_event.publicName
+        assert bookings_recap_paginated.bookings_recap[1].venue_name == venue_for_book.publicName
+        assert bookings_recap_paginated.bookings_recap[2].venue_name == venue_for_thing.publicName
 
 
 class FindFirstMatchingFromOfferByUserTest:

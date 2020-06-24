@@ -94,7 +94,6 @@ class GetTest:
                     'booking_token': 'ABCD',
                     'booking_status': 'validated',
                     'booking_is_duo': False,
-                    'venue_identifier': 'B4',
                     'booking_status_history': [
                         {
                             'status': 'booked',
@@ -108,7 +107,11 @@ class GetTest:
                                 date_used.astimezone(tz.gettz('Europe/Paris'))
                             ),
                         },
-                    ]
+                    ],
+                    'venue': {
+                        'identifier': 'B4',
+                        'name': venue.name
+                    }
                 }
             ]
             assert response.status_code == 200

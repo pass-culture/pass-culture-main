@@ -31,6 +31,7 @@ class BookingRecap:
                  offer_identifier: int,
                  offer_name: str,
                  venue_identifier: int,
+                 venue_name: str,
                  ):
         self.booking_amount = booking_amount
         self.beneficiary_lastname = beneficiary_lastname
@@ -50,6 +51,7 @@ class BookingRecap:
             cancellation_date=cancellation_date,
             payment_date=payment_date,
             date_used=date_used)
+        self.venue_name = venue_name
 
     def __new__(cls, *args, **kwargs):
         if cls is BookingRecap:
