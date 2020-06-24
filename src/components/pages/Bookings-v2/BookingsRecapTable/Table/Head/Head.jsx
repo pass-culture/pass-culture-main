@@ -16,7 +16,7 @@ const Head = ({ headerGroups }) => (
             {column.Filter ? column.render('Filter') : null}
             {
               column.canSort ?
-                <span>
+                <span className="sorting-icons">
                   {column.isSorted ?
                     column.isSortedDesc ? <Icon svg="ico-arrow-up-r" /> : <Icon svg="ico-arrow-down-r" />
                     : <Icon svg="ico-unfold" />}
