@@ -22,6 +22,12 @@ describe('components | FilterByBookingStatus', () => {
           booking_status: 'booked',
           booking_is_duo: false,
           venue_identifier: 'AE',
+          booking_status_history: [
+            {
+              status: 'booked',
+              date: '2020-04-03T12:00:00Z',
+            },
+          ],
         },
         {
           stock: {
@@ -38,6 +44,12 @@ describe('components | FilterByBookingStatus', () => {
           booking_status: 'validated',
           booking_is_duo: true,
           venue_identifier: 'AF',
+          booking_status_history: [
+            {
+              status: 'booked',
+              date: '2020-04-03T12:00:00Z',
+            },
+          ],
         },
       ],
       updateGlobalFilters: jest.fn(),

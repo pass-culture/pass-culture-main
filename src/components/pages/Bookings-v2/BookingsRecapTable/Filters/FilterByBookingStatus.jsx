@@ -9,7 +9,7 @@ class FilterByBookingStatus extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      bookingStatusFilter: [],
+      bookingStatusFilters: [],
       showFilterStatusTooltip: false,
     }
   }
@@ -60,20 +60,20 @@ class FilterByBookingStatus extends Component {
 
   handleCheckboxChange = event => {
     const { updateGlobalFilters } = this.props
-    const { bookingStatusFilter } = this.state
+    const { bookingStatusFilters } = this.state
 
     const statusId = event.target.name
     const isSelected = event.target.checked
 
     if (!isSelected) {
-      bookingStatusFilter.push(statusId)
+      bookingStatusFilters.push(statusId)
     } else {
-      const index = bookingStatusFilter.indexOf(statusId)
-      if (index !== -1) bookingStatusFilter.splice(index, 1)
+      const index = bookingStatusFilters.indexOf(statusId)
+      if (index !== -1) bookingStatusFilters.splice(index, 1)
     }
 
     updateGlobalFilters({
-      bookingStatus: bookingStatusFilter,
+      bookingStatus: bookingStatusFilters,
     })
   }
 
@@ -87,16 +87,16 @@ class FilterByBookingStatus extends Component {
     }))
   }
 
-  byStatusTitle(a, b) {
-    const titleA = a.title
-    const titleB = b.title
+  byStatusTitle(bookingStatusA, bookingStatusB) {
+    const titleA = bookingStatusA.title
+    const titleB = bookingStatusB.title
     return titleA < titleB ? -1 : titleA > titleB ? 1 : 0
   }
 
   computeIconSrc() {
-    const { bookingStatusFilter, showFilterStatusTooltip } = this.state
+    const { bookingStatusFilters, showFilterStatusTooltip } = this.state
 
-    if (bookingStatusFilter.length > 0) {
+    if (bookingStatusFilters.length > 0) {
       return 'ico-filter-status-active'
     } else if (showFilterStatusTooltip) {
       return 'ico-filter-status-red'
@@ -107,7 +107,7 @@ class FilterByBookingStatus extends Component {
 
   render() {
     const { bookingsRecap } = this.props
-    const { bookingStatusFilter, showFilterStatusTooltip } = this.state
+    const { bookingStatusFilters, showFilterStatusTooltip } = this.state
     const bookingStatuses = this.getAvailableStatuses(bookingsRecap).sort(this.byStatusTitle)
 
     return (
@@ -139,7 +139,7 @@ class FilterByBookingStatus extends Component {
                   onMouseUp={this.authorizeHidingFilter}
                 >
                   <input
-                    checked={!bookingStatusFilter.includes(bookingStatus.value)}
+                    checked={!bookingStatusFilters.includes(bookingStatus.value)}
                     id={`bs-${bookingStatus.value}`}
                     name={bookingStatus.value}
                     onChange={this.handleCheckboxChange}
