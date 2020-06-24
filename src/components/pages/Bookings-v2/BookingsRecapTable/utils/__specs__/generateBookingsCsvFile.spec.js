@@ -30,7 +30,11 @@ describe('generateBookingsCsvFile', () => {
         booking_token: 'ZEHBGD',
         booking_status: 'validated',
         booking_is_duo: false,
-        venue_identifier: 'AE',
+        booking_amount: 2,
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber'
+        }
       },
       {
         stock: {
@@ -46,7 +50,11 @@ describe('generateBookingsCsvFile', () => {
         booking_token: 'ABCDEF',
         booking_status: 'cancelled',
         booking_is_duo: false,
-        venue_identifier: 'AE',
+        booking_amount: 5,
+        venue: {
+          identifier: 'AB',
+          name: 'La FNAC Lyon'
+        }
       },
     ]
 
@@ -57,6 +65,7 @@ describe('generateBookingsCsvFile', () => {
     expect(result).toStrictEqual([
       CSV_HEADERS,
       [
+        'Librairie Kléber',
         'Avez-vous déjà vu',
         '12/05/2020 11:03',
         '',
@@ -64,9 +73,11 @@ describe('generateBookingsCsvFile', () => {
         'sonia.klepi@example.com',
         '03/04/2020 12:00',
         'ZEHBGD',
+        2,
         'validé',
       ],
       [
+        'La FNAC Lyon',
         'Jurassic Park',
         '',
         '',
@@ -74,6 +85,7 @@ describe('generateBookingsCsvFile', () => {
         'daniel.lamerguez@example.com',
         '01/05/2020 14:12',
         'ABCDEF',
+        5,
         'annulé',
       ],
     ])
@@ -97,7 +109,11 @@ describe('generateBookingsCsvFile', () => {
         booking_token: 'ZEHBGD',
         booking_status: 'validated',
         booking_is_duo: false,
-        venue_identifier: 'AE',
+        booking_amount: 1,
+        venue: {
+          identifier: 'AB',
+          name: 'La FNAC Lyon'
+        }
       },
       {
         stock: {
@@ -113,7 +129,11 @@ describe('generateBookingsCsvFile', () => {
         booking_token: 'ABCDEF',
         booking_status: 'cancelled',
         booking_is_duo: false,
-        venue_identifier: 'AE',
+        booking_amount: 2,
+        venue: {
+          identifier: 'KF',
+          name: 'Librairie Kléber'
+        }
       },
     ]
 
@@ -124,6 +144,7 @@ describe('generateBookingsCsvFile', () => {
     expect(result).toStrictEqual([
       CSV_HEADERS,
       [
+        'La FNAC Lyon',
         'Avez-vous déjà vu',
         '',
         '9781234567654',
@@ -131,9 +152,11 @@ describe('generateBookingsCsvFile', () => {
         'sonia.klepi@example.com',
         '03/04/2020 12:00',
         'ZEHBGD',
+        1,
         'validé',
       ],
       [
+        'Librairie Kléber',
         'Jurassic Park',
         '',
         '',
@@ -141,6 +164,7 @@ describe('generateBookingsCsvFile', () => {
         'anthony.laguez@example.com',
         '01/05/2020 14:12',
         'ABCDEF',
+        2,
         'annulé',
       ],
     ])

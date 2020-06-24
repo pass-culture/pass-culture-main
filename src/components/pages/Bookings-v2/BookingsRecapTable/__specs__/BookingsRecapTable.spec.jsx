@@ -121,7 +121,10 @@ describe('components | BookingsRecapTable', () => {
           booking_token: 'ZEHBGD',
           booking_status: 'validated',
           booking_is_duo: true,
-          venue_identifier: 'AE',
+          venue: {
+            identifier: 'AE',
+            name: 'Librairie Kléber'
+          },
           booking_status_history: [
             {
               status: 'booked',
@@ -174,7 +177,10 @@ describe('components | BookingsRecapTable', () => {
           booking_token: 'ZEHBGD',
           booking_status: 'validated',
           booking_is_duo: true,
-          venue_identifier: 'AE',
+          venue: {
+            identifier: 'AE',
+            name: 'Librairie Kléber'
+          },
           booking_status_history: [
             {
               status: 'booked',
@@ -215,7 +221,10 @@ describe('components | BookingsRecapTable', () => {
         booking_token: 'ZEHBGD',
         booking_status: 'validated',
         booking_is_duo: true,
-        venue_identifier: 'AE',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber'
+        },
         booking_status_history: [
           {
             status: 'booked',
@@ -280,7 +289,10 @@ describe('components | BookingsRecapTable', () => {
         booking_is_duo: false,
         booking_token: 'ZEHBGD',
         booking_status: 'validated',
-        venue_identifier: 'AE',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber'
+        },
         booking_status_history: [
           {
             status: 'booked',
@@ -394,7 +406,10 @@ describe('components | BookingsRecapTable', () => {
         booking_token: 'ZEHBGD',
         booking_status: 'validated',
         booking_is_duo: true,
-        venue_identifier: 'AE',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber'
+        },
         booking_status_history: [
           {
             status: 'booked',
@@ -420,7 +435,10 @@ describe('components | BookingsRecapTable', () => {
         booking_token: 'ZEHBGD',
         booking_status: 'validated',
         booking_is_duo: true,
-        venue_identifier: 'AE',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber'
+        },
         booking_status_history: [
           {
             status: 'booked',
@@ -636,7 +654,10 @@ describe('components | BookingsRecapTable', () => {
       booking_token: 'ZEHBGD',
       booking_status: 'validated',
       booking_is_duo: false,
-      venue_identifier: 'AE',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      },
       booking_status_history: [
         {
           status: 'booked',
@@ -686,7 +707,10 @@ describe('components | BookingsRecapTable', () => {
           booking_token: 'ZEHBGD',
           booking_status: 'validated',
           booking_is_duo: false,
-          venue_identifier: 'AE',
+          venue: {
+            identifier: 'AE',
+            name: 'Librairie Kléber'
+          },
           booking_status_history: [
             {
               status: 'booked',
@@ -832,7 +856,10 @@ describe('components | BookingsRecapTable', () => {
       booking_token: 'ZEHBGD',
       booking_status: 'validated',
       booking_is_duo: true,
-      venue_identifier: 'AE',
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber'
+      },
       booking_status_history: [
         {
           status: 'booked',

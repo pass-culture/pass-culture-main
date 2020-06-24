@@ -3,6 +3,7 @@ import { FORMAT_DD_MM_YYYY_HH_mm } from '../../../../../utils/date'
 import { getStatusName } from '../CellsFormatter/utils/bookingStatusConverter'
 
 export const CSV_HEADERS = [
+  'Lieu',
   'Nom de l’offre',
   "Date de l'évènement",
   'ISBN',
@@ -10,6 +11,7 @@ export const CSV_HEADERS = [
   'Email du bénéficiaire',
   'Date et heure de réservation',
   'Contremarque',
+  'Prix de la réservation',
   'Statut de la contremarque',
 ]
 
@@ -27,11 +29,10 @@ const generateBookingsCsvFile = bookings => {
   bookings.forEach(booking => {
     const bookingArray = []
 
+    bookingArray.push(booking.venue.name)
     bookingArray.push(booking.stock.offer_name)
-
     bookingArray.push(formatEventDatetimeIfEventType(booking))
     bookingArray.push(booking.stock.offer_isbn || '')
-
     bookingArray.push(booking.beneficiary.lastname.concat(' ', booking.beneficiary.firstname))
     bookingArray.push(booking.beneficiary.email)
     const bookingDatetimeFormatted = moment
@@ -39,6 +40,7 @@ const generateBookingsCsvFile = bookings => {
       .format(FORMAT_DD_MM_YYYY_HH_mm)
     bookingArray.push(bookingDatetimeFormatted)
     bookingArray.push(booking.booking_token)
+    bookingArray.push(booking.booking_amount)
     bookingArray.push(getStatusName(booking.booking_status))
     csv_data.push(bookingArray)
   })

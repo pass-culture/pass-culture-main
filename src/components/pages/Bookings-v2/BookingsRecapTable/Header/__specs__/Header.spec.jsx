@@ -17,7 +17,10 @@ describe('components | Header', () => {
     booking_token: 'ZEHBGD',
     booking_status: 'validated',
     booking_is_duo: false,
-    venue_identifier: 'AE',
+    venue: {
+      identifier: 'AE',
+      name: 'Librairie Kléber'
+    },
   }
 
   it('should render "1 réservation" when one booking', () => {
