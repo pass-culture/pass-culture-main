@@ -4,7 +4,6 @@ import { mount } from 'enzyme'
 import { act } from 'react-dom/test-utils'
 
 import EligibilityCheck from '../EligibilityCheck'
-import BackLink from '../../../../layout/Header/BackLink/BackLink'
 
 describe('eligibility check page', () => {
   it('should display the title "Créer un compte"', () => {
@@ -29,9 +28,8 @@ describe('eligibility check page', () => {
     )
 
     // then
-    const backLink = wrapper.find(BackLink)
+    const backLink = wrapper.find('a[href="/beta"]')
     expect(backLink).toHaveLength(1)
-    expect(backLink.prop('backTo')).toBe('/beta')
   })
 
   it('should display a postal code input', () => {
@@ -56,19 +54,16 @@ describe('eligibility check page', () => {
         <EligibilityCheck />
       </MemoryRouter>
     )
-
-    // when
     const elgbtPostalCodeInput = wrapper.find('input[placeholder="Ex: 75 017"]')
 
+    // when
     act(() => {
       elgbtPostalCodeInput.invoke('onChange')({ target: { value: '76530' } })
     })
-
     wrapper.update()
 
-    const elgbtPostalCodeInputUpdated = wrapper.find('input[placeholder="Ex: 75 017"]')
-
     // then
+    const elgbtPostalCodeInputUpdated = wrapper.find('input[placeholder="Ex: 75 017"]')
     expect(elgbtPostalCodeInputUpdated.prop('value')).toBe('76 530')
   })
 
@@ -92,19 +87,16 @@ describe('eligibility check page', () => {
         <EligibilityCheck />
       </MemoryRouter>
     )
-
-    // when
     const elgbtDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
 
+    // when
     act(() => {
       elgbtDateOfBirthInput.invoke('onChange')({ target: { value: '05031997' } })
     })
-
     wrapper.update()
 
-    const elgbtDateOfBirthInputUpdated = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
-
     // then
+    const elgbtDateOfBirthInputUpdated = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
     expect(elgbtDateOfBirthInputUpdated.prop('value')).toBe('05/03/1997')
   })
 

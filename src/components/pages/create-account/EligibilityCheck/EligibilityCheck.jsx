@@ -1,25 +1,23 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import InputMask from 'react-input-mask'
 
 import BackLink from '../../../layout/Header/BackLink/BackLink'
 
 const EligibilityCheck = () => {
-  let [postalCodeInputValue, setPostalCodeInputValue] = useState('')
-  let [dateOfBirthInputValue, setDateOfBirthInputValue] = useState('')
+  const [postalCodeInputValue, setPostalCodeInputValue] = useState('')
+  const [dateOfBirthInputValue, setDateOfBirthInputValue] = useState('')
 
-  let handlePostalCodeInputChange = event => {
+  const handlePostalCodeInputChange = useCallback(event => {
     const newValue = event.target.value
     setPostalCodeInputValue(newValue)
-  }
+  }, [])
 
-  let handleDOBInputChange = event => {
+  const handleDOBInputChange = useCallback(event => {
     const newValue = event.target.value
     setDateOfBirthInputValue(newValue)
-  }
+  }, [])
 
-  let isMissingField = () => {
-    return postalCodeInputValue.length < 6 || dateOfBirthInputValue.length < 10
-  }
+  const isMissingField = () => postalCodeInputValue.length < 6 || dateOfBirthInputValue.length < 10
 
   return (
     <main className="eligibility-check-page">
