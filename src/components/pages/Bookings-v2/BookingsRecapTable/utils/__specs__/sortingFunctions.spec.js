@@ -181,7 +181,7 @@ describe('utils | sortingFunctions', () => {
         expect(result).toBe(-1)
       })
 
-      it('should return 0 if lastname and firstname are the same', () => {
+      it('should return 0 if lastname and firstname are the same even with different case', () => {
         // Given
         const firstRow = {
           original: {
@@ -195,7 +195,7 @@ describe('utils | sortingFunctions', () => {
           original: {
             beneficiary: {
               lastname: 'Durand',
-              firstname: 'Aragorn',
+              firstname: 'aragorn',
             },
           },
         }

@@ -1,15 +1,15 @@
 export const sortByOfferName = (firstRow, secondRow) => {
   const offerNameOne = firstRow.original.stock.offer_name
   const offerNameTwo = secondRow.original.stock.offer_name
-  return offerNameOne.localeCompare(offerNameTwo)
+  return offerNameOne.localeCompare(offerNameTwo, 'fr', { sensitivity: 'base' })
 }
 
 export const sortByBeneficiaryName = (firstRow, secondRow) => {
   let beneficiaryOne = firstRow.original.beneficiary.lastname
   let beneficiaryTwo = secondRow.original.beneficiary.lastname
-  if (beneficiaryOne.localeCompare(beneficiaryTwo) === 0) {
+  if (beneficiaryOne.localeCompare(beneficiaryTwo, 'fr', { sensitivity: 'base' }) === 0) {
     beneficiaryOne = firstRow.original.beneficiary.firstname
     beneficiaryTwo = secondRow.original.beneficiary.firstname
   }
-  return beneficiaryOne.localeCompare(beneficiaryTwo)
+  return beneficiaryOne.localeCompare(beneficiaryTwo, 'fr', { sensitivity: 'base' })
 }
