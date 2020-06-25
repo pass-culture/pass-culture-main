@@ -1,5 +1,4 @@
-from domain.bank_information import check_offerer_presence, check_venue_presence, check_venue_queried_by_name, \
-    check_new_bank_information_older_than_saved_one, check_new_bank_information_has_a_more_advanced_status
+from domain.bank_information import CannotRegisterBankInformation, check_new_bank_information_has_a_more_advanced_status, check_new_bank_information_older_than_saved_one, check_offerer_presence, check_venue_presence, check_venue_queried_by_name
 from domain.bank_informations.bank_informations import BankInformations
 from domain.bank_informations.bank_informations_repository import BankInformationsRepository
 from domain.demarches_simplifiees import get_venue_bank_information_application_details_by_application_id, \
@@ -9,6 +8,7 @@ from domain.venue.venue_with_basic_information.venue_with_basic_information impo
 from domain.venue.venue_with_basic_information.venue_with_basic_information_repository import VenueWithBasicInformationRepository
 from models import Offerer
 from models.bank_information import BankInformationStatus
+from connectors.api_demarches_simplifiees import DmsApplicationStates
 
 
 class SaveVenueBankInformations:
@@ -25,10 +25,22 @@ class SaveVenueBankInformations:
         application_details = get_venue_bank_information_application_details_by_application_id(
             application_id)
 
-        siren = application_details.siren
-        offerer = self.offerer_repository.find_by_siren(siren)
-        check_offerer_presence(offerer)
-        venue = self.get_referent_venue(application_details, offerer)
+        try:
+            siren = application_details.siren
+            offerer = self.offerer_repository.find_by_siren(siren)
+            check_offerer_presence(offerer)
+            venue = self.get_referent_venue(application_details, offerer)
+        except CannotRegisterBankInformation as error:
+            if application_details.status == BankInformationStatus.ACCEPTED:
+                if error.args == (f'Venue not found',):
+                    raise CannotRegisterBankInformation("Venue not found")
+                elif error.args == (f'Venue name not found',):
+                    raise CannotRegisterBankInformation("Venue name not found")
+                elif error.args == (f'Multiple venues found',):
+                    raise CannotRegisterBankInformation("Multiple venues found")
+                elif error.args == (f'Offerer not found',):
+                    raise CannotRegisterBankInformation("Offerer not found")
+            return
 
         bank_information_by_application_id = self.bank_informations_repository.get_by_application(
             application_details.application_id)

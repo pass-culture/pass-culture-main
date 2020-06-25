@@ -148,14 +148,46 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.DRAFT
 
             @clean_database
-            def test_when_no_venue_siret_specified_should_not_create_bank_information(self, mock_application_details,
+            def test_when_no_offerer_is_found_and_status_is_closed_should_raise_and_not_create_bank_information(self, mock_application_details,
+                                                                                      app):
+                # Given
+                application_id = '8'
+                mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
+                    siret='79387503012345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state='closed')
+
+                # When
+                with pytest.raises(CannotRegisterBankInformation) as error:
+                    self.save_venue_bank_informations.execute(application_id)
+
+                # Then
+                bank_information_count = BankInformation.query.count()
+                assert bank_information_count == 0
+                assert error.value.args == (f'Offerer not found',)
+
+            @clean_database
+            def test_when_no_offerer_is_found_but_status_is_not_closed_should_not_create_bank_information_and_not_raise(self, mock_application_details,
+                                                                                            app):
+                # Given
+                application_id = '8'
+                mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
+                    siret='79387503012345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8,  state='without_continuation')
+
+                # When
+                self.save_venue_bank_informations.execute(application_id)
+
+                # Then
+                bank_information_count = BankInformation.query.count()
+                assert bank_information_count == 0
+
+            @clean_database
+            def test_when_no_venue_is_found_and_status_is_closed_should_raise_and_not_create_bank_information(self, mock_application_details,
                                                                                       app):
                 # Given
                 application_id = '8'
                 offerer = create_offerer(siren='793875030')
                 repository.save(offerer)
                 mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                    siret='79387503012345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8)
+                    siret='79387503012345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state='closed')
 
                 # When
                 with pytest.raises(CannotRegisterBankInformation) as error:
@@ -165,6 +197,24 @@ class SaveVenueBankInformationsTest:
                 bank_information_count = BankInformation.query.count()
                 assert bank_information_count == 0
                 assert error.value.args == (f'Venue not found',)
+
+            @clean_database
+            def test_when_no_venue_is_found_but_status_is_not_closed_should_not_create_bank_information_and_not_raise(self, mock_application_details,
+                                                                                            app):
+                # Given
+                application_id = '8'
+                offerer = create_offerer(siren='793875030')
+                repository.save(offerer)
+                mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
+                    siret='79387503012345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8,  state='received')
+
+                # When
+                self.save_venue_bank_informations.execute(application_id)
+
+                # Then
+                bank_information_count = BankInformation.query.count()
+                assert bank_information_count == 0
+
 
         @patch('domain.demarches_simplifiees.get_application_details')
         class VenueWitoutSiretTest:
@@ -297,7 +347,40 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.DRAFT
 
             @clean_database
-            def test_when_no_venue_without_siret_specified_should_not_create_bank_information(self,
+            def test_when_no_offerer_is_found_but_status_is_not_closed_should_not_raise(self, mock_application_details,
+                                                                                            app):
+                # Given
+                application_id = '8'
+                mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_without_siret(
+                    siret='79387503012345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state='initiated')
+
+                # When
+                self.save_venue_bank_informations.execute(application_id)
+
+                # Then
+                bank_information_count = BankInformation.query.count()
+                assert bank_information_count == 0
+
+            @clean_database
+            def test_when_no_offerer_is_found_and_state_is_closed_should_raise_and_not_create_bank_information(self,
+                                                                                              mock_application_details,
+                                                                                              app):
+                # Given
+                application_id = '8'
+                mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_without_siret(
+                    siret='79387503012345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state='closed')
+
+                # When
+                with pytest.raises(CannotRegisterBankInformation) as error:
+                    self.save_venue_bank_informations.execute(application_id)
+
+                # Then
+                bank_information_count = BankInformation.query.count()
+                assert bank_information_count == 0
+                assert error.value.args == (f'Offerer not found',)
+
+            @clean_database
+            def test_when_no_venue_without_siret_is_found_and_state_is_closed_should_raise_and_not_create_bank_information(self,
                                                                                               mock_application_details,
                                                                                               app):
                 # Given
@@ -306,7 +389,7 @@ class SaveVenueBankInformationsTest:
                 venue = create_venue(offerer, siret='79387503012345')
                 repository.save(venue)
                 mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_without_siret(
-                    siret='79387503012345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8)
+                    siret='79387503012345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state='closed')
 
                 # When
                 with pytest.raises(CannotRegisterBankInformation) as error:
@@ -316,6 +399,23 @@ class SaveVenueBankInformationsTest:
                 bank_information_count = BankInformation.query.count()
                 assert bank_information_count == 0
                 assert error.value.args == (f'Venue name not found',)
+
+            @clean_database
+            def test_when_no_venue_is_found_but_status_is_not_closed_should_not_raise(self, mock_application_details,
+                                                                                            app):
+                # Given
+                application_id = '8'
+                offerer = create_offerer(siren='793875030')
+                repository.save(offerer)
+                mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_without_siret(
+                    siret='79387503012345', bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state='received')
+
+                # When
+                self.save_venue_bank_informations.execute(application_id)
+
+                # Then
+                bank_information_count = BankInformation.query.count()
+                assert bank_information_count == 0
 
     @patch('domain.demarches_simplifiees.get_application_details')
     class UpdateBankInformationByApplicationIdTest:
