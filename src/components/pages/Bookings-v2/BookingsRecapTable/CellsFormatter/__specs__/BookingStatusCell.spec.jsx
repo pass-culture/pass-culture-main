@@ -1,10 +1,11 @@
-import { shallow, mount } from 'enzyme/build'
+import { mount, shallow } from 'enzyme'
 import React from 'react'
 import BookingStatusCell from '../BookingStatusCell'
 import BookingStatusCellHistory from '../BookingStatusCellHistory'
+import Icon from '../../../../../layout/Icon'
 
 describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell', () => {
-  it('should render a div with the corresponding tag value and tag classnames for the given status', () => {
+  it('should render a div with the correct icon, classNames and status title for given status', () => {
     // Given
     const props = {
       bookingRecapInfo: {
@@ -34,12 +35,21 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell
     }
 
     // When
-    const wrapper = shallow(<BookingStatusCell {...props} />)
+    const wrapper = mount(<BookingStatusCell {...props} />)
 
     // Then
-    const status = wrapper.find({ children: 'validé' })
+    const status = wrapper.find('span').at(0)
     expect(status.hasClass('booking-status-label')).toBe(true)
     expect(status.hasClass('booking-status-validated')).toBe(true)
+    expect(status.text()).toBe('validé')
+
+    const icon = wrapper.find(Icon)
+    expect(icon).toHaveLength(1)
+    expect(icon.props()).toStrictEqual({
+      alt: 'icone status validé',
+      png: null,
+      svg: 'ico-status-validated',
+    })
   })
 
   describe('tooltip', () => {

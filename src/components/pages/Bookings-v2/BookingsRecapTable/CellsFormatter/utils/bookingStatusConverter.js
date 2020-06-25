@@ -6,24 +6,28 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     status: 'validé',
     className: 'validated',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
+    icon: 'ico-status-validated',
   },
   {
     id: 'cancelled',
     status: 'annulé',
     className: 'cancelled',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
+    icon: 'ico-status-cancelled',
   },
   {
     id: 'booked',
     status: 'réservé',
     className: 'booked',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
+    icon: 'ico-status-booked',
   },
   {
     id: 'reimbursed',
     status: 'remboursé',
     className: 'reimbursed',
     dateFormat: FORMAT_DD_MM_YYYY,
+    icon: 'ico-status-reimbursed',
   },
 ]
 
@@ -50,6 +54,13 @@ export const getStatusName = bookingStatus => {
     bookingStatus
   )
   return bookingStatusDisplayInformations.status
+}
+
+export const getStatusIcon = bookingStatus => {
+  const bookingStatusDisplayInformations = getBookingStatusDisplayInformationsOrDefault(
+    bookingStatus
+  )
+  return bookingStatusDisplayInformations.icon
 }
 
 export const getStatusDateFormat = bookingStatus => {

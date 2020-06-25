@@ -1,7 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { computeStatusClassName, getStatusName } from './utils/bookingStatusConverter'
+import {
+  computeStatusClassName,
+  getStatusIcon,
+  getStatusName,
+} from './utils/bookingStatusConverter'
 import BookingStatusCellHistory from './BookingStatusCellHistory'
+import Icon from '../../../../layout/Icon'
 
 const BookingStatusCell = ({ bookingRecapInfo }) => {
   let bookingStatus = bookingRecapInfo.original.booking_status
@@ -10,6 +15,7 @@ const BookingStatusCell = ({ bookingRecapInfo }) => {
   const statusClassName = computeStatusClassName(bookingStatus)
   const statusName = getStatusName(bookingStatus)
   const amount = computeBookingAmount(bookingRecapInfo.original.booking_amount)
+  const icon = getStatusIcon(bookingStatus)
 
   function computeBookingAmount(amount) {
     const FREE_AMOUNT = 'Gratuit'
@@ -20,6 +26,10 @@ const BookingStatusCell = ({ bookingRecapInfo }) => {
   return (
     <div className="booking-status-wrapper">
       <span className={`booking-status-label ${statusClassName}`}>
+        <Icon
+          alt={`icone status ${statusName}`}
+          svg={icon}
+        />
         {statusName}
       </span>
       <div className="bs-tooltip">

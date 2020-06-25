@@ -8,14 +8,14 @@
     margin-bottom: rem(10px);
 
     .column-offer-name {
-      width: rem(165px);
+      width: rem(160px);
     }
 
     .column-booking-duo {
       align-items: center;
       display: flex;
       padding: rem(10px) 0;
-      width: rem(40px);
+      width: rem(35px);
     }
 
     .column-beneficiary {
@@ -34,7 +34,8 @@
 
     .column-booking-status {
       padding-left: 0;
-      vertical-align: middle;
+      padding-right: rem(5px);
+      vertical-align:middle;
     }
   }
 }
