@@ -15,6 +15,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     historyClassName: 'bs-history-cancelled',
     statusClassName: 'booking-status-cancelled',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
+    icon: 'ico-status-cancelled',
     svgIconFilename: 'ico-status-cancelled',
   },
   {
