@@ -27,7 +27,7 @@ def to_model(booking: Booking) -> BookingSQLEntity:
         booking_sql_entity = BookingSQLEntity()
         booking_sql_entity.token = random_token()
     else:
-        booking_sql_entity.token = booking_sql_entity.token
+        booking_sql_entity.token = booking.token
     booking_sql_entity.userId = booking.beneficiary.identifier
     booking_sql_entity.stockId = booking.stock.identifier
     booking_sql_entity.amount = booking.amount
