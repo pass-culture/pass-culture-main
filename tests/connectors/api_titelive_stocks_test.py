@@ -78,4 +78,4 @@ class GetTiteLiveStocksTest:
             get_titelive_stocks(siret, last_processed_isbn)
 
         # Then
-        assert str(exception.value) == 'Error getting TiteLive stocks for siret: 123456789123'
+        assert str(exception.value) == 'Error 400 when getting TiteLive stocks for siret: 123456789123'

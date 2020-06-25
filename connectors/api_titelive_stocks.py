@@ -12,7 +12,7 @@ def get_titelive_stocks(siret: str, last_processed_isbn: str = '') -> dict:
     api_response = requests.get(url)
 
     if api_response.status_code != 200:
-        raise ApiTiteLiveException(f'Error getting TiteLive stocks for siret: {siret}')
+        raise ApiTiteLiveException(f'Error {api_response.status_code} when getting TiteLive stocks for siret: {siret}')
 
     return api_response.json()
 
