@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from unittest.mock import patch
 
 from models import VenueSQLEntity, Offerer
 from repository import repository
@@ -12,10 +13,10 @@ from tests.model_creators.specific_creators import create_stock_with_event_offer
     create_stock_with_thing_offer, create_offer_with_event_product, create_event_occurrence
 from utils.human_ids import humanize
 
-TOKEN = os.environ.get('EXPORT_TOKEN')
-
+fake_export_token = 'fake'
 
 @clean_database
+@patch.dict('os.environ', {'EXPORT_TOKEN': fake_export_token})
 def test_export_model_returns_200_when_given_model_is_known(app):
     # given
     user = create_user()
@@ -23,13 +24,14 @@ def test_export_model_returns_200_when_given_model_is_known(app):
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
-    response = auth_request.get('/exports/models/%s?token=%s' % ('VenueSQLEntity', TOKEN))
+    response = auth_request.get('/exports/models/%s?token=%s' % ('VenueSQLEntity', fake_export_token))
 
     # then
     assert response.status_code == 200
 
 
 @clean_database
+@patch.dict('os.environ', {'EXPORT_TOKEN': fake_export_token})
 def test_export_model_returns_400_when_given_model_is_not_exportable(app):
     # given
     user = create_user()
@@ -37,7 +39,7 @@ def test_export_model_returns_400_when_given_model_is_not_exportable(app):
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
-    response = auth_request.get('/exports/models/%s?token=%s' % ('VersionedMixin', TOKEN))
+    response = auth_request.get('/exports/models/%s?token=%s' % ('VersionedMixin', fake_export_token))
 
     # then
     assert response.status_code == 400
@@ -45,6 +47,7 @@ def test_export_model_returns_400_when_given_model_is_not_exportable(app):
 
 
 @clean_database
+@patch.dict('os.environ', {'EXPORT_TOKEN': fake_export_token})
 def test_export_model_returns_bad_request_if_no_token_provided(app):
     # when
     response = TestClient(app.test_client()).get('/exports/models/%s' % ('Venue'), headers={'origin':
@@ -55,6 +58,7 @@ def test_export_model_returns_bad_request_if_no_token_provided(app):
 
 
 @clean_database
+@patch.dict('os.environ', {'EXPORT_TOKEN': fake_export_token})
 def test_export_model_returns_400_when_given_model_is_unknown(app):
     # given
     user = create_user()
@@ -62,7 +66,7 @@ def test_export_model_returns_400_when_given_model_is_unknown(app):
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
 
     # when
-    response = auth_request.get('/exports/models/%s?token=%s' % ('RandomStuff', TOKEN))
+    response = auth_request.get('/exports/models/%s?token=%s' % ('RandomStuff', fake_export_token))
 
     # then
     assert response.status_code == 400

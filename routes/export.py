@@ -20,8 +20,6 @@ from utils.rest import expect_json_data
 from validation.routes.exports import check_user_is_admin, check_get_venues_params, \
     check_get_offerers_params
 
-EXPORT_TOKEN = os.environ.get('EXPORT_TOKEN')
-
 
 @app.route('/exports/models', methods=['GET'])
 def list_export_urls():
@@ -213,6 +211,7 @@ def _make_csv_response(file_name, headers, result):
 
 
 def _check_token():
+    EXPORT_TOKEN = os.environ.get('EXPORT_TOKEN')
     if EXPORT_TOKEN is None or EXPORT_TOKEN == '':
         raise ValueError("Missing environment variable EXPORT_TOKEN")
     token = request.args.get('token')
