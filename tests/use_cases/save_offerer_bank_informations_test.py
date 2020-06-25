@@ -38,7 +38,8 @@ class SaveOffererBankInformationsTest:
                 siren="793875030", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state='refused')
 
             # When
-            self.save_offerer_bank_informations.execute(application_id=application_id)
+            self.save_offerer_bank_informations.execute(
+                application_id=application_id)
 
             # Then
             bank_information_count = BankInformation.query.count()
@@ -61,7 +62,8 @@ class SaveOffererBankInformationsTest:
                 state='without_continuation')
 
             # When
-            self.save_offerer_bank_informations.execute(application_id=application_id)
+            self.save_offerer_bank_informations.execute(
+                application_id=application_id)
 
             # Then
             bank_information_count = BankInformation.query.count()
@@ -82,7 +84,8 @@ class SaveOffererBankInformationsTest:
                 siren="793875030", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state='closed')
 
             # When
-            self.save_offerer_bank_informations.execute(application_id=application_id)
+            self.save_offerer_bank_informations.execute(
+                application_id=application_id)
 
             # Then
             bank_information_count = BankInformation.query.count()
@@ -103,7 +106,8 @@ class SaveOffererBankInformationsTest:
                 siren="793875030", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state='received')
 
             # When
-            self.save_offerer_bank_informations.execute(application_id=application_id)
+            self.save_offerer_bank_informations.execute(
+                application_id=application_id)
 
             # Then
             bank_information_count = BankInformation.query.count()
@@ -124,7 +128,8 @@ class SaveOffererBankInformationsTest:
                 siren="793875030", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state='initiated')
 
             # When
-            self.save_offerer_bank_informations.execute(application_id=application_id)
+            self.save_offerer_bank_informations.execute(
+                application_id=application_id)
 
             # Then
             bank_information_count = BankInformation.query.count()
@@ -135,21 +140,37 @@ class SaveOffererBankInformationsTest:
             assert bank_information.status == BankInformationStatus.DRAFT
 
         @clean_database
-        def test_when_no_offerer_siren_specified_should_not_create_bank_information(self, mock_application_details,
-                                                                                    app):
+        def test_when_no_offerer_is_found_and_state_is_closed_should_not_create_bank_information_and_raise(self, mock_application_details,
+                                                                                                           app):
             # Given
             application_id = '8'
             mock_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(
-                siren="793875030", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8)
+                siren="793875030", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state='closed')
 
             # When
             with pytest.raises(CannotRegisterBankInformation) as error:
-                self.save_offerer_bank_informations.execute(application_id=application_id)
+                self.save_offerer_bank_informations.execute(
+                    application_id=application_id)
 
             # Then
             bank_information_count = BankInformation.query.count()
             assert bank_information_count == 0
             assert error.value.args == (f'Offerer not found',)
+
+        @clean_database
+        def test_when_no_offerer_is_found_and_state_is_not_closed_should_not_create_bank_information_and_not_raise(self, mock_application_details,
+                                                                                                           app):
+            # Given
+            application_id = '8'
+            mock_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(
+                siren="793875030", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state='initiated')
+
+            # When
+            self.save_offerer_bank_informations.execute(application_id=application_id)
+
+            # Then
+            bank_information_count = BankInformation.query.count()
+            assert bank_information_count == 0
 
         @clean_database
         def test_when_state_is_unknown(self, mock_application_details, app):
@@ -163,7 +184,8 @@ class SaveOffererBankInformationsTest:
 
             # When
             with pytest.raises(CannotRegisterBankInformation) as error:
-                self.save_offerer_bank_informations.execute(application_id=application_id)
+                self.save_offerer_bank_informations.execute(
+                    application_id=application_id)
 
             # Then
             bank_information_count = BankInformation.query.count()
@@ -178,6 +200,7 @@ class SaveOffererBankInformationsTest:
                 offerer_repository=OffererSQLRepository(),
                 bank_informations_repository=BankInformationsSQLRepository()
             )
+
         @clean_database
         def test_when_rib_and_offerer_change_everything_should_be_updated(self, mock_application_details, app):
             # Given
@@ -196,7 +219,8 @@ class SaveOffererBankInformationsTest:
                 siren="793875019", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8)
 
             # When
-            self.save_offerer_bank_informations.execute(application_id=application_id)
+            self.save_offerer_bank_informations.execute(
+                application_id=application_id)
 
             # Then
             bank_information_count = BankInformation.query.count()
@@ -224,7 +248,8 @@ class SaveOffererBankInformationsTest:
                 siren="793875030", bic="QSDFGH8Z555", iban="NL36INGB2682297498", idx=8, state="initiated")
 
             # When
-            self.save_offerer_bank_informations.execute(application_id=application_id)
+            self.save_offerer_bank_informations.execute(
+                application_id=application_id)
 
             # Then
             bank_information_count = BankInformation.query.count()
@@ -261,7 +286,8 @@ class SaveOffererBankInformationsTest:
 
             # When
             with pytest.raises(ApiErrors) as errors:
-                self.save_offerer_bank_informations.execute(application_id=application_id)
+                self.save_offerer_bank_informations.execute(
+                    application_id=application_id)
 
             # Then
             bank_information_count = BankInformation.query.count()
@@ -276,6 +302,7 @@ class SaveOffererBankInformationsTest:
                 offerer_repository=OffererSQLRepository(),
                 bank_informations_repository=BankInformationsSQLRepository()
             )
+
         @clean_database
         def test_when_receive_new_closed_application_should_override_previous_one(self, mock_application_details, app):
             # Given
@@ -293,7 +320,8 @@ class SaveOffererBankInformationsTest:
                 siren="793875030", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8)
 
             # When
-            self.save_offerer_bank_informations.execute(application_id=application_id)
+            self.save_offerer_bank_informations.execute(
+                application_id=application_id)
 
             # Then
             bank_information_count = BankInformation.query.count()
@@ -323,7 +351,8 @@ class SaveOffererBankInformationsTest:
                 siren="793875030", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state="initiated")
 
             # When
-            self.save_offerer_bank_informations.execute(application_id=application_id)
+            self.save_offerer_bank_informations.execute(
+                application_id=application_id)
 
             # Then
             bank_information_count = BankInformation.query.count()
@@ -352,7 +381,8 @@ class SaveOffererBankInformationsTest:
 
             # When
             with pytest.raises(CannotRegisterBankInformation) as error:
-                self.save_offerer_bank_informations.execute(application_id=application_id)
+                self.save_offerer_bank_informations.execute(
+                    application_id=application_id)
 
             # Then
             bank_information_count = BankInformation.query.count()
@@ -383,7 +413,8 @@ class SaveOffererBankInformationsTest:
 
             # When
             with pytest.raises(CannotRegisterBankInformation) as error:
-                self.save_offerer_bank_informations.execute(application_id=application_id)
+                self.save_offerer_bank_informations.execute(
+                    application_id=application_id)
 
             # Then
             bank_information_count = BankInformation.query.count()

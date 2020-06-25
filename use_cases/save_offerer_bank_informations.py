@@ -2,8 +2,8 @@ from domain.offerer.offerer_repository import OffererRepository
 from domain.bank_informations.bank_informations_repository import BankInformationsRepository
 from domain.bank_informations.bank_informations import BankInformations
 from models.bank_information import BankInformationStatus
-from domain.bank_information import check_offerer_presence, \
-     check_new_bank_information_older_than_saved_one, check_new_bank_information_has_a_more_advanced_status
+from domain.bank_information import CannotRegisterBankInformation, check_new_bank_information_has_a_more_advanced_status, \
+    check_new_bank_information_older_than_saved_one, check_offerer_presence
 from domain.demarches_simplifiees import get_offerer_bank_information_application_details_by_application_id, \
      ApplicationDetail
 
@@ -20,8 +20,13 @@ class SaveOffererBankInformations:
         application_details = get_offerer_bank_information_application_details_by_application_id(
             application_id)
 
-        offerer = self.offerer_repository.find_by_siren(application_details.siren)
-        check_offerer_presence(offerer)
+        try:
+            offerer = self.offerer_repository.find_by_siren(application_details.siren)
+            check_offerer_presence(offerer)
+        except CannotRegisterBankInformation:
+            if application_details.status == BankInformationStatus.ACCEPTED:
+                raise CannotRegisterBankInformation("Offerer not found")
+            return
 
         bank_information_by_application_id = self.bank_informations_repository.get_by_application(
             application_details.application_id)

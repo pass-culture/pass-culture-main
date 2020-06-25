@@ -1,4 +1,5 @@
-from domain.bank_information import CannotRegisterBankInformation, check_new_bank_information_has_a_more_advanced_status, check_new_bank_information_older_than_saved_one, check_offerer_presence, check_venue_presence, check_venue_queried_by_name
+from domain.bank_information import CannotRegisterBankInformation, check_new_bank_information_has_a_more_advanced_status, \
+    check_new_bank_information_older_than_saved_one, check_offerer_presence, check_venue_presence, check_venue_queried_by_name
 from domain.bank_informations.bank_informations import BankInformations
 from domain.bank_informations.bank_informations_repository import BankInformationsRepository
 from domain.demarches_simplifiees import get_venue_bank_information_application_details_by_application_id, \
@@ -8,7 +9,6 @@ from domain.venue.venue_with_basic_information.venue_with_basic_information impo
 from domain.venue.venue_with_basic_information.venue_with_basic_information_repository import VenueWithBasicInformationRepository
 from models import Offerer
 from models.bank_information import BankInformationStatus
-from connectors.api_demarches_simplifiees import DmsApplicationStates
 
 
 class SaveVenueBankInformations:
