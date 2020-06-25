@@ -22,7 +22,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background: $grey-lighter;
+    background: $grey-light;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -34,7 +34,7 @@
       content: '';
       border-radius: inherit;
       margin: 1rem;
-      border: thin dashed $grey-light;
+      border: thin dashed $grey-medium;
       position: absolute;
       top: 0;
       bottom: 0;
@@ -44,10 +44,10 @@
 
     &.dragged {
       font-weight: $weight-bold;
-      outline-color: $text;
+      outline-color: $black;
 
       &::before {
-        border-color: $text;
+        border-color: $black;
       }
     }
   }
@@ -90,7 +90,7 @@
       display: inline-block;
       background: url(/icons/ico-plus-circled@2x.png) center no-repeat transparent;
       background-size: 36px 36px;
-      color: $red;
+      color: $primary;
       font-size: 1px;
       text-indent: -50px;
       overflow: hidden;
@@ -109,7 +109,7 @@
   }
 
   input[type=range]::-webkit-slider-thumb {
-    background: url(/thumb.png) center no-repeat $red !important;
+    background: url(/thumb.png) center no-repeat $primary !important;
   }
 
   canvas {

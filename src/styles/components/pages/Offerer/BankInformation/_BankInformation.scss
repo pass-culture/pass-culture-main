@@ -2,20 +2,20 @@
   position: relative;
 
   .bi-subtitle {
-    color: $grey;
+    color: $grey-dark;
     margin: rem(16px) 0;
   }
 
   .bi-field {
     margin: rem(10px) 0;
     > :first-child {
-      color: $grey;
+      color: $grey-dark;
       margin-right: rem(5px);
     }
   }
 
   .bi-banner {
-    background: $yellow-bis;
+    background: $attention;
     border-radius: 6px;
     margin: rem(16px) 0;
     padding: rem(7px) rem(15px);

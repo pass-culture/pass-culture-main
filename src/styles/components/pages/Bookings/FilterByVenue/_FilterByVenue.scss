@@ -18,7 +18,7 @@
   -webkit-appearance: none;
   -moz-appearance: none;
   -o-appearance: none;
-  border: 2px solid $grey;
+  border: 2px solid $grey-dark;
   border-radius: 4px;
   width: 20px;
   height: 20px;
@@ -27,15 +27,15 @@
   margin-bottom: rem(54px);
 
   &:focus {
-    border-color: $thumb-color;
+    border-color: $primary;
   }
 
   &:active,
   &:checked {
-    background-color: $grey;
+    background-color: $grey-dark;
 
     &:focus {
-      background-color: $thumb-color;
+      background-color: $primary;
     }
 
     &::after {
@@ -59,7 +59,7 @@
     display: block;
     font-size: rem(16px);
     margin: rem(12px) 0;
-    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.25);
+    box-shadow: 0 2px 6px 0 $black-shadow;
     -webkit-appearance: none;
     -moz-appearance: none;
   }

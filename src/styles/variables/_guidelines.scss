@@ -6,58 +6,8 @@ $desktop: 1000px + (2 * $gap); // 1088px
 $widescreen: $desktop;
 $fullhd: $desktop;
 
-// Colors
-
-$black: hsl(0, 0%, 4%) !default;
-$black-with-transparency: rgba($black, 0.8);
-$black-bis:    hsl(0, 0%, 7%) !default;
-$black-ter:    hsl(0, 0%, 14%) !default;
-$blue-light: rgba(132, 146, 166, 0.94);
-$blue: #0076FF;
-$blue-dark: #0066FF;
-$cyan:         hsl(204, 86%, 53%) !default;
-$green: #B8E986;
-$green-dark: #15884F;
-$grey-lighter: #F7F7F7;
-$grey-light-bis: #ECF0F1;
-$grey-light: #DAE1E3;
-$grey: #757575;
-$grey-medium: #C7C7CC;
-$grey-dark: #DCDDDC;
-$grey-darker: rgba(54, 54, 54, 0.3) !default;
-$grey-darkest: #404040;
-$orange:       hsl(14, 100%, 53%) !default;
-$mediation-green: #4CD964;
-$mediation-green-dark: #003818;
-$mediation-red: #B30041;
-$purple:       hsl(271, 100%, 71%) !default;
-$purple-dark: #320096;
-$red: #EB0055;
-$red-darker: #C10046;
-$turquoise:    hsl(171, 100%, 41%) !default;
-$violet: #BD10E0;
-$violet-dark: rgb(189, 16, 224);
-$white-ter:    hsl(0, 0%, 96%) !default;
-$white-bis:    hsl(0, 0%, 98%) !default;
-$white:        hsl(0, 0%, 100%) !default;
-$yellow:       hsl(48, 100%, 67%) !default;
-$yellow-bis:       hsl(55, 100%, 50%) !default;
-
-$primary: $red;
-
-$grey-disabled-input-background: #F5F5F5;
-$grey-disabled-input-color: #626262;
-
-
-// Texts
-
-$text: $black;
-$link: $text;
-$title-color: inherit;
-$subtitle-color: inherit;
-$text-strong: inherit;
-$success: $green;
-$input-color: $text;
+$box-shadow: 0 0 5px $black-shadow;
+$box-shadow-hover: 0 0 10px rgba($black, 0.4);
 
 // Typography
 
@@ -100,17 +50,12 @@ $control-border-width: 2px;
 $control-radius: $control-height/2;
 $control-radius-small: $control-radius;
 $control-padding-horizontal: 1em;
-$input-border-color: $grey-light;
-$input-focus-border-color: $primary;
-$input-hover-border-color: $grey-light;
-$input-disabled-border-color: $primary;
 $input-focus-box-shadow-size: 0;
 $input-shadow: none;
 $label-weight: $weight-normal;
 
 // Buttons
 
-$button-border-color: $grey-light;
 $button-padding-vertical: 0.1em;
 $button-padding-horizontal: 0.75em;
 $radius: 0;
@@ -131,22 +76,8 @@ $footer-height: 3.5rem;
 
 // Header
 
-$navbar-dropdown-border-top: 1px dotted $red;
+$navbar-dropdown-border-top: 1px dotted $primary;
 $navbar-dropdown-radius: 0;
-
-// Misc
-
-$box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-$box-shadow-hover: 0 0 10px rgba(0, 0, 0, 0.4);
-
-// Notification
-
-$notification-background-is-danger: #FF8097;
-$notification-background-is-info: #B3E7FF;
-$notification-background-is-success: #B8E986;
-$notification-background-is-warning: #FFD580;
-$notification-padding: 0.75rem;
-$notification-text: hsl(0, 0%, 0%);
 
 // Mixins
 
@@ -182,30 +113,3 @@ $marginPaddingIntSizes: (
   60
 );
 $textIntSizes: (12, 13, 14, 15, 16, 18, 19, 20, 22, 30, 32, 36, 48, 52, 60, 80);
-
-// Input Range
-
-$track-color: #95A5A6;
-$thumb-color: #E60039;
-
-$thumb-radius: 12px !default;
-$thumb-height: 24px !default;
-$thumb-width: 24px !default;
-$thumb-shadow-size: 0;
-$thumb-shadow-blur: 0;
-$thumb-shadow-color: rgba(0, 0, 0, 0.2) !default;
-$thumb-border-width: 0;
-$thumb-border-color: transparent;
-
-$track-width: 100% !default;
-$track-height: 3px !default;
-$track-shadow-size: 0;
-$track-shadow-blur: 0;
-$track-shadow-color: transparent;
-$track-border-width: 0;
-$track-border-color: transparent;
-
-$track-radius: 0;
-$contrast: 5% !default;
-
-$ie-bottom-track-color: darken($track-color, $contrast) !default;

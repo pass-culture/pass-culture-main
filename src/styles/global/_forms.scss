@@ -1,7 +1,7 @@
 .field-sep {
   @extend .is-absolute;
 
-  border-top: 1px solid $grey-light;
+  border-top: 1px solid $grey-medium;
   height: 16px;
   left: 0;
   right: 0;
@@ -12,14 +12,6 @@
   display: table;
   margin-bottom: 1rem;
   width: 100%;
-
-  .field-group-title {
-    @extend .fs16;
-    @extend .mb16;
-
-    color: $blue-light;
-    font-weight: 400;
-  }
 }
 
 .field-control {
@@ -72,7 +64,7 @@
   @extend .pr12;
   @extend .fs18;
 
-  color: $text;
+  color: $black;
   font-weight: 400;
   white-space: nowrap;
 
@@ -84,7 +76,7 @@
 }
 
 .field-asterisk {
-  color: $violet-dark;
+  color: $accent;
   margin-left: rem(2px);
 }
 
@@ -95,7 +87,7 @@
 .checkbox-field,
 .checkboxes-field {
   .field-inner {
-    color: black;
+    color: $black;
     padding-left: 4px;
     border: none;
     border-radius: 0;
@@ -141,7 +133,7 @@
 .field-textarea,
 .field-texteditor,
 .field-select {
-  color: $text;
+  color: $black;
 }
 
 .field-input,
@@ -155,26 +147,26 @@
   @extend .no-outline;
 
   border-radius: $control-radius;
-  border: $control-border-width solid $grey-light;
+  border: $control-border-width solid $grey-medium;
 
   &::-webkit-input-placeholder {
-    color: $grey;
+    color: $grey-dark;
   }
 
   &::-moz-placeholder {
-    color: $grey;
+    color: $grey-dark;
   }
 
   &:-moz-placeholder {
-    color: $grey;
+    color: $grey-dark;
   }
 
   &:focus {
-    border-color: $red;
+    border-color: $primary;
   }
 
   &::placeholder {
-    color: $grey;
+    color: $grey-dark;
   }
 }
 
@@ -226,7 +218,7 @@
     overflow-y: hidden;
 
     button {
-      border: 2px solid $grey-light;
+      border: 2px solid $grey-medium;
       border-radius: 0;
       margin-right: 0;
 
@@ -246,7 +238,7 @@
       }
 
       &.clicked {
-        background-color: $grey-light;
+        background-color: $grey-medium;
       }
     }
   }
@@ -361,7 +353,7 @@
 }
 
 .field-errors {
-  color: $red;
+  color: $primary;
   display: flex;
   font-size: rem(14px);
   font-weight: $weight-medium;

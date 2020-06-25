@@ -8,19 +8,19 @@
   }
 
   .booking-status-booked {
-    background-color: $purple-dark;
+    background-color: $secondary;
   }
 
   .booking-status-validated {
-    background-color: $blue-dark;
+    background-color: $accent;
   }
 
   .booking-status-cancelled {
-    background-color: $grey;
+    background-color: $grey-dark;
   }
 
   .booking-status-reimbursed {
-    background-color: $green-dark;
+    background-color: $green-valid;
   }
 
   .booking-status-wrapper {
@@ -34,7 +34,7 @@
   .booking-status-wrapper:hover .bs-tooltip {
     background-color: $white;
     border-radius: rem(4px);
-    box-shadow: 0 rem(2px) rem(10px) 0 rgba(0, 0, 0, 0.3);
+    box-shadow: 0 rem(2px) rem(10px) 0 $black-shadow;
     color: $black;
     display: block;
     position: absolute;
@@ -87,19 +87,19 @@
     width: rem(14px);
 
     &.bs-history-booked {
-      background-color: $purple-dark;
+      background-color: $secondary;
     }
 
     &.bs-history-cancelled {
-      background-color: $grey;
+      background-color: $grey-dark;
     }
 
     &.bs-history-reimbursed {
-      background-color: $green-dark;
+      background-color: $green-valid;
     }
 
     &.bs-history-validated {
-      background-color: $blue-dark;
+      background-color: $accent;
     }
   }
 }

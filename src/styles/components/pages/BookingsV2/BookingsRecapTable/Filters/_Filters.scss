@@ -1,5 +1,5 @@
 .vertical-bar {
-  background-color: $grey-light;
+  background-color: $grey-medium;
   width: $control-border-width;
   height: rem(40px)
 }
@@ -9,7 +9,7 @@
   justify-content: flex-start;
   margin-bottom: rem(30px);
   border-radius: rem(20px);
-  box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
+  box-shadow: 2px 2px 6px 0 $black-shadow;
 
   &.disabled {
     box-shadow: none;
@@ -17,12 +17,12 @@
 
   &:focus-within {
     .vertical-bar {
-      background-color: $red;
+      background-color: $primary;
     }
   }
 
   select {
-    border: $control-border-width solid $grey-light;
+    border: $control-border-width solid $grey-medium;
     border-radius: rem(20px);
     cursor: pointer;
     font-weight: $weight-bold;
@@ -38,14 +38,14 @@
     background: url("/icons/dropdown-disclosure-down-b.svg") no-repeat 92% 56%;
 
     &:focus {
-      border-color: $red;
+      border-color: $primary;
     }
 
     &:disabled {
-      background-color: $grey-disabled-input-background;
+      background-color: $grey-light;
       background-image: url("/icons/dropdown-disclosure-down-b-disabled.svg");
-      border-color: $grey-disabled-input-background;
-      color: $grey-disabled-input-color;
+      border-color: $grey-light;
+      color: $grey-dark;
       cursor: initial;
       opacity: 1;
       font-weight: normal;
@@ -64,7 +64,7 @@
   .fw-booking-text-filters-input {
     flex-grow: 1;
     border-radius: 0 rem(20px) rem(20px) 0;
-    border: $control-border-width solid $grey-light;
+    border: $control-border-width solid $grey-medium;
     padding: rem(10px) rem(16px);
     font-size: rem(16px);
     border-left: none;
@@ -72,17 +72,17 @@
 
     &:focus {
       outline: none;
-      border-color: $red;
+      border-color: $primary;
     }
 
     &:disabled {
-      background-color: $grey-disabled-input-background;
-      border-color: $grey-disabled-input-background;
-      color: $grey-disabled-input-color;
+      background-color: $grey-light;
+      border-color: $grey-light;
+      color: $grey-dark;
       opacity: 1;
 
       &::placeholder {
-        color: $grey-disabled-input-color;
+        color: $grey-dark;
       }
     }
   }
@@ -104,7 +104,7 @@
     background-position-x: 90%;
 
     &:focus-within {
-      border-color: $red;
+      border-color: $primary;
     }
 
     &.disabled {
@@ -119,7 +119,7 @@
   .fw-offer-date {
     .fw-offer-date-picker:focus-within {
       .field-date {
-        border-color: $red;
+        border-color: $primary;
       }
     }
 
@@ -128,7 +128,7 @@
     }
 
     .field-date {
-      box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
+      box-shadow: 2px 2px 6px 0 $black-shadow;
       margin-top: rem(12px);
 
       &.disabled {
@@ -150,12 +150,12 @@
       width: rem(150px);
 
       &:disabled {
-        color: $grey-disabled-input-color;
+        color: $grey-dark;
         cursor: initial;
         opacity: 1;
 
         &::placeholder {
-          color: $grey-disabled-input-color;
+          color: $grey-dark;
         }
       }
     }
@@ -171,11 +171,11 @@
     }
 
     select {
-      border: $control-border-width solid $grey-light;
+      border: $control-border-width solid $grey-medium;
       cursor: pointer;
       font-size: rem(16px);
       border-radius: rem(20px);
-      box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
+      box-shadow: 2px 2px 6px 0 $black-shadow;
       height: rem(40px);
       margin-top: rem(12px);
       padding-left: rem(16px);
@@ -193,15 +193,15 @@
       background: url("/icons/dropdown-disclosure-down-b.svg") no-repeat 92% 56%;
 
       &:focus {
-        border-color: $red;
+        border-color: $primary;
       }
 
       &:disabled {
-        background-color: $grey-disabled-input-background;
+        background-color: $grey-light;
         background-image: url("/icons/dropdown-disclosure-down-b-disabled.svg");
-        border-color: $grey-disabled-input-background;
+        border-color: $grey-light;
         box-shadow: none;
-        color: $grey-disabled-input-color;
+        color: $grey-dark;
         cursor: initial;
         opacity: 1;
       }
@@ -214,19 +214,19 @@
     .fw-booking-date-inputs {
       display: flex;
       border-radius: rem(20px);
-      box-shadow: 2px 2px 6px 0 rgba(0, 0, 0, 0.15);
+      box-shadow: 2px 2px 6px 0 $black-shadow;
       height: rem(40px);
       margin-top: rem(12px);
 
       .fw-booking-date-begin-picker:focus-within {
         .field-date-begin {
-          border-color: $red;
+          border-color: $primary;
         }
       }
 
       .fw-booking-date-end-picker:focus-within {
         .field-date-end {
-          border-color: $red;
+          border-color: $primary;
         }
       }
 
@@ -248,12 +248,12 @@
         width: rem(135px);
 
         &:disabled {
-          color: $grey-disabled-input-color;
+          color: $grey-dark;
           cursor: initial;
           opacity: 1;
 
           &::placeholder {
-            color: $grey-disabled-input-color;
+            color: $grey-dark;
           }
         }
       }
@@ -265,7 +265,7 @@
         height: rem(40px);
 
         &:focus-within {
-          border-color: $red;
+          border-color: $primary;
         }
       }
 
@@ -276,7 +276,7 @@
         height: rem(40px);
 
         &:focus-within {
-          border-color: $red;
+          border-color: $primary;
         }
       }
 
@@ -288,7 +288,7 @@
 
   .fw-booking-date:focus-within {
     .vertical-bar {
-      background-color: $red;
+      background-color: $primary;
     }
   }
 }

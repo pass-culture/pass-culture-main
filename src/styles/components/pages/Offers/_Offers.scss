@@ -3,15 +3,6 @@
     @extend .mb4;
   }
 
-  .recently-added {
-    display: inline-block;
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 50px;
-    background-color: $blue;
-    @extend .mr8;
-  }
-
   .list-header {
     display: flex;
     border-bottom: 1px solid;
@@ -32,7 +23,7 @@
   }
 
   .offers-list-actions {
-    border-bottom: 1px solid $grey-darkest;
+    border-bottom: 1px solid $grey-dark;
     font-size: 0.8rem;
     @extend .pb8;
     @extend .mb16;
@@ -42,7 +33,7 @@
       height: auto;
     }
     button:first-child {
-      border-right: 1px solid $grey;
+      border-right: 1px solid $grey-dark;
       @extend .pr8;
     }
   }

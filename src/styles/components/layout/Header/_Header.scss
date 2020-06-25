@@ -6,7 +6,7 @@
     }
 
     &.navbar-link::after {
-      border-color: $text-color; // caret
+      border-color: $text-color;
     }
   }
 }
@@ -82,7 +82,7 @@ header.navbar {
 
   @media (min-width: $desktop) {
     .navbar-dropdown {
-      box-shadow: 0 0 3.75rem rgba(0, 0, 0, 0.2);
+      box-shadow: 0 0 3.75rem $black-shadow;
     }
   }
 

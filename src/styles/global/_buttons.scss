@@ -20,7 +20,7 @@
 
   &.is-primary {
     &:active {
-      background-color: $red-darker;
+      background-color: $primary-dark;
     }
 
     &:disabled {
@@ -30,7 +30,7 @@
 
     &:focus:not(:active) {
       box-shadow: none;
-      border: rem(3px) solid $red-darker;
+      border: rem(3px) solid $primary-dark;
       padding-left: rem(13px);
       padding-right: rem(13px);
     }
@@ -38,13 +38,13 @@
 
   &.is-secondary {
     background: none;
-    border: rem(2px) solid $red;
-    color: $red;
+    border: rem(2px) solid $primary;
+    color: $primary;
     padding-left: rem(14px);
     padding-right: rem(14px);
 
     &:active {
-      background-color: $red-darker;
+      background-color: $primary-dark;
       border: none;
       color: $white;
       padding-left: rem(16px);
@@ -58,7 +58,7 @@
     }
 
     &:focus:not(:active) {
-      box-shadow: 0 0 4px $red;
+      box-shadow: 0 0 4px $primary;
       border-width: rem(3px);
       padding-left: rem(13px);
       padding-right: rem(13px);
@@ -68,21 +68,21 @@
   &.is-tertiary {
     background: none;
     border-color: transparent;
-    color: $red;
+    color: $primary;
     text-decoration: none;
 
     &:active {
-      color: $red-darker;
+      color: $primary-dark;
     }
 
     &:disabled {
       opacity: 1;
-      color: $grey;
+      color: $grey-dark;
     }
 
     &[disabled] {
       opacity: 1;
-      color: $grey;
+      color: $grey-dark;
     }
 
     &:focus:not(:active) {
@@ -108,8 +108,8 @@
   &.is-intermediate {
     background: none;
     text-decoration: none;
-    border: 1px solid $red;
-    color: $red;
+    border: 1px solid $primary;
+    color: $primary;
   }
 
   &.is-flex-button {

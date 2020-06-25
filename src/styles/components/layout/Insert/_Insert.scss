@@ -2,8 +2,8 @@
   @extend .fs16;
 
   align-items: center;
-  background-color: $notification-background-is-info;
-  color: $notification-text;
+  background-color: $notification-info;
+  color: $black;
   display: flex;
   justify-content: flex-start;
   flex-grow: 1;
@@ -22,7 +22,7 @@
 .yellow-insert {
   @extend .fs16;
 
-  background-color: $yellow-bis;
+  background-color: $attention;
   border-radius: 6px;
   margin-bottom: 1.5rem;
   padding: 18px;

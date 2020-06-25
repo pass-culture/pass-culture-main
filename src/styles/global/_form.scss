@@ -23,7 +23,7 @@ input[type=checkbox] {
   -webkit-appearance: none;
   -moz-appearance: none;
   -o-appearance: none;
-  border: 2px solid $grey;
+  border: 2px solid $grey-dark;
   border-radius: 4px;
   margin-right: 0.5rem;
   width: $body-line-height;
@@ -32,15 +32,15 @@ input[type=checkbox] {
   outline: none;
 
   &:focus {
-    border-color: $thumb-color;
+    border-color: $primary;
   }
 
   &:active,
   &:checked {
-    background-color: $grey;
+    background-color: $grey-dark;
 
     &:focus {
-      background-color: $thumb-color;
+      background-color: $primary;
     }
 
     &::after {
@@ -55,7 +55,7 @@ input[type=checkbox] {
   }
 
   &:disabled {
-    border: 2px solid $grey;
+    border: 2px solid $grey-dark;
   }
 }
 
@@ -74,7 +74,7 @@ input[type=checkbox] {
     }
 
     .display-name {
-      color: $text;
+      color: $black;
       display: inline-block;
       font-weight: $weight-semibold;
       padding-left: 0.25rem;
@@ -90,7 +90,7 @@ input[type=checkbox] {
 
   &.has-addons {
     &:focus-within .button {
-      border-color: $input-focus-border-color;
+      border-color: $primary;
     }
 
     .control {
@@ -99,7 +99,7 @@ input[type=checkbox] {
         height: 100%;
 
         &:focus {
-          border-color: $grey-light;
+          border-color: $grey-medium;
 
           &:not(:active) {
             box-shadow: none;
@@ -172,7 +172,7 @@ input[type=checkbox] {
       vertical-align: top;
 
       .label {
-        color: $text;
+        color: $black;
         margin-bottom: 0;
       }
 
@@ -193,7 +193,7 @@ input[type=checkbox] {
           border: none;
           background-color: transparent;
           cursor: default;
-          color: $input-color;
+          color: $black;
           padding-left: 0.125rem;
           opacity: 1;
         }
@@ -240,14 +240,14 @@ input[type=checkbox] {
   .required:not(.readOnly) {
     &::after {
       content: " *";
-      color: $violet;
+      color: $accent;
       display: inline;
     }
   }
 }
 
 .required-legend {
-  color: $violet;
+  color: $accent;
 }
 
 div.control.control-duration {

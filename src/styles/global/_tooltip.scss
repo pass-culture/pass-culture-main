@@ -1,6 +1,6 @@
 .__react_component_tooltip {
   a {
-    color: white;
+    color: $white;
     pointer-events: visible;
     text-decoration: underline;
   }
@@ -14,7 +14,7 @@
   }
 
   &.type-info {
-    background-color: $blue;
+    background-color: $accent;
     z-index: 99999;
 
     ul {

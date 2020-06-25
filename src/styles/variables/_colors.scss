@@ -1,0 +1,35 @@
+$white: #FFFFFF;
+$grey-medium: #C7C7CC;
+$grey-dark: #626262;
+$black: #151515;
+$black-with-transparency: rgba($black, 0.8);
+$black-shadow: rgba($black, 0.2);
+
+$primary-dark: #C10046;
+$secondary: #320096;
+$accent: #0066FF;
+$green-valid: #15884F;
+$attention: #FFEA00;
+
+$notification-error: #FF8097;
+$notification-info: #B3E7FF;
+$notification-success: #B8E986;
+$notification-warning: #FFD580;
+
+// Surcharge de Bulma
+$primary: #EB0055;
+$grey-light: #F5F5F5;
+$subtitle-color: inherit;
+$text: $black;
+$link: $black;
+$input-color: $black;
+$input-focus-border-color: $primary;
+
+$linear-gradient-to-bottom-right: linear-gradient(to bottom right, $primary, $secondary);
+$linear-gradient-to-right: linear-gradient(to right, $primary, $secondary);
+
+// Croping d'une médiation
+$mediation-violet: #BD10E0;
+$mediation-green: #4CD964;
+$mediation-green-dark: #003818;
+$mediation-red: #B30041;

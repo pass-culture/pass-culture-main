@@ -1,10 +1,10 @@
 .navbar {
   &.is-primary {
-    background-image: linear-gradient(to bottom right, $red, $purple-dark);
+    background-image: $linear-gradient-to-bottom-right;
 
     .navbar-brand {
       & > .navbar-item:hover {
-        background: transparent !important; // Bug?
+        background: transparent !important;
       }
     }
   }

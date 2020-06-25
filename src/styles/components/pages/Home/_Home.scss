@@ -1,23 +1,11 @@
-// TODO: check if works on every page also
-// main.page.home-page.container {
-//   @media (min-width: $widescreen) {
-//     max-width: $desktop;
-//   }
-// }
-
-// .page.container.home-page .page-content {
-//   margin: 0;
-//   padding: 0;
-// }
-
 .home-page.container .page-content {
   top: 0;
 }
 
 .home-cards {
   margin: auto;
-  box-shadow: 0 0 60px 0 rgba(0, 0, 0, 0.2);
-  background-image: linear-gradient(to right, $red, $purple-dark);
+  box-shadow: 0 0 60px 0 $black-shadow;
+  background-image: $linear-gradient-to-right;
   .home-card {
     color: $white;
     padding: 3rem;
@@ -37,15 +25,12 @@
     .home-card-text {
       margin-top: 7rem;
       h1 {
+        color: $white;
         font-size: $size-xlarge;
-        // font-size: 2.6em;
-        // font-weight: $weight-semibold;
       }
 
       p {
-        // margin-top: 0.5rem;
         color: $white;
-        // font-size: 1.2rem;
       }
     }
   }

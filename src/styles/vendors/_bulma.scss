@@ -16,3 +16,18 @@
 .hero-body {
   padding-left: 54px;
 }
+
+.input:hover,
+input:hover[type="checkbox"],
+.textarea:hover,
+.select select:hover,
+.button:hover {
+  border-color: $grey-medium;
+}
+
+.input,
+.textarea,
+.select select,
+.button {
+  border-color: $grey-medium;
+}

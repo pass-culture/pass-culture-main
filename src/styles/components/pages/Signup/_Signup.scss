@@ -1,8 +1,8 @@
 .sign-up-page {
   .logo-side {
-    background-image: linear-gradient(to bottom right, $red, $purple-dark);
+    background-image: $linear-gradient-to-bottom-right;
     bottom: 0;
-    box-shadow: inset -10px 0 20px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: inset -10px 0 20px 0 $black-shadow;
     left: 0;
     position: fixed;
     right: 60%;
@@ -76,7 +76,7 @@
     }
 
     p {
-      color: $grey-darkest;
+      color: $grey-dark;
       font-size: rem(13px);
       line-height: rem(16px);
       text-align: justify;
@@ -110,7 +110,7 @@
   }
 
   .sign-up-operating-procedures {
-    background-color: $notification-background-is-info;
+    background-color: $notification-info;
     padding: rem(16px);
     margin-bottom: rem(32px);
   }
@@ -134,12 +134,12 @@
   }
 
   .sign-up-tips {
-    color: $grey;
+    color: $grey-dark;
     margin-bottom: rem(32px);
   }
 
   label {
-    color: $grey-darker;
+    color: $grey-dark;
     display: block;
     font-size: rem(20px);
     margin-bottom: rem(32px);
@@ -164,7 +164,7 @@
   }
 
   .sub-label {
-    color: $grey;
+    color: $grey-dark;
     display: inline;
     font-size: rem(14px);
   }
@@ -176,7 +176,7 @@
     -ms-flex-align: center;
     -ms-flex-pack: start;
     background-color: $white;
-    border: 2px solid $grey-light;
+    border: 2px solid $grey-medium;
     border-radius: $control-radius;
     display: -ms-inline-flexbox;
     display: inline-flex;
@@ -191,11 +191,11 @@
   }
 
   input::placeholder {
-    color: $grey-darker;
+    color: $grey-dark;
   }
 
   input:focus {
-    border-color: $input-focus-border-color;
+    border-color: $primary;
   }
 
   .field-siren-control {
@@ -245,7 +245,7 @@
   }
 
   .field-password:focus-within > button {
-    border-color: $input-focus-border-color;
+    border-color: $primary;
   }
 
   .field-password > img {
@@ -254,7 +254,7 @@
   }
 
   .sign-up-infos-before-signup {
-    color: $grey;
+    color: $grey-dark;
     font-size: rem(14px);
     font-weight: 500;
     line-height: rem(22px);
@@ -264,7 +264,7 @@
     }
 
     a {
-      color: $red;
+      color: $primary;
     }
   }
 

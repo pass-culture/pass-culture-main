@@ -13,28 +13,28 @@
   }
 
   &.is-danger {
-    background-color: $notification-background-is-danger;
-    color: $notification-text;
+    background-color: $notification-error;
+    color: $black;
   }
 
   &.is-info {
-    background-color: $notification-background-is-info;
-    color: $notification-text;
+    background-color: $notification-info;
+    color: $black;
   }
 
   &.is-success {
-    background-color: $notification-background-is-success;
-    color: $notification-text;
+    background-color: $notification-success;
+    color: $black;
   }
 
   &.is-warning {
-    background-color: $notification-background-is-warning;
-    color: $notification-text;
+    background-color: $notification-warning;
+    color: $black;
   }
 
   a.close,
   button.close {
-    color: $notification-text;
+    color: $black;
     background: none;
     border: none;
     cursor: pointer;

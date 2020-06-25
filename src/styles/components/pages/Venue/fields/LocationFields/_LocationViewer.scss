@@ -7,18 +7,14 @@
     position: relative;
 
     .menu {
-      // margin-top: 0.5rem;
-      // margin: 0 $control-radius;
       position: absolute;
       z-index: 2000;
       background: $white;
-      // padding: 1rem;
       left: $control-radius;
       right: $control-radius;
-      // box-shadow: 0 5px 10px rgba($black, 0.5);
       border-bottom-left-radius: $control-radius;
       border-bottom-right-radius: $control-radius;
-      border: 2px solid $grey-light;
+      border: 2px solid $grey-medium;
       border-top: none;
       overflow: hidden;
 
@@ -37,7 +33,7 @@
           }
 
           &:hover {
-            background-color: $grey-lighter;
+            background-color: $grey-light;
           }
         }
       }

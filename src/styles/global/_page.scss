@@ -10,7 +10,7 @@
     padding-top: 0;
 
     .main-list-title {
-      border-bottom: thin solid $grey-darker;
+      border-bottom: thin solid $grey-dark;
       display: block;
       font-weight: $weight-medium;
       margin: 0.75rem 0;
@@ -26,7 +26,7 @@
 
   .small-text {
     font-size: 13px;
-    color: $grey-darkest;
+    color: $grey-dark;
   }
 
   .align-left {
@@ -53,7 +53,7 @@
       height: $footer-height;
       text-align: right;
       padding: $footer-height-padding $page-padding;
-      padding-left: 3em; // Beta footer
+      padding-left: 3em;
       display: flex;
       align-items: center;
       flex-direction: row-reverse;
@@ -68,13 +68,12 @@
   &.container {
     position: relative;
     .page-content {
-      // min-height: 100vh;
       position: relative;
       top: $header-height - $header-display-height;
       margin: 0 5rem;
       z-index: 10;
-      background: white;
-      box-shadow: 0 0 3.75rem rgba(0, 0, 0, 0.2);
+      background: $white;
+      box-shadow: 0 0 3.75rem $black-shadow;
       min-width: 800px;
 
       .after-notification-content {

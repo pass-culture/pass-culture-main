@@ -22,7 +22,7 @@ li.offer-item {
   }
 
   ul {
-    border-top: 1px solid #EFEFF4;
+    border-top: 1px solid $grey-light;
     li,
     .label {
       font-size: 0.82rem;
@@ -49,16 +49,16 @@ li.offer-item {
       img {
         height: 0.6rem;
       }
-      
+
       li {
         flex-grow: 1;
         text-align: center;
 
         &:nth-child(2) {
-          border-right: 1px solid #EFEFF4;
+          border-right: 1px solid $grey-light;
         }
         &:nth-child(3) {
-          border-right: 1px solid #EFEFF4;
+          border-right: 1px solid $grey-light;
         }
 
         &:first-child {

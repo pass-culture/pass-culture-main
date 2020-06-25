@@ -6,14 +6,14 @@
   position: relative;
 
   .logo-side {
-    background-image: linear-gradient(to bottom right, $red, $purple-dark);
+    background-image: $linear-gradient-to-bottom-right;
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
     right: 60%;
     z-index: 1;
-    box-shadow: inset -10px 0 20px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: inset -10px 0 20px 0 $black-shadow;
 
     @media (max-width: $tablet) {
       position: relative;
@@ -73,12 +73,6 @@
 
   form {
     margin-top: rem(32px);
-
-    p {
-      text-align: left !important;
-      color: #7A7A7A;
-      margin-left: rem(8px);
-    }
   }
 
   label {
@@ -174,7 +168,7 @@
     }
 
     p {
-      color: $grey-darkest;
+      color: $grey-dark;
       font-size: rem(13px);
       line-height: rem(16px);
       text-align: justify;

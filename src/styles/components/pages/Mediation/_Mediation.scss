@@ -26,12 +26,12 @@
   }
 
   a {
-    color: $red;
+    color: $primary;
   }
 }
 
 .thumbnailManager {
-  background-color: $grey-light-bis;
+  background-color: $grey-light;
   padding: 18px;
   margin-bottom: 10px;
 
@@ -40,7 +40,7 @@
   }
 
   canvas {
-    background: url(/pattern-checker.png) repeat white;
+    background: url(/pattern-checker.png) repeat $white;
     border: 1px solid $grey-medium;
   }
 
@@ -62,7 +62,7 @@
   ul li span.li-number {
     height: 20px;
     width: 20px;
-    color: black;
+    color: $black;
     background-color: $mediation-green;
     text-align: center;
     font-weight: bold;
@@ -70,8 +70,8 @@
   }
 
   ul li:first-child span.li-number {
-    color: white;
-    background-color: $violet;
+    color: $white;
+    background-color: $mediation-violet;
   }
 
   h6 {

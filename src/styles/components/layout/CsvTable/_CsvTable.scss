@@ -5,7 +5,7 @@
 }
 
 #csv-table tr:hover {
-  background-color: $grey-dark;
+  background-color: $grey-medium;
 }
 
 #csv-table {
@@ -16,14 +16,14 @@
   }
   tbody {
     td {
-      color: $grey-darkest;
+      color: $grey-dark;
       line-height: normal;
       padding: 10px;
       vertical-align: middle;
     }
 
     tr {
-      @include dotted($red);
+      @include dotted($primary);
     }
   }
 }

@@ -6,7 +6,7 @@
     width: 139px;
     height: 36px;
     background: 110px 14px no-repeat transparent url(/icons/dropdown-disclosure-down-s-w.svg);
-    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.25);
+    box-shadow: 0 2px 6px 0 $black-shadow;
     font-size: 16px;
     margin-right: rem(12px);
     margin-bottom: rem(54px);
@@ -29,7 +29,7 @@
     width: 259px;
     height: 36px;
     background: 226px 14px no-repeat transparent url(/icons/dropdown-disclosure-down-s-w.svg);
-    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.25);
+    box-shadow: 0 2px 6px 0 $black-shadow;
     font-size: 16px;
     margin-right: rem(12px);
     margin-bottom: rem(54px);

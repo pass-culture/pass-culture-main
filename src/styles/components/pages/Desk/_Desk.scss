@@ -19,17 +19,17 @@
     }
 
     button {
-      background: $red;
-      border: 1px solid $red;
+      background: $primary;
+      border: 1px solid $primary;
       border-radius: 1.125em;
       font-size: 30px;
       height: 72px;
-      color: white;
+      color: $white;
       margin-left: 20px;
     }
 
     .state {
-      @include dotted($red);
+      @include dotted($primary);
 
       margin: 20px 0;
       padding-top: 10px;
