@@ -24,12 +24,12 @@ const BookingStatusCell = ({ bookingRecapInfo }) => {
   }
 
   return (
-    <div className="booking-status-wrapper">
-      <span className={`booking-status-label ${statusClassName}`}>
-        <Icon
-          alt={`icone status ${statusName}`}
-          svg={icon}
-        />
+    <div className={`booking-status-label booking-status-wrapper ${statusClassName}`}>
+      <Icon
+        alt={`icone status ${statusName}`}
+        svg={icon}
+      />
+      <span>
         {statusName}
       </span>
       <div className="bs-tooltip">

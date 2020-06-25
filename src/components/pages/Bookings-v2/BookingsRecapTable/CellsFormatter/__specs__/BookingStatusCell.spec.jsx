@@ -38,10 +38,12 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell
     const wrapper = mount(<BookingStatusCell {...props} />)
 
     // Then
-    const status = wrapper.find('span').at(0)
+    const status = wrapper.find('div').at(0)
     expect(status.hasClass('booking-status-label')).toBe(true)
     expect(status.hasClass('booking-status-validated')).toBe(true)
-    expect(status.text()).toBe('validé')
+
+    const statusText = status.find('span').at(0)
+    expect(statusText.text()).toBe('validé')
 
     const icon = wrapper.find(Icon)
     expect(icon).toHaveLength(1)

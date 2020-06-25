@@ -7,12 +7,6 @@
     padding: rem(5px) rem(7px);
   }
 
-  .booking-status-label img {
-    display: inline-block;
-    vertical-align: middle;
-    padding-right: rem(4px)
-  }
-
   .booking-status-booked {
     background-color: $secondary;
   }
@@ -31,6 +25,12 @@
 
   .booking-status-wrapper {
     position: relative;
+    line-height: $body-line-height;
+  }
+
+  .booking-status-wrapper img {
+    vertical-align: middle;
+    padding-right: rem(4px);
   }
 
   .booking-status-wrapper .bs-tooltip {
