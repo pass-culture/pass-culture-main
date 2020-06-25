@@ -343,21 +343,24 @@ workflows:
       - tests-api:
           filters:
             branches:
-              only:
-                - master
-                - /hotfix-v.*/
+              ignore:
+                - production
+                - staging
+                - integration
       - tests-webapp:
           filters:
             branches:
-              only:
-                - master
-                - /hotfix-v.*/
+              ignore:
+                - production
+                - staging
+                - integration
       - tests-pro:
           filters:
             branches:
-              only:
-                - master
-                - /hotfix-v.*/
+              ignore:
+                - production
+                - staging
+                - integration
       - deploy-api:
           filters:
             branches:
