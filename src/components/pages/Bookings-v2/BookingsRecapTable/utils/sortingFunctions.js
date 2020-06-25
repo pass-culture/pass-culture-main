@@ -7,7 +7,9 @@ export const sortByOfferName = (firstRow, secondRow) => {
 export const sortByBeneficiaryName = (firstRow, secondRow) => {
   let beneficiaryOne = firstRow.original.beneficiary.lastname
   let beneficiaryTwo = secondRow.original.beneficiary.lastname
-  if (beneficiaryOne.localeCompare(beneficiaryTwo, 'fr', { sensitivity: 'base' }) === 0) {
+  const lastNamesAreTheSame =
+    beneficiaryOne.localeCompare(beneficiaryTwo, 'fr', { sensitivity: 'base' }) === 0
+  if (lastNamesAreTheSame) {
     beneficiaryOne = firstRow.original.beneficiary.firstname
     beneficiaryTwo = secondRow.original.beneficiary.firstname
   }
