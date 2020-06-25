@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {
   computeStatusClassName,
-  getStatusIcon,
+  getStatusSVGIconFilename,
   getStatusName,
 } from './utils/bookingStatusConverter'
 import BookingStatusCellHistory from './BookingStatusCellHistory'
@@ -15,7 +15,7 @@ const BookingStatusCell = ({ bookingRecapInfo }) => {
   const statusClassName = computeStatusClassName(bookingStatus)
   const statusName = getStatusName(bookingStatus)
   const amount = computeBookingAmount(bookingRecapInfo.original.booking_amount)
-  const icon = getStatusIcon(bookingStatus)
+  const icon = getStatusSVGIconFilename(bookingStatus)
 
   function computeBookingAmount(amount) {
     const FREE_AMOUNT = 'Gratuit'
@@ -26,7 +26,7 @@ const BookingStatusCell = ({ bookingRecapInfo }) => {
   return (
     <div className={`booking-status-label booking-status-wrapper ${statusClassName}`}>
       <Icon
-        alt={`icone status ${statusName}`}
+        alt="icone de statut"
         svg={icon}
       />
       <span>
