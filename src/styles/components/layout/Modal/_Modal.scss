@@ -1,7 +1,7 @@
 #overlay {
   opacity: 0;
   z-index: $zindex-overlay;
-  background-color: rgba($black, 0.8);
+  background-color: $black-background;
 }
 
 @keyframes fadeIn {
@@ -28,7 +28,7 @@
   justify-content: center;
   align-items: center;
   // overlay
-  background-color: rgba($black, 0.8);
+  background-color: $black-background;
   display: none;
   opacity: 0;
   will-change: opacity;
@@ -51,7 +51,7 @@
     right: 0;
     bottom: 0;
     border-radius: 1rem;
-    box-shadow: $box-shadow;
+    box-shadow: 0 0 5px $black-shadow;
     max-width: 100%;
     min-height: 4rem;
     max-height: 100%;

@@ -55,12 +55,12 @@ $dotted-directions: (top, right, bottom, left);
 @each $direction in $dotted-directions {
   .dotted-#{$direction} {
     // white color default
-    @include dotted(white, $direction);
+    @include dotted($white, $direction);
   }
 
   .dotted-#{$direction}-2x {
     // white color default
-    @include dotted(white, $direction, 'large');
+    @include dotted($white, $direction, 'large');
   }
 
   // NOTE: genere les classes

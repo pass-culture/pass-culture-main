@@ -41,7 +41,7 @@
 
   .pf-input-container {
     border-radius: 1.375rem;
-    box-shadow: 0 rem(2px) rem(6px) 0 rgba($black, 0.25);
+    box-shadow: 0 rem(2px) rem(6px) 0 $black-shadow;
     display: flex;
     justify-content: space-between;
     margin-top: rem(8px);

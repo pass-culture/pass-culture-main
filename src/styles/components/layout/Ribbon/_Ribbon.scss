@@ -44,7 +44,7 @@
 
 .ribbon-today span {
   background-color: $ribbon-blue;
-  color: white;
+  color: $white;
 }
 
 .ribbon-tomorrow span {
@@ -53,10 +53,10 @@
 
 .ribbon-cancelled span {
   background-color: $ribbon-red;
-  color: white;
+  color: $white;
 }
 
 .ribbon-finished span {
   background-color: $black;
-  color: white;
+  color: $white;
 }

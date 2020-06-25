@@ -12,7 +12,7 @@
   }
 
   .result-image {
-    box-shadow: 0 rem(2px) rem(4px) 0 rgba($black, 0.1);
+    box-shadow: 0 rem(2px) rem(4px) 0 $black-shadow;
     background-color: $grey-medium;
     border-radius: rem(7.5px);
     height: rem(68px);
