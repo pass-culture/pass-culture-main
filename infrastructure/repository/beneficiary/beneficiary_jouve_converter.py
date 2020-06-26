@@ -3,7 +3,10 @@ from typing import Dict
 
 from domain.beneficiary.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
+from models import BeneficiaryImportSources
 
+
+DEFAULT_JOUVE_SOURCE_ID = None
 
 def to_domain(user_jouve_entity: Dict) -> BeneficiaryPreSubscription:
     return BeneficiaryPreSubscription(
@@ -16,6 +19,8 @@ def to_domain(user_jouve_entity: Dict) -> BeneficiaryPreSubscription:
         last_name=user_jouve_entity['mtd_nom'],
         phone_number=user_jouve_entity['mtd_tel'],
         postal_code=user_jouve_entity['mtd_codPos'],
+        source=BeneficiaryImportSources.jouve.value,
+        source_id=DEFAULT_JOUVE_SOURCE_ID
     )
 
 

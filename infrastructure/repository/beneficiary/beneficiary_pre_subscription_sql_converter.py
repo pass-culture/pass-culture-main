@@ -45,7 +45,7 @@ def _attach_beneficiary_import(beneficiary: UserSQLEntity, beneficiary_pre_subsc
     beneficiary_import = BeneficiaryImport()
 
     beneficiary_import.applicationId = beneficiary_pre_subscription.application_id
-    beneficiary_import.sourceId = None
+    beneficiary_import.sourceId = beneficiary_pre_subscription.source_id
     beneficiary_import.source = beneficiary_pre_subscription.source
     beneficiary_import.setStatus(status=ImportStatus.CREATED)
 

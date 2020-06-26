@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from domain.postal_code.postal_code import PostalCode
-from models import BeneficiaryImportSources
 
 
 class BeneficiaryPreSubscription(object):
@@ -14,8 +13,9 @@ class BeneficiaryPreSubscription(object):
                  first_name: str,
                  last_name: str,
                  phone_number: str,
-                 postal_code: str
-                 ):
+                 postal_code: str,
+                 source: str,
+                 source_id: int):
         self.activity = activity
         self.application_id = application_id
         self.civility = civility
@@ -25,7 +25,8 @@ class BeneficiaryPreSubscription(object):
         self.last_name = last_name
         self.phone_number = phone_number
         self.postal_code = postal_code
-        self.source = BeneficiaryImportSources.jouve.value
+        self.source = source
+        self.source_id = source_id
 
     @property
     def department_code(self) -> str:

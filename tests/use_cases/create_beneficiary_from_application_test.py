@@ -39,6 +39,8 @@ def test_saved_a_beneficiary_from_application(stubed_random_password,
         last_name='DURAND',
         phone_number='0123456789',
         activity='Apprenti',
+        source='jouve',
+        source_id=None
     )
 
     beneficiary_jouve_repository = MagicMock()
