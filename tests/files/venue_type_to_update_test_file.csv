@@ -1,2 +1,3 @@
-a_venue_id,a_type
-another_venue_id,another_type
+a_venue_id;a_type
+another_venue_id;another_type
+venue_id;another_type, whith a comma
