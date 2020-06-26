@@ -105,6 +105,7 @@ describe('components | FilterByBookingStatus', () => {
       expect(checkbox).toHaveLength(2)
       expect(checkbox.at(0).props()).toStrictEqual({
         checked: true,
+        'data-status-filter-tooltip': true,
         id: 'bs-booked',
         name: 'booked',
         onChange: expect.any(Function),
@@ -112,6 +113,7 @@ describe('components | FilterByBookingStatus', () => {
       })
       expect(checkbox.at(1).props()).toStrictEqual({
         checked: true,
+        'data-status-filter-tooltip': true,
         id: 'bs-validated',
         name: 'validated',
         onChange: expect.any(Function),
@@ -120,22 +122,6 @@ describe('components | FilterByBookingStatus', () => {
       expect(label).toHaveLength(2)
       expect(label.at(0).text()).toBe('réservé')
       expect(label.at(1).text()).toBe('validé')
-    })
-
-    it('should hide filters on blur', () => {
-      // given
-      const wrapper = mount(<FilterByBookingStatus {...props} />)
-      const filterIcon = wrapper.find('img')
-      filterIcon.simulate('focus')
-
-      // when
-      filterIcon.simulate('blur')
-
-      // then
-      const checkbox = wrapper.find('input')
-      const label = wrapper.find('label')
-      expect(checkbox).toHaveLength(0)
-      expect(label).toHaveLength(0)
     })
 
     it('should not hide filters on click on a checkbox', () => {
@@ -154,26 +140,6 @@ describe('components | FilterByBookingStatus', () => {
       // then
       const label = wrapper.find('label')
       expect(label).toHaveLength(2)
-    })
-
-    it('should hide filters on blur after a click on a checkbox', () => {
-      // given
-      const wrapper = mount(<FilterByBookingStatus {...props} />)
-      const filterIcon = wrapper.find('img')
-      filterIcon.simulate('focus')
-
-      const checkbox = wrapper.find('input').at(0)
-      checkbox.simulate('mouseDown')
-      checkbox.simulate('mouseUp')
-
-      // when
-      filterIcon.simulate('blur')
-
-      // then
-      const checkboxes = wrapper.find('input')
-      const label = wrapper.find('label')
-      expect(checkboxes).toHaveLength(0)
-      expect(label).toHaveLength(0)
     })
 
     it('should add value to filters when unchecking on a checkbox', () => {

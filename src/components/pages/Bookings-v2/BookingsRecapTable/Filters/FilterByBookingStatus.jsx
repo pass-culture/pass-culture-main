@@ -12,9 +12,34 @@ class FilterByBookingStatus extends Component {
     }
   }
 
-  TIME_NEEDED_TO_TAB_IN_FILTER = 150
-  canHideFilter = true
-  keyHideFilterTimeout
+  componentDidMount() {
+    if (window) {
+      window.addEventListener('click', this.toggleFilterVisibilityOnClick, false)
+      window.addEventListener('focus', this.toggleFilterVisibilityForKeyNavigation, true)
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('click', this.toggleFilterVisibilityOnClick, false)
+    window.removeEventListener('focus', this.toggleFilterVisibilityForKeyNavigation, true)
+  }
+
+  STATUS_FILTER_ELEMENT_IDENTIFIER = 'data-status-filter-tooltip'
+
+  toggleFilterVisibilityOnClick = event => {
+    if (!event.target.getAttribute(this.STATUS_FILTER_ELEMENT_IDENTIFIER)) {
+      this.hideFilters()
+    }
+  }
+
+  toggleFilterVisibilityForKeyNavigation = event => {
+    if (
+      event.target.attributes &&
+      !event.target.getAttribute(this.STATUS_FILTER_ELEMENT_IDENTIFIER)
+    ) {
+      this.hideFilters()
+    }
+  }
 
   showFilter = () => {
     this.setState({
@@ -26,35 +51,6 @@ class FilterByBookingStatus extends Component {
     this.setState({
       showFilterStatusTooltip: false,
     })
-  }
-
-  preventHidingFilter = () => {
-    this.canHideFilter = false
-  }
-
-  authorizeHidingFilter = () => {
-    this.canHideFilter = true
-  }
-
-  hideFiltersIfAllowed = () => {
-    if (this.canHideFilter) {
-      this.hideFilters()
-    }
-  }
-
-  handleHidingFilterForKeyDown = event => {
-    if (event.key === 'Tab') {
-      this.preventHidingFilter()
-      this.keyHideFilterTimeout = setTimeout(() => {
-        this.authorizeHidingFilter()
-        this.hideFilters()
-      }, this.TIME_NEEDED_TO_TAB_IN_FILTER)
-    }
-  }
-
-  preventHidingFilterOfKeyDown = () => {
-    this.authorizeHidingFilter()
-    clearTimeout(this.keyHideFilterTimeout)
   }
 
   handleCheckboxChange = event => {
@@ -110,47 +106,54 @@ class FilterByBookingStatus extends Component {
     const bookingStatuses = this.getAvailableStatuses(bookingsRecap).sort(this.byStatusTitle)
 
     return (
-      // eslint-disable-next-line jsx-a11y/interactive-supports-focus
-      <span
-        className="bs-filter"
-        onBlur={this.hideFiltersIfAllowed}
-        onFocus={this.showFilter}
-        onKeyDown={this.handleHidingFilterForKeyDown}
-        onKeyUp={this.preventHidingFilterOfKeyDown}
-        role="button"
-      >
-        <button type="button">
+      <Fragment>
+        <button
+          className="bs-filter-button"
+          data-status-filter-tooltip
+          onClick={this.showFilter}
+          onFocus={this.showFilter}
+          type="button"
+        >
           <Icon
             alt="Filtrer par statut"
+            data-status-filter-tooltip
             svg={this.computeIconSrc()}
           />
         </button>
-
-        {showFilterStatusTooltip && (
-          <div className="bs-filter-tooltip">
-            <div className="bs-filter-label">
-              {'Afficher les statuts'}
+        <span
+          className="bs-filter"
+          data-status-filter-tooltip
+        >
+          {showFilterStatusTooltip && (
+            <div
+              className="bs-filter-tooltip"
+              data-status-filter-tooltip
+            >
+              <div
+                className="bs-filter-label"
+                data-status-filter-tooltip
+              >
+                {'Afficher les statuts'}
+              </div>
+              {bookingStatuses.map(bookingStatus => (
+                <Fragment key={bookingStatus.value}>
+                  <label data-status-filter-tooltip>
+                    <input
+                      checked={!bookingStatusFilters.includes(bookingStatus.value)}
+                      data-status-filter-tooltip
+                      id={`bs-${bookingStatus.value}`}
+                      name={bookingStatus.value}
+                      onChange={this.handleCheckboxChange}
+                      type="checkbox"
+                    />
+                    {bookingStatus.title}
+                  </label>
+                </Fragment>
+              ))}
             </div>
-            {bookingStatuses.map(bookingStatus => (
-              <Fragment key={bookingStatus.value}>
-                <label
-                  onMouseDown={this.preventHidingFilter}
-                  onMouseUp={this.authorizeHidingFilter}
-                >
-                  <input
-                    checked={!bookingStatusFilters.includes(bookingStatus.value)}
-                    id={`bs-${bookingStatus.value}`}
-                    name={bookingStatus.value}
-                    onChange={this.handleCheckboxChange}
-                    type="checkbox"
-                  />
-                  {bookingStatus.title}
-                </label>
-              </Fragment>
-            ))}
-          </div>
-        )}
-      </span>
+          )}
+        </span>
+      </Fragment>
     )
   }
 }
