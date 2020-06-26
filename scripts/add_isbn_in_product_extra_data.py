@@ -10,7 +10,7 @@ from scripts.performance_toolkit import bulk_update_pc_objects
 CHUNK_SIZE = 500
 
 
-def add_isbn_in_product_and_offer_extra_data():
+def add_isbn_in_product_and_offer_extra_data() -> None:
     connection = db.engine.connect()
     nb_products_updated = _add_isbn_in_product_extra_data(connection)
     print(f"{nb_products_updated} products have been updated")
@@ -61,7 +61,7 @@ def _get_next_products_to_process(connection: Connection, product_index: int, ne
             AND type = 'ThingType.LIVRE_EDITION'
             AND "idAtProviders" IS NOT NULL
             AND "extraData" IS NOT NULL
-            AND (LENGTH("extraData"::JSONB ->> 'isbn') < 10
+            AND (LENGTH("extraData"::JSONB ->> 'isbn') <= 10
                 OR "extraData"::JSONB ->> 'isbn' IS NULL)
             ORDER BY id ASC;
         """).fetchall()
@@ -108,13 +108,13 @@ def _get_next_offers_to_process(connection: Connection, offer_index: int, next_o
             AND type = 'ThingType.LIVRE_EDITION' 
             AND "idAtProviders" IS NOT NULL
             AND "extraData" IS NOT NULL
-            AND (LENGTH("extraData"::JSONB ->> 'isbn') < 10
+            AND (LENGTH("extraData"::JSONB ->> 'isbn') <= 10
                 OR "extraData"::JSONB ->> 'isbn' IS NULL)
             ORDER BY id ASC;
         """).fetchall()
 
 
-def _display_progress_in_percent(item_index: int, number_of_items_in_base: int):
+def _display_progress_in_percent(item_index: int, number_of_items_in_base: int) -> None:
     if number_of_items_in_base > 0:
         percentage_done = 100 * (min(item_index, number_of_items_in_base) / number_of_items_in_base)
         print("%s percent checked" % percentage_done)

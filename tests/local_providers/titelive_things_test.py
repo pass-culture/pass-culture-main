@@ -84,7 +84,7 @@ class TiteliveThingsTest:
         product = Product.query.one()
         assert product.extraData.get('bookFormat') == BookFormat.BEAUX_LIVRES.value
         assert product.type == 'ThingType.LIVRE_EDITION'
-        assert product.extraData.get('isbn') == '2895026319'
+        assert product.extraData.get('isbn') == '9782895026310'
 
     @clean_database
     @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
@@ -667,76 +667,6 @@ class TiteliveThingsTest:
     @clean_database
     @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
     @patch('local_providers.titelive_things.get_lines_from_thing_file')
-    def test_should_fill_isbn_info_with_ean13_if_isbn_is_missing(self,
-                                                                 get_lines_from_thing_file,
-                                                                 get_files_to_process_from_titelive_ftp,
-                                                                 app):
-        files_list = list()
-        files_list.append('Quotidien30.tit')
-
-        get_files_to_process_from_titelive_ftp.return_value = files_list
-
-        data_line = "9782895026310" \
-                    "~*" \
-                    "~nouvelles du Chili" \
-                    "~" \
-                    "~0203" \
-                    "~1" \
-                    "~" \
-                    "~" \
-                    "~" \
-                    "~18,99" \
-                    "~LES EDITIONS DE L'INSTANT MEME" \
-                    "~EPAGINE" \
-                    "~11/05/2011" \
-                    "~BL" \
-                    "~2" \
-                    "~0" \
-                    "~0,0" \
-                    "~0,0" \
-                    "~0,0" \
-                    "~0" \
-                    "~0" \
-                    "~0" \
-                    "~0" \
-                    "~Collectif" \
-                    "~15/01/2013" \
-                    "~02/03/2018" \
-                    "~5,50" \
-                    "~Littérature Hispano-Portugaise" \
-                    "~" \
-                    "~" \
-                    "~" \
-                    "~" \
-                    "~" \
-                    "~1" \
-                    "~3012420280013" \
-                    "~" \
-                    "~" \
-                    "~" \
-                    "~" \
-                    "~" \
-                    "~0" \
-                    "~" \
-                    "~369" \
-                    "~860" \
-                    "~3694440" \
-                    "~"
-        get_lines_from_thing_file.return_value = iter([data_line])
-
-        activate_provider('TiteLiveThings')
-        titelive_things = TiteLiveThings()
-
-        # When
-        titelive_things.updateObjects()
-
-        # Then
-        product = Product.query.one()
-        assert product.extraData['isbn'] == '9782895026310'
-
-    @clean_database
-    @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
-    @patch('local_providers.titelive_things.get_lines_from_thing_file')
     def test_should_not_create_product_when_product_is_paper_press(self,
                                                                    get_lines_from_thing_file,
                                                                    get_files_to_process_from_titelive_ftp,
@@ -852,15 +782,14 @@ class TiteliveThingsTest:
 
         # Then
         assert len(products) == 1
-        assert product.extraData['isbn'] == '2895026319'
-
+        assert product.extraData['isbn'] == '9782895026310'
 
     @clean_database
     @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
     @patch('local_providers.titelive_things.get_lines_from_thing_file')
     def test_should_delete_product_when_it_changes_to_paper_press_product(self, get_lines_from_thing_file,
-                                                                  get_files_to_process_from_titelive_ftp,
-                                                                  app):
+                                                                          get_files_to_process_from_titelive_ftp,
+                                                                          app):
         # Given
         files_list = list()
         files_list.append('Quotidien30.tit')
@@ -935,9 +864,10 @@ class TiteliveThingsTest:
     @clean_database
     @patch('local_providers.titelive_things.get_files_to_process_from_titelive_ftp')
     @patch('local_providers.titelive_things.get_lines_from_thing_file')
-    def test_should_not_delete_product_and_deactivate_associated_offer_when_it_changes_to_paper_press_product(self, get_lines_from_thing_file,
-                                                                                                                get_files_to_process_from_titelive_ftp,
-                                                                                                                app):
+    def test_should_not_delete_product_and_deactivate_associated_offer_when_it_changes_to_paper_press_product(self,
+                                                                                                              get_lines_from_thing_file,
+                                                                                                              get_files_to_process_from_titelive_ftp,
+                                                                                                              app):
         # Given
         files_list = list()
         files_list.append('Quotidien30.tit')

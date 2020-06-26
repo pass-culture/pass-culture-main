@@ -239,8 +239,7 @@ def get_infos_from_data_line(elts: []) -> Dict:
 def get_extra_data_from_infos(infos: Dict) -> Dict:
     extra_data = dict()
     extra_data['author'] = infos['auteurs']
-    extra_data['isbn'] = infos['isbn'] if len(infos['isbn']) in (OLD_ISBN_FORMAT_LENGTH,
-                                                                 NEW_ISBN_FORMAT_LENGTH) else infos['ean13']
+    extra_data['isbn'] = infos['ean13']
     if infos['indice_dewey'] != '':
         extra_data['dewey'] = infos['indice_dewey']
     extra_data['titelive_regroup'] = infos['code_regroupement']
