@@ -396,11 +396,10 @@ class ProcessBeneficiaryApplicationTest:
         }
         existing_user = create_user(date_of_birth=datetime(2000, 5, 1), first_name='Jane', last_name='Doe')
         repository.save(existing_user)
-        mock = Mock(return_value=[existing_user])
 
         # when
         remote_import.process_beneficiary_application(information, error_messages=[], new_beneficiaries=[],
-                                                      retry_ids=[], procedure_id=123456, find_duplicate_users=mock)
+                                                      retry_ids=[], procedure_id=123456)
 
         # then
         send_activation_email.assert_not_called()
@@ -426,21 +425,20 @@ class ProcessBeneficiaryApplicationTest:
         }
         existing_user = create_user(date_of_birth=datetime(2000, 5, 1), first_name='Jane', last_name='Doe')
         repository.save(existing_user)
-        mock = Mock(return_value=[existing_user])
         retry_ids = [123]
 
         # when
         remote_import.process_beneficiary_application(information, error_messages=[], new_beneficiaries=[],
-                                                      retry_ids=retry_ids, procedure_id=123456,
-                                                      find_duplicate_users=mock)
+                                                      retry_ids=retry_ids, procedure_id=123456)
 
         # then
         send_activation_email.assert_called()
         beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
 
+    @patch('scripts.beneficiary.remote_import.get_beneficiary_dupplicates')
     @clean_database
-    def test_an_import_status_is_saved_if_beneficiary_is_a_duplicate(self, app):
+    def test_an_import_status_is_saved_if_beneficiary_is_a_duplicate(self, mock_get_beneficiary_dupplicates, app):
         # given
         information = {
             'department': '93',
@@ -454,12 +452,11 @@ class ProcessBeneficiaryApplicationTest:
             'civility': 'Mme',
             'activity': 'Étudiant'
         }
-        mocked_query = Mock(return_value=[create_user(idx=11), create_user(idx=22)])
+        mock_get_beneficiary_dupplicates.return_value = [create_user(idx=11), create_user(idx=22)]
 
         # when
         remote_import.process_beneficiary_application(information, error_messages=[], new_beneficiaries=[],
-                                                      retry_ids=[], procedure_id=123456,
-                                                      find_duplicate_users=mocked_query)
+                                                      retry_ids=[], procedure_id=123456)
 
         # then
         beneficiary_import = BeneficiaryImport.query.first()

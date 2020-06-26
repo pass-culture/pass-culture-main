@@ -10,11 +10,15 @@ def check_email_is_not_taken(beneficiary_pre_subscription: BeneficiaryPreSubscri
     if find_user_by_email(email):
         raise CantRegisterBeneficiary(f"Email {email} is already taken")
 
+def get_beneficiary_dupplicates(first_name, last_name, date_of_birth) -> None:
+    return find_by_civility(first_name=first_name,
+                            last_name=last_name,
+                            date_of_birth=date_of_birth)
 
 def check_not_a_dupplicate(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
-    dupplicates = find_by_civility(first_name=beneficiary_pre_subscription.first_name,
-                                   last_name=beneficiary_pre_subscription.last_name,
-                                   birth_date=beneficiary_pre_subscription.date_of_birth)
+    dupplicates = get_beneficiary_dupplicates(first_name=beneficiary_pre_subscription.first_name,
+                                              last_name=beneficiary_pre_subscription.last_name,
+                                              date_of_birth=beneficiary_pre_subscription.date_of_birth)
 
     if dupplicates:
         raise CantRegisterBeneficiary(f"User with id {dupplicates[0].id} is a dupplicate")

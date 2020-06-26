@@ -6,6 +6,7 @@ from typing import Callable, Dict, List, Set
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.demarches_simplifiees import \
     get_closed_application_ids_for_demarche_simplifiee
+from domain.beneficiary.beneficiary_pre_subscription_validator import get_beneficiary_dupplicates
 from domain.user_activation import create_beneficiary_from_application
 from domain.user_emails import send_activation_email
 from models import ApiErrors, ImportStatus, UserSQLEntity
@@ -77,12 +78,11 @@ def process_beneficiary_application(
         new_beneficiaries: List[UserSQLEntity],
         retry_ids: List[int],
         procedure_id: int,
-        find_duplicate_users: Callable[..., List[UserSQLEntity]] = find_by_civility
 ) -> None:
-    duplicate_users = find_duplicate_users(
-        information['first_name'],
-        information['last_name'],
-        information['birth_date']
+    duplicate_users = get_beneficiary_dupplicates(
+        first_name=information['first_name'],
+        last_name=information['last_name'],
+        date_of_birth=information['birth_date']
     )
 
     if not duplicate_users or information['application_id'] in retry_ids:

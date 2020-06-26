@@ -57,9 +57,9 @@ def find_user_by_email(email: str) -> UserSQLEntity:
         .first()
 
 
-def find_by_civility(first_name: str, last_name: str, birth_date: datetime) -> List[UserSQLEntity]:
+def find_by_civility(first_name: str, last_name: str, date_of_birth: datetime) -> List[UserSQLEntity]:
     civility_predicate = (_matching(UserSQLEntity.firstName, first_name)) & (_matching(UserSQLEntity.lastName, last_name)) & (
-        UserSQLEntity.dateOfBirth == birth_date)
+        UserSQLEntity.dateOfBirth == date_of_birth)
 
     return UserSQLEntity.query \
         .filter(civility_predicate) \
