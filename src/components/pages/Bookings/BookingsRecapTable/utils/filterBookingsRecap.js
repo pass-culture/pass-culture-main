@@ -10,16 +10,27 @@ const doesOfferNameMatchFilter = (offerName, booking) => {
 
 const doesBookingBeneficiaryMatchFilter = (bookingBeneficiary, booking) => {
   if (bookingBeneficiary !== EMPTY_FILTER_VALUE) {
-    const beneficiaryLowercase = bookingBeneficiary.toLowerCase()
+    const beneficiarySanitarized = bookingBeneficiary.toLowerCase().trim()
     const beneficiaryLastNameFromBooking = booking.beneficiary.lastname.toLowerCase()
     const beneficiaryFirstNameFromBooking = booking.beneficiary.firstname.toLowerCase()
     const beneficiaryEmailFromBooking = booking.beneficiary.email.toLowerCase()
-
-    return (
-      beneficiaryLastNameFromBooking.includes(beneficiaryLowercase) ||
-      beneficiaryFirstNameFromBooking.includes(beneficiaryLowercase) ||
-      beneficiaryEmailFromBooking.includes(beneficiaryLowercase)
+    const FirstNameLastName = beneficiaryFirstNameFromBooking.concat(
+      ' ',
+      beneficiaryLastNameFromBooking
     )
+    const LastNameFirstName = beneficiaryLastNameFromBooking.concat(
+      ' ',
+      beneficiaryFirstNameFromBooking
+    )
+
+    const isAPartOfName =
+      beneficiaryLastNameFromBooking.includes(beneficiarySanitarized) ||
+      beneficiaryFirstNameFromBooking.includes(beneficiarySanitarized) ||
+      beneficiaryEmailFromBooking.includes(beneficiarySanitarized)
+    const isFirstNameLastName = FirstNameLastName.includes(beneficiarySanitarized)
+    const isLastNameFirstName = LastNameFirstName.includes(beneficiarySanitarized)
+
+    return isAPartOfName || isFirstNameLastName || isLastNameFirstName
   }
   return true
 }
