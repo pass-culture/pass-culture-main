@@ -25,6 +25,7 @@ const Header = ({ bookingsRecapFiltered, isLoading }) => {
           <CSVLink
             data={generateBookingsCsvFile(bookingsRecapFiltered)}
             filename="Réservations Pass Culture.csv"
+            separator=";"
           >
             <Icon
               alt="Télécharger le CSV"
