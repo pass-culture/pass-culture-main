@@ -23,9 +23,9 @@ class SaveOffererBankInformations:
         try:
             offerer = self.offerer_repository.find_by_siren(application_details.siren)
             check_offerer_presence(offerer)
-        except CannotRegisterBankInformation:
+        except CannotRegisterBankInformation as error:
             if application_details.status == BankInformationStatus.ACCEPTED:
-                raise CannotRegisterBankInformation("Offerer not found")
+                raise error
             return
 
         bank_information_by_application_id = self.bank_informations_repository.get_by_application(

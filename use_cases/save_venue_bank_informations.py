@@ -32,14 +32,7 @@ class SaveVenueBankInformations:
             venue = self.get_referent_venue(application_details, offerer)
         except CannotRegisterBankInformation as error:
             if application_details.status == BankInformationStatus.ACCEPTED:
-                if error.args == (f'Venue not found',):
-                    raise CannotRegisterBankInformation("Venue not found")
-                elif error.args == (f'Venue name not found',):
-                    raise CannotRegisterBankInformation("Venue name not found")
-                elif error.args == (f'Multiple venues found',):
-                    raise CannotRegisterBankInformation("Multiple venues found")
-                elif error.args == (f'Offerer not found',):
-                    raise CannotRegisterBankInformation("Offerer not found")
+                raise error
             return
 
         bank_information_by_application_id = self.bank_informations_repository.get_by_application(
