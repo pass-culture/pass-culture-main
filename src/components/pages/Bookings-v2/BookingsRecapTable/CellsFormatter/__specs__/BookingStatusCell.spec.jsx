@@ -48,7 +48,6 @@ describe('components | pages | bookings-v2 | CellsFormatter | BookingsStatusCell
     const icon = wrapper.find(Icon)
     expect(icon).toHaveLength(1)
     expect(icon.props()).toStrictEqual({
-      alt: 'icone de statut',
       png: null,
       svg: 'ico-status-validated',
     })

@@ -1,4 +1,4 @@
-import { shallow } from 'enzyme/build'
+import { mount } from 'enzyme/build'
 import React from 'react'
 import BookingStatusCellHistory from '../BookingStatusCellHistory'
 
@@ -15,7 +15,7 @@ describe('cellsFormatter | BookingsStatusCellHistory', () => {
     }
 
     // When
-    const wrapper = shallow(<BookingStatusCellHistory {...props} />)
+    const wrapper = mount(<BookingStatusCellHistory {...props} />)
 
     // Then
     const status = wrapper.find('li')
@@ -44,7 +44,7 @@ describe('cellsFormatter | BookingsStatusCellHistory', () => {
     }
 
     // When
-    const wrapper = shallow(<BookingStatusCellHistory {...props} />)
+    const wrapper = mount(<BookingStatusCellHistory {...props} />)
 
     // Then
     const bookingStatusesElements = wrapper.find('li')
@@ -63,12 +63,12 @@ describe('cellsFormatter | BookingsStatusCellHistory', () => {
     }
 
     // When
-    const wrapper = shallow(<BookingStatusCellHistory {...props} />)
+    const wrapper = mount(<BookingStatusCellHistory {...props} />)
 
     // Then
     const status = wrapper.find('li')
     const disc = status.find('span')
-    expect(disc.hasClass('bs-history-reimbursed')).toBe(true)
+    expect(disc.hasClass('bs-history-reimbursed')).toStrictEqual(true)
     expect(status.text()).toBe('remboursé : 06/01/2020')
   })
 })

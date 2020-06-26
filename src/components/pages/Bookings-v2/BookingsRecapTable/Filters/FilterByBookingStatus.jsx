@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import PropTypes from 'prop-types'
 import Icon from '../../../../layout/Icon'
-import { getStatusName } from '../CellsFormatter/utils/bookingStatusConverter'
+import { getBookingStatusDisplayInformations } from '../CellsFormatter/utils/bookingStatusConverter'
 
 class FilterByBookingStatus extends Component {
   constructor(props) {
@@ -77,7 +77,7 @@ class FilterByBookingStatus extends Component {
       bookingsRecap.map(bookingRecap => bookingRecap.booking_status)
     )
     return Array.from(presentBookingStatues).map(bookingStatus => ({
-      title: getStatusName(bookingStatus),
+      title: getBookingStatusDisplayInformations(bookingStatus).status,
       value: bookingStatus,
     }))
   }

@@ -1,6 +1,6 @@
 import moment from 'moment'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '../../../../../utils/date'
-import { getStatusName } from '../CellsFormatter/utils/bookingStatusConverter'
+import { getBookingStatusDisplayInformations } from '../CellsFormatter/utils/bookingStatusConverter'
 
 export const CSV_HEADERS = [
   'Lieu',
@@ -41,7 +41,7 @@ const generateBookingsCsvFile = bookings => {
     bookingArray.push(bookingDatetimeFormatted)
     bookingArray.push(booking.booking_token)
     bookingArray.push(booking.booking_amount)
-    bookingArray.push(getStatusName(booking.booking_status))
+    bookingArray.push(getBookingStatusDisplayInformations(booking.booking_status).status)
     csv_data.push(bookingArray)
   })
   return csv_data
