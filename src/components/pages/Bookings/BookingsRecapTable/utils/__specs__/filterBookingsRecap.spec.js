@@ -94,6 +94,168 @@ describe('filterBookingsRecap', () => {
       // then
       expect(filteredBookingsRecap).toStrictEqual([bookingRecap1])
     })
+
+    it('should return list containing only BookingRecap matching keywords with different accents', () => {
+      // given
+      const bookingRecap1 = {
+        stock: {
+          offer_name: 'Merlin enchanteur',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Sonia',
+          email: 'sonia.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: 'ZEHBGD',
+        booking_status: 'Validé',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber',
+        },
+      }
+      const bookingRecap2 = {
+        stock: {
+          offer_name: 'Jurrasic Perk',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Sonia',
+          email: 'sonia.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: 'ZACBGD',
+        booking_status: 'Validé',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber',
+        },
+      }
+      const bookingsRecap = [bookingRecap1, bookingRecap2]
+      const filters = {
+        bookingBeneficiary: EMPTY_FILTER_VALUE,
+        bookingToken: EMPTY_FILTER_VALUE,
+        bookingBeginningDate: EMPTY_FILTER_VALUE,
+        bookingEndingDate: EMPTY_FILTER_VALUE,
+        offerDate: EMPTY_FILTER_VALUE,
+        offerISBN: EMPTY_FILTER_VALUE,
+        offerName: 'Mérlin',
+      }
+
+      // when
+      const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+
+      // then
+      expect(filteredBookingsRecap).toStrictEqual([bookingRecap1])
+    })
+
+    it('should return list containing only BookingRecap matching keywords with different case', () => {
+      // given
+      const bookingRecap1 = {
+        stock: {
+          offer_name: 'Merlin enchanteur',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Sonia',
+          email: 'sonia.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: 'ZEHBGD',
+        booking_status: 'Validé',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber',
+        },
+      }
+      const bookingRecap2 = {
+        stock: {
+          offer_name: 'Jurrasic Perk',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Sonia',
+          email: 'sonia.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: 'ZACBGD',
+        booking_status: 'Validé',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber',
+        },
+      }
+      const bookingsRecap = [bookingRecap1, bookingRecap2]
+      const filters = {
+        bookingBeneficiary: EMPTY_FILTER_VALUE,
+        bookingToken: EMPTY_FILTER_VALUE,
+        bookingBeginningDate: EMPTY_FILTER_VALUE,
+        bookingEndingDate: EMPTY_FILTER_VALUE,
+        offerDate: EMPTY_FILTER_VALUE,
+        offerISBN: EMPTY_FILTER_VALUE,
+        offerName: 'MerlIN',
+      }
+
+      // when
+      const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+
+      // then
+      expect(filteredBookingsRecap).toStrictEqual([bookingRecap1])
+    })
+
+    it('should return list containing only BookingRecap matching keywords with surrounding space', () => {
+      // given
+      const bookingRecap1 = {
+        stock: {
+          offer_name: 'Merlin enchanteur',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Sonia',
+          email: 'sonia.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: 'ZEHBGD',
+        booking_status: 'Validé',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber',
+        },
+      }
+      const bookingRecap2 = {
+        stock: {
+          offer_name: 'Jurrasic Perk',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Sonia',
+          email: 'sonia.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: 'ZACBGD',
+        booking_status: 'Validé',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber',
+        },
+      }
+      const bookingsRecap = [bookingRecap1, bookingRecap2]
+      const filters = {
+        bookingBeneficiary: EMPTY_FILTER_VALUE,
+        bookingToken: EMPTY_FILTER_VALUE,
+        bookingBeginningDate: EMPTY_FILTER_VALUE,
+        bookingEndingDate: EMPTY_FILTER_VALUE,
+        offerDate: EMPTY_FILTER_VALUE,
+        offerISBN: EMPTY_FILTER_VALUE,
+        offerName: 'MerlIN',
+      }
+
+      // when
+      const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+
+      // then
+      expect(filteredBookingsRecap).toStrictEqual([bookingRecap1])
+    })
   })
 
   describe('by offer date', () => {
@@ -542,6 +704,156 @@ describe('filterBookingsRecap', () => {
       // then
       expect(filteredBookingsRecap).toStrictEqual([bookingRecap1])
     })
+
+    it('should return list containing only BookingRecap matching token keywords with surrounding space', () => {
+      // given
+      const bookingRecap1 = {
+        stock: {
+          offer_name: 'Merlin enchanteur',
+          offer_isbn: '9787605639121',
+          type: 'book',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Sonia',
+          email: 'sonia.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: 'ABCDEF',
+        booking_status: 'Validé',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber',
+        },
+      }
+      const bookingRecap2 = {
+        stock: {
+          offer_name: 'Jurrasic Perk',
+          type: 'thing',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Ludovic',
+          email: 'ludovic.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: 'ZACBGD',
+        booking_status: 'Remboursé',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber',
+        },
+      }
+      const bookingRecapWithNoToken = {
+        stock: {
+          offer_name: 'Jurrasic Perk',
+          type: 'thing',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Ludovic',
+          email: 'ludovic.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: null,
+        booking_status: 'Validé',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber',
+        },
+      }
+      const bookingsRecap = [bookingRecap1, bookingRecap2, bookingRecapWithNoToken]
+      const filters = {
+        bookingBeneficiary: EMPTY_FILTER_VALUE,
+        bookingToken: 'abc ',
+        bookingBeginningDate: EMPTY_FILTER_VALUE,
+        bookingEndingDate: EMPTY_FILTER_VALUE,
+        offerISBN: EMPTY_FILTER_VALUE,
+        offerName: EMPTY_FILTER_VALUE,
+        offerDate: EMPTY_FILTER_VALUE,
+      }
+
+      // when
+      const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+
+      // then
+      expect(filteredBookingsRecap).toStrictEqual([bookingRecap1])
+    })
+
+    it('should return list containing only BookingRecap matching token keywords with different case', () => {
+      // given
+      const bookingRecap1 = {
+        stock: {
+          offer_name: 'Merlin enchanteur',
+          offer_isbn: '9787605639121',
+          type: 'book',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Sonia',
+          email: 'sonia.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: 'ABCDEF',
+        booking_status: 'Validé',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber',
+        },
+      }
+      const bookingRecap2 = {
+        stock: {
+          offer_name: 'Jurrasic Perk',
+          type: 'thing',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Ludovic',
+          email: 'ludovic.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: 'ZACBGD',
+        booking_status: 'Remboursé',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber',
+        },
+      }
+      const bookingRecapWithNoToken = {
+        stock: {
+          offer_name: 'Jurrasic Perk',
+          type: 'thing',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Ludovic',
+          email: 'ludovic.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: null,
+        booking_status: 'Validé',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber',
+        },
+      }
+      const bookingsRecap = [bookingRecap1, bookingRecap2, bookingRecapWithNoToken]
+      const filters = {
+        bookingBeneficiary: EMPTY_FILTER_VALUE,
+        bookingToken: 'aBc',
+        bookingBeginningDate: EMPTY_FILTER_VALUE,
+        bookingEndingDate: EMPTY_FILTER_VALUE,
+        offerISBN: EMPTY_FILTER_VALUE,
+        offerName: EMPTY_FILTER_VALUE,
+        offerDate: EMPTY_FILTER_VALUE,
+      }
+
+      // when
+      const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+
+      // then
+      expect(filteredBookingsRecap).toStrictEqual([bookingRecap1])
+    })
   })
 
   describe('by ISBN', () => {
@@ -592,6 +904,64 @@ describe('filterBookingsRecap', () => {
         bookingBeginningDate: EMPTY_FILTER_VALUE,
         bookingEndingDate: EMPTY_FILTER_VALUE,
         offerISBN: '9787605',
+        offerName: EMPTY_FILTER_VALUE,
+        offerDate: EMPTY_FILTER_VALUE,
+      }
+
+      // when
+      const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+
+      // then
+      expect(filteredBookingsRecap).toStrictEqual([bookingRecap1])
+    })
+
+    it('should return list containing only BookingRecap matching ISBN keywords with surrounding space', () => {
+      // given
+      const bookingRecap1 = {
+        stock: {
+          offer_name: 'Merlin enchanteur',
+          offer_isbn: '9787605639121',
+          type: 'book',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Sonia',
+          email: 'sonia.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: '98454627263',
+        booking_status: 'Validé',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber',
+        },
+      }
+      const bookingRecap2 = {
+        stock: {
+          offer_name: 'Jurrasic Perk',
+          offer_isbn: '1234567890',
+          type: 'book',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Ludovic',
+          email: 'ludovic.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: 'ZACBGD',
+        booking_status: 'Validé',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber',
+        },
+      }
+      const bookingsRecap = [bookingRecap1, bookingRecap2]
+      const filters = {
+        bookingBeneficiary: EMPTY_FILTER_VALUE,
+        bookingToken: EMPTY_FILTER_VALUE,
+        bookingBeginningDate: EMPTY_FILTER_VALUE,
+        bookingEndingDate: EMPTY_FILTER_VALUE,
+        offerISBN: '9787605 ',
         offerName: EMPTY_FILTER_VALUE,
         offerDate: EMPTY_FILTER_VALUE,
       }
@@ -718,6 +1088,80 @@ describe('filterBookingsRecap', () => {
       const bookingsRecap = [bookingRecap]
       const filters = {
         bookingBeneficiary: 'Klepi Sonia',
+        bookingToken: EMPTY_FILTER_VALUE,
+        bookingBeginningDate: EMPTY_FILTER_VALUE,
+        bookingEndingDate: EMPTY_FILTER_VALUE,
+        offerDate: EMPTY_FILTER_VALUE,
+        offerISBN: EMPTY_FILTER_VALUE,
+        offerName: EMPTY_FILTER_VALUE,
+      }
+
+      // when
+      const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+
+      // then
+      expect(filteredBookingsRecap).toStrictEqual([bookingRecap])
+    })
+
+    it('should espace accents', () => {
+      // given
+      const bookingRecap = {
+        stock: {
+          offer_name: 'Merlin enchanteur',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Sonia',
+          email: 'sonia.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: 'ZEHBGD',
+        booking_status: 'Validé',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber',
+        },
+      }
+      const bookingsRecap = [bookingRecap]
+      const filters = {
+        bookingBeneficiary: 'Klépi Sonia',
+        bookingToken: EMPTY_FILTER_VALUE,
+        bookingBeginningDate: EMPTY_FILTER_VALUE,
+        bookingEndingDate: EMPTY_FILTER_VALUE,
+        offerDate: EMPTY_FILTER_VALUE,
+        offerISBN: EMPTY_FILTER_VALUE,
+        offerName: EMPTY_FILTER_VALUE,
+      }
+
+      // when
+      const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+
+      // then
+      expect(filteredBookingsRecap).toStrictEqual([bookingRecap])
+    })
+
+    it('should trim input', () => {
+      // given
+      const bookingRecap = {
+        stock: {
+          offer_name: 'Merlin enchanteur',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Sonia',
+          email: 'sonia.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00Z',
+        booking_token: 'ZEHBGD',
+        booking_status: 'Validé',
+        venue: {
+          identifier: 'AE',
+          name: 'Librairie Kléber',
+        },
+      }
+      const bookingsRecap = [bookingRecap]
+      const filters = {
+        bookingBeneficiary: 'Klepi Sonia ',
         bookingToken: EMPTY_FILTER_VALUE,
         bookingBeginningDate: EMPTY_FILTER_VALUE,
         bookingEndingDate: EMPTY_FILTER_VALUE,

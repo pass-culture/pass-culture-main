@@ -2,18 +2,19 @@ import { ALL_VENUES, EMPTY_FILTER_VALUE } from '../Filters/_constants'
 
 const doesOfferNameMatchFilter = (offerName, booking) => {
   if (offerName !== EMPTY_FILTER_VALUE) {
-    const offerNameFromBooking = booking.stock.offer_name.toLowerCase()
-    return offerNameFromBooking.includes(offerName.toLowerCase())
+    const offerNameFromBooking = _sanitize(booking.stock.offer_name)
+    return offerNameFromBooking.includes(_sanitize(offerName))
   }
   return true
 }
 
 const doesBookingBeneficiaryMatchFilter = (bookingBeneficiary, booking) => {
   if (bookingBeneficiary !== EMPTY_FILTER_VALUE) {
-    const beneficiarySanitarized = bookingBeneficiary.toLowerCase().trim()
-    const beneficiaryLastNameFromBooking = booking.beneficiary.lastname.toLowerCase()
-    const beneficiaryFirstNameFromBooking = booking.beneficiary.firstname.toLowerCase()
-    const beneficiaryEmailFromBooking = booking.beneficiary.email.toLowerCase()
+    const beneficiarySanitarized = _sanitize(bookingBeneficiary)
+    const beneficiaryLastNameFromBooking = _sanitize(booking.beneficiary.lastname)
+    const beneficiaryFirstNameFromBooking = _sanitize(booking.beneficiary.firstname)
+    const beneficiaryEmailFromBooking = _sanitize(booking.beneficiary.email)
+
     const FirstNameLastName = beneficiaryFirstNameFromBooking.concat(
       ' ',
       beneficiaryLastNameFromBooking
@@ -23,14 +24,14 @@ const doesBookingBeneficiaryMatchFilter = (bookingBeneficiary, booking) => {
       beneficiaryFirstNameFromBooking
     )
 
-    const isAPartOfName =
+    const isAPartOfNameOrEmailAddress =
       beneficiaryLastNameFromBooking.includes(beneficiarySanitarized) ||
       beneficiaryFirstNameFromBooking.includes(beneficiarySanitarized) ||
       beneficiaryEmailFromBooking.includes(beneficiarySanitarized)
     const isFirstNameLastName = FirstNameLastName.includes(beneficiarySanitarized)
     const isLastNameFirstName = LastNameFirstName.includes(beneficiarySanitarized)
 
-    return isAPartOfName || isFirstNameLastName || isLastNameFirstName
+    return isAPartOfNameOrEmailAddress || isFirstNameLastName || isLastNameFirstName
   }
   return true
 }
@@ -42,7 +43,7 @@ const doesBookingTokenMatchFilter = (bookingToken, booking) => {
     return false
   } else {
     const bookingTokenFromBooking = booking.booking_token.toLowerCase()
-    return bookingTokenFromBooking.includes(bookingToken.toLowerCase())
+    return bookingTokenFromBooking.includes(bookingToken.toLowerCase().trim())
   }
 }
 
@@ -87,7 +88,7 @@ const doesOfferVenueMatchFilter = (offerVenue, booking) => {
 
 const doesISBNMatchFilter = (isbn, booking) => {
   if (isbn !== EMPTY_FILTER_VALUE) {
-    return booking.stock.type === 'book' && booking.stock.offer_isbn.includes(isbn)
+    return booking.stock.type === 'book' && booking.stock.offer_isbn.includes(isbn.trim())
   }
   return true
 }
@@ -124,6 +125,14 @@ const filterBookingsRecap = (bookingsRecap, filters) => {
       doesISBNMatchFilter(offerISBN, booking)
     )
   })
+}
+
+function _sanitize(input) {
+  return input
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase()
 }
 
 export default filterBookingsRecap
