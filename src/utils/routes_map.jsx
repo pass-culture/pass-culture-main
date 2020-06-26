@@ -1,5 +1,6 @@
 import React from 'react'
 import { Redirect } from 'react-router'
+import BookingsRecapContainer from '../components/pages/Bookings/BookingsRecapContainer'
 import CsvDetailViewContainer from '../components/layout/CsvTable/CsvTableContainer'
 import DeskContainer from '../components/pages/Desk/DeskContainer'
 import HomeContainer from '../components/pages/Home/HomeContainer'
@@ -9,6 +10,8 @@ import Offers from '../components/pages/Offers/OffersContainer'
 import OfferCreation from '../components/pages/Offer/OfferCreation/OfferCreationContainer'
 import OfferEdition from '../components/pages/Offer/OfferEdition/OfferEditionContainer'
 import Offerers from '../components/pages/Offerers/OfferersContainer'
+import OffererCreationContainer from '../components/pages/Offerer/OffererCreation/OffererCreationContainer'
+import OffererDetailsContainer from '../components/pages/Offerer/OffererDetails/OffererDetailsContainer'
 import ProfilContainer from '../components/pages/Profil/ProfilContainer'
 import ReimbursementsContainer from '../components/pages/Reimbursements/ReimbursementsContainer'
 import SigninContainer from '../components/pages/Signin/SigninContainer'
@@ -17,9 +20,6 @@ import SignupValidationContainer from '../components/pages/Signup/SignupValidati
 import Terms from '../components/pages/Terms/Terms'
 import VenueCreationContainer from '../components/pages/Venue/VenueCreation/VenueCreationContainer'
 import VenueEditionContainer from '../components/pages/Venue/VenueEdition/VenueEditionContainer'
-import OffererCreationContainer from '../components/pages/Offerer/OffererCreation/OffererCreationContainer'
-import OffererDetailsContainer from '../components/pages/Offerer/OffererDetails/OffererDetailsContainer'
-import BookingsRouterContainer from '../components/hocs/bookings-router/BookingsRouterContainer'
 import Unavailable from '../components/pages/Errors/Unavailable/Unavailable'
 import { UNAVAILABLE_ERROR_PAGE } from './routes'
 
@@ -107,7 +107,7 @@ const routes = [
     title: 'Remboursements',
   },
   {
-    component: BookingsRouterContainer,
+    component: BookingsRecapContainer,
     path: '/reservations',
     title: 'Réservations',
   },
