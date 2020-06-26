@@ -11,17 +11,6 @@ from domain.beneficiary.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
 
 
-def create_rejected_beneficiary_import(beneficiary_pre_subscription: BeneficiaryPreSubscription, detail: str) -> BeneficiaryImport:
-    beneficiary_import = BeneficiaryImport()
-
-    beneficiary_import.applicationId = beneficiary_pre_subscription.application_id
-    beneficiary_import.sourceId = None
-    beneficiary_import.source = beneficiary_pre_subscription.source
-    beneficiary_import.setStatus(status=ImportStatus.REJECTED, detail=detail)
-
-    repository.save(beneficiary_import)
-
-
 class CreateBeneficiaryFromApplication:
     def __init__(self,
                  beneficiary_jouve_repository: BeneficiaryPreSubscriptionRepository,
@@ -39,7 +28,7 @@ class CreateBeneficiaryFromApplication:
             beneficiary = self.beneficiary_sql_repository.save(beneficiary_pre_subscription)
 
         except CantRegisterBeneficiary as error:
-            create_rejected_beneficiary_import(beneficiary_pre_subscription, detail=str(error))
+            self.beneficiary_sql_repository.save_rejected(beneficiary_pre_subscription, detail=str(error))
 
         else:
             send_activation_email(user=beneficiary, send_email=send_raw_email)

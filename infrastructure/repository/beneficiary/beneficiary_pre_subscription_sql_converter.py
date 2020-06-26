@@ -52,3 +52,14 @@ def _attach_beneficiary_import(beneficiary: UserSQLEntity, beneficiary_pre_subsc
     beneficiary_import.setStatus(status=ImportStatus.CREATED)
 
     beneficiary.beneficiaryImports = [beneficiary_import]
+
+
+def create_rejected_beneficiary_import(beneficiary_pre_subscription: BeneficiaryPreSubscription, detail: str) -> BeneficiaryImport:
+    beneficiary_import = BeneficiaryImport()
+
+    beneficiary_import.applicationId = beneficiary_pre_subscription.application_id
+    beneficiary_import.sourceId = beneficiary_pre_subscription.source_id
+    beneficiary_import.source = beneficiary_pre_subscription.source
+    beneficiary_import.setStatus(status=ImportStatus.REJECTED, detail=detail)
+
+    return beneficiary_import
