@@ -21,12 +21,10 @@ const EligibilityCheck = () => {
 
   return (
     <main className="eligibility-check-page">
-      <div className="elgbt-header">
-        <BackLink backTo="/beta" />
-        <span>
-          {'Créer un compte'}
-        </span>
-      </div>
+      <BackLink backTo="/beta" />
+      <span className="elgbt-title">
+        {'Créer un compte'}
+      </span>
       <form className="elgbt-form">
         <label>
           {'Quel est ton code postal de résidence ?'}
