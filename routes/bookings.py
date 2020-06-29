@@ -126,8 +126,8 @@ def cancel_booking(booking_id: int):
     try:
         send_booking_cancellation_emails_to_user_and_offerer(booking, is_offerer_cancellation, is_user_cancellation,
                                                              send_raw_email)
-    except MailServiceException as error:
-        app.logger.error('Mail service failure', error)
+    except MailServiceException:
+        app.logger.error('Mail service failure')
 
     return jsonify(as_dict(booking, includes=WEBAPP_PATCH_POST_BOOKING_INCLUDES)), 200
 

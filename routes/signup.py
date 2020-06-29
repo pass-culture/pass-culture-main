@@ -87,8 +87,8 @@ def signup_pro():
     try:
         send_user_validation_email(new_user, send_raw_email, app_origin_url, is_webapp=False)
         subscribe_newsletter(new_user)
-    except MailServiceException as e:
-        app.logger.error('Mail service failure', e)
+    except MailServiceException:
+        logger.error('Mail service failure')
 
     return jsonify(as_dict(new_user, includes=USER_INCLUDES)), 201
 
