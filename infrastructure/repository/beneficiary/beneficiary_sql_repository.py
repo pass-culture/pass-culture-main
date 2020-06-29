@@ -22,7 +22,7 @@ class BeneficiarySQLRepository(BeneficiaryRepository):
         return beneficiary_sql_converter.to_domain(user_sql_entity)
 
     @classmethod
-    def save(cls, beneficiary_pre_subscription: BeneficiaryPreSubscription):
+    def save(cls, beneficiary_pre_subscription: BeneficiaryPreSubscription) -> UserSQLEntity:
         beneficiary = beneficiary_pre_subscription_sql_converter.to_model(beneficiary_pre_subscription)
 
         repository.save(beneficiary)
@@ -31,8 +31,8 @@ class BeneficiarySQLRepository(BeneficiaryRepository):
 
 
     @classmethod
-    def save_rejected(cls, beneficiary_pre_subscription: BeneficiaryPreSubscription, detail: str):
-        beneficiary_import = beneficiary_pre_subscription_sql_converter.create_rejected_beneficiary_import(beneficiary_pre_subscription,
-                                                                                                           detail=detail)
+    def reject(cls, beneficiary_pre_subscription: BeneficiaryPreSubscription, detail: str) -> None:
+        beneficiary_import = beneficiary_pre_subscription_sql_converter \
+            .to_rejected_model(beneficiary_pre_subscription, detail=detail)
 
         repository.save(beneficiary_import)

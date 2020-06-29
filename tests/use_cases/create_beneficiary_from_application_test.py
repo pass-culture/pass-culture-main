@@ -124,11 +124,11 @@ def test_cannot_save_beneficiary_if_email_is_already_taken(app):
     assert beneficiary_import.currentStatus == ImportStatus.REJECTED
     assert beneficiary_import.applicationId == application_id
     assert beneficiary_import.beneficiary == None
-    assert beneficiary_import.detail == f"Email {email} is already taken"
+    assert beneficiary_import.detail == f"Email {email} is already taken."
 
 
 @clean_database
-def test_cannot_save_beneficiary_if_dupplicate(app):
+def test_cannot_save_beneficiary_if_duplicate(app):
     # Given
     first_name = 'Thomas'
     last_name = 'DURAND'
@@ -163,4 +163,4 @@ def test_cannot_save_beneficiary_if_dupplicate(app):
     assert beneficiary_import.currentStatus == ImportStatus.REJECTED
     assert beneficiary_import.applicationId == application_id
     assert beneficiary_import.beneficiary == None
-    assert beneficiary_import.detail == f"User with id {existing_user_id} is a dupplicate"
+    assert beneficiary_import.detail == f"User with id {existing_user_id} is a duplicate."

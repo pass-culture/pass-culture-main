@@ -436,9 +436,9 @@ class ProcessBeneficiaryApplicationTest:
         beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
 
-    @patch('scripts.beneficiary.remote_import.get_beneficiary_dupplicates')
+    @patch('scripts.beneficiary.remote_import.get_beneficiary_duplicates')
     @clean_database
-    def test_an_import_status_is_saved_if_beneficiary_is_a_duplicate(self, mock_get_beneficiary_dupplicates, app):
+    def test_an_import_status_is_saved_if_beneficiary_is_a_duplicate(self, mock_get_beneficiary_duplicates, app):
         # given
         information = {
             'department': '93',
@@ -452,7 +452,7 @@ class ProcessBeneficiaryApplicationTest:
             'civility': 'Mme',
             'activity': 'Étudiant'
         }
-        mock_get_beneficiary_dupplicates.return_value = [create_user(idx=11), create_user(idx=22)]
+        mock_get_beneficiary_duplicates.return_value = [create_user(idx=11), create_user(idx=22)]
 
         # when
         remote_import.process_beneficiary_application(information, error_messages=[], new_beneficiaries=[],

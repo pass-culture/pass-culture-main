@@ -6,7 +6,7 @@ from typing import Callable, Dict, List, Set
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.demarches_simplifiees import \
     get_closed_application_ids_for_demarche_simplifiee
-from domain.beneficiary.beneficiary_pre_subscription_validator import get_beneficiary_dupplicates
+from domain.beneficiary.beneficiary_pre_subscription_validator import get_beneficiary_duplicates
 from domain.user_activation import create_beneficiary_from_application
 from domain.user_emails import send_activation_email
 from models import ApiErrors, ImportStatus, UserSQLEntity
@@ -31,8 +31,7 @@ def run(
         already_imported: Callable[..., bool] = is_already_imported,
         already_existing_user: Callable[..., UserSQLEntity] = find_user_by_email
 ) -> None:
-    procedure_id = int(os.environ.get(
-        'DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2', None))
+    procedure_id = int(os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2'))
     logger.info(
         f'[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées for procedure = {procedure_id} - Procedure {procedure_id}')
     error_messages: List[str] = []
@@ -79,7 +78,7 @@ def process_beneficiary_application(
         retry_ids: List[int],
         procedure_id: int,
 ) -> None:
-    duplicate_users = get_beneficiary_dupplicates(
+    duplicate_users = get_beneficiary_duplicates(
         first_name=information['first_name'],
         last_name=information['last_name'],
         date_of_birth=information['birth_date']

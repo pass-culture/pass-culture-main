@@ -58,6 +58,3 @@ class BeneficiaryJouveRepository(BeneficiaryPreSubscriptionRepository):
                 f'Error getting API jouve GetJouveByID with id: {application_id}')
 
         return beneficiary_jouve_converter.to_domain(response.json())
-
-    def find_beneficiary_by_user_id(self, user_id: int) -> Beneficiary:
-        raise Exception('Not implemented')
