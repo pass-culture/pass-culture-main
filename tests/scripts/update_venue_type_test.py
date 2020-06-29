@@ -81,8 +81,8 @@ class UpdateVenueTypeTest:
 
         # Then
         captured = capsys.readouterr()
-        upadted_venue = VenueSQLEntity.query.one()
-        assert upadted_venue.venueTypeId == 1
+        updated_venue = VenueSQLEntity.query.one()
+        assert updated_venue.venueTypeId == 1
         assert "venue not found for id : 666" in captured.out
         assert "0 venues have been updated" in captured.out
 
@@ -105,8 +105,8 @@ class UpdateVenueTypeTest:
 
         # Then
         captured = capsys.readouterr()
-        upadted_venue = VenueSQLEntity.query.one()
-        assert upadted_venue.venueTypeId == 1
+        updated_venue = VenueSQLEntity.query.one()
+        assert updated_venue.venueTypeId == 1
         assert "venue type id not found for label : other_type and venueId : 121" in captured.out
         assert "0 venues have been updated" in captured.out
 
@@ -124,4 +124,4 @@ class UpdateVenueTypeTest:
         assert venue_id_and_type[0] == ('a_venue_id', 'a_type')
         assert venue_id_and_type[1] == ('another_venue_id', 'another_type')
         assert venue_id_and_type[2] == (
-            'venue_id', 'another_type, whith a comma')
+            'venue_id', 'another_type, with a comma')
