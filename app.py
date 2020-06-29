@@ -22,7 +22,6 @@ from utils.mailing import get_contact, \
     MAILJET_API_KEY, MAILJET_API_SECRET, \
     subscribe_newsletter
 
-
 if IS_DEV is False:
     sentry_sdk.init(
         dsn="https://0470142cf8d44893be88ecded2a14e42@logs.passculture.app/5",
@@ -37,8 +36,10 @@ if feature_request_profiling_enabled():
     app.wsgi_app = ProfilerMiddleware(app.wsgi_app,
                                       restrictions=profiling_restrictions)
 
-def install_login_manager():
+
+def install_login_manager() -> None:
     import utils.login_manager
+
 
 with app.app_context():
     load_environment_variables()

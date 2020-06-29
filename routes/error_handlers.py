@@ -1,8 +1,9 @@
-""" error handlers """
 import traceback
+from typing import Tuple, Dict
 
 import simplejson as json
 from flask import current_app as app, jsonify, request
+from werkzeug.exceptions import MethodNotAllowed
 from werkzeug.exceptions import NotFound
 
 from domain.stocks import TooLateToDeleteError
@@ -14,58 +15,66 @@ from utils.human_ids import NonDehumanizableId
 
 
 @app.errorhandler(NotFound)
-def restize_not_found_route_errors(e):
+def restize_not_found_route_errors(error: NotFound) -> Tuple[Dict, int]:
     return {}, 404
 
 
 @app.errorhandler(ApiErrors)
-def restize_api_errors(e):
-    return jsonify(e.errors), e.status_code or 400
+def restize_api_errors(error: ApiErrors) -> Tuple[Dict, int]:
+    return jsonify(error.errors), error.status_code or 400
 
 
 @app.errorhandler(TooLateToDeleteError)
-def restize_too_late_to_delete_error(e):
-    return jsonify(e.errors), e.status_code or 400
+def restize_too_late_to_delete_error(error: TooLateToDeleteError) -> Tuple[Dict, int]:
+    return jsonify(error.errors), error.status_code or 400
 
 
 @app.errorhandler(ForbiddenError)
-def restize_forbidden_error(e):
-    return jsonify(e.errors), 403
+def restize_forbidden_error(error: ForbiddenError) -> Tuple[Dict, int]:
+    return jsonify(error.errors), 403
 
 
 @app.errorhandler(ResourceGoneError)
-def restize_resource_gone_error(e):
-    return jsonify(e.errors), e.status_code or 410
+def restize_resource_gone_error(error: ResourceGoneError) -> Tuple[Dict, int]:
+    return jsonify(error.errors), error.status_code or 410
 
 
 @app.errorhandler(ResourceNotFoundError)
-def restize_booking_not_found_error(e):
-    return jsonify(e.errors), e.status_code or 404
+def restize_booking_not_found_error(error: ResourceNotFoundError) -> Tuple[Dict, int]:
+    return jsonify(error.errors), error.status_code or 404
 
 
 @app.errorhandler(InvalidOriginHeader)
-def restize_invalid_header_exception(e):
+def restize_invalid_header_exception(error: InvalidOriginHeader) -> Tuple[Dict, int]:
     e = ApiErrors()
     e.add_error('global',
-               'Header non autorisé')
+                'Header non autorisé')
     return jsonify(e.errors), 400
 
 
 @app.errorhandler(500)
 @app.errorhandler(Exception)
-def internal_error(error):
+def internal_error(error: Exception) -> Tuple[Dict, int]:
     tb = traceback.format_exc()
     app.logger.error('500 on %s %s — %s',
                      request.method, request.url, tb)
-    e = ApiErrors()
-    e.add_error('global',
-               "Il semble que nous ayons des problèmes techniques :("
-                + " On répare ça au plus vite.")
-    return jsonify(e.errors), 500
+    errors = ApiErrors()
+    errors.add_error('global',
+                     "Il semble que nous ayons des problèmes techniques :("
+                     + " On répare ça au plus vite.")
+    return jsonify(errors.errors), 500
+
+
+@app.errorhandler(MethodNotAllowed)
+def method_not_allowed(error: MethodNotAllowed) -> Tuple[Dict, int]:
+    api_errors = ApiErrors()
+    api_errors.add_error('global', 'La méthode que vous utilisez n\'existe pas sur notre serveur')
+    app.logger.error('405 %s' % str(error))
+    return jsonify(api_errors.errors), 405
 
 
 @app.errorhandler(NonDehumanizableId)
-def invalid_id_for_dehumanize_error(error):
+def invalid_id_for_dehumanize_error(error: NonDehumanizableId) -> Tuple[Dict, int]:
     api_errors = ApiErrors()
     api_errors.add_error('global', 'La page que vous recherchez n\'existe pas')
     app.logger.error('404 %s' % str(error))
@@ -73,7 +82,7 @@ def invalid_id_for_dehumanize_error(error):
 
 
 @app.errorhandler(DecimalCastError)
-def decimal_cast_error(error):
+def decimal_cast_error(error: DecimalCastError) -> Tuple[Dict, int]:
     api_errors = ApiErrors()
     app.logger.warning(json.dumps(error.errors))
     for field in error.errors.keys():
@@ -82,7 +91,7 @@ def decimal_cast_error(error):
 
 
 @app.errorhandler(DateTimeCastError)
-def date_time_cast_error(error):
+def date_time_cast_error(error: DateTimeCastError) -> Tuple[Dict, int]:
     api_errors = ApiErrors()
     app.logger.warning(json.dumps(error.errors))
     for field in error.errors.keys():
@@ -91,6 +100,6 @@ def date_time_cast_error(error):
 
 
 @app.errorhandler(AlreadyActivatedException)
-def already_activated_exception(error):
+def already_activated_exception(error: AlreadyActivatedException) -> Tuple[Dict, int]:
     app.logger.error(json.dumps(error.errors))
     return jsonify(error.errors), 405
