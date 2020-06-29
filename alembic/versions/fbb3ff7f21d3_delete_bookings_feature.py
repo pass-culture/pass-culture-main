@@ -1,7 +1,7 @@
 """delete_bookings_feature
 
 Revision ID: fbb3ff7f21d3
-Revises: 8df159da2826
+Revises: 0fce064a0f84
 Create Date: 2020-06-26 08:59:48.001790
 
 """
@@ -13,7 +13,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = 'fbb3ff7f21d3'
-down_revision = '8df159da2826'
+down_revision = '0fce064a0f84'
 branch_labels = None
 depends_on = None
 
