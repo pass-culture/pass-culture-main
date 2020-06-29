@@ -1,10 +1,7 @@
 import base64
-import csv
 import io
-from collections import namedtuple
 from datetime import timedelta
-from io import StringIO
-from typing import List, Iterator
+from typing import Iterator
 
 import qrcode
 import qrcode.image.svg
@@ -12,7 +9,6 @@ from PIL import Image
 
 from models.booking_sql_entity import BookingSQLEntity
 from models.stock_sql_entity import StockSQLEntity
-from utils.string_processing import format_decimal
 
 BOOKING_CANCELLATION_DELAY = timedelta(hours=72)
 QR_CODE_PASS_CULTURE_VERSION = 'v2'
@@ -30,45 +26,6 @@ CSV_HEADER = [
     "Tarif pass Culture",
     "Statut",
 ]
-
-
-def generate_bookings_details_csv(bookings_info: List[namedtuple]) -> str:
-    output = StringIO()
-
-    csv_lines = _generate_csv_lines(bookings_info)
-
-    writer = csv.writer(output, dialect=csv.excel, delimiter=";")
-    writer.writerow(CSV_HEADER)
-    writer.writerows(csv_lines)
-    return output.getvalue()
-
-
-def _generate_csv_lines(bookings_info: List[namedtuple]) -> List[List]:
-    csv_lines = []
-    for booking in bookings_info:
-        status_label = _compute_booking_status_label(booking)
-
-        booking_details = [
-            booking.venue_name,
-            booking.offer_name,
-            booking.user_lastname,
-            booking.user_firstname,
-            booking.user_email,
-            booking.date_created,
-            format_decimal(booking.quantity),
-            booking.amount,
-            status_label
-        ]
-        csv_lines.append(booking_details)
-    return csv_lines
-
-
-def _compute_booking_status_label(booking_info: namedtuple) -> str:
-    if booking_info.isCancelled:
-        return "Réservation annulée"
-    elif booking_info.isUsed:
-        return "Contremarque validée"
-    return "En attente"
 
 
 def filter_bookings_to_compute_remaining_stock(stock: StockSQLEntity) -> Iterator:

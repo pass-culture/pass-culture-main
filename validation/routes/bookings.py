@@ -83,32 +83,6 @@ def check_email_and_offer_id_for_anonymous_user(email: str, offer_id: int) -> No
         raise api_errors
 
 
-def check_rights_to_get_bookings_csv(user: UserSQLEntity, venue_id: int = None, offer_id: int = None) -> None:
-    if user.isAdmin:
-        api_errors = ApiErrors()
-        api_errors.add_error(
-            'global',
-            "Le statut d'administrateur ne permet pas d'accéder au suivi des réseravtions"
-        )
-        raise api_errors
-
-    if venue_id:
-        venue = venue_queries.find_by_id(venue_id)
-        if venue is None:
-            api_errors = ApiErrors()
-            api_errors.add_error('venueId', "Ce lieu n'existe pas.")
-            raise api_errors
-        ensure_current_user_has_rights(user=user, rights=RightsType.editor, offerer_id=venue.managingOffererId)
-
-    if offer_id:
-        venue = venue_queries.find_by_offer_id(offer_id)
-        if venue is None:
-            api_errors = ApiErrors()
-            api_errors.add_error('offerId', "Cette offre n'existe pas.")
-            raise api_errors
-        ensure_current_user_has_rights(user=user, rights=RightsType.editor, offerer_id=venue.managingOffererId)
-
-
 def check_booking_is_not_already_cancelled(booking: BookingSQLEntity) -> None:
     if booking.isCancelled:
         api_errors = ResourceGoneError()

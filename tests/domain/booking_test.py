@@ -19,13 +19,12 @@ from tests.conftest import clean_database
 from tests.domain_creators.generic_creators import create_domain_beneficiary
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue, \
-    create_user_offerer, create_payment, create_deposit
+    create_payment, create_deposit
 from tests.model_creators.specific_creators import create_stock_from_offer, \
     create_product_with_thing_type, create_product_with_event_type, create_offer_with_thing_product, \
     create_offer_with_event_product
 from validation.routes.bookings import \
     check_booking_is_cancellable_by_user, \
-    check_rights_to_get_bookings_csv, \
     check_booking_is_not_already_cancelled, \
     check_booking_is_not_used, \
     check_booking_token_is_usable, \
@@ -257,83 +256,6 @@ class CheckBookingIsUsableTest:
         except ApiErrors:
             pytest.fail(
                 'Bookings which are not used nor cancelled and do not have a beginning datetime should be usable')
-
-
-class CheckRightsToGetBookingsCsvTest:
-    @clean_database
-    def test_raises_an_error_when_user_is_admin(self, app):
-        # given
-        user_admin = create_user(can_book_free_offers=False, is_admin=True)
-
-        repository.save(user_admin)
-
-        # when
-        with pytest.raises(ApiErrors) as e:
-            check_rights_to_get_bookings_csv(user_admin)
-        assert e.value.errors['global'] == [
-            "Le statut d'administrateur ne permet pas d'accéder au suivi des réseravtions"]
-
-    @clean_database
-    def test_raises_an_error_when_user_has_no_right_on_venue_id(self, app):
-        # given
-        offerer1 = create_offerer(siren='123456789')
-        user_with_rights_on_venue = create_user(email='test@example.net', is_admin=False)
-        user_offerer1 = create_user_offerer(user_with_rights_on_venue, offerer1)
-
-        user_with_no_rights_on_venue = create_user(is_admin=False)
-
-        venue = create_venue(offerer1, siret=offerer1.siren + '12345')
-
-        repository.save(user_offerer1, user_with_no_rights_on_venue, venue)
-
-        # when
-        with pytest.raises(ApiErrors) as e:
-            check_rights_to_get_bookings_csv(user_with_no_rights_on_venue, venue_id=venue.id)
-        assert e.value.errors['global'] == [
-            'Vous n\'avez pas les droits d\'accès suffisant pour accéder à cette information.']
-
-    @clean_database
-    def test_raises_an_error_when_user_has_no_right_on_offer_id(self, app):
-        # given
-        user_with_no_rights_on_offer = create_user(email='pro_with_no_right@example.net', is_admin=False)
-
-        offerer1 = create_offerer(siren='123456789')
-        user_with_rights_on_offer = create_user(email='test@example.net', is_admin=False)
-        user_offerer1 = create_user_offerer(user_with_rights_on_offer, offerer1)
-        venue = create_venue(offerer1, siret=offerer1.siren + '12345')
-        offer = create_offer_with_event_product(venue)
-
-        repository.save(user_offerer1, user_with_no_rights_on_offer, venue)
-
-        # when
-        with pytest.raises(ApiErrors) as e:
-            check_rights_to_get_bookings_csv(user_with_no_rights_on_offer, offer_id=offer.id)
-        assert e.value.errors['global'] == [
-            'Vous n\'avez pas les droits d\'accès suffisant pour accéder à cette information.']
-
-    @clean_database
-    def test_raises_an_error_when_venue_does_not_exist(self, app):
-        # given
-        user = create_user(email='pro_with_no_right@example.net', is_admin=False)
-
-        repository.save(user)
-
-        # when
-        with pytest.raises(ApiErrors) as e:
-            check_rights_to_get_bookings_csv(user, venue_id=-1)
-        assert e.value.errors['venueId'] == ["Ce lieu n'existe pas."]
-
-    @clean_database
-    def test_raises_an_error_when_offer_does_not_exist(self, app):
-        # given
-        user = create_user(email='pro_with_no_right@example.net', is_admin=False)
-
-        repository.save(user)
-
-        # when
-        with pytest.raises(ApiErrors) as e:
-            check_rights_to_get_bookings_csv(user, offer_id=-1)
-        assert e.value.errors['offerId'] == ["Cette offre n'existe pas."]
 
 
 class CheckQuantityIsValidTest:

@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from decimal import Decimal
 
 import pytest
 from dateutil import tz
@@ -30,279 +29,6 @@ TWO_DAYS_AGO = NOW - timedelta(days=2)
 THREE_DAYS_AGO = NOW - timedelta(days=3)
 FOUR_DAYS_AGO = NOW - timedelta(days=4)
 FIVE_DAYS_AGO = NOW - timedelta(days=5)
-
-
-class FindAllOffererBookingsByVenueIdTest:
-    @clean_database
-    def test_in_a_not_search_context_returns_all_results(self, app: fixture) -> None:
-        # given
-        user = create_user()
-        offerer1 = create_offerer(siren='123456789')
-        offerer2 = create_offerer(siren='987654321')
-        venue1 = create_venue(offerer1, siret=offerer1.siren + '12345')
-        venue2 = create_venue(offerer1, siret=offerer1.siren + '54321')
-        venue3 = create_venue(offerer2, siret=offerer2.siren + '12345')
-        stock1 = create_stock_with_event_offer(offerer1, venue1, price=0, quantity=100)
-        stock2 = create_stock_with_thing_offer(offerer1, venue2, price=0, quantity=100)
-        stock3 = create_stock_with_thing_offer(offerer2, venue3, price=0, quantity=100)
-        booking1 = create_booking(user=user, stock=stock1, venue=venue1, quantity=2, recommendation=None)
-        booking2 = create_booking(user=user, stock=stock2, venue=venue2, quantity=2, recommendation=None)
-        booking3 = create_booking(user=user, stock=stock3, venue=venue3, quantity=2, recommendation=None)
-        repository.save(booking1, booking2, booking3)
-
-        # when
-        bookings = booking_queries.find_all_bookings_info(offerer1.id)
-
-        # then
-        assert len(bookings) == 2
-
-    @clean_database
-    def test_returns_expected_bookings_on_given_venue(self, app: fixture) -> None:
-        # given
-        user = create_user()
-        create_deposit(user)
-        offerer1 = create_offerer(siren='123456789')
-        offerer2 = create_offerer(siren='987654321')
-        venue1 = create_venue(offerer1, siret=offerer1.siren + '12345')
-        venue2 = create_venue(offerer2, siret=offerer2.siren + '12345')
-        offer1 = create_offer_with_event_product(venue1)
-        offer2 = create_offer_with_thing_product(venue1)
-        offer3 = create_offer_with_thing_product(venue2)
-        stock1 = create_stock_from_offer(offer1, price=20, quantity=100)
-        stock2 = create_stock_from_offer(offer2, price=16, quantity=150)
-        stock3 = create_stock_from_offer(offer3, price=16, quantity=150)
-        booking1 = create_booking(user=user, stock=stock1, venue=venue1, quantity=2, recommendation=None)
-        booking2 = create_booking(user=user, stock=stock2, venue=venue1, quantity=3, recommendation=None)
-        booking3 = create_booking(user=user, stock=stock3, venue=venue2, quantity=4, recommendation=None)
-        repository.save(booking1, booking2, booking3)
-
-        # when
-        bookings = booking_queries.find_all_bookings_info(offerer1.id, venue_id=venue1.id)
-
-        # then
-        assert len(bookings) == 2
-        assert booking1 in bookings
-        assert booking2 in bookings
-
-    @clean_database
-    def test_returns_bookings_on_given_venue_and_thing_offer_and_date(self, app: fixture) -> None:
-        # given
-        user = create_user()
-        create_deposit(user=user)
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        target_offer = create_offer_with_thing_product(venue)
-        other_offer = create_offer_with_thing_product(venue)
-        target_stock = create_stock_from_offer(target_offer, price=20, quantity=100)
-        other_stock = create_stock_from_offer(other_offer, price=16, quantity=150)
-        other_booking_1 = create_booking(user=user,
-                                         stock=target_stock,
-                                         venue=venue,
-                                         quantity=2,
-                                         recommendation=None,
-                                         date_created=datetime(2020, 5, 30))
-        target_booking_1 = create_booking(user=user,
-                                          stock=target_stock,
-                                          venue=venue,
-                                          quantity=3,
-                                          recommendation=None,
-                                          date_created=datetime(2020, 6, 1))
-        target_booking_2 = create_booking(user=user,
-                                          stock=target_stock,
-                                          venue=venue,
-                                          quantity=4,
-                                          recommendation=None,
-                                          date_created=datetime(2020, 6, 30))
-        other_booking_2 = create_booking(user=user,
-                                         stock=target_stock,
-                                         venue=venue,
-                                         quantity=2,
-                                         recommendation=None,
-                                         date_created=datetime(2020, 7, 1))
-        other_booking_3 = create_booking(user=user,
-                                         stock=other_stock,
-                                         venue=venue,
-                                         quantity=2,
-                                         recommendation=None,
-                                         date_created=datetime(2020, 6, 1))
-        repository.save(other_booking_1, other_booking_2, other_booking_3, target_booking_1, target_booking_2)
-
-        # when
-        bookings = booking_queries.find_all_bookings_info(offerer.id, venue_id=venue.id, offer_id=target_offer.id,
-                                                          date_from=datetime(2020, 6, 1), date_to=datetime(2020, 6, 30))
-
-        # then
-        assert len(bookings) == 2
-        assert target_booking_1 in bookings
-        assert target_booking_2 in bookings
-
-    @clean_database
-    def test_returns_bookings_on_given_venue_and_event_offer_and_date(self, app: fixture) -> None:
-        # given
-        user = create_user()
-        create_deposit(user)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        target_offer = create_offer_with_event_product(venue)
-        other_offer = create_offer_with_event_product(venue)
-        target_stock = create_stock_from_offer(target_offer, price=16, quantity=150,
-                                               beginning_datetime=datetime.strptime("2020-06-01T20:00:00.000Z",
-                                                                                    "%Y-%m-%dT%H:%M:%S.%fZ"))
-        other_stock_1 = create_stock_from_offer(target_offer, price=20, quantity=100,
-                                                beginning_datetime=datetime.strptime("2020-06-01T16:00:00.000Z",
-                                                                                     "%Y-%m-%dT%H:%M:%S.%fZ"))
-        other_stock_2 = create_stock_from_offer(other_offer, price=16, quantity=150,
-                                                beginning_datetime=datetime.strptime("2020-06-01T18:00:00.000Z",
-                                                                                     "%Y-%m-%dT%H:%M:%S.%fZ"))
-        other_stock_3 = create_stock_from_offer(other_offer, price=16, quantity=150,
-                                                beginning_datetime=datetime.strptime("2020-07-02T20:00:00.000Z",
-                                                                                     "%Y-%m-%dT%H:%M:%S.%fZ"))
-        target_booking = create_booking(user=user, stock=target_stock, venue=venue, quantity=3, recommendation=None)
-        other_booking_1 = create_booking(user=user, stock=other_stock_1, venue=venue, quantity=2, recommendation=None)
-        other_booking_2 = create_booking(user=user, stock=other_stock_2, venue=venue, quantity=2, recommendation=None)
-        other_booking_3 = create_booking(user=user, stock=other_stock_3, venue=venue, quantity=2, recommendation=None)
-        repository.save(other_booking_1, other_booking_2,
-                        target_booking, other_booking_3)
-
-        # when
-        bookings = booking_queries.find_all_bookings_info(offerer.id, venue_id=venue.id, offer_id=target_offer.id,
-                                                          date_from='2020-06-01T20:00:00.000Z',
-                                                          date_to='2020-05-01T20:00:00.000Z')
-
-        # then
-        assert [target_booking] == bookings
-
-    @clean_database
-    def test_should_return_only_expected_attributes(self, app: fixture) -> None:
-        # Given
-        user = create_user(last_name='Doe', first_name='John', email='john.doe@example.com')
-        create_deposit(user)
-        offerer = create_offerer()
-        venue = create_venue(offerer, name='La petite librairie')
-        offer = create_offer_with_thing_product(venue, thing_name='Test Book')
-        stock = create_stock_from_offer(offer)
-        booking = create_booking(user, stock=stock, is_used=True,
-                                 date_created=datetime(2018, 1, 29),
-                                 amount=Decimal(9.90))
-        repository.save(booking)
-
-        # When
-        bookings = booking_queries.find_all_bookings_info(offerer.id)
-
-        # Then
-        assert bookings == [(booking.id,
-                             datetime(2018, 1, 29),
-                             1,
-                             Decimal('9.90'),
-                             False,
-                             True,
-                             'La petite librairie',
-                             'Test Book',
-                             'Doe',
-                             'John',
-                             'john.doe@example.com')]
-
-
-class FindAllDigitalBookingsForOffererTest:
-    @clean_database
-    def test_returns_bookings_linked_to_digital_venue(self, app: fixture) -> None:
-        # given
-        user = create_user()
-        create_deposit(user)
-        offerer1 = create_offerer()
-        digital_venue = create_venue(offerer1, siret=None, is_virtual=True)
-        physical_venue = create_venue(offerer1, siret=offerer1.siren + '12345')
-        stock1 = create_stock_with_event_offer(offerer1, digital_venue, price=2, quantity=100)
-        stock2 = create_stock_with_thing_offer(offerer1, physical_venue, price=3, quantity=100)
-        booking_for_digital = create_booking(user=user, stock=stock1, venue=digital_venue, quantity=3,
-                                             recommendation=None)
-        booking_for_physical = create_booking(user=user, stock=stock2, venue=physical_venue, quantity=2,
-                                              recommendation=None)
-        repository.save(booking_for_digital, booking_for_physical)
-
-        # when
-        bookings = booking_queries.find_all_bookings_info(offerer1.id, only_digital_venues=True)
-
-        # then
-        assert [booking_for_digital] == bookings
-
-    @clean_database
-    def test_returns_only_bookings_for_specified_offerer(self, app: fixture) -> None:
-        # given
-        user = create_user()
-        create_deposit(user)
-        target_offerer = create_offerer(siren='123456789')
-        other_offerer = create_offerer(siren='567891234')
-        target_digital_venue = create_venue(target_offerer, siret=None, is_virtual=True)
-        other_digital_venue = create_venue(other_offerer, siret=None, is_virtual=True)
-        target_stock = create_stock_with_event_offer(target_offerer, target_digital_venue, price=2, quantity=100)
-        other_stock = create_stock_with_thing_offer(other_offerer, other_digital_venue, price=3, quantity=100)
-        target_booking = create_booking(user=user, stock=target_stock, venue=target_digital_venue, quantity=3,
-                                        recommendation=None)
-        other_booking = create_booking(user=user, stock=other_stock, venue=other_digital_venue, quantity=2,
-                                       recommendation=None)
-        repository.save(target_booking, other_booking)
-
-        # when
-        bookings = booking_queries.find_all_bookings_info(target_offerer.id, only_digital_venues=True)
-
-        # then
-        assert [target_booking] == bookings
-
-    @clean_database
-    def test_returns_only_bookings_for_specified_offerer_and_offer(self, app: fixture) -> None:
-        # Given
-        user = create_user()
-        create_deposit(user)
-        offerer = create_offerer()
-        digital_venue = create_venue(offerer, siret=None, is_virtual=True)
-        stock1 = create_stock_with_event_offer(offerer, digital_venue, price=2, quantity=100)
-        stock2 = create_stock_with_thing_offer(offerer, digital_venue, price=3, quantity=100)
-        booking1 = create_booking(user=user, stock=stock1, venue=digital_venue, quantity=2)
-        booking2 = create_booking(user=user, stock=stock2, venue=digital_venue, quantity=3)
-        repository.save(booking1, booking2)
-
-        # When
-        bookings = booking_queries.find_all_bookings_info(offerer.id,
-                                                          offer_id=stock2.offer.id,
-                                                          only_digital_venues=True)
-
-        # Then
-        assert [booking2] == bookings
-
-    @clean_database
-    def test_returns_only_bookings_for_specified_offerer_and_thing_offer_and_booking_date(self, app: fixture) -> None:
-        # given
-        user = create_user()
-        create_deposit(user)
-        offerer1 = create_offerer()
-        digital_venue_for_offerer1 = create_venue(offerer1, siret=None, is_virtual=True)
-        stock1 = create_stock_with_event_offer(offerer1, digital_venue_for_offerer1, price=2, quantity=100)
-        stock2 = create_stock_with_thing_offer(offerer1, digital_venue_for_offerer1, price=3, quantity=100)
-        booking_for_offerer1 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=2,
-                                              recommendation=None, date_created=datetime(2020, 5, 30))
-        booking_for_offerer2 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=3,
-                                              recommendation=None, date_created=datetime(2020, 6, 1))
-        booking_for_offerer3 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=4,
-                                              recommendation=None, date_created=datetime(2020, 6, 30))
-        booking_for_offerer4 = create_booking(user=user, stock=stock2, venue=digital_venue_for_offerer1, quantity=2,
-                                              recommendation=None, date_created=datetime(2020, 7, 31))
-        booking_for_offerer5 = create_booking(user=user, stock=stock1, venue=digital_venue_for_offerer1, quantity=2,
-                                              recommendation=None, date_created=datetime(2020, 6, 30))
-        repository.save(booking_for_offerer1, booking_for_offerer2, booking_for_offerer3, booking_for_offerer4,
-                        booking_for_offerer5)
-
-        # when
-        bookings = booking_queries.find_all_bookings_info(offerer1.id,
-                                                          offer_id=stock2.offer.id,
-                                                          date_from=datetime(2020, 6, 1),
-                                                          date_to=datetime(2020, 6, 30),
-                                                          only_digital_venues=True)
-
-        # then
-        assert len(bookings) == 2
-        assert booking_for_offerer2 in bookings
-        assert booking_for_offerer3 in bookings
 
 
 @clean_database
@@ -1609,7 +1335,8 @@ class IsOfferAlreadyBookedByUserTest:
         assert not is_offer_already_booked
 
     @clean_database
-    def test_should_return_false_when_a_booking_exists_for_same_user_and_offer_but_is_cancelled(self, app: fixture) -> None:
+    def test_should_return_false_when_a_booking_exists_for_same_user_and_offer_but_is_cancelled(self,
+                                                                                                app: fixture) -> None:
         # Given
         user = create_user()
         create_deposit(user)
@@ -1710,7 +1437,8 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_is_duo is False
         assert expected_booking_recap.venue_identifier == venue.id
         assert expected_booking_recap.booking_amount == 12
-        assert expected_booking_recap.booking_status_history.booking_date == booking_date.astimezone(tz.gettz('Europe/Paris'))
+        assert expected_booking_recap.booking_status_history.booking_date == booking_date.astimezone(
+            tz.gettz('Europe/Paris'))
 
     @clean_database
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture) -> None:
@@ -1827,7 +1555,8 @@ class FindByProUserIdTest:
         assert len(bookings_recap_paginated.bookings_recap) == 1
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.booking_is_reimbursed is True
-        assert expected_booking_recap.booking_status_history.payment_date == yesterday.astimezone(tz.gettz('Europe/Paris'))
+        assert expected_booking_recap.booking_status_history.payment_date == yesterday.astimezone(
+            tz.gettz('Europe/Paris'))
 
     @clean_database
     def test_should_return_cancellation_date_when_booking_has_been_cancelled(self, app: fixture) -> None:
@@ -1855,7 +1584,8 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_status_history.cancellation_date is not None
 
     @clean_database
-    def test_should_return_validation_date_when_booking_has_been_used_and_not_cancelled_not_reimbursed(self, app: fixture) -> None:
+    def test_should_return_validation_date_when_booking_has_been_used_and_not_cancelled_not_reimbursed(self,
+                                                                                                       app: fixture) -> None:
         # Given
         beneficiary = create_user(email='beneficiary@example.com',
                                   first_name='Ron', last_name='Weasley')

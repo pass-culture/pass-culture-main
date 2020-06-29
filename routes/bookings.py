@@ -1,25 +1,20 @@
 from datetime import datetime
-from itertools import chain
 from typing import Union, Dict
 
-import dateutil
 from flask import current_app as app
 from flask import jsonify, request
 from flask_login import current_user, login_required
 
 from connectors import redis
-from domain.bookings import generate_bookings_details_csv
 from domain.user_activation import create_initial_deposit, is_activation_booking
 from domain.user_emails import send_activation_email, \
     send_booking_cancellation_emails_to_user_and_offerer
 from infrastructure.container import book_an_offer
-from models import ApiErrors, BookingSQLEntity, EventType, Offerer, RightsType, ApiKey, UserSQLEntity
+from models import BookingSQLEntity, EventType, RightsType, ApiKey, UserSQLEntity
 from models.feature import FeatureToggle
 from models.offer_type import ProductType
 from repository import booking_queries, feature_queries, repository
 from repository.api_key_queries import find_api_key_by_value
-from repository.user_offerer_queries import \
-    filter_query_where_user_is_user_offerer_and_is_validated
 from routes.serialization import as_dict, serialize, serialize_booking
 from routes.serialization.bookings_recap_serialize import serialize_bookings_recap_paginated
 from routes.serialization.bookings_serialize import serialize_booking_for_book_an_offer
@@ -39,7 +34,7 @@ from validation.routes.bookings import check_booking_is_cancellable_by_user, \
     check_email_and_offer_id_for_anonymous_user, \
     check_has_stock_id, \
     check_is_not_activation_booking, \
-    check_rights_to_get_bookings_csv, check_page_format_is_number
+    check_page_format_is_number
 from validation.routes.users_authentifications import check_user_is_logged_in_or_email_is_provided, \
     login_or_api_key_required_v2
 from validation.routes.users_authorizations import \
@@ -47,61 +42,6 @@ from validation.routes.users_authorizations import \
     check_api_key_allows_to_validate_booking, check_user_can_validate_activation_offer, \
     check_user_can_validate_bookings, \
     check_user_can_validate_bookings_v2, check_user_can_cancel_booking_by_id
-
-
-@app.route('/bookings/csv', methods=['GET'])
-@login_required
-def get_bookings_csv():
-    only_digital_venues = request.args.get('onlyDigitalVenues', False)
-
-    try:
-        venue_id = dehumanize(request.args.get('venueId', None))
-        offer_id = dehumanize(request.args.get('offerId', None))
-    except ValueError:
-        errors = ApiErrors()
-        errors.add_error(
-            'global',
-            'Les identifiants sont incorrects'
-        )
-        errors.status_code = 400
-        raise errors
-
-    try:
-        if request.args.get('dateFrom', None):
-            date_from = dateutil.parser.parse(request.args.get('dateFrom'))
-        else:
-            date_from = None
-        if request.args.get('dateTo', None):
-            date_to = dateutil.parser.parse(request.args.get('dateTo'))
-        else:
-            date_to = None
-    except ValueError:
-        errors = ApiErrors()
-        errors.add_error(
-            'global',
-            'Les dates sont incorrectes'
-        )
-        errors.status_code = 400
-        raise errors
-
-    check_rights_to_get_bookings_csv(current_user, venue_id, offer_id)
-
-    query = filter_query_where_user_is_user_offerer_and_is_validated(Offerer.query,
-                                                                     current_user)
-    bookings = chain(*list(map(lambda offerer: booking_queries.find_all_bookings_info(offerer.id,
-                                                                                      venue_id,
-                                                                                      offer_id,
-                                                                                      date_from,
-                                                                                      date_to,
-                                                                                      only_digital_venues),
-                               query)))
-
-    bookings_csv = generate_bookings_details_csv(bookings)
-
-    return bookings_csv.encode('utf-8-sig'), \
-           200, \
-           {'Content-type': 'text/csv; charset=utf-8;',
-            'Content-Disposition': 'attachment; filename=reservations_pass_culture.csv'}
 
 
 @app.route('/bookings/pro', methods=['GET'])
