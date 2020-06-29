@@ -26,28 +26,30 @@ const EligibilityCheck = () => {
         {'Créer un compte'}
       </span>
       <form className="elgbt-form">
-        <label>
-          {'Quel est ton code postal de résidence ?'}
-          <InputMask
-            inputMode="numeric"
-            mask="99 999"
-            maskPlaceholder={null}
-            onChange={handlePostalCodeInputChange}
-            placeholder="Ex: 75 017"
-            value={postalCodeInputValue}
-          />
-        </label>
-        <label>
-          {'Quelle est ta date de naissance ?'}
-          <InputMask
-            inputMode="numeric"
-            mask="99/99/9999"
-            maskPlaceholder={null}
-            onChange={handleDOBInputChange}
-            placeholder="JJ/MM/AAAA"
-            value={dateOfBirthInputValue}
-          />
-        </label>
+        <div>
+          <label>
+            {'Quel est ton code postal de résidence ?'}
+            <InputMask
+              inputMode="numeric"
+              mask="99 999"
+              maskPlaceholder={null}
+              onChange={handlePostalCodeInputChange}
+              placeholder="Ex: 75 017"
+              value={postalCodeInputValue}
+            />
+          </label>
+          <label>
+            {'Quelle est ta date de naissance ?'}
+            <InputMask
+              inputMode="numeric"
+              mask="99/99/9999"
+              maskPlaceholder={null}
+              onChange={handleDOBInputChange}
+              placeholder="JJ/MM/AAAA"
+              value={dateOfBirthInputValue}
+            />
+          </label>
+        </div>
         <input
           className="elgbt-submit"
           disabled={isMissingField}
