@@ -30,17 +30,19 @@ def test_saved_a_beneficiary_from_application(stubed_random_password,
     stubed_random_password.return_value = b'random-password'
     stubed_random_token.return_value = 'token'
     beneficiary_pre_subscription = BeneficiaryPreSubscription(
-        date_of_birth=datetime(1995, 2, 5),
+        activity='Apprenti',
+        address='3 rue de Valois',
         application_id=application_id,
-        postal_code='35123',
+        city='Paris',
+        civility='Mme',
+        date_of_birth=datetime(1995, 2, 5),
         email='rennes@example.org',
         first_name='Thomas',
-        civility='Mme',
         last_name='DURAND',
         phone_number='0123456789',
-        activity='Apprenti',
+        postal_code='35123',
         source='jouve',
-        source_id=None
+        source_id=None,
     )
 
     beneficiary_jouve_repository = MagicMock()
@@ -56,7 +58,9 @@ def test_saved_a_beneficiary_from_application(stubed_random_password,
     # Then
     beneficiary = UserSQLEntity.query.one()
     assert beneficiary.activity == 'Apprenti'
+    assert beneficiary.address == '3 rue de Valois'
     assert beneficiary.canBookFreeOffers == True
+    assert beneficiary.city == 'Paris'
     assert beneficiary.civility == 'Mme'
     assert beneficiary.dateOfBirth == datetime(1995, 2, 5)
     assert beneficiary.departementCode == '35'

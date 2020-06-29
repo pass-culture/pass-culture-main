@@ -6,7 +6,9 @@ from domain.postal_code.postal_code import PostalCode
 class BeneficiaryPreSubscription(object):
     def __init__(self,
                  activity: str,
+                 address: str,
                  application_id: int,
+                 city: str,
                  civility: str,
                  date_of_birth: datetime,
                  email: str,
@@ -17,7 +19,9 @@ class BeneficiaryPreSubscription(object):
                  source: str,
                  source_id: int):
         self.activity = activity
+        self.address = address
         self.application_id = application_id
+        self.city = city
         self.civility = civility
         self.date_of_birth = date_of_birth
         self.email = email

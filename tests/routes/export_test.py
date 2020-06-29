@@ -172,6 +172,8 @@ def test_pending_validation_return_only_requested_data(app):
               'user':
                   {'canBookFreeOffers': False,
                    'activity': None,
+                   'address': None,
+                   'city': None,
                    'civility': None,
                    'dateCreated': serialize(user_pro.dateCreated),
                    'departementCode': '93',

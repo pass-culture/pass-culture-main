@@ -11,7 +11,9 @@ DEFAULT_JOUVE_SOURCE_ID = None
 def to_domain(user_jouve_entity: Dict) -> BeneficiaryPreSubscription:
     return BeneficiaryPreSubscription(
         activity=user_jouve_entity['mtd_statut'],
+        address=user_jouve_entity['mtd_adrResid'],
         application_id=user_jouve_entity['mtd_jeuneID'],
+        city=user_jouve_entity['mtd_comResid'],
         civility=_convert_civility(user_jouve_entity['mtd_sexe']),
         date_of_birth=_convert_date_of_birth(user_jouve_entity['mtd_datNaiss']),
         email=user_jouve_entity['mtd_mail'],

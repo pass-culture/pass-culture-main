@@ -66,7 +66,9 @@ def test_calls_jouve_api_with_previously_fetched_token(mocked_requests_post):
         headers={'X-Authentication': token})
     assert isinstance(beneficiary_pre_subscription, BeneficiaryPreSubscription)
     assert beneficiary_pre_subscription.activity == 'Apprenti'
+    assert beneficiary_pre_subscription.address == '18 avenue des fleurs'
     assert beneficiary_pre_subscription.application_id == 5
+    assert beneficiary_pre_subscription.city == 'RENNES'
     assert beneficiary_pre_subscription.civility == 'Mme'
     assert beneficiary_pre_subscription.date_of_birth == datetime(1995, 8, 9)
     assert beneficiary_pre_subscription.department_code == '35'

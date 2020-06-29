@@ -11,7 +11,9 @@ def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> UserSQ
     beneficiary = UserSQLEntity()
 
     beneficiary.activity = beneficiary_pre_subscription.activity
+    beneficiary.address = beneficiary_pre_subscription.address
     beneficiary.canBookFreeOffers = True
+    beneficiary.city = beneficiary_pre_subscription.city
     beneficiary.civility = beneficiary_pre_subscription.civility
     beneficiary.dateOfBirth = beneficiary_pre_subscription.date_of_birth
     beneficiary.departementCode = beneficiary_pre_subscription.department_code

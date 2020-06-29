@@ -31,10 +31,14 @@ class UserSQLEntity(PcObject,
 
     email = Column(String(120), nullable=False, unique=True)
 
+    address = Column(String(200), nullable=True)
+
     canBookFreeOffers = Column(Boolean,
                                nullable=False,
                                server_default=expression.true(),
                                default=True)
+
+    city = Column(String(50), nullable=True)
 
     clearTextPassword = None
 
