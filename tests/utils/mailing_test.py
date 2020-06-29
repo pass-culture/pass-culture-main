@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
 
 from freezegun import freeze_time
+from requests import Timeout
 
 from domain.user_emails import _build_recipients_list
 from models import ThingType
@@ -327,3 +328,44 @@ def _remove_whitespaces(text):
     text = re.sub('\n\s+', ' ', text)
     text = re.sub('\n', '', text)
     return text
+
+
+class SendRawEmailTest:
+    def test_should_call_mailjet_api_to_send_emails(self, app):
+        # Given
+        data = {'data': {}}
+        app.mailjet_client.send.create = MagicMock()
+        app.mailjet_client.send.create.return_value = MagicMock(status_code=200)
+
+        # When
+        result = send_raw_email(data)
+
+        # Then
+        app.mailjet_client.send.create.assert_called_once_with(data=data)
+        assert result is True
+
+    def test_should_return_false_when_mailjet_status_code_is_not_200(self, app):
+        # Given
+        data = {'data': {}}
+        app.mailjet_client.send.create = MagicMock()
+        app.mailjet_client.send.create.return_value = MagicMock(status_code=400)
+
+        # When
+        result = send_raw_email(data)
+
+        # Then
+        app.mailjet_client.send.create.assert_called_once_with(data=data)
+        assert result is False
+
+    def test_should_catch_errors_when_mailjet_api_is_not_reachable(self, app):
+        # Given
+        data = {'data': {}}
+        app.mailjet_client.send.create = MagicMock()
+        app.mailjet_client.send.create.side_effect = Timeout
+
+        # When
+        result = send_raw_email(data)
+
+        # Then
+        app.mailjet_client.send.create.assert_called_once_with(data=data)
+        assert result is False

@@ -30,14 +30,19 @@ class MailServiceException(Exception):
 
 
 def send_raw_email(data: Dict) -> bool:
-    response = app.mailjet_client.send.create(data=data)
-    successfully_sent_email = response.status_code == 200
-    status = EmailStatus.SENT if successfully_sent_email else EmailStatus.ERROR
-    email_queries.save(data, status)
-    if not successfully_sent_email:
-        logger.logger.warning(
-            f'[EMAIL] Trying to send email # {data} failed with status code {response.status_code}')
-    return successfully_sent_email
+    successfully_sent_email = False
+    try:
+        response = app.mailjet_client.send.create(data=data)
+        successfully_sent_email = response.status_code == 200
+        status = EmailStatus.SENT if successfully_sent_email else EmailStatus.ERROR
+        email_queries.save(data, status)
+        if not successfully_sent_email:
+            logger.logger.warning(
+                f'[EMAIL] Trying to send email # {data} failed with status code {response.status_code}')
+    except Exception:
+        logger.logger.error(f'[EMAIL] Trying to send email # {data} failed with unexpected error')
+    finally:
+        return successfully_sent_email
 
 
 def build_pc_pro_offer_link(offer: Offer) -> str:
