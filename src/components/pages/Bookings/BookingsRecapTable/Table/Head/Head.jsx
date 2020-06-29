@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Icon from '../../../../../layout/Icon'
 
-const Head = ({ headerGroups }) => (
+const Head = ({headerGroups}) => (
   <thead className="bookings-head">
     {headerGroups.map(headerGroup => (
       <tr key="header-group">
@@ -15,18 +15,35 @@ const Head = ({ headerGroups }) => (
             {column.render('headerTitle')}
             {column.Filter ? column.render('Filter') : null}
             {
-              column.canSort ?
-                <span className="sorting-icons">
-                  {column.isSorted ?
-                    column.isSortedDesc ? <Icon svg="ico-arrow-up-r" /> : <Icon svg="ico-arrow-down-r" />
-                    : <Icon svg="ico-unfold" />}
-                </span> :
-                ''
-            }
+            column.canSort ?
+              <span className="sorting-icons">
+                {column.isSorted ?
+                    column.isSortedDesc ?
+                      <Icon
+                        onKeyDown={() => column.toggleSortBy(!column.isSortedDesc)}
+                        role="button"
+                        svg="ico-arrow-up-r"
+                        tabIndex={0}
+                      /> :
+                      <Icon
+                        onKeyDown={() => column.toggleSortBy(!column.isSortedDesc)}
+                        role="button"
+                        svg="ico-arrow-down-r"
+                        tabIndex={0}
+                      /> :
+                      <Icon
+                        onKeyDown={() => column.toggleSortBy(!column.isSortedDesc)}
+                        role="button"
+                        svg="ico-unfold"
+                        tabIndex={0}
+                      />}
+              </span> :
+              ''
+          }
           </th>
-        ))}
+      ))}
       </tr>
-    ))}
+  ))}
   </thead>
 )
 
@@ -39,9 +56,9 @@ Head.propTypes = {
           id: PropTypes.number,
           headerTitle: PropTypes.string,
           render: PropTypes.func,
-        })
+        }),
       ),
-    })
+    }),
   ).isRequired,
 }
 
