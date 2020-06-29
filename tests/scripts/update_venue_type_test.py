@@ -56,7 +56,6 @@ class UpdateVenueTypeTest:
         captured = capsys.readouterr()
         updated_venue1 = VenueSQLEntity.query.filter_by(id=121).one()
         updated_venue2 = VenueSQLEntity.query.filter_by(id=99).one()
-        # should not fail !
         assert updated_venue1.venueTypeId == 1
         assert updated_venue2.venueTypeId == 1
         assert "0 venues have been updated" in captured.out

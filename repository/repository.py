@@ -27,6 +27,7 @@ def save(*models: List[Model]) -> None:
             db.session.add(model)
 
     if api_errors.errors.keys():
+        db.session.rollback()
         raise api_errors
 
     try:
