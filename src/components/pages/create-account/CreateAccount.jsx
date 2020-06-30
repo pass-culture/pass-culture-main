@@ -1,5 +1,6 @@
 import React from 'react'
 import { Route, Switch } from 'react-router'
+import PropTypes from 'prop-types'
 
 import Eligible from './Eligible/Eligible'
 import IneligibleDepartment from './IneligibleDepartment/IneligibleDepartment'
@@ -9,7 +10,7 @@ import IneligibleUnderEighteen from './IneligibleUnderEighteen/IneligibleUnderEi
 import ContactSaved from './ContactSaved/ContactSaved'
 import EligibilityCheck from './EligibilityCheck/EligibilityCheck'
 
-const CreateAccount = () => (
+const CreateAccount = ({ history }) => (
   <Switch>
     <Route path="/verification-eligibilite/eligible">
       <Eligible />
@@ -30,9 +31,15 @@ const CreateAccount = () => (
       <ContactSaved />
     </Route>
     <Route path="/verification-eligibilite">
-      <EligibilityCheck />
+      <EligibilityCheck history={history} />
     </Route>
   </Switch>
 )
+
+CreateAccount.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
+}
 
 export default CreateAccount

@@ -1,119 +1,370 @@
 import React from 'react'
 import { MemoryRouter } from 'react-router'
 import { mount } from 'enzyme'
+import { createMemoryHistory } from 'history'
 import { act } from 'react-dom/test-utils'
 
 import EligibilityCheck from '../EligibilityCheck'
+import { checkIfAgeIsEligible } from '../../domain/checkIfAgeIsEligible'
+import { checkIfDepartmentIsEligible } from '../../domain/checkIfDepartmentIsEligible'
+
+jest.mock('../../domain/checkIfAgeIsEligible', () => {
+  return {
+    checkIfAgeIsEligible: jest.fn(),
+  }
+})
+
+jest.mock('../../domain/checkIfDepartmentIsEligible', () => {
+  return {
+    checkIfDepartmentIsEligible: jest.fn(),
+  }
+})
 
 describe('eligibility check page', () => {
-  it('should display the title "Créer un compte"', () => {
-    // when
-    const wrapper = mount(
-      <MemoryRouter>
-        <EligibilityCheck />
-      </MemoryRouter>
-    )
+  let props
 
-    // then
-    const elgbtTitle = wrapper.find({ children: 'Créer un compte' })
-    expect(elgbtTitle).toHaveLength(1)
+  beforeEach(() => {
+    props = {
+      history: createMemoryHistory(),
+    }
   })
 
-  it('should display a back to beta page link', () => {
-    // when
-    const wrapper = mount(
-      <MemoryRouter>
-        <EligibilityCheck />
-      </MemoryRouter>
-    )
+  describe('when rendering', () => {
+    it('should display the title "Créer un compte"', () => {
+      // when
+      const wrapper = mount(
+        <MemoryRouter>
+          <EligibilityCheck history={props.history} />
+        </MemoryRouter>
+      )
 
-    // then
-    const backLink = wrapper.find('a[href="/beta"]')
-    expect(backLink).toHaveLength(1)
-  })
-
-  it('should display a postal code input label', () => {
-    // when
-    const wrapper = mount(
-      <MemoryRouter>
-        <EligibilityCheck />
-      </MemoryRouter>
-    )
-
-    // then
-    const elgbtPostalCodeInputLabel = wrapper
-      .find('label')
-      .at(0)
-      .text()
-    expect(elgbtPostalCodeInputLabel).toBe('Quel est ton code postal de résidence ?')
-  })
-
-  it('should add a space in input when user enters the first two numbers of his postal code', () => {
-    // given
-    const wrapper = mount(
-      <MemoryRouter>
-        <EligibilityCheck />
-      </MemoryRouter>
-    )
-    const elgbtPostalCodeInput = wrapper.find('input[placeholder="Ex: 75 017"]')
-
-    // when
-    act(() => {
-      elgbtPostalCodeInput.invoke('onChange')({ target: { value: '76530' } })
+      // then
+      const eligibilityTitle = wrapper.find({ children: 'Créer un compte' })
+      expect(eligibilityTitle).toHaveLength(1)
     })
-    wrapper.update()
 
-    // then
-    const elgbtPostalCodeInputUpdated = wrapper.find('input[placeholder="Ex: 75 017"]')
-    expect(elgbtPostalCodeInputUpdated.prop('value')).toBe('76 530')
-  })
+    it('should display a back to beta page link', () => {
+      // when
+      const wrapper = mount(
+        <MemoryRouter>
+          <EligibilityCheck history={props.history} />
+        </MemoryRouter>
+      )
 
-  it('should display a date of birth input label', () => {
-    // when
-    const wrapper = mount(
-      <MemoryRouter>
-        <EligibilityCheck />
-      </MemoryRouter>
-    )
-
-    // then
-    const elgbtDobInputLabel = wrapper
-      .find('label')
-      .at(1)
-      .text()
-    expect(elgbtDobInputLabel).toBe('Quelle est ta date de naissance ?')
-  })
-
-  it('should add slashes in date of birth input', () => {
-    // given
-    const wrapper = mount(
-      <MemoryRouter>
-        <EligibilityCheck />
-      </MemoryRouter>
-    )
-    const elgbtDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
-
-    // when
-    act(() => {
-      elgbtDateOfBirthInput.invoke('onChange')({ target: { value: '05031997' } })
+      // then
+      const backLink = wrapper.find('a[href="/beta"]')
+      expect(backLink).toHaveLength(1)
     })
-    wrapper.update()
 
-    // then
-    const elgbtDateOfBirthInputUpdated = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
-    expect(elgbtDateOfBirthInputUpdated.prop('value')).toBe('05/03/1997')
+    it('should display a postal code input label', () => {
+      // when
+      const wrapper = mount(
+        <MemoryRouter>
+          <EligibilityCheck history={props.history} />
+        </MemoryRouter>
+      )
+
+      // then
+      const eligibilityPostalCodeInputLabel = wrapper
+        .find('label')
+        .at(0)
+        .text()
+      expect(eligibilityPostalCodeInputLabel).toBe('Quel est ton code postal de résidence ?')
+    })
+
+    it('should display a date of birth input label', () => {
+      // when
+      const wrapper = mount(
+        <MemoryRouter>
+          <EligibilityCheck history={props.history} />
+        </MemoryRouter>
+      )
+
+      // then
+      const eligibilityDobInputLabel = wrapper
+        .find('label')
+        .at(1)
+        .text()
+      expect(eligibilityDobInputLabel).toBe('Quelle est ta date de naissance ?')
+    })
+
+    it('should display a submit button', () => {
+      // when
+      const wrapper = mount(
+        <MemoryRouter>
+          <EligibilityCheck history={props.history} />
+        </MemoryRouter>
+      )
+
+      // then
+      const eligibilitySubmitBtn = wrapper.find('input[value="Vérifier mon éligibilité"]')
+      expect(eligibilitySubmitBtn).toHaveLength(1)
+    })
   })
 
-  it('should display a submit button', () => {
-    // when
-    const wrapper = mount(
-      <MemoryRouter>
-        <EligibilityCheck />
-      </MemoryRouter>
-    )
+  describe('when user fills in his postal code and / or date of birth', () => {
+    it('should add a space in input when user enters the first two numbers of his postal code', () => {
+      // given
+      const wrapper = mount(
+        <MemoryRouter>
+          <EligibilityCheck history={props.history} />
+        </MemoryRouter>
+      )
+      const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
 
-    // then
-    const elgbtSubmitBtn = wrapper.find('input[value="Vérifier mon éligibilité"]')
-    expect(elgbtSubmitBtn).toHaveLength(1)
+      // when
+      act(() => {
+        eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '76530' } })
+      })
+      wrapper.update()
+
+      // then
+      const eligibilityPostalCodeInputUpdated = wrapper.find('input[placeholder="Ex: 75017"]')
+      expect(eligibilityPostalCodeInputUpdated.prop('value')).toBe('76530')
+    })
+
+    it('should add slashes in date of birth input', () => {
+      // given
+      const wrapper = mount(
+        <MemoryRouter>
+          <EligibilityCheck history={props.history} />
+        </MemoryRouter>
+      )
+      const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+
+      // when
+      act(() => {
+        eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05031997' } })
+      })
+      wrapper.update()
+
+      // then
+      const eligibilityDateOfBirthInputUpdated = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+      expect(eligibilityDateOfBirthInputUpdated.prop('value')).toBe('05/03/1997')
+    })
+  })
+
+  describe('when user submits form', () => {
+    it("should check if age is eligible based on user's date of birth", () => {
+      // given
+      const wrapper = mount(
+        <MemoryRouter>
+          <EligibilityCheck history={props.history} />
+        </MemoryRouter>
+      )
+
+      const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
+      const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+      const dateOfBirth = '05/03/2002'
+
+      act(() => {
+        eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+        eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: dateOfBirth } })
+      })
+      wrapper.update()
+
+      const eligibilityForm = wrapper.find('form')
+
+      // when
+      eligibilityForm.invoke('onSubmit')({
+        preventDefault: jest.fn(),
+      })
+
+      // then
+      expect(checkIfAgeIsEligible).toHaveBeenCalledWith(dateOfBirth)
+    })
+
+    describe('when user age is eligible', () => {
+      beforeEach(() => {
+        checkIfAgeIsEligible.mockReturnValue('/eligible')
+      })
+
+      it("should check if department is eligible based on user's postal code", () => {
+        // given
+        const wrapper = mount(
+          <MemoryRouter>
+            <EligibilityCheck history={props.history} />
+          </MemoryRouter>
+        )
+
+        const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
+        const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+        const postalCode = '93800'
+
+        act(() => {
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: postalCode } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/2002' } })
+        })
+        wrapper.update()
+
+        const eligibilityForm = wrapper.find('form')
+
+        // when
+        eligibilityForm.invoke('onSubmit')({
+          preventDefault: jest.fn(),
+        })
+
+        // then
+        expect(checkIfDepartmentIsEligible).toHaveBeenCalledWith(postalCode)
+      })
+
+      it('should redirect to /eligible when department is eligible', () => {
+        // given
+        checkIfDepartmentIsEligible.mockReturnValue(true)
+
+        const wrapper = mount(
+          <MemoryRouter>
+            <EligibilityCheck history={props.history} />
+          </MemoryRouter>
+        )
+
+        const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
+        const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+
+        act(() => {
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/2002' } })
+        })
+        wrapper.update()
+
+        const eligibilityForm = wrapper.find('form')
+
+        // when
+        eligibilityForm.invoke('onSubmit')({
+          preventDefault: jest.fn(),
+        })
+
+        // then
+        expect(props.history.location.pathname).toBe('/verification-eligibilite/eligible')
+      })
+
+      it('should redirect to /department-non-eligible when department is not eligible', () => {
+        // given
+        checkIfDepartmentIsEligible.mockReturnValue(false)
+
+        const wrapper = mount(
+          <MemoryRouter>
+            <EligibilityCheck history={props.history} />
+          </MemoryRouter>
+        )
+
+        const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
+        const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+
+        act(() => {
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '27200' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/2002' } })
+        })
+        wrapper.update()
+
+        const eligibilityForm = wrapper.find('form')
+
+        // when
+        eligibilityForm.invoke('onSubmit')({
+          preventDefault: jest.fn(),
+        })
+
+        // then
+        expect(props.history.location.pathname).toBe(
+          '/verification-eligibilite/departement-non-eligible'
+        )
+      })
+    })
+
+    describe('when user age is not eligible', () => {
+      beforeEach(() => {
+        checkIfDepartmentIsEligible.mockReturnValue(true)
+      })
+
+      it('should redirect to /bientot when user is soon to be eligible', () => {
+        // given
+        checkIfAgeIsEligible.mockReturnValue('/bientot')
+
+        const wrapper = mount(
+          <MemoryRouter>
+            <EligibilityCheck history={props.history} />
+          </MemoryRouter>
+        )
+
+        const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
+        const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+
+        act(() => {
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/2003' } })
+        })
+        wrapper.update()
+
+        const eligibilityForm = wrapper.find('form')
+
+        // when
+        eligibilityForm.invoke('onSubmit')({
+          preventDefault: jest.fn(),
+        })
+
+        // then
+        expect(props.history.location.pathname).toBe('/verification-eligibilite/bientot')
+      })
+
+      it('should redirect to /pas-eligible when user is not eligible anymore', () => {
+        // given
+        checkIfAgeIsEligible.mockReturnValue('/pas-eligible')
+
+        const wrapper = mount(
+          <MemoryRouter>
+            <EligibilityCheck history={props.history} />
+          </MemoryRouter>
+        )
+
+        const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
+        const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+
+        act(() => {
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/1997' } })
+        })
+        wrapper.update()
+
+        const eligibilityForm = wrapper.find('form')
+
+        // when
+        eligibilityForm.invoke('onSubmit')({
+          preventDefault: jest.fn(),
+        })
+
+        // then
+        expect(props.history.location.pathname).toBe('/verification-eligibilite/pas-eligible')
+      })
+
+      it('should redirect to /trop-tot when user is not eligible yet', () => {
+        // given
+        checkIfAgeIsEligible.mockReturnValue('/trop-tot')
+
+        const wrapper = mount(
+          <MemoryRouter>
+            <EligibilityCheck history={props.history} />
+          </MemoryRouter>
+        )
+
+        const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
+        const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+
+        act(() => {
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/2005' } })
+        })
+        wrapper.update()
+
+        const eligibilityForm = wrapper.find('form')
+
+        // when
+        eligibilityForm.invoke('onSubmit')({
+          preventDefault: jest.fn(),
+        })
+
+        // then
+        expect(props.history.location.pathname).toBe('/verification-eligibilite/trop-tot')
+      })
+    })
   })
 })
