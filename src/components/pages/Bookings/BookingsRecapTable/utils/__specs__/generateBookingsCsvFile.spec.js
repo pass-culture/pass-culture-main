@@ -169,4 +169,83 @@ describe('generateBookingsCsvFile', () => {
       ],
     ])
   })
+
+  it('should escape offer name containing double quotes', () => {
+    // given
+    const bookings = [
+      {
+        stock: {
+          offer_name: 'Avez-vous "déjà" "vu"',
+          type: 'thing',
+          offer_isbn: '9781234567654',
+        },
+        beneficiary: {
+          lastname: 'Klepi',
+          firstname: 'Sonia',
+          email: 'sonia.klepi@example.com',
+        },
+        booking_date: '2020-04-03T12:00:00+02:00',
+        booking_token: 'ZEHBGD',
+        booking_status: 'validated',
+        booking_is_duo: false,
+        booking_amount: 1,
+        venue: {
+          identifier: 'AB',
+          name: 'La FNAC Lyon'
+        }
+      },
+      {
+        stock: {
+          offer_name: 'Jurassic "Park"',
+          type: 'thing',
+        },
+        beneficiary: {
+          lastname: 'LaGuez',
+          firstname: 'Anthony',
+          email: 'anthony.laguez@example.com',
+        },
+        booking_date: '2020-05-01T14:12:00Z',
+        booking_token: 'ABCDEF',
+        booking_status: 'cancelled',
+        booking_is_duo: false,
+        booking_amount: 2,
+        venue: {
+          identifier: 'KF',
+          name: 'Librairie Kléber'
+        }
+      },
+    ]
+
+    // when
+    const result = generateBookingsCsvFile(bookings)
+
+    // then
+    expect(result).toStrictEqual([
+      CSV_HEADERS,
+      [
+        'La FNAC Lyon',
+        "Avez-vous \"\"déjà\"\" \"\"vu\"\"",
+        '',
+        '9781234567654',
+        'Klepi Sonia',
+        'sonia.klepi@example.com',
+        '03/04/2020 12:00',
+        'ZEHBGD',
+        1,
+        'validé',
+      ],
+      [
+        'Librairie Kléber',
+        "Jurassic \"\"Park\"\"",
+        '',
+        '',
+        'LaGuez Anthony',
+        'anthony.laguez@example.com',
+        '01/05/2020 14:12',
+        'ABCDEF',
+        2,
+        'annulé',
+      ],
+    ])
+  })
 })

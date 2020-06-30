@@ -28,9 +28,10 @@ const generateBookingsCsvFile = bookings => {
 
   bookings.forEach(booking => {
     const bookingArray = []
+    const offerNameWithEscapedDoubleQuotes = booking.stock.offer_name.replace(/"/g, '""')
 
     bookingArray.push(booking.venue.name)
-    bookingArray.push(booking.stock.offer_name)
+    bookingArray.push(offerNameWithEscapedDoubleQuotes)
     bookingArray.push(formatEventDatetimeIfEventType(booking))
     bookingArray.push(booking.stock.offer_isbn || '')
     bookingArray.push(booking.beneficiary.lastname.concat(' ', booking.beneficiary.firstname))
