@@ -236,10 +236,12 @@ def _build_bookings_recap_query(user_id: int) -> Query:
             UserSQLEntity.email.label("beneficiaryEmail"),
             StockSQLEntity.beginningDatetime.label('stockBeginningDatetime'),
             VenueSQLEntity.departementCode.label('venueDepartementCode'),
+            Offerer.name.label('offererName'),
             Offerer.postalCode.label('offererPostalCode'),
             VenueSQLEntity.id.label('venueId'),
             VenueSQLEntity.name.label('venueName'),
             VenueSQLEntity.publicName.label('venuePublicName'),
+            VenueSQLEntity.isVirtual.label('venueIsVirtual'),
         )
 
 
@@ -282,6 +284,7 @@ def _serialize_thing_booking_recap(booking: object) -> ThingBookingRecap:
     return ThingBookingRecap(
         offer_identifier=booking.offerId,
         offer_name=booking.offerName,
+        offerer_name=booking.offererName,
         beneficiary_email=booking.beneficiaryEmail,
         beneficiary_firstname=booking.beneficiaryFirstname,
         beneficiary_lastname=booking.beneficiaryLastname,
@@ -296,7 +299,8 @@ def _serialize_thing_booking_recap(booking: object) -> ThingBookingRecap:
         date_used=_serialize_date_with_timezone(date_without_timezone=booking.dateUsed, booking=booking),
         payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
         cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate, booking=booking),
-        venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName
+        venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName,
+        venue_is_virtual=booking.venueIsVirtual
     )
 
 
@@ -304,6 +308,7 @@ def _serialize_book_booking_recap(booking: object) -> BookBookingRecap:
     return BookBookingRecap(
         offer_identifier=booking.offerId,
         offer_name=booking.offerName,
+        offerer_name=booking.offererName,
         offer_isbn=booking.offerExtraData['isbn'],
         beneficiary_email=booking.beneficiaryEmail,
         beneficiary_firstname=booking.beneficiaryFirstname,
@@ -319,7 +324,8 @@ def _serialize_book_booking_recap(booking: object) -> BookBookingRecap:
         date_used=_serialize_date_with_timezone(date_without_timezone=booking.dateUsed, booking=booking),
         payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
         cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate, booking=booking),
-        venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName
+        venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName,
+        venue_is_virtual=booking.venueIsVirtual
     )
 
 
@@ -327,6 +333,7 @@ def _serialize_event_booking_recap(booking: object) -> EventBookingRecap:
     return EventBookingRecap(
         offer_identifier=booking.offerId,
         offer_name=booking.offerName,
+        offerer_name=booking.offererName,
         beneficiary_email=booking.beneficiaryEmail,
         beneficiary_firstname=booking.beneficiaryFirstname,
         beneficiary_lastname=booking.beneficiaryLastname,
@@ -345,7 +352,8 @@ def _serialize_event_booking_recap(booking: object) -> EventBookingRecap:
         payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
         cancellation_date=_serialize_date_with_timezone(date_without_timezone=booking.cancellationDate, booking=booking),
         venue_identifier=booking.venueId,
-        venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName
+        venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName,
+        venue_is_virtual=booking.venueIsVirtual
     )
 
 

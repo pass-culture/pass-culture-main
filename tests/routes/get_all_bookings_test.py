@@ -108,8 +108,12 @@ class GetTest:
                             ),
                         },
                     ],
+                    'offerer': {
+                        'name': offerer.name
+                    },
                     'venue': {
                         'identifier': 'B4',
+                        'is_virtual': venue.isVirtual,
                         'name': venue.name
                     }
                 }

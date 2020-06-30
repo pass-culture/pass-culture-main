@@ -74,8 +74,12 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> Dict[str, Any]:
         "booking_is_duo": booking_recap.booking_is_duo,
         "booking_amount": booking_recap.booking_amount,
         "booking_status_history": _serialize_booking_status_history(booking_recap.booking_status_history),
+        "offerer": {
+            "name": booking_recap.offerer_name
+        },
         "venue": {
             "identifier": humanize(booking_recap.venue_identifier),
+            "is_virtual": booking_recap.venue_is_virtual,
             "name": booking_recap.venue_name
         }
     }

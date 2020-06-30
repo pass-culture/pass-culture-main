@@ -1426,6 +1426,7 @@ class FindByProUserIdTest:
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
         assert expected_booking_recap.offer_identifier == stock.offer.id
         assert expected_booking_recap.offer_name == 'Harry Potter'
+        assert expected_booking_recap.offerer_name == offerer.name
         assert expected_booking_recap.beneficiary_firstname == 'Ron'
         assert expected_booking_recap.beneficiary_lastname == 'Weasley'
         assert expected_booking_recap.beneficiary_email == 'beneficiary@example.com'
@@ -1439,6 +1440,7 @@ class FindByProUserIdTest:
         assert expected_booking_recap.booking_amount == 12
         assert expected_booking_recap.booking_status_history.booking_date == booking_date.astimezone(
             tz.gettz('Europe/Paris'))
+        assert expected_booking_recap.venue_is_virtual == venue.isVirtual
 
     @clean_database
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture) -> None:

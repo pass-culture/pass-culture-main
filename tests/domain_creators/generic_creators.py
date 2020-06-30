@@ -25,6 +25,7 @@ def create_domain_beneficiary(identifier: int = None,
 
 def create_domain_thing_booking_recap(offer_identifier: int = 1,
                                       offer_name: str = "Le livre de la jungle",
+                                      offerer_name: str = "Libraire de Caen",
                                       offer_isbn: str = None,
                                       beneficiary_lastname: str = "Sans Nom",
                                       beneficiary_firstname: str = "Mowgli",
@@ -40,11 +41,13 @@ def create_domain_thing_booking_recap(offer_identifier: int = 1,
                                       cancellation_date: Optional[datetime] = None,
                                       date_used: Optional[datetime] = None,
                                       venue_identifier: int = 1,
-                                      venue_name="Librairie Kléber") -> ThingBookingRecap:
+                                      venue_name="Librairie Kléber",
+                                      venue_is_virtual=False) -> ThingBookingRecap:
     if offer_isbn:
         return BookBookingRecap(
             offer_identifier=offer_identifier,
             offer_name=offer_name,
+            offerer_name=offerer_name,
             offer_isbn=offer_isbn,
             beneficiary_lastname=beneficiary_lastname,
             beneficiary_firstname=beneficiary_firstname,
@@ -61,10 +64,12 @@ def create_domain_thing_booking_recap(offer_identifier: int = 1,
             date_used=date_used,
             venue_identifier=venue_identifier,
             venue_name=venue_name,
+            venue_is_virtual=venue_is_virtual,
         )
     return ThingBookingRecap(
         offer_identifier=offer_identifier,
         offer_name=offer_name,
+        offerer_name=offerer_name,
         beneficiary_lastname=beneficiary_lastname,
         beneficiary_firstname=beneficiary_firstname,
         beneficiary_email=beneficiary_email,
@@ -80,6 +85,7 @@ def create_domain_thing_booking_recap(offer_identifier: int = 1,
         date_used=date_used,
         venue_identifier=venue_identifier,
         venue_name=venue_name,
+        venue_is_virtual=venue_is_virtual
     )
 
 
@@ -88,6 +94,7 @@ def create_domain_event_booking_recap(payment_date: Optional[datetime] = None,
                                       date_used: Optional[datetime] = None,
                                       offer_identifier: int = 1,
                                       offer_name: str = "Le cirque du Soleil",
+                                      offerer_name='Libraire de Caen',
                                       beneficiary_lastname: str = "Doe",
                                       beneficiary_firstname: str = "Jane",
                                       beneficiary_email: str = "jane.doe@example.com",
@@ -100,10 +107,12 @@ def create_domain_event_booking_recap(payment_date: Optional[datetime] = None,
                                       booking_is_reimbursed: bool = False,
                                       event_beginning_datetime: datetime = datetime(2020, 5, 26, 20, 30, 0, 0),
                                       venue_identifier: int = 1,
-                                      venue_name="Librairie Kléber") -> EventBookingRecap:
+                                      venue_name="Librairie Kléber",
+                                      venue_is_virtual=False) -> EventBookingRecap:
     return EventBookingRecap(
         offer_identifier=offer_identifier,
         offer_name=offer_name,
+        offerer_name=offerer_name,
         beneficiary_lastname=beneficiary_lastname,
         beneficiary_firstname=beneficiary_firstname,
         beneficiary_email=beneficiary_email,
@@ -120,4 +129,5 @@ def create_domain_event_booking_recap(payment_date: Optional[datetime] = None,
         payment_date=payment_date,
         date_used=date_used,
         venue_name=venue_name,
+        venue_is_virtual=venue_is_virtual,
     )

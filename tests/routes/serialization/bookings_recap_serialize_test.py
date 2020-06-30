@@ -16,6 +16,7 @@ class SerializeBookingRecapTest:
         thing_booking_recap = create_domain_thing_booking_recap(
             offer_identifier=1,
             offer_name="Fondation",
+            offerer_name="Fondation de Caen",
             beneficiary_firstname="Hari",
             beneficiary_lastname="Seldon",
             beneficiary_email="hari.seldon@example.com",
@@ -27,6 +28,7 @@ class SerializeBookingRecapTest:
         thing_booking_recap_2 = create_domain_thing_booking_recap(
             offer_identifier=2,
             offer_name="Fondation",
+            offerer_name="Fondation de Paris",
             beneficiary_firstname="Golan",
             beneficiary_lastname="Trevize",
             beneficiary_email="golan.trevize@example.com",
@@ -72,9 +74,13 @@ class SerializeBookingRecapTest:
                     },
                 ],
                 'booking_amount': 18,
+                'offerer': {
+                    'name': "Fondation de Caen"
+                },
                 "venue": {
                     "identifier": "AE",
-                    "name": "Librairie Kléber"
+                    "name": "Librairie Kléber",
+                    "is_virtual": False
                 }
             },
             {
@@ -99,9 +105,13 @@ class SerializeBookingRecapTest:
                     },
                 ],
                 'booking_amount': 0,
+                'offerer': {
+                    'name': "Fondation de Paris"
+                },
                 "venue": {
                     "identifier": "AE",
-                    "name": "Librairie Kléber"
+                    "name": "Librairie Kléber",
+                    "is_virtual": False
                 }
             }
         ]
@@ -115,6 +125,7 @@ class SerializeBookingRecapTest:
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         day_after_booking_date = booking_date + timedelta(days=1)
         event_booking_recap = create_domain_event_booking_recap(offer_name="Cirque du soleil",
+                                                                offerer_name="Fondation des cirques de France",
                                                                 beneficiary_firstname="Hari",
                                                                 beneficiary_lastname="Seldon",
                                                                 beneficiary_email="hari.seldon@example.com",
@@ -157,9 +168,13 @@ class SerializeBookingRecapTest:
                     },
                 ],
                 'booking_amount': 0,
+                'offerer': {
+                    'name': 'Fondation des cirques de France'
+                },
                 "venue": {
                     "identifier": "AE",
-                    "name": "Librairie Kléber"
+                    "name": "Librairie Kléber",
+                    "is_virtual": False
                 }
             },
         ]
@@ -172,7 +187,9 @@ class SerializeBookingRecapTest:
         # Given
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
         thing_booking_recap = create_domain_thing_booking_recap(offer_identifier=1, offer_name="Martine a la playa",
-                                                                offer_isbn='987654345678', beneficiary_firstname="Hari",
+                                                                offer_isbn='987654345678',
+                                                                offerer_name='La maman de Martine',
+                                                                beneficiary_firstname="Hari",
                                                                 beneficiary_lastname="Seldon",
                                                                 beneficiary_email="hari.seldon@example.com",
                                                                 booking_date=booking_date, booking_token="LUNE")
@@ -212,9 +229,13 @@ class SerializeBookingRecapTest:
                         'date': '2020-01-01T10:00:00',
                     },
                 ],
+                'offerer': {
+                  'name': 'La maman de Martine'
+                },
                 "venue": {
                     "identifier": "AE",
-                    "name": "Librairie Kléber"
+                    "name": "Librairie Kléber",
+                    "is_virtual": False
                 }
             },
         ]

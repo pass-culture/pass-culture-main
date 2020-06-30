@@ -30,8 +30,10 @@ class BookingRecap:
                  date_used: Optional[datetime],
                  offer_identifier: int,
                  offer_name: str,
+                 offerer_name: str,
                  venue_identifier: int,
                  venue_name: str,
+                 venue_is_virtual: bool,
                  ):
         self.booking_amount = booking_amount
         self.beneficiary_lastname = beneficiary_lastname
@@ -45,6 +47,7 @@ class BookingRecap:
         self.booking_is_reimbursed = booking_is_reimbursed
         self.offer_identifier = offer_identifier
         self.offer_name = offer_name
+        self.offerer_name = offerer_name
         self.venue_identifier = venue_identifier
         self.booking_status_history = self.build_status_history(
             booking_date=booking_date,
@@ -52,6 +55,7 @@ class BookingRecap:
             payment_date=payment_date,
             date_used=date_used)
         self.venue_name = venue_name
+        self.venue_is_virtual = venue_is_virtual
 
     def __new__(cls, *args, **kwargs):
         if cls is BookingRecap:
