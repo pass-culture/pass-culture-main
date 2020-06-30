@@ -30,7 +30,11 @@ const generateBookingsCsvFile = bookings => {
     const bookingArray = []
     const offerNameWithEscapedDoubleQuotes = booking.stock.offer_name.replace(/"/g, '""')
 
-    bookingArray.push(booking.venue.name)
+    if (booking.venue.is_virtual) {
+      bookingArray.push(`${booking.offerer.name} - Offre numérique`)
+    } else {
+      bookingArray.push(booking.venue.name)
+    }
     bookingArray.push(offerNameWithEscapedDoubleQuotes)
     bookingArray.push(formatEventDatetimeIfEventType(booking))
     bookingArray.push(booking.stock.offer_isbn || '')
