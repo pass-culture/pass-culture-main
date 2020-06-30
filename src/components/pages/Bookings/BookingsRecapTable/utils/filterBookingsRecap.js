@@ -15,23 +15,23 @@ const doesBookingBeneficiaryMatchFilter = (bookingBeneficiary, booking) => {
     const beneficiaryFirstNameFromBooking = _sanitize(booking.beneficiary.firstname)
     const beneficiaryEmailFromBooking = _sanitize(booking.beneficiary.email)
 
-    const FirstNameLastName = beneficiaryFirstNameFromBooking.concat(
+    const firstNameLastName = beneficiaryFirstNameFromBooking.concat(
       ' ',
       beneficiaryLastNameFromBooking
     )
-    const LastNameFirstName = beneficiaryLastNameFromBooking.concat(
+    const lastNameFirstName = beneficiaryLastNameFromBooking.concat(
       ' ',
       beneficiaryFirstNameFromBooking
     )
 
-    const isAPartOfNameOrEmailAddress =
-      beneficiaryLastNameFromBooking.includes(beneficiarySanitarized) ||
-      beneficiaryFirstNameFromBooking.includes(beneficiarySanitarized) ||
-      beneficiaryEmailFromBooking.includes(beneficiarySanitarized)
-    const isFirstNameLastName = FirstNameLastName.includes(beneficiarySanitarized)
-    const isLastNameFirstName = LastNameFirstName.includes(beneficiarySanitarized)
-
-    return isAPartOfNameOrEmailAddress || isFirstNameLastName || isLastNameFirstName
+    const referential = [
+      beneficiaryLastNameFromBooking,
+      beneficiaryFirstNameFromBooking,
+      beneficiaryEmailFromBooking,
+      firstNameLastName,
+      lastNameFirstName,
+    ]
+    return referential.includes(beneficiarySanitarized)
   }
   return true
 }
@@ -127,10 +127,11 @@ const filterBookingsRecap = (bookingsRecap, filters) => {
   })
 }
 
-function _sanitize(input) {
+const _sanitize = input => {
+  const REMOVE_ACCENTS_REGEX = /[\u0300-\u036f]/g
   return input
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+    .replace(REMOVE_ACCENTS_REGEX, '')
     .trim()
     .toLowerCase()
 }
