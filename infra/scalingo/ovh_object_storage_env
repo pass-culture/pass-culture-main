@@ -1,6 +1,0 @@
-export OVH_TENANT_NAME=
-export OVH_USER=
-export OVH_PASSWORD=
-export OVH_REGION=GRA3
-export OVH_AUTH_URL=https://auth.cloud.ovh.net/v2.0/
-export CONTAINER_NAME=
