@@ -1,8 +1,10 @@
 from tests.conftest import TestClient
+from unittest.mock import patch
 
 class Post:
     class Returns200:
-        def when_has_exact_payload(self, app):
+        @patch('routes.beneficiaries.beneficiary_job.delay')
+        def when_has_exact_payload(self, mocked_beneficiary_job, app):
             # Given
             data = {'id': '5'}
 
@@ -12,9 +14,11 @@ class Post:
 
             # Then
             assert response.status_code == 200
+            mocked_beneficiary_job.assert_called_once_with(5)
 
     class Returns400:
-        def when_no_payload(self, app):
+        @patch('routes.beneficiaries.beneficiary_job.delay')
+        def when_no_payload(self, mocked_beneficiary_job, app):
             # When
             response = TestClient(app.test_client()) \
                 .post('/beneficiaries/application_update')
@@ -22,7 +26,8 @@ class Post:
             # Then
             assert response.status_code == 400
 
-        def when_has_wrong_payload(self, app):
+        @patch('routes.beneficiaries.beneficiary_job.delay')
+        def when_has_wrong_payload(self, mocked_beneficiary_job, app):
             # Given
             data = {'next-id': '5'}
 
@@ -33,7 +38,8 @@ class Post:
             # Then
             assert response.status_code == 400
 
-        def when_id_is_not_a_number(self, app):
+        @patch('routes.beneficiaries.beneficiary_job.delay')
+        def when_id_is_not_a_number(self, mocked_beneficiary_job, app):
             # Given
             data = {'id': 'cinq'}
 

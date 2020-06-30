@@ -2,6 +2,7 @@ from flask import current_app as app, request
 
 from validation.routes.beneficiaries import check_verify_licence_token_payload, \
     check_licence_token_is_valid, check_application_update_payload, parse_application_id
+from workers.beneficiary_job import beneficiary_job
 
 
 @app.route('/beneficiaries/licence_verify', methods=['POST'])
@@ -22,5 +23,7 @@ def id_check_application_update():
 
     raw_application_id = request.json.get('id')
     application_id = parse_application_id(raw_application_id)
+
+    beneficiary_job.delay(application_id)
 
     return '', 200
