@@ -16,11 +16,11 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
-    op.add_column('user', sa.Column('address', sa.VARCHAR(200), nullable=True))
-    op.add_column('user', sa.Column('city', sa.VARCHAR(50), nullable=True))
+def upgrade() -> None:
+    op.add_column('user', sa.Column('address', sa.Text, nullable=True))
+    op.add_column('user', sa.Column('city', sa.VARCHAR(100), nullable=True))
 
 
-def downgrade():
+def downgrade() -> None:
     op.drop_column('user', 'city')
     op.drop_column('user', 'address')

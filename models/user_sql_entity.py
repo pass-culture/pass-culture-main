@@ -8,7 +8,8 @@ from sqlalchemy import Binary, \
     Column, \
     func, \
     DateTime, \
-    String
+    String, \
+    Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
@@ -31,14 +32,14 @@ class UserSQLEntity(PcObject,
 
     email = Column(String(120), nullable=False, unique=True)
 
-    address = Column(String(200), nullable=True)
+    address = Column(Text, nullable=True)
 
     canBookFreeOffers = Column(Boolean,
                                nullable=False,
                                server_default=expression.true(),
                                default=True)
 
-    city = Column(String(50), nullable=True)
+    city = Column(String(100), nullable=True)
 
     clearTextPassword = None
 
