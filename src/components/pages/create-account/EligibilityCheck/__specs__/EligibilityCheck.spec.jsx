@@ -21,12 +21,10 @@ jest.mock('../../domain/checkIfDepartmentIsEligible', () => {
 })
 
 describe('eligibility check page', () => {
-  let props
+  let history
 
   beforeEach(() => {
-    props = {
-      history: createMemoryHistory(),
-    }
+    history = createMemoryHistory()
   })
 
   describe('when rendering', () => {
@@ -34,7 +32,7 @@ describe('eligibility check page', () => {
       // when
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck history={props.history} />
+          <EligibilityCheck history={history} />
         </MemoryRouter>
       )
 
@@ -47,7 +45,7 @@ describe('eligibility check page', () => {
       // when
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck history={props.history} />
+          <EligibilityCheck history={history} />
         </MemoryRouter>
       )
 
@@ -60,7 +58,7 @@ describe('eligibility check page', () => {
       // when
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck history={props.history} />
+          <EligibilityCheck history={history} />
         </MemoryRouter>
       )
 
@@ -76,7 +74,7 @@ describe('eligibility check page', () => {
       // when
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck history={props.history} />
+          <EligibilityCheck history={history} />
         </MemoryRouter>
       )
 
@@ -92,7 +90,7 @@ describe('eligibility check page', () => {
       // when
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck history={props.history} />
+          <EligibilityCheck history={history} />
         </MemoryRouter>
       )
 
@@ -107,7 +105,7 @@ describe('eligibility check page', () => {
       // given
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck history={props.history} />
+          <EligibilityCheck history={history} />
         </MemoryRouter>
       )
       const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
@@ -127,7 +125,7 @@ describe('eligibility check page', () => {
       // given
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck history={props.history} />
+          <EligibilityCheck history={history} />
         </MemoryRouter>
       )
       const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
@@ -149,7 +147,7 @@ describe('eligibility check page', () => {
       // given
       const wrapper = mount(
         <MemoryRouter>
-          <EligibilityCheck history={props.history} />
+          <EligibilityCheck history={history} />
         </MemoryRouter>
       )
 
@@ -183,7 +181,7 @@ describe('eligibility check page', () => {
         // given
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck history={props.history} />
+            <EligibilityCheck history={history} />
           </MemoryRouter>
         )
 
@@ -214,7 +212,7 @@ describe('eligibility check page', () => {
 
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck history={props.history} />
+            <EligibilityCheck history={history} />
           </MemoryRouter>
         )
 
@@ -235,7 +233,7 @@ describe('eligibility check page', () => {
         })
 
         // then
-        expect(props.history.location.pathname).toBe('/verification-eligibilite/eligible')
+        expect(history.location.pathname).toBe('/verification-eligibilite/eligible')
       })
 
       it('should redirect to /department-non-eligible when department is not eligible', () => {
@@ -244,7 +242,7 @@ describe('eligibility check page', () => {
 
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck history={props.history} />
+            <EligibilityCheck history={history} />
           </MemoryRouter>
         )
 
@@ -265,9 +263,7 @@ describe('eligibility check page', () => {
         })
 
         // then
-        expect(props.history.location.pathname).toBe(
-          '/verification-eligibilite/departement-non-eligible'
-        )
+        expect(history.location.pathname).toBe('/verification-eligibilite/departement-non-eligible')
       })
     })
 
@@ -282,7 +278,7 @@ describe('eligibility check page', () => {
 
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck history={props.history} />
+            <EligibilityCheck history={history} />
           </MemoryRouter>
         )
 
@@ -303,7 +299,7 @@ describe('eligibility check page', () => {
         })
 
         // then
-        expect(props.history.location.pathname).toBe('/verification-eligibilite/bientot')
+        expect(history.location.pathname).toBe('/verification-eligibilite/bientot')
       })
 
       it('should redirect to /pas-eligible when user is not eligible anymore', () => {
@@ -312,7 +308,7 @@ describe('eligibility check page', () => {
 
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck history={props.history} />
+            <EligibilityCheck history={history} />
           </MemoryRouter>
         )
 
@@ -333,7 +329,7 @@ describe('eligibility check page', () => {
         })
 
         // then
-        expect(props.history.location.pathname).toBe('/verification-eligibilite/pas-eligible')
+        expect(history.location.pathname).toBe('/verification-eligibilite/pas-eligible')
       })
 
       it('should redirect to /trop-tot when user is not eligible yet', () => {
@@ -342,7 +338,7 @@ describe('eligibility check page', () => {
 
         const wrapper = mount(
           <MemoryRouter>
-            <EligibilityCheck history={props.history} />
+            <EligibilityCheck history={history} />
           </MemoryRouter>
         )
 
@@ -363,7 +359,7 @@ describe('eligibility check page', () => {
         })
 
         // then
-        expect(props.history.location.pathname).toBe('/verification-eligibilite/trop-tot')
+        expect(history.location.pathname).toBe('/verification-eligibilite/trop-tot')
       })
     })
   })

@@ -1,10 +1,10 @@
 import React, { useState, useCallback } from 'react'
 import InputMask from 'react-input-mask'
+import PropTypes from 'prop-types'
 
 import BackLink from '../../../layout/Header/BackLink/BackLink'
 import { checkIfDepartmentIsEligible } from '../domain/checkIfDepartmentIsEligible'
 import { checkIfAgeIsEligible } from '../domain/checkIfAgeIsEligible'
-import PropTypes from 'prop-types'
 
 const EligibilityCheck = ({ history }) => {
   const [postalCodeInputValue, setPostalCodeInputValue] = useState('')

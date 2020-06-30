@@ -1,13 +1,14 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 import { Route } from 'react-router-dom'
+import { createMemoryHistory } from 'history'
 
 import CreateAccount from '../CreateAccount'
 
 describe('create account page', () => {
   it('should allow redirection to specific routes', () => {
     // when
-    const wrapper = shallow(<CreateAccount />)
+    const wrapper = shallow(<CreateAccount history={createMemoryHistory()} />)
 
     // then
     const routes = wrapper.find(Route)
