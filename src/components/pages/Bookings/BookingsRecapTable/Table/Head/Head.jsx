@@ -4,8 +4,12 @@ import Icon from '../../../../../layout/Icon'
 
 const IS_MULTI_SORT_ACTIVATED = false
 
-const handleOnKeyDown = (column, selector) => () =>
-  column.toggleSortBy(selector, IS_MULTI_SORT_ACTIVATED)
+const handleOnKeyDown = (column, selector) => event => {
+  const enterKeyHasBeenPressed = event.key === 'Enter'
+  if (enterKeyHasBeenPressed) {
+    column.toggleSortBy(selector, IS_MULTI_SORT_ACTIVATED)
+  }
+}
 
 const Head = ({ headerGroups }) => {
   return (
