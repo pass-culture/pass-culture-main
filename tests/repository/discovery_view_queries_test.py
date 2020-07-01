@@ -12,7 +12,7 @@ class CleanTest:
     @clean_database
     def test_should_remove_dead_tuples_in_database(self, app):
         # Given
-        discovery_last_vacuum = datetime.now().replace(tzinfo=pytz.utc)
+        discovery_last_vacuum_date = datetime.now().replace(tzinfo=pytz.utc)
         discovery_view_queries.refresh()
 
         # When
@@ -20,7 +20,7 @@ class CleanTest:
 
         # Then
         time.sleep(1)
-        discovery_new_vacuum = db.session.execute("""
+        discovery_new_vacuum_date = db.session.execute("""
           SELECT last_vacuum FROM pg_stat_all_tables WHERE relname = 'discovery_view';
         """).scalar()
-        assert discovery_new_vacuum > discovery_last_vacuum
+        assert discovery_new_vacuum_date > discovery_last_vacuum_date

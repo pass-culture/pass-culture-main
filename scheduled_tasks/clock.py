@@ -99,7 +99,8 @@ def pc_update_recommendations_view(app) -> None:
 @cron_context
 @cron_require_feature(FeatureToggle.UPDATE_DISCOVERY_VIEW)
 def pc_update_recommendations_view_with_geolocation(app) -> None:
-    discovery_view_v3_queries.refresh()
+    if feature_queries.is_active(FeatureToggle.RECOMMENDATIONS_WITH_GEOLOCATION):
+        discovery_view_v3_queries.refresh()
 
 
 @log_cron
