@@ -38,9 +38,9 @@ def send_raw_email(data: Dict) -> bool:
         email_queries.save(data, status)
         if not successfully_sent_email:
             logger.logger.warning(
-                f'[EMAIL] Trying to send email # {data} failed with status code {response.status_code}')
+                f'[EMAIL] Trying to send email failed with status code {response.status_code}')
     except Exception:
-        logger.logger.error(f'[EMAIL] Trying to send email # {data} failed with unexpected error')
+        logger.logger.error(f'[EMAIL] Trying to send email failed with unexpected error')
     finally:
         return successfully_sent_email
 
