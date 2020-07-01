@@ -18,10 +18,10 @@ def upgrade():
     op.execute('COMMIT')
     op.create_index(op.f('idx_discovery_view_offerId'),
                     'discovery_view', ['id'],
-                    unique=True, postgresql_concurrently=True)
+                    postgresql_concurrently=True)
     op.create_index(op.f('idx_discovery_view_v3_offerId'),
                     'discovery_view_v3', ['id'],
-                    unique=True, postgresql_concurrently=True)
+                    postgresql_concurrently=True)
 
 
 def downgrade():
