@@ -1,9 +1,13 @@
 import { getOffset } from '../utils/getOffset'
 
+export const ELIGIBLE = 'eligible'
+export const TOO_OLD = 'tooOld'
+export const TOO_YOUNG = 'tooYoung'
+export const SOON = 'soon'
+
 export const checkIfAgeIsEligible = formattedBirthDate => {
   const [birthDay, birthMonth, birthYear] = formattedBirthDate.split('/')
   const birthYearInteger = parseInt(birthYear)
-
   const offset = getOffset()
 
   const seventeenthBirthdayTimestamp = new Date(
@@ -30,15 +34,15 @@ export const checkIfAgeIsEligible = formattedBirthDate => {
     currentTimestamp >= seventeenthBirthdayTimestamp
 
   if (isUserBetween18And19YearsOld) {
-    return '/eligible'
+    return ELIGIBLE
   }
   if (isUserOlderThan19YearsOld) {
-    return '/pas-eligible'
+    return TOO_OLD
   }
   if (isUserBetween17And18YearsOld) {
-    return '/bientot'
+    return SOON
   }
   if (isUserYoungerThan17YearsOld) {
-    return '/trop-tot'
+    return TOO_YOUNG
   }
 }

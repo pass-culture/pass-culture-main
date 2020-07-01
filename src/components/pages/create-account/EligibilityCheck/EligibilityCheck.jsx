@@ -1,10 +1,11 @@
-import React, { useState, useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import InputMask from 'react-input-mask'
 import PropTypes from 'prop-types'
 
 import BackLink from '../../../layout/Header/BackLink/BackLink'
 import { checkIfDepartmentIsEligible } from '../domain/checkIfDepartmentIsEligible'
 import { checkIfAgeIsEligible } from '../domain/checkIfAgeIsEligible'
+import { eligibilityPaths } from './eligibilityPaths'
 
 const EligibilityCheck = ({ history }) => {
   const [postalCodeInputValue, setPostalCodeInputValue] = useState('')
@@ -25,6 +26,7 @@ const EligibilityCheck = ({ history }) => {
   const handleSubmit = useCallback(
     event => {
       event.preventDefault()
+      const currentPathName = history.location.pathname
       const splittedBirthDate = dateOfBirthInputValue.split('/')
       const birthDay = splittedBirthDate[0]
       const birthMonth = splittedBirthDate[1]
@@ -37,14 +39,14 @@ const EligibilityCheck = ({ history }) => {
 
       const ageEligibilityValue = checkIfAgeIsEligible(dateOfBirthInputValue)
 
-      if (ageEligibilityValue === '/eligible') {
+      if (ageEligibilityValue === 'eligible') {
         const isDepartmentEligible = checkIfDepartmentIsEligible(postalCodeInputValue)
 
         isDepartmentEligible
-          ? history.push('/verification-eligibilite/eligible')
-          : history.push('/verification-eligibilite/departement-non-eligible')
+          ? history.push(currentPathName + eligibilityPaths[ageEligibilityValue])
+          : history.push(currentPathName + 'departement-non-eligible')
       } else {
-        history.push('/verification-eligibilite' + ageEligibilityValue)
+        history.push(currentPathName + eligibilityPaths[ageEligibilityValue])
       }
     },
     [postalCodeInputValue, dateOfBirthInputValue]
@@ -98,6 +100,9 @@ const EligibilityCheck = ({ history }) => {
 EligibilityCheck.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
+    location: PropTypes.shape({
+      pathname: PropTypes.string.isRequired,
+    }).isRequired,
   }).isRequired,
 }
 

@@ -9,7 +9,10 @@ import { checkIfAgeIsEligible } from '../../domain/checkIfAgeIsEligible'
 import { checkIfDepartmentIsEligible } from '../../domain/checkIfDepartmentIsEligible'
 
 jest.mock('../../domain/checkIfAgeIsEligible', () => {
+  const originalModule = jest.requireActual('../../domain/checkIfAgeIsEligible')
+
   return {
+    ...originalModule,
     checkIfAgeIsEligible: jest.fn(),
   }
 })
@@ -25,6 +28,7 @@ describe('eligibility check page', () => {
 
   beforeEach(() => {
     history = createMemoryHistory()
+    history.location.pathname = '/verification-eligibilite/'
   })
 
   describe('when rendering', () => {
@@ -174,7 +178,7 @@ describe('eligibility check page', () => {
 
     describe('when user age is eligible', () => {
       beforeEach(() => {
-        checkIfAgeIsEligible.mockReturnValue('/eligible')
+        checkIfAgeIsEligible.mockReturnValue('eligible')
       })
 
       it("should check if department is eligible based on user's postal code", () => {
@@ -274,7 +278,7 @@ describe('eligibility check page', () => {
 
       it('should redirect to /bientot when user is soon to be eligible', () => {
         // given
-        checkIfAgeIsEligible.mockReturnValue('/bientot')
+        checkIfAgeIsEligible.mockReturnValue('soon')
 
         const wrapper = mount(
           <MemoryRouter>
@@ -304,7 +308,7 @@ describe('eligibility check page', () => {
 
       it('should redirect to /pas-eligible when user is not eligible anymore', () => {
         // given
-        checkIfAgeIsEligible.mockReturnValue('/pas-eligible')
+        checkIfAgeIsEligible.mockReturnValue('tooOld')
 
         const wrapper = mount(
           <MemoryRouter>
@@ -334,7 +338,7 @@ describe('eligibility check page', () => {
 
       it('should redirect to /trop-tot when user is not eligible yet', () => {
         // given
-        checkIfAgeIsEligible.mockReturnValue('/trop-tot')
+        checkIfAgeIsEligible.mockReturnValue('tooYoung')
 
         const wrapper = mount(
           <MemoryRouter>

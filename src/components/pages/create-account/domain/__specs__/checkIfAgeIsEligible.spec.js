@@ -19,7 +19,7 @@ describe('check if user age is eligible', () => {
       const returnValue = checkIfAgeIsEligible(birthDate)
 
       // Then
-      expect(returnValue).toBe('/eligible')
+      expect(returnValue).toBe('eligible')
     })
 
     it('should be eligible the day before his 19th birthday', () => {
@@ -34,7 +34,7 @@ describe('check if user age is eligible', () => {
       const returnValue = checkIfAgeIsEligible(birthDate)
 
       // Then
-      expect(returnValue).toBe('/eligible')
+      expect(returnValue).toBe('eligible')
     })
 
     it('should be eligible on his 18th birthday', () => {
@@ -47,7 +47,7 @@ describe('check if user age is eligible', () => {
       const returnValue = checkIfAgeIsEligible(birthDate)
 
       // Then
-      expect(returnValue).toBe('/eligible')
+      expect(returnValue).toBe('eligible')
     })
   })
 
@@ -63,7 +63,7 @@ describe('check if user age is eligible', () => {
         const returnValue = checkIfAgeIsEligible(birthDate)
 
         // Then
-        expect(returnValue).toBe('/pas-eligible')
+        expect(returnValue).toBe('tooOld')
       })
 
       it('should not be eligible if user age is 19 years old or older', () => {
@@ -76,7 +76,7 @@ describe('check if user age is eligible', () => {
         const returnValue = checkIfAgeIsEligible(birthDate)
 
         // Then
-        expect(returnValue).toBe('/pas-eligible')
+        expect(returnValue).toBe('tooOld')
       })
     })
 
@@ -91,7 +91,7 @@ describe('check if user age is eligible', () => {
         const returnValue = checkIfAgeIsEligible(birthDate)
 
         // Then
-        expect(returnValue).toBe('/bientot')
+        expect(returnValue).toBe('soon')
       })
 
       it('should return bientot the day before his 18th birthday', () => {
@@ -106,7 +106,7 @@ describe('check if user age is eligible', () => {
         const returnValue = checkIfAgeIsEligible(birthDate)
 
         // Then
-        expect(returnValue).toBe('/bientot')
+        expect(returnValue).toBe('soon')
       })
 
       it('should return bientot on his 17th birthday', () => {
@@ -119,7 +119,7 @@ describe('check if user age is eligible', () => {
         const returnValue = checkIfAgeIsEligible(birthDate)
 
         // Then
-        expect(returnValue).toBe('/bientot')
+        expect(returnValue).toBe('soon')
       })
     })
 
@@ -134,7 +134,7 @@ describe('check if user age is eligible', () => {
         const returnValue = checkIfAgeIsEligible(birthDate)
 
         // Then
-        expect(returnValue).toBe('/trop-tot')
+        expect(returnValue).toBe('tooYoung')
       })
 
       it('should return trop-tot the day before his 17th birthday', () => {
@@ -149,7 +149,7 @@ describe('check if user age is eligible', () => {
         const returnValue = checkIfAgeIsEligible(birthDate)
 
         // Then
-        expect(returnValue).toBe('/trop-tot')
+        expect(returnValue).toBe('tooYoung')
       })
     })
   })
