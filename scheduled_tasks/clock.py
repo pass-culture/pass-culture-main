@@ -102,6 +102,16 @@ def pc_update_recommendations_view_with_geolocation(app) -> None:
     discovery_view_v3_queries.refresh()
 
 
+@log_cron
+@cron_context
+@cron_require_feature(FeatureToggle.CLEAN_DISCOVERY_VIEW)
+def pc_clean_discovery_views(app) -> None:
+    if feature_queries.is_active(FeatureToggle.RECOMMENDATIONS_WITH_GEOLOCATION):
+        discovery_view_v3_queries.clean(app)
+    else:
+        discovery_view_queries.clean(app)
+
+
 if __name__ == '__main__':
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
@@ -111,6 +121,7 @@ if __name__ == '__main__':
 
     discovery_view_refresh_frequency = os.environ.get('RECO_VIEW_REFRESH_FREQUENCY', '*')
     old_seen_offers_delete_frequency = os.environ.get('SEEN_OFFERS_DELETE_FREQUENCY', '*')
+    clean_discovery_frequency = os.environ.get('CLEAN_DISCOVERY_FREQUENCY', '*')
 
     orm.configure_mappers()
     scheduler = BlockingScheduler()
@@ -152,5 +163,9 @@ if __name__ == '__main__':
     scheduler.add_job(pc_update_recommendations_view_with_geolocation, 'cron',
                       [app],
                       minute=discovery_view_refresh_frequency)
+
+    scheduler.add_job(pc_clean_discovery_views, 'cron',
+                      [app],
+                      hour=clean_discovery_frequency)
 
     scheduler.start()

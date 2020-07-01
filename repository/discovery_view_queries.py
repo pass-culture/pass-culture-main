@@ -1,6 +1,10 @@
+from typing import Callable
+
+import sqlalchemy
+from flask import Flask
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from sqlalchemy.orm import Session
 from sqlalchemy_utils import refresh_materialized_view
-from typing import Callable
 
 from models import DiscoveryView
 from models.db import db
@@ -24,6 +28,26 @@ def order_by_digital_offers() -> str:
 def create(session: Session, order: Callable = order_by_digital_offers) -> None:
     _create_discovery_view(session, order, DiscoveryView.__tablename__)
     session.commit()
+
+
+def clean(app: Flask) -> None:
+    db.session.execute('UPDATE feature SET "isActive" = FALSE WHERE name = \'UPDATE_DISCOVERY_VIEW\'')
+
+    db.session.execute("""
+      SELECT pg_cancel_backend(pid)
+       FROM pg_stat_activity
+        WHERE state = 'active'
+         AND query = 'REFRESH MATERIALIZED VIEW CONCURRENTLY discovery_view';
+    """)
+
+    engine = sqlalchemy.create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+    connection = engine.raw_connection()
+    connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+    cursor = connection.cursor()
+    cursor.execute("VACUUM discovery_view;")
+    connection.close()
+
+    db.session.execute('UPDATE feature SET "isActive" = TRUE WHERE name = \'UPDATE_DISCOVERY_VIEW\'')
 
 
 def refresh(concurrently: bool = True) -> None:

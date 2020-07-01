@@ -29,6 +29,7 @@ class FeatureToggle(enum.Enum):
     RECOMMENDATIONS_WITH_GEOLOCATION = 'Permettre aux utilisateurs d''avoir accès aux offres à 100km de leur position'
     SAVE_SEEN_OFFERS = 'Enregistrer en base les offres déjà vues par les utilisateurs'
     API_SIRENE_AVAILABLE = 'Active les fonctionnalitées liées à l\'API Sirene'
+    CLEAN_DISCOVERY_VIEW = 'Nettoyer les données en base de données liées à la mise à jour régulière'
 
 
 class Feature(PcObject, Model, DeactivableMixin):
