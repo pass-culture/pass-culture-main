@@ -66,39 +66,4 @@ describe('src | components | layout | Verso', () => {
     expect(versoHeaderContainer.prop('title')).toBe('Offer title')
     expect(versoHeaderContainer.prop('type')).toBe('EventType.SPECTACLE_VIVANT')
   })
-
-  it('should scroll to initial position when Verso component props are updated', () => {
-    // given
-    const wrapper = shallow(<Verso {...props} />)
-    const instance = wrapper.instance()
-    instance['versoWrapper'] = {
-      current: {
-        scrollTop: 10,
-      },
-    }
-    props.areDetailsVisible = false
-
-    // when
-    wrapper.setProps({ ...props })
-
-    // then
-    expect(instance['versoWrapper']['current']['scrollTop']).toBe(0)
-  })
-
-  it('should not scroll to initial position when Verso component props are not updated', () => {
-    // given
-    const wrapper = shallow(<Verso {...props} />)
-    const instance = wrapper.instance()
-    instance['versoWrapper'] = {
-      current: {
-        scrollTop: 10,
-      },
-    }
-
-    // when
-    wrapper.setProps({ ...props })
-
-    // then
-    expect(instance['versoWrapper']['current']['scrollTop']).toBe(10)
-  })
 })

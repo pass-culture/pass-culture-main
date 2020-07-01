@@ -172,6 +172,10 @@ class Deck extends PureComponent {
     )
   }
 
+  scrollToTheTop = () => {
+    document.getElementsByClassName('verso-wrapper')[0].scrollTop = 0
+  }
+
   render() {
     const {
       currentRecommendation,
@@ -191,10 +195,13 @@ class Deck extends PureComponent {
         data-nb-recos={nbRecommendations}
         id="deck"
       >
-        {detailView && <CloseLink
-          closeTitle="Fermer"
-          closeTo={this.buildCloseToUrl()}
-                       />}
+        {detailView && (
+          <CloseLink
+            actionOnClick={this.scrollToTheTop}
+            closeTitle="Fermer"
+            closeTo={this.buildCloseToUrl()}
+          />
+        )}
 
         {this.renderDraggableCards()}
 
