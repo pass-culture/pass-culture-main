@@ -31,7 +31,7 @@ const doesBookingBeneficiaryMatchFilter = (bookingBeneficiary, booking) => {
       firstNameLastName,
       lastNameFirstName,
     ]
-    return referential.includes(beneficiarySanitarized)
+    return referential.filter(item => item.includes(beneficiarySanitarized)).length > 0
   }
   return true
 }

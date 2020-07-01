@@ -314,12 +314,82 @@ describe('filterBookingsRecap', () => {
   })
 
   describe('by beneficiary', () => {
-    it('should return list containing only BookingRecap matching beneficiary name or email keywords', () => {
+    it('should return list containing only BookingRecap matching beneficiary firstname keywords', () => {
       // given
       const bookingRecap1 = bookingRecapBuilder({})
       const bookingRecap2 = bookingRecapBuilder({ beneficiary_firstname: 'Ludovic' })
       const bookingsRecap = [bookingRecap1, bookingRecap2]
       const filters = filtersBuilder({ bookingBeneficiary: 'Ludovic' })
+
+      // when
+      const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+
+      // then
+      expect(filteredBookingsRecap).toStrictEqual([bookingRecap2])
+    })
+
+    it('should return list containing only BookingRecap matching partial beneficiary firstname keywords', () => {
+      // given
+      const bookingRecap1 = bookingRecapBuilder({})
+      const bookingRecap2 = bookingRecapBuilder({ beneficiary_firstname: 'Ludovic' })
+      const bookingsRecap = [bookingRecap1, bookingRecap2]
+      const filters = filtersBuilder({ bookingBeneficiary: 'Ludov' })
+
+      // when
+      const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+
+      // then
+      expect(filteredBookingsRecap).toStrictEqual([bookingRecap2])
+    })
+
+    it('should return list containing only BookingRecap matching beneficiary lastname keywords', () => {
+      // given
+      const bookingRecap1 = bookingRecapBuilder({})
+      const bookingRecap2 = bookingRecapBuilder({ beneficiary_lastname: 'Dupont' })
+      const bookingsRecap = [bookingRecap1, bookingRecap2]
+      const filters = filtersBuilder({ bookingBeneficiary: 'Dupont' })
+
+      // when
+      const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+
+      // then
+      expect(filteredBookingsRecap).toStrictEqual([bookingRecap2])
+    })
+
+    it('should return list containing only BookingRecap matching partial beneficiary lastname keywords', () => {
+      // given
+      const bookingRecap1 = bookingRecapBuilder({})
+      const bookingRecap2 = bookingRecapBuilder({ beneficiary_lastname: 'Dupont' })
+      const bookingsRecap = [bookingRecap1, bookingRecap2]
+      const filters = filtersBuilder({ bookingBeneficiary: 'Dup' })
+
+      // when
+      const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+
+      // then
+      expect(filteredBookingsRecap).toStrictEqual([bookingRecap2])
+    })
+
+    it('should return list containing only BookingRecap matching beneficiary email keywords', () => {
+      // given
+      const bookingRecap1 = bookingRecapBuilder({})
+      const bookingRecap2 = bookingRecapBuilder({ beneficiary_email: 'ludo@example.com' })
+      const bookingsRecap = [bookingRecap1, bookingRecap2]
+      const filters = filtersBuilder({ bookingBeneficiary: 'sonia.klepi@example.com' })
+
+      // when
+      const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
+
+      // then
+      expect(filteredBookingsRecap).toStrictEqual([bookingRecap1])
+    })
+
+    it('should return list containing only BookingRecap matching partial beneficiary email keywords', () => {
+      // given
+      const bookingRecap1 = bookingRecapBuilder({})
+      const bookingRecap2 = bookingRecapBuilder({ beneficiary_email: 'ludovic@example.com' })
+      const bookingsRecap = [bookingRecap1, bookingRecap2]
+      const filters = filtersBuilder({ bookingBeneficiary: 'ludovic@example.c' })
 
       // when
       const filteredBookingsRecap = filterBookingsRecap(bookingsRecap, filters)
