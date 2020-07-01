@@ -11,7 +11,7 @@ class DiscoveryView(Model):
 
     mediationId = Column(BigInteger, ForeignKey('mediation.id'))
 
-    id = Column(BigInteger, ForeignKey('offer.id'), primary_key=True)
+    id = Column(BigInteger, ForeignKey('offer.id'), primary_key=True, index=True)
 
     type = Column(String(50))
 
