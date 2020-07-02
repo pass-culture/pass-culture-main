@@ -1,31 +1,41 @@
-from typing import Callable, List
+from typing import Callable, List, Union
 
+from domain.beneficiary.beneficiary import Beneficiary
 from domain.booking.booking import Booking
 from emails.beneficiary_activation import get_activation_email_data
-from emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
+from emails.beneficiary_booking_cancellation import \
+    make_beneficiary_booking_cancellation_email_data
 from emails.beneficiary_booking_confirmation import \
     retrieve_data_for_beneficiary_booking_confirmation_email
 from emails.beneficiary_offer_cancellation import \
     retrieve_offerer_booking_recap_email_data_after_user_cancellation
 from emails.beneficiary_warning_after_pro_booking_cancellation import \
     retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation
-from emails.new_offerer_validation import retrieve_data_for_new_offerer_validation_email
-from emails.offerer_attachment_validation import retrieve_data_for_offerer_attachment_validation_email
-from emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
+from emails.new_offerer_validation import \
+    retrieve_data_for_new_offerer_validation_email
+from emails.offerer_attachment_validation import \
+    retrieve_data_for_offerer_attachment_validation_email
+from emails.offerer_booking_recap import \
+    retrieve_data_for_offerer_booking_recap_email
 from emails.offerer_bookings_recap_after_deleting_stock import \
     retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation
-from emails.offerer_ongoing_attachment import retrieve_data_for_offerer_ongoing_attachment_email
-from emails.pro_reset_password import retrieve_data_for_reset_password_pro_email
-from emails.pro_waiting_validation import retrieve_data_for_pro_user_waiting_offerer_validation_email
-from emails.user_notification_after_stock_update import retrieve_data_to_warn_user_after_stock_update_affecting_booking
-from emails.user_reset_password import retrieve_data_for_reset_password_user_email
-from models import BookingSQLEntity, Offerer, UserSQLEntity, VenueSQLEntity, UserOfferer
+from emails.offerer_ongoing_attachment import \
+    retrieve_data_for_offerer_ongoing_attachment_email
+from emails.pro_reset_password import \
+    retrieve_data_for_reset_password_pro_email
+from emails.pro_waiting_validation import \
+    retrieve_data_for_pro_user_waiting_offerer_validation_email
+from emails.user_notification_after_stock_update import \
+    retrieve_data_to_warn_user_after_stock_update_affecting_booking
+from emails.user_reset_password import \
+    retrieve_data_for_reset_password_user_email
+from models import BookingSQLEntity, Offerer, UserOfferer, UserSQLEntity, \
+    VenueSQLEntity
 from repository.user_queries import find_all_emails_of_user_offerers_admins
 from utils.mailing import ADMINISTRATION_EMAIL_ADDRESS, \
     compute_email_html_part_and_recipients, \
     make_offerer_driven_cancellation_email_for_offerer, \
-    make_user_validation_email, \
-    make_venue_validated_email
+    make_user_validation_email, make_venue_validated_email
 
 
 def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool]) -> bool:
@@ -140,7 +150,7 @@ def send_pro_user_waiting_for_validation_by_admin_email(user: UserSQLEntity, sen
     return send_email(data=email)
 
 
-def send_activation_email(user: UserSQLEntity, send_email: Callable[..., bool]) -> bool:
+def send_activation_email(user: Union[UserSQLEntity, Beneficiary], send_email: Callable[..., bool]) -> bool:
     activation_email_data = get_activation_email_data(user)
     return send_email(activation_email_data)
 

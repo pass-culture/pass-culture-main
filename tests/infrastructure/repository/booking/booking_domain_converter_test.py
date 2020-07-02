@@ -1,14 +1,15 @@
+from tests.conftest import clean_database
+from tests.model_creators.generic_creators import create_booking, \
+    create_offerer, create_user, create_venue
+from tests.model_creators.specific_creators import create_offer_with_thing_product, \
+    create_stock_from_offer
+
 from domain.beneficiary.beneficiary import Beneficiary
 from domain.booking.booking import Booking
 from domain.stock.stock import Stock
 from infrastructure.repository.booking import booking_domain_converter
-from models import ThingType, BookingSQLEntity
+from models import BookingSQLEntity, ThingType
 from repository import repository
-from tests.conftest import clean_database
-from tests.model_creators.generic_creators import create_booking, \
-    create_offerer, create_user, \
-    create_venue
-from tests.model_creators.specific_creators import create_offer_with_thing_product, create_stock_from_offer
 
 
 class BookingDomainConverterTest:
@@ -17,7 +18,7 @@ class BookingDomainConverterTest:
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         beneficiary = Beneficiary(identifier=1, can_book_free_offers=True, email='tony.stark@example.com',
-                                  first_name='Tony', last_name='Stark', department_code='75', wallet_balance=500)
+                                  first_name='Tony', last_name='Stark', department_code='75', wallet_balance=500, reset_password_token='')
         offer = create_offer_with_thing_product(venue=venue)
         stock = Stock(identifier=2, quantity=1, offer=offer, price=0)
         booking = Booking(beneficiary=beneficiary, stock=stock, amount=10, quantity=1, is_used=True, is_cancelled=True)

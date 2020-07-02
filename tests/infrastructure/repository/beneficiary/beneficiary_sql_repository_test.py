@@ -16,7 +16,7 @@ class BeneficiarySQLRepositoryTest:
     def test_should_return_user_with_correct_information(self, app):
         # Given
         beneficiary_sql_entity = create_user(idx=12, can_book_free_offers=True, email='john.doe@example.com',
-                                      first_name='John', last_name='Doe', departement_code='75')
+                                             first_name='John', last_name='Doe', departement_code='75')
         create_deposit(user=beneficiary_sql_entity, amount=230)
         repository.save(beneficiary_sql_entity)
 
@@ -32,8 +32,9 @@ class BeneficiarySQLRepositoryTest:
             last_name='Doe',
             department_code='75',
             wallet_balance=230,
+            reset_password_token=''
         )
-        assert type(user) == Beneficiary
+        assert isinstance(user, Beneficiary)
         assert user.identifier == expected_user.identifier
         assert user.can_book_free_offers == expected_user.can_book_free_offers
         assert user.email == expected_user.email

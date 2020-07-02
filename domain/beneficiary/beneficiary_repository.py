@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 
 from domain.beneficiary.beneficiary import Beneficiary
 from domain.beneficiary.beneficiary_pre_subscription import BeneficiaryPreSubscription
-from models import UserSQLEntity
 
 
 class BeneficiaryRepository(ABC):
@@ -12,7 +11,7 @@ class BeneficiaryRepository(ABC):
 
     @classmethod
     @abstractmethod
-    def save(cls, beneficiary_pre_subscription: BeneficiaryPreSubscription) -> UserSQLEntity:
+    def save(cls, beneficiary_pre_subscription: BeneficiaryPreSubscription) -> Beneficiary:
         pass
 
     @classmethod

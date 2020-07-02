@@ -3,7 +3,6 @@ import os
 
 from jsonschema.validators import requests
 
-from domain.beneficiary.beneficiary import Beneficiary
 from domain.beneficiary.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
 from domain.beneficiary.beneficiary_pre_subscription_repository import BeneficiaryPreSubscriptionRepository

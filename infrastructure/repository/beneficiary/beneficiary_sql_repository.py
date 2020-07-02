@@ -1,13 +1,12 @@
 from domain.beneficiary.beneficiary import Beneficiary
 from domain.beneficiary.beneficiary_exceptions import BeneficiaryDoesntExist
-from domain.beneficiary.beneficiary_repository import BeneficiaryRepository
 from domain.beneficiary.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
+from domain.beneficiary.beneficiary_repository import BeneficiaryRepository
+from infrastructure.repository.beneficiary import beneficiary_pre_subscription_sql_converter, \
+    beneficiary_sql_converter
 from models import UserSQLEntity
 from models.db import db
-from infrastructure.repository.beneficiary import beneficiary_sql_converter, beneficiary_pre_subscription_sql_converter
-from infrastructure.repository.beneficiary import \
-    beneficiary_pre_subscription_sql_converter
 from repository import repository
 
 
@@ -22,17 +21,16 @@ class BeneficiarySQLRepository(BeneficiaryRepository):
         return beneficiary_sql_converter.to_domain(user_sql_entity)
 
     @classmethod
-    def save(cls, beneficiary_pre_subscription: BeneficiaryPreSubscription) -> UserSQLEntity:
-        beneficiary = beneficiary_pre_subscription_sql_converter.to_model(beneficiary_pre_subscription)
+    def save(cls, beneficiary_pre_subscription: BeneficiaryPreSubscription) -> Beneficiary:
+        beneficiary_sql_entitiy = beneficiary_pre_subscription_sql_converter.to_model(beneficiary_pre_subscription)
 
-        repository.save(beneficiary)
+        repository.save(beneficiary_sql_entitiy)
 
-        return beneficiary
-
+        return beneficiary_sql_converter.to_domain(beneficiary_sql_entitiy)
 
     @classmethod
     def reject(cls, beneficiary_pre_subscription: BeneficiaryPreSubscription, detail: str) -> None:
-        beneficiary_import = beneficiary_pre_subscription_sql_converter \
+        beneficiary_sql_entitiy = beneficiary_pre_subscription_sql_converter \
             .to_rejected_model(beneficiary_pre_subscription, detail=detail)
 
-        repository.save(beneficiary_import)
+        repository.save(beneficiary_sql_entitiy)

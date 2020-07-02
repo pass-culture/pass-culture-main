@@ -1,7 +1,7 @@
 from domain.beneficiary.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
 from domain.password import generate_reset_token, random_password
-from models import BeneficiaryImport, ImportStatus, BeneficiaryImportSources
+from models import BeneficiaryImport, ImportStatus
 from models.deposit import Deposit
 from models.user_sql_entity import UserSQLEntity
 from scripts.beneficiary import THIRTY_DAYS_IN_HOURS

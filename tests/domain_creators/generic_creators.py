@@ -13,40 +13,47 @@ def create_domain_beneficiary(identifier: int = None,
                               last_name: str = None,
                               department_code: str = '93',
                               can_book_free_offers: bool = True,
-                              wallet_balance: int = None) -> Beneficiary:
+                              wallet_balance: int = None,
+                              reset_password_token: str = "") -> Beneficiary:
     user = Beneficiary(identifier=identifier,
                        can_book_free_offers=can_book_free_offers,
                        email=email,
                        first_name=first_name,
                        last_name=last_name,
                        department_code=department_code,
-                       wallet_balance=wallet_balance)
+                       wallet_balance=wallet_balance,
+                       reset_password_token=reset_password_token)
 
     return user
 
+
 def create_domain_beneficiary_pre_subcription(date_of_birth: datetime = datetime(1995, 2, 5),
+                                              activity: str = 'Apprenti',
+                                              address: str = '3 rue de Valois',
                                               application_id: str = '12',
+                                              city: str = 'Paris',
                                               postal_code: str = '35123',
                                               email: str = 'rennes@example.org',
                                               first_name: str = 'Thomas',
                                               civility: str = 'Mme',
                                               last_name: str = 'DURAND',
                                               phone_number: str = '0123456789',
-                                              activity: str = 'Apprenti',
                                               source: str = 'jouve',
                                               source_id: str = None) -> BeneficiaryPreSubscription:
     return BeneficiaryPreSubscription(
-        date_of_birth = date_of_birth,
-        application_id = application_id,
-        postal_code = postal_code,
-        email = email,
-        first_name = first_name,
-        civility = civility,
-        last_name = last_name,
-        phone_number = phone_number,
-        activity = activity,
-        source = source,
-        source_id = source_id
+        address=address,
+        activity=activity,
+        application_id=application_id,
+        city=city,
+        date_of_birth=date_of_birth,
+        postal_code=postal_code,
+        email=email,
+        first_name=first_name,
+        civility=civility,
+        last_name=last_name,
+        phone_number=phone_number,
+        source=source,
+        source_id=source_id
     )
 
 

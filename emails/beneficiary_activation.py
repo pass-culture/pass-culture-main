@@ -1,11 +1,12 @@
-from typing import Dict
+from typing import Dict, Union
 from urllib.parse import quote
 
+from domain.beneficiary.beneficiary import Beneficiary
 from models import UserSQLEntity
 from utils.mailing import SUPPORT_EMAIL_ADDRESS, format_environment_for_email
 
 
-def get_activation_email_data(user: UserSQLEntity) -> Dict:
+def get_activation_email_data(user: Union[UserSQLEntity, Beneficiary]) -> Dict:
     first_name = user.firstName.capitalize()
     email = user.email
     token = user.resetPasswordToken

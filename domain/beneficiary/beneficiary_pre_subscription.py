@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from domain.postal_code.postal_code import PostalCode
 
@@ -17,7 +18,7 @@ class BeneficiaryPreSubscription(object):
                  phone_number: str,
                  postal_code: str,
                  source: str,
-                 source_id: int):
+                 source_id: Optional[int]):
         self.activity = activity
         self.address = address
         self.application_id = application_id
