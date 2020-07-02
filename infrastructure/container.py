@@ -39,6 +39,5 @@ get_all_venues_by_pro_user = GetVenuesByProUser(venue_repository=venue_with_offe
 
 cancel_a_booking = CancelABooking(
     booking_repository=booking_repository,
-    beneficiary_repository=user_repository,
     notification_service=notification_service
 )

@@ -9,7 +9,6 @@ from utils.token import random_token
 from validation.routes.users_authorizations import check_user_can_validate_bookings, \
     check_user_can_validate_bookings_v2, \
     check_api_key_allows_to_validate_booking, check_user_can_validate_activation_offer, \
-    check_user_can_cancel_booking_by_id
 
 
 class CheckUserCanValidateBookingTest:
@@ -152,34 +151,3 @@ class CheckUserCanValidateActivationOfferTest:
 
         # Then
         assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
-
-
-class CheckUserCanCancelBookingByIdTest:
-    @clean_database
-    def test_does_not_raise_error_when_one_of_the_user_has_rights(
-            self, app):
-        # Given
-        is_user_cancellation = True
-        is_offerer_cancellation = False
-
-        # When
-        try:
-            check_user_can_cancel_booking_by_id(is_user_cancellation, is_offerer_cancellation)
-
-
-        # Then
-        except:
-            assert False
-
-    def test_does_not_raise_error_when_none_of_the_user_has_rights(
-            self, app):
-        # Given
-        is_user_cancellation = False
-        is_offerer_cancellation = False
-
-        # When
-        with pytest.raises(ApiErrors) as errors:
-            check_user_can_cancel_booking_by_id(is_user_cancellation, is_offerer_cancellation)
-
-        # Then
-        assert errors.value.errors['user'] == ["Vous n'avez pas les droits suffisants pour annuler cette réservation."]

@@ -173,11 +173,11 @@ def create_domain_event_booking_recap(payment_date: Optional[datetime] = None,
 def create_domain_stock(identifier: int,
                         quantity: Optional[int],
                         offer: Offer,
-                        price: float,
-                        beginning_datetime: Optional[datetime],
-                        booking_limit_datetime: Optional[datetime],
-                        is_soft_deleted: bool,
-                        bookings: List[Booking] = []):
+                        price: float = 1,
+                        beginning_datetime: Optional[datetime] = None,
+                        booking_limit_datetime: Optional[datetime] = None,
+                        is_soft_deleted: bool = False,
+                        bookings: List[Booking] = []) -> Stock:
     return Stock(
         identifier=identifier,
         quantity=quantity,
@@ -187,4 +187,28 @@ def create_domain_stock(identifier: int,
         booking_limit_datetime=booking_limit_datetime,
         is_soft_deleted=is_soft_deleted,
         bookings=bookings,
+    )
+
+
+def create_domain_booking(beneficiary: Beneficiary,
+                          stock: Stock,
+                          amount: float = 1,
+                          quantity: int = 1,
+                          recommendation_id: int = None,
+                          is_cancelled: bool = False,
+                          is_used: bool = False,
+                          identifier: int = None,
+                          token: str = None,
+                          date_booked: datetime = datetime.utcnow()) -> Booking:
+    return Booking(
+        beneficiary=beneficiary,
+        stock=stock,
+        amount=amount,
+        quantity=quantity,
+        recommendation_id=recommendation_id,
+        is_cancelled=is_cancelled,
+        is_used=is_used,
+        identifier=identifier,
+        token=token,
+        date_booked=date_booked
     )

@@ -3,8 +3,7 @@ from typing import Tuple, Dict
 
 import simplejson as json
 from flask import current_app as app, jsonify, request
-from werkzeug.exceptions import MethodNotAllowed
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import NotFound, MethodNotAllowed
 
 from domain.stocks import TooLateToDeleteError
 from domain.user_activation import AlreadyActivatedException
@@ -52,13 +51,11 @@ def restize_invalid_header_exception(error: InvalidOriginHeader) -> Tuple[Dict, 
     return jsonify(e.errors), 400
 
 
-@app.errorhandler(500)
 @app.errorhandler(Exception)
 def internal_error(error: Exception) -> Tuple[Dict, int]:
     tb = traceback.format_exc()
     app.logger.error('500 on %s %s — %s',
                      request.method, request.url, tb)
-<<<<<<< HEAD:routes/error_handlers.py
     errors = ApiErrors()
     errors.add_error('global',
                      "Il semble que nous ayons des problèmes techniques :("
@@ -72,13 +69,6 @@ def method_not_allowed(error: MethodNotAllowed) -> Tuple[Dict, int]:
     api_errors.add_error('global', 'La méthode que vous utilisez n\'existe pas sur notre serveur')
     app.logger.error('405 %s' % str(error))
     return jsonify(api_errors.errors), 405
-=======
-    e = ApiErrors()
-    e.add_error('global',
-                "Il semble que nous ayons des problèmes techniques :("
-                + " On répare ça au plus vite.")
-    return jsonify(e.errors), 500
->>>>>>> Extract domain rules for booking cancellation:routes/error_handlers/generic_error_handlers.py
 
 
 @app.errorhandler(NonDehumanizableId)
