@@ -25,10 +25,16 @@ jest.mock('../../domain/checkIfDepartmentIsEligible', () => {
 
 describe('eligibility check page', () => {
   let history
+  const getFullYear = Date.prototype.getFullYear
 
   beforeEach(() => {
     history = createMemoryHistory()
     history.location.pathname = '/verification-eligibilite/'
+    Date.prototype.getFullYear = () => 2020
+  })
+
+  afterEach(() => {
+    Date.prototype.getFullYear = getFullYear
   })
 
   describe('when rendering', () => {
@@ -364,6 +370,96 @@ describe('eligibility check page', () => {
 
         // then
         expect(history.location.pathname).toBe('/verification-eligibilite/trop-tot')
+      })
+    })
+
+    describe('when checking date', () => {
+      beforeEach(() => {
+        checkIfDepartmentIsEligible.mockReturnValue(true)
+      })
+
+      it('should redirect to /pas-eligible when day is invalid', () => {
+        // given
+        const wrapper = mount(
+          <MemoryRouter>
+            <EligibilityCheck history={history} />
+          </MemoryRouter>
+        )
+
+        const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
+        const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+
+        act(() => {
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '99/02/2002' } })
+        })
+        wrapper.update()
+
+        const eligibilityForm = wrapper.find('form')
+
+        // when
+        eligibilityForm.invoke('onSubmit')({
+          preventDefault: jest.fn(),
+        })
+
+        // then
+        expect(history.location.pathname).toBe('/verification-eligibilite/pas-eligible')
+      })
+
+      it('should redirect to /pas-eligible when month is invalid', () => {
+        // given
+        const wrapper = mount(
+          <MemoryRouter>
+            <EligibilityCheck history={history} />
+          </MemoryRouter>
+        )
+
+        const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
+        const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+
+        act(() => {
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '03/99/2002' } })
+        })
+        wrapper.update()
+
+        const eligibilityForm = wrapper.find('form')
+
+        // when
+        eligibilityForm.invoke('onSubmit')({
+          preventDefault: jest.fn(),
+        })
+
+        // then
+        expect(history.location.pathname).toBe('/verification-eligibilite/pas-eligible')
+      })
+
+      it('should redirect to /pas-eligible when birth year is over current year', () => {
+        // given
+        const wrapper = mount(
+          <MemoryRouter>
+            <EligibilityCheck history={history} />
+          </MemoryRouter>
+        )
+
+        const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
+        const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+
+        act(() => {
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '99/02/2021' } })
+        })
+        wrapper.update()
+
+        const eligibilityForm = wrapper.find('form')
+
+        // when
+        eligibilityForm.invoke('onSubmit')({
+          preventDefault: jest.fn(),
+        })
+
+        // then
+        expect(history.location.pathname).toBe('/verification-eligibilite/pas-eligible')
       })
     })
   })

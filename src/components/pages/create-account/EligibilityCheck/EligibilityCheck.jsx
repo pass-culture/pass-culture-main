@@ -32,8 +32,9 @@ const EligibilityCheck = ({ history }) => {
       const birthMonth = splittedBirthDate[1]
       const birthYear = splittedBirthDate[2]
       const currentYear = new Date().getFullYear()
+      const isDateFormatValid = Date.parse(`${birthDay}-${birthMonth}-${birthDay}`)
 
-      if (birthDay > 31 || birthMonth > 12 || birthYear > currentYear) {
+      if (!isDateFormatValid || birthYear > currentYear) {
         return history.push('/verification-eligibilite/pas-eligible')
       }
 
@@ -55,11 +56,11 @@ const EligibilityCheck = ({ history }) => {
   return (
     <main className="eligibility-check-page">
       <BackLink backTo="/beta" />
-      <span className="elgbt-title">
+      <span className="eligibility-title">
         {'Créer un compte'}
       </span>
       <form
-        className="elgbt-form"
+        className="eligibility-form"
         onSubmit={handleSubmit}
       >
         <div>
@@ -87,7 +88,7 @@ const EligibilityCheck = ({ history }) => {
           </label>
         </div>
         <input
-          className="elgbt-submit"
+          className="eligibility-submit"
           disabled={isMissingField}
           type="submit"
           value="Vérifier mon éligibilité"
