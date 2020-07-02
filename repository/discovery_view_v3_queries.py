@@ -32,6 +32,7 @@ def create(session: Session, order: Callable = order_by_digital_offers_v3) -> No
 
 def clean(app: Flask) -> None:
     db.session.execute('UPDATE feature SET "isActive" = FALSE WHERE name = \'UPDATE_DISCOVERY_VIEW\'')
+    db.session.commit()
 
     db.session.execute("""
       SELECT pg_cancel_backend(pid)
@@ -39,6 +40,7 @@ def clean(app: Flask) -> None:
         WHERE state = 'active'
          AND query = 'REFRESH MATERIALIZED VIEW CONCURRENTLY discovery_view_v3';
     """)
+    db.session.commit()
 
     engine = sqlalchemy.create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
     connection = engine.raw_connection()
@@ -48,6 +50,7 @@ def clean(app: Flask) -> None:
     connection.close()
 
     db.session.execute('UPDATE feature SET "isActive" = TRUE WHERE name = \'UPDATE_DISCOVERY_VIEW\'')
+    db.session.commit()
 
 
 def refresh(concurrently: bool = True) -> None:
