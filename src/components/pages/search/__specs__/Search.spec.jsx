@@ -1,7 +1,9 @@
 import { mount, shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
+import { parse } from 'query-string'
 import React from 'react'
 import { Route, Router } from 'react-router'
+
 import { CATEGORY_CRITERIA } from '../Criteria/criteriaEnums'
 import { CriteriaCategory } from '../CriteriaCategory/CriteriaCategory'
 import CriteriaLocation from '../CriteriaLocation/CriteriaLocation'
@@ -9,6 +11,10 @@ import { CriteriaSort } from '../CriteriaSort/CriteriaSort'
 import { Home } from '../Home/Home'
 import Results from '../Results/Results'
 import Search from '../Search'
+
+jest.mock('query-string', () => ({
+  parse: jest.fn(),
+}))
 
 describe('components | Search', () => {
   let props
@@ -22,11 +28,6 @@ describe('components | Search', () => {
       history: createBrowserHistory(),
       match: {
         params: {},
-      },
-      query: {
-        clear: jest.fn(),
-        change: jest.fn(),
-        parse: jest.fn(),
       },
       redirectToSearchMainPage: jest.fn(),
     }
@@ -180,7 +181,7 @@ describe('components | Search', () => {
         })
         expect(searchResultsComponent.prop('history')).toStrictEqual(props.history)
         expect(searchResultsComponent.prop('match')).toStrictEqual(props.match)
-        expect(searchResultsComponent.prop('query')).toStrictEqual(props.query)
+        expect(searchResultsComponent.prop('parse')).toStrictEqual(parse)
         expect(searchResultsComponent.prop('redirectToSearchMainPage')).toStrictEqual(
           props.redirectToSearchMainPage
         )

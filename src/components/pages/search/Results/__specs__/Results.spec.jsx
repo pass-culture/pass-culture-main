@@ -6,6 +6,7 @@ import { Router } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import configureStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
+
 import state from '../../../../../mocks/state'
 import { isGeolocationEnabled } from '../../../../../utils/geolocation'
 import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
@@ -14,12 +15,12 @@ import Spinner from '../../../../layout/Spinner/Spinner'
 import { SORT_CRITERIA } from '../../Criteria/criteriaEnums'
 import CriteriaSort from '../../CriteriaSort/CriteriaSort'
 import { Filters } from '../../Filters/Filters'
+import Header from '../../Header/Header'
 import { EmptyResult } from '../EmptyResult/EmptyResult'
+import Results from '../Results'
 import Result from '../ResultsList/Result/Result'
 import SearchAlgoliaDetailsContainer from '../ResultsList/ResultDetail/ResultDetailContainer'
-import Results from '../Results'
 import { ResultsList } from '../ResultsList/ResultsList'
-import Header from '../../Header/Header'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
@@ -53,15 +54,11 @@ const stubRef = wrapper => {
 
 describe('components | Results', () => {
   let props
-  let change
-  let clear
   let parse
   let replace
   let push
 
   beforeEach(() => {
-    change = jest.fn()
-    clear = jest.fn()
     parse = jest.fn().mockReturnValue({})
     replace = jest.fn()
     push = jest.fn()
@@ -92,11 +89,7 @@ describe('components | Results', () => {
         geolocation: { latitude: null, longitude: null },
         name: null,
       },
-      query: {
-        change,
-        clear,
-        parse,
-      },
+      parse: parse,
       redirectToSearchMainPage: jest.fn(),
       userGeolocation: {
         latitude: 40.1,
@@ -185,7 +178,7 @@ describe('components | Results', () => {
 
     it('should display the number of selected filters in the filter button when categories are provided by the url', () => {
       //given
-      props.query.parse.mockReturnValue({
+      props.parse.mockReturnValue({
         'autour-de': 'oui',
         categories: 'CINEMA;VISITE',
       })
@@ -206,7 +199,7 @@ describe('components | Results', () => {
         user: true,
       }
       props.criteria.categories = ['CINEMA']
-      props.query.parse.mockReturnValue({
+      props.parse.mockReturnValue({
         'autour-de': 'oui',
         categories: 'CINEMA;VISITE',
       })
@@ -352,7 +345,7 @@ describe('components | Results', () => {
 
       afterEach(() => {
         fetchAlgolia.mockReset()
-        props.query.parse.mockReset()
+        props.parse.mockReset()
       })
 
       it('should display EmptyResult component when 0 result', async () => {
@@ -396,7 +389,7 @@ describe('components | Results', () => {
         props.history.push(
           '/recherche/resultats?mots-cles=recherche%20sans%20résultat&autour-de=oui&tri=_by_price&categories=INSTRUMENT'
         )
-        props.query.parse.mockReturnValue({
+        props.parse.mockReturnValue({
           'autour-de': 'oui',
           categories: 'INSTRUMENT',
           'mots-cles': 'recherche sans résultat',
@@ -1502,7 +1495,7 @@ describe('components | Results', () => {
         })
       )
 
-      props.query.parse.mockReturnValue({
+      props.parse.mockReturnValue({
         'autour-de': 'oui',
         categories: 'VISITE',
         latitude: 40,
@@ -1781,7 +1774,7 @@ describe('components | Results', () => {
     it('should render filters page when current route is /recherche/resultats/filtres', () => {
       // given
       history.push('/recherche/resultats/filtres')
-      props.query.parse.mockReturnValue({
+      props.parse.mockReturnValue({
         categories: 'VISITE;CINEMA',
         'mots-cles': 'librairie',
         tri: '_by_price',
@@ -1828,7 +1821,7 @@ describe('components | Results', () => {
       expect(filters.prop('match')).toStrictEqual(props.match)
       expect(filters.prop('offers')).toStrictEqual({ hits: [], nbHits: 0, nbPages: 0 })
       expect(filters.prop('place')).toStrictEqual(props.place)
-      expect(filters.prop('query')).toStrictEqual(props.query)
+      expect(filters.prop('parse')).toStrictEqual(props.parse)
       expect(filters.prop('showFailModal')).toStrictEqual(expect.any(Function))
       expect(filters.prop('updateFilteredOffers')).toStrictEqual(expect.any(Function))
       expect(filters.prop('updateFilters')).toStrictEqual(expect.any(Function))
@@ -1840,7 +1833,7 @@ describe('components | Results', () => {
     it('should render sort page when current route is /recherche/resultats/tri', () => {
       // given
       history.push('/recherche/resultats/tri')
-      props.query.parse.mockReturnValue({
+      props.parse.mockReturnValue({
         categories: 'VISITE;CINEMA',
         'mots-cles': 'librairie',
         tri: '_by_price',

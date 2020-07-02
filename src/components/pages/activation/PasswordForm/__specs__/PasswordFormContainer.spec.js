@@ -153,17 +153,14 @@ describe('components | PasswordFormContainer', () => {
     describe('isValidUrl', () => {
       it('should return false when no email is given', () => {
         // given
-        const location = {}
-        const match = {
-          params: {
-            token: 'fake token',
-          },
-        }
-        const query = { parse: () => ({}) }
         const ownProps = {
-          location,
-          match,
-          query,
+          location: {},
+          match: {
+            params: {
+              token: 'fake token',
+            },
+          },
+          parse: () => ({}),
         }
 
         // when
@@ -175,17 +172,14 @@ describe('components | PasswordFormContainer', () => {
 
       it('should return false when no token is given', () => {
         // given
-        const location = {
-          search: '?email=fake@example.net',
-        }
-        const match = {
-          params: {},
-        }
-        const query = { parse: () => ({}) }
         const params = {
-          location,
-          match,
-          query,
+          location: {
+            search: '?email=fake@example.net',
+          },
+          match: {
+            params: {},
+          },
+          parse: () => ({}),
         }
 
         // when
@@ -197,15 +191,12 @@ describe('components | PasswordFormContainer', () => {
 
       it('should return false when neither token nor email are given', () => {
         // given
-        const location = {}
-        const match = {
-          params: {},
-        }
-        const query = { parse: () => ({}) }
         const params = {
-          location,
-          match,
-          query,
+          location: {},
+          match: {
+            params: {},
+          },
+          parse: () => ({}),
         }
 
         // when
@@ -217,23 +208,18 @@ describe('components | PasswordFormContainer', () => {
 
       it('should return true when token and email are given', () => {
         // given
-        const location = {
-          search: '?email=fake@example.net',
-        }
-        const match = {
-          params: {
-            token: 'fake token',
+        const ownProps = {
+          location: {
+            search: '?email=fake@example.net',
           },
-        }
-        const query = {
+          match: {
+            params: {
+              token: 'fake token',
+            },
+          },
           parse: () => ({
             email: 'fake@example.net',
           }),
-        }
-        const ownProps = {
-          location,
-          match,
-          query,
         }
 
         // when
@@ -247,15 +233,12 @@ describe('components | PasswordFormContainer', () => {
     describe('initialValues', () => {
       it('should map email from query params', () => {
         // given
-        const location = { search: '?email=prenom@example.net' }
         const ownProps = {
-          location,
+          location: { search: '?email=prenom@example.net' },
           match: { params: {} },
-          query: {
-            parse: () => ({
-              email: 'prenom@example.net',
-            }),
-          },
+          parse: () => ({
+            email: 'prenom@example.net',
+          }),
         }
 
         // when
@@ -267,13 +250,10 @@ describe('components | PasswordFormContainer', () => {
 
       it('should map token from router params', () => {
         // given
-        const location = { search: '?email=prenom@example.net' }
-        const match = { params: { token: 'my-precious-token' } }
-        const query = { parse: () => ({}) }
         const ownProps = {
-          location,
-          match,
-          query,
+          location: { search: '?email=prenom@example.net' },
+          match: { params: { token: 'my-precious-token' } },
+          parse: () => ({}),
         }
 
         // when
@@ -291,7 +271,7 @@ describe('components | PasswordFormContainer', () => {
         const ownProps = {
           location: {},
           match: { params: {} },
-          query: { parse: () => ({}) },
+          parse: () => ({}),
         }
 
         // when
@@ -309,7 +289,7 @@ describe('components | PasswordFormContainer', () => {
         const ownProps = {
           location: {},
           match: { params: {} },
-          query: { parse: () => ({}) },
+          parse: () => ({}),
         }
 
         // when

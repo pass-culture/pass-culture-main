@@ -13,10 +13,10 @@ import { SORT_CRITERIA } from '../Criteria/criteriaEnums'
 import CriteriaSort from '../CriteriaSort/CriteriaSort'
 import { Filters } from '../Filters/Filters'
 import { DATE_FILTER, PRICE_FILTER, TIME_FILTER } from '../Filters/filtersEnums'
+import Header from '../Header/Header'
 import { EmptyResult } from './EmptyResult/EmptyResult'
 import ResultDetailContainer from './ResultsList/ResultDetail/ResultDetailContainer'
 import { ResultsList } from './ResultsList/ResultsList'
-import Header from '../Header/Header'
 
 const SEARCH_RESULTS_URI = '/recherche/resultats'
 
@@ -76,9 +76,9 @@ class Results extends PureComponent {
   }
 
   componentDidMount() {
-    const { query } = this.props
+    const { history, parse } = this.props
     const { currentPage } = this.state
-    const queryParams = query.parse()
+    const queryParams = parse(history.location.search)
     const keywords = queryParams['mots-cles'] || ''
     this.fetchOffers({ keywords, page: currentPage })
   }
@@ -99,16 +99,16 @@ class Results extends PureComponent {
   }
 
   getCategoriesFromUrlOrProps = categoriesFromProps => {
-    const { query } = this.props
-    const queryParams = query.parse()
+    const { history, parse } = this.props
+    const queryParams = parse(history.location.search)
     const categoriesFromUrl = queryParams['categories'] || ''
 
     return categoriesFromUrl ? categoriesFromUrl.split(';') : categoriesFromProps
   }
 
   getPlaceFromUrlOrProps = placeFromUrlOrProps => {
-    const { query } = this.props
-    const queryParams = query.parse()
+    const { history, parse } = this.props
+    const queryParams = parse(history.location.search)
     const latitudeFromUrl = queryParams['latitude']
     const longitudeFromUrl = queryParams['longitude']
     const placeFromUrl = queryParams['place']
@@ -129,8 +129,8 @@ class Results extends PureComponent {
   }
 
   getSearchAroundFromUrlOrProps = searchAroundFromProps => {
-    const { history, query, userGeolocation } = this.props
-    const queryParams = query.parse()
+    const { history, parse, userGeolocation } = this.props
+    const queryParams = parse(history.location.search)
     const searchAroundFromUrl = queryParams['autour-de'] || ''
     const latitudeFromUrl = queryParams['latitude']
     const longitudeFromUrl = queryParams['longitude']
@@ -175,8 +175,8 @@ class Results extends PureComponent {
   }
 
   getSortByFromUrlOrProps = sortByFromProps => {
-    const { query } = this.props
-    const queryParams = query.parse()
+    const { history, parse } = this.props
+    const queryParams = parse(history.location.search)
     const sortByFromUrl = queryParams['tri'] || ''
 
     return sortByFromUrl ? sortByFromUrl : sortByFromProps
@@ -188,13 +188,13 @@ class Results extends PureComponent {
 
   handleOnSubmit = event => {
     event.preventDefault()
-    const { history, query } = this.props
+    const { history, parse } = this.props
     const { filters, searchedKeywords } = this.state
     const { offerCategories, sortBy: tri } = filters
     const keywordsToSearch = event.target.keywords.value
     const trimmedKeywordsToSearch = keywordsToSearch.trim()
 
-    const queryParams = query.parse()
+    const queryParams = parse(history.location.search)
     const autourDe = queryParams['autour-de']
     const categories = offerCategories.join(';')
     const longitude = queryParams['longitude']
@@ -433,7 +433,7 @@ class Results extends PureComponent {
   }
 
   render() {
-    const { history, match, query, userGeolocation } = this.props
+    const { history, match, parse, userGeolocation } = this.props
     const {
       currentPage,
       filters,
@@ -544,8 +544,8 @@ class Results extends PureComponent {
               nbHits: resultsCount,
               nbPages: totalPagesNumber,
             }}
+            parse={parse}
             place={place}
-            query={query}
             showFailModal={this.showFailModal}
             updateFilteredOffers={this.updateFilteredOffers}
             updateFilters={this.updateFilters}
@@ -596,6 +596,7 @@ Results.propTypes = {
   }),
   history: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
+  parse: PropTypes.func.isRequired,
   place: PropTypes.shape({
     geolocation: PropTypes.shape({
       latitude: PropTypes.number,
@@ -603,9 +604,6 @@ Results.propTypes = {
     }),
     name: PropTypes.string,
   }),
-  query: PropTypes.shape({
-    parse: PropTypes.func,
-  }).isRequired,
   redirectToSearchMainPage: PropTypes.func.isRequired,
   userGeolocation: PropTypes.shape({
     latitude: PropTypes.number,

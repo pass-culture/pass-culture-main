@@ -1,9 +1,9 @@
+import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { requestData } from 'redux-thunk-data'
-import withLogin from './withLogin'
 
-import withFrenchQueryRouter from '../withFrenchQueryRouter'
 import { getRedirectionPath } from './helpers'
+import withLogin from './withLogin'
 
 export const handleFail = (state, action, ownProps) => {
   const { history, location } = ownProps
@@ -32,7 +32,7 @@ export const handleSuccess = (state, action, ownProps) => {
 }
 
 const withRequiredLogin = compose(
-  withFrenchQueryRouter,
+  withRouter,
   withLogin({
     handleFail,
     handleSuccess,

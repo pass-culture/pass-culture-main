@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
-import queryString from 'query-string'
+import { parse } from 'query-string'
 import React, { PureComponent } from 'react'
-import { Switch, Route } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 
 import NotMatch from '../not-match/NotMatch'
 import RequestEmailForm from './RequestEmailForm/RequestEmailForm'
@@ -33,7 +33,7 @@ class ForgotPassword extends PureComponent {
 
   render() {
     const { location } = this.props
-    const { token } = queryString.parse(location.search)
+    const { token } = parse(location.search)
 
     return (
       <main className="logout-form-main">

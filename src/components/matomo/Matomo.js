@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types'
-import queryString from 'query-string'
+import { parse } from 'query-string'
+
 import { MATOMO_GEOLOCATION_GOAL_ID } from '../../utils/config'
 
 const Matomo = ({ location, userId, coordinates }) => {
   const Matomo = window._paq
 
   const { pathname, search } = location
-  const searchParameters = queryString.parse(search)
+  const searchParameters = parse(search)
   const searchKeyword = searchParameters['mots-cles']
 
   Matomo.push(['setCustomUrl', pathname])

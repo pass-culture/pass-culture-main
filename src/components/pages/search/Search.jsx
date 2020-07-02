@@ -1,13 +1,15 @@
 import PropTypes from 'prop-types'
+import { parse } from 'query-string'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
+
 import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA, SORT_CRITERIA } from './Criteria/criteriaEnums'
+import CriteriaCategory from './CriteriaCategory/CriteriaCategory'
+import CriteriaLocation from './CriteriaLocation/CriteriaLocation'
+import { buildPlaceLabel } from './CriteriaLocation/utils/buildPlaceLabel'
+import CriteriaSort from './CriteriaSort/CriteriaSort'
 import { Home } from './Home/Home'
 import Results from './Results/Results'
-import CriteriaLocation from './CriteriaLocation/CriteriaLocation'
-import CriteriaCategory from './CriteriaCategory/CriteriaCategory'
-import CriteriaSort from './CriteriaSort/CriteriaSort'
-import { buildPlaceLabel } from './CriteriaLocation/utils/buildPlaceLabel'
 
 const DEFAULT_META_VIEWPORT_CONTENT =
   'width=device-width, initial-scale=1, user-scalable=no, shrink-to-fit=no'
@@ -115,7 +117,7 @@ class Search extends PureComponent {
   }
 
   render() {
-    const { history, match, query, redirectToSearchMainPage } = this.props
+    const { history, match, redirectToSearchMainPage } = this.props
     const { categoryCriterion, geolocationCriterion, sortCriterion } = this.state
     const { place, userGeolocation } = geolocationCriterion
 
@@ -142,8 +144,8 @@ class Search extends PureComponent {
             }}
             history={history}
             match={match}
+            parse={parse}
             place={place}
-            query={query}
             redirectToSearchMainPage={redirectToSearchMainPage}
             search={history.location.search}
             userGeolocation={userGeolocation}
@@ -202,11 +204,6 @@ Search.propTypes = {
   }),
   history: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
-  query: PropTypes.shape({
-    clear: PropTypes.func,
-    change: PropTypes.func,
-    parse: PropTypes.func,
-  }).isRequired,
   redirectToSearchMainPage: PropTypes.func.isRequired,
 }
 

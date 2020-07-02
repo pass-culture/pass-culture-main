@@ -2,17 +2,18 @@ import PropTypes from 'prop-types'
 import Slider, { Range } from 'rc-slider'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
+
 import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import { DEFAULT_RADIUS_IN_KILOMETERS } from '../../../../vendor/algolia/filters'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA } from '../Criteria/criteriaEnums'
 import CriteriaLocation from '../CriteriaLocation/CriteriaLocation'
+import { buildPlaceLabel } from '../CriteriaLocation/utils/buildPlaceLabel'
 import { checkIfSearchAround } from '../utils/checkIfSearchAround'
 import Checkbox from './Checkbox/Checkbox'
 import { DATE_FILTER, PRICE_FILTER, TIME_FILTER } from './filtersEnums'
 import { RadioList } from './RadioList/RadioList'
 import Toggle from './Toggle/Toggle'
-import { buildPlaceLabel } from '../CriteriaLocation/utils/buildPlaceLabel'
 
 export class Filters extends PureComponent {
   constructor(props) {
@@ -107,9 +108,9 @@ export class Filters extends PureComponent {
   }
 
   handleOffersFetchAndUrlUpdate = () => {
-    const { history, query } = this.props
+    const { history, parse } = this.props
     const { filters, place, userGeolocation } = this.state
-    const queryParams = query.parse()
+    const queryParams = parse(history.location.search)
     const keywords = queryParams['mots-cles'] || ''
 
     const {
@@ -151,13 +152,13 @@ export class Filters extends PureComponent {
 
   buildSearchParameter = () => {
     const { filters, place, userGeolocation } = this.state
-    const { query } = this.props
+    const { history, parse } = this.props
     const { searchAround, sortBy } = filters
     const offerCategories = this.getSelectedCategories()
     const autourDe = checkIfSearchAround(searchAround)
     const categories = offerCategories.join(';') || ''
     const tri = sortBy
-    const queryParams = query.parse()
+    const queryParams = parse(history.location.search)
     const keywords = queryParams['mots-cles'] || ''
 
     return (
@@ -240,8 +241,8 @@ export class Filters extends PureComponent {
   }
 
   getActiveCriterionLabel = () => {
-    const { query } = this.props
-    const queryParams = query.parse()
+    const { history, parse } = this.props
+    const queryParams = parse(history.location.search)
     const place = queryParams['place'] || ''
     const {
       filters: { searchAround },
@@ -1002,6 +1003,7 @@ Filters.propTypes = {
   }),
   match: PropTypes.shape().isRequired,
   offers: PropTypes.shape().isRequired,
+  parse: PropTypes.func.isRequired,
   place: PropTypes.shape({
     geolocation: PropTypes.shape({
       latitude: PropTypes.number,
@@ -1012,7 +1014,6 @@ Filters.propTypes = {
       short: PropTypes.string,
     }),
   }),
-  query: PropTypes.shape().isRequired,
   showFailModal: PropTypes.func.isRequired,
   updateFilteredOffers: PropTypes.func.isRequired,
   updateFilters: PropTypes.func.isRequired,

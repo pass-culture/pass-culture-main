@@ -9,13 +9,13 @@ import configureStore from 'redux-mock-store'
 
 import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
+import { Criteria } from '../../Criteria/Criteria'
 import { GEOLOCATION_CRITERIA } from '../../Criteria/criteriaEnums'
+import CriteriaLocation from '../../CriteriaLocation/CriteriaLocation'
+import Checkbox from '../Checkbox/Checkbox'
 import { Filters } from '../Filters'
 import { RadioList } from '../RadioList/RadioList'
 import Toggle from '../Toggle/Toggle'
-import CriteriaLocation from '../../CriteriaLocation/CriteriaLocation'
-import Checkbox from '../Checkbox/Checkbox'
-import { Criteria } from '../../Criteria/Criteria'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
@@ -89,9 +89,7 @@ describe('components | Filters', () => {
         nbPages: 0,
       },
       place: null,
-      query: {
-        parse: jest.fn(),
-      },
+      parse: jest.fn(),
       showFailModal: jest.fn(),
       updateFilteredOffers: jest.fn(),
       updateFilters: jest.fn(),
@@ -102,7 +100,7 @@ describe('components | Filters', () => {
         longitude: 41,
       },
     }
-    props.query.parse.mockReturnValue({
+    props.parse.mockReturnValue({
       'mots-cles': '',
     })
     fetchAlgolia.mockReturnValue(
@@ -172,7 +170,7 @@ describe('components | Filters', () => {
         jest.spyOn(props.history, 'replace').mockImplementationOnce(() => {})
         jest.spyOn(props.history, 'push').mockImplementationOnce(() => {})
         props.history.location.pathname = '/recherche/resultats/filtres/localisation'
-        props.query.parse.mockReturnValue({
+        props.parse.mockReturnValue({
           'autour-de': 'non',
           categories: 'VISITE;CINEMA',
           'mots-cles': 'librairie',
@@ -239,7 +237,7 @@ describe('components | Filters', () => {
         jest.spyOn(props.history, 'push').mockImplementationOnce(() => {})
         props.history.location.pathname = '/recherche/resultats/filtres/localisation'
         props.initialFilters.offerCategories = ['VISITE']
-        props.query.parse.mockReturnValue({
+        props.parse.mockReturnValue({
           'autour-de': 'oui',
           categories: 'VISITE',
           'mots-cles': 'librairie',
@@ -346,7 +344,7 @@ describe('components | Filters', () => {
         props.initialFilters.offerIsFilteredByDate = true
         const history = createBrowserHistory()
         history.push('/recherche/resultats/filtres')
-        props.query.parse.mockReturnValue({
+        props.parse.mockReturnValue({
           'mots-cles': '',
         })
         fetchAlgolia.mockReturnValue(
@@ -482,7 +480,7 @@ describe('components | Filters', () => {
       it('should not allow click on display results button when no results', () => {
         // given
         props.history.location.pathname = '/recherche/filtres'
-        props.query.parse.mockReturnValue({
+        props.parse.mockReturnValue({
           'mots-cles': 'librairies',
         })
         props.offers = {
@@ -567,7 +565,7 @@ describe('components | Filters', () => {
           .find({ children: 'Uniquement les offres duo' })
           .closest('li')
           .find(Toggle)
-        props.query.parse.mockReturnValue({})
+        props.parse.mockReturnValue({})
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
             resolve({
@@ -1016,7 +1014,7 @@ describe('components | Filters', () => {
             .find('[data-test="sf-offer-types-filter-wrapper"]')
             .find(Checkbox)
             .at(0)
-          props.query.parse.mockReturnValue({
+          props.parse.mockReturnValue({
             'mots-cles': 'librairies',
           })
           fetchAlgolia.mockReturnValue(
@@ -1109,7 +1107,7 @@ describe('components | Filters', () => {
             .find({ children: 'Uniquement les offres duo' })
             .closest('li')
             .find(Toggle)
-          props.query.parse.mockReturnValue({})
+          props.parse.mockReturnValue({})
           fetchAlgolia.mockReturnValue(
             new Promise(resolve => {
               resolve({
@@ -1156,7 +1154,7 @@ describe('components | Filters', () => {
         it('should display counter when offer duo is checked', () => {
           // given
           props.history.location.pathname = '/recherche/filtres'
-          props.query.parse.mockReturnValue({})
+          props.parse.mockReturnValue({})
           fetchAlgolia.mockReturnValue(
             new Promise(resolve => {
               resolve({
@@ -1235,7 +1233,7 @@ describe('components | Filters', () => {
             .find({ children: 'Uniquement les offres gratuites' })
             .closest('li')
             .find(Toggle)
-          props.query.parse.mockReturnValue({})
+          props.parse.mockReturnValue({})
           fetchAlgolia.mockReturnValue(
             new Promise(resolve => {
               resolve({
@@ -1335,7 +1333,7 @@ describe('components | Filters', () => {
           it('should render a counter next to "Price" if not default value', () => {
             // given
             props.history.location.pathname = '/recherche/filtres'
-            props.query.parse.mockReturnValue({})
+            props.parse.mockReturnValue({})
             fetchAlgolia.mockReturnValue(
               new Promise(resolve => {
                 resolve({
@@ -1367,7 +1365,7 @@ describe('components | Filters', () => {
           it('should display counter', () => {
             // given
             props.history.location.pathname = '/recherche/filtres'
-            props.query.parse.mockReturnValue({})
+            props.parse.mockReturnValue({})
             fetchAlgolia.mockReturnValue(
               new Promise(resolve => {
                 resolve({
@@ -1642,7 +1640,7 @@ describe('components | Filters', () => {
             },
             sortBy: '_by_price',
           }
-          props.query.parse.mockReturnValue({
+          props.parse.mockReturnValue({
             'mots-cles': 'librairie',
           })
           fetchAlgolia.mockReturnValue(
@@ -1720,7 +1718,7 @@ describe('components | Filters', () => {
             },
             sortBy: '_by_price',
           }
-          props.query.parse.mockReturnValue({
+          props.parse.mockReturnValue({
             'mots-cles': 'librairie',
           })
           fetchAlgolia.mockReturnValue(
@@ -2003,7 +2001,7 @@ describe('components | Filters', () => {
             .find({ children: 'Uniquement les nouveautés' })
             .closest('li')
             .find(Toggle)
-          props.query.parse.mockReturnValue({})
+          props.parse.mockReturnValue({})
           fetchAlgolia.mockReturnValue(
             new Promise(resolve => {
               resolve({
@@ -2142,7 +2140,7 @@ describe('components | Filters', () => {
           it('should fetch algolia on time slide', () => {
             // given
             props.history.location.pathname = '/recherche/filtres'
-            props.query.parse.mockReturnValue({})
+            props.parse.mockReturnValue({})
             props.initialFilters.offerIsFilteredByTime = true
             fetchAlgolia.mockReturnValue(
               new Promise(resolve => {
@@ -2223,7 +2221,7 @@ describe('components | Filters', () => {
         it('should display counter when offer is new is checked', () => {
           // given
           props.history.location.pathname = '/recherche/filtres'
-          props.query.parse.mockReturnValue({})
+          props.parse.mockReturnValue({})
           fetchAlgolia.mockReturnValue(
             new Promise(resolve => {
               resolve({

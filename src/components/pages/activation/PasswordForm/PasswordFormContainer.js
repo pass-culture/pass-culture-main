@@ -1,13 +1,13 @@
+import { parse } from 'query-string'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { requestData } from 'redux-thunk-data'
 
-import PasswordForm from './PasswordForm'
-import withFrenchQueryRouter from '../../../hocs/withFrenchQueryRouter'
 import { setTokenStatus, validateToken } from '../../../../redux/actions/token'
-
 import doesTokenHaveBeenChecked from './helpers/doesTokenHaveBeenChecked'
 import isValidToken from './helpers/isValidToken'
+import PasswordForm from './PasswordForm'
 
 export const mapDispatchToProps = dispatch => ({
   checkTokenIsValid: token =>
@@ -45,11 +45,10 @@ export const mapDispatchToProps = dispatch => ({
 })
 
 export const mapStateToProps = (state, ownProps) => {
-  const { match, query } = ownProps
+  const { location, match } = ownProps
   const { params } = match
   const { token } = params
-  const queryParams = query.parse()
-  const { email } = queryParams
+  const { email } = parse(location.search)
   const initialValues = { email, token }
   const isValidUrl = Boolean(token && email)
 
@@ -62,7 +61,7 @@ export const mapStateToProps = (state, ownProps) => {
 }
 
 export default compose(
-  withFrenchQueryRouter,
+  withRouter,
   connect(
     mapStateToProps,
     mapDispatchToProps
