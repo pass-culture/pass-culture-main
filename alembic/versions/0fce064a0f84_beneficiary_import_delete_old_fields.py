@@ -1,7 +1,7 @@
 """beneficiary_import_delete_old_fields
 
 Revision ID: 0fce064a0f84
-Revises: 8df159da2826
+Revises: 31e0e5b920cf
 Create Date: 2020-06-17 12:59:36.426445
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '0fce064a0f84'
-down_revision = '8df159da2826'
+down_revision = '31e0e5b920cf'
 branch_labels = None
 depends_on = None
 

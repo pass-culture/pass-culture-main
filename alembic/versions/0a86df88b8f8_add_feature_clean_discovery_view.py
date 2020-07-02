@@ -1,7 +1,7 @@
 """add_feature_clean_discovery_view
 
 Revision ID: 0a86df88b8f8
-Revises: fbb3ff7f21d3
+Revises: 8df159da2826
 Create Date: 2020-06-30 08:50:36.069761
 
 """
@@ -12,7 +12,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = '0a86df88b8f8'
-down_revision = '48fe21e107f4'
+down_revision = '8df159da2826'
 branch_labels = None
 depends_on = None
 
@@ -30,7 +30,7 @@ def upgrade():
                   'SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS', 'UPDATE_DISCOVERY_VIEW', 'UPDATE_BOOKING_USED',
                   'RECOMMENDATIONS_WITH_DISCOVERY_VIEW', 'RECOMMENDATIONS_WITH_DIGITAL_FIRST',
                   'RECOMMENDATIONS_WITH_GEOLOCATION', 'API_SIRENE_AVAILABLE',
-                  'SAVE_SEEN_OFFERS', 'CLEAN_DISCOVERY_VIEW')
+                  'SAVE_SEEN_OFFERS', 'CLEAN_DISCOVERY_VIEW', 'BOOKINGS_V2')
     previous_values = ('WEBAPP_SIGNUP', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'QR_CODE',
                        'FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE', 'SEARCH_ALGOLIA', 'SEARCH_LEGACY',
                        'BENEFICIARIES_IMPORT', 'SYNCHRONIZE_ALGOLIA', 'SYNCHRONIZE_ALLOCINE',
@@ -39,7 +39,7 @@ def upgrade():
                        'SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS', 'UPDATE_DISCOVERY_VIEW', 'UPDATE_BOOKING_USED',
                        'RECOMMENDATIONS_WITH_DISCOVERY_VIEW', 'RECOMMENDATIONS_WITH_DIGITAL_FIRST',
                        'RECOMMENDATIONS_WITH_GEOLOCATION',
-                       'API_SIRENE_AVAILABLE', 'SAVE_SEEN_OFFERS')
+                       'API_SIRENE_AVAILABLE', 'SAVE_SEEN_OFFERS', 'BOOKINGS_V2')
 
     previous_enum = sa.Enum(*previous_values, name='featuretoggle')
     new_enum = sa.Enum(*new_values, name='featuretoggle')
