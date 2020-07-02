@@ -19,8 +19,10 @@ export const {
   ALGOLIA_SEARCH_API_KEY,
   ALGOLIA_INDEX_NAME,
 } = process.env
+
 export const APP_VERSION = version
 export const PROJECT_NAME = 'pass Culture'
+export const ANDROID_APPLICATION_ID = 'app.passculture.testing.webapp'
 export const IS_DEV = NODE_ENV === 'development'
 export const IS_PROD = !IS_DEV
 
