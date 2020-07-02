@@ -22,8 +22,7 @@ from use_cases.book_an_offer import BookingInformation
 from use_cases.get_all_bookings_by_pro_user import get_all_bookings_by_pro_user
 from utils.human_ids import dehumanize, humanize
 from utils.includes import WEBAPP_GET_BOOKING_INCLUDES, \
-    WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES, \
-    WEBAPP_PATCH_POST_BOOKING_INCLUDES
+    WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES
 from utils.mailing import send_raw_email
 from utils.rest import ensure_current_user_has_rights, expect_json_data
 from validation.routes.bookings import check_booking_is_not_already_cancelled, \
@@ -101,10 +100,9 @@ def create_booking():
 @app.route('/bookings/<booking_id>/cancel', methods=['PUT'])
 @login_required
 def cancel_booking(booking_id: str):
-    dehumanized_booking_id = dehumanize(booking_id)
     booking = cancel_a_booking.execute(
-        booking_id=dehumanized_booking_id,
-        beneficary_id=current_user.id
+        booking_id=dehumanize(booking_id),
+        beneficiary_id=current_user.id
     )
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
@@ -135,29 +133,6 @@ def get_booking_by_token(token: str):
     return '', 204
 
 
-@app.route('/v2/bookings/token/<token>', methods=['GET'])
-@login_or_api_key_required_v2
-def get_booking_by_token_v2(token: str):
-    app_authorization_api_key = _extract_api_key_from_request(request)
-    valid_api_key = find_api_key_by_value(app_authorization_api_key)
-    booking_token_upper_case = token.upper()
-    booking = booking_queries.find_by(booking_token_upper_case)
-    offerer_id = booking.stock.offer.venue.managingOffererId
-
-    if current_user.is_authenticated:
-        # warning : current user is not none when user is not logged in
-        check_user_can_validate_bookings_v2(current_user, offerer_id)
-
-    if valid_api_key:
-        check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
-
-    check_booking_token_is_usable(booking)
-
-    response = serialize_booking(booking)
-
-    return jsonify(response), 200
-
-
 @app.route('/bookings/token/<token>', methods=['PATCH'])
 def patch_booking_by_token(token: str):
     email = request.args.get('email', None)
@@ -182,6 +157,29 @@ def patch_booking_by_token(token: str):
     repository.save(booking)
 
     return '', 204
+
+
+@app.route('/v2/bookings/token/<token>', methods=['GET'])
+@login_or_api_key_required_v2
+def get_booking_by_token_v2(token: str):
+    app_authorization_api_key = _extract_api_key_from_request(request)
+    valid_api_key = find_api_key_by_value(app_authorization_api_key)
+    booking_token_upper_case = token.upper()
+    booking = booking_queries.find_by(booking_token_upper_case)
+    offerer_id = booking.stock.offer.venue.managingOffererId
+
+    if current_user.is_authenticated:
+        # warning : current user is not none when user is not logged in
+        check_user_can_validate_bookings_v2(current_user, offerer_id)
+
+    if valid_api_key:
+        check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
+
+    check_booking_token_is_usable(booking)
+
+    response = serialize_booking(booking)
+
+    return jsonify(response), 200
 
 
 @app.route('/v2/bookings/use/token/<token>', methods=['PATCH'])

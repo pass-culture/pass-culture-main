@@ -34,7 +34,7 @@ class CancelABookingTest:
 
         # When
         result = self.cancel_a_booking.execute(booking_id=booking.identifier,
-                                               beneficary_id=beneficiary.identifier)
+                                               beneficiary_id=beneficiary.identifier)
 
         # Then
         self.booking_repository.save.assert_called_once_with(booking)

@@ -11,10 +11,10 @@ class CancelABooking:
         self.notification_service = notification_service
         self.booking_repository = booking_repository
 
-    def execute(self, booking_id: int, beneficary_id: int) -> Booking:
+    def execute(self, booking_id: int, beneficiary_id: int) -> Booking:
         booking = self.booking_repository.find_booking_by_id_and_beneficiary_id(
             booking_id=booking_id,
-            beneficiary_id=beneficary_id
+            beneficiary_id=beneficiary_id
         )
         booking.cancel()
 

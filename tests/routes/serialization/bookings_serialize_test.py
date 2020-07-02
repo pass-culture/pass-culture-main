@@ -172,6 +172,8 @@ class SerializeBookingForBookAnOfferTest:
 
         # Then
         assert booking_json == {
+            'amount': booking.amount,
+            'isCancelled': booking.isCancelled,
             'id': 'AM',
             'stockId': 'A9',
             'quantity': 1,
