@@ -114,6 +114,7 @@ static/object_store_data
 
 # env
 dev_env_file
+.env.local.secret
 
 # IntelliJ IDEA / PyCharm
 .idea/
