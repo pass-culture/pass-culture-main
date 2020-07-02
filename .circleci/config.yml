@@ -335,6 +335,32 @@ jobs:
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
             curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=All,environment='"$CIRCLE_BRANCH"',deployed=true version="'"$VERSION_TO_DEPLOY"'"'
 
+  tag-version:
+    machine:
+      image: ubuntu-1604:201903-01
+    working_directory: ~/pass-culture
+    steps:
+      - checkout
+      - run:
+          name: Add deploy tag for release
+          command: |
+            git tag -a "deploy-$VERSION_TO_DEPLOY" -m "$VERSION_TO_DEPLOY has been deployed to $CIRCLE_BRANCH"
+            git push --tags
+
+            ROOT_PATH=~/pass-culture
+            cd $ROOT_PATH/api
+            git tag -a "deploy-$VERSION_TO_DEPLOY" -m "$VERSION_TO_DEPLOY has been deployed to $CIRCLE_BRANCH"
+            git push --tags
+
+            cd $ROOT_PATH/pro
+            git tag -a "deploy-$VERSION_TO_DEPLOY" -m "$VERSION_TO_DEPLOY has been deployed to $CIRCLE_BRANCH"
+            git push --tags
+
+            cd $ROOT_PATH/webapp
+            git tag -a "deploy-$VERSION_TO_DEPLOY" -m "$VERSION_TO_DEPLOY has been deployed to $CIRCLE_BRANCH"
+            git push --tags
+
+
 workflows:
   version: 2
   commit:
@@ -380,6 +406,10 @@ workflows:
           requires:
             - deploy-api
       - release-synthesis:
+          requires:
+            - deploy-pro
+            - deploy-webapp
+      - tag-version:
           requires:
             - deploy-pro
             - deploy-webapp
