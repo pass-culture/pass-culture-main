@@ -8,8 +8,7 @@ from tests.model_creators.generic_creators import create_user, create_offerer, c
 from utils.token import random_token
 from validation.routes.users_authorizations import check_user_can_validate_bookings, \
     check_user_can_validate_bookings_v2, \
-    check_api_key_allows_to_validate_booking, check_user_can_validate_activation_offer, \
-
+    check_api_key_allows_to_validate_booking, check_user_can_validate_activation_offer
 
 class CheckUserCanValidateBookingTest:
     @clean_database
