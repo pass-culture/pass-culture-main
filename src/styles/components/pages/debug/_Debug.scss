@@ -1,0 +1,8 @@
+.debug-main {
+  .db-create-error {
+    @include btn();
+
+    font-size: 1rem;
+    background: transparent url(/icons/ico-check.svg) no-repeat left center;
+  }
+}

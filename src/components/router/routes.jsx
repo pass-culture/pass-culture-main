@@ -2,6 +2,7 @@ import React from 'react'
 import { Redirect } from 'react-router-dom'
 
 import { IcoNavBookings } from '../layout/NavBar/Icons/IcoNavBookings'
+import { IcoNavDebug } from '../layout/NavBar/Icons/IcoNavDebug'
 import { IcoNavDiscovery } from '../layout/NavBar/Icons/IcoNavDiscovery'
 import { IcoNavFavorites } from '../layout/NavBar/Icons/IcoNavFavorites'
 import { IcoNavProfile } from '../layout/NavBar/Icons/IcoNavProfile'
@@ -20,6 +21,9 @@ import SignInContainer from '../pages/signin/SignInContainer'
 import CreateAccount from '../pages/create-account/CreateAccount'
 import TutorialsContainer from '../pages/tutorials/TutorialsContainer'
 import TypeFormContainer from '../pages/typeform/TypeformContainer'
+import Debug from '../pages/debug/DebugPage'
+
+import { IS_DEV } from '../../utils/config'
 
 function redirectToBeta() {
   return <Redirect to="/beta" />
@@ -164,5 +168,15 @@ const routes = [
     title: 'Mon compte',
   },
 ]
+
+if (IS_DEV) {
+  routes.push({
+    component: Debug,
+    icon: IcoNavDebug,
+    to: '/errors',
+    path: '/errors',
+    title: "DEV | Gestion d'erreur",
+  })
+}
 
 export default routes
