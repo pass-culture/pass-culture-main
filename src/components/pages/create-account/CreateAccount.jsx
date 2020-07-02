@@ -10,7 +10,7 @@ import IneligibleUnderEighteen from './IneligibleUnderEighteen/IneligibleUnderEi
 import ContactSaved from './ContactSaved/ContactSaved'
 import EligibilityCheck from './EligibilityCheck/EligibilityCheck'
 
-const CreateAccount = ({ history }) => (
+const CreateAccount = ({ history, location }) => (
   <Switch>
     <Route path="/verification-eligibilite/eligible">
       <Eligible />
@@ -31,7 +31,10 @@ const CreateAccount = ({ history }) => (
       <ContactSaved />
     </Route>
     <Route path="/verification-eligibilite">
-      <EligibilityCheck history={history} />
+      <EligibilityCheck
+        historyPush={history.push}
+        pathname={location.pathname}
+      />
     </Route>
   </Switch>
 )
@@ -39,10 +42,11 @@ const CreateAccount = ({ history }) => (
 CreateAccount.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
-    location: PropTypes.shape({
-      pathname: PropTypes.string.isRequired,
-    }).isRequired,
   }).isRequired,
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired,
+  }).isRequired,
+
 }
 
 export default CreateAccount

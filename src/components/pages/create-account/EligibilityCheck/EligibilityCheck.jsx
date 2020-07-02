@@ -7,7 +7,7 @@ import { checkIfDepartmentIsEligible } from '../domain/checkIfDepartmentIsEligib
 import { checkIfAgeIsEligible } from '../domain/checkIfAgeIsEligible'
 import { eligibilityPaths } from './eligibilityPaths'
 
-const EligibilityCheck = ({ history }) => {
+const EligibilityCheck = ({historyPush, pathname}) => {
   const [postalCodeInputValue, setPostalCodeInputValue] = useState('')
   const [dateOfBirthInputValue, setDateOfBirthInputValue] = useState('')
 
@@ -23,10 +23,16 @@ const EligibilityCheck = ({ history }) => {
 
   const isMissingField = postalCodeInputValue.length < 5 || dateOfBirthInputValue.length < 10
 
+  const getCurrentPathName = () => {
+    const currentPathname = pathname
+
+    return currentPathname.slice(-1) !== '/' ? currentPathname + '/' : currentPathname
+  }
+
   const handleSubmit = useCallback(
     event => {
       event.preventDefault()
-      const currentPathName = history.location.pathname
+      const currentPathName = getCurrentPathName()
       const splittedBirthDate = dateOfBirthInputValue.split('/')
       const birthDay = splittedBirthDate[0]
       const birthMonth = splittedBirthDate[1]
@@ -35,7 +41,7 @@ const EligibilityCheck = ({ history }) => {
       const isDateFormatValid = Date.parse(`${birthDay}-${birthMonth}-${birthDay}`)
 
       if (!isDateFormatValid || birthYear > currentYear) {
-        return history.push('/verification-eligibilite/pas-eligible')
+        return historyPush('/verification-eligibilite/pas-eligible')
       }
 
       const ageEligibilityValue = checkIfAgeIsEligible(dateOfBirthInputValue)
@@ -44,10 +50,10 @@ const EligibilityCheck = ({ history }) => {
         const isDepartmentEligible = checkIfDepartmentIsEligible(postalCodeInputValue)
 
         isDepartmentEligible
-          ? history.push(currentPathName + eligibilityPaths[ageEligibilityValue])
-          : history.push(currentPathName + 'departement-non-eligible')
+          ? historyPush(currentPathName + eligibilityPaths[ageEligibilityValue])
+          : historyPush(currentPathName + 'departement-non-eligible')
       } else {
-        history.push(currentPathName + eligibilityPaths[ageEligibilityValue])
+        historyPush(currentPathName + eligibilityPaths[ageEligibilityValue])
       }
     },
     [postalCodeInputValue, dateOfBirthInputValue]
@@ -99,12 +105,8 @@ const EligibilityCheck = ({ history }) => {
 }
 
 EligibilityCheck.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-    location: PropTypes.shape({
-      pathname: PropTypes.string.isRequired,
-    }).isRequired,
-  }).isRequired,
+  historyPush: PropTypes.func.isRequired,
+  pathname: PropTypes.string.isRequired,
 }
 
 export default EligibilityCheck
