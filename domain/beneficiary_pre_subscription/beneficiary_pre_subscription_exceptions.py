@@ -1,0 +1,2 @@
+class CantRegisterBeneficiary(Exception):
+    pass

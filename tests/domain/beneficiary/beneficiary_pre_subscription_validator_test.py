@@ -6,8 +6,9 @@ from tests.domain_creators.generic_creators import \
     create_domain_beneficiary_pre_subcription
 from tests.model_creators.generic_creators import create_user
 
-from domain.beneficiary.beneficiary_pre_subscription_validator import CantRegisterBeneficiary, \
-    validate
+from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
+    CantRegisterBeneficiary
+from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import validate
 from repository import repository
 
 

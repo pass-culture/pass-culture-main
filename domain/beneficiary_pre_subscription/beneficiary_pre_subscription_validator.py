@@ -1,13 +1,12 @@
-from typing import List
 from datetime import datetime
+from typing import List
 
-from domain.beneficiary.beneficiary_pre_subscription import BeneficiaryPreSubscription
+from domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
+    BeneficiaryPreSubscription
+from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import \
+    CantRegisterBeneficiary
 from models import UserSQLEntity
 from repository.user_queries import find_by_civility, find_user_by_email
-
-
-class CantRegisterBeneficiary(Exception):
-    pass
 
 
 def get_beneficiary_duplicates(first_name: str, last_name: str, date_of_birth: datetime) -> List[UserSQLEntity]:

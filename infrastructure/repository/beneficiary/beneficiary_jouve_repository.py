@@ -3,9 +3,9 @@ import os
 
 from jsonschema.validators import requests
 
-from domain.beneficiary.beneficiary_pre_subscription import \
+from domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
-from domain.beneficiary.beneficiary_pre_subscription_repository import BeneficiaryPreSubscriptionRepository
+from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_repository import BeneficiaryPreSubscriptionRepository
 from infrastructure.repository.beneficiary import beneficiary_jouve_converter
 
 JOUVE_API_DOMAIN = os.environ.get('JOUVE_API_DOMAIN')
@@ -19,7 +19,7 @@ class ApiJouveException(Exception):
 
 
 class BeneficiaryJouveRepository(BeneficiaryPreSubscriptionRepository):
-    def _get_authentication_token(cls) -> str:
+    def _get_authentication_token(self) -> str:
         expiration = datetime.datetime.now() + datetime.timedelta(hours=1)
         response = requests.post(
             f'{JOUVE_API_DOMAIN}/REST/server/authenticationtokens',
@@ -40,8 +40,8 @@ class BeneficiaryJouveRepository(BeneficiaryPreSubscriptionRepository):
         response_json = response.json()
         return response_json['Value']
 
-    def get_application_by(cls, application_id: int) -> BeneficiaryPreSubscription:
-        token = cls._get_authentication_token()
+    def get_application_by(self, application_id: int) -> BeneficiaryPreSubscription:
+        token = self._get_authentication_token()
 
         response = requests.post(
             f'{JOUVE_API_DOMAIN}/REST/vault/extensionmethod/VEM_GetJeuneByID',

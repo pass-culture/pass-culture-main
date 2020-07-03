@@ -6,7 +6,7 @@ from typing import Callable, Dict, List, Set
 from connectors.api_demarches_simplifiees import get_application_details
 from domain.demarches_simplifiees import \
     get_closed_application_ids_for_demarche_simplifiee
-from domain.beneficiary.beneficiary_pre_subscription_validator import get_beneficiary_duplicates
+from domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import get_beneficiary_duplicates
 from domain.user_activation import create_beneficiary_from_application
 from domain.user_emails import send_activation_email
 from models import ApiErrors, ImportStatus, UserSQLEntity
@@ -15,7 +15,7 @@ from repository import repository
 from repository.beneficiary_import_queries import (
     find_applications_ids_to_retry, is_already_imported,
     save_beneficiary_import_with_status)
-from repository.user_queries import find_by_civility, find_user_by_email
+from repository.user_queries import find_user_by_email
 from utils.logger import logger
 from utils.mailing import MailServiceException, send_raw_email
 

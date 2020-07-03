@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from domain.beneficiary.beneficiary import Beneficiary
-from domain.beneficiary.beneficiary_pre_subscription import \
+from domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
 from domain.booking.booking import Booking
 from domain.booking_recap.booking_recap import ThingBookingRecap, EventBookingRecap, BookBookingRecap

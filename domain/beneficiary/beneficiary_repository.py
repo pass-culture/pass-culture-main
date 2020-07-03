@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from domain.beneficiary.beneficiary import Beneficiary
-from domain.beneficiary.beneficiary_pre_subscription import BeneficiaryPreSubscription
+from domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 
 
 class BeneficiaryRepository(ABC):

@@ -1,27 +1,34 @@
-from unittest.mock import patch, Mock, call
+from unittest.mock import Mock, call, patch
+
+from tests.conftest import clean_database
+from tests.domain_creators.generic_creators import create_domain_beneficiary, \
+    create_domain_beneficiary_pre_subcription
+from tests.model_creators.generic_creators import create_booking, \
+    create_deposit, create_offerer, create_user, create_user_offerer, \
+    create_venue
+from tests.model_creators.specific_creators import create_offer_with_thing_product, \
+    create_stock_with_event_offer
+from tests.test_utils import create_mocked_bookings
 
 from domain.booking.booking import Booking
 from domain.stock.stock import Stock
-from domain.user_emails import send_beneficiary_booking_cancellation_email, \
-    send_warning_to_beneficiary_after_pro_booking_cancellation, \
-    send_offerer_driven_cancellation_email_to_offerer, \
-    send_booking_confirmation_email_to_beneficiary, send_booking_recap_emails, \
-    send_validation_confirmation_email_to_pro, send_batch_cancellation_emails_to_users, \
-    send_offerer_bookings_recap_email_after_offerer_cancellation, send_user_validation_email, \
-    send_venue_validation_confirmation_email, \
-    send_reset_password_email_to_user, \
-    send_activation_email, \
-    send_reset_password_email_to_pro, \
+from domain.user_emails import send_activation_email, \
     send_attachment_validation_email_to_pro_offerer, \
-    send_ongoing_offerer_attachment_information_email_to_pro, send_user_driven_cancellation_email_to_offerer
+    send_batch_cancellation_emails_to_users, \
+    send_beneficiary_booking_cancellation_email, \
+    send_booking_confirmation_email_to_beneficiary, \
+    send_booking_recap_emails, \
+    send_offerer_bookings_recap_email_after_offerer_cancellation, \
+    send_offerer_driven_cancellation_email_to_offerer, \
+    send_ongoing_offerer_attachment_information_email_to_pro, \
+    send_rejection_email_to_beneficiary_pre_subscription, \
+    send_reset_password_email_to_pro, send_reset_password_email_to_user, \
+    send_user_driven_cancellation_email_to_offerer, \
+    send_user_validation_email, send_validation_confirmation_email_to_pro, \
+    send_venue_validation_confirmation_email, \
+    send_warning_to_beneficiary_after_pro_booking_cancellation
 from models import Offerer
 from repository import repository
-from tests.conftest import clean_database
-from tests.domain_creators.generic_creators import create_domain_beneficiary
-from tests.model_creators.generic_creators import create_booking, create_user, create_offerer, create_venue, \
-    create_user_offerer, create_deposit
-from tests.model_creators.specific_creators import create_stock_with_event_offer, create_offer_with_thing_product
-from tests.test_utils import create_mocked_bookings
 
 
 class SendBeneficiaryBookingCancellationEmailTest:
@@ -319,7 +326,7 @@ class SendCancellationEmailOneUserTest:
     @patch('utils.mailing.feature_send_mail_to_users_enabled', return_value=True)
     def when_called_calls_send_offerer_driven_cancellation_email_to_user_for_every_booking(self,
                                                                                            feature_send_mail_to_users_enabled,
-                                                                                           send_warning_to_beneficiary_after_pro_booking_cancellation):
+                                                                                           mocked_send_warning_to_beneficiary_after_pro_booking_cancellation):
         # Given
         mocked_send_email = Mock()
         num_bookings = 6
@@ -330,7 +337,7 @@ class SendCancellationEmailOneUserTest:
         send_batch_cancellation_emails_to_users(bookings, mocked_send_email)
 
         # Then
-        send_warning_to_beneficiary_after_pro_booking_cancellation.assert_has_calls(calls)
+        mocked_send_warning_to_beneficiary_after_pro_booking_cancellation.assert_has_calls(calls)
 
 
 class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
@@ -449,81 +456,40 @@ class SendUserValidationEmailTest:
 
 
 class SendActivationEmailTest:
-    def test_should_return_true_when_email_data_are_valid(self):
+    @patch('domain.user_emails.get_activation_email_data')
+    def test_send_activation_email(self, mocked_get_activation_email_data):
         # given
-        user = create_user(email='bobby@example.net', public_name='bobby', reset_password_token='AZ45KNB99H',
-                           first_name='John')
-        mocked_send_email = Mock(return_value=True)
+        beneficiary = create_domain_beneficiary()
+        mocked_send_email = Mock()
+        mocked_get_activation_email_data.return_value = {'Html-part': ''}
 
         # when
-        activation_email = send_activation_email(user, mocked_send_email)
+        send_activation_email(beneficiary, mocked_send_email)
 
         # then
-        assert activation_email is True
-
-    def test_should_return_false_when_email_data_are_not_valid(self):
-        # given
-        user = create_user(email='bobby@example.net', public_name='bobby', reset_password_token='AZ45KNB99H',
-                           first_name='John')
-        mocked_send_email = Mock(return_value=False)
-
-        # when
-        activation_email = send_activation_email(user, mocked_send_email)
-
-        # then
-        assert activation_email is False
+        mocked_get_activation_email_data.assert_called_once_with(user=beneficiary)
+        mocked_send_email.assert_called_once_with(data={'Html-part': ''})
 
 
 class SendAttachmentValidationEmailToProOffererTest:
-    @patch('emails.offerer_attachment_validation.feature_send_mail_to_users_enabled', return_value=True)
-    @patch('emails.offerer_attachment_validation.format_environment_for_email', return_value='')
-    @patch('emails.offerer_attachment_validation.find_user_offerer_email',
-           return_value='pro@example.com')
-    @patch('emails.offerer_attachment_validation.SUPPORT_EMAIL_ADDRESS', 'support@example.com')
+    @patch('domain.user_emails.retrieve_data_for_offerer_attachment_validation_email')
     @clean_database
-    def test_should_return_true_when_email_data_are_valid(self,
-                                                          mock_feature_send_mail_to_users_enabled,
-                                                          mock_format_environment_for_email,
-                                                          mock_find_user_offerer_email,
-                                                          app):
+    def test_send_attachment_validation_email_to_pro_offerer(self,
+                                                             mocked_retrieve_data_for_offerer_attachment_validation_email,
+                                                             app):
         # given
-        user = create_user(email='pro@example.com')
+        user = create_user()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
-
-        repository.save(user_offerer)
-
-        mocked_send_email = Mock(return_value=True)
+        mocked_send_email = Mock()
+        mocked_retrieve_data_for_offerer_attachment_validation_email.return_value = {'Html-part': ''}
 
         # when
-        attachment_validation_email = send_attachment_validation_email_to_pro_offerer(user_offerer, mocked_send_email)
+        send_attachment_validation_email_to_pro_offerer(user_offerer, mocked_send_email)
 
         # then
-        assert attachment_validation_email is True
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args
-        data = args[1]['data']
-        assert data['MJ-TemplateID'] == 778756
-        assert data['FromEmail'] == 'support@example.com'
-        assert data['To'] == 'pro@example.com'
-        assert data['Vars']['nom_structure'] == 'Test Offerer'
-
-    @clean_database
-    def test_should_return_false_when_email_data_are_not_valid(self):
-        # given
-        user = create_user(email='bobby@example.net')
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-
-        repository.save(offerer, user_offerer)
-
-        mocked_send_email = Mock(return_value=False)
-
-        # when
-        attachment_validation_email = send_attachment_validation_email_to_pro_offerer(user_offerer, mocked_send_email)
-
-        # then
-        assert attachment_validation_email is False
+        mocked_retrieve_data_for_offerer_attachment_validation_email.assert_called_once_with(user_offerer=user_offerer)
+        mocked_send_email.assert_called_once_with(data={'Html-part': ''})
 
 
 class SendOngoingOffererAttachmentInformationEmailTest:
@@ -586,3 +552,21 @@ class SendResetPasswordUserEmailTest:
         # then
         mock_retrieve_data_for_reset_password_user_email.assert_called_once_with(user)
         mocked_send_email.assert_called_once_with(data={'MJ-TemplateID': 912168})
+
+
+class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
+    @patch('domain.user_emails.make_beneficiary_pre_subscription_rejected_data',
+           return_value={'MJ-TemplateID': 1530996})
+    def when_feature_send_emails_enabled_sends_a_reset_password_email_to_pro_user(self,
+                                                                                  mock_retrieve_data_for_reset_password_user_email,
+                                                                                  app):
+        # given
+        beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription()
+        mocked_send_email = Mock()
+
+        # when
+        send_rejection_email_to_beneficiary_pre_subscription(beneficiary_pre_subscription, mocked_send_email)
+
+        # then
+        mock_retrieve_data_for_reset_password_user_email.assert_called_once_with(beneficiary_pre_subscription)
+        mocked_send_email.assert_called_once_with(data={'MJ-TemplateID': 1530996})

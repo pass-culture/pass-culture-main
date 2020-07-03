@@ -1,6 +1,6 @@
 from domain.beneficiary.beneficiary import Beneficiary
 from domain.beneficiary.beneficiary_exceptions import BeneficiaryDoesntExist
-from domain.beneficiary.beneficiary_pre_subscription import \
+from domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
 from domain.beneficiary.beneficiary_repository import BeneficiaryRepository
 from infrastructure.repository.beneficiary import beneficiary_pre_subscription_sql_converter, \
@@ -22,15 +22,15 @@ class BeneficiarySQLRepository(BeneficiaryRepository):
 
     @classmethod
     def save(cls, beneficiary_pre_subscription: BeneficiaryPreSubscription) -> Beneficiary:
-        beneficiary_sql_entitiy = beneficiary_pre_subscription_sql_converter.to_model(beneficiary_pre_subscription)
+        user_sql_entity = beneficiary_pre_subscription_sql_converter.to_model(beneficiary_pre_subscription)
 
-        repository.save(beneficiary_sql_entitiy)
+        repository.save(user_sql_entity)
 
-        return beneficiary_sql_converter.to_domain(beneficiary_sql_entitiy)
+        return beneficiary_sql_converter.to_domain(user_sql_entity)
 
     @classmethod
     def reject(cls, beneficiary_pre_subscription: BeneficiaryPreSubscription, detail: str) -> None:
-        beneficiary_sql_entitiy = beneficiary_pre_subscription_sql_converter \
+        beneficiary_import = beneficiary_pre_subscription_sql_converter \
             .to_rejected_model(beneficiary_pre_subscription, detail=detail)
 
-        repository.save(beneficiary_sql_entitiy)
+        repository.save(beneficiary_import)

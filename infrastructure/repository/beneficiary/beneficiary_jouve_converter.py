@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Dict
 
-from domain.beneficiary.beneficiary_pre_subscription import \
+from domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
 from models import BeneficiaryImportSources
 

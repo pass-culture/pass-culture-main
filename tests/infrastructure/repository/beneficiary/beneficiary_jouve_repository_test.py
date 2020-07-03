@@ -6,7 +6,7 @@ from freezegun import freeze_time
 from tests.infrastructure.repository.beneficiary import \
     beneficiary_jouve_creators
 
-from domain.beneficiary.beneficiary_pre_subscription import \
+from domain.beneficiary_pre_subscription.beneficiary_pre_subscription import \
     BeneficiaryPreSubscription
 from infrastructure.repository.beneficiary.beneficiary_jouve_repository import ApiJouveException, \
     BeneficiaryJouveRepository

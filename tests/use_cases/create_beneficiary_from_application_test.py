@@ -7,7 +7,6 @@ from tests.domain_creators.generic_creators import \
     create_domain_beneficiary_pre_subcription
 from tests.model_creators.generic_creators import create_user
 
-from infrastructure.repository.beneficiary import beneficiary_sql_converter
 from infrastructure.repository.beneficiary.beneficiary_sql_repository import \
     BeneficiarySQLRepository
 from models import BeneficiaryImport, UserSQLEntity
@@ -63,7 +62,7 @@ def test_saved_a_beneficiary_from_application(stubed_random_password,
     beneficiary = UserSQLEntity.query.one()
     assert beneficiary.activity == 'Apprenti'
     assert beneficiary.address == '3 rue de Valois'
-    assert beneficiary.canBookFreeOffers == True
+    assert beneficiary.canBookFreeOffers is True
     assert beneficiary.city == 'Paris'
     assert beneficiary.civility == 'Mme'
     assert beneficiary.dateOfBirth == datetime(1995, 2, 5)
@@ -164,3 +163,40 @@ def test_cannot_save_beneficiary_if_duplicate(app):
     assert beneficiary_import.applicationId == application_id
     assert beneficiary_import.beneficiary is None
     assert beneficiary_import.detail == f"User with id {existing_user_id} is a duplicate."
+
+
+@patch('use_cases.create_beneficiary_from_application.send_raw_email')
+@patch('use_cases.create_beneficiary_from_application.send_rejection_email_to_beneficiary_pre_subscription')
+@clean_database
+def test_send_email_when_cannot_save_beneficiary(mocked_send_rejection_email_to_beneficiary_pre_subscription,
+                                                 stubed_send_raw_email,
+                                                 app):
+    # Given
+    first_name = 'Thomas'
+    last_name = 'DURAND'
+    date_of_birth = datetime(1995, 2, 5)
+    existing_user_id = 4
+
+    user = create_user(first_name=first_name, last_name=last_name, date_of_birth=date_of_birth, idx=existing_user_id)
+    repository.save(user)
+
+    application_id = 7
+    beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription(
+        date_of_birth=date_of_birth,
+        application_id=application_id,
+        first_name=first_name,
+        last_name=last_name,
+    )
+    beneficiary_pre_subscription_repository = MagicMock()
+    beneficiary_pre_subscription_repository.get_application_by.return_value = beneficiary_pre_subscription
+    create_beneficiary_from_application = CreateBeneficiaryFromApplication(
+        beneficiary_pre_subscription_repository=beneficiary_pre_subscription_repository,
+        beneficiary_repository=BeneficiarySQLRepository()
+    )
+
+    # When
+    create_beneficiary_from_application.execute(application_id)
+
+    # Then
+    mocked_send_rejection_email_to_beneficiary_pre_subscription.assert_called_once_with(beneficiary_pre_subscription=beneficiary_pre_subscription,
+                                                                                        send_email=stubed_send_raw_email)
