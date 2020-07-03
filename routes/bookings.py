@@ -16,8 +16,7 @@ from repository import booking_queries, feature_queries, repository
 from repository.api_key_queries import find_api_key_by_value
 from routes.serialization import as_dict, serialize, serialize_booking
 from routes.serialization.bookings_recap_serialize import serialize_bookings_recap_paginated
-from routes.serialization.bookings_serialize import serialize_booking_for_book_an_offer, \
-    serialize_booking_for_cancel_a_booking
+from routes.serialization.bookings_serialize import serialize_domain_booking
 from use_cases.book_an_offer import BookingInformation
 from use_cases.get_all_bookings_by_pro_user import get_all_bookings_by_pro_user
 from utils.human_ids import dehumanize, humanize
@@ -94,7 +93,7 @@ def create_booking():
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=created_booking.stock.offer.id)
 
-    return jsonify(serialize_booking_for_book_an_offer(created_booking)), 201
+    return jsonify(serialize_domain_booking(created_booking)), 201
 
 
 @app.route('/bookings/<booking_id>/cancel', methods=['PUT'])
@@ -108,7 +107,7 @@ def cancel_booking(booking_id: str):
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offer.id)
 
-    return jsonify(serialize_booking_for_cancel_a_booking(booking)), 200
+    return jsonify(serialize_domain_booking(booking)), 200
 
 
 @app.route('/bookings/token/<token>', methods=['GET'])

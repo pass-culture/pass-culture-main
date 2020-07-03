@@ -4,14 +4,13 @@ import pytest
 
 from domain.booking.booking import Booking
 from domain.booking.booking_exceptions import EventHappensInLessThan72Hours, BookingIsAlreadyUsed
-from tests.domain_creators.generic_creators import create_domain_stock
-from tests.model_creators.generic_creators import create_user
+from tests.domain_creators.generic_creators import create_domain_stock, create_domain_beneficiary
 
 
 class TotalAmountTest:
     def test_should_return_total_amount(self) -> None:
         # Given
-        user = create_user()
+        beneficiary = create_domain_beneficiary()
         stock = create_domain_stock(
             identifier=1,
             quantity=2,
@@ -22,7 +21,7 @@ class TotalAmountTest:
             is_soft_deleted=False,
             bookings=[]
         )
-        booking = Booking(beneficiary=user, stock=stock, amount=1.2, quantity=2, is_cancelled=False)
+        booking = Booking(beneficiary=beneficiary, stock=stock, amount=1.2, quantity=2, is_cancelled=False)
 
         # When
         total_amount = booking.total_amount
@@ -34,7 +33,7 @@ class TotalAmountTest:
 class CancelTest:
     def should_raise_error_when_booking_is_used(self) -> None:
         # Given
-        user = create_user()
+        beneficiary = create_domain_beneficiary()
         stock = create_domain_stock(
             identifier=1,
             quantity=2,
@@ -45,7 +44,8 @@ class CancelTest:
             is_soft_deleted=False,
             bookings=[]
         )
-        booking = Booking(beneficiary=user, stock=stock, amount=1.2, quantity=2, is_cancelled=False, is_used=True)
+        booking = Booking(beneficiary=beneficiary, stock=stock, amount=1.2, quantity=2, is_cancelled=False,
+                          is_used=True)
 
         # When
         with pytest.raises(BookingIsAlreadyUsed) as error:
@@ -58,7 +58,7 @@ class CancelTest:
     def should_raise_error_when_booking_linked_on_stock_event_with_beginning_date_in_less_than_72_hours(self) -> None:
         # Given
         tomorrow = datetime.now() + timedelta(days=1)
-        user = create_user()
+        beneficiary = create_domain_beneficiary()
         stock = create_domain_stock(
             identifier=1,
             quantity=2,
@@ -69,7 +69,7 @@ class CancelTest:
             is_soft_deleted=False,
             bookings=[]
         )
-        booking = Booking(beneficiary=user, stock=stock, amount=1.2, quantity=2, is_cancelled=False, is_used=False)
+        booking = Booking(beneficiary=beneficiary, stock=stock, amount=1.2, quantity=2, is_cancelled=False, is_used=False)
 
         # When
         with pytest.raises(EventHappensInLessThan72Hours) as error:
@@ -80,9 +80,9 @@ class CancelTest:
                    'booking'] == ["Impossible d'annuler une réservation moins de 72h avant le début de l'évènement"]
         assert booking.isCancelled is False
 
-    def should_cancel_booking_when_booking_is_cancellable(self) -> None:
+    def should_change_booking_status_to_cancelled_when_its_not_used_or_far_from_event_date(self) -> None:
         # Given
-        user = create_user()
+        beneficiary = create_domain_beneficiary()
         stock = create_domain_stock(
             identifier=1,
             quantity=2,
@@ -93,7 +93,7 @@ class CancelTest:
             is_soft_deleted=False,
             bookings=[]
         )
-        booking = Booking(beneficiary=user, stock=stock, amount=1.2, quantity=2, is_cancelled=False, is_used=False)
+        booking = Booking(beneficiary=beneficiary, stock=stock, amount=1.2, quantity=2, is_cancelled=False, is_used=False)
 
         # When
         booking.cancel()

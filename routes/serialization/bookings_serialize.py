@@ -56,26 +56,7 @@ def serialize_booking(booking: BookingSQLEntity) -> Dict:
     }
 
 
-def serialize_booking_for_book_an_offer(booking: Booking) -> Dict:
-    return {
-        'amount': booking.amount,
-        'completedUrl': booking.completed_url,
-        'id': humanize(booking.identifier),
-        'isCancelled': booking.isCancelled,
-        'quantity': booking.quantity,
-        'stockId': humanize(booking.stock.identifier),
-        'stock': {
-            'price': booking.stock.price
-        },
-        'token': booking.token,
-        'user': {
-            'id': humanize(booking.beneficiary.identifier),
-            "wallet_balance": booking.beneficiary.wallet_balance,
-        },
-    }
-
-
-def serialize_booking_for_cancel_a_booking(booking: Booking) -> Dict:
+def serialize_domain_booking(booking: Booking) -> Dict:
     return {
         'amount': booking.amount,
         'completedUrl': booking.completed_url,

@@ -192,7 +192,7 @@ def create_domain_stock(identifier: int,
 
 def create_domain_booking(beneficiary: Beneficiary,
                           stock: Stock,
-                          amount: float = 1,
+                          amount: float = 1.0,
                           quantity: int = 1,
                           recommendation_id: int = None,
                           is_cancelled: bool = False,

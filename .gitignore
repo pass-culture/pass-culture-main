@@ -79,12 +79,6 @@ target/
 # celery beat schedule file
 celerybeat-schedule
 
-# dotenv
-.env
-.env.local
-.env.local.secret
-*.secret
-
 # virtualenv
 venv/
 ENV/
@@ -114,7 +108,10 @@ static/object_store_data
 
 # env
 dev_env_file
+.env
+.env.local
 .env.local.secret
+*.secret
 
 # IntelliJ IDEA / PyCharm
 .idea/

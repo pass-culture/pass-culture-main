@@ -6,8 +6,7 @@ from domain.booking.booking import Booking
 from domain.stock.stock import Stock
 from models import EventType, ThingType
 from routes.serialization import serialize_booking
-from routes.serialization.bookings_serialize import serialize_booking_for_book_an_offer, \
-    serialize_booking_for_cancel_a_booking
+from routes.serialization.bookings_serialize import serialize_domain_booking
 from tests.domain_creators.generic_creators import create_domain_beneficiary
 from tests.model_creators.generic_creators import create_booking, create_user, create_stock, create_offerer, \
     create_venue
@@ -141,7 +140,7 @@ class SerializeBookingTest:
         assert response['phoneNumber'] == '0612345678'
 
 
-class SerializeBookingForBookAnOfferTest:
+class SerializeDomainBookingTest:
     def test_should_return_booking_with_expected_information(self):
         # Give
         offer = create_offer_with_event_product(idx=4)
@@ -168,55 +167,7 @@ class SerializeBookingForBookAnOfferTest:
         )
 
         # When
-        booking_json = serialize_booking_for_book_an_offer(booking)
-
-        # Then
-        assert booking_json == {
-            'amount': booking.amount,
-            'isCancelled': booking.isCancelled,
-            'id': 'AM',
-            'stockId': 'A9',
-            'quantity': 1,
-            'stock': {
-                'price': 10
-            },
-            'token': 'GQTQR9',
-            'user': {
-                'id': 'B9',
-                'wallet_balance': None
-            },
-            'completedUrl': None
-        }
-
-
-class SerializeBookingForCancelABookingTest:
-    def test_should_return_booking_with_expected_information(self):
-        # Give
-        offer = create_offer_with_event_product(idx=4)
-        user = create_domain_beneficiary(
-            identifier=10,
-            can_book_free_offers=False,
-            email='joe.doe@example.com',
-            first_name='Joe',
-            last_name='Doe'
-        )
-        stock = Stock(
-            identifier=2,
-            quantity=1,
-            offer=offer,
-            price=10
-        )
-        booking = Booking(
-            identifier=3,
-            beneficiary=user,
-            stock=stock,
-            amount=1,
-            quantity=1,
-            token='GQTQR9'
-        )
-
-        # When
-        booking_json = serialize_booking_for_cancel_a_booking(booking)
+        booking_json = serialize_domain_booking(booking)
 
         # Then
         assert booking_json == {
