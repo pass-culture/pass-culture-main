@@ -1,3 +1,7 @@
+# Loading variables should always be the first thing, before any other load
+from load_environment_variables import load_environment_variables
+load_environment_variables()
+
 import os
 
 import redis
@@ -13,9 +17,6 @@ from scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_b
     batch_indexing_offers_in_algolia_by_venue, \
     batch_deleting_expired_offers_in_algolia, batch_processing_offer_ids_in_error
 from utils.config import REDIS_URL
-from load_environment_variables import load_environment_variables
-
-load_environment_variables()
 
 @log_cron
 @cron_context

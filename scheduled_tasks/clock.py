@@ -1,3 +1,7 @@
+# Loading variables should always be the first thing, before any other load
+from load_environment_variables import load_environment_variables
+load_environment_variables()
+
 import os
 
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -5,7 +9,6 @@ from flask import Flask
 from mailjet_rest import Client
 from sqlalchemy import orm
 
-from load_environment_variables import load_environment_variables
 from local_providers.provider_manager import \
     synchronize_venue_providers_for_provider
 from models.beneficiary_import import BeneficiaryImportSources
@@ -23,8 +26,6 @@ from scripts.dashboard.write_dashboard import write_dashboard
 from scripts.update_booking_used import \
     update_booking_used_after_stock_occurrence
 from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
-
-load_environment_variables()
 
 DEMARCHES_SIMPLIFIEES_OLD_ENROLLMENT_PROCEDURE_ID = os.environ.get('DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID',
                                                                    None)
