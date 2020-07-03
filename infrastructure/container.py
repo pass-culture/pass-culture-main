@@ -1,4 +1,3 @@
-from infrastructure.repository.beneficiary.beneficiary_jouve_repository import BeneficiaryJouveRepository
 from infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 from infrastructure.repository.booking.booking_sql_repository import BookingSQLRepository
 from infrastructure.repository.stock.stock_sql_repository import StockSQLRepository
@@ -13,7 +12,6 @@ from use_cases.get_venue_labels import GetVenueLabels
 from use_cases.create_beneficiary_from_application import CreateBeneficiaryFromApplication
 
 # Repositories
-beneficiary_pre_subscription_repository = BeneficiaryJouveRepository
 booking_repository = BookingSQLRepository()
 user_repository = BeneficiarySQLRepository()
 stock_repository = StockSQLRepository()
@@ -27,11 +25,6 @@ book_an_offer = BookAnOffer(booking_repository=booking_repository,
                             user_repository=user_repository,
                             stock_repository=stock_repository,
                             notification_service=notification_service)
-
-create_beneficiary_from_application = CreateBeneficiaryFromApplication(
-    beneficiary_pre_subscription_repository=beneficiary_pre_subscription_repository,
-    beneficiary_repository=user_repository
-)
 
 get_venue_labels = GetVenueLabels(venue_label_repository=venue_label_repository)
 

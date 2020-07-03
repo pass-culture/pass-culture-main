@@ -1,6 +1,7 @@
 from tests.conftest import TestClient
 from unittest.mock import patch
 
+
 class Post:
     class Returns200:
         @patch('routes.beneficiaries.beneficiary_job.delay')
@@ -25,6 +26,7 @@ class Post:
 
             # Then
             assert response.status_code == 400
+            mocked_beneficiary_job.assert_not_called()
 
         @patch('routes.beneficiaries.beneficiary_job.delay')
         def when_has_wrong_payload(self, mocked_beneficiary_job, app):
@@ -37,6 +39,7 @@ class Post:
 
             # Then
             assert response.status_code == 400
+            mocked_beneficiary_job.assert_not_called()
 
         @patch('routes.beneficiaries.beneficiary_job.delay')
         def when_id_is_not_a_number(self, mocked_beneficiary_job, app):
@@ -49,4 +52,4 @@ class Post:
 
             # Then
             assert response.status_code == 400
-
+            mocked_beneficiary_job.assert_not_called()

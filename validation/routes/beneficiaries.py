@@ -1,6 +1,4 @@
 from flask import Request
-from typing import Dict
-
 from models.api_errors import ApiErrors
 
 

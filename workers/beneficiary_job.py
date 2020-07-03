@@ -1,4 +1,3 @@
-import os
 from rq.decorators import job
 
 from workers import worker

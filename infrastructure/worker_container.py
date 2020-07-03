@@ -8,16 +8,16 @@ from use_cases.save_offerer_bank_informations import SaveOffererBankInformations
 from use_cases.save_venue_bank_informations import SaveVenueBankInformations
 
 # Repositories
-beneficiary_jouve_repository = BeneficiaryJouveRepository
+beneficiary_pre_subscription_repository = BeneficiaryJouveRepository()
 bank_informations_repository = BankInformationsSQLRepository()
 offerer_repository = OffererSQLRepository()
-user_repository = BeneficiarySQLRepository()
+beneficiary_repository = BeneficiarySQLRepository()
 venue_identifier_repository = VenueWithBasicInformationSQLRepository()
 
 # Usecases
 create_beneficiary_from_application = CreateBeneficiaryFromApplication(
-    beneficiary_jouve_repository=beneficiary_jouve_repository,
-    beneficiary_sql_repository=user_repository
+    beneficiary_pre_subscription_repository=beneficiary_pre_subscription_repository,
+    beneficiary_repository=beneficiary_repository
 )
 
 save_offerer_bank_informations = SaveOffererBankInformations(offerer_repository=offerer_repository,

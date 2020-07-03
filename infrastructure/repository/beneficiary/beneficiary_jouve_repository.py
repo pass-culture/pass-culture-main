@@ -19,7 +19,6 @@ class ApiJouveException(Exception):
 
 
 class BeneficiaryJouveRepository(BeneficiaryPreSubscriptionRepository):
-    @classmethod
     def _get_authentication_token(cls) -> str:
         expiration = datetime.datetime.now() + datetime.timedelta(hours=1)
         response = requests.post(
@@ -41,7 +40,6 @@ class BeneficiaryJouveRepository(BeneficiaryPreSubscriptionRepository):
         response_json = response.json()
         return response_json['Value']
 
-    @classmethod
     def get_application_by(cls, application_id: int) -> BeneficiaryPreSubscription:
         token = cls._get_authentication_token()
 
