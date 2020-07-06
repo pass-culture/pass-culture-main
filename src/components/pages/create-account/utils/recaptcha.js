@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { RECAPTCHA_SITE_KEY } from '../../../../utils/config'
 
-// inspired from https://stackoverflow.com/a/34425083/7647005
 export const useReCaptchaScript = () =>
   useEffect(() => {
     const script = document.createElement('script')
@@ -16,7 +15,7 @@ export const useReCaptchaScript = () =>
     }
   }, [])
 
-export const getReCatchaToken = () =>
+export const getReCaptchaToken = () =>
   new Promise(resolve =>
     window.grecaptcha.ready(function() {
       window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: 'submit' }).then(function(token) {

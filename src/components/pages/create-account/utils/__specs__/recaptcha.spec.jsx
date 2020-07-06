@@ -1,18 +1,14 @@
 import React from 'react'
-import { useReCaptchaScript } from '../recaptcha'
 import { mount } from 'enzyme'
+import { useReCaptchaScript } from '../recaptcha'
 
 jest.mock('../../../../../utils/config', () => ({
   RECAPTCHA_SITE_KEY: 'recaptcha-site-key',
 }))
 
-function cleanScriptTags() {
-  document.querySelectorAll('script').forEach(script => script.remove())
-}
-
 describe('useReCaptchaScript', () => {
   beforeEach(() => {
-    cleanScriptTags()
+    document.querySelectorAll('script').forEach(script => script.remove())
   })
 
   it('should append script tag on first render', () => {

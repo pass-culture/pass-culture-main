@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react'
-import { getReCatchaToken } from '../utils/recaptcha'
+import { getReCaptchaToken } from '../utils/recaptcha'
 import { ID_CHECK_URL } from '../../../../utils/config'
 
 const Eligible = () => {
   const handleClick = useCallback(() =>
-    getReCatchaToken().then(
+    getReCaptchaToken().then(
       token => (window.location.href = `${ID_CHECK_URL}?licence_token=${token}`)
     )
   )
@@ -14,7 +14,6 @@ const Eligible = () => {
       {' Eligible '}
       <button
         onClick={handleClick}
-        style={{ color: 'black' }}
         type="submit"
       >
         {"Commencer l'inscription"}
