@@ -23,7 +23,7 @@ import TutorialsContainer from '../pages/tutorials/TutorialsContainer'
 import TypeFormContainer from '../pages/typeform/TypeformContainer'
 import Debug from '../pages/debug/DebugPage'
 
-import { IS_DEV } from '../../utils/config'
+import { IS_DEBUG_PAGE_ACTIVE } from '../../utils/config'
 
 function redirectToBeta() {
   return <Redirect to="/beta" />
@@ -169,7 +169,7 @@ const routes = [
   },
 ]
 
-if (IS_DEV) {
+if (IS_DEBUG_PAGE_ACTIVE) {
   routes.push({
     component: Debug,
     icon: IcoNavDebug,

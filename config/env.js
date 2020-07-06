@@ -57,6 +57,7 @@ function getClientEnvironment(publicUrl) {
         TYPEFORM_URL_CULTURAL_PRACTICES_POLL: process.env.TYPEFORM_URL_CULTURAL_PRACTICES_POLL,
         URL_FOR_MAINTENANCE: process.env.URL_FOR_MAINTENANCE,
         ANDROID_APPLICATION_ID: process.env.ANDROID_APPLICATION_ID,
+        IS_DEBUG_PAGE_ACTIVE: process.env.IS_DEBUG_PAGE_ACTIVE === 'true',
       }
     )
   // Stringify all values so we can feed into Webpack DefinePlugin

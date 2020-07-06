@@ -19,6 +19,7 @@ export const {
   ALGOLIA_SEARCH_API_KEY,
   ALGOLIA_INDEX_NAME,
   ANDROID_APPLICATION_ID,
+  IS_DEBUG_PAGE_ACTIVE,
 } = process.env
 
 export const APP_VERSION = version
