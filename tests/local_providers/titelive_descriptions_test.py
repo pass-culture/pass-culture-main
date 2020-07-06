@@ -7,7 +7,6 @@ from local_providers import TiteLiveThingDescriptions
 from repository import repository
 from repository.provider_queries import get_provider_by_local_class
 from tests.conftest import clean_database
-from tests.model_creators.provider_creators import activate_provider
 
 
 class TiteLiveThingDescriptionsTest:
@@ -34,7 +33,7 @@ class TiteLiveThingDescriptionsTest:
         @patch('local_providers.titelive_thing_descriptions.get_date_from_filename')
         @clean_database
         def test_should_iterate_over_2_zip_files(self, mock_get_date_from_filename, mock_get_zip_file_from_ftp,
-                                                 mock_get_files_to_process_from_titelive, app):
+                                                 mock_get_files_to_process_from_titelive):
             # Given
             titelive_description_provider = get_provider_by_local_class('TiteLiveThingDescriptions')
             mock_get_files_to_process_from_titelive.return_value = ['Resume191012.zip', 'Resume191013.zip']
@@ -59,40 +58,6 @@ class TiteLiveThingDescriptionsTest:
                                                                             re.compile('Resume(\d{6}).zip'))
             assert mock_get_zip_file_from_ftp.call_count == 2
             assert mock_get_date_from_filename.call_count == 3
-
-        @patch('local_providers.titelive_thing_descriptions.get_files_to_process_from_titelive_ftp')
-        @patch('local_providers.titelive_thing_descriptions.get_zip_file_from_ftp')
-        @patch('local_providers.titelive_thing_descriptions.get_date_from_filename')
-        @clean_database
-        def test_should_iterate_over_next_file_when_current_one_is_empty(self,
-                                                                         mock_get_date_from_filename,
-                                                                         mock_get_zip_file_from_ftp,
-                                                                         mock_get_files_to_process_from_titelive,
-                                                                         app):
-            # Given
-            mock_get_files_to_process_from_titelive.return_value = [
-                'Resume191012.zip',
-                'Resume191013.zip'
-            ]
-            mock_get_date_from_filename.side_effect = {
-                '191013',
-            }
-            mock_get_zip_file_from_ftp.side_effect = [
-                None,
-                MockZipFile(filename='Resume191013.zip'),
-            ]
-
-            activate_provider('TiteLiveThingDescriptions')
-            titelive_description_provider = TiteLiveThingDescriptions()
-
-            # When
-            titelive_description_provider.updateObjects()
-
-            # Then
-            mock_get_files_to_process_from_titelive.assert_called_once_with('ResumesLivres',
-                                                                            re.compile('Resume(\d{6}).zip'))
-            assert mock_get_zip_file_from_ftp.call_count == 2
-            assert mock_get_date_from_filename.call_count == 1
 
 
 class MockZipFile():

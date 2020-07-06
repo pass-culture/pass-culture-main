@@ -58,10 +58,6 @@ class TiteLiveThingDescriptions(LocalProvider):
                                     current_file_date)
         next_zip_file_name = str(next(self.zips))
         self.zip_file = get_zip_file_from_ftp(next_zip_file_name, DESCRIPTION_FOLDER_NAME_TITELIVE)
-        if not self.zip_file:
-            self.description_zip_infos = iter([])
-            return
-
         new_file_date = get_date_from_filename(self.zip_file, DATE_REGEXP)
 
         self.log_provider_event(LocalProviderEventType.SyncPartStart,
