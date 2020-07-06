@@ -1,5 +1,5 @@
-import { mapDispatchToProps } from '../MyFavoritesContainer'
-import { favoriteNormalizer } from '../../../../utils/normalizers'
+import { mapDispatchToProps } from '../../MyFavoritesList/MyFavoritesListContainer'
+import { favoriteNormalizer } from '../../../../../utils/normalizers'
 
 jest.mock('redux-thunk-data', () => {
   const { requestData } = jest.requireActual('fetch-normalize-data')
@@ -34,7 +34,7 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
     })
   })
 
-  describe('deleteFavorites()', () => {
+  describe('persistDeleteFavorites()', () => {
     it('should delete my favorites from API', () => {
       // given
       const dispatch = jest.fn()
@@ -42,7 +42,7 @@ describe('src | components | pages | my-favorites | MyFavorites', () => {
       const offerIds = ['ME', 'FA']
 
       // when
-      mapDispatchToProps(dispatch).deleteFavorites(showFailModal, offerIds)()
+      mapDispatchToProps(dispatch).persistDeleteFavorites(showFailModal, offerIds)
 
       // then
       expect(dispatch).toHaveBeenCalledWith({

@@ -5,14 +5,17 @@ import Icon from '../Icon/Icon'
 import { DEFAULT_THUMB_URL } from '../../../utils/thumb'
 
 class Teaser extends PureComponent {
+  handleOnToggle = () => {
+    const { offerId, handleToggleTeaser } = this.props
+    handleToggleTeaser(offerId)
+  }
+
   renderTeaser = () => {
     const {
       date,
-      handleToggleTeaser,
       humanizeRelativeDistance,
       isEditMode,
       name,
-      offerId,
       offerTypeLabel,
       statuses,
       thumbUrl,
@@ -56,7 +59,7 @@ class Teaser extends PureComponent {
             <label className="field-checkbox">
               <input
                 className="input teaser-checkbox form-checkbox"
-                onClick={handleToggleTeaser(offerId)}
+                onClick={this.handleOnToggle}
                 type="checkbox"
               />
             </label>
