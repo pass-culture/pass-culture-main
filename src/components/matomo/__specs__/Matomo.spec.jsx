@@ -63,7 +63,7 @@ describe('src | components | matomo | Matomo', () => {
     )
 
     // then
-    expect(fakeMatomo.push).toHaveBeenNthCalledWith(5, ['trackGoal', 1])
+    expect(fakeMatomo.push).toHaveBeenNthCalledWith(4, ['trackGoal', 1])
   })
 
   it('should not track user geolocation when user is not geolocated', () => {
