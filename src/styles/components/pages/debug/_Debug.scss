@@ -1,8 +1,25 @@
 .debug-main {
-  .db-create-error {
-    @include btn();
+  display: flex;
+  flex-direction: column;
+  position: static;
+  height: 100%;
 
-    font-size: 1rem;
-    background: transparent url(/icons/ico-check.svg) no-repeat left center;
+  .debug-actions-wrapper {
+    align-items: center;
+    background: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: center;
+
+    .db-generate-error {
+      background-color: $primary;
+      border-radius: 2rem;
+      border: 0;
+      font-size: rem(16px);
+      font-weight: 700;
+      height: rem(48px);
+      width: 90%;
+    }
   }
 }
