@@ -98,6 +98,7 @@
     "with-query-router": "3.2.1"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.3",
     "babel-eslint": "^10.0.2",
     "coveralls": "^3.0.6",
     "enzyme": "^3.10.0",
