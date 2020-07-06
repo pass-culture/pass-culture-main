@@ -10,4 +10,4 @@ def load_environment_variables():
     load_dotenv(dotenv_path=env_path)
 
     if IS_DEV:
-        load_dotenv(dotenv_path='.env.local.secret')
+        load_dotenv(dotenv_path='.env.local.secret', override=True)
