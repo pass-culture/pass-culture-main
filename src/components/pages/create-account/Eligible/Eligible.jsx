@@ -15,7 +15,10 @@ const Eligible = () => {
   return (
     <main className="eligible-page">
       <div className="animation-text-container">
-        <Animation name="eligible-animation" />
+        <Animation
+          name="eligible-animation"
+          speed={0.6}
+        />
         <div className="eligible-text">
           {'Tu es éligible !'}
         </div>
