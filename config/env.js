@@ -56,6 +56,7 @@ function getClientEnvironment(publicUrl) {
         SENTRY_SERVER_URL: process.env.SENTRY_SERVER_URL,
         TYPEFORM_URL_CULTURAL_PRACTICES_POLL: process.env.TYPEFORM_URL_CULTURAL_PRACTICES_POLL,
         URL_FOR_MAINTENANCE: process.env.URL_FOR_MAINTENANCE,
+        ANDROID_APPLICATION_ID: process.env.ANDROID_APPLICATION_ID,
       }
     )
   // Stringify all values so we can feed into Webpack DefinePlugin
