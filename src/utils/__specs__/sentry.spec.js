@@ -1,8 +1,12 @@
 import { configureCustomTags } from '../sentry'
 
+jest.mock('../../utils/config', () => ({
+  ANDROID_APPLICATION_ID: 'app.passculture.testing.webapp',
+}))
+
 describe('utils | Sentry', () => {
   describe('configureScope', () => {
-    it('should add a custom tag', () => {
+    it('should set sentry tag when coming from browser', () => {
       // Given
       const scope = {
         setTag: jest.fn(),
@@ -15,9 +19,8 @@ describe('utils | Sentry', () => {
       expect(scope.setTag).toHaveBeenCalledWith('platform', 'browser')
     })
 
-    it('should add a different value when coming from android application', () => {
+    it('should set sentry tag when coming from the configured android application', () => {
       // Given
-      /*document.referrer = 'android-app://app.passculture.testing.webapp'*/
       Object.defineProperty(document, 'referrer', {
         get: () => 'android-app://app.passculture.testing.webapp',
       })

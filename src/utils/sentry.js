@@ -9,9 +9,11 @@ Sentry.init({
 })
 
 export function configureCustomTags(scope) {
-  if (document.referrer.includes('android-app://' + ANDROID_APPLICATION_ID))
+  if (document.referrer.includes('android-app://' + ANDROID_APPLICATION_ID)) {
     scope.setTag('platform', 'application')
-  else scope.setTag('platform', 'browser')
+  } else {
+    scope.setTag('platform', 'browser')
+  }
 }
 
 Sentry.configureScope(configureCustomTags)
