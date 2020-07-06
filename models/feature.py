@@ -30,6 +30,7 @@ class FeatureToggle(enum.Enum):
     SAVE_SEEN_OFFERS = 'Enregistrer en base les offres déjà vues par les utilisateurs'
     API_SIRENE_AVAILABLE = 'Active les fonctionnalitées liées à l\'API Sirene'
     CLEAN_DISCOVERY_VIEW = 'Nettoyer les données en base de données liées à la mise à jour régulière'
+    WEBAPP_HOMEPAGE = "Permettre l affichage de la nouvelle page d accueil de la webapp"
 
 
 class Feature(PcObject, Model, DeactivableMixin):
