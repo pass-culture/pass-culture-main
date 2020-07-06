@@ -7,6 +7,7 @@ EXCLUDED_TOKENS = ['2QLYYA', 'BMTUME', 'LUJ9AM', 'DA8YLU', 'Q46YHM']
 
 
 def correct_booking_status() -> None:
+    print("[BOOKINGS UPDATE] START")
     bookings_to_update = get_bookings_cancelled_during_quarantine_with_payment()
 
     for booking in bookings_to_update:
@@ -15,6 +16,8 @@ def correct_booking_status() -> None:
         booking.dateUsed = booking.dateUsed if booking.dateUsed is not None else booking.dateCreated
 
     repository.save(*bookings_to_update)
+    print(f"{len(bookings_to_update)} USERS UPDATED")
+    print("[BOOKINGS UPDATE] END")
 
 
 def get_bookings_cancelled_during_quarantine_with_payment() -> List[BookingSQLEntity]:

@@ -128,9 +128,10 @@ class CorrectBookingStatusTest:
 
     @clean_database
     @patch('scripts.booking.correct_bookings_status.get_bookings_cancelled_during_quarantine_with_payment')
-    def test_should_not_revert_booking_dateused_if_booking_already_has_one(self,
-                                                                           mock_get_bookings_cancelled_during_quarantine_with_payment,
-                                                                           app):
+    def test_should_not_revert_booking_dateused_if_booking_already_has_one(
+            self,
+            stub_get_bookings_cancelled_during_quarantine_with_payment,
+            app):
         # Given
         dateused = datetime(2020, 7, 3, 20, 4, 4)
         beneficiary = create_user()
@@ -146,7 +147,7 @@ class CorrectBookingStatusTest:
         payment = create_payment(offerer=offerer, booking=booking)
         repository.save(payment)
 
-        mock_get_bookings_cancelled_during_quarantine_with_payment.return_value = [booking]
+        stub_get_bookings_cancelled_during_quarantine_with_payment.return_value = [booking]
 
         # When
         correct_booking_status()
