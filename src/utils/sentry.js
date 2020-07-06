@@ -8,7 +8,7 @@ Sentry.init({
   release: APP_VERSION,
 })
 
-export function configureCustomTags(scope) {
+export const configureCustomTags = scope => {
   if (document.referrer.includes('android-app://' + ANDROID_APPLICATION_ID)) {
     scope.setTag('platform', 'application')
   } else {
