@@ -51,7 +51,6 @@ CreateAccount.propTypes = {
   location: PropTypes.shape({
     pathname: PropTypes.string.isRequired,
   }).isRequired,
-
 }
 
 export default CreateAccount
