@@ -1,6 +1,5 @@
 from flask import Request
 from models.api_errors import ApiErrors
-from connectors.api_recaptcha import validate_recaptcha_token
 
 
 def check_verify_licence_token_payload(payload: Request) -> None:
@@ -10,10 +9,6 @@ def check_verify_licence_token_payload(payload: Request) -> None:
         errors = ApiErrors()
         errors.add_error('token', "Missing token")
         raise errors
-
-
-def check_licence_token_is_valid(token: str) -> bool:
-    return validate_recaptcha_token(token)
 
 def check_application_update_payload(payload: Request) -> None:
     try:

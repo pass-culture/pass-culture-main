@@ -8,7 +8,7 @@ RECAPTCHA_SECRET = os.environ.get("RECAPTCHA_SECRET")
 class ReCaptchaException(Exception):
     pass
 
-def validate_recaptcha_token(token: str) -> str:
+def validate_recaptcha_token(token: str) -> bool:
     params = {
         "secret": RECAPTCHA_SECRET,
         "response": token

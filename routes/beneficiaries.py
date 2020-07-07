@@ -1,7 +1,8 @@
 from flask import current_app as app, request
 
+from domain.beneficiary.beneficiary_licence import is_licence_token_valid
 from validation.routes.beneficiaries import check_verify_licence_token_payload, \
-    check_licence_token_is_valid, check_application_update_payload, parse_application_id
+    check_application_update_payload, parse_application_id
 from workers.beneficiary_job import beneficiary_job
 
 
@@ -10,7 +11,7 @@ def verify_id_check_licence_token():
     check_verify_licence_token_payload(request)
 
     licence_token = request.json.get('token')
-    licence_token_is_valid = check_licence_token_is_valid(licence_token)
+    licence_token_is_valid = is_licence_token_valid(licence_token)
 
     if not licence_token_is_valid:
         return '', 422
