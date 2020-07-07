@@ -2,12 +2,12 @@
   @extend .no-margin;
   @extend .no-padding;
 
-  font-size: 0 !important;
   display: none !important;
-  width: 0 !important;
-  max-width: 0 !important;
+  font-size: 0 !important;
   height: 0 !important;
-  max-height: 0 !important;
   line-height: 0 !important;
+  max-height: 0 !important;
+  max-width: 0 !important;
   visibility: hidden !important;
+  width: 0 !important;
 }

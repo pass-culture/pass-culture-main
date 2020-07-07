@@ -5,17 +5,38 @@
 ------------------------------------------------- */
 
 .transition-wrapper {
-  z-index: 1;
   height: 100%;
   min-height: 100%;
   position: relative;
+  z-index: 1;
 }
 
 .transition-wrapper .transition-item {
-  top: 0;
   left: 0;
-  right: 0;
   position: absolute;
+  right: 0;
+  top: 0;
+}
+
+@media screen and (prefers-reduced-motion: reduce) {
+  .transition-wrapper > .pc-page-view,
+  .transition-wrapper > .pc-page-view-main {
+    overflow: auto;
+    transition: none;
+
+    &.transition-appear {
+      transition-delay: 0;
+    }
+
+    &.transition-appear.transition-appear-active {
+      transform: translate3d(0, 0, 0);
+    }
+
+    &.transition-leave {
+      transform: translate3d(0, 0, 0);
+      transition-delay: 100ms;
+    }
+  }
 }
 
 .transition-wrapper > .pc-page-view,
@@ -32,8 +53,8 @@
   }
 
   &.transition-leave {
-    transition-delay: 100ms;
     transform: translate3d(0, 0, 0);
+    transition-delay: 100ms;
   }
 }
 
@@ -50,8 +71,8 @@
 }
 
 .transition-wrapper > .pc-page-view-main {
-  z-index: 10;
   transform: translate3d(0, 0, 0);
+  z-index: 10;
 
   &.transition-appear {
     transform: translate3d(-100%, 0, 0);

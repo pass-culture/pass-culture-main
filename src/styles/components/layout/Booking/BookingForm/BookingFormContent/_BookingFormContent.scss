@@ -1,8 +1,8 @@
 .booking-form-content-datepicker {
   .react-datepicker {
-    border-width: 2px;
-    border-radius: 20px;
     border-color: $grey-light;
+    border-radius: 20px;
+    border-width: 2px;
     font-family: $family-sans-serif;
   }
 
@@ -11,8 +11,8 @@
     @extend .fs22;
     @extend .no-padding;
 
-    border-bottom: 0;
     background-color: $white;
+    border-bottom: 0;
 
     .react-datepicker__current-month {
       @extend .mt7;
@@ -42,17 +42,19 @@
       @extend .fs16;
 
       border-radius: 50%;
-      width: rem(36px);
       height: rem(36px);
       line-height: rem(36px);
+      width: rem(36px);
 
-      &:hover {
+      &:hover,
+      &:focus {
         background-color: $grey-light;
       }
     }
 
     .react-datepicker__day--disabled {
-      &:hover {
+      &:hover,
+      &:focus {
         background-color: $white;
       }
     }
@@ -61,7 +63,8 @@
       background-color: $white;
       color: $black;
 
-      &:hover {
+      &:hover,
+      &:focus {
         background-color: $grey-light;
       }
     }
@@ -84,10 +87,10 @@
     @extend .no-border;
     @extend .dotted-top-primary;
 
+    background-color: transparent;
     border-top: 0;
     color: $primary;
     padding: rem(12px 0);
-    background-color: transparent;
   }
 
   /* ----- TRIANGLE ----- */
@@ -101,9 +104,9 @@
   .react-datepicker-popper[data-placement^='top'],
   .react-datepicker-popper[data-placement^='bottom'] {
     .react-datepicker__triangle::before {
-      left: -12px;
-      border-width: 12px;
       border-bottom-color: $grey-light;
+      border-width: 12px;
+      left: -12px;
     }
   }
 
@@ -119,17 +122,16 @@
 
   .react-datepicker__navigation--next,
   .react-datepicker__navigation--previous {
-    border: 0;
-    text-indent: inherit;
-
     /* overrides */
     $size: 30px;
 
-    width: rem($size);
-    max-width: rem($size);
+    border: 0;
     height: rem($size);
-    max-height: rem($size);
     line-height: rem($size);
+    max-height: rem($size);
+    max-width: rem($size);
+    text-indent: inherit;
+    width: rem($size);
 
     &::before {
       font-size: rem($size);
@@ -150,19 +152,19 @@
   .react-datepicker__close-icon {
     $size: 24px;
 
-    top: 7px;
-    right: 8px;
-    width: rem($size);
-    height: rem($size);
-    border-radius: 50%;
     background-color: $primary;
+    border-radius: 50%;
+    height: rem($size);
+    right: 8px;
+    top: 7px;
+    width: rem($size);
 
     &::after {
-      top: 3px;
+      background-color: transparent;
+      font-size: rem(30px);
       left: -2px;
       padding: 0;
-      font-size: rem(30px);
-      background-color: transparent;
+      top: 3px;
     }
   }
 }

@@ -7,9 +7,23 @@
     overflow-y: auto;
   }
 
+  @media screen and (prefers-reduced-motion: reduce) {
+    &.entered {
+      top: 0;
+      transition: none;
+    }
+  }
+
   &.entered {
     top: 0;
     transition: top 250ms ease-in-out;
+  }
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    &.entering {
+      top: 100%;
+      transition: none;
+    }
   }
 
   &.entering {
@@ -17,10 +31,18 @@
     transition: top 250ms ease-in-out;
   }
 
+  @media screen and (prefers-reduced-motion: reduce) {
+    &.exited {
+      display: none;
+      transition: none;
+      visibility: none;
+    }
+  }
+
   &.exited {
     display: none;
-    visibility: none;
     transition: top 250ms ease-in-out;
+    visibility: none;
   }
 
   .isDuo {
@@ -31,14 +53,14 @@
     border-radius: 10px;
     font-size: rem(15px);
     font-weight: 600;
+    padding-bottom: rem(1px);
     padding-left: rem(1px);
     padding-right: rem(2px);
-    padding-bottom: rem(1px);
   }
 
   .duo-label {
-    padding-left: rem(8px);
     font-size: rem(20px);
+    padding-left: rem(8px);
   }
 
   .form-checkbox {
@@ -66,7 +88,6 @@
   .label-contact-inner {
     align-items: center;
   }
-
 
   &.with-header {
     margin-top: $header-height;
@@ -103,10 +124,10 @@
   }
 
   .form-footer {
+    background-color: $primary;
     height: 3.5rem;
     max-height: 3.5rem;
     min-height: 3.5rem;
-    background-color: $primary;
 
     button {
       background: transparent;
@@ -136,6 +157,9 @@
     }
 
     .content {
+      -moz-appearance: none;
+      -o-appearance: none;
+      -webkit-appearance: none;
       background-color: $white;
       border: 0;
       cursor: pointer;
@@ -145,9 +169,6 @@
       padding: 0 24px;
       text-align: center;
       width: 100%;
-      -moz-appearance: none;
-      -o-appearance: none;
-      -webkit-appearance: none;
 
       &,
       &:hover,
@@ -176,9 +197,9 @@
 #form-create-booking.is-read-only {
   .input-inner,
   .input-inner input {
+    background-color: transparent !important;
     border: 0 !important;
     border-radius: 0 !important;
-    background-color: transparent !important;
     cursor: default;
   }
 }

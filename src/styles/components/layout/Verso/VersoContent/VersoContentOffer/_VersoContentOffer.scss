@@ -5,9 +5,9 @@
     border-radius: 10px;
     font-size: rem(12px);
     font-weight: 600;
+    padding-bottom: rem(1px);
     padding-left: rem(1px);
     padding-right: rem(2px);
-    padding-bottom: rem(1px);
   }
 
   .duo-label {
@@ -25,16 +25,16 @@
 }
 
 .vco-distance {
-  padding-top: rem(12px);
-  padding-bottom: rem(8px);
-  display: flex;
   align-items: center;
-  font-weight: 200;
   color: $primary;
+  display: flex;
   font-size: rem(16px);
+  font-weight: 200;
   font-weight: 400;
-  text-decoration: none;
   line-height: rem(29px);
+  padding-bottom: rem(8px);
+  padding-top: rem(12px);
+  text-decoration: none;
 
   span {
     margin-left: rem(12px);
@@ -42,15 +42,15 @@
 }
 
 .vco-itinerary {
-  display: flex;
   align-items: center;
-  justify-content: center;
-  color: $primary;
-  font-weight: bold;
-  margin-top: rem(16px);
-  padding: rem(6px) 0;
   border: rem(2px) solid $primary;
   border-radius: rem(24px);
+  color: $primary;
+  display: flex;
+  font-weight: bold;
+  justify-content: center;
+  margin-top: rem(16px);
+  padding: rem(6px) 0;
 
   span {
     margin-left: rem(12px);

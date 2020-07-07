@@ -9,8 +9,8 @@
   background: $white;
   flex-grow: 1;
   height: 100%;
-  padding: rem(21px);
   overflow-y: auto;
+  padding: rem(21px);
 
   a:last-child .result-wrapper {
     margin-bottom: $navbar-height + rem(51px);
@@ -21,13 +21,14 @@
     display: flex;
     justify-content: space-between;
 
-    .sr-items-header-button  {
+    .sr-items-header-button {
       align-items: center;
       color: $black;
       display: flex;
       font-size: 16px;
       font-weight: bold;
     }
+
     .sr-items-header-button > img {
       margin-right: rem(8px);
     }
@@ -58,8 +59,8 @@
   .sr-filter-button {
     align-items: center;
     background-image: $linear-gradient-search;
-    border-radius: rem(24px);
     border: 0;
+    border-radius: rem(24px);
     display: flex;
     font-size: rem(16px);
     font-weight: 700;
@@ -83,12 +84,10 @@
   }
 }
 
-
 @media screen and (max-width: $iphone5-width) and (max-height: $iphone5-height) {
-    .sr-items-wrapper {
+  .sr-items-wrapper {
     a:last-child .result-wrapper {
       margin-bottom: rem(111px);
     }
   }
 }
-

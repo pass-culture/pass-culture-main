@@ -10,10 +10,10 @@
   }
 
   .header-start {
+    left: 0;
     padding: rem(5px);
     position: absolute;
     top: 0;
-    left: 0;
   }
 
   .pf-section {
@@ -49,8 +49,8 @@
     padding: 0 rem(16px);
 
     input {
-      outline: none;
       box-shadow: none;
+      outline: none;
     }
 
     button {
@@ -119,8 +119,8 @@
 
   .pf-button-submit {
     background-color: $primary;
-    border-radius: rem(32px);
     border: 0;
+    border-radius: rem(32px);
     color: $white;
     cursor: pointer;
     font-size: rem(16px);

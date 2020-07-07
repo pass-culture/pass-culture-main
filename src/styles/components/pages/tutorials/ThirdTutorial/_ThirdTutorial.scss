@@ -5,10 +5,10 @@
   width: 100%;
 
   &::before {
-    background-image: url('/onboarding-3@2x.jpg');
     background-color: $primary;
-    background-repeat: no-repeat;
+    background-image: url('/onboarding-3@2x.jpg');
     background-position: center bottom;
+    background-repeat: no-repeat;
     background-size: 92%;
     content: "";
     height: 100%;
@@ -27,7 +27,8 @@
   }
 
   .text-highlight {
-    &.text-physical-offer, .text-digital-offer {
+    &.text-physical-offer,
+    .text-digital-offer {
       margin-right: rem(5px);
     }
 
@@ -36,8 +37,8 @@
     }
 
     &.text-digital-offer::after {
-      width: rem(145px);
       margin-left: rem(2px);
+      width: rem(145px);
     }
 
     &.text-go-out::after {

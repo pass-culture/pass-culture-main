@@ -1,60 +1,67 @@
 @mixin dotted-repeat($position) {
-  background-repeat: if(
-    $position == top or $position == bottom,
-    repeat-x,
-    repeat-y
-  );
+  background-repeat:
+    if(
+      $position == top or $position == bottom,
+      repeat-x,
+      repeat-y
+    );
 }
 
 @mixin dotted-size($size, $position) {
   @if $size == 'large' {
-    background-size: if(
-      $position == top or $position == bottom,
-      5px 2px,
-      2px 5px
-    );
+    background-size:
+      if(
+        $position == top or $position == bottom,
+        5px 2px,
+        2px 5px
+      );
   }
 
   @if $size == 'long' {
-    background-size: if(
-      $position == top or $position == bottom,
-      8px 2px,
-      2px 8px
-    );
+    background-size:
+      if(
+        $position == top or $position == bottom,
+        8px 2px,
+        2px 8px
+      );
   }
 
   @else {
-    background-size: if(
-      $position == top or $position == bottom,
-      8px 1px,
-      1px 8px
-    );
+    background-size:
+      if(
+        $position == top or $position == bottom,
+        8px 1px,
+        1px 8px
+      );
   }
 }
 
 @mixin dotted-image($color, $size, $position) {
   @if $size == 'large' {
-    background-image: if(
-      $position == top or $position == bottom,
-      linear-gradient(to left, $color 35%, transparent 0%),
-      linear-gradient($color 35%, transparent 0%)
-    );
+    background-image:
+      if(
+        $position == top or $position == bottom,
+        linear-gradient(to left, $color 35%, transparent 0%),
+        linear-gradient($color 35%, transparent 0%)
+      );
   }
 
   @if $size == 'long' {
-    background-image: if(
-      $position == top or $position == bottom,
-      linear-gradient(to left, $color 50%, transparent 0%),
-      linear-gradient($color 50%, transparent 0%)
-    );
+    background-image:
+      if(
+        $position == top or $position == bottom,
+        linear-gradient(to left, $color 50%, transparent 0%),
+        linear-gradient($color 50%, transparent 0%)
+      );
   }
 
   @else {
-    background-image: if(
-      $position == top or $position == bottom,
-      linear-gradient(to left, $color 10%, transparent 0%),
-      linear-gradient($color 10%, transparent 0%)
-    );
+    background-image:
+      if(
+        $position == top or $position == bottom,
+        linear-gradient(to left, $color 10%, transparent 0%),
+        linear-gradient($color 10%, transparent 0%)
+      );
   }
 }
 

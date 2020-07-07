@@ -36,9 +36,9 @@ $teaser-title-height-with-margin: rem(53px);
 
 .teaser-main-title {
   color: $white;
-  margin: rem(31px) auto 0;
   font-size: rem(18px);
   font-weight: normal;
+  margin: rem(31px) auto 0;
   text-align: center;
 }
 
@@ -84,6 +84,7 @@ $teaser-title-height-with-margin: rem(53px);
   color: $grey-dark;
   font-size: 0.8rem;
   font-weight: 600;
+
   @include multiLineEllipsis(1);
 }
 
@@ -122,12 +123,12 @@ $teaser-title-height-with-margin: rem(53px);
 
 .teaser-text {
   color: $white;
-  text-align: center;
-  padding: 0 rem(70px);
   font-weight: 400;
+  padding: 0 rem(70px);
+  text-align: center;
 }
 
-.teaser-item{
+.teaser-item {
   @include dotted($primary, bottom);
 
   background-color: $white;

@@ -3,18 +3,18 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: rem(96px);
   max-height: rem(96px);
+  min-height: rem(96px);
   padding: rem(12px) 0;
 
   .sh-input-wrapper {
-    display: flex;
-    height: rem(48px);
-    margin: 0 auto;
-    width: 90%;
     border: 2px solid transparent;
     border-radius: 2rem;
+    display: flex;
+    height: rem(48px);
     justify-content: space-between;
+    margin: 0 auto;
+    width: 90%;
 
     &:focus-within {
       border: 2px solid $primary;

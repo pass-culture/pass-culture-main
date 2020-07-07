@@ -29,9 +29,9 @@
 .place-form-wrapper {
   form {
     align-items: center;
-    display: flex;
     border-radius: rem(22px);
     box-shadow: 0 rem(2px) rem(10px) 0 $black-shadow;
+    display: flex;
     height: rem(40px);
     margin-bottom: rem(5px);
     margin-top: rem(10px);
@@ -44,8 +44,8 @@
   flex: 2;
   font-size: rem(16px);
   font-weight: 400;
-  margin: 0 0 0 rem(30px);
   height: 100%;
+  margin: 0 0 0 rem(30px);
   width: 80%;
 
   &::placeholder {
@@ -56,10 +56,10 @@
 }
 
 .place-reset-wrapper {
-  display: flex;
   align-items: center;
   background: none;
   border-radius: rem(20px);
+  display: flex;
   justify-content: center;
   margin-right: rem(15px);
 

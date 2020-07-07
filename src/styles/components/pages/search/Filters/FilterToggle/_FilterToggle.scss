@@ -12,26 +12,26 @@
   border-radius: rem(16.5px);
   cursor: pointer;
   display: inline-block;
-  position: relative;
   height: rem(28px);
+  position: relative;
   width: rem(53px);
 }
 
 .ft-label-on {
-  content: '';
   background: $green-valid;
   border-radius: rem(16.5px);
+  content: '';
   cursor: pointer;
   display: inline-block;
-  position: relative;
   height: rem(28px);
+  position: relative;
   width: rem(53px);
 }
 
 .ft-button {
+  background: $white;
   border-radius: rem(16.5px);
   box-shadow: 0 0 rem(6px) 0 $black-shadow;
-  background: $white;
   height: rem(32px);
   position: absolute;
   top: rem(-2px);

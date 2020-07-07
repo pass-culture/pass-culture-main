@@ -60,8 +60,8 @@
 @supports (-webkit-touch-callout: none) {
   @media screen and (min-height: $iphoneX-height) {
     .navbar {
-      padding-bottom: $ios-navbar-safe-zone;
       height: $navbar-height + $ios-navbar-safe-zone;
+      padding-bottom: $ios-navbar-safe-zone;
     }
 
     .search-home-page,

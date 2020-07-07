@@ -1,7 +1,7 @@
 #overlay {
+  background-color: $black-background;
   opacity: 0;
   z-index: $zindex-overlay;
-  background-color: $black-background;
 }
 
 @keyframes fadeIn {
@@ -18,53 +18,65 @@
   $modal-padding: 24px;
   $modal-padding--large: 10px;
 
-  // on top of header in mobile view
-  z-index: 10000;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  justify-content: center;
   align-items: center;
   // overlay
   background-color: $black-background;
+  bottom: 0;
   display: none;
+  justify-content: center;
+  left: 0;
   opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
   will-change: opacity;
 
+  // on top of header in mobile view
+  z-index: 10000;
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    &.active {
+      align-items: flex-end;
+      // cannot just use opacity: 1 here,
+      // the element is display none - not rendered, when this class gets applied
+      animation: none;
+      display: flex;
+      opacity: 1;
+    }
+  }
+
   &.active {
-    display: flex;
     align-items: flex-end;
-    opacity: 1;
     // cannot just use opacity: 1 here,
     // the element is display none - not rendered, when this class gets applied
     animation: fadeIn 0.5s ease;
+    display: flex;
+    opacity: 1;
   }
 
   .modal-dialog {
-    transition-timing-function: ease-out;
-    transition-property: transform;
-    position: relative;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 1rem;
-    box-shadow: 0 0 5px $black-shadow;
-    max-width: 100%;
-    min-height: 4rem;
-    max-height: 100%;
-    overflow-y: auto;
-    padding: 1rem;
-    text-align: center;
-    width: 100%;
-    will-change: transform, opacity;
     backface-visibility: hidden;
     background-color: $primary;
+    border-radius: 1rem;
+    bottom: 0;
+    box-shadow: 0 0 5px $black-shadow;
+    left: 0;
     margin-bottom: 0.75rem;
     margin-left: 0.75rem;
     margin-right: 0.75rem;
+    max-height: 100%;
+    max-width: 100%;
+    min-height: 4rem;
+    overflow-y: auto;
+    padding: 1rem;
+    position: relative;
+    right: 0;
+    text-align: center;
+    top: 0;
+    transition-property: transform;
+    transition-timing-function: ease-out;
+    width: 100%;
+    will-change: transform, opacity;
 
     @media (min-width: $widescreen) {
       // so we can avoid cropping things like dropdown lists inside modal.
@@ -73,18 +85,18 @@
     }
 
     &.fullscreen {
-      margin: 0;
-      padding: 0;
       border-radius: 0;
       height: 100%;
+      margin: 0;
+      padding: 0;
     }
 
     button.close {
-      top: 1rem;
-      right: 1rem;
       border: none;
-      position: absolute;
       cursor: pointer;
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
       z-index: 10;
     }
 
@@ -92,9 +104,9 @@
       color: $white;
       font-weight: 500;
       height: 100%;
-      overflow: visible;
       margin: 0;
       max-height: none;
+      overflow: visible;
       width: auto;
     }
   }

@@ -1,5 +1,6 @@
 .is-red-text,
 a.is-red-text,
-a.is-red-text:hover {
+a.is-red-text:hover,
+a.is-red-text:focus {
   color: $primary;
 }

@@ -8,8 +8,8 @@
 
 .cl-wrapper {
   align-items: center;
-  display: flex;
   border-bottom: rem(1px) solid $grey-light;
+  display: flex;
   justify-content: center;
   padding-bottom: rem(20px);
   padding-top: rem(20px);
@@ -31,8 +31,8 @@
 }
 
 .cl-place-wrapper {
-  display: flex;
   background-color: $white;
+  display: flex;
   padding-top: rem(15px);
 
   .cl-place-button {

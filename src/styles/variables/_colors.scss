@@ -1,32 +1,32 @@
-$white: #FFFFFF;
+$white: #fff;
 $navbar: rgba($white, 0.97);
-$grey-light: #F5F5F5;
-$grey-medium: #C7C7CC;
+$grey-light: #f5f5f5;
+$grey-medium: #c7c7cc;
 $grey-dark: #626262;
 $grey: $grey-dark; // Uniquement utile pour lassasvy
 $black: #151515;
 $black-shadow: rgba($black, 0.2);
 $black-background: rgba($black, 0.8);
 
-$primary: #EB0055;
+$primary: #eb0055;
 $secondary: #320096;
-$accent: #0066FF;
-$primary-disabled: #FF99BE;
-$green-valid: #15884F;
-$error: #E60039;
+$accent: #06f;
+$primary-disabled: #ff99be;
+$green-valid: #15884f;
+$error: #e60039;
 
-$ribbon-blue: #0066FF;
-$ribbon-green: #78FB59;
-$ribbon-red: #B30041;
-$ribbon-yellow: #FFF46D;
+$ribbon-blue: #06f;
+$ribbon-green: #78fb59;
+$ribbon-red: #b30041;
+$ribbon-yellow: #fff46d;
 
-$teaser-gradient-start: #C00065;
+$teaser-gradient-start: #c00065;
 $teaser-gradient-end: #650084;
 $linear-gradient-to-right: linear-gradient(to right, $teaser-gradient-start, $teaser-gradient-end);
 $linear-gradient-deck: linear-gradient(to bottom, transparent 0%, $black 30%);
-$linear-gradient-search: linear-gradient(108deg, $primary -6%, #D0005F 103%);
+$linear-gradient-search: linear-gradient(108deg, $primary -6%, #d0005f 103%);
 
 :export {
-  primary: $primary;
   black: $black;
+  primary: $primary;
 }

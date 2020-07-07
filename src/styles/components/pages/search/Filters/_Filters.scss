@@ -32,8 +32,8 @@
   }
 
   .sf-geolocation-button {
-    display: block;
     color: $black;
+    display: block;
     font-size: rem(16px);
     font-weight: 700;
     margin-bottom: rem(10px);
@@ -55,8 +55,8 @@
     border-top: rem(1px) solid $grey-light;
     display: flex;
     justify-content: space-between;
-    padding-top: rem(20px);
     padding-bottom: rem(20px);
+    padding-top: rem(20px);
 
     h4 {
       display: inline;
@@ -112,8 +112,8 @@
 }
 
 .sf-button-wrapper {
-  bottom: 0;
   background: none;
+  bottom: 0;
   display: flex;
   justify-content: center;
   padding: 0 rem(24px) rem(24px) rem(24px);
@@ -138,8 +138,8 @@
 .sf-filter-separator {
   border-top: rem(1px) solid $grey-light;
   display: block;
-  margin-top: rem(20px);
   margin-bottom: rem(20px);
+  margin-top: rem(20px);
 }
 
 .sf-slider-wrapper {
@@ -147,16 +147,16 @@
 }
 
 .sf-slider-indicator {
-  margin-top: rem(-4px);
-  margin-bottom: rem(17px);
-  text-align: center;
-  font-weight: bold;
   display: block;
+  font-weight: bold;
+  margin-bottom: rem(17px);
+  margin-top: rem(-4px);
+  text-align: center;
 }
 
 .sf-price-slider-wrapper {
-  padding: rem(20px) 0;
   border-top: rem(1px) solid $grey-light;
+  padding: rem(20px) 0;
 }
 
 .sf-space-wrapper {

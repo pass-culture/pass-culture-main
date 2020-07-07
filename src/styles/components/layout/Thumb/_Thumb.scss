@@ -1,39 +1,56 @@
 .thumb {
   height: 100%;
-  width: 100%;
-  position: relative;
   overflow: hidden;
+  position: relative;
+  width: 100%;
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    .background {
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 100% auto;
+      box-sizing: content-box;
+      filter: blur(20px);
+      height: 100%;
+      margin-left: -50px;
+      margin-top: -50px;
+      padding: 50px;
+      position: relative;
+      transition: none;
+      width: 100%;
+    }
+  }
 
   .background {
-    filter: blur(20px);
-    background-size: 100% auto;
     background-position: center;
-    height: 100%;
-    width: 100%;
-    position: relative;
     background-repeat: no-repeat;
+    background-size: 100% auto;
     box-sizing: content-box;
-    padding: 50px;
-    margin-top: -50px;
+    filter: blur(20px);
+    height: 100%;
     margin-left: -50px;
+    margin-top: -50px;
+    padding: 50px;
+    position: relative;
     transition: all 0.25s ease-out;
+    width: 100%;
   }
 
   .image {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-size: auto 100%;
     background-position: center;
     background-repeat: no-repeat;
+    background-size: auto 100%;
+    bottom: 0;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
 
     &.translatable {
-      transition-duration: 250ms;
       transition-delay: 50ms;
+      transition-duration: 250ms;
       -webkit-transition-property: transform;
       transition-property: transform;
       will-change: transform;
@@ -42,6 +59,5 @@
         transform: translate(0, -25%) scale(1.1);
       }
     }
-
   }
 }

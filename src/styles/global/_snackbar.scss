@@ -1,12 +1,13 @@
 .Toastify__toast-container {
   left: 0;
-  padding: 0;
   margin-left: 0;
+  padding: 0;
   position: absolute;
   top: 0;
   width: 100% !important;
 
-  button, div {
+  button,
+  div {
     color: $white;
   }
 }

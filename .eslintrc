@@ -27,6 +27,7 @@
     "react/jsx-closing-tag-location": "off",
     "react/jsx-curly-brace-presence": [2, { "props": "never", "children": "ignore" }],
     "react/jsx-fragments": "off",
+    "react/jsx-handler-names": "off",
     "react/jsx-indent": [2, 2],
     "react/jsx-indent-props": [2, 2],
     "react/jsx-max-depth": "off",

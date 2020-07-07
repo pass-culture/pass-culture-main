@@ -23,13 +23,14 @@
   }
 
   .pc-footer {
+    border-top: 4px dotted $white;
     height: 33%;
     min-height: 33%;
-    border-top: 4px dotted $white;
   }
 
   .pc-footer a,
-  .pc-footer a:hover {
+  .pc-footer a:hover,
+  .pc-footer a:focus {
     color: $white;
     text-decoration: none;
   }
@@ -48,8 +49,8 @@
 
   font-size: rem(18px);
   font-weight: 500;
-  margin-top: rem(25px);
   margin-left: rem(21px);
+  margin-top: rem(25px);
   padding-bottom: rem(8px);
 }
 

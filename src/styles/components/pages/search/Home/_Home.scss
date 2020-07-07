@@ -1,10 +1,10 @@
 .search-home-page {
   @extend .page;
 
+  background: $white;
   display: flex;
   flex-direction: column;
   position: static;
-  background: $white;
 }
 
 .sh-criteria-list {
@@ -30,8 +30,8 @@
 
   .sh-search-button {
     background-color: $primary;
-    border-radius: 2rem;
     border: 0;
+    border-radius: 2rem;
     font-size: rem(16px);
     font-weight: 700;
     height: rem(48px);

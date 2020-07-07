@@ -2,10 +2,10 @@
   @extend .is-clipped;
   @extend .is-absolute;
 
-  z-index: 0;
+  height: 75px;
   top: 0;
   width: 75px;
-  height: 75px;
+  z-index: 0;
 }
 
 .ribbon span {
@@ -17,9 +17,9 @@
   @extend .is-uppercase;
   @extend .is-black-text;
 
+  line-height: 19px;
   top: 19px;
   width: 100px;
-  line-height: 19px;
 }
 
 .ribbon-left {
@@ -32,14 +32,14 @@
 
 .ribbon-left span {
   left: -21px;
-  transform: rotate(-45deg);
   -webkit-transform: rotate(-45deg);
+  transform: rotate(-45deg);
 }
 
 .ribbon-right span {
   right: -21px;
-  transform: rotate(45deg);
   -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
 }
 
 .ribbon-today span {

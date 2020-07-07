@@ -1,22 +1,21 @@
 input {
-  -webkit-border-radius: 0;
   -webkit-appearance: none;
-
-  &:disabled {
-    -webkit-text-fill-color: inherit;
-    opacity: 1;
-    color: inherit;
-  }
+  -webkit-border-radius: 0;
 
   &::-moz-placeholder {
     opacity: 1;
   }
 
-  &[type="search"]::-webkit-search-decoration,
-  &[type="search"]::-webkit-search-cancel-button,
-  &[type="search"]::-webkit-search-results-button,
-  &[type="search"]::-webkit-search-results-decoration {
+  &:disabled {
+    color: inherit;
+    opacity: 1;
+    -webkit-text-fill-color: inherit;
+  }
+
+  &[type='search']::-webkit-search-decoration,
+  &[type='search']::-webkit-search-cancel-button,
+  &[type='search']::-webkit-search-results-button,
+  &[type='search']::-webkit-search-results-decoration {
     -webkit-appearance: none;
   }
 }
-

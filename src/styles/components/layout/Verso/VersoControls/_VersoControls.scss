@@ -1,9 +1,9 @@
 .verso-controls {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
   background-color: $primary;
+  display: flex;
   height: rem(62px);
+  justify-content: space-between;
   min-height: rem(62px);
   padding: rem(8px) rem(12px);
 

@@ -1,8 +1,8 @@
 .cg-written-remaining {
   font-size: rem(18px);
   font-weight: 500;
-  margin-top: rem(8px);
   margin-bottom: rem(4px);
+  margin-top: rem(8px);
 }
 
 .cg-container {
@@ -19,9 +19,9 @@
   align-items: center;
   border-radius: 50%;
   display: flex;
+  height: rem(32px);
   justify-content: center;
   width: rem(32px);
-  height: rem(32px);
   z-index: 1;
 }
 
@@ -39,7 +39,6 @@
   margin-left: rem(-9px);
   width: 70%;
 }
-
 
 .gauge-digital {
   .cg-circle {

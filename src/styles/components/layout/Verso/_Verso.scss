@@ -1,9 +1,9 @@
 .verso {
-  transition: transform 250ms;
-  z-index: $zindex-verso-view;
-  transform: translate(0, 100%);
-  will-change: transform;
   height: 100%;
+  transform: translate(0, 100%);
+  transition: transform 250ms;
+  will-change: transform;
+  z-index: $zindex-verso-view;
 
   &.flipped {
     // A remplacer par react-transition-group
@@ -28,9 +28,9 @@
     cursor: initial;
     height: 100%;
     min-height: 100%;
-    padding-top: 56.25%;
     -webkit-overflow-scrolling: touch;
     overflow-y: auto;
+    padding-top: 56.25%;
 
     .verso-header {
       flex-shrink: 0;
@@ -39,8 +39,8 @@
     .with-triangle::before {
       $triangle-diag: 50px;
 
-      content: "";
       background-color: inherit;
+      content: "";
       height: $triangle-diag;
       left: 0;
       margin: auto;
@@ -54,19 +54,19 @@
 
     .verso-content {
       background-color: $white;
-      padding-bottom: $footer-height;
       flex: 1;
+      padding-bottom: $footer-height;
     }
 
     .verso-info-block {
       margin-top: rem(12px);
 
       h3 {
-        padding-top: 0.75rem;
-        padding-bottom: 0.5rem;
         color: $primary;
-        font-weight: 700;
         font-size: 1.5rem;
+        font-weight: 700;
+        padding-bottom: 0.5rem;
+        padding-top: 0.75rem;
       }
 
       p {

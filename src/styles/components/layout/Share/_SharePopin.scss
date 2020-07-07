@@ -7,13 +7,20 @@ $share-popin-height: auto;
 }
 
 #share-popin-close-button {
-  z-index: 1;
-  top: rem(16px);
   right: rem(16px);
+  top: rem(16px);
+  z-index: 1;
 }
 
 #share-popin .inner {
   background-color: $white;
+}
+
+@media screen and (prefers-reduced-motion: reduce) {
+  #share-popin-fixed-container {
+    height: auto;
+    transition: none;
+  }
 }
 
 #share-popin-fixed-container {

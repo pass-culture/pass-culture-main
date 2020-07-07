@@ -1,13 +1,13 @@
 @mixin withHeight($pixelSize) {
   height: rem($pixelSize);
-  min-height: rem($pixelSize);
   max-height: rem($pixelSize);
+  min-height: rem($pixelSize);
 }
 
 @mixin withWidth($pixelSize) {
-  width: rem($pixelSize);
-  min-width: rem($pixelSize);
   max-width: rem($pixelSize);
+  min-width: rem($pixelSize);
+  width: rem($pixelSize);
 }
 
 @mixin withSize($width, $height) {

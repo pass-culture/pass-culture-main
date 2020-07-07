@@ -13,6 +13,12 @@
     font-weight: bold;
   }
 
+  span {
+    font-size: rem(18px);
+    font-weight: 500;
+    margin-bottom: rem(24px);
+  }
+
   p {
     margin-bottom: rem(24px);
     max-width: rem(260px);
@@ -22,12 +28,6 @@
       font-weight: normal;
       margin-bottom: 0;
     }
-  }
-
-  span {
-    font-size: rem(18px);
-    font-weight: 500;
-    margin-bottom: rem(24px);
   }
 }
 

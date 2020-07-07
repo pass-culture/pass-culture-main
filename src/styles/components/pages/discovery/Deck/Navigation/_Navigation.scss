@@ -1,18 +1,18 @@
 #deck-navigation {
-  z-index: $zindex-decknavigation;
+  background-image: $linear-gradient-deck;
+  bottom: 0;
+  height: 240px;
+  position: absolute;
   top: inherit;
   width: 100%;
-  height: 240px;
-  bottom: 0;
-  position: absolute;
-  background-image: $linear-gradient-deck;
+  z-index: $zindex-decknavigation;
 
   #dragButton {
-    width: 100%;
-    position: absolute;
     left: 0;
-    top: 0;
     padding-top: 38px;
+    position: absolute;
+    top: 0;
+    width: 100%;
   }
 
   .controls {
@@ -23,8 +23,8 @@
   }
 
   .controls button {
-    padding: 0;
     border-radius: 0;
+    padding: 0;
     user-select: none;
   }
 
@@ -33,7 +33,8 @@
     margin-bottom: 25px;
   }
 
-  .button.after, .button.before {
+  .button.after,
+  .button.before {
     position: relative;
     z-index: $zindex-navigation-arrows;
   }
@@ -50,6 +51,30 @@
     margin-bottom: 15px;
   }
 
+  @media screen and (prefers-reduced-motion: reduce) {
+    .clue {
+      color: $white;
+      font-size: 1.3rem;
+      font-weight: 500;
+      min-height: 4.5rem;
+      min-width: 5rem;
+      text-align: center;
+      transition: none;
+
+      .separator {
+        font-family: initial;
+        font-weight: bold;
+        line-height: 1rem;
+        opacity: 0.5;
+      }
+
+      .finishable-ribbon-img {
+        margin-left: -40px;
+        top: 0;
+      }
+    }
+  }
+
   .clue {
     color: $white;
     font-size: 1.3rem;
@@ -62,8 +87,8 @@
     .separator {
       font-family: initial;
       font-weight: bold;
-      opacity: 0.5;
       line-height: 1rem;
+      opacity: 0.5;
     }
 
     .finishable-ribbon-img {

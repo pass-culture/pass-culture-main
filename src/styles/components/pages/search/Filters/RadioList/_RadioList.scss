@@ -1,7 +1,7 @@
 .rl-filter-datepicker {
   border: none;
-  width: 100%;
   font-family: $family-sans-serif;
+  width: 100%;
 
   .react-datepicker__week {
     display: flex;
@@ -10,16 +10,16 @@
   }
 
   .react-datepicker {
-    border-width: 2px;
-    border-radius: 20px;
     border-color: $grey-light;
+    border-radius: 20px;
+    border-width: 2px;
     font-family: $family-sans-serif;
   }
 
   .react-datepicker__header {
-    padding: 0;
-    border-bottom: 0;
     background-color: $white;
+    border-bottom: 0;
+    padding: 0;
 
     .react-datepicker__current-month {
       font-weight: normal;
@@ -28,12 +28,12 @@
     }
 
     .react-datepicker__day-names {
+      border-bottom: rem(1px) solid $grey-light;
+      border-top: rem(1px) solid $grey-light;
       display: flex;
       justify-content: space-between;
-      width: 100%;
       padding: rem(7px);
-      border-top: rem(1px) solid $grey-light;
-      border-bottom: rem(1px) solid $grey-light;
+      width: 100%;
     }
 
     .react-datepicker__day-name {
@@ -47,13 +47,14 @@
     width: 100%;
 
     .react-datepicker__day {
+      border-radius: 50%;
       box-sizing: content-box;
       font-size: rem(16px);
-      border-radius: 50%;
       margin: rem(10px) 0;
       padding: rem(5px);
 
-      &:hover &:not(&--selected) {
+      &:hover &:not(&--selected),
+      &:focus &:not(&--selected) {
         background-color: $grey-light;
       }
 
@@ -64,7 +65,8 @@
       &--disabled {
         color: $grey-medium;
 
-        &:hover {
+        &:hover,
+        &:focus {
           background-color: $white;
         }
       }
@@ -90,9 +92,9 @@
   }
 
   li {
-    height: rem(26px);
-    display: flex;
     align-items: center;
+    display: flex;
+    height: rem(26px);
 
     img {
       height: rem(24px);
@@ -100,17 +102,17 @@
     }
 
     label {
+      cursor: pointer;
       font-size: rem(16px);
       font-weight: bold;
-      cursor: pointer;
     }
   }
 }
 
 .rl-datepicker-custom-header {
+  align-items: center;
   display: flex;
   justify-content: space-between;
-  align-items: center;
 
   button {
     padding: rem(15px) rem(20px);

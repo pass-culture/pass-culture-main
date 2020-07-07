@@ -57,8 +57,8 @@
   flex-direction: row;
   font-size: rem(20px);
   height: $footer-height;
-  min-height: $footer-height;
   max-height: $footer-height;
+  min-height: $footer-height;
   padding: 7px 0;
   text-align: center;
 
@@ -68,8 +68,8 @@
 }
 
 .logout-form-footer-instagram {
-  position: relative;
   bottom: 9%;
+  position: relative;
 }
 
 .form-error-message {
@@ -104,19 +104,19 @@
   }
 
   .form-input {
-    color: $black;
     border: none;
+    color: $black;
     flex: 1;
-    font-size: rem(19px);
     font-family: $family-sans-serif;
+    font-size: rem(19px);
     font-weight: 700;
-    padding: rem(9px) rem(18px);
     outline: none;
+    padding: rem(9px) rem(18px);
 
     &::placeholder {
+      font-size: rem(19px);
       font-style: italic;
       font-weight: 400;
-      font-size: rem(19px);
     }
   }
 
@@ -161,8 +161,8 @@
   &:active,
   &:checked {
     &::after {
-      content: '';
       background: url(/icons/checkbox-check-pink.svg) no-repeat 5px center;
+      content: '';
       height: 100%;
       width: 100%;
     }

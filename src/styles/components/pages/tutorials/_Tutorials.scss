@@ -46,7 +46,6 @@
       z-index: -1;
     }
 
-
     &.text-first-highlight::after {
       transform: rotate(1deg);
     }
@@ -57,36 +56,52 @@
   }
 
   .next-arrow {
-    position: absolute;
     bottom: 128px;
+    position: absolute;
     right: 21px;
     transform: rotate(180deg);
   }
 
   .previous-arrow {
-    position: absolute;
     bottom: 128px;
     left: 21px;
+    position: absolute;
+  }
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    .enter-on-left {
+      animation: none;
+      animation-duration: 0.5s;
+      animation-iteration-count: 1;
+    }
   }
 
   .enter-on-left {
-    animation-name: enter-on-left;
+    animation-duration: 0.5s;
     animation-iteration-count: 1;
-    animation-duration: .5s;
+    animation-name: enter-on-left;
+  }
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    .enter-on-right {
+      animation: none;
+      animation-duration: 0.5s;
+      animation-iteration-count: 1;
+    }
   }
 
   .enter-on-right {
-    animation-name: enter-on-right;
+    animation-duration: 0.5s;
     animation-iteration-count: 1;
-    animation-duration: .5s;
+    animation-name: enter-on-right;
   }
 }
-
 
 @keyframes enter-on-right {
   0% {
     transform: translateX(100%);
   }
+
   100% {
     transform: translateX(0);
   }
@@ -96,6 +111,7 @@
   0% {
     transform: translateX(-100%);
   }
+
   100% {
     transform: translateX(0);
   }

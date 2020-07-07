@@ -10,8 +10,8 @@
   .close-link {
     background-color: $black;
     position: absolute;
+    right: 1rem;
     top: 1rem;
     z-index: $zindex-navbar;
-    right: 1rem;
   }
 }

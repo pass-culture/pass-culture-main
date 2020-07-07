@@ -24,9 +24,9 @@
 }
 
 .criteria-item-icon-check {
-  width: rem(24px);
   height: rem(24px);
   margin-left: rem(8px);
+  width: rem(24px);
 }
 
 .criteria-item-icon {
@@ -46,9 +46,9 @@
 }
 
 .criteria-item-label {
+  color: $black;
   font-size: 16px;
   font-weight: 700;
-  color: $black;
 }
 
 .criteria-active-label {

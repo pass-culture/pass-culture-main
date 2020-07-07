@@ -21,8 +21,8 @@
   }
 
   .lf-header {
-    margin-top: rem(50px);
     margin-bottom: rem(24px);
+    margin-top: rem(50px);
   }
 
   .form-label-inner {
@@ -36,9 +36,9 @@
   }
 
   .lf-subtitle {
-    font-weight: 500;
     font-size: rem(24px);
     font-style: italic;
+    font-weight: 500;
     white-space: pre-wrap;
   }
 
@@ -65,10 +65,9 @@
   }
 }
 
-#cancel-link, #sign-in-button {
+#cancel-link,
+#sign-in-button {
   color: $white;
   font-size: rem(16px);
   font-weight: 700;
 }
-
-

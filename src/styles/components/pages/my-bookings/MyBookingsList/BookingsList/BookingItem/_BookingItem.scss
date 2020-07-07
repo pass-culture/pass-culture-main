@@ -38,8 +38,8 @@
   }
 
   .teaser-wrapper {
-    width: 65%;
     background-image: none;
+    width: 65%;
   }
 
   @media (min-width: $tablet) {
@@ -52,8 +52,8 @@
     }
 
     .teaser-wrapper {
-      width: 65%;
       background-image: none;
+      width: 65%;
     }
   }
 }
@@ -109,9 +109,9 @@
   }
 
   .teaser-sub-title {
+    -webkit-box-orient: vertical;
     display: -webkit-box;
     -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
   }
 }
 
@@ -157,14 +157,14 @@
 
 .mb-token-link {
   color: $primary;
-  font-weight: 700;
   font-size: rem(18px);
+  font-weight: 700;
 }
 
 .mb-token-title {
-  font-weight: 500;
+  color: $grey-dark;
   font-size: rem(13px);
+  font-weight: 500;
   padding-top: rem(12px);
   text-align: center;
-  color: $grey-dark;
 }

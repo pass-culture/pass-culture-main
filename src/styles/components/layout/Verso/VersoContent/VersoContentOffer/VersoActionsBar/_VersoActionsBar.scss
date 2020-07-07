@@ -1,14 +1,14 @@
 .verso-actions-bar {
-  height: 36px;
-  min-height: 36px;
-  max-height: 36px;
-  border-radius: rem(6px);
   background-color: $grey-light;
+  border-radius: rem(6px);
+  height: 36px;
+  max-height: 36px;
+  min-height: 36px;
 }
 
 .verso-actions-bar .icon {
-  width: auto;
   height: auto;
+  width: auto;
 }
 
 .verso-actions-bar .icon::before {
