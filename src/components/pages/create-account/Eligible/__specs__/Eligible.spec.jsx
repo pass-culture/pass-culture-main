@@ -1,7 +1,8 @@
 import { mount } from 'enzyme'
 import React from 'react'
-import Eligible from '../Eligible'
 import { MemoryRouter } from 'react-router'
+
+import Eligible from '../Eligible'
 
 jest.mock('../../../../../utils/config', () => ({
   ID_CHECK_URL: 'https://id-check-url/premiere-page',

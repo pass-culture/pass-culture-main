@@ -1,16 +1,16 @@
 import { mount } from 'enzyme'
-import React from 'react'
 import { createMemoryHistory } from 'history'
-
-import CreateAccount from '../CreateAccount'
+import React from 'react'
 import { MemoryRouter } from 'react-router'
+
+import ContactSaved from '../ContactSaved/ContactSaved'
+import CreateAccount from '../CreateAccount'
 import EligibilityCheck from '../EligibilityCheck/EligibilityCheck'
 import Eligible from '../Eligible/Eligible'
+import EligibleSoon from '../EligibleSoon/EligibleSoon'
 import IneligibleDepartment from '../IneligibleDepartment/IneligibleDepartment'
 import IneligibleOverEighteen from '../IneligibleOverEighteen/IneligibleOverEighteen'
-import EligibleSoon from '../EligibleSoon/EligibleSoon'
 import IneligibleUnderEighteen from '../IneligibleUnderEighteen/IneligibleUnderEighteen'
-import ContactSaved from '../ContactSaved/ContactSaved'
 
 describe('create account page', () => {
   let props

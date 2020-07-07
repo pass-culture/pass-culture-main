@@ -1,6 +1,7 @@
 import { mount } from 'enzyme'
 import lottie from 'lottie-web'
 import React from 'react'
+
 import { Animation } from '../Animation'
 
 jest.mock('../../../../../utils/config', () => {

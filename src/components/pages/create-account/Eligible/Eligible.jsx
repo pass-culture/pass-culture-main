@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { getReCaptchaToken } from '../utils/recaptcha'
-import { ID_CHECK_URL } from '../../../../utils/config'
 
+import { ID_CHECK_URL } from '../../../../utils/config'
 import { Animation } from '../Animation/Animation'
+import { getReCaptchaToken } from '../utils/recaptcha'
 
 const Eligible = () => {
   const handleClick = useCallback(() =>

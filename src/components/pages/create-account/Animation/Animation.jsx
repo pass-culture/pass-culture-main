@@ -1,5 +1,5 @@
 import lottie from 'lottie-web'
-import * as PropTypes from 'prop-types'
+import PropTypes from 'prop-types'
 import React, { useEffect, useRef } from 'react'
 
 import { ANIMATIONS_URL } from '../../../../utils/config'
