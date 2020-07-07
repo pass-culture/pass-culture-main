@@ -27,7 +27,14 @@ class Discovery extends PureComponent {
       redirectToFirstRecommendationIfNeeded,
       saveLastRecommendationsRequestTimestamp,
       shouldReloadRecommendations,
+      coordinates,
+      trackGeolocation,
     } = this.props
+
+    const isGeolocated = coordinates && coordinates.latitude && coordinates.longitude
+    if (isGeolocated) {
+      trackGeolocation()
+    }
 
     if (shouldReloadRecommendations) {
       this.updateRecommendations()
@@ -199,9 +206,8 @@ Discovery.propTypes = {
   saveLastRecommendationsRequestTimestamp: PropTypes.func.isRequired,
   seedLastRequestTimestamp: PropTypes.number.isRequired,
   shouldReloadRecommendations: PropTypes.bool.isRequired,
+  trackGeolocation: PropTypes.func.isRequired,
   updateLastRequestTimestamp: PropTypes.func.isRequired,
 }
 
 export default Discovery
-
-

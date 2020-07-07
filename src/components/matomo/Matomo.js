@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import { useEffect } from 'react'
 
-import { ANDROID_APPLICATION_ID, MATOMO_GEOLOCATION_GOAL_ID } from '../../utils/config'
+import { ANDROID_APPLICATION_ID } from '../../utils/config'
 import trackPageView from '../../tracking/trackPageView'
 
-const Matomo = ({ history, location, userId, coordinates }) => {
+const Matomo = ({ history, location, userId }) => {
   const Matomo = window._paq
 
   const { pathname } = location
@@ -35,15 +35,10 @@ const Matomo = ({ history, location, userId, coordinates }) => {
     Matomo.push(['resetUserId'])
   }
 
-  if (coordinates.latitude && coordinates.longitude) {
-    Matomo.push(['trackGoal', MATOMO_GEOLOCATION_GOAL_ID])
-  }
-
   return null
 }
 
 Matomo.propTypes = {
-  coordinates: PropTypes.shape().isRequired,
   location: PropTypes.shape().isRequired,
   userId: PropTypes.string.isRequired,
 }

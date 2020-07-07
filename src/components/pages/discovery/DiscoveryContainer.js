@@ -16,6 +16,7 @@ import { selectUserGeolocation } from '../../../redux/selectors/geolocationSelec
 import { getCoordinatesApiPathQueryString } from './utils/buildApiPathQueryString'
 import { saveLastRecommendationsRequestTimestamp } from '../../../redux/actions/lastRecommendationsRequestTimestamp'
 import { updateSeedLastRequestTimestamp } from '../../../redux/actions/pagination'
+import withGeolocationTracking from '../../../tracking/withGeolocationTracking'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
@@ -105,5 +106,6 @@ export default compose(
   connect(
     mapStateToProps,
     mapDispatchToProps
-  )
+  ),
+  withGeolocationTracking
 )(Discovery)

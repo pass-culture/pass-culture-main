@@ -12,10 +12,6 @@ describe('src | components | matomo | MatomoContainer', () => {
             },
           ],
         },
-        geolocation: {
-          latitude: null,
-          longitude: null,
-        },
       }
 
       // when
@@ -23,7 +19,6 @@ describe('src | components | matomo | MatomoContainer', () => {
 
       // then
       expect(props).toStrictEqual({
-        coordinates: { latitude: null, longitude: null },
         userId: 'Rt4R45ETEs',
       })
     })
@@ -34,17 +29,12 @@ describe('src | components | matomo | MatomoContainer', () => {
         data: {
           users: [],
         },
-        geolocation: {
-          latitude: null,
-          longitude: null,
-        },
       }
       // when
       const props = mapStateToProps(state)
 
       // then
       expect(props).toStrictEqual({
-        coordinates: { latitude: null, longitude: null },
         userId: 'ANONYMOUS',
       })
     })

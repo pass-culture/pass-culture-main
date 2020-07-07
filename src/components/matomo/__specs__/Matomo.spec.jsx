@@ -39,62 +39,6 @@ describe('src | components | matomo | Matomo', () => {
     store = mockStore(initialState)
   })
 
-  it('should track user geolocation when user is geolocated', () => {
-    // given
-    store = mockStore({
-      data: {
-        users: [
-          {
-            id: 'a1',
-          },
-        ],
-      },
-      geolocation: {
-        latitude: 1,
-        longitude: 1,
-      },
-    })
-    // when
-    mount(
-      <Router history={history}>
-        <Provider store={store}>
-          <MatomoContainer {...props} />
-        </Provider>
-      </Router>
-    )
-
-    // then
-    expect(fakeMatomo.push).toHaveBeenNthCalledWith(5, ['trackGoal', 1])
-  })
-
-  it('should not track user geolocation when user is not geolocated', () => {
-    // given
-    store = mockStore({
-      data: {
-        users: [
-          {
-            id: 'a1',
-          },
-        ],
-      },
-      geolocation: {
-        latitude: null,
-        longitude: null,
-      },
-    })
-    // when
-    mount(
-      <Router history={history}>
-        <Provider store={store}>
-          <MatomoContainer {...props} />
-        </Provider>
-      </Router>
-    )
-
-    // then
-    expect(fakeMatomo.push).not.toHaveBeenCalledWith(['trackGoal', 1])
-  })
-
   it('should push a new page displayed event', () => {
     // when
     mount(

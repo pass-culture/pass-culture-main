@@ -34,6 +34,7 @@ describe('src | components | pages | discovery | Discovery', () => {
       saveLastRecommendationsRequestTimestamp: jest.fn(),
       seedLastRequestTimestamp: 1574236357670,
       shouldReloadRecommendations: false,
+      trackGeolocation: jest.fn(),
       updateLastRequestTimestamp: jest.fn(),
     }
   })
@@ -88,6 +89,32 @@ describe('src | components | pages | discovery | Discovery', () => {
       expect(props.redirectToFirstRecommendationIfNeeded).toHaveBeenCalledWith(
         props.recommendations
       )
+    })
+
+    it('should track geolocation when user is geolocated', () => {
+      // given
+      props.coordinates = {
+        longitude: 48.256756,
+        latitude: 2.8796567,
+        watchId: 1,
+      }
+
+      // when
+      shallow(<Discovery {...props} />)
+
+      // then
+      expect(props.trackGeolocation).toHaveBeenCalledWith()
+    })
+
+    it('should not track geolocation when user is not geolocated', () => {
+      // given
+      props.coordinates = { latitude: null, longitude: null, watchId: null }
+
+      // when
+      shallow(<Discovery {...props} />)
+
+      // then
+      expect(props.trackGeolocation).not.toHaveBeenCalledWith()
     })
   })
 
