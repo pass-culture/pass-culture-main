@@ -27,19 +27,6 @@ describe('eligible page', () => {
       expect(eligibleText).toHaveLength(1)
     })
 
-    it('should display a sign up button that redirects to a signup portal', () => {
-      // when
-      const wrapper = mount(
-        <MemoryRouter>
-          <Eligible />
-        </MemoryRouter>
-      )
-
-      // then
-      const signUpButton = wrapper.find('a[href="https://google.com"]')
-      expect(signUpButton).toHaveLength(1)
-    })
-
     it('should display a go back home link', () => {
       // when
       const wrapper = mount(
@@ -59,11 +46,15 @@ describe('eligible page', () => {
       // given
       delete window.location
       window.location = { href: 'inital-url' }
-      const wrapper = mount(<Eligible />)
-      const confirmationButton = wrapper.find('button[type="submit"]')
+      const wrapper = mount(
+        <MemoryRouter>
+          <Eligible />
+        </MemoryRouter>
+      )
+      const confirmationButton = wrapper.find('button[type="button"]')
 
       // when
-      await confirmationButton.simulate('click')
+      await confirmationButton.invoke('onClick')()
 
       // then
       expect(window.location.href).toBe(
