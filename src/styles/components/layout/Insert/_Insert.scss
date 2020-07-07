@@ -29,6 +29,7 @@
 
   .insert-action-link {
     margin-top: 0.5rem;
+
     a {
       font-weight: 700;
       display: flex;
@@ -45,7 +46,9 @@
         align-self: center;
       }
     }
-    a:hover{
+
+    a:focus,
+    a:hover {
       color: $black;
     }
   }

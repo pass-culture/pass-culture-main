@@ -4,8 +4,7 @@
   justify-content: space-between;
   margin-bottom: rem(30px);
 
-  .bookings-header-loading
-  .bookings-header-number {
+  .bookings-header-loading .bookings-header-number {
     font-weight: $weight-normal;
   }
 
@@ -14,6 +13,7 @@
     display: flex;
     font-weight: $weight-bold;
 
+    &:focus,
     &:hover {
       color: $black;
       text-decoration: none;

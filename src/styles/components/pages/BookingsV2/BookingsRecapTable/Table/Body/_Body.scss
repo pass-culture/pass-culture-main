@@ -1,16 +1,16 @@
 .bookings-body {
+  tr {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
   > tr:nth-child(odd) {
     background-color: $grey-light;
   }
 
   td {
     font-size: rem(16px);
-    padding: rem(16px)
-  }
-
-  tr {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    padding: rem(16px);
   }
 }

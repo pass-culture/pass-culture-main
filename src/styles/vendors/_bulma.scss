@@ -17,17 +17,22 @@
   padding-left: 54px;
 }
 
-.input:hover,
-input:hover[type="checkbox"],
-.textarea:hover,
-.select select:hover,
-.button:hover {
-  border-color: $grey-medium;
-}
-
 .input,
 .textarea,
 .select select,
 .button {
+  border-color: $grey-medium;
+}
+
+.input:focus,
+.input:hover,
+input:focus[type="checkbox"],
+input:hover[type="checkbox"],
+.textarea:focus,
+.textarea:hover,
+.select select:focus,
+.select select:hover,
+.button:focus,
+.button:hover {
   border-color: $grey-medium;
 }

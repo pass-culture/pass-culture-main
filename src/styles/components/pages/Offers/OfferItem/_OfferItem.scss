@@ -23,6 +23,7 @@ li.offer-item {
 
   ul {
     border-top: 1px solid $grey-light;
+
     li,
     .label {
       font-size: 0.82rem;
@@ -42,7 +43,8 @@ li.offer-item {
       justify-content: flex-end;
       padding-top: 0.2rem;
 
-      a, button {
+      a,
+      button {
         font-weight: $weight-medium;
       }
 
@@ -57,6 +59,7 @@ li.offer-item {
         &:nth-child(2) {
           border-right: 1px solid $grey-light;
         }
+
         &:nth-child(3) {
           border-right: 1px solid $grey-light;
         }
@@ -65,6 +68,7 @@ li.offer-item {
           flex-grow: 6;
           text-align: left;
         }
+
         &:last-child {
           width: rem(50px);
           text-align: center;

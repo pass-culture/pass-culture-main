@@ -1,7 +1,7 @@
 .vertical-bar {
   background-color: $grey-medium;
   width: $control-border-width;
-  height: rem(40px)
+  height: rem(40px);
 }
 
 .fw-first-line {
@@ -31,7 +31,6 @@
     outline: none;
     padding-left: rem(10px);
     padding-right: rem(30px);
-
     -moz-appearance: none;
     -webkit-appearance: none;
     appearance: none;
@@ -186,7 +185,6 @@
       width: rem(200px);
       outline: none;
       overflow-y: scroll;
-
       -moz-appearance: none;
       -webkit-appearance: none;
       appearance: none;

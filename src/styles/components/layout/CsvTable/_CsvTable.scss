@@ -4,6 +4,7 @@
   justify-content: center;
 }
 
+#csv-table tr:focus,
 #csv-table tr:hover {
   background-color: $grey-medium;
 }
@@ -14,6 +15,7 @@
       padding: 10px;
     }
   }
+
   tbody {
     td {
       color: $grey-dark;
@@ -36,6 +38,7 @@
 
 #no-data-container {
   @extend .fs20;
+
   align-items: center;
   display: flex;
   justify-content: center;
@@ -52,13 +55,14 @@
 
 @media print {
   @page {
-    size: landscape
+    size: landscape;
   }
 
   body {
     font-size: xx-small;
 
-    header, #csv-print-button {
+    header,
+    #csv-print-button {
       display: none;
     }
   }

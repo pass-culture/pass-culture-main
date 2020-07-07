@@ -6,17 +6,21 @@
   margin: auto;
   box-shadow: 0 0 60px 0 $black-shadow;
   background-image: $linear-gradient-to-right;
+
   .home-card {
     color: $white;
     padding: 3rem;
     padding-bottom: 2.6rem;
+
     &:not(:last-child) {
       border-right: 0.4rem dotted $white;
+
       @media (max-width: $tablet) {
         border-right: none;
         border-bottom: 0.4rem dotted $white;
       }
     }
+
     img {
       float: right;
       width: 6rem;
@@ -24,6 +28,7 @@
 
     .home-card-text {
       margin-top: 7rem;
+
       h1 {
         color: $white;
         font-size: $size-xlarge;

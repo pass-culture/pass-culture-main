@@ -37,6 +37,7 @@
     display: none;
   }
 
+  .booking-status-wrapper:focus .bs-tooltip,
   .booking-status-wrapper:hover .bs-tooltip {
     background-color: $white;
     border-radius: rem(4px);

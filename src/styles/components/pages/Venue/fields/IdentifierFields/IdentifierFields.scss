@@ -4,7 +4,14 @@
     align-items: center;
   }
 
-  .is-label-aligned .field-label{
+  .field-label {
+    flex: 1;
+    color: $black;
+    font-size: rem(16px);
+    white-space: initial;
+  }
+
+  .is-label-aligned .field-label {
     padding: 0;
     margin: 0;
   }
@@ -14,18 +21,12 @@
     width: initial;
   }
 
-  .field-label {
-    flex: 1;
-    color: $black;
-    font-size: rem(16px);
-    white-space: initial;
-  }
-
   .field-control {
-    flex: 3
+    flex: 3;
   }
 
-  .venue-type-label,.venue-label-label {
+  .venue-type-label,
+  .venue-label-label {
     padding-left: rem(22px);
   }
 }

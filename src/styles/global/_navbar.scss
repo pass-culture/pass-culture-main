@@ -3,6 +3,7 @@
     background-image: $linear-gradient-to-bottom-right;
 
     .navbar-brand {
+      & > .navbar-item:focus,
       & > .navbar-item:hover {
         background: transparent !important;
       }

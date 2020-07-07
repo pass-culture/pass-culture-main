@@ -1,6 +1,11 @@
+.apf-price-section {
+  margin-top: 0.8rem;
+}
+
 .allocine-provider-form {
   .field-asterisk {
     @extend .ml2;
+
     color: $accent;
   }
 
@@ -20,7 +25,7 @@
   }
 
   .blue-insert {
-    margin-top: .8rem;
+    margin-top: 0.8rem;
 
     img {
       max-width: rem(24px);
@@ -28,17 +33,13 @@
   }
 }
 
-.apf-price-section {
-  margin-top: .8rem;
-}
-
 .apf-quantity-section {
-  margin-top: .8rem;
+  margin-top: 0.8rem;
 }
 
 .apf-is-duo-section {
   display: flex;
-  margin-top: .8rem;
+  margin-top: 0.8rem;
 }
 
 .apf-provider-import-button-section {

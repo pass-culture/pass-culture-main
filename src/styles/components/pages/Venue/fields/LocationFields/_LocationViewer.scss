@@ -32,6 +32,7 @@
             font-weight: $weight-bold;
           }
 
+          &:focus,
           &:hover {
             background-color: $grey-light;
           }

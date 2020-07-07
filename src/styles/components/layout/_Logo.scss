@@ -15,10 +15,6 @@ a.logo {
     vertical-align: middle;
   }
 
-  .logo-subtitle {
-    color: $white;
-  }
-
   &.no-link {
     cursor: inherit;
 
@@ -31,6 +27,7 @@ a.logo {
   }
 
   .logo-subtitle {
+    color: $white;
     font-size: rem(18px);
     font-weight: 500;
     font-style: normal;

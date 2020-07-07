@@ -7,8 +7,10 @@
     display: flex;
     border-bottom: 1px solid;
     justify-content: space-between;
+
     @extend .mb32;
     @extend .pb8;
+
     align-items: center;
 
     .select {
@@ -17,6 +19,7 @@
 
       select {
         @extend .ml8;
+
         display: inline-block;
       }
     }
@@ -25,29 +28,40 @@
   .offers-list-actions {
     border-bottom: 1px solid $grey-dark;
     font-size: 0.8rem;
+
     @extend .pb8;
     @extend .mb16;
+
     button {
       @extend .mr8;
+
       font-weight: 500;
       height: auto;
     }
+
     button:first-child {
       border-right: 1px solid $grey-dark;
+
       @extend .pr8;
     }
   }
 
   .tag {
     font-size: 1rem;
+
     @extend .mr8;
+
     border-color: transparent;
+
     img {
-        @extend .ml8;
-        height: 0.7rem;
+      @extend .ml8;
+
+      height: 0.7rem;
     }
+
     .name {
       font-weight: bold;
+
       @extend .ml5;
     }
   }

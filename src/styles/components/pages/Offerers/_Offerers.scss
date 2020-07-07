@@ -1,6 +1,7 @@
 .offerers-page {
   a.button {
     &.cta {
+      &:focus,
       &:hover {
         background-color: transparent;
         color: $primary;

@@ -44,6 +44,7 @@
     height: auto;
     text-decoration: underline;
 
+    &:focus,
     &:hover {
       text-decoration: none;
       opacity: 0.75;
@@ -71,5 +72,4 @@
     align-items: center;
     flex-grow: 1;
   }
-
 }

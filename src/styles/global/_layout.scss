@@ -40,6 +40,7 @@ hr {
 
 ul.main-list {
   margin-bottom: 1rem;
+
   > li {
     display: flex;
     padding-bottom: 1rem;
@@ -50,6 +51,7 @@ ul.main-list {
     }
 
     @include dotted($primary, bottom);
+
     > * {
       padding: 0 0.5rem;
       align-items: center;

@@ -13,6 +13,7 @@
 }
 
 .booking-offer-detail-link {
+  &:focus,
   &:hover {
     color: inherit;
   }
