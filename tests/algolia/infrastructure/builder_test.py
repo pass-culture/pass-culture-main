@@ -295,7 +295,7 @@ class BuildObjectTest:
         assert result['offer']['prices'] == [Decimal('5.00'), Decimal('7.00'), Decimal('10.30')]
 
     @clean_database
-    def test_should_not_return_coordinates_when_one_coordinate_is_missing(self, app):
+    def test_should_return_default_coordinates_when_one_coordinate_is_missing(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer, latitude=None, longitude=12.13)
@@ -307,7 +307,8 @@ class BuildObjectTest:
         result = build_object(offer)
 
         # Then
-        assert '_geoloc' not in result
+        assert result['_geoloc']['lat'] == 47.158459
+        assert result['_geoloc']['lng'] == 2.409289
 
     @freeze_time('2020-10-15 09:00:00')
     @clean_database
@@ -370,3 +371,20 @@ class BuildObjectTest:
         eighteen_thirty_in_seconds = 66600
         twenty_one_thirty_in_seconds = 77418
         assert sorted(result['offer']['times']) == sorted([eighteen_thirty_in_seconds, twenty_one_thirty_in_seconds])
+
+    @clean_database
+    def test_should_default_coordinates_when_offer_is_digital(self, app):
+        # Given
+        offerer = create_offerer()
+        venue = create_venue(offerer=offerer, latitude=None, longitude=None)
+        offer = create_offer_with_thing_product(venue=venue, is_digital=True)
+        stock = create_stock(offer=offer)
+        repository.save(stock)
+
+        # When
+        result = build_object(offer)
+        print(result)
+
+        # Then
+        assert result['_geoloc']['lat'] == 47.158459
+        assert result['_geoloc']['lng'] == 2.409289

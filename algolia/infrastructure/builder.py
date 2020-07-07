@@ -11,6 +11,7 @@ def build_object(offer: Offer) -> Dict:
     offerer = venue.managingOfferer
     humanize_offer_id = humanize(offer.id)
     has_coordinates = venue.latitude is not None and venue.longitude is not None
+    is_numeric = venue.latitude is None and venue.longitude is None
     author = offer.extraData and offer.extraData.get('author')
     stage_director = offer.extraData and offer.extraData.get('stageDirector')
     visa = offer.extraData and offer.extraData.get('visa')
@@ -83,6 +84,11 @@ def build_object(offer: Offer) -> Dict:
         object_to_index.update({'_geoloc': {
             'lat': float(venue.latitude),
             'lng': float(venue.longitude)
+        }})
+    else:
+        object_to_index.update({'_geoloc': {
+            'lat': 47.158459,
+            'lng': 2.409289
         }})
 
     return object_to_index
