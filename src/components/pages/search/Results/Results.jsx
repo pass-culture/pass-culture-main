@@ -17,6 +17,7 @@ import Header from '../Header/Header'
 import { EmptyResult } from './EmptyResult/EmptyResult'
 import ResultDetailContainer from './ResultsList/ResultDetail/ResultDetailContainer'
 import { ResultsList } from './ResultsList/ResultsList'
+import trackSearchKeyWords from '../../../../tracking/trackSearchKeyWords'
 
 const SEARCH_RESULTS_URI = '/recherche/resultats'
 
@@ -81,6 +82,12 @@ class Results extends PureComponent {
     const queryParams = parse(history.location.search)
     const keywords = queryParams['mots-cles'] || ''
     this.fetchOffers({ keywords, page: currentPage })
+
+    if (queryParams) {
+      const categories = queryParams['categories']
+      const keyWords = queryParams['mots-cles']
+      trackSearchKeyWords(keyWords, categories)
+    }
   }
 
   componentDidUpdate() {

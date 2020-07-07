@@ -53,15 +53,21 @@ const stubRef = wrapper => {
 }
 
 describe('components | Results', () => {
+  let fakeTracking
   let props
   let parse
   let replace
   let push
 
   beforeEach(() => {
+    fakeTracking = {
+      push: jest.fn(),
+    }
+    window._paq = fakeTracking
+
+    push = jest.fn()
     parse = jest.fn().mockReturnValue({})
     replace = jest.fn()
-    push = jest.fn()
 
     props = {
       criteria: {
@@ -113,6 +119,726 @@ describe('components | Results', () => {
     fetchAlgolia.mockReset()
     parse.mockReset()
     replace.mockReset()
+  })
+  describe('when mount', () => {
+    it('should track keywords search when keywords and categories in url', () => {
+      // given
+      props.history = createMemoryHistory()
+      props.history.push(
+        '/recherche/resultats?categories=CINEMA&mots-cles=une%librairie&autour-de=oui'
+      )
+
+      parse.mockReturnValue({
+        'autour-de': 'oui',
+        categories: 'CINEMA',
+        'mots-cles': 'une librairie',
+      })
+
+      // when
+      shallow(<Results {...props} />)
+
+      // then
+      expect(fakeTracking.push).toHaveBeenCalledWith([
+        'trackSiteSearch',
+        'une librairie',
+        'CINEMA',
+        false,
+      ])
+    })
+
+    it('should not track keywords search when no location.search', () => {
+      // given
+      props.history.location.search = null
+
+      // when
+      shallow(<Results {...props} />)
+
+      // then
+      expect(fakeTracking.push).not.toHaveBeenCalledWith()
+    })
+
+    describe('when no keywords in url', () => {
+      it('should fetch data with page 0, given categories, geolocation around user, sort by proximity', () => {
+        props.criteria = {
+          categories: ['Cinéma'],
+          searchAround: {
+            everywhere: false,
+            place: false,
+            user: true,
+          },
+          sortBy: '_by_proximity',
+        }
+
+        // when
+        shallow(<Results {...props} />)
+
+        // then
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
+          geolocation: props.userGeolocation,
+          keywords: '',
+          offerCategories: ['Cinéma'],
+          offerIsDuo: false,
+          offerIsFree: false,
+          offerIsNew: false,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false,
+          },
+          page: 0,
+          priceRange: [0, 500],
+          searchAround: true,
+          sortBy: '_by_proximity',
+        })
+      })
+    })
+
+    describe('when no results', () => {
+      beforeEach(() => {
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [],
+              page: 0,
+              nbHits: 0,
+              nbPages: 0,
+              hitsPerPage: 2,
+              processingTimeMS: 1,
+              query: 'librairie',
+              params: 'query=librairie&hitsPerPage=2',
+            })
+          })
+        )
+      })
+
+      afterEach(() => {
+        fetchAlgolia.mockReset()
+        props.parse.mockReset()
+      })
+
+      it('should display EmptyResult component when 0 result', async () => {
+        // given
+        props.history = createMemoryHistory()
+        props.history.push('/recherche/resultats')
+
+        const wrapper = await mount(
+          <Router history={props.history}>
+            <Results {...props} />
+          </Router>
+        )
+
+        stubRef(wrapper)
+        const form = wrapper.find('form')
+
+        // when
+        await form.simulate('submit', {
+          target: {
+            keywords: {
+              value: 'librairie',
+            },
+          },
+          preventDefault: jest.fn(),
+        })
+
+        wrapper.update()
+
+        // then
+        const emptySearchResult = wrapper.find(EmptyResult)
+        const filterButton = wrapper.find({ children: 'Filtrer' })
+        expect(emptySearchResult).toHaveLength(1)
+        expect(filterButton).toHaveLength(0)
+        expect(emptySearchResult.prop('searchedKeywords')).toBe('librairie')
+      })
+
+      it('should fetch offers in all categories, without keyword, around user and sorted by relevance when clicking on "autour de chez toi"', async () => {
+        // given
+        const history = createMemoryHistory()
+        props.history = history
+        props.history.push(
+          '/recherche/resultats?mots-cles=recherche%20sans%20résultat&autour-de=oui&tri=_by_price&categories=INSTRUMENT'
+        )
+        props.parse.mockReturnValue({
+          'autour-de': 'oui',
+          categories: 'INSTRUMENT',
+          'mots-cles': 'recherche sans résultat',
+          tri: '_by_price',
+        })
+        const wrapper = await mount(
+          <Router history={history}>
+            <Results {...props} />
+          </Router>
+        )
+        wrapper.update()
+        const linkButton = wrapper.find({ children: 'autour de chez toi' })
+
+        // when
+        await linkButton.simulate('click')
+
+        // then
+        expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
+          aroundRadius: 100,
+          geolocation: {
+            latitude: 40.1,
+            longitude: 41.1,
+          },
+          keywords: '',
+          offerCategories: [],
+          offerIsDuo: false,
+          offerIsFree: false,
+          offerIsNew: false,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false,
+          },
+          page: 0,
+          priceRange: [0, 500],
+          searchAround: true,
+          sortBy: '',
+        })
+        const expectedUri = props.history.location.pathname + props.history.location.search
+        expect(expectedUri).toBe(
+          '/recherche/resultats?mots-cles=&autour-de=oui&tri=&categories=&latitude=40.1&longitude=41.1'
+        )
+      })
+    })
+
+    describe('when keywords in url', () => {
+      it('should fill search input, display keywords, number of results and fetch data with page 0', async () => {
+        // given
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
+              nbHits: 1,
+              nbPages: 1,
+              page: 0,
+            })
+          })
+        )
+        parse.mockReturnValue({
+          'autour-de': 'non',
+          'mots-cles': 'une librairie',
+        })
+        props.history = createMemoryHistory()
+        props.history.push(
+          '/recherche/resultats?mots-cles=une%20librairie&autour-de=non&tri=_by_price&categories=INSTRUMENT'
+        )
+
+        // when
+        const wrapper = await mount(
+          <Router history={props.history}>
+            <Results {...props} />
+          </Router>
+        )
+
+        wrapper.update()
+
+        // then
+        const searchResultsListComponent = wrapper.find(ResultsList)
+        const results = searchResultsListComponent.prop('results')
+        const searchInput = wrapper.find('input')
+        expect(results).toHaveLength(1)
+        expect(searchInput.prop('value')).toBe('une librairie')
+        expect(searchResultsListComponent.prop('resultsCount')).toBe(1)
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
+          geolocation: {
+            latitude: 40.1,
+            longitude: 41.1,
+          },
+          keywords: 'une librairie',
+          offerCategories: [],
+          offerIsDuo: false,
+          offerIsFree: false,
+          offerIsNew: false,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false,
+          },
+          page: 0,
+          priceRange: [0, 500],
+          searchAround: false,
+          sortBy: '',
+        })
+      })
+
+      it('should fill search input and display keywords, number of results when results are found', async () => {
+        // given
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [
+                { objectID: 'AA', offer: { dates: [] } },
+                { objectID: 'BB', offer: { dates: [] } },
+              ],
+              nbHits: 2,
+              nbPages: 0,
+              page: 0,
+            })
+          })
+        )
+
+        props.history = createMemoryHistory()
+        props.history.push('/recherche/resultats?mots-cles=une%librairie&autour-de=oui')
+
+        parse.mockReturnValue({
+          'autour-de': 'oui',
+          'mots-cles': 'une librairie',
+        })
+
+        // when
+        const wrapper = await mount(
+          <Router history={props.history}>
+            <Results {...props} />
+          </Router>
+        )
+
+        wrapper.update()
+
+        // then
+        const searchResultsListComponent = wrapper.find(ResultsList)
+        const results = searchResultsListComponent.prop('results')
+        const searchInput = wrapper.find('input')
+        expect(results).toHaveLength(2)
+        expect(searchResultsListComponent.prop('resultsCount')).toBe(2)
+        expect(searchResultsListComponent.prop('geolocation')).toStrictEqual(props.userGeolocation)
+        expect(searchResultsListComponent.prop('results')).toStrictEqual([
+          { objectID: 'AA', offer: { dates: [] } },
+          { objectID: 'BB', offer: { dates: [] } },
+        ])
+        expect(searchResultsListComponent.prop('search')).toBe(props.history.location.search)
+        expect(searchInput.prop('value')).toBe('une librairie')
+      })
+    })
+
+    describe('when geolocation', () => {
+      it('should fetch data using geolocation coordinates when geolocation is enabled', async () => {
+        // given
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              nbHits: 2,
+              nbPages: 2,
+              page: 0,
+            })
+          })
+        )
+        parse.mockReturnValue({
+          'autour-de': 'oui',
+          'mots-cles': 'une librairie',
+        })
+
+        // when
+        shallow(<Results {...props} />)
+
+        // then
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
+          geolocation: { latitude: 40.1, longitude: 41.1 },
+          keywords: 'une librairie',
+          offerCategories: [],
+          offerIsDuo: false,
+          offerIsFree: false,
+          offerIsNew: false,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false,
+          },
+          page: 0,
+          priceRange: [0, 500],
+          searchAround: true,
+          sortBy: '',
+        })
+      })
+
+      it('should replace "autour-de" query param from oui to non when geolocation is disabled', async () => {
+        // given
+        props.userGeolocation = {
+          latitude: null,
+          longitude: null,
+        }
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [],
+              nbHits: 0,
+              nbPages: 0,
+              page: 0,
+            })
+          })
+        )
+        parse.mockReturnValue({
+          'autour-de': 'oui',
+        })
+        isGeolocationEnabled.mockReturnValue(false)
+
+        // when
+        shallow(<Results {...props} />)
+
+        // then
+        expect(props.history.replace).toHaveBeenCalledWith({
+          search: '?mots-cles=&autour-de=non&tri=&categories=',
+        })
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
+          geolocation: { latitude: null, longitude: null },
+          keywords: '',
+          offerCategories: [],
+          offerIsDuo: false,
+          offerIsFree: false,
+          offerIsNew: false,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false,
+          },
+          page: 0,
+          priceRange: [0, 500],
+          searchAround: false,
+          sortBy: '',
+        })
+      })
+    })
+
+    describe('when category filter', () => {
+      it('should fetch data filtered by categories from props when provided', async () => {
+        // given
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              nbHits: 2,
+              nbPages: 2,
+              page: 0,
+            })
+          })
+        )
+        parse.mockReturnValue({
+          categories: '',
+          'mots-cles': 'une librairie',
+        })
+        props.criteria.categories = ['CINEMA']
+
+        // when
+        await shallow(<Results {...props} />)
+
+        // then
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
+          geolocation: { latitude: 40.1, longitude: 41.1 },
+          keywords: 'une librairie',
+          offerCategories: ['CINEMA'],
+          offerIsDuo: false,
+          offerIsFree: false,
+          offerIsNew: false,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false,
+          },
+          page: 0,
+          priceRange: [0, 500],
+          searchAround: false,
+          sortBy: '',
+        })
+      })
+
+      it('should fetch data filtered by categories from URL when provided', async () => {
+        // given
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              nbHits: 2,
+              nbPages: 0,
+              page: 0,
+            })
+          })
+        )
+        parse.mockReturnValue({
+          'autour-de': 'oui',
+          categories: 'CINEMA',
+          'mots-cles': 'une librairie',
+        })
+        props.criteria = {}
+
+        // when
+        await shallow(<Results {...props} />)
+
+        // then
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
+          geolocation: { latitude: 40.1, longitude: 41.1 },
+          keywords: 'une librairie',
+          offerCategories: ['CINEMA'],
+          offerIsDuo: false,
+          offerIsFree: false,
+          offerIsNew: false,
+          offerTypes: { isDigital: false, isEvent: false, isThing: false },
+          priceRange: [0, 500],
+          page: 0,
+          searchAround: true,
+        })
+      })
+
+      it('should fetch data filtered by categories from URL when both from props and URL are provided', async () => {
+        // given
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              nbHits: 2,
+              nbPages: 2,
+              page: 0,
+            })
+          })
+        )
+        parse.mockReturnValue({
+          categories: 'CINEMA',
+          'mots-cles': 'une librairie',
+        })
+        props.criteria.categories = ['VISITE']
+
+        // when
+        await shallow(<Results {...props} />)
+
+        // then
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
+          geolocation: { latitude: 40.1, longitude: 41.1 },
+          keywords: 'une librairie',
+          offerCategories: ['CINEMA'],
+          offerIsDuo: false,
+          offerIsFree: false,
+          offerIsNew: false,
+          offerTypes: { isDigital: false, isEvent: false, isThing: false },
+          priceRange: [0, 500],
+          page: 0,
+          searchAround: false,
+          sortBy: '',
+        })
+      })
+
+      it('should fetch data with empty category filter when no category in URL nor props provided', async () => {
+        // given
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [],
+              nbHits: 0,
+              nbPages: 0,
+              page: 0,
+            })
+          })
+        )
+        parse.mockReturnValue({
+          categories: '',
+          'mots-cles': 'une librairie',
+        })
+
+        // when
+        await shallow(<Results {...props} />)
+
+        // then
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
+          geolocation: { latitude: 40.1, longitude: 41.1 },
+          keywords: 'une librairie',
+          offerCategories: [],
+          offerIsDuo: false,
+          offerIsFree: false,
+          offerIsNew: false,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false,
+          },
+          page: 0,
+          priceRange: [0, 500],
+          searchAround: false,
+          sortBy: '',
+        })
+      })
+    })
+
+    describe('when sort filter', () => {
+      it('should fetch data using sort filter when provided from url', async () => {
+        // given
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              nbHits: 2,
+              nbPages: 0,
+              page: 0,
+            })
+          })
+        )
+        parse.mockReturnValue({
+          'mots-cles': 'une librairie',
+          tri: '_by_proximity',
+        })
+
+        // when
+        await shallow(<Results {...props} />)
+
+        // then
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
+          geolocation: { latitude: 40.1, longitude: 41.1 },
+          keywords: 'une librairie',
+          offerCategories: [],
+          offerIsDuo: false,
+          offerIsFree: false,
+          offerIsNew: false,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false,
+          },
+          page: 0,
+          priceRange: [0, 500],
+          searchAround: false,
+          sortBy: '_by_proximity',
+        })
+      })
+
+      it('should fetch data using sort filter when provided from prop', async () => {
+        // given
+        props.criteria.sortBy = '_by_proximity'
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              nbHits: 2,
+              nbPages: 0,
+              page: 0,
+            })
+          })
+        )
+        parse.mockReturnValue({
+          'mots-cles': 'une librairie',
+          tri: '',
+        })
+
+        // when
+        await shallow(<Results {...props} />)
+
+        // then
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
+          geolocation: { latitude: 40.1, longitude: 41.1 },
+          keywords: 'une librairie',
+          offerCategories: [],
+          offerIsDuo: false,
+          offerIsFree: false,
+          offerIsNew: false,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false,
+          },
+          page: 0,
+          priceRange: [0, 500],
+          searchAround: false,
+          sortBy: '_by_proximity',
+        })
+      })
+
+      it('should fetch data not using sort filter when not provided', async () => {
+        // given
+        fetchAlgolia.mockReturnValue(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              nbHits: 2,
+              nbPages: 0,
+              page: 0,
+            })
+          })
+        )
+        props.criteriacategories = []
+        parse.mockReturnValue({
+          'mots-cles': 'une librairie',
+          tri: '',
+        })
+
+        // when
+        await shallow(<Results {...props} />)
+
+        // then
+        expect(fetchAlgolia).toHaveBeenCalledWith({
+          aroundRadius: 100,
+          geolocation: { latitude: 40.1, longitude: 41.1 },
+          keywords: 'une librairie',
+          offerCategories: [],
+          offerIsDuo: false,
+          offerIsFree: false,
+          offerIsNew: false,
+          offerTypes: {
+            isDigital: false,
+            isEvent: false,
+            isThing: false,
+          },
+          page: 0,
+          priceRange: [0, 500],
+          searchAround: false,
+          sortBy: '',
+        })
+      })
+
+      it('should display the sort filter received from props', async () => {
+        // given
+        fetchAlgolia.mockReturnValueOnce(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
+              nbHits: 1,
+              nbPages: 0,
+              page: 0,
+            })
+          })
+        )
+        props.criteria.sortBy = '_by_price'
+
+        // when
+        const wrapper = await shallow(<Results {...props} />)
+
+        // then
+        const sortCriterionLabel = wrapper.find(ResultsList).prop('sortCriterionLabel')
+        expect(sortCriterionLabel).toBe('Prix')
+      })
+
+      it('should display the sort filter received from url', async () => {
+        // given
+        fetchAlgolia.mockReturnValueOnce(
+          new Promise(resolve => {
+            resolve({
+              hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
+              nbHits: 1,
+              nbPages: 0,
+              page: 0,
+            })
+          })
+        )
+        props.criteria.sortBy = ''
+        parse.mockReturnValue({
+          tri: '_by_price',
+        })
+
+        // when
+        const wrapper = await shallow(<Results {...props} />)
+
+        // then
+        const sortCriterionLabel = wrapper.find(ResultsList).prop('sortCriterionLabel')
+        expect(sortCriterionLabel).toBe('Prix')
+      })
+    })
   })
 
   describe('when render', () => {
