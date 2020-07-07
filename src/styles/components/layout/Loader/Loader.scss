@@ -12,6 +12,11 @@
   right: 0;
   top: 0;
   z-index: $zindex-application-loader;
+
+  .animation {
+    height: rem(200px);
+    width: rem(200px);
+  }
 }
 
 .loader-title {

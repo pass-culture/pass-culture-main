@@ -2,8 +2,8 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Transition } from 'react-transition-group'
 
+import { Animation } from '../../pages/create-account/Animation/Animation'
 import Icon from '../Icon/Icon'
-import LoadingAnimation from '../LoadingPage/LoadingAnimation/LoadingAnimation'
 
 const duration = 500
 
@@ -44,7 +44,10 @@ class Loader extends PureComponent {
     const { hasError500, isLoading } = this.props
 
     if (isLoading) {
-      return <LoadingAnimation />
+      return (<Animation
+        loop
+        name="loading-animation"
+              />)
     }
 
     if (hasError500) {

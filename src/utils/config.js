@@ -53,3 +53,4 @@ if (typeof window !== 'undefined') {
 
 export const ROOT_PATH = CALC_ROOT_PATH || 'http://localhost:3000/'
 export const ICONS_URL = `${ROOT_PATH}/icons`
+export const ANIMATIONS_URL = `${ROOT_PATH}/animations`

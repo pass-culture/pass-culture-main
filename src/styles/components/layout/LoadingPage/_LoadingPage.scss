@@ -11,9 +11,9 @@
   position: absolute;
   right: 0;
   top: 0;
-}
 
-#loading-animation {
-  height: rem(200px);
-  width: rem(200px);
+  .animation {
+    height: rem(200px);
+    width: rem(200px);
+  }
 }

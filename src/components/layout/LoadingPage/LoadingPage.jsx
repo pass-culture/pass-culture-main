@@ -1,10 +1,13 @@
 import React from 'react'
 
-import LoadingAnimation from './LoadingAnimation/LoadingAnimation'
+import { Animation } from '../../pages/create-account/Animation/Animation'
 
 const LoadingPage = () => (
   <div className="loading-page">
-    <LoadingAnimation />
+    <Animation
+      loop
+      name="loading-animation"
+    />
     <p>
       {'Chargement en cours…'}
     </p>
