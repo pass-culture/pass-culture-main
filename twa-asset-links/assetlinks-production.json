@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.passculture.webapp",
+      "sha256_cert_fingerprints": [
+        "C4:07:64:27:1C:CC:B3:A6:A9:5D:BE:2E:D8:3E:07:0E:7F:20:CF:0A:FF:3A:AD:97:54:C4:B5:3B:5F:63:EF:9E",
+        "20:91:22:90:5C:04:1A:7C:78:F8:AE:C3:E6:DC:F2:B6:C5:C8:4F:6E:25:61:C6:B8:47:19:A3:3A:22:F6:61:F3"
+      ]
+    }
+  }
+]

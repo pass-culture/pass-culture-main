@@ -36,6 +36,7 @@ function getServedPath(appPackageJson) {
 
 // config after eject: we're in ./config/
 module.exports = {
+  appAssetLinksDirectory: resolveApp('twa-asset-links'),
   appBuild: resolveApp('build'),
   appHtml: resolveApp('public/index.html'),
   appIndexJs: resolveApp('src/index.jsx'),
