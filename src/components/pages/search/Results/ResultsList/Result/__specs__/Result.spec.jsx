@@ -25,6 +25,7 @@ describe('components | Result', () => {
           dates: [1585484866, 1585484866],
           departementCode: 54,
           id: 'AE',
+          isDigital: false,
           label: 'Livre',
           name: 'Les fleurs du mal',
           priceMin: 8,
@@ -48,9 +49,7 @@ describe('components | Result', () => {
     const offerPrice = wrapper.findWhere(node => node.text() === 'A partir de 8 €').first()
     const offerDistance = wrapper.findWhere(node => node.text() === '900+ km').first()
     const offerMediation = wrapper.find('img')
-    expect(wrapper.prop('to')).toBe(
-      '/recherche/resultats/details/AE?mots-cles=librairie&page=1'
-    )
+    expect(wrapper.prop('to')).toBe('/recherche/resultats/details/AE?mots-cles=librairie&page=1')
     expect(offerName).toHaveLength(1)
     expect(offerLabel).toHaveLength(1)
     expect(offerDate).toHaveLength(1)
@@ -132,6 +131,18 @@ describe('components | Result', () => {
     // then
     const offerDate = wrapper.find('[data-test="result-distance-test"]')
     expect(offerDate).toHaveLength(0)
+  })
+
+  it('should render a Link component with no distance when the offer is digital', () => {
+    // given
+    props.result.offer.isDigital = true
+
+    // when
+    const wrapper = shallow(<Result {...props} />)
+
+    // then
+    const offerDistance = wrapper.find('[data-test="result-distance-test"]')
+    expect(offerDistance).toHaveLength(0)
   })
 
   it('should render default thumb if no thumb url is specified', () => {

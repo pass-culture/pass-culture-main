@@ -13,6 +13,7 @@ const Result = ({ result, geolocation, search }) => {
     dates,
     departementCode,
     id: offerId,
+    isDigital,
     isDuo,
     label,
     name,
@@ -49,7 +50,7 @@ const Result = ({ result, geolocation, search }) => {
             <h1 className="result-title">
               {name}
             </h1>
-            {geolocation && humanizedDistance && (
+            {!isDigital && geolocation && humanizedDistance && (
               <span
                 className="result-distance"
                 data-test="result-distance-test"
@@ -69,11 +70,9 @@ const Result = ({ result, geolocation, search }) => {
               {formattedDate}
             </p>
           )}
-          {canDisplayPrice && (
-            <p className="result-price">
-              {formattedPrice}
-            </p>
-          )}
+          {canDisplayPrice && <p className="result-price">
+            {formattedPrice}
+          </p>}
         </div>
       </div>
     </Link>
@@ -100,6 +99,7 @@ Result.propTypes = {
       dates: PropTypes.arrayOf(PropTypes.number),
       departementCode: PropTypes.number,
       id: PropTypes.string,
+      isDigital: PropTypes.bool,
       isDuo: PropTypes.bool,
       label: PropTypes.string,
       name: PropTypes.string,
