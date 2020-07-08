@@ -15,18 +15,18 @@ def get_application_by_detail_response(
         status: str = 'Apprenti',
 ) -> Dict:
     return {
-        'mtd_datEnreg': '04/06/2020 06:00',
-        'mtd_jeuneID': application_id,
-        'mtd_adrResid': address,
-        'mtd_datNaiss': birth_date,
-        'mtd_comResid': city,
-        'mtd_mail': email,
-        'mtd_prenom': first_name,
-        'mtd_sexe': gender,
-        'mtd_nom': last_name,
-        'mtd_codPos': postal_code,
-        'mtd_tel': phone_number,
-        'mtd_statut': status
+        'registrationDate': '04/06/2020 06:00',
+        'id': application_id,
+        'address': address,
+        'birthDate': birth_date,
+        'city': city,
+        'email': email,
+        'firstName': first_name,
+        'gender': gender,
+        'lastName': last_name,
+        'postalCode': postal_code,
+        'phoneNumber': phone_number,
+        'activity': status
     }
 
 
