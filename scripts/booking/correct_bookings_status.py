@@ -1,6 +1,6 @@
 from typing import List
 
-from models import BookingSQLEntity, Payment
+from models import BookingSQLEntity, Payment, ApiErrors
 from repository import repository
 
 EXCLUDED_TOKENS = ['2QLYYA', 'BMTUME', 'LUJ9AM', 'DA8YLU', 'Q46YHM']
@@ -9,14 +9,21 @@ EXCLUDED_TOKENS = ['2QLYYA', 'BMTUME', 'LUJ9AM', 'DA8YLU', 'Q46YHM']
 def correct_booking_status() -> None:
     print("[BOOKINGS UPDATE] START")
     bookings_to_update = get_bookings_cancelled_during_quarantine_with_payment()
+    not_updated_bookings = []
 
     for booking in bookings_to_update:
         booking.isCancelled = False
         booking.isUsed = True
         booking.dateUsed = booking.dateUsed if booking.dateUsed is not None else booking.dateCreated
+        try:
+            repository.save(booking)
+        except ApiErrors as error:
+            print(f"error : {error.errors} for booking {booking.id}")
+            not_updated_bookings.append(booking.userId)
 
-    repository.save(*bookings_to_update)
-    print(f"{len(bookings_to_update)} USERS UPDATED")
+    print(f"{len(bookings_to_update) - len(not_updated_bookings)} BOOKINGS UPDATED")
+    print(f"LIST OF USERS WITH NON UPDATED BOOKINGS")
+    print(not_updated_bookings)
     print("[BOOKINGS UPDATE] END")
 
 

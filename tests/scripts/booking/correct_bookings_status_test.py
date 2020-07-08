@@ -1,7 +1,9 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from models import BookingSQLEntity
+import pytest
+
+from models import BookingSQLEntity, ApiErrors
 from repository import repository
 from scripts.booking.correct_bookings_status import get_bookings_cancelled_during_quarantine_with_payment, \
     correct_booking_status
@@ -158,3 +160,37 @@ class CorrectBookingStatusTest:
         assert corrected_booking.cancellationDate is None
         assert corrected_booking.isUsed is True
         assert corrected_booking.dateUsed == dateused
+
+    @clean_database
+    @patch('scripts.booking.correct_bookings_status.get_bookings_cancelled_during_quarantine_with_payment')
+    def test_should_not_revert_booking_if_user_has_insufficient_funds(
+            self,
+            stub_get_bookings_cancelled_during_quarantine_with_payment,
+            app):
+        # Given
+        dateused = datetime(2020, 7, 3, 20, 4, 4)
+        beneficiary = create_user()
+        create_deposit(user=beneficiary, amount=3)
+        offerer = create_offerer()
+        venue = create_venue(offerer)
+        offer = create_offer_with_event_product(venue)
+        stock = create_stock(offer=offer, beginning_datetime=datetime(2020, 4, 16), price=10)
+        booking = create_booking(stock=stock,
+                                 user=beneficiary, is_cancelled=True,
+                                 date_created=datetime(2019, 7, 3, 20, 4, 4),
+                                 date_used=dateused,
+                                 amount=10)
+        payment = create_payment(offerer=offerer, booking=booking)
+        repository.save(payment)
+
+        stub_get_bookings_cancelled_during_quarantine_with_payment.return_value = [booking]
+
+        # When
+        correct_booking_status()
+
+        # Then
+        not_modified_booking = BookingSQLEntity.query.get(booking.id)
+        assert not_modified_booking.isCancelled is True
+        assert not_modified_booking.cancellationDate is not None
+        assert not_modified_booking.isUsed is False
+        assert not_modified_booking.dateUsed == dateused
