@@ -1,5 +1,6 @@
 @mixin navbar-colors($text-color) {
   a {
+    &,
     &:focus,
     &:hover {
       color: $text-color;
@@ -26,6 +27,7 @@ header.navbar {
   }
 
   .navbar-dropdown a {
+    &,
     &:focus,
     &:hover {
       color: $primary;
@@ -36,6 +38,7 @@ header.navbar {
     &,
     &.is-primary {
       a {
+        &,
         &:focus,
         &:hover {
           color: $primary;
