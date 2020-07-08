@@ -5,6 +5,9 @@ from models import Offer
 from utils.date import get_time_in_seconds_from_datetime
 from utils.human_ids import humanize
 
+DEFAULT_LONGITUDE_FOR_NUMERIC_OFFER = 2.409289
+DEFAULT_LATITUDE_FOR_NUMERIC_OFFER = 47.158459
+
 
 def build_object(offer: Offer) -> Dict:
     venue = offer.venue
@@ -87,8 +90,8 @@ def build_object(offer: Offer) -> Dict:
         }})
     else:
         object_to_index.update({'_geoloc': {
-            'lat': 47.158459,
-            'lng': 2.409289
+            'lat': DEFAULT_LATITUDE_FOR_NUMERIC_OFFER,
+            'lng': DEFAULT_LONGITUDE_FOR_NUMERIC_OFFER
         }})
 
     return object_to_index

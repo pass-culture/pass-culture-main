@@ -373,7 +373,7 @@ class BuildObjectTest:
         assert sorted(result['offer']['times']) == sorted([eighteen_thirty_in_seconds, twenty_one_thirty_in_seconds])
 
     @clean_database
-    def test_should_default_coordinates_when_offer_is_digital(self, app):
+    def test_should_default_coordinates_when_offer_is_numeric(self, app):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer=offerer, latitude=None, longitude=None)
@@ -383,7 +383,6 @@ class BuildObjectTest:
 
         # When
         result = build_object(offer)
-        print(result)
 
         # Then
         assert result['_geoloc']['lat'] == 47.158459
