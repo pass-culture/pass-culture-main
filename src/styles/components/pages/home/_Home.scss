@@ -17,25 +17,18 @@
   flex-direction: column;
   margin-top: rem(72px);
 
-  .title-small {
+  h1 {
     color: $white;
     font-size: $size-large;
     font-style: italic;
     margin-bottom: rem(8px);
-    padding-left: rem(10px);
-    padding-right: rem(10px);
-    text-align: center;
-  }
-
-  .title-large {
-    color: $white;
-    font-size: $size-extra-regular;
-    font-style: italic;
-    margin-bottom: rem(8px);
+    overflow: hidden;
     padding-left: rem(15px);
     padding-right: rem(15px);
+    text-overflow: ellipsis;
     text-align: center;
-    @include multiLineEllipsis(1);
+    width: 100%;
+    white-space: nowrap;
   }
 
   span {
