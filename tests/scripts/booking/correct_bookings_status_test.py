@@ -1,9 +1,7 @@
 from datetime import datetime
 from unittest.mock import patch
 
-import pytest
-
-from models import BookingSQLEntity, ApiErrors
+from models import BookingSQLEntity
 from repository import repository
 from scripts.booking.correct_bookings_status import get_bookings_cancelled_during_quarantine_with_payment, \
     correct_booking_status
