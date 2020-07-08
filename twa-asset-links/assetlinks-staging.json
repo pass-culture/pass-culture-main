@@ -5,7 +5,7 @@
     ],
     "target": {
       "namespace": "android_app",
-      "package_name": "app.passculture.testing.webapp",
+      "package_name": "app.passculture.staging.webapp",
       "sha256_cert_fingerprints": [
         "FB:AE:23:38:2C:57:E8:A0:24:81:ED:2B:34:20:A7:B2:77:44:18:26:70:5C:80:95:25:D6:43:67:27:81:8D:67",
       ]
