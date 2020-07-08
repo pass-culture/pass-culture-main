@@ -59,6 +59,22 @@
           margin: rem(15px) 0;
         }
       }
+
+      .date-of-birth-input {
+        margin-bottom: 0;
+
+        &:focus {
+          margin-bottom: 0;
+        }
+      }
+
+      .date-of-birth-input-error {
+        border: 2px solid $error;
+
+        &:focus {
+          border: 2px solid $error;
+        }
+      }
     }
   }
 
@@ -79,6 +95,26 @@
       cursor: not-allowed;
       opacity: 0.5;
       -webkit-text-fill-color: $white;
+    }
+  }
+
+  .dob-field-error {
+    align-self: flex-start;
+    color: $error;
+    display: flex;
+    font-size: rem(14px);
+    font-weight: 500;
+    margin: rem(7px) rem(15px) 0;
+
+    img {
+      height: rem(17px);
+      margin-right: rem(9px);
+      width: rem(17px);
+    }
+
+    pre {
+      font-family: inherit;
+      white-space: pre-wrap;
     }
   }
 }

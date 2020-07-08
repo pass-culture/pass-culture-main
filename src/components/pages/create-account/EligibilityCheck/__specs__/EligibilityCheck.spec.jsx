@@ -48,7 +48,7 @@ describe('eligibility check page', () => {
       )
 
       // then
-      const eligibilityTitle = wrapper.find({children: 'Créer un compte'})
+      const eligibilityTitle = wrapper.find({ children: 'Créer un compte' })
       expect(eligibilityTitle).toHaveLength(1)
     })
 
@@ -123,7 +123,7 @@ describe('eligibility check page', () => {
 
       // when
       act(() => {
-        eligibilityPostalCodeInput.invoke('onChange')({target: {value: '76530'}})
+        eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '76530' } })
       })
       wrapper.update()
 
@@ -143,7 +143,7 @@ describe('eligibility check page', () => {
 
       // when
       act(() => {
-        eligibilityDateOfBirthInput.invoke('onChange')({target: {value: '05031997'}})
+        eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05031997' } })
       })
       wrapper.update()
 
@@ -160,7 +160,6 @@ describe('eligibility check page', () => {
       checkIfDepartmentIsEligible.mockReturnValue(false)
       props.pathname = '/verification-eligibilite'
 
-
       const wrapper = mount(
         <MemoryRouter>
           <EligibilityCheck {...props} />
@@ -171,8 +170,8 @@ describe('eligibility check page', () => {
       const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
 
       act(() => {
-        eligibilityPostalCodeInput.invoke('onChange')({target: {value: '27200'}})
-        eligibilityDateOfBirthInput.invoke('onChange')({target: {value: '05/03/2002'}})
+        eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '27200' } })
+        eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/2002' } })
       })
       wrapper.update()
 
@@ -184,10 +183,12 @@ describe('eligibility check page', () => {
       })
 
       // Then
-      expect(props.historyPush).toHaveBeenCalledWith('/verification-eligibilite/departement-non-eligible')
+      expect(props.historyPush).toHaveBeenCalledWith(
+        '/verification-eligibilite/departement-non-eligible'
+      )
     })
 
-    it('should check if age is eligible based on user\'s date of birth', () => {
+    it("should check if age is eligible based on user's date of birth", () => {
       // given
       const wrapper = mount(
         <MemoryRouter>
@@ -200,8 +201,8 @@ describe('eligibility check page', () => {
       const dateOfBirth = '05/03/2002'
 
       act(() => {
-        eligibilityPostalCodeInput.invoke('onChange')({target: {value: '93800'}})
-        eligibilityDateOfBirthInput.invoke('onChange')({target: {value: dateOfBirth}})
+        eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+        eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: dateOfBirth } })
       })
       wrapper.update()
 
@@ -221,7 +222,7 @@ describe('eligibility check page', () => {
         checkIfAgeIsEligible.mockReturnValue('eligible')
       })
 
-      it('should check if department is eligible based on user\'s postal code', () => {
+      it("should check if department is eligible based on user's postal code", () => {
         // given
         const wrapper = mount(
           <MemoryRouter>
@@ -234,8 +235,8 @@ describe('eligibility check page', () => {
         const postalCode = '93800'
 
         act(() => {
-          eligibilityPostalCodeInput.invoke('onChange')({target: {value: postalCode}})
-          eligibilityDateOfBirthInput.invoke('onChange')({target: {value: '05/03/2002'}})
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: postalCode } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/2002' } })
         })
         wrapper.update()
 
@@ -264,8 +265,8 @@ describe('eligibility check page', () => {
         const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
 
         act(() => {
-          eligibilityPostalCodeInput.invoke('onChange')({target: {value: '93800'}})
-          eligibilityDateOfBirthInput.invoke('onChange')({target: {value: '05/03/2002'}})
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/2002' } })
         })
         wrapper.update()
 
@@ -294,8 +295,8 @@ describe('eligibility check page', () => {
         const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
 
         act(() => {
-          eligibilityPostalCodeInput.invoke('onChange')({target: {value: '27200'}})
-          eligibilityDateOfBirthInput.invoke('onChange')({target: {value: '05/03/2002'}})
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '27200' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/2002' } })
         })
         wrapper.update()
 
@@ -307,7 +308,9 @@ describe('eligibility check page', () => {
         })
 
         // then
-        expect(props.historyPush).toHaveBeenCalledWith('/verification-eligibilite/departement-non-eligible')
+        expect(props.historyPush).toHaveBeenCalledWith(
+          '/verification-eligibilite/departement-non-eligible'
+        )
       })
     })
 
@@ -330,8 +333,8 @@ describe('eligibility check page', () => {
         const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
 
         act(() => {
-          eligibilityPostalCodeInput.invoke('onChange')({target: {value: '93800'}})
-          eligibilityDateOfBirthInput.invoke('onChange')({target: {value: '05/03/2003'}})
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/2003' } })
         })
         wrapper.update()
 
@@ -360,8 +363,8 @@ describe('eligibility check page', () => {
         const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
 
         act(() => {
-          eligibilityPostalCodeInput.invoke('onChange')({target: {value: '93800'}})
-          eligibilityDateOfBirthInput.invoke('onChange')({target: {value: '05/03/1997'}})
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/1997' } })
         })
         wrapper.update()
 
@@ -390,8 +393,8 @@ describe('eligibility check page', () => {
         const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
 
         act(() => {
-          eligibilityPostalCodeInput.invoke('onChange')({target: {value: '93800'}})
-          eligibilityDateOfBirthInput.invoke('onChange')({target: {value: '05/03/2005'}})
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/2005' } })
         })
         wrapper.update()
 
@@ -412,7 +415,7 @@ describe('eligibility check page', () => {
         checkIfDepartmentIsEligible.mockReturnValue(true)
       })
 
-      it('should redirect to /pas-eligible when day is invalid', () => {
+      it('should display an error message when day is not between 01 and 31', () => {
         // given
         const wrapper = mount(
           <MemoryRouter>
@@ -424,23 +427,26 @@ describe('eligibility check page', () => {
         const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
 
         act(() => {
-          eligibilityPostalCodeInput.invoke('onChange')({target: {value: '93800'}})
-          eligibilityDateOfBirthInput.invoke('onChange')({target: {value: '99/02/2002'}})
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '99/02/2002' } })
         })
         wrapper.update()
 
         const eligibilityForm = wrapper.find('form')
 
         // when
-        eligibilityForm.invoke('onSubmit')({
-          preventDefault: jest.fn(),
+        act(() => {
+          eligibilityForm.invoke('onSubmit')({
+            preventDefault: jest.fn(),
+          })
         })
+        wrapper.update()
 
         // then
-        expect(props.historyPush).toHaveBeenCalledWith('/verification-eligibilite/pas-eligible')
+        expect(wrapper.find({ children: 'Le format de la date est incorrect.' })).toHaveLength(1)
       })
 
-      it('should redirect to /pas-eligible when month is invalid', () => {
+      it('should display an error message when month is not between 01 and 12', () => {
         // given
         const wrapper = mount(
           <MemoryRouter>
@@ -452,23 +458,26 @@ describe('eligibility check page', () => {
         const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
 
         act(() => {
-          eligibilityPostalCodeInput.invoke('onChange')({target: {value: '93800'}})
-          eligibilityDateOfBirthInput.invoke('onChange')({target: {value: '03/99/2002'}})
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '03/99/2002' } })
         })
         wrapper.update()
 
         const eligibilityForm = wrapper.find('form')
 
         // when
-        eligibilityForm.invoke('onSubmit')({
-          preventDefault: jest.fn(),
+        act(() => {
+          eligibilityForm.invoke('onSubmit')({
+            preventDefault: jest.fn(),
+          })
         })
+        wrapper.update()
 
         // then
-        expect(props.historyPush).toHaveBeenCalledWith('/verification-eligibilite/pas-eligible')
+        expect(wrapper.find({ children: 'Le format de la date est incorrect.' })).toHaveLength(1)
       })
 
-      it('should redirect to /pas-eligible when birth year is over current year', () => {
+      it('should display an error message when birth year is over current year', () => {
         // given
         const wrapper = mount(
           <MemoryRouter>
@@ -480,20 +489,54 @@ describe('eligibility check page', () => {
         const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
 
         act(() => {
-          eligibilityPostalCodeInput.invoke('onChange')({target: {value: '93800'}})
-          eligibilityDateOfBirthInput.invoke('onChange')({target: {value: '99/02/2021'}})
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/02/2021' } })
         })
         wrapper.update()
 
         const eligibilityForm = wrapper.find('form')
 
         // when
-        eligibilityForm.invoke('onSubmit')({
-          preventDefault: jest.fn(),
+        act(() => {
+          eligibilityForm.invoke('onSubmit')({
+            preventDefault: jest.fn(),
+          })
         })
+        wrapper.update()
 
         // then
-        expect(props.historyPush).toHaveBeenCalledWith('/verification-eligibilite/pas-eligible')
+        expect(wrapper.find({ children: 'Le format de la date est incorrect.' })).toHaveLength(1)
+      })
+
+      it('should display an error message when birth year is 0000', () => {
+        // given
+        const wrapper = mount(
+          <MemoryRouter>
+            <EligibilityCheck {...props} />
+          </MemoryRouter>
+        )
+
+        const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
+        const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+
+        act(() => {
+          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/02/0000' } })
+        })
+        wrapper.update()
+
+        const eligibilityForm = wrapper.find('form')
+
+        // when
+        act(() => {
+          eligibilityForm.invoke('onSubmit')({
+            preventDefault: jest.fn(),
+          })
+        })
+        wrapper.update()
+
+        // then
+        expect(wrapper.find({ children: 'Le format de la date est incorrect.' })).toHaveLength(1)
       })
     })
   })

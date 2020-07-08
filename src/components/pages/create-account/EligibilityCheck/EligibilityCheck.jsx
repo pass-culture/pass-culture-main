@@ -3,6 +3,7 @@ import InputMask from 'react-input-mask'
 import PropTypes from 'prop-types'
 
 import BackLink from '../../../layout/Header/BackLink/BackLink'
+import Icon from '../../../layout/Icon/Icon'
 import { checkIfDepartmentIsEligible } from '../domain/checkIfDepartmentIsEligible'
 import { checkIfAgeIsEligible } from '../domain/checkIfAgeIsEligible'
 import { eligibilityPaths } from './eligibilityPaths'
@@ -10,6 +11,7 @@ import { eligibilityPaths } from './eligibilityPaths'
 const EligibilityCheck = ({ historyPush, pathname }) => {
   const [postalCodeInputValue, setPostalCodeInputValue] = useState('')
   const [dateOfBirthInputValue, setDateOfBirthInputValue] = useState('')
+  const [hasAnErrorMessage, setHasAnErrorMessage] = useState(false)
 
   const keepNumbersOnly = string => string.replace(/[^0-9]/g, '')
 
@@ -21,6 +23,7 @@ const EligibilityCheck = ({ historyPush, pathname }) => {
   const handleDOBInputChange = useCallback(event => {
     const newValue = event.target.value
     setDateOfBirthInputValue(newValue)
+    setHasAnErrorMessage(false)
   }, [])
 
   const dateFormatRegex = RegExp('[0-9]{2}/[0-9]{2}/[0-9]{4}', 'g')
@@ -33,6 +36,13 @@ const EligibilityCheck = ({ historyPush, pathname }) => {
     return currentPathname.slice(-1) !== '/' ? currentPathname + '/' : currentPathname
   }
 
+  const checkIfDateIsValid = (birthDay, birthMonth, birthYear) => {
+    const isDateFormatValid = Date.parse(`${birthDay}-${birthMonth}-${birthDay}`)
+    const currentYear = new Date().getFullYear()
+
+    return !(!isDateFormatValid || birthYear > currentYear || birthYear === '0000')
+  }
+
   const handleSubmit = useCallback(
     event => {
       event.preventDefault()
@@ -41,23 +51,22 @@ const EligibilityCheck = ({ historyPush, pathname }) => {
       const birthDay = splittedBirthDate[0]
       const birthMonth = splittedBirthDate[1]
       const birthYear = splittedBirthDate[2]
-      const currentYear = new Date().getFullYear()
-      const isDateFormatValid = Date.parse(`${birthDay}-${birthMonth}-${birthDay}`)
 
-      if (!isDateFormatValid || birthYear > currentYear) {
-        return historyPush('/verification-eligibilite/pas-eligible')
-      }
+      if (checkIfDateIsValid(birthDay, birthMonth, birthYear)) {
+        setHasAnErrorMessage(false)
+        const ageEligibilityValue = checkIfAgeIsEligible(dateOfBirthInputValue)
 
-      const ageEligibilityValue = checkIfAgeIsEligible(dateOfBirthInputValue)
+        if (ageEligibilityValue === 'eligible') {
+          const isDepartmentEligible = checkIfDepartmentIsEligible(postalCodeInputValue)
 
-      if (ageEligibilityValue === 'eligible') {
-        const isDepartmentEligible = checkIfDepartmentIsEligible(postalCodeInputValue)
-
-        isDepartmentEligible
-          ? historyPush(currentPathName + eligibilityPaths[ageEligibilityValue])
-          : historyPush(currentPathName + 'departement-non-eligible')
+          isDepartmentEligible
+            ? historyPush(currentPathName + eligibilityPaths[ageEligibilityValue])
+            : historyPush(currentPathName + 'departement-non-eligible')
+        } else {
+          historyPush(currentPathName + eligibilityPaths[ageEligibilityValue])
+        }
       } else {
-        historyPush(currentPathName + eligibilityPaths[ageEligibilityValue])
+        setHasAnErrorMessage(true)
       }
     },
     [postalCodeInputValue, dateOfBirthInputValue]
@@ -88,17 +97,28 @@ const EligibilityCheck = ({ historyPush, pathname }) => {
           <label>
             {'Quelle est ta date de naissance ?'}
             <InputMask
+              className={`date-of-birth-input ${
+                hasAnErrorMessage ? 'date-of-birth-input-error' : ''
+              }`}
               inputMode="numeric"
               mask="99/99/9999"
               onChange={handleDOBInputChange}
               placeholder="JJ/MM/AAAA"
               value={dateOfBirthInputValue}
             />
+            {hasAnErrorMessage && (
+              <div className="dob-field-error">
+                <Icon svg="ico-error" />
+                <pre>
+                  {'Le format de la date est incorrect.'}
+                </pre>
+              </div>
+            )}
           </label>
         </div>
         <input
           className="eligibility-submit"
-          disabled={isMissingField}
+          disabled={isMissingField || hasAnErrorMessage}
           type="submit"
           value="Vérifier mon éligibilité"
         />
