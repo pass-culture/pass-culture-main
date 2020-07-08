@@ -1,0 +1,12 @@
+.home-wrapper {
+  background-attachment: fixed;
+  background-image: url('/home-background.png');
+  background-position: top;
+  background-repeat: no-repeat;
+  background-size: 100% rem(280px);
+  background-color: $white;
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}

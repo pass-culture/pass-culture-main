@@ -18,6 +18,7 @@ describe('should status bar be colored', () => {
     it('should return true', () => {
       // given
       const pathsWithPinkHeader = [
+        '/accueil',
         '/recherche/criteres-categorie',
         '/recherche/criteres-localisation',
         '/recherche/criteres-localisation/place',

@@ -24,6 +24,8 @@ import TypeFormContainer from '../pages/typeform/TypeformContainer'
 import Debug from '../pages/debug/DebugPage'
 
 import { IS_DEBUG_PAGE_ACTIVE } from '../../utils/config'
+import HomeContainer from '../pages/home/HomeContainer'
+import { IcoNavHome } from '../layout/NavBar/Icons/IcoNavHome'
 
 function redirectToBeta() {
   return <Redirect to="/beta" />
@@ -130,6 +132,14 @@ const routes = [
       '/:cancellation(annulation)?' +
       '/:confirmation(confirmation)?',
     title: 'Recherche',
+  },
+  {
+    component: HomeContainer,
+    featureName: 'WEBAPP_HOMEPAGE',
+    icon: IcoNavHome,
+    path: '/accueil',
+    to: '/accueil',
+    title: 'Accueil',
   },
   {
     component: MyBookingsContainer,
