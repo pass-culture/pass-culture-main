@@ -7,12 +7,14 @@ import { checkIfDepartmentIsEligible } from '../domain/checkIfDepartmentIsEligib
 import { checkIfAgeIsEligible } from '../domain/checkIfAgeIsEligible'
 import { eligibilityPaths } from './eligibilityPaths'
 
-const EligibilityCheck = ({historyPush, pathname}) => {
+const EligibilityCheck = ({ historyPush, pathname }) => {
   const [postalCodeInputValue, setPostalCodeInputValue] = useState('')
   const [dateOfBirthInputValue, setDateOfBirthInputValue] = useState('')
 
+  const keepNumbersOnly = string => string.replace(/[^0-9]/g, '')
+
   const handlePostalCodeInputChange = useCallback(event => {
-    const newValue = event.target.value
+    let newValue = keepNumbersOnly(event.target.value)
     setPostalCodeInputValue(newValue)
   }, [])
 
@@ -21,7 +23,9 @@ const EligibilityCheck = ({historyPush, pathname}) => {
     setDateOfBirthInputValue(newValue)
   }, [])
 
-  const isMissingField = postalCodeInputValue.length < 5 || dateOfBirthInputValue.length < 10
+  const dateFormatRegex = RegExp('[0-9]{2}/[0-9]{2}/[0-9]{4}', 'g')
+  const isMissingField =
+    postalCodeInputValue.length < 5 || !dateFormatRegex.test(dateOfBirthInputValue)
 
   const getCurrentPathName = () => {
     const currentPathname = pathname
@@ -72,12 +76,12 @@ const EligibilityCheck = ({historyPush, pathname}) => {
         <div>
           <label>
             {'Quel est ton code postal de résidence ?'}
-            <InputMask
+            <input
               inputMode="numeric"
-              mask="99999"
-              maskPlaceholder={null}
+              maxLength="5"
               onChange={handlePostalCodeInputChange}
               placeholder="Ex: 75017"
+              type="text"
               value={postalCodeInputValue}
             />
           </label>
@@ -86,7 +90,6 @@ const EligibilityCheck = ({historyPush, pathname}) => {
             <InputMask
               inputMode="numeric"
               mask="99/99/9999"
-              maskPlaceholder={null}
               onChange={handleDOBInputChange}
               placeholder="JJ/MM/AAAA"
               value={dateOfBirthInputValue}
