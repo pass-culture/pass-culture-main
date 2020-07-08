@@ -71,10 +71,12 @@
     cursor: pointer;
     font-size: rem(16px);
     font-weight: bold;
+    outline: none;
     padding: rem(15px) 0;
     width: rem(300px);
 
     &:disabled {
+      cursor: not-allowed;
       opacity: 0.5;
       -webkit-text-fill-color: $white;
     }
