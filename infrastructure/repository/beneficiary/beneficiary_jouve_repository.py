@@ -35,7 +35,7 @@ class BeneficiaryJouveRepository(BeneficiaryPreSubscriptionRepository):
 
         if response.status_code != 200:
             raise ApiJouveException(
-                'Error getting API jouve authentication token')
+                f'Error {response.status_code} getting API jouve authentication token')
 
         response_json = response.json()
         return response_json['Value']
@@ -52,6 +52,6 @@ class BeneficiaryJouveRepository(BeneficiaryPreSubscriptionRepository):
 
         if response.status_code != 200:
             raise ApiJouveException(
-                f'Error getting API jouve GetJouveByID with id: {application_id}')
+                f'Error {response.status_code} getting API jouve GetJouveByID with id: {application_id}')
 
         return beneficiary_jouve_converter.to_domain(response.json())

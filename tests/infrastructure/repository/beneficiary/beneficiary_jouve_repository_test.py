@@ -91,7 +91,7 @@ def test_raise_exception_when_password_is_invalid(stubed_requests_post):
         BeneficiaryJouveRepository().get_application_by(application_id)
 
     # Then
-    assert str(api_jouve_exception.value) == 'Error getting API jouve authentication token'
+    assert str(api_jouve_exception.value) == 'Error 400 getting API jouve authentication token'
 
 
 @patch('infrastructure.repository.beneficiary.beneficiary_jouve_repository.requests.post')
@@ -117,4 +117,4 @@ def test_raise_exception_when_token_is_invalid(stubed_requests_post):
         BeneficiaryJouveRepository().get_application_by(application_id)
 
     # Then
-    assert str(api_jouve_exception.value) == 'Error getting API jouve GetJouveByID with id: 5'
+    assert str(api_jouve_exception.value) == 'Error 400 getting API jouve GetJouveByID with id: 5'
