@@ -44,7 +44,7 @@
   right: rem(20px);
 
   .hw-account-image {
-    border: 1px solid $white;
+    border: rem(1px) solid $white;
     border-radius: 50%;
     height: rem(40px);
     width: rem(40px);
