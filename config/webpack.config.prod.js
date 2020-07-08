@@ -84,13 +84,13 @@ module.exports = {
           .concat(
             process.env.HAS_WORKERS
               ? [
-                {
-                  loader: 'worker-loader',
-                  options: { inline: true },
-                  test: /index\.(.*)\.worker\.js$/,
-                },
-              ]
-              : [],
+                  {
+                    loader: 'worker-loader',
+                    options: { inline: true },
+                    test: /index\.(.*)\.worker\.js$/,
+                  },
+                ]
+              : []
           )
           .concat([
             {
@@ -136,20 +136,22 @@ module.exports = {
       ['bmp', 'pdf', 'jpg', 'jpeg', 'png', 'json'].map(extension => ({
         from: path.resolve(`${paths.appPublic}/**/*.${extension}`),
         to: path.resolve(`${paths.appBuild}/**/*.${extension}`),
-      })),
+      }))
     ),
-    new CopyWebpackPlugin(
-      [{
-        from: function () {
+    new CopyWebpackPlugin([
+      {
+        from: (function() {
           if (process.env.ENVIRONMENT_NAME === 'production') {
             return path.resolve(`${paths.appAssetLinksDirectory}/assetlinks-production.json`)
-          } else {
+          } else if (process.env.ENVIRONMENT_NAME === 'staging') {
             return path.resolve(`${paths.appAssetLinksDirectory}/assetlinks-staging.json`)
+          } else if (process.env.ENVIRONMENT_NAME === 'testing') {
+            return path.resolve(`${paths.appAssetLinksDirectory}/assetlinks-testing.json`)
           }
-        }(),
+        })(),
         to: path.resolve(`${paths.appBuild}/.well-known/assetlinks.json`),
-      }],
-    ),
+      },
+    ]),
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.appHtml,
@@ -206,7 +208,7 @@ module.exports = {
     },
     extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx'],
     modules: ['node_modules', paths.appNodeModules].concat(
-      process.env.NODE_PATH.split(path.delimiter).filter(Boolean),
+      process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
     ),
     plugins: [new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson])],
   },

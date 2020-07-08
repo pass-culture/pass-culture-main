@@ -5,9 +5,9 @@
     ],
     "target": {
       "namespace": "android_app",
-      "package_name": "app.passculture.webapp",
+      "package_name": "app.passculture.staging.webapp",
       "sha256_cert_fingerprints": [
-        "C4:07:64:27:1C:CC:B3:A6:A9:5D:BE:2E:D8:3E:07:0E:7F:20:CF:0A:FF:3A:AD:97:54:C4:B5:3B:5F:63:EF:9E",
+        "BB:14:2E:15:DE:C9:22:EA:4B:1D:24:BC:8A:10:3C:A5:DC:76:0F:32:B1:90:3D:17:EA:AB:EF:44:A3:A9:07:60",
       ]
     }
   }
