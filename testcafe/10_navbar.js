@@ -35,8 +35,18 @@ test('je peux naviguer vers la recherche', async t => {
     .eql(`${ROOT_PATH}recherche`)
 })
 
+test('je peux naviguer vers la page d\'accueil', async t => {
+  const navBarSearchLink = navBar.nth(2)
+  await t
+    .expect(navBarSearchLink.exists)
+    .ok()
+    .click(navBarSearchLink)
+    .expect(getPageUrl())
+    .eql(`${ROOT_PATH}accueil`)
+})
+
 test('je peux naviguer vers mes réservations', async t => {
-  const navBarBookingsLink = navBar.nth(2)
+  const navBarBookingsLink = navBar.nth(3)
   await t
     .expect(navBarBookingsLink.exists)
     .ok()
@@ -46,7 +56,7 @@ test('je peux naviguer vers mes réservations', async t => {
 })
 
 test('je peux naviguer vers les favoris', async t => {
-  const navBarFavoritesLink = navBar.nth(3)
+  const navBarFavoritesLink = navBar.nth(4)
   await t
     .expect(navBarFavoritesLink.exists)
     .ok()
@@ -56,7 +66,7 @@ test('je peux naviguer vers les favoris', async t => {
 })
 
 test('je peux naviguer vers mon profil', async t => {
-  const navBarProfileLink = navBar.nth(4)
+  const navBarProfileLink = navBar.nth(5)
   await t
     .expect(navBarProfileLink.exists)
     .ok()
