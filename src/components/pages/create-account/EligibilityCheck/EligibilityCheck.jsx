@@ -1,65 +1,33 @@
-import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
+import InputMask from 'react-input-mask'
+import PropTypes from 'prop-types'
 
 import BackLink from '../../../layout/Header/BackLink/BackLink'
-import { checkIfAgeIsEligible } from '../domain/checkIfAgeIsEligible'
 import { checkIfDepartmentIsEligible } from '../domain/checkIfDepartmentIsEligible'
+import { checkIfAgeIsEligible } from '../domain/checkIfAgeIsEligible'
 import { eligibilityPaths } from './eligibilityPaths'
 
-const EligibilityCheck = ({ historyPush, pathname }) => {
+const EligibilityCheck = ({historyPush, pathname}) => {
   const [postalCodeInputValue, setPostalCodeInputValue] = useState('')
   const [dateOfBirthInputValue, setDateOfBirthInputValue] = useState('')
+
+  const handlePostalCodeInputChange = useCallback(event => {
+    const newValue = event.target.value
+    setPostalCodeInputValue(newValue)
+  }, [])
+
+  const handleDOBInputChange = useCallback(event => {
+    const newValue = event.target.value
+    setDateOfBirthInputValue(newValue)
+  }, [])
+
+  const isMissingField = postalCodeInputValue.length < 5 || dateOfBirthInputValue.length < 10
 
   const getCurrentPathName = () => {
     const currentPathname = pathname
 
     return currentPathname.slice(-1) !== '/' ? currentPathname + '/' : currentPathname
   }
-
-  const addSlashToBirthDate = birthDate => {
-    const fullDateLength = 8
-    const dayDateLength = 2
-    const monthDateLength = 4
-    if (birthDate.length < dayDateLength) {
-      return birthDate
-    }
-    if (birthDate.length >= dayDateLength && birthDate.length < monthDateLength) {
-      return birthDate[0] + birthDate[1] + '/' + birthDate.slice(2)
-    }
-    if (birthDate.length >= monthDateLength && birthDate.length <= fullDateLength) {
-      return (
-        birthDate[0] + birthDate[1] + '/' + birthDate[2] + birthDate[3] + '/' + birthDate.slice(4)
-      )
-    }
-  }
-
-  const keepNumbersOnly = string => string.replace(/[^0-9]/g, '')
-
-  const sanitizeBirthDateInputValue = event => {
-    const previousValueLastChar = dateOfBirthInputValue.slice(-1)
-    let newValue = keepNumbersOnly(event.target.value)
-    if (previousValueLastChar === '/' && event.nativeEvent.inputType === 'deleteContentBackward') {
-      newValue = dateOfBirthInputValue.slice(0, -2)
-    }
-
-    return newValue.replace(/\//g, '')
-  }
-
-  const handlePostalCodeInputChange = useCallback(
-    event => {
-      let newValue = keepNumbersOnly(event.target.value)
-      setPostalCodeInputValue(newValue)
-    },
-    [postalCodeInputValue]
-  )
-
-  const handleBirthDateChange = useCallback(
-    event => {
-      const sanitizedNewValue = sanitizeBirthDateInputValue(event)
-      setDateOfBirthInputValue(addSlashToBirthDate(sanitizedNewValue))
-    },
-    [dateOfBirthInputValue]
-  )
 
   const handleSubmit = useCallback(
     event => {
@@ -91,8 +59,6 @@ const EligibilityCheck = ({ historyPush, pathname }) => {
     [postalCodeInputValue, dateOfBirthInputValue]
   )
 
-  const isMissingField = postalCodeInputValue.length < 5 || dateOfBirthInputValue.length < 10
-
   return (
     <main className="eligibility-check-page">
       <BackLink backTo="/beta" />
@@ -106,9 +72,10 @@ const EligibilityCheck = ({ historyPush, pathname }) => {
         <div>
           <label>
             {'Quel est ton code postal de résidence ?'}
-            <input
+            <InputMask
               inputMode="numeric"
-              maxLength="5"
+              mask="99999"
+              maskPlaceholder={null}
               onChange={handlePostalCodeInputChange}
               placeholder="Ex: 75017"
               value={postalCodeInputValue}
@@ -116,10 +83,11 @@ const EligibilityCheck = ({ historyPush, pathname }) => {
           </label>
           <label>
             {'Quelle est ta date de naissance ?'}
-            <input
+            <InputMask
               inputMode="numeric"
-              maxLength="10"
-              onChange={handleBirthDateChange}
+              mask="99/99/9999"
+              maskPlaceholder={null}
+              onChange={handleDOBInputChange}
               placeholder="JJ/MM/AAAA"
               value={dateOfBirthInputValue}
             />
