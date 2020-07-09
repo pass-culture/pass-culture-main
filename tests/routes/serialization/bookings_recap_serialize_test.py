@@ -402,3 +402,48 @@ class SerializeBookingRecapHistoryTest:
             },
         ]
         assert results['bookings_recap'][0]['booking_status_history'] == expected_booking_recap_history
+
+    def test_should_return_booking_recap_history_with_empty_validated_date_when_booking_was_not_validated_but_reimbursed(self, app:fixture):
+        # Given
+        booking_date = datetime(2020, 1, 1, 10, 0, 0)
+        bookings_recap = [
+            create_domain_thing_booking_recap(
+                offer_name="Martine a la playa",
+                offer_isbn='987654345678',
+                beneficiary_firstname="Hari",
+                beneficiary_lastname="Seldon",
+                beneficiary_email="hari.seldon@example.com",
+                booking_date=booking_date,
+                booking_token="LUNE",
+                booking_is_used=False,
+                booking_is_reimbursed=True,
+                payment_date=datetime(2020, 5, 3, 10, 0),
+                date_used=None
+            )
+        ]
+        bookings_recap_paginated_response = BookingsRecapPaginated(
+            bookings_recap=list(bookings_recap),
+            page=0,
+            pages=1,
+            total=2
+        )
+
+        # When
+        results = serialize_bookings_recap_paginated(bookings_recap_paginated_response)
+
+        # Then
+        expected_booking_recap_history = [
+            {
+                'status': 'booked',
+                'date': '2020-01-01T10:00:00',
+            },
+            {
+                'status': 'validated',
+                'date': None,
+            },
+            {
+                'status': 'reimbursed',
+                'date': '2020-05-03T10:00:00',
+            }
+        ]
+        assert results['bookings_recap'][0]['booking_status_history'] == expected_booking_recap_history
