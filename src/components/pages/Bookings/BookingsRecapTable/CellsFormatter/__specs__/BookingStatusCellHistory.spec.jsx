@@ -71,4 +71,25 @@ describe('cellsFormatter | BookingsStatusCellHistory', () => {
     expect(disc.hasClass('bs-history-reimbursed')).toStrictEqual(true)
     expect(status.text()).toBe('remboursé : 06/01/2020')
   })
+
+  it('should render a "-" when the date is not available', () => {
+    // Given
+    const props = {
+      bookingStatusHistory: [
+        {
+          status: 'reimbursed',
+          date: null,
+        },
+      ],
+    }
+
+    // When
+    const wrapper = mount(<BookingStatusCellHistory {...props} />)
+
+    // Then
+    const status = wrapper.find('li')
+    const disc = status.find('span')
+    expect(disc.hasClass('bs-history-reimbursed')).toStrictEqual(true)
+    expect(status.text()).toBe('remboursé : -')
+  })
 })
