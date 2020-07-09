@@ -1,0 +1,39 @@
+.offer-tile-wrapper {
+  display: inline-block;
+  width: 100%;
+  margin-right: 3.5%;
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  a {
+    color: black;
+    text-decoration: none;
+    width: 90%;
+  }
+
+  p {
+    font-size: $size-small;
+    font-weight: $weight-medium;
+  }
+
+  span {
+    color: $grey-dark;
+    font-size: $size-small;
+  }
+}
+
+.otw-image-wrapper {
+  width: 100%;
+
+  img {
+    box-shadow: 0 rem(2px) rem(4px) 0 rgba(0, 0, 0, 0.1);
+    background-color: $grey;
+    border-radius: 8px;
+    height: rem(150px);
+    object-fit: cover;
+    margin-bottom: rem(5px);
+    width: 100%;
+  }
+}

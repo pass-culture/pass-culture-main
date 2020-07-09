@@ -1,40 +1,13 @@
 .one-item-medium {
-  align-items: center;
-  display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
   margin-bottom: rem(50px);
+  overflow-x: scroll;
+  padding-left: rem(20px);
+  padding-right: rem(20px);
+  white-space:nowrap;
+
+  -webkit-overflow-scrolling: touch;
 
   &::-webkit-scrollbar {
     display: none;
-  }
-
-  a {
-    color: black;
-    text-decoration: none;
-  }
-
-  li {
-    margin-left: rem(20px);
-  }
-
-  img {
-    box-shadow: 0 rem(2px) rem(4px) 0 rgba(0, 0, 0, 0.1);
-    background-color: $grey;
-    border-radius: 8px;
-    height: rem(150px);
-    margin-bottom: rem(5px);
-    width: rem(330px);
-  }
-
-  p {
-    font-size: $size-small;
-    font-weight: $weight-medium;
-  }
-
-  span {
-    color: $grey-dark;
-    font-size: $size-small;
   }
 }

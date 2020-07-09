@@ -11,12 +11,17 @@ const OfferTile = ({ hit }) => {
   const formattedPrice = formatResultPrice(offer.priceMin, offer.priceMax, offer.isDuo)
 
   return (
-    <li key={offer.id}>
+    <li
+      className="offer-tile-wrapper"
+      key={offer.id}
+    >
       <Link to={`/offre/details/${offer.id}`}>
-        <img
-          alt="Détails de l'offre"
-          src={offer.thumbUrl ? offer.thumbUrl : DEFAULT_THUMB_URL}
-        />
+        <div className="otw-image-wrapper">
+          <img
+            alt="Détails de l'offre"
+            src={offer.thumbUrl ? offer.thumbUrl : DEFAULT_THUMB_URL}
+          />
+        </div>
         <p>
           {venue.name}
         </p>
