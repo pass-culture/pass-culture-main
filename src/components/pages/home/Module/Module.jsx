@@ -25,8 +25,11 @@ class Module extends Component {
     const { hits } = this.state
 
     return (
-      <div>
+      <div className="module-wrapper">
         <ul className={display.layout}>
+          <h1>
+            {display.title}
+          </h1>
           {hits.length > 0 && hits.map(hit => (
             <OfferTile
               hit={hit}

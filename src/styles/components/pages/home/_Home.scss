@@ -2,7 +2,7 @@
   background-attachment: fixed;
   background-image: url('/home-background.png');
   background-repeat: no-repeat;
-  background-size: 100% rem(250px);
+  background-size: 100% rem(280px);
   background-color: $white;
   height: 100%;
 }
@@ -11,7 +11,7 @@
   align-items: center;
   display: flex;
   flex-direction: column;
-  margin-bottom: rem(50px);
+  margin-bottom: rem(30px);
 
   h1 {
     color: $white;
@@ -29,7 +29,7 @@
 
   span {
     color: $white;
-    font-size: $size-regular;
+    font-size: $size-extra-regular;
     font-weight: $weight-regular;
   }
 }

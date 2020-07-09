@@ -224,4 +224,37 @@ describe('src | components | Module', () => {
     const firstOfferPrice = firstOffer.find({ children: '33 €'})
     expect(firstOfferPrice).toHaveLength(1)
   })
+
+  it('should render a pane with pane title', async () => {
+    // given
+    fetchAlgolia.mockReturnValue(
+      new Promise(resolve => {
+        resolve({
+          hits: [offerOne],
+          nbHits: 0,
+          nbPages: 0,
+          page: 0,
+        })
+      })
+    )
+
+    const props = {
+      module: new Offers({
+        algolia,
+        display,
+      }),
+    }
+
+    // when
+    const wrapper = await mount(
+      <MemoryRouter>
+        <Module {...props} />
+      </MemoryRouter>
+    )
+    await wrapper.update()
+
+    // then
+    const title = wrapper.find(Module).find({ children : 'Les offres près de chez toi!'})
+    expect(title).toHaveLength(1)
+  })
 })

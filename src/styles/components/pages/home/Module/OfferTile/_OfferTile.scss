@@ -4,7 +4,7 @@
   margin-right: 3.5%;
 
   &:last-child {
-    margin-right: 0;
+    margin-right: rem(20px);
   }
 
   a {
@@ -14,13 +14,13 @@
   }
 
   p {
-    font-size: $size-small;
+    font-size: $size-medium;
     font-weight: $weight-medium;
   }
 
   span {
     color: $grey-dark;
-    font-size: $size-small;
+    font-size: $size-medium;
   }
 }
 

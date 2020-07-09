@@ -1,13 +1,23 @@
-.one-item-medium {
-  margin-bottom: rem(50px);
-  overflow-x: scroll;
-  padding-left: rem(20px);
-  padding-right: rem(20px);
-  white-space:nowrap;
+.module-wrapper {
+  .one-item-medium {
+    margin-bottom: rem(20px);
+    overflow-x: scroll;
+    padding-left: rem(20px);
+    padding-right: rem(20px);
+    white-space: nowrap;
 
-  -webkit-overflow-scrolling: touch;
+    -webkit-overflow-scrolling: touch;
 
-  &::-webkit-scrollbar {
-    display: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    h1 {
+      color: $white;
+      font-size: $size-extra-regular;
+      font-weight: $weight-medium;
+      margin-bottom: rem(15px);
+    }
   }
 }
+
