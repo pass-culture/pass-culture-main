@@ -9,7 +9,6 @@ import Notifications from '../../components/layout/Notifications/Notifications'
 import OverlayContainer from '../../components/layout/Overlay/OverlayContainer'
 import SharePopinContainer from '../../components/layout/Share/SharePopinContainer'
 import SplashContainer from '../../components/layout/Splash/SplashContainer'
-import { getBrowserRoutes } from '../../components/router/getBrowserRoutes'
 import routes from '../../components/router/routes'
 import { IS_DEV, PROJECT_NAME } from '../../utils/config'
 import RedirectToMaintenance from './RedirectToMaintenance/RedirectToMaintenance'
@@ -24,7 +23,7 @@ export const App = ({ children, location, isMaintenanceActivated }) => {
   if (isMaintenanceActivated) {
     return <RedirectToMaintenance />
   } else {
-    const currentRouteObj = getCurrentRouteObjectByPath(getBrowserRoutes(routes), location.pathname)
+    const currentRouteObj = getCurrentRouteObjectByPath(routes, location.pathname)
     const pageTitle = getPageTitle(currentRouteObj)
 
     return (

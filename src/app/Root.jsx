@@ -6,7 +6,6 @@ import { PersistGate } from 'redux-persist/integration/react'
 import MatomoContainer from '../components/matomo/MatomoContainer'
 import NotMatch from '../components/pages/not-match/NotMatch'
 import FeaturedRouteContainer from '../components/router/FeaturedRouteContainer'
-import { getBrowserRoutes } from '../components/router/getBrowserRoutes'
 import routes from '../components/router/routes'
 import Tracking from '../components/tracking/Tracking'
 import { configureStore } from '../utils/store'
@@ -24,7 +23,7 @@ const Root = () => (
         <BrowserRouter>
           <AppContainer>
             <Switch>
-              {getBrowserRoutes(routes).map(route => (
+              {routes.map(route => (
                 <FeaturedRouteContainer
                   {...route}
                   key={route.path}

@@ -33,54 +33,73 @@ function redirectToBeta() {
 
 const routes = [
   {
+    exact: true,
     path: '/',
     render: redirectToBeta,
+    sensitive: true,
   },
   {
     component: BetaPageContainer,
+    exact: true,
     path: '/beta',
+    sensitive: true,
     title: 'Bienvenue dans l’avant-première du pass Culture',
   },
   {
     component: ActivationContainer,
+    exact: true,
     path: '/activation/:token([A-Z0-9]+|error|lien-invalide)',
+    sensitive: true,
     title: 'Activation',
   },
   {
     component: SignInContainer,
+    exact: true,
     path: '/connexion',
+    sensitive: true,
     title: 'Connexion',
   },
   {
     component: SignupContainer,
+    exact: true,
     featureName: 'WEBAPP_SIGNUP',
     path: '/inscription',
+    sensitive: true,
     title: 'Inscription',
   },
   {
     component: CreateAccount,
+    exact: true,
     path:
       '/verification-eligibilite' +
       '/(eligible|departement-non-eligible|pas-eligible|bientot|trop-tot|gardons-contact)?',
+    sensitive: true,
     title: 'Eligibilité',
   },
   {
     component: TutorialsContainer,
+    exact: true,
     path: '/bienvenue',
+    sensitive: true,
     title: 'Bienvenue',
   },
   {
     component: ForgotPassword,
+    exact: true,
     path: '/mot-de-passe-perdu/(succes)?',
+    sensitive: true,
     title: 'Mot de passe perdu',
   },
   {
     component: TypeFormContainer,
+    exact: true,
     path: '/typeform',
+    sensitive: true,
     title: 'Questionnaire',
   },
   {
     component: OfferContainer,
+    exact: true,
     path:
       '/offre' +
       '/:details(details|transition)?' +
@@ -90,6 +109,7 @@ const routes = [
       '/:bookingId([A-Z0-9]+)?' +
       '/:cancellation(annulation)?' +
       '/:confirmation(confirmation)?',
+    sensitive: true,
     title: 'Détail de l’offre',
   },
   /* ---------------------------------------------------
@@ -101,6 +121,7 @@ const routes = [
    ---------------------------------------------------  */
   {
     component: DiscoveryContainer,
+    exact: true,
     icon: IcoNavDiscovery,
     to: '/decouverte',
     path:
@@ -112,10 +133,12 @@ const routes = [
       '/:bookingId([A-Z0-9]+)?' +
       '/:cancellation(annulation)?' +
       '/:confirmation(confirmation)?',
+    sensitive: true,
     title: 'Les offres',
   },
   {
     component: SearchContainer,
+    exact: true,
     featureName: 'SEARCH_ALGOLIA',
     icon: IcoNavSearch,
     to: '/recherche',
@@ -131,6 +154,7 @@ const routes = [
       '/:bookingId([A-Z0-9]+)?' +
       '/:cancellation(annulation)?' +
       '/:confirmation(confirmation)?',
+    sensitive: true,
     title: 'Recherche',
   },
   {
@@ -143,6 +167,7 @@ const routes = [
   },
   {
     component: MyBookingsContainer,
+    exact: true,
     icon: IcoNavBookings,
     to: '/reservations',
     path:
@@ -153,10 +178,12 @@ const routes = [
       '/:cancellation(annulation)?' +
       '/:confirmation(confirmation)?' +
       '/:qrcode(qrcode)?',
+    sensitive: true,
     title: 'Réservations',
   },
   {
     component: MyFavoritesContainer,
+    exact: true,
     icon: IcoNavFavorites,
     to: '/favoris',
     path:
@@ -168,13 +195,16 @@ const routes = [
       '/:bookingId([A-Z0-9]+)?' +
       '/:cancellation(annulation)?' +
       '/:confirmation(confirmation)?',
+    sensitive: true,
     title: 'Favoris',
   },
   {
     component: ProfileContainer,
+    exact: true,
     icon: IcoNavProfile,
     to: '/profil',
     path: '/profil/:view(mot-de-passe|informations|mentions-legales)?',
+    sensitive: true,
     title: 'Mon compte',
   },
 ]
@@ -182,10 +212,12 @@ const routes = [
 if (IS_DEBUG_PAGE_ACTIVE) {
   routes.push({
     component: Debug,
+    exact: true,
     icon: IcoNavDebug,
     to: '/errors',
     path: '/errors',
-    title: "DEV | Gestion d'erreur",
+    sensitive: true,
+    title: "DEV | Gestion d'erreur",
   })
 }
 
