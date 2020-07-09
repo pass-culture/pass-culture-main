@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src | components | pages | NotMatch should match the snapshot 1`] = `
+exports[`notMatch should match the snapshot 1`] = `
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <NotMatch
@@ -24,7 +24,7 @@ ShallowWrapper {
     "props": Object {
       "children": Array [
         <h3>
-          404 Not found undefined
+          404 Not found /
         </h3>,
         <p>
           Vous allez être automatiquement redirigé dans 1 secondes.
@@ -39,10 +39,10 @@ ShallowWrapper {
         "key": undefined,
         "nodeType": "host",
         "props": Object {
-          "children": "404 Not found undefined",
+          "children": "404 Not found /",
         },
         "ref": null,
-        "rendered": "404 Not found undefined",
+        "rendered": "404 Not found /",
         "type": "h3",
       },
       Object {
@@ -67,7 +67,7 @@ ShallowWrapper {
       "props": Object {
         "children": Array [
           <h3>
-            404 Not found undefined
+            404 Not found /
           </h3>,
           <p>
             Vous allez être automatiquement redirigé dans 1 secondes.
@@ -82,10 +82,10 @@ ShallowWrapper {
           "key": undefined,
           "nodeType": "host",
           "props": Object {
-            "children": "404 Not found undefined",
+            "children": "404 Not found /",
           },
           "ref": null,
-          "rendered": "404 Not found undefined",
+          "rendered": "404 Not found /",
           "type": "h3",
         },
         Object {

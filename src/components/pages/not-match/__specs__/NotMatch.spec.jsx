@@ -1,8 +1,9 @@
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
+
 import NotMatch from '../NotMatch'
 
-describe('src | components | pages | NotMatch', () => {
+describe('notMatch', () => {
   let props
 
   beforeEach(() => {
