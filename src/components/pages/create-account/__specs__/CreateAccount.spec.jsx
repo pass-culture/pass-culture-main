@@ -19,6 +19,7 @@ describe('create account page', () => {
     props = {
       location: { pathname: '/verification-eligibilite' },
       history: createMemoryHistory(),
+      match: { path: '/verification-eligibilite' },
     }
   })
 

@@ -57,11 +57,7 @@ const routes = [
   },
   {
     component: CreateAccount,
-    exact: true,
-    path:
-      '/verification-eligibilite' +
-      '/(eligible|departement-non-eligible|pas-eligible|bientot|trop-tot|gardons-contact)?',
-    sensitive: true,
+    path: '/verification-eligibilite',
     title: 'Eligibilité',
   },
   {
