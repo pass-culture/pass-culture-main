@@ -33,7 +33,7 @@ describe('components | FormFooter', () => {
           className: 'flex-1 my-class',
           disabled: false,
           id: 'my-id',
-          to: 'my-url'
+          to: 'my-url',
         })
       })
 
@@ -63,7 +63,7 @@ describe('components | FormFooter', () => {
           className: 'flex-1 my-class',
           disabled: false,
           id: 'my-id',
-          to: 'my-url'
+          to: 'my-url',
         })
       })
     })
@@ -81,7 +81,7 @@ describe('components | FormFooter', () => {
             title: 'my-title',
             url: 'my-url',
           },
-          submit: null
+          submit: null,
         }
 
         // when
@@ -95,21 +95,18 @@ describe('components | FormFooter', () => {
           className: 'flex-1 my-class',
           href: 'my-url',
           id: 'my-id',
-          'onClick': expect.any(Function),
-          'onKeyPress': expect.any(Function),
+          onClick: expect.any(Function),
+          onKeyPress: expect.any(Function),
           role: 'button',
           tabIndex: '0',
           target: '_blank',
-          title: 'my-title'
+          title: 'my-title',
         })
       })
 
-      it('should trigger tracking event when click on link and current location matches', () => {
+      it('should trigger tracker event when click on link when provided', () => {
         // given
-        const mock = window.gtag_report_conversion = jest.fn()
-        delete window.location
-        const url = 'https://app.passculture.beta.gouv.fr/beta'
-        window.location = { href: url }
+        const trackerMock = jest.fn()
         const props = {
           cancel: null,
           className: null,
@@ -118,9 +115,10 @@ describe('components | FormFooter', () => {
             id: 'my-id',
             label: 'my-label',
             title: 'my-title',
+            tracker: trackerMock,
             url: 'my-url',
           },
-          submit: null
+          submit: null,
         }
         const wrapper = shallow(<FormFooter {...props} />)
         const externalLink = wrapper.find('a')
@@ -129,35 +127,7 @@ describe('components | FormFooter', () => {
         externalLink.simulate('click')
 
         // then
-        expect(mock).toHaveBeenCalledWith()
-      })
-
-      it('should not trigger tracking event when click on link and current location does not match', () => {
-        // given
-        const mock = window.gtag_report_conversion = jest.fn()
-        delete window.location
-        const url = 'fake-url'
-        window.location = { href: url }
-        const props = {
-          cancel: null,
-          className: null,
-          externalLink: {
-            className: 'my-class',
-            id: 'my-id',
-            label: 'my-label',
-            title: 'my-title',
-            url: 'my-url',
-          },
-          submit: null
-        }
-        const wrapper = shallow(<FormFooter {...props} />)
-        const externalLink = wrapper.find('a')
-
-        // when
-        externalLink.simulate('click')
-
-        // then
-        expect(mock).not.toHaveBeenCalledWith()
+        expect(trackerMock).toHaveBeenCalledWith()
       })
     })
 
@@ -187,7 +157,7 @@ describe('components | FormFooter', () => {
           className: 'flex-1 my-class',
           disabled: false,
           id: 'my-id',
-          type: 'submit'
+          type: 'submit',
         })
       })
     })

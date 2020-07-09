@@ -37,8 +37,9 @@ class FormFooter extends PureComponent {
   }
 
   handleTracking = () => {
-    if (window.location.href === 'https://app.passculture.beta.gouv.fr/beta') {
-      window.gtag_report_conversion()
+    const { externalLink } = this.props
+    if (externalLink.tracker) {
+      externalLink.tracker()
     }
   }
 
@@ -112,6 +113,7 @@ FormFooter.propTypes = {
     id: PropTypes.string,
     label: PropTypes.string.isRequired,
     title: PropTypes.string,
+    tracker: PropTypes.func,
     url: PropTypes.string,
   }),
   submit: shape({

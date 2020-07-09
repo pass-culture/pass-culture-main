@@ -1,8 +1,9 @@
 import React from 'react'
 import FormFooter from '../../forms/FormFooter'
 import Icon from '../../layout/Icon/Icon'
+import PropTypes from 'prop-types'
 
-const BetaPage = () => (
+const BetaPage = ({ trackSignup }) => (
   <div className="beta-page">
     <Icon
       alt=""
@@ -37,6 +38,7 @@ const BetaPage = () => (
         label: 'Créer un compte',
         title: 'Créer un compte (nouvelle fenêtre)',
         url: 'https://www.demarches-simplifiees.fr/commencer/inscription-pass-culture',
+        tracker: trackSignup,
       }}
       submit={{
         id: 'sign-in-link',
@@ -46,5 +48,9 @@ const BetaPage = () => (
     />
   </div>
 )
+
+BetaPage.propTypes = {
+  trackSignup: PropTypes.func.isRequired,
+}
 
 export default BetaPage
