@@ -8,6 +8,7 @@ import MatomoContainer from '../MatomoContainer'
 
 jest.mock('../../../utils/config', () => ({
   MATOMO_GEOLOCATION_GOAL_ID: 1,
+  ANDROID_APPLICATION_ID: 'app.passculture.testing.webapp',
 }))
 
 describe('src | components | matomo | Matomo', () => {
@@ -63,7 +64,7 @@ describe('src | components | matomo | Matomo', () => {
     )
 
     // then
-    expect(fakeMatomo.push).toHaveBeenNthCalledWith(4, ['trackGoal', 1])
+    expect(fakeMatomo.push).toHaveBeenNthCalledWith(5, ['trackGoal', 1])
   })
 
   it('should not track user geolocation when user is not geolocated', () => {
@@ -157,7 +158,7 @@ describe('src | components | matomo | Matomo', () => {
       )
 
       // then
-      expect(fakeMatomo.push).toHaveBeenNthCalledWith(4, ['resetUserId'])
+      expect(fakeMatomo.push).toHaveBeenNthCalledWith(5, ['resetUserId'])
     })
   })
 
@@ -189,6 +190,78 @@ describe('src | components | matomo | Matomo', () => {
 
       // then
       expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', '5FYTbfk4TR on WEBAPP'])
+    })
+  })
+
+  describe('when user is coming from webapp', () => {
+    it('should dispatch user id with the right platform and custom variable', () => {
+      // Given
+      store = mockStore({
+        data: {
+          users: [
+            {
+              id: '5FYTbfk4TR',
+            },
+          ],
+        },
+        geolocation: {
+          latitude: null,
+          longitude: null,
+        },
+      })
+
+      // When
+      mount(
+        <Router history={history}>
+          <Provider store={store}>
+            <MatomoContainer {...props} />
+          </Provider>
+        </Router>,
+      )
+
+      // Then
+      expect(fakeMatomo.push).toHaveBeenCalledWith( ['setUserId', '5FYTbfk4TR on WEBAPP'])
+      expect(fakeMatomo.push).toHaveBeenCalledWith( ["setCustomVariable", 1, "platform", "browser", "visit"])
+      expect(fakeMatomo.push).not.toHaveBeenCalledWith( ['setUserId', '5FYTbfk4TR on TWA'])
+      expect(fakeMatomo.push).not.toHaveBeenCalledWith( ["setCustomVariable", 1, "platform", "application", "visit"])
+    })
+  })
+
+  describe('when user is coming from twa', () => {
+    it('should dispatch user id with the right platform and custom variable', () => {
+      // Given
+      Object.defineProperty(document, 'referrer', {
+        get: () => 'android-app://app.passculture.testing.webapp',
+      })
+
+      store = mockStore({
+        data: {
+          users: [
+            {
+              id: '5FYTbfk4TR',
+            },
+          ],
+        },
+        geolocation: {
+          latitude: null,
+          longitude: null,
+        },
+      })
+
+      // When
+      mount(
+        <Router history={history}>
+          <Provider store={store}>
+            <MatomoContainer {...props} />
+          </Provider>
+        </Router>,
+      )
+
+      // Then
+      expect(fakeMatomo.push).toHaveBeenCalledWith( ['setUserId', '5FYTbfk4TR on TWA'])
+      expect(fakeMatomo.push).toHaveBeenCalledWith( ["setCustomVariable", 1, "platform", "application", "visit"])
+      expect(fakeMatomo.push).not.toHaveBeenCalledWith( ['setUserId', '5FYTbfk4TR on WEBAPP'])
+      expect(fakeMatomo.push).not.toHaveBeenCalledWith( ["setCustomVariable", 1, "platform", "browser", "visit"])
     })
   })
 })
