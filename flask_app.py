@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+from utils.mailing import get_contact, \
+    MAILJET_API_KEY, MAILJET_API_SECRET, \
+    subscribe_newsletter
+from utils.config import REDIS_URL
+from mailjet_rest import Client
+import redis
 import os
 
 import sentry_sdk
@@ -25,10 +31,12 @@ if IS_DEV is False:
 
 app = Flask(__name__, static_url_path='/static')
 login_manager = LoginManager()
-admin = Admin(name='pc Back Office', url='/pc/back-office', template_mode='bootstrap3')
+admin = Admin(name='pc Back Office', url='/pc/back-office',
+              template_mode='bootstrap3')
 
 if feature_request_profiling_enabled():
-    profiling_restrictions = [int(os.environ.get('PROFILE_REQUESTS_LINES_LIMIT', 100))]
+    profiling_restrictions = [
+        int(os.environ.get('PROFILE_REQUESTS_LINES_LIMIT', 100))]
     app.config['PROFILE'] = True
     app.wsgi_app = ProfilerMiddleware(app.wsgi_app,
                                       restrictions=profiling_restrictions)
@@ -62,3 +70,12 @@ cors = CORS(app,
             )
 
 app.url_map.strict_slashes = False
+
+
+with app.app_context():
+    app.mailjet_client = Client(
+        auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
+    app.redis_client = redis.from_url(url=REDIS_URL, decode_responses=True)
+
+    app.get_contact = get_contact
+    app.subscribe_newsletter = subscribe_newsletter
