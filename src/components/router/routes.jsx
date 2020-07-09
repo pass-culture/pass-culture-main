@@ -46,7 +46,6 @@ const routes = [
     component: SignInContainer,
     exact: true,
     path: '/connexion',
-    sensitive: true,
     title: 'Connexion',
   },
   {
@@ -54,7 +53,6 @@ const routes = [
     exact: true,
     featureName: 'WEBAPP_SIGNUP',
     path: '/inscription',
-    sensitive: true,
     title: 'Inscription',
   },
   {
