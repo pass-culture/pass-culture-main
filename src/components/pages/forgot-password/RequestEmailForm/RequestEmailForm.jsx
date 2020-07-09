@@ -1,9 +1,10 @@
-import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
+import React, { Fragment } from 'react'
 
 import FormError from '../../../forms/FormError'
 import FormFooter from '../../../forms/FormFooter'
 import InputField from '../../../forms/inputs/InputField'
+import withNotRequiredLogin from '../../../hocs/with-login/withNotRequiredLogin'
 import withResetForm from '../hocs/withResetForm'
 
 export const RequestEmailForm = ({ canSubmit, isLoading, formErrors }) => (
@@ -36,7 +37,7 @@ export const RequestEmailForm = ({ canSubmit, isLoading, formErrors }) => (
         className: 'is-bold is-white-text',
         id: 'np-ok-button',
         label: 'OK',
-        disabled: !canSubmit
+        disabled: !canSubmit,
       }}
     />
   </Fragment>
@@ -52,4 +53,6 @@ RequestEmailForm.propTypes = {
   isLoading: PropTypes.bool.isRequired,
 }
 
-export default withResetForm(RequestEmailForm, null, '/users/reset-password', 'POST')
+export default withNotRequiredLogin(
+  withResetForm(RequestEmailForm, null, '/users/reset-password', 'POST')
+)

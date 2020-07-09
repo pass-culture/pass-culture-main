@@ -1,10 +1,11 @@
-import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
+import React, { Fragment } from 'react'
 
 import FormError from '../../../forms/FormError'
 import FormFooter from '../../../forms/FormFooter'
 import HiddenField from '../../../forms/inputs/HiddenField'
 import PasswordField from '../../../forms/inputs/PasswordField'
+import withNotRequiredLogin from '../../../hocs/with-login/withNotRequiredLogin'
 import withResetForm from '../hocs/withResetForm'
 
 const cancelOptions = {
@@ -80,4 +81,6 @@ ResetPasswordForm.propTypes = {
   isLoading: PropTypes.bool.isRequired,
 }
 
-export default withResetForm(ResetPasswordForm, null, '/users/new-password', 'POST')
+export default withNotRequiredLogin(
+  withResetForm(ResetPasswordForm, null, '/users/new-password', 'POST')
+)

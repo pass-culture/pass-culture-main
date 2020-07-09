@@ -6,9 +6,9 @@ import { requestData } from 'redux-thunk-data'
 
 const noop = () => {}
 
-const withPasswordForm = (WrappedComponent, validator, routePath, routeMethod) => {
+const withResetForm = (WrappedComponent, validator, routePath, routeMethod) => {
   const name = WrappedComponent.displayName || 'Component'
-  withPasswordForm.displayName = `withPasswordForm(${name})`
+  withResetForm.displayName = `withResetForm(${name})`
 
   class ResetPasswordForm extends PureComponent {
     constructor(props) {
@@ -117,4 +117,4 @@ const withPasswordForm = (WrappedComponent, validator, routePath, routeMethod) =
   return connect()(ResetPasswordForm)
 }
 
-export default withPasswordForm
+export default withResetForm

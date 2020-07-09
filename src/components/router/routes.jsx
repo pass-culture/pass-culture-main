@@ -68,21 +68,17 @@ const routes = [
     component: TutorialsContainer,
     exact: true,
     path: '/bienvenue',
-    sensitive: true,
     title: 'Bienvenue',
   },
   {
     component: ForgotPassword,
-    exact: true,
-    path: '/mot-de-passe-perdu/(succes)?',
-    sensitive: true,
+    path: '/mot-de-passe-perdu',
     title: 'Mot de passe perdu',
   },
   {
     component: TypeFormContainer,
     exact: true,
     path: '/typeform',
-    sensitive: true,
     title: 'Questionnaire',
   },
   {
@@ -202,7 +198,6 @@ if (IS_DEBUG_PAGE_ACTIVE) {
     icon: IcoNavDebug,
     to: '/errors',
     path: '/errors',
-    sensitive: true,
     title: "DEV | Gestion d'erreur",
   })
 }
