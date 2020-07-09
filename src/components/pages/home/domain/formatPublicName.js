@@ -1,4 +1,3 @@
-
 export const formatPublicName = (publicName = '') => {
   const SPACE_CHARACTER = " "
   const PUBLIC_NAME_MAX_CHARACTERS = 15

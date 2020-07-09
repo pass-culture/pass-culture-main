@@ -4,11 +4,26 @@ import Home from '../Home'
 import { Link } from 'react-router-dom'
 import { MemoryRouter } from 'react-router'
 import Icon from '../../../layout/Icon/Icon'
+import { fetchLastHomepage } from '../../../../vendor/contentful/contentful'
+import OffersWithCover from '../domain/ValueObjects/OffersWithCover'
+import ModuleWithCover from '../ModuleWithCover/ModuleWithCover'
+import Module from '../Module/Module'
+import Offers from '../domain/ValueObjects/Offers'
+import { PANE_LAYOUT } from '../domain/layout'
+import InformationPane from '../domain/ValueObjects/InformationPane'
+import BusinessModule from '../BusinessModule/BusinessModule'
 
+jest.mock('../../../../vendor/contentful/contentful', () => ({
+  fetchLastHomepage: jest.fn(),
+}))
+jest.mock('../../../../vendor/algolia/algolia', () => ({
+  fetchAlgolia: jest.fn().mockResolvedValue({ hits: []}),
+}))
 describe('src | components | Home', () => {
   let props
 
   beforeEach(() => {
+    fetchLastHomepage.mockResolvedValue([])
     props = {
       user: {
         publicName: 'Iron Man',
@@ -48,7 +63,7 @@ describe('src | components | Home', () => {
     expect(title).toHaveLength(1)
   })
 
-  it('should render a subtile with the user wallet balance', () => {
+  it('should render a subtitle with the user wallet balance', () => {
     // when
     const wrapper = mount(
       <MemoryRouter>
@@ -59,5 +74,82 @@ describe('src | components | Home', () => {
     // then
     const title = wrapper.find({ children: 'Tu as 200,1€ sur ton pass'})
     expect(title).toHaveLength(1)
+  })
+
+  it('should render a module with cover component when module is for offers with cover', async () => {
+    // given
+    fetchLastHomepage.mockResolvedValue([new OffersWithCover({})])
+
+    // when
+    const wrapper = await mount(
+      <MemoryRouter>
+        <Home {...props} />
+      </MemoryRouter>
+    )
+    await wrapper.update()
+
+    // then
+    const moduleWithCover = wrapper.find(ModuleWithCover)
+    expect(moduleWithCover).toHaveLength(1)
+  })
+
+  it('should render a module component when module is for offers', async () => {
+    // given
+    const algolia = {
+      aroundRadius: 10000,
+      beginningDatetime: '2020-07-10T00:00+02:00',
+      categories: ['CINEMA', 'LECON', 'LIVRE'],
+      endingDatetime: '2020-07-15T00:00+02:00',
+      isDigital: false,
+      isDuo: true,
+      isEvent: true,
+      isGeolocated: true,
+      isThing: false,
+      newestOnly: true,
+      priceMax: 10,
+      priceMin: 1,
+      title: 'Mes paramètres Algolia',
+    }
+    const display = {
+      activeOn: '2020-07-01T00:00+02:00',
+      activeUntil: '2020-07-30T00:00+02:00',
+      layout: PANE_LAYOUT['ONE-ITEM-MEDIUM'],
+      minOffers: 5,
+      title: 'Les offres près de chez toi!',
+    }
+    fetchLastHomepage.mockResolvedValue([new Offers({
+      algolia, display
+    })])
+
+    // when
+    const wrapper = await mount(
+      <MemoryRouter>
+        <Home {...props} />
+      </MemoryRouter>
+    )
+    await wrapper.update()
+
+    // then
+    const module = wrapper.find(Module)
+    expect(module).toHaveLength(1)
+  })
+
+  it('should render a business module component when module is for business information', async () => {
+    // given
+    fetchLastHomepage.mockResolvedValue([new InformationPane({
+      img: 'my-image', title: 'my-title', url: 'my-url'
+    })])
+
+    // when
+    const wrapper = await mount(
+      <MemoryRouter>
+        <Home {...props} />
+      </MemoryRouter>
+    )
+    await wrapper.update()
+
+    // then
+    const module = wrapper.find(BusinessModule)
+    expect(module).toHaveLength(1)
   })
 })

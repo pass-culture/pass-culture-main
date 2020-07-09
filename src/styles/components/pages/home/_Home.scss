@@ -1,21 +1,16 @@
 .home-wrapper {
   background-attachment: fixed;
   background-image: url('/home-background.png');
-  background-position: top;
   background-repeat: no-repeat;
   background-size: 100% rem(250px);
   background-color: $white;
-
-  display: flex;
-  flex-direction: column;
-  height: 100%;
 }
 
 .hw-header {
   align-items: center;
   display: flex;
   flex-direction: column;
-  margin-top: rem(72px);
+  margin-bottom: rem(50px);
 
   h1 {
     color: $white;
@@ -39,9 +34,10 @@
 }
 
 .hw-account {
-  position: absolute;
-  top: rem(20px);
-  right: rem(20px);
+  align-content: flex-end;
+  display: flex;
+  justify-content: space-between;
+  margin: rem(20px) rem(20px) rem(10px) auto;
 
   .hw-account-image {
     border: rem(1px) solid $white;
