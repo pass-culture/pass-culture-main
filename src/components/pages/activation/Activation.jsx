@@ -9,19 +9,23 @@ const Activation = () => (
   <main className="logout-form-main">
     <Switch>
       <Route
-        component={Error}
         exact
         path="/activation/error"
-      />
+      >
+        <Error />
+      </Route>
       <Route
-        component={InvalidLink}
         exact
         path="/activation/lien-invalide"
-      />
+      >
+        <InvalidLink />
+      </Route>
       <Route
-        component={PasswordFormContainer}
-        path="/activation/:token"
-      />
+        exact
+        path="/activation/:token([A-Z0-9]+)"
+      >
+        <PasswordFormContainer />
+      </Route>
       <Redirect to="/activation/error" />
     </Switch>
   </main>

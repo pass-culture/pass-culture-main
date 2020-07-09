@@ -39,9 +39,7 @@ const routes = [
   },
   {
     component: ActivationContainer,
-    exact: true,
-    path: '/activation/:token([A-Z0-9]+|error|lien-invalide)',
-    sensitive: true,
+    path: '/activation',
     title: 'Activation',
   },
   {
