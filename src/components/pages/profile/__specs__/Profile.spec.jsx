@@ -13,6 +13,9 @@ describe('profile page', () => {
       history: {
         push: jest.fn(),
       },
+      match: {
+        path: '/profil',
+      },
       user: new User({
         email: 'beneficiary@example.com',
       }),

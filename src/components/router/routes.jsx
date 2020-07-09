@@ -1,6 +1,3 @@
-import React from 'react'
-import { Redirect } from 'react-router-dom'
-
 import { IcoNavBookings } from '../layout/NavBar/Icons/IcoNavBookings'
 import { IcoNavDebug } from '../layout/NavBar/Icons/IcoNavDebug'
 import { IcoNavDiscovery } from '../layout/NavBar/Icons/IcoNavDiscovery'
@@ -27,22 +24,17 @@ import { IS_DEBUG_PAGE_ACTIVE } from '../../utils/config'
 import HomeContainer from '../pages/home/HomeContainer'
 import { IcoNavHome } from '../layout/NavBar/Icons/IcoNavHome'
 
-function redirectToBeta() {
-  return <Redirect to="/beta" />
-}
-
 const routes = [
   {
+    component: BetaPageContainer,
     exact: true,
     path: '/',
-    render: redirectToBeta,
     sensitive: true,
   },
   {
     component: BetaPageContainer,
     exact: true,
     path: '/beta',
-    sensitive: true,
     title: 'Bienvenue dans l’avant-première du pass Culture',
   },
   {
@@ -200,11 +192,9 @@ const routes = [
   },
   {
     component: ProfileContainer,
-    exact: true,
     icon: IcoNavProfile,
     to: '/profil',
-    path: '/profil/:view(mot-de-passe|informations|mentions-legales)?',
-    sensitive: true,
+    path: '/profil',
     title: 'Mon compte',
   },
 ]

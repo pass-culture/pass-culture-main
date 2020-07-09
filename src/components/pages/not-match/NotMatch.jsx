@@ -28,14 +28,13 @@ class NotMatch extends PureComponent {
 
   render() {
     const { timing } = this.state
-    const { location } = this.props
 
     if (timing < 0) return this.redirectTo()
 
     return (
       <div className="page">
         <h3>
-          {`404 Not found ${location.pathname}`}
+          {`404 Not found ${window.location.pathname}`}
         </h3>
         <p>
           {timing > 0
@@ -54,7 +53,6 @@ NotMatch.defaultProps = {
 
 NotMatch.propTypes = {
   delay: PropTypes.number,
-  location: PropTypes.shape().isRequired,
   redirect: PropTypes.string,
 }
 
