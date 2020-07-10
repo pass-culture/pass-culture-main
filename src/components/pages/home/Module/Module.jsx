@@ -3,6 +3,7 @@ import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import PropTypes from 'prop-types'
 import OfferTile from './OfferTile/OfferTile'
 import Offers from '../domain/ValueObjects/Offers'
+import { parseAlgoliaParameters } from '../domain/parseAlgoliaParameters'
 
 class Module extends Component {
   constructor(props) {
@@ -13,7 +14,10 @@ class Module extends Component {
   }
 
   componentDidMount() {
-    fetchAlgolia().then(data => {
+    const { module: { algolia } } = this.props
+    const parsedParameters = parseAlgoliaParameters(algolia)
+
+    fetchAlgolia(parsedParameters).then(data => {
       const { hits } = data
       this.setState({
         hits: hits

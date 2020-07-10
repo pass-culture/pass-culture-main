@@ -22,6 +22,7 @@ describe('src | components | Module', () => {
       beginningDatetime: '2020-07-10T00:00+02:00',
       categories: ['CINEMA', 'LECON', 'LIVRE'],
       endingDatetime: '2020-07-15T00:00+02:00',
+      hitsPerPage: 5,
       isDigital: false,
       isDuo: true,
       isEvent: true,

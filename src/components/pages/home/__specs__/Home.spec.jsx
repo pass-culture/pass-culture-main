@@ -18,6 +18,9 @@ jest.mock('../../../../vendor/contentful/contentful', () => ({
 jest.mock('../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn().mockResolvedValue({ hits: []}),
 }))
+jest.mock('../domain/parseAlgoliaParameters', () => ({
+  parseAlgoliaParameters: jest.fn().mockReturnValue({}),
+}))
 describe('src | components | Home', () => {
   let props
 
