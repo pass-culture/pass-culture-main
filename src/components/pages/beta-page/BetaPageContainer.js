@@ -14,8 +14,8 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
       window.gtag_report_conversion()
 
       const userDevice = document.referrer.includes('android-app://' + ANDROID_APPLICATION_ID)
-        ? 'TWA'
-        : 'WEBAPP'
+        ? 'application'
+        : 'browser'
       ownProps.tracking.trackEvent({ action: 'signup', name: userDevice })
     },
   }
