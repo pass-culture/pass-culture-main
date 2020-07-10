@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-from utils.mailing import get_contact, \
-    MAILJET_API_KEY, MAILJET_API_SECRET, \
-    subscribe_newsletter
+from utils.mailing import MAILJET_API_KEY, MAILJET_API_SECRET
 from utils.config import REDIS_URL
 from mailjet_rest import Client
 import redis
@@ -76,6 +74,3 @@ with app.app_context():
     app.mailjet_client = Client(
         auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version='v3')
     app.redis_client = redis.from_url(url=REDIS_URL, decode_responses=True)
-
-    app.get_contact = get_contact
-    app.subscribe_newsletter = subscribe_newsletter
