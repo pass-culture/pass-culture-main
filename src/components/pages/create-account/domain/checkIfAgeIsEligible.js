@@ -1,5 +1,11 @@
 import { getOffset } from '../utils/getOffset'
 
+export const eligiblityValues = {
+  eligible: 'eligible',
+  tooOld: 'tooOld',
+  tooYoung: 'tooYoung',
+  soon: 'soon',
+}
 export const ELIGIBLE = 'eligible'
 export const TOO_OLD = 'tooOld'
 export const TOO_YOUNG = 'tooYoung'
