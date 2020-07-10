@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { Fragment, useCallback, useState } from 'react'
 import InputMask from 'react-input-mask'
 import PropTypes from 'prop-types'
 
@@ -7,11 +7,13 @@ import Icon from '../../../layout/Icon/Icon'
 import { checkIfDepartmentIsEligible } from '../domain/checkIfDepartmentIsEligible'
 import { checkIfAgeIsEligible } from '../domain/checkIfAgeIsEligible'
 import { eligibilityPaths } from './eligibilityPaths'
+import Eligible from '../Eligible/Eligible'
 
-const EligibilityCheck = ({ historyPush, pathname }) => {
+const EligibilityCheck = ({historyPush, pathname}) => {
   const [postalCodeInputValue, setPostalCodeInputValue] = useState('')
   const [dateOfBirthInputValue, setDateOfBirthInputValue] = useState('')
   const [hasAnErrorMessage, setHasAnErrorMessage] = useState(false)
+  const [shouldRenderEligibleComponent, setShouldRenderEligibleComponent] = useState(false)
 
   const keepNumbersOnly = string => string.replace(/[^0-9]/g, '')
 
@@ -60,11 +62,13 @@ const EligibilityCheck = ({ historyPush, pathname }) => {
       const ageEligibilityValue = checkIfAgeIsEligible(dateOfBirthInputValue)
 
       if (ageEligibilityValue === 'eligible') {
-        const isDepartmentEligible = checkIfDepartmentIsEligible(postalCodeInputValue)
+
+        setShouldRenderEligibleComponent(true)
+        /*const isDepartmentEligible = checkIfDepartmentIsEligible(postalCodeInputValue)
 
         isDepartmentEligible
           ? historyPush(currentPathName + eligibilityPaths[ageEligibilityValue])
-          : historyPush(currentPathName + 'departement-non-eligible')
+          : historyPush(currentPathName + 'departement-non-eligible')*/
       } else {
         historyPush(currentPathName + eligibilityPaths[ageEligibilityValue])
       }
@@ -72,58 +76,65 @@ const EligibilityCheck = ({ historyPush, pathname }) => {
     [postalCodeInputValue, dateOfBirthInputValue]
   )
 
+  const eligibilityComponentToRender = 'Eligible'
+
   return (
-    <main className="eligibility-check-page">
-      <BackLink backTo="/beta" />
-      <span className="eligibility-title">
+    <Fragment>
+      {shouldRenderEligibleComponent ?
+        <${eligibilityComponentToRender} /> :
+        <main className="eligibility-check-page">
+          <BackLink backTo="/beta"/>
+          <span className="eligibility-title">
         {'Créer un compte'}
       </span>
-      <form
-        className="eligibility-form"
-        onSubmit={handleSubmit}
-      >
-        <div>
-          <label>
-            {'Quel est ton code postal de résidence ?'}
-            <input
-              inputMode="numeric"
-              maxLength="5"
-              onChange={handlePostalCodeInputChange}
-              placeholder="Ex: 75017"
-              type="text"
-              value={postalCodeInputValue}
-            />
-          </label>
-          <label>
-            {'Quelle est ta date de naissance ?'}
-            <InputMask
-              className={`date-of-birth-input ${
-                hasAnErrorMessage ? 'date-of-birth-input-error' : ''
-              }`}
-              inputMode="numeric"
-              mask="99/99/9999"
-              onChange={handleDOBInputChange}
-              placeholder="JJ/MM/AAAA"
-              value={dateOfBirthInputValue}
-            />
-            {hasAnErrorMessage && (
-              <div className="dob-field-error">
-                <Icon svg="ico-error" />
-                <pre>
+          <form
+            className="eligibility-form"
+            onSubmit={handleSubmit}
+          >
+            <div>
+              <label>
+                {'Quel est ton code postal de résidence ?'}
+                <input
+                  inputMode="numeric"
+                  maxLength="5"
+                  onChange={handlePostalCodeInputChange}
+                  placeholder="Ex: 75017"
+                  type="text"
+                  value={postalCodeInputValue}
+                />
+              </label>
+              <label>
+                {'Quelle est ta date de naissance ?'}
+                <InputMask
+                  className={`date-of-birth-input ${
+                    hasAnErrorMessage ? 'date-of-birth-input-error' : ''
+                  }`}
+                  inputMode="numeric"
+                  mask="99/99/9999"
+                  onChange={handleDOBInputChange}
+                  placeholder="JJ/MM/AAAA"
+                  value={dateOfBirthInputValue}
+                />
+                {hasAnErrorMessage && (
+                  <div className="dob-field-error">
+                    <Icon svg="ico-error" />
+                    <pre>
                   {'Le format de la date est incorrect.'}
                 </pre>
-              </div>
-            )}
-          </label>
-        </div>
-        <input
-          className="eligibility-submit"
-          disabled={isMissingField || hasAnErrorMessage}
-          type="submit"
-          value="Vérifier mon éligibilité"
-        />
-      </form>
-    </main>
+                  </div>
+                )}
+              </label>
+            </div>
+            <input
+              className="eligibility-submit"
+              disabled={isMissingField || hasAnErrorMessage}
+              type="submit"
+              value="Vérifier mon éligibilité"
+            />
+          </form>
+        </main>
+      }
+    </Fragment>
   )
 }
 
