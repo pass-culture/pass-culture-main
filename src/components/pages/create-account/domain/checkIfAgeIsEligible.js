@@ -10,16 +10,19 @@ export const checkIfAgeIsEligible = formattedBirthDate => {
   const birthYearInteger = parseInt(birthYear)
   const offset = getOffset()
 
+  const formattedBirthMonth = birthMonth === '02' && birthDay === '29' ? '03' : birthMonth
+  const formattedBirthDay = birthMonth === '02' && birthDay === '29' ? '01' : birthDay
+
   const seventeenthBirthdayTimestamp = new Date(
-    `${birthYearInteger + 17}-${birthMonth}-${birthDay}T00:00:00${offset}`
+    `${birthYearInteger + 17}-${formattedBirthMonth}-${formattedBirthDay}T00:00:00${offset}`
   ).getTime()
 
   const eighteenthBirthdayTimestamp = new Date(
-    `${birthYearInteger + 18}-${birthMonth}-${birthDay}T00:00:00${offset}`
+    `${birthYearInteger + 18}-${formattedBirthMonth}-${formattedBirthDay}T00:00:00${offset}`
   ).getTime()
 
   const nineteenthBirthdayTimestamp = new Date(
-    `${birthYearInteger + 19}-${birthMonth}-${birthDay}T00:00:00${offset}`
+    `${birthYearInteger + 19}-${formattedBirthMonth}-${formattedBirthDay}T00:00:00${offset}`
   ).getTime()
 
   const currentTimestamp = Date.now()

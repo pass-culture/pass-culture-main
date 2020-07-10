@@ -37,10 +37,10 @@ const EligibilityCheck = ({ historyPush, pathname }) => {
   }
 
   const checkIfDateIsValid = (birthDay, birthMonth, birthYear) => {
-    const isDateFormatValid = Date.parse(`${birthDay}-${birthMonth}-${birthDay}`)
+    const isDateFormatValid = Date.parse(`${birthYear}-${birthMonth}-${birthDay}`)
     const currentYear = new Date().getFullYear()
 
-    return !(!isDateFormatValid || birthYear > currentYear || birthYear === '0000')
+    return isDateFormatValid && birthYear <= currentYear && birthYear !== '0000'
   }
 
   const handleSubmit = useCallback(
@@ -52,21 +52,21 @@ const EligibilityCheck = ({ historyPush, pathname }) => {
       const birthMonth = splittedBirthDate[1]
       const birthYear = splittedBirthDate[2]
 
-      if (checkIfDateIsValid(birthDay, birthMonth, birthYear)) {
-        setHasAnErrorMessage(false)
-        const ageEligibilityValue = checkIfAgeIsEligible(dateOfBirthInputValue)
+      if (!checkIfDateIsValid(birthDay, birthMonth, birthYear)) {
+        return setHasAnErrorMessage(true)
+      }
 
-        if (ageEligibilityValue === 'eligible') {
-          const isDepartmentEligible = checkIfDepartmentIsEligible(postalCodeInputValue)
+      setHasAnErrorMessage(false)
+      const ageEligibilityValue = checkIfAgeIsEligible(dateOfBirthInputValue)
 
-          isDepartmentEligible
-            ? historyPush(currentPathName + eligibilityPaths[ageEligibilityValue])
-            : historyPush(currentPathName + 'departement-non-eligible')
-        } else {
-          historyPush(currentPathName + eligibilityPaths[ageEligibilityValue])
-        }
+      if (ageEligibilityValue === 'eligible') {
+        const isDepartmentEligible = checkIfDepartmentIsEligible(postalCodeInputValue)
+
+        isDepartmentEligible
+          ? historyPush(currentPathName + eligibilityPaths[ageEligibilityValue])
+          : historyPush(currentPathName + 'departement-non-eligible')
       } else {
-        setHasAnErrorMessage(true)
+        historyPush(currentPathName + eligibilityPaths[ageEligibilityValue])
       }
     },
     [postalCodeInputValue, dateOfBirthInputValue]

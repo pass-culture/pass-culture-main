@@ -153,4 +153,17 @@ describe('check if user age is eligible', () => {
       })
     })
   })
+
+  it('should be able to deal with date such as 29/02', () => {
+    // Given
+    const june_twentyfour_2020_23H59M59 = new Date(`2020-07-09T15:59:59${timezoneOffset}`).getTime()
+    jest.spyOn(Date, 'now').mockReturnValue(june_twentyfour_2020_23H59M59)
+    const birthDate = '29/02/2004'
+
+    // When
+    const returnValue = checkIfAgeIsEligible(birthDate)
+
+    // Then
+    expect(returnValue).toBe('tooYoung')
+  })
 })
