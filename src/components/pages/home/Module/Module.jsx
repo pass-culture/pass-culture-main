@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import PropTypes from 'prop-types'
 import OfferTile from './OfferTile/OfferTile'
+import Offers from '../domain/ValueObjects/Offers'
 
 class Module extends Component {
   constructor(props) {
@@ -23,14 +24,15 @@ class Module extends Component {
   render() {
     const { module: { display } } = this.props
     const { hits } = this.state
+    const atLeastOneHit = hits.length > 0
 
-    return (
+    return atLeastOneHit ?
       <div className="module-wrapper">
+        <h1>
+          {display.title}
+        </h1>
         <ul className={display.layout}>
-          <h1>
-            {display.title}
-          </h1>
-          {hits.length > 0 && hits.map(hit => (
+          {hits.map(hit => (
             <OfferTile
               hit={hit}
               key={hit.offer.id}
@@ -38,15 +40,12 @@ class Module extends Component {
           )}
         </ul>
       </div>
-    )
+      : <div />
   }
 }
 
 Module.propTypes = {
-  module: PropTypes.shape({
-    algolia: PropTypes.shape(),
-    display: PropTypes.shape()
-  }).isRequired
+  module: PropTypes.instanceOf(Offers).isRequired
 }
 
 export default Module

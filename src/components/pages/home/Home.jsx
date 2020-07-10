@@ -28,15 +28,12 @@ class Home extends Component {
   }
 
   renderModule = module => {
-    let component
     if (module instanceof OffersWithCover) {
-      component = <ModuleWithCover module={module} />
+      return <ModuleWithCover module={module} />
     } else if (module instanceof Offers) {
-      component = <Module module={module} />
-    } else {
-      component = <BusinessModule module={module} />
+      return <Module module={module} />
     }
-    return component
+    return <BusinessModule module={module} />
   }
 
   render() {
@@ -45,6 +42,7 @@ class Home extends Component {
     const { publicName, wallet_balance } = user
     const formattedPublicName = formatPublicName(publicName)
     const formattedWalletBalance = formatToFrenchDecimal(wallet_balance)
+    const atLeastOneModule = modules.length > 0
 
     return (
       <div className="home-wrapper">
@@ -61,14 +59,16 @@ class Home extends Component {
             {`Bonjour ${formattedPublicName}`}
           </h1>
           <span>
-            {`Tu as ${formattedWalletBalance}€ sur ton pass`}
+            {`Tu as ${formattedWalletBalance} € sur ton pass`}
           </span>
         </div>
-        <div className="hw-modules">
-          {modules.length > 0 && modules.map(module => {
-            return this.renderModule(module)
-          })}
-        </div>
+        {atLeastOneModule && (
+          <div className="hw-modules">
+            {modules.map(module => {
+              return this.renderModule(module)
+            })}
+          </div>
+        )}
       </div>
     )
   }

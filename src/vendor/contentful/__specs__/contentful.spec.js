@@ -1,6 +1,6 @@
 import { createClient } from 'contentful'
 import { fetchLastHomepage } from '../contentful'
-import InformationPane from '../../../components/pages/home/domain/ValueObjects/InformationPane'
+import BusinessPane from '../../../components/pages/home/domain/ValueObjects/BusinessPane'
 import { CONTENT_TYPES } from '../constants'
 import { PANE_LAYOUT } from '../../../components/pages/home/domain/layout'
 import Offers from '../../../components/pages/home/domain/ValueObjects/Offers'
@@ -50,7 +50,7 @@ describe('src | vendor | contentful', () => {
     expect(mockGetEntries).toHaveBeenCalledWith({ content_type: CONTENT_TYPES.HOMEPAGE, include: 2 })
   })
 
-  it('should return a module for InformationPane when not an algolia module', async () => {
+  it('should return a module for BusinessPane when not an algolia module', async () => {
     // given
     const module = {
       fields: {
@@ -86,7 +86,7 @@ describe('src | vendor | contentful', () => {
     const modules = await fetchLastHomepage()
 
     // then
-    const informationPane = new InformationPane({
+    const informationPane = new BusinessPane({
         image: 'https://my-image-url',
         title: 'my-title',
         url: 'my-url'
@@ -195,5 +195,18 @@ describe('src | vendor | contentful', () => {
       }
     )
     expect(modules).toStrictEqual([offersWithCover])
+  })
+
+  it('should return an empty array when fetching data failed', async () => {
+    // given
+    createClient.mockReturnValue({
+      getEntries: jest.fn().mockRejectedValue({})
+    })
+
+    // when
+    const modules = await fetchLastHomepage()
+
+    // then
+    expect(modules).toStrictEqual([])
   })
 })

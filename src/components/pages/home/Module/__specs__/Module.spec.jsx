@@ -3,13 +3,12 @@ import { PANE_LAYOUT } from '../../domain/layout'
 import { mount } from 'enzyme'
 import Module from '../Module'
 import React from 'react'
-import { Link } from 'react-router-dom'
 import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import { MemoryRouter } from 'react-router'
-import { DEFAULT_THUMB_URL } from '../../../../../utils/thumb'
+import OfferTile from '../OfferTile/OfferTile'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
-  fetchAlgolia: jest.fn(),
+  fetchAlgolia: jest.fn()
 }))
 describe('src | components | Module', () => {
   let algolia
@@ -31,14 +30,14 @@ describe('src | components | Module', () => {
       newestOnly: true,
       priceMax: 10,
       priceMin: 1,
-      title: 'Mes paramètres Algolia',
+      title: 'Mes paramètres Algolia'
     }
     display = {
       activeOn: '2020-07-01T00:00+02:00',
       activeUntil: '2020-07-30T00:00+02:00',
       layout: PANE_LAYOUT['ONE-ITEM-MEDIUM'],
       minOffers: 5,
-      title: 'Les offres près de chez toi!',
+      title: 'Les offres près de chez toi!'
     }
     offerOne = {
       objectID: 'NE',
@@ -49,11 +48,11 @@ describe('src | components | Module', () => {
         name: "Dansons jusqu'en 2030",
         priceMax: 33,
         priceMin: 33,
-        thumbUrl: 'http://localhost/storage/thumbs/mediations/KQ',
+        thumbUrl: 'http://localhost/storage/thumbs/mediations/KQ'
       },
       venue: {
-        name: 'Le Sous-sol',
-      },
+        name: 'Le Sous-sol'
+      }
     }
     offerTwo = {
       objectID: 'AE',
@@ -64,15 +63,15 @@ describe('src | components | Module', () => {
         name: 'Naruto',
         priceMax: 1,
         priceMin: 12,
-        thumbUrl: 'http://localhost/storage/thumbs/mediations/PP',
+        thumbUrl: 'http://localhost/storage/thumbs/mediations/PP'
       },
       venue: {
-        name: 'Librairie Kléber',
-      },
+        name: 'Librairie Kléber'
+      }
     }
   })
 
-  it('should render two panes with two offers image and link to details', async () => {
+  it('should render two OfferTile when two offers', async () => {
     // given
     fetchAlgolia.mockReturnValue(
       new Promise(resolve => {
@@ -80,7 +79,7 @@ describe('src | components | Module', () => {
           hits: [offerOne, offerTwo],
           nbHits: 0,
           nbPages: 0,
-          page: 0,
+          page: 0
         })
       })
     )
@@ -88,8 +87,8 @@ describe('src | components | Module', () => {
     const props = {
       module: new Offers({
         algolia,
-        display,
-      }),
+        display
+      })
     }
 
     // when
@@ -102,127 +101,12 @@ describe('src | components | Module', () => {
     await wrapper.update()
 
     // then
-    const offers = wrapper.find(Module).find('li')
+    const offers = wrapper.find(Module).find(OfferTile)
     expect(offers).toHaveLength(2)
-    const firstOffer = offers.at(0).find(Link)
-    expect(firstOffer).toHaveLength(1)
-    expect(firstOffer.prop('to')).toBe('/offre/details/NE')
-    const firstOfferImage = firstOffer.find('img')
-    expect(firstOfferImage).toHaveLength(1)
-    expect(firstOfferImage.prop('src')).toBe('http://localhost/storage/thumbs/mediations/KQ')
-    const secondOffer = offers.at(1).find(Link)
-    expect(secondOffer).toHaveLength(1)
-    const secondOfferImage = secondOffer.find('img')
-    expect(secondOfferImage).toHaveLength(1)
-    expect(secondOfferImage.prop('src')).toBe('http://localhost/storage/thumbs/mediations/PP')
-    expect(secondOffer.prop('to')).toBe('/offre/details/AE')
-  })
-
-  it('should render a pane with one offer default image when no thumb', async () => {
-    // given
-    offerOne.offer.thumbUrl = null
-    fetchAlgolia.mockReturnValue(
-      new Promise(resolve => {
-        resolve({
-          hits: [offerOne],
-          nbHits: 0,
-          nbPages: 0,
-          page: 0,
-        })
-      })
-    )
-
-    const props = {
-      module: new Offers({
-        algolia,
-        display,
-      }),
-    }
-
-    // when
-    const wrapper = await mount(
-      <MemoryRouter>
-        <Module {...props} />
-      </MemoryRouter>
-    )
-
-    await wrapper.update()
-
-    // then
-    const offers = wrapper.find(Module).find('li')
-    const firstOffer = offers.at(0).find(Link)
-    const firstOfferImage = firstOffer.find('img')
-    expect(firstOfferImage.prop('src')).toBe(DEFAULT_THUMB_URL)
-  })
-
-  it('should render a pane with venue name', async () => {
-    // given
-    fetchAlgolia.mockReturnValue(
-      new Promise(resolve => {
-        resolve({
-          hits: [offerOne],
-          nbHits: 0,
-          nbPages: 0,
-          page: 0,
-        })
-      })
-    )
-
-    const props = {
-      module: new Offers({
-        algolia,
-        display,
-      }),
-    }
-
-    // when
-    const wrapper = await mount(
-      <MemoryRouter>
-        <Module {...props} />
-      </MemoryRouter>
-    )
-    await wrapper.update()
-
-    // then
-    const offers = wrapper.find(Module).find('li')
-    const firstOffer = offers.at(0).find(Link)
-    const firstOfferVenueName = firstOffer.find({ children: 'Le Sous-sol'})
-    expect(firstOfferVenueName).toHaveLength(1)
-  })
-
-  it('should render a pane with offer price', async () => {
-    // given
-    fetchAlgolia.mockReturnValue(
-      new Promise(resolve => {
-        resolve({
-          hits: [offerOne],
-          nbHits: 0,
-          nbPages: 0,
-          page: 0,
-        })
-      })
-    )
-
-    const props = {
-      module: new Offers({
-        algolia,
-        display,
-      }),
-    }
-
-    // when
-    const wrapper = await mount(
-      <MemoryRouter>
-        <Module {...props} />
-      </MemoryRouter>
-    )
-    await wrapper.update()
-
-    // then
-    const offers = wrapper.find(Module).find('li')
-    const firstOffer = offers.at(0).find(Link)
-    const firstOfferPrice = firstOffer.find({ children: '33 €'})
-    expect(firstOfferPrice).toHaveLength(1)
+    const firstOffer = offers.at(0)
+    expect(firstOffer.prop('hit')).toStrictEqual(offerOne)
+    const secondOffer = offers.at(1)
+    expect(secondOffer.prop('hit')).toStrictEqual(offerTwo)
   })
 
   it('should render a pane with pane title', async () => {
@@ -233,7 +117,7 @@ describe('src | components | Module', () => {
           hits: [offerOne],
           nbHits: 0,
           nbPages: 0,
-          page: 0,
+          page: 0
         })
       })
     )
@@ -241,8 +125,8 @@ describe('src | components | Module', () => {
     const props = {
       module: new Offers({
         algolia,
-        display,
-      }),
+        display
+      })
     }
 
     // when
@@ -254,7 +138,41 @@ describe('src | components | Module', () => {
     await wrapper.update()
 
     // then
-    const title = wrapper.find(Module).find({ children : 'Les offres près de chez toi!'})
+    const title = wrapper.find(Module).find({ children: 'Les offres près de chez toi!' })
     expect(title).toHaveLength(1)
+  })
+
+  it('should not render OfferTile nor pane title when no hits', async () => {
+    fetchAlgolia.mockReturnValue(
+      new Promise(resolve => {
+        resolve({
+          hits: [],
+          nbHits: 0,
+          nbPages: 0,
+          page: 0
+        })
+      })
+    )
+
+    const props = {
+      module: new Offers({
+        algolia,
+        display
+      })
+    }
+
+    // when
+    const wrapper = await mount(
+      <MemoryRouter>
+        <Module {...props} />
+      </MemoryRouter>
+    )
+    await wrapper.update()
+
+    // then
+    const offerTile = wrapper.find(Module).find(OfferTile)
+    expect(offerTile).toHaveLength(0)
+    const title = wrapper.find(Module).find({ children: 'Les offres près de chez toi!' })
+    expect(title).toHaveLength(0)
   })
 })

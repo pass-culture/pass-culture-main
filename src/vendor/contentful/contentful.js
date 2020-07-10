@@ -3,7 +3,7 @@ import { CONTENTFUL_ACCESS_TOKEN, CONTENTFUL_ENVIRONMENT, CONTENTFUL_SPACE_ID } 
 import { CONTENT_FIELDS, CONTENT_TYPES } from './constants'
 import OffersWithCover from '../../components/pages/home/domain/ValueObjects/OffersWithCover'
 import Offers from '../../components/pages/home/domain/ValueObjects/Offers'
-import InformationPane from '../../components/pages/home/domain/ValueObjects/InformationPane'
+import BusinessPane from '../../components/pages/home/domain/ValueObjects/BusinessPane'
 
 const DEPTH_LEVEL = 2
 
@@ -46,12 +46,15 @@ export const fetchLastHomepage = () => {
               display: displayParameters
             })
         } else {
-          return new InformationPane({
+          return new BusinessPane({
             image: `https:${fields[CONTENT_FIELDS.IMAGE].fields[CONTENT_FIELDS.FILE].url}`,
             title: fields[CONTENT_FIELDS.TITLE],
             url: fields[CONTENT_FIELDS.URL]
           })
         }
       })
+    })
+    .catch(() => {
+      return []
     })
 }

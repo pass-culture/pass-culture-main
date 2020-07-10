@@ -9,8 +9,7 @@ import OffersWithCover from '../domain/ValueObjects/OffersWithCover'
 import ModuleWithCover from '../ModuleWithCover/ModuleWithCover'
 import Module from '../Module/Module'
 import Offers from '../domain/ValueObjects/Offers'
-import { PANE_LAYOUT } from '../domain/layout'
-import InformationPane from '../domain/ValueObjects/InformationPane'
+import BusinessPane from '../domain/ValueObjects/BusinessPane'
 import BusinessModule from '../BusinessModule/BusinessModule'
 
 jest.mock('../../../../vendor/contentful/contentful', () => ({
@@ -72,7 +71,7 @@ describe('src | components | Home', () => {
     )
 
     // then
-    const title = wrapper.find({ children: 'Tu as 200,1€ sur ton pass'})
+    const title = wrapper.find({ children: 'Tu as 200,1 € sur ton pass'})
     expect(title).toHaveLength(1)
   })
 
@@ -95,31 +94,7 @@ describe('src | components | Home', () => {
 
   it('should render a module component when module is for offers', async () => {
     // given
-    const algolia = {
-      aroundRadius: 10000,
-      beginningDatetime: '2020-07-10T00:00+02:00',
-      categories: ['CINEMA', 'LECON', 'LIVRE'],
-      endingDatetime: '2020-07-15T00:00+02:00',
-      isDigital: false,
-      isDuo: true,
-      isEvent: true,
-      isGeolocated: true,
-      isThing: false,
-      newestOnly: true,
-      priceMax: 10,
-      priceMin: 1,
-      title: 'Mes paramètres Algolia',
-    }
-    const display = {
-      activeOn: '2020-07-01T00:00+02:00',
-      activeUntil: '2020-07-30T00:00+02:00',
-      layout: PANE_LAYOUT['ONE-ITEM-MEDIUM'],
-      minOffers: 5,
-      title: 'Les offres près de chez toi!',
-    }
-    fetchLastHomepage.mockResolvedValue([new Offers({
-      algolia, display
-    })])
+    fetchLastHomepage.mockResolvedValue([new Offers({})])
 
     // when
     const wrapper = await mount(
@@ -136,7 +111,7 @@ describe('src | components | Home', () => {
 
   it('should render a business module component when module is for business information', async () => {
     // given
-    fetchLastHomepage.mockResolvedValue([new InformationPane({
+    fetchLastHomepage.mockResolvedValue([new BusinessPane({
       img: 'my-image', title: 'my-title', url: 'my-url'
     })])
 

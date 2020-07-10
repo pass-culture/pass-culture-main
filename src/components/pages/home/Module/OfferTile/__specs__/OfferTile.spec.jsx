@@ -57,7 +57,7 @@ describe('src | components | OfferTile', () => {
     // then
     const img = wrapper.find('img')
     expect(img).toHaveLength(1)
-    expect(img.prop('alt')).toBe("Détails de l'offre")
+    expect(img.prop('alt')).toBe("")
     expect(img.prop('src')).toBe('my-thumb')
   })
 
@@ -100,8 +100,8 @@ describe('src | components | OfferTile', () => {
     )
 
     // then
-    const venue = wrapper.find({ children: '1 €' })
-    expect(venue).toHaveLength(1)
+    const price = wrapper.find({ children: '1 €' })
+    expect(price).toHaveLength(1)
   })
 
   it('should render an offer tile with dates when event', () => {

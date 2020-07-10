@@ -8,17 +8,17 @@
   }
 
   a {
-    color: black;
+    color: $black;
     text-decoration: none;
     width: 90%;
   }
 
-  p {
+  .otw-venue {
     font-size: $size-medium;
     font-weight: $weight-medium;
   }
 
-  span {
+  .otw-offer-info {
     color: $grey-dark;
     font-size: $size-medium;
   }
@@ -28,7 +28,7 @@
   width: 100%;
 
   img {
-    box-shadow: 0 rem(2px) rem(4px) 0 rgba(0, 0, 0, 0.1);
+    box-shadow: 0 rem(2px) rem(4px) 0 $black-shadow;
     background-color: $grey;
     border-radius: 8px;
     height: rem(150px);

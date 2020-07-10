@@ -18,19 +18,21 @@ const OfferTile = ({ hit }) => {
       <Link to={`/offre/details/${offer.id}`}>
         <div className="otw-image-wrapper">
           <img
-            alt="Détails de l'offre"
+            alt=""
             src={offer.thumbUrl ? offer.thumbUrl : DEFAULT_THUMB_URL}
           />
         </div>
-        <p>
+        <p className="otw-venue">
           {venue.name}
         </p>
-        <span>
-          {offerDates}
-        </span>
-        <span>
-          {formattedPrice}
-        </span>
+        <p className="otw-offer-info">
+          <span>
+            {offerDates}
+          </span>
+          <span>
+            {formattedPrice}
+          </span>
+        </p>
       </Link>
     </li>
   )
