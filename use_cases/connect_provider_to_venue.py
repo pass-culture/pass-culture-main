@@ -1,6 +1,7 @@
 from decimal import Decimal
 from typing import Dict
 
+from domain.libraires import are_stocks_available_from_libraires_api
 from local_providers import AllocineStocks, LibrairesStocks, TiteLiveStocks
 from local_providers.local_provider import LocalProvider
 from local_providers.price_rule import PriceRule
@@ -18,7 +19,10 @@ def connect_provider_to_venue(provider_class: LocalProvider, venue_provider_payl
     check_existing_venue(venue)
     if provider_class == AllocineStocks:
         new_venue_provider = _connect_allocine_to_venue(venue, venue_provider_payload)
-    elif provider_class in (LibrairesStocks, TiteLiveStocks):
+    elif provider_class == LibrairesStocks:
+        check_venue_can_be_synchronized_with_libraires(venue)
+        new_venue_provider = _connect_titelive_or_libraires_to_venue(venue, venue_provider_payload)
+    elif provider_class == TiteLiveStocks:
         new_venue_provider = _connect_titelive_or_libraires_to_venue(venue, venue_provider_payload)
     else:
         errors = ApiErrors()
@@ -68,3 +72,10 @@ def _create_allocine_venue_provider(allocine_theater_id: str, payload: Dict, ven
     allocine_venue_provider.quantity = payload.get('quantity')
 
     return allocine_venue_provider
+
+def check_venue_can_be_synchronized_with_libraires(venue: VenueSQLEntity):
+    if not are_stocks_available_from_libraires_api(venue.siret):
+        errors = ApiErrors()
+        errors.status_code = 422
+        errors.add_error('provider', f'L’importation d’offres avec LesLibraires n’est pas disponible pour le siret {venue.siret}')
+        raise errors

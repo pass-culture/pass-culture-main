@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 import pytest
+from unittest.mock import patch
 
 from local_providers import AllocineStocks, LibrairesStocks, TiteLiveStocks
 from models import VenueProvider, AllocineVenueProviderPriceRule, AllocineVenueProvider, ApiErrors
@@ -49,7 +50,8 @@ class UseCaseTest:
 
         class WhenProviderIsLibraires:
             @clean_database
-            def test_should_connect_venue_to_libraires_provider(self, app):
+            @patch('use_cases.connect_provider_to_venue.are_stocks_available_from_libraires_api')
+            def test_should_connect_venue_to_libraires_provider(self, stubbed_are_stocks_available, app):
                 # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer)
@@ -64,12 +66,41 @@ class UseCaseTest:
                     'venueId': humanize(venue.id),
                 }
 
+                stubbed_are_stocks_available.return_value = True
+
                 # When
                 connect_provider_to_venue(provider_type, venue_provider_payload)
 
                 # Then
                 libraires_venue_provider = VenueProvider.query.one()
                 assert libraires_venue_provider.venue == venue
+
+
+            @clean_database
+            @patch('use_cases.connect_provider_to_venue.are_stocks_available_from_libraires_api')
+            def test_should_not_connect_venue_to_libraires_provider_if_not_interfaced(self, stubbed_are_stocks_available, app):
+                # Given
+                offerer = create_offerer()
+                venue = create_venue(offerer, siret='12345678912345')
+                provider = activate_provider('LibrairesStocks')
+
+                repository.save(venue)
+
+                provider_type = LibrairesStocks
+
+                venue_provider_payload = {
+                    'providerId': humanize(provider.id),
+                    'venueId': humanize(venue.id),
+                }
+
+                stubbed_are_stocks_available.return_value = False
+
+                # when
+                with pytest.raises(ApiErrors) as error:
+                    connect_provider_to_venue(provider_type, venue_provider_payload)
+
+                # then
+                assert error.value.errors['provider'] == ['L’importation d’offres avec LesLibraires n’est pas disponible pour le siret 12345678912345']
 
         class WhenProviderIsTiteLive:
             @clean_database
