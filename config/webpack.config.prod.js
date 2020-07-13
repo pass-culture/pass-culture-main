@@ -147,6 +147,8 @@ module.exports = {
             return path.resolve(`${paths.appAssetLinksDirectory}/assetlinks-staging.json`)
           } else if (process.env.ENVIRONMENT_NAME === 'testing') {
             return path.resolve(`${paths.appAssetLinksDirectory}/assetlinks-testing.json`)
+          } else if (process.env.ENVIRONMENT_NAME === 'integration') {
+            return path.resolve(`${paths.appAssetLinksDirectory}/assetlinks-integration.json`)
           }
         })(),
         to: path.resolve(`${paths.appBuild}/.well-known/assetlinks.json`),
