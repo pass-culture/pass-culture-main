@@ -104,7 +104,8 @@ class UseCaseTest:
 
         class WhenProviderIsTiteLive:
             @clean_database
-            def test_should_connect_venue_to_titelive_provider(self, app):
+            @patch('use_cases.connect_provider_to_venue.are_stocks_available_from_titelive_api')
+            def test_should_connect_venue_to_titelive_provider(self, stubbed_are_stocks_available, app):
                 # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer)
@@ -119,12 +120,42 @@ class UseCaseTest:
                     'venueId': humanize(venue.id),
                 }
 
+                stubbed_are_stocks_available.return_value = True
+
                 # When
                 connect_provider_to_venue(provider_type, venue_provider_payload)
 
                 # Then
                 titelive_venue_provider = VenueProvider.query.one()
                 assert titelive_venue_provider.venue == venue
+
+
+            @clean_database
+            @patch('use_cases.connect_provider_to_venue.are_stocks_available_from_libraires_api')
+            def test_should_not_connect_venue_to_titelive_provider_if_not_interfaced(self, stubbed_are_stocks_available, app):
+                # Given
+                offerer = create_offerer()
+                venue = create_venue(offerer, siret='12345678912345')
+                provider = activate_provider('TiteLiveStocks')
+
+                repository.save(venue)
+
+                provider_type = TiteLiveStocks
+
+                venue_provider_payload = {
+                    'providerId': humanize(provider.id),
+                    'venueId': humanize(venue.id),
+                }
+
+                stubbed_are_stocks_available.return_value = False
+
+                # when
+                with pytest.raises(ApiErrors) as error:
+                    connect_provider_to_venue(provider_type, venue_provider_payload)
+
+                # then
+                assert error.value.errors['provider'] == ['L’importation d’offres avec Titelive n’est pas disponible pour le siret 12345678912345']
+
 
         class WhenProviderIsSomethingElse:
             @clean_database

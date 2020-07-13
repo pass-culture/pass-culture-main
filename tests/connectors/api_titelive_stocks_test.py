@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 
-from connectors.api_titelive_stocks import get_titelive_stocks, ApiTiteLiveException
+from connectors.api_titelive_stocks import get_titelive_stocks, ApiTiteLiveException, try_get_titelive_stocks
 
 
 class GetTiteLiveStocksTest:
@@ -31,7 +31,7 @@ class GetTiteLiveStocksTest:
         get_titelive_stocks(siret)
 
         # Then
-        requests_get.assert_called_once_with('https://stock.epagine.fr/stocks/123456789123')
+        requests_get.assert_called_once_with('https://stock.epagine.fr/stocks/123456789123', params={})
 
     @patch('connectors.api_titelive_stocks.requests.get')
     def test_should_call_titelive_api_with_siret_and_last_processed_isbn_to_call_next_api_page(self,
@@ -60,7 +60,7 @@ class GetTiteLiveStocksTest:
         get_titelive_stocks(siret, last_processed_isbn)
 
         # Then
-        requests_get.assert_called_once_with('https://stock.epagine.fr/stocks/123456789123?after=9876543214567')
+        requests_get.assert_called_once_with('https://stock.epagine.fr/stocks/123456789123', params={'after': '9876543214567'})
 
     @patch('connectors.api_titelive_stocks.requests.get')
     def test_should_raise_error_when_request_fails(self, requests_get):
@@ -79,3 +79,42 @@ class GetTiteLiveStocksTest:
 
         # Then
         assert str(exception.value) == 'Error 400 when getting TiteLive stocks for siret: 123456789123'
+
+
+class  TryGetTiteLiveStocksTest:
+    @patch('connectors.api_titelive_stocks.requests.get')
+    def test_should_call_libraires_api_with_given_siret(self, mock_requests_get):
+        # Given
+        siret = '12345678912345'
+        mock_requests_get.return_value = MagicMock(status_code=200)
+
+        # When
+        try_get_titelive_stocks(siret)
+
+        # Then
+        mock_requests_get.assert_called_once_with(
+            'https://stock.epagine.fr/stocks/12345678912345')
+
+    @patch('connectors.api_titelive_stocks.requests.get')
+    def test_should_returns_true_if_api_returns_200(self, mock_requests_get):
+        # Given
+        siret = '12345678912345'
+        mock_requests_get.return_value = MagicMock(status_code=200)
+
+        # When
+        output = try_get_titelive_stocks(siret)
+
+        # Then
+        assert output == True
+
+    @patch('connectors.api_titelive_stocks.requests.get')
+    def test_should_returns_false_when_libraires_api_request_fails(self, mock_requests_get):
+        # Given
+        siret = '12345678912345'
+        mock_requests_get.return_value = MagicMock(status_code=400)
+
+        # When
+        output = try_get_titelive_stocks(siret)
+
+        # Then
+        assert output == False
