@@ -15,9 +15,9 @@ import ProfileContainer from '../pages/profile/ProfileContainer'
 import SignupContainer from '../pages/signup/SignupContainer'
 import SearchContainer from '../pages/search/SearchContainer'
 import SignInContainer from '../pages/signin/SignInContainer'
-import CreateAccount from '../pages/create-account/CreateAccount'
 import TutorialsContainer from '../pages/tutorials/TutorialsContainer'
 import TypeFormContainer from '../pages/typeform/TypeformContainer'
+import EligibilityCheck from '../pages/create-account/EligibilityCheck'
 import Debug from '../pages/debug/DebugPage'
 
 import { IS_DEBUG_PAGE_ACTIVE } from '../../utils/config'
@@ -56,7 +56,7 @@ const routes = [
     title: 'Inscription',
   },
   {
-    component: CreateAccount,
+    component: EligibilityCheck,
     path: '/verification-eligibilite',
     title: 'Eligibilité',
   },

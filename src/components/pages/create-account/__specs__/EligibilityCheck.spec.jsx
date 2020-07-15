@@ -4,8 +4,8 @@ import { mount } from 'enzyme'
 import { act } from 'react-dom/test-utils'
 
 import EligibilityCheck from '../EligibilityCheck'
-import { checkIfAgeIsEligible, ELIGIBLE } from '../../domain/checkIfAgeIsEligible'
-import { checkIfDepartmentIsEligible } from '../../domain/checkIfDepartmentIsEligible'
+import { checkIfAgeIsEligible, ELIGIBLE } from '../domain/checkIfAgeIsEligible'
+import { checkIfDepartmentIsEligible } from '../domain/checkIfDepartmentIsEligible'
 
 jest.mock('../../domain/checkIfAgeIsEligible', () => {
   const originalModule = jest.requireActual('../../domain/checkIfAgeIsEligible')
@@ -27,10 +27,6 @@ describe('eligibility check page', () => {
   const getFullYear = Date.prototype.getFullYear
 
   beforeEach(() => {
-    props = {
-      historyPush: jest.fn(),
-      pathname: '/verification-eligibilite/',
-    }
     Date.prototype.getFullYear = () => 2020
   })
 
@@ -154,40 +150,6 @@ describe('eligibility check page', () => {
   })
 
   describe('when user submits form', () => {
-    it('should properly format url for redirection when necessary', () => {
-      // given
-      checkIfAgeIsEligible.mockReturnValue(ELIGIBLE)
-      checkIfDepartmentIsEligible.mockReturnValue(false)
-      props.pathname = '/verification-eligibilite'
-
-      const wrapper = mount(
-        <MemoryRouter>
-          <EligibilityCheck {...props} />
-        </MemoryRouter>
-      )
-
-      const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
-      const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
-
-      act(() => {
-        eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '27200' } })
-        eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/2002' } })
-      })
-      wrapper.update()
-
-      const eligibilityForm = wrapper.find('form')
-
-      // when
-      eligibilityForm.invoke('onSubmit')({
-        preventDefault: jest.fn(),
-      })
-
-      // Then
-      expect(props.historyPush).toHaveBeenCalledWith(
-        '/verification-eligibilite/departement-non-eligible'
-      )
-    })
-
     it("should check if age is eligible based on user's date of birth", () => {
       // given
       const wrapper = mount(
@@ -209,9 +171,12 @@ describe('eligibility check page', () => {
       const eligibilityForm = wrapper.find('form')
 
       // when
-      eligibilityForm.invoke('onSubmit')({
-        preventDefault: jest.fn(),
+      act(() => {
+        eligibilityForm.invoke('onSubmit')({
+          preventDefault: jest.fn(),
+        })
       })
+      wrapper.update()
 
       // then
       expect(checkIfAgeIsEligible).toHaveBeenCalledWith(dateOfBirth)
@@ -243,15 +208,18 @@ describe('eligibility check page', () => {
         const eligibilityForm = wrapper.find('form')
 
         // when
-        eligibilityForm.invoke('onSubmit')({
-          preventDefault: jest.fn(),
+        act(() => {
+          eligibilityForm.invoke('onSubmit')({
+            preventDefault: jest.fn(),
+          })
         })
+        wrapper.update()
 
         // then
         expect(checkIfDepartmentIsEligible).toHaveBeenCalledWith(postalCode)
       })
 
-      it('should redirect to /eligible when department is eligible', () => {
+      it('should display eligible view when department is eligible', () => {
         // given
         checkIfDepartmentIsEligible.mockReturnValue(true)
 
@@ -273,15 +241,18 @@ describe('eligibility check page', () => {
         const eligibilityForm = wrapper.find('form')
 
         // when
-        eligibilityForm.invoke('onSubmit')({
-          preventDefault: jest.fn(),
+        act(() => {
+          eligibilityForm.invoke('onSubmit')({
+            preventDefault: jest.fn(),
+          })
         })
+        wrapper.update()
 
         // then
-        expect(props.historyPush).toHaveBeenCalledWith('/verification-eligibilite/eligible')
+        expect(wrapper.find({children: 'Tu es éligible !'})).toHaveLength(1)
       })
 
-      it('should redirect to /department-non-eligible when department is not eligible', () => {
+      it('should display ineligible department view when department is not eligible', () => {
         // given
         checkIfDepartmentIsEligible.mockReturnValue(false)
 
@@ -303,14 +274,15 @@ describe('eligibility check page', () => {
         const eligibilityForm = wrapper.find('form')
 
         // when
-        eligibilityForm.invoke('onSubmit')({
-          preventDefault: jest.fn(),
+        act(() => {
+          eligibilityForm.invoke('onSubmit')({
+            preventDefault: jest.fn(),
+          })
         })
+        wrapper.update()
 
         // then
-        expect(props.historyPush).toHaveBeenCalledWith(
-          '/verification-eligibilite/departement-non-eligible'
-        )
+        expect(wrapper.find({children: 'IneligibleDepartment'})).toHaveLength(1)
       })
     })
 
@@ -319,7 +291,7 @@ describe('eligibility check page', () => {
         checkIfDepartmentIsEligible.mockReturnValue(true)
       })
 
-      it('should redirect to /bientot when user is soon to be eligible', () => {
+      it('should display eligible soon view when user is soon to be eligible', () => {
         // given
         checkIfAgeIsEligible.mockReturnValue('soon')
 
@@ -341,15 +313,18 @@ describe('eligibility check page', () => {
         const eligibilityForm = wrapper.find('form')
 
         // when
-        eligibilityForm.invoke('onSubmit')({
-          preventDefault: jest.fn(),
+        act(() => {
+          eligibilityForm.invoke('onSubmit')({
+            preventDefault: jest.fn(),
+          })
         })
+        wrapper.update()
 
         // then
-        expect(props.historyPush).toHaveBeenCalledWith('/verification-eligibilite/bientot')
+        expect(wrapper.find({children:'Plus que quelques mois d’attente !'})).toHaveLength(1)
       })
 
-      it('should redirect to /pas-eligible when user is not eligible anymore', () => {
+      it('should display ineligible over eighteen view when user is not eligible anymore', () => {
         // given
         checkIfAgeIsEligible.mockReturnValue('tooOld')
 
@@ -371,15 +346,18 @@ describe('eligibility check page', () => {
         const eligibilityForm = wrapper.find('form')
 
         // when
-        eligibilityForm.invoke('onSubmit')({
-          preventDefault: jest.fn(),
+        act(() => {
+          eligibilityForm.invoke('onSubmit')({
+            preventDefault: jest.fn(),
+          })
         })
+        wrapper.update()
 
         // then
-        expect(props.historyPush).toHaveBeenCalledWith('/verification-eligibilite/pas-eligible')
+        expect(wrapper.find({children:'Tu as plus de 18 ans'})).toHaveLength(1)
       })
 
-      it('should redirect to /trop-tot when user is not eligible yet', () => {
+      it('should display ineligible under eighteen view when user is not eligible yet', () => {
         // given
         checkIfAgeIsEligible.mockReturnValue('tooYoung')
 
@@ -401,12 +379,15 @@ describe('eligibility check page', () => {
         const eligibilityForm = wrapper.find('form')
 
         // when
-        eligibilityForm.invoke('onSubmit')({
-          preventDefault: jest.fn(),
+        act(() => {
+          eligibilityForm.invoke('onSubmit')({
+            preventDefault: jest.fn(),
+          })
         })
+        wrapper.update()
 
         // then
-        expect(props.historyPush).toHaveBeenCalledWith('/verification-eligibilite/trop-tot')
+        expect(wrapper.find({children:'Il est encore un peu tôt pour toi. Pour profiter du pass Culture, tu dois avoir 18 ans.'})).toHaveLength(1)
       })
     })
 

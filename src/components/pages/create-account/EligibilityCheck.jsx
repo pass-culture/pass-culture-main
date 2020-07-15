@@ -1,18 +1,20 @@
 import React, { useCallback, useState } from 'react'
 import InputMask from 'react-input-mask'
 
-import BackLink from '../../../layout/Header/BackLink/BackLink'
-import Icon from '../../../layout/Icon/Icon'
-import { checkIfDepartmentIsEligible } from '../domain/checkIfDepartmentIsEligible'
-import { checkIfAgeIsEligible } from '../domain/checkIfAgeIsEligible'
-import EligibleSoon from '../EligibleSoon/EligibleSoon'
-import IneligibleDepartment from '../IneligibleDepartment/IneligibleDepartment'
-import IneligibleOverEighteen from '../IneligibleOverEighteen/IneligibleOverEighteen'
-import IneligibleUnderEighteen from '../IneligibleUnderEighteen/IneligibleUnderEighteen'
-import Eligible from '../Eligible/Eligible'
-import { eligiblityValues } from '../domain/checkIfAgeIsEligible'
+import BackLink from '../../layout/Header/BackLink/BackLink'
+import Icon from '../../layout/Icon/Icon'
+import { checkIfDepartmentIsEligible } from './domain/checkIfDepartmentIsEligible'
+import { checkIfAgeIsEligible } from './domain/checkIfAgeIsEligible'
+import EligibleSoon from './EligibleSoon/EligibleSoon'
+import IneligibleDepartment from './IneligibleDepartment/IneligibleDepartment'
+import IneligibleOverEighteen from './IneligibleOverEighteen/IneligibleOverEighteen'
+import IneligibleUnderEighteen from './IneligibleUnderEighteen/IneligibleUnderEighteen'
+import Eligible from './Eligible/Eligible'
+import { eligiblityValues } from './domain/checkIfAgeIsEligible'
+import { useReCaptchaScript } from './utils/recaptcha'
 
 const EligibilityCheck = () => {
+  useReCaptchaScript()
   const [postalCodeInputValue, setPostalCodeInputValue] = useState('')
   const [dateOfBirthInputValue, setDateOfBirthInputValue] = useState('')
   const [componentToRender, setComponentToRender] = useState('')
