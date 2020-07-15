@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react'
 import InputMask from 'react-input-mask'
-import PropTypes from 'prop-types'
 
 import BackLink from '../../../layout/Header/BackLink/BackLink'
 import Icon from '../../../layout/Icon/Icon'
@@ -13,7 +12,7 @@ import IneligibleUnderEighteen from '../IneligibleUnderEighteen/IneligibleUnderE
 import Eligible from '../Eligible/Eligible'
 import { eligiblityValues } from '../domain/checkIfAgeIsEligible'
 
-const EligibilityCheck = ({ historyPush }) => {
+const EligibilityCheck = () => {
   const [postalCodeInputValue, setPostalCodeInputValue] = useState('')
   const [dateOfBirthInputValue, setDateOfBirthInputValue] = useState('')
   const [componentToRender, setComponentToRender] = useState('')
@@ -138,10 +137,6 @@ const EligibilityCheck = ({ historyPush }) => {
   }
 
   return renderComponent()
-}
-
-EligibilityCheck.propTypes = {
-  historyPush: PropTypes.func.isRequired,
 }
 
 export default EligibilityCheck
