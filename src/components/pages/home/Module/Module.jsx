@@ -5,8 +5,7 @@ import OfferTile from './OfferTile/OfferTile'
 import Offers from '../domain/ValueObjects/Offers'
 import { parseAlgoliaParameters } from '../domain/parseAlgoliaParameters'
 import Draggable from 'react-draggable'
-
-const DEFAULT_STEP = 0
+import { calculatePositionX, calculateStep, DEFAULT_STEP } from './domain/dragFunctions'
 
 class Module extends Component {
   constructor(props) {
@@ -32,45 +31,24 @@ class Module extends Component {
     })
   }
 
-  calculatePositionX = (lastX, newX, position, step, maxSteps) => {
-    const width = document.getElementsByClassName('otw-image-wrapper')[0].offsetWidth
-    const movingRight = lastX > newX
-    const movingRatio = width * 1.035
-
-    if (movingRight) {
-      if (step < maxSteps) {
-        return position.x - movingRatio
-      }
-      return position.x
-    } else {
-      if (step > 0) {
-        return position.x + movingRatio
-      }
-      return position.x
-    }
-  }
-
-  calculateStep = (lastX, newX, step, maxSteps) => {
-    const movingRight = lastX > newX
-
-    if (movingRight) {
-      if (step < maxSteps) {
-        return step + 1
-      }
-      return maxSteps
-    } else {
-      if (step > 0) {
-        return step - 1
-      }
-      return DEFAULT_STEP
-    }
-  }
-
   handleStopDragging = (event, data) => {
     const { isDragging, hits, lastX, position, step } = this.state
-    const maxSteps = hits.length - 1
-    const newStep = this.calculateStep(lastX, data.x, step, maxSteps)
-    const newX = this.calculatePositionX(lastX, data.x, position, step, maxSteps)
+    const firstOfferImageWidth = document.getElementsByClassName('otw-image-wrapper')[0].offsetWidth
+
+    const maxSteps = hits.length
+    const newStep = calculateStep({
+      lastX: lastX,
+      maxSteps: maxSteps,
+      newX: data.x,
+      step: step,
+    })
+    const newX = calculatePositionX({
+      lastX: lastX,
+      maxSteps: maxSteps,
+      newX: data.x,
+      step: step,
+      width: firstOfferImageWidth
+    })
 
     if (isDragging) {
       this.setState({
