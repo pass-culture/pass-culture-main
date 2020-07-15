@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Callable
 
-from connectors.api_libraires import get_stocks_from_libraires_api, try_get_stocks_from_libraires_api
+from connectors.api_libraires import get_stocks_from_libraires_api, is_siret_registered
 
 LIBRAIRES_STOCK_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
@@ -12,8 +12,8 @@ def get_libraires_stock_information(siret: str, last_processed_isbn: str = '', m
     return iter(api_response['stocks'])
 
 
-def are_stocks_available_from_libraires_api(siret: str) -> bool:
-    return try_get_stocks_from_libraires_api(siret)
+def can_be_synchronized_with_libraires(siret: str) -> bool:
+    return is_siret_registered(siret)
 
 
 def read_last_modified_date(date: datetime) -> str:

@@ -1,8 +1,8 @@
 from decimal import Decimal
 from typing import Dict
 
-from domain.libraires import are_stocks_available_from_libraires_api
-from domain.titelive import are_stocks_available_from_titelive_api
+from domain.libraires import can_be_synchronized_with_libraires
+from domain.titelive import can_be_synchronized_with_titelive
 from local_providers import AllocineStocks, LibrairesStocks, TiteLiveStocks
 from local_providers.local_provider import LocalProvider
 from local_providers.price_rule import PriceRule
@@ -76,14 +76,14 @@ def _create_allocine_venue_provider(allocine_theater_id: str, payload: Dict, ven
     return allocine_venue_provider
 
 def check_venue_can_be_synchronized_with_libraires(venue: VenueSQLEntity):
-    if not are_stocks_available_from_libraires_api(venue.siret):
+    if not can_be_synchronized_with_libraires(venue.siret):
         errors = ApiErrors()
         errors.status_code = 422
         errors.add_error('provider', f'L’importation d’offres avec LesLibraires n’est pas disponible pour le siret {venue.siret}')
         raise errors
 
 def check_venue_can_be_synchronized_with_titelive(venue: VenueSQLEntity):
-    if not are_stocks_available_from_titelive_api(venue.siret):
+    if not can_be_synchronized_with_titelive(venue.siret):
         errors = ApiErrors()
         errors.status_code = 422
         errors.add_error('provider', f'L’importation d’offres avec Titelive n’est pas disponible pour le siret {venue.siret}')

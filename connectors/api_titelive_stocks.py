@@ -1,4 +1,5 @@
 import requests
+from typing import Dict
 
 TITELIVE_STOCKS_API_URL = 'https://stock.epagine.fr/stocks'
 
@@ -7,11 +8,9 @@ class ApiTiteLiveException(Exception):
     pass
 
 
-def get_titelive_stocks(siret: str, last_processed_isbn: str = '') -> dict:
+def get_titelive_stocks(siret: str, last_processed_isbn: str = '') -> Dict:
     url = _build_url(siret)
-    params = {}
-    if last_processed_isbn:
-        params['after'] = last_processed_isbn
+    params = _build_params(last_processed_isbn)
 
     api_response = requests.get(url, params=params)
 
@@ -21,7 +20,7 @@ def get_titelive_stocks(siret: str, last_processed_isbn: str = '') -> dict:
     return api_response.json()
 
 
-def try_get_titelive_stocks(siret: str) -> bool:
+def is_siret_registered(siret: str) -> bool:
     api_url = _build_url(siret)
     libraires_response = requests.get(api_url)
 
@@ -30,3 +29,10 @@ def try_get_titelive_stocks(siret: str) -> bool:
 
 def _build_url(siret: str) -> str:
     return f'{TITELIVE_STOCKS_API_URL}/{siret}'
+
+def _build_params(last_processed_isbn: str = '') -> Dict:
+    params = {}
+    if last_processed_isbn:
+        params['after'] = last_processed_isbn
+
+    return params

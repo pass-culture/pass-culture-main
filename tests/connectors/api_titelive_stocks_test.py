@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 
-from connectors.api_titelive_stocks import get_titelive_stocks, ApiTiteLiveException, try_get_titelive_stocks
+from connectors.api_titelive_stocks import get_titelive_stocks, ApiTiteLiveException, is_siret_registered
 
 
 class GetTiteLiveStocksTest:
@@ -81,7 +81,7 @@ class GetTiteLiveStocksTest:
         assert str(exception.value) == 'Error 400 when getting TiteLive stocks for siret: 123456789123'
 
 
-class  TryGetTiteLiveStocksTest:
+class  IsSiretRegisteredTest:
     @patch('connectors.api_titelive_stocks.requests.get')
     def test_should_call_libraires_api_with_given_siret(self, mock_requests_get):
         # Given
@@ -89,7 +89,7 @@ class  TryGetTiteLiveStocksTest:
         mock_requests_get.return_value = MagicMock(status_code=200)
 
         # When
-        try_get_titelive_stocks(siret)
+        is_siret_registered(siret)
 
         # Then
         mock_requests_get.assert_called_once_with(
@@ -102,7 +102,7 @@ class  TryGetTiteLiveStocksTest:
         mock_requests_get.return_value = MagicMock(status_code=200)
 
         # When
-        output = try_get_titelive_stocks(siret)
+        output = is_siret_registered(siret)
 
         # Then
         assert output == True
@@ -114,7 +114,7 @@ class  TryGetTiteLiveStocksTest:
         mock_requests_get.return_value = MagicMock(status_code=400)
 
         # When
-        output = try_get_titelive_stocks(siret)
+        output = is_siret_registered(siret)
 
         # Then
         assert output == False

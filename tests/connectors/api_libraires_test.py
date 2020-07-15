@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 
-from connectors.api_libraires import ApiLibrairesException, get_stocks_from_libraires_api, try_get_stocks_from_libraires_api
+from connectors.api_libraires import ApiLibrairesException, get_stocks_from_libraires_api, is_siret_registered
 
 
 class GetStocksFromLibrairesApiTest:
@@ -87,7 +87,7 @@ class GetStocksFromLibrairesApiTest:
                 'modifiedSince': modified_since
             })
 
-class  TryGetStocksFromLibrairesApiTest:
+class  IsSiretRegisteredTest:
     @patch('connectors.api_libraires.requests.get')
     def test_should_call_libraires_api_with_given_siret(self, mock_requests_get):
         # Given
@@ -95,7 +95,7 @@ class  TryGetStocksFromLibrairesApiTest:
         mock_requests_get.return_value = MagicMock(status_code=200)
 
         # When
-        try_get_stocks_from_libraires_api(siret)
+        is_siret_registered(siret)
 
         # Then
         mock_requests_get.assert_called_once_with(
@@ -108,7 +108,7 @@ class  TryGetStocksFromLibrairesApiTest:
         mock_requests_get.return_value = MagicMock(status_code=200)
 
         # When
-        output = try_get_stocks_from_libraires_api(siret)
+        output = is_siret_registered(siret)
 
         # Then
         assert output == True
@@ -120,7 +120,7 @@ class  TryGetStocksFromLibrairesApiTest:
         mock_requests_get.return_value = MagicMock(status_code=400)
 
         # When
-        output = try_get_stocks_from_libraires_api(siret)
+        output = is_siret_registered(siret)
 
         # Then
         assert output == False

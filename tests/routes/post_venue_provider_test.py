@@ -13,7 +13,7 @@ class Post:
     class Returns201:
         @clean_database
         @patch('routes.venue_providers.subprocess.Popen')
-        @patch('use_cases.connect_provider_to_venue.are_stocks_available_from_titelive_api')
+        @patch('use_cases.connect_provider_to_venue.can_be_synchronized_with_titelive')
         def when_venue_provider_is_successfully_created(self, stubbed_check, mock_subprocess, app):
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)
@@ -137,7 +137,7 @@ class Post:
             assert ['error received'] == response.json['errors']
 
         @clean_database
-        @patch('use_cases.connect_provider_to_venue.are_stocks_available_from_libraires_api')
+        @patch('use_cases.connect_provider_to_venue.can_be_synchronized_with_libraires')
         def when_trying_to_add_existing_provider(self, stubbed_check, app):
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)
@@ -256,7 +256,7 @@ class Post:
 
     class Returns422:
         @clean_database
-        @patch('use_cases.connect_provider_to_venue.are_stocks_available_from_titelive_api')
+        @patch('use_cases.connect_provider_to_venue.can_be_synchronized_with_titelive')
         def when_provider_api_not_available(self, stubbed_check, app):
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)

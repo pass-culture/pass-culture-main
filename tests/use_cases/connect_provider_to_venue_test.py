@@ -50,8 +50,8 @@ class UseCaseTest:
 
         class WhenProviderIsLibraires:
             @clean_database
-            @patch('use_cases.connect_provider_to_venue.are_stocks_available_from_libraires_api')
-            def test_should_connect_venue_to_libraires_provider(self, stubbed_are_stocks_available, app):
+            @patch('use_cases.connect_provider_to_venue.can_be_synchronized_with_libraires')
+            def test_should_connect_venue_to_libraires_provider(self, stubbed_can_by_synchronized, app):
                 # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer)
@@ -66,7 +66,7 @@ class UseCaseTest:
                     'venueId': humanize(venue.id),
                 }
 
-                stubbed_are_stocks_available.return_value = True
+                stubbed_can_by_synchronized.return_value = True
 
                 # When
                 connect_provider_to_venue(provider_type, venue_provider_payload)
@@ -77,8 +77,8 @@ class UseCaseTest:
 
 
             @clean_database
-            @patch('use_cases.connect_provider_to_venue.are_stocks_available_from_libraires_api')
-            def test_should_not_connect_venue_to_libraires_provider_if_not_interfaced(self, stubbed_are_stocks_available, app):
+            @patch('use_cases.connect_provider_to_venue.can_be_synchronized_with_libraires')
+            def test_should_not_connect_venue_to_libraires_provider_if_not_interfaced(self, stubbed_can_by_synchronized, app):
                 # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer, siret='12345678912345')
@@ -93,7 +93,7 @@ class UseCaseTest:
                     'venueId': humanize(venue.id),
                 }
 
-                stubbed_are_stocks_available.return_value = False
+                stubbed_can_by_synchronized.return_value = False
 
                 # when
                 with pytest.raises(ApiErrors) as error:
@@ -104,8 +104,8 @@ class UseCaseTest:
 
         class WhenProviderIsTiteLive:
             @clean_database
-            @patch('use_cases.connect_provider_to_venue.are_stocks_available_from_titelive_api')
-            def test_should_connect_venue_to_titelive_provider(self, stubbed_are_stocks_available, app):
+            @patch('use_cases.connect_provider_to_venue.can_be_synchronized_with_titelive')
+            def test_should_connect_venue_to_titelive_provider(self, stubbed_can_by_synchronized, app):
                 # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer)
@@ -120,7 +120,7 @@ class UseCaseTest:
                     'venueId': humanize(venue.id),
                 }
 
-                stubbed_are_stocks_available.return_value = True
+                stubbed_can_by_synchronized.return_value = True
 
                 # When
                 connect_provider_to_venue(provider_type, venue_provider_payload)
@@ -131,8 +131,8 @@ class UseCaseTest:
 
 
             @clean_database
-            @patch('use_cases.connect_provider_to_venue.are_stocks_available_from_libraires_api')
-            def test_should_not_connect_venue_to_titelive_provider_if_not_interfaced(self, stubbed_are_stocks_available, app):
+            @patch('use_cases.connect_provider_to_venue.can_be_synchronized_with_libraires')
+            def test_should_not_connect_venue_to_titelive_provider_if_not_interfaced(self, stubbed_can_by_synchronized, app):
                 # Given
                 offerer = create_offerer()
                 venue = create_venue(offerer, siret='12345678912345')
@@ -147,7 +147,7 @@ class UseCaseTest:
                     'venueId': humanize(venue.id),
                 }
 
-                stubbed_are_stocks_available.return_value = False
+                stubbed_can_by_synchronized.return_value = False
 
                 # when
                 with pytest.raises(ApiErrors) as error:
