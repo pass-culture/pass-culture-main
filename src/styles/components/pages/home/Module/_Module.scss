@@ -1,12 +1,4 @@
 .module-wrapper {
-  overflow-x: scroll;
-  -webkit-overflow-scrolling: touch;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  scrollbar-width: none;
-
   .one-item-medium {
     margin-bottom: rem(20px);
     padding-left: rem(20px);
