@@ -1,54 +1,70 @@
-import { shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import React from 'react'
-import { Redirect, Route } from 'react-router'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
 
+import getMockStore from '../../../../utils/mockStore'
 import Activation from '../Activation'
-import Error from '../Error/Error'
-import InvalidLink from '../InvalidLink/InvalidLink'
-import PasswordFormContainer from '../PasswordForm/PasswordFormContainer'
 
 describe('activation', () => {
-  it('should render route for activating password when token is given', () => {
+  it('should render route for activating password when token adn email are given', () => {
     // when
-    const wrapper = shallow(<Activation />)
+    const mockStore = getMockStore({
+      token: (
+        state = {
+          hasBeenChecked: false,
+        }
+      ) => state,
+    })
+    const wrapper = mount(
+      <Provider store={mockStore}>
+        <MemoryRouter initialEntries={['/activation/MEFA?email=beneficiary@example.com']}>
+          <Activation />
+        </MemoryRouter>
+      </Provider>
+    )
 
     // then
-    const routes = wrapper.find(Route)
-    const passwordFormContainer = wrapper.find(PasswordFormContainer)
-    expect(routes.at(2).prop('path')).toBe('/activation/:token([A-Z0-9]+)')
-    expect(passwordFormContainer).toHaveLength(1)
+    const title = wrapper.find({ children: 'Pour commencer, choisissez votre mot de passe.' })
+    expect(title).toHaveLength(1)
   })
 
-  it('should render error component when route is exactly /activation/error', () => {
+  it('should render error component when wrong route is given', () => {
     // given
-    const wrapper = shallow(<Activation />)
+    const wrapper = mount(
+      <MemoryRouter initialEntries={['/activation/error']}>
+        <Activation />
+      </MemoryRouter>
+    )
 
     // then
-    const routes = wrapper.find(Route)
-    const error = wrapper.find(Error)
-    expect(routes.at(0).prop('path')).toBe('/activation/error')
-    expect(error).toHaveLength(1)
-    expect(routes.at(0).prop('exact')).toBeDefined()
+    const title = wrapper.find({ children: 'Il semblerait que le lien cliqué soit incorrect.' })
+    expect(title).toHaveLength(1)
   })
 
   it('should redirect to error page when current URLs does not match any mapped URLs', () => {
     // given
-    const wrapper = shallow(<Activation />)
+    const wrapper = mount(
+      <MemoryRouter initialEntries={['/activation/wrong-url']}>
+        <Activation />
+      </MemoryRouter>
+    )
 
     // then
-    const redirect = wrapper.find(Redirect)
-    expect(redirect.prop('to')).toBe('/activation/error')
+    const title = wrapper.find({ children: 'Il semblerait que le lien cliqué soit incorrect.' })
+    expect(title).toHaveLength(1)
   })
 
   it('should render InvalidLink component when route is exactly /activation/lien-invalide', () => {
     // given
-    const wrapper = shallow(<Activation />)
+    const wrapper = mount(
+      <MemoryRouter initialEntries={['/activation/lien-invalide']}>
+        <Activation />
+      </MemoryRouter>
+    )
 
     // then
-    const routes = wrapper.find(Route)
-    const invalidLink = wrapper.find(InvalidLink)
-    expect(routes.at(1).prop('path')).toBe('/activation/lien-invalide')
-    expect(invalidLink).toHaveLength(1)
-    expect(routes.at(1).prop('exact')).toBeDefined()
+    const title = wrapper.find({ children: 'Le lien sur lequel vous avez cliqué est invalide.' })
+    expect(title).toHaveLength(1)
   })
 })
