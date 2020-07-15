@@ -13,7 +13,8 @@ class Post:
     class Returns201:
         @clean_database
         @patch('routes.venue_providers.subprocess.Popen')
-        def when_venue_provider_is_successfully_created(self, mock_subprocess, app):
+        @patch('use_cases.connect_provider_to_venue.are_stocks_available_from_titelive_api')
+        def when_venue_provider_is_successfully_created(self, stubbed_check, mock_subprocess, app):
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)
             offerer = create_offerer()
@@ -29,6 +30,7 @@ class Post:
 
             auth_request = TestClient(app.test_client()) \
                 .with_auth(email=user.email)
+            stubbed_check.return_value = True
 
             # When
             response = auth_request.post('/venueProviders',
@@ -135,7 +137,8 @@ class Post:
             assert ['error received'] == response.json['errors']
 
         @clean_database
-        def when_trying_to_add_existing_provider(self, app):
+        @patch('use_cases.connect_provider_to_venue.are_stocks_available_from_libraires_api')
+        def when_trying_to_add_existing_provider(self, stubbed_check, app):
             # Given
             user = create_user(is_admin=True, can_book_free_offers=False)
             offerer = create_offerer()
@@ -150,6 +153,7 @@ class Post:
                 'providerId': humanize(provider.id),
                 'venueId': humanize(venue.id),
             }
+            stubbed_check.return_value = True
 
             # When
             response = auth_request.post('/venueProviders', json=venue_provider_data)
@@ -249,3 +253,34 @@ class Post:
 
             # Then
             assert response.status_code == 404
+
+    class Returns422:
+        @clean_database
+        @patch('use_cases.connect_provider_to_venue.are_stocks_available_from_titelive_api')
+        def when_provider_api_not_available(self, stubbed_check, app):
+            # Given
+            user = create_user(is_admin=True, can_book_free_offers=False)
+            offerer = create_offerer()
+            venue = create_venue(offerer, siret='12345678912345')
+            repository.save(venue, user)
+
+            provider = activate_provider('TiteLiveStocks')
+
+            venue_provider_data = {
+                'providerId': humanize(provider.id),
+                'venueId': humanize(venue.id),
+            }
+
+            auth_request = TestClient(app.test_client()) \
+                .with_auth(email=user.email)
+
+            stubbed_check.return_value = False
+
+            # When
+            response = auth_request.post('/venueProviders',
+                                         json=venue_provider_data)
+
+            # Then
+            assert response.status_code == 422
+            assert response.json['provider'] == ["L’importation d’offres avec Titelive n’est pas disponible pour le siret 12345678912345"]
+            assert VenueProvider.query.count() == 0
