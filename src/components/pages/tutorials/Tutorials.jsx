@@ -9,7 +9,7 @@ import SliderPoints from './SliderPoints/SliderPoints'
 import DraggableTutorial from './DraggableTutorial/DraggableTutorial'
 import EnteringSides from './animationsEnteringSides/EnteringSides'
 
-const Tutorials = ({ history, saveUserHasSeenTutorials }) => {
+const Tutorials = ({ redirectToDiscovery, saveUserHasSeenTutorials }) => {
   const tutorials = [FirstTutorial, SecondTutorial, ThirdTutorial]
   const lastTutorialStep = tutorials.length - 1
 
@@ -17,8 +17,7 @@ const Tutorials = ({ history, saveUserHasSeenTutorials }) => {
   let [previousStep, setPreviousStep] = useState(-1)
 
   function concludeTutorials() {
-    saveUserHasSeenTutorials()
-    history.push('/decouverte')
+    saveUserHasSeenTutorials(redirectToDiscovery)
   }
 
   function handleGoNext() {
@@ -93,7 +92,7 @@ const Tutorials = ({ history, saveUserHasSeenTutorials }) => {
 }
 
 Tutorials.propTypes = {
-  history: PropTypes.shape().isRequired,
+  redirectToDiscovery: PropTypes.func.isRequired,
   saveUserHasSeenTutorials: PropTypes.func.isRequired,
 }
 

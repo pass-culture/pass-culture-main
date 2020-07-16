@@ -6,14 +6,14 @@ import SecondTutorial from '../SecondTutorial/SecondTutorial'
 import ThirdTutorial from '../ThirdTutorial/ThirdTutorial'
 
 describe('components | Tutorials', () => {
-  let history
+  let redirectToDiscovery
   let props
   let saveUserHasSeenTutorials
 
   beforeEach(function() {
-    history = { push: jest.fn() }
+    redirectToDiscovery = jest.fn()
     saveUserHasSeenTutorials = jest.fn()
-    props = { history, saveUserHasSeenTutorials }
+    props = { redirectToDiscovery, saveUserHasSeenTutorials }
   })
 
   describe('when display for the first time', () => {
@@ -205,7 +205,7 @@ describe('components | Tutorials', () => {
   })
 
   describe('when click on next arrow three times', () => {
-    it('should redirect to /decouverte', () => {
+    it('should save informations that user has finished to see the three tutorials and redirect to /decouverte', () => {
       // when
       const wrapper = shallow(<Tutorials {...props} />)
 
@@ -217,22 +217,7 @@ describe('components | Tutorials', () => {
       }
 
       // then
-      expect(history.push).toHaveBeenCalledWith('/decouverte')
-    })
-
-    it('should save informations that user has finished to see the three tutorials', () => {
-      // when
-      const wrapper = shallow(<Tutorials {...props} />)
-
-      for (let i = 1; i <= 3; i++) {
-        wrapper
-          .find({ alt: 'Suivant' })
-          .parent('button')
-          .simulate('click')
-      }
-
-      // then
-      expect(saveUserHasSeenTutorials).toHaveBeenCalledWith()
+      expect(saveUserHasSeenTutorials).toHaveBeenCalledWith(redirectToDiscovery)
     })
   })
 })
