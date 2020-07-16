@@ -20,6 +20,7 @@ describe('src | components | OfferTile', () => {
           id: 'AE',
           isDuo: false,
           isEvent: false,
+          name: 'Avengers - Age of Ultron',
           priceMin: 1,
           priceMax: 1,
           thumbUrl: 'my-thumb'
@@ -121,5 +122,18 @@ describe('src | components | OfferTile', () => {
     // then
     const date = wrapper.find({ children: `${mockedDate} - ` })
     expect(date).toHaveLength(1)
+  })
+
+  it('should render an offer tile with the offer name', () => {
+    // when
+    const wrapper = mount(
+      <MemoryRouter>
+        <OfferTile {...props} />
+      </MemoryRouter>
+    )
+
+    // then
+    const offerName = wrapper.find({ children: 'Avengers - Age of Ultron' })
+    expect(offerName).toHaveLength(1)
   })
 })

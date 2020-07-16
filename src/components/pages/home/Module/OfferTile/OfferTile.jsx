@@ -21,6 +21,11 @@ const OfferTile = ({ hit }) => {
             alt=""
             src={offer.thumbUrl ? offer.thumbUrl : DEFAULT_THUMB_URL}
           />
+          <div className="otw-offer-linear-background">
+            <div className="otw-offer-name">
+              {offer.name}
+            </div>
+          </div>
         </div>
         <p className="otw-venue">
           {venue.name}
