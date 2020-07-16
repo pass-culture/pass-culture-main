@@ -4,11 +4,11 @@ import { mount } from 'enzyme'
 import { act } from 'react-dom/test-utils'
 
 import EligibilityCheck from '../EligibilityCheck'
-import { checkIfAgeIsEligible, ELIGIBLE } from '../domain/checkIfAgeIsEligible'
+import { checkIfAgeIsEligible } from '../domain/checkIfAgeIsEligible'
 import { checkIfDepartmentIsEligible } from '../domain/checkIfDepartmentIsEligible'
 
-jest.mock('../../domain/checkIfAgeIsEligible', () => {
-  const originalModule = jest.requireActual('../../domain/checkIfAgeIsEligible')
+jest.mock('../domain/checkIfAgeIsEligible', () => {
+  const originalModule = jest.requireActual('../domain/checkIfAgeIsEligible')
 
   return {
     ...originalModule,
@@ -16,7 +16,7 @@ jest.mock('../../domain/checkIfAgeIsEligible', () => {
   }
 })
 
-jest.mock('../../domain/checkIfDepartmentIsEligible', () => {
+jest.mock('../domain/checkIfDepartmentIsEligible', () => {
   return {
     checkIfDepartmentIsEligible: jest.fn(),
   }
@@ -249,7 +249,7 @@ describe('eligibility check page', () => {
         wrapper.update()
 
         // then
-        expect(wrapper.find({children: 'Tu es éligible !'})).toHaveLength(1)
+        expect(wrapper.find({ children: 'Tu es éligible !' })).toHaveLength(1)
       })
 
       it('should display ineligible department view when department is not eligible', () => {
@@ -282,7 +282,7 @@ describe('eligibility check page', () => {
         wrapper.update()
 
         // then
-        expect(wrapper.find({children: 'IneligibleDepartment'})).toHaveLength(1)
+        expect(wrapper.find({ children: 'IneligibleDepartment' })).toHaveLength(1)
       })
     })
 
@@ -321,7 +321,7 @@ describe('eligibility check page', () => {
         wrapper.update()
 
         // then
-        expect(wrapper.find({children:'Plus que quelques mois d’attente !'})).toHaveLength(1)
+        expect(wrapper.find({ children: 'Plus que quelques mois d’attente !' })).toHaveLength(1)
       })
 
       it('should display ineligible over eighteen view when user is not eligible anymore', () => {
@@ -354,7 +354,7 @@ describe('eligibility check page', () => {
         wrapper.update()
 
         // then
-        expect(wrapper.find({children:'Tu as plus de 18 ans'})).toHaveLength(1)
+        expect(wrapper.find({ children: 'Tu as plus de 18 ans' })).toHaveLength(1)
       })
 
       it('should display ineligible under eighteen view when user is not eligible yet', () => {
@@ -387,7 +387,12 @@ describe('eligibility check page', () => {
         wrapper.update()
 
         // then
-        expect(wrapper.find({children:'Il est encore un peu tôt pour toi. Pour profiter du pass Culture, tu dois avoir 18 ans.'})).toHaveLength(1)
+        expect(
+          wrapper.find({
+            children:
+              'Il est encore un peu tôt pour toi. Pour profiter du pass Culture, tu dois avoir 18 ans.',
+          })
+        ).toHaveLength(1)
       })
     })
 

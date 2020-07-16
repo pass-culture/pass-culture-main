@@ -69,6 +69,8 @@
       }
 
       .date-of-birth-input-error {
+        animation: wizz-input-error .1s linear;
+        animation-iteration-count: 3;
         border: 2px solid $error;
 
         &:focus {
@@ -116,5 +118,14 @@
       font-family: inherit;
       white-space: pre-wrap;
     }
+  }
+}
+
+@keyframes wizz-input-error {
+  0% {
+    transform: translateX(-5px);
+  }
+  100% {
+    transform: translateX(5px);
   }
 }

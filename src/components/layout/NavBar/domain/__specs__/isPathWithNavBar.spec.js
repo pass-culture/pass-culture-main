@@ -38,12 +38,6 @@ describe('when page matching URI does not contain nav bar', () => {
       '/activation/MEFA',
       '/inscription',
       '/verification-eligibilite',
-      '/verification-eligibilite/eligible',
-      '/verification-eligibilite/departement-non-eligible',
-      '/verification-eligibilite/pas-eligible',
-      '/verification-eligibilite/bientot',
-      '/verification-eligibilite/trop-tot',
-      '/verification-eligibilite/gardons-contact',
     ]
 
     paths.forEach(path => {

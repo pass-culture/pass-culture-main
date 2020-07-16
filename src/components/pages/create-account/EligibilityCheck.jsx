@@ -10,7 +10,7 @@ import IneligibleDepartment from './IneligibleDepartment/IneligibleDepartment'
 import IneligibleOverEighteen from './IneligibleOverEighteen/IneligibleOverEighteen'
 import IneligibleUnderEighteen from './IneligibleUnderEighteen/IneligibleUnderEighteen'
 import Eligible from './Eligible/Eligible'
-import { eligiblityValues } from './domain/checkIfAgeIsEligible'
+import { ELIGIBILITY_VALUES } from './domain/checkIfAgeIsEligible'
 import { useReCaptchaScript } from './utils/recaptcha'
 
 const EligibilityCheck = () => {
@@ -63,82 +63,74 @@ const EligibilityCheck = () => {
     [postalCodeInputValue, dateOfBirthInputValue]
   )
 
-  function renderComponent() {
-    if (componentToRender === eligiblityValues.eligible) {
-      const isDepartmentEligible = checkIfDepartmentIsEligible(postalCodeInputValue)
-
-      if (isDepartmentEligible) {
-        return <Eligible />
-      } else {
-        return <IneligibleDepartment />
-      }
-    }
-    if (componentToRender === eligiblityValues.tooYoung) {
+  switch (componentToRender) {
+    case ELIGIBILITY_VALUES.ELIGIBLE:
+      return checkIfDepartmentIsEligible(postalCodeInputValue) ? (
+        <Eligible />
+      ) : (
+        <IneligibleDepartment />
+      )
+    case ELIGIBILITY_VALUES.TOO_YOUNG:
       return <IneligibleUnderEighteen />
-    }
-    if (componentToRender === eligiblityValues.tooOld) {
+    case ELIGIBILITY_VALUES.TOO_OLD:
       return <IneligibleOverEighteen />
-    }
-    if (componentToRender === eligiblityValues.soon) {
+    case ELIGIBILITY_VALUES.SOON:
       return <EligibleSoon />
-    }
-
-    return (
-      <main className="eligibility-check-page">
-        <BackLink backTo="/beta" />
-        <span className="eligibility-title">
-          {'Créer un compte'}
-        </span>
-        <form
-          className="eligibility-form"
-          onSubmit={handleSubmit}
-        >
-          <div>
-            <label>
-              {'Quel est ton code postal de résidence ?'}
-              <input
-                inputMode="numeric"
-                maxLength="5"
-                onChange={handlePostalCodeInputChange}
-                placeholder="Ex: 75017"
-                type="text"
-                value={postalCodeInputValue}
-              />
-            </label>
-            <label>
-              {'Quelle est ta date de naissance ?'}
-              <InputMask
-                className={`date-of-birth-input ${
-                  hasAnErrorMessage ? 'date-of-birth-input-error' : ''
-                }`}
-                inputMode="numeric"
-                mask="99/99/9999"
-                onChange={handleDOBInputChange}
-                placeholder="JJ/MM/AAAA"
-                value={dateOfBirthInputValue}
-              />
-              {hasAnErrorMessage && (
-                <div className="dob-field-error">
-                  <Icon svg="ico-error" />
-                  <pre>
-                    {'Le format de la date est incorrect.'}
-                  </pre>
-                </div>
-              )}
-            </label>
-          </div>
-          <input
-            className="eligibility-submit"
-            disabled={isMissingField || hasAnErrorMessage}
-            type="submit"
-            value="Vérifier mon éligibilité"
-          />
-        </form>
-      </main>
-    )
+    default:
+      return (
+        <main className="eligibility-check-page">
+          <BackLink backTo="/beta" />
+          <span className="eligibility-title">
+            {'Créer un compte'}
+          </span>
+          <form
+            className="eligibility-form"
+            onSubmit={handleSubmit}
+          >
+            <div>
+              <label>
+                {'Quel est ton code postal de résidence ?'}
+                <input
+                  inputMode="numeric"
+                  maxLength="5"
+                  onChange={handlePostalCodeInputChange}
+                  placeholder="Ex: 75017"
+                  type="text"
+                  value={postalCodeInputValue}
+                />
+              </label>
+              <label>
+                {'Quelle est ta date de naissance ?'}
+                <InputMask
+                  className={`date-of-birth-input ${
+                    hasAnErrorMessage ? 'date-of-birth-input-error' : ''
+                  }`}
+                  inputMode="numeric"
+                  mask="99/99/9999"
+                  onChange={handleDOBInputChange}
+                  placeholder="JJ/MM/AAAA"
+                  value={dateOfBirthInputValue}
+                />
+                {hasAnErrorMessage && (
+                  <div className="dob-field-error">
+                    <Icon svg="ico-error" />
+                    <pre>
+                      {'Le format de la date est incorrect.'}
+                    </pre>
+                  </div>
+                )}
+              </label>
+            </div>
+            <input
+              className="eligibility-submit"
+              disabled={isMissingField || hasAnErrorMessage}
+              type="submit"
+              value="Vérifier mon éligibilité"
+            />
+          </form>
+        </main>
+      )
   }
-
-  return renderComponent()
 }
 
 export default EligibilityCheck
