@@ -80,16 +80,14 @@ class Module extends Component {
   }
 
   render() {
-    const {
-      module: { display },
-    } = this.props
+    const { module: { display }, titleClassName } = this.props
     const { hits, position } = this.state
     const atLeastOneHit = hits.length > 0
 
     return (
       atLeastOneHit && (
         <div className="module-wrapper">
-          <h1>
+          <h1 className={titleClassName}>
             {display.title}
           </h1>
           <Draggable
@@ -117,6 +115,7 @@ class Module extends Component {
 
 Module.propTypes = {
   module: PropTypes.instanceOf(Offers).isRequired,
+  titleClassName: PropTypes.string.isRequired
 }
 
 export default Module

@@ -27,13 +27,30 @@ class Home extends Component {
     )
   }
 
-  renderModule = module => {
+  renderModule = (module, index) => {
+    const titleClassName = index === 0 ? 'white-title' : 'black-title'
+
     if (module instanceof OffersWithCover) {
-      return <ModuleWithCover module={module} />
+      return (
+        <ModuleWithCover
+          module={module}
+          titleClassName={titleClassName}
+        />
+      )
     } else if (module instanceof Offers) {
-      return <Module module={module} />
+      return (
+        <Module
+          module={module}
+          titleClassName={titleClassName}
+        />
+      )
     }
-    return <BusinessModule module={module} />
+    return (
+      <BusinessModule
+        module={module}
+        titleClassName={titleClassName}
+      />
+    )
   }
 
   render() {
@@ -64,8 +81,8 @@ class Home extends Component {
         </div>
         {atLeastOneModule && (
           <div className="hw-modules">
-            {modules.map(module => {
-              return this.renderModule(module)
+            {modules.map((module, index) => {
+              return this.renderModule(module, index)
             })}
           </div>
         )}

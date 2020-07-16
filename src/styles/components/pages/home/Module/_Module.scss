@@ -7,11 +7,18 @@
   }
 
   h1 {
-    color: $white;
     font-size: $size-extra-regular;
     font-weight: $weight-medium;
-    margin-bottom: rem(15px);
-    margin-left: rem(20px);
+    margin: 0 rem(20px) rem(15px);
+    white-space: normal;
+  }
+
+  .white-title {
+    color: $white;
+  }
+
+  .black-title {
+    color: $black;
   }
 }
 
