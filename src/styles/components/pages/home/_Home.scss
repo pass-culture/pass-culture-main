@@ -1,20 +1,22 @@
 .home-wrapper {
-  background-attachment: fixed;
-  background-image: url('/home-background.png');
-  background-repeat: no-repeat;
-  background-size: 100% rem(280px);
   background-color: $white;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
   padding-bottom: $navbar-height;
+  -webkit-overflow-scrolling: touch;
 }
 
 .hw-header {
+  background-image: url('/home-background.png');
+  background-repeat: no-repeat;
+  background-size: 100% rem(400px);
+
   align-items: center;
   display: flex;
   flex-direction: column;
-  margin-bottom: rem(30px);
+  height: rem(280px);
+  padding-bottom: rem(30px);
 
   h1 {
     color: $white;
@@ -49,4 +51,9 @@
     height: rem(40px);
     width: rem(40px);
   }
+}
+
+.hw-modules {
+  margin-top: rem(-115px);
+  margin-bottom: $navbar-height + rem(20px);
 }
