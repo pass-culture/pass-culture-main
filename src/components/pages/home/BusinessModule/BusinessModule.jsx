@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const BusinessModule = ({ module, titleClassName }) => {
+const BusinessModule = ({ module }) => {
   const { image, title, url } = module
   return (
     <div>
@@ -9,7 +9,7 @@ const BusinessModule = ({ module, titleClassName }) => {
         alt=""
         src={image}
       />
-      <h1 className={titleClassName}>
+      <h1>
         {title}
       </h1>
       <span>
@@ -23,9 +23,8 @@ BusinessModule.propTypes = {
   module: PropTypes.shape({
     image: PropTypes.string,
     title: PropTypes.string,
-    url: PropTypes.string
+    url: PropTypes.string,
   }).isRequired,
-  titleClassName: PropTypes.string.isRequired
 }
 
 export default BusinessModule

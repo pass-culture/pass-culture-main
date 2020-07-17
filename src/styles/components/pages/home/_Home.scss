@@ -8,10 +8,9 @@
 }
 
 .hw-header {
-  background-image: url('/home-background.png');
+  background-image: url(/home-background.png);
   background-repeat: no-repeat;
   background-size: 100% rem(400px);
-
   align-items: center;
   display: flex;
   flex-direction: column;
@@ -19,9 +18,9 @@
   padding-bottom: rem(30px);
 
   h1 {
+    @include title1();
+
     color: $white;
-    font-size: $size-large;
-    font-style: italic;
     margin-bottom: rem(8px);
     overflow: hidden;
     padding-left: rem(15px);
@@ -33,9 +32,9 @@
   }
 
   span {
+    @include title4();
+
     color: $white;
-    font-size: $size-extra-regular;
-    font-weight: $weight-regular;
   }
 }
 

@@ -14,7 +14,7 @@ class Module extends Component {
     super(props)
     this.state = {
       hits: [],
-      lastX: 0,
+      lastPositionOnXAxis: 0,
       position: DEFAULT_POSITION,
       step: DEFAULT_STEP,
     }
@@ -35,28 +35,28 @@ class Module extends Component {
   }
 
   moveToPreviousOrNextTile = (event, data) => {
-    const { hits, lastX, position, step } = this.state
+    const { hits, lastPositionOnXAxis, position, step } = this.state
     const firstOfferImageWidth = document.getElementsByClassName('otw-image-wrapper')[0].offsetWidth
 
     const maxSteps = hits.length
     const newStep = calculateStep({
-      lastX: lastX,
+      lastPositionOnXAxis: lastPositionOnXAxis,
       maxSteps: maxSteps,
-      newX: data.x,
+      newPositionOnXAxis: data.x,
       step: step,
     })
-    const newX = calculatePositionOnXAxis({
-      lastX: lastX,
+    const newPositionOnXAxis = calculatePositionOnXAxis({
+      lastPositionOnXAxis: lastPositionOnXAxis,
       maxSteps: maxSteps,
-      newX: data.x,
+      newPositionOnXAxis: data.x,
       step: step,
       width: firstOfferImageWidth,
     })
 
     this.setState({
-      lastX: newX,
+      lastPositionOnXAxis: newPositionOnXAxis,
       position: {
-        x: newX,
+        x: newPositionOnXAxis,
         y: position.y,
       },
       step: newStep,
@@ -80,14 +80,17 @@ class Module extends Component {
   }
 
   render() {
-    const { module: { display }, titleClassName } = this.props
+    const {
+      module: { display },
+      row,
+    } = this.props
     const { hits, position } = this.state
     const atLeastOneHit = hits.length > 0
 
     return (
       atLeastOneHit && (
         <div className="module-wrapper">
-          <h1 className={titleClassName}>
+          <h1>
             {display.title}
           </h1>
           <Draggable
@@ -102,7 +105,7 @@ class Module extends Component {
               {hits.map(hit => (
                 <OfferTile
                   hit={hit}
-                  key={hit.offer.id}
+                  key={`${row}${hit.offer.id}`}
                 />
               ))}
             </ul>
@@ -115,7 +118,7 @@ class Module extends Component {
 
 Module.propTypes = {
   module: PropTypes.instanceOf(Offers).isRequired,
-  titleClassName: PropTypes.string.isRequired
+  row: PropTypes.number.isRequired,
 }
 
 export default Module

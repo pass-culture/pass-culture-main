@@ -15,42 +15,35 @@ class Home extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      modules: []
+      modules: [],
     }
   }
 
   componentDidMount() {
     fetchLastHomepage().then(modules =>
       this.setState({
-        modules: modules
+        modules: modules,
       })
     )
   }
 
-  renderModule = (module, index) => {
-    const titleClassName = index === 0 ? 'white-title' : 'black-title'
-
+  renderModule = (module, row) => {
     if (module instanceof OffersWithCover) {
-      return (
-        <ModuleWithCover
-          module={module}
-          titleClassName={titleClassName}
-        />
-      )
-    } else if (module instanceof Offers) {
-      return (
-        <Module
-          module={module}
-          titleClassName={titleClassName}
-        />
-      )
-    }
-    return (
-      <BusinessModule
+      return (<ModuleWithCover
+        key={`${row}-module-with-cover`}
         module={module}
-        titleClassName={titleClassName}
-      />
-    )
+              />)
+    } else if (module instanceof Offers) {
+      return (<Module
+        key={`${row}-module`}
+        module={module}
+        row={row}
+              />)
+    }
+    return (<BusinessModule
+      key={`${row}-business-module`}
+      module={module}
+            />)
   }
 
   render() {
@@ -81,8 +74,8 @@ class Home extends Component {
         </div>
         {atLeastOneModule && (
           <div className="hw-modules">
-            {modules.map((module, index) => {
-              return this.renderModule(module, index)
+            {modules.map((module, row) => {
+              return this.renderModule(module, row)
             })}
           </div>
         )}
@@ -94,8 +87,8 @@ class Home extends Component {
 Home.propTypes = {
   user: PropTypes.shape({
     publicName: PropTypes.string,
-    wallet_balance: PropTypes.number
-  }).isRequired
+    wallet_balance: PropTypes.number,
+  }).isRequired,
 }
 
 export default Home

@@ -6,9 +6,9 @@ describe('src | dragFunctions', () => {
       it('should return new position translated to right when step inferior to max steps', () => {
         // given
         const parameters = {
-          lastX: 1,
+          lastPositionOnXAxis: 1,
           maxSteps: 3,
-          newX: 0.5,
+          newPositionOnXAxis: 0.5,
           step: 1,
           width: 100,
         }
@@ -23,9 +23,9 @@ describe('src | dragFunctions', () => {
       it('should return last x when step is equal to maxSteps', () => {
         // given
         const parameters = {
-          lastX: 1,
+          lastPositionOnXAxis: 1,
           maxSteps: 3,
-          newX: 0.5,
+          newPositionOnXAxis: 0.5,
           step: 3,
           width: 100,
         }
@@ -42,9 +42,9 @@ describe('src | dragFunctions', () => {
       it('should return new position translated to left when step is superior to default step', () => {
         // given
         const parameters = {
-          lastX: 1,
+          lastPositionOnXAxis: 1,
           maxSteps: 3,
-          newX: 2,
+          newPositionOnXAxis: 2,
           step: 2,
           width: 100,
         }
@@ -59,9 +59,9 @@ describe('src | dragFunctions', () => {
       it('should return default position when step is equal to default step', () => {
         // given
         const parameters = {
-          lastX: 1,
+          lastPositionOnXAxis: 1,
           maxSteps: 3,
-          newX: 2,
+          newPositionOnXAxis: 2,
           step: 1,
           width: 100,
         }
@@ -80,9 +80,9 @@ describe('src | dragFunctions', () => {
       it('should return step incremented by one when step is inferior to max steps', () => {
         // given
         const parameters = {
-          lastX: 2,
+          lastPositionOnXAxis: 2,
           maxSteps: 5,
-          newX: 1,
+          newPositionOnXAxis: 1,
           step: 1,
         }
 
@@ -96,9 +96,9 @@ describe('src | dragFunctions', () => {
       it('should max steps when step is equal to max steps', () => {
         // given
         const parameters = {
-          lastX: 2,
+          lastPositionOnXAxis: 2,
           maxSteps: 5,
-          newX: 1,
+          newPositionOnXAxis: 1,
           step: 5,
         }
 
@@ -114,9 +114,9 @@ describe('src | dragFunctions', () => {
       it('should return step decremented by one when step is superior to default step', () => {
         // given
         const parameters = {
-          lastX: 1,
+          lastPositionOnXAxis: 1,
           maxSteps: 5,
-          newX: 2,
+          newPositionOnXAxis: 2,
           step: 5,
         }
 
@@ -130,9 +130,9 @@ describe('src | dragFunctions', () => {
       it('should return default step when step is equal to default step', () => {
         // given
         const parameters = {
-          lastX: 1,
+          lastPositionOnXAxis: 1,
           maxSteps: 5,
-          newX: 2,
+          newPositionOnXAxis: 2,
           step: 1,
         }
 

@@ -7,18 +7,14 @@
   }
 
   h1 {
-    font-size: $size-extra-regular;
-    font-weight: $weight-medium;
+    @include title4();
+
+    color: $black;
     margin: 0 rem(20px) rem(15px);
     white-space: normal;
   }
 
-  .white-title {
+  &:first-child h1 {
     color: $white;
   }
-
-  .black-title {
-    color: $black;
-  }
 }
-

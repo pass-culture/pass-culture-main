@@ -13,13 +13,13 @@ import BusinessPane from '../domain/ValueObjects/BusinessPane'
 import BusinessModule from '../BusinessModule/BusinessModule'
 
 jest.mock('../../../../vendor/contentful/contentful', () => ({
-  fetchLastHomepage: jest.fn()
+  fetchLastHomepage: jest.fn(),
 }))
 jest.mock('../../../../vendor/algolia/algolia', () => ({
-  fetchAlgolia: jest.fn().mockResolvedValue({ hits: [] })
+  fetchAlgolia: jest.fn().mockResolvedValue({ hits: [] }),
 }))
 jest.mock('../domain/parseAlgoliaParameters', () => ({
-  parseAlgoliaParameters: jest.fn().mockReturnValue({})
+  parseAlgoliaParameters: jest.fn().mockReturnValue({}),
 }))
 describe('src | components | Home', () => {
   let props
@@ -29,8 +29,8 @@ describe('src | components | Home', () => {
     props = {
       user: {
         publicName: 'Iron Man',
-        wallet_balance: 200.1
-      }
+        wallet_balance: 200.1,
+      },
     }
   })
 
@@ -114,52 +114,11 @@ describe('src | components | Home', () => {
 
   it('should render a business module component when module is for business information', async () => {
     // given
-    fetchLastHomepage.mockResolvedValue([new BusinessPane({
-      img: 'my-image', title: 'my-title', url: 'my-url'
-    })])
-
-    // when
-    const wrapper = await mount(
-      <MemoryRouter>
-        <Home {...props} />
-      </MemoryRouter>
-    )
-    await wrapper.update()
-
-    // then
-    const module = wrapper.find(BusinessModule)
-    expect(module).toHaveLength(1)
-  })
-
-  it('should render a business module component with white title when module is for business information and is first in order', async () => {
-    // given
     fetchLastHomepage.mockResolvedValue([
       new BusinessPane({
-        img: 'my-image', title: 'my-title', url: 'my-url'
-      }),
-      new Offers({})
-    ])
-
-    // when
-    const wrapper = await mount(
-      <MemoryRouter>
-        <Home {...props} />
-      </MemoryRouter>
-    )
-    await wrapper.update()
-
-    // then
-    const module = wrapper.find(BusinessModule)
-    expect(module).toHaveLength(1)
-    expect(module.prop('titleClassName')).toBe('white-title')
-  })
-
-  it('should render a business module component with black title when module is for business information and is second in order', async () => {
-    // given
-    fetchLastHomepage.mockResolvedValue([
-      new Offers({}),
-      new BusinessPane({
-        img: 'my-image', title: 'my-title', url: 'my-url'
+        img: 'my-image',
+        title: 'my-title',
+        url: 'my-url',
       }),
     ])
 
@@ -174,6 +133,5 @@ describe('src | components | Home', () => {
     // then
     const module = wrapper.find(BusinessModule)
     expect(module).toHaveLength(1)
-    expect(module.prop('titleClassName')).toBe('black-title')
   })
 })

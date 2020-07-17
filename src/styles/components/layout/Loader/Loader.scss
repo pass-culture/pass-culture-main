@@ -20,7 +20,7 @@
 }
 
 .loader-title {
-  @include h1();
+  @include title1();
 
   margin: rem(16px) 0;
 }

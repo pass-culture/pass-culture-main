@@ -30,7 +30,7 @@
   }
 
   .lf-title {
-    @include h1();
+    @include title1();
 
     margin-bottom: rem(8px);
   }
