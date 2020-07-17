@@ -6,20 +6,21 @@ import {
   MAILJET_NOT_YET_ELIGIBLE_LIST_ID,
 } from '../../utils/config'
 
+// TODO côté implem call cette fonction avec .then() et .catch()
 export const addContactInNotYetEligibleList = (contactEmail, contactDepartmentCode, contactDateOfBirth) => {
   const mailjetClient = mailjet.connect(MAILJET_PUBLIC_API_KEY, MAILJET_PRIVATE_API_KEY)
-  // TODO return Promise to resolve or reject
   return new Promise((resolve, reject) => {
     addNewContact(mailjetClient, contactEmail)
       .then(response => {
         const createdContactId = response.body.Data[0].ID
-        //TODO paralellize with addContactInformations
         const addContactToListPromise = addContactToList(mailjetClient, createdContactId, MAILJET_NOT_YET_ELIGIBLE_LIST_ID)
         const addContactInformationsPromise = addContactInformations(mailjetClient, createdContactId, '93', '26/02/2005')
 
-        return Promise.all([addContactToListPromise, addContactInformationsPromise]).then(result => {
-          resolve(result)
-        })
+        return Promise.all([addContactToListPromise, addContactInformationsPromise])
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => reject(error))
       })
       .catch(error => {
         if (error.statusCode === 400) {
@@ -34,7 +35,7 @@ export const addContactInNotYetEligibleList = (contactEmail, contactDepartmentCo
               })
             })
             .catch(error => {
-              reject(new Error('Error getting existing contact: ' + error))
+              reject('Error getting existing contact: ' + error.message)
             })
         }
       })
@@ -48,12 +49,13 @@ const addNewContact = (mailjetClient, email) =>
       Email: email,
     })
 
-//TODO encode url
-const getExistingContact = (mailjetClient, email) =>
-  mailjetClient
-    .get('contact', {'version': 'v3'})
-    .id(email)
+const getExistingContact = (mailjetClient, email) => {
+  const encodedEmail = encodeURI(email)
+  return mailjetClient
+    .get('contact', { 'version': 'v3' })
+    .id(encodedEmail)
     .request()
+}
 
 const addContactToList = (mailjetClient, contactId, listId) => {
   return new Promise((resolve, reject) => {
@@ -64,20 +66,22 @@ const addContactToList = (mailjetClient, contactId, listId) => {
         ContactID: contactId,
         ListID: listId,
       })
-      .then(result => {
-        resolve(result)
+      .then(response => {
+        resolve(response)
       })
       .catch(error => {
         if (error.statusCode === 400) {
-          reject('oops 400')
+          resolve()
         }
-        reject('AddContactToListError: ' + error)
+        reject('Error adding contact to list: ' + error.message)
       })
   })
 }
 
 const addContactInformations = (mailjetClient, contactId, departmentCode, birthDate) => {
-  // TODO convert birthDate to timestamp
+  const splittedBirthDate = birthDate.split('/')
+  const birthDateTimeStampInSeconds = Date.UTC(splittedBirthDate[2], splittedBirthDate[1] - 1, splittedBirthDate[0]) / 1000
+
   return new Promise((resolve, reject) => {
     mailjetClient
       .put('contactdata', { version: 'v3' })
@@ -86,7 +90,7 @@ const addContactInformations = (mailjetClient, contactId, departmentCode, birthD
         Data: [
           {
             Name: 'date_de_naissance',
-            Value: birthDate,
+            Value: birthDateTimeStampInSeconds,
           },
           {
             Name: 'département',
@@ -95,6 +99,6 @@ const addContactInformations = (mailjetClient, contactId, departmentCode, birthD
         ],
       })
       .then(result => resolve(result))
-      .catch(error => reject('Erreur addContactInformations: ' + error))
+      .catch(error => reject('Error adding contact informations: ' + error.message))
   })
 }

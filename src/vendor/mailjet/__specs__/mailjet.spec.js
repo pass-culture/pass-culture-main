@@ -24,13 +24,15 @@ describe('mailjet', () => {
     contactDepartmentCode,
     contactDateOfBirth,
     listName,
-    successfullCreationResponse
+    successfullCreationResponse,
+    addContactToListResponse,
+    addContactInformationsResponse
   beforeEach(() => {
     contactName = 'JeunePresqueEligible'
     contactEmail = 'jeunepresqueeligible@example.com'
     contactId = 2387456
     contactDepartmentCode = '93'
-    contactDateOfBirth = '26/02/2005'
+    contactDateOfBirth = 1109376000
     listName = 'Liste Jeune Presque Eligible'
     mockMJRequest = jest.fn()
     mockMJId = jest.fn().mockReturnValue({ request: mockMJRequest })
@@ -42,25 +44,27 @@ describe('mailjet', () => {
     successfullCreationResponse = {
       body: { Data: [{ ID: contactId }] },
     }
+
+    addContactToListResponse = {
+      body: {
+        Data: [{
+          Name: listName,
+          ID: contactId,
+        }]
+      }
+    }
+
+    addContactInformationsResponse = {
+      body: {
+        Data: [{
+          IsExcludedFromCampaigns: true,
+          Name: contactName,
+          Email: contactEmail,
+          ID: contactId,
+        }]
+      }
+    }
   })
-  const addContactToListResponse = {
-    body: {
-      Data: [{
-        Name: listName,
-        ID: contactId,
-      }]
-    }
-  }
-  const addContactInformationsResponse = {
-    body: {
-      Data: [{
-        IsExcludedFromCampaigns: true,
-        Name: contactName,
-        Email: contactEmail,
-        ID: contactId,
-      }]
-    }
-  }
 
   describe('when contact does not exist', () => {
     beforeEach(() => {
@@ -98,6 +102,21 @@ describe('mailjet', () => {
         IsUnsubscribed: 'false',
         ContactID: contactId,
         ListID: 'notYetEligibleListId',
+      })
+    })
+
+    it('should save contact date of birth and department code', async () => {
+      // When
+      await addContactInNotYetEligibleList(contactEmail, contactDepartmentCode, contactDateOfBirth)
+
+      // Then
+      expect(mockMJPut).toHaveBeenCalledWith('contactdata', { version: 'v3' })
+      expect(mockMJId).toHaveBeenCalledWith(contactId)
+      expect(mockMJRequest).toHaveBeenNthCalledWith(3, {
+        Data: [
+          { Name: 'date_de_naissance', Value: contactDateOfBirth },
+          { Name: 'département', Value: contactDepartmentCode },
+        ],
       })
     })
   })
@@ -156,6 +175,139 @@ describe('mailjet', () => {
           { Name: 'département', Value: contactDepartmentCode },
         ],
       })
+    })
+  })
+
+  describe('when unable to get existing contact', () => {
+    beforeEach(() => {
+      const contactAlreadyExistsReponse = {
+        statusCode: 400,
+      }
+      const cannotGetExistingContactResponse = {
+        statusCode: 400,
+        message: 'error contact'
+      }
+
+      mockMJRequest.mockRejectedValueOnce(contactAlreadyExistsReponse)
+      mockMJRequest.mockRejectedValueOnce(cannotGetExistingContactResponse)
+      mockMJRequest.mockResolvedValueOnce(addContactToListResponse)
+      mockMJRequest.mockResolvedValueOnce(addContactInformationsResponse)
+    })
+
+    it('should catch an error', async () => {
+      // when
+      const result = addContactInNotYetEligibleList(contactEmail, contactDepartmentCode, contactDateOfBirth)
+
+      // then
+      await expect(result).rejects.toStrictEqual('Error getting existing contact: error contact')
+    })
+  })
+
+  describe('when unable to save contact department code and date of birth', () => {
+    beforeEach(() => {
+      const cannotAddContactInformationResponse = {
+        message: 'Error',
+        status: 500
+      }
+
+      mockMJRequest.mockResolvedValueOnce(successfullCreationResponse)
+      mockMJRequest.mockResolvedValueOnce(addContactToListResponse)
+      mockMJRequest.mockRejectedValueOnce(cannotAddContactInformationResponse)
+    })
+
+    it('should catch an error', async () => {
+      // when
+      const result = addContactInNotYetEligibleList(contactEmail, contactDepartmentCode, contactDateOfBirth)
+
+      // then
+      await expect(result).rejects.toStrictEqual('Error adding contact informations: Error')
+    })
+  })
+
+  describe('when unable to add contact to list', () => {
+    describe('when unable because contact already in mailing list', () => {
+      beforeEach(() => {
+        const cannotAddContactToListResponse = {
+          statusCode: 400
+        }
+
+        mockMJRequest.mockResolvedValueOnce(successfullCreationResponse)
+        mockMJRequest.mockRejectedValueOnce(cannotAddContactToListResponse)
+        mockMJRequest.mockResolvedValueOnce(addContactInformationsResponse)
+      })
+
+      it('should still resolve', async () => {
+        // when
+        const result = addContactInNotYetEligibleList(contactEmail, contactDepartmentCode, contactDateOfBirth)
+
+        // then
+        // eslint-disable-next-line jest/no-expect-resolves
+        await expect(result).resolves.toStrictEqual([undefined, addContactInformationsResponse])
+      })
+    })
+
+    describe('when unable because internal error', () => {
+      beforeEach(() => {
+        const cannotAddContactToListResponse = {
+          statusCode: 500,
+          message: 'error'
+        }
+
+        mockMJRequest.mockResolvedValueOnce(successfullCreationResponse)
+        mockMJRequest.mockRejectedValueOnce(cannotAddContactToListResponse)
+        mockMJRequest.mockResolvedValueOnce(addContactInformationsResponse)
+      })
+
+      it('should catch an error', async () => {
+        // when
+        const result = addContactInNotYetEligibleList(contactEmail, contactDepartmentCode, contactDateOfBirth)
+
+        // then
+        await expect(result).rejects.toStrictEqual('Error adding contact to list: error')
+      })
+    })
+  })
+
+  describe('when everything success', () => {
+    beforeEach(() => {
+      mockMJRequest.mockResolvedValueOnce(successfullCreationResponse)
+      mockMJRequest.mockResolvedValueOnce(addContactToListResponse)
+      mockMJRequest.mockResolvedValueOnce(addContactInformationsResponse)
+    })
+
+    it('should resolve', async () => {
+      // when
+      const result = addContactInNotYetEligibleList(contactEmail, contactDepartmentCode, contactDateOfBirth)
+
+      // then
+      // eslint-disable-next-line jest/no-expect-resolves
+      await expect(result).resolves.toStrictEqual(  [
+          {
+            "body":
+              {
+                "Data": [
+                  {
+                    "ID": 2387456,
+                    "Name": "Liste Jeune Presque Eligible"
+                  }
+                ]
+              }
+          },
+          {
+            "body":
+              {
+                "Data": [
+                  {
+                    "Email": "jeunepresqueeligible@example.com",
+                    "ID": 2387456,
+                    "IsExcludedFromCampaigns": true,
+                    "Name": "JeunePresqueEligible"
+                  }
+                ]
+              }
+          }
+        ]
+      )
     })
   })
 })
