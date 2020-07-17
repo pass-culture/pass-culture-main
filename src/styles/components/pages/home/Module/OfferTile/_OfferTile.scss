@@ -8,9 +8,9 @@
   }
 
   a {
+    display: block;
     color: $black;
     text-decoration: none;
-    width: 90%;
   }
 
   .otw-venue {
@@ -36,4 +36,8 @@
     margin-bottom: rem(5px);
     width: 100%;
   }
+}
+
+.disabled-click-event {
+  pointer-events: none;
 }

@@ -12,27 +12,28 @@ class Module extends Component {
     super(props)
     this.state = {
       hits: [],
-      isDragging: false,
       lastX: 0,
       position: { x: 0, y: 0 },
-      step: DEFAULT_STEP
+      step: DEFAULT_STEP,
     }
   }
 
   componentDidMount() {
-    const { module: { algolia } } = this.props
+    const {
+      module: { algolia },
+    } = this.props
     const parsedParameters = parseAlgoliaParameters(algolia)
 
     fetchAlgolia(parsedParameters).then(data => {
       const { hits } = data
       this.setState({
-        hits: hits
+        hits: hits,
       })
     })
   }
 
   handleStopDragging = (event, data) => {
-    const { isDragging, hits, lastX, position, step } = this.state
+    const { hits, lastX, position, step } = this.state
     const firstOfferImageWidth = document.getElementsByClassName('otw-image-wrapper')[0].offsetWidth
 
     const maxSteps = hits.length
@@ -47,34 +48,43 @@ class Module extends Component {
       maxSteps: maxSteps,
       newX: data.x,
       step: step,
-      width: firstOfferImageWidth
+      width: firstOfferImageWidth,
     })
 
-    if (isDragging) {
-      this.setState({
-        isDragging: false,
-        lastX: newX,
-        position: {
-          x: newX,
-          y: position.y
-        },
-        step: newStep
-      })
-    }
+    this.setState({
+      lastX: newX,
+      position: {
+        x: newX,
+        y: position.y,
+      },
+      step: newStep,
+    })
+
+    this.getAllLinks().forEach(link => {
+      link.classList.remove('disabled-click-event')
+    })
   }
 
   handleDragging = () => {
-    this.setState({
-      isDragging: true
+    this.getAllLinks().forEach(link => {
+      link.classList.add('disabled-click-event')
     })
   }
 
+  getAllLinks = () => window.document.querySelectorAll('.hw-modules a')
+
+  preventDefault = event => {
+    event.preventDefault()
+  }
+
   render() {
-    const { module: { display } } = this.props
+    const {
+      module: { display },
+    } = this.props
     const { hits, position } = this.state
     const atLeastOneHit = hits.length > 0
 
-    return atLeastOneHit ?
+    return atLeastOneHit ? (
       <div className="module-wrapper">
         <h1>
           {display.title}
@@ -83,27 +93,28 @@ class Module extends Component {
           axis="x"
           bounds={{ right: 0 }}
           onDrag={this.handleDragging}
+          onMouseDown={this.preventDefault}
           onStop={this.handleStopDragging}
           position={position}
         >
-          <ul
-            className={display.layout}
-          >
+          <ul className={display.layout}>
             {hits.map(hit => (
               <OfferTile
                 hit={hit}
                 key={hit.offer.id}
-              />)
-            )}
+              />
+            ))}
           </ul>
         </Draggable>
       </div>
-      : <div />
+    ) : (
+      <div />
+    )
   }
 }
 
 Module.propTypes = {
-  module: PropTypes.instanceOf(Offers).isRequired
+  module: PropTypes.instanceOf(Offers).isRequired,
 }
 
 export default Module
