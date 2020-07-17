@@ -1,7 +1,7 @@
-import { calculatePositionX, calculateStep } from '../dragFunctions'
+import { calculatePositionOnXAxis, calculateStep } from '../dragFunctions'
 
 describe('src | dragFunctions', () => {
-  describe('calculatePositionX', () => {
+  describe('calculatePositionOnXAxis', () => {
     describe('when moving right', () => {
       it('should return new position translated to right when step inferior to max steps', () => {
         // given
@@ -10,11 +10,11 @@ describe('src | dragFunctions', () => {
           maxSteps: 3,
           newX: 0.5,
           step: 1,
-          width: 100
+          width: 100,
         }
 
         // when
-        const positionX = calculatePositionX(parameters)
+        const positionX = calculatePositionOnXAxis(parameters)
 
         // then
         expect(positionX).toBe(-102.49999999999999)
@@ -27,11 +27,11 @@ describe('src | dragFunctions', () => {
           maxSteps: 3,
           newX: 0.5,
           step: 3,
-          width: 100
+          width: 100,
         }
 
         // when
-        const positionX = calculatePositionX(parameters)
+        const positionX = calculatePositionOnXAxis(parameters)
 
         // then
         expect(positionX).toBe(1)
@@ -46,11 +46,11 @@ describe('src | dragFunctions', () => {
           maxSteps: 3,
           newX: 2,
           step: 2,
-          width: 100
+          width: 100,
         }
 
         // when
-        const positionX = calculatePositionX(parameters)
+        const positionX = calculatePositionOnXAxis(parameters)
 
         // then
         expect(positionX).toBe(104.49999999999999)
@@ -63,11 +63,11 @@ describe('src | dragFunctions', () => {
           maxSteps: 3,
           newX: 2,
           step: 1,
-          width: 100
+          width: 100,
         }
 
         // when
-        const positionX = calculatePositionX(parameters)
+        const positionX = calculatePositionOnXAxis(parameters)
 
         // then
         expect(positionX).toBe(0)
@@ -83,7 +83,7 @@ describe('src | dragFunctions', () => {
           lastX: 2,
           maxSteps: 5,
           newX: 1,
-          step: 1
+          step: 1,
         }
 
         // when
@@ -99,7 +99,7 @@ describe('src | dragFunctions', () => {
           lastX: 2,
           maxSteps: 5,
           newX: 1,
-          step: 5
+          step: 5,
         }
 
         // when
@@ -117,7 +117,7 @@ describe('src | dragFunctions', () => {
           lastX: 1,
           maxSteps: 5,
           newX: 2,
-          step: 5
+          step: 5,
         }
 
         // when
@@ -133,7 +133,7 @@ describe('src | dragFunctions', () => {
           lastX: 1,
           maxSteps: 5,
           newX: 2,
-          step: 1
+          step: 1,
         }
 
         // when

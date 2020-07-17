@@ -1,26 +1,13 @@
-export const DEFAULT_STEP = 1
-export const DEFAULT_POSITION = 0
+import { SPACE_BETWEEN_TWO_IMAGES, DEFAULT_POSITION, DEFAULT_STEP } from '../../_constants'
 
-export const calculatePositionX = ({
-                                     lastX,
-                                     maxSteps,
-                                     newX,
-                                     step,
-                                     width
-                                   }) => {
+export const calculatePositionOnXAxis = ({ lastX, maxSteps, newX, step, width }) => {
   const movingRight = lastX > newX
-  const movingRatio = width * 1.035
+  const movingRatio = width * SPACE_BETWEEN_TWO_IMAGES
 
   if (movingRight) {
-    if (step < maxSteps) {
-      return lastX - movingRatio
-    }
-    return lastX
+    return step < maxSteps ? lastX - movingRatio : lastX
   } else {
-    if (step > DEFAULT_STEP) {
-      return lastX + movingRatio
-    }
-    return DEFAULT_POSITION
+    return step > DEFAULT_STEP ? lastX + movingRatio : DEFAULT_POSITION.x
   }
 }
 
@@ -28,14 +15,8 @@ export const calculateStep = ({ lastX, maxSteps, newX, step }) => {
   const movingRight = lastX > newX
 
   if (movingRight) {
-    if (step < maxSteps) {
-      return step + 1
-    }
-    return maxSteps
+    return step < maxSteps ? step + 1 : maxSteps
   } else {
-    if (step > DEFAULT_STEP) {
-      return step - 1
-    }
-    return DEFAULT_STEP
+    return step > DEFAULT_STEP ? step - 1 : DEFAULT_STEP
   }
 }

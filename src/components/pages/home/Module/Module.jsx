@@ -1,11 +1,13 @@
-import React, { Component } from 'react'
-import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import PropTypes from 'prop-types'
-import OfferTile from './OfferTile/OfferTile'
-import Offers from '../domain/ValueObjects/Offers'
-import { parseAlgoliaParameters } from '../domain/parseAlgoliaParameters'
+import React, { Component } from 'react'
 import Draggable from 'react-draggable'
-import { calculatePositionX, calculateStep, DEFAULT_STEP } from './domain/dragFunctions'
+
+import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
+import { parseAlgoliaParameters } from '../domain/parseAlgoliaParameters'
+import Offers from '../domain/ValueObjects/Offers'
+import { DEFAULT_POSITION, DEFAULT_STEP } from '../_constants'
+import { calculatePositionOnXAxis, calculateStep } from './domain/dragFunctions'
+import OfferTile from './OfferTile/OfferTile'
 
 class Module extends Component {
   constructor(props) {
@@ -13,7 +15,7 @@ class Module extends Component {
     this.state = {
       hits: [],
       lastX: 0,
-      position: { x: 0, y: 0 },
+      position: DEFAULT_POSITION,
       step: DEFAULT_STEP,
     }
   }
@@ -32,7 +34,7 @@ class Module extends Component {
     })
   }
 
-  handleStopDragging = (event, data) => {
+  moveToPreviousOrNextTile = (event, data) => {
     const { hits, lastX, position, step } = this.state
     const firstOfferImageWidth = document.getElementsByClassName('otw-image-wrapper')[0].offsetWidth
 
@@ -43,7 +45,7 @@ class Module extends Component {
       newX: data.x,
       step: step,
     })
-    const newX = calculatePositionX({
+    const newX = calculatePositionOnXAxis({
       lastX: lastX,
       maxSteps: maxSteps,
       newX: data.x,
@@ -65,7 +67,7 @@ class Module extends Component {
     })
   }
 
-  handleDragging = () => {
+  removeClickableLinks = () => {
     this.getAllLinks().forEach(link => {
       link.classList.add('disabled-click-event')
     })
@@ -73,7 +75,7 @@ class Module extends Component {
 
   getAllLinks = () => window.document.querySelectorAll('.hw-modules a')
 
-  preventDefault = event => {
+  preventDefaultLink = event => {
     event.preventDefault()
   }
 
@@ -84,31 +86,31 @@ class Module extends Component {
     const { hits, position } = this.state
     const atLeastOneHit = hits.length > 0
 
-    return atLeastOneHit ? (
-      <div className="module-wrapper">
-        <h1>
-          {display.title}
-        </h1>
-        <Draggable
-          axis="x"
-          bounds={{ right: 0 }}
-          onDrag={this.handleDragging}
-          onMouseDown={this.preventDefault}
-          onStop={this.handleStopDragging}
-          position={position}
-        >
-          <ul className={display.layout}>
-            {hits.map(hit => (
-              <OfferTile
-                hit={hit}
-                key={hit.offer.id}
-              />
-            ))}
-          </ul>
-        </Draggable>
-      </div>
-    ) : (
-      <div />
+    return (
+      atLeastOneHit && (
+        <div className="module-wrapper">
+          <h1>
+            {display.title}
+          </h1>
+          <Draggable
+            axis="x"
+            bounds={{ right: 0 }}
+            onDrag={this.removeClickableLinks}
+            onMouseDown={this.preventDefaultLink}
+            onStop={this.moveToPreviousOrNextTile}
+            position={position}
+          >
+            <ul className={display.layout}>
+              {hits.map(hit => (
+                <OfferTile
+                  hit={hit}
+                  key={hit.offer.id}
+                />
+              ))}
+            </ul>
+          </Draggable>
+        </div>
+      )
     )
   }
 }
