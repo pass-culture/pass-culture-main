@@ -18,7 +18,7 @@ from models import EventType, \
     StockSQLEntity, \
     ThingType, \
     VenueSQLEntity, \
-    Product, Favorite, BookingSQLEntity, DiscoveryView, DiscoveryViewV3, UserSQLEntity, SeenOffer
+    Product, Favorite, BookingSQLEntity, DiscoveryView, DiscoveryViewV3, UserSQLEntity, SeenOffer, UserOfferer
 from models.db import Model
 from models.feature import FeatureToggle
 from repository import feature_queries
@@ -31,12 +31,6 @@ from use_cases.diversify_recommended_offers import order_offers_by_diversified_t
 from utils.logger import logger
 
 ALL_DEPARTMENTS_CODE = '00'
-
-
-def build_offer_search_base_query():
-    return Offer.query.outerjoin(Product) \
-        .join(VenueSQLEntity) \
-        .join(Offerer)
 
 
 def department_or_national_offers(query, departement_codes):
@@ -255,22 +249,14 @@ def filter_offers_with_keywords_string_on_offer_only(query: BaseQuery, keywords_
     return _build_query_using_keywords_on_model(keywords_string, query, Offer)
 
 
-def filter_offers_with_keywords_string(query: BaseQuery, keywords_string: str) -> BaseQuery:
+def filter_offers_with_keywords_string(query: Query, keywords_string: str) -> Query:
     query_on_offer_using_keywords = _build_query_using_keywords_on_model(keywords_string, query, Offer)
     query_on_offer_using_keywords = _order_by_offer_name_containing_keyword_string(keywords_string,
                                                                                    query_on_offer_using_keywords)
-
-    query_on_venue_using_keywords = _build_query_using_keywords_on_model(keywords_string, query, VenueSQLEntity)
-
-    query_on_offerer_using_keywords = _build_query_using_keywords_on_model(keywords_string, query, Offerer)
-
-    return query_on_offer_using_keywords.union_all(
-        query_on_venue_using_keywords,
-        query_on_offerer_using_keywords
-    )
+    return query_on_offer_using_keywords
 
 
-def _build_query_using_keywords_on_model(keywords_string: str, query: BaseQuery, model: Model) -> BaseQuery:
+def _build_query_using_keywords_on_model(keywords_string: str, query: Query, model: Model) -> Query:
     text_search_filters_on_model = create_get_filter_matching_ts_query_in_any_model(model)
     model_keywords_filter = create_filter_matching_all_keywords_in_any_model(
         text_search_filters_on_model, keywords_string
@@ -304,25 +290,29 @@ def _offer_has_stocks_compatible_with_days_intervals(days_intervals):
     ).exists()
 
 
-def find_offers_with_filter_parameters(
-        user,
-        offerer_id=None,
-        venue_id=None,
-        keywords_string=None
-):
-    query = build_offer_search_base_query()
+def build_find_offers_with_filter_parameters(
+        user: UserSQLEntity,
+        offerer_id: int = None,
+        venue_id: int = None,
+        keywords_string: str = None
+) -> Query:
+    query = Offer.query
 
     if venue_id is not None:
         query = query.filter(Offer.venueId == venue_id)
 
     if offerer_id is not None:
-        query = query.filter(VenueSQLEntity.managingOffererId == offerer_id)
+        query = query \
+            .join(VenueSQLEntity) \
+            .filter(VenueSQLEntity.managingOffererId == offerer_id)
 
     if not user.isAdmin:
-        query = filter_query_where_user_is_user_offerer_and_is_validated(
-            query,
-            user
-        )
+        query = query \
+            .join(VenueSQLEntity) \
+            .join(Offerer) \
+            .join(UserOfferer) \
+            .filter(UserOfferer.user == user) \
+            .filter(UserOfferer.validationToken == None)
 
     if keywords_string is not None:
         query = filter_offers_with_keywords_string(
@@ -383,7 +373,8 @@ def _filter_recommendable_offers_for_search(offer_query):
 
 def find_activation_offers(departement_code: str) -> List[Offer]:
     departement_codes = ILE_DE_FRANCE_DEPT_CODES if departement_code == '93' else [departement_code]
-    match_department_or_is_national = or_(VenueSQLEntity.departementCode.in_(departement_codes), Offer.isNational == True)
+    match_department_or_is_national = or_(VenueSQLEntity.departementCode.in_(departement_codes),
+                                          Offer.isNational == True)
 
     query = Offer.query \
         .join(VenueSQLEntity) \

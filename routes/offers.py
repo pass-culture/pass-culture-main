@@ -5,10 +5,11 @@ from flask_login import current_user, login_required
 from domain.admin_emails import \
     send_offer_creation_notification_to_administration
 from domain.create_offer import fill_offer_with_new_data, initialize_offer_from_product_id
+from infrastructure.repository.offer.offer_view import get_paginated_offers_for_offerer_venue_and_keywords
 from models import Offer, RightsType, VenueSQLEntity
 from models.api_errors import ResourceNotFoundError
 from repository import offer_queries, repository, venue_queries
-from repository.offer_queries import find_activation_offers, find_offers_with_filter_parameters
+from repository.offer_queries import find_activation_offers
 from routes.serialization import as_dict
 from routes.serialization.offers_serialize import serialize_offer
 from use_cases.update_an_offer import update_an_offer
@@ -31,25 +32,31 @@ def list_offers() -> (str, int):
     offerer_id = dehumanize(request.args.get('offererId'))
     venue_id = dehumanize(request.args.get('venueId'))
     pagination_limit = request.args.get('paginate', '10')
+    page = int(request.args.get('page', 0))
+
+    # TODO: extract in repo
     venue = venue_queries.find_by_id(venue_id)
 
+    # TODO: split in check payload + check in repo
     check_venue_exists_when_requested(venue, venue_id)
-    check_user_has_rights_for_query(offerer_id, venue, venue_id)
 
-    query = find_offers_with_filter_parameters(
-        current_user,
+    # TODO: revoir la gestion des droits
+    check_user_has_rights_for_query(
         offerer_id=offerer_id,
-        venue_id=venue_id,
-        keywords_string=request.args.get('keywords')
+        venue=venue,
+        venue_id=venue_id
     )
 
-    return handle_rest_get_list(Offer,
-                                includes=OFFER_INCLUDES,
-                                order_by=None,
-                                page=request.args.get('page'),
-                                paginate=int(pagination_limit),
-                                query=query,
-                                with_total_data_count=True)
+    response = get_paginated_offers_for_offerer_venue_and_keywords(
+        user=current_user,
+        offerer_id=offerer_id,
+        pagination_limit=pagination_limit,
+        venue_id=venue_id,
+        keywords=request.args.get('keywords'),
+        page=page
+    )
+
+    return response, 200
 
 
 @app.route('/offers/<offer_id>', methods=['GET'])

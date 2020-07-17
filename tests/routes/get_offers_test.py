@@ -42,6 +42,20 @@ class Get:
             assert len(offers) == 5
 
         @clean_database
+        def test_returns_total_data_count_in_headers(self, app):
+            # given
+            user = create_user(email='user@test.com')
+            create_offers_for(user, 20)
+            auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
+
+            # when
+            response = auth_request.get('/offers')
+
+            # then
+            assert response.status_code == 200
+            assert response.headers['Total-Data-Count'] == "20"
+
+        @clean_database
         def test_results_are_paginated_by_default_on_page_1(self, app):
             # given
             user = create_user(email='user@test.com')
@@ -197,36 +211,55 @@ class Get:
             assert humanize(offer2.productId) in event_ids
             assert humanize(offer3.productId) in event_ids
 
+    class Returns404:
+        @clean_database
+        def when_requested_venue_does_not_exist(self, app):
+            # Given
+            user = create_user(email='user@test.com')
+            repository.save(user)
+
+            # when
+            response = TestClient(app.test_client()) \
+                .with_auth(email=user.email).get('/offers?venueId=ABC')
+
+            # then
+            assert response.status_code == 404
+            assert response.json == {'global': ["La page que vous recherchez n'existe pas"]}
+
         @clean_database
         def test_does_not_show_anything_to_user_offerer_when_not_validated(self, app):
             # given
             user = create_user()
             offerer = create_offerer()
-            venue = create_venue(offerer)
             user_offerer = create_user_offerer(user, offerer, validation_token=secrets.token_urlsafe(20))
+            venue = create_venue(offerer)
             offer = create_offer_with_thing_product(venue)
             repository.save(user_offerer, offer)
-            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+
             # when
-            response = auth_request.get('/offers')
+            response = TestClient(app.test_client()).with_auth(email=user.email).get('/offers')
 
             # then
-            assert response.status_code == 200
-            assert response.json == []
+            assert response.status_code == 404
+            assert response.json == {'global': ["Aucun résultat disponible"]}
 
+    class Returns403:
         @clean_database
-        def test_returns_total_data_count_in_headers(self, app):
-            # given
+        def when_user_has_no_rights_on_requested_venue(self, app):
+            # Given
             user = create_user(email='user@test.com')
-            create_offers_for(user, 20)
-            auth_request = TestClient(app.test_client()).with_auth(email='user@test.com')
+            offerer = create_offerer()
+            venue = create_venue(offerer)
+            repository.save(user, venue)
 
             # when
-            response = auth_request.get('/offers')
+            response = TestClient(app.test_client()) \
+                .with_auth(email=user.email).get(f'/offers?venueId={humanize(venue.id)}')
 
             # then
-            assert response.status_code == 200
-            assert response.headers['Total-Data-Count'] == "20"
+            assert response.status_code == 403
+            assert response.json == {
+                'global': ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]}
 
 
 def create_offers_for(user, n, siren='123456789'):

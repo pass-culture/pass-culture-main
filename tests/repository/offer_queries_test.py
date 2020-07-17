@@ -8,7 +8,7 @@ from models.offer_type import EventType, ThingType
 from repository import repository
 from repository.offer_queries import department_or_national_offers, \
     find_activation_offers, \
-    find_offers_with_filter_parameters, \
+    build_find_offers_with_filter_parameters, \
     get_offers_by_venue_id, \
     get_paginated_active_offer_ids, \
     get_paginated_offer_ids_by_venue_id_and_last_provider_id, \
@@ -258,7 +258,7 @@ class FindOffersTest:
         )
 
         # when
-        offers = find_offers_with_filter_parameters(
+        offers = build_find_offers_with_filter_parameters(
             user,
             venue_id=venue1.id,
             keywords_string='Jacq Rencon'
