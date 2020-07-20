@@ -9,7 +9,6 @@ from infrastructure.read_models.paginated_offers.paginated_offer_sql_repository 
 from models import Offer, RightsType, VenueSQLEntity
 from models.api_errors import ResourceNotFoundError
 from repository import offer_queries, repository, venue_queries, user_offerer_queries
-from repository.offer_queries import find_activation_offers
 from routes.serialization import as_dict
 from routes.serialization.offers_serialize import serialize_offer
 from use_cases.update_an_offer import update_an_offer
@@ -18,7 +17,7 @@ from utils.human_ids import dehumanize
 from utils.includes import OFFER_INCLUDES
 from utils.mailing import send_raw_email
 from utils.rest import ensure_current_user_has_rights, expect_json_data, \
-    handle_rest_get_list, load_or_404, load_or_raise_error, \
+    load_or_404, load_or_raise_error, \
     login_or_api_key_required
 from validation.routes.offers import check_has_venue_id, \
     check_offer_name_length_is_valid, check_offer_type_is_valid, \

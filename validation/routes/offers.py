@@ -1,8 +1,7 @@
 from domain.allocine import get_editable_fields_for_allocine_offers
-from models import RightsType, Offer, UserOfferer
+from models import Offer, UserOfferer
 from models.api_errors import ResourceNotFoundError, ApiErrors
 from models.offer_type import ProductType
-from utils.rest import ensure_current_user_has_rights
 
 
 def check_user_has_rights_on_offerer(user_offerer: UserOfferer):
@@ -21,15 +20,6 @@ def check_user_has_rights_on_offerer(user_offerer: UserOfferer):
 
     if user_offerer.validationToken:
         raise errors
-
-
-def check_user_has_rights_for_query(offerer_id, venue, venue_id):
-    if venue_id:
-        ensure_current_user_has_rights(RightsType.editor,
-                                       venue.managingOffererId)
-    elif offerer_id:
-        ensure_current_user_has_rights(RightsType.editor,
-                                       offerer_id)
 
 
 def check_has_venue_id(venue_id):
