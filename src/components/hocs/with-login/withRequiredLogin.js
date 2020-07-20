@@ -5,7 +5,7 @@ import { requestData } from 'redux-thunk-data'
 import { getRedirectionPath } from './helpers'
 import withLogin from './withLogin'
 
-export const handleFail = (state, action, ownProps) => {
+export const handleFail = ownProps => {
   const { history, location } = ownProps
   const { pathname, search } = location
 
@@ -14,11 +14,7 @@ export const handleFail = (state, action, ownProps) => {
   history.push(`/connexion?de=${fromUrl}`)
 }
 
-export const handleSuccess = (state, action, ownProps) => {
-  const {
-    payload: { datum },
-  } = action
-  const currentUser = datum
+export const handleSuccess = (currentUser, ownProps) => {
   const { history, location } = ownProps
 
   const redirect = getRedirectionPath({

@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import { selectCurrentUser } from '../../../../redux/selectors/data/usersSelectors'
+import { selectCurrentUser } from '../../../../redux/selectors/currentUserSelector'
 
 import withTracking from '../../../hocs/withTracking'
 import ShareButton from './ShareButton'

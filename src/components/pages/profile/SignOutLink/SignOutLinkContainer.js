@@ -4,6 +4,7 @@ import { reinitializeData } from 'redux-thunk-data'
 import { updateSeedLastRequestTimestamp } from '../../../../redux/actions/pagination'
 import SignOutLink from './SignOutLink'
 import { selectReadRecommendations } from '../../../../redux/selectors/data/readRecommendationsSelectors'
+import { resetCurrentUser } from '../../../../redux/actions/currentUser'
 
 const resetSeedLastRequestTimestamp = date => updateSeedLastRequestTimestamp(date)
 
@@ -19,6 +20,7 @@ export const mapDispatchToProps = dispatch => ({
   },
   reinitializeDataExceptFeatures: () => {
     dispatch(reinitializeDataExceptFeatures())
+    dispatch(resetCurrentUser())
   },
 })
 

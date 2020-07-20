@@ -28,9 +28,7 @@ describe('src | components | matomo | Matomo', () => {
     }
     window._paq = fakeMatomo
     initialState = {
-      data: {
-        users: [],
-      },
+      currentUser: null,
       geolocation: {
         latitude: null,
         longitude: null,
@@ -110,12 +108,8 @@ describe('src | components | matomo | Matomo', () => {
     it('should dispatch the user id when current user is logged', () => {
       // given
       store = mockStore({
-        data: {
-          users: [
-            {
-              id: '5FYTbfk4TR',
-            },
-          ],
+        currentUser: {
+          id: '5FYTbfk4TR',
         },
         geolocation: {
           latitude: null,
@@ -141,12 +135,8 @@ describe('src | components | matomo | Matomo', () => {
     it('should dispatch user id with the right platform and custom variable', () => {
       // Given
       store = mockStore({
-        data: {
-          users: [
-            {
-              id: '5FYTbfk4TR',
-            },
-          ],
+        currentUser: {
+          id: '5FYTbfk4TR',
         },
         geolocation: {
           latitude: null,
@@ -160,14 +150,26 @@ describe('src | components | matomo | Matomo', () => {
           <Provider store={store}>
             <MatomoContainer {...props} />
           </Provider>
-        </Router>,
+        </Router>
       )
 
       // Then
-      expect(fakeMatomo.push).toHaveBeenCalledWith( ['setUserId', '5FYTbfk4TR on WEBAPP'])
-      expect(fakeMatomo.push).toHaveBeenCalledWith( ["setCustomVariable", 1, "platform", "browser", "visit"])
-      expect(fakeMatomo.push).not.toHaveBeenCalledWith( ['setUserId', '5FYTbfk4TR on TWA'])
-      expect(fakeMatomo.push).not.toHaveBeenCalledWith( ["setCustomVariable", 1, "platform", "application", "visit"])
+      expect(fakeMatomo.push).toHaveBeenCalledWith(['setUserId', '5FYTbfk4TR on WEBAPP'])
+      expect(fakeMatomo.push).toHaveBeenCalledWith([
+        'setCustomVariable',
+        1,
+        'platform',
+        'browser',
+        'visit',
+      ])
+      expect(fakeMatomo.push).not.toHaveBeenCalledWith(['setUserId', '5FYTbfk4TR on TWA'])
+      expect(fakeMatomo.push).not.toHaveBeenCalledWith([
+        'setCustomVariable',
+        1,
+        'platform',
+        'application',
+        'visit',
+      ])
     })
   })
 
@@ -179,12 +181,8 @@ describe('src | components | matomo | Matomo', () => {
       })
 
       store = mockStore({
-        data: {
-          users: [
-            {
-              id: '5FYTbfk4TR',
-            },
-          ],
+        currentUser: {
+          id: '5FYTbfk4TR',
         },
         geolocation: {
           latitude: null,
@@ -198,14 +196,26 @@ describe('src | components | matomo | Matomo', () => {
           <Provider store={store}>
             <MatomoContainer {...props} />
           </Provider>
-        </Router>,
+        </Router>
       )
 
       // Then
-      expect(fakeMatomo.push).toHaveBeenCalledWith( ['setUserId', '5FYTbfk4TR on TWA'])
-      expect(fakeMatomo.push).toHaveBeenCalledWith( ["setCustomVariable", 1, "platform", "application", "visit"])
-      expect(fakeMatomo.push).not.toHaveBeenCalledWith( ['setUserId', '5FYTbfk4TR on WEBAPP'])
-      expect(fakeMatomo.push).not.toHaveBeenCalledWith( ["setCustomVariable", 1, "platform", "browser", "visit"])
+      expect(fakeMatomo.push).toHaveBeenCalledWith(['setUserId', '5FYTbfk4TR on TWA'])
+      expect(fakeMatomo.push).toHaveBeenCalledWith([
+        'setCustomVariable',
+        1,
+        'platform',
+        'application',
+        'visit',
+      ])
+      expect(fakeMatomo.push).not.toHaveBeenCalledWith(['setUserId', '5FYTbfk4TR on WEBAPP'])
+      expect(fakeMatomo.push).not.toHaveBeenCalledWith([
+        'setCustomVariable',
+        1,
+        'platform',
+        'browser',
+        'visit',
+      ])
     })
   })
 })

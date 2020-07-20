@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux'
+import currentUser from './currentUser'
 import data from './data'
 import geolocation from './geolocation'
 import overlay from './overlay'
@@ -10,6 +11,7 @@ import maintenance from './maintenance'
 import lastRecommendationsRequestTimestamp from './lastRecommendationRequestTimestamp'
 
 const rootReducer = combineReducers({
+  currentUser,
   data,
   geolocation,
   lastRecommendationsRequestTimestamp,

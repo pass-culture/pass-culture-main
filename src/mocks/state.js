@@ -1,6 +1,37 @@
 import offerTypes from './api/offer_types'
 
 const state = {
+  currentUser: {
+    id: 'AE',
+    canBookFreeOffers: true,
+    dateCreated: '2018-10-29T09:44:18.243300Z',
+    departementCode: '93',
+    email: 'pctest.jeune.93@btmx.fr',
+    expenses: {
+      all: {
+        actual: 230,
+        max: 500,
+      },
+      digital: {
+        actual: 0,
+        max: 200,
+      },
+      physical: {
+        actual: 0,
+        max: 100,
+      },
+    },
+    firstName: 'PC Test',
+    isAdmin: false,
+    lastName: 'Jeune 93',
+    modelName: 'User',
+    phoneNumber: null,
+    postalCode: '93100',
+    publicName: 'PC Test Jeune 93',
+    thumbCount: 1,
+    wallet_balance: 270,
+    wallet_is_activated: true,
+  },
   data: {
     bookings: [
       {
@@ -425,39 +456,6 @@ const state = {
       },
     ],
     types: offerTypes,
-    users: [
-      {
-        id: 'AE',
-        canBookFreeOffers: true,
-        dateCreated: '2018-10-29T09:44:18.243300Z',
-        departementCode: '93',
-        email: 'pctest.jeune.93@btmx.fr',
-        expenses: {
-          all: {
-            actual: 230,
-            max: 500,
-          },
-          digital: {
-            actual: 0,
-            max: 200,
-          },
-          physical: {
-            actual: 0,
-            max: 100,
-          },
-        },
-        firstName: 'PC Test',
-        isAdmin: false,
-        lastName: 'Jeune 93',
-        modelName: 'User',
-        phoneNumber: null,
-        postalCode: '93100',
-        publicName: 'PC Test Jeune 93',
-        thumbCount: 1,
-        wallet_balance: 270,
-        wallet_is_activated: true,
-      },
-    ],
   },
   errors: {},
   form: {},

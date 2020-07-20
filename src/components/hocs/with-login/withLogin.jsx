@@ -1,22 +1,13 @@
-import { requestData } from 'redux-thunk-data'
-
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import LoadingPage from '../../layout/LoadingPage/LoadingPage'
-
 import { connect } from 'react-redux'
 
-export const resolveCurrentUser = userFromRequest => {
-  if (!userFromRequest) {
-    return null
-  }
-  return userFromRequest
-}
+import LoadingPage from '../../layout/LoadingPage/LoadingPage'
+import { getCurrentUser } from '../../../redux/actions/currentUser'
 
 export default (config = {}) => WrappedComponent => {
   const { handleFail, handleSuccess } = config
   const isRequired = typeof config.isRequired === 'undefined' ? true : config.isRequired
-  const currentUserApiPath = '/users/current'
 
   class _withLogin extends PureComponent {
     constructor() {
@@ -26,41 +17,35 @@ export default (config = {}) => WrappedComponent => {
       }
     }
 
-    componentDidMount = () => {
-      const { dispatch } = this.props
+    componentDidMount = async () => {
+      const { getCurrentUser } = this.props
 
-      dispatch(
-        requestData({
-          apiPath: currentUserApiPath,
-          resolve: resolveCurrentUser,
-          ...config,
-          handleFail: this.handleFailLogin,
-          handleSuccess: this.handleSuccessLogin,
-        })
-      )
+      const setCurrentUserAction = await getCurrentUser()
+
+      const currentUser = setCurrentUserAction.value
+      if (currentUser) {
+        this.handleSuccessLogin(currentUser)
+      } else {
+        this.handleFailLogin()
+      }
     }
 
-    handleFailLogin = (state, action) => {
+    handleFailLogin = () => {
       if (!isRequired) {
         this.setState({ canRenderChildren: true }, () => {
           if (handleFail) {
-            handleFail(state, action, this.props)
+            handleFail(this.props)
           }
         })
         return
       }
 
       if (handleFail) {
-        handleFail(state, action, this.props)
+        handleFail(this.props)
       }
     }
 
-    handleSuccessLogin = (state, action) => {
-      const {
-        payload: { datum },
-      } = action
-
-      const currentUser = resolveCurrentUser(datum)
+    handleSuccessLogin = currentUser => {
       const canRenderChildren = isRequired ? !!currentUser : true
 
       this.setState(
@@ -69,7 +54,7 @@ export default (config = {}) => WrappedComponent => {
         },
         () => {
           if (handleSuccess) {
-            handleSuccess(state, action, this.props)
+            handleSuccess(currentUser, this.props)
           }
         }
       )
@@ -87,8 +72,11 @@ export default (config = {}) => WrappedComponent => {
   }
 
   _withLogin.propTypes = {
-    dispatch: PropTypes.func.isRequired,
+    getCurrentUser: PropTypes.func.isRequired,
   }
 
-  return connect()(_withLogin)
+  return connect(
+    undefined,
+    { getCurrentUser }
+  )(_withLogin)
 }

@@ -5,12 +5,8 @@ describe('src | components | matomo | MatomoContainer', () => {
     it('should return an object of props when user logged in', () => {
       // given
       const state = {
-        data: {
-          users: [
-            {
-              id: 'Rt4R45ETEs',
-            },
-          ],
+        currentUser: {
+          id: 'Rt4R45ETEs',
         },
       }
 
@@ -26,9 +22,7 @@ describe('src | components | matomo | MatomoContainer', () => {
     it('should return an object of props when user not logged in', () => {
       // given
       const state = {
-        data: {
-          users: [],
-        },
+        currentUser: null,
       }
       // when
       const props = mapStateToProps(state)

@@ -5,13 +5,10 @@ import { requestData } from 'redux-thunk-data'
 import { getRedirectToCurrentLocationOrDiscovery } from './helpers'
 import withLogin from './withLogin'
 
-export const handleSuccess = (state, action, ownProps) => {
-  const {
-    payload: { datum },
-  } = action
+export const handleSuccess = (currentUser, ownProps) => {
   const { history, location } = ownProps
   const redirect = getRedirectToCurrentLocationOrDiscovery({
-    currentUser: datum,
+    currentUser,
     ...location,
   })
 

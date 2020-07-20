@@ -11,14 +11,9 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
   describe('handleSuccess()', () => {
     it('should call getRedirectToCurrentLocationOrDiscovery with right parameters', () => {
       // given
-      const state = {}
-      const action = {
-        payload: {
-          datum: {
-            email: 'michel.marx@youpi.fr',
-            needsToFillCulturalSurvey: false,
-          },
-        },
+      const user = {
+        email: 'michel.marx@youpi.fr',
+        needsToFillCulturalSurvey: false,
       }
       const ownProps = {
         history: {
@@ -34,7 +29,7 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
       }
 
       // when
-      handleSuccess(state, action, ownProps)
+      handleSuccess(user, ownProps)
 
       // then
       expect(getRedirectToCurrentLocationOrDiscovery).toHaveBeenCalledWith({
@@ -52,10 +47,7 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
 
     it('should not call push history when user is redirected', () => {
       // given
-      const state = {}
-      const action = {
-        payload: {},
-      }
+      const user = null
       const ownProps = {
         history: {
           push: jest.fn(),
@@ -65,7 +57,7 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
       getRedirectToCurrentLocationOrDiscovery.mockReturnValue('/fake-url')
 
       // when
-      handleSuccess(state, action, ownProps)
+      handleSuccess(user, ownProps)
 
       // then
       expect(ownProps.history.push).toHaveBeenCalledWith('/fake-url')
@@ -73,10 +65,7 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
 
     it('should call push history when its success', () => {
       // given
-      const state = {}
-      const action = {
-        payload: {},
-      }
+      const user = null
       const ownProps = {
         history: {
           push: jest.fn(),
@@ -86,7 +75,7 @@ describe('src | components | pages | hocs | with-login | withNotRequiredLogin', 
       getRedirectToCurrentLocationOrDiscovery.mockReturnValue(undefined)
 
       // when
-      handleSuccess(state, action, ownProps)
+      handleSuccess(user, ownProps)
 
       // then
       expect(ownProps.history.push).not.toHaveBeenCalled()

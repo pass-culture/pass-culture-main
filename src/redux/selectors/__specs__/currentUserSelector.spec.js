@@ -1,14 +1,12 @@
-import { selectCurrentUser } from '../usersSelectors'
-import User from '../../../../components/pages/profile/ValueObjects/User'
+import { selectCurrentUser } from '../currentUserSelector'
+import User from '../../../components/pages/profile/ValueObjects/User'
 
-describe('users selectors', () => {
+describe('currentUser selector', () => {
   describe('select current user infos', () => {
     describe('when nothing in the store', () => {
       it('should return nothing', () => {
         // given
-        const state = {
-          data: {},
-        }
+        const state = {}
 
         // when
         const user = selectCurrentUser(state)
@@ -22,12 +20,8 @@ describe('users selectors', () => {
       it('should return the first user', () => {
         // given
         const state = {
-          data: {
-            users: [
-              {
-                id: 'EF',
-              },
-            ],
+          currentUser: {
+            id: 'EF',
           },
         }
 
