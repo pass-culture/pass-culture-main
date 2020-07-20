@@ -5,7 +5,6 @@ import React, { PureComponent } from 'react'
 import LoadingPage from '../../layout/LoadingPage/LoadingPage'
 
 import { connect } from 'react-redux'
-import { selectCurrentUser } from '../../../redux/selectors/data/usersSelectors'
 
 export const resolveCurrentUser = userFromRequest => {
   if (!userFromRequest) {
@@ -20,12 +19,11 @@ export default (config = {}) => WrappedComponent => {
   const currentUserApiPath = '/users/current'
 
   class _withLogin extends PureComponent {
-    constructor(props) {
-      super(props)
-      const { initialCurrentUser } = props
+    constructor() {
+      super()
       this.state = {
         canRenderChildren: false,
-        currentUser: initialCurrentUser,
+        currentUser: null,
       }
     }
 
@@ -33,19 +31,13 @@ export default (config = {}) => WrappedComponent => {
       const { dispatch } = this.props
 
       dispatch(
-        requestData(
-          Object.assign(
-            {
-              apiPath: currentUserApiPath,
-              resolve: resolveCurrentUser,
-              ...config,
-            },
-            {
-              handleFail: this.handleFailLogin,
-              handleSuccess: this.handleSuccessLogin,
-            }
-          )
-        )
+        requestData({
+          apiPath: currentUserApiPath,
+          resolve: resolveCurrentUser,
+          ...config,
+          handleFail: this.handleFailLogin,
+          handleSuccess: this.handleSuccessLogin,
+        })
       )
     }
 
@@ -96,16 +88,9 @@ export default (config = {}) => WrappedComponent => {
     }
   }
 
-  _withLogin.defaultProps = {
-    initialCurrentUser: null,
-  }
-
   _withLogin.propTypes = {
     dispatch: PropTypes.func.isRequired,
-    initialCurrentUser: PropTypes.shape(),
   }
 
-  return connect(state => ({
-    currentUser: selectCurrentUser(state),
-  }))(_withLogin)
+  return connect()(_withLogin)
 }
