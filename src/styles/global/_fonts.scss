@@ -1,0 +1,46 @@
+@mixin hero() {
+  font-size: rem(40px);
+  font-weight: 500;
+}
+
+@mixin exception() {
+  font-size: rem(32px);
+  font-weight: 300;
+}
+
+@mixin title1() {
+  font-size: rem(32px);
+  font-style: italic;
+  font-weight: 800;
+}
+
+@mixin title2() {
+  font-size: rem(24px);
+  font-style: italic;
+  font-weight: 500;
+}
+
+@mixin title3() {
+  font-size: rem(22px);
+  font-weight: 600;
+}
+
+@mixin title4() {
+  font-size: rem(18px);
+  font-weight: 500;
+}
+
+@mixin button() {
+  font-size: rem(16px);
+  font-weight: 600;
+}
+
+@mixin body() {
+  font-size: rem(16px);
+  font-weight: 400;
+}
+
+@mixin caption() {
+  font-size: rem(14px);
+  font-weight: 500;
+}
