@@ -1,82 +1,50 @@
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
-
-import LoadingPage from '../../layout/LoadingPage/LoadingPage'
+import { withRouter } from 'react-router-dom'
+import { compose } from 'redux'
 import { getCurrentUser } from '../../../redux/actions/currentUser'
+import LoadingPage from '../../layout/LoadingPage/LoadingPage'
 
-export default (config = {}) => WrappedComponent => {
-  const { handleFail, handleSuccess } = config
-  const isRequired = typeof config.isRequired === 'undefined' ? true : config.isRequired
+export default ({
+  isRequired,
+  handleSuccess = () => null,
+  handleFail = () => null,
+}) => WrappedComponent => {
+  const _withLogin = props => {
+    const { getCurrentUser, history, location } = props
+    const [loading, setLoading] = useState(true)
 
-  class _withLogin extends PureComponent {
-    constructor() {
-      super()
-      this.state = {
-        canRenderChildren: false,
-      }
-    }
+    useEffect(() => {
+      getCurrentUser().then(({ value }) => {
+        const isLoggedIn = !!value
 
-    componentDidMount = async () => {
-      const { getCurrentUser } = this.props
+        if (isLoggedIn) handleSuccess(value, history, location)
+        else handleFail(history, location)
 
-      const setCurrentUserAction = await getCurrentUser()
+        if (!isRequired || isLoggedIn) setLoading(false)
+      })
+    }, [])
 
-      const currentUser = setCurrentUserAction.value
-      if (currentUser) {
-        this.handleSuccessLogin(currentUser)
-      } else {
-        this.handleFailLogin()
-      }
-    }
-
-    handleFailLogin = () => {
-      if (!isRequired) {
-        this.setState({ canRenderChildren: true }, () => {
-          if (handleFail) {
-            handleFail(this.props)
-          }
-        })
-        return
-      }
-
-      if (handleFail) {
-        handleFail(this.props)
-      }
-    }
-
-    handleSuccessLogin = currentUser => {
-      const canRenderChildren = isRequired ? !!currentUser : true
-
-      this.setState(
-        {
-          canRenderChildren,
-        },
-        () => {
-          if (handleSuccess) {
-            handleSuccess(currentUser, this.props)
-          }
-        }
-      )
-    }
-
-    render() {
-      const { canRenderChildren } = this.state
-
-      if (!canRenderChildren) {
-        return <LoadingPage />
-      }
-
-      return <WrappedComponent {...this.props} />
-    }
+    return loading ? <LoadingPage /> : <WrappedComponent {...props} />
   }
 
   _withLogin.propTypes = {
     getCurrentUser: PropTypes.func.isRequired,
+    history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+    }).isRequired,
+    location: PropTypes.shape({
+      pathname: PropTypes.string.isRequired,
+      search: PropTypes.string.isRequired,
+    }).isRequired,
   }
 
-  return connect(
-    undefined,
-    { getCurrentUser }
+  return compose(
+    withRouter,
+    connect(
+      undefined,
+      { getCurrentUser }
+    )
   )(_withLogin)
 }

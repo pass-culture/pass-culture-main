@@ -1,12 +1,7 @@
-import { withRouter } from 'react-router-dom'
-import { compose } from 'redux'
-import { requestData } from 'redux-thunk-data'
-
 import { getRedirectionPath } from './helpers'
 import withLogin from './withLogin'
 
-export const handleFail = ownProps => {
-  const { history, location } = ownProps
+export const handleFail = (history, location) => {
   const { pathname, search } = location
 
   const fromUrl = encodeURIComponent(`${pathname}${search}`)
@@ -14,9 +9,7 @@ export const handleFail = ownProps => {
   history.push(`/connexion?de=${fromUrl}`)
 }
 
-export const handleSuccess = (currentUser, ownProps) => {
-  const { history, location } = ownProps
-
+export const handleSuccess = (currentUser, history, location) => {
   const redirect = getRedirectionPath({
     currentUser,
     ...location,
@@ -27,14 +20,8 @@ export const handleSuccess = (currentUser, ownProps) => {
   }
 }
 
-const withRequiredLogin = compose(
-  withRouter,
-  withLogin({
-    handleFail,
-    handleSuccess,
-    isRequired: true,
-    requestData,
-  })
-)
-
-export default withRequiredLogin
+export default withLogin({
+  handleFail,
+  handleSuccess,
+  isRequired: true,
+})

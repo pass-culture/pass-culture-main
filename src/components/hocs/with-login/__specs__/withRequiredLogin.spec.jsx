@@ -5,21 +5,19 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin - uni
     describe('when authentication fails', () => {
       it('should redirect to signin with initial requested route as parameter', () => {
         // given
-        const ownProps = {
-          history: {
-            push: jest.fn(),
-          },
-          location: {
-            pathname: 'pathname',
-            search: 'search',
-          },
+        const history = {
+          push: jest.fn(),
+        }
+        const location = {
+          pathname: 'pathname',
+          search: 'search',
         }
 
         // when
-        handleFail(ownProps)
+        handleFail(history, location)
 
         // then
-        expect(ownProps.history.push).toHaveBeenCalledWith(`/connexion?de=pathnamesearch`)
+        expect(history.push).toHaveBeenCalledWith(`/connexion?de=pathnamesearch`)
       })
     })
   })
@@ -34,22 +32,19 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin - uni
             needsToFillCulturalSurvey: false,
             needsToSeeTutorials: false,
           }
-
-          const ownProps = {
-            history: {
-              push: jest.fn(),
-            },
-            location: {
-              pathname: '/test',
-              search: '',
-            },
+          const history = {
+            push: jest.fn(),
+          }
+          const location = {
+            pathname: '/test',
+            search: '',
           }
 
           // when
-          handleSuccess(user, ownProps)
+          handleSuccess(user, history, location)
 
           // then
-          expect(ownProps.history.push).not.toHaveBeenCalled()
+          expect(history.push).not.toHaveBeenCalled()
         })
       })
 
@@ -60,22 +55,19 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin - uni
             email: 'michel.marx@example.com',
             needsToSeeTutorials: true,
           }
-
-          const ownProps = {
-            history: {
-              push: jest.fn(),
-            },
-            location: {
-              pathname: '/test',
-              search: '',
-            },
+          const history = {
+            push: jest.fn(),
+          }
+          const location = {
+            pathname: '/test',
+            search: '',
           }
 
           // when
-          handleSuccess(user, ownProps)
+          handleSuccess(user, history, location)
 
           // then
-          expect(ownProps.history.push).toHaveBeenCalledWith('/bienvenue')
+          expect(history.push).toHaveBeenCalledWith('/bienvenue')
         })
       })
 
@@ -86,22 +78,19 @@ describe('src | components | pages | hocs | with-login | withRequiredLogin - uni
             email: 'michel.marx@example.com',
             needsToFillCulturalSurvey: true,
           }
-
-          const ownProps = {
-            history: {
-              push: jest.fn(),
-            },
-            location: {
-              key: expect.any(String),
-              pathname: '/test',
-            },
+          const history = {
+            push: jest.fn(),
+          }
+          const location = {
+            key: expect.any(String),
+            pathname: '/test',
           }
 
           // when
-          handleSuccess(user, ownProps)
+          handleSuccess(user, history, location)
 
           // then
-          expect(ownProps.history.push).toHaveBeenCalledWith('/typeform')
+          expect(history.push).toHaveBeenCalledWith('/typeform')
         })
       })
     })

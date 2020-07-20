@@ -4,6 +4,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
 import configureStore from 'redux-mock-store'
+import thunk from 'redux-thunk'
 
 import LoadingPage from '../../../layout/LoadingPage/LoadingPage'
 import withLogin from '../withLogin'
@@ -20,19 +21,14 @@ describe('src | components | pages | hocs | with-login | withLogin', () => {
     it('should display the loading page', () => {
       // given
       const initialState = { data: { users: [] } }
-      const middlewares = []
+      const middlewares = [thunk]
       const mockStore = configureStore(middlewares)
       const store = mockStore(initialState)
-      let handleFail = jest.fn()
-      let handleSuccess = jest.fn()
       let dispatch = jest.fn()
       const wrappedComponent = () => (<h1>
         {'Hello World !'}
       </h1>)
-      const config = {
-        handleFail,
-        handleSuccess,
-      }
+      const config = {}
       const history = createBrowserHistory()
 
       // when

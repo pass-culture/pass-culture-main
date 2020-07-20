@@ -1,12 +1,7 @@
-import { withRouter } from 'react-router-dom'
-import { compose } from 'redux'
-import { requestData } from 'redux-thunk-data'
-
 import { getRedirectToCurrentLocationOrDiscovery } from './helpers'
 import withLogin from './withLogin'
 
-export const handleSuccess = (currentUser, ownProps) => {
-  const { history, location } = ownProps
+export const handleSuccess = (currentUser, history, location) => {
   const redirect = getRedirectToCurrentLocationOrDiscovery({
     currentUser,
     ...location,
@@ -17,13 +12,7 @@ export const handleSuccess = (currentUser, ownProps) => {
   }
 }
 
-const withNotRequiredLogin = compose(
-  withRouter,
-  withLogin({
-    handleSuccess,
-    isRequired: false,
-    requestData,
-  })
-)
-
-export default withNotRequiredLogin
+export default withLogin({
+  handleSuccess,
+  isRequired: false,
+})
