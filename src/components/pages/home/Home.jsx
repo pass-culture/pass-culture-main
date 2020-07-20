@@ -28,6 +28,8 @@ class Home extends Component {
   }
 
   renderModule = (module, row) => {
+    const { history } = this.props
+
     if (module instanceof OffersWithCover) {
       return (<ModuleWithCover
         key={`${row}-module-with-cover`}
@@ -35,6 +37,7 @@ class Home extends Component {
               />)
     } else if (module instanceof Offers) {
       return (<Module
+        historyPush={history.push}
         key={`${row}-module`}
         module={module}
         row={row}
@@ -85,6 +88,7 @@ class Home extends Component {
 }
 
 Home.propTypes = {
+  history: PropTypes.shape().isRequired,
   user: PropTypes.shape({
     publicName: PropTypes.string,
     wallet_balance: PropTypes.number,

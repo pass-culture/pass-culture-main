@@ -1,8 +1,6 @@
 .module-wrapper {
   .one-item-medium {
-    margin-bottom: rem(24px);
-    padding-left: rem(20px);
-    padding-right: rem(20px);
+    padding: 0 rem(20px) rem(24px);
     white-space: nowrap;
   }
 
@@ -10,7 +8,8 @@
     @include title4();
 
     color: $black;
-    margin: 0 rem(20px) rem(15px);
+    margin-left: 2%;
+    padding: 0 rem(20px) rem(16px);
     white-space: normal;
   }
 

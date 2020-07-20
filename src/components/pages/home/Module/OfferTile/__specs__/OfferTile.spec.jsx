@@ -1,19 +1,20 @@
 import { mount } from 'enzyme'
 import React from 'react'
 import { MemoryRouter } from 'react-router'
-import OfferTile from '../OfferTile'
+import OfferTile, { noOp } from '../OfferTile'
 import { Link } from 'react-router-dom'
 import { DEFAULT_THUMB_URL } from '../../../../../../utils/thumb'
 import { formatSearchResultDate } from '../../../../../../utils/date/date'
 
 jest.mock('../../../../../../utils/date/date', () => ({
-  formatSearchResultDate: jest.fn()
+  formatSearchResultDate: jest.fn(),
 }))
 describe('src | components | OfferTile', () => {
   let props
 
   beforeEach(() => {
     props = {
+      historyPush: jest.fn(),
       hit: {
         offer: {
           dates: [],
@@ -23,13 +24,14 @@ describe('src | components | OfferTile', () => {
           name: 'Avengers - Age of Ultron',
           priceMin: 1,
           priceMax: 1,
-          thumbUrl: 'my-thumb'
+          thumbUrl: 'my-thumb',
         },
         venue: {
           departementCode: '54',
-          name: 'Librairie Kléber'
-        }
-      }
+          name: 'Librairie Kléber',
+        },
+      },
+      isSwitching: false,
     }
   })
 
@@ -44,7 +46,9 @@ describe('src | components | OfferTile', () => {
     // then
     const link = wrapper.find(Link)
     expect(link).toHaveLength(1)
-    expect(link.prop('to')).toBe('/offre/details/AE')
+    expect(link.prop('to')).toBe(noOp)
+    expect(link.prop('onMouseDown')).toStrictEqual(expect.any(Function))
+    expect(link.prop('onClick')).toStrictEqual(expect.any(Function))
   })
 
   it('should render an offer tile with an image when provided', () => {
@@ -58,7 +62,7 @@ describe('src | components | OfferTile', () => {
     // then
     const img = wrapper.find('img')
     expect(img).toHaveLength(1)
-    expect(img.prop('alt')).toBe("")
+    expect(img.prop('alt')).toBe('')
     expect(img.prop('src')).toBe('my-thumb')
   })
 

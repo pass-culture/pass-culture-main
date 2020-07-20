@@ -27,6 +27,9 @@ describe('src | components | Home', () => {
   beforeEach(() => {
     fetchLastHomepage.mockResolvedValue([])
     props = {
+      history: {
+        push: jest.fn(),
+      },
       user: {
         publicName: 'Iron Man',
         wallet_balance: 200.1,

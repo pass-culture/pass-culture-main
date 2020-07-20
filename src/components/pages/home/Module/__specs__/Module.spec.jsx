@@ -8,7 +8,7 @@ import { MemoryRouter } from 'react-router'
 import OfferTile from '../OfferTile/OfferTile'
 
 jest.mock('../../../../../vendor/algolia/algolia', () => ({
-  fetchAlgolia: jest.fn()
+  fetchAlgolia: jest.fn(),
 }))
 describe('src | components | Module', () => {
   let algolia
@@ -31,14 +31,14 @@ describe('src | components | Module', () => {
       newestOnly: true,
       priceMax: 10,
       priceMin: 1,
-      title: 'Mes paramètres Algolia'
+      title: 'Mes paramètres Algolia',
     }
     display = {
       activeOn: '2020-07-01T00:00+02:00',
       activeUntil: '2020-07-30T00:00+02:00',
       layout: PANE_LAYOUT['ONE-ITEM-MEDIUM'],
       minOffers: 5,
-      title: 'Les offres près de chez toi!'
+      title: 'Les offres près de chez toi!',
     }
     offerOne = {
       objectID: 'NE',
@@ -49,11 +49,11 @@ describe('src | components | Module', () => {
         name: "Dansons jusqu'en 2030",
         priceMax: 33,
         priceMin: 33,
-        thumbUrl: 'http://localhost/storage/thumbs/mediations/KQ'
+        thumbUrl: 'http://localhost/storage/thumbs/mediations/KQ',
       },
       venue: {
-        name: 'Le Sous-sol'
-      }
+        name: 'Le Sous-sol',
+      },
     }
     offerTwo = {
       objectID: 'AE',
@@ -64,11 +64,11 @@ describe('src | components | Module', () => {
         name: 'Naruto',
         priceMax: 1,
         priceMin: 12,
-        thumbUrl: 'http://localhost/storage/thumbs/mediations/PP'
+        thumbUrl: 'http://localhost/storage/thumbs/mediations/PP',
       },
       venue: {
-        name: 'Librairie Kléber'
-      }
+        name: 'Librairie Kléber',
+      },
     }
   })
 
@@ -80,16 +80,18 @@ describe('src | components | Module', () => {
           hits: [offerOne, offerTwo],
           nbHits: 0,
           nbPages: 0,
-          page: 0
+          page: 0,
         })
       })
     )
 
     const props = {
+      historyPush: jest.fn(),
       module: new Offers({
         algolia,
-        display
-      })
+        display,
+      }),
+      row: 1,
     }
 
     // when
@@ -118,16 +120,18 @@ describe('src | components | Module', () => {
           hits: [offerOne],
           nbHits: 0,
           nbPages: 0,
-          page: 0
+          page: 0,
         })
       })
     )
 
     const props = {
+      historyPush: jest.fn(),
       module: new Offers({
         algolia,
-        display
-      })
+        display,
+      }),
+      row: 1,
     }
 
     // when
@@ -150,16 +154,18 @@ describe('src | components | Module', () => {
           hits: [],
           nbHits: 0,
           nbPages: 0,
-          page: 0
+          page: 0,
         })
       })
     )
 
     const props = {
+      historyPush: jest.fn(),
       module: new Offers({
         algolia,
-        display
-      })
+        display,
+      }),
+      row: 1,
     }
 
     // when

@@ -1,21 +1,38 @@
+import PropTypes from 'prop-types'
+import React from 'react'
+import { Link } from 'react-router-dom'
+
 import { formatSearchResultDate } from '../../../../../utils/date/date'
 import { formatResultPrice } from '../../../../../utils/price'
-import { Link } from 'react-router-dom'
 import { DEFAULT_THUMB_URL } from '../../../../../utils/thumb'
-import React from 'react'
-import PropTypes from 'prop-types'
 
-const OfferTile = ({ hit }) => {
+export const noOp = () => false
+
+const OfferTile = ({ historyPush, hit, isSwitching }) => {
   const { offer, venue } = hit
-  const offerDates = offer.isEvent ? `${formatSearchResultDate(venue.departementCode, offer.dates)} - ` : ''
+  const offerDates = offer.isEvent
+    ? `${formatSearchResultDate(venue.departementCode, offer.dates)} - `
+    : ''
   const formattedPrice = formatResultPrice(offer.priceMin, offer.priceMax, offer.isDuo)
+  function goToOffer() {
+    if (!isSwitching) {
+      historyPush(`/offre/details/${offer.id}`)
+    }
+  }
+  function preventDefault(event) {
+    event.preventDefault()
+  }
 
   return (
     <li
       className="offer-tile-wrapper"
       key={offer.id}
     >
-      <Link to={`/offre/details/${offer.id}`}>
+      <Link
+        onClick={goToOffer}
+        onMouseDown={preventDefault}
+        to={noOp}
+      >
         <div className="otw-image-wrapper">
           <img
             alt=""
@@ -44,7 +61,9 @@ const OfferTile = ({ hit }) => {
 }
 
 OfferTile.propTypes = {
-  hit: PropTypes.shape().isRequired
+  historyPush: PropTypes.func.isRequired,
+  hit: PropTypes.shape().isRequired,
+  isSwitching: PropTypes.bool.isRequired,
 }
 
 export default OfferTile

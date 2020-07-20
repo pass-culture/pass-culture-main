@@ -1,12 +1,10 @@
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import Draggable from 'react-draggable'
+import SwipeableViews from 'react-swipeable-views'
 
 import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import { parseAlgoliaParameters } from '../domain/parseAlgoliaParameters'
 import Offers from '../domain/ValueObjects/Offers'
-import { DEFAULT_POSITION, DEFAULT_STEP } from '../_constants'
-import { calculatePositionOnXAxis, calculateStep } from './domain/dragFunctions'
 import OfferTile from './OfferTile/OfferTile'
 
 class Module extends Component {
@@ -14,10 +12,9 @@ class Module extends Component {
     super(props)
     this.state = {
       hits: [],
-      lastPositionOnXAxis: 0,
-      position: DEFAULT_POSITION,
-      step: DEFAULT_STEP,
+      isSwitching: false,
     }
+    this.swipeRatio = 0.2
   }
 
   componentDidMount() {
@@ -34,57 +31,17 @@ class Module extends Component {
     })
   }
 
-  moveToPreviousOrNextTile = (event, data) => {
-    const { hits, lastPositionOnXAxis, position, step } = this.state
-    const firstOfferImageWidth = document.getElementsByClassName('otw-image-wrapper')[0].offsetWidth
+  onSwitching = () => this.setState({ isSwitching: true })
 
-    const maxSteps = hits.length
-    const newStep = calculateStep({
-      lastPositionOnXAxis: lastPositionOnXAxis,
-      maxSteps: maxSteps,
-      newPositionOnXAxis: data.x,
-      step: step,
-    })
-    const newPositionOnXAxis = calculatePositionOnXAxis({
-      lastPositionOnXAxis: lastPositionOnXAxis,
-      maxSteps: maxSteps,
-      newPositionOnXAxis: data.x,
-      step: step,
-      width: firstOfferImageWidth,
-    })
-
-    this.setState({
-      lastPositionOnXAxis: newPositionOnXAxis,
-      position: {
-        x: newPositionOnXAxis,
-        y: position.y,
-      },
-      step: newStep,
-    })
-
-    this.getAllLinks().forEach(link => {
-      link.classList.remove('disabled-click-event')
-    })
-  }
-
-  removeClickableLinks = () => {
-    this.getAllLinks().forEach(link => {
-      link.classList.add('disabled-click-event')
-    })
-  }
-
-  getAllLinks = () => window.document.querySelectorAll('.hw-modules a')
-
-  preventDefaultLink = event => {
-    event.preventDefault()
-  }
+  onTransitionEnd = () => this.setState({ isSwitching: false })
 
   render() {
     const {
+      historyPush,
       module: { display },
       row,
     } = this.props
-    const { hits, position } = this.state
+    const { hits, isSwitching } = this.state
     const atLeastOneHit = hits.length > 0
 
     return (
@@ -93,23 +50,26 @@ class Module extends Component {
           <h1>
             {display.title}
           </h1>
-          <Draggable
-            axis="x"
-            bounds={{ right: 0 }}
-            onDrag={this.removeClickableLinks}
-            onMouseDown={this.preventDefaultLink}
-            onStop={this.moveToPreviousOrNextTile}
-            position={position}
-          >
-            <ul className={display.layout}>
+          <ul>
+            <SwipeableViews
+              className={display.layout}
+              disableLazyLoading
+              enableMouseEvents
+              hysteresis={this.swipeRatio}
+              onSwitching={this.onSwitching}
+              onTransitionEnd={this.onTransitionEnd}
+              slideClassName="module-slides"
+            >
               {hits.map(hit => (
                 <OfferTile
+                  historyPush={historyPush}
                   hit={hit}
+                  isSwitching={isSwitching}
                   key={`${row}${hit.offer.id}`}
                 />
               ))}
-            </ul>
-          </Draggable>
+            </SwipeableViews>
+          </ul>
         </div>
       )
     )
@@ -117,6 +77,7 @@ class Module extends Component {
 }
 
 Module.propTypes = {
+  historyPush: PropTypes.func.isRequired,
   module: PropTypes.instanceOf(Offers).isRequired,
   row: PropTypes.number.isRequired,
 }

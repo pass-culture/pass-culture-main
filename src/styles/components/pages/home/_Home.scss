@@ -32,7 +32,7 @@
   }
 
   span {
-    @include title4();
+    @include body();
 
     color: $white;
   }
