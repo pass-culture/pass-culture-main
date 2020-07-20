@@ -138,22 +138,16 @@ module.exports = {
         to: path.resolve(`${paths.appBuild}/**/*.${extension}`),
       }))
     ),
-    new CopyWebpackPlugin([
-      {
-        from: (function() {
-          if (process.env.ENVIRONMENT_NAME === 'production') {
-            return path.resolve(`${paths.appAssetLinksDirectory}/assetlinks-production.json`)
-          } else if (process.env.ENVIRONMENT_NAME === 'staging') {
-            return path.resolve(`${paths.appAssetLinksDirectory}/assetlinks-staging.json`)
-          } else if (process.env.ENVIRONMENT_NAME === 'testing') {
-            return path.resolve(`${paths.appAssetLinksDirectory}/assetlinks-testing.json`)
-          } else if (process.env.ENVIRONMENT_NAME === 'integration') {
-            return path.resolve(`${paths.appAssetLinksDirectory}/assetlinks-integration.json`)
-          }
-        })(),
-        to: path.resolve(`${paths.appBuild}/.well-known/assetlinks.json`),
-      },
-    ]),
+    ...(['production', 'staging', 'testing'].includes(process.env.ENVIRONMENT_NAME)
+      ? [
+          new CopyWebpackPlugin([
+            {
+              from: `${paths.appAssetLinksDirectory}/assetlinks-${process.env.ENVIRONMENT_NAME}.json`,
+              to: `${paths.appBuild}/.well-known/assetlinks.json`,
+            },
+          ]),
+        ]
+      : []),
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.appHtml,
