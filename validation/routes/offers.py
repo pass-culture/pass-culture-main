@@ -1,8 +1,26 @@
 from domain.allocine import get_editable_fields_for_allocine_offers
-from models import RightsType, Offer
+from models import RightsType, Offer, UserOfferer
 from models.api_errors import ResourceNotFoundError, ApiErrors
 from models.offer_type import ProductType
 from utils.rest import ensure_current_user_has_rights
+
+
+def check_user_has_rights_on_offerer(user_offerer: UserOfferer):
+    errors = ApiErrors()
+    errors.add_error(
+        'global',
+        "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
+    )
+    errors.status_code = 403
+
+    if user_offerer is None:
+        raise errors
+
+    if user_offerer.user.isAdmin:
+        return True
+
+    if user_offerer.validationToken:
+        raise errors
 
 
 def check_user_has_rights_for_query(offerer_id, venue, venue_id):

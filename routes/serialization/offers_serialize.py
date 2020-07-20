@@ -1,7 +1,7 @@
 from typing import Dict
 
-from repository.booking_queries import find_first_matching_from_offer_by_user
 from models import Offer, UserSQLEntity
+from repository.booking_queries import find_first_matching_from_offer_by_user
 from routes.serialization.dictifier import as_dict
 from utils.includes import OFFER_INCLUDES, \
     WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES

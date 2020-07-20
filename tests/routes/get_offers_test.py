@@ -56,6 +56,23 @@ class Get:
             assert response.headers['Total-Data-Count'] == "20"
 
         @clean_database
+        def test_does_not_show_anything_to_user_offerer_when_not_validated(self, app):
+            # given
+            user = create_user()
+            offerer = create_offerer()
+            user_offerer = create_user_offerer(user, offerer, validation_token=secrets.token_urlsafe(20))
+            venue = create_venue(offerer)
+            offer = create_offer_with_thing_product(venue)
+            repository.save(user_offerer, offer)
+
+            # when
+            response = TestClient(app.test_client()).with_auth(email=user.email).get('/offers')
+
+            # then
+            assert response.status_code == 200
+            assert response.json == []
+
+        @clean_database
         def test_results_are_paginated_by_default_on_page_1(self, app):
             # given
             user = create_user(email='user@test.com')
@@ -225,23 +242,6 @@ class Get:
             # then
             assert response.status_code == 404
             assert response.json == {'global': ["La page que vous recherchez n'existe pas"]}
-
-        @clean_database
-        def test_does_not_show_anything_to_user_offerer_when_not_validated(self, app):
-            # given
-            user = create_user()
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer, validation_token=secrets.token_urlsafe(20))
-            venue = create_venue(offerer)
-            offer = create_offer_with_thing_product(venue)
-            repository.save(user_offerer, offer)
-
-            # when
-            response = TestClient(app.test_client()).with_auth(email=user.email).get('/offers')
-
-            # then
-            assert response.status_code == 404
-            assert response.json == {'global': ["Aucun résultat disponible"]}
 
     class Returns403:
         @clean_database

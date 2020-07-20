@@ -1,8 +1,9 @@
 import pytest
 
 from models import ApiErrors, ThingType, EventType, Offer
+from tests.model_creators.generic_creators import create_user, create_offerer, create_user_offerer
 from validation.routes.offers import check_has_venue_id, check_offer_type_is_valid, check_offer_is_editable, \
-    check_offer_name_length_is_valid, check_edition_for_allocine_offer_is_valid
+    check_offer_name_length_is_valid, check_edition_for_allocine_offer_is_valid, check_user_has_rights_on_offerer
 
 
 class CheckHasVenueIdTest:
@@ -126,3 +127,43 @@ class CheckEditionForAllocineOfferIsValidTest:
         assert error.value.errors['bookingEmail'] == ['Vous ne pouvez pas modifier ce champ']
         assert error.value.errors['isNational'] == ['Vous ne pouvez pas modifier ce champ']
         assert error.value.errors['name'] == ['Vous ne pouvez pas modifier ce champ']
+
+
+class CheckUserHasRightsOnOffererTest:
+    def test_should_not_raise_errors_when_user_is_admin(self):
+        # Given
+        user = create_user(is_admin=True)
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user=user, offerer=offerer)
+
+        # When
+        check_user_has_rights_on_offerer(user_offerer=user_offerer)
+
+        # Then
+        assert True
+
+    def test_should_raise_errors_when_user_offerer_is_not_validated(self):
+        # Given
+        user = create_user(is_admin=False)
+        offerer = create_offerer()
+        user_offerer = create_user_offerer(user=user, offerer=offerer, validation_token='ABCD')
+
+        # When
+        with pytest.raises(ApiErrors) as errors:
+            check_user_has_rights_on_offerer(user_offerer=user_offerer)
+
+        # Then
+        assert errors.value.errors == {'global': ["Vous n'avez pas les droits d'accès"
+                                                  " suffisant pour accéder à cette information."]}
+
+    def test_should_raise_errors_when_no_user_offerer(self):
+        # Given
+        user_offerer = None
+
+        # When
+        with pytest.raises(ApiErrors) as errors:
+            check_user_has_rights_on_offerer(user_offerer=user_offerer)
+
+        # Then
+        assert errors.value.errors == {'global': ["Vous n'avez pas les droits d'accès"
+                                                  " suffisant pour accéder à cette information."]}
