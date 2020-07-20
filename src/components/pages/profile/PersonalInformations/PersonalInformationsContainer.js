@@ -1,15 +1,8 @@
 import { connect } from 'react-redux'
-
-import { updateUser } from '../repository/updateUser'
 import PersonalInformations from './PersonalInformations'
-
-const mapDispatchToProps = dispatch => ({
-  handleSubmit: (formValues, handleSubmitFail, handleSubmitSuccess) => {
-    dispatch(updateUser(formValues, handleSubmitFail, handleSubmitSuccess))
-  },
-})
+import { updateCurrentUser } from '../../../../redux/actions/currentUser'
 
 export default connect(
   null,
-  mapDispatchToProps
+  { updateCurrentUser }
 )(PersonalInformations)

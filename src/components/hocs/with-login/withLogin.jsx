@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
-import { getCurrentUser } from '../../../redux/actions/currentUser'
+import { fetchCurrentUser } from '../../../redux/actions/currentUser'
 import LoadingPage from '../../layout/LoadingPage/LoadingPage'
 
 export default ({
@@ -12,11 +12,11 @@ export default ({
   handleFail = () => null,
 }) => WrappedComponent => {
   const _withLogin = props => {
-    const { getCurrentUser, history, location } = props
+    const { dispatchFetchCurrentUser, history, location } = props
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-      getCurrentUser().then(({ value }) => {
+      dispatchFetchCurrentUser().then(({ value }) => {
         const isLoggedIn = !!value
 
         if (isLoggedIn) handleSuccess(value, history, location)
@@ -30,7 +30,7 @@ export default ({
   }
 
   _withLogin.propTypes = {
-    getCurrentUser: PropTypes.func.isRequired,
+    dispatchFetchCurrentUser: PropTypes.func.isRequired,
     history: PropTypes.shape({
       push: PropTypes.func.isRequired,
     }).isRequired,
@@ -44,7 +44,7 @@ export default ({
     withRouter,
     connect(
       undefined,
-      { getCurrentUser }
+      { dispatchFetchCurrentUser: fetchCurrentUser }
     )
   )(_withLogin)
 }

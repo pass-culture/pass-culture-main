@@ -15,7 +15,7 @@ describe('personal informations', () => {
     props = {
       historyPush: jest.fn(),
       department: 'Seine-Saint' + '-Denis (93)',
-      handleSubmit: jest.fn(),
+      updateCurrentUser: jest.fn(),
       triggerSuccessSnackbar: jest.fn(),
       pathToProfile: '/profil',
       user: new User({
@@ -100,15 +100,15 @@ describe('personal informations', () => {
         submitButton.invoke('onClick')({ preventDefault: jest.fn() })
 
         // Then
-        expect(props.handleSubmit).not.toHaveBeenCalled()
+        expect(props.updateCurrentUser).not.toHaveBeenCalled()
         expect(props.historyPush).toHaveBeenCalledWith('/profil')
       })
     })
 
     describe('when user has modified his nickname', () => {
-      it('should redirect to profile and call snackbar once with proper informations', () => {
+      it('should redirect to profile and call snackbar once with proper informations', async () => {
         // Given
-        jest.spyOn(props, 'handleSubmit').mockImplementation((values, fail, success) => success())
+        jest.spyOn(props, 'updateCurrentUser').mockImplementation(() => null)
 
         const wrapper = mount(
           <MemoryRouter>
@@ -121,8 +121,7 @@ describe('personal informations', () => {
 
         // When
         nickname.invoke('onChange')({ target: { value: 'DifferentNickname' } })
-        form.invoke('onSubmit')(event)
-        form.invoke('onSubmit')(event)
+        await form.invoke('onSubmit')(event)
 
         // Then
         expect(props.historyPush).toHaveBeenCalledWith('/profil')
@@ -134,17 +133,9 @@ describe('personal informations', () => {
     describe('when input nickname value is not valid', () => {
       it('should display an error message', () => {
         // Given
-        jest.spyOn(props, 'handleSubmit').mockImplementation((values, fail) => {
-          return fail(
-            {},
-            {
-              payload: {
-                errors: {
-                  publicName: ['Pseudo invalide'],
-                },
-              },
-            }
-          )
+        jest.spyOn(props, 'updateCurrentUser').mockImplementation(() => {
+          const errors = { publicName: ['Pseudo invalide'] }
+          throw errors
         })
         const wrapper = mount(
           <MemoryRouter>

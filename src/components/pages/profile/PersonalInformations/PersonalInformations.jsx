@@ -7,7 +7,7 @@ import User from '../ValueObjects/User'
 
 class PersonalInformations extends PureComponent {
   constructor(props) {
-    super(props)
+    super()
 
     this.state = {
       errors: null,
@@ -23,9 +23,9 @@ class PersonalInformations extends PureComponent {
     this.setState({ nickname: newValue })
   }
 
-  handleSubmitFail = (state, action) => {
+  handleSubmitFail = errors => {
     this.setState({
-      errors: { ...action.payload.errors },
+      errors,
       isSubmitButtonDisabled: false,
     })
     this.nicknameInputRef.current.focus()
@@ -38,9 +38,9 @@ class PersonalInformations extends PureComponent {
     triggerSuccessSnackbar('Ton pseudo a bien été modifié.')
   }
 
-  handleSubmitNickname = event => {
+  handleSubmitNickname = async event => {
     event.preventDefault()
-    const { handleSubmit, historyPush, user, pathToProfile } = this.props
+    const { updateCurrentUser, historyPush, user, pathToProfile } = this.props
     const { isSubmitButtonDisabled } = this.state
     const nicknameInputValue = this.nicknameInputRef.current.value
     const nicknameToSubmit = {
@@ -49,7 +49,13 @@ class PersonalInformations extends PureComponent {
 
     if (user.publicName !== nicknameInputValue && !isSubmitButtonDisabled) {
       this.setState({ isSubmitButtonDisabled: true })
-      handleSubmit(nicknameToSubmit, this.handleSubmitFail, this.handleSubmitSuccess)
+      try {
+        await updateCurrentUser(nicknameToSubmit)
+        this.handleSubmitSuccess()
+      } catch (e) {
+        if (typeof e == 'object' && 'publicName' in e) this.handleSubmitFail(e)
+        else throw e
+      }
     } else {
       historyPush(pathToProfile)
     }
@@ -117,10 +123,10 @@ class PersonalInformations extends PureComponent {
 
 PersonalInformations.propTypes = {
   department: PropTypes.string.isRequired,
-  handleSubmit: PropTypes.func.isRequired,
   historyPush: PropTypes.func.isRequired,
   pathToProfile: PropTypes.string.isRequired,
   triggerSuccessSnackbar: PropTypes.func.isRequired,
+  updateCurrentUser: PropTypes.func.isRequired,
   user: PropTypes.instanceOf(User).isRequired,
 }
 
