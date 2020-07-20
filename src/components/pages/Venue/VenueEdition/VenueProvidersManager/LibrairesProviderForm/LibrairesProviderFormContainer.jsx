@@ -29,7 +29,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(
         showNotification({
           text: getRequestErrorStringFromErrors(errors),
-          type: 'fail',
+          type: 'danger',
         })
       )
     },

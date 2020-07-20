@@ -1,16 +1,17 @@
-import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
-import VenueProviderItem from './VenueProviderItem/VenueProviderItem'
+import React, { PureComponent } from 'react'
+import ReactTooltip from 'react-tooltip'
+
+import AllocineProviderForm from './AllocineProviderForm/AllocineProviderFormContainer'
+import LibrairesProviderForm from './LibrairesProviderForm/LibrairesProviderFormContainer'
+import TiteliveProviderForm from './TiteliveProviderForm/TiteliveProviderFormContainer'
 import {
   ALLOCINE_PROVIDER_OPTION,
   DEFAULT_PROVIDER_OPTION,
   LIBRAIRES_PROVIDER_OPTION,
   TITELIVE_PROVIDER_OPTION,
 } from './utils/providerOptions'
-import AllocineProviderForm from './AllocineProviderForm/AllocineProviderFormContainer'
-import TiteliveProviderForm from './TiteliveProviderForm/TiteliveProviderFormContainer'
-import ReactTooltip from 'react-tooltip'
-import LibrairesProviderForm from './LibrairesProviderForm/LibrairesProviderFormContainer'
+import VenueProviderItem from './VenueProviderItem/VenueProviderItem'
 
 class VenueProvidersManager extends PureComponent {
   constructor(props) {
@@ -34,15 +35,15 @@ class VenueProvidersManager extends PureComponent {
     ReactTooltip.rebuild()
     const { venueProviders } = this.props
     if (prevProps.venueProviders.length < venueProviders.length) {
-      this.updateIsCreationMode()
+      this.toggleOffCreationMode()
     }
   }
 
-  updateIsCreationMode = () => {
+  toggleOffCreationMode = () => {
     this.setState({ isCreationMode: false })
   }
 
-  handleAddVenueProvider = () => {
+  toggleOnCreationMode = () => {
     this.setState({
       isCreationMode: true,
     })
@@ -74,6 +75,15 @@ class VenueProvidersManager extends PureComponent {
 
     this.setState({
       providerId: valueParsed.id,
+    })
+  }
+
+  cancelProviderSelection = () => {
+    this.toggleOffCreationMode()
+    this.setState({
+      providerSelectedIsTitelive: false,
+      providerSelectedIsLibraires: false,
+      providerId: null,
     })
   }
 
@@ -148,6 +158,7 @@ class VenueProvidersManager extends PureComponent {
 
                 {providerSelectedIsTitelive && (
                   <TiteliveProviderForm
+                    cancelProviderSelection={this.cancelProviderSelection}
                     offererId={match.params.offererId}
                     providerId={providerId}
                     venueId={match.params.venueId}
@@ -157,6 +168,7 @@ class VenueProvidersManager extends PureComponent {
 
                 {providerSelectedIsLibraires && (
                   <LibrairesProviderForm
+                    cancelProviderSelection={this.cancelProviderSelection}
                     offererId={match.params.offererId}
                     providerId={providerId}
                     venueId={match.params.venueId}
@@ -173,7 +185,7 @@ class VenueProvidersManager extends PureComponent {
             <button
               className="button is-tertiary"
               id="add-venue-provider-btn"
-              onClick={this.handleAddVenueProvider}
+              onClick={this.toggleOnCreationMode}
               type="button"
             >
               {'+ Importer des offres'}

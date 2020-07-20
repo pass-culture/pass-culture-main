@@ -1,5 +1,5 @@
-import React, {PureComponent} from 'react'
-import {Form} from 'react-final-form'
+import React, { PureComponent } from 'react'
+import { Form } from 'react-final-form'
 import PropTypes from 'prop-types'
 
 class TiteliveProviderForm extends PureComponent {
@@ -10,7 +10,7 @@ class TiteliveProviderForm extends PureComponent {
     }
   }
 
-  handleFormSubmit = (formValues, form) => {
+  handleFormSubmit = () => {
     this.setState({ isLoadingMode: true })
 
     const { createVenueProvider } = this.props
@@ -22,25 +22,21 @@ class TiteliveProviderForm extends PureComponent {
       venueId: venueId,
     }
 
-    return createVenueProvider(this.handleFail(form), this.handleSuccess, payload)
+    return createVenueProvider(this.handleFail, this.handleSuccess, payload)
   }
 
   handleSuccess = () => {
-    const {
-      history,
-      offererId,
-      venueId,
-    } = this.props
+    const { history, offererId, venueId } = this.props
     history.push(`/structures/${offererId}/lieux/${venueId}`)
   }
 
-  handleFail = () => (state, action) => {
-    const { notify } = this.props
+  handleFail = (state, action) => {
+    const { cancelProviderSelection, notify } = this.props
     const {
       payload: { errors },
     } = action
-
     notify(errors)
+    cancelProviderSelection()
   }
 
   renderForm = props => {
@@ -53,9 +49,7 @@ class TiteliveProviderForm extends PureComponent {
             <div className="account-label">
               {'Compte'}
             </div>
-            <div
-              className='account-value'
-            >
+            <div className="account-value">
               {venueSiret}
             </div>
           </div>
@@ -84,12 +78,13 @@ class TiteliveProviderForm extends PureComponent {
 }
 
 TiteliveProviderForm.propTypes = {
+  cancelProviderSelection: PropTypes.func.isRequired,
   createVenueProvider: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   notify: PropTypes.func.isRequired,
   providerId: PropTypes.string.isRequired,
   venueId: PropTypes.string.isRequired,
-  venueSiret: PropTypes.string.isRequired
+  venueSiret: PropTypes.string.isRequired,
 }
 
 export default TiteliveProviderForm

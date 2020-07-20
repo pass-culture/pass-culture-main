@@ -13,7 +13,7 @@ describe('src | components | pages | Venue | VenueProviderManager | form | Provi
             venueId: 'AE',
           },
         },
-        providerId:'AA',
+        providerId: 'AA',
         venueId: 'AC',
         venueSiret: 'AB',
       }
@@ -69,7 +69,7 @@ describe('src | components | pages | Venue | VenueProviderManager | form | Provi
         expect(dispatch).toHaveBeenCalledWith({
           patch: {
             text: 'error',
-            type: 'fail',
+            type: 'danger',
           },
           type: 'SHOW_NOTIFICATION',
         })

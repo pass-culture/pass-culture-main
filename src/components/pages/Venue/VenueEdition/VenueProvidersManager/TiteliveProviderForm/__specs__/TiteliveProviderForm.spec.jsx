@@ -1,22 +1,25 @@
 import React from 'react'
-import {mount, shallow} from 'enzyme'
+import { mount, shallow } from 'enzyme'
 
 import TiteliveProviderForm from '../TiteliveProviderForm'
-import {Form} from 'react-final-form'
+import { Form } from 'react-final-form'
 
 describe('src | components | pages | Venue | VenueProvidersManager | form | TiteliveProviderForm', () => {
+  let cancelProviderSelection
   let createVenueProvider
   let props
   let notify
   let history
 
   beforeEach(() => {
+    cancelProviderSelection = jest.fn()
     createVenueProvider = jest.fn()
     history = {
       push: jest.fn(),
     }
     notify = jest.fn()
     props = {
+      cancelProviderSelection,
       createVenueProvider,
       history,
       notify,
@@ -24,7 +27,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Tite
       providerId: 'CC',
       venueId: 'AA',
       venueIdAtOfferProviderIsRequired: false,
-      venueSiret: '12345678901234'
+      venueSiret: '12345678901234',
     }
   })
 
@@ -132,13 +135,13 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Tite
           ],
         },
       }
-      const form = {
-        batch: jest.fn(),
-      }
+
       // when
-      wrapper.instance().handleFail(form)({}, action)
+      wrapper.instance().handleFail({}, action)
+
       // then
       expect(notify).toHaveBeenCalledWith([{ error: 'fake error' }])
+      expect(cancelProviderSelection).toHaveBeenCalledTimes(1)
     })
   })
 })

@@ -5,18 +5,21 @@ import LibrairesProviderForm from '../LibrairesProviderForm'
 import { Form } from 'react-final-form'
 
 describe('src | components | pages | Venue | VenueProvidersManager | form | LibrairesProviderForm', () => {
+  let cancelProviderSelection
   let createVenueProvider
   let props
   let notify
   let history
 
   beforeEach(() => {
+    cancelProviderSelection = jest.fn()
     createVenueProvider = jest.fn()
     history = {
       push: jest.fn(),
     }
     notify = jest.fn()
     props = {
+      cancelProviderSelection,
       createVenueProvider,
       history,
       notify,
@@ -128,13 +131,13 @@ describe('src | components | pages | Venue | VenueProvidersManager | form | Libr
           ],
         },
       }
-      const form = {
-        batch: jest.fn(),
-      }
+
       // when
       wrapper.instance().handleFail({}, action)
+
       // then
       expect(notify).toHaveBeenCalledWith([{ error: 'fake error' }])
+      expect(cancelProviderSelection).toHaveBeenCalledTimes(1)
     })
   })
 })

@@ -6,7 +6,7 @@ import { requestData } from 'redux-saga-data'
 
 import TiteliveProviderForm from './TiteliveProviderForm'
 
-export const mapDispatchToProps = (dispatch) => {
+export const mapDispatchToProps = dispatch => {
   return {
     createVenueProvider: (handleFail, handleSuccess, payload) => {
       dispatch(
@@ -23,7 +23,7 @@ export const mapDispatchToProps = (dispatch) => {
       dispatch(
         showNotification({
           text: getRequestErrorStringFromErrors(errors),
-          type: 'fail',
+          type: 'danger',
         })
       )
     },

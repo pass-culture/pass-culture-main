@@ -1,6 +1,6 @@
+import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
-import PropTypes from 'prop-types'
 
 class LibrairesProviderForm extends PureComponent {
   constructor() {
@@ -23,12 +23,12 @@ class LibrairesProviderForm extends PureComponent {
   }
 
   handleFail = (state, action) => {
-    const { notify } = this.props
+    const { cancelProviderSelection, notify } = this.props
     const {
       payload: { errors },
     } = action
-
     notify(errors)
+    cancelProviderSelection()
   }
 
   renderForm = props => {
@@ -71,6 +71,7 @@ class LibrairesProviderForm extends PureComponent {
 }
 
 LibrairesProviderForm.propTypes = {
+  cancelProviderSelection: PropTypes.func.isRequired,
   createVenueProvider: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   notify: PropTypes.func.isRequired,

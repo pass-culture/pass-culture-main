@@ -4,6 +4,7 @@ exports[`src | components | pages | Venue | VenueProvidersManager | form | Libra
 ShallowWrapper {
   Symbol(enzyme.__root__): [Circular],
   Symbol(enzyme.__unrendered__): <LibrairesProviderForm
+    cancelProviderSelection={[MockFunction]}
     createVenueProvider={[MockFunction]}
     history={
       Object {
