@@ -75,7 +75,12 @@ const EligibilityCheck = () => {
     case ELIGIBILITY_VALUES.TOO_OLD:
       return <IneligibleOverEighteen />
     case ELIGIBILITY_VALUES.SOON:
-      return <EligibleSoon />
+      return (
+        <EligibleSoon
+          birthDate={dateOfBirthInputValue}
+          postalCode={postalCodeInputValue}
+        />
+      )
     default:
       return (
         <main className="eligibility-check-page">

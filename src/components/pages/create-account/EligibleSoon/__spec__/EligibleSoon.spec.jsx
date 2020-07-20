@@ -13,12 +13,16 @@ jest.mock('../../utils/checkEmailFormat', () => {
 })
 
 describe('eligible soon page', () => {
+  const props =  {
+    birthDate:'02/02/2003',
+    postalCode:'93800'
+  }
   describe('render', () => {
     it('should display informations text', () => {
       // given
       const wrapper = mount(
         <MemoryRouter>
-          <EligibleSoon />
+          <EligibleSoon {...props} />
         </MemoryRouter>
       )
 
@@ -31,7 +35,7 @@ describe('eligible soon page', () => {
       // given
       const wrapper = mount(
         <MemoryRouter>
-          <EligibleSoon />
+          <EligibleSoon {...props} />
         </MemoryRouter>
       )
 
@@ -44,7 +48,7 @@ describe('eligible soon page', () => {
       // given
       const wrapper = mount(
         <MemoryRouter>
-          <EligibleSoon />
+          <EligibleSoon {...props} />
         </MemoryRouter>
       )
 
@@ -64,7 +68,7 @@ describe('eligible soon page', () => {
 
       const wrapper = mount(
         <MemoryRouter>
-          <EligibleSoon />
+          <EligibleSoon {...props} />
         </MemoryRouter>
       )
       const submitButton = wrapper.find({children: 'Rester en contact'})
