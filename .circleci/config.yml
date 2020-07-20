@@ -383,6 +383,7 @@ workflows:
           requires:
             - deploy-pro
             - deploy-webapp
+            - deploy-api-datalake
   every-mondays-nights:
     triggers:
       - schedule:
