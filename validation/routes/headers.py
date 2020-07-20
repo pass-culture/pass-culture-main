@@ -72,7 +72,7 @@ def _get_endpoint_exceptions():
             'update_offerer_demarches_simplifiees_application',
             'update_venue_demarches_simplifiees_application',
             'verify_id_check_licence_token',
-            'id_check_application_update'
+            'id_check_application_update', 'save_mailing_contact'
             ]
 
 

@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from pprint import pformat
 from typing import Dict, List, Union
+from requests import Response
 
 from flask import current_app as app, render_template
 
@@ -43,6 +44,40 @@ def send_raw_email(data: Dict) -> bool:
         logger.logger.error(f'[EMAIL] Trying to send email failed with unexpected error')
     finally:
         return successfully_sent_email
+
+
+def create_contact(email: str) -> Response:
+    data = {
+        'Email': email
+    }
+
+    return app.mailjet_client.contact.create(data=data)
+
+
+def add_contact_informations(email: str, date_of_birth: str, department_code: str) -> Response:
+    data = {
+        'Data': [
+            {
+                "Name": "date_de_naissance",
+                "Value": date_of_birth
+            },
+            {
+                "Name": "département",
+                "Value": department_code
+            }
+        ]
+    }
+
+    return app.mailjet_client.contactdata.update(id=email, data=data)
+
+def add_contact_to_list(email: str, list_id: str) -> Response:
+    data = {
+        'IsUnsubscribed': "false",
+        'ContactAlt': email,
+        'ListID': list_id,
+    }
+
+    return app.mailjet_client.listrecipient.create(data=data)
 
 
 def build_pc_pro_offer_link(offer: Offer) -> str:

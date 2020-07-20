@@ -31,6 +31,7 @@ def install_routes():
     import routes.venue_types
     import routes.venue_labels
     import routes.health_check
+    import routes.mailing_contacts
 
     if IS_DEV:
         import routes.sandboxes

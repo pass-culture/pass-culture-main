@@ -14,6 +14,7 @@ from use_cases.cancel_a_booking import CancelABooking
 from use_cases.get_bookings_for_beneficiary import GetBookingsForBeneficiary
 from use_cases.get_venue_labels import GetVenueLabels
 from use_cases.get_venues_by_pro_user import GetVenuesByProUser
+from use_cases.add_contact_in_eligiblity_list import AddContactInEligibilityList
 
 # Repositories
 booking_repository = BookingSQLRepository()
@@ -37,6 +38,10 @@ get_all_venues_by_pro_user = GetVenuesByProUser(venue_repository=venue_with_offe
 
 cancel_a_booking = CancelABooking(
     booking_repository=booking_repository,
+    notification_service=notification_service
+)
+
+add_contact_in_eligibility_list = AddContactInEligibilityList(
     notification_service=notification_service
 )
 

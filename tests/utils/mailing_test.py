@@ -20,7 +20,7 @@ from utils.mailing import parse_email_addresses, \
     send_raw_email, \
     compute_email_html_part_and_recipients, \
     extract_users_information_from_bookings, build_pc_pro_offer_link, format_booking_date_for_email, \
-    format_booking_hours_for_email, make_validation_email_object
+    format_booking_hours_for_email, make_validation_email_object, create_contact, add_contact_to_list, add_contact_informations
 
 
 def get_mocked_response_status_200(entity):
@@ -369,3 +369,87 @@ class SendRawEmailTest:
         # Then
         app.mailjet_client.send.create.assert_called_once_with(data=data)
         assert result is False
+
+
+class CreateContactTest:
+    def test_should_call_mailjet_api_to_create_contact(self, app):
+        # Given
+        data = {'Email': 'beneficiary@example.com'}
+        create_contact_response = {
+            'Data': [{
+                'ID': '123',
+                'Name': 'BeneficiaryName',
+                'Email': 'beneficiary@example.com'
+            }]
+        }
+
+        app.mailjet_client.contact.create = MagicMock()
+        app.mailjet_client.contact.create.return_value = create_contact_response
+
+        # When
+        result = create_contact('beneficiary@example.com')
+
+        # Then
+        app.mailjet_client.contact.create.assert_called_once_with(data=data)
+        assert result == create_contact_response
+
+
+class AddContactInformationsTest:
+    def test_should_call_mailjet_api_to_add_contact_informations(self, app):
+        # Given
+        data = {
+            'Data': [
+                {
+                    "Name": "date_de_naissance",
+                    "Value": 1046822400
+                },
+                {
+                    "Name": "département",
+                    "Value": "93"
+                }
+            ]
+        }
+        add_contact_infos_response = {
+            'Data': [{
+                'ID': '123',
+                'Name': 'BeneficiaryName',
+                'Email': 'beneficiary@example.com'
+            }]
+        }
+        app.mailjet_client.contactdata.update = MagicMock()
+        app.mailjet_client.contactdata.update.return_value = add_contact_infos_response
+
+        # When
+        result = add_contact_informations('beneficiary@example.com', 1046822400, '93')
+
+        # Then
+        app.mailjet_client.contactdata.update.assert_called_once_with(id='beneficiary@example.com', data=data)
+        assert result == add_contact_infos_response
+
+class AddContactToListTest:
+    def test_should_call_mailjet_api_to_add_contact_to_list(self, app):
+        # Given
+        data = {
+            'IsUnsubscribed': "false",
+            'ContactAlt': 'beneficiary@example.com',
+            'ListID': '12345',
+        }
+
+        add_to_list_response = {
+            'Data': [{
+                'ID': '123',
+                'ListID': 'mailjetListId',
+                'ListName': 'mailjetListName'
+            }]
+        }
+
+        app.mailjet_client.listrecipient.create = MagicMock()
+        app.mailjet_client.listrecipient.create.return_value = add_to_list_response
+
+        # When
+        result = add_contact_to_list('beneficiary@example.com', '12345')
+
+        # Then
+        app.mailjet_client.listrecipient.create.assert_called_once_with(data=data)
+        assert result == add_to_list_response
+

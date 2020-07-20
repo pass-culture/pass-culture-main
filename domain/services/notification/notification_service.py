@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Callable
 
 from domain.booking.booking import Booking
+from domain.beneficiary_contact.beneficiary_contact import BeneficiaryContact
 
 
 class NotificationService(ABC):
@@ -19,4 +20,12 @@ class NotificationService(ABC):
                                                              is_offerer_cancellation: bool,
                                                              is_user_cancellation: bool,
                                                              send_email: Callable[..., bool]):
+        pass
+
+    @abstractmethod
+    def create_mailing_contact(self, beneficiary_contact: BeneficiaryContact) -> None:
+        pass
+
+    @abstractmethod
+    def add_contact_to_eligible_soon_list(self, beneficiary_contact: BeneficiaryContact) -> None:
         pass

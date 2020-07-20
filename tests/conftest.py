@@ -80,6 +80,9 @@ def mocked_mail(f):
     def decorated_function(app, *args, **kwargs):
         app.mailjet_client = Mock(spec=Client)
         app.mailjet_client.send = Mock()
+        app.mailjet_client.contact = Mock()
+        app.mailjet_client.contactdata = Mock()
+        app.mailjet_client.listrecipient = Mock()
         return f(app, *args, **kwargs)
 
     return decorated_function
