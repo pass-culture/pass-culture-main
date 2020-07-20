@@ -23,7 +23,6 @@ export default (config = {}) => WrappedComponent => {
       super()
       this.state = {
         canRenderChildren: false,
-        currentUser: null,
       }
     }
 
@@ -61,10 +60,12 @@ export default (config = {}) => WrappedComponent => {
         payload: { datum },
       } = action
 
+      const currentUser = resolveCurrentUser(datum)
+      const canRenderChildren = isRequired ? !!currentUser : true
+
       this.setState(
         {
-          canRenderChildren: true,
-          currentUser: resolveCurrentUser(datum),
+          canRenderChildren,
         },
         () => {
           if (handleSuccess) {
@@ -75,16 +76,13 @@ export default (config = {}) => WrappedComponent => {
     }
 
     render() {
-      const { canRenderChildren, currentUser } = this.state
+      const { canRenderChildren } = this.state
 
-      if (!canRenderChildren || (isRequired && !currentUser)) {
+      if (!canRenderChildren) {
         return <LoadingPage />
       }
 
-      return (<WrappedComponent
-        {...this.props}
-        currentUser={currentUser}
-              />)
+      return <WrappedComponent {...this.props} />
     }
   }
 
